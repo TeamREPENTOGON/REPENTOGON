@@ -239,14 +239,47 @@ __declspec(naked) bool Game::IsPaused()
 	}
 }
 
+namespace _func7
+{
+	static void *func = 0;
+	static short argdata[] = {0x1ff};
+	static FunctionDefinition funcObj("Game::ShakeScreen", typeid(void (Game::*)(int )), "558beca1????????538b", argdata, 1, 4, &func);
+}
+
+__declspec(naked) void Game::ShakeScreen(int timeout)
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		push [ebp+8]		// timeout
+		call _func7::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		retn 4
+	}
+}
+
 Game *g_Game;
 
-namespace _var7
+namespace _var8
 {
 	static VariableDefinition varObj("g_Game", ".e8????????c745fcffffffffa3(????????)e8", &g_Game);
 }
 
-namespace _func8
+namespace _func9
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -265,7 +298,7 @@ __declspec(naked) void Manager::Update()
 		push ebx
 		push esi
 		push edi
-		call _func8::func
+		call _func9::func
 		add esp, 0
 		pop edi
 		pop esi

@@ -9,6 +9,9 @@ FuncSignature Signature_GameIsPaused = {
 __thiscall bool Game::IsPaused(Game* this); //ghidra trolling with calling convention? this or fastcall
 
 
+"558beca1????????538b":
+void __thiscall Game::ShakeScreen(int param_1_00,int param_1);
+
 //out potential target
 /*
 		01444061 e8  3a  1a       CALL       IsaacRepentance::Game::Game?                     int * Game?(Game * param_1)

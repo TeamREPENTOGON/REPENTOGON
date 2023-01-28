@@ -1,16 +1,18 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 
-/*HOOK_METHOD(Game, IsPaused, () -> bool) {
+/*HOOK_STATIC(Manager, Update, () -> void) {
     printf("hi");
-    //return super();
-}
-*/
+	super();
+}*/
 
-HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
-	printf("added you're MOM's collectible");
-	super(type, charge, firsttime, slot, vardata);
+HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
+	super(amount * 100);
 }
+/*HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
+	printf("added you're MOM's collectible");
+	//super(type, charge, firsttime, slot, vardata);
+}*/
 
 /*HOOK_METHOD(Entity_Player, AddCoins, (int amount) -> void) {
     //printf("EntityPlayer::AddCoins call %d\n", amount);

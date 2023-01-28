@@ -88,6 +88,7 @@ struct Game;
 struct Game
 {
 	LIBZHL_API bool IsPaused();
+	LIBZHL_API void __stdcall ShakeScreen(int timeout);
 	
 };
 
