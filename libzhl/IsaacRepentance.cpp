@@ -271,11 +271,11 @@ __declspec(naked) void Game::ShakeScreen(int timeout)
 	}
 }
 
-Game *g_Game;
+Game **__ptr_g_Game;
 
 namespace _var8
 {
-	static VariableDefinition varObj("g_Game", ".e8????????c745fcffffffffa3(????????)e8", &g_Game);
+	static VariableDefinition varObj("g_Game", ".e8????????c745fcffffffffa3(????????)e8", &__ptr_g_Game);
 }
 
 namespace _func9

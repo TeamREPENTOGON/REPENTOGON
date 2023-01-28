@@ -42,7 +42,7 @@ const static FuncSignatureByte Signature_GameGlobalAddres = {
 */
 
 ".e8????????c745fcffffffffa3(????????)e8":
-Game *g_Game;
+reference Game *g_Game;
 
 struct GlobalPost
 {{

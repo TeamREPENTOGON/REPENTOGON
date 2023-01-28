@@ -9,3 +9,4 @@ pch.cpp
 pch.h
 lib/*.lib
 *.suo
+*.opensdf

@@ -69,12 +69,6 @@ struct Game
 	
 };
 
-struct Manager
-{
-	LIBZHL_API static void __stdcall Update();
-	
-};
-
 struct Entity_Player;
 
 struct Entity_Player
@@ -88,11 +82,18 @@ struct Entity_Player
 	
 };
 
+struct Manager
+{
+	LIBZHL_API static void __stdcall Update();
+	
+};
+
 struct Globals
 {
 };
 
-extern LIBZHL_API Game *g_Game;
+extern LIBZHL_API Game **__ptr_g_Game;
+#define g_Game (*__ptr_g_Game)
 
 
 
