@@ -60,6 +60,21 @@ static DWORD GetBaseAddress()
 }
 
 
+struct Game;
+
+struct Game
+{
+	LIBZHL_API bool IsPaused();
+	LIBZHL_API void ShakeScreen(int timeout);
+	
+};
+
+struct Manager
+{
+	LIBZHL_API static void __stdcall Update();
+	
+};
+
 struct Entity_Player;
 
 struct Entity_Player
@@ -73,23 +88,8 @@ struct Entity_Player
 	
 };
 
-struct Manager
-{
-	LIBZHL_API static void __stdcall Update();
-	
-};
-
 struct Globals
 {
-};
-
-struct Game;
-
-struct Game
-{
-	LIBZHL_API bool IsPaused();
-	LIBZHL_API void __stdcall ShakeScreen(int timeout);
-	
 };
 
 extern LIBZHL_API Game *g_Game;

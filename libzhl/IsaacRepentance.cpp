@@ -4,7 +4,7 @@
 namespace _func0
 {
 	static void *func = 0;
-	static short argdata[] = {0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
+	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
 	static FunctionDefinition funcObj("Entity_Player::AddCollectible", typeid(void (Entity_Player::*)(int , int , bool , int , int )), "558bec6a??68????????64a1????????5081ec????????a1????????33c58945f05657508d45f464a3????????8bf18975bc", argdata, 6, 5, &func);
 }
 
@@ -25,7 +25,6 @@ __declspec(naked) void Entity_Player::AddCollectible(int type, int charge, bool 
 		push [ebp+16]		// firsttime
 		push [ebp+12]		// charge
 		push [ebp+8]		// type
-		push ecx			// this
 		call _func0::func
 		pop edi
 		pop esi
@@ -211,7 +210,7 @@ __declspec(naked) void Entity_Player::AddCoins(int amount)
 namespace _func6
 {
 	static void *func = 0;
-	static short argdata[] = {0x1ff};
+	static short argdata[] = {0x100};
 	static FunctionDefinition funcObj("Game::IsPaused", typeid(bool (Game::*)()), "83b9??????????8b15", argdata, 1, 1, &func);
 }
 
@@ -226,7 +225,7 @@ __declspec(naked) bool Game::IsPaused()
 		push ebx
 		push esi
 		push edi
-		push ecx			// this
+		mov eax, ecx	// this
 		call _func6::func
 		pop edi
 		pop esi
@@ -242,8 +241,8 @@ __declspec(naked) bool Game::IsPaused()
 namespace _func7
 {
 	static void *func = 0;
-	static short argdata[] = {0x1ff};
-	static FunctionDefinition funcObj("Game::ShakeScreen", typeid(void (Game::*)(int )), "558beca1????????538b", argdata, 1, 4, &func);
+	static short argdata[] = {0x101, 0x1ff};
+	static FunctionDefinition funcObj("Game::ShakeScreen", typeid(void (Game::*)(int )), "558beca1????????538b", argdata, 2, 5, &func);
 }
 
 __declspec(naked) void Game::ShakeScreen(int timeout)
