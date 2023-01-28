@@ -3,3 +3,7 @@ Debug
 *Release
 ipch
 *.sdf
+ZHLTest.depend
+ZHLTest.layout
+pch.cpp
+pch.h
