@@ -1,0 +1,68 @@
+/*
+"\x55\x8B\xEC\x83\xE4\x00\x51\xA1\x00\x00\x00\x00\x53\x56\x57\x83",
+	//mask
+	"xxxxx?xx????xxxx",
+*/
+
+struct GlobalPre
+{{
+	#include <windows.h>
+	#include "zhl.h"
+	//#include "rapidxml.hpp"
+	#include <string>
+	#include <vector>
+	#include <set>
+	#include <map>
+	#include <functional>
+	#include <deque>
+	#include <stdarg.h>
+	#include <unordered_map>
+	#include <math.h>
+	#include <queue>
+	#undef LoadImage
+
+	#ifndef M_PI
+		#define M_PI 3.14159265358979323846
+	#endif
+	
+	/*struct CAchievement;
+	struct RandomAmount;
+	struct Point;
+	
+	typedef std::pair<int, int> std_pair_int_int;
+	typedef std::pair<float, float> std_pair_float_float;
+	typedef std::pair<std::string, int> std_pair_std_string_int;
+	typedef std::pair<std::string, RandomAmount> std_pair_std_string_RandomAmount;
+	typedef std::pair<std::string, std::string> std_pair_std_string_std_string;
+	typedef std::pair<CAchievement*, Point> std_pair_CAchievement_ptr_Point;
+	typedef std::map<std::string, std::string> std_map_std_string_std_string;
+	typedef std::map<std::string, int> std_map_std_string_int;
+	typedef std::map<std::string, bool> std_map_std_string_bool;
+	*/
+
+	
+}};
+
+//=================================================================================================================
+// This block will be copied right afterwards, unless it "depends" on specific structures
+// in which case these structures will be declared first
+// This is useful if you have something like a 2D vector struct and want some predefined vectors for convenience purposes
+
+// struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
+struct GlobalConst
+{{	
+	
+	
+	static DWORD GetBaseAddress()
+	{
+		return (DWORD)GetModuleHandle(NULL);
+	}
+}};
+
+struct GlobalPost
+{{
+}};
+
+/*"558bec83e4?51a1????????53565783f801":
+cleanup __cdecl void Kage_PrintLog(int flag, char* Format);
+*/

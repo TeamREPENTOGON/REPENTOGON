@@ -1,0 +1,41 @@
+//AnimatePickup - Entity_Player::AnimatePickup(ANM2 const&, bool, char const*)
+//(/* public: void __thiscall Player::AnimatePickup(struct ANM2 const &) */) --> rebirth zhl
+/*
+"558BEC83E4??81EC???????535657FF": //bless JSG
+__thiscall void Entity_Player::AnimatePickup(Entity_Player *this, ANM2 *param_1,bool param_2,char *param_3);
+*/
+
+//AddCollectible - 
+"558bec6a??68????????64a1????????5081ec????????a1????????33c58945f05657508d45f464a3????????8bf18975bc":
+__thiscall void Entity_Player::AddCollectible(Entity_Player *this, int type, int charge, bool firsttime,int slot,int vardata);
+
+//AddBrokenHearts
+/*
+"":
+__thiscall void Entity_Player::AddBrokenHearts(Entity_Player *this, int);
+*/
+
+//AddBombs
+"558bec83e4??8b550883ec??56":
+__thiscall void Entity_Player::AddBombs(Entity_Player *this, int amount);
+
+//AddKeys
+"558bec83ec??8b45088d":
+__thiscall void Entity_Player::AddKeys(Entity_Player *this, int amount);
+
+//AddJarHearts
+/*"558bec83b9": //ghidra showed three results
+__thiscall void Entity_Player::AddJarHearts(Entity_Player *this, int amount);
+*/
+
+//AddJarFlies (func for lua?)
+"558bec8b91????????b8":
+__thiscall void Entity_Player::AddJarFlies(Entity_Player *this, int amount);
+
+//AddPrettyFly (func for lua?)
+"568bf18b86????????ff":
+__thiscall void Entity_Player::AddPrettyFly(Entity_Player *this);
+
+//AddCoins
+"558bec83ec??5356578b7d088bd985":
+__thiscall void Entity_Player::AddCoins(Entity_Player *this, int amount);

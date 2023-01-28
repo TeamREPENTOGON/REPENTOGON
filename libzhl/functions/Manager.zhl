@@ -1,0 +1,10 @@
+
+"558bec83e4??83ec??56578b3d":
+static cleanup __cdecl void Manager::Update();
+
+/*
+"":
+__stdcall static void __stdcall Manager::RestartGame(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >) //from remix 2 zhl
+__cdecl void Manager::RestartGame(Seeds param_1,bool param_2,bool param_3) //switch ver
+__stdcall void Manager::RestartGame() //v1.7.9b maybe
+*/

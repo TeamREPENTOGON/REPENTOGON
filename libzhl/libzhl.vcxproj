@@ -71,6 +71,7 @@ copy /Y "$(OutDir)\libzhl.lib" "$(SolutionDir)\lib"</Command>
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="hde.cpp" />
     <ClCompile Include="HookSystem.cpp" />
+    <ClCompile Include="IsaacRepentance.cpp" />
     <ClCompile Include="SigScan.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
