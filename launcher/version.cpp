@@ -23,6 +23,8 @@ int GetIsaacVersion()
 				g_Version = ISAAC_REBIRTH;
 			else if(sz == 3825664)
 				g_Version = ISAAC_AFTERBIRTH;
+			else if(sz == 8820440)
+				g_Version = ISAAC_REPENTANCE;
 			else
 				g_Version = ISAAC_UNKNOWN;
 		}
