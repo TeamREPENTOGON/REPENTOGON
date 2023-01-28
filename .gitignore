@@ -8,3 +8,4 @@ ZHLTest.layout
 pch.cpp
 pch.h
 lib/*.lib
+*.suo
