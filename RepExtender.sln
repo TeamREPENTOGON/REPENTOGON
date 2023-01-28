@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "launcher", "launcher\launcher.vcxproj", "{97E0CF75-86EF-41F0-BE95-EAF797E576A3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{456029FA-8FAA-4E95-9BC5-F2CFEBAB8FB8} = {456029FA-8FAA-4E95-9BC5-F2CFEBAB8FB8}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libzhl", "libzhl\libzhl.vcxproj", "{456029FA-8FAA-4E95-9BC5-F2CFEBAB8FB8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "modtest", "modtest\modtest.vcxproj", "{120372CD-7597-4457-A311-612EEE99F2B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97E0CF75-86EF-41F0-BE95-EAF797E576A3}.Debug|Win32.ActiveCfg = Release|Win32
+		{97E0CF75-86EF-41F0-BE95-EAF797E576A3}.Debug|Win32.Build.0 = Release|Win32
+		{97E0CF75-86EF-41F0-BE95-EAF797E576A3}.Release|Win32.ActiveCfg = Release|Win32
+		{97E0CF75-86EF-41F0-BE95-EAF797E576A3}.Release|Win32.Build.0 = Release|Win32
+		{456029FA-8FAA-4E95-9BC5-F2CFEBAB8FB8}.Debug|Win32.ActiveCfg = Release|Win32
+		{456029FA-8FAA-4E95-9BC5-F2CFEBAB8FB8}.Debug|Win32.Build.0 = Release|Win32
+		{456029FA-8FAA-4E95-9BC5-F2CFEBAB8FB8}.Release|Win32.ActiveCfg = Release|Win32
+		{456029FA-8FAA-4E95-9BC5-F2CFEBAB8FB8}.Release|Win32.Build.0 = Release|Win32
+		{120372CD-7597-4457-A311-612EEE99F2B5}.Debug|Win32.ActiveCfg = Release|Win32
+		{120372CD-7597-4457-A311-612EEE99F2B5}.Debug|Win32.Build.0 = Release|Win32
+		{120372CD-7597-4457-A311-612EEE99F2B5}.Release|Win32.ActiveCfg = Release|Win32
+		{120372CD-7597-4457-A311-612EEE99F2B5}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

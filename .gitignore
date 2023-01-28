@@ -1,0 +1,5 @@
+build
+Debug
+*Release
+ipch
+*.sdf
