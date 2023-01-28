@@ -6,8 +6,10 @@ FuncSignature Signature_GameIsPaused = {
 */
 
 "83b9??????????8b15":
-__thiscall bool Game::IsPaused(Game* this); //ghidra trolling with calling convention? this or fastcall
+bool Game::IsPaused(Game *this<eax>);
 
+"558beca1????????538b":
+__thiscall void Game::ShakeScreen(Game *this<ecx>, int timeout);
 
 //out potential target
 /*
@@ -45,6 +47,3 @@ Game *g_Game;
 struct GlobalPost
 {{
 }};
-
-"558beca1????????538b":
-void __thiscall Game::ShakeScreen(int param_1_00,int param_1);

@@ -7,7 +7,7 @@ __thiscall void Entity_Player::AnimatePickup(Entity_Player *this, ANM2 *param_1,
 
 //AddCollectible - 
 "558bec6a??68????????64a1????????5081ec????????a1????????33c58945f05657508d45f464a3????????8bf18975bc":
-__thiscall void Entity_Player::AddCollectible(Entity_Player *this, int type, int charge, bool firsttime,int slot,int vardata);
+__thiscall void Entity_Player::AddCollectible(Entity_Player *this<ecx>, int type, int charge, bool firsttime,int slot,int vardata);
 
 //AddBrokenHearts
 /*
