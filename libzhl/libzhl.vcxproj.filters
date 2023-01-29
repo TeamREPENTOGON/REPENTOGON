@@ -16,6 +16,9 @@
     <Filter Include="Header Files\Public">
       <UniqueIdentifier>{2021daf9-f86e-4874-adca-2a3b429784df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\functions">
+      <UniqueIdentifier>{ba3cceb3-9482-4fb6-959f-4b62a443a3f5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="detours.h">
@@ -68,5 +71,25 @@
     <ClCompile Include="IsaacRepentance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="functions\Entity.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
+    <None Include="functions\EntityPlayer.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
+    <None Include="functions\Game.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
+    <None Include="functions\Global.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
+    <None Include="functions\LuaEngine.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
+    <None Include="functions\Manager.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
   </ItemGroup>
 </Project>
