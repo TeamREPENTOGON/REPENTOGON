@@ -115,6 +115,8 @@ struct Game
 
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
+extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
+#define g_LuaEngine (*__ptr_g_LuaEngine)
 extern LIBZHL_API Manager **__ptr_g_Manager;
 #define g_Manager (*__ptr_g_Manager)
 extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
