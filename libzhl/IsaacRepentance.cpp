@@ -343,7 +343,14 @@ __declspec(naked) void LuaEngine::GetState()
 	}
 }
 
-namespace _func11
+LuaEngine **__ptr_g_LuaEngine;
+
+namespace _var11
+{
+	static VariableDefinition varObj("g_LuaEngine", "ffb548feffffc745fcffffffff8bce8935(????????)e8????????", &__ptr_g_LuaEngine);
+}
+
+namespace _func12
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -362,7 +369,7 @@ __declspec(naked) void Manager::Update()
 		push ebx
 		push esi
 		push edi
-		call _func11::func
+		call _func12::func
 		add esp, 0
 		pop edi
 		pop esi
@@ -378,7 +385,7 @@ __declspec(naked) void Manager::Update()
 
 Manager **__ptr_g_Manager;
 
-namespace _var12
+namespace _var13
 {
 	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
 }
