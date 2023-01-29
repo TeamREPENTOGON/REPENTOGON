@@ -5,13 +5,6 @@ HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
 	super(amount);
 }
 
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	printf("[REPENTOGON WAS HERE] (flame everywhere woah gif modding of isaac sticker)\n");
-	lua_State *state = g_LuaEngine->GetState(); //Soon.
-    super();
-};
-
 HOOK_METHOD(Game, Update, () -> void) {
 	super();
 	/*printf("I'm a buff baby that can dance like a man,\n");
@@ -20,6 +13,7 @@ HOOK_METHOD(Game, Update, () -> void) {
 	printf("Punch-ah yo buns, I can punch-ah yo buns!\n");
 	*/
 }
+
 
 /*HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	super(109, charge, firsttime, slot, vardata);

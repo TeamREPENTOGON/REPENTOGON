@@ -346,6 +346,46 @@ namespace _var10
 namespace _func11
 {
 	static void *func = 0;
+	static const short *argdata = NULL;
+	static FunctionDefinition funcObj("Manager::Update", typeid(void (*)()), "558bec83e4??83ec??56578b3d", argdata, 0, 6, &func);
+}
+
+__declspec(naked) void Manager::Update()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func11::func
+		add esp, 0
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+Manager **__ptr_g_Manager;
+
+namespace _var12
+{
+	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
+}
+
+namespace _func13
+{
+	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
 	static FunctionDefinition funcObj("LuaEngine::Init", typeid(void (LuaEngine::*)(bool )), "558bec83e4??83ec??56578bf9????????ff", argdata, 2, 5, &func);
 }
@@ -363,7 +403,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 		push esi
 		push edi
 		push [ebp+8]		// Debug
-		call _func11::func
+		call _func13::func
 		pop edi
 		pop esi
 		pop ebx
@@ -376,7 +416,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 	}
 }
 
-namespace _func12
+namespace _func14
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -395,7 +435,7 @@ __declspec(naked) void LuaEngine::RegisterClasses()
 		push ebx
 		push esi
 		push edi
-		call _func12::func
+		call _func14::func
 		pop edi
 		pop esi
 		pop ebx
@@ -410,48 +450,8 @@ __declspec(naked) void LuaEngine::RegisterClasses()
 
 LuaEngine **__ptr_g_LuaEngine;
 
-namespace _var13
-{
-	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
-}
-
-namespace _func14
-{
-	static void *func = 0;
-	static const short *argdata = NULL;
-	static FunctionDefinition funcObj("Manager::Update", typeid(void (*)()), "558bec83e4??83ec??56578b3d", argdata, 0, 6, &func);
-}
-
-__declspec(naked) void Manager::Update()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func14::func
-		add esp, 0
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-Manager **__ptr_g_Manager;
-
 namespace _var15
 {
-	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
+	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
 }
 

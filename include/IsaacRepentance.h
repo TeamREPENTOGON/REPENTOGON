@@ -34,6 +34,11 @@ __declspec(noreturn) inline void __cdecl __NOP() {}
 	#define M_PI 3.14159265358979323846
 #endif
 
+extern "C"
+{
+	#include "lstate.h"
+}
+
 /*struct CAchievement;
 struct RandomAmount;
 struct Point;
@@ -58,36 +63,6 @@ static DWORD GetBaseAddress()
 }
 
 
-struct LuaEngine;
-
-struct lua_State
-{
-};
-
-struct LuaEngine
-{
-	lua_State *GetState() {return &_state;}
-
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
-	lua_State _state;
-};
-
-struct Manager
-{
-	LIBZHL_API static void __stdcall Update();
-	
-};
-
-struct Globals
-{
-};
-
-struct Entity
-{
-};
-
 struct Game;
 
 struct Game
@@ -104,6 +79,32 @@ struct Game
 	
 };
 
+struct Entity
+{
+};
+
+struct Entity_Slot : Entity
+{
+};
+
+struct Manager
+{
+	LIBZHL_API static void __stdcall Update();
+	
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	lua_State *GetState() {return &_state;}
+	lua_State _state;
+
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+};
+
 struct Entity_Player;
 
 struct Entity_Player : Entity
@@ -117,15 +118,15 @@ struct Entity_Player : Entity
 	
 };
 
-struct Entity_Slot : Entity
+struct Globals
 {
 };
 
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
-extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
-#define g_LuaEngine (*__ptr_g_LuaEngine)
 extern LIBZHL_API Manager **__ptr_g_Manager;
 #define g_Manager (*__ptr_g_Manager)
+extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
+#define g_LuaEngine (*__ptr_g_LuaEngine)
 
 

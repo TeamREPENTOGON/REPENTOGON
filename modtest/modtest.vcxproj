@@ -58,6 +58,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="HookTest.cpp" />
+    <ClCompile Include="LuaTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
