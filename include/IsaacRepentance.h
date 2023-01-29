@@ -58,23 +58,6 @@ static DWORD GetBaseAddress()
 }
 
 
-struct Entity
-{
-};
-
-struct Entity_Player;
-
-struct Entity_Player : Entity
-{
-	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
-	LIBZHL_API void AddBombs(int amount);
-	LIBZHL_API void AddKeys(int amount);
-	LIBZHL_API void AddJarFlies(int amount);
-	LIBZHL_API void AddPrettyFly();
-	LIBZHL_API void AddCoins(int amount);
-	
-};
-
 struct LuaEngine;
 
 struct lua_State
@@ -91,10 +74,6 @@ struct LuaEngine
 	lua_State _state;
 };
 
-struct Entity_Slot : Entity
-{
-};
-
 struct Manager
 {
 	LIBZHL_API static void __stdcall Update();
@@ -102,6 +81,10 @@ struct Manager
 };
 
 struct Globals
+{
+};
+
+struct Entity
 {
 };
 
@@ -114,11 +97,28 @@ struct Game
 	
 };
 
+struct Entity_Player;
+
+struct Entity_Player : Entity
+{
+	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
+	LIBZHL_API void AddBombs(int amount);
+	LIBZHL_API void AddKeys(int amount);
+	LIBZHL_API void AddJarFlies(int amount);
+	LIBZHL_API void AddPrettyFly();
+	LIBZHL_API void AddCoins(int amount);
+	
+};
+
+struct Entity_Slot : Entity
+{
+};
+
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
-extern LIBZHL_API Manager **__ptr_g_Manager;
-#define g_Manager (*__ptr_g_Manager)
 extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
 #define g_LuaEngine (*__ptr_g_LuaEngine)
+extern LIBZHL_API Manager **__ptr_g_Manager;
+#define g_Manager (*__ptr_g_Manager)
 
 
