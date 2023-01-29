@@ -63,20 +63,6 @@ static DWORD GetBaseAddress()
 }
 
 
-struct Entity
-{
-};
-
-struct Entity_Slot : Entity
-{
-};
-
-struct Manager
-{
-	LIBZHL_API static void __stdcall Update();
-	
-};
-
 struct Game;
 
 struct Game
@@ -93,8 +79,30 @@ struct Game
 	
 };
 
-struct Globals
+struct Entity
 {
+};
+
+struct Entity_Slot : Entity
+{
+};
+
+struct Manager
+{
+	LIBZHL_API static void __stdcall Update();
+	
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	lua_State *GetState() {return &_state;}
+	lua_State _state;
+
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
 };
 
 struct Entity_Player;
@@ -110,16 +118,8 @@ struct Entity_Player : Entity
 	
 };
 
-struct LuaEngine;
-
-struct LuaEngine
+struct Globals
 {
-	lua_State *GetState() {return &_state;}
-	lua_State _state;
-
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
 };
 
 extern LIBZHL_API Game **__ptr_g_Game;
