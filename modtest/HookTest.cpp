@@ -1,11 +1,15 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 
+HOOK_METHOD(Lua, Level_MakeRedRoomDoor, () -> void) {
+	printf("No.");
+//	super();
+}
 
-HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
+/*HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
 	super(amount * 100);
 	printf("%s\n", g_Game->IsPaused() ? "true" : "false");
-}
+}*/
 
 /*HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	super(109, charge, firsttime, slot, vardata);
