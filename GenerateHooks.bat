@@ -1,2 +1,2 @@
-lua libzhlgen\cparser.lua
+lua libzhlgen\parsefuncs.lua
 pause
