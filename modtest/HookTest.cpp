@@ -2,14 +2,11 @@
 #include "HookSystem.h"
 
 HOOK_METHOD(LuaEngine, GetState, () -> void) {
-	printf("test\n");
-	super(); // this would be a good one to try to reimplement once we get g_LuaEngine's position
+	super();
 }
 
-/*HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
-	super(amount * 100);
-	printf("%s\n", g_Game->IsPaused() ? "true" : "false");
-}*/
+HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
+}
 
 /*HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	super(109, charge, firsttime, slot, vardata);

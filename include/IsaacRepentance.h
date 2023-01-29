@@ -60,27 +60,14 @@ static DWORD GetBaseAddress()
 }
 
 
-struct LuaEngine;
-
-struct LuaEngine
+struct Globals
 {
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void GetState();
-	
 };
 
 struct Manager
 {
 	LIBZHL_API static void __stdcall Update();
 	
-};
-
-struct Globals
-{
-};
-
-struct Entity
-{
 };
 
 struct Game;
@@ -90,6 +77,19 @@ struct Game
 	LIBZHL_API bool IsPaused();
 	LIBZHL_API void ShakeScreen(int timeout);
 	
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void GetState();
+	
+};
+
+struct Entity
+{
 };
 
 struct Entity_Player;
@@ -113,5 +113,7 @@ extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
 extern LIBZHL_API Manager **__ptr_g_Manager;
 #define g_Manager (*__ptr_g_Manager)
+extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
+#define g_LuaEngine (*__ptr_g_LuaEngine)
 
 
