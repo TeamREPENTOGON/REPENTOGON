@@ -60,6 +60,19 @@ static DWORD GetBaseAddress()
 }
 
 
+struct Globals
+{
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void GetState();
+	
+};
+
 struct Entity_Player;
 
 struct Entity_Player
@@ -82,29 +95,9 @@ struct Game
 	
 };
 
-struct Globals
-{
-};
-
-struct LuaEngine;
-
-struct LuaEngine
-{
-	LIBZHL_API void Init(bool Debug);
-	
-};
-
 struct Manager
 {
 	LIBZHL_API static void __stdcall Update();
-	
-};
-
-struct Lua;
-
-struct Lua
-{
-	LIBZHL_API void Level_MakeRedRoomDoor();
 	
 };
 

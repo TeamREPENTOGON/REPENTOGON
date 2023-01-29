@@ -281,39 +281,6 @@ namespace _var8
 namespace _func9
 {
 	static void *func = 0;
-	static short argdata[] = {0x1ff};
-	static FunctionDefinition funcObj("Lua::Level_MakeRedRoomDoor", typeid(void (Lua::*)()), "558bec5153568b????576a0156ff15????????83c40885c0750589????eb1c6a00683768c000ba010000008bcee82e82faff", argdata, 1, 5, &func);
-}
-
-__declspec(naked) void Lua::Level_MakeRedRoomDoor()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		push ecx			// this
-		call _func9::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func10
-{
-	static void *func = 0;
 	static const short *argdata = NULL;
 	static FunctionDefinition funcObj("Manager::Update", typeid(void (*)()), "558bec83e4??83ec??56578b3d", argdata, 0, 6, &func);
 }
@@ -330,7 +297,7 @@ __declspec(naked) void Manager::Update()
 		push ebx
 		push esi
 		push edi
-		call _func10::func
+		call _func9::func
 		add esp, 0
 		pop edi
 		pop esi
@@ -344,7 +311,7 @@ __declspec(naked) void Manager::Update()
 	}
 }
 
-namespace _func11
+namespace _func10
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -364,7 +331,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 		push esi
 		push edi
 		push [ebp+8]		// Debug
-		call _func11::func
+		call _func10::func
 		pop edi
 		pop esi
 		pop ebx
@@ -374,6 +341,38 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 		mov esp, ebp
 		pop ebp
 		retn 4
+	}
+}
+
+namespace _func11
+{
+	static void *func = 0;
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("LuaEngine::GetState", typeid(void (LuaEngine::*)()), "a1????????8b40", argdata, 1, 5, &func);
+}
+
+__declspec(naked) void LuaEngine::GetState()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func11::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
 	}
 }
 

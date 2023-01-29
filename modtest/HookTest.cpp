@@ -1,8 +1,9 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 
-HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
-	super(debug);
+HOOK_METHOD(LuaEngine, GetState, () -> void) {
+	printf("test\n");
+	super(); // this would be a good one to try to reimplement once we get g_LuaEngine's position
 }
 
 /*HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {

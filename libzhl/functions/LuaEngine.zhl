@@ -1,2 +1,5 @@
 "558bec83e4??83ec??56578bf9????????ff":
 __thiscall void LuaEngine::Init(LuaEngine *this<ecx>, bool Debug);
+
+"a1????????8b40":
+__thiscall void LuaEngine::GetState(LuaEngine *this<ecx>);
