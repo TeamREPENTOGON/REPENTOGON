@@ -46,7 +46,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)\$(TargetFileName)" "$(SolutionDir)\build"
+      <Command>copy /Y "$(OutDir)\$(TargetFileName)" "$(SolutionDir)build"
 copy /Y "$(OutDir)\libzhl.lib" "$(SolutionDir)\lib"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
