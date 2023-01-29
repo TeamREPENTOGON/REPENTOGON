@@ -1,6 +1,7 @@
 struct LuaEngine
 {{
 	lua_State *GetState() {return &_state;}
+	lua_State _state;
 }};
 
 "558bec83e4??83ec??56578bf9????????ff":

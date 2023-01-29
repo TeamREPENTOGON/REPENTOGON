@@ -24,6 +24,11 @@ struct GlobalPre
 		#define M_PI 3.14159265358979323846
 	#endif
 	
+	extern "C"
+	{
+		#include "lstate.h"
+	}
+
 	/*struct CAchievement;
 	struct RandomAmount;
 	struct Point;
