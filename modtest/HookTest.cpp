@@ -1,9 +1,8 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 
-HOOK_METHOD(Lua, Level_MakeRedRoomDoor, () -> void) {
-	printf("No.");
-//	super();
+HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
+	super(debug);
 }
 
 /*HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
