@@ -47,7 +47,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)lib</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)\launcher.dll" "$(SolutionDir)\build\dsound.dll"</Command>
+      <Command>copy /Y "$(OutDir)launcher.dll" "$(SolutionDir)build\dsound.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
