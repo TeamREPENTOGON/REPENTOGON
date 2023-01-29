@@ -52,15 +52,21 @@ typedef std::map<std::string, bool> std_map_std_string_bool;
 
 
 	
-
-
 static DWORD GetBaseAddress()
 {
 	return (DWORD)GetModuleHandle(NULL);
 }
 
 
+struct Entity
+{
+};
+
 struct Globals
+{
+};
+
+struct lua_State
 {
 };
 
@@ -70,25 +76,18 @@ struct Manager
 	
 };
 
-struct Game;
-
-struct Game
-{
-	LIBZHL_API bool IsPaused();
-	LIBZHL_API void ShakeScreen(int timeout);
-	
-};
-
 struct LuaEngine;
 
 struct LuaEngine
 {
+	lua_State *GetState() {return &_state;}
+
 	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void GetState();
 	
+	lua_State _state;
 };
 
-struct Entity
+struct Entity_Slot : Entity
 {
 };
 
@@ -105,8 +104,13 @@ struct Entity_Player : Entity
 	
 };
 
-struct Entity_Slot : Entity
+struct Game;
+
+struct Game
 {
+	LIBZHL_API bool IsPaused();
+	LIBZHL_API void ShakeScreen(int timeout);
+	
 };
 
 extern LIBZHL_API Game **__ptr_g_Game;

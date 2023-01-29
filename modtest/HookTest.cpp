@@ -1,11 +1,18 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 
-HOOK_METHOD(LuaEngine, GetState, () -> void) {
+/*HOOK_METHOD(LuaEngine, GetState, () -> void) {
 	super();
-}
+}*/
 
 HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
+	lua_State *state = &g_LuaEngine->_state;
+	lua_State *state2 = g_LuaEngine->GetState();
+	if(state == state2) {
+		printf("woag\n");
+	}
+
+	super(amount);
 }
 
 /*HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
