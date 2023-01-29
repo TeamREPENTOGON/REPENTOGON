@@ -62,35 +62,6 @@ struct Entity
 {
 };
 
-struct Globals
-{
-};
-
-struct lua_State
-{
-};
-
-struct Manager
-{
-	LIBZHL_API static void __stdcall Update();
-	
-};
-
-struct LuaEngine;
-
-struct LuaEngine
-{
-	lua_State *GetState() {return &_state;}
-
-	LIBZHL_API void Init(bool Debug);
-	
-	lua_State _state;
-};
-
-struct Entity_Slot : Entity
-{
-};
-
 struct Entity_Player;
 
 struct Entity_Player : Entity
@@ -104,6 +75,36 @@ struct Entity_Player : Entity
 	
 };
 
+struct LuaEngine;
+
+struct lua_State
+{
+};
+
+struct LuaEngine
+{
+	lua_State *GetState() {return &_state;}
+
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+	lua_State _state;
+};
+
+struct Entity_Slot : Entity
+{
+};
+
+struct Manager
+{
+	LIBZHL_API static void __stdcall Update();
+	
+};
+
+struct Globals
+{
+};
+
 struct Game;
 
 struct Game
@@ -115,8 +116,6 @@ struct Game
 
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
-extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
-#define g_LuaEngine (*__ptr_g_LuaEngine)
 extern LIBZHL_API Manager **__ptr_g_Manager;
 #define g_Manager (*__ptr_g_Manager)
 extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;

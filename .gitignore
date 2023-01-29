@@ -10,3 +10,4 @@ pch.h
 lib/*.lib
 *.suo
 *.opensdf
+build/*.dll
