@@ -48,7 +48,7 @@
       <AdditionalDependencies>libzhl.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)\modtest.dll" "$(SolutionDir)\build\zhlModTest.dll"</Command>
+      <Command>copy /Y "$(OutDir)modtest.dll" "$(SolutionDir)build\zhlModTest.dll"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
