@@ -50,8 +50,6 @@ struct GlobalPre
 // struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
 struct GlobalConst
 {{	
-	
-	
 	static DWORD GetBaseAddress()
 	{
 		return (DWORD)GetModuleHandle(NULL);

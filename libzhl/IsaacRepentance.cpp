@@ -351,41 +351,9 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 	}
 }
 
-namespace _func12
-{
-	static void *func = 0;
-	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("LuaEngine::GetState", typeid(void (LuaEngine::*)()), "a1????????8b40", argdata, 1, 5, &func);
-}
-
-__declspec(naked) void LuaEngine::GetState()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func12::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
 LuaEngine **__ptr_g_LuaEngine;
 
-namespace _var13
+namespace _var12
 {
 	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
 }
