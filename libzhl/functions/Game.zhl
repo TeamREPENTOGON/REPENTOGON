@@ -1,3 +1,7 @@
+/*"":
+__thiscall void Game::constructor(Game *this);
+*/
+
 /*
 FuncSignature Signature_GameIsPaused = {
 	"\x83\xB9\x00\x00\x00\x00\x00\x8B\x15",
@@ -43,7 +47,3 @@ const static FuncSignatureByte Signature_GameGlobalAddres = {
 
 ".e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
-
-struct GlobalPost
-{{
-}};
