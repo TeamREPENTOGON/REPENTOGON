@@ -12,6 +12,15 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
     super();
 };
 
+HOOK_METHOD(Game, Update, () -> void) {
+	super();
+	/*printf("I'm a buff baby that can dance like a man,\n");
+	printf("I can shake-ah my fanny, I can shake-ah my can!\n");
+	printf("I'm a tough tootin' baby, I can punch-ah yo buns!\n");
+	printf("Punch-ah yo buns, I can punch-ah yo buns!\n");
+	*/
+}
+
 /*HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	super(109, charge, firsttime, slot, vardata);
 }*/

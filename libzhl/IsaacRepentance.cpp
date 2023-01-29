@@ -211,6 +211,39 @@ namespace _func6
 {
 	static void *func = 0;
 	static short argdata[] = {0x100};
+	static FunctionDefinition funcObj("Game::constructor", typeid(void (Game::*)()), "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec105657a1????????33c5508d45f464a3000000008bf9897dec897de468????????", argdata, 1, 5, &func);
+}
+
+__declspec(naked) void Game::constructor()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		mov eax, ecx	// this
+		call _func6::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func7
+{
+	static void *func = 0;
+	static short argdata[] = {0x100};
 	static FunctionDefinition funcObj("Game::IsPaused", typeid(bool (Game::*)()), "83b9??????????8b15", argdata, 1, 1, &func);
 }
 
@@ -226,7 +259,7 @@ __declspec(naked) bool Game::IsPaused()
 		push esi
 		push edi
 		mov eax, ecx	// this
-		call _func6::func
+		call _func7::func
 		pop edi
 		pop esi
 		pop ebx
@@ -238,7 +271,7 @@ __declspec(naked) bool Game::IsPaused()
 	}
 }
 
-namespace _func7
+namespace _func8
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -258,7 +291,7 @@ __declspec(naked) void Game::ShakeScreen(int timeout)
 		push esi
 		push edi
 		push [ebp+8]		// timeout
-		call _func7::func
+		call _func8::func
 		pop edi
 		pop esi
 		pop ebx
@@ -271,14 +304,46 @@ __declspec(naked) void Game::ShakeScreen(int timeout)
 	}
 }
 
+namespace _func9
+{
+	static void *func = 0;
+	static const short *argdata = NULL;
+	static FunctionDefinition funcObj("Game::Update", typeid(void (Game::*)()), "558bec83e4f083ec38a1????????33c4", argdata, 0, 4, &func);
+}
+
+__declspec(naked) void Game::Update()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func9::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
 Game **__ptr_g_Game;
 
-namespace _var8
+namespace _var10
 {
 	static VariableDefinition varObj("g_Game", ".e8????????c745fcffffffffa3(????????)e8", &__ptr_g_Game);
 }
 
-namespace _func9
+namespace _func11
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -298,7 +363,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 		push esi
 		push edi
 		push [ebp+8]		// Debug
-		call _func9::func
+		call _func11::func
 		pop edi
 		pop esi
 		pop ebx
@@ -311,7 +376,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 	}
 }
 
-namespace _func10
+namespace _func12
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -330,7 +395,7 @@ __declspec(naked) void LuaEngine::RegisterClasses()
 		push ebx
 		push esi
 		push edi
-		call _func10::func
+		call _func12::func
 		pop edi
 		pop esi
 		pop ebx
@@ -345,12 +410,12 @@ __declspec(naked) void LuaEngine::RegisterClasses()
 
 LuaEngine **__ptr_g_LuaEngine;
 
-namespace _var11
+namespace _var13
 {
 	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
 }
 
-namespace _func12
+namespace _func14
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -369,7 +434,7 @@ __declspec(naked) void Manager::Update()
 		push ebx
 		push esi
 		push edi
-		call _func12::func
+		call _func14::func
 		add esp, 0
 		pop edi
 		pop esi
@@ -385,7 +450,7 @@ __declspec(naked) void Manager::Update()
 
 Manager **__ptr_g_Manager;
 
-namespace _var13
+namespace _var15
 {
 	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
 }

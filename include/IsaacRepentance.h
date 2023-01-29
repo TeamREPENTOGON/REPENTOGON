@@ -92,8 +92,15 @@ struct Game;
 
 struct Game
 {
+	Game()
+	{
+		this->constructor();
+	}
+
+	LIBZHL_API void constructor();
 	LIBZHL_API bool IsPaused();
 	LIBZHL_API void ShakeScreen(int timeout);
+	LIBZHL_API void __stdcall Update();
 	
 };
 
