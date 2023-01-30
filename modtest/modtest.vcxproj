@@ -52,6 +52,40 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lapi.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lauxlib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lbaselib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lbitlib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lcode.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lcorolib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lctype.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\ldblib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\ldebug.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\ldo.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\ldump.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lfunc.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lgc.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\linit.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\liolib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\llex.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lmathlib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lmem.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\loadlib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lobject.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lopcodes.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\loslib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lparser.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lstate.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lstring.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lstrlib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\ltable.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\ltablib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\ltm.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lua.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lundump.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lutf8lib.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lvm.c" />
+    <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lzio.c" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -59,6 +93,63 @@
     </ClCompile>
     <ClCompile Include="HookTest.cpp" />
     <ClCompile Include="LuaTest.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lapi.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lauxlib.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lcode.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lctype.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\ldebug.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\ldo.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lfunc.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lgc.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\llex.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\llimits.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lmem.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lobject.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lopcodes.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lparser.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lprefix.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lstate.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lstring.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\ltable.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\ltm.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lua.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lua.hpp" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\luaconf.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lualib.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lundump.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lvm.h" />
+    <ClInclude Include="..\..\..\..\Downloads\lua-5.3.3\include\lzio.h" />
+    <ClInclude Include="..\include\lapi.h" />
+    <ClInclude Include="..\include\lauxlib.h" />
+    <ClInclude Include="..\include\lcode.h" />
+    <ClInclude Include="..\include\lctype.h" />
+    <ClInclude Include="..\include\ldebug.h" />
+    <ClInclude Include="..\include\ldo.h" />
+    <ClInclude Include="..\include\lfunc.h" />
+    <ClInclude Include="..\include\lgc.h" />
+    <ClInclude Include="..\include\libzhl.h" />
+    <ClInclude Include="..\include\llex.h" />
+    <ClInclude Include="..\include\llimits.h" />
+    <ClInclude Include="..\include\lmem.h" />
+    <ClInclude Include="..\include\lobject.h" />
+    <ClInclude Include="..\include\lopcodes.h" />
+    <ClInclude Include="..\include\lparser.h" />
+    <ClInclude Include="..\include\lprefix.h" />
+    <ClInclude Include="..\include\lstate.h" />
+    <ClInclude Include="..\include\lstring.h" />
+    <ClInclude Include="..\include\ltable.h" />
+    <ClInclude Include="..\include\ltm.h" />
+    <ClInclude Include="..\include\lua.h" />
+    <ClInclude Include="..\include\luaconf.h" />
+    <ClInclude Include="..\include\lualib.h" />
+    <ClInclude Include="..\include\lundump.h" />
+    <ClInclude Include="..\include\lvm.h" />
+    <ClInclude Include="..\include\lzio.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\lua-5.3.3\include\Makefile" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

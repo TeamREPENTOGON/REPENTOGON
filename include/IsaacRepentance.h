@@ -37,6 +37,7 @@ __declspec(noreturn) inline void __cdecl __NOP() {}
 extern "C"
 {
 	#include "lstate.h"
+	#include "lauxlib.h"
 }
 
 /*struct CAchievement;
@@ -63,6 +64,12 @@ static DWORD GetBaseAddress()
 }
 
 
+struct Manager
+{
+	LIBZHL_API static void __stdcall Update();
+	
+};
+
 struct Game;
 
 struct Game
@@ -79,6 +86,34 @@ struct Game
 	
 };
 
+struct LuaEngine;
+
+struct LuaEngine
+{
+	//lua_State *GetState() {return &_state;}
+
+	int _asdfg;
+	int _callbackStates;
+	int _callbackCallFunc;
+	int _unloadmodFunc;
+	lua_State _state;
+	bool _debug;
+	unsigned int _hashKey;
+	int _GCStepSize;
+	int _GCMemTrail[10];
+	int _GCMemTrailPointer;
+	int _GCStepCooldown;
+	int _lastMemSize;
+	unsigned int m_MemHistory[128];
+	unsigned int m_MemHistoryTail;
+	unsigned int m_MemHistorySize;
+	unsigned int m_MemHistoryCountdown;
+
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+};
+
 struct Entity
 {
 };
@@ -87,22 +122,8 @@ struct Entity_Slot : Entity
 {
 };
 
-struct Manager
+struct Globals
 {
-	LIBZHL_API static void __stdcall Update();
-	
-};
-
-struct LuaEngine;
-
-struct LuaEngine
-{
-	lua_State *GetState() {return &_state;}
-	lua_State _state;
-
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
 };
 
 struct Entity_Player;
@@ -116,10 +137,6 @@ struct Entity_Player : Entity
 	LIBZHL_API void AddPrettyFly();
 	LIBZHL_API void AddCoins(int amount);
 	
-};
-
-struct Globals
-{
 };
 
 extern LIBZHL_API Game **__ptr_g_Game;
