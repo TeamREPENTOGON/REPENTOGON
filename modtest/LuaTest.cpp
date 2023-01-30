@@ -15,8 +15,9 @@ extern "C" int Lua_TestLua(lua_State *L) {
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+	super();
 	printf("[REPENTOGON WAS HERE] (flame everywhere woah gif modding of isaac sticker)\n");
-	lua_State *state = &g_LuaEngine->_state; //Soon.
+	lua_State *state = g_LuaEngine->_state; //Soon.
 	printf("repentogonning all over the place\n");
 	lua_register(state, "Lua_TestLua", Lua_TestLua);
 	printf("i'm repeotogonnning!!!!!!\n");

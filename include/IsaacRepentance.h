@@ -92,13 +92,16 @@ struct LuaEngine
 {
 	//lua_State *GetState() {return &_state;}
 
-	int _asdfg;
-	int _callbackStates;
-	int _callbackCallFunc;
-	int _unloadmodFunc;
-	lua_State _state;
-	bool _debug;
-	unsigned int _hashKey;
+	int _asdfg; // 0x0
+	int _callbackStates; // 0x4
+	int _callbackCallFunc; // 0x8
+	int _unloadmodFunc; // 0xC
+	// lua_State _state; // 0x10
+	char unk0[4]; // 0x10
+	bool _debug; // 0x14
+	char pad0[3]; // 0x15
+	lua_State* _state; // 0x18
+	unsigned int _hashKey; // Originally misaligned
 	int _GCStepSize;
 	int _GCMemTrail[10];
 	int _GCMemTrailPointer;
