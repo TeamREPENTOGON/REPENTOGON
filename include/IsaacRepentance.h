@@ -63,6 +63,23 @@ static DWORD GetBaseAddress()
 }
 
 
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+	char pad0[24];
+	lua_State *_state;
+};
+
+struct Manager
+{
+	LIBZHL_API void __stdcall Update();
+	
+};
+
 struct Entity;
 
 struct LIBZHL_INTERFACE Entity
@@ -84,10 +101,34 @@ struct Entity_Slot : Entity
 {
 };
 
-struct Manager
+struct Vector
 {
-	LIBZHL_API void __stdcall Update();
+	Vector() : x(0.f), y(0.f) {}
+	Vector(float _x, float _y) : x(_x), y(_y) {}
 	
+	Vector operator+(const Vector& other)
+	{
+		return Vector(x + other.x, y + other.y);
+	}
+	
+	Vector operator-(const Vector& other)
+	{		
+		return Vector(x - other.x, y - other.y);
+	}
+	
+	Vector operator/(float amount)
+	{		
+		return Vector(x / amount, y / amount);
+	}
+	
+	Vector operator*(float amount)
+	{		
+		return Vector(x * amount, y * amount);
+	}
+
+
+	float x;
+	float y;
 };
 
 struct Entity_Player;
@@ -103,17 +144,7 @@ struct Entity_Player : Entity
 	
 };
 
-struct LuaEngine;
-
-struct LuaEngine
-{
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
-	char pad0[24];
-	lua_State *_state;
-};
-
+struct Vector;
 struct Game;
 
 struct Game
@@ -126,6 +157,7 @@ struct Game
 	LIBZHL_API void constructor();
 	LIBZHL_API bool IsPaused();
 	LIBZHL_API void ShakeScreen(int timeout);
+	LIBZHL_API void MakeShockwave(const Vector &pos, float amplitude, float speed, int duration);
 	LIBZHL_API void __stdcall Update();
 	
 };
@@ -136,9 +168,9 @@ struct Globals
 
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
-extern LIBZHL_API Manager **__ptr_g_Manager;
-#define g_Manager (*__ptr_g_Manager)
 extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
 #define g_LuaEngine (*__ptr_g_LuaEngine)
+extern LIBZHL_API Manager **__ptr_g_Manager;
+#define g_Manager (*__ptr_g_Manager)
 
 

@@ -1,5 +1,6 @@
 struct Manager;
 struct Game;
+struct Vector;
 struct Entity;
 struct VTable_Entity;
 
@@ -15,6 +16,12 @@ struct Manager
 struct Game 
 {
 	
+};
+
+struct Vector
+{
+	float x;
+	float y;
 };
 
 struct Entity 

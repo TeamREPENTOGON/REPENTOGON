@@ -81,6 +81,7 @@ copy /Y "$(OutDir)\libzhl.lib" "$(SolutionDir)\lib"</Command>
     <None Include="functions\Global.zhl" />
     <None Include="functions\LuaEngine.zhl" />
     <None Include="functions\Manager.zhl" />
+    <None Include="functions\Vector2.zhl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
