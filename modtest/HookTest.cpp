@@ -15,7 +15,7 @@ HOOK_METHOD(Game, Update, () -> void) {
 }
 
 HOOK_METHOD(Entity, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
-	super(type, variant, subtype, unk);
+	super(type, variant, subtype, initSeed);
 	printf("Entity::Init type %d variant %d sub %d and this thing %d\n", type,variant,subtype,initSeed);
 }
 
