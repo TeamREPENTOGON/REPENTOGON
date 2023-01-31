@@ -37,7 +37,6 @@ __declspec(noreturn) inline void __cdecl __NOP() {}
 extern "C"
 {
 	#include "lstate.h"
-	#include "lauxlib.h"
 }
 
 /*struct CAchievement;
@@ -64,10 +63,55 @@ static DWORD GetBaseAddress()
 }
 
 
+struct Entity;
+
+struct LIBZHL_INTERFACE Entity
+{
+	Entity() 
+	{
+		this->constructor();
+	}
+
+	virtual ~Entity() {}
+	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	virtual void PreUpdate() LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual void Update();
+	LIBZHL_API void constructor();
+	
+};
+
+struct Entity_Slot : Entity
+{
+};
+
 struct Manager
 {
-	LIBZHL_API static void __stdcall Update();
+	LIBZHL_API void __stdcall Update();
 	
+};
+
+struct Entity_Player;
+
+struct Entity_Player : Entity
+{
+	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
+	LIBZHL_API void AddBombs(int amount);
+	LIBZHL_API void AddKeys(int amount);
+	LIBZHL_API void AddJarFlies(int amount);
+	LIBZHL_API void AddPrettyFly();
+	LIBZHL_API void AddCoins(int amount);
+	
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+	char pad0[24];
+	lua_State *_state;
 };
 
 struct Game;
@@ -86,60 +130,8 @@ struct Game
 	
 };
 
-struct LuaEngine;
-
-struct LuaEngine
-{
-	//lua_State *GetState() {return &_state;}
-
-	int _asdfg; // 0x0
-	int _callbackStates; // 0x4
-	int _callbackCallFunc; // 0x8
-	int _unloadmodFunc; // 0xC
-	// lua_State _state; // 0x10
-	char unk0[4]; // 0x10
-	bool _debug; // 0x14
-	char pad0[3]; // 0x15
-	lua_State* _state; // 0x18
-	unsigned int _hashKey; // Originally misaligned
-	int _GCStepSize;
-	int _GCMemTrail[10];
-	int _GCMemTrailPointer;
-	int _GCStepCooldown;
-	int _lastMemSize;
-	unsigned int m_MemHistory[128];
-	unsigned int m_MemHistoryTail;
-	unsigned int m_MemHistorySize;
-	unsigned int m_MemHistoryCountdown;
-
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
-};
-
-struct Entity
-{
-};
-
-struct Entity_Slot : Entity
-{
-};
-
 struct Globals
 {
-};
-
-struct Entity_Player;
-
-struct Entity_Player : Entity
-{
-	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
-	LIBZHL_API void AddBombs(int amount);
-	LIBZHL_API void AddKeys(int amount);
-	LIBZHL_API void AddJarFlies(int amount);
-	LIBZHL_API void AddPrettyFly();
-	LIBZHL_API void AddCoins(int amount);
-	
 };
 
 extern LIBZHL_API Game **__ptr_g_Game;
