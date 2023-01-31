@@ -37,7 +37,6 @@ __declspec(noreturn) inline void __cdecl __NOP() {}
 extern "C"
 {
 	#include "lstate.h"
-	#include "lauxlib.h"
 }
 
 /*struct CAchievement;
@@ -64,34 +63,13 @@ static DWORD GetBaseAddress()
 }
 
 
-struct Manager
-{
-	LIBZHL_API static void __stdcall Update();
-	
-};
-
-struct Game;
-
-struct Game
-{
-	Game()
-	{
-		this->constructor();
-	}
-
-	LIBZHL_API void constructor();
-	LIBZHL_API bool IsPaused();
-	LIBZHL_API void ShakeScreen(int timeout);
-	LIBZHL_API void __stdcall Update();
-	
-};
-
 struct LuaEngine;
 
 struct LuaEngine
 {
-	//lua_State *GetState() {return &_state;}
-
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
 	int _asdfg; // 0x0
 	int _callbackStates; // 0x4
 	int _callbackCallFunc; // 0x8
@@ -111,22 +89,49 @@ struct LuaEngine
 	unsigned int m_MemHistoryTail;
 	unsigned int m_MemHistorySize;
 	unsigned int m_MemHistoryCountdown;
+};
 
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
+struct Manager
+{
+	LIBZHL_API void __stdcall Update();
 	
-};
-
-struct Entity
-{
-};
-
-struct Entity_Slot : Entity
-{
 };
 
 struct Globals
 {
+};
+
+struct Entity;
+
+struct LIBZHL_INTERFACE Entity
+{
+	Entity() 
+	{
+		this->constructor();
+	}
+
+	virtual ~Entity() {}
+	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	virtual void PreUpdate() LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual void Update();
+	LIBZHL_API void constructor();
+	
+};
+
+struct Game;
+
+struct Game
+{
+	Game()
+	{
+		this->constructor();
+	}
+
+	LIBZHL_API void constructor();
+	LIBZHL_API bool IsPaused();
+	LIBZHL_API void ShakeScreen(int timeout);
+	LIBZHL_API void __stdcall Update();
+	
 };
 
 struct Entity_Player;
@@ -142,11 +147,15 @@ struct Entity_Player : Entity
 	
 };
 
+struct Entity_Slot : Entity
+{
+};
+
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
-extern LIBZHL_API Manager **__ptr_g_Manager;
-#define g_Manager (*__ptr_g_Manager)
 extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
 #define g_LuaEngine (*__ptr_g_LuaEngine)
+extern LIBZHL_API Manager **__ptr_g_Manager;
+#define g_Manager (*__ptr_g_Manager)
 
 

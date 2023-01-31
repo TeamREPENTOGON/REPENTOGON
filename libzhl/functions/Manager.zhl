@@ -1,6 +1,6 @@
 
 "558bec83e4??83ec??56578b3d":
-static cleanup __cdecl void Manager::Update();
+void Manager::Update();
 
 /*
 "":
