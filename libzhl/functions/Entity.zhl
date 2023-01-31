@@ -1,0 +1,20 @@
+"558bec6aff68????????64a1000000005083ec085657a1????????33c5508d45f464a3000000008bf9897df0c707????????c7470800000000":
+__thiscall void Entity::constructor(Entity *this<ecx>);
+
+"558bec83ec308b4508f30f7e05????????568bf1578946288b450c":
+virtual __thiscall void Entity::Init(Entity* this<ecx>, unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+
+/*"b":
+virtual __thiscall void Entity::PreUpdate(Entity* this<ecx>);
+*/
+
+"558bec83e4f081ecd8010000a1????????33c4":
+virtual __thiscall void Entity::Update(Entity* this<ecx>);
+
+struct Entity
+{{
+	Entity() 
+	{
+		this->constructor();
+	}
+}};
