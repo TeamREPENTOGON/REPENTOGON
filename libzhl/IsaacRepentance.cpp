@@ -590,3 +590,33 @@ namespace _var19
 	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
 }
 
+namespace _func20
+{
+	static void *func = 0;
+	static const short *argdata = NULL;
+	static FunctionDefinition funcObj("Room::GetDevilRoomChance", typeid(float (Room::*)()), "558bec83ec08f30f1005????????56578bf9f30f1145fc8b0d????????", argdata, 0, 0, &func);
+}
+
+__declspec(naked) float Room::GetDevilRoomChance()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func20::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+

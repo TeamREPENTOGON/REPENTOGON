@@ -101,6 +101,12 @@ struct Entity_Slot : Entity
 {
 };
 
+struct Room
+{
+	LIBZHL_API float __stdcall GetDevilRoomChance();
+	
+};
+
 struct Vector
 {
 	Vector() : x(0.f), y(0.f) {}
@@ -131,19 +137,6 @@ struct Vector
 	float y;
 };
 
-struct Entity_Player;
-
-struct Entity_Player : Entity
-{
-	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
-	LIBZHL_API void AddBombs(int amount);
-	LIBZHL_API void AddKeys(int amount);
-	LIBZHL_API void AddJarFlies(int amount);
-	LIBZHL_API void AddPrettyFly();
-	LIBZHL_API void AddCoins(int amount);
-	
-};
-
 struct Vector;
 struct Game;
 
@@ -159,6 +152,23 @@ struct Game
 	LIBZHL_API void ShakeScreen(int timeout);
 	LIBZHL_API void MakeShockwave(const Vector &pos, float amplitude, float speed, int duration);
 	LIBZHL_API void __stdcall Update();
+	
+	int _floorNum;
+	bool _altFloor;
+	char unk1[3];
+	int _curses;
+};
+
+struct Entity_Player;
+
+struct Entity_Player : Entity
+{
+	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
+	LIBZHL_API void AddBombs(int amount);
+	LIBZHL_API void AddKeys(int amount);
+	LIBZHL_API void AddJarFlies(int amount);
+	LIBZHL_API void AddPrettyFly();
+	LIBZHL_API void AddCoins(int amount);
 	
 };
 

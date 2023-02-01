@@ -94,5 +94,8 @@
     <None Include="functions\Vector2.zhl">
       <Filter>Source Files\functions</Filter>
     </None>
+    <None Include="functions\Room.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
   </ItemGroup>
 </Project>

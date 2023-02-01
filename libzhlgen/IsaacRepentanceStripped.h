@@ -2,7 +2,9 @@ struct Manager;
 struct Game;
 struct Vector;
 struct Entity;
+struct Room;
 struct VTable_Entity;
+struct VTable_EntityPlayer;
 
 struct Globals
 {
@@ -15,7 +17,10 @@ struct Manager
 
 struct Game 
 {
-	
+	int _floorNum;
+	bool _altFloor;
+	char unk1[0x03];
+	int _curses;
 };
 
 struct Vector
@@ -27,6 +32,11 @@ struct Vector
 struct Entity 
 {
 	VTable_Entity *_vtable;
+};
+
+struct Room
+{
+	
 };
 
 struct VTable_Entity
