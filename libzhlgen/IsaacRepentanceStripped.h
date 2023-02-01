@@ -1,7 +1,9 @@
 struct Manager;
 struct Game;
 struct Vector;
+struct PlayerManager;
 struct Entity;
+struct Entity_Player;
 struct Room;
 struct VTable_Entity;
 struct VTable_EntityPlayer;
@@ -27,6 +29,11 @@ struct Vector
 {
 	float x;
 	float y;
+};
+
+struct PlayerManager
+{
+	
 };
 
 struct Entity 

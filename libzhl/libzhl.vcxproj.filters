@@ -97,5 +97,8 @@
     <None Include="functions\Room.zhl">
       <Filter>Source Files\functions</Filter>
     </None>
+    <None Include="functions\PlayerManager.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
   </ItemGroup>
 </Project>
