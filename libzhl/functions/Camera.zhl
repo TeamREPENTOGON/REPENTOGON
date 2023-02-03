@@ -1,0 +1,5 @@
+"538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec285657a1????????33c5508d45f464a3000000008bf18975d46a3ce8????????":
+__thiscall void Camera::constructor(Camera *this<ecx>, Room* room);
+
+"558bec51568bf1578b7e088b4e043bf975??85ff":
+__thiscall void Camera::SetFocusPosition(Camera *this<ecx>, const Vector& pos);

@@ -90,6 +90,10 @@ struct Manager
 	
 };
 
+struct Globals
+{
+};
+
 struct Entity;
 
 struct LIBZHL_INTERFACE Entity
@@ -108,10 +112,6 @@ struct LIBZHL_INTERFACE Entity
 };
 
 struct Entity_Slot : Entity
-{
-};
-
-struct Globals
 {
 };
 
@@ -184,6 +184,18 @@ struct Game
 	char unk1[3];
 	int _curses;
 };
+
+struct Camera;
+struct Room;
+
+struct Camera
+{
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
+	
+};
+
+LIBZHL_API unsigned int __stdcall Random();
 
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
