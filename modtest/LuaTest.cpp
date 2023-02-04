@@ -1,8 +1,12 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include <iostream>
+#include <sstream>
+#include <string>
 
 extern "C" {
 #include "lapi.h"
+#include "lauxlib.h"
 }
 
 extern "C" int Lua_TestLua(lua_State *L) {
