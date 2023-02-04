@@ -42,7 +42,7 @@ __thiscall void Entity_Player::AddPrettyFly(Entity_Player *this);
 __thiscall void Entity_Player::AddCoins(Entity_Player *this, int amount);
 
 "558bec83e4??83ec??8b4d":
-static cleanup PosVel Entity_Player::GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
+static cleanup __cdecl PosVel Entity_Player::GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
 
 "558bec83e4??83ec??8b450853568bf1":
 Weapon_MultiShotParams Entity_Player::GetMultiShotParams(Entity_Player *this<ecx>, WeaponType weaponType);
