@@ -86,6 +86,7 @@
     <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lutf8lib.c" />
     <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lvm.c" />
     <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lzio.c" />
+    <ClCompile Include="CustomCallbacks.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

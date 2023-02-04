@@ -126,6 +126,9 @@
     <ClCompile Include="..\..\..\..\Downloads\lua-5.3.3\include\lzio.c">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="CustomCallbacks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\lapi.h">

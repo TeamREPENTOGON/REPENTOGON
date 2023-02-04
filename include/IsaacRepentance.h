@@ -86,30 +86,38 @@ static DWORD GetBaseAddress()
 }
 
 
-struct Game;
 struct Entity_Player;
-struct Entity;
-struct Vector;
+struct PlayerManager;
 
-struct Game
+struct PlayerManager
 {
-	Game()
-	{
-		this->constructor();
-	}
+	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
+	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
+	
+};
 
-	LIBZHL_API void constructor();
-	LIBZHL_API bool IsPaused();
-	LIBZHL_API Entity *Spawn(unsigned int type, unsigned int variant, const Vector &position, const Vector &velocity, Entity *spawner, unsigned int subtype, unsigned int seed, unsigned int unk);
-	LIBZHL_API void ShakeScreen(int timeout);
-	LIBZHL_API void MakeShockwave(const Vector &pos, float amplitude, float speed, int duration);
-	LIBZHL_API Entity_Player *GetPlayer(unsigned int Index);
+struct Manager
+{
 	LIBZHL_API void __stdcall Update();
 	
-	int _floorNum;
-	bool _altFloor;
-	char unk1[3];
-	int _curses;
+};
+
+struct Weapon_MultiShotParams
+{
+	int16_t numTears;
+	int16_t unk1;
+	float unk2;
+	float unk3;
+	float unk4;
+	float unk5;
+	int32_t unk6;
+	float unk7;
+	bool unk8[1];
+	bool unk9[1];
+	bool unk10[1];
+	char pad0;
+	int16_t unk11;
+	char pad1[2];
 };
 
 struct Vector
@@ -172,6 +180,19 @@ struct PosVel
 	Vector vel;
 };
 
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+	char pad0[24];
+	lua_State *_state;
+};
+
+struct Entity;
+
 struct LIBZHL_INTERFACE Entity
 {
 	Entity() 
@@ -189,22 +210,52 @@ struct LIBZHL_INTERFACE Entity
 	float _timeScale;
 };
 
-struct Weapon_MultiShotParams
+struct Entity_Slot : Entity
 {
-	int16_t numTears;
-	int16_t unk1;
-	float unk2;
-	float unk3;
-	float unk4;
-	float unk5;
-	int32_t unk6;
-	float unk7;
-	bool unk8;
-	bool unk9;
-	bool unk10;
-	char pad0;
-	int16_t unk11;
-	char pad1[2];
+};
+
+struct Room
+{
+	LIBZHL_API float __stdcall GetDevilRoomChance();
+	
+};
+
+struct Game;
+struct Vector;
+
+struct Game
+{
+	Game()
+	{
+		this->constructor();
+	}
+
+	LIBZHL_API void constructor();
+	LIBZHL_API bool IsPaused();
+	LIBZHL_API Entity *Spawn(unsigned int type, unsigned int variant, const Vector &position, const Vector &velocity, Entity *spawner, unsigned int subtype, unsigned int seed, unsigned int unk);
+	LIBZHL_API void ShakeScreen(int timeout);
+	LIBZHL_API void MakeShockwave(const Vector &pos, float amplitude, float speed, int duration);
+	LIBZHL_API Entity_Player *GetPlayer(unsigned int Index);
+	LIBZHL_API void __stdcall Update();
+	
+	int _floorNum;
+	bool _altFloor;
+	char unk1[3];
+	int _curses;
+};
+
+struct Camera;
+struct Room;
+
+struct Camera
+{
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
+	
+};
+
+struct Globals
+{
 };
 
 struct Entity_Player : Entity
@@ -220,56 +271,6 @@ struct Entity_Player : Entity
 	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
 	LIBZHL_API virtual void Update();
 	
-};
-
-struct Manager
-{
-	LIBZHL_API void __stdcall Update();
-	
-};
-
-struct Globals
-{
-};
-
-struct Camera;
-struct Room;
-
-struct Camera
-{
-	LIBZHL_API void constructor(Room *room);
-	LIBZHL_API void SetFocusPosition(const Vector &pos);
-	
-};
-
-struct Room
-{
-	LIBZHL_API float __stdcall GetDevilRoomChance();
-	
-};
-
-struct LuaEngine;
-
-struct LuaEngine
-{
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
-	char pad0[24];
-	lua_State *_state;
-};
-
-struct PlayerManager;
-
-struct PlayerManager
-{
-	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
-	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
-	
-};
-
-struct Entity_Slot : Entity
-{
 };
 
 LIBZHL_API unsigned int __stdcall Random();
