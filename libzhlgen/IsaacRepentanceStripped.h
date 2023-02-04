@@ -103,9 +103,9 @@ struct Weapon_MultiShotParams
     float unk5;
     int32_t unk6;
     float unk7;
-    bool unk8[1];
-    bool unk9[1];
-    bool unk10[1];
+    bool unk8;
+    bool unk9;
+    bool unk10;
     char pad0;
     int16_t unk11;
     char pad1[2];
