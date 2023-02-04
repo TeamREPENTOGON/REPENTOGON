@@ -75,12 +75,16 @@ copy /Y "$(OutDir)\libzhl.lib" "$(SolutionDir)\lib"</Command>
     <ClCompile Include="SigScan.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="functions\Camera.zhl" />
     <None Include="functions\Entity.zhl" />
     <None Include="functions\EntityPlayer.zhl" />
     <None Include="functions\Game.zhl" />
     <None Include="functions\Global.zhl" />
     <None Include="functions\LuaEngine.zhl" />
     <None Include="functions\Manager.zhl" />
+    <None Include="functions\PlayerManager.zhl" />
+    <None Include="functions\RNG.zhl" />
+    <None Include="functions\Room.zhl" />
     <None Include="functions\Vector2.zhl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

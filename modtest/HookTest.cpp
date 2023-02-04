@@ -20,11 +20,28 @@ HOOK_METHOD(Game, Update, () -> void) {
 	*/
 }
 
-/*HOOK_METHOD(Game, Spawn, (unsigned int type, unsigned int variant, const Vector &pos, const Vector &vel, Entity* spawner, unsigned int sub, unsigned int seed, unsigned int unk) -> Entity*) {
-	return super(type,variant,pos,vel,spawner,sub,seed, unk);
-	printf("Game::Spawn %d, %d, %f, %f, %f, %f,%d,%d,%d\n", type, variant, pos.x,pos.y, vel.x, vel.y, sub, seed, unk);
+/*HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
+	super(type, variant, subtype, initSeed);
+	printf("Entity_Player::Init type %d variant %d sub %d and this thing %d\n", type,variant,subtype,initSeed);
+};
+*/
+
+/*HOOK_METHOD(PlayerManager, SpawnCoPlayer2, (int unk) -> Entity_Player*) {
+	printf("PlayerManager::SpawnCoPlayer2 %d\n", unk);
+	Entity_Player* ret = super(unk);
+
+	return ret;
 }
 */
+
+/*HOOK_METHOD(Game, Spawn, (unsigned int type, unsigned int variant, const Vector &pos, const Vector &vel, Entity* spawner, unsigned int sub, unsigned int seed, unsigned int unk) -> Entity*) {
+	Entity* ret = super(type,variant,pos,vel,spawner,sub,seed, unk);
+	printf("Game::Spawn %d, %d, %f, %f, %f, %f,%d,%d,%d\n", type, variant, pos.x,pos.y, vel.x, vel.y, sub, seed, unk);
+
+	return ret;
+}
+*/
+
 
 /*HOOK_METHOD(Entity, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 	super(type, variant, subtype, initSeed);
@@ -36,6 +53,15 @@ HOOK_METHOD(Entity, Update, () -> void) {
 	super();
 	//printf("hellp");
 }
+
+/*HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
+	float ret = super();
+
+	ret = 0.134f;
+	printf("GetDevilRoomChance: %f\n", ret);
+	return ret;
+}
+*/
 
 /*HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	super(109, charge, firsttime, slot, vardata);

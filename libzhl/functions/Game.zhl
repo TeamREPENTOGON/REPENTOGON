@@ -12,9 +12,9 @@ FuncSignature Signature_GameIsPaused = {
 "83b9??????????8b15":
 bool Game::IsPaused(Game *this<eax>);
 
-/*"558bec83e4f883ec6c8b450853568b751857894424148bf98d4520897c2410508d451c508b451456508b4510508d450c508d44242c50e8????????":
+"558bec83e4f883ec6c8b450853568b751857894424148bf98d4520897c2410508d451c508b451456508b4510508d450c508d44242c50e8????????":
 __thiscall Entity* Game::Spawn(Game *this<ecx>, unsigned int type, unsigned int variant, const Vector& position, const Vector& velocity, Entity* spawner, unsigned int subtype, unsigned int seed, unsigned int unk);
-*/
+
 
 "558beca1????????538b":
 __thiscall void Game::ShakeScreen(Game *this<ecx>, int timeout);

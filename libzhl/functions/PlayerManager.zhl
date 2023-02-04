@@ -1,0 +1,12 @@
+"558bec6aff68????????64a1000000005083ec20535657a1????????33c5508d45f464a3000000008bf9897de08b47142b4710c1f8024083f84076??68????????":
+__thiscall Entity_Player* PlayerManager::SpawnCoPlayer(PlayerManager* this<ecx>, int unk); //smol baby
+
+"558bec6aff68????????64a1000000005083ec10535657a1????????33c5508d45f464a3000000008bf9837d08ff0f85????????6880250000e8????????":
+__thiscall Entity_Player* PlayerManager::SpawnCoPlayer2(PlayerManager* this<ecx>, int unk); //big baby
+
+
+//to-do: add rng struct
+/*
+"558bec83e4f883ec0c538b5d0856578bf98b0d????????53":
+__thiscall Entity_Player* PlayerManager::FirstCollectibleOwner(PlayerManager *this,int collectibleID,RNG **rng,bool unk);
+*/

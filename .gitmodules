@@ -1,0 +1,3 @@
+[submodule "libs/luafilesystem"]
+	path = libs/luafilesystem
+	url = https://github.com/lunarmodules/luafilesystem
