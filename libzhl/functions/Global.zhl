@@ -14,10 +14,11 @@ struct GlobalPre
 	#include <map>
 	#include <functional>
 	#include <deque>
-	#include <stdarg.h>
+	#include <cstdarg>
 	#include <unordered_map>
-	#include <math.h>
+	#include <cmath>
 	#include <queue>
+    #include <cstdint>
 	#undef LoadImage
 
 	#ifndef M_PI

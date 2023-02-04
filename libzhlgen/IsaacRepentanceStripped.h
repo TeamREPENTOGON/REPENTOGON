@@ -84,3 +84,27 @@ struct LuaEngine
 	char pad0[24];
 	lua_State* _state; // 0x18
 };
+
+struct PosVel 
+{
+    Vector pos;
+    Vector vel;
+};
+
+struct Weapon_MultiShotParams
+{
+    int16_t numTears;
+    int16_t unk1;
+    float unk2;
+    float unk3;
+    float unk4;
+    float unk5;
+    int32_t unk6;
+    float unk7;
+    bool unk8;
+    bool unk9;
+    bool unk10;
+    char pad0;
+    int16_t unk11;
+    char pad1[2];
+};
