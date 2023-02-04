@@ -40,6 +40,9 @@ struct PlayerManager
 struct Entity 
 {
 	VTable_Entity *_vtable;
+	
+	char pad0[752];
+	float _timeScale;
 };
 
 struct Room

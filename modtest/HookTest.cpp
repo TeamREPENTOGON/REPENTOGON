@@ -26,6 +26,14 @@ HOOK_METHOD(Game, Update, () -> void) {
 };
 */
 
+/*HOOK_METHOD(Entity_Player, Update, () -> void) {
+	printf("preSuper %f\n", g_Game->GetPlayer(0)->_timeScale);
+	super();
+	printf("pre %f\n", g_Game->GetPlayer(0)->_timeScale);
+	g_Game->GetPlayer(0)->_timeScale = 0.2;
+	printf("post %f\n", g_Game->GetPlayer(0)->_timeScale);
+}*/
+
 /*HOOK_METHOD(PlayerManager, SpawnCoPlayer2, (int unk) -> Entity_Player*) {
 	printf("PlayerManager::SpawnCoPlayer2 %d\n", unk);
 	Entity_Player* ret = super(unk);
