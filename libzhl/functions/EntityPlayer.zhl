@@ -5,6 +5,7 @@
 __thiscall void Entity_Player::AnimatePickup(Entity_Player *this, ANM2 *param_1,bool param_2,char *param_3);
 */
 
+
 //AddCollectible - 
 "558bec6a??68????????64a1????????5081ec????????a1????????33c58945f05657508d45f464a3????????8bf18975bc":
 __thiscall void Entity_Player::AddCollectible(Entity_Player *this<ecx>, int type, int charge, bool firsttime,int slot,int vardata);
@@ -39,3 +40,9 @@ __thiscall void Entity_Player::AddPrettyFly(Entity_Player *this);
 //AddCoins
 "558bec83ec??5356578b7d088bd985":
 __thiscall void Entity_Player::AddCoins(Entity_Player *this, int amount);
+
+"558bec83e4??83ec??8b4d":
+static cleanup PosVel Entity_Player::GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
+
+"558bec83e4??83ec??8b450853568bf1":
+Weapon_MultiShotParams Entity_Player::GetMultiShotParams(Entity_Player *this<ecx>, WeaponType weaponType);

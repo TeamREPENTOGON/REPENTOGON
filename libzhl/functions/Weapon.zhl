@@ -1,0 +1,13 @@
+struct Weapon {{
+	struct MultiShotParams
+	{
+		int unk;
+		float unk2;
+		float unk3;
+		float unk4;
+		float unk5;
+		signed int unk6;
+		float unk7;
+		char unk8;
+	};
+}};

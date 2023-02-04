@@ -22,6 +22,9 @@ __thiscall void Game::ShakeScreen(Game *this<ecx>, int timeout);
 "558bec83ec088b45085657f30f1000f30f104804a1????????":
 __thiscall void Game::MakeShockwave(Game *this<ecx>, const Vector& pos, float amplitude, float speed, int duration);
 
+"558bec5156578bf98b97????????8b":
+__thiscall Entity_Player* Game:: GetPlayer(IsaacRepentance::Game *this<ecx>, unsigned int Index);
+
 "558bec83e4f083ec38a1????????33c4":
 void Game::Update();
 

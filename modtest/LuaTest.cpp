@@ -3,6 +3,7 @@
 
 extern "C" {
 #include "lapi.h"
+#include "lauxlib.h"
 }
 
 extern "C" int Lua_TestLua(lua_State *L) {

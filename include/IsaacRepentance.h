@@ -57,27 +57,36 @@ typedef std::map<std::string, bool> std_map_std_string_bool;
 
 
 	
+
+enum WeaponType
+{
+	WEAPON_NULL = 0x0,
+	WEAPON_TEARS = 0x1,
+	WEAPON_BRIMSTONE = 0x2,
+	WEAPON_LASER = 0x3,
+	WEAPON_KNIFE = 0x4,
+	WEAPON_BOMBS = 0x5,
+	WEAPON_ROCKETS = 0x6,
+	WEAPON_MONSTROS_LUNGS = 0x7,
+	WEAPON_LUDOVICO_TECHNIQUE = 0x8,
+	WEAPON_TECH_X = 0x9,
+	WEAPON_BONE = 0xA,
+	WEAPON_NOTCHED_AXE = 0xB,
+	WEAPON_URN_OF_SOULS = 0xC,
+	WEAPON_SPIRIT_SWORD = 0xD,
+	WEAPON_FETUS = 0xE,
+ 		WEAPON_UMBILICAL_WHIP = 0xF,
+	NUM_WEAPON_TYPES = 0x10,
+};
+
 static DWORD GetBaseAddress()
 {
 	return (DWORD)GetModuleHandle(NULL);
 }
 
 
-struct LuaEngine;
-
-struct LuaEngine
+struct Globals
 {
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
-	char pad0[24];
-	lua_State *_state;
-};
-
-struct Manager
-{
-	LIBZHL_API void __stdcall Update();
-	
 };
 
 struct Entity;
@@ -97,8 +106,39 @@ struct LIBZHL_INTERFACE Entity
 	
 };
 
+struct Game;
+struct Vector;
+struct Entity_Player;
+
+struct Game
+{
+	Game()
+	{
+		this->constructor();
+	}
+
+	LIBZHL_API void constructor();
+	LIBZHL_API bool IsPaused();
+	LIBZHL_API void ShakeScreen(int timeout);
+	LIBZHL_API void MakeShockwave(const Vector &pos, float amplitude, float speed, int duration);
+	LIBZHL_API Entity_Player* GetPlayer(unsigned int Index);
+	LIBZHL_API void __stdcall Update();
+	
+};
+
 struct Entity_Slot : Entity
 {
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+	char pad0[24];
+	lua_State *_state;
 };
 
 struct Vector
@@ -131,7 +171,51 @@ struct Vector
 	float y;
 };
 
-struct Entity_Player;
+struct PosVel
+{
+	PosVel() : pos(Vector()), vel(Vector()) {}
+	PosVel(Vector _pos, Vector _vel) : pos(_pos), vel(_vel) {}
+
+	PosVel operator+(const PosVel& other)
+	{
+		return PosVel(pos + other.pos, vel + other.vel);
+	}
+	
+	PosVel operator-(const PosVel& other)
+	{		
+		return PosVel(pos - other.pos, vel - other.vel);
+	}
+	
+	PosVel operator/(float amount)
+	{		
+		return PosVel(pos / amount, vel / amount);
+	}
+	
+	PosVel operator*(float amount)
+	{		
+		return PosVel(pos * amount, vel * amount);
+	}
+
+
+	Vector pos;
+	Vector vel;
+};
+
+struct Weapon_MultiShotParams
+{
+	__int16 numTears;
+	__int16 unk;
+	float unk2;
+	float unk3;
+	float unk4;
+	float unk5;
+	int unk6;
+	float unk7;
+	bool unk8;
+	bool unk9;
+	bool unk10;
+	__int16 unk11;
+};
 
 struct Entity_Player : Entity
 {
@@ -141,36 +225,22 @@ struct Entity_Player : Entity
 	LIBZHL_API void AddJarFlies(int amount);
 	LIBZHL_API void AddPrettyFly();
 	LIBZHL_API void AddCoins(int amount);
+	LIBZHL_API static PosVel __stdcall GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
+	LIBZHL_API Weapon_MultiShotParams GetMultiShotParams(WeaponType weaponType);
 	
 };
 
-struct Vector;
-struct Game;
-
-struct Game
+struct Manager
 {
-	Game()
-	{
-		this->constructor();
-	}
-
-	LIBZHL_API void constructor();
-	LIBZHL_API bool IsPaused();
-	LIBZHL_API void ShakeScreen(int timeout);
-	LIBZHL_API void MakeShockwave(const Vector &pos, float amplitude, float speed, int duration);
 	LIBZHL_API void __stdcall Update();
 	
 };
 
-struct Globals
-{
-};
-
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)
-extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
-#define g_LuaEngine (*__ptr_g_LuaEngine)
 extern LIBZHL_API Manager **__ptr_g_Manager;
 #define g_Manager (*__ptr_g_Manager)
+extern LIBZHL_API LuaEngine **__ptr_g_LuaEngine;
+#define g_LuaEngine (*__ptr_g_LuaEngine)
 
 

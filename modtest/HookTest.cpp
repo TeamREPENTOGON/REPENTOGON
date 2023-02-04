@@ -39,12 +39,18 @@ HOOK_METHOD(Entity, Update, () -> void) {
 
 /*HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	super(109, charge, firsttime, slot, vardata);
+
+	
+	Weapon_MultiShotParams params =  g_Game->GetPlayer(0)->GetMultiShotParams(WEAPON_TEARS);
+	printf("%d\n", params.numTears);
+	PosVel shotPosVel = g_Game->GetPlayer(0)->GetMultiShotPositionVelocity(0, WEAPON_TEARS, Vector(10, 0), 1.0f, params);
+	printf("(%f, %f) (%f, %f)", shotPosVel.pos.x, shotPosVel.pos.y, shotPosVel.vel.x, shotPosVel.vel.y);
+
 }*/
 
 
 /*HOOK_METHOD(Entity_Player, AddCoins, (int amount) -> void) {
     //printf("EntityPlayer::AddCoins call %d\n", amount);
-	super(amount);
 }
 
 HOOK_METHOD(Entity_Player, AddBombs, (int amount) -> void) {

@@ -55,6 +55,28 @@ struct GlobalPre
 // struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
 struct GlobalConst
 {{	
+
+	enum WeaponType
+	{
+		WEAPON_NULL = 0x0,
+		WEAPON_TEARS = 0x1,
+		WEAPON_BRIMSTONE = 0x2,
+		WEAPON_LASER = 0x3,
+		WEAPON_KNIFE = 0x4,
+		WEAPON_BOMBS = 0x5,
+		WEAPON_ROCKETS = 0x6,
+		WEAPON_MONSTROS_LUNGS = 0x7,
+		WEAPON_LUDOVICO_TECHNIQUE = 0x8,
+		WEAPON_TECH_X = 0x9,
+		WEAPON_BONE = 0xA,
+		WEAPON_NOTCHED_AXE = 0xB,
+		WEAPON_URN_OF_SOULS = 0xC,
+		WEAPON_SPIRIT_SWORD = 0xD,
+		WEAPON_FETUS = 0xE,
+ 		WEAPON_UMBILICAL_WHIP = 0xF,
+		NUM_WEAPON_TYPES = 0x10,
+};
+
 	static DWORD GetBaseAddress()
 	{
 		return (DWORD)GetModuleHandle(NULL);
