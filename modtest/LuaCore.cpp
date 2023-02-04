@@ -58,6 +58,10 @@ namespace lua {
 		char* _err;
 	};
 
+	void UnloadMetatables() {
+		_metatables.clear();
+	}
+
 	void GetMetatable(lua_State* L, Metatables metatable) {
 		auto iter = _metatables.find(metatable);
 

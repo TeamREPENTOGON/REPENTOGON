@@ -121,7 +121,7 @@ static void ExtractGameFunctions(lua_State* L, std::vector<std::pair<std::string
 					if ((upvalue->tt_ & 0xF) == LUA_TUSERDATA) {
 						Udata* closure_udata = (Udata*)upvalue->value_.p;
 						void* fn_addr = *(void**)((char*)closure_udata + 0x18);
-						fprintf(f, "Found addr of %s at %p\n", name, fn_addr);
+						// fprintf(f, "Found addr of %s at %p\n", name, fn_addr);
 						functions.push_back(std::make_pair(name, fn_addr));
 					}
 				}
@@ -195,15 +195,20 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	printf("[REPENTOGON WAS HERE] (flame everywhere woah gif modding of isaac sticker)\n");
 	lua_State *state = g_LuaEngine->_state; //Soon.
-	luaL_openlibs(state);
+	// luaL_openlibs(state);
 	printf("repentogonning all over the place\n");
 	lua_register(state, "Lua_TestLua", Lua_TestLua);
 	lua_register(state, "DumpRegistry", LuaDumpRegistry);
 	printf("i'm repeotogonnning!!!!!!\n");
+	lua::UnloadMetatables();
 	RegisterMetatables(state);
 	RegisterRailFunctions(state);
 
 	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
+};
+
+HOOK_STATIC(Entity_Player, GetMultiShotPositionVelocity, (int loopIndex, WeaponType weaponType, Vector direction, float speed, Weapon_MultiShotParams params) -> PosVel) {
+	return super(loopIndex, weaponType, direction, speed, params);
 };
 
 //AddCollectible Callback (id: 1004 enum pending)
@@ -231,6 +236,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 		return;
 		}
 	}
+
 	super(type, charge, firsttime, slot, vardata);
 }
 //AddCollectible Callback (id: 1004 enum pending)

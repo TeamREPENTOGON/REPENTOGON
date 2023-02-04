@@ -87,11 +87,11 @@ local function sizeof(t)
 			for _,f in pairs(sdef.fields) do
 				size = size + sizeof(f)
 			end
-		elseif t.class == "__int64" or t.class == "double" then
+		elseif t.class == "__int64" or t.class == "double" or t.class == "int64_t" or t.class == "uint64_t" then
 			size = 8
-		elseif t.class == "__int16" or t.class == "short" then
+		elseif t.class == "__int16" or t.class == "short" or t.class == "int16_t" or t.class == "uint16_t" then
 			size = 2
-		elseif t.class == "__int8" or t.class == "char" then
+		elseif t.class == "__int8" or t.class == "char" or t.class == "bool" or t.class == "uint8_t" or t.class == "int8_t" then
 			size = 1
 		elseif t.parent and t.parent.class == "std" then
 			if t.class == "string" then
@@ -623,7 +623,14 @@ local function writeFunctions(struct, out)
 					out("%s", func:toString())
 					
 					if not func.thiscall then
-						out("__stdcall ")
+						if func.callingConvention == "__cdecl" then
+							out ("__cdecl ")
+						else
+							if func.cleanup then
+								error ("You cannot specify cleanup on a stdcall function")
+							end
+							out ("__stdcall ")
+						end
 					end
 					
 					out("%s(", func.name)

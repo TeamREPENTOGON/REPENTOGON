@@ -139,6 +139,7 @@ enum class Metatables {
     CONST_VECTOR
 };
 
+void UnloadMetatables();
 void RegisterMetatable(Metatables metatable, void* key);
 void GetMetatable(lua_State* L, Metatables metatable);
 Metatables GetMetatableIdxFromName(std::string const& name);
