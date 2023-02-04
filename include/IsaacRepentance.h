@@ -159,6 +159,8 @@ struct Entity_Player : Entity
 	LIBZHL_API void AddJarFlies(int amount);
 	LIBZHL_API void AddPrettyFly();
 	LIBZHL_API void AddCoins(int amount);
+	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	LIBZHL_API virtual void Update();
 	
 };
 

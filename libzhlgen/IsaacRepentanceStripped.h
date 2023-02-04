@@ -58,17 +58,17 @@ struct VTable_Entity
 struct Entity_Player
 {
 	Entity _entity;
-	//VTable_EntityPlayer *_vtable;
 	
 };
 
-struct VTable_EntityPlayer
+/*struct VTable_EntityPlayer
 {
-	void (__thiscall *Free)(Entity_Player *);
+	//void (__thiscall *Free)(Entity_Player *);
 	//void (__thiscall *Init)(Entity_Player *, unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
 	//void (__thiscall *PreUpdate)(Entity *);
     //void (__thiscall *Update)(Entity_Player *);
 };
+*/
 
 struct Entity_Slot
 {

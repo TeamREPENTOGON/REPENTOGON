@@ -20,6 +20,12 @@ HOOK_METHOD(Game, Update, () -> void) {
 	*/
 }
 
+/*HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
+	super(type, variant, subtype, initSeed);
+	printf("Entity_Player::Init type %d variant %d sub %d and this thing %d\n", type,variant,subtype,initSeed);
+};
+*/
+
 /*HOOK_METHOD(PlayerManager, SpawnCoPlayer2, (int unk) -> Entity_Player*) {
 	printf("PlayerManager::SpawnCoPlayer2 %d\n", unk);
 	Entity_Player* ret = super(unk);

@@ -376,6 +376,74 @@ __declspec(naked) void Entity_Player::AddCoins(int amount)
 namespace _func11
 {
 	static void *func = 0;
+	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
+	static FunctionDefinition funcObj("Entity_Player::Init", typeid(void (Entity_Player::*)(unsigned int , unsigned int , unsigned int , unsigned int )), "558bec6aff68????????64a1000000005081eca0010000a1????????33c58945f05657508d45f464a3000000008bf989bd74fffffff30f7e05????????", argdata, 5, 5, &func);
+}
+
+__declspec(naked) void Entity_Player::Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed)
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		push [ebp+20]		// initSeed
+		push [ebp+16]		// subtype
+		push [ebp+12]		// variant
+		push [ebp+8]		// type
+		call _func11::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		retn 16
+	}
+}
+
+namespace _func12
+{
+	static void *func = 0;
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("Entity_Player::Update", typeid(void (Entity_Player::*)()), "558bec6aff68????????64a1000000005081ec8c010000a1????????33c58945f0", argdata, 1, 5, &func);
+}
+
+__declspec(naked) void Entity_Player::Update()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func12::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func13
+{
+	static void *func = 0;
 	static short argdata[] = {0x100};
 	static FunctionDefinition funcObj("Game::constructor", typeid(void (Game::*)()), "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec105657a1????????33c5508d45f464a3000000008bf9897dec897de468????????", argdata, 1, 5, &func);
 }
@@ -393,7 +461,7 @@ __declspec(naked) void Game::constructor()
 		push esi
 		push edi
 		mov eax, ecx	// this
-		call _func11::func
+		call _func13::func
 		pop edi
 		pop esi
 		pop ebx
@@ -406,7 +474,7 @@ __declspec(naked) void Game::constructor()
 	}
 }
 
-namespace _func12
+namespace _func14
 {
 	static void *func = 0;
 	static short argdata[] = {0x100};
@@ -425,7 +493,7 @@ __declspec(naked) bool Game::IsPaused()
 		push esi
 		push edi
 		mov eax, ecx	// this
-		call _func12::func
+		call _func14::func
 		pop edi
 		pop esi
 		pop ebx
@@ -437,7 +505,7 @@ __declspec(naked) bool Game::IsPaused()
 	}
 }
 
-namespace _func13
+namespace _func15
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -463,7 +531,7 @@ __declspec(naked) Entity *Game::Spawn(unsigned int type, unsigned int variant, c
 		push [ebp+16]		// position
 		push [ebp+12]		// variant
 		push [ebp+8]		// type
-		call _func13::func
+		call _func15::func
 		pop edi
 		pop esi
 		pop ebx
@@ -475,7 +543,7 @@ __declspec(naked) Entity *Game::Spawn(unsigned int type, unsigned int variant, c
 	}
 }
 
-namespace _func14
+namespace _func16
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -495,7 +563,7 @@ __declspec(naked) void Game::ShakeScreen(int timeout)
 		push esi
 		push edi
 		push [ebp+8]		// timeout
-		call _func14::func
+		call _func16::func
 		pop edi
 		pop esi
 		pop ebx
@@ -508,7 +576,7 @@ __declspec(naked) void Game::ShakeScreen(int timeout)
 	}
 }
 
-namespace _func15
+namespace _func17
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -531,7 +599,7 @@ __declspec(naked) void Game::MakeShockwave(const Vector &pos, float amplitude, f
 		push [ebp+16]		// speed
 		push [ebp+12]		// amplitude
 		push [ebp+8]		// pos
-		call _func15::func
+		call _func17::func
 		pop edi
 		pop esi
 		pop ebx
@@ -544,7 +612,7 @@ __declspec(naked) void Game::MakeShockwave(const Vector &pos, float amplitude, f
 	}
 }
 
-namespace _func16
+namespace _func18
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -563,7 +631,7 @@ __declspec(naked) void Game::Update()
 		push ebx
 		push esi
 		push edi
-		call _func16::func
+		call _func18::func
 		pop edi
 		pop esi
 		pop ebx
@@ -578,12 +646,12 @@ __declspec(naked) void Game::Update()
 
 Game **__ptr_g_Game;
 
-namespace _var17
+namespace _var19
 {
 	static VariableDefinition varObj("g_Game", ".e8????????c745fcffffffffa3(????????)e8", &__ptr_g_Game);
 }
 
-namespace _func18
+namespace _func20
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -603,7 +671,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 		push esi
 		push edi
 		push [ebp+8]		// Debug
-		call _func18::func
+		call _func20::func
 		pop edi
 		pop esi
 		pop ebx
@@ -616,7 +684,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 	}
 }
 
-namespace _func19
+namespace _func21
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -624,45 +692,6 @@ namespace _func19
 }
 
 __declspec(naked) void LuaEngine::RegisterClasses()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func19::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-LuaEngine **__ptr_g_LuaEngine;
-
-namespace _var20
-{
-	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
-}
-
-namespace _func21
-{
-	static void *func = 0;
-	static const short *argdata = NULL;
-	static FunctionDefinition funcObj("Manager::Update", typeid(void (Manager::*)()), "558bec83e4??83ec??56578b3d", argdata, 0, 4, &func);
-}
-
-__declspec(naked) void Manager::Update()
 {
 	__asm
 	{
@@ -687,14 +716,53 @@ __declspec(naked) void Manager::Update()
 	}
 }
 
-Manager **__ptr_g_Manager;
+LuaEngine **__ptr_g_LuaEngine;
 
 namespace _var22
+{
+	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
+}
+
+namespace _func23
+{
+	static void *func = 0;
+	static const short *argdata = NULL;
+	static FunctionDefinition funcObj("Manager::Update", typeid(void (Manager::*)()), "558bec83e4??83ec??56578b3d", argdata, 0, 4, &func);
+}
+
+__declspec(naked) void Manager::Update()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func23::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+Manager **__ptr_g_Manager;
+
+namespace _var24
 {
 	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
 }
 
-namespace _func23
+namespace _func25
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -713,7 +781,7 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer(int unk)
 		push esi
 		push edi
 		push [ebp+8]		// unk
-		call _func23::func
+		call _func25::func
 		pop edi
 		pop esi
 		pop ebx
@@ -725,7 +793,7 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer(int unk)
 	}
 }
 
-namespace _func24
+namespace _func26
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -744,7 +812,7 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
 		push esi
 		push edi
 		push [ebp+8]		// unk
-		call _func24::func
+		call _func26::func
 		pop edi
 		pop esi
 		pop ebx
@@ -756,7 +824,7 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
 	}
 }
 
-namespace _func25
+namespace _func27
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -774,7 +842,7 @@ __declspec(naked) unsigned int __stdcall Random()
 		push ebx
 		push esi
 		push edi
-		call _func25::func
+		call _func27::func
 		pop edi
 		pop esi
 		pop ebx
@@ -786,7 +854,7 @@ __declspec(naked) unsigned int __stdcall Random()
 	}
 }
 
-namespace _func26
+namespace _func28
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -804,7 +872,7 @@ __declspec(naked) float Room::GetDevilRoomChance()
 		push ebx
 		push esi
 		push edi
-		call _func26::func
+		call _func28::func
 		pop edi
 		pop esi
 		pop ebx
