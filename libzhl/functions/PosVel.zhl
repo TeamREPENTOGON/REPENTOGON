@@ -1,4 +1,5 @@
-struct PosVel {{
+struct PosVel 
+{{
 	PosVel() : pos(Vector()), vel(Vector()) {}
 	PosVel(Vector _pos, Vector _vel) : pos(_pos), vel(_vel) {}
 
