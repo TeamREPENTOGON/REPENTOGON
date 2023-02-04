@@ -2,7 +2,6 @@
 
 #include <lua.hpp>
 
-#include "LuaBridge.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
