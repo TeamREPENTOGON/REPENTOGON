@@ -63,6 +63,16 @@ static DWORD GetBaseAddress()
 }
 
 
+struct PlayerManager;
+struct Entity_Player;
+
+struct PlayerManager
+{
+	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
+	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
+	
+};
+
 struct LuaEngine;
 
 struct LuaEngine
@@ -78,6 +88,10 @@ struct Manager
 {
 	LIBZHL_API void __stdcall Update();
 	
+};
+
+struct Globals
+{
 };
 
 struct Entity;
@@ -99,6 +113,12 @@ struct LIBZHL_INTERFACE Entity
 
 struct Entity_Slot : Entity
 {
+};
+
+struct Room
+{
+	LIBZHL_API float __stdcall GetDevilRoomChance();
+	
 };
 
 struct Vector
@@ -131,8 +151,6 @@ struct Vector
 	float y;
 };
 
-struct Entity_Player;
-
 struct Entity_Player : Entity
 {
 	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
@@ -141,11 +159,13 @@ struct Entity_Player : Entity
 	LIBZHL_API void AddJarFlies(int amount);
 	LIBZHL_API void AddPrettyFly();
 	LIBZHL_API void AddCoins(int amount);
+	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	LIBZHL_API virtual void Update();
 	
 };
 
-struct Vector;
 struct Game;
+struct Vector;
 
 struct Game
 {
@@ -156,15 +176,28 @@ struct Game
 
 	LIBZHL_API void constructor();
 	LIBZHL_API bool IsPaused();
+	LIBZHL_API Entity *Spawn(unsigned int type, unsigned int variant, const Vector &position, const Vector &velocity, Entity *spawner, unsigned int subtype, unsigned int seed, unsigned int unk);
 	LIBZHL_API void ShakeScreen(int timeout);
 	LIBZHL_API void MakeShockwave(const Vector &pos, float amplitude, float speed, int duration);
 	LIBZHL_API void __stdcall Update();
 	
+	int _floorNum;
+	bool _altFloor;
+	char unk1[3];
+	int _curses;
 };
 
-struct Globals
+struct Camera;
+struct Room;
+
+struct Camera
 {
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
+	
 };
+
+LIBZHL_API unsigned int __stdcall Random();
 
 extern LIBZHL_API Game **__ptr_g_Game;
 #define g_Game (*__ptr_g_Game)

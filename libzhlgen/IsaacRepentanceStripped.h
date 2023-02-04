@@ -1,8 +1,13 @@
 struct Manager;
 struct Game;
 struct Vector;
+struct PlayerManager;
 struct Entity;
+struct Entity_Player;
+struct Room;
+struct Camera;
 struct VTable_Entity;
+struct VTable_EntityPlayer;
 
 struct Globals
 {
@@ -15,7 +20,10 @@ struct Manager
 
 struct Game 
 {
-	
+	int _floorNum;
+	bool _altFloor;
+	char unk1[0x03];
+	int _curses;
 };
 
 struct Vector
@@ -24,9 +32,19 @@ struct Vector
 	float y;
 };
 
+struct PlayerManager
+{
+	
+};
+
 struct Entity 
 {
 	VTable_Entity *_vtable;
+};
+
+struct Room
+{
+	
 };
 
 struct VTable_Entity
@@ -40,11 +58,25 @@ struct VTable_Entity
 struct Entity_Player
 {
 	Entity _entity;
+	
 };
+
+/*struct VTable_EntityPlayer
+{
+	//void (__thiscall *Free)(Entity_Player *);
+	//void (__thiscall *Init)(Entity_Player *, unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	//void (__thiscall *PreUpdate)(Entity *);
+    //void (__thiscall *Update)(Entity_Player *);
+};
+*/
 
 struct Entity_Slot
 {
 	Entity _entity;
+};
+
+struct Camera {
+	
 };
 
 struct LuaEngine
