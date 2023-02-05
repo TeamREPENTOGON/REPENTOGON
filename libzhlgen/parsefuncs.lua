@@ -909,7 +909,11 @@ local function writeFunctionWrappers(funcs, out)
 					out("\n\t\tmov esp, ebp")
 					out("\n\t\tpop ebp")
 					if func.stacksize > 0 then
-						out("\n\t\tretn %d", func.stacksize)
+						if func.callingConvention ~= "__cdecl" then
+							out("\n\t\tretn %d", func.stacksize)
+						else
+							out("\n\t\tret")
+						end
 					else
 						out("\n\t\tret")
 					end
