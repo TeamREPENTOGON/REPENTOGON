@@ -4,6 +4,8 @@ struct Vector;
 struct PlayerManager;
 struct Entity;
 struct Entity_Player;
+struct GridEntity;
+struct GridEntity_Rock;
 struct Room;
 struct Camera;
 struct VTable_Entity;
@@ -58,19 +60,29 @@ struct VTable_Entity
     void (__thiscall *Update)(Entity *);
 };
 
+
 struct Entity_Player
 {
+	VTable_EntityPlayer *_vtable;
 	Entity _entity;
 };
 
-/*struct VTable_EntityPlayer
+struct VTable_EntityPlayer
 {
-	//void (__thiscall *Free)(Entity_Player *);
-	//void (__thiscall *Init)(Entity_Player *, unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
-	//void (__thiscall *PreUpdate)(Entity *);
-    //void (__thiscall *Update)(Entity_Player *);
+	void (__thiscall *Free)(Entity_Player *);
+	void (__thiscall *Init)(Entity_Player *, unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	void (__thiscall *PreUpdate)(Entity *);
+    void (__thiscall *Update)(Entity_Player *);
 };
-*/
+
+struct GridEntity {
+	int _unk; //type?
+};
+
+struct GridEntity_Rock {
+	GridEntity _base;
+};
+
 
 struct Entity_Slot
 {

@@ -106,5 +106,11 @@
     <None Include="functions\Camera.zhl">
       <Filter>Source Files\functions</Filter>
     </None>
+    <None Include="functions\GridEntity.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
+    <None Include="functions\GridEntityRock.zhl">
+      <Filter>Source Files\functions</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -767,6 +767,69 @@ namespace _var22
 namespace _func23
 {
 	static void *func = 0;
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("GridEntity_Rock::Update", typeid(void (GridEntity_Rock::*)()), "558bec6aff68????????64a1000000005081ec88000000a1????????33c58945f05657508d45f464a3000000008bf9897da48b57048b0d????????83fa0474??", argdata, 1, 5, &func);
+}
+
+__declspec(naked) void GridEntity_Rock::Update()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func23::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func24
+{
+	static void *func = 0;
+	static short argdata[] = {0x101, 0x1ff};
+	static FunctionDefinition funcObj("GridEntity_Rock::Destroy", typeid(bool (GridEntity_Rock::*)(bool )), "558bec83ec40a1????????33c58945fc538b1d????????56", argdata, 2, 1, &func);
+}
+
+__declspec(naked) bool GridEntity_Rock::Destroy(bool Immediate)
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push ecx
+		push ebx
+		push esi
+		push edi
+		push [ebp+8]		// Immediate
+		call _func24::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop edx
+		mov esp, ebp
+		pop ebp
+		retn 4
+	}
+}
+
+namespace _func25
+{
+	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
 	static FunctionDefinition funcObj("LuaEngine::Init", typeid(void (LuaEngine::*)(bool )), "558bec83e4??83ec??56578bf9????????ff", argdata, 2, 5, &func);
 }
@@ -784,7 +847,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 		push esi
 		push edi
 		push [ebp+8]		// Debug
-		call _func23::func
+		call _func25::func
 		pop edi
 		pop esi
 		pop ebx
@@ -797,7 +860,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 	}
 }
 
-namespace _func24
+namespace _func26
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -805,45 +868,6 @@ namespace _func24
 }
 
 __declspec(naked) void LuaEngine::RegisterClasses()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func24::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-LuaEngine **__ptr_g_LuaEngine;
-
-namespace _var25
-{
-	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
-}
-
-namespace _func26
-{
-	static void *func = 0;
-	static const short *argdata = NULL;
-	static FunctionDefinition funcObj("Manager::Update", typeid(void (Manager::*)()), "558bec83e4??83ec??56578b3d", argdata, 0, 4, &func);
-}
-
-__declspec(naked) void Manager::Update()
 {
 	__asm
 	{
@@ -868,14 +892,53 @@ __declspec(naked) void Manager::Update()
 	}
 }
 
-Manager **__ptr_g_Manager;
+LuaEngine **__ptr_g_LuaEngine;
 
 namespace _var27
+{
+	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
+}
+
+namespace _func28
+{
+	static void *func = 0;
+	static const short *argdata = NULL;
+	static FunctionDefinition funcObj("Manager::Update", typeid(void (Manager::*)()), "558bec83e4??83ec??56578b3d", argdata, 0, 4, &func);
+}
+
+__declspec(naked) void Manager::Update()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func28::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+Manager **__ptr_g_Manager;
+
+namespace _var29
 {
 	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
 }
 
-namespace _func28
+namespace _func30
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -894,7 +957,7 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer(int unk)
 		push esi
 		push edi
 		push [ebp+8]		// unk
-		call _func28::func
+		call _func30::func
 		pop edi
 		pop esi
 		pop ebx
@@ -906,7 +969,7 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer(int unk)
 	}
 }
 
-namespace _func29
+namespace _func31
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -925,7 +988,7 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
 		push esi
 		push edi
 		push [ebp+8]		// unk
-		call _func29::func
+		call _func31::func
 		pop edi
 		pop esi
 		pop ebx
@@ -937,7 +1000,7 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
 	}
 }
 
-namespace _func30
+namespace _func32
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -955,7 +1018,7 @@ __declspec(naked) unsigned int __stdcall Random()
 		push ebx
 		push esi
 		push edi
-		call _func30::func
+		call _func32::func
 		pop edi
 		pop esi
 		pop ebx
@@ -967,7 +1030,7 @@ __declspec(naked) unsigned int __stdcall Random()
 	}
 }
 
-namespace _func31
+namespace _func33
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -985,7 +1048,7 @@ __declspec(naked) float Room::GetDevilRoomChance()
 		push ebx
 		push esi
 		push edi
-		call _func31::func
+		call _func33::func
 		pop edi
 		pop esi
 		pop ebx

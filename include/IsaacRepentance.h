@@ -86,22 +86,6 @@ static DWORD GetBaseAddress()
 }
 
 
-struct Entity_Player;
-struct PlayerManager;
-
-struct PlayerManager
-{
-	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
-	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
-	
-};
-
-struct Manager
-{
-	LIBZHL_API void __stdcall Update();
-	
-};
-
 struct Weapon_MultiShotParams
 {
 	int16_t numTears;
@@ -118,6 +102,46 @@ struct Weapon_MultiShotParams
 	char pad0;
 	int16_t unk11;
 	char pad1[2];
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+	char pad0[24];
+	lua_State *_state;
+};
+
+struct Manager
+{
+	LIBZHL_API void __stdcall Update();
+	
+};
+
+struct Entity;
+
+struct LIBZHL_INTERFACE Entity
+{
+	Entity() 
+	{
+		this->constructor();
+	}
+
+	virtual ~Entity() {}
+	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	virtual void PreUpdate() LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual void Update();
+	LIBZHL_API void constructor();
+	
+	char pad0[752];
+	float _timeScale;
+};
+
+struct Entity_Slot : Entity
+{
 };
 
 struct Vector
@@ -180,48 +204,64 @@ struct PosVel
 	Vector vel;
 };
 
-struct LuaEngine;
+struct Entity_Player;
 
-struct LuaEngine
+struct LIBZHL_INTERFACE Entity_Player : Entity
 {
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
-	char pad0[24];
-	lua_State *_state;
-};
-
-struct Entity;
-
-struct LIBZHL_INTERFACE Entity
-{
-	Entity() 
-	{
-		this->constructor();
-	}
-
-	virtual ~Entity() {}
+	virtual ~Entity_Player() {}
 	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
 	virtual void PreUpdate() LIBZHL_PLACEHOLDER
 	LIBZHL_API virtual void Update();
-	LIBZHL_API void constructor();
+	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
+	LIBZHL_API void AddBombs(int amount);
+	LIBZHL_API void AddKeys(int amount);
+	LIBZHL_API void AddJarFlies(int amount);
+	LIBZHL_API void AddPrettyFly();
+	LIBZHL_API void AddCoins(int amount);
+	LIBZHL_API static PosVel __cdecl GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
+	LIBZHL_API Weapon_MultiShotParams GetMultiShotParams(WeaponType weaponType);
 	
-	char pad0[752];
-	float _timeScale;
 };
 
-struct Entity_Slot : Entity
+struct GridEntity
+{
+	int _unk;
+};
+
+struct GridEntity_Rock;
+
+struct GridEntity_Rock : GridEntity
+{
+	LIBZHL_API void Update();
+	LIBZHL_API bool Destroy(bool Immediate);
+	
+};
+
+struct Camera;
+struct Vector;
+struct Room;
+
+struct Camera
+{
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
+	
+};
+
+struct Globals
 {
 };
 
-struct Room
+struct PlayerManager;
+
+struct PlayerManager
 {
-	LIBZHL_API float __stdcall GetDevilRoomChance();
+	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
+	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
 	
 };
 
 struct Game;
-struct Vector;
 
 struct Game
 {
@@ -244,32 +284,9 @@ struct Game
 	int _curses;
 };
 
-struct Camera;
-struct Room;
-
-struct Camera
+struct Room
 {
-	LIBZHL_API void constructor(Room *room);
-	LIBZHL_API void SetFocusPosition(const Vector &pos);
-	
-};
-
-struct Globals
-{
-};
-
-struct Entity_Player : Entity
-{
-	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
-	LIBZHL_API void AddBombs(int amount);
-	LIBZHL_API void AddKeys(int amount);
-	LIBZHL_API void AddJarFlies(int amount);
-	LIBZHL_API void AddPrettyFly();
-	LIBZHL_API void AddCoins(int amount);
-	LIBZHL_API static PosVel __stdcall GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
-	LIBZHL_API Weapon_MultiShotParams GetMultiShotParams(WeaponType weaponType);
-	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
-	LIBZHL_API virtual void Update();
+	LIBZHL_API float __stdcall GetDevilRoomChance();
 	
 };
 

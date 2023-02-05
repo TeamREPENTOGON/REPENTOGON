@@ -80,6 +80,8 @@ copy /Y "$(OutDir)\libzhl.lib" "$(SolutionDir)\lib"</Command>
     <None Include="functions\EntityPlayer.zhl" />
     <None Include="functions\Game.zhl" />
     <None Include="functions\Global.zhl" />
+    <None Include="functions\GridEntity.zhl" />
+    <None Include="functions\GridEntityRock.zhl" />
     <None Include="functions\LuaEngine.zhl" />
     <None Include="functions\Manager.zhl" />
     <None Include="functions\PlayerManager.zhl" />
