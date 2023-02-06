@@ -98,9 +98,29 @@ static int LuaExtractFunctions(lua_State* L) {
 	return 1;
 }
 
+extern "C" int Lua_GetMultiShotPositionVelocity(lua_State * L) // This *should* be in the API, but magically vanished some point after 1.7.8.
+{
+	Entity_Player* player = *(Entity_Player**)((char*)lua_touserdata(L, 1) + 4);
+	int loopIndex = luaL_checkinteger(L, 2);
+	WeaponType weaponType = (WeaponType)luaL_checkinteger(L, 3);
+	Vector* shotDirection = *(Vector**)((char*)lua_touserdata(L, 4) + 4);
+	float shotSpeed = luaL_checknumber(L, 5);
+
+	printf("given loopIndex: %d\n", loopIndex);
+	printf("given weapon: %d\n", weaponType);
+	printf("given shotSpeed: %f\n", shotSpeed);
+	printf("given shotDirection.x: %f\n", shotDirection->x);
+	printf("given shotDireciton.y: %f\n", shotDirection->y);
+	PosVel result = g_Game->GetPlayer(0)->GetMultiShotPositionVelocity(0, WeaponType::WEAPON_TEARS, Vector(3, 4), 1.0f, g_Game->GetPlayer(0)->GetMultiShotParams(WeaponType::WEAPON_TEARS));
+	printf("got MuliShotPositionVelocity!\n");
+	printf("result: (%f,%f) (%f,%f)", result.pos.x, result.pos.y, result.vel.x, result.vel.y);
+
+	return 1; // <--- crashes here, function never returns
+}
+
 static void RegisterRailFunctions(lua_State* L) {
 	// Get metatable of Room object
-	lua::GetMetatable(L, lua::Metatables::ROOM);
+	lua::PushMetatable(L, lua::Metatables::ROOM);
 	lua_pushstring(L, "Test");
 	lua_pushcfunction(L, Room_Test);
 	lua_rawset(L, -3);
@@ -191,6 +211,14 @@ static void RegisterMetatables(lua_State* L) {
 	fclose(f);
 }
 
+int TestPosVel(lua_State* L) {
+	// PosVel result = PosVel(Vector(1.2, 3.4), Vector(5.6, 7.8)); // this is just for testing purposes
+	// Lua_PosVelUserdata* ud = (Lua_PosVelUserdata*)lua_newuserdata(L, sizeof(Lua_PosVelUserdata));
+	PosVel* toLua = lua::luabridge::UserdataValue<PosVel>::place(L, lua::GetMetatableKey(lua::Metatables::POS_VEL));
+	*toLua = PosVel(Vector(1.2, 3.4), Vector(5.6, 7.8));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	printf("[REPENTOGON WAS HERE] (flame everywhere woah gif modding of isaac sticker)\n");
@@ -199,6 +227,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	printf("repentogonning all over the place\n");
 	lua_register(state, "Lua_TestLua", Lua_TestLua);
 	lua_register(state, "DumpRegistry", LuaDumpRegistry);
+	lua_register(state, "PTest", Lua_GetMultiShotPositionVelocity);
+	lua_register(state, "PosVelTest", TestPosVel);
 	printf("i'm repeotogonnning!!!!!!\n");
 	lua::UnloadMetatables();
 	RegisterMetatables(state);

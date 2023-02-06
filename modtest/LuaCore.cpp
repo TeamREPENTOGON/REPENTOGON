@@ -62,7 +62,7 @@ namespace lua {
 		_metatables.clear();
 	}
 
-	void GetMetatable(lua_State* L, Metatables metatable) {
+	void PushMetatable(lua_State* L, Metatables metatable) {
 		auto iter = _metatables.find(metatable);
 
 		if (iter == _metatables.end()) {
@@ -70,6 +70,10 @@ namespace lua {
 		}
 
 		lua_rawgetp(L, LUA_REGISTRYINDEX, _metatables[metatable]);
+	}
+
+	void* GetMetatableKey(Metatables metatable) {
+		return _metatables[metatable];
 	}
 
 	void RegisterMetatable(Metatables metatable, void* key) {
@@ -226,5 +230,21 @@ namespace lua {
 		}
 
 		return _metatable_idx_from_name[name];
+	}
+
+	namespace luabridge {
+		UserdataPtr::UserdataPtr(void* const p) {
+			m_p = p;
+		}
+
+		void UserdataPtr::push(lua_State* L, void* const p, void const* const key) {
+			if (p) {
+				new (lua_newuserdata(L, sizeof(UserdataPtr))) UserdataPtr(p);
+				lua_rawgetp(L, LUA_REGISTRYINDEX, key);
+				lua_setmetatable(L, -2);
+			} else {
+				lua_pushnil(L);
+			}
+		}
 	}
 }

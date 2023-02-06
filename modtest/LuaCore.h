@@ -141,7 +141,63 @@ enum class Metatables {
 
 void UnloadMetatables();
 void RegisterMetatable(Metatables metatable, void* key);
-void GetMetatable(lua_State* L, Metatables metatable);
+void PushMetatable(lua_State* L, Metatables metatable);
+void* GetMetatableKey(Metatables metatable);
 Metatables GetMetatableIdxFromName(std::string const& name);
+
+namespace luabridge {
+    class Userdata {
+    protected:
+        void* m_p;
+
+    public:
+        virtual ~Userdata() { }
+
+        inline void* getPointer() {
+            return m_p;
+        }
+    };
+
+    template<typename T>
+    class UserdataValue : public Userdata {
+    private:
+        UserdataValue<T>(UserdataValue<T> const&);
+        UserdataValue<T>& operator=(UserdataValue<T> const&);
+
+        char m_storage[sizeof(T)];
+
+        UserdataValue() {
+            m_p = getObject();
+        }
+
+        inline T* getObject() {
+            return reinterpret_cast<T*>(m_storage);
+        }
+
+    public:
+        static T* place(lua_State* L, void* key) {
+            UserdataValue<T>* const ud = new(lua_newuserdata(L, sizeof(UserdataValue<T>))) UserdataValue<T>();
+            lua_rawgetp(L, LUA_REGISTRYINDEX, key);
+            lua_setmetatable(L, -2);
+            return (T*)ud->getPointer();
+        }
+
+        template<typename U>
+        static void push(lua_State* L, void* key, U const& u) {
+            new (place(L, key))  U(u);
+        }
+    };
+
+    class UserdataPtr : public Userdata {
+    private:
+        UserdataPtr(UserdataPtr const&);
+        UserdataPtr& operator= (UserdataPtr const&);
+
+        explicit UserdataPtr(void* const p);
+
+    public:
+        static void push(lua_State* L, void* const p, void const* const key);
+    };
+}
 
 }

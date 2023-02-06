@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13.0)
 
 project(RepExtender)
 
-include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src")
+include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge")
 
 FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src/*.c)
 list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src/luac.c")
