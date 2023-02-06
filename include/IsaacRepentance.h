@@ -80,6 +80,37 @@ enum WeaponType
 	NUM_WEAPON_TYPES = 0x10,
 };
 
+enum GridEntityType {
+	GRID_NULL = 0x0,
+	GRID_DECORATION = 0x1,
+	GRID_ROCK = 0x2,
+	GRID_ROCKB = 0x3,	
+	GRID_ROCKT = 0x4,	
+	GRID_ROCK_BOMB = 0x5,	
+	GRID_ROCK_ALT = 0x6,	
+	GRID_PIT = 0x7,
+	GRID_SPIKES = 0x8,
+	GRID_SPIKES_ONOFF = 0x9,
+	GRID_SPIDERWEB = 0xA,
+	GRID_LOCK = 0xB,
+	GRID_TNT = 0xC,
+	GRID_FIREPLACE = 0xD,
+	GRID_POOP = 0xE,
+	GRID_WALL = 0xF,
+	GRID_DOOR = 0x10,
+	GRID_TRAPDOOR = 0x11,
+	GRID_STAIRS = 0x12,
+	GRID_GRAVITY = 0x13,
+	GRID_PRESSURE_PLATE = 0x14,
+	GRID_STATUE = 0x15,
+	GRID_ROCK_SS = 0x16,
+	GRID_TELEPORTER = 0x17,
+	GRID_PILLAR = 0x18,
+	GRID_ROCK_SPIKED = 0x19,
+	GRID_ROCK_ALT2 = 0x1A,
+	GRID_ROCK_GOLD = 0x1B,
+};
+
 static DWORD GetBaseAddress()
 {
 	return (DWORD)GetModuleHandle(NULL);
@@ -226,6 +257,8 @@ struct LIBZHL_INTERFACE Entity_Player : Entity
 struct GridEntity
 {
 	int _unk;
+	GridEntityType _type;
+	int _variant;
 };
 
 struct GridEntity_Rock;
@@ -290,6 +323,9 @@ struct Room
 	
 };
 
+struct GridEntity;
+
+LIBZHL_API GridEntity *__stdcall CreateGridEntity(GridEntityType type, unsigned int seed);
 LIBZHL_API unsigned int __stdcall Random();
 
 extern LIBZHL_API Game **__ptr_g_Game;

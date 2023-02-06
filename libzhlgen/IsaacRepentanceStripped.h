@@ -76,7 +76,14 @@ struct VTable_EntityPlayer
 };
 
 struct GridEntity {
-	int _unk; //type?
+	int _unk; 
+	GridEntityType _type; //type?
+	int _variant;
+	int _state;
+	int _unk2;
+	int _varData;
+	int _unk3;
+	
 };
 
 struct GridEntity_Rock {

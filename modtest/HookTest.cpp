@@ -22,9 +22,10 @@ HOOK_METHOD(Game, Update, () -> void) {
 
 /*HOOK_METHOD(GridEntity_Rock, Update, () -> void) {
 	super();
-	printf("GridRock type: %d\n", _unk);
+	printf("GridRock unk: %d type %d variant %d\n", _unk, _type, _variant);
 }
 */
+
 
 /*HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 	super(type, variant, subtype, initSeed);
@@ -40,6 +41,14 @@ HOOK_METHOD(Game, Update, () -> void) {
 /*HOOK_METHOD(PlayerManager, SpawnCoPlayer2, (int unk) -> Entity_Player*) {
 	printf("PlayerManager::SpawnCoPlayer2 %d\n", unk);
 	Entity_Player* ret = super(unk);
+
+	return ret;
+}
+*/
+
+/*HOOK_GLOBAL(CreateGridEntity, (GridEntityType type, unsigned int seed) -> GridEntity*) {
+	GridEntity* ret = super(type, seed);
+	printf("CreateGridEntity type: %d, seed %d\n", type, seed);
 
 	return ret;
 }
