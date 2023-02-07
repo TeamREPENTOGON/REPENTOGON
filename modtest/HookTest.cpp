@@ -119,8 +119,8 @@ HOOK_METHOD(Entity_Player, AddPrettyFly, () -> void) {
 }
 */
 
-HOOK_STATIC(Entity_Player, GetMultiShotPositionVelocity, (int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams) -> PosVel) {
+/*HOOK_STATIC(Entity_Player, GetMultiShotPositionVelocity, (int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams) -> PosVel) {
 	printf("GetMultiShotPositionVelocity hook!\n");
 	printf("loopIndex %d weaponType %d ShotDirection (%f,%f) shotSpeed %f)", loopIndex, weaponType, shotDirection.x, shotDirection.y, shotSpeed);
 	return super(loopIndex, weaponType, shotDirection, shotSpeed, multiShotParams);
-}
+}*/

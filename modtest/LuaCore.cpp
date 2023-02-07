@@ -232,6 +232,32 @@ namespace lua {
 		return _metatable_idx_from_name[name];
 	}
 
+	void* TestUserdata(lua_State* L, int ud, lua::Metatables mt) {
+		void* p = lua_touserdata(L, ud);
+		if (p != NULL) {
+			if (lua_getmetatable(L, ud)) {
+				lua::PushMetatable(L, mt);
+				if (!lua_rawequal(L, -1, -2))
+					p = NULL;
+				lua_pop(L, 2);
+				return p;
+			}
+		}
+		return NULL;
+	}
+
+	void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string name) {
+		void* p = TestUserdata(L, ud, mt);
+		if (!p) {
+			lua_getmetatable(L, ud);
+			lua::PushMetatable(L, mt);
+			std::string type = lua_typename(L, lua_type(L, ud));
+			std::string err = name + " expected, got " + type;
+			luaL_argerror(L, ud, err.c_str());
+		}
+		return p;
+	}
+
 	namespace luabridge {
 		UserdataPtr::UserdataPtr(void* const p) {
 			m_p = p;

@@ -145,6 +145,9 @@ void PushMetatable(lua_State* L, Metatables metatable);
 void* GetMetatableKey(Metatables metatable);
 Metatables GetMetatableIdxFromName(std::string const& name);
 
+void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
+void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string name);
+
 namespace luabridge {
     class Userdata {
     protected:

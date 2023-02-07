@@ -99,31 +99,6 @@ static int LuaExtractFunctions(lua_State* L) {
 }
 
 
-void *rep_testudata(lua_State *L, int ud, lua::Metatables mt) { //TODO move this to LuaCore?
-	void *p = lua_touserdata(L, ud);
-	if (p != NULL) {
-		if (lua_getmetatable(L, ud)) {
-			lua::PushMetatable(L, mt);
-			if (!lua_rawequal(L, -1, -2))
-				p = NULL;
-			lua_pop(L, 2);
-			return p;
-		}
-	}
-	return NULL;
-}
-
-void *rep_checkudata(lua_State *L, int ud, lua::Metatables mt) { //TODO move this to LuaCore?
-	void *p = rep_testudata(L, 4, lua::Metatables::VECTOR);
-	if (!p) {
-		std::string type = lua_typename(L, lua_type(L, 4));
-		std::string err = "Vector expected, got " + type; //TODO make first type dynamic
-
-		luaL_argerror(L, 4, err.c_str());
-	}
-	return p;
-}
-
 static void RegisterRailFunctions(lua_State* L) {
 	// Get metatable of Room object
 	lua::PushMetatable(L, lua::Metatables::ROOM);
@@ -223,15 +198,19 @@ static void RegisterMetatables(lua_State* L) {
 
 extern "C" int Lua_GetMultiShotPositionVelocity(lua_State *L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
-	Entity_Player* player = *(Entity_Player**)((char*)rep_checkudata(L, 1, lua::Metatables::ENTITY_PLAYER) + 4);
+	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
 	int loopIndex = luaL_checkinteger(L, 2);
 	WeaponType weaponType = (WeaponType)luaL_checkinteger(L, 3);
-	Vector* shotDirection = *(Vector**)((char*)rep_checkudata(L, 4, lua::Metatables::VECTOR) + 4);
+	Vector* shotDirection = *(Vector**)((char*)lua::CheckUserdata(L, 4, lua::Metatables::VECTOR, "Vector") + 4);
 	float shotSpeed = luaL_checknumber(L, 5);
-	//Weapon_MultiShotParams* multiShotParams = *(Weapon_MultiShotParams**)((char*)lua_touserdata(L, 5) + 4);
+	Weapon_MultiShotParams* multiShotParams = *(Weapon_MultiShotParams**)((char*)lua_touserdata(L, 6) + 4); // no metatable for this in the API (yet)! :compressed_torvalds:
+
+	if (multiShotParams->numTears < loopIndex) {
+		luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.numTears");
+	};
 
 	PosVel* toLua = lua::luabridge::UserdataValue<PosVel>::place(L, lua::GetMetatableKey(lua::Metatables::POS_VEL));
-	*toLua = g_Game->GetPlayer(0)->GetMultiShotPositionVelocity(loopIndex, weaponType, *shotDirection, shotSpeed, g_Game->GetPlayer(0)->GetMultiShotParams(weaponType));
+	*toLua = player->GetMultiShotPositionVelocity(loopIndex, weaponType, *shotDirection, shotSpeed, *multiShotParams);
 
 	return 1;
 }
