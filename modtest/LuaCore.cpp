@@ -242,7 +242,8 @@ namespace lua {
 				new (lua_newuserdata(L, sizeof(UserdataPtr))) UserdataPtr(p);
 				lua_rawgetp(L, LUA_REGISTRYINDEX, key);
 				lua_setmetatable(L, -2);
-			} else {
+			}
+			else {
 				lua_pushnil(L);
 			}
 		}

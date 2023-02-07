@@ -39,6 +39,7 @@ struct PlayerManager
 	
 };
 
+
 struct Entity 
 {
 	VTable_Entity *_vtable;
@@ -46,6 +47,20 @@ struct Entity
 	char pad0[752];
 	float _timeScale;
 };
+
+
+struct EntityRef
+{
+  int  _type; //TODO: EntityType enum
+  int _variant;
+  int _spawnerType; //TODO: ditto
+  unsigned int _spawnerVariant;
+  Vector _position;
+  Vector _velocity;
+  unsigned int _flags;
+  Entity *_entity;
+};
+
 
 struct Room
 {

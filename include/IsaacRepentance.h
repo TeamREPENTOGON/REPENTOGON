@@ -57,123 +57,6 @@ typedef std::map<std::string, bool> std_map_std_string_bool;
 
 
 
-	
-
-enum WeaponType
-{
-	WEAPON_NULL = 0x0,
-	WEAPON_TEARS = 0x1,
-	WEAPON_BRIMSTONE = 0x2,
-	WEAPON_LASER = 0x3,
-	WEAPON_KNIFE = 0x4,
-	WEAPON_BOMBS = 0x5,
-	WEAPON_ROCKETS = 0x6,
-	WEAPON_MONSTROS_LUNGS = 0x7,
-	WEAPON_LUDOVICO_TECHNIQUE = 0x8,
-	WEAPON_TECH_X = 0x9,
-	WEAPON_BONE = 0xA,
-	WEAPON_NOTCHED_AXE = 0xB,
-	WEAPON_URN_OF_SOULS = 0xC,
-	WEAPON_SPIRIT_SWORD = 0xD,
-	WEAPON_FETUS = 0xE,
- 		WEAPON_UMBILICAL_WHIP = 0xF,
-	NUM_WEAPON_TYPES = 0x10,
-};
-
-enum GridEntityType {
-	GRID_NULL = 0x0,
-	GRID_DECORATION = 0x1,
-	GRID_ROCK = 0x2,
-	GRID_ROCKB = 0x3,	
-	GRID_ROCKT = 0x4,	
-	GRID_ROCK_BOMB = 0x5,	
-	GRID_ROCK_ALT = 0x6,	
-	GRID_PIT = 0x7,
-	GRID_SPIKES = 0x8,
-	GRID_SPIKES_ONOFF = 0x9,
-	GRID_SPIDERWEB = 0xA,
-	GRID_LOCK = 0xB,
-	GRID_TNT = 0xC,
-	GRID_FIREPLACE = 0xD,
-	GRID_POOP = 0xE,
-	GRID_WALL = 0xF,
-	GRID_DOOR = 0x10,
-	GRID_TRAPDOOR = 0x11,
-	GRID_STAIRS = 0x12,
-	GRID_GRAVITY = 0x13,
-	GRID_PRESSURE_PLATE = 0x14,
-	GRID_STATUE = 0x15,
-	GRID_ROCK_SS = 0x16,
-	GRID_TELEPORTER = 0x17,
-	GRID_PILLAR = 0x18,
-	GRID_ROCK_SPIKED = 0x19,
-	GRID_ROCK_ALT2 = 0x1A,
-	GRID_ROCK_GOLD = 0x1B,
-};
-
-static DWORD GetBaseAddress()
-{
-	return (DWORD)GetModuleHandle(NULL);
-}
-
-
-struct Weapon_MultiShotParams
-{
-	int16_t numTears;
-	int16_t unk1;
-	float unk2;
-	float unk3;
-	float unk4;
-	float unk5;
-	int32_t unk6;
-	float unk7;
-	bool unk8[1];
-	bool unk9[1];
-	bool unk10[1];
-	char pad0;
-	int16_t unk11;
-	char pad1[2];
-};
-
-struct LuaEngine;
-
-struct LuaEngine
-{
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
-	char pad0[24];
-	lua_State *_state;
-};
-
-struct Manager
-{
-	LIBZHL_API void __stdcall Update();
-	
-};
-
-struct Entity;
-
-struct LIBZHL_INTERFACE Entity
-{
-	Entity() 
-	{
-		this->constructor();
-	}
-
-	virtual ~Entity() {}
-	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
-	virtual void PreUpdate() LIBZHL_PLACEHOLDER
-	LIBZHL_API virtual void Update();
-	LIBZHL_API void constructor();
-	
-	char pad0[752];
-	float _timeScale;
-};
-
-struct Entity_Slot : Entity
-{
-};
 
 struct Vector
 {
@@ -235,7 +118,118 @@ struct PosVel
 	Vector vel;
 };
 
+struct Entity;
+
+struct EntityRef
+{
+	int _type;
+	int _variant;
+	int _spawnerType;
+	unsigned int _spawnerVariant;
+	Vector _position;
+	Vector _velocity;
+	unsigned int _flags;
+	Entity *_entity;
+};
+	
+
+enum WeaponType
+{
+	WEAPON_NULL = 0x0,
+	WEAPON_TEARS = 0x1,
+	WEAPON_BRIMSTONE = 0x2,
+	WEAPON_LASER = 0x3,
+	WEAPON_KNIFE = 0x4,
+	WEAPON_BOMBS = 0x5,
+	WEAPON_ROCKETS = 0x6,
+	WEAPON_MONSTROS_LUNGS = 0x7,
+	WEAPON_LUDOVICO_TECHNIQUE = 0x8,
+	WEAPON_TECH_X = 0x9,
+	WEAPON_BONE = 0xA,
+	WEAPON_NOTCHED_AXE = 0xB,
+	WEAPON_URN_OF_SOULS = 0xC,
+	WEAPON_SPIRIT_SWORD = 0xD,
+	WEAPON_FETUS = 0xE,
+ 		WEAPON_UMBILICAL_WHIP = 0xF,
+	NUM_WEAPON_TYPES = 0x10,
+};
+
+enum GridEntityType {
+	GRID_NULL = 0x0,
+	GRID_DECORATION = 0x1,
+	GRID_ROCK = 0x2,
+	GRID_ROCKB = 0x3,	
+	GRID_ROCKT = 0x4,	
+	GRID_ROCK_BOMB = 0x5,	
+	GRID_ROCK_ALT = 0x6,	
+	GRID_PIT = 0x7,
+	GRID_SPIKES = 0x8,
+	GRID_SPIKES_ONOFF = 0x9,
+	GRID_SPIDERWEB = 0xA,
+	GRID_LOCK = 0xB,
+	GRID_TNT = 0xC,
+	GRID_FIREPLACE = 0xD,
+	GRID_POOP = 0xE,
+	GRID_WALL = 0xF,
+	GRID_DOOR = 0x10,
+	GRID_TRAPDOOR = 0x11,
+	GRID_STAIRS = 0x12,
+	GRID_GRAVITY = 0x13,
+	GRID_PRESSURE_PLATE = 0x14,
+	GRID_STATUE = 0x15,
+	GRID_ROCK_SS = 0x16,
+	GRID_TELEPORTER = 0x17,
+	GRID_PILLAR = 0x18,
+	GRID_ROCK_SPIKED = 0x19,
+	GRID_ROCK_ALT2 = 0x1A,
+	GRID_ROCK_GOLD = 0x1B,
+};
+
+static DWORD GetBaseAddress()
+{
+	return (DWORD)GetModuleHandle(NULL);
+}
+
+
+struct EntityRef;
+
+struct LIBZHL_INTERFACE Entity
+{
+	Entity() 
+	{
+		this->constructor();
+	}
+
+	virtual ~Entity() {}
+	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	virtual void PreUpdate() LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual void Update();
+	LIBZHL_API void constructor();
+	LIBZHL_API virtual bool TakeDamage(float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
+	
+	char pad0[752];
+	float _timeScale;
+};
+
 struct Entity_Player;
+
+struct Weapon_MultiShotParams
+{
+	int16_t numTears;
+	int16_t unk1;
+	float unk2;
+	float unk3;
+	float unk4;
+	float unk5;
+	int32_t unk6;
+	float unk7;
+	bool unk8;
+	bool unk9;
+	bool unk10;
+	char pad0;
+	int16_t unk11;
+	char pad1[2];
+};
 
 struct LIBZHL_INTERFACE Entity_Player : Entity
 {
@@ -251,6 +245,33 @@ struct LIBZHL_INTERFACE Entity_Player : Entity
 	LIBZHL_API void AddCoins(int amount);
 	LIBZHL_API static PosVel __cdecl GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
 	LIBZHL_API Weapon_MultiShotParams GetMultiShotParams(WeaponType weaponType);
+	LIBZHL_API virtual bool TakeDamage(float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
+	
+};
+
+struct Entity_Slot : Entity
+{
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+	char pad0[24];
+	lua_State *_state;
+};
+
+struct Camera;
+struct Room;
+struct Vector;
+
+struct Camera
+{
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
 	
 };
 
@@ -259,6 +280,10 @@ struct GridEntity
 	int _unk;
 	GridEntityType _type;
 	int _variant;
+	int _state;
+	int _unk2;
+	int _varData;
+	int _unk3;
 };
 
 struct GridEntity_Rock;
@@ -270,27 +295,9 @@ struct GridEntity_Rock : GridEntity
 	
 };
 
-struct Camera;
-struct Vector;
-struct Room;
-
-struct Camera
+struct Manager
 {
-	LIBZHL_API void constructor(Room *room);
-	LIBZHL_API void SetFocusPosition(const Vector &pos);
-	
-};
-
-struct Globals
-{
-};
-
-struct PlayerManager;
-
-struct PlayerManager
-{
-	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
-	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
+	LIBZHL_API void __stdcall Update();
 	
 };
 
@@ -315,6 +322,19 @@ struct Game
 	bool _altFloor;
 	char unk1[3];
 	int _curses;
+};
+
+struct PlayerManager;
+
+struct PlayerManager
+{
+	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
+	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
+	
+};
+
+struct Globals
+{
 };
 
 struct Room

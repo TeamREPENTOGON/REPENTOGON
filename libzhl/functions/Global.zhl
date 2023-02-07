@@ -54,7 +54,7 @@ struct GlobalPre
 // This is useful if you have something like a 2D vector struct and want some predefined vectors for convenience purposes
 
 // struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
-struct GlobalConst
+struct GlobalConst depends (PosVel, EntityRef)
 {{	
 
 	enum WeaponType
@@ -76,7 +76,7 @@ struct GlobalConst
 		WEAPON_FETUS = 0xE,
  		WEAPON_UMBILICAL_WHIP = 0xF,
 		NUM_WEAPON_TYPES = 0x10,
-};
+	};
 
 	enum GridEntityType {
 		GRID_NULL = 0x0,
@@ -107,7 +107,7 @@ struct GlobalConst
 		GRID_ROCK_SPIKED = 0x19,
 		GRID_ROCK_ALT2 = 0x1A,
 		GRID_ROCK_GOLD = 0x1B,
-};
+	};
 
 	static DWORD GetBaseAddress()
 	{

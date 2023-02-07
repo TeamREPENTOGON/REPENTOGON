@@ -98,24 +98,30 @@ static int LuaExtractFunctions(lua_State* L) {
 	return 1;
 }
 
-extern "C" int Lua_GetMultiShotPositionVelocity(lua_State * L) // This *should* be in the API, but magically vanished some point after 1.7.8.
-{
-	Entity_Player* player = *(Entity_Player**)((char*)lua_touserdata(L, 1) + 4);
-	int loopIndex = luaL_checkinteger(L, 2);
-	WeaponType weaponType = (WeaponType)luaL_checkinteger(L, 3);
-	Vector* shotDirection = *(Vector**)((char*)lua_touserdata(L, 4) + 4);
-	float shotSpeed = luaL_checknumber(L, 5);
 
-	printf("given loopIndex: %d\n", loopIndex);
-	printf("given weapon: %d\n", weaponType);
-	printf("given shotSpeed: %f\n", shotSpeed);
-	printf("given shotDirection.x: %f\n", shotDirection->x);
-	printf("given shotDireciton.y: %f\n", shotDirection->y);
-	PosVel result = g_Game->GetPlayer(0)->GetMultiShotPositionVelocity(0, WeaponType::WEAPON_TEARS, Vector(3, 4), 1.0f, g_Game->GetPlayer(0)->GetMultiShotParams(WeaponType::WEAPON_TEARS));
-	printf("got MuliShotPositionVelocity!\n");
-	printf("result: (%f,%f) (%f,%f)", result.pos.x, result.pos.y, result.vel.x, result.vel.y);
+void *rep_testudata(lua_State *L, int ud, lua::Metatables mt) { //TODO move this to LuaCore?
+	void *p = lua_touserdata(L, ud);
+	if (p != NULL) {
+		if (lua_getmetatable(L, ud)) {
+			lua::PushMetatable(L, mt);
+			if (!lua_rawequal(L, -1, -2))
+				p = NULL;
+			lua_pop(L, 2);
+			return p;
+		}
+	}
+	return NULL;
+}
 
-	return 1; // <--- crashes here, function never returns
+void *rep_checkudata(lua_State *L, int ud, lua::Metatables mt) { //TODO move this to LuaCore?
+	void *p = rep_testudata(L, 4, lua::Metatables::VECTOR);
+	if (!p) {
+		std::string type = lua_typename(L, lua_type(L, 4));
+		std::string err = "Vector expected, got " + type; //TODO make first type dynamic
+
+		luaL_argerror(L, 4, err.c_str());
+	}
+	return p;
 }
 
 static void RegisterRailFunctions(lua_State* L) {
@@ -175,20 +181,23 @@ static void RegisterMetatables(lua_State* L) {
 						if (bossID == LUA_TNIL) {
 							if (type.find("const") != std::string::npos) {
 								type = "const RoomConfig_Room";
-							} else {
+							}
+							else {
 								type = "RoomConfig_Room";
 							}
 						}
 
 						lua_pop(L, 1);
-					} else if (type == "RoomDescriptor" || type == "const RoomDescriptor") {
+					}
+					else if (type == "RoomDescriptor" || type == "const RoomDescriptor") {
 						lua_pushstring(L, "Get");
 						int get = lua_rawget(L, -3);
 
 						if (get != LUA_TNIL) {
 							if (type.find("const") != std::string::npos) {
 								type = "const ArrayProxy_RoomDescriptor";
-							} else {
+							}
+							else {
 								type = "ArrayProxy_RoomDescriptor";
 							}
 						}
@@ -211,13 +220,31 @@ static void RegisterMetatables(lua_State* L) {
 	fclose(f);
 }
 
-int TestPosVel(lua_State* L) {
-	// PosVel result = PosVel(Vector(1.2, 3.4), Vector(5.6, 7.8)); // this is just for testing purposes
-	// Lua_PosVelUserdata* ud = (Lua_PosVelUserdata*)lua_newuserdata(L, sizeof(Lua_PosVelUserdata));
+
+extern "C" int Lua_GetMultiShotPositionVelocity(lua_State *L) // This *should* be in the API, but magically vanished some point after 1.7.8.
+{
+	Entity_Player* player = *(Entity_Player**)((char*)rep_checkudata(L, 1, lua::Metatables::ENTITY_PLAYER) + 4);
+	int loopIndex = luaL_checkinteger(L, 2);
+	WeaponType weaponType = (WeaponType)luaL_checkinteger(L, 3);
+	Vector* shotDirection = *(Vector**)((char*)rep_checkudata(L, 4, lua::Metatables::VECTOR) + 4);
+	float shotSpeed = luaL_checknumber(L, 5);
+	//Weapon_MultiShotParams* multiShotParams = *(Weapon_MultiShotParams**)((char*)lua_touserdata(L, 5) + 4);
+
 	PosVel* toLua = lua::luabridge::UserdataValue<PosVel>::place(L, lua::GetMetatableKey(lua::Metatables::POS_VEL));
-	*toLua = PosVel(Vector(1.2, 3.4), Vector(5.6, 7.8));
+	*toLua = g_Game->GetPlayer(0)->GetMultiShotPositionVelocity(loopIndex, weaponType, *shotDirection, shotSpeed, g_Game->GetPlayer(0)->GetMultiShotParams(weaponType));
+
 	return 1;
 }
+
+static void RegisterMultiShotPositionVelocity(lua_State *L)
+{
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetMultiShotPositionVelocity");
+	lua_pushcfunction(L, Lua_GetMultiShotPositionVelocity);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -227,17 +254,11 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	printf("repentogonning all over the place\n");
 	lua_register(state, "Lua_TestLua", Lua_TestLua);
 	lua_register(state, "DumpRegistry", LuaDumpRegistry);
-	lua_register(state, "PTest", Lua_GetMultiShotPositionVelocity);
-	lua_register(state, "PosVelTest", TestPosVel);
 	printf("i'm repeotogonnning!!!!!!\n");
 	lua::UnloadMetatables();
 	RegisterMetatables(state);
 	RegisterRailFunctions(state);
 
 	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
+	RegisterMultiShotPositionVelocity(state);
 };
-
-HOOK_STATIC(Entity_Player, GetMultiShotPositionVelocity, (int loopIndex, WeaponType weaponType, Vector direction, float speed, Weapon_MultiShotParams params) -> PosVel) {
-	return super(loopIndex, weaponType, direction, speed, params);
-};
-

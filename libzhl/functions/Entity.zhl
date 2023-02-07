@@ -11,6 +11,9 @@ virtual __thiscall void Entity::PreUpdate(Entity* this<ecx>);
 "558bec83e4f081ecd8010000a1????????33c4":
 virtual __thiscall void Entity::Update(Entity* this<ecx>);
 
+"558bec83e4??83ec??5356578bf9837f28":
+virtual __thiscall bool Entity::TakeDamage(Entity *this<ecx>, float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
+
 struct Entity
 {{
 	Entity() 
