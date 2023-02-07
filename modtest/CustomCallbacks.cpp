@@ -6,7 +6,7 @@
 
 //AddCollectible Callback (id: 1004 enum pending)
 HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
-	printf("item get");
+	printf("item get\n");
 	lua_State *L = g_LuaEngine->_state;
 	
 	lua_getglobal(L, "Isaac");

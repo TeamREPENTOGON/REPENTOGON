@@ -11,15 +11,6 @@
 
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
 
-int Lua_TestLua(lua_State *L) {
-	int a = lua_tointeger(L, 1);
-	int b = lua_tointeger(L, 2);
-	int result = a + b;
-
-	lua_pushinteger(L, result);
-	return 1;
-}
-
 template<typename T>
 T ud_to_data(void* ud) {
 	return *(T*)((char*)ud + 4);
@@ -231,7 +222,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State *state = g_LuaEngine->_state; //Soon.
 	// luaL_openlibs(state);
 	printf("repentogonning all over the place\n");
-	lua_register(state, "Lua_TestLua", Lua_TestLua);
 	lua_register(state, "DumpRegistry", LuaDumpRegistry);
 	printf("i'm repeotogonnning!!!!!!\n");
 	lua::UnloadMetatables();
