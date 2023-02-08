@@ -58,8 +58,6 @@ typedef std::map<std::string, bool> std_map_std_string_bool;
 
 
 
-struct Entity;
-
 struct Vector
 {
 	Vector() : x(0.f), y(0.f) {}
@@ -89,6 +87,8 @@ struct Vector
 	float x;
 	float y;
 };
+
+struct Entity;
 
 struct EntityRef
 {
@@ -191,91 +191,44 @@ static DWORD GetBaseAddress()
 }
 
 
-struct Weapon_MultiShotParams
-{
-	int16_t numTears;
-	int16_t unk1;
-	float unk2;
-	float unk3;
-	float unk4;
-	float unk5;
-	int32_t unk6;
-	float unk7;
-	bool unk8;
-	bool unk9;
-	bool unk10;
-	char pad0;
-	int16_t unk11;
-	char pad1[2];
-};
-
-struct EntityRef;
-
-struct LIBZHL_INTERFACE Entity
-{
-	Entity() 
-	{
-		this->constructor();
-	}
-
-	virtual ~Entity() {}
-	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
-	virtual void PreUpdate() LIBZHL_PLACEHOLDER
-	LIBZHL_API virtual void Update();
-	LIBZHL_API void constructor();
-	LIBZHL_API virtual bool TakeDamage(float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
-	
-	char pad0[752];
-	float _timeScale;
-};
-
+struct PlayerManager;
 struct Entity_Player;
 
-struct LIBZHL_INTERFACE Entity_Player : Entity
+struct PlayerManager
 {
-	virtual ~Entity_Player() {}
-	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
-	virtual void PreUpdate() LIBZHL_PLACEHOLDER
-	LIBZHL_API virtual void Update();
-	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
-	LIBZHL_API void AddBombs(int amount);
-	LIBZHL_API void AddKeys(int amount);
-	LIBZHL_API void AddJarFlies(int amount);
-	LIBZHL_API void AddPrettyFly();
-	LIBZHL_API void AddCoins(int amount);
-	LIBZHL_API static PosVel __cdecl GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
-	LIBZHL_API Weapon_MultiShotParams GetMultiShotParams(WeaponType weaponType);
-	LIBZHL_API virtual bool TakeDamage(float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
+	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
+	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
 	
 };
 
-struct Camera;
-struct Room;
-struct Vector;
-
-struct Camera
+struct GridEntity
 {
-	LIBZHL_API void constructor(Room *room);
-	LIBZHL_API void SetFocusPosition(const Vector &pos);
+	int _unk;
+	GridEntityType _type;
+	int _variant;
+	int _state;
+	int _unk2;
+	int _varData;
+	int _unk3;
+};
+
+struct GridEntity_Rock;
+
+struct GridEntity_Rock : GridEntity
+{
+	LIBZHL_API void Update();
+	LIBZHL_API bool Destroy(bool Immediate);
 	
 };
 
-struct LuaEngine;
-
-struct LuaEngine
+struct Manager
 {
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
+	LIBZHL_API void __stdcall Update();
 	
-	char pad0[24];
-	lua_State *_state;
-};
-
-struct Globals
-{
 };
 
 struct Game;
+struct Vector;
 
 struct Game
 {
@@ -298,24 +251,22 @@ struct Game
 	int _curses;
 };
 
-struct PlayerManager;
-
-struct PlayerManager
+struct Weapon_MultiShotParams
 {
-	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
-	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
-	
-};
-
-struct GridEntity
-{
-	int _unk;
-	GridEntityType _type;
-	int _variant;
-	int _state;
-	int _unk2;
-	int _varData;
-	int _unk3;
+	int16_t numTears;
+	int16_t unk1;
+	float unk2;
+	float unk3;
+	float unk4;
+	float unk5;
+	int32_t unk6;
+	float unk7;
+	bool unk8;
+	bool unk9;
+	bool unk10;
+	char pad0;
+	int16_t unk11;
+	char pad1[2];
 };
 
 struct Room
@@ -324,22 +275,75 @@ struct Room
 	
 };
 
-struct GridEntity_Rock;
+struct EntityRef;
 
-struct GridEntity_Rock : GridEntity
+struct LIBZHL_INTERFACE Entity
 {
-	LIBZHL_API void Update();
-	LIBZHL_API bool Destroy(bool Immediate);
+	Entity() 
+	{
+		this->constructor();
+	}
+
+	virtual ~Entity() {}
+	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	virtual void PreUpdate() LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual void Update();
+	LIBZHL_API void constructor();
+	LIBZHL_API virtual bool TakeDamage(float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
 	
+	char pad0[752];
+	float _timeScale;
+};
+
+struct LuaEngine;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	
+	char pad0[24];
+	lua_State *_state;
 };
 
 struct Entity_Slot : Entity
 {
 };
 
-struct Manager
+struct Globals
 {
-	LIBZHL_API void __stdcall Update();
+};
+
+struct LIBZHL_INTERFACE Entity_Player : Entity
+{
+	virtual ~Entity_Player() {}
+	LIBZHL_API virtual void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
+	virtual void PreUpdate() LIBZHL_PLACEHOLDER
+	LIBZHL_API virtual void Update();
+	LIBZHL_API void AddCollectible(int type, int charge, bool firsttime, int slot, int vardata);
+	LIBZHL_API void AddBombs(int amount);
+	LIBZHL_API void AddKeys(int amount);
+	LIBZHL_API void AddJarFlies(int amount);
+	LIBZHL_API void AddPrettyFly();
+	LIBZHL_API void AddCoins(int amount);
+	LIBZHL_API static PosVel __cdecl GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
+	LIBZHL_API Weapon_MultiShotParams GetMultiShotParams(WeaponType weaponType);
+	LIBZHL_API virtual bool TakeDamage(float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
+	
+};
+
+struct Room;
+struct Camera;
+
+struct Camera
+{
+	Camera(Room* room)
+	{
+		this->constructor(room);
+	}
+
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
 	
 };
 
