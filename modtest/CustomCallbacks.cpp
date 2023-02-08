@@ -50,12 +50,12 @@ void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damag
 	lua_getglobal(L, "Isaac");
 	lua_getfield(L, -1, "RunCallback");
 
-	lua_pushnumber(L, 1006);
+	lua_pushinteger(L, 1006);
 	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
 	lua_pushnumber(L, damage);
-	lua_pushnumber(L, damageFlags);
+	lua_pushinteger(L, damageFlags);
 	lua::luabridge::UserdataPtr::push(L, source, lua::GetMetatableKey(lua::Metatables::ENTITY_REF));
-	lua_pushnumber(L, damageCountdown);
+	lua_pushinteger(L, damageCountdown);
 
 	lua_pcall(L, 6, 1, 0);
 
