@@ -8,6 +8,8 @@ struct GridEntity;
 struct GridEntity_Rock;
 struct Room;
 struct Camera;
+struct HUD;
+struct PlayerHUD;
 struct VTable_Entity;
 struct VTable_EntityPlayer;
 
@@ -113,6 +115,14 @@ struct Entity_Slot
 
 struct Camera {
 	
+};
+
+struct HUD {
+	
+};
+
+struct PlayerHUD {
+	HUD _base;
 };
 
 struct LuaEngine
