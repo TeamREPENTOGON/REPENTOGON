@@ -43,7 +43,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 //1005 RESERVED - POST_ADD_COLLECTIBLE
 
 //POST_TAKE_DMG callback (id: 1006 enum pending)
-void ProcessPostDamageCallback(Entity ent, float damage, unsigned __int64 damageFlags, EntityRef *source, int damageCountdown) {
+void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damageFlags, EntityRef *source, int damageCountdown) {
 
 	lua_State *L = g_LuaEngine->_state;
 
@@ -51,16 +51,10 @@ void ProcessPostDamageCallback(Entity ent, float damage, unsigned __int64 damage
 	lua_getfield(L, -1, "RunCallback");
 
 	lua_pushnumber(L, 1006);
-	
-	Entity* luaEnt = lua::luabridge::UserdataValue<Entity>::place(L, lua::GetMetatableKey(lua::Metatables::ENTITY));
-	*luaEnt = ent;
-
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
 	lua_pushnumber(L, damage);
 	lua_pushnumber(L, damageFlags);
-
-	EntityRef* ref = lua::luabridge::UserdataValue<EntityRef>::place(L, lua::GetMetatableKey(lua::Metatables::ENTITY_REF));
-	*ref = *source;
-
+	lua::luabridge::UserdataPtr::push(L, source, lua::GetMetatableKey(lua::Metatables::ENTITY_REF));
 	lua_pushnumber(L, damageCountdown);
 
 	lua_pcall(L, 6, 1, 0);
@@ -71,7 +65,7 @@ HOOK_METHOD(Entity, TakeDamage, (float damage, unsigned __int64 damageFlags, Ent
 	bool result = super(damage, damageFlags, source, damageCountdown);
 	Entity* ent = (Entity*)this;
 
-	if (result) ProcessPostDamageCallback(*ent, damage, damageFlags, source, damageCountdown);
+	if (result) ProcessPostDamageCallback(ent, damage, damageFlags, source, damageCountdown);
 	return result;
 }
 
@@ -79,7 +73,7 @@ HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned __int64 damageFla
 	bool result = super(damage, damageFlags, source, damageCountdown);
 	Entity* ent = (Entity*)this;
 
-	if(result) ProcessPostDamageCallback(*ent, damage, damageFlags, source, damageCountdown);
+	if(result) ProcessPostDamageCallback(ent, damage, damageFlags, source, damageCountdown);
 	return result;
 }
 //POST_TAKE_DMG callback end
