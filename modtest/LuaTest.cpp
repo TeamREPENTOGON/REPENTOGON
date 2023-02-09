@@ -218,6 +218,7 @@ static void RegisterMultiShotPositionVelocity(lua_State *L)
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
+	freopen("CONOUT$", "w", stdout);
 	printf("[REPENTOGON WAS HERE] (flame everywhere woah gif modding of isaac sticker)\n");
 	lua_State *state = g_LuaEngine->_state; //Soon.
 	// luaL_openlibs(state);
