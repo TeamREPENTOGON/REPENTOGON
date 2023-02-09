@@ -215,6 +215,22 @@ static void RegisterMultiShotPositionVelocity(lua_State *L)
 	lua_pop(L, 1);
 }
 
+int Lua_GameAchievementUnlocksDisallowed(lua_State * L)
+{
+	Game* game = *(Game**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::GAME, "Game") + 4);
+	lua_pushboolean(L, game->AchievementUnlocksDisallowed());
+
+	return 1;
+}
+
+static void RegisterAchievementUnlocksDisallowed(lua_State *L)
+{
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "AchievementUnlocksDisallowed");
+	lua_pushcfunction(L, Lua_GameAchievementUnlocksDisallowed);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -231,4 +247,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
 	RegisterMultiShotPositionVelocity(state);
+	RegisterAchievementUnlocksDisallowed(state);
 };

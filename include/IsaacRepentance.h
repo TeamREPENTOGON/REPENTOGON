@@ -191,29 +191,24 @@ static DWORD GetBaseAddress()
 }
 
 
-struct Manager
+struct LuaEngine;
+
+struct LuaEngine
 {
-	LIBZHL_API void __stdcall Update();
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
 	
+	char pad0[24];
+	lua_State *_state;
 };
 
-struct GridEntity_Rock;
+struct Entity_Player;
+struct PlayerManager;
 
-struct GridEntity
+struct PlayerManager
 {
-	int _unk;
-	GridEntityType _type;
-	int _variant;
-	int _state;
-	int _unk2;
-	int _varData;
-	int _unk3;
-};
-
-struct GridEntity_Rock : GridEntity
-{
-	LIBZHL_API void Update();
-	LIBZHL_API bool Destroy(bool Immediate);
+	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
+	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
 	
 };
 
@@ -237,15 +232,6 @@ struct LIBZHL_INTERFACE Entity
 	float _timeScale;
 };
 
-struct Entity_Slot : Entity
-{
-};
-
-struct Globals
-{
-};
-
-struct Entity_Player;
 struct Game;
 struct Vector;
 
@@ -263,6 +249,7 @@ struct Game
 	LIBZHL_API void MakeShockwave(const Vector &pos, float amplitude, float speed, int duration);
 	LIBZHL_API Entity_Player *GetPlayer(unsigned int Index);
 	LIBZHL_API void __stdcall Update();
+	LIBZHL_API bool AchievementUnlocksDisallowed();
 	
 	int _floorNum;
 	bool _altFloor;
@@ -270,41 +257,14 @@ struct Game
 	int _curses;
 };
 
-struct Room
+struct Globals
 {
-	LIBZHL_API float __stdcall GetDevilRoomChance();
-	
 };
 
-struct PlayerManager;
-
-struct PlayerManager
+struct Manager
 {
-	LIBZHL_API Entity_Player *SpawnCoPlayer(int unk);
-	LIBZHL_API Entity_Player *SpawnCoPlayer2(int unk);
+	LIBZHL_API void __stdcall Update();
 	
-};
-
-struct HUD;
-
-struct HUD
-{
-	LIBZHL_API void Render();
-	LIBZHL_API void Update();
-	LIBZHL_API void PostUpdate();
-	LIBZHL_API void LoadGraphics();
-	
-};
-
-struct LuaEngine;
-
-struct LuaEngine
-{
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	
-	char pad0[24];
-	lua_State *_state;
 };
 
 struct Weapon_MultiShotParams
@@ -325,21 +285,6 @@ struct Weapon_MultiShotParams
 	char pad1[2];
 };
 
-struct Room;
-struct Camera;
-
-struct Camera
-{
-	Camera(Room* room)
-	{
-		this->constructor(room);
-	}
-
-	LIBZHL_API void constructor(Room *room);
-	LIBZHL_API void SetFocusPosition(const Vector &pos);
-	
-};
-
 struct LIBZHL_INTERFACE Entity_Player : Entity
 {
 	virtual ~Entity_Player() {}
@@ -358,6 +303,58 @@ struct LIBZHL_INTERFACE Entity_Player : Entity
 	
 };
 
+struct Room
+{
+	LIBZHL_API float __stdcall GetDevilRoomChance();
+	
+};
+
+struct Camera;
+struct Room;
+
+struct Camera
+{
+	Camera(Room* room)
+	{
+		this->constructor(room);
+	}
+
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
+	
+};
+
+struct HUD;
+
+struct HUD
+{
+	LIBZHL_API void Render();
+	LIBZHL_API void Update();
+	LIBZHL_API void PostUpdate();
+	LIBZHL_API void LoadGraphics();
+	
+};
+
+struct GridEntity_Rock;
+
+struct GridEntity
+{
+	int _unk;
+	GridEntityType _type;
+	int _variant;
+	int _state;
+	int _unk2;
+	int _varData;
+	int _unk3;
+};
+
+struct GridEntity_Rock : GridEntity
+{
+	LIBZHL_API void Update();
+	LIBZHL_API bool Destroy(bool Immediate);
+	
+};
+
 struct PlayerHUD;
 
 struct PlayerHUD : HUD
@@ -365,6 +362,10 @@ struct PlayerHUD : HUD
 	LIBZHL_API void Update();
 	LIBZHL_API void RenderActiveItem(unsigned int slot, const Vector &pos, float alpha, float unk4);
 	
+};
+
+struct Entity_Slot : Entity
+{
 };
 
 struct GridEntity;
