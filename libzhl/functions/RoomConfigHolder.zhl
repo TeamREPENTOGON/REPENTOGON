@@ -1,0 +1,2 @@
+"558bec518b55145356578b7d0869f7c4000000":
+__thiscall RoomConfig* RoomConfigHolder::GetRoomByStageTypeAndVariant(RoomConfigHolder* this<ecx>, uint32_t stage, uint32_t type, uint32_t variant, int32_t difficulty);
