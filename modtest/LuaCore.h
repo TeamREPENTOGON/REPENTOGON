@@ -146,7 +146,19 @@ void* GetMetatableKey(Metatables metatable);
 Metatables GetMetatableIdxFromName(std::string const& name);
 
 void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
-void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string name);
+void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
+
+template<typename T>
+T GetUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
+    void* p = CheckUserdata(L, idx, mt, name);
+    return *(T*)((char*)p + 0x4);
+}
+
+template<typename T>
+T GetUserdata(lua_State* L, int idx, const char* mt) {
+    void* ud = luaL_checkudata(L, idx, mt);
+    return (T)ud;
+}
 
 namespace luabridge {
     class Userdata {

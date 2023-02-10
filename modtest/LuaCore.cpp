@@ -246,7 +246,7 @@ namespace lua {
 		return NULL;
 	}
 
-	void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string name) {
+	void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name) {
 		void* p = TestUserdata(L, ud, mt);
 		if (!p) {
 			lua_getmetatable(L, ud);
