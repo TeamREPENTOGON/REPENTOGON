@@ -247,3 +247,16 @@ struct Weapon_MultiShotParams
     int16_t unk11;
     char pad1[2];
 };
+
+struct LevelGenerator
+{
+};
+
+struct LevelGenerator_Room
+{
+};
+
+struct RNG
+{
+  unsigned int _seed;
+};

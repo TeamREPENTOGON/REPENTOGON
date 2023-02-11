@@ -19,6 +19,7 @@ struct GlobalPre
 	#include <cmath>
 	#include <queue>
     #include <cstdint>
+	#include <bitset>
 	#undef LoadImage
 
 	#ifndef M_PI
@@ -54,7 +55,7 @@ struct GlobalPre
 // This is useful if you have something like a 2D vector struct and want some predefined vectors for convenience purposes
 
 // struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
-struct GlobalConst depends (PosVel, EntityRef)
+struct GlobalConst
 {{	
 
 	enum WeaponType
@@ -107,6 +108,15 @@ struct GlobalConst depends (PosVel, EntityRef)
 		GRID_ROCK_SPIKED = 0x19,
 		GRID_ROCK_ALT2 = 0x1A,
 		GRID_ROCK_GOLD = 0x1B,
+	};
+
+	enum Direction
+	{
+		NO_DIRECTION = 0xFFFFFFFF,
+		LEFT = 0x0,
+		UP = 0x1,
+		RIGHT = 0x2,
+		DOWN = 0x3,
 	};
 
 	static DWORD GetBaseAddress()

@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include <bitset>
 
 HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
 	super(amount);

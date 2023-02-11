@@ -1,0 +1,12 @@
+"558bec83e4??83ec??538b5d08b8????????56":
+__thiscall int LevelGenerator::PlaceRoom(LevelGenerator *this<ecx>, LevelGenerator_Room *room);
+
+// This appears to be used for "special" generation: Greed Mode, Blue Womb, Home, probably others
+"558BEC6AFF68????????64A1????????5083EC50A1????????33C58945F05657508D45F464A3????????8BF98B4510508B450883EC088BCC89018B450C8941048D4DA8E8????????508BCFC745??????????":
+__thiscall LevelGenerator_Room* LevelGenerator::CreateRoom(LevelGenerator *this<ecx>, int x, int y, int shape, int connectX, int connectY, Direction connectDir);
+
+"558bec83ec??8a45":
+__thiscall void LevelGenerator::Generate(LevelGenerator *this<ecx>, int unk, bool unk2, bool unk3, bool unk4, const unsigned int &allowedShapes, int unk5, LevelGenerator_Room* startRoom);
+
+"558bec83e4??515356578bf98bb7":
+__thiscall LevelGenerator_Room* LevelGenerator::GetNewEndRoom(LevelGenerator *this<ecx>, int roomShape, const unsigned int &possibleDoors);

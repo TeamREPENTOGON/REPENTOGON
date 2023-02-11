@@ -31,6 +31,11 @@ void Game::Update(Game* this<ecx>);
 "568bf180be04bb0100008d8e04bb010075??e8????????84c0":
 __thiscall bool Game::AchievementUnlocksDisallowed(Game *this<ecx>);
 
+"558bec83ec??53568b750c578bf9":
+__thiscall bool Game::PlaceRoom(Game *this<ecx>, LevelGenerator_Room *room, RoomConfig *data, unsigned int Seed, int dimension);
+
+"558bec83e4??515356578bf96a":
+__thiscall void Game::UpdateVisibility(Game *this<ecx>);
 
 //out potential target
 /*
