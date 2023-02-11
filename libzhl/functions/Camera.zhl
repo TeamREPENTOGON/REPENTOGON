@@ -3,3 +3,11 @@ __thiscall void Camera::constructor(Camera *this<ecx>, Room* room);
 
 "558bec51568bf1578b7e088b4e043bf975??85ff":
 __thiscall void Camera::SetFocusPosition(Camera *this<ecx>, const Vector& pos);
+
+struct Camera 
+{{
+	Camera(Room* room)
+	{
+		this->constructor(room);
+	}
+}};

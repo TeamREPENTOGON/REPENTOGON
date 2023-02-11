@@ -77,3 +77,82 @@ HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned __int64 damageFla
 	return result;
 }
 //POST_TAKE_DMG callback end
+
+//GRID_ROCK_UPDATE (id: 1010)
+
+void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int variant) {
+	lua_State *L = g_LuaEngine ->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1010);
+
+	lua::luabridge::UserdataPtr::push(L, gridRock, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY_ROCK));
+
+	lua_pushinteger(L, variant);
+
+	lua_pcall(L, 3, 1, 0);
+
+}
+
+HOOK_METHOD(GridEntity_Rock, Update, () -> void) {
+	GridEntity_Rock* rockGridEnt = (GridEntity_Rock*)this;
+
+	int variant = this->_variant;
+	ProcessGridRockUpdate(this, variant);
+	super();
+}
+
+//GRID_ROCK_UPDATE callback end
+
+//HUD_UPDATE (id: 1020)
+
+HOOK_METHOD(HUD, Update, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1020);
+
+	lua_pcall(L, 1, 1, 0);
+
+	super();
+}
+
+//HUD_UPDATE callback end
+
+//HUD_POST_UPDATE (id: 1021)
+
+HOOK_METHOD(HUD, PostUpdate, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1021);
+
+	lua_pcall(L, 1, 1, 0);
+
+	super();
+}
+
+//HUD_POST_UPDATE callback end
+
+//HUD_POST_UPDATE (id: 1022)
+
+HOOK_METHOD(HUD, Render, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1022);
+
+	lua_pcall(L, 1, 1, 0);
+
+	super();
+}
+
+//HUD_POST_UPDATE callback end

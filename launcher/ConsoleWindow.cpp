@@ -56,5 +56,10 @@ void ConsoleWindow::Init()
 
 // make cout, wcout, cin, wcin, wcerr, cerr, wclog and clog
 // point to console as well
+
     ios::sync_with_stdio();
+
+    freopen("CONOUT$", "w", stdout);
+    freopen("CONOUT$", "w", stderr);
+    freopen("CONIN$", "r", stdin);
 }
