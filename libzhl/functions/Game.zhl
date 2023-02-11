@@ -37,6 +37,12 @@ __thiscall bool Game::PlaceRoom(Game *this<ecx>, LevelGenerator_Room *room, Room
 "558bec83e4??515356578bf96a":
 __thiscall void Game::UpdateVisibility(Game *this<ecx>);
 
+"558bec8b450885c0790a":
+__thiscall uint32_t* Game::GetRoomDescriptorsOffsetsArrayForDimension(Game *this<ecx>, uint32_t dimension);
+
+"558bec6aff689171b00064a100000000":
+__thiscall RoomDescriptor* Game::GetRoomByIdx(Game *this<ecx>, uint32_t idx, int32_t dimension);
+
 //out potential target
 /*
 		01444061 e8  3a  1a       CALL       IsaacRepentance::Game::Game?                     int * Game?(Game * param_1)
@@ -76,4 +82,14 @@ struct Game
 	{
 		this->constructor();
 	}
+    
+    uint32_t GetNbRooms() const 
+    { 
+        return *(uint32_t*)((char*)this + 0x1815C); 
+    }
+    
+    RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
+    { 
+        return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 
+    }
 }};

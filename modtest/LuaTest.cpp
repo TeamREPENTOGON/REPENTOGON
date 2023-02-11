@@ -233,6 +233,9 @@ static void RegisterAchievementUnlocksDisallowed(lua_State *L)
 }
 
 static constexpr const char* RoomConfigHolderMT = "RoomConfigHolder";
+static constexpr const char* RoomPlacerMT = "RoomPlacer";
+static constexpr const char* RoomDescriptorDoors = "RoomDescriptorDoors";
+static constexpr const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
 
 static int Lua_GameGetRoomConfigHolder(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -299,6 +302,251 @@ static void RegisterRoomConfigHolder(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static RoomDescriptor* GetLeftRoom(RoomDescriptor* source) {
+	return nullptr;
+}
+
+static int Lua_LevelPlaceRoom(lua_State* L) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
+	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 2, RoomPlacerMT);
+	RoomConfig* config = lua::GetUserdata<RoomConfig*>(L, 3, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
+	uint64_t seed = luaL_checkinteger(L, 4);
+
+	bool result = game->PlaceRoom(room, config, seed, 0);
+	lua_pushboolean(L, result);
+
+	if (result) {
+		// Fix doors for other rooms
+		uint32_t roomIdx = room->_gridLineIdx * 13 + room->_gridColIdx;
+		RoomDescriptor* descriptor = game->GetRoomByIdx(roomIdx, -1);
+		
+		switch (descriptor->Data->Shape) {
+		case ROOMSHAPE_1x1:
+			break;
+		}
+	}
+
+	return 1;
+}
+
+static int Lua_RoomPlacerSetColIdx(lua_State* L) {
+	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 1, RoomPlacerMT);
+	room->_gridColIdx = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_RoomPlacerSetLineIdx(lua_State* L) {
+	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 1, RoomPlacerMT);
+	room->_gridLineIdx = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_RoomPlacerSetAllowedDoors(lua_State* L) {
+	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 1, RoomPlacerMT);
+	room->_doors = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_LevelGeneratorEntry(lua_State* L) {
+	LevelGenerator_Room* ud = (LevelGenerator_Room*)lua_newuserdata(L, sizeof(LevelGenerator_Room));
+	luaL_setmetatable(L, RoomPlacerMT);
+	return 1;
+}
+
+void RegisterRoomAdder(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::LEVEL);
+	lua_pushstring(L, "PlaceRoom");
+	lua_pushcfunction(L, Lua_LevelPlaceRoom);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	luaL_newmetatable(L, RoomPlacerMT);
+	lua_pushstring(L, "__index");
+	lua_pushvalue(L, -2);
+	lua_settable(L, -3);
+
+	luaL_Reg functions[] = {
+		{ "SetColIdx", Lua_RoomPlacerSetColIdx },
+		{ "SetLineIdx", Lua_RoomPlacerSetLineIdx },
+		{ "SetAllowedDoors", Lua_RoomPlacerSetAllowedDoors },
+		{ NULL, NULL }
+	};
+
+	luaL_setfuncs(L, functions, 0);
+	lua_pop(L, 1);
+
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "LevelGeneratorEntry");
+	lua_pushcfunction(L, Lua_LevelGeneratorEntry);
+	lua_rawset(L, -3);
+}
+
+static void RoomDescriptorGetAllowedDoors(lua_State* L, RoomDescriptor* descriptor) {
+	lua_pushinteger(L, descriptor->AllowedDoors);
+}
+
+static int Lua_RoomDescriptorGetAllowedDoors(lua_State* L) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptorGetAllowedDoors(L, descriptor);
+	return 1;
+}
+
+static int Lua_RoomDescriptorGetAllowedDoorsConst(lua_State* L) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
+	RoomDescriptorGetAllowedDoors(L, descriptor);
+	return 1;
+}
+
+static int Lua_RoomDescriptorSetAllowedDoors(lua_State* L) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	int doors = luaL_checkinteger(L, 2);
+	descriptor->AllowedDoors = doors;
+	return 0;
+}
+
+static int Lua_RoomDescriptorSetDoor(lua_State* L) {
+	return 0;
+}
+
+static void RoomDescriptorGetDoors(lua_State* L, RoomDescriptor* descriptor, bool allowSet) {
+	RoomDescriptor** ptr = (RoomDescriptor**)lua_newuserdata(L, sizeof(RoomDescriptor*));
+	*ptr = descriptor;
+	if (allowSet) {
+		luaL_setmetatable(L, RoomDescriptorDoors);
+	} else {
+		luaL_setmetatable(L, RoomDescriptorDoorsConst);
+	}
+}
+
+static int Lua_RoomDescriptorGetDoors(lua_State* L) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptorGetDoors(L, descriptor, true);
+	return 1;
+}
+
+static int Lua_RoomDescriptorGetDoorsConst(lua_State* L) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
+	RoomDescriptorGetDoors(L, descriptor, false);
+	return 1;
+}
+
+static void _RoomDescriptorDoorsGet(lua_State* L, RoomDescriptor* descriptor) {
+	int slot = luaL_checkinteger(L, 2);
+	if (slot < 0 || slot > 7) {
+		luaL_error(L, "Invalid door slot %d\n", slot);
+		return;
+	}
+
+	lua_pushinteger(L, descriptor->Doors[slot]);
+}
+
+static int Lua_RoomDescriptorDoorsGet(lua_State* L) {
+	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, RoomDescriptorDoors);
+	_RoomDescriptorDoorsGet(L, *ptr);
+	return 1;
+}
+
+static int Lua_RoomDescriptorDoorsGetConst(lua_State* L) {
+	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, RoomDescriptorDoorsConst);
+	_RoomDescriptorDoorsGet(L, *ptr);
+	return 1;
+}
+
+static int Lua_RoomDescriptorDoorsSet(lua_State* L) {
+	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, RoomDescriptorDoors);
+	RoomDescriptor* descriptor = *ptr;
+
+	int slot = luaL_checkinteger(L, 2);
+	if (slot < 0 || slot > 7) {
+		return luaL_error(L, "Invalid door slot %d\n", slot);
+	}
+
+	int value = luaL_checkinteger(L, 3);
+	if (value < -1 || value > 255) {
+		return luaL_error(L, "Invalid door mask %d\n", value);
+	}
+
+	descriptor->Doors[slot] = value;
+	return 0;
+}
+
+static void FixRoomDescriptorProperties(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM_DESCRIPTOR);
+	lua_pushstring(L, "__propget");
+	int type = lua_rawget(L, -2);
+
+	if (type != LUA_TTABLE) {
+		lua_pop(L, 2);
+		printf("__propget is not a table\n");
+		return;
+	}
+
+	lua_pushstring(L, "AllowedDoors");
+	lua_pushcfunction(L, Lua_RoomDescriptorGetAllowedDoors);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Doors");
+	lua_pushcfunction(L, Lua_RoomDescriptorGetDoors);
+	lua_rawset(L, -3);
+
+	lua_pop(L, 2);
+
+	lua::PushMetatable(L, lua::Metatables::CONST_ROOM_DESCRIPTOR);
+	lua_pushstring(L, "__propget");
+	type = lua_rawget(L, -2);
+
+	if (type != LUA_TTABLE) {
+		lua_pop(L, 2);
+		printf("__propget is not a table\n");
+		return;
+	}
+
+	lua_pushstring(L, "AllowedDoors");
+	lua_pushcfunction(L, Lua_RoomDescriptorGetAllowedDoorsConst);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Doors");
+	lua_pushcfunction(L, Lua_RoomDescriptorGetDoorsConst);
+	lua_rawset(L, -3);
+
+	lua_pop(L, 2);
+
+	lua::PushMetatable(L, lua::Metatables::ROOM_DESCRIPTOR);
+	lua_pushstring(L, "__propset");
+	type = lua_rawget(L, -2);
+
+	if (type != LUA_TTABLE) {
+		lua_pop(L, 2);
+		printf("__propset is not a table\n");
+		return;
+	}
+
+	lua_pushstring(L, "AllowedDoors");
+	lua_pushcfunction(L, Lua_RoomDescriptorSetAllowedDoors);
+
+	lua_rawset(L, -3);
+	lua_pop(L, 2);
+
+	luaL_newmetatable(L, RoomDescriptorDoors);
+	lua_pushstring(L, "__index");
+	lua_pushcfunction(L, Lua_RoomDescriptorDoorsGet);
+	lua_pushstring(L, "__newindex");
+	lua_pushcfunction(L, Lua_RoomDescriptorDoorsSet);
+	lua_rawset(L, -5);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	luaL_newmetatable(L, RoomDescriptorDoorsConst);
+	lua_pushstring(L, "__index");
+	lua_pushcfunction(L, Lua_RoomDescriptorDoorsGetConst);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterPlayerManager(lua_State* L) {
+
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	printf("[REPENTOGON WAS HERE] (flame everywhere woah gif modding of isaac sticker)\n");
@@ -315,4 +563,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterMultiShotPositionVelocity(state);
 	RegisterAchievementUnlocksDisallowed(state);
 	RegisterRoomConfigHolder(state);
+	RegisterRoomAdder(state);
+	RegisterPlayerManager(state);
+	FixRoomDescriptorProperties(state);
 };
