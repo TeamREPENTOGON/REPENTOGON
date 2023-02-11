@@ -118,6 +118,23 @@ struct GlobalConst
 		RIGHT = 0x2,
 		DOWN = 0x3,
 	};
+    
+    enum eRoomShape 
+    {
+        ROOMSHAPE_1x1 = 1,
+        ROOMSHAPE_IH, // Horizontal, narrow
+        ROOMSHAPE_IV, // Vertical, narrow
+        ROOMSHAPE_1x2, // Vertical, two high
+        ROOMSHAPE_IIV, // Vertical, two high, narrow
+        ROOMSHAPE_2x1, // Horizontal, two wide
+        ROOMSHAPE_IIH, // Horizontal, two wide, narrow
+        ROOMSHAPE_2x2,
+        ROOMSHAPE_LTL, 
+        ROOMSHAPE_LTR,
+        ROOMSHAPE_LBL,
+        ROOMSHAPE_LBR,
+        MAX_ROOMSHAPES
+    };
 
 	static DWORD GetBaseAddress()
 	{

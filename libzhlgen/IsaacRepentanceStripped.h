@@ -104,15 +104,78 @@ struct RoomConfigHolder
     RoomConfigs configs[36];
 }; // 0xC4 * 36
 
+struct PlayerManager
+{
+	
+};
+
+
+struct RoomDescriptor 
+{
+    int32_t GridIndex; // 0x0
+    int32_t SafeGridIndex; // 0x4
+    int32_t ListIndex; // 0x8
+    int32_t unk0; // 0xC
+    RoomConfig* Data; // 0x10
+    RoomConfig* OverrideData; // 0x14
+    int32_t AllowedDoors; // 0x18
+    int32_t Doors[8]; // 0x1C
+    int32_t DisplayFlags; // 0x3C
+    int32_t VisitedCount; // 0x40
+    int32_t Flags; // 0x44
+    int16_t unk9; // 0x48
+    int16_t ClearCount; // 0x4A
+    int32_t unk10; // 0x4C
+    int32_t PoopCount; // 0x50
+    int32_t PitsCount; // 0x54
+    int32_t DecorationSeed; // 0x58
+    int32_t SpawnSeed; // 0x5C
+    int32_t AwardSeed; // 0x60
+    int32_t unk11; // 0x64
+    int32_t unk12; // 0x68
+    int32_t unk13; // 0x6C
+    int32_t unk14; 
+    int32_t unk15; 
+    int32_t unk16; 
+    int32_t unk17; // 0x70 -> 0x80
+    int32_t unk18; 
+    int32_t unk19; 
+    int32_t unk20; 
+    int32_t unk21; // 0x80 -> 0x90
+    int32_t unk22; 
+    int32_t unk23; 
+    int32_t unk24; 
+    int32_t unk25; // 0x90 -> 0xA0
+    int32_t unk26; // 0xA0
+    int32_t unk27; // 0xA4
+    int32_t unk28; // 0xA8
+    int16_t ShopItemIdx; // 0xAC
+    int16_t ShopItemDiscountIdx; // 0xAE
+    int32_t DeliriumDistance; // 0xB0
+    int32_t unk29; // 0xB4
+}; // 0xB8 (Checked in assembly)
+
 struct Game 
 {
 	uint32_t _stage; // 0x0
 	uint32_t _stageType; // 0x4
 	uint32_t unk; // 0x8
 	uint32_t _curses; // 0xC
+    RoomDescriptor _gridRooms[507]; // 0x14
+    RoomDescriptor _negativeGridRooms[18]; // 0x16c7c
+    uint32_t _roomOffset[507]; // 0x1796c
     uint32_t _nbRooms; // 0x1815C
+    uint32_t _startingRoomIdx; // 0x18160
     Room* _room; // 0x18190
+    uint32_t _currentRoomIdx; // 0x18194;
+    uint32_t _lastRoomIdx; // 0x18198
+    uint32_t _currentDimensionIdx; // 0x1819C
+    uint32_t _lastRoomDimensionIdx; // 0x181A0
+    uint32_t _leaveDoor; // 0x181A8
+    uint32_t _enterDoor; // 0x181AC
+    uint32_t _greedModeTreasureRoomIdx; // 0x18200
     RoomConfigHolder _roomConfigs; // 0x1879C
+    PlayerManager _playerManager; // 0x1AB40
     uint32_t _difficulty; // 0x243624
 };
 
@@ -122,11 +185,6 @@ struct Vector
 {
 	float x;
 	float y;
-};
-
-struct PlayerManager
-{
-	
 };
 
 
@@ -250,10 +308,16 @@ struct Weapon_MultiShotParams
 
 struct LevelGenerator
 {
+    
 };
 
 struct LevelGenerator_Room
 {
+    char pad0[0x8]; // 0x0
+    uint32_t _gridColIdx; // 0x8
+    uint32_t _gridLineIdx; // 0xC
+    char pad1[0xC]; // 0x10
+    uint32_t _doors; // 0x1C
 };
 
 struct RNG
