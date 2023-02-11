@@ -187,7 +187,7 @@ static void RegisterMetatables(lua_State* L) {
 }
 
 
-extern "C" int Lua_GetMultiShotPositionVelocity(lua_State *L) // This *should* be in the API, but magically vanished some point after 1.7.8.
+int Lua_GetMultiShotPositionVelocity(lua_State *L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
 	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
 	int loopIndex = luaL_checkinteger(L, 2);
