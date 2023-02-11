@@ -125,3 +125,8 @@ HOOK_METHOD(Entity_Player, AddPrettyFly, () -> void) {
 	printf("loopIndex %d weaponType %d ShotDirection (%f,%f) shotSpeed %f)", loopIndex, weaponType, shotDirection.x, shotDirection.y, shotSpeed);
 	return super(loopIndex, weaponType, shotDirection, shotSpeed, multiShotParams);
 }*/
+
+HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void) {
+	printf("%d\n", CharacterId);
+	super(CharacterId, RenderPos, DefaultSprite);
+}

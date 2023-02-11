@@ -260,3 +260,11 @@ struct RNG
 {
   unsigned int _seed;
 };
+
+struct ModManager
+{
+};
+
+struct ANM2
+{
+};
