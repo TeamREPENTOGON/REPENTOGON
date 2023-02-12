@@ -47,6 +47,9 @@ static cleanup __cdecl PosVel Entity_Player::GetMultiShotPositionVelocity(int lo
 "558bec83e4??83ec??8b450853568bf1":
 Weapon_MultiShotParams Entity_Player::GetMultiShotParams(Entity_Player *this<ecx>, WeaponType weaponType);
 
+"558bec83e4f883ec0c53568bf18b0d????????57ff75088d8940ba0100e8????????":
+__thiscall Entity_Player* Entity_Player::InitTwin(Entity_Player *this<ecx>, int playerType); //replace with ePlayerType later
+
 "558bec6aff68????????64a1000000005081eca0010000a1????????33c58945f05657508d45f464a3000000008bf989bd74fffffff30f7e05????????":
 virtual __thiscall void Entity_Player::Init(Entity_Player* this<ecx>, unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
 
