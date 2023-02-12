@@ -663,14 +663,17 @@ static void RegisterPersistentGameData(lua_State* L)
 	lua_pop(L, 1);
 }
 
+HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
+	super(Debug);
+	this->RunBundledScript("resources/scripts/enums_ex.lua");
+	this->RunBundledScript("resources/scripts/main_ex.lua");
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	printf("[REPENTOGON WAS HERE] (flame everywhere woah gif modding of isaac sticker)\n");
 	lua_State *state = g_LuaEngine->_state;
 	// luaL_openlibs(state);
-	boolean REPENTOGON = true;
-	lua_pushboolean(state, REPENTOGON);
-	lua_setglobal(state, "REPENTOGON");
 	printf("repentogonning all over the place\n");
 	lua_register(state, "DumpRegistry", LuaDumpRegistry);
 	printf("i'm repeotogonnning!!!!!!\n");
@@ -687,4 +690,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	FixRoomDescriptorProperties(state);
 	RegisterInitTwin(state);
 	RegisterPersistentGameData(state);
-};
+}
