@@ -1,0 +1,2 @@
+"558bec83e4f883ec0c5356578bf9807f01000f85????????":
+__thiscall bool PersistentGameData::TryUnlock(PersistentGameData* this<ecx>, int achievementID);
