@@ -207,37 +207,12 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	if (!lua_pcall(L, 7, 1, 0)) { // is this if statement even necessary? seems to run this code regardless
 		if (lua_istable(L, -1)) {
 			if (lua_rawlen(L, -1) == 6) {
-				// TODO write helper functions for this, for the love of christ
-				lua_pushinteger(L, 1);
-				lua_gettable(L, -2);
-				ID = luaL_checkinteger(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushinteger(L, 2);
-				lua_gettable(L, -2);
-				Volume = luaL_checknumber(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushinteger(L, 3);
-				lua_gettable(L, -2);
-				FrameDelay = luaL_checkinteger(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushboolean(L, 4);
-				lua_gettable(L, -2);
-				Loop = lua_toboolean(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushnumber(L, 5);
-				lua_gettable(L, -2);
-				Pitch = luaL_checknumber(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushnumber(L, 6);
-				lua_gettable(L, -2);
-				Pan = luaL_checknumber(L, -1);
-				lua_pop(L, 1);
-
+				ID = lua::callbacks::ToInteger(L, 1);
+				Volume = lua::callbacks::ToNumber(L, 2);
+				FrameDelay = lua::callbacks::ToInteger(L, 3);
+				Loop = lua::callbacks::ToBoolean(L, 4);
+				Pitch = lua::callbacks::ToNumber(L, 5);
+				Pan = lua::callbacks::ToNumber(L, 6);
 				super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 				ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 			}

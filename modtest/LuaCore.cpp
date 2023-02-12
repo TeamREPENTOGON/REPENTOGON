@@ -274,4 +274,30 @@ namespace lua {
 			}
 		}
 	}
+
+	namespace callbacks {
+		int ToInteger(lua_State* L, int stackPosition) {
+			lua_pushinteger(L, stackPosition);
+			lua_gettable(L, -2);
+			int res = luaL_checkinteger(L, -1);
+			lua_pop(L, 1);
+			return res;
+		}
+
+		double ToNumber(lua_State* L, int stackPosition) {
+			lua_pushinteger(L, stackPosition);
+			lua_gettable(L, -2);
+			double res = luaL_checknumber(L, -1);
+			lua_pop(L, 1);
+			return res;
+		}
+
+		bool ToBoolean(lua_State* L, int stackPosition) {
+			lua_pushinteger(L, stackPosition);
+			lua_gettable(L, -2);
+			bool res = lua_toboolean(L, -1); //TODO add typechecking
+			lua_pop(L, 1);
+			return res;
+		}
+	}
 }

@@ -1518,7 +1518,7 @@ LuaEngine **__ptr_g_LuaEngine;
 
 namespace _var46
 {
-	static VariableDefinition varObj("g_LuaEngine", "a1(????????)8b40", &__ptr_g_LuaEngine);
+	static VariableDefinition varObj("g_LuaEngine", "8b0d(????????)c745dc01000000", &__ptr_g_LuaEngine);
 }
 
 namespace _func47
