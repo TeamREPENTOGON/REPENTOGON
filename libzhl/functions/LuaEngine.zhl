@@ -4,5 +4,5 @@ __thiscall void LuaEngine::Init(LuaEngine *this<ecx>, bool Debug);
 "558bec6aff68????????64a1000000005081ec3c01000053":
 __thiscall void LuaEngine::RegisterClasses(LuaEngine *this<ecx>);
 
-"a1(????????)8b40":
+"8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;
