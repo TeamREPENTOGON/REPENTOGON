@@ -157,6 +157,19 @@ HOOK_METHOD(HUD, Render, () -> void) {
 
 //HUD_POST_UPDATE callback end
 
+//Character menu render Callback(id:1023)
+HOOK_METHOD(Menu_Character, Render, () -> void) {
+	super();
+	lua_State* L = g_LuaEngine->_state;
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1023);
+	lua_pcall(L, 1, 1, 0);
+}
+
+//Character menu render Callback end
+
 //SFX_PRE/POST_PLAY (id: 1030/1031)
 void ProcessPostSFXPlay(int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan)
 {

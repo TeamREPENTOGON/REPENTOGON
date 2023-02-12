@@ -6,6 +6,14 @@ HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
 	super(amount);
 }
 
+HOOK_METHOD(Menu_Character, Init, (Vector* x) -> void) {
+	printf("Chara Menu Init \n");
+	super(x);
+}
+HOOK_METHOD(CompletionWidget, Render, (Vector* a, Vector* b) -> void) {
+	super(a, b);
+}
+
 /*HOOK_METHOD(Game, MakeShockwave, (const Vector &pos, float amp, float speed, int dur) -> void) {
 	super(pos, amp, speed, dur);
 	printf("%g %g %g %g %d\n", pos.x,pos.y, amp, speed, dur);
