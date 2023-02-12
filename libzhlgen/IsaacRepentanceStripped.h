@@ -2,6 +2,7 @@ struct Manager;
 struct Game;
 struct Vector;
 struct PlayerManager;
+struct PersistentGameData;
 struct Entity;
 struct Entity_Player;
 struct GridEntity;
@@ -27,10 +28,14 @@ struct Globals
 
 struct Manager
 {
-	
+	char unk1[0x13];
+	PersistentGameData _persistentGameData;
 };
 
-
+struct PersistentGameData
+{
+	
+};
 
 struct CompletionWidget 
 {
