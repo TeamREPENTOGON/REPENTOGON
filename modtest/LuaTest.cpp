@@ -623,6 +623,22 @@ static void RegisterInitTwin(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_InitPostLevelInitStats(lua_State* L)
+{
+	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
+	player->InitPostLevelInitStats();
+
+	return 1;
+}
+
+static void RegisterInitPostLevelInitStats(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "InitPostLevelInitStats");
+	lua_pushcfunction(L, Lua_InitPostLevelInitStats);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 static int Lua_GetPersistentGameData(lua_State* L) {
 	Manager* manager = g_Manager;
 	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
@@ -690,4 +706,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	FixRoomDescriptorProperties(state);
 	RegisterInitTwin(state);
 	RegisterPersistentGameData(state);
-}
+	RegisterInitPostLevelInitStats(state);
+};

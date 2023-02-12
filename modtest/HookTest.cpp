@@ -138,3 +138,9 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	printf("%d\n", CharacterId);
 	super(CharacterId, RenderPos, DefaultSprite);
 }
+
+/*HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int num) -> void) {
+	printf("IncreaseEventCounter %d %d\n", eEvent, num);
+	super(eEvent, num);
+}
+*/

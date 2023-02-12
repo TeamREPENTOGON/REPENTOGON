@@ -61,3 +61,9 @@ virtual __thiscall bool Entity_Player::TakeDamage(Entity_Player *this<ecx>, floa
 
 "558bec83e4??81ec????????538bd1":
 __thiscall Entity* Entity_Player::ThrowHeldEntity(Entity_Player *this<ecx>, Vector* Velocity);
+
+"558bec6aff68????????64a1000000005081ecd0000000a1????????33c58945f0":
+__thiscall void Entity_Player::InitPostLevelInitStats(Entity_Player *this<ecx>);
+
+"558bec83e4f881ec3c0100005356578bf1e8????????":
+__thiscall void Entity_Player::TriggerRoomExit(Entity_Player *this<ecx>, bool unk);
