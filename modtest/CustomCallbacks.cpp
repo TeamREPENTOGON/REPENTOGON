@@ -230,3 +230,42 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	}
 }
 //SFX_PRE/POST_PLAY callbacks end
+
+//PRE/POST_ENTITY_THROW (1040/1041)
+void ProcessPostEntityThrow(Vector* Velocity, Entity* ent) {
+	lua_State* L = g_LuaEngine->_state;
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1041);
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *Velocity);
+
+	lua_pcall(L, 3, 1, 0);
+}
+
+HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1040);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *Velocity);
+	
+	int pcallRes = lua_pcall(L, 2, 1, 0);
+	if (!pcallRes) {
+		if (lua_isuserdata(L, -1)) {
+			Velocity = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+			Entity* res = super(Velocity);
+			ProcessPostEntityThrow(Velocity, res);
+			return res;
+		}
+		else {
+			Entity* res = super(Velocity);
+			ProcessPostEntityThrow(Velocity, res);
+			return res;
+		}
+	}
+}
+//PRE/POST_ENTITY_THROW end
