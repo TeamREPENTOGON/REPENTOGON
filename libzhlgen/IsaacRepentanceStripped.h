@@ -3,6 +3,7 @@ struct Game;
 struct Vector;
 struct PlayerManager;
 struct PersistentGameData;
+struct Music;
 struct Entity;
 struct Entity_Player;
 struct GridEntity;
@@ -359,5 +360,8 @@ struct ANM2
 };
 
 struct SFXManager
+{
+};
+struct Music 
 {
 };

@@ -298,3 +298,74 @@ HOOK_METHOD(Entity_Player, TriggerRoomExit, (bool unk) -> void) {
 	lua_pcall(L, 3, 1, 0);
 	super(unk);
 }
+
+//PRE_MUSIC_PLAY Callback (id: 1034 enum pending)
+HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
+	printf("music plays\n");
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1034); //parameters (1004 is the callback id)
+	lua_pushinteger(L, musicid);
+	lua_pushnumber(L, volume);
+	lua_pushboolean(L, false); //isfade
+
+	if (!lua_pcall(L, 4, 1, 0)) { // 6 params 
+		if (lua_istable(L, -1)) {
+			printf("Music callback run \n");
+			int tablesize = lua_rawlen(L, -1);
+			if (tablesize == 2) {
+				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
+				return;
+			}
+		}else if (lua_isinteger(L, -1)) {
+			printf("Music callback run \n");
+			super(lua_tointeger(L, -1), volume);
+			return;
+		}else if(lua_isboolean(L, -1)){
+			printf("Music callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(musicid, volume);
+}
+HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
+	printf("music fades\n");
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1034); //parameters (1004 is the callback id)
+	lua_pushinteger(L, musicid);
+	lua_pushnumber(L, faderate);
+	lua_pushboolean(L, true); //isfade
+
+	if (!lua_pcall(L, 4, 1, 0)) { // 6 params 
+		if (lua_istable(L, -1)) {
+			printf("Music callback run \n");
+			int tablesize = lua_rawlen(L, -1);
+			if (tablesize == 2) {
+				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
+				return;
+			}
+		}
+		else if (lua_isinteger(L, -1)) {
+			printf("Music callback run \n");
+			super(lua_tointeger(L, -1), faderate);
+			return;
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("Music callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(musicid, faderate);
+}
+//PRE_MUSIC_PLAY Callback (id: 1034 enum pending)
