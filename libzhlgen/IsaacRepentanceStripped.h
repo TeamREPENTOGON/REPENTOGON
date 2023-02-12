@@ -30,6 +30,26 @@ struct Manager
 	
 };
 
+
+
+struct CompletionWidget 
+{
+	
+};
+
+struct Menu_Character 
+{
+	int status; //1 seeds screen //4 transitioning to tainted
+	int lockedflags; //I think? 65792 is unlocked 65536 is locked
+	int difficulty;
+	int unk4;
+	int charaslot;
+	float unk5; //dunno if these are floats even just using them as paddiong (they are usually 0)
+	float unk6; //dunno if these are floats even just using them as paddiong (they are usually 0)
+	int unk7;
+	int unk8;
+};
+
 struct Room
 {
     
