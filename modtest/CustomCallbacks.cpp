@@ -277,8 +277,24 @@ HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
 	lua_getglobal(L, "Isaac");
 	lua_getfield(L, -1, "RunCallback");
 	lua_pushinteger(L, 1042);
+
 	Entity_Player* ent = (Entity_Player*)this;
 	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 	lua_pcall(L, 2, 1, 0);
 	super();
+}
+
+//PRE_ROOM_EXIT (1043) (currently using Entity_Player::TriggerRoomExit as the base)
+HOOK_METHOD(Entity_Player, TriggerRoomExit, (bool unk) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_pushinteger(L, 1043);
+
+	Entity_Player* ent = (Entity_Player*)this;
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua_pushboolean(L, unk);
+	lua_pcall(L, 3, 1, 0);
+	super(unk);
 }
