@@ -1762,3 +1762,41 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRandomRoom(unsigned int seed,
 	}
 }
 
+namespace _func55
+{
+	static void *func = 0;
+	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
+	static FunctionDefinition funcObj("SFXManager::Play", typeid(void (SFXManager::*)(int , float , int , bool , float , float )), "558bec6aff68????????64a1????????5083ec0c535657a1????????33c5508d45f464a3????????8bd964a1????????8b10a1????????3b82????????0f8f????????8b7d", argdata, 7, 5, &func);
+}
+
+__declspec(naked) void SFXManager::Play(int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan)
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		push [ebp+28]		// Pan
+		push [ebp+24]		// Pitch
+		push [ebp+20]		// Loop
+		push [ebp+16]		// FrameDelay
+		push [ebp+12]		// Volume
+		push [ebp+8]		// ID
+		call _func55::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		retn 24
+	}
+}
+

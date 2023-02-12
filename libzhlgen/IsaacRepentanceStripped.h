@@ -332,3 +332,7 @@ struct ModManager
 struct ANM2
 {
 };
+
+struct SFXManager
+{
+};

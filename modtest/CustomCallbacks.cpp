@@ -156,3 +156,89 @@ HOOK_METHOD(HUD, Render, () -> void) {
 }
 
 //HUD_POST_UPDATE callback end
+
+//SFX_PRE/POST_PLAY (id: 1030/1031)
+void ProcessPostSFXPlay(int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan)
+{
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1031);
+	lua_pushinteger(L, ID);
+	lua_pushnumber(L, Volume);
+	lua_pushinteger(L, FrameDelay);
+	lua_pushboolean(L, Loop);
+	lua_pushnumber(L, Pitch);
+	lua_pushnumber(L, Pan);
+
+	lua_pcall(L, 7, 1, 0);
+
+}
+
+HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1030);
+	lua_pushinteger(L, ID);
+	lua_pushnumber (L, Volume);
+	lua_pushinteger(L, FrameDelay);
+	lua_pushboolean(L, Loop);
+	lua_pushnumber (L, Pitch);
+	lua_pushnumber (L, Pan);
+
+	if (!lua_pcall(L, 7, 1, 0)) { // is this if statement even necessary? seems to run this code regardless
+		if (lua_istable(L, -1)) {
+			if (lua_rawlen(L, -1) == 6) {
+				// TODO write helper functions for this, for the love of christ
+				lua_pushinteger(L, 1);
+				lua_gettable(L, -2);
+				ID = luaL_checkinteger(L, -1);
+				lua_pop(L, 1);
+
+				lua_pushinteger(L, 2);
+				lua_gettable(L, -2);
+				Volume = luaL_checknumber(L, -1);
+				lua_pop(L, 1);
+
+				lua_pushinteger(L, 3);
+				lua_gettable(L, -2);
+				FrameDelay = luaL_checkinteger(L, -1);
+				lua_pop(L, 1);
+
+				lua_pushboolean(L, 4);
+				lua_gettable(L, -2);
+				Loop = lua_toboolean(L, -1);
+				lua_pop(L, 1);
+
+				lua_pushnumber(L, 5);
+				lua_gettable(L, -2);
+				Pitch = luaL_checknumber(L, -1);
+				lua_pop(L, 1);
+
+				lua_pushnumber(L, 6);
+				lua_gettable(L, -2);
+				Pan = luaL_checknumber(L, -1);
+				lua_pop(L, 1);
+
+				super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+				ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+			}
+		}
+		else if (lua_isboolean(L, -1)) {
+			if (lua_toboolean(L, -1)) { // this particular if statement can't be combined with the one above it, or it fails to register false properly
+				super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+				ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+			}
+		}
+		else {
+			super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+			ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+		}
+	}
+}
+//SFX_PRE/POST_PLAY callbacks end
