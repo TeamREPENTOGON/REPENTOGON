@@ -50,6 +50,9 @@ Accepts no return parameters.
 ##ModCallbacks.MC_PRE_ROOM_EXIT(EntityPlayer Player, Bool Unknown)
 Accepts no return parameters.
 
+##ModCallbacks.MC_PRE_LEVEL_INIT()
+Accepts no return parameters.
+
 ##ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH(EntityPlayer Player)
 Accepts `false` to cancel the death, reviving the player in-place, `true` or `nil` to allow the death to go through.
 **BUG!** Much like the vanilla Lua Revive() function, this removes the current run's ability to save. This is being investigated.

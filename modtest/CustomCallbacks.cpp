@@ -385,6 +385,7 @@ HOOK_METHOD(Level, Init, () -> void) {
 	super();
 }
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
+
 //PRE_TRIGGER_PLAYER_DEATH (id: 1050)
 HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
 	lua_State* L = g_LuaEngine->_state;
