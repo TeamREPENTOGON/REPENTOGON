@@ -65,7 +65,7 @@ Accepts `false` to cancel the death, reviving the player in-place, `true` or `ni
 **BUG!** Much like the vanilla Lua Revive() function, this removes the current run's ability to save. This is being investigated.
 
 # Functions
-##PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
+## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.
 
 Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than MultiShotParams.NumTears.
@@ -105,6 +105,9 @@ I believe this is used by J&E, Strawman etc
 
 ## void EntityPlayer:InitPostLevelInitStats()
 Call this after spawning characters with "special" tears (Forgotten, Lilith, Azazel etc) with InitTwin, or they won't have their proper tear type.
+
+## PersistentGameData Isaac:GetPersistentGameData()
+Should probably be moved to Game for consistency.
 
 ## bool PersistentGameData:TryUnlock(int Unlock)
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
