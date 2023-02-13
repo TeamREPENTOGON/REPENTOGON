@@ -218,9 +218,8 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 			}
 		}
 		else if (lua_isboolean(L, -1)) {
-			if (lua_toboolean(L, -1)) { // this particular if statement can't be combined with the one above it, or it fails to register false properly
-				super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
-				ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+			if (!lua_toboolean(L, -1)) { // this particular if statement can't be combined with the one above it, or it fails to register false properly
+				return;
 			}
 		}
 		else {
