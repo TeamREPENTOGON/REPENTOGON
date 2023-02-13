@@ -1,2 +1,8 @@
 "558bec83ec08f30f1005????????56578bf9f30f1145fc8b0d????????":
 __thiscall float Room::GetDevilRoomChance(Room* this<ecx>);
+
+"558bec6aff68????????64a1000000005083ec7ca1????????33c58945f0535657508d45f464a3000000008bd9":
+__thiscall void Room::ShopRestockFull(Room* this<ecx>);
+
+"558bec83ec1c53568bf1":
+__thiscall void Room::ShopRestockPartial(Room* this<ecx>);

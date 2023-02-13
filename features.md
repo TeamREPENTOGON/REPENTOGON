@@ -64,6 +64,16 @@ Accepts `false` to cancel the death, reviving the player in-place, `true` or `ni
 
 **BUG!** Much like the vanilla Lua Revive() function, this removes the current run's ability to save. This is being investigated.
 
+## ModCallbacks.MC_PRE_RESTOCK_SHOP(bool Partial)
+Accepts `false` to cancel the restock, blocking shop rerolls from restock machines or restocks from Restock altogether.
+
+This callback is called for *both* Room::ShopRestockFull *and* Room::ShopRestockPartial! `Partial` is provided to distinguish the two.
+
+## ModCallbacks.MC_POST_RESTOCK_SHOP(bool Partial)
+Accepts no return parameters.
+
+This callback is called for *both* Room::ShopRestockFull *and* Room::ShopRestockPartial! `Partial` is provided to distinguish the two.
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.

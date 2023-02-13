@@ -413,3 +413,49 @@ HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
 	}
 }
 //PRE_TRIGGER_PLAYER_DEATH end
+
+//PRE/POST_RESTOCK_SHOP (id: 1070/1071)
+bool ProcessPreRestockCallback(bool Partial) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1070);
+	lua_pushboolean(L, Partial);
+
+	if (!lua_pcall(L, 2, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void ProcessPostRestockCallback(bool Partial) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1071);
+	lua_pushboolean(L, Partial);
+
+	lua_pcall(L, 2, 1, 0);
+}
+
+HOOK_METHOD(Room, ShopRestockFull, () -> void) {
+	if (ProcessPreRestockCallback(false)) {
+		super();
+		ProcessPostRestockCallback(false);
+	}
+}
+
+HOOK_METHOD(Room, ShopRestockPartial, () -> void) {
+	if (ProcessPreRestockCallback(true)) {
+		super();
+		ProcessPostRestockCallback(true);
+	}
+}
