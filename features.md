@@ -74,6 +74,9 @@ Accepts no return parameters.
 
 This callback is called for *both* Room::ShopRestockFull *and* Room::ShopRestockPartial! `Partial` is provided to distinguish the two.
 
+## ModCallbacks.MC_PRE_CHANGE_ROOM(int TargetRoomIdx, int Dimension)
+Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.

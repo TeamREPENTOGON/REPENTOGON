@@ -459,3 +459,26 @@ HOOK_METHOD(Room, ShopRestockPartial, () -> void) {
 		ProcessPostRestockCallback(true);
 	}
 }
+
+//PRE_LEVEL_CHANGE_ROOM (id :1061)
+HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_pushinteger(L, 1061);
+
+	lua_pushinteger(L, roomId);
+	lua_pushinteger(L, dimension);
+
+	if (!lua_pcall(L, 3, 1, 0)) {
+		if (lua_istable(L, -1)) {
+			if (lua_rawlen(L, -1) == 2) {
+				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2));
+			}
+		}
+		else {
+			super(roomId, dimension);
+		}
+	}
+}
