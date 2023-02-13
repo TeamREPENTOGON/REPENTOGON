@@ -14,6 +14,17 @@ HOOK_METHOD(CompletionWidget, Render, (Vector* a, Vector* b) -> void) {
 	super(a, b);
 }
 
+HOOK_METHOD(Game, StartStageTransition, (bool samestage, int animation, Entity_Player *player) -> void) {
+	printf("Stage Transition \n");
+	super(samestage, animation, player);
+}
+
+HOOK_METHOD(Level, SetStage, (int stageid, int alt) -> void) {
+	printf("Setting Stage \n");
+	super(stageid, alt);
+}
+
+
 /*HOOK_METHOD(Game, MakeShockwave, (const Vector &pos, float amp, float speed, int dur) -> void) {
 	super(pos, amp, speed, dur);
 	printf("%g %g %g %g %d\n", pos.x,pos.y, amp, speed, dur);

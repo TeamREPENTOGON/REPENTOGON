@@ -9,6 +9,7 @@ struct Entity_Player;
 struct GridEntity;
 struct GridEntity_Rock;
 struct Room;
+struct Level;
 struct Camera;
 struct HUD;
 struct PlayerHUD;
@@ -333,6 +334,11 @@ struct Weapon_MultiShotParams
 };
 
 struct LevelGenerator
+{
+    
+};
+
+struct Level
 {
     
 };
