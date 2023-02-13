@@ -216,10 +216,9 @@ struct Vector
 
 struct Entity 
 {
-	VTable_Entity *_vtable;
-	
-	char pad0[752];
-	float _timeScale;
+	VTable_Entity *_vtable; //0x0, len 0x8
+	char pad0[357];
+	bool _visible; // 0x169 
 };
 
 
