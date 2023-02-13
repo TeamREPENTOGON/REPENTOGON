@@ -1,0 +1,2 @@
+"558bec6aff68????????64a1000000005083ec54535657a1????????33c5508d45f464a300000000894dec8b7d0c85ff75??8bf98bbf80040000897d0c85ff0f84????????":
+__thiscall void Entity_Pickup::TriggerShopPurchase(Entity_Pickup* this<ecx>, Entity_Player* player, int spentMoney);
