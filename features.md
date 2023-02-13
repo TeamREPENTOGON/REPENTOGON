@@ -63,3 +63,49 @@ Accepts no return parameters.
 Accepts `false` to cancel the death, reviving the player in-place, `true` or `nil` to allow the death to go through.
 
 **BUG!** Much like the vanilla Lua Revive() function, this removes the current run's ability to save. This is being investigated.
+
+# Functions
+##PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
+This magically vanished from the API some time after 1.7.8.
+
+Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than MultiShotParams.NumTears.
+
+MultiShotParams has not been directly exposed to the API yet- it's on the to-do list, for now any mods that want to experiment with this can use this error in pcall to get the amount of tears.
+
+## bool Game:AchievementUnlocksDisallowed()
+Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
+
+## RoomConfigRoom RoomConfigHolder::GetRoomByStageTypeAndVariant(STBStageID Stage, int Type, int Variant, int Difficulty)
+Returns a RoomConfigRoom corresponding to the given params.
+
+### TODO STBStageID has not been implemented yet!
+
+## LevelGeneratorEntry Isaac.LevelGeneratorEntry
+Fetches a blank LevelGeneratorEntry from the game.
+
+## void RoomPlacer:SetColIdx(LevelGeneratorEntry Room, int ColIdx)
+
+## void RoomPlacer:SetLineIdx(LevelGeneratorEntry Room, int ColIdx)
+
+## void RoomPlacer:SetAllowedDoors(LevelGeneratorEntry Room, int Doors)
+I *believe* Doors here is a bitmask and will need its own enum, but don't quote me on this.
+
+## bool Level:PlaceRoom(LevelGeneratorEntry Room, RoomConfigRoom RoomConfig, int Seed)
+Places a room into the game. Returns `true` if successful.
+
+## PlayerManager Game:GetPlayerManager()
+
+## EntityPlayer PlayerManager:FirstCollectibleOwner(CollectibleType Collectible, RNG RNG, bool Unknown)
+Returns `nil` if the specified collectible has never been picked up.
+
+## EntityPlayer PlayerManager:SpawnCoPlayer2(PlayerType PlayerType)
+
+## EntityPlayer EntityPlayer:InitTwin(PlayerType PlayerType)
+I believe this is used by J&E, Strawman etc
+
+## void EntityPlayer:InitPostLevelInitStats()
+Call this after spawning characters with "special" tears (Forgotten, Lilith, Azazel etc) with InitTwin, or they won't have their proper tear type.
+
+## bool PersistentGameData:TryUnlock(int Unlock)
+Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
+Could *maybe* benefit from an enum?
