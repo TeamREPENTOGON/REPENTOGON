@@ -267,6 +267,10 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 			return res;
 		}
 	}
+	else
+	{
+		return super(Velocity);
+	}
 }
 //PRE/POST_ENTITY_THROW end
 
@@ -370,15 +374,42 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 }
 //PRE_MUSIC_PLAY Callback (id: 1034 enum pending)
 
-//PRE_LEVEL_INIT Callback (id: 1050 enum pending)
+//PRE_LEVEL_INIT Callback (id: 1060 enum pending)
 HOOK_METHOD(Level, Init, () -> void) {
 	printf("Stage Init \n");
 	lua_State* L = g_LuaEngine->_state;
 
 	lua_getglobal(L, "Isaac");
 	lua_getfield(L, -1, "RunCallback");
-	lua_pushinteger(L, 1050);
+	lua_pushinteger(L, 1060);
 	lua_pcall(L, 1, 1, 0);
 	super();
 }
-//PRE_LEVEL_INIT Callback (id: 1050 enum pending)
+//PRE_LEVEL_INIT Callback (id: 1060 enum pending)
+//PRE_TRIGGER_PLAYER_DEATH (id: 1050)
+HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
+	lua_State* L = g_LuaEngine->_state;
+
+	if (!checkOnly) {
+		lua_getglobal(L, "Isaac");
+		lua_getfield(L, -1, "RunCallback");
+
+		lua_pushinteger(L, 1050);
+		lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+
+		if (!lua_pcall(L, 2, 1, 0)) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					this->Revive();
+					this->_visible = true;
+					return false;
+				}
+			}
+		}
+		return super(checkOnly);
+	}
+	else {
+		return super(checkOnly);
+	}
+}
+//PRE_TRIGGER_PLAYER_DEATH end
