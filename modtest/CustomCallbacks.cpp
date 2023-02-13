@@ -15,7 +15,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 	lua_pushinteger(L, 1004); //parameters (1004 is the callback id)
 	lua_pushinteger(L, type); 
 	lua_pushinteger(L, charge);
-	lua_pushboolean(L, firsttime);
+	lua_pushboolean(L, !firsttime);
 	lua_pushinteger(L, slot);
 	lua_pushinteger(L, vardata);
 
