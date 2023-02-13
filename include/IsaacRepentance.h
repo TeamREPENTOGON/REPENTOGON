@@ -261,8 +261,8 @@ struct LIBZHL_INTERFACE Entity
 	LIBZHL_API virtual bool TakeDamage(float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
 	LIBZHL_API static void __stdcall PlaySound(int ID, float Volume, int FrameDelay, bool Loop, float Pitch);
 	
-	char pad0[752];
-	float _timeScale;
+	char pad0[357];
+	bool _visible;
 };
 
 struct uIsaacString
@@ -444,6 +444,8 @@ struct LIBZHL_INTERFACE Entity_Player : Entity
 	LIBZHL_API Entity *ThrowHeldEntity(Vector *Velocity);
 	LIBZHL_API void InitPostLevelInitStats();
 	LIBZHL_API void TriggerRoomExit(bool unk);
+	LIBZHL_API bool TriggerDeath(bool checkOnly);
+	LIBZHL_API void Revive();
 	
 };
 
