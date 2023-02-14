@@ -73,3 +73,6 @@ __thiscall bool Entity_Player::TriggerDeath(Entity_Player *this<ecx>, bool check
 
 "558bec83e4f883ec08568bf15780":
 __thiscall void Entity_Player::Revive(Entity_Player *this<ecx>);
+
+"558bec568bf1e8????????8b45088986341500005e":
+__thiscall void Entity_Player::SetItemState(Entity_Player* this<ecx>, int collectible);

@@ -122,6 +122,8 @@ I believe this is used by J&E, Strawman etc
 ## void EntityPlayer:InitPostLevelInitStats()
 Call this after spawning characters with "special" tears (Forgotten, Lilith, Azazel etc) with InitTwin, or they won't have their proper tear type.
 
+## void EntityPlayer:SetItemState(CollectibleType CollectibleType)
+
 ## PersistentGameData Isaac:GetPersistentGameData()
 Should probably be moved to Game for consistency.
 
