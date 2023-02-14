@@ -80,10 +80,10 @@ Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
 ## ModCallbacks.MC_POST_PICKUP_SHOP_PURCHASE(EntityPickup Pickup, EntityPlayer Player, int MoneySpent)
 Accepts no return parameters.
 
-## Entity_Pickup::Morph(EntityPickup Pickup,int EntityType,int Variant,int SubType,bool KeepPrice,bool KeepSeed,bool IgnoreModifiers)
+## ModCallbacks.MC_PRE_PICKUP_MORPH(EntityPickup Pickup,int EntityType,int Variant,int SubType,bool KeepPrice,bool KeepSeed,bool IgnoreModifiers)
 Accepts a table of parameters: `{EntityType, Variant, SubType, KeepPrice, KeepSeed, IgnoreModifiers}` or just `{EntityType, Variant, SubType}`. Returning `false` cancels the morph.
 
-## Entity_NPC::Morph(int EntityType,int Variant,int SubType,int Championid)
+## ModCallbacks.MC_PRE_NPC_MORPH(int EntityType,int Variant,int SubType,int Championid)
 Accepts a table of parameters: `{EntityType, Variant, SubType, Championid}` or just `{EntityType, Variant, SubType}`. Returning `false` cancels the morph.
 
 # Functions
