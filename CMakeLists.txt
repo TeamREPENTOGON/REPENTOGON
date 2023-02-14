@@ -32,6 +32,8 @@ add_library(dsound SHARED ${LAUNCHER_SRC})
 FILE(GLOB MODTEST_SRC ${CMAKE_SOURCE_DIR}/modtest/*.cpp)
 add_library(zhlModTest SHARED ${MODTEST_SRC})
 
+add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "$<TARGET_FILE_DIR:zhlModTest>/resources/scripts")
+		
 add_dependencies(libzhl ZHL)
 
 target_link_libraries(zhlModTest Lua5.3.3r libzhl)

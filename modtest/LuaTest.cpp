@@ -237,6 +237,8 @@ static constexpr const char* RoomPlacerMT = "RoomPlacer";
 static constexpr const char* RoomDescriptorDoors = "RoomDescriptorDoors";
 static constexpr const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
 static constexpr const char* PlayerManagerMT = "PlayerManager";
+static constexpr const char* PersistentGameDataMT = "PersistentGameData";
+static constexpr const char* ConsoleMT = "Console";
 
 static int Lua_GameGetRoomConfigHolder(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -602,6 +604,7 @@ static void RegisterPlayerManager(lua_State* L) {
 	lua_pop(L, 1);
 
 }
+
 int Lua_InitTwin(lua_State* L)
 {
 	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
@@ -622,10 +625,128 @@ static void RegisterInitTwin(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_InitPostLevelInitStats(lua_State* L)
+{
+	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
+	player->InitPostLevelInitStats();
+
+	return 1;
+}
+
+static void RegisterInitPostLevelInitStats(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "InitPostLevelInitStats");
+	lua_pushcfunction(L, Lua_InitPostLevelInitStats);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+int Lua_PlayerSetItemState(lua_State* L)
+{
+	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
+	int item = luaL_checkinteger(L, 2);
+
+	player->SetItemState(item);
+
+	return 1;
+}
+
+static void RegisterPlayerSetItemState(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "SetItemState");
+	lua_pushcfunction(L, Lua_PlayerSetItemState);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static int Lua_GetPersistentGameData(lua_State* L) {
+	Manager* manager = g_Manager;
+	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
+	*ud = (char*)manager + 0x14;
+	luaL_setmetatable(L, PersistentGameDataMT);
+	return 1;
+}
+
+int Lua_PGDTryUnlock(lua_State* L)
+{
+	PersistentGameData* pgd = lua::GetUserdata<PersistentGameData*>(L, 1, PersistentGameDataMT);
+	int unlock = luaL_checkinteger(L, 2);
+
+	bool success = pgd->TryUnlock(unlock);
+	lua_pushboolean(L, success);
+	return 1;
+}
+
+static void RegisterPersistentGameData(lua_State* L)
+{
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "GetPersistentGameData");
+	lua_pushcfunction(L, Lua_GetPersistentGameData);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	luaL_newmetatable(L, PersistentGameDataMT);
+	lua_pushstring(L, "__index");
+	lua_pushvalue(L, -2);
+	lua_settable(L, -3);
+
+	luaL_Reg functions[] = {
+		{ "TryUnlock", Lua_PGDTryUnlock },
+		{ NULL, NULL }
+	};
+
+	luaL_setfuncs(L, functions, 0);
+	lua_pop(L, 1);
+}
+
+static int Lua_GetConsole(lua_State* L) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
+	*ud = (char*)g_Game + 0X1BB60;
+	luaL_setmetatable(L, ConsoleMT);
+	return 1;
+}
+
+int Lua_ConsolePrintError(lua_State* L)
+{
+	Console* console = lua::GetUserdata<Console*>(L, 1, ConsoleMT);
+	std::string err = luaL_checkstring(L, 2);
+	console->PrintError(err);
+	return 1;
+}
+
+static void RegisterConsole(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "GetConsole");
+	lua_pushcfunction(L, Lua_GetConsole);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	luaL_newmetatable(L, ConsoleMT);
+	lua_pushstring(L, "__index");
+	lua_pushvalue(L, -2);
+	lua_settable(L, -3);
+
+	luaL_Reg functions[] = {
+		{ "PrintError", Lua_ConsolePrintError },
+		{ NULL, NULL }
+	};
+
+	luaL_setfuncs(L, functions, 0);
+	lua_pop(L, 1);
+
+}
+
+HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
+	super(Debug);
+	this->RunBundledScript("resources/scripts/enums_ex.lua");
+	this->RunBundledScript("resources/scripts/main_ex.lua");
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	printf("[REPENTOGON WAS HERE] (flame everywhere woah gif modding of isaac sticker)\n");
-	lua_State *state = g_LuaEngine->_state; //Soon.
+	lua_State *state = g_LuaEngine->_state;
 	// luaL_openlibs(state);
 	printf("repentogonning all over the place\n");
 	lua_register(state, "DumpRegistry", LuaDumpRegistry);
@@ -642,4 +763,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterPlayerManager(state);
 	FixRoomDescriptorProperties(state);
 	RegisterInitTwin(state);
+	RegisterPersistentGameData(state);
+	RegisterInitPostLevelInitStats(state);
+	RegisterPlayerSetItemState(state);
+	RegisterConsole(state);
 };

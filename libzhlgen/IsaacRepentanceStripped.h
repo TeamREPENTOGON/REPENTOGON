@@ -2,11 +2,18 @@ struct Manager;
 struct Game;
 struct Vector;
 struct PlayerManager;
+struct PersistentGameData;
+struct Music;
 struct Entity;
 struct Entity_Player;
+
+struct Entity_NPC;
+
+struct Entity_Pickup;
 struct GridEntity;
 struct GridEntity_Rock;
 struct Room;
+struct Level;
 struct Camera;
 struct HUD;
 struct PlayerHUD;
@@ -27,10 +34,14 @@ struct Globals
 
 struct Manager
 {
-	
+	char unk1[0x13];
+	PersistentGameData _persistentGameData;
 };
 
-
+struct PersistentGameData
+{
+	
+};
 
 struct CompletionWidget 
 {
@@ -125,6 +136,10 @@ struct PlayerManager
 };
 
 
+struct Console
+{
+};
+
 struct RoomDescriptor 
 {
     int32_t GridIndex; // 0x0
@@ -190,7 +205,10 @@ struct Game
     uint32_t _enterDoor; // 0x181AC
     uint32_t _greedModeTreasureRoomIdx; // 0x18200
     RoomConfigHolder _roomConfigs; // 0x1879C
-    PlayerManager _playerManager; // 0x1AB40
+	char _pad0[2067];
+    PlayerManager _playerManager; // 0x1AB40 
+	char _pad1[1019];
+	Console _console; // 0x1BB60
     uint32_t _difficulty; // 0x243624
 };
 
@@ -205,10 +223,9 @@ struct Vector
 
 struct Entity 
 {
-	VTable_Entity *_vtable;
-	
-	char pad0[752];
-	float _timeScale;
+	VTable_Entity *_vtable; //0x0, len 0x8
+	char pad0[357];
+	bool _visible; // 0x169 
 };
 
 
@@ -248,6 +265,11 @@ struct Entity_Player
 	Entity _entity;
 };
 
+struct Entity_Pickup
+{
+	Entity _entity;
+};
+
 struct VTable_EntityPlayer
 {
 	void (__thiscall *Free)(Entity_Player *);
@@ -259,6 +281,16 @@ struct VTable_EntityPlayer
 struct VTable_GridEntity
 {
     
+};
+
+struct Entity_Pickup
+{
+
+};
+
+struct Entity_NPC
+{
+
 };
 
 struct GridEntity 
@@ -335,6 +367,11 @@ struct LevelGenerator
     
 };
 
+struct Level
+{
+    
+};
+
 struct LevelGenerator_Room
 {
     char pad0[0x8]; // 0x0
@@ -351,12 +388,20 @@ struct RNG
 
 struct ModManager
 {
+
 };
 
 struct ANM2
 {
+
 };
 
 struct SFXManager
 {
+
+};
+
+struct Music 
+{
+
 };

@@ -14,6 +14,17 @@ HOOK_METHOD(CompletionWidget, Render, (Vector* a, Vector* b) -> void) {
 	super(a, b);
 }
 
+HOOK_METHOD(Game, StartStageTransition, (bool samestage, int animation, Entity_Player *player) -> void) {
+	printf("Stage Transition \n");
+	super(samestage, animation, player);
+}
+
+HOOK_METHOD(Level, SetStage, (int stageid, int alt) -> void) {
+	printf("Setting Stage \n");
+	super(stageid, alt);
+}
+
+
 /*HOOK_METHOD(Game, MakeShockwave, (const Vector &pos, float amp, float speed, int dur) -> void) {
 	super(pos, amp, speed, dur);
 	printf("%g %g %g %g %d\n", pos.x,pos.y, amp, speed, dur);
@@ -138,3 +149,23 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	printf("%d\n", CharacterId);
 	super(CharacterId, RenderPos, DefaultSprite);
 }
+
+/*HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int num) -> void) {
+	printf("IncreaseEventCounter %d %d\n", eEvent, num);
+	super(eEvent, num);
+}
+*/
+
+HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out, Entity_Player* player) -> void) {
+	//printf("running a command! %s %s", in.c_str(), out.c_str());
+	printf("running a command! %s", in.c_str());
+
+	std::string errtest = "AAAAAAA";
+	this->PrintError(errtest);
+	super(in, out, player);
+}
+
+/*HOOK_METHOD(Console, PrintError, (const std::string &err) -> void) {
+	printf(committed an oopsie! %s", err.c_str());
+	super(err);
+}*/

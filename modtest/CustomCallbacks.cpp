@@ -207,45 +207,19 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	if (!lua_pcall(L, 7, 1, 0)) { // is this if statement even necessary? seems to run this code regardless
 		if (lua_istable(L, -1)) {
 			if (lua_rawlen(L, -1) == 6) {
-				// TODO write helper functions for this, for the love of christ
-				lua_pushinteger(L, 1);
-				lua_gettable(L, -2);
-				ID = luaL_checkinteger(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushinteger(L, 2);
-				lua_gettable(L, -2);
-				Volume = luaL_checknumber(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushinteger(L, 3);
-				lua_gettable(L, -2);
-				FrameDelay = luaL_checkinteger(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushboolean(L, 4);
-				lua_gettable(L, -2);
-				Loop = lua_toboolean(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushnumber(L, 5);
-				lua_gettable(L, -2);
-				Pitch = luaL_checknumber(L, -1);
-				lua_pop(L, 1);
-
-				lua_pushnumber(L, 6);
-				lua_gettable(L, -2);
-				Pan = luaL_checknumber(L, -1);
-				lua_pop(L, 1);
-
+				ID = lua::callbacks::ToInteger(L, 1);
+				Volume = lua::callbacks::ToNumber(L, 2);
+				FrameDelay = lua::callbacks::ToInteger(L, 3);
+				Loop = lua::callbacks::ToBoolean(L, 4);
+				Pitch = lua::callbacks::ToNumber(L, 5);
+				Pan = lua::callbacks::ToNumber(L, 6);
 				super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 				ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 			}
 		}
 		else if (lua_isboolean(L, -1)) {
-			if (lua_toboolean(L, -1)) { // this particular if statement can't be combined with the one above it, or it fails to register false properly
-				super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
-				ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+			if (!lua_toboolean(L, -1)) { // this particular if statement can't be combined with the one above it, or it fails to register false properly
+				return;
 			}
 		}
 		else {
@@ -255,3 +229,365 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	}
 }
 //SFX_PRE/POST_PLAY callbacks end
+
+//PRE/POST_ENTITY_THROW (1040/1041)
+void ProcessPostEntityThrow(Vector* Velocity, Entity* ent) {
+	lua_State* L = g_LuaEngine->_state;
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1041);
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *Velocity);
+
+	lua_pcall(L, 3, 1, 0);
+}
+
+HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
+
+	std::string err = "test"; 
+	g_Game->_console.PrintError(err);  // crashes as well :(
+
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1040);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *Velocity);
+	
+	int pcallRes = lua_pcall(L, 2, 1, 0);
+	if (!pcallRes) {
+		if (lua_isuserdata(L, -1)) {
+			Velocity = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+			Entity* res = super(Velocity);
+			ProcessPostEntityThrow(Velocity, res);
+			return res;
+		}
+		else {
+			Entity* res = super(Velocity);
+			ProcessPostEntityThrow(Velocity, res);
+			return res;
+		}
+	}
+	else
+	{
+		return super(Velocity);
+	}
+}
+//PRE/POST_ENTITY_THROW end
+
+//PLAYER_INIT_POST_LEVEL_INIT_STATS (1042)
+HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_pushinteger(L, 1042);
+
+	Entity_Player* ent = (Entity_Player*)this;
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua_pcall(L, 2, 1, 0);
+	super();
+}
+
+//PRE_ROOM_EXIT (1043) (currently using Entity_Player::TriggerRoomExit as the base)
+HOOK_METHOD(Entity_Player, TriggerRoomExit, (bool unk) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_pushinteger(L, 1043);
+
+	Entity_Player* ent = (Entity_Player*)this;
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua_pushboolean(L, unk);
+	lua_pcall(L, 3, 1, 0);
+	super(unk);
+}
+
+//PRE_MUSIC_PLAY Callback (id: 1034 enum pending)
+HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
+	printf("music plays\n");
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1034); //parameters (1004 is the callback id)
+	lua_pushinteger(L, musicid);
+	lua_pushnumber(L, volume);
+	lua_pushboolean(L, false); //isfade
+
+	if (!lua_pcall(L, 4, 1, 0)) { // 6 params 
+		if (lua_istable(L, -1)) {
+			printf("Music callback run \n");
+			int tablesize = lua_rawlen(L, -1);
+			if (tablesize == 2) {
+				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
+				return;
+			}
+		}else if (lua_isinteger(L, -1)) {
+			printf("Music callback run \n");
+			super(lua_tointeger(L, -1), volume);
+			return;
+		}else if(lua_isboolean(L, -1)){
+			printf("Music callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(musicid, volume);
+}
+HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
+	printf("music fades\n");
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1034); //parameters (1004 is the callback id)
+	lua_pushinteger(L, musicid);
+	lua_pushnumber(L, faderate);
+	lua_pushboolean(L, true); //isfade
+
+	if (!lua_pcall(L, 4, 1, 0)) { // 6 params 
+		if (lua_istable(L, -1)) {
+			printf("Music callback run \n");
+			int tablesize = lua_rawlen(L, -1);
+			if (tablesize == 2) {
+				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
+				return;
+			}
+		}
+		else if (lua_isinteger(L, -1)) {
+			printf("Music callback run \n");
+			super(lua_tointeger(L, -1), faderate);
+			return;
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("Music callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(musicid, faderate);
+}
+//PRE_MUSIC_PLAY Callback (id: 1034 enum pending)
+
+//PRE_LEVEL_INIT Callback (id: 1060 enum pending)
+HOOK_METHOD(Level, Init, () -> void) {
+	printf("Stage Init \n");
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_pushinteger(L, 1060);
+	lua_pcall(L, 1, 1, 0);
+	super();
+}
+//PRE_LEVEL_INIT Callback (id: 1060 enum pending)
+
+//PRE_TRIGGER_PLAYER_DEATH (id: 1050)
+HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
+	lua_State* L = g_LuaEngine->_state;
+
+	if (!checkOnly) {
+		lua_getglobal(L, "Isaac");
+		lua_getfield(L, -1, "RunCallback");
+
+		lua_pushinteger(L, 1050);
+		lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+
+		if (!lua_pcall(L, 2, 1, 0)) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					this->Revive();
+					this->_visible = true;
+					return false;
+				}
+			}
+		}
+		return super(checkOnly);
+	}
+	else {
+		return super(checkOnly);
+	}
+}
+//PRE_TRIGGER_PLAYER_DEATH end
+
+//PRE/POST_RESTOCK_SHOP (id: 1070/1071)
+bool ProcessPreRestockCallback(bool Partial) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1070);
+	lua_pushboolean(L, Partial);
+
+	if (!lua_pcall(L, 2, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void ProcessPostRestockCallback(bool Partial) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1071);
+	lua_pushboolean(L, Partial);
+
+	lua_pcall(L, 2, 1, 0);
+}
+
+HOOK_METHOD(Room, ShopRestockFull, () -> void) {
+	if (ProcessPreRestockCallback(false)) {
+		super();
+		ProcessPostRestockCallback(false);
+	}
+}
+
+HOOK_METHOD(Room, ShopRestockPartial, () -> void) {
+	if (ProcessPreRestockCallback(true)) {
+		super();
+		ProcessPostRestockCallback(true);
+	}
+}
+
+//PRE_LEVEL_CHANGE_ROOM (id :1061)
+HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_pushinteger(L, 1061);
+
+	lua_pushinteger(L, roomId);
+	lua_pushinteger(L, dimension);
+
+	if (!lua_pcall(L, 3, 1, 0)) {
+		if (lua_istable(L, -1)) {
+			if (lua_rawlen(L, -1) == 2) {
+				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2));
+			}
+		}
+		else {
+			super(roomId, dimension);
+		}
+	}
+}
+
+
+//Pre_Morph Callbacks (id:1080)
+HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Championid) -> void) {
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 2012);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+	lua_pushinteger(L, EntityType);
+	lua_pushinteger(L, Variant);
+	lua_pushinteger(L, SubType);
+	lua_pushinteger(L, Championid);
+
+	if (!lua_pcall(L, 6, 1, 0)) {
+		if (lua_istable(L, -1)) {
+			printf("NPC Morph callback run \n");
+			int tablesize = lua_rawlen(L, -1);
+			if (tablesize == 4) {				
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToNumber(L, 4));
+				return;
+			}
+			else if (tablesize == 3) {
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), Championid);
+				return;
+			}
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("NPC Morph callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(EntityType, Variant, SubType, Championid);
+}
+
+
+HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers) -> void) {
+	printf("Pickup Morphed \n");
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 2013);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
+	lua_pushinteger(L, EntityType);
+	lua_pushinteger(L, Variant);
+	lua_pushinteger(L, SubType);
+	lua_pushboolean(L, KeepPrice);
+	lua_pushboolean(L, KeepSeed);
+	lua_pushboolean(L, IgnoreModifiers);
+	
+
+	if (!lua_pcall(L, 8, 1, 0)) {
+		if (lua_istable(L, -1)) {
+			printf("Pickup Morph callback run \n");
+			int tablesize = lua_rawlen(L, -1);
+			if (tablesize == 6) {
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToBoolean(L, 4), lua::callbacks::ToBoolean(L, 5), lua::callbacks::ToBoolean(L, 6));
+				return;
+			}
+			else if (tablesize == 3) {
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), KeepPrice, KeepSeed,IgnoreModifiers);
+				return;
+			}
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("Pickup Morph callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(EntityType, Variant, SubType, KeepPrice, KeepSeed, IgnoreModifiers);
+}
+//end of Pre_Morph callvacks
+
+//POST_PICKUP_SHOP_PURCHASE (id: 1062)
+void ProcessPostPickupShopPurchase(Entity_Pickup* pickup, Entity_Player* player, int moneySpent)
+{
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1062);
+
+	lua::luabridge::UserdataPtr::push(L, pickup, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua_pushinteger(L, moneySpent);
+
+	lua_pcall(L, 4, 1, 0);
+}
+
+HOOK_METHOD(Entity_Pickup, TriggerShopPurchase, (Entity_Player* player, int moneySpent) -> void) {
+
+	Entity_Pickup* pickup = (Entity_Pickup*)this;
+	super(player, moneySpent);
+	ProcessPostPickupShopPurchase(pickup, player, moneySpent);
+}
+

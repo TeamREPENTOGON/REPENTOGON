@@ -3,3 +3,9 @@ __thiscall float Room::GetDevilRoomChance(Room* this<ecx>);
 
 "558bec8b45083dbf0100007708":
 __thiscall GridEntity* Room::GetGridEntity(Room* this<ecx>, uint32_t idx);
+
+"558bec6aff68????????64a1000000005083ec7ca1????????33c58945f0535657508d45f464a3000000008bd9":
+__thiscall void Room::ShopRestockFull(Room* this<ecx>);
+
+"558bec83ec1c53568bf1":
+__thiscall void Room::ShopRestockPartial(Room* this<ecx>);
