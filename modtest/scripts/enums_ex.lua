@@ -159,7 +159,7 @@ BossType = {
 	CADAVRA = 103,
 }
 
-NullPickupSubType = { -- 5.0.x
+NullPickupSubType = {
 	ANY = 0,
 	NO_COLLECTIBLE_CHEST = 1,
 	NO_COLLECTIBLE = 2,
@@ -205,7 +205,7 @@ SlotVariant = {
 	ROTTEN_BEGGAR = 18,
 }
 
-RoomSubType = { -- For Super Secret room backdrop use `BackdropType`, for Boss room use `BossType`
+RoomSubType = {
 	NULL = 0,
 
 	-- Shop
@@ -229,6 +229,7 @@ RoomSubType = { -- For Super Secret room backdrop use `BackdropType`, for Boss r
 	TREASURE_OPTIONS = 1,
 	TREASURE_PAY_TO_PLAY = 2,
 	TREASURE_PAY_TO_PLAY_OPTIONS = 3,
+	TREASURE_KNIFE_PIECE = 34,
 
 	-- Miniboss
 	MINIBOSS_SLOTH = 0,
@@ -274,6 +275,16 @@ RoomSubType = { -- For Super Secret room backdrop use `BackdropType`, for Boss r
 	SECRET_EXIT_MINES = 2,
 	SECRET_EXIT_MAUSOLEUM = 3,
 
+	-- Knife Puzzles
+	DOWNPOUR_WHITE_FIRE = 1,
+	DOWNPOUR_MIRROR = 34,
+	MINES_YELLOW_BUTTON = 1,
+	MINES_MINESHAFT_ENTRANCE = 10,
+	MINESHAFT_LOBBY = 11,
+	MINESHAFT_KNIFE_PIECE = 20,
+	MINESHAFT_ROOM = 30,
+	MINESHAFT_ROOM_BACKWARDS = 31,
+
 	-- Ascent
 	ASCENT_EXIT = 0,
 	ASCENT_BASEMENT = 1,
@@ -290,7 +301,7 @@ RoomSubType = { -- For Super Secret room backdrop use `BackdropType`, for Boss r
 	HOME_LIVING_ROOM = 3,
 	HOME_CLOSET_PICKUPS = 10,
 	HOME_CLOSET_TAINTED = 11,
-	DEATH_CERTIFICATE_ENTRACE = 33,
+	DEATH_CERTIFICATE_ENTRANCE = 33,
 	DEATH_CERTIFICATE_NORMAL = 34,
 
 	-- Other
@@ -304,6 +315,4 @@ RoomSubType = { -- For Super Secret room backdrop use `BackdropType`, for Boss r
 	ANGEL_STAIRWAY = 1,
 	ISAACS_BEDROOM_NORMAL = 0,
 	ISAACS_BEDROOM_GENESIS = 99,
-	DOWNPOUR_WHITE_FIRE = 1,
-	MINES_YELLOW_BUTTON = 1,
 }
