@@ -179,8 +179,10 @@ struct Manager
 	PersistentGameData _persistentGameData;
 };
 
-struct ANM2
+struct Entity_Pickup
 {
+	LIBZHL_API void __stdcall Morph(int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers);
+	
 };
 
 struct Vector;
@@ -425,6 +427,12 @@ struct Entity_Slot : Entity
 {
 };
 
+struct Entity_NPC
+{
+	LIBZHL_API void __stdcall Morph(int EntityType, int Variant, int SubType, int Championid);
+	
+};
+
 struct Entity_Player;
 
 struct LIBZHL_INTERFACE Entity_Player : Entity
@@ -519,18 +527,8 @@ struct SFXManager
 	
 };
 
-struct Camera;
-
-struct Camera
+struct ANM2
 {
-	Camera(Room* room)
-	{
-		this->constructor(room);
-	}
-
-	LIBZHL_API void constructor(Room *room);
-	LIBZHL_API void SetFocusPosition(const Vector &pos);
-	
 };
 
 struct RoomDescriptor
@@ -589,6 +587,20 @@ struct CompletionWidget
 {
 	LIBZHL_API void __stdcall Init(bool ispause, char alt);
 	LIBZHL_API void __stdcall Render(Vector *pos, Vector *scale);
+	
+};
+
+struct Camera;
+
+struct Camera
+{
+	Camera(Room* room)
+	{
+		this->constructor(room);
+	}
+
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
 	
 };
 

@@ -6,6 +6,8 @@ struct PersistentGameData;
 struct Music;
 struct Entity;
 struct Entity_Player;
+struct Entity_NPC;
+struct Entity_Pickup;
 struct GridEntity;
 struct GridEntity_Rock;
 struct Room;
@@ -262,6 +264,17 @@ struct VTable_EntityPlayer
 	void (__thiscall *Init)(Entity_Player *, unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
 	void (__thiscall *PreUpdate)(Entity *);
     void (__thiscall *Update)(Entity_Player *);
+};
+
+
+struct Entity_Pickup
+{
+	//probably similar mambojambo to Entity_Player but not needed yet so I wont risk it
+};
+
+struct Entity_NPC
+{
+	//probably similar mambojambo to Entity_Player but not needed yet so I wont risk it
 };
 
 struct GridEntity 
