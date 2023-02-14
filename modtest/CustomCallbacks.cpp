@@ -244,6 +244,10 @@ void ProcessPostEntityThrow(Vector* Velocity, Entity* ent) {
 }
 
 HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
+
+	std::string err = "test"; 
+	g_Game->_console.PrintError(err);  // crashes as well :(
+
 	lua_State* L = g_LuaEngine->_state;
 
 	lua_getglobal(L, "Isaac");
