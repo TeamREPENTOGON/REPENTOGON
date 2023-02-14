@@ -483,6 +483,7 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 	}
 }
 
+
 //Pre_Morph Callbacks (id:1080)
 HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Championid) -> void) {
 	lua_State *L = g_LuaEngine->_state;
@@ -561,3 +562,28 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 	super(EntityType, Variant, SubType, KeepPrice, KeepSeed, IgnoreModifiers);
 }
 //end of Pre_Morph callvacks
+
+//POST_PICKUP_SHOP_PURCHASE (id: 1062)
+void ProcessPostPickupShopPurchase(Entity_Pickup* pickup, Entity_Player* player, int moneySpent)
+{
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1062);
+
+	lua::luabridge::UserdataPtr::push(L, pickup, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
+	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua_pushinteger(L, moneySpent);
+
+	lua_pcall(L, 4, 1, 0);
+}
+
+HOOK_METHOD(Entity_Pickup, TriggerShopPurchase, (Entity_Player* player, int moneySpent) -> void) {
+
+	Entity_Pickup* pickup = (Entity_Pickup*)this;
+	super(player, moneySpent);
+	ProcessPostPickupShopPurchase(pickup, player, moneySpent);
+}
+

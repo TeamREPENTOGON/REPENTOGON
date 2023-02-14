@@ -179,9 +179,13 @@ struct Manager
 	PersistentGameData _persistentGameData;
 };
 
+struct Entity_Pickup;
+struct Entity_Player;
+
 struct Entity_Pickup
 {
 	LIBZHL_API void __stdcall Morph(int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers);
+	LIBZHL_API void TriggerShopPurchase(Entity_Player *player, int spentMoney);
 	
 };
 
@@ -433,8 +437,6 @@ struct Entity_NPC
 	
 };
 
-struct Entity_Player;
-
 struct LIBZHL_INTERFACE Entity_Player : Entity
 {
 	virtual ~Entity_Player() {}
@@ -456,6 +458,7 @@ struct LIBZHL_INTERFACE Entity_Player : Entity
 	LIBZHL_API void TriggerRoomExit(bool unk);
 	LIBZHL_API bool TriggerDeath(bool checkOnly);
 	LIBZHL_API void Revive();
+	LIBZHL_API void SetItemState(int collectible);
 	
 };
 

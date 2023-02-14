@@ -6,7 +6,9 @@ struct PersistentGameData;
 struct Music;
 struct Entity;
 struct Entity_Player;
+
 struct Entity_NPC;
+
 struct Entity_Pickup;
 struct GridEntity;
 struct GridEntity_Rock;
@@ -255,6 +257,11 @@ struct VTable_Entity
 struct Entity_Player
 {
 	VTable_EntityPlayer *_vtable;
+	Entity _entity;
+};
+
+struct Entity_Pickup
+{
 	Entity _entity;
 };
 

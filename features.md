@@ -77,6 +77,9 @@ This callback is called for *both* Room::ShopRestockFull *and* Room::ShopRestock
 ## ModCallbacks.MC_PRE_CHANGE_ROOM(int TargetRoomIdx, int Dimension)
 Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
 
+## ModCallbacks.MC_POST_PICKUP_SHOP_PURCHASE(EntityPickup Pickup, EntityPlayer Player, int MoneySpent)
+Accepts no return parameters.
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.
@@ -118,6 +121,8 @@ I believe this is used by J&E, Strawman etc
 
 ## void EntityPlayer:InitPostLevelInitStats()
 Call this after spawning characters with "special" tears (Forgotten, Lilith, Azazel etc) with InitTwin, or they won't have their proper tear type.
+
+## void EntityPlayer:SetItemState(CollectibleType CollectibleType)
 
 ## PersistentGameData Isaac:GetPersistentGameData()
 Should probably be moved to Game for consistency.
