@@ -1,2 +1,5 @@
 "558bec83ec08f30f1005????????56578bf9f30f1145fc8b0d????????":
 __thiscall float Room::GetDevilRoomChance(Room* this<ecx>);
+
+"558bec8b45083dbf0100007708":
+__thiscall GridEntity* Room::GetGridEntity(Room* this<ecx>, uint32_t idx);

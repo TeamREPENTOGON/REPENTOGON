@@ -135,6 +135,19 @@ struct GlobalConst
         ROOMSHAPE_LBR,
         MAX_ROOMSHAPES
     };
+    
+    enum eDoorSlots 
+    {
+        DOOR_SLOT_LEFT0 = 0, // Left wall, top
+        DOOR_SLOT_UP0, // Top wall, left
+        DOOR_SLOT_RIGHT0, // Right wall, top
+        DOOR_SLOT_DOWN0, // Down wall, left
+        DOOR_SLOT_LEFT1, // Left wall, bottom
+        DOOR_SLOT_UP1, // Top wall, right
+        DOOR_SLOT_RIGHT1, // Right wall, bottom
+        DOOR_SLOT_DOWN1, // Bottom wall, right
+        MAX_DOOR_SLOTS
+    };
 
 	static DWORD GetBaseAddress()
 	{

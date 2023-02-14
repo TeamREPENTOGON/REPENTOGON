@@ -50,11 +50,6 @@ struct Menu_Character
 	int unk8;
 };
 
-struct Room
-{
-    
-};
-
 struct RoomConfig 
 {
     int32_t StageId; // 0x0
@@ -229,10 +224,13 @@ struct EntityRef
   Entity *_entity;
 };
 
-
 struct Room
 {
-	
+	char pad0[0x24]; 
+    GridEntity* _gridEntities[0x1BF]; // 0x24
+    char pad1[0x4]; // 0x720
+    GridEntity* _doors[8]; // 0x724
+    uint32_t _doorGridPositions[8]; // 0x744
 };
 
 struct VTable_Entity
@@ -258,11 +256,17 @@ struct VTable_EntityPlayer
     void (__thiscall *Update)(Entity_Player *);
 };
 
+struct VTable_GridEntity
+{
+    
+};
+
 struct GridEntity 
 {
+    VTable_GridEntity* _vtable;
 	int _unk; 
-	GridEntityType _type; //type?
-	int _variant;
+	GridEntityType _type; // 0x4
+	int _variant; // 0x8
 	int _state;
 	int _unk2;
 	int _varData;
