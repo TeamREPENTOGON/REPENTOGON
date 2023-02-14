@@ -165,7 +165,7 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
 	super(in, out, player);
 }
 
-/*HOOK_METHOD(Console, PrintError, (const std::string &err) -> void) {
-	printf(committed an oopsie! %s", err.c_str());
+HOOK_METHOD(Console, PrintError, (const std::string &err) -> void) {
+	printf("committed an oopsie!% s\n", err.c_str());
 	super(err);
-}*/
+}

@@ -172,7 +172,7 @@ namespace _func5
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff};
-	static FunctionDefinition funcObj("Console::RunCommand", typeid(void (Console::*)(const std::string &, const std::string &, Entity_Player *)), "558bec6aff68b0369f0064a1000000005081ec04020000a1b4a3ba0033c58945f0535657508d45f464a3000000008bd9", argdata, 4, 5, &func);
+	static FunctionDefinition funcObj("Console::RunCommand", typeid(void (Console::*)(const std::string &, const std::string &, Entity_Player *)), "558bec6aff68????????64a1000000005081ec04020000a1????????33c58945f0535657508d45f464a3000000008bd9", argdata, 4, 5, &func);
 }
 
 __declspec(naked) void Console::RunCommand(const std::string &in, const std::string &out, Entity_Player *player)
