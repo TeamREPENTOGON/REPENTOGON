@@ -487,6 +487,86 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 	}
 }
 
+
+//Pre_Morph Callbacks (id:1080)
+HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Championid) -> void) {
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 2012);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+	lua_pushinteger(L, EntityType);
+	lua_pushinteger(L, Variant);
+	lua_pushinteger(L, SubType);
+	lua_pushinteger(L, Championid);
+
+	if (!lua_pcall(L, 6, 1, 0)) {
+		if (lua_istable(L, -1)) {
+			printf("NPC Morph callback run \n");
+			int tablesize = lua_rawlen(L, -1);
+			if (tablesize == 4) {				
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToNumber(L, 4));
+				return;
+			}
+			else if (tablesize == 3) {
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), Championid);
+				return;
+			}
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("NPC Morph callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(EntityType, Variant, SubType, Championid);
+}
+
+
+HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers) -> void) {
+	printf("Pickup Morphed \n");
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 2013);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
+	lua_pushinteger(L, EntityType);
+	lua_pushinteger(L, Variant);
+	lua_pushinteger(L, SubType);
+	lua_pushboolean(L, KeepPrice);
+	lua_pushboolean(L, KeepSeed);
+	lua_pushboolean(L, IgnoreModifiers);
+	
+
+	if (!lua_pcall(L, 8, 1, 0)) {
+		if (lua_istable(L, -1)) {
+			printf("Pickup Morph callback run \n");
+			int tablesize = lua_rawlen(L, -1);
+			if (tablesize == 6) {
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToBoolean(L, 4), lua::callbacks::ToBoolean(L, 5), lua::callbacks::ToBoolean(L, 6));
+				return;
+			}
+			else if (tablesize == 3) {
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), KeepPrice, KeepSeed,IgnoreModifiers);
+				return;
+			}
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("Pickup Morph callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(EntityType, Variant, SubType, KeepPrice, KeepSeed, IgnoreModifiers);
+}
+//end of Pre_Morph callvacks
+
 //POST_PICKUP_SHOP_PURCHASE (id: 1062)
 void ProcessPostPickupShopPurchase(Entity_Pickup* pickup, Entity_Player* player, int moneySpent)
 {
@@ -510,3 +590,4 @@ HOOK_METHOD(Entity_Pickup, TriggerShopPurchase, (Entity_Player* player, int mone
 	super(player, moneySpent);
 	ProcessPostPickupShopPurchase(pickup, player, moneySpent);
 }
+
