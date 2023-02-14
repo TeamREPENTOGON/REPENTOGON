@@ -702,14 +702,14 @@ static void RegisterPersistentGameData(lua_State* L)
 static int Lua_GetConsole(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)g_Game + 0X1BB60;
+	*ud = (char*)game + 0x1BB60;
 	luaL_setmetatable(L, ConsoleMT);
 	return 1;
 }
 
 int Lua_ConsolePrintError(lua_State* L)
 {
-	Console* console = lua::GetUserdata<Console*>(L, 1, ConsoleMT);
+	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
 	std::string err = luaL_checkstring(L, 2);
 	console->PrintError(err);
 	return 1;

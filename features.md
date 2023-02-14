@@ -97,6 +97,8 @@ MultiShotParams has not been directly exposed to the API yet- it's on the to-do 
 ## bool Game:AchievementUnlocksDisallowed()
 Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
 
+## RoomConfigHolder Game:GetRoomConfigHolder()
+
 ## RoomConfigRoom RoomConfigHolder::GetRoomByStageTypeAndVariant(STBStageID Stage, int Type, int Variant, int Difficulty)
 Returns a RoomConfigRoom corresponding to the given params.
 
@@ -105,11 +107,11 @@ Returns a RoomConfigRoom corresponding to the given params.
 ## LevelGeneratorEntry Isaac.LevelGeneratorEntry
 Fetches a blank LevelGeneratorEntry from the game.
 
-## void RoomPlacer:SetColIdx(LevelGeneratorEntry Room, int ColIdx)
+## void LevelGeneratorEntry:SetColIdx(LevelGeneratorEntry Room, int ColIdx)
 
-## void RoomPlacer:SetLineIdx(LevelGeneratorEntry Room, int ColIdx)
+## void LevelGeneratorEntry:SetLineIdx(LevelGeneratorEntry Room, int ColIdx)
 
-## void RoomPlacer:SetAllowedDoors(LevelGeneratorEntry Room, int Doors)
+## void LevelGeneratorEntry:SetAllowedDoors(LevelGeneratorEntry Room, int Doors)
 I *believe* Doors here is a bitmask and will need its own enum, but don't quote me on this.
 
 ## bool Level:PlaceRoom(LevelGeneratorEntry Room, RoomConfigRoom RoomConfig, int Seed)
@@ -136,3 +138,8 @@ Should probably be moved to Game for consistency.
 ## bool PersistentGameData:TryUnlock(int Unlock)
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
 Could *maybe* benefit from an enum?
+
+## Console Game:GetConsole()
+
+## void Console:PrintError(string Error)
+Prints an error to the console.

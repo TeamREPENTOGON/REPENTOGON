@@ -155,17 +155,3 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	super(eEvent, num);
 }
 */
-
-HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out, Entity_Player* player) -> void) {
-	//printf("running a command! %s %s", in.c_str(), out.c_str());
-	printf("running a command! %s", in.c_str());
-
-	std::string errtest = "AAAAAAA";
-	this->PrintError(errtest);
-	super(in, out, player);
-}
-
-HOOK_METHOD(Console, PrintError, (const std::string &err) -> void) {
-	printf("committed an oopsie!% s\n", err.c_str());
-	super(err);
-}

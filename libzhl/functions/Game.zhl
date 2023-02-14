@@ -93,6 +93,8 @@ struct Game
         return *(uint32_t*)((char*)this + 0x1815C); 
     }
     
+	inline Console* GetConsole() { return (Console*)((char*)this + 0x1BB60); } // Cast to appropriate type
+	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 
         return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 

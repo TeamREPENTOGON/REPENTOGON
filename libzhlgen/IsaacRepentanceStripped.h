@@ -203,11 +203,9 @@ struct Game
     uint32_t _lastRoomDimensionIdx; // 0x181A0
     uint32_t _leaveDoor; // 0x181A8
     uint32_t _enterDoor; // 0x181AC
-    uint32_t _greedModeTreasureRoomIdx; // 0x18200
+    uint32_t _greedModeTreasureRoomIdx; // 0x18200;
     RoomConfigHolder _roomConfigs; // 0x1879C
-	char _pad0[2067];
     PlayerManager _playerManager; // 0x1AB40 
-	char _pad1[1019];
 	Console _console; // 0x1BB60
     uint32_t _difficulty; // 0x243624
 };
