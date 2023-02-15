@@ -5,9 +5,6 @@
 #include "HookSystem.h"
 
 //AddCollectible Callback (id: 1004 enum pending)
-void RunPreAddCollectible(lua_State *L, int type, int charge, bool firsttime, bool slot, int vardata) {
-
-}
 HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	printf("item get\n");
 	lua_State* L = g_LuaEngine->_state;
@@ -46,6 +43,10 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 			{
 				console->PrintError("Bad return table length to MC_PRE_ADD_COLLECTIBLE!");// this is purely proof of concept error handling, nothing more, will make it prettier later
 			}
+		}
+		else if (lua_isinteger(L, -1))
+		{
+			super(lua_tointeger(L, -1), charge, firsttime, slot, vardata);
 		}
 		else if (!lua_isnil(L, -1))
 		{

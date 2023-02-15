@@ -1,15 +1,12 @@
 # Callbacks
 ## ModCallbacks.MC_PRE_ADD_COLLECTIBLE(CollectibleType Type, int Charge, bool FirstTime, int Slot, int VarData)
 Optional argument: `CollectibleType Type`
+
 Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData}`
 
 Example, which turns every item into Money = Power: `return {CollectibleType.COLLECTIBLE_MONEY_EQUALS_POWER, Charge, FirstTime, Slot, VarData}`
 
-## ModCallbacks.MC_POST_TAKE_DMG(Entity Ent, float Damage, int DamageFlags, EntityRef Source, int DamageCooldown)
-Accepts no return parameters.
-
-## ModCallbacks.MD_GRID_ROCK_UPDATE(GridEntityRock Rock)
-Accepts no return parameters.
+Alternatively accepts an integer to change the CollectibleType without changing any other parameters (effectively shorthand for the above)
 
 ## ModCallbacks.MC_HUD_UPDATE()
 Accepts no return parameters.
