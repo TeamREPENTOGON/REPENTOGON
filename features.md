@@ -100,10 +100,8 @@ Returns `true` if achievements can't be unlocked this run (challenges, seeded, e
 
 ## RoomConfigHolder Game:GetRoomConfigHolder()
 
-## RoomConfigRoom RoomConfigHolder::GetRoomByStageTypeAndVariant(STBStageID Stage, int Type, int Variant, int Difficulty)
+## RoomConfigRoom RoomConfigHolder::GetRoomByStageTypeAndVariant(StbType Stage, int Type, int Variant, int Difficulty)
 Returns a RoomConfigRoom corresponding to the given params.
-
-### TODO STBStageID has not been implemented yet!
 
 ## LevelGeneratorEntry Isaac.LevelGeneratorEntry
 Fetches a blank LevelGeneratorEntry from the game.
@@ -113,7 +111,7 @@ Fetches a blank LevelGeneratorEntry from the game.
 ## void LevelGeneratorEntry:SetLineIdx(LevelGeneratorEntry Room, int ColIdx)
 
 ## void LevelGeneratorEntry:SetAllowedDoors(LevelGeneratorEntry Room, int Doors)
-I *believe* Doors here is a bitmask and will need its own enum, but don't quote me on this.
+I *believe* Doors here is a bitmask (1 << DoorSlot)
 
 ## bool Level:PlaceRoom(LevelGeneratorEntry Room, RoomConfigRoom RoomConfig, int Seed)
 Places a room into the game. Returns `true` if successful.
@@ -132,6 +130,7 @@ I believe this is used by J&E, Strawman etc
 Call this after spawning characters with "special" tears (Forgotten, Lilith, Azazel etc) with InitTwin, or they won't have their proper tear type.
 
 ## void EntityPlayer:SetItemState(CollectibleType CollectibleType)
+This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
 ## PersistentGameData Isaac:GetPersistentGameData()
 Should probably be moved to Game for consistency.
@@ -144,3 +143,23 @@ Could *maybe* benefit from an enum?
 
 ## void Console:PrintError(string Error)
 Prints an error to the console.
+
+# Enumerations
+## StbType
+Taken by RoomConfigHolder::GetRoomByStageTypeAndVariant.
+
+## BossType
+Return value of Entity::GetBossID and Room::GetBossID.
+
+## NullPickupSubType
+5.0.x
+
+## KnifeVariant
+
+## KnifeSubType
+*VERY* incomplete.
+
+## SlotVariant
+
+## RoomSubType
+Excludes Super Secret Room backdrop (use [BackdropType]), and Boss Room boss (use [BossType]).
