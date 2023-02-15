@@ -140,6 +140,11 @@ Returns `true` if successful, `false` if unlocking failed or the secret was alre
 ## void Console:PrintError(string Error)
 Prints an error to the console.
 
+## Ambush Game:GetAmbushEx()
+
+## void Ambush:StartChallenge()
+Triggers Challenge/Boss Rush ambush.
+
 # Enumerations
 ## StbType
 Taken by RoomConfigHolder::GetRoomByStageTypeAndVariant.
