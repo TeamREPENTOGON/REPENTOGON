@@ -1,5 +1,6 @@
 # Callbacks
-## ModCallbacks.MC_PRE_ADD_COLLECTIBLE(int Type, int Charge, bool FirstTime, int Slot, int VarData)
+## ModCallbacks.MC_PRE_ADD_COLLECTIBLE(CollectibleType Type, int Charge, bool FirstTime, int Slot, int VarData)
+Optional argument: `CollectibleType Type`
 Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData}`
 
 Example, which turns every item into Money = Power: `return {CollectibleType.COLLECTIBLE_MONEY_EQUALS_POWER, Charge, FirstTime, Slot, VarData}`
