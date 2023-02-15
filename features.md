@@ -134,7 +134,6 @@ Should probably be moved to Game for consistency.
 
 ## bool PersistentGameData:TryUnlock(int Unlock)
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
-Could *maybe* benefit from an enum?
 
 ## Console Game:GetConsole()
 
@@ -160,3 +159,6 @@ Return value of Entity::GetBossID and Room::GetBossID.
 
 ## RoomSubType
 Excludes Super Secret Room backdrop (use [BackdropType]), and Boss Room boss (use [BossType]).
+
+## Achievement
+Taken by PersistentGameData::TryUnlock.
