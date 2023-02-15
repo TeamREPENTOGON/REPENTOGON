@@ -605,3 +605,24 @@ HOOK_METHOD(Entity_Pickup, TriggerShopPurchase, (Entity_Player* player, int mone
 	ProcessPostPickupShopPurchase(pickup, player, moneySpent);
 }
 
+
+//GET_FOLLOWER_PRIORITY (id: 1063)
+HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1063);
+
+	Entity_Familiar* fam = (Entity_Familiar*)this;
+	lua::luabridge::UserdataPtr::push(L, fam, lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+
+	if (!lua_pcall(L, 2, 1, 0)) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+		return super();
+	}
+}
+

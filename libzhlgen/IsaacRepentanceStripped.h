@@ -11,12 +11,14 @@ struct Entity_Player;
 struct Entity_NPC;
 
 struct Entity_Pickup;
+struct Entity_Familiar;
 struct GridEntity;
 struct GridEntity_Rock;
 struct Room;
 struct Level;
 struct Camera;
 struct Ambush;
+struct BossPool;
 struct HUD;
 struct PlayerHUD;
 struct VTable_Entity;
@@ -276,6 +278,11 @@ struct Entity_Pickup
 	Entity _entity;
 };
 
+struct Entity_Familiar
+{
+	Entity _entity;
+};
+
 struct VTable_EntityPlayer
 {
 	void (__thiscall *Free)(Entity_Player *);
@@ -331,6 +338,10 @@ struct Camera
 struct Ambush
 {
 	
+};
+
+struct BossPool
+{
 };
 
 struct HUD 
