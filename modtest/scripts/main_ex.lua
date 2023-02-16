@@ -20,6 +20,8 @@ typecheckFunctions[tostring(ModCallbacks.MC_PRE_ADD_COLLECTIBLE)] = function(ret
 	end
 end
 
+
+
 function Isaac.RunCallbackWithParam(callbackID, Param, ...)
     local callbacks = Isaac.GetCallbacks(callbackID)
 	if callbacks then
@@ -42,5 +44,5 @@ function Isaac.RunCallbackWithParam(callbackID, Param, ...)
 end
 
 function Isaac.RunCallback(callbackID, ...)
-	return Isaac.RunCallbackWithParam(callbackID, Param, ...)
+	return Isaac.RunCallbackWithParam(callbackID, nil, ...)
 end
