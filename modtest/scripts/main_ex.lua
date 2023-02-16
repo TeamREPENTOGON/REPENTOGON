@@ -108,7 +108,7 @@ for _, callback in ipairs(intCallbacks) do
 	typecheckFunctions[callback] = {["number"] = checkInteger}
 end
 
-for callback, typeTable in pairs(typecheckFunctions) do
+local function setExpectedTypes(typeTable)
 	local validTypes = {}
 	for typ, func in pairs(typeTable) do
 		validTypes[#validTypes + 1] = typ
@@ -127,11 +127,22 @@ for callback, typeTable in pairs(typecheckFunctions) do
 		end
 	end
 	
+	if expected == "" then
+		expected = "no return"
+	end
+	
 	typeTable.expectedtypes = expected
 end
 
-rawset(Isaac, "SetCallbackTypeCheck", function(callbackID, tbl)
+for callback, typeTable in pairs(typecheckFunctions) do
+	setExpectedTypes(typeTable)
+end
+
+rawset(Isaac, "SetCallbackTypeCheck", function(callbackID, tbl, noSetExpected)
 	typecheckFunctions[callbackID] = tbl
+	if not noSetExpected then
+		setExpectedTypes(tbl)
+	end
 end)
 
 rawset(Isaac, "SetCallbackMatchTest", function(callbackID, func)
