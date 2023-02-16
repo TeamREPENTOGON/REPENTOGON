@@ -1,0 +1,2 @@
+"558bec83e4f083ec48a1????????8b550c56578b7d088bf16aff8bcf":
+__thiscall int BossPool::GetBossId(BossPool *this<ecx>, int leveltype, int levelvariant, RNG* rng);

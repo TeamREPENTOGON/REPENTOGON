@@ -78,6 +78,9 @@ Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
 ## ModCallbacks.MC_POST_PICKUP_SHOP_PURCHASE(EntityPickup Pickup, EntityPlayer Player, int MoneySpent)
 Accepts no return parameters.
 
+## ModCallbacks.MC_GET_FOLLOWER_PRIORITY(EntityFamiliar Familiar)
+Accepts an integer parameter to give familiar priority.
+
 ## ModCallbacks.MC_PRE_PICKUP_MORPH(EntityPickup Pickup,int EntityType,int Variant,int SubType,bool KeepPrice,bool KeepSeed,bool IgnoreModifiers)
 Accepts a table of parameters: `{EntityType, Variant, SubType, KeepPrice, KeepSeed, IgnoreModifiers}` or just `{EntityType, Variant, SubType}`. Returning `false` cancels the morph.
 
@@ -139,6 +142,11 @@ Returns `true` if successful, `false` if unlocking failed or the secret was alre
 
 ## void Console:PrintError(string Error)
 Prints an error to the console.
+
+## Ambush Game:GetAmbushEx()
+
+## void Ambush:StartChallenge()
+Triggers Challenge/Boss Rush ambush.
 
 # Enumerations
 ## StbType
