@@ -31,6 +31,12 @@ enum eStages
 };
 */
 
+struct StaticArray
+{
+    void* data;
+    uint16_t size;
+};
+
 struct Globals
 {
     
@@ -70,35 +76,6 @@ struct Menu_Character
 	int unk8;
 };
 
-struct RoomConfig 
-{
-    int32_t StageId; // 0x0
-    int32_t Mode; // 0x4
-    int32_t Type; // 0x8
-    int32_t Variant; // 0xC
-    int32_t Subtype; // 0x10
-    const char* Name; // 0x14
-    int32_t unk1; // 0x18
-    int32_t unk2; // 0x1C
-    int32_t unk3; // 0x20
-    int32_t unk4; // 0x24
-    int32_t unk5; // 0x28
-    int32_t unk6; // 0x2C
-    float InitialWeight; // 0x30
-    float Weight; // 0x34
-    int32_t Doors; // 0x38
-    int32_t unk7; // 0x3C
-    int32_t unk8; // 0x40
-    int16_t SpawnCount; // 0x44
-    int8_t Width; // 0x46
-    int8_t Height; // 0x47
-    int32_t Shape; // 0x48
-    int32_t unk9; // 0x4C
-    int32_t unk10; // 0x50
-    int32_t unk11; // 0x54
-    int32_t unk12; // 0x58
-};
-
 union uIsaacString
 {
     char small_string[16];
@@ -111,6 +88,46 @@ struct IsaacString
     uint32_t size; // 0x10
     uint32_t unk; // 0x14
 }; // 0x18
+
+struct RoomEntry
+{
+    uint32_t type; // 0x0
+    uint16_t variant; // 0x4
+    uint16_t subtype; // 0x6
+    float weight; // 0x8
+}; // 0xC
+
+struct RoomSpawn 
+{
+    uint16_t X; // 0x0
+    uint16_t Y; // 0x2
+    StaticArray Entries;
+    char pad[2]; // 0xA
+    float SumWeights; // 0xC
+}; // 0x10 (absolutely sure)
+
+struct RoomConfig 
+{
+    int32_t StageId; // 0x0
+    int32_t Mode; // 0x4
+    int32_t Type; // 0x8
+    int32_t Variant; // 0xC
+    int32_t Subtype; // 0x10
+    IsaacString Name; // 0x14
+    int32_t Difficulty; // 0x2C
+    float InitialWeight; // 0x30
+    float Weight; // 0x34
+    int32_t Doors; // 0x38
+    int32_t unk7; // 0x3C
+    StaticArray Spawns; // 0x40
+    int8_t Width; // 0x46
+    int8_t Height; // 0x47
+    int32_t Shape; // 0x48
+    int32_t unk9; // 0x4C
+    int32_t unk10; // 0x50
+    int32_t unk11; // 0x54
+    int32_t unk12; // 0x58
+}; // 0x5C
 
 struct RoomConfigs
 {
@@ -354,10 +371,19 @@ struct PlayerHUD
 	HUD _base;
 };
 
+struct RunCallbackRegistry
+{
+    lua_State* state; // 0x0
+    int32_t key; // 0x4
+};
+
 struct LuaEngine
 {
-	char pad0[24];
+	char pad0[0x10];
+    RunCallbackRegistry* runCallbackRegistry; // 0x10
+    char pad1[0x4]; // 0x14
 	lua_State* _state; // 0x18
+    int32_t _runCallbackRegistryKey; // 0x1C
 };
 
 struct PosVel 

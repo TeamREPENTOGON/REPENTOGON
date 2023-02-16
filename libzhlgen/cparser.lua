@@ -208,17 +208,36 @@ function initdef(t)
 	return setmetatable(t, meta0)
 end
 
+function debugCapture(s)
+    return function(p)
+        print ("Begin " .. s)
+    
+        if (type(p) == "string") then
+            print ("No capture " .. p)
+            print ("End " .. s)
+            return p
+        end
+        
+        for k, v in pairs(p) do
+            print ("Capture " .. tostring(k) .. " => " .. tostring(v))
+        end
+        
+        print ("End " .. s)
+        return p
+    end
+end
+
 local callingConventions = lpeg.P("__stdcall") + lpeg.P("__fastcall") + lpeg.P("__vectorcall") + lpeg.P("__thiscall") + lpeg.P("__cdecl") + lpeg.P("__regparm3") + lpeg.P("__regparm2") + lpeg.P("__regparm1") + lpeg.P("__amd64")
 
 local funcdef = lpeg.P
 {
 	"S";
-	S = sp * lpeg.V("class");
+	S = (sp * lpeg.V("class")) / debugCapture("global");
 	id = lN0 * lN^0;
 	id_or_operator = ("operator" * sp * ("()" + lpeg.S("+-*/<>=!&|^")^1)) + (lN0 * lN^0);
-	template = "<" * sp * lpeg.Cg(lpeg.Ct(
+	template = ("<" * sp * lpeg.Cg(lpeg.Ct(
 		(lpeg.V("class") * ("," * sp * lpeg.V("class"))^0)^-1
-	), "template") * ">" * sp;
+	), "template") / debugCapture("template in") * ">" * sp)/debugCapture("template out");
 	depends = "depends" * sp * "(" * sp * lpeg.Cg(lpeg.Ct(
 		(lpeg.V("class") * ("," * sp * lpeg.V("class"))^0)^-1
 	), "depends") * ")" * sp;

@@ -798,8 +798,13 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua_pop(g_LuaEngine->_state, 1);
 	luaL_requiref(g_LuaEngine->_state, "os", luaopen_os, 1);
 	lua_pop(g_LuaEngine->_state, 1);
+	lua_State* state = g_LuaEngine->runCallbackRegistry->state;
 	this->RunBundledScript("resources/scripts/enums_ex.lua");
 	this->RunBundledScript("resources/scripts/main_ex.lua");
+
+	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua_getglobal(state, "_RunCallback");
+	g_LuaEngine->runCallbackRegistry->key = luaL_ref(state, LUA_REGISTRYINDEX);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
