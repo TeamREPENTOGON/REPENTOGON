@@ -79,7 +79,7 @@ Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
 Accepts no return parameters.
 
 ## ModCallbacks.MC_GET_FOLLOWER_PRIORITY(EntityFamiliar Familiar)
-Accepts an integer parameter to give familiar priority.
+Accepts FollowerPriority to give familiar priority. Can accept any int.
 
 ## ModCallbacks.MC_PRE_PICKUP_MORPH(EntityPickup Pickup,int EntityType,int Variant,int SubType,bool KeepPrice,bool KeepSeed,bool IgnoreModifiers)
 Accepts a table of parameters: `{EntityType, Variant, SubType, KeepPrice, KeepSeed, IgnoreModifiers}` or just `{EntityType, Variant, SubType}`. Returning `false` cancels the morph.
@@ -135,7 +135,7 @@ This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 ## PersistentGameData Isaac:GetPersistentGameData()
 Should probably be moved to Game for consistency.
 
-## bool PersistentGameData:TryUnlock(int Unlock)
+## bool PersistentGameData:TryUnlock(Achievement Unlock)
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
 
 ## Console Game:GetConsole()
@@ -170,3 +170,6 @@ Excludes Super Secret Room backdrop (use [BackdropType]), and Boss Room boss (us
 
 ## Achievement
 Taken by PersistentGameData::TryUnlock.
+
+## FollowerPriority
+Return parameter for MC_GET_FOLLOWER_PRIORITY.
