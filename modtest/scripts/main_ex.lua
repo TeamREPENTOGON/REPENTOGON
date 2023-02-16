@@ -65,6 +65,13 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN] = {
 		["table"] = checkTableSizeFunction(3)
 	},
+	[ModCallbacks.MC_USE_ITEM] = {
+		["table"] = true,
+		["boolean"] = true,
+	},
+	[ModCallbacks.MC_GET_SHADER_PARAMS] = {
+		["table"] = true
+	},
 }
 
 local boolCallbacks = {
@@ -81,6 +88,7 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_LASER_COLLISION,
 	ModCallbacks.MC_PRE_NPC_UPDATE,
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
+	ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD,
 }
 
 for _, callback in ipairs(boolCallbacks) do
