@@ -155,9 +155,3 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	super(eEvent, num);
 }
 */
-
-HOOK_METHOD(PersistentGameData, Unlocked, (int achi) -> bool) {
-	bool ret = super(achi);
-	printf("Achievement %d %d\n", achi, ret);
-	return ret;
-}
