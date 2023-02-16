@@ -670,7 +670,7 @@ static int Lua_GetPersistentGameData(lua_State* L) {
 
 int Lua_PGDTryUnlock(lua_State* L)
 {
-	PersistentGameData* pgd = lua::GetUserdata<PersistentGameData*>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
 	int unlock = luaL_checkinteger(L, 2);
 
 	bool success = pgd->TryUnlock(unlock);
@@ -680,7 +680,7 @@ int Lua_PGDTryUnlock(lua_State* L)
 
 int Lua_PGDUnlocked(lua_State* L)
 {
-	PersistentGameData* pgd = lua::GetUserdata<PersistentGameData*>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
 	int unlock = luaL_checkinteger(L, 2);
 
 	bool unlocked = pgd->Unlocked(unlock);
