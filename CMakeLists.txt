@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.13.0)
 
+set ("CMAKE_CXX_STANDARD" 17)
+
 project(RepExtender)
 
 include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge")
@@ -35,6 +37,10 @@ add_library(zhlModTest SHARED ${MODTEST_SRC})
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "$<TARGET_FILE_DIR:zhlModTest>/resources/scripts")
 		
 add_dependencies(libzhl ZHL)
+
+add_library(stb SHARED stbParser/stbParser.cpp)
+add_executable(stbc stbParser/stbParserc.cpp)
+target_link_libraries(stbc stb)
 
 target_link_libraries(zhlModTest Lua5.3.3r libzhl)
 target_link_libraries(libzhl Lua5.3.3r)
