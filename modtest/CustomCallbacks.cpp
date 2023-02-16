@@ -4,11 +4,28 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+void PrintError(lua_State* L) {
+	std::string err = "[";
+	lua_pushstring(L, "callback");
+	lua_gettable(L, -2);
+	lua_pushstring(L, "Mod");
+	lua_gettable(L, -2);
+	lua_pushstring(L, "Name");
+	lua_gettable(L, -2);
+	err += lua_tostring(L, -1);
+	err += "] ";
+	lua_pop(L, 3);
+	lua_pushstring(L, "msg");
+	lua_gettable(L, -2);
+	err += lua_tostring(L, -1);
+	g_Game->GetConsole()->PrintError(err);
+	lua_pop(L, 1);
+}
+
 //AddCollectible Callback (id: 1004 enum pending)
 HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	printf("item get\n");
 	lua_State* L = g_LuaEngine->_state;
-	Console* console = g_Game->GetConsole();
 
 	lua_getglobal(L, "Isaac");
 	lua_getfield(L, -1, "RunCallbackWithParam");
@@ -25,33 +42,26 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 	if (!lua_pcall(L, 7, 1, 0)) {
 		printf("Additem callback run \n");
 		if (lua_istable(L, -1)) { // 6 params 
-			int tablesize = lua_rawlen(L, -1);
-			if (tablesize == 5) {
-				int* result = new int[tablesize];
-				printf("tablesize: %d\n", tablesize);
-				for (int i = 1; i <= tablesize; i++) {
-					lua_pushinteger(L, i);
-					lua_gettable(L, -2);
-					result[i - 1] = lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
-					printf("V: %d\n", result[i - 1]);
-					lua_pop(L, 1);
-				}
-				super(result[0], result[1], result[2], result[3], result[4]);
-				return;
+			int* result = new int[5];
+			printf("tablesize: %d\n", 5);
+			for (int i = 1; i <= 5; i++) {
+				lua_pushinteger(L, i);
+				lua_gettable(L, -2);
+				result[i - 1] = lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
+				printf("V: %d\n", result[i - 1]);
+				lua_pop(L, 1);
 			}
-			else
-			{
-				console->PrintError("Bad return table length to MC_PRE_ADD_COLLECTIBLE!");// this is purely proof of concept error handling, nothing more, will make it prettier later
-			}
+			super(result[0], result[1], result[2], result[3], result[4]);
+			return;
 		}
 		else if (lua_isinteger(L, -1))
 		{
 			super(lua_tointeger(L, -1), charge, firsttime, slot, vardata);
+			return;
 		}
-		else if (!lua_isnil(L, -1))
-		{
-			console->PrintError("Bad return type to MC_PRE_ADD_COLLECTIBLE"); // this is purely proof of concept error handling, nothing more, will make it prettier later
-		}
+	}
+	else {
+		PrintError(L);
 	}
 
 	super(type, charge, firsttime, slot, vardata);
@@ -603,5 +613,26 @@ HOOK_METHOD(Entity_Pickup, TriggerShopPurchase, (Entity_Player* player, int mone
 	Entity_Pickup* pickup = (Entity_Pickup*)this;
 	super(player, moneySpent);
 	ProcessPostPickupShopPurchase(pickup, player, moneySpent);
+}
+
+
+//GET_FOLLOWER_PRIORITY (id: 1063)
+HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1063);
+
+	Entity_Familiar* fam = (Entity_Familiar*)this;
+	lua::luabridge::UserdataPtr::push(L, fam, lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+
+	if (!lua_pcall(L, 2, 1, 0)) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+		return super();
+	}
 }
 

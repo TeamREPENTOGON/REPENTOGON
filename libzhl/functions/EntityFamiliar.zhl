@@ -1,0 +1,2 @@
+"8b412c483dea00000077??0fb680????????":
+__thiscall int Entity_Familiar::GetFollowerPriority(Entity_Familiar *this<ecx>);

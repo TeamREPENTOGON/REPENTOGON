@@ -1,4 +1,5 @@
 struct Manager;
+struct MenuManager;
 struct Game;
 struct Vector;
 struct PlayerManager;
@@ -10,11 +11,14 @@ struct Entity_Player;
 struct Entity_NPC;
 
 struct Entity_Pickup;
+struct Entity_Familiar;
 struct GridEntity;
 struct GridEntity_Rock;
 struct Room;
 struct Level;
 struct Camera;
+struct Ambush;
+struct BossPool;
 struct HUD;
 struct PlayerHUD;
 struct VTable_Entity;
@@ -36,6 +40,11 @@ struct Manager
 {
 	char unk1[0x13];
 	PersistentGameData _persistentGameData;
+};
+
+struct MenuManager
+{
+	
 };
 
 struct PersistentGameData
@@ -203,10 +212,11 @@ struct Game
     uint32_t _lastRoomDimensionIdx; // 0x181A0
     uint32_t _leaveDoor; // 0x181A8
     uint32_t _enterDoor; // 0x181AC
-    uint32_t _greedModeTreasureRoomIdx; // 0x18200;
+    uint32_t _greedModeTreasureRoomIdx; // 0x18200
     RoomConfigHolder _roomConfigs; // 0x1879C
     PlayerManager _playerManager; // 0x1AB40 
 	Console _console; // 0x1BB60
+	Ambush _ambush; // 0x1c31b8
     uint32_t _difficulty; // 0x243624
 };
 
@@ -268,6 +278,11 @@ struct Entity_Pickup
 	Entity _entity;
 };
 
+struct Entity_Familiar
+{
+	Entity _entity;
+};
+
 struct VTable_EntityPlayer
 {
 	void (__thiscall *Free)(Entity_Player *);
@@ -318,6 +333,15 @@ struct Entity_Slot
 struct Camera 
 {
 	
+};
+
+struct Ambush
+{
+	
+};
+
+struct BossPool
+{
 };
 
 struct HUD 

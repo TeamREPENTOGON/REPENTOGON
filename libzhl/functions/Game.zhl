@@ -95,6 +95,8 @@ struct Game
     
 	inline Console* GetConsole() { return (Console*)((char*)this + 0x1BB60); } // Cast to appropriate type
 	
+	inline Ambush* GetAmbush() { return (Ambush*)((char*)this + 0x1c31b8); }
+	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 
         return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 
