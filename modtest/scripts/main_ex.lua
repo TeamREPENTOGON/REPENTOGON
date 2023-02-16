@@ -36,10 +36,33 @@ rawset(Isaac, "SetCallbackMatchTest", function(callbackID, func)
 	getmetatable(callbacks).__matchParams = func
 end)
 
-local function logError(callbackID, err)
+local function cleanTraceback(level) -- similar to debug.traceback but breaks at xpcall, uses spaces instead of tabs, and doesn't call local functions upvalues
+	level = level + 1
+	local msg = "Stack Traceback:\n"
+	while true do
+		local info = debug_getinfo(level, "Sln")
+		if not info then break end
+		if info.what == "C" then
+			if info.name == "xpcall" then break end
+			msg = msg .. "  in method " .. tostring(info.name) .. "\n"
+		else
+			if info.name then
+				msg = msg .. "  " .. tostring(info.short_src) .. ":" .. tostring(info.currentline) .. ": in function '" .. tostring(info.name) .. "'\n"
+			else
+				msg = msg .. "  " .. tostring(info.short_src) .. ":" .. tostring(info.currentline) .. ": in function at line " .. tostring(info.linedefined) .. "\n"
+			end
+		end
+		
+		level = level + 1
+	end
+	
+	return msg
+end
+
+local function logError(callbackID, modName, err)
 	local cbName = callbackIDToName[callbackID] or callbackID
-	Game():GetConsole():PrintError('"' .. cbName .. '" failed: ' ..  err)
-	Isaac.DebugString('Error in "' ..cbName .. '" call: ' .. err) -- this should be replaced with a proper log function so it can have the [INFO] header
+	Game():GetConsole():PrintError('"' .. cbName .. '" from "' .. modName .. '" failed: ' ..  err)
+	Isaac.DebugString('Error in "' ..cbName .. '" call from "' .. modName .. '": ' .. err) -- this should be replaced with a proper log function so it can have the [INFO] header
 end
 
 function _RunCallback(callbackID, Param, ...)
@@ -48,7 +71,9 @@ function _RunCallback(callbackID, Param, ...)
 		for _, callback in ipairs(callbacks) do
 			local matchFunc = getmetatable(callbacks).__matchParams or defaultCallbackMeta.__matchParams
 			if matchFunc(Param, callback.Param) then				
-				local status, ret = pcall(callback.Function, callback.Mod, ...)
+				local status, ret = xpcall(callback.Function, function(msg)
+					return msg .. "\n" .. cleanTraceback(2)
+				end, callback.Mod, ...)
 				if status then
 					if ret ~= nil then
 						local err
@@ -56,7 +81,7 @@ function _RunCallback(callbackID, Param, ...)
 							err = typecheckFunctions[callbackID](ret)
 							if err then
 								local info = debug_getinfo(callback.Function, "S")
-								logError(callbackID, info.short_src .. ": " .. info.linedefined .. ": " .. err)
+								logError(callbackID, callback.Mod.Name, info.short_src .. ": " .. info.linedefined .. ": " .. err)
 							end
 						end
 						
@@ -65,7 +90,7 @@ function _RunCallback(callbackID, Param, ...)
 						end
 					end
 				else
-					logError(callbackID, ret)
+					logError(callbackID, callback.Mod.Name, ret)
 				end
 			end
 		end
