@@ -794,6 +794,10 @@ static void RegisterFamiliarGetFollowerPriority(lua_State* L) {
 
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	super(Debug);
+	luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
+	lua_pop(g_LuaEngine->_state, 1);
+	luaL_requiref(g_LuaEngine->_state, "os", luaopen_os, 1);
+	lua_pop(g_LuaEngine->_state, 1);
 	this->RunBundledScript("resources/scripts/enums_ex.lua");
 	this->RunBundledScript("resources/scripts/main_ex.lua");
 }
