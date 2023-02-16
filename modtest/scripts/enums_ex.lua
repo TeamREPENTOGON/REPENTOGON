@@ -962,7 +962,7 @@ FollowerPriority = {
 	DEFAULT = 0,
 	SHOOTER = 1,
 	DEFENSIVE = 2, -- Dry Baby, Mongo Baby, Censcer, Lil Abaddon
-	SHOOTER_SPECIAL = 3 -- Lil Brim, Lil Monstro
+	SHOOTER_SPECIAL = 3, -- Lil Brim, Lil Monstro
 	INCUBUS = 10,
 	KING_BABY = 9999,
 }
