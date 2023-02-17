@@ -90,7 +90,7 @@ Accepts a table of parameters: `{EntityType, Variant, SubType, Championid}` or j
 ## ModCallbacks.MC_PRE_USE_CARD(Card ID, EntityPlayer Player, int UseFlag)
 Accepts `true` to cancel card use.
 
-## ModCallbacks.MC_PRE_USE_Pill(PillEffect ID, PillColor PillColor, EntityPlayer Player, int UseFlag)
+## ModCallbacks.MC_PRE_USE_PILL(PillEffect ID, PillColor PillColor, EntityPlayer Player, int UseFlag)
 Accepts `true` to cancel pill use.
 
 # Functions
