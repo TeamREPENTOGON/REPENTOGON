@@ -123,6 +123,20 @@ Returns `nil` if the specified collectible has never been picked up.
 
 ## EntityPlayer PlayerManager:SpawnCoPlayer2(PlayerType PlayerType)
 
+## void Entity:AddBleeding(EntityRef Source, int Duration)
+
+## void Entity:AddMagnetized(EntityRef Source, int Duration)
+
+## void Entity:AddBaited(EntityRef Source, int Duration)
+
+## void Entity:AddBrimstoneMark(EntityRef Source, int Duration)
+
+## void Entity:AddWeakness(EntityRef Source, int Duration)
+
+## void Entity:AddIce(EntityRef Source, int Duration)
+
+## void Entity:AddKnockback(EntityRef Source, Vector PushDirection, int Duration, bool Unknown)
+
 ## EntityPlayer EntityPlayer:InitTwin(PlayerType PlayerType)
 I believe this is used by J&E, Strawman etc
 
