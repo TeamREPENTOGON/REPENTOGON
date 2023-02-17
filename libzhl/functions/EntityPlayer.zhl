@@ -76,3 +76,7 @@ __thiscall void Entity_Player::Revive(Entity_Player *this<ecx>);
 
 "558bec568bf1e8????????8b45088986341500005e":
 __thiscall void Entity_Player::SetItemState(Entity_Player* this<ecx>, int collectible);
+
+struct Entity_Player {{
+	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
+}};

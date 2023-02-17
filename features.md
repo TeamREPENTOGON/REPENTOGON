@@ -42,10 +42,10 @@ Alternatively accepts `false` to cancel the track
 This callback is called for *both* MusicManager::Play *and* MusicManager::Crossfade! `IsFade` is provided to distinguish the two.
 
 
-## ModCallbacks.MC_PRE_ENTITY_THROW(Vector Velocity)
+## ModCallbacks.MC_PRE_ENTITY_THROW(EntityPlayer ThrowingPlayer, Entity HeldEntity, Vector Velocity)
 Accepts a `Vector` which will modify the velocity of the thrown entity.
 
-## ModCallbacks.MC_POST_ENTITY_THROW(Entity ThrownEntity, Vector Velocity)
+## ModCallbacks.MC_POST_ENTITY_THROW(EntityPlayer ThrowingPlayer, Entity ThrownEntity, Vector Velocity)
 Accepts no return parameters.
 
 ## ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS()
