@@ -639,3 +639,58 @@ HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
 	}
 }
 
+//PRE_USE_CARD (id: 1064)
+HOOK_METHOD(Entity_Player, UseCard, (int cardType, unsigned int useFlag) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1064);
+	lua_pushinteger(L, cardType);
+	lua_pushinteger(L, cardType);
+
+	Entity_Player* plr = (Entity_Player*)this;
+	lua::luabridge::UserdataPtr::push(L, plr, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua_pushinteger(L, useFlag);
+
+	if (!lua_pcall(L, 5, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else {
+			super(cardType, useFlag);
+		}
+	}
+}
+
+
+//PRE_USE_PILL (id: 1065)
+HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int useFlag) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1065);
+	lua_pushinteger(L, pillEffect);
+	lua_pushinteger(L, pillEffect);
+	lua_pushinteger(L, pillColor);
+
+	Entity_Player* plr = (Entity_Player*)this;
+	lua::luabridge::UserdataPtr::push(L, plr, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua_pushinteger(L, useFlag);
+
+	if (!lua_pcall(L, 6, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else {
+			super(pillEffect, pillColor, useFlag);
+		}
+	}
+}

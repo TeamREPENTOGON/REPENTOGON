@@ -87,6 +87,12 @@ Accepts a table of parameters: `{EntityType, Variant, SubType, KeepPrice, KeepSe
 ## ModCallbacks.MC_PRE_NPC_MORPH(int EntityType,int Variant,int SubType,int Championid)
 Accepts a table of parameters: `{EntityType, Variant, SubType, Championid}` or just `{EntityType, Variant, SubType}`. Returning `false` cancels the morph.
 
+## ModCallbacks.MC_PRE_USE_CARD(Card ID, EntityPlayer Player, int UseFlag)
+Accepts `true` to cancel card use.
+
+## ModCallbacks.MC_PRE_USE_Pill(PillEffect ID, PillColor PillColor, EntityPlayer Player, int UseFlag)
+Accepts `true` to cancel pill use.
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.

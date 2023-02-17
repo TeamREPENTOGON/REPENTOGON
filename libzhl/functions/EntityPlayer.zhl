@@ -77,6 +77,12 @@ __thiscall void Entity_Player::Revive(Entity_Player *this<ecx>);
 "558bec568bf1e8????????8b45088986341500005e":
 __thiscall void Entity_Player::SetItemState(Entity_Player* this<ecx>, int collectible);
 
+"558bec6aff68????????64a1000000005081ec38040000a1????????33c58945f056":
+__thiscall void Entity_Player::UseCard(Entity_Player* this<ecx>, int cardType, unsigned int useFlag);
+
+"538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec78010000a1????????33c58945ec5657508d45f464a3000000008bf989bdacfeffff8b430c8b35????????8b4b08":
+__thiscall void Entity_Player::UsePill(Entity_Player* this<ecx>, int ePillEffect, int ePillColor, unsigned int useFlag);
+
 struct Entity_Player {{
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 }};
