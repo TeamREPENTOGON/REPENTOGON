@@ -93,6 +93,9 @@ Accepts `true` to cancel card use.
 ## ModCallbacks.MC_PRE_USE_PILL(PillEffect ID, PillColor PillColor, EntityPlayer Player, int UseFlag)
 Accepts `true` to cancel pill use.
 
+## ModCallbacks.MC_GET_SHOP_ITEM_PRICE(int EntityVariant, int EntitySubType, int ShopItemID)
+Accepts an integer to change the price of the item.
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.
@@ -151,6 +154,9 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 
 ## void EntityPlayer:SetItemState(CollectibleType CollectibleType)
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
+
+## int Room:GetShopItemPrice(int EntityVariant, int EntitySubType, int ShopItemID)
+Returns the price of the item.
 
 ## PersistentGameData Isaac:GetPersistentGameData()
 Should probably be moved to Game for consistency.

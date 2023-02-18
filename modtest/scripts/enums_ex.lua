@@ -23,6 +23,7 @@ ModCallbacks.MC_PRE_NPC_MORPH = 2012
 ModCallbacks.MC_PRE_PICKUP_MORPH = 2013
 ModCallbacks.MC_PRE_USE_CARD = 1064
 ModCallbacks.MC_PRE_USE_PILL = 1065
+ModCallbacks.MC_GET_SHOP_ITEM_PRICE = 1066
 
 StbType = {
 	SPECIAL_ROOMS = 0,
