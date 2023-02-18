@@ -186,8 +186,6 @@ This magically vanished from the API some time after 1.7.8.
 
 Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than MultiShotParams.NumTears.
 
-MultiShotParams has not been directly exposed to the API yet- it's on the to-do list, for now any mods that want to experiment with this can use this error in pcall to get the amount of tears.
-
 ## bool Game:AchievementUnlocksDisallowed()
 Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
 
@@ -240,6 +238,14 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
 ## HealthType EntityPlayer:GetHealthType()
+
+## MultiShotParams EntityPlayer:GetMultiShotParams(WeaponType WeaponType)
+Now returns a proper `MultiShotParams` object.
+
+## int MultiShotParams:GetNumTears()
+Returns the amount of tears the player can currently simultaneously fire.
+
+This would be more ideal as a field- I'm looking into this.
 
 ## int Room:GetShopItemPrice(int EntityVariant, int EntitySubType, int ShopItemID)
 Returns the price of the item.
