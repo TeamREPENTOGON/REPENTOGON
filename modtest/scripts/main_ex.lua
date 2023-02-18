@@ -28,6 +28,27 @@ local function checkTableSizeFunction(size)
 	end
 end
 
+local function checkTableTypeFunction(typestrings)
+	return function(tbl)
+		local tablesize = #tbl
+		if tablesize ~= #typestrings then
+			return "bad return table length (" .. tostring(#typestrings) .. " expected, got " .. tostring(tablesize) .. ")"
+		end
+		
+		for i, param in pairs(tbl) do
+			local paramType = type(param)
+			
+			if paramType == "number" and math.type(param) == "integer" then
+				paramType = "integer"
+			end
+
+			if paramType ~= typestrings[i] then
+				return "bad return type for table value #" .. tostring(i) .. " (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+			end
+		end
+	end
+end
+
 local function backEnum(enum, id)
 	for k, v in pairs(enum) do
 		if v == id then
@@ -38,7 +59,7 @@ end
 
 local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = {
-		["table"] = checkTableSizeFunction(5),
+		["table"] = checkTableTypeFunction({"integer", "integer", "boolean", "integer", "integer"}),
 		["number"] = checkInteger
 	},
 	[ModCallbacks.MC_INPUT_ACTION] = {

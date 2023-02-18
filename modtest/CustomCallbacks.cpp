@@ -4,24 +4,6 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-void PrintError(lua_State* L) {
-	std::string err = "[";
-	lua_pushstring(L, "callback");
-	lua_gettable(L, -2);
-	lua_pushstring(L, "Mod");
-	lua_gettable(L, -2);
-	lua_pushstring(L, "Name");
-	lua_gettable(L, -2);
-	err += lua_tostring(L, -1);
-	err += "] ";
-	lua_pop(L, 3);
-	lua_pushstring(L, "msg");
-	lua_gettable(L, -2);
-	err += lua_tostring(L, -1);
-	g_Game->GetConsole()->PrintError(err);
-	lua_pop(L, 1);
-}
-
 //AddCollectible Callback (id: 1004 enum pending)
 HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	printf("item get\n");
@@ -59,9 +41,6 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 			super(lua_tointeger(L, -1), charge, firsttime, slot, vardata);
 			return;
 		}
-	}
-	else {
-		PrintError(L);
 	}
 
 	super(type, charge, firsttime, slot, vardata);
