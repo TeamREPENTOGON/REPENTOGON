@@ -215,3 +215,36 @@ Taken by Room::CheckLine.
 
 ## ProjectileMode
 Taken by EntityNPC::FireProjectiles.
+
+## StbGridType
+Type attribute of GridEntities stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## StbRockSubType
+SubType attribute of StbGridType.ROCK stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## StbPoopSubType
+SubType attribute of StbGridType.POOP stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## StbTeleporterSubType
+SubType attribute of StbGridType.TELEPORTER stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## StbRailVariant
+Variant attribute of StbGridType.RAIL and StbGridType.RAIL_PIT stored in STB. (And while passing through MC_PRE_ROOM_ENTITY_SPAWN?)
+
+## RetractingSpikesVariant
+Variant attribute of StbGridType.RETRACTING_SPIKES stored in STB in-world, and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+Variant attribute of GridEntityType.GRID_SPIKES_ONOFF.
+
+## PressurePlateVariant
+Variant attribute of StbGridType.PRESSURE_PLATE stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+Variant attribute of GridEntityType.GRID_PRESSURE_PLATE.
+
+## TeleporterVariant
+Variant attribute of StbGridType.TELEPORTER stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+Variant attribute of StbGridType.GRID_TELEPORTER.
+
+## GridPoopVariant
+Variant attribute of GridEntityType.GRID_POOP. Is not stored in STB, or passed through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## EntityPoopVariant
+Variant attribute of EntityType.ENTITY_POOP.
