@@ -211,4 +211,7 @@ Return value for EntityPlayer::GetHealthType. Return parameter for MC_PLAYER_GET
 ## Dimension
 
 ## LineCheckMode
-Taken by Room::CheckLine. 
+Taken by Room::CheckLine.
+
+## ProjectileMode
+Taken by EntityNPC::FireProjectiles.
