@@ -113,7 +113,7 @@ HOOK_METHOD(GridEntity_Rock, Update, () -> void) {
 
 //GRID_ROCK_UPDATE callback end
 
-//HUD_UPDATE (id: 1020)
+//_UPDATE (id: 1020)
 
 HOOK_METHOD(HUD, Update, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
@@ -147,7 +147,7 @@ HOOK_METHOD(HUD, PostUpdate, () -> void) {
 
 //HUD_POST_UPDATE callback end
 
-//HUD_POST_UPDATE (id: 1022)
+//HUD_POST_RENDER (id: 1022)
 
 HOOK_METHOD(HUD, Render, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
@@ -162,7 +162,7 @@ HOOK_METHOD(HUD, Render, () -> void) {
 	super();
 }
 
-//HUD_POST_UPDATE callback end
+//HUD_POST_RENDER callback end
 
 //Character menu render Callback(id:1023)
 HOOK_METHOD(Menu_Character, Render, () -> void) {
