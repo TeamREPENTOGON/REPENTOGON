@@ -249,10 +249,15 @@ struct Vector
 struct Entity 
 {
 	VTable_Entity *_vtable; //0x0, len 0x8
-	char pad0[357];
+	char pad0[28];
+	unsigned int _index; //0x20
+	unsigned int _collisionIndex; //0x24
+	unsigned int _type; //0x28
+	unsigned int _variant; //0x2c
+	unsigned int _subtype; //0x30
+	char pad1[309];
 	bool _visible; // 0x169 
 };
-
 
 struct EntityRef
 {
@@ -313,14 +318,39 @@ struct VTable_GridEntity
     
 };
 
+struct Entity_Tear 
+{
+	Entity _entity;
+};
+
+struct Entity_Projectile
+{
+	Entity _entity;
+};
+
+struct Entity_Knife
+{
+	Entity _entity;
+};
+
+struct Entity_Effect
+{
+	Entity _entity;
+};
+
+struct Entity_Bomb
+{
+	Entity _entity;
+};
+
 struct Entity_Pickup
 {
-
+	Entity _entity;
 };
 
 struct Entity_NPC
 {
-
+	Entity _entity;
 };
 
 struct GridEntity 

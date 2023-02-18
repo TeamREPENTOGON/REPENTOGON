@@ -93,6 +93,69 @@ Accepts `true` to cancel card use.
 ## ModCallbacks.MC_PRE_USE_PILL(PillEffect ID, PillColor PillColor, EntityPlayer Player, int UseFlag)
 Accepts `true` to cancel pill use.
 
+## ModCallbacks.MC_PRE_FAMILIAR_RENDER(EntityFamiliar Familiar, Vector Offset)
+Optional argument: `FamiliarVariant Variant`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_PRE_NPC_RENDER(EntityNPC NPC, Vector Offset)
+OptionalArguemnt: `EntityType Type`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_PRE_PLAYER_RENDER(EntityPlayer Player, Vector Offset)
+OptionalArguemnt: `PlayerVariant Variant`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_PRE_PICKUP_RENDER(EntityPickup Pickup, Vector Offset)
+OptionalArguemnt: `PickupVariant Variant`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_PRE_TEAR_RENDER(EntityTear Tear, Vector Offset)
+OptionalArguemnt: `TearVariant Variant`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_PRE_PROJECTILE_RENDER(EntityProjectile Projectile, Vector Offset)
+OptionalArguemnt: `ProjectileVariant Variant`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_PRE_KNIFE_RENDER(EntityKnife Knife, Vector Offset)
+OptionalArguemnt: `ProjectileVariant Variant`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_PRE_EFFECT_RENDER(EntityEffect Effect, Vector Offset)
+OptionalArguemnt: `EffectVariant Variant`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_PRE_BOMB_RENDER(EntityBomb Bomb, Vector Offset)
+OptionalArguemnt: `BombVariant Variant`
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.

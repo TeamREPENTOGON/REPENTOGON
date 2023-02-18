@@ -211,7 +211,7 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	lua_pushnumber (L, Pitch);
 	lua_pushnumber (L, Pan);
 
-	if (!lua_pcall(L, 7, 1, 0)) { // is this if statement even necessary? seems to run this code regardless
+	if (!lua_pcall(L, 7, 1, 0)) {
 		if (lua_istable(L, -1)) {
 			if (lua_rawlen(L, -1) == 6) {
 				ID = lua::callbacks::ToInteger(L, 1);
@@ -263,13 +263,13 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *Velocity);
 	
 	int pcallRes = lua_pcall(L, 4, 1, 0);
-	if (!pcallRes) {
-		if (lua_isuserdata(L, -1)) {
+	if (!pcallRes) {if (lua_isuserdata(L, -1)) {
 			Velocity = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
 			Entity* res = super(Velocity);
 			ProcessPostEntityThrow(Velocity, this, res);
 			return res;
 		}
+		
 		else {
 			Entity* res = super(Velocity);
 			ProcessPostEntityThrow(Velocity, this, res);
@@ -411,7 +411,7 @@ HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
 			if (lua_isboolean(L, -1)) {
 				if (!lua_toboolean(L, -1)) {
 					this->Revive();
-					this->_visible = true;
+					*this->GetVisibile() = true;
 					return false;
 				}
 			}
@@ -672,4 +672,243 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 			super(pillEffect, pillColor, useFlag);
 		}
 	}
+}
+
+//PRE_FAMILIAR_RENDER (id: 1080)
+HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	
+
+	lua_pushinteger(L, 1080);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+}
+
+//PRE_NPC_RENDER (id: 1081)
+HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+
+	lua_pushinteger(L, 1081);
+	lua_pushinteger(L, *this->GetType());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+}
+
+//PRE_PLAYER_RENDER (id: 1082)
+HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+
+	lua_pushinteger(L, 1082);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+}
+
+//PRE_PICKUP_RENDER (id: 1083)
+HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+
+	lua_pushinteger(L, 1083);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PICKUP));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+}
+
+//PRE_TEAR_RENDER (id: 1084)
+HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+
+	lua_pushinteger(L, 1084);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_TEAR));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+}
+
+//PRE_PROJECTILE_RENDER (id: 1085)
+HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1085);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PROJECTILE));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+}
+
+//PRE_KNIFE_RENDER (id: 1086)
+HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1086);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_KNIFE));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+}
+
+//PRE_EFFECT_RENDER (id: 1087)
+HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1087);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+}
+
+//PRE_BOMB_RENDER (id: 1088)
+HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1088);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_BOMB));
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
 }

@@ -83,6 +83,9 @@ __thiscall void Entity_Player::UseCard(Entity_Player* this<ecx>, int cardType, u
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec78010000a1????????33c58945ec5657508d45f464a3000000008bf989bdacfeffff8b430c8b35????????8b4b08":
 __thiscall void Entity_Player::UsePill(Entity_Player* this<ecx>, int ePillEffect, int ePillColor, unsigned int useFlag);
 
+"558bec83e4c081ecb4000000a1????????33c4898424b0000000538bd9568b":
+__thiscall void Entity_Player::Render(Entity_Player *this<ecx>, Vector *offset);
+
 struct Entity_Player {{
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 }};
