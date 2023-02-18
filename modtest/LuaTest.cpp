@@ -187,6 +187,16 @@ static void RegisterMetatables(lua_State* L) {
 }
 
 
+static constexpr const char* RoomConfigHolderMT = "RoomConfigHolder";
+static constexpr const char* RoomPlacerMT = "RoomPlacer";
+static constexpr const char* RoomDescriptorDoors = "RoomDescriptorDoors";
+static constexpr const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
+static constexpr const char* PlayerManagerMT = "PlayerManager";
+static constexpr const char* PersistentGameDataMT = "PersistentGameData";
+static constexpr const char* ConsoleMT = "Console";
+static constexpr const char* AmbushMT = "Ambush";
+static constexpr const char* MultiShotParamsMT = "MultiShotParams";
+
 int Lua_GetMultiShotPositionVelocity(lua_State *L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
 	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
@@ -194,10 +204,10 @@ int Lua_GetMultiShotPositionVelocity(lua_State *L) // This *should* be in the AP
 	WeaponType weaponType = (WeaponType)luaL_checkinteger(L, 3);
 	Vector* shotDirection = *(Vector**)((char*)lua::CheckUserdata(L, 4, lua::Metatables::VECTOR, "Vector") + 4);
 	float shotSpeed = luaL_checknumber(L, 5);
-	Weapon_MultiShotParams* multiShotParams = *(Weapon_MultiShotParams**)((char*)lua_touserdata(L, 6) + 4); // no metatable for this in the API (yet)! :compressed_torvalds:
-
+	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, MultiShotParamsMT);
+	printf("%d", multiShotParams->numTears);
 	if (multiShotParams->numTears < loopIndex) {
-		luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.numTears");
+		luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.NumTears");
 	};
 
 	PosVel* toLua = lua::luabridge::UserdataValue<PosVel>::place(L, lua::GetMetatableKey(lua::Metatables::POS_VEL));
@@ -231,16 +241,6 @@ static void RegisterAchievementUnlocksDisallowed(lua_State *L)
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 }
-
-static constexpr const char* RoomConfigHolderMT = "RoomConfigHolder";
-static constexpr const char* RoomPlacerMT = "RoomPlacer";
-static constexpr const char* RoomDescriptorDoors = "RoomDescriptorDoors";
-static constexpr const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
-static constexpr const char* PlayerManagerMT = "PlayerManager";
-static constexpr const char* PersistentGameDataMT = "PersistentGameData";
-static constexpr const char* ConsoleMT = "Console";
-static constexpr const char* AmbushMT = "Ambush";
-static constexpr const char* MultiShotParamsMT = "MultiShotParams";
 
 static int Lua_GameGetRoomConfigHolder(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
