@@ -62,6 +62,10 @@ local typecheckFunctions = {
 		["table"] = checkTableTypeFunction({"integer", "integer", "boolean", "integer", "integer"}),
 		["number"] = checkInteger
 	},
+	[ModCallbacks.MC_PRE_SFX_PLAY] = {
+		["table"] = checkTableTypeFunction({"integer", "number", "integer", "boolean", "number", "number"}),
+		["boolean"] = true
+	},
 	[ModCallbacks.MC_INPUT_ACTION] = {
 		["number"] = function(ret, retType, entity, hook)
 			if hook ~= InputHook.GET_ACTION_VALUE then
