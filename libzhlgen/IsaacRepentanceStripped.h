@@ -343,6 +343,11 @@ struct Entity_Bomb
 	Entity _entity;
 };
 
+struct Entity_Slot
+{
+	Entity _entity;
+};
+
 struct Entity_Pickup
 {
 	Entity _entity;

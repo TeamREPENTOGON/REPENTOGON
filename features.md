@@ -93,7 +93,12 @@ Accepts `true` to cancel card use.
 ## ModCallbacks.MC_PRE_USE_PILL(PillEffect ID, PillColor PillColor, EntityPlayer Player, int UseFlag)
 Accepts `true` to cancel pill use.
 
-<<<<<<< HEAD
+## ModCallbacks.MC_GET_SHOP_ITEM_PRICE(int EntityVariant, int EntitySubType, int ShopItemID)
+Accepts an integer to change the price of the item.
+
+## ModCallbacks.MC_PLAYER_GET_HEALTH_TYPE(EntityPlayer Player)
+Accepts an integer to change health type for the character.
+
 ## ModCallbacks.MC_PRE_FAMILIAR_RENDER(EntityFamiliar Familiar, Vector Offset)
 Optional argument: `FamiliarVariant Variant`
 
@@ -102,67 +107,78 @@ Accepts a Vector to modify render offset
 Alternatively accepts `false` to cancel rendering
 
 ## ModCallbacks.MC_PRE_NPC_RENDER(EntityNPC NPC, Vector Offset)
-OptionalArguemnt: `EntityType Type`
+Optional argument: `EntityType Type`
 
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
 ## ModCallbacks.MC_PRE_PLAYER_RENDER(EntityPlayer Player, Vector Offset)
-OptionalArguemnt: `PlayerVariant Variant`
+Optional argument: `PlayerVariant Variant`
 
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
 ## ModCallbacks.MC_PRE_PICKUP_RENDER(EntityPickup Pickup, Vector Offset)
-OptionalArguemnt: `PickupVariant Variant`
+Optional argument: `PickupVariant Variant`
 
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
 ## ModCallbacks.MC_PRE_TEAR_RENDER(EntityTear Tear, Vector Offset)
-OptionalArguemnt: `TearVariant Variant`
+Optional argument: `TearVariant Variant`
 
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
 ## ModCallbacks.MC_PRE_PROJECTILE_RENDER(EntityProjectile Projectile, Vector Offset)
-OptionalArguemnt: `ProjectileVariant Variant`
+Optional argument: `ProjectileVariant Variant`
 
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
 ## ModCallbacks.MC_PRE_KNIFE_RENDER(EntityKnife Knife, Vector Offset)
-OptionalArguemnt: `ProjectileVariant Variant`
+Optional argument: `ProjectileVariant Variant`
 
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
 ## ModCallbacks.MC_PRE_EFFECT_RENDER(EntityEffect Effect, Vector Offset)
-OptionalArguemnt: `EffectVariant Variant`
+Optional argument: `EffectVariant Variant`
 
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
 ## ModCallbacks.MC_PRE_BOMB_RENDER(EntityBomb Bomb, Vector Offset)
-OptionalArguemnt: `BombVariant Variant`
+Optional argument: `BombVariant Variant`
 
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
-=======
-## ModCallbacks.MC_GET_SHOP_ITEM_PRICE(int EntityVariant, int EntitySubType, int ShopItemID)
-Accepts an integer to change the price of the item.
 
-## ModCallbacks.MC_PLAYER_GET_HEALTH_TYPE(EntityPlayer Player)
-Accepts an integer to change health type for the character.
->>>>>>> 585462a66883933bdfb131500b2340868a2ca2ab
+## ModCallbacks.MC_PRE_SLOT_RENDER(Entity Slot, Vector Offset)
+Optional argument: `SlotVariant Variant`
+
+As we don't (yet) have an EntitySlot metatable, this simply returns an Entity. Sorry! :(
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
+
+## ModCallbacks.MC_POST_SLOT_RENDER(Entity Slot, Vector Offset)
+Optional argument: `SlotVariant Variant`
+
+As we don't (yet) have an EntitySlot metatable, this simply returns an Entity. Sorry! :(
+
+Accepts a Vector to modify render offset
+
+Alternatively accepts `false` to cancel rendering
 
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)

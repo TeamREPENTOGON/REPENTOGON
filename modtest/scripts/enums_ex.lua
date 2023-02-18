@@ -34,6 +34,8 @@ ModCallbacks.MC_PRE_PROJECTILE_RENDER = 1085
 ModCallbacks.MC_PRE_KNIFE_RENDER = 1086
 ModCallbacks.MC_PRE_EFFECT_RENDER = 1087
 ModCallbacks.MC_PRE_BOMB_RENDER = 1088
+ModCallbacks.MC_PRE_SLOT_RENDER = 1089
+ModCallbacks.MC_POST_SLOT_RENDER = 1090
 
 EntityPartition.ALL = 0xffffffff
 

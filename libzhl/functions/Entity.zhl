@@ -49,7 +49,7 @@ struct Entity
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
 	inline unsigned int* GetVariant() { return (unsigned int*)((char*)this + 0x2c); }
 	inline unsigned int* GetSubType() { return (unsigned int*)((char*)this + 0x30); }
-	inline bool* GetVisibile() { return (bool*)((char*)this + 0x169); }
+	inline bool* GetVisible() { return (bool*)((char*)this + 0x169); }
 	
 	Entity() 
 	{

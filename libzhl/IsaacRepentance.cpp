@@ -1862,10 +1862,10 @@ namespace _func55
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
-	static FunctionDefinition funcObj("Entity_Tear::Render", typeid(void (Entity_Tear::*)(Vector *)), "558bec83e4c083ec3453568bf15780be??????????0f84????????80be??????????0f84????????f30f108e????????83ec08f30f588e????????f30f1005????????f30f5c05????????f30f101d????????f30f591d????????f30f5c0d????????f30f5905????????f30f115c24??f30f590d????????f30f58c8f30f59cbf30f580d????????f30f114c24??d9442440", argdata, 2, 5, &func);
+	static FunctionDefinition funcObj("Entity_Slot::Render", typeid(void (Entity_Slot::*)(Vector *)), "558bec56ff75088bf1e8????????8b462c", argdata, 2, 5, &func);
 }
 
-__declspec(naked) void Entity_Tear::Render(Vector *offset)
+__declspec(naked) void Entity_Slot::Render(Vector *offset)
 {
 	__asm
 	{
@@ -1894,6 +1894,39 @@ __declspec(naked) void Entity_Tear::Render(Vector *offset)
 namespace _func56
 {
 	static void *func = 0;
+	static short argdata[] = {0x101, 0x1ff};
+	static FunctionDefinition funcObj("Entity_Tear::Render", typeid(void (Entity_Tear::*)(Vector *)), "558bec83e4c083ec3453568bf15780be??????????0f84????????80be??????????0f84????????f30f108e????????83ec08f30f588e????????f30f1005????????f30f5c05????????f30f101d????????f30f591d????????f30f5c0d????????f30f5905????????f30f115c24??f30f590d????????f30f58c8f30f59cbf30f580d????????f30f114c24??d9442440", argdata, 2, 5, &func);
+}
+
+__declspec(naked) void Entity_Tear::Render(Vector *offset)
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		push [ebp+8]		// offset
+		call _func56::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		retn 4
+	}
+}
+
+namespace _func57
+{
+	static void *func = 0;
 	static short argdata[] = {0x100};
 	static FunctionDefinition funcObj("Game::constructor", typeid(void (Game::*)()), "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec105657a1????????33c5508d45f464a3000000008bf9897dec897de468????????", argdata, 1, 5, &func);
 }
@@ -1911,7 +1944,7 @@ __declspec(naked) void Game::constructor()
 		push esi
 		push edi
 		mov eax, ecx	// this
-		call _func56::func
+		call _func57::func
 		pop edi
 		pop esi
 		pop ebx
@@ -1924,7 +1957,7 @@ __declspec(naked) void Game::constructor()
 	}
 }
 
-namespace _func57
+namespace _func58
 {
 	static void *func = 0;
 	static short argdata[] = {0x100};
@@ -1943,7 +1976,7 @@ __declspec(naked) bool Game::IsPaused()
 		push esi
 		push edi
 		mov eax, ecx	// this
-		call _func57::func
+		call _func58::func
 		pop edi
 		pop esi
 		pop ebx
@@ -1955,7 +1988,7 @@ __declspec(naked) bool Game::IsPaused()
 	}
 }
 
-namespace _func58
+namespace _func59
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -1981,7 +2014,7 @@ __declspec(naked) Entity *Game::Spawn(unsigned int type, unsigned int variant, c
 		push [ebp+16]		// position
 		push [ebp+12]		// variant
 		push [ebp+8]		// type
-		call _func58::func
+		call _func59::func
 		pop edi
 		pop esi
 		pop ebx
@@ -1993,7 +2026,7 @@ __declspec(naked) Entity *Game::Spawn(unsigned int type, unsigned int variant, c
 	}
 }
 
-namespace _func59
+namespace _func60
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -2013,7 +2046,7 @@ __declspec(naked) void Game::ShakeScreen(int timeout)
 		push esi
 		push edi
 		push [ebp+8]		// timeout
-		call _func59::func
+		call _func60::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2026,7 +2059,7 @@ __declspec(naked) void Game::ShakeScreen(int timeout)
 	}
 }
 
-namespace _func60
+namespace _func61
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -2049,7 +2082,7 @@ __declspec(naked) void Game::MakeShockwave(const Vector &pos, float amplitude, f
 		push [ebp+16]		// speed
 		push [ebp+12]		// amplitude
 		push [ebp+8]		// pos
-		call _func60::func
+		call _func61::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2062,7 +2095,7 @@ __declspec(naked) void Game::MakeShockwave(const Vector &pos, float amplitude, f
 	}
 }
 
-namespace _func61
+namespace _func62
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -2081,7 +2114,7 @@ __declspec(naked) Entity_Player *Game::GetPlayer(unsigned int Index)
 		push esi
 		push edi
 		push [ebp+8]		// Index
-		call _func61::func
+		call _func62::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2093,7 +2126,7 @@ __declspec(naked) Entity_Player *Game::GetPlayer(unsigned int Index)
 	}
 }
 
-namespace _func62
+namespace _func63
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -2112,7 +2145,7 @@ __declspec(naked) void Game::Update()
 		push ebx
 		push esi
 		push edi
-		call _func62::func
+		call _func63::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2125,7 +2158,7 @@ __declspec(naked) void Game::Update()
 	}
 }
 
-namespace _func63
+namespace _func64
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -2143,7 +2176,7 @@ __declspec(naked) bool Game::AchievementUnlocksDisallowed()
 		push ebx
 		push esi
 		push edi
-		call _func63::func
+		call _func64::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2155,7 +2188,7 @@ __declspec(naked) bool Game::AchievementUnlocksDisallowed()
 	}
 }
 
-namespace _func64
+namespace _func65
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -2177,7 +2210,7 @@ __declspec(naked) bool Game::PlaceRoom(LevelGenerator_Room *room, RoomConfig *da
 		push [ebp+16]		// Seed
 		push [ebp+12]		// data
 		push [ebp+8]		// room
-		call _func64::func
+		call _func65::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2189,7 +2222,7 @@ __declspec(naked) bool Game::PlaceRoom(LevelGenerator_Room *room, RoomConfig *da
 	}
 }
 
-namespace _func65
+namespace _func66
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -2208,7 +2241,7 @@ __declspec(naked) void Game::UpdateVisibility()
 		push ebx
 		push esi
 		push edi
-		call _func65::func
+		call _func66::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2221,7 +2254,7 @@ __declspec(naked) void Game::UpdateVisibility()
 	}
 }
 
-namespace _func66
+namespace _func67
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -2240,7 +2273,7 @@ __declspec(naked) uint32_t *Game::GetRoomDescriptorsOffsetsArrayForDimension(uin
 		push esi
 		push edi
 		push [ebp+8]		// dimension
-		call _func66::func
+		call _func67::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2252,7 +2285,7 @@ __declspec(naked) uint32_t *Game::GetRoomDescriptorsOffsetsArrayForDimension(uin
 	}
 }
 
-namespace _func67
+namespace _func68
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -2272,7 +2305,7 @@ __declspec(naked) RoomDescriptor *Game::GetRoomByIdx(uint32_t idx, int32_t dimen
 		push edi
 		push [ebp+12]		// dimension
 		push [ebp+8]		// idx
-		call _func67::func
+		call _func68::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2286,12 +2319,12 @@ __declspec(naked) RoomDescriptor *Game::GetRoomByIdx(uint32_t idx, int32_t dimen
 
 Game **__ptr_g_Game;
 
-namespace _var68
+namespace _var69
 {
 	static VariableDefinition varObj("g_Game", ".e8????????c745fcffffffffa3(????????)e8", &__ptr_g_Game);
 }
 
-namespace _func69
+namespace _func70
 {
 	static void *func = 0;
 	static short argdata[] = {0x1ff, 0x1ff, 0x1ff};
@@ -2313,7 +2346,7 @@ __declspec(naked) void Game::StartStageTransition(bool SameStage, int param_2, E
 		push [ebp+16]		// param_3
 		push [ebp+12]		// param_2
 		push [ebp+8]		// SameStage
-		call _func69::func
+		call _func70::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2326,7 +2359,7 @@ __declspec(naked) void Game::StartStageTransition(bool SameStage, int param_2, E
 	}
 }
 
-namespace _func70
+namespace _func71
 {
 	static void *func = 0;
 	static short argdata[] = {0x1ff, 0x1ff};
@@ -2346,7 +2379,7 @@ __declspec(naked) GridEntity *__stdcall CreateGridEntity(GridEntityType type, un
 		push edi
 		push [ebp+12]		// seed
 		push [ebp+8]		// type
-		call _func70::func
+		call _func71::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2358,7 +2391,7 @@ __declspec(naked) GridEntity *__stdcall CreateGridEntity(GridEntityType type, un
 	}
 }
 
-namespace _func71
+namespace _func72
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -2377,7 +2410,7 @@ __declspec(naked) void GridEntity_Rock::Update()
 		push ebx
 		push esi
 		push edi
-		call _func71::func
+		call _func72::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2390,7 +2423,7 @@ __declspec(naked) void GridEntity_Rock::Update()
 	}
 }
 
-namespace _func72
+namespace _func73
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -2409,7 +2442,7 @@ __declspec(naked) bool GridEntity_Rock::Destroy(bool Immediate)
 		push esi
 		push edi
 		push [ebp+8]		// Immediate
-		call _func72::func
+		call _func73::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2421,7 +2454,7 @@ __declspec(naked) bool GridEntity_Rock::Destroy(bool Immediate)
 	}
 }
 
-namespace _func73
+namespace _func74
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -2429,38 +2462,6 @@ namespace _func73
 }
 
 __declspec(naked) void HUD::Render()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func73::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func74
-{
-	static void *func = 0;
-	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("HUD::Update", typeid(void (HUD::*)()), "558bec515356578bf980bfbc3e0c000074??ff8fc03e0c00", argdata, 1, 5, &func);
-}
-
-__declspec(naked) void HUD::Update()
 {
 	__asm
 	{
@@ -2489,10 +2490,10 @@ namespace _func75
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("HUD::PostUpdate", typeid(void (HUD::*)()), "558bec83e4f85153568bd9578bf3bf08000000833e0074??8bcee8????????81c6b0060000", argdata, 1, 5, &func);
+	static FunctionDefinition funcObj("HUD::Update", typeid(void (HUD::*)()), "558bec515356578bf980bfbc3e0c000074??ff8fc03e0c00", argdata, 1, 5, &func);
 }
 
-__declspec(naked) void HUD::PostUpdate()
+__declspec(naked) void HUD::Update()
 {
 	__asm
 	{
@@ -2521,10 +2522,10 @@ namespace _func76
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("HUD::LoadGraphics", typeid(void (HUD::*)()), "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec88000000a1????????33c58945ec5657508d45f464a3000000008bf180beb73e0c0000", argdata, 1, 5, &func);
+	static FunctionDefinition funcObj("HUD::PostUpdate", typeid(void (HUD::*)()), "558bec83e4f85153568bd9578bf3bf08000000833e0074??8bcee8????????81c6b0060000", argdata, 1, 5, &func);
 }
 
-__declspec(naked) void HUD::LoadGraphics()
+__declspec(naked) void HUD::PostUpdate()
 {
 	__asm
 	{
@@ -2552,6 +2553,38 @@ __declspec(naked) void HUD::LoadGraphics()
 namespace _func77
 {
 	static void *func = 0;
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("HUD::LoadGraphics", typeid(void (HUD::*)()), "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec88000000a1????????33c58945ec5657508d45f464a3000000008bf180beb73e0c0000", argdata, 1, 5, &func);
+}
+
+__declspec(naked) void HUD::LoadGraphics()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func77::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func78
+{
+	static void *func = 0;
 	static short argdata[] = {0x1ff, 0x1ff};
 	static FunctionDefinition funcObj("Level::SetStage", typeid(void (Level::*)(int , int )), "558bec568b35????????578b??8b??85d27e??83fa067f??8b??????????33c0", argdata, 2, 4, &func);
 }
@@ -2570,7 +2603,7 @@ __declspec(naked) void Level::SetStage(int stageid, int alt)
 		push edi
 		push [ebp+12]		// alt
 		push [ebp+8]		// stageid
-		call _func77::func
+		call _func78::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2583,7 +2616,7 @@ __declspec(naked) void Level::SetStage(int stageid, int alt)
 	}
 }
 
-namespace _func78
+namespace _func79
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -2602,7 +2635,7 @@ __declspec(naked) void Level::Init()
 		push ebx
 		push esi
 		push edi
-		call _func78::func
+		call _func79::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2615,7 +2648,7 @@ __declspec(naked) void Level::Init()
 	}
 }
 
-namespace _func79
+namespace _func80
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -2636,7 +2669,7 @@ __declspec(naked) void Level::ChangeRoom(int targetRoomIDX, int dimension)
 		push edi
 		push [ebp+12]		// dimension
 		push [ebp+8]		// targetRoomIDX
-		call _func79::func
+		call _func80::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2649,7 +2682,7 @@ __declspec(naked) void Level::ChangeRoom(int targetRoomIDX, int dimension)
 	}
 }
 
-namespace _func80
+namespace _func81
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -2668,7 +2701,7 @@ __declspec(naked) int LevelGenerator::PlaceRoom(LevelGenerator_Room *room)
 		push esi
 		push edi
 		push [ebp+8]		// room
-		call _func80::func
+		call _func81::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2680,7 +2713,7 @@ __declspec(naked) int LevelGenerator::PlaceRoom(LevelGenerator_Room *room)
 	}
 }
 
-namespace _func81
+namespace _func82
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -2704,7 +2737,7 @@ __declspec(naked) LevelGenerator_Room *LevelGenerator::CreateRoom(int x, int y, 
 		push [ebp+16]		// shape
 		push [ebp+12]		// y
 		push [ebp+8]		// x
-		call _func81::func
+		call _func82::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2716,7 +2749,7 @@ __declspec(naked) LevelGenerator_Room *LevelGenerator::CreateRoom(int x, int y, 
 	}
 }
 
-namespace _func82
+namespace _func83
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -2742,7 +2775,7 @@ __declspec(naked) void LevelGenerator::Generate(int unk, bool unk2, bool unk3, b
 		push [ebp+16]		// unk3
 		push [ebp+12]		// unk2
 		push [ebp+8]		// unk
-		call _func82::func
+		call _func83::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2755,7 +2788,7 @@ __declspec(naked) void LevelGenerator::Generate(int unk, bool unk2, bool unk3, b
 	}
 }
 
-namespace _func83
+namespace _func84
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -2775,7 +2808,7 @@ __declspec(naked) LevelGenerator_Room *LevelGenerator::GetNewEndRoom(int roomSha
 		push edi
 		push [ebp+12]		// possibleDoors
 		push [ebp+8]		// roomShape
-		call _func83::func
+		call _func84::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2787,7 +2820,7 @@ __declspec(naked) LevelGenerator_Room *LevelGenerator::GetNewEndRoom(int roomSha
 	}
 }
 
-namespace _func84
+namespace _func85
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -2807,7 +2840,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 		push esi
 		push edi
 		push [ebp+8]		// Debug
-		call _func84::func
+		call _func85::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2820,7 +2853,7 @@ __declspec(naked) void LuaEngine::Init(bool Debug)
 	}
 }
 
-namespace _func85
+namespace _func86
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -2839,7 +2872,7 @@ __declspec(naked) void LuaEngine::RegisterClasses()
 		push ebx
 		push esi
 		push edi
-		call _func85::func
+		call _func86::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2852,7 +2885,7 @@ __declspec(naked) void LuaEngine::RegisterClasses()
 	}
 }
 
-namespace _func86
+namespace _func87
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -2871,7 +2904,7 @@ __declspec(naked) bool LuaEngine::RunBundledScript(const char *path)
 		push esi
 		push edi
 		push [ebp+8]		// path
-		call _func86::func
+		call _func87::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2885,12 +2918,12 @@ __declspec(naked) bool LuaEngine::RunBundledScript(const char *path)
 
 LuaEngine **__ptr_g_LuaEngine;
 
-namespace _var87
+namespace _var88
 {
 	static VariableDefinition varObj("g_LuaEngine", "8b0d(????????)c745dc01000000", &__ptr_g_LuaEngine);
 }
 
-namespace _func88
+namespace _func89
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -2909,7 +2942,7 @@ __declspec(naked) void Manager::Update()
 		push ebx
 		push esi
 		push edi
-		call _func88::func
+		call _func89::func
 		pop edi
 		pop esi
 		pop ebx
@@ -2924,12 +2957,12 @@ __declspec(naked) void Manager::Update()
 
 Manager **__ptr_g_Manager;
 
-namespace _var89
+namespace _var90
 {
 	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
 }
 
-namespace _func90
+namespace _func91
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -2937,38 +2970,6 @@ namespace _func90
 }
 
 __declspec(naked) void Menu_Character::Update()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func90::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func91
-{
-	static void *func = 0;
-	static const short *argdata = NULL;
-	static FunctionDefinition funcObj("Menu_Character::Render", typeid(void (Menu_Character::*)()), "538bdc83ec0883e4??83c404558b????89??????8bec6aff68????????64a1????????505381??????????a1????????33c589????5657508d????64??????????8bf989??????????80????????????0f57d2", argdata, 0, 4, &func);
-}
-
-__declspec(naked) void Menu_Character::Render()
 {
 	__asm
 	{
@@ -2996,6 +2997,38 @@ __declspec(naked) void Menu_Character::Render()
 namespace _func92
 {
 	static void *func = 0;
+	static const short *argdata = NULL;
+	static FunctionDefinition funcObj("Menu_Character::Render", typeid(void (Menu_Character::*)()), "538bdc83ec0883e4??83c404558b????89??????8bec6aff68????????64a1????????505381??????????a1????????33c589????5657508d????64??????????8bf989??????????80????????????0f57d2", argdata, 0, 4, &func);
+}
+
+__declspec(naked) void Menu_Character::Render()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func92::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func93
+{
+	static void *func = 0;
 	static short argdata[] = {0x1ff};
 	static FunctionDefinition funcObj("Menu_Character::Init", typeid(void (Menu_Character::*)(Vector *)), "538bdc83ec0883e4f883c404558b????89??????8bec6aff684d??????64a1????????505383ec48a1b4??????33c589????5657508d????64a3????????8bf189", argdata, 1, 4, &func);
 }
@@ -3013,7 +3046,7 @@ __declspec(naked) void Menu_Character::Init(Vector *unk)
 		push esi
 		push edi
 		push [ebp+8]		// unk
-		call _func92::func
+		call _func93::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3026,7 +3059,7 @@ __declspec(naked) void Menu_Character::Init(Vector *unk)
 	}
 }
 
-namespace _func93
+namespace _func94
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -3045,7 +3078,7 @@ __declspec(naked) void MenuManager::constructor()
 		push ebx
 		push esi
 		push edi
-		call _func93::func
+		call _func94::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3060,12 +3093,12 @@ __declspec(naked) void MenuManager::constructor()
 
 MenuManager **__ptr_g_MenuManager;
 
-namespace _var94
+namespace _var95
 {
 	static VariableDefinition varObj("g_MenuManager", "c745fcffffffff8bc8a3(????????)e8????????", &__ptr_g_MenuManager);
 }
 
-namespace _func95
+namespace _func96
 {
 	static void *func = 0;
 	static short argdata[] = {0x1ff, 0x1ff, 0x1ff};
@@ -3087,7 +3120,7 @@ __declspec(naked) void ModManager::RenderCustomCharacterMenu(int CharacterId, Ve
 		push [ebp+16]		// DefaultSprite
 		push [ebp+12]		// RenderPos
 		push [ebp+8]		// CharacterId
-		call _func95::func
+		call _func96::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3100,7 +3133,7 @@ __declspec(naked) void ModManager::RenderCustomCharacterMenu(int CharacterId, Ve
 	}
 }
 
-namespace _func96
+namespace _func97
 {
 	static void *func = 0;
 	static short argdata[] = {0x1ff, 0x1ff};
@@ -3121,7 +3154,7 @@ __declspec(naked) void Music::Play(int musicid, float volume)
 		push edi
 		push [ebp+12]		// volume
 		push [ebp+8]		// musicid
-		call _func96::func
+		call _func97::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3134,7 +3167,7 @@ __declspec(naked) void Music::Play(int musicid, float volume)
 	}
 }
 
-namespace _func97
+namespace _func98
 {
 	static void *func = 0;
 	static short argdata[] = {0x1ff, 0x1ff};
@@ -3155,7 +3188,7 @@ __declspec(naked) void Music::Crossfade(int musicid, float faderate)
 		push edi
 		push [ebp+12]		// faderate
 		push [ebp+8]		// musicid
-		call _func97::func
+		call _func98::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3168,7 +3201,7 @@ __declspec(naked) void Music::Crossfade(int musicid, float faderate)
 	}
 }
 
-namespace _func98
+namespace _func99
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -3187,7 +3220,7 @@ __declspec(naked) bool PersistentGameData::TryUnlock(int achievementID)
 		push esi
 		push edi
 		push [ebp+8]		// achievementID
-		call _func98::func
+		call _func99::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3199,7 +3232,7 @@ __declspec(naked) bool PersistentGameData::TryUnlock(int achievementID)
 	}
 }
 
-namespace _func99
+namespace _func100
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -3220,7 +3253,7 @@ __declspec(naked) void PersistentGameData::IncreaseEventCounter(int eEventCounte
 		push edi
 		push [ebp+12]		// num
 		push [ebp+8]		// eEventCounters
-		call _func99::func
+		call _func100::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3233,7 +3266,7 @@ __declspec(naked) void PersistentGameData::IncreaseEventCounter(int eEventCounte
 	}
 }
 
-namespace _func100
+namespace _func101
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -3252,7 +3285,7 @@ __declspec(naked) bool PersistentGameData::Unlocked(int achievementID)
 		push esi
 		push edi
 		push [ebp+8]		// achievementID
-		call _func100::func
+		call _func101::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3264,7 +3297,7 @@ __declspec(naked) bool PersistentGameData::Unlocked(int achievementID)
 	}
 }
 
-namespace _func101
+namespace _func102
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -3283,7 +3316,7 @@ __declspec(naked) void PlayerHUD::Update()
 		push ebx
 		push esi
 		push edi
-		call _func101::func
+		call _func102::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3296,7 +3329,7 @@ __declspec(naked) void PlayerHUD::Update()
 	}
 }
 
-namespace _func102
+namespace _func103
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -3319,7 +3352,7 @@ __declspec(naked) void PlayerHUD::RenderActiveItem(unsigned int slot, const Vect
 		push [ebp+16]		// alpha
 		push [ebp+12]		// pos
 		push [ebp+8]		// slot
-		call _func102::func
+		call _func103::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3332,7 +3365,7 @@ __declspec(naked) void PlayerHUD::RenderActiveItem(unsigned int slot, const Vect
 	}
 }
 
-namespace _func103
+namespace _func104
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -3340,37 +3373,6 @@ namespace _func103
 }
 
 __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer(int unk)
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push ecx
-		push ebx
-		push esi
-		push edi
-		push [ebp+8]		// unk
-		call _func103::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop edx
-		mov esp, ebp
-		pop ebp
-		retn 4
-	}
-}
-
-namespace _func104
-{
-	static void *func = 0;
-	static short argdata[] = {0x101, 0x1ff};
-	static FunctionDefinition funcObj("PlayerManager::SpawnCoPlayer2", typeid(Entity_Player *(PlayerManager::*)(int )), "558bec6aff68????????64a1000000005083ec10535657a1????????33c5508d45f464a3000000008bf9837d08ff0f85????????6880250000e8????????", argdata, 2, 1, &func);
-}
-
-__declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
 {
 	__asm
 	{
@@ -3397,6 +3399,37 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
 namespace _func105
 {
 	static void *func = 0;
+	static short argdata[] = {0x101, 0x1ff};
+	static FunctionDefinition funcObj("PlayerManager::SpawnCoPlayer2", typeid(Entity_Player *(PlayerManager::*)(int )), "558bec6aff68????????64a1000000005083ec10535657a1????????33c5508d45f464a3000000008bf9837d08ff0f85????????6880250000e8????????", argdata, 2, 1, &func);
+}
+
+__declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push ecx
+		push ebx
+		push esi
+		push edi
+		push [ebp+8]		// unk
+		call _func105::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop edx
+		mov esp, ebp
+		pop ebp
+		retn 4
+	}
+}
+
+namespace _func106
+{
+	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff};
 	static FunctionDefinition funcObj("PlayerManager::FirstCollectibleOwner", typeid(Entity_Player *(PlayerManager::*)(unsigned int , RNG &, bool )), "558bec83e4f883ec0c538b5d0856578bf98b0d????????53", argdata, 4, 1, &func);
 }
@@ -3415,7 +3448,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(unsigned i
 		push [ebp+16]		// unk
 		push [ebp+12]		// rng
 		push [ebp+8]		// collectibleID
-		call _func105::func
+		call _func106::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3427,7 +3460,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(unsigned i
 	}
 }
 
-namespace _func106
+namespace _func107
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -3435,36 +3468,6 @@ namespace _func106
 }
 
 __declspec(naked) unsigned int __stdcall Random()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func106::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func107
-{
-	static void *func = 0;
-	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("Room::GetDevilRoomChance", typeid(float (Room::*)()), "558bec83ec08f30f1005????????56578bf9f30f1145fc8b0d????????", argdata, 1, 1, &func);
-}
-
-__declspec(naked) float Room::GetDevilRoomChance()
 {
 	__asm
 	{
@@ -3490,6 +3493,36 @@ __declspec(naked) float Room::GetDevilRoomChance()
 namespace _func108
 {
 	static void *func = 0;
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("Room::GetDevilRoomChance", typeid(float (Room::*)()), "558bec83ec08f30f1005????????56578bf9f30f1145fc8b0d????????", argdata, 1, 1, &func);
+}
+
+__declspec(naked) float Room::GetDevilRoomChance()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func108::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func109
+{
+	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
 	static FunctionDefinition funcObj("Room::GetGridEntity", typeid(GridEntity *(Room::*)(uint32_t )), "558bec8b45083dbf0100007708", argdata, 2, 1, &func);
 }
@@ -3506,7 +3539,7 @@ __declspec(naked) GridEntity *Room::GetGridEntity(uint32_t idx)
 		push esi
 		push edi
 		push [ebp+8]		// idx
-		call _func108::func
+		call _func109::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3518,7 +3551,7 @@ __declspec(naked) GridEntity *Room::GetGridEntity(uint32_t idx)
 	}
 }
 
-namespace _func109
+namespace _func110
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -3526,38 +3559,6 @@ namespace _func109
 }
 
 __declspec(naked) void Room::ShopRestockFull()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func109::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func110
-{
-	static void *func = 0;
-	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("Room::ShopRestockPartial", typeid(void (Room::*)()), "558bec83ec1c53568bf1", argdata, 1, 5, &func);
-}
-
-__declspec(naked) void Room::ShopRestockPartial()
 {
 	__asm
 	{
@@ -3585,6 +3586,38 @@ __declspec(naked) void Room::ShopRestockPartial()
 namespace _func111
 {
 	static void *func = 0;
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("Room::ShopRestockPartial", typeid(void (Room::*)()), "558bec83ec1c53568bf1", argdata, 1, 5, &func);
+}
+
+__declspec(naked) void Room::ShopRestockPartial()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func111::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func112
+{
+	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff};
 	static FunctionDefinition funcObj("Room::GetShopItemPrice", typeid(int (Room::*)(unsigned int , unsigned int , int )), "558bec83ec30f30f7e05????????", argdata, 4, 1, &func);
 }
@@ -3603,7 +3636,7 @@ __declspec(naked) int Room::GetShopItemPrice(unsigned int entVariant, unsigned i
 		push [ebp+16]		// shopItemID
 		push [ebp+12]		// entSubType
 		push [ebp+8]		// entVariant
-		call _func111::func
+		call _func112::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3615,7 +3648,7 @@ __declspec(naked) int Room::GetShopItemPrice(unsigned int entVariant, unsigned i
 	}
 }
 
-namespace _func112
+namespace _func113
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -3637,7 +3670,7 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRoomByStageTypeAndVariant(uin
 		push [ebp+16]		// variant
 		push [ebp+12]		// type
 		push [ebp+8]		// stage
-		call _func112::func
+		call _func113::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3649,7 +3682,7 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRoomByStageTypeAndVariant(uin
 	}
 }
 
-namespace _func113
+namespace _func114
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -3679,7 +3712,7 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRandomRoom(unsigned int seed,
 		push [ebp+16]		// stage
 		push [ebp+12]		// reduceWeight
 		push [ebp+8]		// seed
-		call _func113::func
+		call _func114::func
 		pop edi
 		pop esi
 		pop ebx
@@ -3691,7 +3724,7 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRandomRoom(unsigned int seed,
 	}
 }
 
-namespace _func114
+namespace _func115
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -3716,7 +3749,7 @@ __declspec(naked) void SFXManager::Play(int ID, float Volume, int FrameDelay, bo
 		push [ebp+16]		// FrameDelay
 		push [ebp+12]		// Volume
 		push [ebp+8]		// ID
-		call _func114::func
+		call _func115::func
 		pop edi
 		pop esi
 		pop ebx

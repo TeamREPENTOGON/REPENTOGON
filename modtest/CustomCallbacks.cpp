@@ -411,7 +411,7 @@ HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
 			if (lua_isboolean(L, -1)) {
 				if (!lua_toboolean(L, -1)) {
 					this->Revive();
-					*this->GetVisibile() = true;
+					*this->GetVisible() = true;
 					return false;
 				}
 			}
@@ -953,4 +953,40 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 	}
 
 	super(offset);
+}
+
+//PRE/POST _SLOT_RENDER (id: 1089/1090)
+HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1089);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY)); //TODO once we have a proper EntitySlot metatable, return that instead
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isuserdata(L, -1)) {
+			offset = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+		}
+	}
+
+	super(offset);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1090);
+	lua_pushinteger(L, *this->GetVariant());
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY)); //TODO once we have a proper EntitySlot metatable, return that instead
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *offset);
+
+	lua_pcall(L, 4, 1, 0);
 }
