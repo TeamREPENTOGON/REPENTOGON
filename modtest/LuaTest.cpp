@@ -240,6 +240,7 @@ static constexpr const char* PlayerManagerMT = "PlayerManager";
 static constexpr const char* PersistentGameDataMT = "PersistentGameData";
 static constexpr const char* ConsoleMT = "Console";
 static constexpr const char* AmbushMT = "Ambush";
+static constexpr const char* MultiShotParamsMT = "MultiShotParams";
 
 static int Lua_GameGetRoomConfigHolder(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -660,22 +661,6 @@ static void RegisterPlayerSetItemState(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-int Lua_PlayerGetHealthType(lua_State* L)
-{
-	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
-	lua_pushinteger(L, player->GetHealthType());
-	return 1;
-}
-
-static void RegisterPlayerGetHealthType(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "GetHealthType");
-	lua_pushcfunction(L, Lua_PlayerGetHealthType);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 static int Lua_GetPersistentGameData(lua_State* L) {
 	Manager* manager = g_Manager;
 	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
@@ -967,24 +952,41 @@ static void RegisterFamiliarGetFollowerPriority(lua_State* L) {
 }
 */
 
-int Lua_RoomGetShopItemPrice(lua_State* L) 
-{
-	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
-	unsigned int entVariant = luaL_checkinteger(L, 2);
-	unsigned int entSubtype = luaL_checkinteger(L, 3);
-	int shopItemID = luaL_checkinteger(L, 4);
-
-	lua_pushinteger(L, room->GetShopItemPrice(entVariant, entSubtype, shopItemID));
+static int Lua_GetMultiShotParams(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int weaponType = luaL_checkinteger(L, 2);
+	Weapon_MultiShotParams* ud = (Weapon_MultiShotParams*)lua_newuserdata(L, sizeof(Weapon_MultiShotParams));
+	*ud = player->GetMultiShotParams((WeaponType)weaponType);
+	luaL_setmetatable(L, MultiShotParamsMT);
 	return 1;
 }
 
-static void RegisterRoomGetShopItemPrice(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "GetShopItemPrice");
-	lua_pushcfunction(L, Lua_RoomGetShopItemPrice);
+static int Lua_MultiShotParamsGetNumTears(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, MultiShotParamsMT);
+
+	lua_pushinteger(L, params->numTears);
+
+	return 1;
+};
+
+static void RegisterMultiShotParams(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetMultiShotParams");
+	lua_pushcfunction(L, Lua_GetMultiShotParams);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
+
+	luaL_newmetatable(L, MultiShotParamsMT);
+	lua_pushstring(L, "__index");
+	lua_pushvalue(L, -2);
+	lua_settable(L, -3);
+
+	lua_pushstring(L, "GetNumTears");
+	lua_pushcfunction(L, Lua_MultiShotParamsGetNumTears);
+	lua_rawset(L, -3);
+
+	lua_pop(L, 2);
+
 }
 
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
@@ -1016,6 +1018,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
 	RegisterMultiShotPositionVelocity(state);
+	RegisterMultiShotParams(state);
 	RegisterAchievementUnlocksDisallowed(state);
 	RegisterRoomConfigHolder(state);
 	RegisterRoomAdder(state);
@@ -1025,7 +1028,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterPersistentGameData(state);
 	RegisterInitPostLevelInitStats(state);
 	RegisterPlayerSetItemState(state);
-	RegisterPlayerGetHealthType(state);
 	RegisterConsole(state);
 	RegisterAmbush(state);
 	//RegisterFamiliarGetFollowerPriority(state);
@@ -1037,5 +1039,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityAddBrimstoneMark(state);
 	RegisterEntityAddIce(state);
 	RegisterEntityAddKnockback(state);
-	RegisterRoomGetShopItemPrice(state);
+
 };
