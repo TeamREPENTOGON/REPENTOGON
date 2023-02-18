@@ -1171,3 +1171,8 @@ EntityPoopVariant = {
 	BLACK = 15,
 	HOLY = 16, WHITE = 6,
 }
+
+PlayerVariant = {
+	PLAYER = 0,
+	FOUND_SOUL = 1, CO_OP_BABY = 1,
+}

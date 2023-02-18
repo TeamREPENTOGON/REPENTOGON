@@ -298,7 +298,7 @@ Taken by Room::CheckLine.
 Taken by EntityNPC::FireProjectiles.
 
 ## StbGridType
-Type attribute of GridEntities stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+Type attribute of grid entities stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
 
 ## StbRockSubType
 SubType attribute of StbGridType.ROCK stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
@@ -313,7 +313,7 @@ SubType attribute of StbGridType.TELEPORTER stored in STB and while passing thro
 Variant attribute of StbGridType.RAIL and StbGridType.RAIL_PIT stored in STB. (And while passing through MC_PRE_ROOM_ENTITY_SPAWN?)
 
 ## RetractingSpikesVariant
-Variant attribute of StbGridType.RETRACTING_SPIKES stored in STB in-world, and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+Variant attribute of StbGridType.RETRACTING_SPIKES stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
 Variant attribute of GridEntityType.GRID_SPIKES_ONOFF.
 
 ## PressurePlateVariant
@@ -329,3 +329,6 @@ Variant attribute of GridEntityType.GRID_POOP. Is not stored in STB, or passed t
 
 ## EntityPoopVariant
 Variant attribute of EntityType.ENTITY_POOP.
+
+## PlayerVariant
+Optional argument of MC_POST_PLAYER_INIT, MC_POST_PLAYER_UPDATE, MC_PRE_PLAYER_RENDER, MC_POST_PLAYER_RENDER, and MC_PRE_PLAYER_COLLISION.
