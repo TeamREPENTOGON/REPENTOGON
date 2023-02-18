@@ -93,6 +93,7 @@ Accepts `true` to cancel card use.
 ## ModCallbacks.MC_PRE_USE_PILL(PillEffect ID, PillColor PillColor, EntityPlayer Player, int UseFlag)
 Accepts `true` to cancel pill use.
 
+<<<<<<< HEAD
 ## ModCallbacks.MC_PRE_FAMILIAR_RENDER(EntityFamiliar Familiar, Vector Offset)
 Optional argument: `FamiliarVariant Variant`
 
@@ -155,6 +156,13 @@ OptionalArguemnt: `BombVariant Variant`
 Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
+=======
+## ModCallbacks.MC_GET_SHOP_ITEM_PRICE(int EntityVariant, int EntitySubType, int ShopItemID)
+Accepts an integer to change the price of the item.
+
+## ModCallbacks.MC_PLAYER_GET_HEALTH_TYPE(EntityPlayer Player)
+Accepts an integer to change health type for the character.
+>>>>>>> 585462a66883933bdfb131500b2340868a2ca2ab
 
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
@@ -215,6 +223,11 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 ## void EntityPlayer:SetItemState(CollectibleType CollectibleType)
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
+## HealthType EntityPlayer:GetHealthType()
+
+## int Room:GetShopItemPrice(int EntityVariant, int EntitySubType, int ShopItemID)
+Returns the price of the item.
+
 ## PersistentGameData Isaac:GetPersistentGameData()
 Should probably be moved to Game for consistency.
 
@@ -256,3 +269,47 @@ Taken by PersistentGameData::TryUnlock.
 
 ## FollowerPriority
 Return parameter for MC_GET_FOLLOWER_PRIORITY.
+
+## HealthType
+Return value for EntityPlayer::GetHealthType. Return parameter for MC_PLAYER_GET_HEALTH_TYPE.
+
+## Dimension
+
+## LineCheckMode
+Taken by Room::CheckLine.
+
+## ProjectileMode
+Taken by EntityNPC::FireProjectiles.
+
+## StbGridType
+Type attribute of GridEntities stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## StbRockSubType
+SubType attribute of StbGridType.ROCK stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## StbPoopSubType
+SubType attribute of StbGridType.POOP stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## StbTeleporterSubType
+SubType attribute of StbGridType.TELEPORTER stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## StbRailVariant
+Variant attribute of StbGridType.RAIL and StbGridType.RAIL_PIT stored in STB. (And while passing through MC_PRE_ROOM_ENTITY_SPAWN?)
+
+## RetractingSpikesVariant
+Variant attribute of StbGridType.RETRACTING_SPIKES stored in STB in-world, and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+Variant attribute of GridEntityType.GRID_SPIKES_ONOFF.
+
+## PressurePlateVariant
+Variant attribute of StbGridType.PRESSURE_PLATE stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+Variant attribute of GridEntityType.GRID_PRESSURE_PLATE.
+
+## TeleporterVariant
+Variant attribute of StbGridType.TELEPORTER stored in STB and while passing through MC_PRE_ROOM_ENTITY_SPAWN.
+Variant attribute of StbGridType.GRID_TELEPORTER.
+
+## GridPoopVariant
+Variant attribute of GridEntityType.GRID_POOP. Is not stored in STB, or passed through MC_PRE_ROOM_ENTITY_SPAWN.
+
+## EntityPoopVariant
+Variant attribute of EntityType.ENTITY_POOP.

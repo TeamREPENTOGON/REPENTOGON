@@ -86,6 +86,9 @@ __thiscall void Entity_Player::UsePill(Entity_Player* this<ecx>, int ePillEffect
 "558bec83e4c081ecb4000000a1????????33c4898424b0000000538bd9568b":
 __thiscall void Entity_Player::Render(Entity_Player *this<ecx>, Vector *offset);
 
+"8b810c13000083c0fc83f82477??0fb680????????":
+__thiscall int Entity_Player::GetHealthType(Entity_Player *this<ecx>);
+
 struct Entity_Player {{
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 }};

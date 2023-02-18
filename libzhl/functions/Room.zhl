@@ -9,3 +9,6 @@ __thiscall void Room::ShopRestockFull(Room* this<ecx>);
 
 "558bec83ec1c53568bf1":
 __thiscall void Room::ShopRestockPartial(Room* this<ecx>);
+
+"558bec83ec30f30f7e05????????":
+__thiscall int Room::GetShopItemPrice(Room* this<ecx>, unsigned int entVariant, unsigned int entSubType, int shopItemID);

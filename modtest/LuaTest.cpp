@@ -660,6 +660,22 @@ static void RegisterPlayerSetItemState(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerGetHealthType(lua_State* L)
+{
+	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
+	lua_pushinteger(L, player->GetHealthType());
+	return 1;
+}
+
+static void RegisterPlayerGetHealthType(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetHealthType");
+	lua_pushcfunction(L, Lua_PlayerGetHealthType);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 static int Lua_GetPersistentGameData(lua_State* L) {
 	Manager* manager = g_Manager;
 	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
@@ -951,6 +967,26 @@ static void RegisterFamiliarGetFollowerPriority(lua_State* L) {
 }
 */
 
+int Lua_RoomGetShopItemPrice(lua_State* L) 
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	unsigned int entVariant = luaL_checkinteger(L, 2);
+	unsigned int entSubtype = luaL_checkinteger(L, 3);
+	int shopItemID = luaL_checkinteger(L, 4);
+
+	lua_pushinteger(L, room->GetShopItemPrice(entVariant, entSubtype, shopItemID));
+	return 1;
+}
+
+static void RegisterRoomGetShopItemPrice(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "GetShopItemPrice");
+	lua_pushcfunction(L, Lua_RoomGetShopItemPrice);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	super(Debug);
 	luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
@@ -989,6 +1025,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterPersistentGameData(state);
 	RegisterInitPostLevelInitStats(state);
 	RegisterPlayerSetItemState(state);
+	RegisterPlayerGetHealthType(state);
 	RegisterConsole(state);
 	RegisterAmbush(state);
 	//RegisterFamiliarGetFollowerPriority(state);
@@ -1000,4 +1037,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityAddBrimstoneMark(state);
 	RegisterEntityAddIce(state);
 	RegisterEntityAddKnockback(state);
+	RegisterRoomGetShopItemPrice(state);
 };
