@@ -255,7 +255,7 @@ struct Entity
 	unsigned int _type; //0x28
 	unsigned int _variant; //0x2c
 	unsigned int _subtype; //0x30
-	char pad1[309];
+	unsigned int _shadowSize; //0x150   
 	bool _visible; // 0x169 
 };
 

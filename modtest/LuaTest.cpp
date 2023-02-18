@@ -989,6 +989,36 @@ static void RegisterMultiShotParams(lua_State* L) {
 
 }
 
+static int Lua_EntityGetShadowSize(lua_State* L)
+{
+	Entity* entity = ud_to_data<Entity*>(lua_touserdata(L, 1));
+	lua_pushnumber(L, *entity->GetShadowSize());
+	return 1;
+}
+
+static int Lua_EntitySetShadowSize(lua_State* L)
+{
+	Entity* entity = ud_to_data<Entity*>(lua_touserdata(L, 1));
+	float shadowSize = luaL_checknumber(L, 2);
+	*entity->GetShadowSize() = shadowSize;
+	return 0;
+}
+
+static void RegisterEntityShadowSize(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::ENTITY);
+	lua_pushstring(L, "GetShadowSize");
+	lua_pushcfunction(L, Lua_EntityGetShadowSize);
+	lua_rawset(L, -3);
+
+	lua::PushMetatable(L, lua::Metatables::ENTITY);
+	lua_pushstring(L, "SetShadowSize");
+	lua_pushcfunction(L, Lua_EntitySetShadowSize);
+	lua_rawset(L, -3);
+
+	lua_pop(L, 2);
+}
+
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	super(Debug);
 	luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
@@ -1039,5 +1069,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityAddBrimstoneMark(state);
 	RegisterEntityAddIce(state);
 	RegisterEntityAddKnockback(state);
-
+	RegisterEntityShadowSize(state);
 };

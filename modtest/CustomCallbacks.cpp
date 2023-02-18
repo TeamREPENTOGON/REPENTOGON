@@ -750,7 +750,6 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 	lua_getglobal(L, "Isaac");
 	lua_getfield(L, -1, "RunCallbackWithParam");
 
-
 	lua_pushinteger(L, 1081);
 	lua_pushinteger(L, *this->GetType());
 	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));

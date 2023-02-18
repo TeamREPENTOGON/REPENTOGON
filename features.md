@@ -228,6 +228,10 @@ Returns `nil` if the specified collectible has never been picked up.
 
 ## void Entity:AddKnockback(EntityRef Source, Vector PushDirection, int Duration, bool Unknown)
 
+## float Entity:GetShadowSize()
+
+## float Entity:SetShadowSize(float Size)
+
 ## EntityPlayer EntityPlayer:InitTwin(PlayerType PlayerType)
 I believe this is used by J&E, Strawman etc
 
