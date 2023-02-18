@@ -965,7 +965,7 @@ Achievement = {
 FollowerPriority = {
 	DEFAULT = 0,
 	SHOOTER = 1,
-	DEFENSIVE = 2, -- Dry Baby, Mongo Baby, Censcer, Lil Abaddon
+	DEFENSIVE = 2, -- Dry Baby, Mongo Baby, Cencer, Lil Abaddon
 	SHOOTER_SPECIAL = 3, -- Lil Brim, Lil Monstro
 	INCUBUS = 10,
 	KING_BABY = 9999,
@@ -974,7 +974,21 @@ FollowerPriority = {
 HealthType = {
 	DEFAULT = 0, RED = 0,
 	SOUL = 1,
-	LOST = 2, NO_HEALTH = 2
+	LOST = 2, NO_HEALTH = 2,
 	COIN = 3, KEEPER = 3,
 	BONE = 4,
+}
+
+Dimension = {
+	CURRENT = -1,
+	NORMAL = 0,
+	KNIFE_PUZZLE = 1, MIRROR = 1, MINESHAFT = 1,
+	DEATH_CERTIFICATE = 2,
+}
+
+LineCheckMode = {
+	ENTITY = 0,
+	RAYCAST = 1, -- Similar to ENTITY, and cheaper, but can pass between diagonally adjacent GridEntities
+	EXPLOSION = 2,
+	PROJECTILE = 3,
 }

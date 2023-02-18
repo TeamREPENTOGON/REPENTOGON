@@ -206,3 +206,9 @@ Taken by PersistentGameData::TryUnlock.
 Return parameter for MC_GET_FOLLOWER_PRIORITY.
 
 ## HealthType
+Return value for EntityPlayer::GetHealthType. Return parameter for MC_PLAYER_GET_HEALTH_TYPE.
+
+## Dimension
+
+## LineCheckMode
+Taken by Room::CheckLine. 
