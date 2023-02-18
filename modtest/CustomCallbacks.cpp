@@ -674,7 +674,7 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 	}
 }
 
-//MC_GET_SHOP_ITEM_PRICE (id: 1066)
+//GET_SHOP_ITEM_PRICE (id: 1066)
 HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSubtype, int shopItemID) -> int) {
 	lua_State* L = g_LuaEngine->_state;
 
@@ -692,6 +692,27 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 		}
 		else {
 			super(entVariant, entSubtype, shopItemID);
+		}
+	}
+}
+
+//PLAYER_GET_HEALTH_TYPE (id: 1067)
+HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1067);
+	Entity_Player* fam = (Entity_Player*)this;
+	lua::luabridge::UserdataPtr::push(L, fam, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+
+	if (!lua_pcall(L, 2, 1, 0)) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+		else {
+			return super();
 		}
 	}
 }

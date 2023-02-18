@@ -24,6 +24,7 @@ ModCallbacks.MC_PRE_PICKUP_MORPH = 2013
 ModCallbacks.MC_PRE_USE_CARD = 1064
 ModCallbacks.MC_PRE_USE_PILL = 1065
 ModCallbacks.MC_GET_SHOP_ITEM_PRICE = 1066
+ModCallbacks.MC_PLAYER_GET_HEALTH_TYPE = 1067
 
 StbType = {
 	SPECIAL_ROOMS = 0,
@@ -968,4 +969,12 @@ FollowerPriority = {
 	SHOOTER_SPECIAL = 3, -- Lil Brim, Lil Monstro
 	INCUBUS = 10,
 	KING_BABY = 9999,
+}
+
+HealthType = {
+	DEFAULT = 0, RED = 0,
+	SOUL = 1,
+	LOST = 2, NO_HEALTH = 2
+	COIN = 3, KEEPER = 3,
+	BONE = 4,
 }

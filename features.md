@@ -96,6 +96,9 @@ Accepts `true` to cancel pill use.
 ## ModCallbacks.MC_GET_SHOP_ITEM_PRICE(int EntityVariant, int EntitySubType, int ShopItemID)
 Accepts an integer to change the price of the item.
 
+## ModCallbacks.MC_PLAYER_GET_HEALTH_TYPE(EntityPlayer Player)
+Accepts an integer to change health type for the character.
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.
@@ -155,6 +158,8 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 ## void EntityPlayer:SetItemState(CollectibleType CollectibleType)
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
+## HealthType EntityPlayer:GetHealthType()
+
 ## int Room:GetShopItemPrice(int EntityVariant, int EntitySubType, int ShopItemID)
 Returns the price of the item.
 
@@ -199,3 +204,5 @@ Taken by PersistentGameData::TryUnlock.
 
 ## FollowerPriority
 Return parameter for MC_GET_FOLLOWER_PRIORITY.
+
+## HealthType
