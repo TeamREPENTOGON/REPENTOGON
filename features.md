@@ -203,6 +203,20 @@ Accepts a Vector to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
+## ModCallbacks.MC_PRE_GRID_INIT(GridEntity Grid, int Seed)
+Optional argument: `GridEntityType Type`
+
+This is called when a grid is being placed into a room for the first time.
+
+Accepts `false` to cancel grid initialization and immediately remove the residual grid from the room. **This will cause the game to call PRE_GRID_INIT again the next time the room is entered.**
+
+Alternatively accepts an int to modify the init seed.
+
+## ModCallbacks.MC_POST_GRID_INIT(GridEntity Grid, int Seed)
+Optional argument: `GridEntityType Type`
+
+Accepts no return parameters.
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.

@@ -97,6 +97,8 @@ struct Game
 	
 	inline Ambush* GetAmbush() { return (Ambush*)((char*)this + 0x1c31b8); }
 	
+	inline Room** GetCurrentRoom() { return (Room**)((char*)this + 0x18190); }
+	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 
         return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 

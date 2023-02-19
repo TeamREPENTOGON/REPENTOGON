@@ -1,0 +1,4 @@
+// Throwing anything from the global namespace here so ZHL doesn't throw a fit
+
+"558bec6aff68????????64a1000000005051535657a1????????33c5508d45f464a3000000008bda":
+static GridEntity* Isaac::CreateGridEntity(int Type<ecx>, unsigned int Index<edx>);

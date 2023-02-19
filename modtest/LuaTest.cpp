@@ -205,7 +205,6 @@ int Lua_GetMultiShotPositionVelocity(lua_State *L) // This *should* be in the AP
 	Vector* shotDirection = *(Vector**)((char*)lua::CheckUserdata(L, 4, lua::Metatables::VECTOR, "Vector") + 4);
 	float shotSpeed = luaL_checknumber(L, 5);
 	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, MultiShotParamsMT);
-	printf("%d", multiShotParams->numTears);
 	if (multiShotParams->numTears < loopIndex) {
 		luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.NumTears");
 	};
@@ -985,7 +984,7 @@ static void RegisterMultiShotParams(lua_State* L) {
 	lua_pushcfunction(L, Lua_MultiShotParamsGetNumTears);
 	lua_rawset(L, -3);
 
-	lua_pop(L, 2);
+	lua_pop(L, 1);
 
 }
 
