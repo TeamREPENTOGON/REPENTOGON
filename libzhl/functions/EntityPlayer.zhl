@@ -89,6 +89,13 @@ __thiscall void Entity_Player::Render(Entity_Player *this<ecx>, Vector *offset);
 "8b810c13000083c0fc83f82477??0fb680????????":
 __thiscall int Entity_Player::GetHealthType(Entity_Player *this<ecx>);
 
+
+"558bec83e4f85153568bf15780????????????0f":
+__thiscall void Entity_Player::RenderHead(Entity_Player* this<ecx>,Vector *position);
+
+"558bec83e4??83ec1453568b??5780??":
+__thiscall void Entity_Player::RenderBody(Entity_Player *this<ecx>,Vector *position);
+
 struct Entity_Player {{
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 }};

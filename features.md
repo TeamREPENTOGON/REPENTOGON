@@ -54,6 +54,17 @@ Alternatively accepts `false` to cancel the track
 This callback is called for *both* MusicManager::Play *and* MusicManager::Crossfade! `IsFade` is provided to distinguish the two.
 
 
+## ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD(EntityPlayer player, Vector renderpos)
+Accepts an override `vector` for renderpos.
+
+Alternatively accepts a `false` to stop the rendering.
+
+## ModCallbacks.MC_PRE_RENDER_PLAYER_BODY(EntityPlayer player, Vector renderpos)
+Accepts an override `vector` for renderpos.
+
+Alternatively accepts a `false` to stop the rendering.
+
+
 ## ModCallbacks.MC_PRE_ENTITY_THROW(EntityPlayer ThrowingPlayer, Entity HeldEntity, Vector Velocity)
 Accepts a `Vector` which will modify the velocity of the thrown entity.
 

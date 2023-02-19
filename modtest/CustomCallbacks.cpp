@@ -990,41 +990,61 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	lua_pcall(L, 4, 1, 0);
 }
 
-//PRE/POST_GRID_INIT (id: 1100/1101)
-HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
 
-	lua_State* L = g_LuaEngine->_state;
+//RenderHead Callback (id: 1038)
+HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
+	//printf("Head Rendering \n");
+	lua_State *L = g_LuaEngine->_state;
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_getfield(L, -1, "RunCallback");
 
-	lua_pushinteger(L, 1100);
-	lua_pushinteger(L, this->_type);
-	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY));
-	lua_pushinteger(L, Seed);
+	lua_pushinteger(L, 1038);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataPtr::push(L, x, lua::GetMetatableKey(lua::Metatables::VECTOR));
 
-	if (!lua_pcall(L, 4, 1, 0)) {
-		if (lua_isboolean(L, -1)) {
+	if (!lua_pcall(L, 3, 1, 0)) {
+		if (lua_isuserdata(L, -1)) {
+			printf("Head Render callback run \n");
+			Vector* newpos = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+			super(newpos);
+			return;
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("Head Render callback run \n");
 			if (!lua_toboolean(L, -1)) {
-				Room* room = *g_Game->GetCurrentRoom();
-				room->RemoveGridEntityImmediate(*this->GetGridIndex(), 0, false);
 				return;
 			}
 		}
-		else if (lua_isinteger(L, -1)) {
-			Seed = lua_tointeger(L, -1);
-		}
 	}
+	super(x);
+}
 
-	super(Seed);
+//Renderbody Callback (id: 1039)
+HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
+	//printf("Body Rendering \n");
+	lua_State *L = g_LuaEngine->_state;
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_getfield(L, -1, "RunCallback");
 
-	lua_pushinteger(L, 1101);
-	lua_pushinteger(L, this->_type);
-	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY));
-	lua_pushinteger(L, Seed);
+	lua_pushinteger(L, 1039);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataPtr::push(L, x, lua::GetMetatableKey(lua::Metatables::VECTOR));
 
-	lua_pcall(L, 4, 1, 0);
-};
+	if (!lua_pcall(L, 3, 1, 0)) {
+		if (lua_isuserdata(L, -1)) {
+			printf("Body Render callback run \n");
+			Vector* newpos = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+			super(newpos);
+			return;
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("Body Render callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(x);
+}
