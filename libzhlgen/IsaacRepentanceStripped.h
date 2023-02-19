@@ -1,5 +1,4 @@
 struct Manager;
-struct MenuManager;
 struct Game;
 struct ANM2;
 struct Vector;
