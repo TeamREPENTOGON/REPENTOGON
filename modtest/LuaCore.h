@@ -160,6 +160,12 @@ namespace lua {
         return (T)ud;
     }
 
+
+    template<typename T>
+    T UserdataToData(void* ud) {
+        return *(T*)((char*)ud + 4);
+    }
+
     namespace luabridge {
         class Userdata {
         protected:
