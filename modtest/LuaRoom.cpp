@@ -26,9 +26,25 @@ static void RegisterRailFunctions(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static int Lua_RemoveGridEntityImmediate(lua_State* L) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	int GridIndex = luaL_checkinteger(L, 2);
+	int PathTrail = luaL_checkinteger(L, 3);
+	bool KeepDecoration = lua_toboolean(L, 4);
+	room->RemoveGridEntityImmediate(GridIndex, PathTrail, KeepDecoration);
+}
+
+static void RegisterRemoveGridEntityImmediate(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "RemoveGridEntityImmediate");
+	lua_pushcfunction(L, Lua_RemoveGridEntityImmediate);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	RegisterRailFunctions(state);
+	RegisterRemoveGridEntityImmediate(state);
 }
