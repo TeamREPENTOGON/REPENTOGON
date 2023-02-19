@@ -1,0 +1,2 @@
+"558bec83e4??515356578bf98b????85d274??":
+__thiscall void ANM2::Render(Vector* position,Vector* topleftclamp,Vector* bottomrightclamp);

@@ -1,8 +1,10 @@
 struct Manager;
 struct MenuManager;
 struct Game;
+struct ANM2;
 struct Vector;
 struct PlayerManager;
+struct MenuManager;
 struct PersistentGameData;
 struct Music;
 struct Entity;
@@ -472,6 +474,10 @@ struct RNG
 struct ModManager
 {
 
+};
+
+struct MenuManager
+{
 };
 
 struct ANM2

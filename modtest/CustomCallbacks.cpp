@@ -989,3 +989,62 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 
 	lua_pcall(L, 4, 1, 0);
 }
+
+
+//RenderHead Callback (id: 1038)
+HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
+	//printf("Head Rendering \n");
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1038);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataPtr::push(L, x, lua::GetMetatableKey(lua::Metatables::VECTOR));
+
+	if (!lua_pcall(L, 3, 1, 0)) {
+		if (lua_isuserdata(L, -1)) {
+			printf("Head Render callback run \n");
+			Vector* newpos = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+			super(newpos);
+			return;
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("Head Render callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(x);
+}
+
+//Renderbody Callback (id: 1039)
+HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
+	//printf("Body Rendering \n");
+	lua_State *L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+
+	lua_pushinteger(L, 1039);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	lua::luabridge::UserdataPtr::push(L, x, lua::GetMetatableKey(lua::Metatables::VECTOR));
+
+	if (!lua_pcall(L, 3, 1, 0)) {
+		if (lua_isuserdata(L, -1)) {
+			printf("Body Render callback run \n");
+			Vector* newpos = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+			super(newpos);
+			return;
+		}
+		else if (lua_isboolean(L, -1)) {
+			printf("Body Render callback run \n");
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super(x);
+}
