@@ -1,2 +1,11 @@
 "558bec6aff68????????64a1000000005051535657a1????????33c5508d45f464a3000000008bda8bf983ff1b0f87????????":
 GridEntity* CreateGridEntity(GridEntityType type, unsigned int seed);
+
+"558bec8b4508568bf1894614":
+__thiscall void GridEntity::Init(IsaacRepentance::GridEntity *this<ecx>, unsigned int Seed);
+
+struct GridEntity
+{{
+	inline GridCollisionClass* GetCollisionClass() { return (GridCollisionClass*)((char*)this + 0x3C); }
+	inline unsigned int* GetGridIndex() { return (unsigned int*)((char*)this + 0x24); }
+}};

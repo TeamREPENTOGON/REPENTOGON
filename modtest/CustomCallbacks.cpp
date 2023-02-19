@@ -989,3 +989,42 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 
 	lua_pcall(L, 4, 1, 0);
 }
+
+//PRE/POST_GRID_INIT (id: 1100/1101)
+HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
+
+	lua_State* L = g_LuaEngine->_state;
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1100);
+	lua_pushinteger(L, this->_type);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY));
+	lua_pushinteger(L, Seed);
+
+	if (!lua_pcall(L, 4, 1, 0)) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				Room* room = *g_Game->GetCurrentRoom();
+				room->RemoveGridEntityImmediate(*this->GetGridIndex(), 0, false);
+				return;
+			}
+		}
+		else if (lua_isinteger(L, -1)) {
+			Seed = lua_tointeger(L, -1);
+		}
+	}
+
+	super(Seed);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+
+	lua_pushinteger(L, 1101);
+	lua_pushinteger(L, this->_type);
+	lua::luabridge::UserdataPtr::push(L, this, lua::GetMetatableKey(lua::Metatables::GRID_ENTITY));
+	lua_pushinteger(L, Seed);
+
+	lua_pcall(L, 4, 1, 0);
+};

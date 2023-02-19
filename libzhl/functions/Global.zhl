@@ -149,6 +149,16 @@ struct GlobalConst
         MAX_DOOR_SLOTS
     };
 
+	enum GridCollisionClass
+	{
+		COLLISION_NONE = 0,
+		COLLISION_PIT,
+		COLLISION_OBJECT,
+		COLLISION_SOLID,
+		COLLISION_WALL,
+		COLLISION_WALL_EXCEPT_PLAYER
+	};
+	
 	static DWORD GetBaseAddress()
 	{
 		return (DWORD)GetModuleHandle(NULL);

@@ -36,6 +36,8 @@ ModCallbacks.MC_PRE_EFFECT_RENDER = 1087
 ModCallbacks.MC_PRE_BOMB_RENDER = 1088
 ModCallbacks.MC_PRE_SLOT_RENDER = 1089
 ModCallbacks.MC_POST_SLOT_RENDER = 1090
+ModCallbacks.MC_PRE_GRID_INIT = 1100
+ModCallbacks.MC_POST_GRID_INIT = 1101
 
 EntityPartition.ALL = 0xffffffff
 

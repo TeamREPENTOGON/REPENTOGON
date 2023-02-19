@@ -12,3 +12,12 @@ __thiscall void Room::ShopRestockPartial(Room* this<ecx>);
 
 "558bec83ec30f30f7e05????????":
 __thiscall int Room::GetShopItemPrice(Room* this<ecx>, unsigned int entVariant, unsigned int entSubType, int shopItemID);
+
+"558bec53568b75088bd95785":
+__thiscall bool Room::SpawnGridEntity(Room *this<ecx>, int GridIndex, unsigned int Type, unsigned int Variant, unsigned int Seed, int VarData);
+
+"558bec5153568b75088bd95785":
+__thiscall bool Room::SpawnGridEntity(Room *this<ecx>, int GridIndex, GridEntityDesc *Desc);
+
+"558bec8b5508568bf181":
+__thiscall void Room::RemoveGridEntityImmediate(Room *this<ecx>, int GridIndex, int PathTrail, bool KeepDecoration);

@@ -211,6 +211,16 @@ struct RoomDescriptor
     int32_t unk29; // 0xB4
 }; // 0xB8 (Checked in assembly)
 
+
+struct Room
+{
+	char pad0[0x24]; 
+    GridEntity* _gridEntities[0x1BF]; // 0x24
+    char pad1[0x4]; // 0x720
+    GridEntity* _doors[8]; // 0x724
+    uint32_t _doorGridPositions[8]; // 0x744
+};
+
 struct Game 
 {
 	uint32_t _stage; // 0x0
@@ -269,15 +279,6 @@ struct EntityRef
   Vector _velocity;
   unsigned int _flags;
   Entity *_entity;
-};
-
-struct Room
-{
-	char pad0[0x24]; 
-    GridEntity* _gridEntities[0x1BF]; // 0x24
-    char pad1[0x4]; // 0x720
-    GridEntity* _doors[8]; // 0x724
-    uint32_t _doorGridPositions[8]; // 0x744
 };
 
 struct VTable_Entity
@@ -358,6 +359,19 @@ struct Entity_NPC
 	Entity _entity;
 };
 
+struct GridEntityDesc
+{
+	int _type;
+	int _variant;
+	int _state;
+	int _spawnCount;
+	unsigned int _spawnSeed;
+	int _varData;
+	bool _initialized;
+	unsigned int _variableSeed;
+
+};
+
 struct GridEntity 
 {
     VTable_GridEntity* _vtable;
@@ -368,6 +382,7 @@ struct GridEntity
 	int _unk2;
 	int _varData;
 	int _unk3;
+	unsigned int _collisionClass; // 0x3C
 	
 };
 
@@ -487,4 +502,9 @@ struct SFXManager
 struct Music 
 {
 
+};
+
+struct Isaac
+{
+	
 };
