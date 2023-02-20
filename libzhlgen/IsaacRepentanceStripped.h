@@ -77,15 +77,9 @@ struct Menu_Character
 	int unk8;
 };
 
-union uIsaacString
-{
-    char small_string[16];
-    char* long_string;
-};
-
 struct IsaacString 
 {
-    uIsaacString value;
+    char text[16];
     uint32_t size; // 0x10
     uint32_t unk; // 0x14
 }; // 0x18

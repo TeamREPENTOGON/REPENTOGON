@@ -32,6 +32,7 @@ static int Lua_RemoveGridEntityImmediate(lua_State* L) {
 	int PathTrail = luaL_checkinteger(L, 3);
 	bool KeepDecoration = lua_toboolean(L, 4);
 	room->RemoveGridEntityImmediate(GridIndex, PathTrail, KeepDecoration);
+	return 0;
 }
 
 static void RegisterRemoveGridEntityImmediate(lua_State* L) {

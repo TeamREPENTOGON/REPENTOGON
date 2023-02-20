@@ -954,10 +954,10 @@ local function writeGlobalVars(funcs, out)
 	for _,var in ipairs(funcs) do
 		if not var.args then
 			if var.reference then
-				out("\nextern LIBZHL_API %s*__ptr_%s;", var:toString(), var.name)
+				out("\nextern LIBZHL_API_GLOBS %s*__ptr_%s;", var:toString(), var.name)
 				out("\n#define %s (*__ptr_%s)", var.name, var.name)
 			else
-				out("\nextern LIBZHL_API %s%s;", var:toString(), var.name)
+				out("\nextern LIBZHL_API_GLOBS %s%s;", var:toString(), var.name)
 			end
 		end
 	end
@@ -972,18 +972,14 @@ f([[#pragma once
 
 #pragma warning( disable : 4722 )
 
-#ifdef LIBZHL_EXPORTS
-#define LIBZHL_API __declspec(dllexport)
-#else
-#define LIBZHL_API __declspec(dllimport)
-#endif
-
 #define LIBZHL_INTERFACE __declspec(novtable)
 
 #define MOD_EXPORT extern "C" __declspec(dllexport)
 
 __declspec(noreturn) inline void __cdecl __NOP() {}
 #define LIBZHL_PLACEHOLDER {__NOP();}
+
+#include "libzhl.h"
 
 ]])
 

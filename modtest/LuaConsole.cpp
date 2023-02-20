@@ -17,8 +17,17 @@ static int Lua_GetConsole(lua_State* L) {
 int Lua_ConsolePrintError(lua_State* L)
 {
 	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
-	std::string err = luaL_checkstring(L, 2);
-	console->PrintError(err);
+	// std::string err = luaL_checkstring(L, 2);
+	IsaacString str;
+	const char* err = luaL_checkstring(L, 2);
+	if (strlen(err) < 16) {
+		strcpy(str.text, err);
+	}
+	else {
+		*(char**)str.text = (char*)err;
+	}
+	str.unk = str.size = strlen(err);
+	console->PrintError(str);
 	return 1;
 }
 

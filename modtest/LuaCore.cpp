@@ -397,7 +397,7 @@ namespace lua {
 				FILE* f = fopen("repentogon.log", "a");
 				fprintf(f, err.str().c_str());
 				fclose(f);
-				throw std::runtime_error(err.str());
+				abort();
 			}
 		}
 	}
