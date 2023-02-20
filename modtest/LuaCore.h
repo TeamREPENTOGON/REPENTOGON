@@ -1,5 +1,7 @@
 #pragma once
 
+#include "lua.hpp"
+
 struct lua_State;
 
 namespace lua {
@@ -160,10 +162,96 @@ namespace lua {
         return (T)ud;
     }
 
+    struct lua_global_tag_t {};
+
+    class LuaResults;
+
+    class LuaCaller {
+    public:
+        LuaCaller(lua_State* L);
+
+        LuaCaller& push(bool x);
+        LuaCaller& push(lua_CFunction fn, int n = 0);
+        LuaCaller& pushfstring(const char* fmt, ...);
+        LuaCaller& push(lua_global_tag_t);
+
+        template<typename T>
+        std::enable_if_t<std::is_integral_v<T>, LuaCaller&> push(T x) {
+            lua_pushinteger(_L, x);
+            ++_n;
+            return *this;
+        }
+        
+        template<typename T>
+        std::enable_if_t<std::is_floating_point_v<T>, LuaCaller&> push(T x) {
+            lua_pushnumber(_L, x);
+            ++_n;
+            return *this;
+        }
+
+        LuaCaller& push(void* p);
+        LuaCaller& push(const char* s, size_t len = 0);
+        LuaCaller& pushnil();
+        LuaCaller& pushvalue(int idx);
+        LuaCaller& push(const char* fmt, va_list va);
+        LuaCaller& push(void* ptr, Metatables meta);
+        template<typename T>
+        LuaCaller& pushUserdataValue(T const& t, Metatables meta) {
+            luabridge::UserdataValue<T>::push(_L, GetMetatableKey(meta), t);
+            ++_n;
+            return *this;
+        }
+
+        LuaResults call(int nresults);
+
+    private:
+        lua_State* _L;
+        int _n = 0;
+    };
+
+    class LuaStackProtector {
+    public:
+        LuaStackProtector(lua_State* L, int n = 0);
+        ~LuaStackProtector();
+
+        LuaStackProtector(LuaStackProtector const&) = delete;
+        LuaStackProtector& operator=(LuaStackProtector const&) = delete;
+
+        LuaStackProtector(LuaStackProtector&&);
+        LuaStackProtector& operator=(LuaStackProtector&&);
+
+    private:
+        lua_State* _L;
+        int _orig;
+        int _n;
+    };
+
+    class LuaResults {
+    public:
+        friend LuaResults LuaCaller::call(int);
+
+        ~LuaResults();
+
+        LuaResults& operator=(LuaResults const&) = delete;
+        LuaResults(LuaResults const&) = delete;
+
+        LuaResults(LuaResults&&);
+        LuaResults& operator=(LuaResults&&);
+
+        operator bool() const;
+
+    private:
+        LuaResults(lua_State* L, int n, int valid);
+
+        lua_State* _L;
+        int _n;
+        int _valid;
+    };
+
     namespace luabridge {
         class Userdata {
         protected:
-            void* m_p;
+            void* m_p = nullptr;
 
         public:
             virtual ~Userdata() { }

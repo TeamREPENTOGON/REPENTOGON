@@ -1,4 +1,5 @@
 #include <map>
+#include <sstream>
 #include <stdexcept>
 
 #include <lua.hpp>
@@ -299,5 +300,142 @@ namespace lua {
 			lua_pop(L, 1);
 			return res;
 		}
+	}
+
+	LuaCaller::LuaCaller(lua_State* L) : _L(L) { }
+
+	LuaCaller& LuaCaller::push(bool x) {
+		lua_pushboolean(_L, x);
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::push(lua_CFunction f, int n) {
+		if (n != 0) {
+			lua_pushcclosure(_L, f, n);
+		}
+		else {
+			lua_pushcfunction(_L, f);
+		}
+
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::pushfstring(const char* fmt, ...) {
+		va_list va;
+		va_start(va, fmt);
+		return push(fmt, va);
+	}
+
+	LuaCaller& LuaCaller::push(lua_global_tag_t) {
+		lua_pushglobaltable(_L);
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::push(void* p) {
+		lua_pushlightuserdata(_L, p);
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::push(const char* s, size_t len) {
+		if (len == 0) {
+			lua_pushstring(_L, s);
+		}
+		else {
+			lua_pushlstring(_L, s, len);
+		}
+
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::pushnil() {
+		lua_pushnil(_L);
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::pushvalue(int idx) {
+		lua_pushvalue(_L, idx);
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::push(const char* fmt, va_list va) {
+		lua_pushvfstring(_L, fmt, va);
+		++_n;
+		return *this;
+	}
+
+	LuaCaller& LuaCaller::push(void* ptr, Metatables meta) {
+		luabridge::UserdataPtr::push(_L, ptr, GetMetatableKey(meta));
+		++_n;
+		return *this;
+	}
+
+	LuaResults LuaCaller::call(int nresults) {
+		int n = lua_gettop(_L) - _n - 1; // Expected amount after poping everything (number of params + function)
+		int result = lua_pcall(_L, _n, nresults, 0);
+		int results = lua_gettop(_L) - n; // How many results
+
+		return LuaResults(_L, results, result);
+	}
+
+	LuaStackProtector::LuaStackProtector(lua_State* L, int n) : _L(L), _orig(lua_gettop(L)), _n(n) {
+
+	}
+
+	LuaStackProtector::~LuaStackProtector() {
+		if (_L) {
+			int n = lua_gettop(_L);
+			if (n != _orig + _n) {
+				std::ostringstream err;
+				err << "Inconsistent Lua stack. Expected " << _orig + _n << " elements, got " << n << std::endl;
+				FILE* f = fopen("repentogon.log", "a");
+				fprintf(f, err.str().c_str());
+				fclose(f);
+				throw std::runtime_error(err.str());
+			}
+		}
+	}
+
+	LuaStackProtector::LuaStackProtector(LuaStackProtector&& other) : _L(other._L), _n(other._n) {
+		other._L = nullptr;
+	}
+
+	LuaStackProtector& LuaStackProtector::operator=(LuaStackProtector&& other) {
+		_L = other._L;
+		other._L = nullptr;
+		return *this;
+	}
+
+	LuaResults::LuaResults(lua_State* L, int n, int valid) : _L(L), _n(n), _valid(valid) {
+
+	}
+
+	LuaResults::LuaResults(LuaResults&& other) : _L(other._L), _n(other._n), _valid(other._valid) {
+		other._L = nullptr;
+	}
+
+	LuaResults& LuaResults::operator=(LuaResults&& other) {
+		_L = other._L;
+		_n = other._n;
+		_valid = other._valid;
+		other._L = nullptr;
+		return *this;
+	}
+
+	LuaResults::~LuaResults() {
+		// For consistency with lua_pcall returning 0 when everything is okay
+		if (_L && !_valid) {
+			lua_pop(_L, _n);
+		}
+	}
+
+	LuaResults::operator bool() const {
+		return _valid;
 	}
 }
