@@ -42,6 +42,15 @@ int Lua_SpawnCoPlayer2(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerManagerIsCoopPlay(lua_State* L)
+{
+	PlayerManager* playerManager = lua::GetUserdata<PlayerManager*>(L, 1, PlayerManagerMT);
+
+	bool result = playerManager->IsCoopPlay();
+	lua_pushboolean(L, result);
+	return 1;
+}
+
 static void RegisterPlayerManager(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetPlayerManager");
@@ -57,6 +66,7 @@ static void RegisterPlayerManager(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "FirstCollectibleOwner", Lua_FirstCollectibleOwner },
 		{ "SpawnCoPlayer2", Lua_SpawnCoPlayer2 },
+		//{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
 		{ NULL, NULL }
 	};
 

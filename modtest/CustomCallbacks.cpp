@@ -1145,3 +1145,43 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 	}
 	super(x);
 }
+
+//PRE_ROOM_TRIGGER_CLEAR (id: 1068)
+HOOK_METHOD(Room, TriggerClear, (bool playSound) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1068)
+		.push(playSound)
+		.call(1);
+
+	super(playSound);
+}
+
+//PRE_PLAYER_TRIGGER_ROOM_CLEAR (id: 1069)
+HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1069)
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.call(1);
+
+
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super();
+}

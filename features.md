@@ -217,6 +217,12 @@ Optional argument: `GridEntityType Type`
 
 Accepts no return parameters.
 
+## ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR(bool PlaySound)
+Accepts no return parameters.
+
+## ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR(EntityPlayer Player)
+Accepts `false` to cancel trigger effects.
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.
@@ -268,6 +274,9 @@ Returns `nil` if the specified collectible has never been picked up.
 ## float Entity:GetShadowSize()
 
 ## float Entity:SetShadowSize(float Size)
+
+## Vector Entity:GetNullOffset(string NullLayerName)
+Returns position of null layer mark. Alternatively returns Vector.Zero if layer is not visible or for other unknown reasons.
 
 ## EntityPlayer EntityPlayer:InitTwin(PlayerType PlayerType)
 I believe this is used by J&E, Strawman etc

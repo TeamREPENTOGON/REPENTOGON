@@ -21,3 +21,6 @@ __thiscall bool Room::SpawnGridEntity(Room *this<ecx>, int GridIndex, GridEntity
 
 "558bec8b5508568bf181":
 __thiscall void Room::RemoveGridEntityImmediate(Room *this<ecx>, int GridIndex, int PathTrail, bool KeepDecoration);
+
+"558bec83ec08538bd956578b3d????????8b4304":
+__thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);

@@ -44,6 +44,9 @@ __thiscall void Entity::AddIce(Entity *this<ecx>, const EntityRef& ref, int dura
 "558bec83e4f85156ff75088bf1e8????????84c00f85????????":
 __thiscall void Entity::AddKnockback(Entity *this<ecx>, const EntityRef& ref, const Vector& unk1, int unk2, bool unk3);
 
+"558bec83e4f883ec14568bf1837e70000f84????????":
+__thiscall Vector Entity::GetNullOffset(Entity *this<ecx>, const char* nullLayerName);
+
 struct Entity
 {{
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
