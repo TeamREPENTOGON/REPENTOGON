@@ -1,5 +1,6 @@
 #include "libzhl.h"
 #include "HookSystem.h"
+#include "Version.h"
 #include <Windows.h>
 #include <stdio.h>
 
@@ -65,10 +66,13 @@ The default priority is 0, and priority numbers can be negative
 ********************************************************************************/
 
 // This small function loads all the hooks and must be present in every mod
+
+static char titlebar[128];
 MOD_EXPORT int ModInit(int argc, char **argv)
 {
 	ZHL::Init();
-	SetWindowTextA(GetActiveWindow(), "The Binding of Isaac: REPENTOGON");
+	sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON v%d.%d.%d)", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+	SetWindowTextA(GetActiveWindow(), titlebar);
 	printf(":REPENTOGON:\n");
 	return 0;
 }

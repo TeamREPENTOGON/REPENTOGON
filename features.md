@@ -291,6 +291,9 @@ This would be more ideal as a field- I'm looking into this.
 ## int Room:GetShopItemPrice(int EntityVariant, int EntitySubType, int ShopItemID)
 Returns the price of the item.
 
+## void Room:RemoveGridEntityImmediate(int GridIndex, int PathTrail, bool KeepDecoration)
+*Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
+
 ## PersistentGameData Isaac:GetPersistentGameData()
 Should probably be moved to Game for consistency.
 
