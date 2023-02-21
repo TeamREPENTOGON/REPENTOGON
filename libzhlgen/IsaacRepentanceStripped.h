@@ -489,6 +489,12 @@ struct MenuManager
 {
 };
 
+struct Minimap
+{
+
+};
+
+
 struct ANM2
 {
 
