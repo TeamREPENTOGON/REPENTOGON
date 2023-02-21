@@ -1184,3 +1184,50 @@ HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 	}
 	super();
 }
+
+//PLAYER_GET_ACTIVE_MAX_CHARGE (id: 1072)
+HOOK_METHOD(Entity_Player, GetActiveMaxCharge, (int item, int vardata) -> int) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1072)
+		.push(item)
+		.push(item)
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.push(vardata)
+		.call(1);
+
+	if (!result) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+	}
+	return super(item, vardata);
+}
+
+//PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE (id: 1073)
+HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1073)
+		.push(this->GetActiveItem(slot))
+		.push(slot)
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.call(1);
+
+	if (!result) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+	}
+	return super(slot);
+}

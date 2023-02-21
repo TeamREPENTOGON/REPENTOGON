@@ -75,7 +75,7 @@ __thiscall bool Entity_Player::TriggerDeath(Entity_Player *this<ecx>, bool check
 __thiscall void Entity_Player::Revive(Entity_Player *this<ecx>);
 
 "558bec568bf1e8????????8b45088986341500005e":
-__thiscall void Entity_Player::SetItemState(Entity_Player* this<ecx>, int collectible);
+__thiscall void Entity_Player::SetItemState(Entity_Player* this<ecx>, CollectibleType collectible);
 
 "558bec6aff68????????64a1000000005081ec38040000a1????????33c58945f056":
 __thiscall void Entity_Player::UseCard(Entity_Player* this<ecx>, int cardType, unsigned int useFlag);
@@ -99,7 +99,7 @@ __thiscall void Entity_Player::RenderBody(Entity_Player *this<ecx>,Vector *posit
 __thiscall void Entity_Player::TriggerRoomClear(Entity_Player *this<ecx>);
 
 "558bec83e4f883ec0c538b5d0c56578bf985db78??53e8????????53":
-__thiscall bool Entity_Player::CanUseCollectible(Entity_Player *this<ecx>, int collectible, int slot);
+__thiscall bool Entity_Player::CanUseCollectible(Entity_Player *this<ecx>, CollectibleType collectible, int slot);
 
 "558bec83e4f883ec1c538b5d08":
 __thiscall bool Entity_Player::HasCollectible(Entity_Player *this<ecx>, CollectibleType type, bool ignoreModifiers);
@@ -112,6 +112,21 @@ __thiscall void Entity_Player::EvaluateItems(Entity_Player *this<ecx>);
 
 "558bec8b45080981b8":
 __thiscall void Entity_Player::AddCacheFlags(Entity_Player *this<ecx>, int flags);
+
+"558bec8b55088d04d5000000002bc28b8481c41400005dc20400":
+__thiscall int Entity_Player::GetActiveItem(Entity_Player *this<ecx>, int slot);
+
+"558bec8b55085356578d04d500000000":
+__thiscall int Entity_Player::GetTotalActiveCharge(Entity_Player *this<ecx>, int slot);
+
+"558bec8b450c568b750881fe1e010000":
+__thiscall int Entity_Player::GetActiveMaxCharge(Entity_Player *this<ecx>, int collectible, int vardata); //replace int to CollectibleType for collectible later
+
+"558bec518b550883fa0374??83fa0275??81b9fc1400004402000075??a1????????83b89c311c002c74??8d04d5000000002bc28d14818b82c41400003d63020000":
+__thiscall int Entity_Player::GetActiveMinUsableCharge(Entity_Player *this<ecx>, int slot);
+
+"558bec8b450c8d14c5000000002bd08b4508898491dc1400005dc20800":
+__thiscall void Entity_Player::SetActiveVarData(Entity_Player *this<ecx>, int vardata, int slot);
 
 struct Entity_Player {{
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }

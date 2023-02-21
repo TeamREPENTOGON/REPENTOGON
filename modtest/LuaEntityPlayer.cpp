@@ -110,7 +110,7 @@ static void RegisterInitPostLevelInitStats(lua_State* L) {
 int Lua_PlayerSetItemState(lua_State* L)
 {
 	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
-	int item = luaL_checkinteger(L, 2);
+	CollectibleType item = (CollectibleType)luaL_checkinteger(L, 2);
 
 	player->SetItemState(item);
 
@@ -145,6 +145,70 @@ static void RegisterNewAddCacheFlags(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
 	lua_pushstring(L, "AddCacheFlags");
 	lua_pushcfunction(L, Lua_PlayerAddCacheFlags);
+}
+
+int Lua_PlayerGetTotalActiveCharge(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = luaL_checkinteger(L, 2);
+
+	lua_pushinteger(L, player->GetTotalActiveCharge(slot));
+	return 1;
+}
+
+static void RegisterGetTotalActiveCharge(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetTotalActiveCharge");
+	lua_pushcfunction(L, Lua_PlayerGetTotalActiveCharge);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+int Lua_PlayerGetActiveMaxCharge(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int item = luaL_checkinteger(L, 2);
+	int vardata = luaL_checkinteger(L, 3);
+
+	lua_pushinteger(L, player->GetActiveMaxCharge(item,vardata));
+	return 1;
+}
+
+static void RegisterGetActiveMaxCharge(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetActiveMaxCharge");
+	lua_pushcfunction(L, Lua_PlayerGetActiveMaxCharge);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+int Lua_PlayerGetActiveMinUsableCharge(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int slot = luaL_checkinteger(L, 2);
+
+	lua_pushinteger(L, player->GetActiveMinUsableCharge(slot));
+	return 1;
+}
+
+static void RegisterGetActiveMinUsableCharge(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetActiveMinUsableCharge");
+	lua_pushcfunction(L, Lua_PlayerGetActiveMinUsableCharge);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+int Lua_PlayerSetActiveVarData(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int vardata = luaL_checkinteger(L, 2);
+	int slot = luaL_checkinteger(L, 3);
+
+	player->SetActiveVarData(vardata, slot);
+	return 1;
+}
+
+static void RegisterPlayerSetActiveVarData(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "SetActiveVarData");
+	lua_pushcfunction(L, Lua_PlayerSetActiveVarData);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 }
@@ -158,4 +222,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterInitPostLevelInitStats(state);
 	RegisterPlayerSetItemState(state);
 	RegisterNewAddCacheFlags(state);
+	RegisterGetTotalActiveCharge(state);
+	RegisterGetActiveMaxCharge(state);
+	RegisterGetActiveMinUsableCharge(state);
+	RegisterPlayerSetActiveVarData(state);
 }

@@ -223,6 +223,16 @@ Accepts no return parameters.
 ## ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR(EntityPlayer Player)
 Accepts `false` to cancel trigger effects.
 
+## ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE(CollectibleType Collectible, int VarData)
+Optional argument: `CollectibleType Collectible`
+
+Accepts an integer to change chargebar for the active item.
+
+## ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE(ActiveSlot Slot)
+Optional argument: `CollectibleType Collectible`
+
+Accepts an integer to change the minimum charge to use the active item.
+
 # Functions
 ## PosVel EntityPlayer:GetMultiShotPositionVelocity(int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params)
 This magically vanished from the API some time after 1.7.8.
@@ -291,6 +301,14 @@ This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 Now accepts an optional `bool` to determine if EntityPlayer:EvaluateItems() should be called after adding cache flags.
 
 ## HealthType EntityPlayer:GetHealthType()
+
+## int EntityPlayer:GetTotalActiveCharge(ActiveSlot Slot)
+
+## void EntityPlayer:SetActiveVarData(int VarData, ActiveSlot Slot)
+
+## int EntityPlayer:GetActiveMaxCharge(CollectibleType Collectible, int VarData)
+
+## int EntityPlayer:GetActiveMinUsableCharge(ActiveSlot Slot)
 
 ## MultiShotParams EntityPlayer:GetMultiShotParams(WeaponType WeaponType)
 Now returns a proper `MultiShotParams` object.
