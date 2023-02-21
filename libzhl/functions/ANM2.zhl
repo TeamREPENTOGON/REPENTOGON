@@ -1,2 +1,6 @@
 "558bec83e4??515356578bf98b????85d274??":
-__thiscall void ANM2::Render(Vector* position,Vector* topleftclamp,Vector* bottomrightclamp);
+__thiscall void ANM2::Render(ANM2 *this<ecx> ,Vector* position,Vector* topleftclamp,Vector* bottomrightclamp);
+
+
+"558bec83??????565774608b????8d??":
+__thiscall void ANM2::SetLayerFrame(int param_1,int param_2);
