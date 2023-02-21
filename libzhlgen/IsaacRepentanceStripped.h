@@ -234,6 +234,7 @@ struct Game
     uint32_t _lastRoomDimensionIdx; // 0x181A0
     uint32_t _leaveDoor; // 0x181A8
     uint32_t _enterDoor; // 0x181AC
+	unsigned int _stateFlags; // 0x1822C
     uint32_t _greedModeTreasureRoomIdx; // 0x18200
     RoomConfigHolder _roomConfigs; // 0x1879C
     PlayerManager _playerManager; // 0x1AB40 
@@ -504,6 +505,11 @@ struct Music
 };
 
 struct Isaac
+{
+	
+};
+
+struct EntityList
 {
 	
 };

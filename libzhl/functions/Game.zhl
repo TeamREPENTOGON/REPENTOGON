@@ -23,7 +23,7 @@ __thiscall void Game::ShakeScreen(Game *this<ecx>, int timeout);
 __thiscall void Game::MakeShockwave(Game *this<ecx>, const Vector& pos, float amplitude, float speed, int duration);
 
 "558bec5156578bf98b97????????8b":
-__thiscall Entity_Player* Game:: GetPlayer(IsaacRepentance::Game *this<ecx>, unsigned int Index);
+__thiscall Entity_Player* Game::GetPlayer(IsaacRepentance::Game *this<ecx>, unsigned int Index);
 
 "558bec83e4f083ec38a1????????33c4":
 void Game::Update(Game* this<ecx>);
@@ -42,6 +42,9 @@ __thiscall uint32_t* Game::GetRoomDescriptorsOffsetsArrayForDimension(Game *this
 
 "558bec6aff68????????64a1????????505657a1????????33c5508d45f464a3????????8bf164a1????????8b10a1????????3b82????????": //suboptimal sig, prob
 __thiscall RoomDescriptor* Game::GetRoomByIdx(Game *this<ecx>, uint32_t idx, int32_t dimension);
+
+"558bec83ec1cf30f1005":
+__thiscall double Game::GetPlanetariumChance(Game *this<ecx>);
 
 //out potential target
 /*
@@ -98,6 +101,10 @@ struct Game
 	inline Ambush* GetAmbush() { return (Ambush*)((char*)this + 0x1c31b8); }
 	
 	inline Room** GetCurrentRoom() { return (Room**)((char*)this + 0x18190); }
+	
+	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
+	
+	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 

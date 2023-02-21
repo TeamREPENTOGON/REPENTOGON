@@ -47,6 +47,9 @@ __thiscall void Entity::AddKnockback(Entity *this<ecx>, const EntityRef& ref, co
 "558bec83e4f883ec14568bf1837e70000f84????????":
 __thiscall Vector Entity::GetNullOffset(Entity *this<ecx>, const char* nullLayerName);
 
+"558bec83e4c081ecb4000000f3":
+__thiscall bool Entity::RenderShadowLayer(Entity *this<ecx>, Vector *offset);
+
 struct Entity
 {{
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }

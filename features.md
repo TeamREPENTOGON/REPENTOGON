@@ -287,6 +287,9 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 ## void EntityPlayer:SetItemState(CollectibleType CollectibleType)
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
+## void EntityPlayer:AddCacheFlags(CacheFlag CacheFlag, bool EvaluateItems)
+Now accepts an optional `bool` to determine if EntityPlayer:EvaluateItems() should be called after adding cache flags.
+
 ## HealthType EntityPlayer:GetHealthType()
 
 ## MultiShotParams EntityPlayer:GetMultiShotParams(WeaponType WeaponType)

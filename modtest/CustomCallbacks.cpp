@@ -1042,7 +1042,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 	super(offset);
 }
 
-//PRE/POST _SLOT_RENDER (id: 1089/1090)
+//PRE/POST_SLOT_RENDER (id: 1089/1090)
 HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
@@ -1080,7 +1080,6 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 		.pushUserdataValue(*offset, lua::Metatables::VECTOR)
 		.call(1);
 }
-
 
 //RenderHead Callback (id: 1038)
 HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {

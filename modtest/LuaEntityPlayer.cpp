@@ -1,10 +1,13 @@
 #include <lua.hpp>
+#include <algorithm>
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
 static constexpr const char* MultiShotParamsMT = "MultiShotParams";
+
+std::vector<int> fakeItems;
 
 int Lua_GetMultiShotPositionVelocity(lua_State* L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
@@ -67,7 +70,6 @@ static void RegisterMultiShotParams(lua_State* L) {
 	lua_rawset(L, -3);
 
 	lua_pop(L, 2);
-
 }
 
 int Lua_InitTwin(lua_State* L)
@@ -112,13 +114,37 @@ int Lua_PlayerSetItemState(lua_State* L)
 
 	player->SetItemState(item);
 
-	return 1;
+	return 0;
 }
 
 static void RegisterPlayerSetItemState(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
 	lua_pushstring(L, "SetItemState");
 	lua_pushcfunction(L, Lua_PlayerSetItemState);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+int Lua_PlayerAddCacheFlags(lua_State* L)
+{
+	bool evaluateCache = false;
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int flags = luaL_checkinteger(L, 2);
+	if (lua_isboolean(L, 3))
+		evaluateCache = lua_toboolean(L, 3);
+
+	player->AddCacheFlags(flags);
+	if (evaluateCache) {
+		player->EvaluateItems();
+	}
+
+	return 0;
+}
+
+static void RegisterNewAddCacheFlags(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "AddCacheFlags");
+	lua_pushcfunction(L, Lua_PlayerAddCacheFlags);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 }
@@ -131,4 +157,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterInitTwin(state);
 	RegisterInitPostLevelInitStats(state);
 	RegisterPlayerSetItemState(state);
+	RegisterNewAddCacheFlags(state);
 }
