@@ -1,0 +1,38 @@
+name: 'CI + CD'
+
+on:
+    push:
+        branches:
+            - main-msvc
+        paths:
+          - documentation/**
+
+jobs:
+    deployment:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout the repository
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+            - name: Install Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: 3.x
+            - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+              with:
+                  token: '${{ secrets.GITHUB_TOKEN }}'
+
+            - name: Install PIP packages
+              run: |
+                   pip install mkdocs
+                   pip install mkdocs-material==8.5.11
+                   pip install mike
+                   pip install mkdocs-git-revision-date-plugin
+                   pip install mkdocs-git-revision-date-localized-plugin
+                   
+            - name: Deploy Repentogon Docs
+              if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
+              run: |
+                   mike deploy rep Repentogon -t Repentogon -p
+                   mike set-default rep
