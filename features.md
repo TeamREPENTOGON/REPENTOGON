@@ -324,6 +324,14 @@ Returns the amount of tears the player can currently simultaneously fire.
 
 This would be more ideal as a field- I'm looking into this.
 
+## void EntityPickup:SetAlternatePedestal(int PedestalType)
+
+## bool EntityPickup:TryRemoveCollectible()
+
+## bool EntityPickup:IsBlind()
+
+## void EntityPickup:SetForceBlind(bool SetBlind)
+
 ## int Room:GetShopItemPrice(int EntityVariant, int EntitySubType, int ShopItemID)
 Returns the price of the item.
 
