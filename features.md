@@ -248,6 +248,9 @@ Compared to the vanilla function, this implementation has been further augmented
 ## bool Game:AchievementUnlocksDisallowed()
 Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
 
+## bool Game:IsHardMode()
+Returns `true` if hard mode or greedier
+
 ## RoomConfigHolder Game:GetRoomConfigHolder()
 
 ## RoomConfigRoom RoomConfigHolder::GetRoomByStageTypeAndVariant(StbType Stage, int Type, int Variant, int Difficulty)
