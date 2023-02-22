@@ -310,6 +310,8 @@ Now accepts an optional `bool` to determine if EntityPlayer:EvaluateItems() shou
 
 ## int EntityPlayer:GetActiveMinUsableCharge(ActiveSlot Slot)
 
+## int EntityPlayer:AddActiveCharge(int Charge, ActiveSlot Slot, bool Unknown, bool Overcharge, bool Force)
+
 ## MultiShotParams EntityPlayer:GetMultiShotParams(WeaponType WeaponType)
 Now returns a proper `MultiShotParams` object.
 

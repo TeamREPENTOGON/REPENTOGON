@@ -128,6 +128,9 @@ __thiscall int Entity_Player::GetActiveMinUsableCharge(Entity_Player *this<ecx>,
 "558bec8b450c8d14c5000000002bd08b4508898491dc1400005dc20800":
 __thiscall void Entity_Player::SetActiveVarData(Entity_Player *this<ecx>, int vardata, int slot);
 
+"558bec83e4f883ec1c538b5d0c56578bf985db79??":
+__thiscall int Entity_Player::AddActiveCharge(Entity_Player *this<ecx>, unsigned int charge, int slot, bool unk, bool overcharge, bool force);
+
 struct Entity_Player {{
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 }};
