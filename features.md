@@ -33,6 +33,8 @@ Accepts no return parameters.
 Accepts no return parameters.
 
 ## ModCallbacks.MC_PRE_SFX_PLAY(int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan)
+Optional argument: `SoundEffect Sound`
+
 Accepts a table of parameters: `{ID, Volume, FrameDelay, Loop, Pitch, Pan}`
 
 Example, which forcibly loops every sound: `return {ID, Volume, FrameDelay, true, Pitch, Pan}`
@@ -40,6 +42,8 @@ Example, which forcibly loops every sound: `return {ID, Volume, FrameDelay, true
 Alternatively accepts `false` to cancel the sound
 
 ## ModCallbacks.MC_POST_SFX_PLAY(int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan)
+Optional argument: `SoundEffect Sound`
+
 Accepts no return parameters.
 
 ## ModCallbacks.MC_PRE_MUSIC_PLAY(int ID, float Volume OR float FadeRate (see below), bool IsFade)

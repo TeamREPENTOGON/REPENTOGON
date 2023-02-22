@@ -195,10 +195,11 @@ void ProcessPostSFXPlay(int ID, float Volume, int FrameDelay, bool Loop, float P
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaCaller(L).push(1031)
+		.push(ID)
 		.push(ID)
 		.push(Volume)
 		.push(FrameDelay)
@@ -213,10 +214,11 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1030)
+		.push(ID)
 		.push(ID)
 		.push(Volume)
 		.push(FrameDelay)
