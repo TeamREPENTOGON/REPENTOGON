@@ -145,6 +145,8 @@ static void RegisterNewAddCacheFlags(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
 	lua_pushstring(L, "AddCacheFlags");
 	lua_pushcfunction(L, Lua_PlayerAddCacheFlags);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
 }
 
 int Lua_PlayerGetTotalActiveCharge(lua_State* L) {

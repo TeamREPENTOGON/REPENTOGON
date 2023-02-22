@@ -164,9 +164,9 @@ HOOK_METHOD(HUD, Render, () -> void) {
 
 	lua::LuaCaller(L).push(1022).call(1);
 
-	FILE* f = fopen("repentogon.log", "a");
+	/*FILE* f = fopen("repentogon.log", "a");
 	fprintf(f, "After call to HUD::Render, there are %d elements on the stack\n", lua_gettop(L));
-	fclose(f);
+	fclose(f);*/
 
 	super();
 }

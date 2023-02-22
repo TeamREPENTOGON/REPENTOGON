@@ -297,8 +297,8 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 ## void EntityPlayer:SetItemState(CollectibleType CollectibleType)
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
-## void EntityPlayer:AddCacheFlags(CacheFlag CacheFlag, bool EvaluateItems)
-Now accepts an optional `bool` to determine if EntityPlayer:EvaluateItems() should be called after adding cache flags.
+## void EntityPlayer:AddCacheFlags(CacheFlag CacheFlag, bool EvaluateItems = false)
+Now accepts an optional `bool` to determine if EntityPlayer:EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ## HealthType EntityPlayer:GetHealthType()
 
@@ -339,6 +339,9 @@ Prints an error to the console.
 
 ## void Ambush:StartChallenge()
 Triggers Challenge/Boss Rush ambush.
+
+## void Sprite:ReplaceSpritesheet (int LayerId, string PngFilename, bool︎ LoadGraphics = false);
+Now accepts an optional `bool` to determine if Sprite:LoadGraphics should be called after replacing the spritesheet. In most cases, you'll want to do this.
 
 # Enumerations
 ## StbType

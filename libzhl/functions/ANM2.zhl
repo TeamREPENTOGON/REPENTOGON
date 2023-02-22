@@ -4,3 +4,9 @@ __thiscall void ANM2::Render(ANM2 *this<ecx> ,Vector* position,Vector* topleftcl
 
 "558bec83??????565774608b????8d??":
 __thiscall void ANM2::SetLayerFrame(int param_1,int param_2);
+
+"558bec8b4508568bf185c078":
+__thiscall void ANM2::ReplaceSpritesheet(ANM2 *this<ecx>, int LayerId, std::string *PngFilename);
+
+"558bec6aff68????????64a1000000005083ec28535657a1????????33c5508d45f464a3000000008bf933":
+__thiscall void ANM2::LoadGraphics(ANM2 *this<ecx>, bool unk);
