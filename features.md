@@ -124,6 +124,8 @@ Accepts `true` to cancel pill use.
 Accepts an integer to change the price of the item.
 
 ## ModCallbacks.MC_PLAYER_GET_HEALTH_TYPE(EntityPlayer Player)
+Optional argument: `PlayerType PlayerType `
+
 Accepts an integer to change health type for the character.
 
 ## ModCallbacks.MC_PRE_FAMILIAR_RENDER(EntityFamiliar Familiar, Vector Offset)
