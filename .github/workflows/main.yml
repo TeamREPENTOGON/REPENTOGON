@@ -19,21 +19,30 @@ jobs:
               uses: actions/setup-python@v2
               with:
                   python-version: 3.x
-            - uses: oleksiyrudenko/gha-git-credentials@v2-latest
-              with:
-                  token: '${{ secrets.GITHUB_TOKEN }}'
 
             - name: Install PIP packages
               run: |
                    pip install mkdocs
                    pip install mkdocs-material==8.5.11
-                   pip install mike
                    pip install mkdocs-git-revision-date-plugin
                    pip install mkdocs-git-revision-date-localized-plugin
-                   
+            
+            - name: Install SSH key
+              uses: shimataro/ssh-key-action@v2
+              with:
+                key: ${{ secrets.SSH_KEY }}
+                known_hosts: ${{ secrets.KNOWN_HOSTS }}
+                if_key_exists: fail 
+
             - name: Deploy Repentogon Docs
-              if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
+              if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
               run: |
                    cd documentation
-                   mike deploy rep Repentogon -t Repentogon -p
-                   mike set-default rep
+                   mkdocs build
+
+            - name: Upload to Website
+              if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
+              run: |
+                   cd documentation
+                   apt update && apt install -y rsync
+                   rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
