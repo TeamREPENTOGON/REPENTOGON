@@ -11,6 +11,10 @@ ___
 Now accepts an optional `bool` to determine if EntityPlayer:EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ___
+### DropCollectible () {: aria-label='Functions' }
+#### void DropCollectible ( CollectibleType Collectible ) {: .copyable aria-label='Functions' }
+
+___
 ### GetActiveMaxCharge () {: aria-label='Functions' }
 #### int GetActiveMaxCharge ( CollectibleType Collectible, int VarData ) {: .copyable aria-label='Functions' }
 
