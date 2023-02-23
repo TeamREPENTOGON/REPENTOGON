@@ -1,0 +1,757 @@
+:root {
+    --function-color: #90CAF9;
+    --function-color-light: #BBDEFB;
+    --var-color: #A5D6A7;
+    --var-color-light: #E8F5E9;
+    --constructor-color: #FFCC80;
+    --constructor-color-light: #FFE0B2;
+    --function-overview-bg-color: #BBDEFB;
+    --var-overview-bg-color: #E8F5E9;
+    --constructor-overview-bg-color: #FFE0B2;
+    --operator-color: #CE93D8;
+    --operator-color-light: #E1BEE7;
+    --operator-overview-bg-color: #F3E5F5;
+    --abp-color: #FDD835;
+    --rep-color: #F44336;
+    --md-typeset-mark-text-color: #000000;
+}
+
+nav[aria-label='Functions'] {
+    border-left-color: var(--function-color) !important;
+}
+
+nav[aria-label='Variables'] {
+    border-left-color: var(--var-color) !important;
+}
+
+nav[aria-label='Constructors'] {
+    border-left-color: var(--constructor-color) !important;
+}
+
+nav[aria-label='Operators'] {
+    border-left-color: var(--operator-color) !important;
+}
+
+.md-typeset h2 {
+    margin: 0 !important;
+    text-align: center;
+}
+
+.wrongParsing {
+    color: white !important;
+    background-color: red;
+    font-size: 20px !important;
+}
+
+.wrongParsing::after {
+    content: "THIS PART IS NOT PARSED CORRECTLY! PLEASE FIX MANUALLY!!!!!";
+    color: red !important;
+    background-color: black;
+    display: block;
+}
+
+h3[aria-label$='Functions'],
+h3[aria-label$='Variables'],
+h3[aria-label$='Operators'],
+h3[aria-label$='Constructors'] {
+    border-radius: 5px 5px 0px 0px;
+    padding: 0px 10px;
+    margin: 0 !important;
+    display: inline-block;
+}
+
+h3[aria-label$='Functions'] {
+    background-color: var(--function-color);
+}
+
+h3[aria-label$='Variables'] {
+    background-color: var(--var-color);
+}
+
+h3[aria-label$='Constructors'] {
+    background-color: var(--constructor-color);
+}
+
+h3[aria-label$='Operators'] {
+    background-color: var(--operator-color);
+}
+
+h4[aria-label$='Functions'],
+h4[aria-label$='Variables'],
+h4[aria-label$='Operators'],
+h4[aria-label$='Constructors'] {
+    border-radius: 0px 5px 5px 5px;
+    padding: 2px 10px;
+    margin: 0 !important;
+    font-weight: 400 !important;
+    font-family: "Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace;
+    font-size: .85em;
+}
+
+h4[aria-label$='Functions'] {
+    background-color: var(--function-color-light);
+}
+
+h4[aria-label$='Variables'] {
+    background-color: var(--var-color-light);
+}
+
+h4[aria-label$='Constructors'] {
+    background-color: var(--constructor-color-light);
+}
+
+h4[aria-label$='Operators'] {
+    background-color: var(--operator-color-light);
+}
+
+.subHeader {
+    border-bottom: 1px solid var(--md-default-fg-color--light);
+    font-size: 1em !important;
+    font-weight: 800!important;
+}
+
+.frequentlyUsed {
+    padding-bottom: 5pt;
+    border-bottom: 2pt solid var(--md-primary-fg-color);
+}
+
+.secondH4 {
+    border-top: 1px solid #777777;
+    border-radius: 5px !important;
+}
+
+
+/**** BADGES ****/
+
+.abp {
+    background-color: var(--abp-color);
+}
+
+.abp::before {
+    content: "AB+";
+}
+
+a.abp.tooltip:after {
+    content: "Only compatible with Afterbirth+";
+}
+
+.rep {
+    background-color: var(--rep-color);
+}
+
+.rep::before {
+    content: "Rep";
+}
+
+a.rep.tooltip:after {
+    content: "Only compatible with Repentance";
+}
+
+.abrep {
+    background: var(--abp-color);
+    background: -moz-linear-gradient(90deg, var(--abp-color) 0%, var(--abp-color) 50%, var(--rep-color) 50%, var(--rep-color) 100%);
+    background: -webkit-linear-gradient(90deg, var(--abp-color) 0%, var(--abp-color) 50%, var(--rep-color) 50%, var(--rep-color) 100%);
+    background: linear-gradient(90deg, var(--abp-color) 0%, var(--abp-color) 50%, var(--rep-color) 50%, var(--rep-color) 100%);
+    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr=var(--abp-color), endColorstr=var(--rep-color), GradientType=1);
+}
+
+.abrep::before {
+    content: "AB+ | Rep";
+}
+
+a.abrep.tooltip:after {
+    content: "Compatible with Afterbirth+ and Repentance";
+}
+
+.static {
+    background-color: #c7c7c7;
+}
+
+.static::before {
+    content: "static";
+}
+
+a.static.tooltip:after {
+    content: "This function is static";
+}
+
+.const {
+    background-color: #44d8cc;
+}
+
+.const::before {
+    content: "const";
+}
+
+a.const.tooltip:after {
+    content: "This function returns a constant value";
+}
+
+.badge {
+    font-size: 8pt;
+    vertical-align: middle;
+    padding: 4px 5px 4px 6px;
+    border-radius: 10px;
+    white-space: nowrap;
+    color: black !important;
+}
+
+.badgeLine {
+    margin: 0 !important;
+    float: right;
+}
+
+
+/**** DARK MODE ****/
+
+[data-md-color-scheme="slate"] {
+    --function-color: #405e9a;
+    --function-color-light: #272938;
+    --var-color: #128676;
+    --var-color-light: #272938;
+    --constructor-color: #e65100;
+    --constructor-color-light: #272938;
+    --function-overview-bg-color: rgb(64 94 154 / 50%);
+    --var-overview-bg-color: rgb(18 134 118 / 50%);
+    --constructor-overview-bg-color: rgb(230 81 0 / 50%);
+    --operator-color: #BA68C8;
+    --operator-color-light: #272938;
+    --operator-overview-bg-color: rgb(186 104 200 / 50%);
+    --md-hue: 232;
+
+    --md-primary-fg-color: #4051b5;
+    --md-primary-bg-color: #FFFFFF;
+    --md-primary-bg-color: rgb(255 255 255 / 87%);
+    --md-primary-bg-color--light: rgb(255 255 255 / 54%);
+
+    --md-default-fg-color: hsla(var(--md-hue), 75%, 95%, 1);
+    --md-default-fg-color--light: hsla(var(--md-hue), 75%, 90%, 0.62);
+    --md-default-fg-color--lighter: #ffc41e;
+    --md-default-fg-color--lightest: hsla(var(--md-hue), 75%, 90%, 0.12);
+    --md-default-bg-color: hsla(var(--md-hue), 15%, 21%, 1);
+    --md-default-bg-color--light: hsla(var(--md-hue), 15%, 21%, 0.54);
+    --md-default-bg-color--lighter: hsla(var(--md-hue), 15%, 21%, 0.26);
+    --md-default-bg-color--lightest: hsla(var(--md-hue), 15%, 21%, 0.07);
+    --md-code-fg-color: hsla(var(--md-hue), 18%, 86%, 1);
+    --md-code-bg-color: hsla(var(--md-hue), 15%, 15%, 1);
+    --md-code-hl-color: hsla(218, 100%, 63%, 0.15);
+    --md-code-hl-number-color: hsla(6, 74%, 63%, 1);
+    --md-code-hl-special-color: hsla(340, 83%, 66%, 1);
+    --md-code-hl-function-color: hsla(291, 57%, 65%, 1);
+    --md-code-hl-constant-color: hsla(250, 62%, 70%, 1);
+    --md-code-hl-keyword-color: hsla(219, 66%, 64%, 1);
+    --md-code-hl-string-color: hsla(150, 58%, 44%, 1);
+    --md-typeset-a-color: #ffc41e;
+    --md-accent-fg-color: #ffc41e;
+    /*var(--md-primary-fg-color--light);*/
+    --md-typeset-mark-color: #ffc41e;
+    --md-typeset-mark-text-color: #000000;
+    --md-typeset-kbd-color: hsla(var(--md-hue), 15%, 94%, 0.12);
+    --md-typeset-kbd-accent-color: hsla(var(--md-hue), 15%, 94%, 0.2);
+    --md-typeset-kbd-border-color: hsla(var(--md-hue), 15%, 14%, 1);
+    --md-admonition-bg-color: hsla(var(--md-hue), 0%, 100%, 0.025);
+    --md-footer-bg-color: hsla(var(--md-hue), 15%, 12%, 0.87);
+    --md-footer-bg-color--dark: hsla(var(--md-hue), 15%, 10%, 1);
+    --md-code-fg-color: hsla(var(--md-hue), 18%, 86%, 1);
+    --md-code-bg-color: hsla(var(--md-hue), 15%, 15%, 1) !important;
+    --md-code-hl-color: hsla(218, 100%, 63%, 0.15);
+    --md-code-hl-number-color: hsla(6, 74%, 63%, 1);
+    --md-code-hl-special-color: hsla(340, 83%, 66%, 1);
+    --md-code-hl-function-color: hsla(291, 57%, 65%, 1);
+    --md-code-hl-constant-color: hsla(250, 62%, 70%, 1);
+    --md-code-hl-keyword-color: hsla(219, 66%, 64%, 1);
+    --md-code-hl-string-color: hsla(150, 58%, 44%, 1);
+}
+
+
+
+/**** TOOLTIP ****/
+
+a.tooltip {
+    position: relative;
+    text-decoration: none;
+}
+
+a.tooltip:after {
+    content: inherit;
+    position: absolute;
+    bottom: 200%;
+    right: 0%;
+    background: inherit;
+    padding: 5px 15px;
+    color: inherit;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    -webkit-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+
+a.tooltip:hover:after {
+    bottom: 125%;
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/**** Mark.js Highlights ****/
+
+.md-typeset mark {
+    color: var(--md-typeset-mark-text-color);
+}
+
+.hideMarks{
+    --md-typeset-mark-color: #00000000; /*Make yellow highlight invisible if applied*/
+    --md-typeset-mark-text-color: initial;
+}
+
+.clearSearchMarks {
+    float: right;
+    padding: 0 .8rem;
+    color: var(--md-default-fg-color--light);
+    font-size: .64rem;
+    line-height: 1.8rem;
+}
+
+.clearSearchMarks>label:hover, .clearSearchMarks>input:hover {
+    cursor: pointer;
+}
+
+/**** WEBSITE FORMATTING ****/
+
+.md-content p {
+    /* Block-text for content texts */
+    text-align: justify
+}
+
+.md-typeset details {
+    /* Increase text size for Admonitions / info boxes */
+    font-size: .74rem;
+}
+
+details>summary {
+    /* Increase text size for Admonitions / info boxes */
+    font-size: .64rem;
+}
+
+.md-grid {
+    /* Strech content to full content size */
+    max-width: initial;
+}
+
+.md-footer-meta__inner {
+    /* footer bar a bit smaller */
+    padding: 0.5em 1em;
+    font-size: 0.75em;
+    line-height: 2.3;
+}
+
+.md-tabs__link {
+    /* smaller top bar */
+    margin-top: 0;
+}
+
+.md-tabs__item {
+    /* smaller top bar */
+    height: 1.4rem;
+}
+
+.md-header-nav__source {
+    /* lesser padding to github top bar entry */
+    width: 10rem;
+}
+
+.md-main__inner {
+    /* no distance between content and nav bar */
+    margin-top: 0;
+}
+
+
+/* Hide Announcement bar */
+
+div[data-md-component$="announce"] {
+    display: none;
+}
+
+
+/* Visible announcement bar */
+
+.md-announce__inner {
+    line-height: 1.2;
+    text-align: center;
+}
+
+
+/* Smaller Search results */
+
+.md-search-result__icon {
+    margin: 0.2rem 0.35rem;
+    display: block;
+    height: .8rem;
+    width: .8rem;
+}
+
+.md-search-result__article--document .md-search-result__title {
+    line-height: 0.5;
+}
+
+.md-search-result__article {
+    padding-left: 1.7rem;
+}
+
+.md-search-result__link:last-child p:last-child {
+    margin-bottom: 0.3rem;
+}
+
+.md-search-result__title {
+    line-height: 1;
+    margin: 0.25em 0;
+}
+
+.md-search-result__more summary {
+    padding: 0.5em .8rem;
+}
+
+.md-search-result__article .md-tag {
+    display: none;
+}
+
+
+/*Format default table layout*/
+
+.md-typeset table:not([class]) {
+    display: table;
+}
+
+.md-typeset table:not([class]) tr td:first-child {
+    border-left: 0;
+}
+
+.md-typeset table:not([class]) tr td {
+    border-left: .05rem solid var(--md-default-fg-color--lightest);
+    padding: .8em .9em;
+}
+
+.md-typeset table:not([class]) tr th:first-child {
+    border-left: 0;
+}
+
+.md-typeset table:not([class]) tr th {
+    border-left: .05rem solid var(--md-default-fg-color--lighter);
+    min-width: 0rem;
+}
+
+
+/* Table of content */
+
+.md-nav__title {
+    text-align: center;
+    border-bottom: 1px solid #ababab;
+}
+
+
+/* Make H2 Table of content entries bold */
+
+.md-nav.md-nav--secondary>.md-nav__list>.md-nav__item>a {
+    font-weight: 700;
+}
+
+.md-nav.md-nav--secondary>.md-nav__list>.md-nav__item>nav {
+    border-left: 5px solid #dddddd;
+    line-height: 1.15;
+    margin: 0 0 1.5rem 0;
+}
+
+
+/******* COPY BUTTON *******/
+
+.copyButton {
+    position: relative;
+    top: 0;
+    right: 0;
+    display: block;
+    float: right;
+    margin-left: 5pt;
+    color: var(--md-default-fg-color--lighter);
+}
+
+.copyButton>span {
+    visibility: hidden;
+    width: max-content;
+    max-width: 80vw;
+    opacity: 0;
+    transform: translateX(-50%);
+    background-color: var(--md-accent-fg-color);
+    color: var(--md-default-bg-color);
+    text-align: center;
+    border-radius: 6px;
+    padding: 0.5em;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    transition: opacity 0.3s;
+    font-family: "Roboto Mono", SFMono-Regular, Consolas, Menlo, monospace;
+}
+
+h3>.copyButton>span,
+h4>.copyButton>span,
+td>.copyButton>span {
+    transform: translateY(-25%);
+    right: 150%;
+    top: 0%;
+    bottom: auto;
+}
+
+.copyButton>span::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--md-accent-fg-color) transparent transparent transparent;
+}
+
+h3>.copyButton>span::after,
+h4>.copyButton>span::after,
+td>.copyButton>span::after {
+    left: 100%;
+    top: 35%;
+    margin-left: 0px;
+    border-color: transparent transparent transparent var(--md-accent-fg-color);
+}
+
+.copyButton:hover>span {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/******* Content Overview *******/
+
+.contentTable {
+    font-size: .70rem;
+    width: 100%;
+}
+
+.contentTable td,
+.contentTable th {
+    padding: .2em .5em;
+    border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.contentTable th {
+    color: var(--md-default-bg-color);
+    vertical-align: top;
+    text-align: left;
+    background-color: var(--md-default-fg-color--light);
+}
+
+.contentTable tr td:first-child {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.contentTable tr[aria-label$='Functions'] {
+    background-color: var(--function-overview-bg-color);
+}
+
+.contentTable tr[aria-label$='Variables'] {
+    background-color: var(--var-overview-bg-color);
+}
+
+.contentTable tr[aria-label$='Constructors'] {
+    background-color: var(--constructor-overview-bg-color);
+}
+
+.contentTable tr[aria-label$='Operators'] {
+    background-color: var(--operator-overview-bg-color);
+}
+
+.overviewHeader {
+    position: relative;
+    cursor: pointer;
+}
+
+.overviewHeader::after {
+    position: absolute;
+    top: .4rem;
+    width: 1rem;
+    height: 1rem;
+    background-color: currentColor;
+    -webkit-mask-image: var(--md-details-icon);
+    mask-image: var(--md-details-icon);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    transform: rotate(90deg);
+    transition: transform 250ms;
+    content: "";
+}
+
+.overviewHeader.collapsed::after {
+    transform: rotate(-90deg);
+}
+
+
+/*** XML File pages ***/
+
+.xmlInfo {
+    color: #fff;
+    padding: 0.5em;
+    font-size: 75%;
+    font-weight: 700;
+    vertical-align: middle;
+    border-radius: .25rem;
+    background-color: #6c757d;
+}
+
+.xmlInfo.red {
+    background-color: #dc3545;
+}
+
+.xmlInfo.green {
+    background-color: #28a745;
+}
+
+
+/*** Search result coloring ***/
+
+.searchClass .md-search-result__article::before,
+.searchEnum .md-search-result__article::before,
+.searchFile .md-search-result__article::before,
+.searchXML .md-search-result__article::before,
+.searchFAQ .md-search-result__article::before,
+.searchTutorial .md-search-result__article::before {
+    content: "";
+    float: left;
+    padding: 0 0.4rem;
+    position: absolute;
+    top: 0.85rem;
+    left: 0;
+    color: var(--constructor-color);
+}
+
+.searchClass .md-search-result__icon {
+    color: var(--function-color);
+}
+
+.searchClass .md-search-result__article::before {
+    content: "Class";
+    padding: 0pt 2pt;
+    color: var(--function-color);
+}
+
+.searchEnum .md-search-result__icon {
+    color: var(--operator-color);
+}
+
+.searchEnum .md-search-result__article::before {
+    content: "Enum";
+    padding: 0 0.15rem;
+    color: var(--operator-color);
+}
+
+.searchFile .md-search-result__icon,
+.searchXML .md-search-result__icon {
+    color: var(--constructor-color);
+}
+
+.searchFile .md-search-result__article::before {
+    content: "File";
+    padding: 0 0.4rem;
+    color: var(--constructor-color);
+}
+
+.searchXML .md-search-result__article::before {
+    content: "XML";
+    padding: 0 0.3rem;
+    color: var(--constructor-color);
+}
+
+.searchFAQ .md-search-result__icon {
+    color: var(--rep-color);
+}
+
+.searchFAQ .md-search-result__article::before {
+    content: "FAQ";
+    padding: 0 0.35rem;
+    color: var(--rep-color);
+}
+
+.searchTutorial .md-search-result__icon {
+    color: var(--var-color);
+}
+
+.searchTutorial .md-search-result__article::before {
+    content: "Tutorial";
+    padding: 0pt 1pt;
+    font-size: 7pt;
+    color: var(--var-color);
+}
+
+
+/*** Bitset calculator ***/
+
+#bitsetCalculator {
+    margin: 1em 0em;
+}
+
+#bitsetCalcInput {
+    border: 1px solid var(--md-code-fg-color);
+    border-radius: 5px;
+    padding: 0.1em;
+    width: 5em;
+    height: 1rem;
+    margin-left: 5pt;
+    float: left;
+}
+
+#bitsetCalcSplits {
+    padding: 0.1em;
+    margin-left: 5pt;
+}
+
+#bitsetCalcSplits>span.highVal {
+    background-color: var(--var-color);
+    border-radius: 5px;
+    padding: 0.1em;
+}
+
+#bitsetCalcResult {
+    margin: 0.5em 0em;
+}
+
+.tableHighlight {
+    background-color: var(--var-color);
+}
+
+.inlineEditButton {
+    height: 1rem;
+    width: 1rem;
+    margin: 0.3rem;
+}
+
+/*** Interactive FAQs ***/
+#faq_buttons {
+    margin: 1em;
+}
+
+.faqButton {
+    margin: 0.25em;
+}
+
+#faq_text {
+    min-height: 10em;
+}
+
+/*** Hide diagrams in their "codeblock" version, which exists on page load **/
+.mermaidDiagram > pre{
+    visibility: hidden;
+}
