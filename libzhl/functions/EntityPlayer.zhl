@@ -131,6 +131,9 @@ __thiscall void Entity_Player::SetActiveVarData(Entity_Player *this<ecx>, int va
 "558bec83e4f883ec1c538b5d0c56578bf985db79??":
 __thiscall int Entity_Player::AddActiveCharge(Entity_Player *this<ecx>, unsigned int charge, int slot, bool unk, bool overcharge, bool force);
 
+"558bec83e4f883ec14538b5d??b841020000":
+__thiscall int Entity_Player::DropCollectible(Entity_Player *this<ecx>, int collectible, int param2, bool param3);
+
 struct Entity_Player {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }

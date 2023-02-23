@@ -321,6 +321,9 @@ Now accepts an optional `bool` to determine if EntityPlayer:EvaluateItems() shou
 
 ## int EntityPlayer:AddActiveCharge(int Charge, ActiveSlot Slot, bool Unknown, bool Overcharge, bool Force)
 
+## int EntityPlayer:DropCollectible(CollectibleType Collectible)
+Removes an item from the player and drops a pedestal of it on the ground
+
 ## MultiShotParams EntityPlayer:GetMultiShotParams(WeaponType WeaponType)
 Now returns a proper `MultiShotParams` object.
 
