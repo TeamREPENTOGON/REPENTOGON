@@ -44,6 +44,6 @@ jobs:
             - name: Upload to Website
               if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
               run: |
-                   cd documentatio
+                   cd documentation
                    apt update && apt install -y rsync
                    rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
