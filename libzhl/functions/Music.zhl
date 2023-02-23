@@ -3,3 +3,12 @@ __thiscall void Music::Play(int musicid,float volume);
 
 "558BEC51538B5D085657":
 __thiscall void Music::Crossfade(int musicid,float faderate);
+
+
+struct Music
+{{
+	inline void StopJingle() {
+		*(int*)((char*)this + 0x348) = 0;
+		*(int*)((char*)this + 0x364) = 0xffffff9c;
+	};
+}};

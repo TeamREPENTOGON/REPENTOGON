@@ -17,8 +17,9 @@ ___
 Returns `true` if hard mode or greedier
 
 ___
-### GetAmbushEx () {: aria-label='Functions' }
-#### [Ambush](Ambush.md) GetAmbushEx ( ) {: .copyable aria-label='Functions' }
+### GetAmbush () {: aria-label='Functions' }
+#### [Ambush](Ambush.md) GetAmbush ( ) {: .copyable aria-label='Functions' }
+It works now
 
 ___
 ### GetConsole () {: aria-label='Functions' }
