@@ -1,5 +1,15 @@
 # Class "PlayerManager"
 
+???+ info
+    You can get this class by using the following functions:
+
+    * [Game:GetPlayerManager](Game.md#getplayermanager)
+
+    ???+ example "Example Code"
+        ```lua
+        local manager = Game():GetPlayerManager()
+        ``    
+        
 ## Functions
 
 ### FirstCollectibleOwner () {: aria-label='Functions' }
