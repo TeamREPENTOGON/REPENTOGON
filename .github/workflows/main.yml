@@ -4,8 +4,8 @@ on:
     push:
         branches:
             - main-msvc
-        paths:
-            - documentation/**
+ #       paths:
+ #           - documentation/**
 
 jobs:
     deployment:
@@ -44,5 +44,6 @@ jobs:
               if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
               run: |
                    cd documentation
+                   /bin/echo $PATH
                    /bin/apt update && /bin/apt install -y rsync
                    /bin/rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
