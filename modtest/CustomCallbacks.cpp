@@ -768,10 +768,11 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1067)
+		.push(this->GetPlayerType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.call(1);
 

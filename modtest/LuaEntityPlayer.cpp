@@ -237,6 +237,22 @@ static void RegisterPlayerAddActiveCharge(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerDropCollectible(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int collectible = luaL_checkinteger(L, 2);
+
+	player->DropCollectible(collectible, 0, false);
+	return 1;
+}
+
+static void RegisterPlayerDropCollectible(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "DropCollectible");
+	lua_pushcfunction(L, Lua_PlayerDropCollectible);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -251,4 +267,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetActiveMinUsableCharge(state);
 	RegisterPlayerSetActiveVarData(state);
 	RegisterPlayerAddActiveCharge(state);
+	RegisterPlayerDropCollectible(state);
 }

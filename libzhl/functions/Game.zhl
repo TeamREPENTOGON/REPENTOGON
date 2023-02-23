@@ -12,6 +12,9 @@ FuncSignature Signature_GameIsPaused = {
 "83b9??????????8b15":
 bool Game::IsPaused(Game *this<eax>);
 
+"a1????????8b80????????83f80174??83f80374??32c0":
+bool Game::IsHardMode(Game *this<eax>);
+
 "558bec83e4f883ec6c8b450853568b751857894424148bf98d4520897c2410508d451c508b451456508b4510508d450c508d44242c50e8????????":
 __thiscall Entity* Game::Spawn(Game *this<ecx>, unsigned int type, unsigned int variant, const Vector& position, const Vector& velocity, Entity* spawner, unsigned int subtype, unsigned int seed, unsigned int unk);
 
@@ -105,6 +108,8 @@ struct Game
 	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
 	
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
+	
+	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 
