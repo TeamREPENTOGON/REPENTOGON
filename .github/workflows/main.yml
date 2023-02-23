@@ -39,11 +39,11 @@ jobs:
               run: |
                    cd documentation
                    mkdocs build
+                   echo "/bin" >> $GITHUB_PATH
 
             - name: Upload to Website
               if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
               run: |
-                   cd documentation
-                   echo "/bin" >> $GITHUB_PATH
+                   cd documentatio
                    apt update && apt install -y rsync
                    rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
