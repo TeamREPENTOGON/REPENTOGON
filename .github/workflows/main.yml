@@ -44,5 +44,5 @@ jobs:
               if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
               run: |
                    cd documentation
-                   apt update && apt install -y rsync
-                   rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
+                   /bin/apt update && /bin/apt install -y rsync
+                   /bin/rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
