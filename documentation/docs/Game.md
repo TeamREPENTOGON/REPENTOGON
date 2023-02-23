@@ -18,18 +18,18 @@ Returns `true` if hard mode or greedier
 
 ___
 ### GetAmbushEx () {: aria-label='Functions' }
-#### Ambush GetAmbushEx ( ) {: .copyable aria-label='Functions' }
+#### [Ambush](Ambush.md) GetAmbushEx ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetConsole () {: aria-label='Functions' }
-#### Console GetConsole ( ) {: .copyable aria-label='Functions' }
+#### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPlayerManager () {: aria-label='Functions' }
-#### PlayerManager GetPlayerManager ( ) {: .copyable aria-label='Functions' }
+#### [PlayerManager](PlayerManager.md) GetPlayerManager ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRoomConfigHolder () {: aria-label='Functions' }
-#### RoomConfigHolder GetRoomConfigHolder ( ) {: .copyable aria-label='Functions' }
+#### [RoomConfigHolder](RoomConfigHolder.md) GetRoomConfigHolder ( ) {: .copyable aria-label='Functions' }
 
 ___
