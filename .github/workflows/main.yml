@@ -45,5 +45,5 @@ jobs:
               if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
               run: |
                    cd documentation
-                   apt update && apt install -y rsync libssl1.1
+                   sudo apt update && sudo apt install -y libssl1.1
                    rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
