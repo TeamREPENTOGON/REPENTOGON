@@ -7,7 +7,7 @@
 
     ???+ example "Example Code"
         ```lua
-        local console= Game():Console()
+        local console = Game():GetConsole()
         ```
         
 ## Functions

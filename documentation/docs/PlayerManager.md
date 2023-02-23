@@ -8,7 +8,7 @@
     ???+ example "Example Code"
         ```lua
         local manager = Game():GetPlayerManager()
-        ``    
+        ```
         
 ## Functions
 

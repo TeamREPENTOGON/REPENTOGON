@@ -76,7 +76,7 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/IsaacZHL/IsaacZHL
-      name: "BoI: Lua API Docs on GitHub"
+      name: "REPENTOGON source code and documentation"
   version:
     provider: mike
     default: rep
@@ -88,7 +88,7 @@ extra_javascript:
     - js/tablesort.number.min.js
     - js/customJS.js
     - js/jquery.mark.min.js
-copyright: "Copyright &copy; 2021 - 2023 Wofsauge (Discord: Wofsauge#6503)"
+copyright: "Copyright &copy; 2023 REPENTOGON developers"
 repo_url: https://github.com/IsaacZHL/IsaacZHL
 repo_name: IsaacZHL/IsaacZHL
 edit_uri: edit/main/documentation/docs/
