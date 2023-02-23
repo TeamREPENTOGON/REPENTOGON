@@ -13,7 +13,7 @@ Returns the amount of planetariums the player has entered this run.
 
 ___
 ### IsHardMode () {: aria-label='Functions' }
-#### int IsHardMode ( ) {: .copyable aria-label='Functions' }
+#### bool IsHardMode ( ) {: .copyable aria-label='Functions' }
 Returns `true` if hard mode or greedier
 
 ___
