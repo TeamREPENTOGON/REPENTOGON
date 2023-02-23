@@ -11,19 +11,26 @@
 
 int Lua_SpriteReplaceSpritesheet(lua_State* L)
 {
-	printf("MY TURN\n");
 	bool loadGraphics = false;
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	int layerId = luaL_checkinteger(L, 2);
-	std::string filename = luaL_checkstring(L, 3);
+
+	IsaacString str;
+	const char* filename = luaL_checkstring(L, 3);
+	if (strlen(filename) < 16) {
+		strcpy(str.text, filename);
+	}
+	else {
+		*(char**)str.text = (char*)filename;
+	}
+	str.unk = str.size = strlen(filename);
 
 	if (lua_isboolean(L, 4))
 		loadGraphics = lua_toboolean(L, 4);
 
-	anm2->ReplaceSpritesheet(layerId, &filename);
+	anm2->ReplaceSpritesheet(layerId, str);
 
 	if (loadGraphics) {
-		printf("HOOOOOOOOOOOEEEEE\n");
 		anm2->LoadGraphics(false); 
 	}
 

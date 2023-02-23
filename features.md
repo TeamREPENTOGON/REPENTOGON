@@ -242,6 +242,9 @@ Compared to the vanilla function, this implementation has been further augmented
 ## bool Game:AchievementUnlocksDisallowed()
 Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
 
+## int Game:GetPlanetariumsVisited()
+Returns the amount of planetariums the player has entered this run.
+
 ## RoomConfigHolder Game:GetRoomConfigHolder()
 
 ## RoomConfigRoom RoomConfigHolder::GetRoomByStageTypeAndVariant(StbType Stage, int Type, int Variant, int Difficulty)

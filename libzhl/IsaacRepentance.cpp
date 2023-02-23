@@ -106,10 +106,10 @@ namespace _func3
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
-	static FunctionDefinition funcObj("ANM2::ReplaceSpritesheet", typeid(void (ANM2::*)(int , std::string *)), "558bec8b4508568bf185c078", argdata, 3, 5, &func);
+	static FunctionDefinition funcObj("ANM2::ReplaceSpritesheet", typeid(void (ANM2::*)(int , const IsaacString &)), "558bec8b4508568bf185c078", argdata, 3, 5, &func);
 }
 
-__declspec(naked) void ANM2::ReplaceSpritesheet(int LayerId, std::string *PngFilename)
+__declspec(naked) void ANM2::ReplaceSpritesheet(int LayerId, const IsaacString &PngFilename)
 {
 	__asm
 	{

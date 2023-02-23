@@ -106,6 +106,8 @@ struct Game
 	
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
 	
+	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
+	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 
         return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 
