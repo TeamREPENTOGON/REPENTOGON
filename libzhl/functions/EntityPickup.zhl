@@ -7,3 +7,16 @@ __thiscall void Entity_Pickup::TriggerShopPurchase(Entity_Pickup* this<ecx>, Ent
 
 "558bec83e4c083ec3453568bf15780be??????????0f84????????80be??????????0f84????????83be??????????":
 __thiscall void Entity_Pickup::Render(Entity_Pickup *this<ecx>, Vector *offset);
+
+"558bec83e4f883ec145356578bf9837f2c640f85????????":
+__thiscall void Entity_Pickup::SetAlternatePedestal(Entity_Pickup *this<ecx>, int pedestalType);
+
+"568bf18b462c83f8640f85????????":
+__thiscall bool Entity_Pickup::TryRemoveCollectible(Entity_Pickup *this<ecx>);
+
+"558bec5183792c648a45088a917e04000088817e040000":
+__thiscall void Entity_Pickup::SetForceBlind(Entity_Pickup *this<ecx>, bool setBlind);
+
+struct Entity_Pickup {{
+	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
+}};

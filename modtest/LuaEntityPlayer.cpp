@@ -215,6 +215,28 @@ static void RegisterPlayerSetActiveVarData(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerAddActiveCharge(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	unsigned int charge = luaL_checkinteger(L, 2);
+	int slot = luaL_checkinteger(L, 3);
+	bool unknown = lua_toboolean(L, 4);
+	bool overcharge = lua_toboolean(L, 5);
+	bool force = lua_toboolean(L, 6);
+
+	int ret = player->AddActiveCharge(charge, slot, unknown, overcharge, force);
+	lua_pushinteger(L, ret);
+
+	return 1;
+}
+
+static void RegisterPlayerAddActiveCharge(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "AddActiveCharge");
+	lua_pushcfunction(L, Lua_PlayerAddActiveCharge);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -228,4 +250,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetActiveMaxCharge(state);
 	RegisterGetActiveMinUsableCharge(state);
 	RegisterPlayerSetActiveVarData(state);
+	RegisterPlayerAddActiveCharge(state);
 }
