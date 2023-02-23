@@ -4,8 +4,8 @@ on:
     push:
         branches:
             - main-msvc
- #       paths:
- #           - documentation/**
+        paths:
+            - documentation/**
 
 jobs:
     deployment:
@@ -39,11 +39,13 @@ jobs:
               run: |
                    cd documentation
                    mkdocs build
-                   echo "/bin" >> $GITHUB_PATH
+                   
 
+            - name: Add /bin to PATH (?????????)
+              run: echo "/bin" >> $GITHUB_PATH
+              
             - name: Upload to Website
               if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
               run: |
                    cd documentation
-                   sudo apt update && sudo apt install -y libssl1.1
                    rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
