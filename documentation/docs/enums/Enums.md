@@ -18,8 +18,8 @@ Return parameter for MC_GET_FOLLOWER_PRIORITY.
 ### GridPoopVariant {: aria-label='Constructors' }
 Variant attribute of GridEntityType.GRID_POOP. Is not stored in STB, or passed through MC_PRE_ROOM_ENTITY_SPAWN.
 
-### HealthType {: aria-label='Constructors' }
-Return value for EntityPlayer::GetHealthType. Return parameter for MC_PLAYER_GET_HEALTH_TYPE.
+### [HealthType](enums/HealthType.md) {: aria-label='Constructors' }
+Return value for [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html)::Get[HealthType](enums/HealthType.md). Return parameter for MC_PLAYER_GET_HEALTH_TYPE.
 
 ### KnifeSubType {: aria-label='Constructors' }
 *VERY* incomplete.

@@ -12,7 +12,7 @@
         
 ## Functions
 
-### StartChallenge () {: aria-label='Functions' }
+### Start·Challenge () {: aria-label='Functions' }
 #### void StartChallenge ( ) {: .copyable aria-label='Functions' }
 Triggers Challenge/Boss Rush ambush.
 

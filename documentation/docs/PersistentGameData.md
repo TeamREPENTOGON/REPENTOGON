@@ -12,8 +12,8 @@
         
 ## Functions
 
-### TryUnlock () {: aria-label='Functions' }
-#### bool TryUnlock ( Achievement Unlock ) {: .copyable aria-label='Functions' }
+### Try·Unlock () {: aria-label='Functions' }
+#### boolean TryUnlock ( [Achievement](enums/Enums.md) Unlock ) {: .copyable aria-label='Functions' }
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
 
 ___
