@@ -402,3 +402,21 @@ Accepts an integer to change the minimum charge to use the active item.
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|:--|
 ||- |MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE {: .copyable } | (ActiveSlot Slot)| - | void |
+
+### MC_PRE_REPLACE_SPRITESHEET
+Optional argument: `string ANM2Filename`
+
+Accepts a table of parameters: `{int LayerID, string PNGFilename}`
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_PRE_REPLACE_SPRITESHEET {: .copyable } | (int LayerID, string PNGFilename)| - | void |
+
+### MC_POST_REPLACE_SPRITESHEET
+Optional argument: `string ANM2Filename`
+
+Accepts no return parameters.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_POST_REPLACE_SPRITESHEET {: .copyable } | (int LayerID, string PNGFilename)| - | void |
