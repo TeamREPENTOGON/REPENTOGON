@@ -1234,3 +1234,46 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 	}
 	return super(slot);
 }
+
+//MC_PRE_REPLACE_SPRITESHEET (id: 1100)
+HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString &PngFilename) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1100)
+		.push(*(char**)this->_filename.text)
+		.push(LayerID)
+		.push(*(char**)PngFilename.text)
+		.call(1);
+
+	if (!result) {
+		if (lua_istable(L, -1)) {
+			LayerID = lua::callbacks::ToInteger(L, 1);
+
+			const char* filename = lua::callbacks::ToString(L, 2);
+			if (strlen(filename) < 16) {
+				strcpy(PngFilename.text, filename);
+			}
+			else {
+				*(char**)PngFilename.text = (char*)filename;
+			}
+			PngFilename.unk = PngFilename.size = strlen(filename);
+		}
+	}
+
+	super(LayerID, PngFilename);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults postResult = lua::LuaCaller(L).push(1101)
+		.push(*(char**)this->_filename.text)
+		.push(LayerID)
+		.push(*(char**)PngFilename.text)
+		.call(1);
+}

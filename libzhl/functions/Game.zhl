@@ -87,7 +87,7 @@ reference Game *g_Game;
 __thiscall void Game::StartStageTransition(bool SameStage,int param_2,Entity_Player *param_3);
 
 
-struct Game 
+struct Game depends (DailyChallenge)
 {{
 	Game()
 	{
@@ -110,6 +110,10 @@ struct Game
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
 	
 	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
+	
+	inline DailyChallenge GetDailyChallenge() { return *(DailyChallenge*)((char*)this + 0x1C3204); }
+	
+	inline unsigned int GetChallenge() { return *(unsigned int*)((char*)this + 0x1C319C); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 

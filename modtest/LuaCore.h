@@ -313,5 +313,6 @@ namespace lua {
         int ToInteger(lua_State* L, int stackPosition);
         double ToNumber(lua_State* L, int stackPosition);
         bool ToBoolean(lua_State* L, int stackPosition);
+		const char* ToString(lua_State* L, int stackPosition);
     }
 }

@@ -9,5 +9,8 @@ __cdecl void Manager::RestartGame(Seeds param_1,bool param_2,bool param_3) //swi
 __stdcall void Manager::RestartGame() //v1.7.9b maybe
 */
 
+"558bec694508a4":
+__thiscall ChallengeParam* Manager::GetChallengeParams(Manager *this<ecx>, int challengeID);
+
 ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":
 reference Manager *g_Manager;
