@@ -1,7 +1,7 @@
-"558bec51538b5d??568bf18975fc5785db78238b8e????????b8ab??????8bbe1c03????2bcff7e9c1fa048bc2c1e81f": 
+"558bec51538b5d??568bf18975": 
 __thiscall void Music::Play(int musicid,float volume);
 
-"558BEC51538B5D085657":
+"558bec51538b5d??56578bf985db":
 __thiscall void Music::Crossfade(int musicid,float faderate);
 
 

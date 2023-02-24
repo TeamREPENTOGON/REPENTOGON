@@ -1,8 +1,8 @@
-"558bec83e4f883ec0c5356578bf9807f01000f85????????":
+"558bec83e4f883ec0c5356578bf9807f??000f85????????8b5d":
 __thiscall bool PersistentGameData::TryUnlock(PersistentGameData* this<ecx>, int achievementID);
 
-"558bec81ecd4000000a1????????33c58945fc8b450c538b5d08568bf157807e01000f85????????":
+"558bec81ecd4000000a1????????33c58945??8b45":
 __thiscall void PersistentGameData::IncreaseEventCounter(PersistentGameData* this<ecx>, int eEventCounters, int num);
 
-"558bec8b450883f8fe74??85c079??":
+"558bec8b45??83f8fe":
 __thiscall bool PersistentGameData::Unlocked(PersistentGameData *this<ecx>, int achievementID);

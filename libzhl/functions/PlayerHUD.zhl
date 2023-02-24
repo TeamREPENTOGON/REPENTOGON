@@ -1,7 +1,7 @@
-"538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ecd8040000a1????????33c58945ec5657508d45f464a300000000":
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd8040000":
 __thiscall void PlayerHUD::Update(PlayerHUD *this<ecx>);
 
-"558bec83e4f081ecc802000056578b39f30f115c241c898c24a0000000897c241880bf881f0000000f85????????8b55088b4904898c24dc0000008d04d5000000002bc2":
+"558bec83e4f081ecc8020000":
 __thiscall void PlayerHUD::RenderActiveItem(PlayerHUD *this<ecx>, unsigned int slot, const Vector& pos, float alpha, float unk4);
 
 /*"558bec83e4f881ec24020000a1????????33c4898424????????":
