@@ -1,2 +1,2 @@
-"558bec81ec????????a1????????33c58945fc568b7508578bf9":
+"558bec81ecc0010000":
 __thiscall void Entity_Effect::Render(Entity_Effect *this<ecx>, Vector *offset);

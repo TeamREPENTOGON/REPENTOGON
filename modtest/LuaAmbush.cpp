@@ -23,7 +23,7 @@ int Lua_AmbushStartChallenge(lua_State* L)
 
 static void RegisterAmbush(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetAmbushEx");
+	lua_pushstring(L, "GetAmbush");
 	lua_pushcfunction(L, Lua_GetAmbush);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
