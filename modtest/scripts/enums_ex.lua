@@ -1186,3 +1186,10 @@ PlayerVariant = {
 	PLAYER = 0,
 	FOUND_SOUL = 1, CO_OP_BABY = 1,
 }
+
+PillCardSlot = {
+	PRIMARY = 0,
+	SECONDARY = 1,
+	TERTIARY = 2, -- Offset by 2 of: Pocket Item, Dice Bag Item, Pillcard (Otherwise unused)
+	QUATERNARY = 3, -- Offset by Pocket Item and Dice Bag Item and Pillcard (Otherwise unused)
+}
