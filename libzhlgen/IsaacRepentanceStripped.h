@@ -216,33 +216,11 @@ struct Room
     uint32_t _doorGridPositions[8]; // 0x744
 };
 
-struct Game 
+struct DailyChallenge
 {
-	uint32_t _stage; // 0x0
-	uint32_t _stageType; // 0x4
-	uint32_t unk; // 0x8
-	uint32_t _curses; // 0xC
-    RoomDescriptor _gridRooms[507]; // 0x14
-    RoomDescriptor _negativeGridRooms[18]; // 0x16c7c
-    uint32_t _roomOffset[507]; // 0x1796c
-    uint32_t _nbRooms; // 0x1815C
-    uint32_t _startingRoomIdx; // 0x18160
-    Room* _room; // 0x18190
-    uint32_t _currentRoomIdx; // 0x18194;
-    uint32_t _lastRoomIdx; // 0x18198
-    uint32_t _currentDimensionIdx; // 0x1819C
-    uint32_t _lastRoomDimensionIdx; // 0x181A0
-    uint32_t _leaveDoor; // 0x181A8
-    uint32_t _enterDoor; // 0x181AC
-    uint32_t _greedModeTreasureRoomIdx; // 0x18200
-    RoomConfigHolder _roomConfigs; // 0x1879C
-    PlayerManager _playerManager; // 0x1AB40 
-	Console _console; // 0x1BB60
-	Ambush _ambush; // 0x1c31b8
-    uint32_t _difficulty; // 0x243624
+	unsigned int _id; //0x0
+	unsigned int _seed; //0x4
 };
-
-typedef Game Level;
 
 struct Vector
 {
@@ -488,9 +466,15 @@ struct MenuManager
 {
 };
 
-struct ANM2
+struct Minimap
 {
 
+};
+
+
+struct ANM2
+{
+	IsaacString _filename;
 };
 
 struct SFXManager
@@ -507,3 +491,43 @@ struct Isaac
 {
 	
 };
+
+struct EntityList
+{
+	
+};
+
+struct ChallengeParam
+{
+	IsaacString _name; //0x0
+};
+
+
+struct Game 
+{
+	uint32_t _stage; // 0x0
+	uint32_t _stageType; // 0x4
+	uint32_t unk; // 0x8
+	uint32_t _curses; // 0xC
+    RoomDescriptor _gridRooms[507]; // 0x14
+    RoomDescriptor _negativeGridRooms[18]; // 0x16c7c
+    uint32_t _roomOffset[507]; // 0x1796c
+    uint32_t _nbRooms; // 0x1815C
+    uint32_t _startingRoomIdx; // 0x18160
+    Room* _room; // 0x18190
+    uint32_t _currentRoomIdx; // 0x18194;
+    uint32_t _lastRoomIdx; // 0x18198
+    uint32_t _currentDimensionIdx; // 0x1819C
+    uint32_t _lastRoomDimensionIdx; // 0x181A0
+    uint32_t _leaveDoor; // 0x181A8
+    uint32_t _enterDoor; // 0x181AC
+	unsigned int _stateFlags; // 0x1822C
+    uint32_t _greedModeTreasureRoomIdx; // 0x18200
+    RoomConfigHolder _roomConfigs; // 0x1879C
+    PlayerManager _playerManager; // 0x1AB40 
+	Console _console; // 0x1BB60
+	Ambush _ambush; // 0x1c31b8
+    uint32_t _difficulty; // 0x243624
+};
+
+typedef Game Level;

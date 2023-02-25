@@ -1,23 +1,26 @@
-"558bec83ec08f30f1005????????56578bf9f30f1145fc8b0d????????":
+"558bec83ec08f30f1005????????56578bf9f30f1145??8b0d":
 __thiscall float Room::GetDevilRoomChance(Room* this<ecx>);
 
-"558bec8b45083dbf0100007708":
+"558bec8b45??3dbf01000077??8b44":
 __thiscall GridEntity* Room::GetGridEntity(Room* this<ecx>, uint32_t idx);
 
-"558bec6aff68????????64a1000000005083ec7ca1????????33c58945f0535657508d45f464a3000000008bd9":
+"558bec6aff68????????64a1????????5083ec7ca1????????33c58945??535657508d45??64a3????????8bd9":
 __thiscall void Room::ShopRestockFull(Room* this<ecx>);
 
 "558bec83ec1c53568bf1":
 __thiscall void Room::ShopRestockPartial(Room* this<ecx>);
 
-"558bec83ec30f30f7e05????????":
+"558bec83ec30f30f7e05":
 __thiscall int Room::GetShopItemPrice(Room* this<ecx>, unsigned int entVariant, unsigned int entSubType, int shopItemID);
 
-"558bec53568b75088bd95785":
+"558bec53568b75??8bd95785f6":
 __thiscall bool Room::SpawnGridEntity(Room *this<ecx>, int GridIndex, unsigned int Type, unsigned int Variant, unsigned int Seed, int VarData);
 
-"558bec5153568b75088bd95785":
+"558bec5153568b75??8bd95785f6":
 __thiscall bool Room::SpawnGridEntity(Room *this<ecx>, int GridIndex, GridEntityDesc *Desc);
 
-"558bec8b5508568bf181":
+"558bec8b55??568bf181fabf010000":
 __thiscall void Room::RemoveGridEntityImmediate(Room *this<ecx>, int GridIndex, int PathTrail, bool KeepDecoration);
+
+"558bec83ec08538bd956578b3d":
+__thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);

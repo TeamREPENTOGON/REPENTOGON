@@ -1,5 +1,5 @@
-"558bec518b55145356578b7d0869f7c4000000":
+"558bec518b55??5356578b7d":
 __thiscall RoomConfig* RoomConfigHolder::GetRoomByStageTypeAndVariant(RoomConfigHolder* this<ecx>, uint32_t stage, uint32_t type, uint32_t variant, int32_t difficulty);
 
-"558bec6aff68????????64a1????????5083ec74a1????????33c58945f0535657508d45f464a3????????894dd08b45088945b88a450c8845cf88":
+"558bec6aff68????????64a1????????5083ec74a1????????33c58945??535657508d45??64a3????????894d":
 __thiscall RoomConfig* RoomConfigHolder::GetRandomRoom(RoomConfigHolder *this<ecx>, unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int unk1, unsigned int unk2, int minDifficulty, int maxDifficulty, const unsigned int &requiredDoors, unsigned int roomSubtype, int unk3);

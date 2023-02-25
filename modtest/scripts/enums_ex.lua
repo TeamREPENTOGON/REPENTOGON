@@ -27,6 +27,8 @@ ModCallbacks.MC_PRE_USE_CARD = 1064
 ModCallbacks.MC_PRE_USE_PILL = 1065
 ModCallbacks.MC_GET_SHOP_ITEM_PRICE = 1066
 ModCallbacks.MC_PLAYER_GET_HEALTH_TYPE = 1067
+ModCallbacks.MC_PRE_ROOM_TRIGGER_CLEAR = 1068
+ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR = 1069
 ModCallbacks.MC_PRE_FAMILIAR_RENDER = 1080
 ModCallbacks.MC_PRE_NPC_RENDER = 1081
 ModCallbacks.MC_PRE_PLAYER_RENDER = 1082
@@ -40,6 +42,10 @@ ModCallbacks.MC_PRE_SLOT_RENDER = 1089
 ModCallbacks.MC_POST_SLOT_RENDER = 1090
 ModCallbacks.MC_PRE_GRID_INIT = 1100
 ModCallbacks.MC_POST_GRID_INIT = 1101
+ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE = 1072
+ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE = 1073
+ModCallbacks.MC_PRE_REPLACE_SPRITESHEET = 1100
+ModCallbacks.MC_POST_REPLACE_SPRITESHEET = 1101
 
 EntityPartition.ALL = 0xffffffff
 
@@ -337,6 +343,8 @@ RoomSubType = {
 	ANGEL_STAIRWAY = 1,
 	ISAACS_BEDROOM_NORMAL = 0,
 	ISAACS_BEDROOM_GENESIS = 99,
+	DEPTHS_NORMAL = 0,
+	DEPTHS_FOOL_ROOM = 1, DEPTHS_MARKED_SKULL = 1,
 }
 
 Achievement = {
@@ -1179,4 +1187,11 @@ EntityPoopVariant = {
 PlayerVariant = {
 	PLAYER = 0,
 	FOUND_SOUL = 1, CO_OP_BABY = 1,
+}
+
+PillCardSlot = {
+	PRIMARY = 0,
+	SECONDARY = 1,
+	TERTIARY = 2, -- Offset by 2 of: Pocket Item, Dice Bag Item, Pillcard (Otherwise unused)
+	QUATERNARY = 3, -- Offset by Pocket Item and Dice Bag Item and Pillcard (Otherwise unused)
 }

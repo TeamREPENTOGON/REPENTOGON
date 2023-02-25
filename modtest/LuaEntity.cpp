@@ -183,6 +183,24 @@ static void RegisterEntityCopyStatusEffects(lua_State* L)
 }
 */
 
+static int Lua_EntityGetNullOffset(lua_State* L)
+{
+	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
+	const char* nullLayerName = luaL_checkstring(L, 2);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = entity->GetNullOffset(nullLayerName);
+	return 1;
+}
+
+static void RegisterEntityGetNullOffset(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::ENTITY);
+	lua_pushstring(L, "GetNullOffset");
+	lua_pushcfunction(L, Lua_EntityGetNullOffset);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -194,4 +212,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityAddIce(state);
 	RegisterEntityAddKnockback(state);
 	RegisterEntityShadowSize(state);
+	RegisterEntityGetNullOffset(state);
 }

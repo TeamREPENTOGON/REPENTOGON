@@ -164,9 +164,9 @@ HOOK_METHOD(HUD, Render, () -> void) {
 
 	lua::LuaCaller(L).push(1022).call(1);
 
-	FILE* f = fopen("repentogon.log", "a");
+	/*FILE* f = fopen("repentogon.log", "a");
 	fprintf(f, "After call to HUD::Render, there are %d elements on the stack\n", lua_gettop(L));
-	fclose(f);
+	fclose(f);*/
 
 	super();
 }
@@ -195,10 +195,11 @@ void ProcessPostSFXPlay(int ID, float Volume, int FrameDelay, bool Loop, float P
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaCaller(L).push(1031)
+		.push(ID)
 		.push(ID)
 		.push(Volume)
 		.push(FrameDelay)
@@ -213,10 +214,11 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1030)
+		.push(ID)
 		.push(ID)
 		.push(Volume)
 		.push(FrameDelay)
@@ -766,10 +768,11 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1067)
+		.push(this->GetPlayerType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.call(1);
 
@@ -1042,7 +1045,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 	super(offset);
 }
 
-//PRE/POST _SLOT_RENDER (id: 1089/1090)
+//PRE/POST_SLOT_RENDER (id: 1089/1090)
 HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
@@ -1080,7 +1083,6 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 		.pushUserdataValue(*offset, lua::Metatables::VECTOR)
 		.call(1);
 }
-
 
 //RenderHead Callback (id: 1038)
 HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
@@ -1144,4 +1146,134 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 		}
 	}
 	super(x);
+}
+
+//PRE_ROOM_TRIGGER_CLEAR (id: 1068)
+HOOK_METHOD(Room, TriggerClear, (bool playSound) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1068)
+		.push(playSound)
+		.call(1);
+
+	super(playSound);
+}
+
+//PRE_PLAYER_TRIGGER_ROOM_CLEAR (id: 1069)
+HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1069)
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.call(1);
+
+
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+	super();
+}
+
+//PLAYER_GET_ACTIVE_MAX_CHARGE (id: 1072)
+HOOK_METHOD(Entity_Player, GetActiveMaxCharge, (int item, int vardata) -> int) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1072)
+		.push(item)
+		.push(item)
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.push(vardata)
+		.call(1);
+
+	if (!result) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+	}
+	return super(item, vardata);
+}
+
+//PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE (id: 1073)
+HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1073)
+		.push(this->GetActiveItem(slot))
+		.push(slot)
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.call(1);
+
+	if (!result) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+	}
+	return super(slot);
+}
+
+//MC_PRE_REPLACE_SPRITESHEET (id: 1100)
+HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString &PngFilename) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1100)
+		.push(*(char**)this->_filename.text)
+		.push(LayerID)
+		.push(*(char**)PngFilename.text)
+		.call(1);
+
+	if (!result) {
+		if (lua_istable(L, -1)) {
+			LayerID = lua::callbacks::ToInteger(L, 1);
+
+			const char* filename = lua::callbacks::ToString(L, 2);
+			if (strlen(filename) < 16) {
+				strcpy(PngFilename.text, filename);
+			}
+			else {
+				*(char**)PngFilename.text = (char*)filename;
+			}
+			PngFilename.unk = PngFilename.size = strlen(filename);
+		}
+	}
+
+	super(LayerID, PngFilename);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults postResult = lua::LuaCaller(L).push(1101)
+		.push(*(char**)this->_filename.text)
+		.push(LayerID)
+		.push(*(char**)PngFilename.text)
+		.call(1);
 }

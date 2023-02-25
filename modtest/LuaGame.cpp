@@ -21,8 +21,45 @@ static void RegisterAchievementUnlocksDisallowed(lua_State* L)
 	lua_pop(L, 1);
 }
 
+int Lua_GameGetPlanetariumsVisited(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushinteger(L, game->GetPlanetariumsVisited());
+
+	return 1;
+}
+
+int Lua_GameIsHardMode(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushboolean(L, game->IsHardMode());
+
+	return 1;
+}
+
+
+static void RegisterGetPlanetariumsVisited(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "GetPlanetariumsVisited");
+	lua_pushcfunction(L, Lua_GameGetPlanetariumsVisited);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterIsHardMode(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "IsHardMode");
+	lua_pushcfunction(L, Lua_GameIsHardMode);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	RegisterAchievementUnlocksDisallowed(state);
+	RegisterGetPlanetariumsVisited(state);
+	RegisterIsHardMode(state);
 }

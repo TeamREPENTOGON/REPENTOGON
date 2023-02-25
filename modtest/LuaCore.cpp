@@ -300,6 +300,14 @@ namespace lua {
 			lua_pop(L, 1);
 			return res;
 		}
+
+		const char* ToString(lua_State* L, int stackPosition) {
+			lua_pushinteger(L, stackPosition);
+			lua_gettable(L, -2);
+			const char* res = luaL_checkstring(L, -1);
+			lua_pop(L, 1);
+			return res;
+		}
 	}
 
 	LuaCaller::LuaCaller(lua_State* L) : _L(L) { }

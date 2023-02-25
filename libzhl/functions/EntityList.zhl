@@ -1,0 +1,2 @@
+"558bec83ec78535657":
+__thiscall void EntityList::RenderShadows(EntityList *this<ecx>, Vector *offset);
