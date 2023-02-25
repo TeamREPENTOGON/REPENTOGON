@@ -1,64 +1,64 @@
-# Class "EntityPlayer"
+# Class "[EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html)"
 
 ## Functions
 
-### AddActiveCharge () {: aria-label='Functions' }
-#### int AddActiveCharge ( int Charge, ActiveSlot Slot, bool Unknown, bool Overcharge, bool Force ) {: .copyable aria-label='Functions' }
+### Add·Active·Charge () {: aria-label='Functions' }
+#### int AddActiveCharge ( int Charge, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, boolean Unknown, boolean Overcharge, boolean Force ) {: .copyable aria-label='Functions' }
 
 ___
-### AddCacheFlags () {: aria-label='Functions' }
-#### void AddCacheFlags ( CacheFlag CacheFlag, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }
-Now accepts an optional `bool` to determine if EntityPlayer:EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
+### Add·Cache·Flags () {: aria-label='Functions' }
+#### void AddCacheFlags ( [CacheFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/CacheFlag.html) CacheFlag, boolean EvaluateItems = false ) {: .copyable aria-label='Functions' }
+Now accepts an optional `bool` to determine if [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ___
-### DropCollectible () {: aria-label='Functions' }
-#### void DropCollectible ( CollectibleType Collectible ) {: .copyable aria-label='Functions' }
+### Drop·Collectible () {: aria-label='Functions' }
+#### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 
 ___
-### GetActiveMaxCharge () {: aria-label='Functions' }
-#### int GetActiveMaxCharge ( CollectibleType Collectible, int VarData ) {: .copyable aria-label='Functions' }
+### Get·Active·Max·Charge () {: aria-label='Functions' }
+#### int GetActiveMaxCharge ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int VarData ) {: .copyable aria-label='Functions' }
 
 ___
-### GetActiveMinUsableCharge () {: aria-label='Functions' }
-#### int GetActiveMinUsableCharge ( ActiveSlot Slot ) {: .copyable aria-label='Functions' }
+### Get·Active·Min·Usable·Charge () {: aria-label='Functions' }
+#### int GetActiveMinUsableCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
-### GetHealthType () {: aria-label='Functions' }
-#### HealthType GetHealthType ( ) {: .copyable aria-label='Functions' }
+### Get·Health·Type () {: aria-label='Functions' }
+#### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetMultiShotParams () {: aria-label='Functions' }
-#### MultiShotParams GetMultiShotParams ( WeaponType WeaponType ) {: .copyable aria-label='Functions' }
+### Get·Multi·Shot·Params () {: aria-label='Functions' }
+#### [MultiShotParams](MultiShotParams.md) GetMultiShotParams ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType ) {: .copyable aria-label='Functions' }
 Now returns a proper `MultiShotParams` object.
 
 ___
-### GetMultiShotPositionVelocity () {: aria-label='Functions' }
-#### PosVel GetMultiShotPositionVelocity ( int LoopIndex, WeaponType WeaponType, Vector ShotDirection, Vector ShotSpeed, MultiShotParams Params ) {: .copyable aria-label='Functions' }
+### Get·Multi·Shot·Position·Velocity () {: aria-label='Functions' }
+#### [PosVel](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetMultiShotPositionVelocity ( int LoopIndex, [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotDirection, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotSpeed, [MultiShotParams](MultiShotParams.md) Params ) {: .copyable aria-label='Functions' }
 This magically vanished from the API some time after 1.7.8.
 
-Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than MultiShotParams.NumTears.
+Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than [MultiShotParams](MultiShotParams.md).NumTears.
 
 ___
-### GetTotalActiveCharge () {: aria-label='Functions' }
-#### int GetTotalActiveCharge ( ActiveSlot Slot ) {: .copyable aria-label='Functions' }
+### Get·Total·Active·Charge () {: aria-label='Functions' }
+#### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
-### InitPostLevelInitStats () {: aria-label='Functions' }
+### Init·Post·Level·Init·Stats () {: aria-label='Functions' }
 #### void InitPostLevelInitStats ( ) {: .copyable aria-label='Functions' }
 Call this after spawning characters with "special" tears (Forgotten, Lilith, Azazel etc) with InitTwin, or they won't have their proper tear type.
 
 ___
-### InitTwin () {: aria-label='Functions' }
-#### EntityPlayer InitTwin ( PlayerType PlayerType ) {: .copyable aria-label='Functions' }
+### Init·Twin () {: aria-label='Functions' }
+#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) InitTwin ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 I believe this is used by J&E, Strawman etc
 
 ___
-### SetActiveVarData () {: aria-label='Functions' }
-#### void SetActiveVarData ( int VarData, ActiveSlot Slot ) {: .copyable aria-label='Functions' }
+### Set·Active·Var·Data () {: aria-label='Functions' }
+#### void SetActiveVarData ( int VarData, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
-### SetItemState () {: aria-label='Functions' }
-#### void SetItemState ( CollectibleType CollectibleType ) {: .copyable aria-label='Functions' }
+### Set·Item·State () {: aria-label='Functions' }
+#### void SetItemState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType ) {: .copyable aria-label='Functions' }
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
 ___
