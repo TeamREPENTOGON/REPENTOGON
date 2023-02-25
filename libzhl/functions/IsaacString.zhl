@@ -1,0 +1,9 @@
+struct IsaacString {{
+    const char* Get() const {
+        if (size < 16) {
+            return text;
+        } else {
+            return *(char**)text;
+        }
+    }
+}};

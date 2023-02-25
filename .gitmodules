@@ -1,3 +1,6 @@
 [submodule "libs/luafilesystem"]
 	path = libs/luafilesystem
 	url = https://github.com/lunarmodules/luafilesystem
+[submodule "libs/zydis"]
+	path = libs/zydis
+	url = https://github.com/zyantific/zydis.git
