@@ -5,7 +5,31 @@ nav:
         - Home: index.md
         - "Enums":
             - "ModCallbacks": enums/ModCallbacks.md
-            - "Enums": enums/Enums.md
+            - "StbType": enums/StbType.md
+            - "BossType": enums/BossType.md
+            - "NullPickupSubType": enums/NullPickupSubType.md
+            - "KnifeVariant": enums/KnifeVariant.md
+            - "KnifeSubType": enums/KnifeSubType.md
+            - "SlotVariant": enums/SlotVariant.md
+            - "RoomSubType": enums/RoomSubType.md
+            - "Achievement": enums/Achievement.md
+            - "FollowerPriority": enums/FollowerPriority.md
+            - "HealthType": enums/HealthType.md
+            - "Dimension": enums/Dimension.md
+            - "LineCheckMode": enums/LineCheckMode.md
+            - "ProjectileMode": enums/ProjectileMode.md
+            - "StbGridType": enums/StbGridType.md
+            - "StbRockSubType": enums/StbRockSubType.md
+            - "StbPoopSubType": enums/StbPoopSubType.md
+            - "StbTeleporterSubType": enums/StbTeleporterSubType.md
+            - "StbRailVariant": enums/StbRailVariant.md
+            - "RetractingSpikesVariant": enums/RetractingSpikesVariant.md
+            - "PressurePlateVariant": enums/PressurePlateVariant.md
+            - "TeleporterVariant": enums/TeleporterVariant.md
+            - "GridPoopVariant": enums/GridPoopVariant.md
+            - "EntityPoopVariant": enums/EntityPoopVariant.md
+            - "PlayerVariant": enums/PlayerVariant.md
+            - "PillCardSlot": enums/PillCardSlot.md
         - Ambush: Ambush.md
         - Console: Console.md
         - Entity: Entity.md
