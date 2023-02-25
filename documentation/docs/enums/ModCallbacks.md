@@ -420,3 +420,69 @@ Accepts no return parameters.
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|:--|
 ||- |MC_POST_REPLACE_SPRITESHEET {: .copyable } | (int LayerID, string PNGFilename)| - | void |
+
+### MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
+This callback is run at the start of planetarium calculation. Before running calculation, the game first checks if the current floor is valid to spawn a planetarium. If the current floor is invalid, all further calculation (and thus, all further callbacks) will be canceled.
+
+By default, planetariums cannot spawn past Depths II (Womb II with Telescope Lens).
+
+This callback can be used, for example, to add custom planetarium spawn rules on custom floors, or to add new items like Telescope Lens which can augment the rules.
+
+Accepts a `bool`. Return `true` to bypass the planetarium stage limitation, or `false` to keep it intact.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY {: .copyable } | ()| - | bool |
+
+### MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
+After ensuring the stage is valid, the game then checks if a planetarium has been entered before. If so, the chance will be locked at 1% (10% with Telescope Lens).
+
+If you're looking to add an item like Telescope Lens which modifies the *base* chance, have a look at MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS instead.
+
+Accepts a `bool`. Return `true` to bypass the planetarium enter limitation, or `false` to keep it intact.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY {: .copyable } | ()| - | bool |
+
+### MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
+After ensuring planetariums haven't been entered before, the game then checks how many treasure rooms have been entered. If the amount of treasure rooms entered is greater than or equal to the current stage number, the chance will be locked at 1% (10% with Telescope Lens).
+
+If you're looking to add an item like Telescope Lens which modifies the *base* chance, have a look at MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS instead.
+
+Accepts a `bool`. Return `true` to bypass the planetarium treasure room limitation, or `false` to keep it intact.
+
+Alternatively accepts an `int` to modify how many treasure rooms the game will believe has been entered.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY {: .copyable } | (int TreasureRoomsVisited)| - | bool or int |
+
+### MC_PRE_PLANETARIUM_APPLY_ITEMS
+After checking the amount of treasure rooms entered, the game applies flat item chances. This is where Crystal Ball, Magic 8 Ball and Sausage's chances get added, as well as Telescope Lens's additional 15% chance.
+
+If you're looking to add an item like Telescope Lens which modifies the *base* chance, have a look at MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS instead.
+
+Accepts a `float` to modify the chance in this step of the calculation.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_PRE_PLANETARIUM_APPLY_ITEMS {: .copyable } | (float Chance)| - | float |
+
+### MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
+Finally, after checking all of the above, Telescope Lens adds an additional 9% chance to the base chance, bringing the base generation chance to 10%.
+
+Accepts a `float` to modify the chance in this step of the calculation.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS {: .copyable } | (float Chance)| - | float |
+
+### MC_POST_PLANETARIUM_CALCULATE
+This will override *all* previous calculation values, ultimately dictating the planetarium chance.
+
+Accepts a `float` to modify the chance.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_POST_PLANETARIUM_CALCULATE {: .copyable } | (float Chance)| - | float |

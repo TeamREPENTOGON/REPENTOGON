@@ -500,6 +500,7 @@ struct EntityList
 struct ChallengeParam
 {
 	IsaacString _name; //0x0
+	std_set_int _roomset; //0x18
 };
 
 
@@ -526,6 +527,8 @@ struct Game
     RoomConfigHolder _roomConfigs; // 0x1879C
     PlayerManager _playerManager; // 0x1AB40 
 	Console _console; // 0x1BB60
+	int _treasureRoomsVisited; // 0x1C3178
+	int _planetariumsVisited; // 0x1C317C
 	Ambush _ambush; // 0x1c31b8
     uint32_t _difficulty; // 0x243624
 };

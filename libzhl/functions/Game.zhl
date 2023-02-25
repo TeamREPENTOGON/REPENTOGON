@@ -47,7 +47,7 @@ __thiscall uint32_t* Game::GetRoomDescriptorsOffsetsArrayForDimension(Game *this
 __thiscall RoomDescriptor* Game::GetRoomByIdx(Game *this<ecx>, uint32_t idx, int32_t dimension);
 
 "558bec83ec1cf30f1005":
-__thiscall double Game::GetPlanetariumChance(Game *this<ecx>);
+__thiscall float Game::GetPlanetariumChance(Game *this<ecx>);
 
 "558bec83ec0c568bf18b0d":
 __thiscall void Game::StartStageTransition(bool SameStage,int param_2,Entity_Player *param_3);
@@ -106,6 +106,8 @@ struct Game depends (DailyChallenge)
 	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
 	
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
+	
+	inline int GetTreasureRoomsVisited() { return *(int*)((char*)this + 0x1C3178); }
 	
 	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
 	

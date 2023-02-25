@@ -3161,15 +3161,16 @@ namespace _func95
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("Game::GetPlanetariumChance", typeid(double (Game::*)()), "558bec83ec1cf30f1005", argdata, 1, 9, &func);
+	static FunctionDefinition funcObj("Game::GetPlanetariumChance", typeid(float (Game::*)()), "558bec83ec1cf30f1005", argdata, 1, 1, &func);
 }
 
-__declspec(naked) double Game::GetPlanetariumChance()
+__declspec(naked) float Game::GetPlanetariumChance()
 {
 	__asm
 	{
 		push ebp
 		mov ebp, esp
+		push edx
 		push ecx
 		push ebx
 		push esi
@@ -3179,6 +3180,7 @@ __declspec(naked) double Game::GetPlanetariumChance()
 		pop esi
 		pop ebx
 		pop ecx
+		pop edx
 		mov esp, ebp
 		pop ebp
 		ret
@@ -4427,10 +4429,10 @@ namespace _func137
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff};
-	static FunctionDefinition funcObj("PlayerManager::FirstCollectibleOwner", typeid(Entity_Player *(PlayerManager::*)(CollectibleType , RNG &, bool )), "558bec83e4f883ec0c538b5d??56578bf98b0d", argdata, 4, 1, &func);
+	static FunctionDefinition funcObj("PlayerManager::FirstCollectibleOwner", typeid(Entity_Player *(PlayerManager::*)(CollectibleType , RNG **, bool )), "558bec83e4f883ec0c538b5d??56578bf98b0d", argdata, 4, 1, &func);
 }
 
-__declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(CollectibleType collectibleID, RNG &rng, bool unk)
+__declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(CollectibleType collectibleID, RNG **rng, bool unk)
 {
 	__asm
 	{
