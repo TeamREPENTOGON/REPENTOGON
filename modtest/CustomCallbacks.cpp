@@ -1245,9 +1245,9 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString &PngFilename) ->
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1100)
-		.push(*(char**)this->_filename.text)
+		.push(_filename.Get())
 		.push(LayerID)
-		.push(*(char**)PngFilename.text)
+		.push(PngFilename.Get())
 		.call(1);
 
 	if (!result) {
@@ -1272,8 +1272,8 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString &PngFilename) ->
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults postResult = lua::LuaCaller(L).push(1101)
-		.push(*(char**)this->_filename.text)
+		.push(_filename.Get())
 		.push(LayerID)
-		.push(*(char**)PngFilename.text)
+		.push(PngFilename.Get())
 		.call(1);
 }

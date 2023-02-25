@@ -158,6 +158,7 @@ static int Lua_ASMPatch___gc(lua_State* L) {
 }
 
 static void RegisterASMPatchTest(lua_State* L) {
+	lua::LuaStackProtector protector(L);
 	luaL_newmetatable(L, ASMPatchTestMT);
 	lua_pushstring(L, "__index");
 	lua_pushvalue(L, -2);
@@ -270,14 +271,14 @@ static void RegisterASMPatchTest(lua_State* L) {
 	lua_pushinteger(L, (uint32_t)ASMPatcher::CondJumps::JG);
 	lua_rawset(L, -3);
 	lua_setglobal(L, "CondJumps");
-	lua_pop(L, 1);
+	// lua_pop(L, 1);
 
 	lua_register(L, "ASMPatch", Lua_NewASMPatch);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State *state = g_LuaEngine->_state;
+	lua_State* state = g_LuaEngine->_state;
 
 	void* play = VirtualAlloc(NULL, 4096, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 	if (play) {
