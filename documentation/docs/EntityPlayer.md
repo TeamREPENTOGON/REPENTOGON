@@ -1,14 +1,30 @@
 # Class "[EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html)"
 
+This class contains both new functions and modified reimplementations of existing ones.
+
+## Modified Function
+
+### Add·Cache·Flags () {: aria-label='Modified Functions' }
+#### void AddCacheFlags ( [CacheFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/CacheFlag.html) CacheFlag, boolean EvaluateItems = false ) {: .copyable aria-label='Modified Functions' }
+Now accepts an optional `bool` to determine if [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
+
+___
+### Get·Multi·Shot·Params () {: aria-label='Modified Functions' }
+#### [MultiShotParams](MultiShotParams.md) GetMultiShotParams ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType ) {: .copyable aria-label='Modified Functions' }
+Now returns a proper `MultiShotParams` object.
+
+___
+### Get·Multi·Shot·Position·Velocity () {: aria-label='Modified Functions' }
+#### [PosVel](https://wofsauge.github.io/IsaacDocs/rep/PosVel.html) GetMultiShotPositionVelocity ( int LoopIndex, [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotDirection, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotSpeed, [MultiShotParams](MultiShotParams.md) Params ) {: .copyable aria-label='Modified Functions' }
+This magically vanished from the API some time after 1.7.8.
+
+Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than [MultiShotParams:GetNumTears()](MultiShotParams.md#getnumtears).
+
+
 ## Functions
 
 ### Add·Active·Charge () {: aria-label='Functions' }
 #### int AddActiveCharge ( int Charge, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, boolean Unknown, boolean Overcharge, boolean Force ) {: .copyable aria-label='Functions' }
-
-___
-### Add·Cache·Flags () {: aria-label='Functions' }
-#### void AddCacheFlags ( [CacheFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/CacheFlag.html) CacheFlag, boolean EvaluateItems = false ) {: .copyable aria-label='Functions' }
-Now accepts an optional `bool` to determine if [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ___
 ### Drop·Collectible () {: aria-label='Functions' }
@@ -25,18 +41,6 @@ ___
 ___
 ### Get·Health·Type () {: aria-label='Functions' }
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Multi·Shot·Params () {: aria-label='Functions' }
-#### [MultiShotParams](MultiShotParams.md) GetMultiShotParams ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType ) {: .copyable aria-label='Functions' }
-Now returns a proper `MultiShotParams` object.
-
-___
-### Get·Multi·Shot·Position·Velocity () {: aria-label='Functions' }
-#### [PosVel](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetMultiShotPositionVelocity ( int LoopIndex, [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotDirection, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotSpeed, [MultiShotParams](MultiShotParams.md) Params ) {: .copyable aria-label='Functions' }
-This magically vanished from the API some time after 1.7.8.
-
-Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than [MultiShotParams](MultiShotParams.md).NumTears.
 
 ___
 ### Get·Total·Active·Charge () {: aria-label='Functions' }

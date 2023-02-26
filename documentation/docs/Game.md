@@ -1,15 +1,20 @@
 # Class "Game"
 
+This class contains both new functions and modified reimplementations of existing ones.
+
+## Modified Functions
+
+### Get·Ambush () {: aria-label='Modified Functions' }
+#### [Ambush](Ambush.md) GetAmbush ( ) {: .copyable aria-label='Modified Functions' }
+Now returns a proper [Ambush](Ambush.md) metatable.
+
+___
+
 ## Functions
 
 ### Achievement·Unlocks·Disallowed () {: aria-label='Functions' }
 #### boolean AchievementUnlocksDisallowed ( ) {: .copyable aria-label='Functions' }
 Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
-
-___
-### Get·Ambush () {: aria-label='Functions' }
-#### [Ambush](Ambush.md) GetAmbush ( ) {: .copyable aria-label='Functions' }
-It works now
 
 ___
 ### Get·Console () {: aria-label='Functions' }
