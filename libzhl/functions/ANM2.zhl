@@ -1,9 +1,11 @@
 "558bec83e4f8515356578bf98b57":
 __thiscall void ANM2::Render(ANM2 *this<ecx> ,Vector* position,Vector* topleftclamp,Vector* bottomrightclamp);
 
+"558bec83ec10568bf1578b7e":
+__thiscall void ANM2::Update(ANM2 *this<ecx>);
 
 "558bec8379??0056":
-__thiscall void ANM2::SetLayerFrame(int param_1,int param_2);
+__thiscall void ANM2::SetLayerFrame(ANM2 *this<ecx>,int layerid,int frame);
 
 "558bec8b45??568bf185c078":
 __thiscall void ANM2::ReplaceSpritesheet(ANM2 *this<ecx>, int LayerId, IsaacString &PngFilename);
