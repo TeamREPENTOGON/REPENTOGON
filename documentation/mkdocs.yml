@@ -57,6 +57,7 @@ theme:
         - navigation.top
     icon:
         repo: fontawesome/brands/github
+    favicon: img/favicon.ico
     palette:
         - media: "(prefers-color-scheme: light)"
           scheme: default
