@@ -954,10 +954,10 @@ local function writeGlobalVars(funcs, out)
 	for _,var in ipairs(funcs) do
 		if not var.args then
 			if var.reference then
-				out("\nextern LIBZHL_API_GLOBS %s*__ptr_%s;", var:toString(), var.name)
+				out("\nextern LIBZHL_API %s*__ptr_%s;", var:toString(), var.name)
 				out("\n#define %s (*__ptr_%s)", var.name, var.name)
 			else
-				out("\nextern LIBZHL_API_GLOBS %s%s;", var:toString(), var.name)
+				out("\nextern LIBZHL_API %s%s;", var:toString(), var.name)
 			end
 		end
 	end
