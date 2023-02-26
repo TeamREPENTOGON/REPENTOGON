@@ -2,7 +2,7 @@
 List of added callbacks
 
 ### MC_PRE_ADD_COLLECTIBLE
-Optional argument: `[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type`
+Optional argument: [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type
 
 Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData}`
 
@@ -65,6 +65,8 @@ Accepts no return parameters.
 ||- |MC_POST_SFX_PLAY {: .copyable } | (int ID, float Volume, int FrameDelay, boolean Loop, float Pitch, float Pan)| - | void |
 
 ### MC_PRE_MUSIC_PLAY
+Optional argument: [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) ID
+
 Accepts a table of parameters: `{ID, Volume}`
 
 Example, which replaces every song with the Flooded Caves track: `return {Music.MUSIC_FLOODED_CAVES, Volume}`
@@ -81,6 +83,8 @@ This callback is called for *both* MusicManager::Play *and* MusicManager::Crossf
 ||- |MC_PRE_MUSIC_PLAY {: .copyable } | (int ID, float Volume OR float FadeRate (see below), boolean IsFade)| - | void |
 
 ### MC_PRE_RENDER_PLAYER_HEAD
+Optional argument: [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType
+
 Accepts an override `vector` for renderpos.
 
 Alternatively accepts a `false` to stop the rendering.
@@ -90,6 +94,8 @@ Alternatively accepts a `false` to stop the rendering.
 ||- |MC_PRE_RENDER_PLAYER_HEAD {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) player, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) renderpos)| - | void |
 
 ### MC_PRE_RENDER_PLAYER_BODY
+Optional argument: [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType
+
 Accepts an override `vector` for renderpos.
 
 Alternatively accepts a `false` to stop the rendering.
@@ -114,6 +120,8 @@ Accepts no return parameters.
 ||- |MC_POST_ENTITY_THROW {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) ThrowingPlayer, Entity ThrownEntity, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Velocity)| - | void |
 
 ### MC_PLAYER_INIT_POST_LEVEL_INIT_STATS {: .copyable }
+Optional argument: [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType
+
 Accepts no return parameters.
 
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
@@ -169,6 +177,8 @@ Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
 ||- |MC_PRE_CHANGE_ROOM {: .copyable } | (int TargetRoomIdx, int Dimension)| - | void |
 
 ### MC_POST_PICKUP_SHOP_PURCHASE
+Optional argument: [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) Variant
+
 Accepts no return parameters.
 
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
@@ -176,6 +186,8 @@ Accepts no return parameters.
 ||- |MC_POST_PICKUP_SHOP_PURCHASE {: .copyable } | (EntityPickup Pickup, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int MoneySpent)| - | void |
 
 ### MC_GET_FOLLOWER_PRIORITY
+Optional argument: [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) Variant
+
 Accepts FollowerPriority to give familiar priority. Can accept any int.
 
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
@@ -211,6 +223,8 @@ Accepts `true` to cancel pill use.
 ||- |MC_PRE_USE_PILL {: .copyable } | (PillEffect ID, PillColor PillColor, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int UseFlag)| - | void |
 
 ### MC_GET_SHOP_ITEM_PRICE
+Optional argument: `EntityVariant Variant`
+
 Accepts an integer to change the price of the item.
 
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
@@ -379,6 +393,8 @@ Accepts no return parameters.
 ||- |MC_PRE_ROOM_TRIGGER_CLEAR {: .copyable } | (boolean PlaySound)| - | void |
 
 ### MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR
+Optional argument: `PlayerVariant Variant`
+
 Accepts `false` to cancel trigger effects.
 
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
@@ -386,7 +402,7 @@ Accepts `false` to cancel trigger effects.
 ||- |MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| - | void |
 
 ### MC_PLAYER_GET_ACTIVE_MAX_CHARGE
-Optional argument: `[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible`
+Optional argument: [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible
 
 Accepts an integer to change chargebar for the active item.
 
@@ -395,7 +411,7 @@ Accepts an integer to change chargebar for the active item.
 ||- |MC_PLAYER_GET_ACTIVE_MAX_CHARGE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int VarData)| - | void |
 
 ### MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE
-Optional argument: `[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible`
+Optional argument: [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible
 
 Accepts an integer to change the minimum charge to use the active item.
 
@@ -420,6 +436,15 @@ Accepts no return parameters.
 |DLC|Value|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|:--|
 ||- |MC_POST_REPLACE_SPRITESHEET {: .copyable } | (int LayerID, string PNGFilename)| - | void |
+
+### MC_PLAYER_GET_HEART_LIMIT
+Optional argument: [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType
+
+Accepts an override `integer` for heart limit.
+
+|DLC|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|:--|
+||- |MC_PLAYER_GET_HEART_LIMIT {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int HeartLimit, boolean IsKeeper)| - | void |
 
 ### MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
 This callback is run at the start of planetarium calculation. Before running calculation, the game first checks if the current floor is valid to spawn a planetarium. If the current floor is invalid, all further calculation (and thus, all further callbacks) will be canceled.

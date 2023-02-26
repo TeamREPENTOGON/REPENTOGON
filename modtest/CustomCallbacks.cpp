@@ -258,10 +258,12 @@ void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 	lua_getglobal(L, "Isaac");
+	//lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_getfield(L, -1, "RunCallback");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaCaller(L).push(1041)
+		//.push(ent->GetType())
 		.push(player, lua::Metatables::ENTITY_PLAYER)
 		.push(ent, lua::Metatables::ENTITY)
 		.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
@@ -274,10 +276,14 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
+	//lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_getfield(L, -1, "RunCallback");
 	lua_remove(L, lua_absindex(L, -2));
 
+	//printf("Entity type: %d\n", (*heldEntity)->GetVariant());
+
 	lua::LuaResults results = lua::LuaCaller(L).push(1040)
+		//.push((*heldEntity)->GetType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.push(*heldEntity, lua::Metatables::ENTITY)
 		.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
@@ -309,12 +315,13 @@ HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	Entity_Player* ent = (Entity_Player*)this;
 
 	lua::LuaCaller(L).push(1042)
+		.push(this->GetPlayerType())
 		.push(ent, lua::Metatables::ENTITY_PLAYER)
 		.call(1);
 
@@ -346,10 +353,11 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1034)
+		.push(musicid)
 		.push(musicid)
 		.push(volume)
 		.push(false)
@@ -384,10 +392,11 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1034)
+		.push(musicid)
 		.push(musicid)
 		.push(faderate)
 		.push(true)
@@ -640,10 +649,11 @@ void ProcessPostPickupShopPurchase(Entity_Pickup* pickup, Entity_Player* player,
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1062)
+		.push(*pickup->GetVariant())
 		.push(pickup, lua::Metatables::ENTITY_PICKUP)
 		.push(player, lua::Metatables::ENTITY_PLAYER)
 		.push(moneySpent)
@@ -664,12 +674,13 @@ HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	Entity_Familiar* fam = (Entity_Familiar*)this;
 
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1063)
+		.push(*fam->GetVariant())
 		.push(fam, lua::Metatables::ENTITY_FAMILIAR)
 		.call(1);
 
@@ -747,10 +758,11 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1066)
+		.push(entVariant)
 		.push(entVariant)
 		.push(entSubtype)
 		.push(shopItemID)
@@ -1094,10 +1106,11 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1038)
+		.push(this->GetPlayerType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.push(x, lua::Metatables::VECTOR)
 		.call(1);
@@ -1126,10 +1139,11 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1039)
+		.push(this->GetPlayerType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.push(x, lua::Metatables::VECTOR)
 		.call(1);
@@ -1173,10 +1187,11 @@ HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1069)
+		.push(*this->GetVariant())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.call(1);
 
@@ -1279,4 +1294,28 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString& PngFilename) ->
 		.push(LayerID)
 		.push(PngFilename.Get())
 		.call(1);
+}
+
+//PLAYER_GET_HEART_LIMIT (id: 1074)
+HOOK_METHOD(Entity_Player, GetHealthLimit, (bool keeper) -> int) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1074)
+		.push(this->GetPlayerType())
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.push(super(keeper))
+		.push(keeper)
+		.call(1);
+
+	if (!result) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+	}
+	return super(keeper);
 }
