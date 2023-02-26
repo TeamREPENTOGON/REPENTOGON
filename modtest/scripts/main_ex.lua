@@ -21,8 +21,12 @@ end
 
 local function checkTableSizeFunction(size)
 	return function(val)
-		local tablesize = #val
-		if tablesize ~= size then
+		local tablesize = 0
+		for i, tabletype in pairs(val) do 
+			tablesize = i
+		end
+		
+		if tablesize > size then
 			return "bad return table length (" .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
 		end
 	end
@@ -30,9 +34,13 @@ end
 
 local function checkTableTypeFunction(typestrings)
 	return function(tbl)
-		local tablesize = #tbl
-		if tablesize ~= #typestrings then
-			return "bad return table length (" .. tostring(#typestrings) .. " expected, got " .. tostring(tablesize) .. ")"
+		local tablesize = 0
+		for i, tabletype in pairs(tbl) do 
+			tablesize = i
+		end
+		
+		if tablesize > #typestrings then
+			return "bad return table length (" .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
 		end
 		
 		for i, param in pairs(tbl) do
@@ -88,7 +96,7 @@ local typecheckFunctions = {
 		["table"] = checkTableSizeFunction(2)
 	},
 	[ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN] = {
-		["table"] = checkTableSizeFunction(3)
+		["table"] = checkTableTypeFunction({"integer", "integer", "integer"})
 	},
 	[ModCallbacks.MC_USE_ITEM] = {
 		["table"] = true,
@@ -243,6 +251,17 @@ function _RunCallback(callbackID, Param, ...)
 		end
 	end
 end
+
+rawset(Isaac, "RunAdditiveCallback", function(callbackID, value, ...)
+	local callbacks = Isaac.GetCallbacks(callbackID)
+	for _, callback in ipairs(callbacks) do
+		local ret = callback.Function(callback.Mod, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end)
 
 Isaac.RunCallbackWithParam = _RunCallback
 

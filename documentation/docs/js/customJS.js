@@ -116,16 +116,15 @@ function modifyCallbackPageLayout() {
 
     var tableContent = "";
     $("article.md-content__inner .md-typeset__table").each(function(index) {
-        var headerLink = $(this).find("td:eq(2)").text().toLowerCase();
+        var headerLink = $(this).find("td:eq(1)").text().toLowerCase();
         tableContent = tableContent + "<tr>" +
-            "<td>" + $(this).find("td:eq(1)").html() + "</td>" +
-            "<td class=\"copyable\" style=\"text-align: right;\"><a href=\"#" + headerLink + "\">" + $(this).find("td:eq(2)").text() + "</a></td>" +
+            "<td class=\"copyable\" style=\"text-align: right;\"><a href=\"#" + headerLink + "\">" + $(this).find("td:eq(1)").text() + "</a></td>" +
+            "<td>" + $(this).find("td:eq(2)").html() + "</td>" +
             "<td>" + $(this).find("td:eq(3)").html() + "</td>" +
-            "<td>" + $(this).find("td:eq(4)").html() + "</td>" +
-            "<td>" + $(this).find("td:eq(5)").html() + "</td></tr>";
+            "<td>" + $(this).find("td:eq(4)").html() + "</td></tr>";
     });
     var mapObj = $("<div class=\"contentMap\"><h2 class=\"overviewHeader\">Content Overview</h2><table class=\"contentTable\" id=\"contentOverviewTable\">" +
-        "<thead><tr><th>ID</th><th>Name</th><th>Function Args</th><th>Optional Args</th><th>Return Type</th></tr></thead><tbody></tbody></table><hr/></div>");
+        "<thead><tr><th>Name</th><th>Function Args</th><th>Optional Args</th><th>Return Type</th></tr></thead><tbody></tbody></table><hr/></div>");
     mapObj.insertAfter($(".md-content__inner").find("p").first());
 
     $('#contentOverviewTable > tbody').append(tableContent);

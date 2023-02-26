@@ -20,7 +20,7 @@ int Lua_FirstCollectibleOwner(lua_State* L)
 	CollectibleType collectible = (CollectibleType)luaL_checkinteger(L, 2);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 	bool unk = lua_toboolean(L, 4);
-	Entity_Player* player = playerManager->FirstCollectibleOwner(collectible, *rng, unk);
+	Entity_Player* player = playerManager->FirstCollectibleOwner(collectible, &rng, unk);
 	if (!player) {
 		lua_pushnil(L);
 	}

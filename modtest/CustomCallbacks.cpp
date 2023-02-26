@@ -53,9 +53,9 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 //1005 RESERVED - POST_ADD_COLLECTIBLE
 
 //POST_TAKE_DMG callback (id: 1006 enum pending)
-void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damageFlags, EntityRef *source, int damageCountdown) {
+void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damageFlags, EntityRef* source, int damageCountdown) {
 
-	lua_State *L = g_LuaEngine->_state;
+	lua_State* L = g_LuaEngine->_state;
 
 	lua::LuaStackProtector protector(L);
 
@@ -74,7 +74,7 @@ void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damag
 
 };
 
-HOOK_METHOD(Entity, TakeDamage, (float damage, unsigned __int64 damageFlags, EntityRef *source, int damageCountdown) -> bool) {
+HOOK_METHOD(Entity, TakeDamage, (float damage, unsigned __int64 damageFlags, EntityRef* source, int damageCountdown) -> bool) {
 	bool result = super(damage, damageFlags, source, damageCountdown);
 	Entity* ent = (Entity*)this;
 
@@ -82,11 +82,11 @@ HOOK_METHOD(Entity, TakeDamage, (float damage, unsigned __int64 damageFlags, Ent
 	return result;
 }
 
-HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned __int64 damageFlags, EntityRef *source, int damageCountdown) -> bool) {
+HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned __int64 damageFlags, EntityRef* source, int damageCountdown) -> bool) {
 	bool result = super(damage, damageFlags, source, damageCountdown);
 	Entity* ent = (Entity*)this;
 
-	if(result) ProcessPostDamageCallback(ent, damage, damageFlags, source, damageCountdown);
+	if (result) ProcessPostDamageCallback(ent, damage, damageFlags, source, damageCountdown);
 	return result;
 }
 //POST_TAKE_DMG callback end
@@ -94,7 +94,7 @@ HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned __int64 damageFla
 //GRID_ROCK_UPDATE (id: 1010)
 
 void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int variant) {
-	lua_State *L = g_LuaEngine ->_state;
+	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
@@ -254,14 +254,16 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 //SFX_PRE/POST_PLAY callbacks end
 
 //PRE/POST_ENTITY_THROW (1040/1041)
-void ProcessPostEntityThrow(Vector* Velocity, Entity_Player *player, Entity* ent) {
+void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 	lua_getglobal(L, "Isaac");
+	//lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_getfield(L, -1, "RunCallback");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaCaller(L).push(1041)
+		//.push(ent->GetType())
 		.push(player, lua::Metatables::ENTITY_PLAYER)
 		.push(ent, lua::Metatables::ENTITY)
 		.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
@@ -274,22 +276,27 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
+	//lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_getfield(L, -1, "RunCallback");
 	lua_remove(L, lua_absindex(L, -2));
 
+	//printf("Entity type: %d\n", (*heldEntity)->GetVariant());
+
 	lua::LuaResults results = lua::LuaCaller(L).push(1040)
+		//.push((*heldEntity)->GetType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.push(*heldEntity, lua::Metatables::ENTITY)
 		.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
 		.call(1);
-	
+
 	if (!results) {
 		if (lua_isuserdata(L, -1)) {
 			Velocity = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
 			Entity* res = super(Velocity);
 			ProcessPostEntityThrow(Velocity, this, res);
 			return res;
-		} else {
+		}
+		else {
 			Entity* res = super(Velocity);
 			ProcessPostEntityThrow(Velocity, this, res);
 			return res;
@@ -308,12 +315,13 @@ HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	Entity_Player* ent = (Entity_Player*)this;
 
 	lua::LuaCaller(L).push(1042)
+		.push(this->GetPlayerType())
 		.push(ent, lua::Metatables::ENTITY_PLAYER)
 		.call(1);
 
@@ -341,14 +349,15 @@ HOOK_METHOD(Entity_Player, TriggerRoomExit, (bool unk) -> void) {
 //PRE_MUSIC_PLAY Callback (id: 1034 enum pending)
 HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 	printf("music plays\n");
-	lua_State *L = g_LuaEngine->_state;
+	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1034)
+		.push(musicid)
 		.push(musicid)
 		.push(volume)
 		.push(false)
@@ -362,11 +371,13 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
 				return;
 			}
-		}else if (lua_isinteger(L, -1)) {
+		}
+		else if (lua_isinteger(L, -1)) {
 			printf("Music callback run \n");
 			super(lua_tointeger(L, -1), volume);
 			return;
-		}else if(lua_isboolean(L, -1)){
+		}
+		else if (lua_isboolean(L, -1)) {
 			printf("Music callback run \n");
 			if (!lua_toboolean(L, -1)) {
 				return;
@@ -377,14 +388,15 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 }
 HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 	printf("music fades\n");
-	lua_State *L = g_LuaEngine->_state;
+	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1034)
+		.push(musicid)
 		.push(musicid)
 		.push(faderate)
 		.push(true)
@@ -544,7 +556,7 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 
 //Pre_Morph Callbacks (id:1080)
 HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Championid) -> void) {
-	lua_State *L = g_LuaEngine->_state;
+	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
@@ -566,7 +578,7 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 		if (lua_istable(L, -1)) {
 			printf("NPC Morph callback run \n");
 			int tablesize = lua_rawlen(L, -1);
-			if (tablesize == 4) {				
+			if (tablesize == 4) {
 				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToNumber(L, 4));
 				return;
 			}
@@ -588,7 +600,7 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 
 HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers) -> void) {
 	printf("Pickup Morphed \n");
-	lua_State *L = g_LuaEngine->_state;
+	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
@@ -604,7 +616,7 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 		.push(KeepSeed)
 		.push(IgnoreModifiers)
 		.call(1);
-	
+
 
 	if (!result) {
 		if (lua_istable(L, -1)) {
@@ -615,7 +627,7 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 				return;
 			}
 			else if (tablesize == 3) {
-				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), KeepPrice, KeepSeed,IgnoreModifiers);
+				super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), KeepPrice, KeepSeed, IgnoreModifiers);
 				return;
 			}
 		}
@@ -637,10 +649,11 @@ void ProcessPostPickupShopPurchase(Entity_Pickup* pickup, Entity_Player* player,
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1062)
+		.push(*pickup->GetVariant())
 		.push(pickup, lua::Metatables::ENTITY_PICKUP)
 		.push(player, lua::Metatables::ENTITY_PLAYER)
 		.push(moneySpent)
@@ -661,12 +674,13 @@ HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	Entity_Familiar* fam = (Entity_Familiar*)this;
 
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1063)
+		.push(*fam->GetVariant())
 		.push(fam, lua::Metatables::ENTITY_FAMILIAR)
 		.call(1);
 
@@ -674,7 +688,7 @@ HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
 		if (lua_isinteger(L, -1)) {
 			return lua_tointeger(L, -1);
 		}
-		
+
 	}
 
 	return super();
@@ -744,10 +758,11 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1066)
+		.push(entVariant)
 		.push(entVariant)
 		.push(entSubtype)
 		.push(shopItemID)
@@ -1087,14 +1102,15 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 //RenderHead Callback (id: 1038)
 HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 	//printf("Head Rendering \n");
-	lua_State *L = g_LuaEngine->_state;
+	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1038)
+		.push(this->GetPlayerType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.push(x, lua::Metatables::VECTOR)
 		.call(1);
@@ -1119,14 +1135,15 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 //Renderbody Callback (id: 1039)
 HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 	//printf("Body Rendering \n");
-	lua_State *L = g_LuaEngine->_state;
+	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1039)
+		.push(this->GetPlayerType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.push(x, lua::Metatables::VECTOR)
 		.call(1);
@@ -1170,10 +1187,11 @@ HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1069)
+		.push(*this->GetVariant())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.call(1);
 
@@ -1236,7 +1254,7 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 }
 
 //MC_PRE_REPLACE_SPRITESHEET (id: 1100)
-HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString &PngFilename) -> void) {
+HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString& PngFilename) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
@@ -1276,4 +1294,28 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString &PngFilename) ->
 		.push(LayerID)
 		.push(PngFilename.Get())
 		.call(1);
+}
+
+//PLAYER_GET_HEART_LIMIT (id: 1074)
+HOOK_METHOD(Entity_Player, GetHealthLimit, (bool keeper) -> int) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1074)
+		.push(this->GetPlayerType())
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.push(super(keeper))
+		.push(keeper)
+		.call(1);
+
+	if (!result) {
+		if (lua_isinteger(L, -1)) {
+			return lua_tointeger(L, -1);
+		}
+	}
+	return super(keeper);
 }

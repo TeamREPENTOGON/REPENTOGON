@@ -131,6 +131,9 @@ __thiscall int Entity_Player::AddActiveCharge(Entity_Player *this<ecx>, unsigned
 "558bec83e4f883ec14538b5d??b841020000":
 __thiscall int Entity_Player::DropCollectible(Entity_Player *this<ecx>, int collectible, int param2, bool param3);
 
+"558bec83e4f8515356578bf98b472c85c075??8b9f0c130000":
+__thiscall int Entity_Player::GetHealthLimit(Entity_Player *this<ecx>, bool keeper);
+
 struct Entity_Player {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }

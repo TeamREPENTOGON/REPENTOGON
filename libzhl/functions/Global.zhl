@@ -46,6 +46,7 @@ struct GlobalPre
 	typedef std::map<std::string, bool> std_map_std_string_bool;
 	*/
 
+	typedef std::set<int> std_set_int;
 	
 }};
 

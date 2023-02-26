@@ -7,13 +7,13 @@
 
     ???+ example "Example Code"
         ```lua
-        local ambush = Isaac:GetPersistentGameData()
+        local persistentGameData = Isaac:GetPersistentGameData()
         ```
         
 ## Functions
 
 ### Try·Unlock () {: aria-label='Functions' }
-#### boolean TryUnlock ( [Achievement](enums/Enums.md) Unlock ) {: .copyable aria-label='Functions' }
+#### boolean TryUnlock ( [Achievement](enums/Achievement.md) Unlock ) {: .copyable aria-label='Functions' }
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
 
 ___
