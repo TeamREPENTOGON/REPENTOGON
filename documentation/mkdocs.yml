@@ -82,6 +82,7 @@ nav:
   - MultiShotParams: MultiShotParams.md
   - PersistentGameData: PersistentGameData.md
   - PlayerManager: PlayerManager.md
+  - RNG: RNG.md
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
   - Sprite: Sprite.md
