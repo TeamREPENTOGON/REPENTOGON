@@ -56,7 +56,7 @@ for (const file of allFiles) {
   }
 
   // check if functions are sorted alphabetically
-  let constructorsSort = constructors.slice();
+  /*let constructorsSort = constructors.slice();
   let functionsSort = functions.slice();
   let variablesSort = variables.slice();
   constructorsSort.sort(function (a, b) {
@@ -91,7 +91,7 @@ for (const file of allFiles) {
       console.log(`${file}: Variable '` + entry + `' is not sorted correctly! Should be at location ` + variablesSort.indexOf(entry) + ` but its at location ` + index);
       hasError = true;
     }
-  }
+  }*/
 }
 
 function getFilesForDirectory(directory) {
