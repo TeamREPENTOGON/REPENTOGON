@@ -1,6 +1,8 @@
 # Class "Sprite"
 
-## Functions
+Currently, this class does not have any new additions in REPENTOGON, only reimplemented versions of functions already in the API with added functionality.
+
+## Modified Functions
 
 ### Replace·Spritesheet () {: aria-label='Functions' }
 #### void ReplaceSpritesheet ( int LayerId, string PngFilename, bool︎ LoadGraphics = false ) {: .copyable aria-label='Functions' }

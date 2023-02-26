@@ -1,120 +1,121 @@
-site_name: "BoI: REPENTOGON Docs "
-nav:
-    - Home: index.md
-    - Docs:
-        - Home: index.md
-        - "Enums":
-            - "ModCallbacks": enums/ModCallbacks.md
-            - "StbType": enums/StbType.md
-            - "BossType": enums/BossType.md
-            - "NullPickupSubType": enums/NullPickupSubType.md
-            - "KnifeVariant": enums/KnifeVariant.md
-            - "KnifeSubType": enums/KnifeSubType.md
-            - "SlotVariant": enums/SlotVariant.md
-            - "RoomSubType": enums/RoomSubType.md
-            - "Achievement": enums/Achievement.md
-            - "FollowerPriority": enums/FollowerPriority.md
-            - "HealthType": enums/HealthType.md
-            - "Dimension": enums/Dimension.md
-            - "LineCheckMode": enums/LineCheckMode.md
-            - "ProjectileMode": enums/ProjectileMode.md
-            - "StbGridType": enums/StbGridType.md
-            - "StbRockSubType": enums/StbRockSubType.md
-            - "StbPoopSubType": enums/StbPoopSubType.md
-            - "StbTeleporterSubType": enums/StbTeleporterSubType.md
-            - "StbRailVariant": enums/StbRailVariant.md
-            - "RetractingSpikesVariant": enums/RetractingSpikesVariant.md
-            - "PressurePlateVariant": enums/PressurePlateVariant.md
-            - "TeleporterVariant": enums/TeleporterVariant.md
-            - "GridPoopVariant": enums/GridPoopVariant.md
-            - "EntityPoopVariant": enums/EntityPoopVariant.md
-            - "PlayerVariant": enums/PlayerVariant.md
-            - "PillCardSlot": enums/PillCardSlot.md
-        - Ambush: Ambush.md
-        - Console: Console.md
-        - Entity: Entity.md
-        - EntityPlayer: EntityPlayer.md
-        - EntityPickup: EntityPickup.md
-        - Game: Game.md
-        - Isaac: Isaac.md
-        - Level: Level.md
-        - LevelGeneratorEntry: LevelGeneratorEntry.md
-        - MultiShotParams: MultiShotParams.md
-        - PersistentGameData: PersistentGameData.md
-        - PlayerManager: PlayerManager.md
-        - Room: Room.md
-        - RoomConfigHolder: RoomConfigHolder.md
-        - Sprite: Sprite.md
-    - Lua 5.3 Docs: https://www.lua.org/manual/5.3/
-theme:
-    name: material
-    features:
-        - search.suggest
-        - search.highlight
-        - search.share
-        - navigation.tabs
-        - navigation.instant
-        - navigation.top
-    icon:
-        repo: fontawesome/brands/github
-    palette:
-        - media: "(prefers-color-scheme: light)"
-          scheme: default
-          toggle:
-            icon: material/weather-night
-            name: Switch to dark mode
-        - media: "(prefers-color-scheme: dark)"
-          scheme: slate
-          primary: amber
-          accent: amber
-          toggle:
-            icon: material/weather-sunny
-            name: Switch to light mode
-markdown_extensions:
-  - toc:
-      permalink: ⚓︎
-      toc_depth: 3
-  - pymdownx.highlight:
-      linenums: true
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.inlinehilite
-  - pymdownx.snippets:
-      check_paths: true
-      url_download: true
-  - admonition
-  - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
-  - pymdownx.tabbed:
-      alternate_style: true
-  - attr_list
-plugins:
-  - search:
-      separator: '[\s\-\.\_\·]+'
+copyright: Copyright &copy; 2023 REPENTOGON developers
+edit_uri: edit/main/documentation/docs/
 extra:
   social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/IsaacZHL/IsaacZHL
-      name: "REPENTOGON source code and documentation"
+  - icon: fontawesome/brands/github
+    link: https://github.com/IsaacZHL/IsaacZHL
+    name: REPENTOGON source code and documentation
   version:
-    provider: mike
     default: rep
+    provider: mike
 extra_css:
-    - css/custom.css
+- css/custom.css
 extra_javascript:
-    - https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js
-    - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
-    - js/tablesort.number.min.js
-    - js/customJS.js
-    - js/jquery.mark.min.js
-copyright: "Copyright &copy; 2023 REPENTOGON developers"
-repo_url: https://github.com/IsaacZHL/IsaacZHL
+- https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js
+- https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
+- js/tablesort.number.min.js
+- js/customJS.js
+- js/jquery.mark.min.js
+markdown_extensions:
+- toc:
+    permalink: "\u2693\uFE0E"
+    toc_depth: 3
+- pymdownx.highlight:
+    linenums: true
+- pymdownx.superfences:
+    custom_fences:
+    - class: mermaid
+      format: !!python/name:pymdownx.superfences.fence_code_format ''
+      name: mermaid
+- pymdownx.inlinehilite
+- pymdownx.snippets:
+    check_paths: true
+    url_download: true
+- admonition
+- pymdownx.details
+- pymdownx.emoji:
+    emoji_generator: !!python/name:materialx.emoji.to_svg ''
+    emoji_index: !!python/name:materialx.emoji.twemoji ''
+- pymdownx.tabbed:
+    alternate_style: true
+- attr_list
+nav:
+- Home: index.md
+- Docs:
+  - Home: index.md
+  - Enums:
+    - Achievement: enums/Achievement.md
+    - BossType: enums/BossType.md
+    - Dimension: enums/Dimension.md
+    - EntityPoopVariant: enums/EntityPoopVariant.md
+    - FollowerPriority: enums/FollowerPriority.md
+    - GridPoopVariant: enums/GridPoopVariant.md
+    - HealthType: enums/HealthType.md
+    - KnifeSubType: enums/KnifeSubType.md
+    - KnifeVariant: enums/KnifeVariant.md
+    - LineCheckMode: enums/LineCheckMode.md
+    - ModCallbacks: enums/ModCallbacks.md
+    - NullPickupSubType: enums/NullPickupSubType.md
+    - PillCardSlot: enums/PillCardSlot.md
+    - PlayerVariant: enums/PlayerVariant.md
+    - PressurePlateVariant: enums/PressurePlateVariant.md
+    - ProjectileMode: enums/ProjectileMode.md
+    - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
+    - RoomSubType: enums/RoomSubType.md
+    - SlotVariant: enums/SlotVariant.md
+    - StbGridType: enums/StbGridType.md
+    - StbPoopSubType: enums/StbPoopSubType.md
+    - StbRailVariant: enums/StbRailVariant.md
+    - StbRockSubType: enums/StbRockSubType.md
+    - StbTeleporterSubType: enums/StbTeleporterSubType.md
+    - StbType: enums/StbType.md
+    - TeleporterVariant: enums/TeleporterVariant.md
+  - Ambush: Ambush.md
+  - Console: Console.md
+  - Entity: Entity.md
+  - EntityPlayer: EntityPlayer.md
+  - EntityPickup: EntityPickup.md
+  - Game: Game.md
+  - Isaac: Isaac.md
+  - Level: Level.md
+  - LevelGeneratorEntry: LevelGeneratorEntry.md
+  - MultiShotParams: MultiShotParams.md
+  - PersistentGameData: PersistentGameData.md
+  - PlayerManager: PlayerManager.md
+  - Room: Room.md
+  - RoomConfigHolder: RoomConfigHolder.md
+  - Sprite: Sprite.md
+- Lua 5.3 Docs: https://www.lua.org/manual/5.3/
+plugins:
+- search:
+    separator: "[\\s\\-\\.\\_\\\xB7]+"
 repo_name: IsaacZHL/IsaacZHL
-edit_uri: edit/main/documentation/docs/
-site_url: ""
-use_directory_urls: False
+repo_url: https://github.com/IsaacZHL/IsaacZHL
+site_name: 'BoI: REPENTOGON Docs'
+site_url: https://repentogon.com
+theme:
+  favicon: img/favicon.ico
+  features:
+  - search.suggest
+  - search.highlight
+  - search.share
+  - navigation.tabs
+  - navigation.instant
+  - navigation.top
+  icon:
+    repo: fontawesome/brands/github
+  name: material
+  palette:
+  - media: '(prefers-color-scheme: light)'
+    scheme: default
+    toggle:
+      icon: material/weather-night
+      name: Switch to dark mode
+  - accent: amber
+    media: '(prefers-color-scheme: dark)'
+    primary: amber
+    scheme: slate
+    toggle:
+      icon: material/weather-sunny
+      name: Switch to light mode
+use_directory_urls: false

@@ -7,7 +7,7 @@
 
     ???+ example "Example Code"
         ```lua
-        local ambush = Isaac:GetPersistentGameData()
+        local persistentGameData = Isaac:GetPersistentGameData()
         ```
         
 ## Functions
