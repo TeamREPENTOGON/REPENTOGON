@@ -141,6 +141,11 @@ namespace lua {
         CONST_VECTOR
     };
 
+    namespace metatables
+    {
+        extern const char* EntitySlotMT;;
+    }
+
     void UnloadMetatables();
     void RegisterMetatable(Metatables metatable, void* key);
     void PushMetatable(lua_State* L, Metatables metatable);
@@ -195,6 +200,7 @@ namespace lua {
         LuaCaller& pushvalue(int idx);
         LuaCaller& push(const char* fmt, va_list va);
         LuaCaller& push(void* ptr, Metatables meta);
+        LuaCaller& push(void* ptr, const char* meta); 
         template<typename T>
         LuaCaller& pushUserdataValue(T const& t, Metatables meta) {
             luabridge::UserdataValue<T>::push(_L, GetMetatableKey(meta), t);
@@ -255,6 +261,13 @@ namespace lua {
     }
 
     namespace luabridge {
+        extern void* identityKey;
+        extern lua_CFunction indexMetaMethod;
+
+        inline void* getIdentityKey() {
+            return identityKey;
+        }
+
         class Userdata {
         protected:
             void* m_p = nullptr;
@@ -306,6 +319,7 @@ namespace lua {
 
         public:
             static void push(lua_State* L, void* const p, void const* const key);
+            static void push(lua_State* L, void* const p, const char* key);
         };
     }
 

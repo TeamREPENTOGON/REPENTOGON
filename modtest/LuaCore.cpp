@@ -5,6 +5,8 @@
 #include <lua.hpp>
 
 #include "LuaCore.h"
+#include "HookSystem_private.h"
+#include "SigScan.h"
 
 namespace lua {
 	std::map<Metatables, void*> _metatables;
@@ -274,6 +276,27 @@ namespace lua {
 				lua_pushnil(L);
 			}
 		}
+
+		void UserdataPtr::push(lua_State* L, void* const p, const char* meta) {
+			if (p) {
+				new (lua_newuserdata(L, sizeof(UserdataPtr))) UserdataPtr(p);
+				luaL_setmetatable(L, meta);
+			} 
+			else {
+				lua_pushnil(L);
+			}
+		}
+
+		void* identityKey;
+		static VariableDefinition identityKeyDef("luabridge::IdentityKey", "5357FF15????????68(????????)", &identityKey);
+
+		lua_CFunction indexMetaMethod;
+
+		namespace {
+			static const short* argdata = nullptr;
+			static FunctionDefinition indexMetaMethodDef("luabrige::Namespace::ClassBase::indexMetaMethod", typeid(lua_CFunction), 
+				"558bec83ec0c53568b7508576a0156ff15????????6a0256ff15", argdata, 1, 0, (void**)& indexMetaMethod);
+		}
 	}
 
 	namespace callbacks {
@@ -384,6 +407,13 @@ namespace lua {
 		return *this;
 	}
 
+	LuaCaller& LuaCaller::push(void* ptr, const char* meta)
+	{
+		luabridge::UserdataPtr::push(_L, ptr, meta);
+		++_n;
+		return *this;
+	}
+
 	LuaResults LuaCaller::call(int nresults) {
 		int n = lua_gettop(_L) - _n - 1; // Expected amount after poping everything (number of params + function)
 		int result = lua_pcall(_L, _n, nresults, 0);
@@ -445,5 +475,10 @@ namespace lua {
 
 	LuaResults::operator bool() const {
 		return _valid;
+	}
+
+	namespace metatables
+	{
+		const char* EntitySlotMT = "EntitySlot";
 	}
 }

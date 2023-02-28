@@ -1071,7 +1071,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1089)
 		.push(*this->GetVariant())
-		.push(this, lua::Metatables::ENTITY)
+		.push(this, lua::metatables::EntitySlotMT)
 		.pushUserdataValue(*offset, lua::Metatables::VECTOR)
 		.call(1);
 
@@ -1094,7 +1094,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 
 	lua::LuaResults postResult = lua::LuaCaller(L).push(1090)
 		.push(*this->GetVariant())
-		.push(this, lua::Metatables::ENTITY)
+		.push(this, lua::metatables::EntitySlotMT)
 		.pushUserdataValue(*offset, lua::Metatables::VECTOR)
 		.call(1);
 }

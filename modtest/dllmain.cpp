@@ -1,5 +1,6 @@
 #include "libzhl.h"
 #include "HookSystem.h"
+#include "HookSystem_private.h"
 #include "Version.h"
 #include <Windows.h>
 #include <stdio.h>
@@ -70,6 +71,7 @@ The default priority is 0, and priority numbers can be negative
 static char titlebar[128];
 MOD_EXPORT int ModInit(int argc, char **argv)
 {
+	Definition::Init();
 	ZHL::Init();
 	sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON v%d.%d.%d)", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
 	SetWindowTextA(GetActiveWindow(), titlebar);
