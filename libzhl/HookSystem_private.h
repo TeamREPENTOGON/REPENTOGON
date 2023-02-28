@@ -2,7 +2,7 @@
 
 #include "HookSystem.h"
 
-class Definition
+class LIBZHL_API Definition
 {
 public:
 	static int Init();
@@ -18,7 +18,7 @@ public:
 
 //=================================================================================================
 
-class FunctionDefinition : public Definition
+class LIBZHL_API FunctionDefinition : public Definition
 {
 private:
 	char _shortName[128];
@@ -52,7 +52,7 @@ public:
 
 //=================================================================================================
 
-class VariableDefinition : public Definition
+class LIBZHL_API VariableDefinition : public Definition
 {
 private:
 	void *_outVar;
