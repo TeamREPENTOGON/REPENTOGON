@@ -64,6 +64,11 @@ struct CompletionWidget
 	
 };
 
+struct Menu_Title
+{
+	
+};
+
 struct Menu_Character 
 {
 	int status; //1 seeds screen //4 transitioning to tainted
@@ -534,3 +539,8 @@ struct Game
 };
 
 typedef Game Level;
+
+struct Capsule 
+{
+	
+};
