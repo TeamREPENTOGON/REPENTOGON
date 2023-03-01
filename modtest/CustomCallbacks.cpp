@@ -60,11 +60,12 @@ void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damag
 	lua::LuaStackProtector protector(L);
 
 	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallback");
+	lua_getfield(L, -1, "RunCallbackWithParam");
 	lua_remove(L, lua_absindex(L, -2));
 
 	lua::LuaCaller(L)
 		.push(1006)
+		.pushnil()
 		.push(ent, lua::Metatables::ENTITY)
 		.push(damage)
 		.push(damageFlags)
@@ -1376,5 +1377,78 @@ HOOK_METHOD(Entity_Slot, Update, () -> void) {
 	lua::LuaResults result = lua::LuaCaller(L).push(1122)
 		.push(*this->GetVariant())
 		.push(this, lua::metatables::EntitySlotMT)
+		.call(1);
+}
+
+//PRE/POST_SLOT_CREATE_EXPLOSION_DROPS (1123/1124)
+HOOK_METHOD(Entity_Slot, CreateDropsFromExplosion, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1123)
+		.push(*this->GetVariant())
+		.push(this, lua::metatables::EntitySlotMT)
+		.call(1);
+
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+	}
+
+	super();
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults postResult = lua::LuaCaller(L).push(1124)
+		.push(*this->GetVariant())
+		.push(this, lua::metatables::EntitySlotMT)
+		.call(1);
+}
+
+//PRE/POST_SLOT_SET_PRIZE_COLLECTIBLE (1125/1126)
+HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1125)
+		.push(*this->GetVariant())
+		.push(this, lua::metatables::EntitySlotMT)
+		.push(id)
+		.call(1);
+
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (!lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isnumber(L, -1)) {
+			id = lua_tonumber(L, -1);
+		}
+	}
+
+	super(id);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults postResult = lua::LuaCaller(L).push(1126)
+		.push(*this->GetVariant())
+		.push(this, lua::metatables::EntitySlotMT)
+		.push(id)
 		.call(1);
 }
