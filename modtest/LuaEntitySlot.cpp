@@ -2,18 +2,49 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
-// Test function
-static int lua_EntitySlot_REPENTOGOING(lua_State* L) {
+static int Lua_EntityToEntitySlot(lua_State* L) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	if (*entity->GetType() == 6) { //TODO: enum
+		Entity_Slot* ud = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+
+		luaL_setmetatable(L, lua::metatables::EntitySlotMT);
+	}
+	else
+		lua_pushnil(L);
+	return 1;
+}
+
+static int Lua_CreateDropsFromExplosion(lua_State* L) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	lua_pushstring(L, "REPENTOGOING !");
-	lua_pushinteger(L, *(slot->GetType()));
-	lua_pushinteger(L, *(slot->GetVariant()));
-	return 3;
+	slot->CreateDropsFromExplosion();
+	return 0;
+}
+
+static int Lua_SetPrizeCollectible(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	int collectible = luaL_checkinteger(L, 2);
+	slot->SetPrizeCollectible(collectible);
+	return 0;
+}
+
+static int Lua_RandomCoinJamAnim(lua_State* L) {
+	//this is such a trivial reimplementation that like, who cares
+	const char* CoinJamAnims[4] = { "CoinJam", "CoinJam2", "CoinJam3", "CoinJam4" };
+	const char* CoinJamAnim = CoinJamAnims[Isaac::Random(4)];
+	lua_pushstring(L, CoinJamAnim);
+	return 1;
 }
 
 void RegisterSlotMetatable(lua_State* L) {
 	lua::LuaStackProtector protector(L);
+
+	lua::PushMetatable(L, lua::Metatables::ENTITY);
+	lua_pushstring(L, "ToSlot");
+	lua_pushcfunction(L, Lua_EntityToEntitySlot);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
 
 	luaL_newmetatable(L, lua::metatables::EntitySlotMT); // meta
 
@@ -49,7 +80,9 @@ void RegisterSlotMetatable(lua_State* L) {
 	lua_rawset(L, -3); // meta
 
 	luaL_Reg funcs[] = {
-		{ "REPENTOGO", lua_EntitySlot_REPENTOGOING },
+		{ "CreateDropsFromExplosion", Lua_CreateDropsFromExplosion },
+		{ "SetPrizeCollectible", Lua_SetPrizeCollectible },
+		{ "RandomCoinJamAnim", Lua_RandomCoinJamAnim },
 		{ NULL, NULL }
 	};
 

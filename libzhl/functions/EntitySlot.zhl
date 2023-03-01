@@ -1,2 +1,17 @@
 "558bec56ff75??8bf1e8????????8b46":
-__thiscall void Entity_Slot::Render(Entity_Slot *this<ecx>, Vector *offset);558bec56ff75088bf1e8????????8b462c
+__thiscall void Entity_Slot::Render(Entity_Slot *this<ecx>, Vector *offset);
+
+"558bec6aff68????????64a1000000005081ecc0000000a1????????33c58945f053":
+virtual __thiscall void Entity_Slot::Update(Entity_Slot *this<ecx>);
+
+"558bec81ec94000000a1":
+__thiscall void Entity_Slot::CreateDropsFromExplosion(Entity_Slot *this<ecx>);
+
+"558bec83e4f8518b4508538b":
+__thiscall void Entity_Slot::SetPrizeCollectible(Entity_Slot *this<ecx>, int CollectibleType);
+
+"558beca1????????81":
+virtual __thiscall void Entity_Slot::Init(Entity_Slot *this<ecx>, int Type, int Variant, int SubType, int Seed);
+
+"558bec83e4f883ec3c83":
+virtual __thiscall bool Entity_Slot::HandleCollision(Entity_Slot *this<ecx>, Entity *Collider, bool Low);

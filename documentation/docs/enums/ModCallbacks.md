@@ -371,8 +371,6 @@ Alternatively accepts `false` to cancel rendering
 |- |MC_PRE_BOMB_RENDER {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_PRE_SLOT_RENDER
-Optional argument: `SlotVariant Variant`
-
 As we don't (yet) have an EntitySlot metatable, this simply returns an Entity. Sorry! :(
 
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
@@ -384,16 +382,14 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_PRE_SLOT_RENDER {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [SlotVariant](SlotVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|- |MC_PRE_SLOT_RENDER {: .copyable } | ([EntitySlot](../EntitySlot.md) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [SlotVariant](SlotVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_SLOT_RENDER
-As we don't (yet) have an EntitySlot metatable, this simply returns an Entity. Sorry! :(
-
-Accepts no returnn parameters.
+Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_POST_SLOT_RENDER {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [SlotVariant](SlotVariant.md) | void |
+|- |MC_POST_SLOT_RENDER {: .copyable } | ([EntitySlot[(../EntitySlot.md) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [SlotVariant](SlotVariant.md) | void |
 
 ### MC_PRE_GRID_INIT
 This is called when a grid is being placed into a room for the first time.
@@ -527,3 +523,26 @@ Accepts a `float` to modify the chance.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_POST_PLANETARIUM_CALCULATE {: .copyable } | (float Chance)| - | float |
+
+### ModCallbacks.MC_POST_SLOT_INIT
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_PRE_SLOT_INIT {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | void |
+
+### ModCallbacks.MC_POST_SLOT_UPDATE
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_POST_SLOT_UPDATE {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | void |
+
+### ModCallbacks.MC_PRE_SLOT_COLLISION
+Just like the collision callbacks in the vanilla API, the Low value is true if the entity collided with the collider first, and false if the opposite is true.
+
+Return `true` to ignore collision, `false` to collide but not execute internal code.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_PRE_SLOT_COLLISION {: .copyable } | ([EntitySlot](../EntitySlot.md), [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [SlotVariant](SlotVariant.md) | bool |

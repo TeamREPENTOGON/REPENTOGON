@@ -1319,3 +1319,62 @@ HOOK_METHOD(Entity_Player, GetHealthLimit, (bool keeper) -> int) {
 	}
 	return super(keeper);
 }
+
+//PRE_SLOT_COLLIDE (1120)
+HOOK_METHOD(Entity_Slot, HandleCollision, (Entity* collider, bool Low) -> bool) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1120)
+		.push(*this->GetVariant())
+		.push(this, lua::metatables::EntitySlotMT)
+		.push(collider, lua::Metatables::ENTITY)
+		.push(Low)
+		.call(1);
+
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			return lua_toboolean(L, -1);
+		}
+	}
+
+	return super(collider, Low);
+}
+
+//POST_SLOT_INIT (1121)
+HOOK_METHOD(Entity_Slot, Init, (int Type, int Variant, int SubType, int Seed) -> void) {
+	super(Type, Variant, SubType, Seed);
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1121)
+		.push(Variant)
+		.push(this, lua::metatables::EntitySlotMT)
+		.call(1);
+}
+
+//POST_SLOT_UPDATE (1122)
+HOOK_METHOD(Entity_Slot, Update, () -> void) {
+	super();
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1122)
+		.push(*this->GetVariant())
+		.push(this, lua::metatables::EntitySlotMT)
+		.call(1);
+}
