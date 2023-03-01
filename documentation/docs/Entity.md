@@ -42,3 +42,11 @@ ___
 #### float SetShadowSize ( float Size ) {: .copyable aria-label='Functions' }
 
 ___
+### To·Slot () {: aria-label='Functions' }
+#### [EntitySlot](EntitySlot.md) ToSlot ( ) {: .copyable aria-label='Functions' }
+Used to cast an [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) object to an [EntitySlot](EntitySlot.md) object.
+
+???+ note "Return behavior"
+    If the conversion is not successful, this function returns `nil`.
+
+___
