@@ -1,5 +1,7 @@
 # Class "EntityPickup"
 
+## Class Diagram
+--8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
 ## Functions
 
 ### Is·Blind () {: aria-label='Functions' }

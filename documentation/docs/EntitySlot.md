@@ -2,6 +2,8 @@
 
 It's Real.
 
+## Class Diagram
+--8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
 ## Functions
 
 ### Create·Drops·From·Explosion() {: aria-label='Functions' }

@@ -207,7 +207,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_POST_PICKUP_SHOP_PURCHASE {: .copyable } | ([EntityPickup]([../EntityPickup.md](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html)) Pickup, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int MoneySpent)| [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.md) | void |
+|- |MC_POST_PICKUP_SHOP_PURCHASE {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int MoneySpent)| [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.md) | void |
 
 ### MC_GET_FOLLOWER_PRIORITY
 Accepts [FollowerPriority](FollowerPriority.md) to give familiar priority. Can accept any int.

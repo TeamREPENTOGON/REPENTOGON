@@ -72,9 +72,11 @@ nav:
     - TeleporterVariant: enums/TeleporterVariant.md
   - Ambush: Ambush.md
   - Console: Console.md
-  - Entity: Entity.md
-  - EntityPlayer: EntityPlayer.md
-  - EntityPickup: EntityPickup.md
+  - Entity:
+    - Entity: Entity.md
+    - EntityPlayer: EntityPlayer.md
+    - EntityPickup: EntityPickup.md
+    - EntitySlot: EntitySlot.md
   - Game: Game.md
   - Isaac: Isaac.md
   - Level: Level.md

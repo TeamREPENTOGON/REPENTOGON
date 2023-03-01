@@ -1,8 +1,10 @@
-# Class "[EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html)"
+# Class "EntityPlayer"
 
 This class contains both new functions and modified reimplementations of existing ones.
 
-## Modified Function
+## Class Diagram
+--8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
+## Modified Functions
 
 ### Add·Cache·Flags () {: aria-label='Modified Functions' }
 #### void AddCacheFlags ( [CacheFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/CacheFlag.html) CacheFlag, boolean EvaluateItems = false ) {: .copyable aria-label='Modified Functions' }
