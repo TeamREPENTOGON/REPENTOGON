@@ -263,6 +263,7 @@ namespace lua {
     namespace luabridge {
         extern void* identityKey;
         extern lua_CFunction indexMetaMethod;
+        extern lua_CFunction newIndexMetaMethod;
 
         inline void* getIdentityKey() {
             return identityKey;

@@ -52,6 +52,10 @@ void RegisterSlotMetatable(lua_State* L) {
 	lua_pushcfunction(L, lua::luabridge::indexMetaMethod); // meta __index metamethod
 	lua_rawset(L, -3); // meta
 
+	lua_pushstring(L, "__newindex"); // meta __newindex
+	lua_pushcfunction(L, lua::luabridge::newIndexMetaMethod); // meta __newindex metamethod
+	lua_rawset(L, -3); // meta
+
 	lua_pushboolean(L, true); // meta true
 	lua_rawsetp(L, -2, lua::luabridge::getIdentityKey()); // meta
 
