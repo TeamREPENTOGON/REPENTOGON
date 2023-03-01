@@ -236,14 +236,45 @@ namespace lua {
 	}
 
 	void* TestUserdata(lua_State* L, int ud, lua::Metatables mt) {
+		// s = ... userdata ... 
 		void* p = lua_touserdata(L, ud);
 		if (p != NULL) {
-			if (lua_getmetatable(L, ud)) {
-				lua::PushMetatable(L, mt);
-				if (!lua_rawequal(L, -1, -2))
-					p = NULL;
+			lua::PushMetatable(L, mt); // ... userdata ... meta
+			if (lua_getmetatable(L, ud)) { // ... userdata ... meta meta
+				while (true) {
+					if (!lua_rawequal(L, -1, -2)) {
+						// Check parent metatable
+						lua_pushstring(L, "__parent"); // ... userdata ... meta meta __parent
+						int type = lua_rawget(L, -2); // ... userdata ... meta meta ?parent
+						if (type != LUA_TTABLE) {
+							// Pop the metatable we compare against, the metatable of the userdata
+							// and its attempted parent
+							lua_pop(L, 3);
+							return NULL;
+						}
+
+						lua_remove(L, -2); // ... userdata ... meta parentmeta
+					}
+					else {
+						lua_pop(L, 2);
+						return p;
+					}
+				}
+				// Proof that the while finishes in normal working conditions :
+				// The else case of the if is trivial. Proof that the if iteself finishes
+				// The if can not finish only if lua_rawget(L, -2) never produces something that is not a table.
+				// This means there is an infinite chain of __parent, i.e. a loop.
+				// Then this means the application is bugged and we are no longer in normal work conditions.
+				// Otherwise, the chain of __parent is bounded and the inner if will eventually be entered, therefore the while finishes.
+
+				// Pop the metatable we compare against and the metatable of the userdata
 				lua_pop(L, 2);
 				return p;
+			}
+			else {
+				// Pop the metatable we compare against
+				lua_pop(L, 1); // ... userdata ...
+				return NULL;
 			}
 		}
 		return NULL;
