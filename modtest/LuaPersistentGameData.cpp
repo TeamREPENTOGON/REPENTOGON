@@ -45,6 +45,16 @@ int Lua_PGDIncreaseEventCounter(lua_State* L)
 	return 1;
 }
 
+int Lua_PGDGetEventCounter(lua_State* L)
+{
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	int eventCounter = luaL_checkinteger(L, 2);
+
+	lua_pushinteger(L, pgd->GetEventCounter(eventCounter));
+
+	return 1;
+}
+
 static void RegisterPersistentGameData(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
@@ -62,6 +72,7 @@ static void RegisterPersistentGameData(lua_State* L)
 		{ "TryUnlock", Lua_PGDTryUnlock },
 		{ "Unlocked", Lua_PGDUnlocked },
 		{ "IncreaseEventCounter", Lua_PGDIncreaseEventCounter},
+		{ "GetEventCounter", Lua_PGDGetEventCounter},
 		{ NULL, NULL }
 	};
 
