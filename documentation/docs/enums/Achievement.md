@@ -531,6 +531,7 @@ tags:
 |406 |THE_STARS_ARE_CALLING {: .copyable } |  |
 |406 |PLANETARIUMS {: .copyable } |  |
 |407 |UNLOCKED_A_SECRET_EXIT {: .copyable } |  |
+|407 |SECRET_EXIT {: .copyable } |  |
 |407 |ALT_PATH {: .copyable } |  |
 |407 |ANTIBIRTH_PATH {: .copyable } |  |
 |408 |FORGOTTEN_LULLABY {: .copyable } |  |
@@ -668,7 +669,7 @@ tags:
 |521 |BROKEN_GLASSES {: .copyable } |  |
 |522 |ICE_CUBE {: .copyable } |  |
 |523 |CHARGED_PENNY {: .copyable } |  |
-|524 |REVERSED_THE_FOLL {: .copyable } |  |
+|524 |REVERSED_THE_FOOL {: .copyable } |  |
 |524 |REVERSED_FOOL {: .copyable } |  |
 |525 |REVERSED_THE_MAGICIAN {: .copyable } |  |
 |525 |REVERSED_MAGICIAN {: .copyable } |  |
@@ -800,7 +801,7 @@ tags:
 |630 |SOUL_OF_KEEPER {: .copyable } |  |
 |631 |SOUL_OF_APOLLYON {: .copyable } |  |
 |632 |SOUL_OF_THE_FORGOTTEN {: .copyable } |  |
-|632 |SOUL_OF_FOTGOTTEN {: .copyable } |  |
+|632 |SOUL_OF_FORGOTTEN {: .copyable } |  |
 |633 |SOUL_OF_BETHANY {: .copyable } |  |
 |634 |SOUL_OF_JACOB {: .copyable } |  |
 |634 |SOUL_OF_JACOB_AND_ESAU {: .copyable } |  |

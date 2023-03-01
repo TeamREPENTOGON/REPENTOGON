@@ -48,6 +48,7 @@ nav:
     - BossType: enums/BossType.md
     - Dimension: enums/Dimension.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
+    - EventCounter: enums/EventCounter.md
     - FollowerPriority: enums/FollowerPriority.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md

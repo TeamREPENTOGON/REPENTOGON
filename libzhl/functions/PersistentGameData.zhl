@@ -6,3 +6,7 @@ __thiscall void PersistentGameData::IncreaseEventCounter(PersistentGameData* thi
 
 "558bec8b45??83f8fe":
 __thiscall bool PersistentGameData::Unlocked(PersistentGameData *this<ecx>, int achievementID);
+
+struct PersistentGameData {{
+	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
+}};

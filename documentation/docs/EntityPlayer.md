@@ -67,4 +67,9 @@ ___
 #### void SetItemState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType ) {: .copyable aria-label='Functions' }
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
+
+### Increment·Player·Form·Counter () {: aria-label='Functions' }
+#### void IncrementPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Form, int Num ) {: .copyable aria-label='Functions' }
+
+
 ___

@@ -1209,3 +1209,8 @@ PillCardSlot = {
 	TERTIARY = 2, -- Offset by 2 of: Pocket Item, Dice Bag Item, Pillcard (Otherwise unused)
 	QUATERNARY = 3, -- Offset by Pocket Item and Dice Bag Item and Pillcard (Otherwise unused)
 }
+
+--to-do--
+EventCounter = {
+	DONATE_MACHINE_COUNTER = 20, DONATION_MACHINE_COUNTER = 20,
+}
