@@ -253,6 +253,23 @@ static void RegisterPlayerDropCollectible(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerIncrementPlayerFormCounter(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int ePlayerForm = luaL_checkinteger(L, 2);
+	int num = luaL_checkinteger(L, 3);
+
+	player->IncrementPlayerFormCounter(ePlayerForm, num);
+	return 1;
+}
+
+static void RegisterIncrementPlayerFormCounter(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "IncrementPlayerFormCounter");
+	lua_pushcfunction(L, Lua_PlayerIncrementPlayerFormCounter);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -268,4 +285,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterPlayerSetActiveVarData(state);
 	RegisterPlayerAddActiveCharge(state);
 	RegisterPlayerDropCollectible(state);
+	RegisterIncrementPlayerFormCounter(state);
 }

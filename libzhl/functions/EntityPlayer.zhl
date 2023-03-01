@@ -134,6 +134,9 @@ __thiscall int Entity_Player::DropCollectible(Entity_Player *this<ecx>, int coll
 "558bec83e4f8515356578bf98b472c85c075??8b9f0c130000":
 __thiscall int Entity_Player::GetHealthLimit(Entity_Player *this<ecx>, bool keeper);
 
+"558bec83e4f883ec14538b5d0856578bf980bf1c1f000000":
+__thiscall void Entity_Player::IncrementPlayerFormCounter(Entity_Player *this<ecx>, int ePlayerForm, int num);
+
 struct Entity_Player {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
