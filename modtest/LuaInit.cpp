@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <chrono>
 
 #include <lua.hpp>
 
@@ -173,6 +174,42 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	g_LuaEngine->runCallbackRegistry->key = luaL_ref(state, LUA_REGISTRYINDEX);
 }
 
+static int LuaBenchmark(lua_State* L) {
+	if (int n = lua_gettop(L); n != 1) {
+		return luaL_error(L, "Expected one parameter, got %d", n);
+	}
+
+	const char* s = lua_tostring(L, 1);
+	if (!s) {
+		return luaL_error(L, "Invalid parameter");
+	}
+
+	if (luaL_dostring(L, s)) {
+		const char* err = lua_tostring(L, 1);
+		std::string copy(err);
+		lua_pop(L, 1);
+		return luaL_error(L, "Invalid error: %s", copy.c_str());
+	}
+
+	bool running = lua_gc(L, LUA_GCISRUNNING, 0);
+	if (running) {
+		lua_gc(L, LUA_GCSTOP, 0);
+	}
+
+	auto begin = std::chrono::steady_clock::now();
+	luaL_dostring(L, s);
+	auto end = std::chrono::steady_clock::now();
+
+	auto diff = std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count();
+	lua_pushinteger(L, diff);
+
+	if (running) {
+		lua_gc(L, LUA_GCRESTART, 0);
+	}
+
+	return 1;
+}
+
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
 	printf("[REPENTOGON] Registering Lua functions and metatables\n");
@@ -182,4 +219,5 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	lua::UnloadMetatables();
 	RegisterMetatables(state);
 	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
+	lua_register(state, "Benchmark", LuaBenchmark);
 }
