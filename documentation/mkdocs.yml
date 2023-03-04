@@ -52,11 +52,11 @@ nav:
     - FollowerPriority: enums/FollowerPriority.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
-	- MainMenu: enums/MainMenu.md
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
     - LineCheckMode: enums/LineCheckMode.md
     - ModCallbacks: enums/ModCallbacks.md
+	- MainMenu: enums/MainMenu.md
     - NullPickupSubType: enums/NullPickupSubType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
