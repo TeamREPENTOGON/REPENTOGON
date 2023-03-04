@@ -1210,6 +1210,26 @@ PillCardSlot = {
 	QUATERNARY = 3, -- Offset by Pocket Item and Dice Bag Item and Pillcard (Otherwise unused)
 }
 
+MainMenu = {
+	TITLE = 1, --0 exists but its unusable
+	SAVES = 2,
+	GAME = 3, --the actual menu where all the menus are
+	DAILYRUN = 4, 
+	CHARACTER = 5, 
+	SPECIALSEEDS = 6, 
+	CHALLENGE = 7, 
+	COLLECTION = 8, 
+	STATS = 9, 
+	OPTIONS = 10, 
+	CONTROLS = 11, 
+	KEYCONFIG = 12, 
+	ENDINGS = 13, 
+	BESTIARY = 14, 
+	MODCHALLENGES = 15, 
+	MODS = 16, 
+	SEED = 17, 
+}
+
 --to-do--
 EventCounter = {
 	DONATE_MACHINE_COUNTER = 20, DONATION_MACHINE_COUNTER = 20,
