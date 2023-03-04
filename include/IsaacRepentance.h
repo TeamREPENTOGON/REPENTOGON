@@ -1202,68 +1202,8 @@ static DWORD GetBaseAddress()
 }
 
 
-struct Minimap;
-
-struct Minimap
-{
-	LIBZHL_API void Render();
-	
-};
-
-struct DailyChallenge
-{
-	unsigned int _id;
-	unsigned int _seed;
-};
-
-struct Capsule
-{
-};
-
-struct BossPool;
-struct RNG;
-
-struct BossPool
-{
-	LIBZHL_API int GetBossId(int leveltype, int levelvariant, RNG *rng);
-	
-};
-
-struct Vector;
-struct EntityList;
-
-struct EntityList
-{
-	LIBZHL_API void RenderShadows(Vector *offset);
-	
-};
-
-struct IsaacString
-{
-    const char* Get() const {
-        if (size < 16) {
-            return text;
-        } else {
-            return *(char**)text;
-        }
-    }
-
-	char text[16];
-	uint32_t size;
-	uint32_t unk;
-};
-
-struct ChallengeParam
-{
-	IsaacString _name;
-	std_set_int _roomset;
-};
-
-struct Entity_Slot;
-
-struct Capsule;
-struct Entity;
 struct EntityRef;
+struct Entity;
 
 struct Vector
 {
@@ -1294,6 +1234,8 @@ struct Vector
 	float x;
 	float y;
 };
+
+struct Capsule;
 
 struct LIBZHL_INTERFACE Entity
 {
@@ -1337,15 +1279,19 @@ struct LIBZHL_INTERFACE Entity
 	bool _visible;
 };
 
-struct Entity_Slot : Entity
+struct IsaacString
 {
-	LIBZHL_API void Render(Vector *offset);
-	LIBZHL_API virtual void Update();
-	LIBZHL_API void CreateDropsFromExplosion();
-	LIBZHL_API void SetPrizeCollectible(int CollectibleType);
-	LIBZHL_API virtual void Init(int Type, int Variant, int SubType, int Seed);
-	LIBZHL_API virtual bool HandleCollision(Entity *Collider, bool Low);
-	
+    const char* Get() const {
+        if (size < 16) {
+            return text;
+        } else {
+            return *(char**)text;
+        }
+    }
+
+	char text[16];
+	uint32_t size;
+	uint32_t unk;
 };
 
 struct StaticArray
@@ -1354,40 +1300,104 @@ struct StaticArray
 	uint16_t size;
 };
 
-struct RoomSpawn
-{
-	uint16_t X;
-	uint16_t Y;
-	StaticArray Entries;
-	char pad[2];
-	float SumWeights;
-};
+struct PersistentGameData;
 
-struct LIBZHL_INTERFACE GridEntity
+struct PersistentGameData
 {
-	inline GridCollisionClass* GetCollisionClass() { return (GridCollisionClass*)((char*)this + 0x3C); }
-	inline unsigned int* GetGridIndex() { return (unsigned int*)((char*)this + 0x24); }
+	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
+	inline bool IsItemInCollection (int collectibleID) {
+		int savedata = *(int*)((char*)this + collectibleID * 0x1 + 0xa78);
+		printf("savedata %d\n", savedata);
+		return savedata != 0; 
+	}
 
-	LIBZHL_API void Init(unsigned int Seed);
+	LIBZHL_API bool TryUnlock(int achievementID);
+	LIBZHL_API void IncreaseEventCounter(int eEventCounters, int num);
+	LIBZHL_API bool Unlocked(int achievementID);
+	LIBZHL_API void AddToCollection(int collectibleID);
 	
-	int _unk;
-	GridEntityType _type;
-	int _variant;
-	int _state;
-	int _unk2;
-	int _varData;
-	int _unk3;
-	unsigned int _collisionClass;
 };
 
-struct GridEntity_Rock;
+struct RNG;
+struct BossPool;
 
-struct GridEntity_Rock : GridEntity
+struct BossPool
+{
+	LIBZHL_API int GetBossId(int leveltype, int levelvariant, RNG *rng);
+	
+};
+
+struct Entity_Tear;
+struct Vector;
+
+struct Entity_Tear : Entity
+{
+	LIBZHL_API void Render(Vector *offset);
+	
+};
+
+struct ChallengeParam
+{
+	IsaacString _name;
+	std_set_int _roomset;
+};
+
+struct Menu_Title;
+
+struct Menu_Title
 {
 	LIBZHL_API void Update();
-	LIBZHL_API bool Destroy(bool Immediate);
 	
 };
+
+struct SFXManager;
+
+struct SFXManager
+{
+	LIBZHL_API void Play(int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan);
+	
+};
+
+struct Ambush;
+
+struct Ambush
+{
+	LIBZHL_API void StartChallenge();
+	
+};
+
+struct RoomConfig
+{
+	int32_t StageId;
+	int32_t Mode;
+	int32_t Type;
+	int32_t Variant;
+	int32_t Subtype;
+	IsaacString Name;
+	int32_t Difficulty;
+	float InitialWeight;
+	float Weight;
+	int32_t Doors;
+	int32_t unk7;
+	StaticArray Spawns;
+	int8_t Width;
+	int8_t Height;
+	int32_t Shape;
+	int32_t unk9;
+	int32_t unk10;
+	int32_t unk11;
+	int32_t unk12;
+};
+
+struct RoomEntry
+{
+	uint32_t type;
+	uint16_t variant;
+	uint16_t subtype;
+	float weight;
+};
+
+struct PlayerHUD;
 
 struct HUD;
 
@@ -1397,6 +1407,38 @@ struct HUD
 	LIBZHL_API void Update();
 	LIBZHL_API void PostUpdate();
 	LIBZHL_API void LoadGraphics();
+	
+};
+
+struct PlayerHUD : HUD
+{
+	LIBZHL_API void Update();
+	LIBZHL_API void RenderActiveItem(unsigned int slot, const Vector &pos, float alpha, float unk4);
+	
+};
+
+struct Music;
+
+struct Music
+{
+	inline void StopJingle() {
+		*(int*)((char*)this + 0x348) = 0;
+		*(int*)((char*)this + 0x364) = -99;
+	};
+
+	LIBZHL_API void __stdcall Play(int musicid, float volume);
+	LIBZHL_API void __stdcall Crossfade(int musicid, float faderate);
+	LIBZHL_API void PlayJingle(int musicid);
+	LIBZHL_API void DisableLayer(int id);
+	LIBZHL_API void EnableLayer(int id, bool instant);
+	
+};
+
+struct Minimap;
+
+struct Minimap
+{
+	LIBZHL_API void Render();
 	
 };
 
@@ -1424,36 +1466,27 @@ struct RoomConfigs
 	uint32_t backdrop;
 };
 
-struct ANM2;
+struct RoomConfigHolder;
 
-struct ModManager
+struct RoomConfigHolder
 {
-	LIBZHL_API static void __stdcall RenderCustomCharacterMenu(int CharacterId, Vector *RenderPos, ANM2 *DefaultSprite);
+	LIBZHL_API RoomConfig *GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int32_t difficulty);
+	LIBZHL_API RoomConfig *GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int unk1, unsigned int unk2, int minDifficulty, int maxDifficulty, const unsigned int &requiredDoors, unsigned int roomSubtype, int unk3);
 	
+	RoomConfigs configs[36];
 };
 
-struct Music;
+struct Entity_Slot;
 
-struct Music
+struct Entity_Slot : Entity
 {
-	inline void StopJingle() {
-		*(int*)((char*)this + 0x348) = 0;
-		*(int*)((char*)this + 0x364) = -99;
-	};
-
-	LIBZHL_API void __stdcall Play(int musicid, float volume);
-	LIBZHL_API void __stdcall Crossfade(int musicid, float faderate);
-	LIBZHL_API void PlayJingle(int musicid);
-	LIBZHL_API void DisableLayer(int id);
-	LIBZHL_API void EnableLayer(int id, bool instant);
+	LIBZHL_API void Render(Vector *offset);
+	LIBZHL_API virtual void Update();
+	LIBZHL_API void CreateDropsFromExplosion();
+	LIBZHL_API void SetPrizeCollectible(int CollectibleType);
+	LIBZHL_API virtual void Init(int Type, int Variant, int SubType, int Seed);
+	LIBZHL_API virtual bool HandleCollision(Entity *Collider, bool Low);
 	
-};
-
-struct RNG
-{
-	LIBZHL_API void SetSeed(unsigned int Seed, unsigned int ShiftIdx);
-	
-	unsigned int _seed;
 };
 
 struct PosVel
@@ -1484,289 +1517,6 @@ struct PosVel
 
 	Vector pos;
 	Vector vel;
-};
-
-struct Entity_Familiar;
-
-struct Entity_Familiar : Entity
-{
-	LIBZHL_API int GetFollowerPriority();
-	LIBZHL_API void Render(Vector *offset);
-	
-};
-
-struct GridEntityDesc
-{
-	int _type;
-	int _variant;
-	int _state;
-	int _spawnCount;
-	unsigned int _spawnSeed;
-	int _varData;
-	bool _initialized;
-	unsigned int _variableSeed;
-};
-
-struct EntityRef
-{
-	int _type;
-	int _variant;
-	int _spawnerType;
-	unsigned int _spawnerVariant;
-	Vector _position;
-	Vector _velocity;
-	unsigned int _flags;
-	Entity *_entity;
-};
-
-struct LuaEngine;
-struct RunCallbackRegistry;
-
-struct LuaEngine
-{
-	LIBZHL_API void Init(bool Debug);
-	LIBZHL_API void RegisterClasses();
-	LIBZHL_API bool RunBundledScript(const char *path);
-	
-	char pad0[16];
-	RunCallbackRegistry *runCallbackRegistry;
-	char pad1[4];
-	lua_State *_state;
-	int32_t _runCallbackRegistryKey;
-};
-
-struct LevelGenerator_Room
-{
-	char pad0[8];
-	uint32_t _gridColIdx;
-	uint32_t _gridLineIdx;
-	char pad1[12];
-	uint32_t _doors;
-};
-
-struct RunCallbackRegistry
-{
-	lua_State *state;
-	int32_t key;
-};
-
-struct GridEntity;
-
-struct Isaac
-{
-	LIBZHL_API static GridEntity *__stdcall CreateGridEntity(int Type, unsigned int Index);
-	LIBZHL_API static int __stdcall Random(int Max);
-	
-};
-
-struct Ambush;
-
-struct Ambush
-{
-	LIBZHL_API void StartChallenge();
-	
-};
-
-struct Camera;
-struct Room;
-
-struct Camera
-{
-	Camera(Room* room)
-	{
-		this->constructor(room);
-	}
-
-	LIBZHL_API void constructor(Room *room);
-	LIBZHL_API void SetFocusPosition(const Vector &pos);
-	
-};
-
-struct Menu_Character
-{
-	LIBZHL_API void __stdcall Update();
-	LIBZHL_API void __stdcall Render();
-	LIBZHL_API void __stdcall Init(Vector *unk);
-	
-	int status;
-	int lockedflags;
-	int difficulty;
-	int unk4;
-	int charaslot;
-	float unk5;
-	float unk6;
-	int unk7;
-	int unk8;
-};
-
-struct GridEntityDesc;
-
-struct Room
-{
-	LIBZHL_API float GetDevilRoomChance();
-	LIBZHL_API GridEntity *GetGridEntity(uint32_t idx);
-	LIBZHL_API void ShopRestockFull();
-	LIBZHL_API void ShopRestockPartial();
-	LIBZHL_API int GetShopItemPrice(unsigned int entVariant, unsigned int entSubType, int shopItemID);
-	LIBZHL_API bool SpawnGridEntity(int GridIndex, unsigned int Type, unsigned int Variant, unsigned int Seed, int VarData);
-	LIBZHL_API bool SpawnGridEntity(int GridIndex, GridEntityDesc *Desc);
-	LIBZHL_API void RemoveGridEntityImmediate(int GridIndex, int PathTrail, bool KeepDecoration);
-	LIBZHL_API void TriggerClear(bool playSound);
-	
-	char pad0[36];
-	GridEntity *_gridEntities[447];
-	char pad1[4];
-	GridEntity *_doors[8];
-	uint32_t _doorGridPositions[8];
-};
-
-struct Entity_Effect;
-
-struct Entity_Effect : Entity
-{
-	LIBZHL_API void Render(Vector *offset);
-	
-};
-
-struct Globals
-{
-};
-
-struct CompletionWidget;
-
-struct CompletionWidget
-{
-	LIBZHL_API void Render(Vector *pos, Vector *scale);
-	LIBZHL_API void Update();
-	
-};
-
-struct RoomConfig
-{
-	int32_t StageId;
-	int32_t Mode;
-	int32_t Type;
-	int32_t Variant;
-	int32_t Subtype;
-	IsaacString Name;
-	int32_t Difficulty;
-	float InitialWeight;
-	float Weight;
-	int32_t Doors;
-	int32_t unk7;
-	StaticArray Spawns;
-	int8_t Width;
-	int8_t Height;
-	int32_t Shape;
-	int32_t unk9;
-	int32_t unk10;
-	int32_t unk11;
-	int32_t unk12;
-};
-
-struct PersistentGameData;
-
-struct PersistentGameData
-{
-	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
-
-	LIBZHL_API bool TryUnlock(int achievementID);
-	LIBZHL_API void IncreaseEventCounter(int eEventCounters, int num);
-	LIBZHL_API bool Unlocked(int achievementID);
-	
-};
-
-struct ChallengeParam;
-struct Manager;
-
-struct Manager
-{
-	LIBZHL_API void __stdcall Update();
-	LIBZHL_API ChallengeParam *GetChallengeParams(int challengeID);
-	
-	char unk1[19];
-	PersistentGameData _persistentGameData;
-};
-
-struct RoomEntry
-{
-	uint32_t type;
-	uint16_t variant;
-	uint16_t subtype;
-	float weight;
-};
-
-struct Entity_Projectile;
-
-struct Entity_Projectile : Entity
-{
-	LIBZHL_API void Render(Vector *offset);
-	
-};
-
-struct LevelGenerator_Room;
-struct LevelGenerator;
-
-struct LevelGenerator
-{
-	LIBZHL_API int PlaceRoom(LevelGenerator_Room *room);
-	LIBZHL_API LevelGenerator_Room *CreateRoom(int x, int y, int shape, int connectX, int connectY, Direction connectDir);
-	LIBZHL_API void Generate(int unk, bool unk2, bool unk3, bool unk4, const unsigned int &allowedShapes, int unk5, LevelGenerator_Room *startRoom);
-	LIBZHL_API LevelGenerator_Room *GetNewEndRoom(int roomShape, const unsigned int &possibleDoors);
-	
-};
-
-struct Entity_Tear;
-
-struct Entity_Tear : Entity
-{
-	LIBZHL_API void Render(Vector *offset);
-	
-};
-
-struct RoomDescriptor
-{
-	int32_t GridIndex;
-	int32_t SafeGridIndex;
-	int32_t ListIndex;
-	int32_t unk0;
-	RoomConfig *Data;
-	RoomConfig *OverrideData;
-	int32_t AllowedDoors;
-	int32_t Doors[8];
-	int32_t DisplayFlags;
-	int32_t VisitedCount;
-	int32_t Flags;
-	int16_t unk9;
-	int16_t ClearCount;
-	int32_t unk10;
-	int32_t PoopCount;
-	int32_t PitsCount;
-	int32_t DecorationSeed;
-	int32_t SpawnSeed;
-	int32_t AwardSeed;
-	int32_t unk11;
-	int32_t unk12;
-	int32_t unk13;
-	int32_t unk14;
-	int32_t unk15;
-	int32_t unk16;
-	int32_t unk17;
-	int32_t unk18;
-	int32_t unk19;
-	int32_t unk20;
-	int32_t unk21;
-	int32_t unk22;
-	int32_t unk23;
-	int32_t unk24;
-	int32_t unk25;
-	int32_t unk26;
-	int32_t unk27;
-	int32_t unk28;
-	int16_t ShopItemIdx;
-	int16_t ShopItemDiscountIdx;
-	int32_t DeliriumDistance;
-	int32_t unk29;
 };
 
 struct Weapon_MultiShotParams
@@ -1840,14 +1590,165 @@ struct LIBZHL_INTERFACE Entity_Player : Entity
 	
 };
 
-struct Console;
-struct IsaacString;
+struct Manager;
+struct ChallengeParam;
 
-struct Console
+struct Manager
 {
-	LIBZHL_API void PrintError(const IsaacString &err);
-	LIBZHL_API void RunCommand(const std::string &in, const std::string &out, Entity_Player *player);
+	LIBZHL_API void __stdcall Update();
+	LIBZHL_API ChallengeParam *GetChallengeParams(int challengeID);
 	
+	char unk1[19];
+	PersistentGameData _persistentGameData;
+};
+
+struct RNG
+{
+	LIBZHL_API void SetSeed(unsigned int Seed, unsigned int ShiftIdx);
+	
+	unsigned int _seed;
+};
+
+struct ANM2;
+
+struct ANM2
+{
+	LIBZHL_API void Render(Vector *position, Vector *topleftclamp, Vector *bottomrightclamp);
+	LIBZHL_API void Update();
+	LIBZHL_API void SetLayerFrame(int layerid, int frame);
+	LIBZHL_API void ReplaceSpritesheet(int LayerId, IsaacString &PngFilename);
+	LIBZHL_API void LoadGraphics(bool unk);
+	
+	IsaacString _filename;
+};
+
+struct Entity_Pickup;
+
+struct Entity_Pickup : Entity
+{
+	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
+
+	LIBZHL_API void __stdcall Morph(int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers);
+	LIBZHL_API void TriggerShopPurchase(Entity_Player *player, int spentMoney);
+	LIBZHL_API void Render(Vector *offset);
+	LIBZHL_API void SetAlternatePedestal(int pedestalType);
+	LIBZHL_API bool TryRemoveCollectible();
+	LIBZHL_API void SetForceBlind(bool setBlind);
+	
+};
+
+struct Entity_Familiar;
+
+struct Entity_Familiar : Entity
+{
+	LIBZHL_API int GetFollowerPriority();
+	LIBZHL_API void Render(Vector *offset);
+	
+};
+
+struct LevelGenerator_Room
+{
+	char pad0[8];
+	uint32_t _gridColIdx;
+	uint32_t _gridLineIdx;
+	char pad1[12];
+	uint32_t _doors;
+};
+
+struct LevelGenerator;
+struct LevelGenerator_Room;
+
+struct LevelGenerator
+{
+	LIBZHL_API int PlaceRoom(LevelGenerator_Room *room);
+	LIBZHL_API LevelGenerator_Room *CreateRoom(int x, int y, int shape, int connectX, int connectY, Direction connectDir);
+	LIBZHL_API void Generate(int unk, bool unk2, bool unk3, bool unk4, const unsigned int &allowedShapes, int unk5, LevelGenerator_Room *startRoom);
+	LIBZHL_API LevelGenerator_Room *GetNewEndRoom(int roomShape, const unsigned int &possibleDoors);
+	
+};
+
+struct EntityRef
+{
+	int _type;
+	int _variant;
+	int _spawnerType;
+	unsigned int _spawnerVariant;
+	Vector _position;
+	Vector _velocity;
+	unsigned int _flags;
+	Entity *_entity;
+};
+
+struct LIBZHL_INTERFACE GridEntity
+{
+	inline GridCollisionClass* GetCollisionClass() { return (GridCollisionClass*)((char*)this + 0x3C); }
+	inline unsigned int* GetGridIndex() { return (unsigned int*)((char*)this + 0x24); }
+
+	LIBZHL_API void Init(unsigned int Seed);
+	
+	int _unk;
+	GridEntityType _type;
+	int _variant;
+	int _state;
+	int _unk2;
+	int _varData;
+	int _unk3;
+	unsigned int _collisionClass;
+};
+
+struct Level;
+
+struct Level
+{
+	LIBZHL_API void __stdcall SetStage(int stageid, int alt);
+	LIBZHL_API void __stdcall Init();
+	LIBZHL_API void ChangeRoom(int targetRoomIDX, int dimension);
+	
+};
+
+struct RoomDescriptor
+{
+	int32_t GridIndex;
+	int32_t SafeGridIndex;
+	int32_t ListIndex;
+	int32_t unk0;
+	RoomConfig *Data;
+	RoomConfig *OverrideData;
+	int32_t AllowedDoors;
+	int32_t Doors[8];
+	int32_t DisplayFlags;
+	int32_t VisitedCount;
+	int32_t Flags;
+	int16_t unk9;
+	int16_t ClearCount;
+	int32_t unk10;
+	int32_t PoopCount;
+	int32_t PitsCount;
+	int32_t DecorationSeed;
+	int32_t SpawnSeed;
+	int32_t AwardSeed;
+	int32_t unk11;
+	int32_t unk12;
+	int32_t unk13;
+	int32_t unk14;
+	int32_t unk15;
+	int32_t unk16;
+	int32_t unk17;
+	int32_t unk18;
+	int32_t unk19;
+	int32_t unk20;
+	int32_t unk21;
+	int32_t unk22;
+	int32_t unk23;
+	int32_t unk24;
+	int32_t unk25;
+	int32_t unk26;
+	int32_t unk27;
+	int32_t unk28;
+	int16_t ShopItemIdx;
+	int16_t ShopItemDiscountIdx;
+	int32_t DeliriumDistance;
+	int32_t unk29;
 };
 
 struct MenuManager;
@@ -1860,33 +1761,87 @@ struct MenuManager
 	}
 
 	LIBZHL_API void constructor();
+	LIBZHL_API void __stdcall Init();
+	LIBZHL_API void __stdcall Render();
+	LIBZHL_API void __stdcall SetState(int estate);
 	
 };
 
-struct RoomConfigHolder;
-
-struct RoomConfigHolder
+struct Menu_Character
 {
-	LIBZHL_API RoomConfig *GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int32_t difficulty);
-	LIBZHL_API RoomConfig *GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int unk1, unsigned int unk2, int minDifficulty, int maxDifficulty, const unsigned int &requiredDoors, unsigned int roomSubtype, int unk3);
+	LIBZHL_API void __stdcall Update();
+	LIBZHL_API void __stdcall Render();
+	LIBZHL_API void __stdcall Init(Vector *unk);
 	
-	RoomConfigs configs[36];
+	int status;
+	int lockedflags;
+	int difficulty;
+	int unk4;
+	int charaslot;
+	float unk5;
+	float unk6;
+	int unk7;
+	int unk8;
 };
 
-struct Menu_Title;
+struct Entity_Bomb;
 
-struct Menu_Title
+struct Entity_Bomb : Entity
 {
-	LIBZHL_API void Update();
-	
-};
-
-struct Entity_NPC;
-
-struct Entity_NPC : Entity
-{
-	LIBZHL_API void __stdcall Morph(int EntityType, int Variant, int SubType, int Championid);
 	LIBZHL_API void Render(Vector *offset);
+	
+};
+
+struct LuaEngine;
+struct RunCallbackRegistry;
+
+struct LuaEngine
+{
+	LIBZHL_API void Init(bool Debug);
+	LIBZHL_API void RegisterClasses();
+	LIBZHL_API bool RunBundledScript(const char *path);
+	
+	char pad0[16];
+	RunCallbackRegistry *runCallbackRegistry;
+	char pad1[4];
+	lua_State *_state;
+	int32_t _runCallbackRegistryKey;
+};
+
+struct RunCallbackRegistry
+{
+	lua_State *state;
+	int32_t key;
+};
+
+struct GridEntityDesc
+{
+	int _type;
+	int _variant;
+	int _state;
+	int _spawnCount;
+	unsigned int _spawnSeed;
+	int _varData;
+	bool _initialized;
+	unsigned int _variableSeed;
+};
+
+struct Console;
+struct IsaacString;
+
+struct Console
+{
+	LIBZHL_API void PrintError(const IsaacString &err);
+	LIBZHL_API void RunCommand(const std::string &in, const std::string &out, Entity_Player *player);
+	
+};
+
+struct GridEntity;
+
+struct Isaac
+{
+	LIBZHL_API static GridEntity *__stdcall CreateGridEntity(int Type, unsigned int Index);
+	LIBZHL_API static int __stdcall Random(int Max);
 	
 };
 
@@ -1895,6 +1850,43 @@ struct Entity_Knife;
 struct Entity_Knife : Entity
 {
 	LIBZHL_API void Render(Vector *offset);
+	
+};
+
+struct Entity_Projectile;
+
+struct Entity_Projectile : Entity
+{
+	LIBZHL_API void Render(Vector *offset);
+	
+};
+
+struct DailyChallenge
+{
+	unsigned int _id;
+	unsigned int _seed;
+};
+
+struct EntityList;
+
+struct EntityList
+{
+	LIBZHL_API void RenderShadows(Vector *offset);
+	
+};
+
+struct Room;
+struct Camera;
+
+struct Camera
+{
+	Camera(Room* room)
+	{
+		this->constructor(room);
+	}
+
+	LIBZHL_API void constructor(Room *room);
+	LIBZHL_API void SetFocusPosition(const Vector &pos);
 	
 };
 
@@ -1911,33 +1903,84 @@ struct PlayerManager
 	
 };
 
-struct Level;
-
-struct Level
+struct Capsule
 {
-	LIBZHL_API void __stdcall SetStage(int stageid, int alt);
-	LIBZHL_API void __stdcall Init();
-	LIBZHL_API void ChangeRoom(int targetRoomIDX, int dimension);
+};
+
+struct GridEntityDesc;
+
+struct Room
+{
+	LIBZHL_API float GetDevilRoomChance();
+	LIBZHL_API GridEntity *GetGridEntity(uint32_t idx);
+	LIBZHL_API void ShopRestockFull();
+	LIBZHL_API void ShopRestockPartial();
+	LIBZHL_API int GetShopItemPrice(unsigned int entVariant, unsigned int entSubType, int shopItemID);
+	LIBZHL_API bool SpawnGridEntity(int GridIndex, unsigned int Type, unsigned int Variant, unsigned int Seed, int VarData);
+	LIBZHL_API bool SpawnGridEntity(int GridIndex, GridEntityDesc *Desc);
+	LIBZHL_API void RemoveGridEntityImmediate(int GridIndex, int PathTrail, bool KeepDecoration);
+	LIBZHL_API void TriggerClear(bool playSound);
+	
+	char pad0[36];
+	GridEntity *_gridEntities[447];
+	char pad1[4];
+	GridEntity *_doors[8];
+	uint32_t _doorGridPositions[8];
+};
+
+struct RoomSpawn
+{
+	uint16_t X;
+	uint16_t Y;
+	StaticArray Entries;
+	char pad[2];
+	float SumWeights;
+};
+
+struct GridEntity_Rock;
+
+struct GridEntity_Rock : GridEntity
+{
+	LIBZHL_API void Update();
+	LIBZHL_API bool Destroy(bool Immediate);
 	
 };
 
-struct Entity_Bomb;
+struct Globals
+{
+};
 
-struct Entity_Bomb : Entity
+struct Entity_NPC;
+
+struct Entity_NPC : Entity
+{
+	LIBZHL_API void __stdcall Morph(int EntityType, int Variant, int SubType, int Championid);
+	LIBZHL_API void Render(Vector *offset);
+	LIBZHL_API void UpdateDirtColor(bool unk);
+	
+};
+
+struct Entity_Effect;
+
+struct Entity_Effect : Entity
 {
 	LIBZHL_API void Render(Vector *offset);
 	
 };
 
-struct ANM2
+struct CompletionWidget;
+
+struct CompletionWidget
 {
-	LIBZHL_API void Render(Vector *position, Vector *topleftclamp, Vector *bottomrightclamp);
+	LIBZHL_API void Render(Vector *pos, Vector *scale);
 	LIBZHL_API void Update();
-	LIBZHL_API void SetLayerFrame(int layerid, int frame);
-	LIBZHL_API void ReplaceSpritesheet(int LayerId, IsaacString &PngFilename);
-	LIBZHL_API void LoadGraphics(bool unk);
 	
-	IsaacString _filename;
+};
+
+struct ModManager
+{
+	LIBZHL_API static void __stdcall RenderCustomCharacterMenu(int CharacterId, Vector *RenderPos, ANM2 *DefaultSprite);
+	
 };
 
 struct Game;
@@ -2018,38 +2061,6 @@ struct Game
 	int _planetariumsVisited;
 	Ambush _ambush;
 	uint32_t _difficulty;
-};
-
-struct PlayerHUD;
-
-struct PlayerHUD : HUD
-{
-	LIBZHL_API void Update();
-	LIBZHL_API void RenderActiveItem(unsigned int slot, const Vector &pos, float alpha, float unk4);
-	
-};
-
-struct Entity_Pickup;
-
-struct Entity_Pickup : Entity
-{
-	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
-
-	LIBZHL_API void __stdcall Morph(int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers);
-	LIBZHL_API void TriggerShopPurchase(Entity_Player *player, int spentMoney);
-	LIBZHL_API void Render(Vector *offset);
-	LIBZHL_API void SetAlternatePedestal(int pedestalType);
-	LIBZHL_API bool TryRemoveCollectible();
-	LIBZHL_API void SetForceBlind(bool setBlind);
-	
-};
-
-struct SFXManager;
-
-struct SFXManager
-{
-	LIBZHL_API void Play(int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan);
-	
 };
 
 LIBZHL_API GridEntity *__stdcall CreateGridEntity(GridEntityType type, unsigned int seed);
