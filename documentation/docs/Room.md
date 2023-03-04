@@ -2,6 +2,12 @@
 
 ## Functions
 
+### Get·Camera () {: aria-label='Functions' }
+#### [Camera](Camera.md) GetCamera ( ) {: .copyable aria-label='Functions' }
+Returns a [Camera](Camera.md) object.
+
+___
+
 ### Get·Shop·Item·Price () {: aria-label='Functions' }
 #### int GetShopItemPrice ( int EntityVariant, int EntitySubType, int ShopItemID ) {: .copyable aria-label='Functions' }
 Returns the price of the item.

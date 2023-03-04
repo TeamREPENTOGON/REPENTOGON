@@ -219,6 +219,7 @@ struct Room
     char pad1[0x4]; // 0x720
     GridEntity* _doors[8]; // 0x724
     uint32_t _doorGridPositions[8]; // 0x744
+	__declspec(align(2)) Camera *m_Camera; //0x11F8
 };
 
 struct DailyChallenge

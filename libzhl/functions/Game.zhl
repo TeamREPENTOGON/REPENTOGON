@@ -52,6 +52,9 @@ __thiscall float Game::GetPlanetariumChance(Game *this<ecx>);
 "558bec83ec0c568bf18b0d":
 __thiscall void Game::StartStageTransition(bool SameStage,int param_2,Entity_Player *param_3);
 
+"558bec83e4f881ec1802":
+__thiscall void Game::Render(Game *this<ecx>);
+
 //out potential target
 /*
 		01444061 e8  3a  1a       CALL       IsaacRepentance::Game::Game?                     int * Game?(Game * param_1)
