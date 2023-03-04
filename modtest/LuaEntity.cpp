@@ -201,6 +201,34 @@ static void RegisterEntityGetNullOffset(lua_State* L)
 	lua_pop(L, 1);
 }
 
+static int lua_Entity_GetType(lua_State* L) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, *entity->GetType());
+	return 1;
+}
+
+static int lua_Entity_GetPosVel(lua_State* L) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* pos = (Vector*)((char*)entity + 0x294);
+	Vector* vel = (Vector*)((char*)entity + 0x2B8);
+
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *pos);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *vel);
+
+	return 2;
+}
+
+static void RegisterEntityGetters(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY);
+	lua_pushstring(L, "GetType");
+	lua_pushcfunction(L, lua_Entity_GetType);
+	lua_rawset(L, -3);
+	lua_pushstring(L, "GetPosVel");
+	lua_pushcfunction(L, lua_Entity_GetPosVel);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -213,4 +241,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityAddKnockback(state);
 	RegisterEntityShadowSize(state);
 	RegisterEntityGetNullOffset(state);
+	RegisterEntityGetters(state);
 }

@@ -4,7 +4,7 @@ ModCallbacks.MC_GRID_ROCK_UPDATE = 1010
 ModCallbacks.MC_HUD_UPDATE = 1020
 ModCallbacks.MC_HUD_POST_UPDATE = 1021
 ModCallbacks.MC_HUD_RENDER = 1022
-ModCallbacks.MC_CHARACTER_MENU_RENDER = 1023
+ModCallbacks.MC_MAIN_MENU_RENDER = 1023
 ModCallbacks.MC_PRE_SFX_PLAY = 1030
 ModCallbacks.MC_POST_SFX_PLAY = 1031
 ModCallbacks.MC_PRE_MUSIC_PLAY = 1034
@@ -1208,6 +1208,26 @@ PillCardSlot = {
 	SECONDARY = 1,
 	TERTIARY = 2, -- Offset by 2 of: Pocket Item, Dice Bag Item, Pillcard (Otherwise unused)
 	QUATERNARY = 3, -- Offset by Pocket Item and Dice Bag Item and Pillcard (Otherwise unused)
+}
+
+MainMenu = {
+	TITLE = 1, --0 exists but its unusable
+	SAVES = 2,
+	GAME = 3, --the actual menu where all the menus are
+	DAILYRUN = 4, 
+	CHARACTER = 5, 
+	SPECIALSEEDS = 6, 
+	CHALLENGE = 7, 
+	COLLECTION = 8, 
+	STATS = 9, 
+	OPTIONS = 10, 
+	CONTROLS = 11, 
+	KEYCONFIG = 12, 
+	ENDINGS = 13, 
+	BESTIARY = 14, 
+	MODCHALLENGES = 15, 
+	MODS = 16, 
+	SEED = 17, 
 }
 
 --to-do--

@@ -49,12 +49,12 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |- |MC_HUD_RENDER {: .copyable } | - | - | void |
 
-### MC_CHARACTER_MENU_RENDER {: .copyable }
+### MC_MAIN_MENU_RENDER {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_CHARACTER_MENU_RENDER {: .copyable } | - | - | void |
+|- |MC_MAIN_MENU_RENDER {: .copyable } | - | - | void |
 
 ### MC_PRE_SFX_PLAY
 Accepts a table of parameters: `{ID, Volume, FrameDelay, Loop, Pitch, Pan}`
