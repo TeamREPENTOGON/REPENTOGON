@@ -55,8 +55,8 @@ nav:
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
     - LineCheckMode: enums/LineCheckMode.md
-    - ModCallbacks: enums/ModCallbacks.md
 	- MainMenu: enums/MainMenu.md
+    - ModCallbacks: enums/ModCallbacks.md
     - NullPickupSubType: enums/NullPickupSubType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
