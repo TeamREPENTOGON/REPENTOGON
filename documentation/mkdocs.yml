@@ -52,6 +52,7 @@ nav:
     - FollowerPriority: enums/FollowerPriority.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
+	- MainMenu: enums/MainMenu.md
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
     - LineCheckMode: enums/LineCheckMode.md
