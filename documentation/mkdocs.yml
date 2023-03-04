@@ -55,6 +55,7 @@ nav:
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
     - LineCheckMode: enums/LineCheckMode.md
+    - MainMenu: enums/MainMenu.md
     - ModCallbacks: enums/ModCallbacks.md
     - NullPickupSubType: enums/NullPickupSubType.md
     - PillCardSlot: enums/PillCardSlot.md
@@ -72,6 +73,7 @@ nav:
     - StbType: enums/StbType.md
     - TeleporterVariant: enums/TeleporterVariant.md
   - Ambush: Ambush.md
+  - Camera: Camera.md
   - Console: Console.md
   - Entity:
     - Entity: Entity.md

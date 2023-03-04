@@ -22,4 +22,3 @@ tags:
 |15 |MODCHALLENGES {: .copyable } |  |
 |16 |MODS {: .copyable } |  |
 |17 |SEED {: .copyable } |  |
-
