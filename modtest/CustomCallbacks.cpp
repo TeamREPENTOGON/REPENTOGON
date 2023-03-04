@@ -175,7 +175,7 @@ HOOK_METHOD(HUD, Render, () -> void) {
 //HUD_POST_RENDER callback end
 
 //Character menu render Callback(id:1023)
-HOOK_METHOD(Menu_Character, Render, () -> void) {
+HOOK_METHOD(MenuManager, Render, () -> void) {
 	super();
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
