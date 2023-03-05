@@ -25,7 +25,10 @@ __thiscall void Room::RemoveGridEntityImmediate(Room *this<ecx>, int GridIndex, 
 "558bec83ec08538bd956578b3d":
 __thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);
 
-struct Room depends (Camera)
+struct Room depends (Camera, TemporaryEffects)
 {{
-	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); } // ofiginal value i found was 11F8 but comparing against hush, this seems to consistently be off by 0x40?
+	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
+	inline bool GetRedHeartDamage() {return *(bool**)((char*)this + 0x120C); }
+	inline EntityList* GetEntityList() {return (EntityList*)((char*)this + 0x1218); }
+	inline TemporaryEffects* GetTemporaryEffects() {return (TemporaryEffects*)((char*)this + 0x71F4); }
 }};

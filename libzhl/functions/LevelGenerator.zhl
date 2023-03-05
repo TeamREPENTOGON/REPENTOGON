@@ -10,3 +10,16 @@ __thiscall void LevelGenerator::Generate(LevelGenerator *this<ecx>, int unk, boo
 
 "558bec83e4f8515356578bf98bb7":
 __thiscall LevelGenerator_Room* LevelGenerator::GetNewEndRoom(LevelGenerator *this<ecx>, int roomShape, const unsigned int &possibleDoors);
+
+
+"558bec83e4f883ec245356578bf989":
+__thiscall void LevelGenerator::DetermineBossRoom(int shape, const unsigned int &possibleDoors);
+
+
+
+
+
+struct LevelGenerator
+{{
+	inline int* GetNumBossRooms() { return (int*)((char*)this + 0x38C); }
+}};

@@ -49,12 +49,12 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |- |MC_HUD_RENDER {: .copyable } | - | - | void |
 
-### MC_MAIN_MENU_RENDER {: .copyable }
+### MC_CHARACTER_MENU_RENDER {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_MAIN_MENU_RENDER {: .copyable } | - | - | void |
+|- |MC_CHARACTER_MENU_RENDER {: .copyable } | - | - | void |
 
 ### MC_PRE_SFX_PLAY
 Accepts a table of parameters: `{ID, Volume, FrameDelay, Loop, Pitch, Pan}`
@@ -524,21 +524,21 @@ Accepts a `float` to modify the chance.
 |:--|:--|:--|:--|:--|
 |- |MC_POST_PLANETARIUM_CALCULATE {: .copyable } | (float Chance)| - | float |
 
-### ModCallbacks.MC_POST_SLOT_INIT
+### MC_POST_SLOT_INIT
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_SLOT_INIT {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | void |
 
-### ModCallbacks.MC_POST_SLOT_UPDATE
+### MC_POST_SLOT_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_POST_SLOT_UPDATE {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | void |
 
-### ModCallbacks.MC_PRE_SLOT_COLLISION
+### MC_PRE_SLOT_COLLISION
 Just like the collision callbacks in the vanilla API, the Low value is true if the entity collided with the collider first, and false if the opposite is true.
 
 Return `true` to ignore collision, `false` to collide but not execute internal code.
@@ -547,21 +547,21 @@ Return `true` to ignore collision, `false` to collide but not execute internal c
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_SLOT_COLLISION {: .copyable } | ([EntitySlot](../EntitySlot.md), [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [SlotVariant](SlotVariant.md) | bool |
 
-### ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS
+### MC_PRE_SLOT_CREATE_EXPLOSION_DROPS
 Return `false` to stop explosions from dropping the standard consumables. This is useful, for example, to allow custom slots to drop their own loot on explosion.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_SLOT_CREATE_EXPLOSION_DROPS {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | bool |
 
-### ModCallbacks.MC_POST_SLOT_CREATE_EXPLOSION_DROPS
+### MC_POST_SLOT_CREATE_EXPLOSION_DROPS
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_POST_SLOT_CREATE_EXPLOSION_DROPS {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | void |
 
-### ModCallbacks.MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE
+### MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE
 Used by Shell Game and Hell Game. 
 
 Accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) to override what the game will pay out with.
@@ -570,9 +570,51 @@ Accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/Colle
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
 
-### ModCallbacks.MC_POST_SLOT_SET_PRIZE_COLLECTIBLE
+### MC_POST_SLOT_SET_PRIZE_COLLECTIBLE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_POST_SLOT_SET_PRIZE_COLLECTIBLE {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | void |
+
+ModCallbacks.MC_POST_DEVIL_CALCULATE = 1133
+
+### MC_PRE_DEVIL_APPLY_ITEMS
+This callback is run when the game starts to tally up traditional items for devil deal calculation. This is called before the stage penalty.
+
+Most items that affect devil deal chance perform their changes here.
+
+Accepts a `float` to modify the chance in this step of the calculation.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- | MC_PRE_DEVIL_APPLY_ITEMS {: .copyable } | ()| - | float |
+
+### MC_PRE_DEVIL_APPLY_STAGE_PENALTY
+Next, the game calculates stage penalty. If a deal spawned anywhere on the previous two floors, the game decays the resulting chance by either 50% or 25% depending on how many deals have been taken.
+
+Important to note that even though the game displays a value of ~66% or ~33% for the 50% and 25% values, respectively, this is because devil chance is *not* clamped to a value between 0 and 1, and "100%" without items generally means a value of ~133%.
+
+Accepts a `boolean`. Return `true` to bypass the stage penalty, or `false` to keep it intact.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_PRE_DEVIL_APPLY_STAGE_PENALTY {: .copyable } | ()| - | boolean |
+
+### MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
+Next, the game applies "special" items which bypass the stage penalty like Goat Head and Eucharist.
+
+Accepts a `float` to modify the chance in this step of the calculation.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- | MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS {: .copyable } | ()| - | float |
+
+### MC_POST_DEVIL_CALCULATE
+This will override *all* previous calculation values, ultimately dictating the planetarium chance.
+
+Accepts a `float` to modify the chance.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_POST_DEVIL_CALCULATE {: .copyable } | (float Chance)| - | float |

@@ -4,9 +4,208 @@
 #include "HookSystem.h"
 #include "LuaCore.h"
 
+bool modsChangingDevilChance(lua_State* L) {
+    int callbacks[4] = { 1130, 1131, 1132, 1133 };
+    lua::LuaStackProtector protector(L);
+
+    for (int callback : callbacks) {
+
+        lua_getglobal(L, "Isaac");
+        lua_getfield(L, -1, "GetCallbacks");
+        lua_remove(L, lua_absindex(L, -2));
+        lua::LuaResults callbackResult = lua::LuaCaller(L).push(callback)
+            .call(1);
+
+        if (!callbackResult) {
+            if (lua_rawlen(L, -1) > 0) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
-	// Soon.
-    return super();
+    float originalChance = super();
+
+    // Same as with planetariums, return the original value for dailies
+    // The original deal code has some special handling for dailies that aren't necessary in cases where the reimplementation is needed
+    if (g_Game->GetDailyChallenge()._id) {
+        return originalChance;
+    }
+
+    lua_State* L = g_LuaEngine->_state;
+    PlayerManager* manager = g_Game->GetPlayerManager();
+    RNG *rng = &manager->_rng;
+    int flags = *g_Game->GetLevelStateFlags();
+    Room* room = *g_Game->GetCurrentRoom();
+    RoomDescriptor* desc = g_Game->GetRoomByIdx(g_Game->GetCurrentRoomIdx(), -1);
+    EntityList* list = room->GetEntityList();
+    bool hasActOfContrition = manager->FirstCollectibleOwner(COLLECTIBLE_ACT_OF_CONTRITION, &rng, true);
+    lua::LuaStackProtector protector(L);
+
+    float chance = 0;
+
+    if (!g_Game->_devilRoomDisabled) { 
+        chance += 0.01;
+
+        //MC_PRE_DEVIL_APPLY_ITEMS
+        lua_getglobal(L, "Isaac");
+        lua_getfield(L, -1, "RunAdditiveCallback");
+        lua_remove(L, lua_absindex(L, -2));
+
+        lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1130)
+            .push(chance)
+            .call(1);
+
+        if (!preApplyItemsResult) {
+                chance = lua_tonumber(L, -1);
+        }
+        //MC_PRE_DEVIL_APPLY_ITEMS
+
+        if (manager->FirstCollectibleOwner(COLLECTIBLE_PENTAGRAM, &rng, true))
+            chance += 0.1;
+        if (manager->GetNumCollectibles(COLLECTIBLE_PENTAGRAM) > 1)
+            chance += 0.05;
+
+        if (manager->FirstCollectibleOwner(COLLECTIBLE_BLACK_CANDLE, &rng, true))
+            chance += 0.15;
+        if (manager->FirstCollectibleOwner(COLLECTIBLE_BOOK_OF_BELIAL, &rng, true) || manager->FirstCollectibleOwner(COLLECTIBLE_BOOK_OF_BELIAL_PASSIVE, &rng, true))
+            chance += 0.125;
+        if (manager->FirstCollectibleOwner(COLLECTIBLE_BOOK_OF_REVELATIONS, &rng, true))
+            chance += 0.175;
+
+        if ((flags & 1) != 0) //Beggar killed, haven't identified the right enum yet
+            chance += 0.35;
+
+        if (desc && desc->ListIndex == g_Game->GetLastBossRoomListIdx() && room->GetRedHeartDamage()) {
+            if (hasActOfContrition)
+                chance += 0.15;
+        }
+        else
+            chance += 0.35;
+
+        if ((flags & 4) != 0) { // Took red heart damage (excluding sac rooms and such)
+            if (hasActOfContrition)
+                chance += 0.4;
+        }
+        else
+            chance += 0.99;
+
+        if ((flags & 0x40) != 0) // Shopkeeper crushkilled
+            chance += 0.1;
+
+        if (manager->FirstTrinketOwner(TRINKET_NUMBER_MAGNET, &rng, true))
+            chance += 0.1;
+
+        if (manager->FirstCollectibleOwner(COLLECTIBLE_SAUSAGE, &rng, true))
+            chance += 0.069; // nice
+
+        chance += (0.1 * list->CountWisps(COLLECTIBLE_SATANIC_BIBLE));
+
+        unsigned int lastDevilRoomStage = g_Game->GetLastDevilRoomStage();
+        bool shouldBypassStagePenalty = false;
+
+        //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
+        lua_getglobal(L, "Isaac");
+        lua_getfield(L, -1, "RunCallback");
+        lua_remove(L, lua_absindex(L, -2));
+
+        lua::LuaResults preApplyStagePenaltyResult = lua::LuaCaller(L).push(1131)
+            .push(chance)
+            .call(1);
+
+        if (!preApplyStagePenaltyResult) {
+                shouldBypassStagePenalty = lua_toboolean(L, -1);
+        }
+        //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
+
+        if (lastDevilRoomStage && !shouldBypassStagePenalty) {
+            unsigned int stageType = g_Game->_stageType;
+            unsigned int stage = g_Game->_stage;
+
+            if (stageType == STAGETYPE_REPENTANCE || stageType == STAGETYPE_REPENTANCE_B)
+                stage++;
+
+            unsigned int stagesSinceDealTaken = stage - lastDevilRoomStage;
+
+            if (stagesSinceDealTaken && (--stagesSinceDealTaken, stagesSinceDealTaken)) {
+                if (stagesSinceDealTaken == 1)
+                    chance *= 0.5;
+            }
+            else
+                chance *= 0.25;
+        }
+    }
+
+    //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
+    lua_getglobal(L, "Isaac");
+    lua_getfield(L, -1, "RunAdditiveCallback");
+    lua_remove(L, lua_absindex(L, -2));
+
+    lua::LuaResults preApplySpecialItemsResult = lua::LuaCaller(L).push(1132)
+        .push(chance)
+        .call(1);
+
+    if (!preApplySpecialItemsResult) {
+        chance = lua_tonumber(L, -1);
+    }
+    //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
+
+    if (manager->FirstCollectibleOwner(COLLECTIBLE_GOAT_HEAD, &rng, true))
+        chance = 66.6; // the game truncates the value anyways... but hey, vanilla game does it, i have to be accurate
+     
+    if (!this->GetTemporaryEffects()->_disabled) {
+        for (TemporaryEffect effect : this->GetTemporaryEffects()->_effects) {
+            int type = effect._item->_type;
+            if ((type == 1 || type == 3 || type == 4) && effect._item->_id == COLLECTIBLE_GOAT_HEAD) // Passive, active and familiar types. TODO Need to add enums
+                chance = 66.6;
+        }
+    }
+
+    if (manager->FirstCollectibleOwner(COLLECTIBLE_EUCHARIST, &rng, true))
+        chance = 1;
+
+    //MC_POST_DEVIL_CALCULATE
+    lua_getglobal(L, "Isaac");
+    lua_getfield(L, -1, "RunAdditiveCallback");
+    lua_remove(L, lua_absindex(L, -2));
+
+    lua::LuaResults postDevilCalculateResult = lua::LuaCaller(L).push(1133)
+        .push(chance)
+        .call(1);
+
+    if (!postDevilCalculateResult) {
+        chance = lua_tonumber(L, -1);
+    }
+    //MC_POST_DEVIL_CALCULATE
+
+    int difficulty = g_Game->GetDifficulty();
+
+    if (difficulty == 2 || difficulty == 3) { // Greed and Greedier mode. TODO enums
+        if (g_Game->GetGreedModeWave() < (int)(difficulty == 3) + 11) // 11 waves pass for devil chance in Greed, 12 in Greedier
+            chance = 0;
+        else
+            chance = 1;
+    }
+
+    // While my reimplementation should be accurate, since devil chance is more complex than planetariums, there's more chance for things to go wrong.
+    // For now, calculate devil chance twice per frame- once with the original code, and once with the reimplementation- and report any issues.
+    // I'll remove this once the chance has been further battle-tested.
+    if (originalChance != chance && !modsChangingDevilChance) {
+        static char err[128];
+        IsaacString str;
+
+        sprintf(err, "DEVIL CHANCE PARITY ERROR: Expected %f, got %f, falling back to original value", originalChance, chance);
+        *(char**)str.text = (char*)err;
+        str.unk = str.size = strlen(err);
+        g_Game->GetConsole()->PrintError(str);
+
+        return originalChance;
+    }
+
+    return chance;
 }
 
 bool modsChangingPlanetariumChance(lua_State *L) {
@@ -35,7 +234,6 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
 
     // For dailies, take zero chances (hah) and just return the original value
     if (g_Game->GetDailyChallenge()._id) {
-        printf("DAILY PLAYER SPOTTED :(\n");
         return originalChance;
     }
     lua_State* L = g_LuaEngine->_state;
@@ -62,7 +260,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         .call(1);
 
     if (!preApplyStageResult) {
-        shouldBypassStageRestriction = lua_toboolean(L, -1);
+            shouldBypassStageRestriction = lua_toboolean(L, -1);
     }
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
 
@@ -71,8 +269,6 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
 
     if (!shouldBypassStageRestriction && (stage > STAGE3_2 && !hasTelescopeLens || stage > STAGE4_2))
         return 0.f;
-
-    //printf("after APPLY STAGE PENALTY the chance is %f\n", chance);
 
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
     lua_getglobal(L, "Isaac");
@@ -83,7 +279,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         .call(1);
 
     if (!preApplyPlanetariumResult) {
-        shouldBypassPlanetariumRestriction = lua_toboolean(L, -1);
+            shouldBypassPlanetariumRestriction = lua_toboolean(L, -1);
     }
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
 
@@ -102,7 +298,8 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         if (!preApplyTreasureResult) {
             if (lua_isinteger(L, -1))
                 treasureRoomsVisited = lua_tointeger(L, -1);
-            else shouldBypassTreasureRestriction = lua_toboolean(L, -1);
+            else if(lua_isboolean(L, -1))
+                shouldBypassTreasureRestriction = lua_toboolean(L, -1);
         }
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
 

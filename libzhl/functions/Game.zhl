@@ -106,10 +106,14 @@ struct Game depends (DailyChallenge)
 	
 	inline Room** GetCurrentRoom() { return (Room**)((char*)this + 0x18190); }
 	
-	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
+	inline int GetGreedModeWave() { return *(int*)((char*)this + 0x181C4); }
 	
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
+		
+	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
 	
+	inline int GetLastDevilRoomStage() { return *(int*)((char*)this + 0x1C3174); }
+
 	inline int GetTreasureRoomsVisited() { return *(int*)((char*)this + 0x1C3178); }
 	
 	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
@@ -117,6 +121,12 @@ struct Game depends (DailyChallenge)
 	inline DailyChallenge GetDailyChallenge() { return *(DailyChallenge*)((char*)this + 0x1C3204); }
 	
 	inline unsigned int GetChallenge() { return *(unsigned int*)((char*)this + 0x1C319C); }
+	
+	inline int GetCurrentRoomIdx() {return *(int*)((char*)this + 0x18194); }
+	
+	inline int GetLastBossRoomListIdx() {return *(int*)((char*)this + 0x181A4); }
+	
+	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 

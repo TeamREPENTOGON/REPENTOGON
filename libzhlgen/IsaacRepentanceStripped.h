@@ -156,9 +156,15 @@ struct RoomConfigHolder
     RoomConfigs configs[36];
 }; // 0xC4 * 36
 
+struct RNG
+{
+  unsigned int _seed; //0x0
+  char pad0[0xC]; // probably ShiftIdx?
+}; //0x10
+
 struct PlayerManager
 {
-	
+	RNG _rng; //0x0
 };
 
 
@@ -212,14 +218,33 @@ struct RoomDescriptor
 }; // 0xB8 (Checked in assembly)
 
 
+
+struct EntityList_EL
+{
+	bool _sublist;
+	Entity** _data;
+	unsigned int _capacity;
+	unsigned int _size;
+};
+
+struct EntityList
+{
+	
+};
+
 struct Room
 {
-	char pad0[0x24]; 
+	char pad0[0x4];
+	RoomDescriptor* _descriptor; //0x04
+    char pad1[0x1C];	
     GridEntity* _gridEntities[0x1BF]; // 0x24
-    char pad1[0x4]; // 0x720
+    char pad2[0x4]; // 0x720
     GridEntity* _doors[8]; // 0x724
     uint32_t _doorGridPositions[8]; // 0x744
-	__declspec(align(2)) Camera *m_Camera; //0x11F8
+	Camera *_Camera; //0x11F8
+	bool _redHeartDamage; //0x120C
+	EntityList _entityList; //0x1218
+	TemporaryEffects _temporaryEffects; //0x71F4
 };
 
 struct DailyChallenge
@@ -269,10 +294,37 @@ struct VTable_Entity
 };
 
 
+struct Capsule 
+{
+	
+};
+
 struct Entity_Player
 {
 	VTable_EntityPlayer *_vtable;
 	Entity _entity;
+};
+
+struct ItemConfig_Item
+{
+	int _type; //0x0
+	int _id; //0x4
+};
+
+struct TemporaryEffect
+{
+	ItemConfig_Item *_item;
+	int _unk;
+	int _unk2;
+};
+
+struct TemporaryEffects
+{
+	int _unk;
+	std::vector<TemporaryEffect> _effects;
+	int _unk2;
+	int _disabled;
+	Entity_Player* _player;
 };
 
 struct Entity_Pickup
@@ -441,7 +493,7 @@ struct Weapon_MultiShotParams
 
 struct LevelGenerator
 {
-    
+	
 };
 
 struct Level
@@ -456,11 +508,6 @@ struct LevelGenerator_Room
     uint32_t _gridLineIdx; // 0xC
     char pad1[0xC]; // 0x10
     uint32_t _doors; // 0x1C
-};
-
-struct RNG
-{
-  unsigned int _seed;
 };
 
 struct ModManager
@@ -498,11 +545,6 @@ struct Isaac
 	
 };
 
-struct EntityList
-{
-	
-};
-
 struct ChallengeParam
 {
 	IsaacString _name; //0x0
@@ -514,7 +556,9 @@ struct Game
 {
 	uint32_t _stage; // 0x0
 	uint32_t _stageType; // 0x4
-	uint32_t unk; // 0x8
+	bool _bossChallenge; //0x8
+	bool _devilRoomDisabled; //0x9
+	char _pad0[2]; // probably nothing?
 	uint32_t _curses; // 0xC
     RoomDescriptor _gridRooms[507]; // 0x14
     RoomDescriptor _negativeGridRooms[18]; // 0x16c7c
@@ -526,8 +570,10 @@ struct Game
     uint32_t _lastRoomIdx; // 0x18198
     uint32_t _currentDimensionIdx; // 0x1819C
     uint32_t _lastRoomDimensionIdx; // 0x181A0
+	uint32_t _lastBossRoomListIdx; //0X181A4
     uint32_t _leaveDoor; // 0x181A8
     uint32_t _enterDoor; // 0x181AC
+	uint32_t _greedModeWave; // 0x181C4
 	unsigned int _stateFlags; // 0x1822C
     uint32_t _greedModeTreasureRoomIdx; // 0x18200
     RoomConfigHolder _roomConfigs; // 0x1879C
@@ -540,8 +586,3 @@ struct Game
 };
 
 typedef Game Level;
-
-struct Capsule 
-{
-	
-};
