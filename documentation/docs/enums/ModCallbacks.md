@@ -611,7 +611,7 @@ Accepts a `float` to modify the chance in this step of the calculation.
 |- | MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS {: .copyable } | ()| - | float |
 
 ### MC_POST_DEVIL_CALCULATE
-This will override *all* previous calculation values, ultimately dictating the planetarium chance.
+This will override *all* previous calculation values, ultimately dictating the devil chance.
 
 Accepts a `float` to modify the chance.
 
