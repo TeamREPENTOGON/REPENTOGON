@@ -7,6 +7,14 @@ __thiscall void PersistentGameData::IncreaseEventCounter(PersistentGameData* thi
 "558bec8b45??83f8fe":
 __thiscall bool PersistentGameData::Unlocked(PersistentGameData *this<ecx>, int achievementID);
 
+"558bec8b4508568bf1807e010075??":
+__thiscall void PersistentGameData::AddToCollection(PersistentGameData *this<ecx>, int collectibleID);
+
 struct PersistentGameData {{
 	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
+	inline bool IsItemInCollection (int collectibleID) {
+		int savedata = *(int*)((char*)this + collectibleID * 0x1 + 0xa78);
+		printf("savedata %d\n", savedata);
+		return savedata != 0; 
+	}
 }};

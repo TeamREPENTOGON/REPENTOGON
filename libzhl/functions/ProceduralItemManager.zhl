@@ -1,0 +1,2 @@
+"538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec68020000a1????????33c58945ec5657508d45f464a3000000008bf189b5????????":
+__thiscall int ProceduralItemManager::CreateProceduralItem(ProceduralItemManager *this<ecx>, unsigned int seed, unsigned int unk);

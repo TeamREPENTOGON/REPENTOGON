@@ -47,6 +47,7 @@ struct Manager
 {
 	char unk1[0x13];
 	PersistentGameData _persistentGameData;
+	StringTable _stringTable; //0x4a234
 };
 
 struct MenuManager
@@ -551,6 +552,10 @@ struct ChallengeParam
 	std_set_int _roomset; //0x18
 };
 
+struct ProceduralItemManager
+{
+	
+};
 
 struct Game 
 {
@@ -583,6 +588,7 @@ struct Game
 	int _planetariumsVisited; // 0x1C317C
 	Ambush _ambush; // 0x1c31b8
     uint32_t _difficulty; // 0x243624
+	ProceduralItemManager _proceduralItemManager; // 0x283c20
 };
 
 typedef Game Level;
@@ -593,3 +599,8 @@ struct ColorMod
 	float _colorize[4]; //0x10
 	float _offset[3]; //0x20
 }; //0x2C
+
+struct StringTable
+{
+	
+};
