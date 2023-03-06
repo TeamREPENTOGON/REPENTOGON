@@ -8,7 +8,7 @@ struct PersistentGameData;
 struct Music;
 struct Entity;
 struct Entity_Player;
-
+struct ColorMod;
 struct Entity_NPC;
 
 struct Entity_Pickup;
@@ -586,3 +586,10 @@ struct Game
 };
 
 typedef Game Level;
+
+struct ColorMod
+{	
+	float _tint[4]; //0x0
+	float _colorize[4]; //0x10
+	float _offset[3]; //0x20
+}; //0x2C

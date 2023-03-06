@@ -77,6 +77,7 @@ nav:
   - Console: Console.md
   - Entity:
     - Entity: Entity.md
+    - EntityNPC: EntityNPC.md
     - EntityPlayer: EntityPlayer.md
     - EntityPickup: EntityPickup.md
     - EntitySlot: EntitySlot.md

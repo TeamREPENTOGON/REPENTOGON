@@ -1452,10 +1452,3 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 		.push(id)
 		.call(1);
 }
-
-HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4, const unsigned int& allowedShapes, int unk5, LevelGenerator_Room* startRoom) -> void) {
-
-	*this->GetNumBossRooms() = 4;
-
-	super(unk, unk2, unk3, unk4, allowedShapes, unk5, startRoom);
-}
