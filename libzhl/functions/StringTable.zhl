@@ -1,0 +1,3 @@
+
+"558bec83ec145356578bf133d28b4d086a006a01e857ce0200":
+__thiscall char* StringTable::GetString(StringTable *this<ecx>, const char* category, int language, const char* key, void* unk);

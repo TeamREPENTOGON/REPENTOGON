@@ -602,5 +602,5 @@ struct ColorMod
 
 struct StringTable
 {
-	
+	uint32_t language;
 };
