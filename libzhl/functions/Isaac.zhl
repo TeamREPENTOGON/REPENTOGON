@@ -5,3 +5,6 @@ static GridEntity* Isaac::CreateGridEntity(int Type<ecx>, unsigned int Index<edx
 
 "568bf185f6750433c05ec3e8":
 static __fastcall int Isaac::Random(int Max<ecx>);
+
+"558bec83ec0c5356578b7d0c803f23":
+static const char* Isaac::GetString(StringTable* table, const char* key);

@@ -12,13 +12,9 @@ __stdcall void Manager::RestartGame() //v1.7.9b maybe
 "558bec694508a4":
 __thiscall ChallengeParam* Manager::GetChallengeParams(Manager *this<ecx>, int challengeID);
 
-"558bec83ec0c5356578b7d0c803f23":
-__thiscall IsaacString* Manager::GetString(Manager *this<ecx>, StringTable* stringTable, IsaacString &string);
-
-/*struct Manager {{
+struct Manager {{
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
 }};
-*/
 
 ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":
 reference Manager *g_Manager;

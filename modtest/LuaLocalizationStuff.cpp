@@ -12,20 +12,20 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 int Lua_IsaacGetString(lua_State* L)
 {
 	Manager* manager = g_Manager;
-	StringTable stringTable = manager->_stringTable;
+	StringTable* stringTable = manager->GetStringTable();
 
-	IsaacString str;
+	// IsaacString str;
 	const char* translateString = luaL_checkstring(L, 1);
-	if (strlen(translateString) < 16) {
+	/* if (strlen(translateString) < 16) {
 		strcpy(str.text, translateString);
 	}
 	else {
 		*(char**)str.text = (char*)translateString;
 	}
-	str.unk = str.size = strlen(translateString);
+	str.unk = str.size = strlen(translateString); */
 
-	IsaacString* retStr = manager->GetString(&stringTable, str);
-	lua_pushstring(L, retStr->Get());
+	const char* retStr = Isaac::GetString(stringTable, translateString);
+	lua_pushstring(L, retStr);
 
 	return 1;
 }
