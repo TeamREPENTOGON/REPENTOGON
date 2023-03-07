@@ -1452,3 +1452,19 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 		.push(id)
 		.call(1);
 }
+
+//ITEM_OVERLAY_UPDATE (id: 1075)
+HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	super(unk);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallback");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1075)
+		.push(this->GetSprite(), lua::Metatables::SPRITE)
+		.call(1);
+}

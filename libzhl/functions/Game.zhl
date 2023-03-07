@@ -102,6 +102,8 @@ struct Game depends (DailyChallenge)
     
 	inline Console* GetConsole() { return (Console*)((char*)this + 0x1BB60); } // Cast to appropriate type
 	
+	inline ItemOverlay* GetItemOverlay() { return (ItemOverlay*)((char*)this + 0x1BCC0) ; }
+	
 	inline Ambush* GetAmbush() { return (Ambush*)((char*)this + 0x1c31b8); }
 	
 	inline Room** GetCurrentRoom() { return (Room**)((char*)this + 0x18190); }
@@ -113,6 +115,10 @@ struct Game depends (DailyChallenge)
 	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
 	
 	inline int GetLastDevilRoomStage() { return *(int*)((char*)this + 0x1C3174); }
+	
+	inline int GetLastLevelWithDamage() { return *(int*)((char*)this + 0x243628); }
+	
+	inline int GetLastLevelWithoutHalfHp() { return *(int*)((char*)this + 0x24361c); }
 
 	inline int GetTreasureRoomsVisited() { return *(int*)((char*)this + 0x1C3178); }
 	
