@@ -1348,7 +1348,7 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 	lua_getglobal(L, "_RunCallback");
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1075)
-		.push(this->GetSprite(), lua::Metatables::SPRITE)
+		//.push(this->GetSprite(), lua::Metatables::SPRITE)
 		.call(1);
 }
 

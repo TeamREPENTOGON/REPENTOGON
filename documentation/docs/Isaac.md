@@ -10,11 +10,11 @@ Should probably be moved to Game for consistency.
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WorldToMenuPosition ( [MainMenu](enums/MainMenu.md) MenuId, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
 Converts the World position from input to a pinned main menu position that varies depending on the enum selected. It's important to reconvert this every frame, in a similar fashion to WorldToRender, in order to properly render when menus are changed or the window is resized.
 
-### Get String () {: aria-label='Functions' }
+### Get·String () {: aria-label='Functions' }
 #### string GetString ( string category, string key) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
 
-### Get Localized String () {: aria-label='Functions' }
+### Get·Localized·String () {: aria-label='Functions' }
 #### string GetLocalizedString ( string category, string key, int language ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.
 ___

@@ -618,3 +618,18 @@ Accepts a `float` to modify the chance.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_POST_DEVIL_CALCULATE {: .copyable } | (float Chance)| - | float |
+
+### MC_POST_ITEM_OVERLAY_UPDATE
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1075 |MC_POST_ITEM_OVERLAY_UPDATE {: .copyable } | ()| - | - |
+
+### MC_PRE_ITEM_OVERLAY_SHOW
+Accepts an integer to change [GiantBook](Giantbook.md)
+
+Alternatively accepts ``true`` to cancel item overlay show
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1076 |MC_PRE_ITEM_OVERLAY_SHOW {: .copyable } | ([GiantBook](Giantbook.md) GiantBookID, int Unknown, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [GiantBook](Giantbook.md) | [GiantBook](Giantbook.md) or boolean |
