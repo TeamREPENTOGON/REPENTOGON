@@ -1338,7 +1338,7 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 		.call(1);
 }
 
-//ITEM_OVERLAY_UPDATE (id: 1075)
+//POST_ITEM_OVERLAY_UPDATE (id: 1075)
 HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
@@ -1350,4 +1350,34 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 	lua::LuaResults result = lua::LuaCaller(L).push(1075)
 		.push(this->GetSprite(), lua::Metatables::SPRITE)
 		.call(1);
+}
+
+//PRE_ITEM_OVERLAY_SHOW (id: 1076)
+HOOK_METHOD(ItemOverlay, Show, (int overlayID, int unk, Entity_Player* player) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Isaac");
+	lua_getfield(L, -1, "RunCallbackWithParam");
+	lua_remove(L, lua_absindex(L, -2));
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1076)
+		.push(overlayID)
+		.push(overlayID)
+		.push(unk)
+		.push(player, lua::Metatables::ENTITY_PLAYER)
+		.call(1);
+	
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else if (lua_isnumber(L, -1)) {
+			overlayID = lua_tonumber(L, -1);
+		}
+	}
+
+	super(overlayID, unk, player);
 }

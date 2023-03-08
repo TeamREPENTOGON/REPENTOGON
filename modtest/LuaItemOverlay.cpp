@@ -20,8 +20,10 @@ int Lua_ItemOverlayShow(lua_State* L)
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, ItemOverlayMT);
 	int overlayID = luaL_checkinteger(L, 2);
 	int unk = luaL_checkinteger(L, 3);
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-
+	Entity_Player* player = NULL;
+	if (lua_gettop(L) == 4 && !lua_isnil(L, 4)) {
+		player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY, "Entity_Player");
+	}
 	itemOverlay->Show(overlayID, unk, player);
 	return 0;
 }
