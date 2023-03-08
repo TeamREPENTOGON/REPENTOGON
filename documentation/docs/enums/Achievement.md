@@ -184,7 +184,7 @@ tags:
 |121 |BLANK_CARD {: .copyable } |  |
 |122 |BOOK_OF_SECRETS {: .copyable } |  |
 |123 |MYSTERIOUS_PAPER {: .copyable } |  |
-|124 |MYSTERY_SACL {: .copyable } |  |
+|124 |MYSTERY_SACK {: .copyable } |  |
 |125 |UNDEFINED {: .copyable } |  |
 |126 |SATANIC_BIBLE {: .copyable } |  |
 |127 |DAEMONS_TAIL {: .copyable } |  |
@@ -212,7 +212,7 @@ tags:
 |145 |BUTTER_BEAN {: .copyable } |  |
 |146 |LITTLE_BAGGY {: .copyable } |  |
 |147 |BLOOD_BAG {: .copyable } |  |
-|148 |A_D3 {: .copyable } |  |
+|148 |A_D4 {: .copyable } |  |
 |148 |D4 {: .copyable } |  |
 |149 |THE_LOST_POSTER {: .copyable } |  |
 |149 |LOST_POSTER {: .copyable } |  |
@@ -449,7 +449,7 @@ tags:
 |332 |MAGGY_HOLDS_A_PILL {: .copyable } |  |
 |332 |MAGDALENE_HOLDS_A_PILL {: .copyable } |  |
 |333 |CHARGED_KEY {: .copyable } |  |
-|334 |SAMMSON_FEELS_HEALTH {: .copyable } |  |
+|334 |SAMMSON_FEELS_HEALTHY {: .copyable } |  |
 |334 |SAMSON_HOLDS_CHILDS_HEART {: .copyable } |  |
 |335 |GREEDS_GULLET {: .copyable } |  |
 |336 |CRACKED_CROWN {: .copyable } |  |
