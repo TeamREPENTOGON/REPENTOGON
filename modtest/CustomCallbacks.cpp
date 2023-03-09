@@ -11,7 +11,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 	lua::LuaStackProtector protector(L);
 	lua::LuaCaller caller(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults res = caller.push(1004)
 		.push(type)
@@ -57,7 +57,7 @@ void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damag
 
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaCaller(L)
 		.push(1006)
@@ -94,10 +94,11 @@ void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int variant) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaCaller(L).push(1010)
 		.push(gridRock, lua::Metatables::GRID_ENTITY_ROCK)
+		.pushnil()
 		.push(variant)
 		.call(1); // Sylmir note: original version said there was 1 result on the stack
 
@@ -119,7 +120,7 @@ HOOK_METHOD(HUD, Update, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaCaller(L).push(1020).call(1);
 
@@ -134,7 +135,7 @@ HOOK_METHOD(HUD, PostUpdate, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaCaller(L).push(1021).call(1);
 
@@ -149,7 +150,7 @@ HOOK_METHOD(HUD, Render, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaCaller(L).push(1022).call(1);
 
@@ -167,7 +168,7 @@ HOOK_METHOD(MenuManager, Render, () -> void) {
 	super();
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaCaller(L).push(1023).call(1);
 }
@@ -180,7 +181,7 @@ void ProcessPostSFXPlay(int ID, float Volume, int FrameDelay, bool Loop, float P
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaCaller(L).push(1031)
 		.push(ID)
@@ -197,7 +198,7 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1030)
 		.push(ID)
@@ -239,7 +240,7 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaCaller(L).push(1041)
 		//.push(ent->GetType())
@@ -254,7 +255,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 	Entity** heldEntity = this->GetHeldEntity();
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	//printf("Entity type: %d\n", (*heldEntity)->GetVariant());
 
@@ -290,7 +291,7 @@ HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	Entity_Player* ent = (Entity_Player*)this;
 
@@ -307,11 +308,12 @@ HOOK_METHOD(Entity_Player, TriggerRoomExit, (bool unk) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	Entity_Player* ent = (Entity_Player*)this;
 
 	lua::LuaCaller(L).push(1043)
+		.pushnil()
 		.push(ent, lua::Metatables::ENTITY_PLAYER)
 		.push(unk)
 		.call(1);
@@ -324,7 +326,7 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1034)
 		.push(musicid)
@@ -361,7 +363,7 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1034)
 		.push(musicid)
@@ -401,7 +403,7 @@ HOOK_METHOD(Level, Init, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1060)
 		.call(1);
@@ -416,9 +418,10 @@ HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
 	if (!checkOnly) {
 		lua::LuaStackProtector protector(L);
 
-		lua_getglobal(L, "_RunCallback");
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(1050)
+			.pushnil()
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
@@ -444,9 +447,10 @@ bool ProcessPreRestockCallback(bool Partial) {
 	lua_State* L = g_LuaEngine->_state;
 
 	lua::LuaStackProtector protector(L);
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1070)
+		.pushnil()
 		.push(Partial)
 		.call(1);
 
@@ -464,9 +468,10 @@ void ProcessPostRestockCallback(bool Partial) {
 	lua_State* L = g_LuaEngine->_state;
 
 	lua::LuaStackProtector protector(L);
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1071)
+		.pushnil()
 		.push(Partial)
 		.call(1);
 }
@@ -490,9 +495,10 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 
 	lua::LuaStackProtector protector(L);
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1061)
+		.pushnil()
 		.push(roomId)
 		.push(dimension)
 		.call(1);
@@ -515,13 +521,14 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	/// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	/// INCONSISTENT CALLBACK ID IN COMMENT AND REALITY
 	/// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	lua::LuaResults result = lua::LuaCaller(L).push(2012)
 		.push(this, lua::Metatables::ENTITY_NPC)
+		.pushnil()
 		.push(EntityType)
 		.push(Variant)
 		.push(SubType)
@@ -557,9 +564,10 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(2013)
+		.pushnil()
 		.push(this, lua::Metatables::ENTITY_PICKUP)
 		.push(EntityType)
 		.push(Variant)
@@ -600,7 +608,7 @@ void ProcessPostPickupShopPurchase(Entity_Pickup* pickup, Entity_Player* player,
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1062)
 		.push(*pickup->GetVariant())
@@ -623,7 +631,7 @@ HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 	Entity_Familiar* fam = (Entity_Familiar*)this;
 
 
@@ -647,7 +655,7 @@ HOOK_METHOD(Entity_Player, UseCard, (int cardType, unsigned int useFlag) -> void
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	Entity_Player* plr = (Entity_Player*)this;
 	lua::LuaResults result = lua::LuaCaller(L).push(1064)
@@ -675,7 +683,7 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1065)
 		.push(pillEffect)
@@ -701,7 +709,7 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1066)
 		.push(entVariant)
@@ -724,7 +732,7 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1067)
 		.push(this->GetPlayerType())
@@ -744,7 +752,7 @@ HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1080)
 		.push(*this->GetVariant())
@@ -771,7 +779,7 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1081)
 		.push(*this->GetType())
@@ -798,7 +806,7 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1082)
 		.push(*this->GetVariant())
@@ -825,7 +833,7 @@ HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1083)
 		.push(*this->GetVariant())
@@ -852,7 +860,7 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1083)
 		.push(*this->GetVariant())
@@ -879,7 +887,7 @@ HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1085)
 		.push(*this->GetVariant())
@@ -906,7 +914,7 @@ HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1086)
 		.push(*this->GetVariant())
@@ -933,7 +941,7 @@ HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1087)
 		.push(*this->GetVariant())
@@ -960,7 +968,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1088)
 		.push(*this->GetVariant())
@@ -987,7 +995,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1089)
 		.push(*this->GetVariant())
@@ -1008,7 +1016,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 
 	super(offset);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults postResult = lua::LuaCaller(L).push(1090)
 		.push(*this->GetVariant())
@@ -1023,7 +1031,7 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1038)
 		.push(this->GetPlayerType())
@@ -1054,7 +1062,7 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1039)
 		.push(this->GetPlayerType())
@@ -1084,9 +1092,10 @@ HOOK_METHOD(Room, TriggerClear, (bool playSound) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1068)
+		.pushnil()
 		.push(playSound)
 		.call(1);
 
@@ -1098,7 +1107,7 @@ HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1069)
 		.push(*this->GetVariant())
@@ -1121,7 +1130,7 @@ HOOK_METHOD(Entity_Player, GetActiveMaxCharge, (int item, int vardata) -> int) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1072)
 		.push(item)
@@ -1143,7 +1152,7 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1073)
 		.push(this->GetActiveItem(slot))
@@ -1164,7 +1173,7 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString& PngFilename) ->
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1100)
 		.push(_filename.Get())
@@ -1189,7 +1198,7 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString& PngFilename) ->
 
 	super(LayerID, PngFilename);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults postResult = lua::LuaCaller(L).push(1101)
 		.push(_filename.Get())
@@ -1203,7 +1212,7 @@ HOOK_METHOD(Entity_Player, GetHealthLimit, (bool keeper) -> int) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1074)
 		.push(this->GetPlayerType())
@@ -1225,7 +1234,7 @@ HOOK_METHOD(Entity_Slot, HandleCollision, (Entity* collider, bool Low) -> bool) 
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1120)
 		.push(*this->GetVariant())
@@ -1250,7 +1259,7 @@ HOOK_METHOD(Entity_Slot, Init, (int Type, int Variant, int SubType, int Seed) ->
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1121)
 		.push(Variant)
@@ -1265,7 +1274,7 @@ HOOK_METHOD(Entity_Slot, Update, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1122)
 		.push(*this->GetVariant())
@@ -1278,7 +1287,7 @@ HOOK_METHOD(Entity_Slot, CreateDropsFromExplosion, () -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1123)
 		.push(*this->GetVariant())
@@ -1295,7 +1304,7 @@ HOOK_METHOD(Entity_Slot, CreateDropsFromExplosion, () -> void) {
 
 	super();
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults postResult = lua::LuaCaller(L).push(1124)
 		.push(*this->GetVariant())
@@ -1308,7 +1317,7 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1125)
 		.push(*this->GetVariant())
@@ -1329,7 +1338,7 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 
 	super(id);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults postResult = lua::LuaCaller(L).push(1126)
 		.push(*this->GetVariant())
@@ -1345,9 +1354,10 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 
 	super(unk);
 
-	lua_getglobal(L, "_RunCallback");
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1075)
+		.pushnil()
 		//.push(this->GetSprite(), lua::Metatables::SPRITE)
 		.call(1);
 }
@@ -1357,9 +1367,7 @@ HOOK_METHOD(ItemOverlay, Show, (int overlayID, int unk, Entity_Player* player) -
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
-	lua_getglobal(L, "Isaac");
-	lua_getfield(L, -1, "RunCallbackWithParam");
-	lua_remove(L, lua_absindex(L, -2));
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 	lua::LuaResults result = lua::LuaCaller(L).push(1076)
 		.push(overlayID)
