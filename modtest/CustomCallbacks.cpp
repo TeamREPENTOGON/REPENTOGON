@@ -1389,3 +1389,34 @@ HOOK_METHOD(ItemOverlay, Show, (int overlayID, int unk, Entity_Player* player) -
 
 	super(overlayID, unk, player);
 }
+
+//POST_PLAYER_NEW_ROOM_TEMP_EFFECTS (id: 1077)
+HOOK_METHOD(Entity_Player, TriggerNewRoom_TemporaryEffects, () -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	super();
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1077)
+		.push(this->GetPlayerType())
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.call(1);
+}
+
+//POST_PLAYER_NEW_LEVEL (id: 1078)
+HOOK_METHOD(Entity_Player, TriggerNewStage, (bool unk) -> void) {
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	super(unk);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(1078)
+		.push(this->GetPlayerType())
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.push(unk)
+		.call(1);
+}

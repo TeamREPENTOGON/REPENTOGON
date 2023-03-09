@@ -137,6 +137,12 @@ __thiscall int Entity_Player::GetHealthLimit(Entity_Player *this<ecx>, bool keep
 "558bec83e4f883ec14538b5d0856578bf980bf1c1f000000":
 __thiscall void Entity_Player::IncrementPlayerFormCounter(Entity_Player *this<ecx>, int ePlayerForm, int num);
 
+"558bec83ec3ca1????????33c58945fc5356":
+__thiscall void Entity_Player::TriggerNewRoom_TemporaryEffects(Entity_Player *this<ecx>);
+
+"558bec6aff68????????64a1000000005081ecb8000000535657a1????????":
+__thiscall void Entity_Player::TriggerNewStage(Entity_Player *this<ecx>, bool unk);
+
 struct Entity_Player {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
