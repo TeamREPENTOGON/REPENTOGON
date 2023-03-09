@@ -43,9 +43,26 @@ static void RegisterRemoveGridEntityImmediate(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static int Lua_RoomCanSpawnObstacleAtPosition(lua_State* L) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	int GridIndex = luaL_checkinteger(L, 2);
+	bool Force = lua_toboolean(L, 3);
+	lua_pushboolean(L, room->CanSpawnObstacleAtPosition(GridIndex, Force));
+	return 1;
+}
+
+static void RegisterRoomCanSpawnObstacleAtPosition(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "CanSpawnObstacleAtPosition");
+	lua_pushcfunction(L, Lua_RoomCanSpawnObstacleAtPosition);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	RegisterRailFunctions(state);
 	RegisterRemoveGridEntityImmediate(state);
+	RegisterRoomCanSpawnObstacleAtPosition(state);
 }

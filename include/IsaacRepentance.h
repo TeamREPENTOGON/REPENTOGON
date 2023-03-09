@@ -1514,6 +1514,7 @@ struct Room
 	LIBZHL_API bool SpawnGridEntity(int GridIndex, GridEntityDesc *Desc);
 	LIBZHL_API void RemoveGridEntityImmediate(int GridIndex, int PathTrail, bool KeepDecoration);
 	LIBZHL_API void TriggerClear(bool playSound);
+	LIBZHL_API bool CanSpawnObstacleAtPosition(int GridIndex, bool Force);
 	
 	char pad0[4];
 	RoomDescriptor *_descriptor;

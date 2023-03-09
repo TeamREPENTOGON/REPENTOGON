@@ -2,6 +2,11 @@
 
 ## Functions
 
+### Can·Spawn·Obstacle·At·Position () {: aria-label='Functions' }
+#### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
+
+___
+
 ### Get·Camera () {: aria-label='Functions' }
 #### [Camera](Camera.md) GetCamera ( ) {: .copyable aria-label='Functions' }
 Returns a [Camera](Camera.md) object.
