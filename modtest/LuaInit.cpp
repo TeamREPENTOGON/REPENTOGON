@@ -82,7 +82,7 @@ static void ExtractGameFunctions(lua_State* L, std::vector<std::pair<std::string
 				unsigned char nupvalues = *(unsigned char*)((char*)addr + 0x6);
 
 				if (nupvalues == 1) {
-					lua_TValue* upvalue = (lua_TValue*)((char*)addr + 0x10);
+					TValue* upvalue = (TValue*)((char*)addr + 0x10);
 					if ((upvalue->tt_ & 0xF) == LUA_TUSERDATA) {
 						Udata* closure_udata = (Udata*)upvalue->value_.p;
 						void* fn_addr = *(void**)((char*)closure_udata + 0x18);
