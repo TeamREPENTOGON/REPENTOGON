@@ -38,6 +38,9 @@ add_library(libzhl SHARED ${ZHL_SRC})
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
 
+FILE(GLOB LUAUP_SRC ${CMAKE_SOURCE_DIR}/Lua54Upgrader/*.cpp)
+add_library(Lua5.3.3r SHARED ${LUAUP_SRC})
+
 FILE(GLOB MODTEST_SRC ${CMAKE_SOURCE_DIR}/modtest/*.cpp)
 add_library(zhlModTest SHARED ${MODTEST_SRC})
 

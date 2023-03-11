@@ -1,5 +1,5 @@
 #include "HookSystem_private.h"
-#include "detours.h"
+#include "mologie_detours.h"
 #include "SigScan.h"
 #include <unordered_map>
 #include <map>

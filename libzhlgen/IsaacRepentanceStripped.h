@@ -610,3 +610,7 @@ struct ItemOverlay
 {
 	
 };
+
+struct Lua53
+{
+};

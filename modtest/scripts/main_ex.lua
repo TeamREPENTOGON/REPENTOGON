@@ -1,5 +1,7 @@
 REPENTOGON = true
 
+collectgarbage("generational")
+
 local defaultCallbackMeta = {
 	__matchParams = function(a, b)
 		return not a or not b or a == -1 or b == -1 or a == b
