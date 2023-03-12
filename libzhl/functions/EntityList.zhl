@@ -8,7 +8,7 @@ __thiscall EntityList_EL* EntityList::QueryType(EntityList* this<ecx>, EntityLis
 struct EntityList depends (EntityList_EL, Entity)
 {{
 	inline EntityList_EL* GetWisps() { return (EntityList_EL*)((char*)this + 0x90); }
-
+    inline EntityList_EL* GetUpdateEL() { return (EntityList_EL*)((char*)this + 0x40); }
 
 	// This exists in the original source code as evidenced in the Switch decomp, but was inlined on PC.
 	int CountWisps(int WispSubtype) {

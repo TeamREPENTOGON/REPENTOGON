@@ -48,6 +48,33 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 	return 1;
 }
 
+
+int Lua_IsaacGetRoomEntitiesFix(lua_State* L)
+{
+	Room* room = *g_Game->GetCurrentRoom();
+	EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
+
+	lua_newtable(L, 0);
+
+	unsigned int size = res->_size;
+
+	if (size) {
+		Entity** data = res->_data;
+		unsigned int idx = 1;
+		while (size) {
+			Entity* ent = *data;
+			lua_pushnumber(L, idx);
+			lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
+			lua_settable(L, -3);
+			++data;
+			idx++;
+			--size;
+		}
+	}
+
+	return 1;
+}
+
 static void RegisterFindByTypeFix(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
@@ -57,8 +84,17 @@ static void RegisterFindByTypeFix(lua_State* L)
 	lua_pop(L, 1);
 }
 
+static void RegisterGetRoomEntitiesFix(lua_State* L)
+{
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "GetRoomEntities");
+	lua_pushcfunction(L, Lua_IsaacGetRoomEntitiesFix);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	RegisterFindByTypeFix(state);
+	RegisterGetRoomEntitiesFix(state);
 }
