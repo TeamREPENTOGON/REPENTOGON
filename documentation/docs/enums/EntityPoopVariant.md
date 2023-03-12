@@ -15,4 +15,4 @@ tags:
 |15 |STINKY {: .copyable } |  |
 |15 |BLACK {: .copyable } |  |
 |16 |HOLY {: .copyable } |  |
-|6 |WHITE {: .copyable } |  |
+|16 |WHITE {: .copyable } |  |

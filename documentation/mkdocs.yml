@@ -45,18 +45,27 @@ nav:
   - Home: index.md
   - Enums:
     - Achievement: enums/Achievement.md
+    - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - BossType: enums/BossType.md
+    - CameraStyle: enums/CameraStyle.md
+    - ConsoleFont: enums/ConsoleFont.md
     - Dimension: enums/Dimension.md
+    - Ending: enums/Ending.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
     - EventCounter: enums/EventCounter.md
+    - ExtraHudStyle: enums/ExtraHudStyle.md
+    - FadeoutTarget: enums/FadeoutTarget.md
     - FollowerPriority: enums/FollowerPriority.md
+    - Giantbook: enums/Giantbook.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
+    - Language: enums/Language.md
     - LineCheckMode: enums/LineCheckMode.md
     - MainMenu: enums/MainMenu.md
     - ModCallbacks: enums/ModCallbacks.md
+    - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
@@ -72,6 +81,7 @@ nav:
     - StbTeleporterSubType: enums/StbTeleporterSubType.md
     - StbType: enums/StbType.md
     - TeleporterVariant: enums/TeleporterVariant.md
+    - WispSubType: enums/WispSubType.md
   - Ambush: Ambush.md
   - Camera: Camera.md
   - Console: Console.md
@@ -82,11 +92,13 @@ nav:
     - EntityPickup: EntityPickup.md
     - EntitySlot: EntitySlot.md
   - Game: Game.md
+  - ItemOverlay: ItemOverlay.md
   - Isaac: Isaac.md
   - Level: Level.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
   - MultiShotParams: MultiShotParams.md
   - PersistentGameData: PersistentGameData.md
+  - ProceduralItemManager: ProceduralItemManager.md
   - PlayerManager: PlayerManager.md
   - RNG: RNG.md
   - Room: Room.md

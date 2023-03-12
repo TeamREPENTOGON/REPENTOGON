@@ -37,6 +37,29 @@ int Lua_GameIsHardMode(lua_State* L)
 	return 1;
 }
 
+int Lua_GameGetLastDevilRoomStageFix(lua_State* L) 
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushinteger(L, game->GetLastDevilRoomStage());
+
+	return 1;
+}
+
+int Lua_GetLastLevelWithDamageFix(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushinteger(L, game->GetLastLevelWithDamage());
+
+	return 1;
+}
+
+int Lua_GetLastLevelWithoutHalfHpFix(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushinteger(L, game->GetLastLevelWithoutHalfHp());
+
+	return 1;
+}
 
 static void RegisterGetPlanetariumsVisited(lua_State* L)
 {
@@ -56,10 +79,40 @@ static void RegisterIsHardMode(lua_State* L)
 	lua_pop(L, 1);
 }
 
+static void RegisterGetLastDevilRoomStageFix(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "GetLastDevilRoomStage");
+	lua_pushcfunction(L, Lua_GameGetLastDevilRoomStageFix);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterGetLastLevelWithDamageFix(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "GetLastLevelWithDamage");
+	lua_pushcfunction(L, Lua_GetLastLevelWithDamageFix);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterGetLastLevelWithoutHalfHpFix(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "GetLastLevelWithoutHalfHp");
+	lua_pushcfunction(L, Lua_GetLastLevelWithoutHalfHpFix);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	RegisterAchievementUnlocksDisallowed(state);
 	RegisterGetPlanetariumsVisited(state);
 	RegisterIsHardMode(state);
+	RegisterGetLastDevilRoomStageFix(state);
+	RegisterGetLastLevelWithDamageFix(state);
+	RegisterGetLastLevelWithoutHalfHpFix(state);
 }

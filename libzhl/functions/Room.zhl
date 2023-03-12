@@ -25,6 +25,9 @@ __thiscall void Room::RemoveGridEntityImmediate(Room *this<ecx>, int GridIndex, 
 "558bec83ec08538bd956578b3d":
 __thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);
 
+"558bec83e4f883ec5ca1????????33c4894424??8b45??894424??":
+__thiscall bool Room::CanSpawnObstacleAtPosition(Room *this<ecx>, int GridIndex, bool Force);
+
 struct Room depends (Camera, TemporaryEffects)
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }

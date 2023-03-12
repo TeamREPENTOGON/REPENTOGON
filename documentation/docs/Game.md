@@ -9,6 +9,25 @@ This class contains both new functions and modified reimplementations of existin
 Now returns a proper [Ambush](Ambush.md) metatable.
 
 ___
+### Get·Item·Overlay () {: aria-label='Modified Functions' }
+#### [ItemOverlay](ItemOverlay.md) GetItemOverlay ( ) {: .copyable aria-label='Modified Functions' }
+Now returns a proper [ItemOverlay](ItemOverlay.md) metatable.
+
+___
+### Get·Last·Devil·Room·Stage () {: aria-label='Functions' }
+#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastDevilRoomStage ( ) {: .copyable aria-label='Functions' }
+Now returns integer instead of unusable userdata.
+___
+### Get·Last·Level·With·Damage () {: aria-label='Functions' }
+#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastLevelWithDamage ( ) {: .copyable aria-label='Functions' }
+Now returns integer instead of unusable userdata.
+
+___
+### Get·Last·Level·Without·Half·Hp () {: aria-label='Functions' }
+#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastLevelWithoutHalfHp ( ) {: .copyable aria-label='Functions' }
+Now returns integer instead of unusable userdata.
+
+___
 
 ## Functions
 
@@ -19,6 +38,10 @@ Returns `true` if achievements can't be unlocked this run (challenges, seeded, e
 ___
 ### Get·Console () {: aria-label='Functions' }
 #### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Procedural·Item·Manager () {: aria-label='Functions' }
+#### [ProceduralItemManager](ProceduralItemManager.md) GetProceduralItemManager ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Planetariums·Visited () {: aria-label='Functions' }
