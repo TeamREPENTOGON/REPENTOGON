@@ -1355,6 +1355,12 @@ LUA_API void *lua_newuserdatauv (lua_State *L, size_t size, int nuvalue) {
   return getudatamem(u);
 }
 
+#undef lua_newuserdata
+
+LUA_API void* lua_newuserdata(lua_State* L, size_t size) {
+    return lua_newuserdatauv(L, size, 1);
+}
+
 static const char *aux_upvalue (TValue *fi, int n, TValue **val,
                                 GCObject **owner) {
   switch (ttypetag(fi)) {
