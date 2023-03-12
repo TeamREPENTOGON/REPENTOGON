@@ -155,3 +155,10 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	super(eEvent, num);
 }
 */
+
+/*HOOK_METHOD(ANM2, GetLayer, (const char* layerName) -> LayerState*) {
+	LayerState* ret = super(layerName);
+	printf("%s %d\n",layerName, super(layerName)->IsVisible());
+	return ret;
+}
+*/

@@ -531,6 +531,11 @@ struct ANM2
 	IsaacString _filename;
 };
 
+struct LayerState
+{
+	
+};
+
 struct SFXManager
 {
 

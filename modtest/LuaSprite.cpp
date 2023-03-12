@@ -9,6 +9,8 @@
 * I've named this file "LuaSprite" for consistency with the existing API metatable.
 */
 
+static constexpr const char* LayerStateMT = "LayerState";
+
 int Lua_SpriteReplaceSpritesheet(lua_State* L)
 {
 	bool loadGraphics = false;
@@ -45,9 +47,71 @@ static void RegisterNewReplaceSpriteSheet(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+
+/*int Lua_SpriteGetLayer(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const char* layerName = luaL_checkstring(L, 2);
+	LayerState* toLua = (LayerState*)lua_newuserdata(L, sizeof(LayerState));
+	toLua = anm2->GetLayer(layerName);
+	if (toLua == nullptr) {
+		printf("ABORT THIS");
+	}
+	luaL_setmetatable(L, LayerStateMT);
+	return 1;
+}
+*/
+
+int Lua_SpriteGetLayer(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const char* layerName = luaL_checkstring(L, 2);
+	LayerState* toLua = anm2->GetLayer(layerName);
+	if (toLua == nullptr) {
+		lua_pushnil(L);
+		return 1;
+	}
+	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
+	*luaLayer = toLua;
+	luaL_setmetatable(L, LayerStateMT);
+	return 1;
+}
+
+/*int Lua_LayerStateIsVisible(lua_State* L)
+{
+	LayerState* layerState = lua::GetUserdata<LayerState*>(L, 1, LayerStateMT);
+	lua_pushboolean(L, layerState->IsVisible());
+	return 1;
+}
+*/
+
+
+static void RegisterLayerState(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::SPRITE);
+	lua_pushstring(L, "GetLayer");
+	lua_pushcfunction(L, Lua_SpriteGetLayer);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	luaL_newmetatable(L, LayerStateMT);
+	lua_pushstring(L, "__index");
+	lua_pushvalue(L, -2);
+	lua_settable(L, -3);
+
+	luaL_Reg funcs[] = {
+		//{ "IsVisible", Lua_LayerStateIsVisible },
+		{ NULL, NULL }
+	};
+
+	luaL_setfuncs(L, funcs, 0);
+
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	RegisterNewReplaceSpriteSheet(state);
+	RegisterLayerState(state);
 }
 

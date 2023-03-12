@@ -1,0 +1,3 @@
+struct LayerState {{
+	inline bool IsVisible() { return *(bool*)((char*)this + 0x74); }
+}};
