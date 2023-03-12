@@ -23,6 +23,10 @@ void ZHL::AddFilesystemPath(const char *path)
 	//printf("added filesystem path '%s'\n", tmp);
 }
 
+/// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/// Sylmir warning: No calling convention given to HOOK_STATIC because I don't know which one to give
+/// This may result in weird compilation errors !
+
 HOOK_STATIC(FileManager, OpenRead, (const char *path, bool cached) -> FileBase*)
 {
 	char tmp[256];

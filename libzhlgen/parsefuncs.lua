@@ -624,6 +624,7 @@ local function writeFunctions(struct, out)
 					
 					if not func.thiscall then
 						if func.callingConvention == "__cdecl" then
+                            func.cleanup = true
 							out ("__cdecl ")
 						else
 							if func.cleanup then

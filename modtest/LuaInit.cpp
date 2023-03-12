@@ -210,6 +210,51 @@ static int LuaBenchmark(lua_State* L) {
 	return 1;
 }
 
+static void DumpTable(lua_State* L, FILE* f) {
+	lua_pushnil(L);
+	while (lua_next(L, -2) != 0) {
+		fprintf(f, "%s - %s\n", lua_typename(L, lua_type(L, -2)), lua_typename(L, lua_type(L, -1)));
+		lua_pop(L, 1); // Pop value
+	}
+}
+
+HOOK_STATIC(Isaac, GetRoomEntities, (void* holder) -> void*, __cdecl) {
+	FILE* f = fopen("repentogon.log", "a");
+	fprintf(f, "Post GetRoomEntities\n");
+	void* res = super(holder);
+	lua_Integer* key = (lua_Integer*)((char*)holder + 4);
+	lua_State* L = g_LuaEngine->_state;
+	lua_rawgeti(L, LUA_REGISTRYINDEX, *key);
+	lua_pushnil(L);
+	while (lua_next(L, -2) != 0) {
+		fprintf(f, "%s - %s\n", lua_typename(L, lua_type(L, -2)), lua_typename(L, lua_type(L, -1)));
+		lua_pop(L, 1); // Pop value
+		lua_pushvalue(L, -1); // Copy key to keep it on the stack after the set
+		lua_pushnil(L); // t key key nil
+		lua_rawset(L, -4); // t key
+	}
+	/* lua_pushinteger(L, 1);
+	lua_pushstring(L, "toto");
+	lua_rawset(L, -3); */
+	lua_pop(L, 1); 
+	luaL_unref(L, LUA_REGISTRYINDEX, *key);
+	lua_createtable(L, 0, 0);
+	fprintf(f, "createtable\n");
+	DumpTable(L, f);
+	*key = luaL_ref(L, LUA_REGISTRYINDEX);
+	lua_rawgeti(L, LUA_REGISTRYINDEX, *key);
+	fprintf(f, "rawgeti\n");
+	DumpTable(L, f);
+	lua_pushinteger(L, 12);
+	luaL_ref(L, -2);
+	fprintf(f, "ref\n");
+	DumpTable(L, f);
+	lua_settop(L, -2);
+	
+	fclose(f);
+	return res;
+}
+
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
 	printf("[REPENTOGON] Registering Lua functions and metatables\n");

@@ -47,37 +47,37 @@ public:
 
 //=================================================================================================
 
-#define _DEFINE_STATIC_HOOK1(_id, _classname, _name, _priority, _type) \
+#define _DEFINE_STATIC_HOOK1(_id, _classname, _name, _priority, _type, _conv) \
 	namespace { namespace Hook_##_id { \
 		static void *internalSuper = NULL; \
 		struct wrapper : public _classname { \
-			static auto __stdcall hook _type ; \
-			static auto __stdcall super _type ; \
+			static auto _conv hook _type ; \
+			static auto _conv super _type ; \
 		}; \
 		static FunctionHook hookObj(#_classname "::" #_name, typeid(auto (*) _type), &wrapper::hook, &internalSuper, _priority); \
 	} } \
 	auto __declspec(naked) Hook_##_id :: wrapper::super _type {__asm jmp internalSuper} \
 	auto Hook_##_id ::wrapper::hook _type
 
-#define _DEFINE_STATIC_HOOK0(_id, _classname, _name, _priority, _type) _DEFINE_STATIC_HOOK1(_id, _classname, _name, _priority, _type)
+#define _DEFINE_STATIC_HOOK0(_id, _classname, _name, _priority, _type, _conv) _DEFINE_STATIC_HOOK1(_id, _classname, _name, _priority, _type, _conv)
 
-#define HOOK_STATIC(_classname, _name, _type) _DEFINE_STATIC_HOOK0(__LINE__, _classname, _name, 0, _type)
-#define HOOK_STATIC_PRIORITY(_classname, _name, _priority, _type) _DEFINE_STATIC_HOOK0(__LINE__, _classname, _name, _priority, _type)
+#define HOOK_STATIC(_classname, _name, _type, _conv) _DEFINE_STATIC_HOOK0(__LINE__, _classname, _name, 0, _type, _conv)
+#define HOOK_STATIC_PRIORITY(_classname, _name, _priority, _type, _conv) _DEFINE_STATIC_HOOK0(__LINE__, _classname, _name, _priority, _type, _conv)
 
 //=================================================================================================
 
-#define _DEFINE_GLOBAL_HOOK1(_id, _name, _priority, _type) \
+#define _DEFINE_GLOBAL_HOOK1(_id, _name, _priority, _type, _conv) \
 	namespace { namespace Hook_##_id { \
 		static void *internalSuper = NULL; \
-		static auto __stdcall hook _type ; \
-		static auto __stdcall super _type ; \
+		static auto _conv hook _type ; \
+		static auto _conv super _type ; \
 		\
 		static FunctionHook hookObj(#_name, typeid(auto (*) _type), &hook, &internalSuper, _priority); \
 	} } \
-	auto __declspec(naked) __stdcall Hook_##_id ::super _type {__asm jmp internalSuper} \
-	auto __stdcall Hook_##_id ::hook _type
+	auto __declspec(naked) _conv Hook_##_id ::super _type {__asm jmp internalSuper} \
+	auto _conv Hook_##_id ::hook _type
 
-#define _DEFINE_GLOBAL_HOOK0(_id, _name, _priority, _type) _DEFINE_GLOBAL_HOOK1(_id, _name, _priority, _type)
+#define _DEFINE_GLOBAL_HOOK0(_id, _name, _priority, _type, _conv) _DEFINE_GLOBAL_HOOK1(_id, _name, _priority, _type, _conv)
 
-#define HOOK_GLOBAL(_name, _type) _DEFINE_GLOBAL_HOOK0(__LINE__, _name, 0, _type)
-#define HOOK_GLOBAL_PRIORITY(_name, _priority, _type) _DEFINE_GLOBAL_HOOK0(__LINE__, _name, _priority, _type)
+#define HOOK_GLOBAL(_name, _type, _conv) _DEFINE_GLOBAL_HOOK0(__LINE__, _name, 0, _type, _conv)
+#define HOOK_GLOBAL_PRIORITY(_name, _priority, _type, _conv) _DEFINE_GLOBAL_HOOK0(__LINE__, _name, _priority, _type, _conv)

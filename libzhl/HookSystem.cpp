@@ -309,6 +309,11 @@ int FunctionHook_private::Install()
 
 	// Call the hook
 	P(0xE8); PL((unsigned int)_hook - (unsigned int)ptr - 4);	// call _hook
+	if (stackPos > 8 && def->NeedsCallerCleanup()) {
+		P(0x81);
+		P(0xC4);
+		PL(stackPos - 8);
+	}
 
 	// Restore all saved registers
 	P(0x5f);	// pop edi
@@ -449,7 +454,7 @@ int FunctionHook_private::Install()
 	// Epilogue
 	P(0x89); P(0xec);				// mov esp, ebp
 	P(0x5d);						// pop ebp
-	if(stackPos > 8)
+	if(stackPos > 8 && !def->NeedsCallerCleanup())
 	{
 		P(0xc2); PS(stackPos - 8);	// ret 4*N
 	}
