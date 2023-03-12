@@ -8,11 +8,9 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 {
 	Room* room = *g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
-	//(EntityType Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false)
 
 	int type = luaL_checkinteger(L, 1);
 	int variant = -1;
-	// try doing lua_tonumber to let -1 through
 	if (lua_isinteger(L, 2))
 		variant = lua_tointeger(L, 2);
 	int subtype = -1;
@@ -35,19 +33,17 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 		while (size) {
 			Entity* ent = *data;
 			lua_pushnumber(L, idx);
-			lua::luabridge::UserdataPtr::push(L, &ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
+			lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
 			lua_settable(L, -3);
 			++data;
 			idx++;
 			--size;
+
+
+			if (!res->_sublist)
+				operator delete[](ent);
 		}
 	}
-
-	/*for (int i = 0; i < size; ++i) {
-		Entity* ent = *data[i];
-		
-		printf("%d %d %d", ent.GetType(), ent.GetVariant(), ent.GetSubType());
-	}*/
 
 	return 1;
 }
@@ -55,7 +51,7 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 static void RegisterFindByTypeFix(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "FindByType2");
+	lua_pushstring(L, "FindByType");
 	lua_pushcfunction(L, Lua_IsaacFindByTypeFix);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
