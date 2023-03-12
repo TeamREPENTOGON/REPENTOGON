@@ -5,15 +5,19 @@ __thiscall void EntityList::RenderShadows(EntityList *this<ecx>, Vector *offset)
 "558bec6aff68????????64a1000000005083ec24535657a1????????33c5508d45f464a3000000008bf18b":
 __thiscall EntityList_EL* EntityList::QueryType(EntityList* this<ecx>, EntityList_EL* result, int Type, int Variant, int Subtype, bool Cache, bool IgnoreFriendly);
 
+"558bec83e4f883ec14535657f3":
+__thiscall void EntityList::QueryRadius(EntityList* this<ecx>, EntityList_EL* result, Vector* Position, float Radius, unsigned int Partitions);
+
 struct EntityList depends (EntityList_EL, Entity)
 {{
-	inline EntityList_EL* GetWisps() { return (EntityList_EL*)((char*)this + 0x90); }
     inline EntityList_EL* GetUpdateEL() { return (EntityList_EL*)((char*)this + 0x40); }
+    inline EntityList_EL* GetTempEL() { return (EntityList_EL*)((char*)this + 0x70); }
+	inline EntityList_EL* GetWispEL() { return (EntityList_EL*)((char*)this + 0x90); }
 
 	// This exists in the original source code as evidenced in the Switch decomp, but was inlined on PC.
 	int CountWisps(int WispSubtype) {
 	
-		EntityList_EL* wisps = this->GetWisps();
+		EntityList_EL* wisps = this->GetWispEL();
 		unsigned int size = wisps->_size;
 		unsigned int wispCount = 0;
 		
