@@ -69,7 +69,7 @@ static void RegisterMultiShotParams(lua_State* L) {
 	lua_pushcfunction(L, Lua_MultiShotParamsGetNumTears);
 	lua_rawset(L, -3);
 
-	lua_pop(L, 2);
+	lua_pop(L, 1);
 }
 
 int Lua_InitTwin(lua_State* L)
