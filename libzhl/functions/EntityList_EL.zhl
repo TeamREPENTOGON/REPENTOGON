@@ -1,0 +1,10 @@
+"8039007509":
+__thiscall void EntityList_EL::constructor(EntityList *this<ecx>);
+
+struct EntityList_EL
+{{
+	EntityList_EL() 
+	{
+		this->constructor();
+	}
+}};

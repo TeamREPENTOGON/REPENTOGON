@@ -1,6 +1,10 @@
 "558bec83ec78535657":
 __thiscall void EntityList::RenderShadows(EntityList *this<ecx>, Vector *offset);
 
+
+"558bec6aff68????????64a1000000005083ec24535657a1????????33c5508d45f464a3000000008bf18b":
+__thiscall EntityList_EL* EntityList::QueryType(EntityList* this<ecx>, EntityList_EL* result, int Type, int Variant, int Subtype, bool Cache, bool IgnoreFriendly);
+
 struct EntityList depends (EntityList_EL, Entity)
 {{
 	inline EntityList_EL* GetWisps() { return (EntityList_EL*)((char*)this + 0x90); }
@@ -27,5 +31,4 @@ struct EntityList depends (EntityList_EL, Entity)
 		
 		return wispCount;
 	}
-	
 }};
