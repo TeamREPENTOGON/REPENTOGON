@@ -14,4 +14,7 @@ __thiscall void ANM2::ReplaceSpritesheet(ANM2 *this<ecx>, int LayerId, IsaacStri
 __thiscall void ANM2::LoadGraphics(ANM2 *this<ecx>, bool unk);
 
 "558bec51538b9980000000":
-__thiscall LayerState * ANM2::GetLayer(ANM2 *this<ecx>, const char* layerName);
+__thiscall LayerState* ANM2::GetLayer(ANM2 *this<ecx>, const char* layerName);
+
+"558bec5156578b7d??8bf1":
+__thiscall LayerState* ANM2::GetLayer(ANM2 *this<ecx>, int layer);

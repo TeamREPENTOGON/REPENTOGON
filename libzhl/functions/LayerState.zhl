@@ -1,3 +1,4 @@
 struct LayerState {{
-	inline bool IsVisible() { return *(bool*)((char*)this + 0x74); }
+	inline int* IsVisible() { return (int*)((char*)this + 0x74); } //not working
+	inline float* GetCropPos() { return (float*)((char*)this + 0x90); } //cropY (not working)
 }};

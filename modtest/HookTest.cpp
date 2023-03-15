@@ -156,9 +156,16 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 }
 */
 
-/*HOOK_METHOD(ANM2, GetLayer, (const char* layerName) -> LayerState*) {
+/*HOOK_METHOD(ANM2, GetLayer, (int layerName) -> LayerState*) {
 	LayerState* ret = super(layerName);
-	printf("%s %d\n",layerName, super(layerName)->IsVisible());
+	float* test = ret->GetCropPos();
+	if (test == NULL) {
+		printf("Abort Test\n");
+	}
+	else {
+		printf("Hello %f %d\n",test, ret->IsVisible());
+	}
+	printf("GetLayer %d\n", layerName);
 	return ret;
 }
 */
