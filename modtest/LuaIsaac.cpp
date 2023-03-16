@@ -1,8 +1,11 @@
 #include <lua.hpp>
 
+#include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+
+static int QueryRadiusRef = -1;
 
 int Lua_IsaacFindByTypeFix(lua_State* L)
 {
@@ -35,11 +38,9 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 			++data;
 			idx++;
 			--size;
-
-
-			if (!res._sublist)
-				Isaac::free(ent);
 		}
+
+		res.Destroy();
 	}
 
 	return 1;
@@ -69,18 +70,39 @@ int Lua_IsaacGetRoomEntitiesFix(lua_State* L)
 	return 1;
 }
 
+static void DummyQueryRadius(EntityList_EL* el, void* pos, int partition) {
+	el->_data = nullptr;
+	el->_size = 0;
+	el->_sublist = 1;
+	el->_capacity = 0;
+}
+
 int Lua_IsaacFindInRadiusFix(lua_State* L)
 {
-	/*Room* room = *g_Game->GetCurrentRoom();
+	Room* room = *g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float radius = luaL_checknumber(L, 2);
 	unsigned int partition = luaL_optinteger(L, 3, -1);
 
-	EntityList_EL res(*list->GetUpdateEL());
+	EntityList_EL res;
+	EntityList_EL* resPtr = &res;
 	lua_newtable(L, 0);
 
-	list->QueryRadius(&res, pos, radius, partition);
+	lua_rawgeti(g_LuaEngine->_state, LUA_REGISTRYINDEX, QueryRadiusRef);
+	const void* queryRadius = lua_topointer(g_LuaEngine->_state, -1);
+	lua_pop(g_LuaEngine->_state, 1);
+
+	__asm {
+		push ecx;
+		mov ecx, list;
+		push partition;
+		push pos;
+		push resPtr;
+		movss xmm3, radius;
+		call queryRadius;
+		pop ecx;
+	}
 
 	unsigned int size = res._size;
 
@@ -95,15 +117,10 @@ int Lua_IsaacFindInRadiusFix(lua_State* L)
 			++data;
 			idx++;
 			--size;
-
-			if (!res._sublist)
-
-				Isaac::free(ent);
 		}
-	}*/
 
-	// For now, until we have QueryRadius fixed, just return an empty table. This breaks mods in the meantime, but stops (much of) the incessant error spam.
-	lua_newtable(L, 0);
+		res.Destroy();
+	}
 
 	return 1;
 }
@@ -141,4 +158,14 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterFindByTypeFix(state);
 	RegisterGetRoomEntitiesFix(state);
 	RegisterFindInRadiusFix(state);
+
+	SigScan scanner("558bec83e4f883ec14535657f3");
+	bool result = scanner.Scan();
+	if (!result) {
+		lua_pushlightuserdata(state, &DummyQueryRadius);
+	}
+	else {
+		lua_pushlightuserdata(state, scanner.GetAddress());
+	}
+	QueryRadiusRef = luaL_ref(state, LUA_REGISTRYINDEX);
 }
