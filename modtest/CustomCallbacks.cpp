@@ -358,6 +358,7 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 	}
 	super(musicid, volume);
 }
+
 HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 	printf("music fades\n");
 	lua_State* L = g_LuaEngine->_state;

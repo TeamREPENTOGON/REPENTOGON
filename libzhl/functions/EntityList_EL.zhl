@@ -1,10 +1,10 @@
-"8039007509":
-__thiscall void EntityList_EL::constructor(EntityList_EL *this<ecx>);
+"558bec8b5508c6":
+__thiscall void EntityList_EL::constructor(EntityList_EL *this<ecx>, EntityList_EL *source);
 
 struct EntityList_EL
 {{
-	EntityList_EL() 
+	EntityList_EL(EntityList_EL *source) 
 	{
-		this->constructor();
+		this->constructor(source);
 	}
 }};

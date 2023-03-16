@@ -17,10 +17,8 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 	bool ignoreFriendly = false;
 	if lua_isboolean(L, 5)
 		ignoreFriendly = lua_toboolean(L, 5);
-
 	lua_newtable(L, 0);
-
-	EntityList_EL res;
+	EntityList_EL res(*list->GetUpdateEL());
 
 	list->QueryType(&res, type, variant, subtype, cache, ignoreFriendly);
 
@@ -40,7 +38,7 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 
 
 			if (!res._sublist)
-				operator delete[](ent);
+				Isaac::free(ent);
 		}
 	}
 
@@ -68,19 +66,18 @@ int Lua_IsaacGetRoomEntitiesFix(lua_State* L)
 			--size;
 		}
 	}
-
 	return 1;
 }
 
 int Lua_IsaacFindInRadiusFix(lua_State* L)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	/*Room* room = *g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float radius = luaL_checknumber(L, 2);
 	unsigned int partition = luaL_optinteger(L, 3, -1);
 
-	EntityList_EL res;
+	EntityList_EL res(*list->GetUpdateEL());
 	lua_newtable(L, 0);
 
 	list->QueryRadius(&res, pos, radius, partition);
@@ -100,9 +97,13 @@ int Lua_IsaacFindInRadiusFix(lua_State* L)
 			--size;
 
 			if (!res._sublist)
-				operator delete[](ent);
+
+				Isaac::free(ent);
 		}
-	}
+	}*/
+
+	// For now, until we have QueryRadius fixed, just return an empty table. This breaks mods in the meantime, but stops (much of) the incessant error spam.
+	lua_newtable(L, 0);
 
 	return 1;
 }
@@ -128,7 +129,7 @@ static void RegisterGetRoomEntitiesFix(lua_State* L)
 static void RegisterFindInRadiusFix(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "FindInRadius2");
+	lua_pushstring(L, "FindInRadius");
 	lua_pushcfunction(L, Lua_IsaacFindInRadiusFix);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
