@@ -531,6 +531,19 @@ struct ANM2
 	IsaacString _filename;
 };
 
+struct LayerState
+{
+	char pad[0x89];
+	float _cropY;
+	//char pad[0x73];
+	//int something; 
+	//0x74
+};
+
+struct NullFrame {
+	
+};
+
 struct SFXManager
 {
 
@@ -611,6 +624,8 @@ struct ItemOverlay
 	
 };
 
-struct Lua53
+/*struct NPC_Pathfinder 
 {
+	
 };
+*/

@@ -1421,3 +1421,19 @@ HOOK_METHOD(Entity_Player, TriggerNewStage, (bool unk) -> void) {
 		.push(unk)
 		.call(1);
 }
+
+HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void) {
+	super(CharacterId, RenderPos, DefaultSprite);
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaCaller(L).push(1333)
+		.push(CharacterId)
+		.push(CharacterId)
+		.pushUserdataValue(*RenderPos, lua::Metatables::VECTOR)
+		.push(DefaultSprite, lua::Metatables::SPRITE)
+		.call(1);
+}
