@@ -10,7 +10,7 @@ Returns the dynamic dirt color of the entity. This lets entities like Nightcrawl
 
 ___
 ### Update·Dirt·Color() {: aria-label='Functions' }
-#### void UpdateDirtColor ( bool unk ) {: .copyable aria-label='Functions' }
+#### void UpdateDirtColor ( boolean unk ) {: .copyable aria-label='Functions' }
 Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
 
 ___
