@@ -4,7 +4,7 @@ set ("CMAKE_CXX_STANDARD" 17)
 
 project(RepExtender)
 
-include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl")
+include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl")
 
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
@@ -12,11 +12,12 @@ option(ZYDIS_BUILD_EXAMPLES "" OFF)
 option(ZYDIS_BUILD_DOXYGEN "" OFF)
 add_subdirectory("libs/zydis")
 
-FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src/*.c)
-list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src/luac.c")
+FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/*.c)
+list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/luac.c")
+add_compile_definitions(LUA_BUILD_AS_DLL)
 add_library(Lua5.3.3r SHARED ${LUA_SRC})
 
-add_executable(lua "${CMAKE_SOURCE_DIR}/libs/lua-5.3.3/src/lua.c")
+add_executable(lua "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/lua.c")
 target_link_libraries (lua Lua5.3.3r)
 
 FILE(GLOB LUA_LFS_SRC ${CMAKE_SOURCE_DIR}/libs/luafilesystem/src/*.c)
@@ -36,6 +37,9 @@ add_library(libzhl SHARED ${ZHL_SRC})
 
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
+
+#[[FILE(GLOB LUAUP_SRC ${CMAKE_SOURCE_DIR}/Lua54Upgrader/*.cpp)
+add_library(Lua5.3.3r SHARED ${LUAUP_SRC})]]
 
 FILE(GLOB MODTEST_SRC ${CMAKE_SOURCE_DIR}/modtest/*.cpp)
 add_library(zhlModTest SHARED ${MODTEST_SRC})

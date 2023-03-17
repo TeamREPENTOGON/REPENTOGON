@@ -3,7 +3,9 @@
 #include <vector>
 #include <list>
 
-class SigScan
+#include "libzhl.h"
+
+class LIBZHL_API SigScan
 {
 public:
 	class Match

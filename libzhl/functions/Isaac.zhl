@@ -11,3 +11,6 @@ static const char* Isaac::GetString(StringTable* table, const char* key);
 
 "558bec83e4f883ec0ca1????????5356578b7018":
 static __cdecl void* Isaac::GetRoomEntities(void* unk);
+
+"558becff7508ff15????????83c4045dc3cccccccccccccccccccccccccccccc8a410c":
+static __cdecl void Isaac::free(void *block);
