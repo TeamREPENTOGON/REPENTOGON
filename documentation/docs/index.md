@@ -9,6 +9,14 @@ This documentation covers the additions and modifications made to the Lua API by
 
 In addition to the changes listed on the pages, REPENTOGON makes the following general behavior changes to the API:
 
+## Lua 5.4
+
+  * The API has been ported to use Lua 5.4 instead of 5.3.
+  
+  * The generational garbage collector from 5.4 has been enabled by default, allowing for a significant performance boost.
+
+  * We have (tentative) plans to migrate to LuaJIT in the future, which is *not* fully compatible with 5.4 (or even 5.2, for that matter). As a result, we ask that mods refrain from relying on any Lua 5.4-specific functionality.
+
 ## Callback Typechecking
 Still a work in progress for the new callbacks added by REPENTOGON, but all vanilla callbacks are now typechecked.
 
