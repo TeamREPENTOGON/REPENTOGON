@@ -38,5 +38,6 @@ static void RegisterFixedRNGSetSeed(lua_State* L)
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(state);
 	RegisterFixedRNGSetSeed(state);
 }

@@ -79,10 +79,12 @@ void RegisterRoomPlacer(lua_State* L) {
 	lua_pushstring(L, "LevelGeneratorEntry");
 	lua_pushcfunction(L, Lua_LevelGeneratorEntry);
 	lua_rawset(L, -3);
+	lua_pop(L, 1);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(state);
 	RegisterRoomPlacer(state);
 }

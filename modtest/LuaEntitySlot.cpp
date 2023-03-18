@@ -97,5 +97,7 @@ void RegisterSlotMetatable(lua_State* L) {
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	RegisterSlotMetatable(g_LuaEngine->_state);
+	lua_State* state = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(state);
+	RegisterSlotMetatable(state);
 }
