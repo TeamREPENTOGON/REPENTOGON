@@ -1,9 +1,12 @@
+#include "ASMPatcher.hpp"
 #include "libzhl.h"
 #include "HookSystem.h"
 #include "HookSystem_private.h"
+#include "SigScan.h"
 #include "Version.h"
 #include <Windows.h>
 #include <stdio.h>
+#include "lua.hpp"
 
 /********************************************************************************
 HOOKING
@@ -66,15 +69,103 @@ The default priority is 0, and priority numbers can be negative
 
 ********************************************************************************/
 
-// This small function loads all the hooks and must be present in every mod
+// Taken from lua.h in Lua 5.3.3
+struct override_lua_Debug {
+	int event;
+	const char* name;	/* (n) */
+	const char* namewhat;	/* (n) 'global', 'local', 'field', 'method' */
+	const char* what;	/* (S) 'Lua', 'C', 'main', 'tail' */
+	const char* source;	/* (S) */
+	int currentline;	/* (l) */
+	int linedefined;	/* (S) */
+	int lastlinedefined;	/* (S) */
+	unsigned char nups;	/* (u) number of upvalues */
+	unsigned char nparams;/* (u) number of parameters */
+	char isvararg;        /* (u) */
+	char istailcall;	/* (t) */
+	char short_src[LUA_IDSIZE]; /* (S) */
+	/* private part */
+	struct CallInfo* i_ci;  /* active function */
+};
+
+static int __cdecl OverrideGetInfo(lua_State* L, const char* what, override_lua_Debug* ar) {
+	lua_Debug debug = *(lua_Debug*)ar;
+	int result = lua_getinfo(L, what, &debug);
+	ar->event = debug.event;
+	ar->name = debug.name;
+	ar->namewhat = debug.namewhat;
+	ar->what = debug.what;
+	ar->source = debug.source;
+	ar->currentline = debug.currentline;
+	ar->linedefined = debug.linedefined;
+	ar->lastlinedefined = debug.lastlinedefined;
+	ar->nups = debug.nups;
+	ar->nparams = debug.nparams;
+	ar->isvararg = debug.isvararg;
+	ar->istailcall = debug.istailcall;
+	memcpy(ar->short_src, debug.short_src, LUA_IDSIZE);
+	ar->i_ci = debug.i_ci;
+	return result;
+}
+
+static void FixLuaDump()
+{
+	const char* sig = "558BEC83E4F881ECA4020000"
+		"A1????????33C4898424A0020000833D????????00"
+		"535657894C24100F848A00000068????????6A00E896290D00"
+		"8B3D????????83C4088B1D????????33F60F1F4400008D442420"
+		"5056FF7718FFD383C40C85C074568D4424205068????????FF7718FF15????????83C40C";
+	SigScan scanner(sig);
+	// SigScan scanner("8b442424b9????????85c00f45c88d44244451ff742438");
+	if (!scanner.Scan()) {
+		fprintf(stderr, "Unable to find Lua write minidump function\n");
+		exit(-2);
+	}
+
+	const char* protectedBase = (const char*)scanner.GetAddress();
+	MEMORY_BASIC_INFORMATION info;
+	if (VirtualQuery(protectedBase, &info, sizeof(info)) == 0) {
+		fprintf(stderr, "VirtualQuery error %d\n", GetLastError());
+		exit(-2);
+	}
+
+	DWORD protect;
+	if (!VirtualProtect(info.BaseAddress, info.RegionSize, PAGE_READWRITE, &protect)) {
+		fprintf(stderr, "VirtualProtect error %d\n", GetLastError());
+		exit(-2);
+	}
+
+	char* base = const_cast<char*>(protectedBase);
+	void* target = (void*)OverrideGetInfo;
+	char* getInfoCall = base + (strlen(sig) / 2) - 9; // Base of call lua_getinfo, FF15 ????????
+	char buffer[5] = { '\xE8', 0, 0, 0, 0};
+	ptrdiff_t diff = (ptrdiff_t)target - (ptrdiff_t)(getInfoCall + 5);
+	memcpy(buffer + 1, &diff, sizeof(diff));
+	memcpy(getInfoCall, buffer, 5);
+	getInfoCall[5] = '\x90';
+	/* size_t lineDefinedOffset = 22;
+	size_t shortSrcOffset = 17;
+
+	base[lineDefinedOffset] = '\x3C';
+	base[shortSrcOffset] = '\x4A'; */
+
+	DWORD dummy;
+	if (!VirtualProtect(info.BaseAddress, info.RegionSize, protect, &dummy)) {
+		fprintf(stderr, "VirtualProtect error %d\n", GetLastError());
+	}
+
+	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+}
 
 static char titlebar[128];
+// This small function loads all the hooks and must be present in every mod
 MOD_EXPORT int ModInit(int argc, char **argv)
 {
 	Definition::Init();
 	ZHL::Init();
 	sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON v%d.%d.%d)", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
 	SetWindowTextA(GetActiveWindow(), titlebar);
+	FixLuaDump();
 	printf(":REPENTOGON:\n");
 	return 0;
 }
