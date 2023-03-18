@@ -32,3 +32,9 @@ Callback error behavior has been reverted back to how it was before Repentance's
   * A callback with an error will no longer stop every future callback from running.
   
   * This deprecates [Mod Error Container](https://steamcommunity.com/sharedfiles/filedetails/?id=2917616737).
+  
+## Error Display
+
+  * The first mod to cause a Lua error will trigger a message at the top of the screen stating the mod is causing errors. This is in the hopes that unrelated mods stop being blamed for errors.
+  
+  * This can be clicked by the user to open a read-only (unless the console has already been opened by the player) version of the debug console to help show players what exactly is wrong.

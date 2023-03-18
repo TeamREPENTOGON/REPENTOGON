@@ -3,3 +3,8 @@ __thiscall void Console::PrintError(Console *this<ecx>, const IsaacString &err);
 
 "558bec6aff68????????64a1????????5081ec04020000":
 __thiscall void Console::RunCommand(Console *this<ecx>, const std::string &in, const std::string &out, Entity_Player *player);
+
+struct Console
+{{
+    inline int* GetState() { return (int*)((char*)this + 0x20); }
+}};

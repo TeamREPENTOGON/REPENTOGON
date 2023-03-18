@@ -208,10 +208,82 @@ local function cleanTraceback(level) -- similar to debug.traceback but breaks at
 	return msg
 end
 
+local err_input = 1
+local err_decay = 1500 
+local err_hud_opacity = 1
+local err_shader_opacity = 1
+local err_color = 0
+local err_shown = false
+local err_bounding_x = nil
+
+local ERR_INPUT_TARGET = 484
+local INT_MIN = -2147483647
+
+local err_main_font = Font()
+local err_min_font = Font()
+
+
+local function RenderErrText(name, opacity)
+    local main_str = name .. " is causing errors!"
+    local detail_str = "Click this message for more info."
+
+    if not err_bounding_x then 
+        err_bounding_x = (Isaac.GetScreenWidth() / 2) - (math.max(err_main_font:GetStringWidth(main_str), err_main_font:GetStringWidth(detail_str)) / 2) end
+
+    err_main_font:DrawString(main_str, (Isaac.GetScreenWidth() / 2) - (err_main_font:GetStringWidth(main_str) / 2), 0, KColor(1, err_color, err_color, opacity), 0, false)
+    err_min_font:DrawString(detail_str, (Isaac.GetScreenWidth() / 2) - (err_min_font:GetStringWidth(detail_str) / 2), 7, KColor(1, err_color, err_color, opacity), 0 , false)
+end
+
+
 local function logError(callbackID, modName, err)
 	local cbName = callbackIDToName[callbackID] or callbackID
 	Game():GetConsole():PrintError('"' .. cbName .. '" from "' .. modName .. '" failed: ' ..  err)
 	Isaac.DebugString('Error in "' ..cbName .. '" call from "' .. modName .. '": ' .. err) -- this should be replaced with a proper log function so it can have the [INFO] header
+
+        if not err_shown then 	
+
+            local errdisp = RegisterMod("REPENTOGON Error Display", 1)	
+
+            err_main_font:Load("font/pftempestasevencondensed.fnt")	
+	    err_min_font:Load("font/luaminioutlined.fnt") 
+            local mouse = Sprite()
+            mouse:Load("gfx/ui/cursor.anm2", true)
+
+
+            errdisp:AddPriorityCallback(ModCallbacks.MC_HUD_RENDER, INT_MIN, function()
+                if err_input < ERR_INPUT_TARGET then
+                    err_color = math.sin((err_input * 200)/ err_decay) / 2 + .5
+		    err_input = err_input + 1 
+		    err_decay = err_decay + 1
+		else
+                    err_color = 0
+		end
+
+		if err_hud_opacity > 0.3 then err_hud_opacity = err_hud_opacity - (0.7 / ERR_INPUT_TARGET) end
+		RenderErrText(modName, err_hud_opacity)
+
+
+               mouse.Color = Color(1, 1, 1, err_hud_opacity)
+               local mouse_pos = Isaac.WorldToScreen(Input.GetMousePosition(true))
+
+               if mouse_pos.X > err_bounding_x and mouse_pos.X < Isaac.GetScreenWidth() - err_bounding_x and mouse_pos.Y < 18 then 
+                   mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity) 
+                   if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
+                       Game():GetConsole():Show()
+                   end
+               end
+
+               mouse:Play("Idle")
+               mouse:Render(mouse_pos)
+            end)
+									
+	    errdisp:AddPriorityCallback(ModCallbacks.MC_GET_SHADER_PARAMS, INT_MIN, function()
+		if err_shader_opacity > 0 then err_shader_opacity = err_shader_opacity - (1 /  ERR_INPUT_TARGET) end
+		RenderErrText(modName, err_shader_opacity)
+	    end)
+
+        err_shown = true
+    end
 end
 
 function _RunCallback(callbackID, Param, ...)

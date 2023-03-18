@@ -31,6 +31,13 @@ int Lua_ConsolePrintError(lua_State* L)
 	return 1;
 }
 
+int Lua_ConsoleShow(lua_State* L)
+{
+	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+	*console->GetState() = 2;
+	return 0;
+}
+
 static void RegisterConsole(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetConsole");
@@ -45,6 +52,7 @@ static void RegisterConsole(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "PrintError", Lua_ConsolePrintError },
+		{ "Show", Lua_ConsoleShow },
 		{ NULL, NULL }
 	};
 
