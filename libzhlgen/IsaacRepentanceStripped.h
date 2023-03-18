@@ -533,10 +533,10 @@ struct ANM2
 
 struct LayerState
 {
-	char pad[0x89];
-	float _cropY;
-	//char pad[0x73];
-	//int something; 
+	//char pad[0x90];
+	//float _cropY;
+	char pad[0x74];
+	bool _something; 
 	//0x74
 };
 
@@ -624,8 +624,7 @@ struct ItemOverlay
 	
 };
 
-/*struct NPC_Pathfinder 
+struct NPCAI_Pathfinder 
 {
 	
 };
-*/

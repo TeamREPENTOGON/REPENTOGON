@@ -33,6 +33,7 @@ int Lua_ItemOverlayShow(lua_State* L)
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, ItemOverlayMT);
 	ANM2* toLua = lua::luabridge::UserdataValue<ANM2>::place(L, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	*toLua = *itemOverlay->GetSprite();
+
 	return 1;
 }
 */
