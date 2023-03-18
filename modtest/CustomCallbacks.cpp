@@ -1422,7 +1422,7 @@ HOOK_METHOD(Entity_Player, TriggerNewStage, (bool unk) -> void) {
 		.call(1);
 }
 
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void) {
+HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
 	super(CharacterId, RenderPos, DefaultSprite);
 
 	lua_State* L = g_LuaEngine->_state;
