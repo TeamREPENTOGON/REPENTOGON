@@ -62,28 +62,47 @@ static void RegisterNewReplaceSpriteSheet(lua_State* L) {
 }
 */
 
-int Lua_SpriteGetLayer(lua_State* L)
+static int Lua_SpriteGetLayer(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	const char* layerName = luaL_checkstring(L, 2);
-	LayerState* toLua = anm2->GetLayer(layerName);
-	if (toLua == nullptr) {
-		lua_pushnil(L);
-		return 1;
-	}
+	int layerName = luaL_checkinteger(L, 2);
 	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
-	*luaLayer = toLua;
+	*luaLayer = anm2->GetLayer(layerName);
 	luaL_setmetatable(L, LayerStateMT);
 	return 1;
 }
 
-/*int Lua_LayerStateIsVisible(lua_State* L)
+static int Lua_LayerStateIsVisible(lua_State* L)
 {
-	LayerState* layerState = lua::GetUserdata<LayerState*>(L, 1, LayerStateMT);
-	lua_pushboolean(L, layerState->IsVisible());
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	lua_pushboolean(L, *layerState->IsVisible());
+
 	return 1;
 }
-*/
+
+static int Lua_LayerStateSetVisible(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	*layerState->IsVisible() = lua_toboolean(L, 2);
+
+	return 0;
+}
+
+static int Lua_LayerStateGetCropYOffset(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	lua_pushnumber(L, *layerState->GetCropYOffset());
+
+	return 1;
+}
+
+static int Lua_LayerStateSetCropYOffset(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	*layerState->GetCropYOffset() = luaL_checknumber(L, 2);
+
+	return 0;
+}
 
 
 static void RegisterLayerState(lua_State* L) {
@@ -99,7 +118,10 @@ static void RegisterLayerState(lua_State* L) {
 	lua_settable(L, -3);
 
 	luaL_Reg funcs[] = {
-		//{ "IsVisible", Lua_LayerStateIsVisible },
+		{ "IsVisible", Lua_LayerStateIsVisible },
+		{ "SetVisible", Lua_LayerStateSetVisible},
+		{ "GetCropYOffset", Lua_LayerStateGetCropYOffset},
+		{ "SetCropYOffset", Lua_LayerStateSetCropYOffset},
 		{ NULL, NULL }
 	};
 

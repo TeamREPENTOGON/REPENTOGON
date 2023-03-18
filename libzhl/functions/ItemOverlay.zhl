@@ -6,5 +6,5 @@ __thiscall void ItemOverlay::Update(ItemOverlay *this<ecx>, bool unk);
 
 struct ItemOverlay depends (ANM2)
 {{
-	ANM2* GetSprite() { return(ANM2*)((char*)this + 0x114c); } 
+	ANM2* GetSprite() { return (ANM2*)((char*)this + 0x114c); } 
 }};
