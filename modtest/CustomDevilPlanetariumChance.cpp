@@ -31,11 +31,15 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
 
     // Same as with planetariums, return the original value for dailies
     // The original deal code has some special handling for dailies that aren't necessary in cases where the reimplementation is needed
-    if (g_Game->GetDailyChallenge()._id) {
+    if (g_Game->GetDailyChallenge()._id)
         return originalChance;
-    }
 
     lua_State* L = g_LuaEngine->_state;
+
+    // My reimplementation *should* be accurate, but there's no reason to run it if mods aren't actively attempting to change values.
+    if (!modsChangingDevilChance(L)) 
+        return originalChance;
+
     PlayerManager* manager = g_Game->GetPlayerManager();
     RNG *rng = &manager->_rng;
     int flags = *g_Game->GetLevelStateFlags();
@@ -188,21 +192,6 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
             chance = 0;
         else
             chance = 1;
-    }
-
-    // While my reimplementation should be accurate, since devil chance is more complex than planetariums, there's more chance for things to go wrong.
-    // For now, calculate devil chance twice per frame- once with the original code, and once with the reimplementation- and report any issues.
-    // I'll remove this once the chance has been further battle-tested.
-    if (originalChance != chance && !modsChangingDevilChance) {
-        static char err[128];
-        IsaacString str;
-
-        sprintf(err, "DEVIL CHANCE PARITY ERROR: Expected %f, got %f, falling back to original value", originalChance, chance);
-        *(char**)str.text = (char*)err;
-        str.unk = str.size = strlen(err);
-        g_Game->GetConsole()->PrintError(str);
-
-        return originalChance;
     }
 
     return chance;
