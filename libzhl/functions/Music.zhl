@@ -1,8 +1,8 @@
 "558bec51538b5d??568bf18975": 
-__thiscall void Music::Play(int musicid,float volume);
+__thiscall void Music::Play(Music* this<ecx>, int musicid,float volume);
 
 "558bec51538b5d??56578bf985db":
-__thiscall void Music::Crossfade(int musicid,float faderate);
+__thiscall void Music::Crossfade(Music* this<ecx>, int musicid,float faderate);
 
 "558bec51568bf1578b860c030000":
 __thiscall void Music::PlayJingle(Music *this<ecx>, int musicid);
