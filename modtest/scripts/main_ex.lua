@@ -248,7 +248,7 @@ local function logWarning(callbackID, modName, warn)
 	table.insert(printedWarnings, warn)
 
 	Game():GetConsole():PrintWarning('"' .. cbName .. '" from "' .. modName .. '" failed: ' ..  warn .. "\n(This warning will not reappear until the next Lua reload.)")
-	Isaac.DebugString('Error in "' ..cbName .. '" call from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload."))
+	Isaac.DebugString('Error in "' ..cbName .. '" call from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload.)")
 end
 
 local err_dupecount = 1

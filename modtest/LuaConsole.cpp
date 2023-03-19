@@ -59,14 +59,16 @@ int Lua_ConsolePrintWarning(lua_State* L)
 {
 	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
 	IsaacString str;
-	const char* err = luaL_checkstring(L, 2);
-	if (strlen(err) < 16) {
-		strcpy(str.text, err);
+	std::string err = luaL_checkstring(L, 2) + std::string("\n");
+	const char* errstr = err.c_str();
+
+	if (strlen(errstr) < 16) {
+		strcpy(str.text, errstr);
 	}
 	else {
-		*(char**)str.text = (char*)err;
+		*(char**)str.text = (char*)errstr;
 	}
-	str.unk = str.size = strlen(err);
+	str.unk = str.size = strlen(errstr);
 	console->Print(str, 0xFFFCCA03, 0x96u);
 	return 1;
 }
