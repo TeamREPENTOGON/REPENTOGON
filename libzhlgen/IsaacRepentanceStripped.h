@@ -168,9 +168,14 @@ struct PlayerManager
 	RNG _rng; //0x0
 };
 
+struct Console_HistoryEntry
+{
+	IsaacString _text;
+};
 
 struct Console
 {
+
 };
 
 struct RoomDescriptor 

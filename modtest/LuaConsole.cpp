@@ -38,6 +38,36 @@ int Lua_ConsoleShow(lua_State* L)
 	return 0;
 }
 
+int Lua_ConsoleGetHistory(lua_State* L)
+{
+	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+	std::deque<Console_HistoryEntry> *history = console->GetHistory();
+
+	lua_newtable(L, 0);
+	unsigned int idx = 1;
+	for (Console_HistoryEntry entry : *history) {
+		lua_pushnumber(L, idx);
+		lua_pushstring(L, entry._text.Get());
+		lua_settable(L, -3);
+		idx++;
+	}
+
+	return 1;
+}
+
+int Lua_ConsolePopHistory(lua_State* L) {
+	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+	int amount = luaL_optinteger(L, 2, 1);
+	std::deque<Console_HistoryEntry>* history = console->GetHistory();
+	amount++;
+
+	for (int i = 0; i < amount; ++i) {
+		if(history->size() > 0)
+			history->pop_front();
+	}
+	return 0;
+}
+
 static void RegisterConsole(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetConsole");
@@ -53,6 +83,8 @@ static void RegisterConsole(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "PrintError", Lua_ConsolePrintError },
 		{ "Show", Lua_ConsoleShow },
+		{ "GetHistory", Lua_ConsoleGetHistory },
+		{ "PopHistory", Lua_ConsolePopHistory },
 		{ NULL, NULL }
 	};
 

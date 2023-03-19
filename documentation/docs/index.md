@@ -10,8 +10,7 @@ This documentation covers the additions and modifications made to the Lua API by
 In addition to the changes listed on the pages, REPENTOGON makes the following general behavior changes to the API:
 
 ## Lua 5.4
-
-  * The API has been ported to use Lua 5.4 instead of 5.3.
+The API has been ported to use Lua 5.4 instead of 5.3.
   
   * The generational garbage collector from 5.4 has been enabled by default, allowing for a significant performance boost.
 
@@ -34,7 +33,9 @@ Callback error behavior has been reverted back to how it was before Repentance's
   * This deprecates [Mod Error Container](https://steamcommunity.com/sharedfiles/filedetails/?id=2917616737).
   
 ## Error Display
-
-  * The first mod to cause a Lua error will trigger a message at the top of the screen stating the mod is causing errors. This is in the hopes that unrelated mods stop being blamed for errors.
+The first mod to cause a Lua error will trigger a message at the top of the screen stating the mod is causing errors. This is in the hopes that unrelated mods stop being blamed for errors.
   
   * This can be clicked by the user to open a read-only (unless the console has already been opened by the player) version of the debug console to help show players what exactly is wrong.
+
+## Console Error Flattening
+ Multiple sequential instances of the same error will be flattened in the console (not the logs). Duplicate entries will be denoted with an (x2) (x3) etc next to the error.

@@ -31,20 +31,10 @@ struct GlobalPre
 		#include "lstate.h"
 	}
 
-	/*struct CAchievement;
-	struct RandomAmount;
-	struct Point;
+
+    struct Console_HistoryEntry;
 	
-	typedef std::pair<int, int> std_pair_int_int;
-	typedef std::pair<float, float> std_pair_float_float;
-	typedef std::pair<std::string, int> std_pair_std_string_int;
-	typedef std::pair<std::string, RandomAmount> std_pair_std_string_RandomAmount;
-	typedef std::pair<std::string, std::string> std_pair_std_string_std_string;
-	typedef std::pair<CAchievement*, Point> std_pair_CAchievement_ptr_Point;
-	typedef std::map<std::string, std::string> std_map_std_string_std_string;
-	typedef std::map<std::string, int> std_map_std_string_int;
-	typedef std::map<std::string, bool> std_map_std_string_bool;
-	*/
+	typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
 
 	typedef std::set<int> std_set_int;
 	

@@ -5342,8 +5342,8 @@ __declspec(naked) void ModManager::RenderCustomCharacterMenu(int CharacterId, Ve
 namespace _func165
 {
 	static void *func = 0;
-	static short argdata[] = {0x1ff, 0x1ff};
-	static FunctionDefinition funcObj("Music::Play", typeid(void (Music::*)(int , float )), "558bec51538b5d??568bf18975", argdata, 2, 4, &func);
+	static short argdata[] = {0x101, 0x1ff, 0x1ff};
+	static FunctionDefinition funcObj("Music::Play", typeid(void (Music::*)(int , float )), "558bec51538b5d??568bf18975", argdata, 3, 5, &func);
 }
 
 __declspec(naked) void Music::Play(int musicid, float volume)
@@ -5376,8 +5376,8 @@ __declspec(naked) void Music::Play(int musicid, float volume)
 namespace _func166
 {
 	static void *func = 0;
-	static short argdata[] = {0x1ff, 0x1ff};
-	static FunctionDefinition funcObj("Music::Crossfade", typeid(void (Music::*)(int , float )), "558bec51538b5d??56578bf985db", argdata, 2, 4, &func);
+	static short argdata[] = {0x101, 0x1ff, 0x1ff};
+	static FunctionDefinition funcObj("Music::Crossfade", typeid(void (Music::*)(int , float )), "558bec51538b5d??56578bf985db", argdata, 3, 5, &func);
 }
 
 __declspec(naked) void Music::Crossfade(int musicid, float faderate)

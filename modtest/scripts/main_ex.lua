@@ -234,10 +234,56 @@ local function RenderErrText(name, opacity)
     err_min_font:DrawString(detail_str, (Isaac.GetScreenWidth() / 2) - (err_min_font:GetStringWidth(detail_str) / 2), 7, KColor(1, err_color, err_color, opacity), 0 , false)
 end
 
+local err_dupecount = 1
 
 local function logError(callbackID, modName, err)
+	
+	--[[ In order to squash multiple instances of an error into one line,
+	     we want to get the *last* instance of "(x*)" for comparison here, 
+		 so we can remove our (x2) (x3) etc. from a comparison. 
+
+	     Unfortunately, Lua has no support for removing the last instance of a pattern,
+		 but it very much has support for removing the *first* instance of a pattern.
+		 For better or worse, we use a reversed version of both the target log and console history for comparison.
+		 This is likely not the best for performance, but this only runs when there's an error anyways-
+		 all bets are already off the table at that point.
+	  ]]
+
+	local console = Game():GetConsole()
+	local ohistory = console:GetHistory()
+	local history = {}
+
+	--[[ First, inverse the table , as console history is returned last-to-first. 
+	     Next, concatenate the table with \n so we can compare with our tracebacks.
+	  ]]
+	for i=#ohistory, 1, -1 do
+		history[#history+1] = ohistory[i]
+	end
+
+	history = table.concat(history, "\n"):reverse()
+
 	local cbName = callbackIDToName[callbackID] or callbackID
-	Game():GetConsole():PrintError('"' .. cbName .. '" from "' .. modName .. '" failed: ' ..  err)
+	local consoleLog = '"' .. cbName .. '" from "' .. modName .. '" failed: ' ..  err
+	
+	-- We add a \n to our comparison to account for the parsed history having one.
+	local historyComparison = (consoleLog .. "\n"):reverse()
+
+	local parsedHistory = history:gsub("%)(%d+)x%(%s", "", 1):sub(1, #historyComparison)
+
+	if parsedHistory == historyComparison then
+		--[[ Determine how many entries to remove.
+		     Newlines automatically increment the amount of strings we need to remove by 1.
+			 Since we previously concatenated history into a string with newlines, we can count
+			 the amount of newlines, and this will return the amount to pop.
+		]]
+		console:PopHistory(select(2, string.gsub(parsedHistory, "\n", "")))
+		consoleLog = consoleLog .. " (x" .. err_dupecount .. ")"
+		err_dupecount = err_dupecount + 1
+	else
+		err_dupecount = 1 
+	end
+	
+	console:PrintError(consoleLog)
 	Isaac.DebugString('Error in "' ..cbName .. '" call from "' .. modName .. '": ' .. err) -- this should be replaced with a proper log function so it can have the [INFO] header
 
         if not err_shown then 	
