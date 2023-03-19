@@ -4,6 +4,9 @@ __thiscall void Console::PrintError(Console *this<ecx>, const IsaacString &err);
 "558bec6aff68????????64a1????????5081ec04020000":
 __thiscall void Console::RunCommand(Console *this<ecx>, const std::string &in, const std::string &out, Entity_Player *player);
 
+"558bec6aff68????????64a1000000005083ec60a1????????33c58945ec535657508d45f464a3000000008bf9":
+__thiscall void Console::Print(Console *this<ecx>, const IsaacString &text, unsigned int color, unsigned int unk);
+
 struct Console depends (Console_HistoryEntry)
 {{
     inline int* GetState() { return (int*)((char*)this + 0x20); }

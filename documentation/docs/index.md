@@ -38,4 +38,4 @@ The first mod to cause a Lua error will trigger a message at the top of the scre
   * This can be clicked by the user to open a read-only (unless the console has already been opened by the player) version of the debug console to help show players what exactly is wrong.
 
 ## Console Error Flattening
- Multiple sequential instances of the same error will be flattened in the console (not the logs). Duplicate entries will be denoted with an (x2) (x3) etc next to the error.
+ Multiple sequential instances of the same error will be flattened in the console (not the logs). Duplicate entries will be denoted with an (x2) (x3) etc. next to the error.

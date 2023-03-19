@@ -55,6 +55,22 @@ int Lua_ConsoleGetHistory(lua_State* L)
 	return 1;
 }
 
+int Lua_ConsolePrintWarning(lua_State* L)
+{
+	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+	IsaacString str;
+	const char* err = luaL_checkstring(L, 2);
+	if (strlen(err) < 16) {
+		strcpy(str.text, err);
+	}
+	else {
+		*(char**)str.text = (char*)err;
+	}
+	str.unk = str.size = strlen(err);
+	console->Print(str, 0xFFFCCA03, 0x96u);
+	return 1;
+}
+
 int Lua_ConsolePopHistory(lua_State* L) {
 	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
 	int amount = luaL_optinteger(L, 2, 1);
@@ -85,6 +101,7 @@ static void RegisterConsole(lua_State* L) {
 		{ "Show", Lua_ConsoleShow },
 		{ "GetHistory", Lua_ConsoleGetHistory },
 		{ "PopHistory", Lua_ConsolePopHistory },
+		{ "PrintWarning", Lua_ConsolePrintWarning },
 		{ NULL, NULL }
 	};
 

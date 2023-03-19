@@ -76,20 +76,6 @@ local typecheckFunctions = {
 		["table"] = checkTableTypeFunction({"integer", "number", "integer", "boolean", "number", "number"}),
 		["boolean"] = true
 	},
-	[ModCallbacks.MC_INPUT_ACTION] = {
-		["number"] = function(ret, retType, entity, hook)
-			if hook ~= InputHook.GET_ACTION_VALUE then
-				return "bad return type for hook " .. backEnum(InputHook, hook) .. " (boolean expected, got number)"
-			elseif ret < 0 or ret > 1 then
-				return "bad return value for hook GET_ACTION_VALUE (number must be within range 0-1)"
-			end
-		end,
-		["boolean"] = function(ret, retType, entity, hook)
-			if hook == InputHook.GET_ACTION_VALUE then
-				return "bad return type for hook GET_ACTION_VALUE (number expected, got boolean)"
-			end
-		end
-	},
 	[ModCallbacks.MC_EXECUTE_CMD] = {}, -- returning any value causes the game to crash
 	[ModCallbacks.MC_PRE_ENTITY_SPAWN] = {
 		["table"] = checkTableSizeFunction(4)
@@ -106,6 +92,23 @@ local typecheckFunctions = {
 	},
 	[ModCallbacks.MC_GET_SHADER_PARAMS] = {
 		["table"] = true
+	},
+}
+
+local typecheckWarnFunctions = {
+	[ModCallbacks.MC_INPUT_ACTION] = {
+		["number"] = function(ret, retType, entity, hook)
+			if hook ~= InputHook.GET_ACTION_VALUE then
+				return "bad return type for hook " .. backEnum(InputHook, hook) .. " (boolean expected, got number)"
+			elseif ret < 0 or ret > 1 then
+				return "bad return value for hook GET_ACTION_VALUE (number must be within range 0-1)"
+			end
+		end,
+		["boolean"] = function(ret, retType, entity, hook)
+			if hook == InputHook.GET_ACTION_VALUE then
+				return "bad return type for hook GET_ACTION_VALUE (number expected, got boolean)"
+			end
+		end
 	},
 }
 
@@ -234,6 +237,20 @@ local function RenderErrText(name, opacity)
     err_min_font:DrawString(detail_str, (Isaac.GetScreenWidth() / 2) - (err_min_font:GetStringWidth(detail_str) / 2), 7, KColor(1, err_color, err_color, opacity), 0 , false)
 end
 
+local printedWarnings = {}
+
+local function logWarning(callbackID, modName, warn)
+	local cbName = callbackIDToName[callbackID] or callbackID
+	for _, printedWarning in pairs(printedWarnings) do
+		if warn == printedWarning then return end
+	end
+
+	table.insert(printedWarnings, warn)
+
+	Game():GetConsole():PrintWarning('"' .. cbName .. '" from "' .. modName .. '" failed: ' ..  warn .. "\n(This warning will not reappear until the next Lua reload.)")
+	Isaac.DebugString('Error in "' ..cbName .. '" call from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload."))
+end
+
 local err_dupecount = 1
 
 local function logError(callbackID, modName, err)
@@ -253,7 +270,7 @@ local function logError(callbackID, modName, err)
 	local ohistory = console:GetHistory()
 	local history = {}
 
-	--[[ First, inverse the table , as console history is returned last-to-first. 
+	--[[ First, inverse the table, as console history is returned last-to-first. 
 	     Next, concatenate the table with \n so we can compare with our tracebacks.
 	  ]]
 	for i=#ohistory, 1, -1 do
@@ -360,6 +377,22 @@ function _RunCallback(callbackID, Param, ...)
 							end
 						end
 						
+						local typeCheckWarn = typecheckWarnFunctions[callbackID]
+						if typeCheckWarn then
+							local typ = type(ret)
+							if typeCheckWarn[typ] == true then
+							elseif typeCheckWarn[typ] then
+								warn = typeCheckWarn[typ](ret, typ, ...)
+							else
+								warn = "bad return type (" .. typeCheckWarn.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
+							end
+							
+							if warn then
+								local info = debug_getinfo(callback.Function, "S")
+								logWarning(callbackID, callback.Mod.Name, info.short_src .. ": " .. info.linedefined .. ": " .. warn)
+							end
+						end
+
 						if not err then
 							return ret
 						end
