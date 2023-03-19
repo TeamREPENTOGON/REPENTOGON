@@ -656,30 +656,34 @@ function writeStructDependencies(dep, out, parent)
 	local lastWasStructPrototype = false
 	for c, n in pairs(dep) do
 		local st = structs[c]
-		if parent then
-			if st.parent and st.parent:cname() == parent:cname() then
-				writeStruct(st, out, parent)
-				lastWasStructPrototype = false
-			end
-		else
-			while st.parent do
-				st = structs[st.parent:cname()]
-				n = 2
-			end
-			c = st:cname()
-			
-			if n == 1 then
-				if not out.declared[c] then
-					if not lastWasStructPrototype then out("\n") end
-					out('struct %s;\n', c)
-					out.declared[c] = true;
-					lastWasStructPrototype = true
-				end
-			else
-				writeStruct(st, out)
-				lastWasStructPrototype = false
-			end
-		end
+        if not st then
+            out("struct %s;\n", c)
+        else
+            if parent then
+                if st.parent and st.parent:cname() == parent:cname() then
+                    writeStruct(st, out, parent)
+                    lastWasStructPrototype = false
+                end
+            else
+                while st.parent do
+                    st = structs[st.parent:cname()]
+                    n = 2
+                end
+                c = st:cname()
+                
+                if n == 1 then
+                    if not out.declared[c] then
+                        if not lastWasStructPrototype then out("\n") end
+                        out('struct %s;\n', c)
+                        out.declared[c] = true;
+                        lastWasStructPrototype = true
+                    end
+                else
+                    writeStruct(st, out)
+                    lastWasStructPrototype = false
+                end
+            end
+        end
 	end
 end
 

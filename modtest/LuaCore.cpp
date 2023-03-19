@@ -371,6 +371,15 @@ namespace lua {
 		}
 	}
 
+	bool luaL_optboolean(lua_State* L, int idx, bool default) {
+		if (lua_gettop(L) < idx) {
+			return default;
+		}
+		else {
+			return lua_toboolean(L, idx);
+		}
+	}
+
 	LuaCaller::LuaCaller(lua_State* L) : _L(L) { }
 
 	LuaCaller& LuaCaller::push(bool x) {
