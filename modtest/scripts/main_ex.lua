@@ -293,9 +293,9 @@ local function logError(callbackID, modName, err)
 			 Since we previously concatenated history into a string with newlines, we can count
 			 the amount of newlines, and this will return the amount to pop.
 		]]
+		err_dupecount = err_dupecount + 1
 		console:PopHistory(select(2, string.gsub(parsedHistory, "\n", "")))
 		consoleLog = consoleLog .. " (x" .. err_dupecount .. ")"
-		err_dupecount = err_dupecount + 1
 	else
 		err_dupecount = 1 
 	end
