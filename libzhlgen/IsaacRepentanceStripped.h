@@ -628,3 +628,38 @@ struct NPCAI_Pathfinder
 {
 	
 };
+
+struct KColor
+{
+    float _red;
+    float _green;
+    float _blue;
+    float _alpha;
+};
+
+struct DrawStringEntry
+{
+    const char* _text; // 0x0
+    float _x; // 0x4
+    float _y; // 0x8
+    KColor _color; // 0xC
+    int _boxWidth; // 0x1C
+    bool _center; // 0x20
+}; // 0x24 (not confirmed)
+
+struct DrawStringScaledEntry
+{
+    const char* _text; // 0x0
+    float _x; // 0x4
+    float _y; // 0x8
+    float _scaleX; // 0xC
+    float _scaleY; // 0x10
+    KColor _color; // 0x1C
+    int _boxWidth; // 0x24
+    bool _center; // 0x28
+}; // 0x2C (not confirmed)
+
+struct Font
+{
+    
+};

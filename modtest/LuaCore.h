@@ -324,6 +324,8 @@ namespace lua {
         };
     }
 
+    bool luaL_optboolean(lua_State* L, int idx, bool default);
+
     namespace callbacks {
         int ToInteger(lua_State* L, int stackPosition);
         double ToNumber(lua_State* L, int stackPosition);
