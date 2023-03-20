@@ -20,6 +20,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 		.push(firsttime)
 		.push(slot)
 		.push(vardata)
+		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.call(1);
 
 	if (!res) {

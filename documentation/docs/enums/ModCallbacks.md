@@ -3,14 +3,14 @@
 This is a list of all new callbacks added by REPENTOGON.
 
 ### MC_PRE_ADD_COLLECTIBLE
-Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData}`
+Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData, Player}`
 
 Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) to change the type without changing any other parameters
 
 ???- example "Example Code"
     This code will transform every collectible into Money = Power once the player picks it up.
     ```lua
-    function mod:myFunction(Type, Charge, FirstTime, Slot, VarData)
+    function mod:myFunction(Type, Charge, FirstTime, Slot, VarData, Player)
         return CollectibleType.COLLECTIBLE_MONEY_EQUALS_POWER
     end
     mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, mod.myFunction)
@@ -18,7 +18,7 @@ Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/r
 
     This code will force active items to be uncharged on pickup.
     ```lua
-    function mod:myFunction(Type, Charge, FirstTime, Slot, VarData)
+    function mod:myFunction(Type, Charge, FirstTime, Slot, VarData, Player)
         return {Type, 0, FirstTime, Slot, VarData}
     end
     mod:AddCallback(ModCallbacks.MC_PRE_ADD_COLLECTIBLE, mod.myFunction)
@@ -26,7 +26,7 @@ Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/r
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_PRE_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, int Charge, boolean FirstTime, int Slot, int VarData)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | table or [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
+|- |MC_PRE_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, int Charge, boolean FirstTime, int Slot, int VarData, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | table or [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
 
 ### MC_HUD_UPDATE {: .copyable }
 Accepts no return parameters.
@@ -151,6 +151,15 @@ Accepts no return parameters.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, boolean Unknown)| - | void |
+
+### MC_COMPLETION_MARK_GET
+Accepts no return parameters.
+
+Triggers when the player gets a completion mark, getting as a parameter the code for the mark in question.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion) | - |
 
 ### MC_PRE_LEVEL_INIT {: .copyable }
 Accepts no return parameters.
@@ -645,3 +654,5 @@ Alternatively accepts ``true`` to cancel item overlay show
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1078 |MC_POST_PLAYER_NEW_LEVEL {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | - |
+
+
