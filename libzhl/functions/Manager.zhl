@@ -2,6 +2,9 @@
 "558bec83e4f883ec1856578b3d":
 void Manager::Update();
 
+"558bec83ec105356578b3d????????85ff":
+void Manager::RecordPlayerCompletion(int eCompletionEvent);
+
 /*
 "":
 __stdcall static void __stdcall Manager::RestartGame(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >) //from remix 2 zhl
