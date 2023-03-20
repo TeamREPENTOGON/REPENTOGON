@@ -1,0 +1,4 @@
+struct NullFrame {{
+	inline Vector* GetPos() {return (Vector*)((char*)this); }
+	inline Vector* GetSize() {return (Vector*)((char*)this + 0x10); }
+}};

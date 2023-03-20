@@ -88,6 +88,40 @@ static int Lua_LayerStateSetVisible(lua_State* L)
 	return 0;
 }
 
+/*static int Lua_LayerStateGetUnk1(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	lua_pushnumber(L, *layerState->GetUnk1());
+
+	return 1;
+}
+
+static int Lua_LayerStateGetUnk2(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	lua_pushnumber(L, *layerState->GetUnk2());
+
+	return 1;
+}
+*/
+
+static int Lua_LayerStateGetSize(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *layerState->GetSize();
+
+	return 1;
+}
+
+static int Lua_LayerStateSetSize(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	*layerState->GetSize() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	return 0;
+}
+
 static int Lua_LayerStateGetCropYOffset(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
@@ -122,6 +156,10 @@ static void RegisterLayerState(lua_State* L) {
 		{ "SetVisible", Lua_LayerStateSetVisible},
 		{ "GetCropYOffset", Lua_LayerStateGetCropYOffset},
 		{ "SetCropYOffset", Lua_LayerStateSetCropYOffset},
+		//{ "GetUnk1", Lua_LayerStateGetUnk1},
+		//{ "GetUnk2", Lua_LayerStateGetUnk2},
+		{ "GetSize", Lua_LayerStateGetSize},
+		{ "SetSize", Lua_LayerStateSetSize},
 		{ NULL, NULL }
 	};
 

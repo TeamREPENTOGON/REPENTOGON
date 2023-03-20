@@ -2,6 +2,7 @@ struct Manager;
 struct Game;
 struct ANM2;
 struct Vector;
+struct NullFrame;
 struct PlayerManager;
 struct MenuManager;
 struct PersistentGameData;
@@ -50,6 +51,11 @@ struct Manager
 	StringTable _stringTable; //0x4a234
 };
 
+struct AnimationState
+{
+	
+};
+
 struct MenuManager
 {
 	
@@ -66,6 +72,11 @@ struct CompletionWidget
 };
 
 struct Menu_Title
+{
+	
+};
+
+struct Menu_Game
 {
 	
 };

@@ -143,6 +143,8 @@ namespace lua {
 
     namespace metatables
     {
+        extern const char* AnimationStateMT;;
+        extern const char* NullFrameMT;;
         extern const char* EntitySlotMT;;
     }
 
