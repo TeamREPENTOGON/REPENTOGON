@@ -40,6 +40,10 @@ ___
 #### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Debug·Flag () {: aria-label='Functions' }
+#### boolean GetDebugFlag ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Procedural·Item·Manager () {: aria-label='Functions' }
 #### [ProceduralItemManager](ProceduralItemManager.md) GetProceduralItemManager ( ) {: .copyable aria-label='Functions' }
 
@@ -62,3 +66,8 @@ ___
 Returns `true` if hard mode or greedier
 
 ___
+### Toggle·Debug·Flag () {: aria-label='Functions' }
+#### boolean ToggleDebugFlag ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
+Toggles the given debug flag. Returns the state of the debug flag after toggling (under the hood we just return the value of GetDebugFlag after running this).
+
+__

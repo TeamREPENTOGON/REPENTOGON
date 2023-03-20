@@ -109,7 +109,6 @@ static void RegisterConsole(lua_State* L) {
 
 	luaL_setfuncs(L, functions, 0);
 	lua_pop(L, 1);
-
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

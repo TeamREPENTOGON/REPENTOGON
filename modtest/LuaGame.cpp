@@ -12,15 +12,6 @@ int Lua_GameAchievementUnlocksDisallowed(lua_State* L)
 	return 1;
 }
 
-static void RegisterAchievementUnlocksDisallowed(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "AchievementUnlocksDisallowed");
-	lua_pushcfunction(L, Lua_GameAchievementUnlocksDisallowed);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 int Lua_GameGetPlanetariumsVisited(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -59,6 +50,35 @@ int Lua_GetLastLevelWithoutHalfHpFix(lua_State* L)
 	lua_pushinteger(L, game->GetLastLevelWithoutHalfHp());
 
 	return 1;
+}
+
+int Lua_GameGetDebugFlag(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	unsigned int flag = luaL_checkinteger(L, 2) - 1;
+	lua_pushboolean(L, game->GetDebugFlag(flag));
+
+	return 1;
+}
+
+int Lua_GameToggleDebugFlag(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	unsigned int flag = luaL_checkinteger(L, 2) - 1;
+	game->ToggleDebugFlag(flag);
+	lua_pushboolean(L, game->GetDebugFlag(flag));
+
+	return 1;
+}
+
+
+static void RegisterAchievementUnlocksDisallowed(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "AchievementUnlocksDisallowed");
+	lua_pushcfunction(L, Lua_GameAchievementUnlocksDisallowed);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
 }
 
 static void RegisterGetPlanetariumsVisited(lua_State* L)
@@ -106,6 +126,22 @@ static void RegisterGetLastLevelWithoutHalfHpFix(lua_State* L)
 	lua_pop(L, 1);
 }
 
+static void RegisterSetDebugFlag(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "GetDebugFlag");
+	lua_pushcfunction(L, Lua_GameGetDebugFlag);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterToggleDebugFlag(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "ToggleDebugFlag");
+	lua_pushcfunction(L, Lua_GameToggleDebugFlag);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -116,4 +152,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetLastDevilRoomStageFix(state);
 	RegisterGetLastLevelWithDamageFix(state);
 	RegisterGetLastLevelWithoutHalfHpFix(state);
+	RegisterSetDebugFlag(state);
+	RegisterToggleDebugFlag(state);
 }
