@@ -113,6 +113,10 @@ struct Game depends (DailyChallenge)
 	inline Ambush* GetAmbush() { return (Ambush*)((char*)this + 0x1c31b8); }
 	
 	inline Room** GetCurrentRoom() { return (Room**)((char*)this + 0x18190); }
+		
+	inline int GetCurrentRoomIdx() {return *(int*)((char*)this + 0x18194); }
+
+	inline int GetLastBossRoomListIdx() {return *(int*)((char*)this + 0x181A4); }
 	
 	inline int GetGreedModeWave() { return *(int*)((char*)this + 0x181C4); }
 	
@@ -134,9 +138,7 @@ struct Game depends (DailyChallenge)
 	
 	inline unsigned int GetChallenge() { return *(unsigned int*)((char*)this + 0x1C319C); }
 	
-	inline int GetCurrentRoomIdx() {return *(int*)((char*)this + 0x18194); }
-	
-	inline int GetLastBossRoomListIdx() {return *(int*)((char*)this + 0x181A4); }
+	inline unsigned int GetDebugFlags() { return *(unsigned int*)((char*)this + 0X1C3164); }
 	
 	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }
 	

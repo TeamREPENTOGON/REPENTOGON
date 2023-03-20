@@ -61,6 +61,15 @@ int Lua_GameGetDebugFlag(lua_State* L)
 	return 1;
 }
 
+int Lua_GameGetDebugFlags(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushinteger(L, game->GetDebugFlags());
+
+	return 1;
+}
+
+
 int Lua_GameToggleDebugFlag(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -126,10 +135,18 @@ static void RegisterGetLastLevelWithoutHalfHpFix(lua_State* L)
 	lua_pop(L, 1);
 }
 
-static void RegisterSetDebugFlag(lua_State* L) {
+static void RegisterGetDebugFlag(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetDebugFlag");
 	lua_pushcfunction(L, Lua_GameGetDebugFlag);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterGetDebugFlags(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "GetDebugFlags");
+	lua_pushcfunction(L, Lua_GameGetDebugFlags);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 }
@@ -152,6 +169,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetLastDevilRoomStageFix(state);
 	RegisterGetLastLevelWithDamageFix(state);
 	RegisterGetLastLevelWithoutHalfHpFix(state);
-	RegisterSetDebugFlag(state);
+	RegisterGetDebugFlag(state);
+	RegisterGetDebugFlags(state);
 	RegisterToggleDebugFlag(state);
 }

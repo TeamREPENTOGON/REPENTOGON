@@ -42,6 +42,12 @@ ___
 ___
 ### Get·Debug·Flag () {: aria-label='Functions' }
 #### boolean GetDebugFlag ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
+Returns the current state of the debug flag. If a script needs to check multiple debug flags quickly, it's recommended to use GetDebugFlags() instead.
+
+___
+### Get·Debug·Flags () {: aria-label='Functions' }
+#### int GetDebugFlags ( ) {: .copyable aria-label='Functions' }
+Returns a [DebugFlag](enums/DebugFlag.md) bitmask..
 
 ___
 ### Get·Procedural·Item·Manager () {: aria-label='Functions' }
@@ -68,6 +74,6 @@ Returns `true` if hard mode or greedier
 ___
 ### Toggle·Debug·Flag () {: aria-label='Functions' }
 #### boolean ToggleDebugFlag ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
-Toggles the given debug flag. Returns the state of the debug flag after toggling (under the hood we just return the value of GetDebugFlag after running this).
+Toggles the given debug flag. Returns the state of the debug flag after toggling (under the hood we just return the value of GetDebugFlag() after running this).
 
 __
