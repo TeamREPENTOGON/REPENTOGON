@@ -68,6 +68,7 @@ ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS = 1130
 ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY = 1131
 ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS = 1132
 ModCallbacks.MC_POST_DEVIL_CALCULATE = 1133
+ModCallbacks.MC_COMPLETION_MARK_GET = 1047
 
 EntityPartition.ALL = 0xffffffff
 
@@ -1397,4 +1398,22 @@ DebugFlag = {
 	PLAYER_ITEM_INFO = 12,
 	GRID_COLLISION_POINTS = 13,
 	LUA_MEMORY_USAGE = 14
+}
+
+CompletionType = {
+	MOMS_HEART = 0,
+	ISAAC = 1,
+	SATAN = 2,
+	BOSS_RUSH = 3,
+	BLUE_BABY = 4,
+	LAMB = 5,
+	MEGA_SATAN = 6,
+	ULTRA_GREED = 7,
+	--scrappedmark?
+	HUSH = 9,
+	--scrappedmark?
+	ULTRA_GREEDIER = 11,
+	DELIRIUM = 12,
+	MOTHER = 13,
+	BEAST = 14,
 }
