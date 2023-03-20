@@ -1391,7 +1391,7 @@ CompletionType = {
 	BOSS_RUSH = 3,
 	BLUE_BABY = 4,
 	LAMB = 5,
-	MEGA_STAAN = 6,
+	MEGA_SATAN = 6,
 	ULTRA_GREED = 7,
 	--scrappedmark?
 	HUSH = 9,
