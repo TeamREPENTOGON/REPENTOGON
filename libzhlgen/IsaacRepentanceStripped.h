@@ -5,6 +5,7 @@ struct Vector;
 struct NullFrame;
 struct PlayerManager;
 struct MenuManager;
+struct PauseScreen;
 struct PersistentGameData;
 struct Music;
 struct Entity;
@@ -534,6 +535,11 @@ struct ModManager
 
 struct MenuManager
 {
+};
+
+struct PauseScreen
+{
+	
 };
 
 struct Minimap

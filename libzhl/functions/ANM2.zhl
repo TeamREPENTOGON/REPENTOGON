@@ -18,3 +18,6 @@ __thiscall LayerState* ANM2::GetLayer(ANM2 *this<ecx>, const char* layerName);
 
 "558bec5156578b7d??8bf1":
 __thiscall LayerState* ANM2::GetLayer(ANM2 *this<ecx>, int layer);
+
+"558bec5153568bf15780be????????00":
+__thiscall void ANM2::RenderLayer(ANM2 *this<ecx>,int param_1,Vector *param_2,Vector *param_3,Vector *param_4);
