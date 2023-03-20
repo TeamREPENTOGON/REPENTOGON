@@ -55,6 +55,12 @@ __thiscall void Game::StartStageTransition(bool SameStage,int param_2,Entity_Pla
 "558bec83e4f881ec1802":
 __thiscall void Game::Render(Game *this<ecx>);
 
+"558bec8b0d????????8b5508":
+__thiscall void Game::ToggleDebugFlag(Game *this<ecx>, unsigned int debug);
+
+"558bec8b5508b801000000568bf18bca83e11fc1ea05d3e085849664":
+__thiscall bool Game::GetDebugFlag(Game *this<ecx>, unsigned int debug);
+
 //out potential target
 /*
 		01444061 e8  3a  1a       CALL       IsaacRepentance::Game::Game?                     int * Game?(Game * param_1)
@@ -107,6 +113,10 @@ struct Game depends (DailyChallenge)
 	inline Ambush* GetAmbush() { return (Ambush*)((char*)this + 0x1c31b8); }
 	
 	inline Room** GetCurrentRoom() { return (Room**)((char*)this + 0x18190); }
+		
+	inline int GetCurrentRoomIdx() {return *(int*)((char*)this + 0x18194); }
+
+	inline int GetLastBossRoomListIdx() {return *(int*)((char*)this + 0x181A4); }
 	
 	inline int GetGreedModeWave() { return *(int*)((char*)this + 0x181C4); }
 	
@@ -128,9 +138,7 @@ struct Game depends (DailyChallenge)
 	
 	inline unsigned int GetChallenge() { return *(unsigned int*)((char*)this + 0x1C319C); }
 	
-	inline int GetCurrentRoomIdx() {return *(int*)((char*)this + 0x18194); }
-	
-	inline int GetLastBossRoomListIdx() {return *(int*)((char*)this + 0x181A4); }
+	inline unsigned int GetDebugFlags() { return *(unsigned int*)((char*)this + 0X1C3164); }
 	
 	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }
 	

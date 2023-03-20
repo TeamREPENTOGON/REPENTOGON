@@ -48,7 +48,9 @@ nav:
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
+    - CompletionType: enums/CompletionType.md
     - ConsoleFont: enums/ConsoleFont.md
+    - DebugFlag: enums/DebugFlag.md
     - Dimension: enums/Dimension.md
     - Ending: enums/Ending.md
     - EntityPoopVariant: enums/EntityPoopVariant.md

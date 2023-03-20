@@ -405,7 +405,7 @@ function _RunCallback(callbackID, Param, ...)
 	end
 end
 
-rawset(Isaac, "RunAdditiveCallback", function(callbackID, value, ...)
+function _RunAdditiveCallback(callbackID, value, ...)
 	local callbacks = Isaac.GetCallbacks(callbackID)
 	for _, callback in ipairs(callbacks) do
 		local ret = callback.Function(callback.Mod, value, ...)
@@ -414,7 +414,9 @@ rawset(Isaac, "RunAdditiveCallback", function(callbackID, value, ...)
 		end
 	end
 	return value
-end)
+end
+
+rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
 
 Isaac.RunCallbackWithParam = _RunCallback
 
