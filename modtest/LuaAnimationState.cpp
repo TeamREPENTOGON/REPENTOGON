@@ -19,6 +19,21 @@ static int Lua_EntityGetAnimationState(lua_State* L)
 	return 1;
 }
 
+static int Lua_EntityGetOverlayAnimationState(lua_State* L)
+{
+	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
+	AnimationState* toLua = entity->GetOverlayAnimationState();
+	if (toLua == nullptr) {
+		printf("ALERT, ANIMSTATE IS NULL");
+		lua_pushnil(L);
+		return 1;
+	}
+	AnimationState** luaAnimationState = (AnimationState**)lua_newuserdata(L, sizeof(AnimationState*));
+	*luaAnimationState = toLua;
+	luaL_setmetatable(L, lua::metatables::AnimationStateMT);
+	return 1;
+}
+
 static int Lua_AnimationStateGetNullFrame(lua_State* L)
 {
 	AnimationState* animationState = *lua::GetUserdata<AnimationState**>(L, 1, lua::metatables::AnimationStateMT);
@@ -54,6 +69,12 @@ static void RegisterAnimationState(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ENTITY);
 	lua_pushstring(L, "GetAnimationState");
 	lua_pushcfunction(L, Lua_EntityGetAnimationState);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	lua::PushMetatable(L, lua::Metatables::ENTITY);
+	lua_pushstring(L, "GetOverlayAnimationState");
+	lua_pushcfunction(L, Lua_EntityGetOverlayAnimationState);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 

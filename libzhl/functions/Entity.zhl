@@ -61,7 +61,7 @@ struct Entity depends (AnimationState)
 	inline unsigned int* GetVariant() { return (unsigned int*)((char*)this + 0x2c); }
 	inline unsigned int* GetSubType() { return (unsigned int*)((char*)this + 0x30); }
 	inline AnimationState* GetAnimationState() { return (AnimationState*)((char*)this + 0x6c); }
-	//inline AnimationState* GetAnimationState() { return (AnimationState*)((char*)this + 0x8c); }
+	inline AnimationState* GetOverlayAnimationState() { return (AnimationState*)((char*)this + 0x8c); }
 	inline float* GetShadowSize() { return (float*)((char*)this + 0x150); }
 	inline bool* GetVisible() { return (bool*)((char*)this + 0x169); }
 	
