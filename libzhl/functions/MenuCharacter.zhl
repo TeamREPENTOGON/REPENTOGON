@@ -7,3 +7,8 @@ __thiscall void Menu_Character::Render();
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec48a1????????33c58945??5657508d45??64a3????????8bf1":
 __thiscall void Menu_Character::Init(Vector* unk);
+
+struct Menu_Character depends (CompletionWidget)
+{{
+	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 1168); } 
+}};

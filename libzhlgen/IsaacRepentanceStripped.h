@@ -69,7 +69,8 @@ struct PersistentGameData
 
 struct CompletionWidget 
 {
-	
+	int CharacterId;
+	//ANM2* CompletionMarkAnm; //added a getspritefunction with a +4 offset, couldnt get this shit to work
 };
 
 struct Menu_Title

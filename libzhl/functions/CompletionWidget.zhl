@@ -5,3 +5,8 @@ __thiscall void CompletionWidget::Render(CompletionWidget *this<ecx>,Vector* pos
 "558bec83ec6ca1????????33c58945??0f280d":
 void CompletionWidget::Update(CompletionWidget *this<ecx>);
 
+
+struct CompletionWidget depends (ANM2)
+{{
+	inline ANM2* GetANM2() { return (ANM2*)((char*)this + 4); } 
+}};
