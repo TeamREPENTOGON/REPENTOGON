@@ -11,10 +11,13 @@ with open("../documentation/mkdocs.yml") as cfg:
 
 new_mkdocs_enums = [
     {"ModCallbacks": "enums/ModCallbacks.md"}
+    {"ColorPresets": "enums/ColorFade.md"}
 ]
 
+blocked_values = [".MC_", "ColorPresets", "Color(", ".ALL", ".Set"]
+
 for value in data:
-    if not ".MC_" in value and not ".ALL" in value:
+    if not value in blocked_values:
         with open(f"../documentation/docs/enums/{value}.md", "w+") as md:
             md.write(f'---\ntags:\n  - Enum\n---\n# Enum "{value}"\n|Value|Enumerator|Comment|\n|:--|:--|:--|\n');
             if type(data[value]) is dict:

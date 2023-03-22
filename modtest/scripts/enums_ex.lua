@@ -1417,3 +1417,8 @@ CompletionType = {
 	MOTHER = 13,
 	BEAST = 14,
 }
+
+ColorPresets = {
+    EMBER_FADE = Color(1, 1, 1, 1, 1, 0.514, 0.004),
+}
+ColorPresets.EMBER_FADE:SetTint(0, 0, 0, 1.1)
