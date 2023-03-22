@@ -6,31 +6,29 @@
 
 static int Lua_EntityGetAnimationState(lua_State* L)
 {
-	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
-	AnimationState* toLua = entity->GetAnimationState();
-	if (toLua == nullptr) {
-		printf("ALERT, ANIMSTATE IS NULL");
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	if (!entity->IsAnimationExist()) {
 		lua_pushnil(L);
-		return 1;
 	}
-	AnimationState** luaAnimationState = (AnimationState**)lua_newuserdata(L, sizeof(AnimationState*));
-	*luaAnimationState = toLua;
-	luaL_setmetatable(L, lua::metatables::AnimationStateMT);
+	else {
+		AnimationState** toLua = (AnimationState**)lua_newuserdata(L, sizeof(AnimationState*));
+		*toLua = entity->GetAnimationState();
+		luaL_setmetatable(L, lua::metatables::AnimationStateMT);
+	}
 	return 1;
 }
 
 static int Lua_EntityGetOverlayAnimationState(lua_State* L)
 {
-	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
-	AnimationState* toLua = entity->GetOverlayAnimationState();
-	if (toLua == nullptr) {
-		printf("ALERT, ANIMSTATE IS NULL");
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	if (!entity->IsOverlayAnimationExist()) {
 		lua_pushnil(L);
-		return 1;
 	}
-	AnimationState** luaAnimationState = (AnimationState**)lua_newuserdata(L, sizeof(AnimationState*));
-	*luaAnimationState = toLua;
-	luaL_setmetatable(L, lua::metatables::AnimationStateMT);
+	else {
+		AnimationState** toLua = (AnimationState**)lua_newuserdata(L, sizeof(AnimationState*));
+		*toLua = entity->GetOverlayAnimationState();
+		luaL_setmetatable(L, lua::metatables::AnimationStateMT);
+	}
 	return 1;
 }
 
