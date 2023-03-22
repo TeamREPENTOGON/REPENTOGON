@@ -1,4 +1,7 @@
 struct LayerState {{
+	inline Vector* GetSize() {return (Vector*)((char*)this + 0x34); }
+	//inline float* GetUnk1() { return (float*)((char*)this + 0x34); }
+	//inline float* GetUnk2() { return (float*)((char*)this + 0x38); }
 	inline bool* IsVisible() { return (bool*)((char*)this + 0x74); }
 	inline float* GetCropYOffset() { return (float*)((char*)this + 0x90); }
 }};

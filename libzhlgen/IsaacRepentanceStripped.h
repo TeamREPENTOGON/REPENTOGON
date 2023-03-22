@@ -2,8 +2,10 @@ struct Manager;
 struct Game;
 struct ANM2;
 struct Vector;
+struct NullFrame;
 struct PlayerManager;
 struct MenuManager;
+struct PauseScreen;
 struct PersistentGameData;
 struct Music;
 struct Entity;
@@ -50,6 +52,11 @@ struct Manager
 	StringTable _stringTable; //0x4a234
 };
 
+struct AnimationState
+{
+	
+};
+
 struct MenuManager
 {
 	
@@ -62,10 +69,16 @@ struct PersistentGameData
 
 struct CompletionWidget 
 {
-	
+	int CharacterId;
+	//ANM2* CompletionMarkAnm; //added a getspritefunction with a +4 offset, couldnt get this shit to work
 };
 
 struct Menu_Title
+{
+	
+};
+
+struct Menu_Game
 {
 	
 };
@@ -523,6 +536,11 @@ struct ModManager
 
 struct MenuManager
 {
+};
+
+struct PauseScreen
+{
+	
 };
 
 struct Minimap
