@@ -1,5 +1,15 @@
 # Class "Color"
-        
+ 
+## Constants
+### Color.EmberFade {: aria-label='Constants' }
+[ ](#){: .rep .tooltip .badge }
+Used for enemies like Crackles and Coal Spiders. Gibs start orange and fade into grey.
+
+Tint of (0, 0, 0, 1.1)
+Colorize of (0, 0, 0, 0)
+Offset of (1, 0.514, 0.004)
+
+___
 ## Functions
 
 ### Get·Colorize () {: aria-label='Functions' }

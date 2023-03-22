@@ -77,6 +77,15 @@ static void RegisterColorGetOffset(lua_State* L)
 	lua_pop(L, 1);
 }
 
+static void RegisterColorPresets(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::COLOR);
+	lua_pushstring(L, "GetOffset");
+	lua_pushcfunction(L, Lua_ColorGetOffset);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -84,4 +93,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterColorGetTint(state);
 	RegisterColorGetColorize(state);
 	RegisterColorGetOffset(state);
+	RegisterColorPresets(state);
 }

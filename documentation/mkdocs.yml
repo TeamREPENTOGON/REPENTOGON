@@ -48,7 +48,6 @@ nav:
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
-    - ColorPresets: enums/ColorPresets.md
     - CompletionType: enums/CompletionType.md
     - ConsoleFont: enums/ConsoleFont.md
     - DebugFlag: enums/DebugFlag.md

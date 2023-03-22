@@ -1458,7 +1458,5 @@ BitwiseDebugFlag = {
 	LUA_MEMORY_USAGE = 8192
 }
 
-ColorPresets = {
-    EMBER_FADE = Color(1, 1, 1, 1, 1, 0.514, 0.004),
-}
-ColorPresets.EMBER_FADE:SetTint(0, 0, 0, 1.1)
+rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
+Color.EmberFade:SetTint(0, 0, 0, 1.1)
