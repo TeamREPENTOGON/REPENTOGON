@@ -8,7 +8,7 @@ static int Lua_NullFrameGetSize(lua_State* L)
 {
 	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	*toLua = *nullFrame->GetSize();
+	*toLua = *nullFrame->GetScale();
 
 	return 1;
 }
