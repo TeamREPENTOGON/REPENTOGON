@@ -1249,7 +1249,7 @@ namespace _func39
 	static FunctionDefinition funcObj("Entity::AddKnockback", typeid(void (Entity::*)(const EntityRef &, const Vector &, int , bool )), "558bec83e4f85156ff75??8bf1e8", argdata, 5, 5, &func);
 }
 
-__declspec(naked) void Entity::AddKnockback(const EntityRef &ref, const Vector &unk1, int unk2, bool unk3)
+__declspec(naked) void Entity::AddKnockback(const EntityRef &ref, const Vector &pushDirection, int duration, bool takeImpactDamage)
 {
 	__asm
 	{
@@ -1261,9 +1261,9 @@ __declspec(naked) void Entity::AddKnockback(const EntityRef &ref, const Vector &
 		push ebx
 		push esi
 		push edi
-		push [ebp+20]		// unk3
-		push [ebp+16]		// unk2
-		push [ebp+12]		// unk1
+		push [ebp+20]		// takeImpactDamage
+		push [ebp+16]		// duration
+		push [ebp+12]		// pushDirection
 		push [ebp+8]		// ref
 		call _func39::func
 		pop edi
@@ -4942,7 +4942,7 @@ namespace _func151
 	static FunctionDefinition funcObj("ItemOverlay::Show", typeid(void (ItemOverlay::*)(int , int , Entity_Player *)), "558bec83ec1853568b75088bd9895dfc5783fe2e0f87????????", argdata, 4, 5, &func);
 }
 
-__declspec(naked) void ItemOverlay::Show(int eOverlayID, int unk, Entity_Player *player)
+__declspec(naked) void ItemOverlay::Show(int eOverlayID, int delay, Entity_Player *player)
 {
 	__asm
 	{
@@ -4955,7 +4955,7 @@ __declspec(naked) void ItemOverlay::Show(int eOverlayID, int unk, Entity_Player 
 		push esi
 		push edi
 		push [ebp+16]		// player
-		push [ebp+12]		// unk
+		push [ebp+12]		// delay
 		push [ebp+8]		// eOverlayID
 		call _func151::func
 		pop edi
@@ -6406,7 +6406,7 @@ namespace _func198
 	static FunctionDefinition funcObj("PlayerManager::FirstCollectibleOwner", typeid(Entity_Player *(PlayerManager::*)(CollectibleType , RNG **, bool )), "558bec83e4f883ec0c538b5d??56578bf98b0d", argdata, 4, 1, &func);
 }
 
-__declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(CollectibleType collectibleID, RNG **rng, bool allowCoplayers)
+__declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(CollectibleType collectibleID, RNG **rng, bool unk)
 {
 	__asm
 	{
@@ -6417,7 +6417,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(Collectibl
 		push ebx
 		push esi
 		push edi
-		push [ebp+16]		// allowCoplayers
+		push [ebp+16]		// unk
 		push [ebp+12]		// rng
 		push [ebp+8]		// collectibleID
 		call _func198::func
@@ -6500,7 +6500,7 @@ namespace _func201
 	static FunctionDefinition funcObj("PlayerManager::FirstTrinketOwner", typeid(Entity_Player *(PlayerManager::*)(TrinketType , RNG **, bool )), "558bec83ec08a1????????53", argdata, 4, 1, &func);
 }
 
-__declspec(naked) Entity_Player *PlayerManager::FirstTrinketOwner(TrinketType trinketType, RNG **rng, bool allowCoplayers)
+__declspec(naked) Entity_Player *PlayerManager::FirstTrinketOwner(TrinketType trinketType, RNG **rng, bool unk)
 {
 	__asm
 	{
@@ -6511,7 +6511,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstTrinketOwner(TrinketType tr
 		push ebx
 		push esi
 		push edi
-		push [ebp+16]		// allowCoplayers
+		push [ebp+16]		// unk
 		push [ebp+12]		// rng
 		push [ebp+8]		// trinketType
 		call _func201::func
