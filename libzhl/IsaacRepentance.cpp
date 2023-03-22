@@ -6406,7 +6406,7 @@ namespace _func198
 	static FunctionDefinition funcObj("PlayerManager::FirstCollectibleOwner", typeid(Entity_Player *(PlayerManager::*)(CollectibleType , RNG **, bool )), "558bec83e4f883ec0c538b5d??56578bf98b0d", argdata, 4, 1, &func);
 }
 
-__declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(CollectibleType collectibleID, RNG **rng, bool unk)
+__declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(CollectibleType collectibleID, RNG **rng, bool allowCoplayers)
 {
 	__asm
 	{
@@ -6417,7 +6417,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(Collectibl
 		push ebx
 		push esi
 		push edi
-		push [ebp+16]		// unk
+		push [ebp+16]		// allowCoplayers
 		push [ebp+12]		// rng
 		push [ebp+8]		// collectibleID
 		call _func198::func
@@ -6500,7 +6500,7 @@ namespace _func201
 	static FunctionDefinition funcObj("PlayerManager::FirstTrinketOwner", typeid(Entity_Player *(PlayerManager::*)(TrinketType , RNG **, bool )), "558bec83ec08a1????????53", argdata, 4, 1, &func);
 }
 
-__declspec(naked) Entity_Player *PlayerManager::FirstTrinketOwner(TrinketType trinketType, RNG **rng, bool unk)
+__declspec(naked) Entity_Player *PlayerManager::FirstTrinketOwner(TrinketType trinketType, RNG **rng, bool allowCoplayers)
 {
 	__asm
 	{
@@ -6511,7 +6511,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstTrinketOwner(TrinketType tr
 		push ebx
 		push esi
 		push edi
-		push [ebp+16]		// unk
+		push [ebp+16]		// allowCoplayers
 		push [ebp+12]		// rng
 		push [ebp+8]		// trinketType
 		call _func201::func

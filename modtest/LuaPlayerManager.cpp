@@ -9,7 +9,7 @@ static constexpr const char* PlayerManagerMT = "PlayerManager";
 static int Lua_GetPlayerManager(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)game + 0x1AB40;
+	*ud = (char*)game + 0x1BA40;
 	luaL_setmetatable(L, PlayerManagerMT);
 	return 1;
 }
@@ -17,10 +17,10 @@ static int Lua_GetPlayerManager(lua_State* L) {
 int Lua_FirstCollectibleOwner(lua_State* L)
 {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
-	CollectibleType collectible = (CollectibleType)luaL_checkinteger(L, 2);
+	int collectible = luaL_checkinteger(L, 2);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 	bool unk = lua_toboolean(L, 4);
-	Entity_Player* player = playerManager->FirstCollectibleOwner(collectible, &rng, unk);
+	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, unk);
 	if (!player) {
 		lua_pushnil(L);
 	}
@@ -32,7 +32,7 @@ int Lua_FirstCollectibleOwner(lua_State* L)
 
 int Lua_SpawnCoPlayer2(lua_State* L)
 {
-	PlayerManager* playerManager = lua::GetUserdata<PlayerManager*>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
 	int playerType = luaL_checkinteger(L, 2);
 
 	Entity_Player* player = playerManager->SpawnCoPlayer2(playerType);
@@ -43,7 +43,7 @@ int Lua_SpawnCoPlayer2(lua_State* L)
 
 int Lua_PlayerManagerIsCoopPlay(lua_State* L)
 {
-	PlayerManager* playerManager = lua::GetUserdata<PlayerManager*>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
 
 	bool result = playerManager->IsCoopPlay();
 	lua_pushboolean(L, result);
@@ -65,7 +65,7 @@ static void RegisterPlayerManager(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "FirstCollectibleOwner", Lua_FirstCollectibleOwner },
 		{ "SpawnCoPlayer2", Lua_SpawnCoPlayer2 },
-		//{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
+		{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
 		{ NULL, NULL }
 	};
 
