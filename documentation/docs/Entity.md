@@ -19,7 +19,7 @@ ___
 
 ___
 ### Add·Knockback () {: aria-label='Functions' }
-#### void AddKnockback ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) PushDirection, int Duration, boolean Unknown ) {: .copyable aria-label='Functions' }
+#### void AddKnockback ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) PushDirection, int Duration, boolean TakeImpactDamage ) {: .copyable aria-label='Functions' }
 
 ___
 ### Add·Magnetized () {: aria-label='Functions' }
