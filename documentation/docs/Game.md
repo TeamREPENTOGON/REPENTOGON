@@ -40,6 +40,11 @@ ___
 #### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Add·Debug·Flags () {: aria-label='Functions' }
+#### boolean GetDebugFlag ( [BitwiseDebugFlag](enums/BitwiseDebugFlag.md) flag ) {: .copyable aria-label='Functions' }
+Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `BitwiseDebugFlag.ENTITY_POSITIONS | BitwiseDebugFlag.HITSPHERES`)
+
+___
 ### Get·Debug·Flag () {: aria-label='Functions' }
 #### boolean GetDebugFlag ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
 Returns the current state of the debug flag. If a script needs to check multiple debug flags quickly, it's recommended to use GetDebugFlags() instead.
@@ -47,7 +52,7 @@ Returns the current state of the debug flag. If a script needs to check multiple
 ___
 ### Get·Debug·Flags () {: aria-label='Functions' }
 #### int GetDebugFlags ( ) {: .copyable aria-label='Functions' }
-Returns a [DebugFlag](enums/DebugFlag.md) bitmask..
+Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
 ### Get·Procedural·Item·Manager () {: aria-label='Functions' }

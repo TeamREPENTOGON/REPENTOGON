@@ -64,7 +64,7 @@ int Lua_GameGetDebugFlag(lua_State* L)
 int Lua_GameGetDebugFlags(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	lua_pushinteger(L, game->GetDebugFlags());
+	lua_pushinteger(L, *game->GetDebugFlags());
 
 	return 1;
 }
@@ -80,6 +80,13 @@ int Lua_GameToggleDebugFlag(lua_State* L)
 	return 1;
 }
 
+int Lua_GameAddDebugFlags(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	unsigned int flags = luaL_checkinteger(L, 2);
+	*game->GetDebugFlags() |= flags;
+
+}
 
 static void RegisterAchievementUnlocksDisallowed(lua_State* L)
 {
@@ -159,6 +166,14 @@ static void RegisterToggleDebugFlag(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static void RegisterAddDebugFlags(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::GAME);
+	lua_pushstring(L, "AddDebugFlags");
+	lua_pushcfunction(L, Lua_GameAddDebugFlags);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -172,4 +187,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetDebugFlag(state);
 	RegisterGetDebugFlags(state);
 	RegisterToggleDebugFlag(state);
+	RegisterAddDebugFlags(state);
 }
