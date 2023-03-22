@@ -149,6 +149,22 @@ static void RegisterNewAddCacheFlags(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerGetHealthType(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->GetHealthType());
+	return 1;
+}
+
+static void RegisterPlayerGetHealthType(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetHealthType");
+	lua_pushcfunction(L, Lua_PlayerGetHealthType);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 int Lua_PlayerGetTotalActiveCharge(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int slot = luaL_checkinteger(L, 2);
@@ -280,6 +296,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterInitPostLevelInitStats(state);
 	RegisterPlayerSetItemState(state);
 	RegisterNewAddCacheFlags(state);
+	RegisterPlayerGetHealthType(state);
 	RegisterGetTotalActiveCharge(state);
 	RegisterGetActiveMaxCharge(state);
 	RegisterGetActiveMinUsableCharge(state);
