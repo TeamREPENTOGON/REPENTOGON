@@ -227,8 +227,8 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     lua_State* L = g_LuaEngine->_state;
 
     // My reimplementation *should* be accurate, but there's no reason to run it if mods aren't actively attempting to change values.
-    //if (!modsChangingPlanetariumChance(L))
-    //    return originalChance;
+    if (!modsChangingPlanetariumChance(L))
+        return originalChance;
  
     lua::LuaStackProtector protector(L);
     int stageType = this->_stageType;
@@ -288,7 +288,6 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         if (!preApplyTreasureResult) {
             if (lua_isinteger(L, -1)) {
                 treasureRoomsVisited = lua_tointeger(L, -1);
-                //shouldBypassTreasureRestriction = true;
             }
             else if (lua_isboolean(L, -1)) {
                 shouldBypassTreasureRestriction = !lua_toboolean(L, -1);
