@@ -143,6 +143,9 @@ __thiscall void Entity_Player::TriggerNewRoom_TemporaryEffects(Entity_Player *th
 "558bec6aff68????????64a1000000005081ecb8000000535657a1????????":
 __thiscall void Entity_Player::TriggerNewStage(Entity_Player *this<ecx>, bool unk);
 
+"558bec83e4f851568bf18b86????????0386":
+__thiscall bool Entity_Player::TryPreventDeath(Entity_Player *this<ecx>);
+
 struct Entity_Player {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
