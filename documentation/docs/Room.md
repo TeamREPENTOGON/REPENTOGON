@@ -41,6 +41,14 @@ Sets the amount of water that should be in the current room. Vanilla typically u
 
 ___
 ### Set·Water·Color () {: aria-label='Functions' }
-#### void GetWaterColor ( [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
+#### void SetWaterColor ( [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
 
+___
+### Set·Water·Current () {: aria-label='Functions' }
+#### void SetWaterCurrent ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WaterCurrent ) {: .copyable aria-label='Functions' }
+Sets the strength of the water current in the room. Current sounds and particles are automatically handled.
+
+The game typically uses `1` or `-1` for its values depending on current strength and direction. You can technically go higher than this for some interesting results. Arbitrary directions are fully supported as well.
+
+`Vector(0, 0)` will remove the current.
 ___

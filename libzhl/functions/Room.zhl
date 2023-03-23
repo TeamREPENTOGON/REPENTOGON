@@ -37,4 +37,6 @@ struct Room depends (Camera, TemporaryEffects, ColorMod)
 	inline ColorMod* GetWaterColor() { return (ColorMod*)((char*)this + 0x7168 ); }
 	inline ColorMod* GetFloorColor() { return (ColorMod*)((char*)this + 0x7188 ); }
 	inline TemporaryEffects* GetTemporaryEffects() {return (TemporaryEffects*)((char*)this + 0x71F4); }
+	inline Vector* GetWaterCurrent() {return (Vector*)((char*)this + 0x7344); }
+
 }};

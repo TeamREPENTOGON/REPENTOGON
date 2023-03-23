@@ -105,6 +105,15 @@ int Lua_RoomSetWaterColor(lua_State* L)
 	return 0;
 }
 
+int Lua_RoomSetWaterCurrent(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*room->GetWaterCurrent() = *vector;
+
+	return 0;
+}
+
 static void RegisterGetWaterAmount(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ROOM);
 	lua_pushstring(L, "GetWaterAmount");
@@ -146,6 +155,13 @@ static void RegisterSetWaterColor(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static void RegisterSetWaterCurrent(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "SetWaterCurrent");
+	lua_pushcfunction(L, Lua_RoomSetWaterCurrent);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -158,4 +174,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetFloorColor(state);
 	RegisterGetWaterColor(state);
 	RegisterSetWaterColor(state);
+	RegisterSetWaterCurrent(state);
 }
