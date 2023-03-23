@@ -85,7 +85,7 @@ int Lua_GameAddDebugFlags(lua_State* L)
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	unsigned int flags = luaL_checkinteger(L, 2);
 	*game->GetDebugFlags() |= flags;
-
+	return 0;
 }
 
 static void RegisterAchievementUnlocksDisallowed(lua_State* L)

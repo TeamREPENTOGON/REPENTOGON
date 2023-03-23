@@ -12,10 +12,22 @@ ___
 Returns a [Camera](Camera.md) object.
 
 ___
+### Get·Floor·Color () {: aria-label='Functions' }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetWaterColor ( ) {: .copyable aria-label='Functions' }
 
+___
 ### Get·Shop·Item·Price () {: aria-label='Functions' }
 #### int GetShopItemPrice ( int EntityVariant, int EntitySubType, int ShopItemID ) {: .copyable aria-label='Functions' }
 Returns the price of the item.
+
+___
+### Get·Water·Amount () {: aria-label='Functions' }
+#### float GetWaterAmount ( ) {: .copyable aria-label='Functions' }
+Returns the "amount" of water currently in the room. Generally this will be 0 for no water and 1 for water, but values in between 0 and 1 (and technically above 1 in modded scenarios) are possible.
+
+___
+### Get·Water·Color () {: aria-label='Functions' }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetWaterColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Remove·Grid·Entity·Immediate () {: aria-label='Functions' }
@@ -23,4 +35,12 @@ ___
 *Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
 
 ___
+### Set·Water·Amount () {: aria-label='Functions' }
+#### void GetWaterAmount ( float Amount ) {: .copyable aria-label='Functions' }
+Sets the amount of water that should be in the current room. Vanilla typically uses 0 for no water and 1 for water. You can technically go higher than this for some interesting results.
 
+___
+### Set·Water·Color () {: aria-label='Functions' }
+#### void GetWaterColor ( [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
+
+___
