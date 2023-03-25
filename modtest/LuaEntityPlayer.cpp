@@ -300,6 +300,22 @@ static void RegisterTryPreventDeath(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerSetCanShoot(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	bool canShoot = lua_toboolean(L, 2);
+	*player->GetCanShoot() = canShoot;
+	return 0;
+}
+
+static void RegisterSetCanShoot(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "SetCanShoot");
+	lua_pushcfunction(L, Lua_PlayerSetCanShoot);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -319,4 +335,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterPlayerDropCollectible(state);
 	RegisterIncrementPlayerFormCounter(state);
 	RegisterTryPreventDeath(state);
+	RegisterSetCanShoot(state);
 }
