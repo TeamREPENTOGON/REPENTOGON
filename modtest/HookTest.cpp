@@ -155,3 +155,7 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	super(eEvent, num);
 }
 */
+
+HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
+	return false;
+}
