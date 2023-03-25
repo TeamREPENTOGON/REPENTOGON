@@ -10,6 +10,7 @@ struct PersistentGameData;
 struct Music;
 struct Entity;
 struct Entity_Player;
+//struct History;
 struct ColorMod;
 struct Entity_NPC;
 
@@ -322,6 +323,11 @@ struct Entity_Player
 {
 	VTable_EntityPlayer *_vtable;
 	Entity _entity;
+};
+
+struct History
+{
+	
 };
 
 struct ItemConfig_Item
