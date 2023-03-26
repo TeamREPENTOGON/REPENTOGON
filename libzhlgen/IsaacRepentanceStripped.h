@@ -686,3 +686,7 @@ struct Font
 {
     
 };
+
+struct Backdrop {
+    
+};

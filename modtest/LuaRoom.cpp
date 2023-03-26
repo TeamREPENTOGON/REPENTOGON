@@ -35,6 +35,18 @@ static int Lua_RemoveGridEntityImmediate(lua_State* L) {
 	return 0;
 }
 
+static int Lua_RoomSetBackdrop(lua_State* L) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	lua_Integer id = luaL_checkinteger(L, 2);
+	if (id < 0 || id >= 0x3D) {
+		luaL_error(L, "Invalid backdrop id %d (min = 0, max = 61)", id);
+	}
+	lua_Integer unk = luaL_checkinteger(L, 3);
+	Backdrop* backdrop = room->GetBackdrop();
+	backdrop->Init(id, unk);
+	return 0;
+}
+
 static void RegisterRemoveGridEntityImmediate(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ROOM);
 	lua_pushstring(L, "RemoveGridEntityImmediate");
@@ -59,6 +71,14 @@ static void RegisterRoomCanSpawnObstacleAtPosition(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static void RegisterRoomSetBackdrop(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "SetBackdropType");
+	lua_pushcfunction(L, Lua_RoomSetBackdrop);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -66,4 +86,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterRailFunctions(state);
 	RegisterRemoveGridEntityImmediate(state);
 	RegisterRoomCanSpawnObstacleAtPosition(state);
+	RegisterRoomSetBackdrop(state);
 }

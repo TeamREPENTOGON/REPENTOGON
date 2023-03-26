@@ -1,0 +1,2 @@
+"558bec83e4f88b45088bd185c0":
+__thiscall void Backdrop::Init(Backdrop* this<ecx>, uint32_t backdropId, uint32_t unk);

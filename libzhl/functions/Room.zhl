@@ -28,10 +28,11 @@ __thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);
 "558bec83e4f883ec5ca1????????33c4894424??8b45??894424??":
 __thiscall bool Room::CanSpawnObstacleAtPosition(Room *this<ecx>, int GridIndex, bool Force);
 
-struct Room depends (Camera, TemporaryEffects)
+struct Room depends (Camera, TemporaryEffects, Backdrop)
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() {return *(bool**)((char*)this + 0x120C); }
 	inline EntityList* GetEntityList() {return (EntityList*)((char*)this + 0x1218); }
 	inline TemporaryEffects* GetTemporaryEffects() {return (TemporaryEffects*)((char*)this + 0x71F4); }
+    inline Backdrop* GetBackdrop() { return (Backdrop*)((char*)this + 0x1D34); }
 }};
