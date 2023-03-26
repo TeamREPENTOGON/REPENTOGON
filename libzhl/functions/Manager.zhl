@@ -15,6 +15,9 @@ __stdcall void Manager::RestartGame() //v1.7.9b maybe
 "558bec694508a4":
 __thiscall ChallengeParam* Manager::GetChallengeParams(Manager *this<ecx>, int challengeID);
 
+"558bec51568b35????????8b86":
+__thiscall bool Manager::AchievementUnlocksDisallowed(Manager *this<ecx>, bool unk);
+
 struct Manager {{
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
 }};

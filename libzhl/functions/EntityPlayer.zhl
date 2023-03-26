@@ -146,9 +146,13 @@ __thiscall void Entity_Player::TriggerNewStage(Entity_Player *this<ecx>, bool un
 "558bec83e4f851568bf18b86????????0386":
 __thiscall bool Entity_Player::TryPreventDeath(Entity_Player *this<ecx>);
 
-struct Entity_Player {{
+"558bec578bf98b4d":
+__thiscall void Entity_Player::RemoveCollectibleByHistoryIndex(Entity_Player *this<ecx>, int index);
+
+struct Entity_Player depends (History) {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
-	inline bool* GetCanShoot() { return (bool*)(char*)this + 0x1745; }
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
+	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
+	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 }};

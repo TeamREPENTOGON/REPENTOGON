@@ -300,6 +300,21 @@ static void RegisterTryPreventDeath(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int lua_PlayerRemoveCollectibleByHistoryIndex(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int index = luaL_checknumber(L, 2);
+	player->RemoveCollectibleByHistoryIndex(index);
+	return 0;
+}
+
+static void RegisterRemoveCollectibleByHistoryIndex(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "RemoveCollectibleByHistoryIndex");
+	lua_pushcfunction(L, lua_PlayerRemoveCollectibleByHistoryIndex);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 int Lua_PlayerSetCanShoot(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -352,4 +367,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterTryPreventDeath(state);
 	RegisterSetCanShoot(state);
 	RegisterGetDeadEyeCharge(state);
+	RegisterRemoveCollectibleByHistoryIndex(state);
 }

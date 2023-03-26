@@ -1,17 +1,66 @@
+
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include <bitset>
 
-HOOK_METHOD(Game, ShakeScreen, (int amount) -> void) {
-	super(amount);
+
+#include <lua.hpp>
+#include "LuaCore.h"
+
+
+//Completion Makrs Test
+HOOK_METHOD(PauseScreen, Render, () -> void) {
+	super();
+	int playertype = g_Game->GetPlayer(0)->GetPlayerType();
+	if (playertype > 40) {
+		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget"); 
+		Vector* widgtpos = nul->GetPos();
+		Vector* widgtscale = nul->GetScale();
+		CompletionWidget* cmpl = this->GetCompletionWidget();
+
+		ANM2* anm = cmpl->GetANM2();
+
+		for (int i = 1; i <= 11; i++) {
+			anm->SetLayerFrame(i, 1);
+		}
+		anm->Update();
+		cmpl->Render(new Vector((g_WIDTH * 0.6) + widgtpos->x, (g_HEIGHT * 0.5) +widgtpos->y), widgtscale);
+	}
 }
 
-HOOK_METHOD(Menu_Character, Init, (Vector* x) -> void) {
-	printf("Chara Menu Init \n");
-	super(x);
+int selectedchar = 0;
+HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
+	selectedchar = CharacterId;
+	super(CharacterId, RenderPos, DefaultSprite);
 }
-HOOK_METHOD(CompletionWidget, Render, (Vector* a, Vector* b) -> void) {
-	super(a, b);
+HOOK_METHOD(Menu_Character, Render, () -> void) {
+	super();
+	CompletionWidget* cmpl = this->GetCompletionWidget();
+	if(this->charaslot > 17){
+		Vector* ref = (Vector *)(g_MenuManager + 60);
+		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
+		ANM2* anm = cmpl->GetANM2();
+		
+		for (int i = 1; i <= 11; i++) {
+			anm->SetLayerFrame(i, 1);
+		}
+		anm->Update();	
+		cmpl->Render(new Vector(ref->x + 80, ref->y + 860), new Vector(1, 1));
+
+	}
+}
+//Completion Makrs Test END
+
+HOOK_METHOD(ANM2, SetLayerFrame, (int x,int y) -> void) {
+	//this->Render(new Vector(100, 100), new Vector(0, 0), new Vector(0, 0)); // this crashes
+	super(x,y);
+}
+
+HOOK_METHOD(ANM2, Render, (Vector* x,Vector* y, Vector* z) -> void) {
+	for (int i = 1; i == 101; i++) {
+        this->SetLayerFrame(i, 1);
+	}
+	super(x,y,z);
 }
 
 HOOK_METHOD(Game, StartStageTransition, (bool samestage, int animation, Entity_Player *player) -> void) {
@@ -145,13 +194,50 @@ HOOK_METHOD(Entity_Player, AddPrettyFly, () -> void) {
 	return super(loopIndex, weaponType, shotDirection, shotSpeed, multiShotParams);
 }*/
 
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
-	printf("%d\n", CharacterId);
-	super(CharacterId, RenderPos, DefaultSprite);
-}
 
 /*HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int num) -> void) {
 	printf("IncreaseEventCounter %d %d\n", eEvent, num);
 	super(eEvent, num);
+}
+*/
+
+HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
+	return false;
+}
+HOOK_METHOD(Manager, RecordPlayerCompletion, (int eEvent) -> void) {
+	super(eEvent);
+}
+
+
+/* //Sinful stuff, DONT JUDGE! (or at least do it in silence)
+int Lua_TEST(lua_State* L)
+{
+		int n = lua_gettop(L);
+		int menuid = luaL_checkinteger(L, 1);
+		char* x = (char *)(g_Manager + menuid); //(171924*4) anm2
+		int* y = (int *)(g_Manager + menuid);
+		float* z = (float *)(g_Manager + menuid);
+		long* zz = (long *)(g_Manager + menuid);
+		printf("tests: %s \n", x);
+		printf("testd: %d \n", *y);
+		printf("testf: %f \n", *z);
+		printf("testl: %l \n", *zz);
+		printf("--------------------- \n");
+		return 0;
+}
+
+ int RegisterTest(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "Test");
+	lua_pushcfunction(L, Lua_TEST);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+	return 0;
+}
+HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+	super();
+	lua_State* state = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(state);
+	RegisterTest(state);
 }
 */
