@@ -109,23 +109,22 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         chance += (0.1 * list->CountWisps(COLLECTIBLE_SATANIC_BIBLE));
 
         unsigned int lastDevilRoomStage = g_Game->GetLastDevilRoomStage();
-        bool shouldBypassStagePenalty = false;
+        bool shouldApplyStagePenalty = true;
 
         //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
-        lua_getglobal(L, "Isaac");
-        lua_getfield(L, -1, "RunCallback");
-        lua_remove(L, lua_absindex(L, -2));
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
         lua::LuaResults preApplyStagePenaltyResult = lua::LuaCaller(L).push(1131)
             .push(chance)
             .call(1);
 
         if (!preApplyStagePenaltyResult) {
-                shouldBypassStagePenalty = lua_toboolean(L, -1);
+                if(lua_isboolean(L, -1))
+                    shouldApplyStagePenalty = lua_toboolean(L, -1);
         }
         //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
 
-        if (lastDevilRoomStage && !shouldBypassStagePenalty) {
+        if (lastDevilRoomStage && shouldApplyStagePenalty) {
             unsigned int stageType = g_Game->_stageType;
             unsigned int stage = g_Game->_stage;
 
@@ -237,7 +236,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     PlayerManager* manager = g_Game->GetPlayerManager();
     bool hasTelescopeLens = manager->FirstTrinketOwner(TRINKET_TELESCOPE_LENS, 0, true);
     bool shouldBypassPlanetariumRestriction = false;
-    bool shouldBypassStageRestriction = false;
+    bool shouldApplyStageRestriction = true;
     float chance = 0.01;
 
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
@@ -249,14 +248,15 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         .call(1);
 
     if (!preApplyStageResult) {
-            shouldBypassStageRestriction = lua_toboolean(L, -1);
+            if(lua_isboolean(L, -1))
+                shouldApplyStageRestriction = lua_toboolean(L, -1);
     }
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
 
     if (stageType == STAGETYPE_REPENTANCE || stageType == STAGETYPE_REPENTANCE_B)
         stage++;
 
-    if (!shouldBypassStageRestriction && (stage > STAGE3_2 && !hasTelescopeLens || stage > STAGE4_2))
+    if (shouldApplyStageRestriction && (stage > STAGE3_2 && !hasTelescopeLens || stage > STAGE4_2))
         return 0.f;
 
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
@@ -268,7 +268,8 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         .call(1);
 
     if (!preApplyPlanetariumResult) {
-            shouldBypassPlanetariumRestriction = lua_toboolean(L, -1);
+            if(lua_isboolean(L, -1))
+                shouldBypassPlanetariumRestriction = !lua_toboolean(L, -1);
     }
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
 
@@ -285,15 +286,18 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
             .call(1);
 
         if (!preApplyTreasureResult) {
-            if (lua_isinteger(L, -1))
+            if (lua_isinteger(L, -1)) {
                 treasureRoomsVisited = lua_tointeger(L, -1);
-            else if(lua_isboolean(L, -1))
-                shouldBypassTreasureRestriction = lua_toboolean(L, -1);
+            }
+            else if (lua_isboolean(L, -1)) {
+                shouldBypassTreasureRestriction = !lua_toboolean(L, -1);
+                if(shouldBypassTreasureRestriction)
+                    treasureRoomsVisited = 0;
+            }
         }
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
-
         if (treasureRoomsVisited < stage - 1 || shouldBypassTreasureRestriction) {
-                chance += ((stage - treasureRoomsVisited - 1) * 0.2);
+            chance += ((stage - treasureRoomsVisited - 1) * 0.2);
 
             // no idea if these values to FirstCollectibleOwner are right, but... trust in the decomp, i guess?
             // second is 0 for now, gotta figure out why FirstCollectibleOwner even... needs RNG, that doesn't make sense to me

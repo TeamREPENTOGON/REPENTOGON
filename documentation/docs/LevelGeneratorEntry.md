@@ -10,6 +10,6 @@ ___
 
 ___
 ### Set·Line·Idx () {: aria-label='Functions' }
-#### void SetLineIdx ( [LevelGeneratorEntry](LevelGeneratorEntry.md) Room, int ColIdx ) {: .copyable aria-label='Functions' }
+#### void SetLineIdx ( [LevelGeneratorEntry](LevelGeneratorEntry.md) Room, int LineIdx ) {: .copyable aria-label='Functions' }
 
 ___

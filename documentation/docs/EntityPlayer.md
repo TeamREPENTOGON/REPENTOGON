@@ -40,6 +40,11 @@ ___
 ### Get·Active·Min·Usable·Charge () {: aria-label='Functions' }
 #### int GetActiveMinUsableCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
+
+___
+### Get·Dead·Eye·Charge () {: aria-label='Functions' }
+#### int GetDeadEyeCharge ( ) {: .copyable aria-label='Functions' }
+
 ___
 ### Get·Health·Type () {: aria-label='Functions' }
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
@@ -62,6 +67,11 @@ ___
 ### Set·Active·Var·Data () {: aria-label='Functions' }
 #### void SetActiveVarData ( int VarData, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
+
+___
+### Set·Can·Shoot () {: aria-label='Functions' }
+#### bool SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
+Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
 ___
 ### Set·Item·State () {: aria-label='Functions' }
 #### void SetItemState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType ) {: .copyable aria-label='Functions' }

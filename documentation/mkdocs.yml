@@ -86,6 +86,7 @@ nav:
     - WispSubType: enums/WispSubType.md
   - Ambush: Ambush.md
   - Camera: Camera.md
+  - Color: Color.md
   - Console: Console.md
   - Entity:
     - Entity: Entity.md

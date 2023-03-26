@@ -529,5 +529,6 @@ namespace lua {
 		const char* AnimationStateMT = "AnimationState";
 		const char* NullFrameMT = "NullFrame";
 		const char* EntitySlotMT = "EntitySlot";
+		const char* HistoryMT = "History";
 	}
 }

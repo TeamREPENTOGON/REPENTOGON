@@ -311,6 +311,8 @@ local function logError(callbackID, modName, err)
 	    err_min_font:Load("font/luaminioutlined.fnt") 
             local mouse = Sprite()
             mouse:Load("gfx/ui/cursor.anm2", true)
+	    mouse:Play("Idle")
+	    local mousecontrol_off=not Options.MouseControl	--i bet its expensive to straight up call this every frame
 
 
             errdisp:AddPriorityCallback(ModCallbacks.MC_HUD_RENDER, INT_MIN, function()
@@ -335,9 +337,10 @@ local function logError(callbackID, modName, err)
                        Game():GetConsole():Show()
                    end
                end
-
-               mouse:Play("Idle")
-               mouse:Render(mouse_pos)
+               
+		if mousecontrol_off then
+              		mouse:Render(mouse_pos)
+		end
             end)
 									
 	    errdisp:AddPriorityCallback(ModCallbacks.MC_GET_SHADER_PARAMS, INT_MIN, function()

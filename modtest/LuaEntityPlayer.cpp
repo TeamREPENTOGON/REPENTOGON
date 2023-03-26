@@ -149,6 +149,22 @@ static void RegisterNewAddCacheFlags(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerGetHealthType(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->GetHealthType());
+	return 1;
+}
+
+static void RegisterPlayerGetHealthType(lua_State* L)
+{
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetHealthType");
+	lua_pushcfunction(L, Lua_PlayerGetHealthType);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 int Lua_PlayerGetTotalActiveCharge(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int slot = luaL_checkinteger(L, 2);
@@ -270,6 +286,66 @@ static void RegisterIncrementPlayerFormCounter(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerTryPreventDeath(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushboolean(L, player->TryPreventDeath());
+	return 1;
+}
+
+static void RegisterTryPreventDeath(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "TryPreventDeath");
+	lua_pushcfunction(L, Lua_PlayerTryPreventDeath);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+int lua_PlayerRemoveCollectibleByHistoryIndex(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int index = luaL_checknumber(L, 2);
+	player->RemoveCollectibleByHistoryIndex(index);
+	return 0;
+}
+
+static void RegisterRemoveCollectibleByHistoryIndex(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "RemoveCollectibleByHistoryIndex");
+	lua_pushcfunction(L, lua_PlayerRemoveCollectibleByHistoryIndex);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+int Lua_PlayerSetCanShoot(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	bool canShoot = lua_toboolean(L, 2);
+	*player->GetCanShoot() = canShoot;
+	return 0;
+}
+
+static void RegisterSetCanShoot(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "SetCanShoot");
+	lua_pushcfunction(L, Lua_PlayerSetCanShoot);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+int Lua_PlayerGetDeadEyeCharge(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->GetDeadEyeCharge());
+	return 1;
+}
+
+static void RegisterGetDeadEyeCharge(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetDeadEyeCharge");
+	lua_pushcfunction(L, Lua_PlayerGetDeadEyeCharge);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -280,6 +356,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterInitPostLevelInitStats(state);
 	RegisterPlayerSetItemState(state);
 	RegisterNewAddCacheFlags(state);
+	RegisterPlayerGetHealthType(state);
 	RegisterGetTotalActiveCharge(state);
 	RegisterGetActiveMaxCharge(state);
 	RegisterGetActiveMinUsableCharge(state);
@@ -287,4 +364,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterPlayerAddActiveCharge(state);
 	RegisterPlayerDropCollectible(state);
 	RegisterIncrementPlayerFormCounter(state);
+	RegisterTryPreventDeath(state);
+	RegisterSetCanShoot(state);
+	RegisterGetDeadEyeCharge(state);
+	RegisterRemoveCollectibleByHistoryIndex(state);
 }

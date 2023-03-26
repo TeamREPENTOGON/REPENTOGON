@@ -1,5 +1,5 @@
 "558bec83ec1853568b75088bd9895dfc5783fe2e0f87????????":
-__thiscall void ItemOverlay::Show(ItemOverlay *this<ecx>, int eOverlayID, int unk, Entity_Player *player);
+__thiscall void ItemOverlay::Show(ItemOverlay *this<ecx>, int eOverlayID, int delay, Entity_Player *player);
 
 "558bec6aff68????????64a1000000005083ec20535657a1????????33c5508d45f464a3000000008bf98b0783f80175??":
 __thiscall void ItemOverlay::Update(ItemOverlay *this<ecx>, bool unk);

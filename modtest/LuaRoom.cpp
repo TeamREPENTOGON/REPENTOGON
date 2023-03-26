@@ -71,10 +71,143 @@ static void RegisterRoomCanSpawnObstacleAtPosition(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-static void RegisterRoomSetBackdrop(lua_State* L) {
+int Lua_RoomGetWaterAmount(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	lua_pushnumber(L, *room->GetWaterAmount());
+
+	return 1;
+}
+
+int Lua_RoomSetWaterAmount(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	float amount = luaL_checknumber(L, 2);
+	*room->GetWaterAmount() = amount;
+
+	return 0;
+}
+
+int Lua_RoomGetFloorColor(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+
+	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	*toLua = *room->GetFloorColor();
+
+	return 1;
+}
+
+int Lua_RoomGetWaterColor(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+
+	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
+	*toLua = *room->GetWaterColor();
+
+	return 1;
+}
+
+int Lua_RoomSetWaterColor(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	KColor* color = lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*room->GetUnknownWaterInt() = 1; // See Room.zhl for more info
+	*room->GetWaterColor() = *color;
+
+	return 0;
+}
+
+int Lua_RoomGetWaterColorMultiplier(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+
+	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
+	*toLua = *room->GetWaterColorMultiplier();
+
+	return 1;
+}
+
+int Lua_RoomSetWaterColorMultiplier(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	KColor* color = lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*room->GetUnknownWaterInt() = 1;
+	*room->GetWaterColorMultiplier() = *color;
+
+	return 0;
+}
+
+int Lua_RoomSetWaterCurrent(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*room->GetWaterCurrent() = *vector;
+
+	return 0;
+}
+
+static void RegisterGetWaterAmount(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "SetBackdropType");
-	lua_pushcfunction(L, Lua_RoomSetBackdrop);
+	lua_pushstring(L, "GetWaterAmount");
+	lua_pushcfunction(L, Lua_RoomGetWaterAmount);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+
+static void RegisterSetWaterAmount(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "SetWaterAmount");
+	lua_pushcfunction(L, Lua_RoomSetWaterAmount);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterGetFloorColor(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "GetFloorColor");
+	lua_pushcfunction(L, Lua_RoomGetFloorColor);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterGetWaterColor(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "GetWaterColor");
+	lua_pushcfunction(L, Lua_RoomGetWaterColor);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterSetWaterColor(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "SetWaterColor");
+	lua_pushcfunction(L, Lua_RoomSetWaterColor);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterSetWaterCurrent(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "SetWaterCurrent");
+	lua_pushcfunction(L, Lua_RoomSetWaterCurrent);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterGetWaterColorMultiplier(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "GetWaterColorMultiplier");
+	lua_pushcfunction(L, Lua_RoomGetWaterColorMultiplier);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterSetWaterColorMultiplier(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "SetWaterColorMultiplier");
+	lua_pushcfunction(L, Lua_RoomSetWaterColorMultiplier);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 }
@@ -86,5 +219,13 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterRailFunctions(state);
 	RegisterRemoveGridEntityImmediate(state);
 	RegisterRoomCanSpawnObstacleAtPosition(state);
+	RegisterGetWaterAmount(state);
+	RegisterSetWaterAmount(state);
+	RegisterGetFloorColor(state);
+	RegisterGetWaterColor(state);
+	RegisterSetWaterColor(state);
+	RegisterSetWaterCurrent(state);
+	RegisterGetWaterColorMultiplier(state);
+	RegisterSetWaterColorMultiplier(state);
 	RegisterRoomSetBackdrop(state);
 }

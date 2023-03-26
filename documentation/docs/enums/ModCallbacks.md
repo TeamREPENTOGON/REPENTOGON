@@ -474,7 +474,7 @@ By default, planetariums cannot spawn past Depths II (Womb II with Telescope Len
 
 This callback can be used, for example, to add custom planetarium spawn rules on custom floors, or to add new items like Telescope Lens which can augment the rules.
 
-Accepts a `boolean`. Return `true` to bypass the planetarium stage limitation, or `false` to keep it intact.
+Accepts a `boolean`. Return `false` to bypass the planetarium stage penalty.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -485,7 +485,7 @@ After ensuring the stage is valid, the game then checks if a planetarium has bee
 
 If you're looking to add an item like Telescope Lens which modifies the *base* chance, have a look at MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS instead.
 
-Accepts a `boolean`. Return `true` to bypass the planetarium enter limitation, or `false` to keep it intact.
+Accepts a `boolean`. Return `false` to bypass the planetarium enter penalty.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -496,7 +496,8 @@ After ensuring planetariums haven't been entered before, the game then checks ho
 
 If you're looking to add an item like Telescope Lens which modifies the *base* chance, have a look at MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS instead.
 
-Accepts a `boolean`. Return `true` to bypass the planetarium treasure room limitation, or `false` to keep it intact.
+
+Accepts a `boolean`. Return `false` to bypass the planetarium treasure room penalty entirely, meaning the game will act as if no treasure rooms have been entered.
 
 Alternatively accepts an `int` to modify how many treasure rooms the game will believe has been entered.
 
@@ -604,7 +605,7 @@ Next, the game calculates stage penalty. If a deal spawned anywhere on the previ
 
 Important to note that even though the game displays a value of ~66% or ~33% for the 50% and 25% values, respectively, this is because devil chance is *not* clamped to a value between 0 and 1, and "100%" without items generally means a value of ~133%.
 
-Accepts a `boolean`. Return `true` to bypass the stage penalty, or `false` to keep it intact.
+Accepts a `boolean`. Return `false` to bypass the stage penalty.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|

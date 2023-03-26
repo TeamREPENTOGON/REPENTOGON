@@ -4,11 +4,11 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static int Lua_NullFrameGetSize(lua_State* L)
+static int Lua_NullFrameGetScale(lua_State* L)
 {
 	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	*toLua = *nullFrame->GetSize();
+	*toLua = *nullFrame->GetScale();
 
 	return 1;
 }
@@ -31,7 +31,7 @@ static void RegisterNullFrame(lua_State* L)
 
 	luaL_Reg funcs[] = {
 		{ "GetPos", Lua_NullFrameGetPos},
-		{ "GetSize", Lua_NullFrameGetSize},
+		{ "GetScale", Lua_NullFrameGetScale},
 		{ NULL, NULL }
 	};
 
