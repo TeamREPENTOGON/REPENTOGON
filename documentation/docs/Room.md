@@ -27,7 +27,11 @@ Returns the "amount" of water currently in the room. Generally this will be 0 fo
 
 ___
 ### Get·Water·Color () {: aria-label='Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetWaterColor ( ) {: .copyable aria-label='Functions' }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetWaterColor ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Water·Color·Multiplier () {: aria-label='Functions' }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetWaterColorMultiplier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Remove·Grid·Entity·Immediate () {: aria-label='Functions' }
@@ -41,7 +45,11 @@ Sets the amount of water that should be in the current room. Vanilla typically u
 
 ___
 ### Set·Water·Color () {: aria-label='Functions' }
-#### void SetWaterColor ( [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
+#### void SetWaterColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Water·Color·Multiplier () {: aria-label='Functions' }
+#### void SetWaterColorMultiplier ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Water·Current () {: aria-label='Functions' }

@@ -28,13 +28,21 @@ __thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);
 "558bec83e4f883ec5ca1????????33c4894424??8b45??894424??":
 __thiscall bool Room::CanSpawnObstacleAtPosition(Room *this<ecx>, int GridIndex, bool Force);
 
+
 struct Room depends (Camera, TemporaryEffects, ColorMod)
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() {return *(bool**)((char*)this + 0x120C); }
 	inline EntityList* GetEntityList() {return (EntityList*)((char*)this + 0x1218); }
 	inline float* GetWaterAmount() {return (float*)((char*)this + 0x7134); }
-	inline ColorMod* GetWaterColor() { return (ColorMod*)((char*)this + 0x7168 ); }
+	inline KColor* GetWaterColor() { return (KColor*)((char*)this + 0x7158 ); }
+	inline KColor* GetWaterColorMultiplier() { return (KColor*)((char*)this + 0x7168 ); }
+	
+	// Initially, the base water color was erroneously defined as a Color and not a KColor occupying 0x7168. Color takes more bytes in memory.
+	// Due to this, when setting the color, some arbitrary bytes ahead of the water color were being set.
+	// While the true nature of these bytes aren't yet understood, the one at 0x7178 seems to control whether water color is rendered.
+	inline int* GetUnknownWaterInt() { return (int*)((char*)this + 0x7178 ); }
+	
 	inline ColorMod* GetFloorColor() { return (ColorMod*)((char*)this + 0x7188 ); }
 	inline TemporaryEffects* GetTemporaryEffects() {return (TemporaryEffects*)((char*)this + 0x71F4); }
 	inline Vector* GetWaterCurrent() {return (Vector*)((char*)this + 0x7344); }
