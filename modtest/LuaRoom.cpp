@@ -41,9 +41,9 @@ static int Lua_RoomSetBackdrop(lua_State* L) {
 	if (id < 0 || id >= 0x3D) {
 		luaL_error(L, "Invalid backdrop id %d (min = 0, max = 61)", id);
 	}
-	lua_Integer unk = luaL_checkinteger(L, 3);
+	lua_Integer changeDecoration = luaL_checkinteger(L, 3);
 	Backdrop* backdrop = room->GetBackdrop();
-	backdrop->Init(id, unk);
+	backdrop->Init(id, changeDecoration);
 	return 0;
 }
 
@@ -208,6 +208,14 @@ static void RegisterSetWaterColorMultiplier(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ROOM);
 	lua_pushstring(L, "SetWaterColorMultiplier");
 	lua_pushcfunction(L, Lua_RoomSetWaterColorMultiplier);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterRoomSetBackdrop(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ROOM);
+	lua_pushstring(L, "SetBackdropType");
+	lua_pushcfunction(L, Lua_RoomSetBackdrop);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 }
