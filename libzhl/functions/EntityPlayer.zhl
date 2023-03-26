@@ -150,4 +150,5 @@ struct Entity_Player {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 	inline bool* GetCanShoot() { return (bool*)(char*)this + 0x1745; }
+	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 }};

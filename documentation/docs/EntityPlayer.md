@@ -40,6 +40,11 @@ ___
 ### Get·Active·Min·Usable·Charge () {: aria-label='Functions' }
 #### int GetActiveMinUsableCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
+
+___
+### Get·Dead·Eye·Charge () {: aria-label='Functions' }
+#### int GetDeadEyeCharge ( ) {: .copyable aria-label='Functions' }
+
 ___
 ### Get·Health·Type () {: aria-label='Functions' }
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
