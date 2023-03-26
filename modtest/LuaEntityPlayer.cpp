@@ -346,6 +346,32 @@ static void RegisterGetDeadEyeCharge(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerTeleport(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	bool doEffects = true;
+	bool teleportTwinPlayers = false;
+
+	if (lua_isboolean(L, 3))
+		doEffects = lua_toboolean(L, 3);
+
+	if (lua_isboolean(L, 4))
+		teleportTwinPlayers = lua_toboolean(L, 4);
+
+	player->Teleport(position, doEffects, teleportTwinPlayers);
+	return 0;
+}
+
+static void RegisterTeleport(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "Teleport");
+	lua_pushcfunction(L, Lua_PlayerTeleport);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -368,4 +394,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterSetCanShoot(state);
 	RegisterGetDeadEyeCharge(state);
 	RegisterRemoveCollectibleByHistoryIndex(state);
+	RegisterTeleport(state);
 }

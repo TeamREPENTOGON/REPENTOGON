@@ -149,6 +149,11 @@ __thiscall bool Entity_Player::TryPreventDeath(Entity_Player *this<ecx>);
 "558bec578bf98b4d":
 __thiscall void Entity_Player::RemoveCollectibleByHistoryIndex(Entity_Player *this<ecx>, int index);
 
+"558bec6aff68????????64a1????????5081ec4c010000":
+__thiscall void Entity_Player::Teleport(Entity_Player *this<ecx>,Vector *position, bool doEffects, bool teleportTwinPlayers);
+
+
+
 struct Entity_Player depends (History) {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }

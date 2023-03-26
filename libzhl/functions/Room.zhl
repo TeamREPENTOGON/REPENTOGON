@@ -29,7 +29,7 @@ __thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);
 __thiscall bool Room::CanSpawnObstacleAtPosition(Room *this<ecx>, int GridIndex, bool Force);
 
 
-struct Room depends (Camera, TemporaryEffects, ColorMod)
+struct Room depends (Camera, TemporaryEffects, ColorMod, KColor, Vector, EntityList)
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() {return *(bool**)((char*)this + 0x120C); }
