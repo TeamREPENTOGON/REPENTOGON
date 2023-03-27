@@ -240,8 +240,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     float chance = 0.01;
 
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
-    lua_getglobal(L, "Isaac");
-    lua_getfield(L, -1, "RunCallback");
+    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
     lua_remove(L, lua_absindex(L, -2));
 
     lua::LuaResults preApplyStageResult = lua::LuaCaller(L).push(1110)
@@ -260,8 +259,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         return 0.f;
 
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
-    lua_getglobal(L, "Isaac");
-    lua_getfield(L, -1, "RunCallback");
+    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
     lua_remove(L, lua_absindex(L, -2));
 
     lua::LuaResults preApplyPlanetariumResult = lua::LuaCaller(L).push(1111)
@@ -277,8 +275,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         bool shouldBypassTreasureRestriction = false;
         int treasureRoomsVisited = g_Game->GetTreasureRoomsVisited();
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
-        lua_getglobal(L, "Isaac");
-        lua_getfield(L, -1, "RunCallback");
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
         lua_remove(L, lua_absindex(L, -2));
 
         lua::LuaResults preApplyTreasureResult = lua::LuaCaller(L).push(1112)
