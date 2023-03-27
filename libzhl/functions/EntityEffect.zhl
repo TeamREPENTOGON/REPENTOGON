@@ -1,5 +1,5 @@
 "558bec81ecc0010000":
 __thiscall void Entity_Effect::Render(Entity_Effect *this<ecx>, Vector *offset);
 
-"558bec83e4f856578bfa8bf1e82f6a0d00":
-static __cdecl Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t unk1, bool unk2);
+"558bec83e4f856578bfa":
+static __cdecl Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);

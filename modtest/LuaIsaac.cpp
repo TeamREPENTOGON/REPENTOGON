@@ -184,7 +184,15 @@ static int Lua_CreateTimer(lua_State* L) {
 		delay = 1;
 	}
 
-	Entity_Effect* effect = Entity_Effect::CreateTimer(&TimerFunction, delay, 0, true);
+	int times = luaL_optinteger(L, 3, 0);
+	if(times < 0)
+		times = 1;
+
+	bool persistent = true;
+	if (lua_isboolean(L, 4))
+		persistent = lua_toboolean(L, 4);
+
+	Entity_Effect* effect = Entity_Effect::CreateTimer(&TimerFunction, delay, times, persistent);
 
 	// Register function in the registry
 	lua_rawgeti(L, LUA_REGISTRYINDEX, timerFnTable);
