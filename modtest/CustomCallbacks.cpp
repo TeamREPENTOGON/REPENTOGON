@@ -680,7 +680,7 @@ HOOK_METHOD(Entity_Player, UseCard, (int cardType, unsigned int useFlag) -> void
 }
 
 
-//PRE_USE_PILL (id: 1065)
+//(PRE_)USE_PILL (id: 1065/1000)
 HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int useFlag) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
@@ -704,6 +704,17 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 	}
 
 	super(pillEffect, pillColor, useFlag);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua::LuaResults postResult = lua::LuaCaller(L).push(1000)
+		.push(pillEffect)
+		.push(pillEffect)
+		.push(this, lua::Metatables::ENTITY_PLAYER)
+		.push(useFlag)
+		.push(pillColor)
+		.call(1);
+
+	
 }
 
 //GET_SHOP_ITEM_PRICE (id: 1066)
