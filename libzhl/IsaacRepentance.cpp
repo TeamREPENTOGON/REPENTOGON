@@ -1480,7 +1480,7 @@ namespace _func46
 	static FunctionDefinition funcObj("Entity_Effect::CreateTimer", typeid(Entity_Effect *(*)(void *, uint32_t , uint32_t , bool )), "558bec83e4f856578bfa", argdata, 4, 2, &func);
 }
 
-__declspec(naked) Entity_Effect *Entity_Effect::CreateTimer(void *fn, uint32_t delay, uint32_t unk1, bool unk2)
+__declspec(naked) Entity_Effect *Entity_Effect::CreateTimer(void *fn, uint32_t delay, uint32_t times, bool persistent)
 {
 	__asm
 	{
@@ -1491,8 +1491,8 @@ __declspec(naked) Entity_Effect *Entity_Effect::CreateTimer(void *fn, uint32_t d
 		push ebx
 		push esi
 		push edi
-		push [ebp+20]		// unk2
-		push [ebp+16]		// unk1
+		push [ebp+20]		// persistent
+		push [ebp+16]		// times
 		mov ecx, [ebp+8]	// fn
 		mov edx, [ebp+12]	// delay
 		call _func46::func

@@ -74,7 +74,7 @@ ___
 
 ___
 ### Set·Can·Shoot () {: aria-label='Functions' }
-#### bool SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
+#### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
 ___
 ### Set·Item·State () {: aria-label='Functions' }

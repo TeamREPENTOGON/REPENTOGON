@@ -174,6 +174,21 @@ static void RegisterAddDebugFlags(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_GetDimension(lua_State* L){
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, game->GetDimension());
+	return 1;
+}
+
+static void RegisterGetDimension(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::LEVEL);
+	lua_pushstring(L, "GetDimension");
+	lua_pushcfunction(L, Lua_GetDimension);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -188,4 +203,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetDebugFlags(state);
 	RegisterToggleDebugFlag(state);
 	RegisterAddDebugFlags(state);
+	RegisterGetDimension(state);
 }
