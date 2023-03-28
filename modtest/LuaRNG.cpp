@@ -8,10 +8,7 @@ int Lua_RNGSetSeed(lua_State* L) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, "RNG");
 
 	unsigned int seed = luaL_checkinteger(L, 2);
-	unsigned int shiftidx = 35;
-
-	if(lua_isinteger(L, 3))
-		shiftidx = lua_tointeger(L, 3);
+	unsigned int shiftidx = luaL_optinteger(L, 3, 35);
 
 	if (seed <= 0) {
 		luaL_argerror(L, 2, "RNG seed must be an integer above 0");
@@ -26,18 +23,9 @@ int Lua_RNGSetSeed(lua_State* L) {
 	return 0;
 }
 
-static void RegisterFixedRNGSetSeed(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::RNG);
-	lua_pushstring(L, "SetSeed");
-	lua_pushcfunction(L, Lua_RNGSetSeed);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterFixedRNGSetSeed(state);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "SetSeed", Lua_RNGSetSeed);
 }
