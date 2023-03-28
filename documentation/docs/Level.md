@@ -3,7 +3,7 @@
 ## Functions
 
 ### Get·Dimension () {: aria-label='Functions' }
-#### int GetDimension ( ) {: .copyable aria-label='Functions' }
+#### [Dimension](enums/Dimension.md) GetDimension ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Place·Room () {: aria-label='Functions' }
