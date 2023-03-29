@@ -1203,7 +1203,7 @@ EntityPoopVariant = {
 	STONE = 11, PETRIFIED = 11,
 	CHUNKY = 12, CORN = 12,
 	FLAMING = 13,
-	STINKY = 15, POISON = 15,
+	STINKY = 14, POISON = 14,
 	BLACK = 15,
 	HOLY = 16, WHITE = 16,
 }
