@@ -1242,7 +1242,7 @@ MainMenu = {
 
 --to-do--
 EventCounter = {
-	DONATE_MACHINE_COUNTER = 20, DONATION_MACHINE_COUNTER = 20,
+	DONATE_MACHINE_COUNTER = 20, DONATION_MACHINE_COUNTER = 20, EDEN_TOKENS = 21
 }
 
 WispSubType = { -- Unless specified, use CollectibleType
