@@ -1203,7 +1203,7 @@ EntityPoopVariant = {
 	STONE = 11, PETRIFIED = 11,
 	CHUNKY = 12, CORN = 12,
 	FLAMING = 13,
-	STINKY = 15,
+	STINKY = 14, POISON = 14,
 	BLACK = 15,
 	HOLY = 16, WHITE = 16,
 }
@@ -1457,6 +1457,20 @@ BitwiseDebugFlag = {
 	PLAYER_ITEM_INFO = 2048,
 	GRID_COLLISION_POINTS = 4096,
 	LUA_MEMORY_USAGE = 8192
+}
+
+DipSubType = {
+	NORMAL = 0,
+	RED = 1,
+	CHUNKY = 2, CORN = 2, 
+	GOLDEN = 3,
+	RAINBOW = 4,
+	BLACK = 5,
+	HOLY = 6, WHITE = 6,
+	STONE = 12, PETRIFIED = 12,
+	FLAMING = 13,
+	STINKY = 14, POISON = 14,
+	BROWNIE = 20,	
 }
 
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
