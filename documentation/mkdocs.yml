@@ -85,21 +85,26 @@ nav:
     - TeleporterVariant: enums/TeleporterVariant.md
     - WispSubType: enums/WispSubType.md
   - Ambush: Ambush.md
+  - AnimationState: AnimationState.md
   - Camera: Camera.md
   - Color: Color.md
   - Console: Console.md
   - Entity:
     - Entity: Entity.md
+    - EntityFamiliar: EntityFamiliar.md
     - EntityNPC: EntityNPC.md
     - EntityPlayer: EntityPlayer.md
     - EntityPickup: EntityPickup.md
     - EntitySlot: EntitySlot.md
   - Game: Game.md
+  - History: History.md
   - ItemOverlay: ItemOverlay.md
   - Isaac: Isaac.md
+  - LayerState: LayerState.md
   - Level: Level.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
   - MultiShotParams: MultiShotParams.md
+  - NullFrame: NullFrame.md
   - PersistentGameData: PersistentGameData.md
   - ProceduralItemManager: ProceduralItemManager.md
   - PlayerManager: PlayerManager.md

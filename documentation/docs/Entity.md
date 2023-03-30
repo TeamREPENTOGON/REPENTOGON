@@ -30,9 +30,15 @@ ___
 #### void AddWeakness ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Animation·State () {: aria-label='Functions' }
+#### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
+___
 ### Get·Null·Offset () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetNullOffset ( string NullLayerName ) {: .copyable aria-label='Functions' }
 Returns position of null layer mark. Alternatively returns Vector.Zero if layer is not visible or for other unknown reasons.
+___
+### Get·Overlay·Animation·State () {: aria-label='Functions' }
+#### [AnimationState](AnimationState.md) GetOverlayAnimationState ( ) {: .copyable aria-label='Functions' }
 ___
 ### Get·Shadow·Size () {: aria-label='Functions' }
 #### float GetShadowSize ( ) {: .copyable aria-label='Functions' }
