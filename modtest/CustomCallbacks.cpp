@@ -62,7 +62,7 @@ void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damag
 
 	lua::LuaCaller(L)
 		.push(1006)
-		.pushnil()
+		.push(*ent->GetType())
 		.push(ent, lua::Metatables::ENTITY)
 		.push(damage)
 		.push(damageFlags)
