@@ -6,6 +6,8 @@
 
 static constexpr const char* PersistentGameDataMT = "PersistentGameData";
 
+static const unsigned int PGD_COUNTER_MAX = 495;
+
 static int Lua_GetPersistentGameData(lua_State* L) {
 	Manager* manager = g_Manager;
 	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
@@ -38,6 +40,10 @@ int Lua_PGDIncreaseEventCounter(lua_State* L)
 {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
 	int eventCounter = luaL_checkinteger(L, 2);
+
+	if (eventCounter > PGD_COUNTER_MAX)
+		luaL_error(L, "bad argument #2 to 'IncreaseEventCounter' (EventCounter cannot be higher than %d)", PGD_COUNTER_MAX);
+
 	int num = luaL_checkinteger(L, 3);
 
 	pgd->IncreaseEventCounter(eventCounter, num);
@@ -50,7 +56,11 @@ int Lua_PGDGetEventCounter(lua_State* L)
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
 	int eventCounter = luaL_checkinteger(L, 2);
 
+	if (eventCounter > PGD_COUNTER_MAX)
+		luaL_error(L, "bad argument #2 to 'GetEventCounter' (EventCounter cannot be higher than %d)", PGD_COUNTER_MAX);
+
 	lua_pushinteger(L, pgd->GetEventCounter(eventCounter));
+
 
 	return 1;
 }
