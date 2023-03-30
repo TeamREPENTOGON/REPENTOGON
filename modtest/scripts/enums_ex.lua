@@ -1486,12 +1486,37 @@ local colorPresets = {
 	TearHoming = {0.4, 0.15, 0.38, 1, 71/255, 0, 116/255},
 	TearTar = {0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255},
 	TearSoy = {1.5, 2, 2},
+	TearChocolate = {0.33, 0.18, 0.18, 1, 66/255, 40/255, 40/255},
+	TearAlmond = {1.8, 1.7, 1},
+	TearScorpio = {50/255, 1, 50/255},
+	TearSerpentsKiss = {0.5, 0.97, 0.5},
+	TearCommonCold = {0.4, 0.97, 0.5},
+	TearCoal = {0.2, 0.09, 0.065},
+	TearNumberOne = {1, 1, 0, 1, 45/255, 15/255, 0},
 
 	ProjectileIpecac = {1, 1, 1, 1, 0, 0, 0, 0.4, 2, 0.5, 1},
 	ProjectileHoming = {1, 1, 1, 1, 0.26, 0.05, 0.4, 0.8, 0.15, 1, 1},
 	ProjectileTar	= {1, 1, 1, 1, 0, 0, 0, 0.5, 0.5, 0.5, 1},
 	ProjectileSoy = {1, 1, 1, 1, 0.8, 0.7, 0.5, 1, 1, 1, 1},
 	ProjectileFireWave = {1, 1, 1, 1, 1, 0.3, 0},
+
+	ProjectileCageBlue = {1, 1, 1, 1, 0, 0, 0, 0.8, 1, 0.85, 1},
+	ProjectileMegaSatanBlack = {1, 1, 1, 1, 0, 0, 0, 0.6, 0.6, 0.6, 1},
+	ProjectileMegaSatanWhite = {1, 1, 1, 1, 0, 0, 0, 2, 2, 2, 1},
+	ProjectileHushBlue = {1, 1, 1, 1, 0, 0.2, 0.4},
+	ProjectileHushYellow = {1, 1, 1, 1, 0.4, 0.2, 0},
+	ProjectileHushGreen = {1, 1, 1, 1, 0.2, 0.2, 0},
+
+	LaserIpecac = {1, 1, 1, 1, 0, 0, 0, 1.8, 3, 1, 1},
+	LaserHoming = {1, 1, 1, 1, 0, 0, 0, 3, 1, 3.5, 1},
+	LaserSoy = {1, 1, 1, 1, 0, 0, 0, 5.6, 5, 4.2, 1},
+	LaserChocolate = {1, 1, 1, 1, 0, 0, 0, 3, 1.7, 1.7, 1},
+	LaserAlmond = {1, 1, 1, 1, 0, 0, 0, 5.6, 5.2, 3.8, 1},
+	LaserPoison = {1, 1, 1, 1, 0, 0, 0, 1.8, 4, 1, 1},
+	LaserCoal = {3, 3, 3, 1, -0.5, -0.5, -0.5, 1.3, 1.2, 1.2, 1},
+	LaserFireMind = {1, 1, 1, 1, 0, 0, 0, 5, 3, 1, 1},
+	LaserNumberOne = {1, 1, 1, 1, 0, 0, 0, 5, 4.9, 1, 1},
+	LaserMother = {1, 1, 1, 1, 0, 0, 0, 2, 2.2, 1, 1},
 
 	ProjectileCorpsePink = {1, 1, 1, 1, 0, 0, 0, 4, 3.5, 3.2, 1},
 	ProjectileCorpseWhite = {1, 1, 1, 1, 0, 0, 0, 2.7, 3, 2, 1},
@@ -1504,41 +1529,3 @@ local colorPresets = {
 for colorName, colorData in pairs(colorPresets) do
 	quickRegisterColorPreset(colorName, table.unpack(colorData))
 end
-
--- If someone really hates the handling above the raw data can just be uncommented
---[[
-rawset(getmetatable(Color), "IpecacTear", Color(0.5, 0.9, 0.4, 1, 0, 0, 0))
-rawset(getmetatable(Color), "IpecacProjectile", Color(1, 1, 1, 1, 0, 0, 0))
-Color.IpecacProjectile:SetColorize(0.4, 2, 0.5, 1)
-
-rawset(getmetatable(Color), "HomingTear", Color(0.4, 0.15, 0.38, 71/255, 0, 116/255))
-rawset(getmetatable(Color), "HomingProjectile", Color(1, 1, 1, 1, 0.26, 0.05, 0.4))
-Color.HomingProjectile:SetColorize(0.8, 0.15, 1, 1)
-
-rawset(getmetatable(Color), "TarTear", Color(0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255))
-rawset(getmetatable(Color), "TarProjectile", Color(1, 1, 1, 1, 0, 0, 0))
-Color.TarProjectile:SetColorize(0.5, 0.5, 0.5, 1)
-
-rawset(getmetatable(Color), "SoyTear", Color(1.5, 2, 2, 1, 0, 0, 0))
-rawset(getmetatable(Color), "SoyProjectile", Color(1, 1, 1, 1, 0.8, 0.7, 0.5))
-Color.SoyProjectile:SetColorize(1, 1, 1, 1)
-
-rawset(getmetatable(Color), "FireWaveProjectile", Color(1, 1, 1, 1, 1, 0.3, 0))
-
-rawset(getmetatable(Color), "CorpsePinkProjectile", Color(1, 1, 1, 1, 0, 0, 0))
-Color.CorpsePinkProjectile:SetColorize(4, 3.5, 3.2, 1)
-
-rawset(getmetatable(Color), "CorpseWhiteProjectile", Color(1, 1, 1, 1, 0, 0, 0))
-Color.CorpseWhiteProjectile:SetColorize(2.7, 3, 2, 1)
-
-rawset(getmetatable(Color), "CorpseGreenProjectile" Color(1, 1, 1, 1, 0, 0, 0))
-Color.CorpseGreenProjectile:SetColorize(1.5, 2, 1, 1)
-
-rawset(getmetatable(Color), "CorpseYellowProjectile", Color(1, 1, 1, 1, 0, 0, 0))
-Color.CorpseYellowProjectile:SetColorize(3.5, 2.5, 1, 1)
-
-rawset(getmetatable(Color), "CorpseClusterProjectileLight", Color(4, 4, 4, 1, 0, 0, 0))
-Color.CorpseClusterProjectileLight:SetColorize(0.63, 0.85, 0.32, 1)
-rawset(getmetatable(Color), "CorpseClusterProjectileDark", Color(1, 1, 1, 1, 0, 0, 0))
-Color.CorpseClusterProjectileDark:SetColorize(0.63, 0.85, 0.32, 1)
-]]
