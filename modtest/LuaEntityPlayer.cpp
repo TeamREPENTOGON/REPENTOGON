@@ -79,7 +79,7 @@ int Lua_InitPostLevelInitStats(lua_State* L)
 	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
 	player->InitPostLevelInitStats();
 
-	return 1;
+	return 0;
 }
 
 int Lua_PlayerSetItemState(lua_State* L)
@@ -146,7 +146,7 @@ int Lua_PlayerSetActiveVarData(lua_State* L) {
 	int slot = luaL_checkinteger(L, 3);
 
 	player->SetActiveVarData(vardata, slot);
-	return 1;
+	return 0;
 }
 
 int Lua_PlayerAddActiveCharge(lua_State* L) {
@@ -168,7 +168,7 @@ int Lua_PlayerDropCollectible(lua_State* L) {
 	int collectible = luaL_checkinteger(L, 2);
 
 	player->DropCollectible(collectible, 0, false);
-	return 1;
+	return 0;
 }
 
 int Lua_PlayerIncrementPlayerFormCounter(lua_State* L) {
@@ -177,7 +177,7 @@ int Lua_PlayerIncrementPlayerFormCounter(lua_State* L) {
 	int num = luaL_checkinteger(L, 3);
 
 	player->IncrementPlayerFormCounter(ePlayerForm, num);
-	return 1;
+	return 0;
 }
 
 int Lua_PlayerTryPreventDeath(lua_State* L) {
@@ -233,7 +233,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::Metatables mt = lua::Metatables::ENTITY_PLAYER;
 	lua::RegisterFunction(state, mt, "GetMultiShotPositionVelocity", Lua_GetMultiShotPositionVelocity);
 	lua::RegisterFunction(state, mt, "InitTwin", Lua_InitTwin);
-	lua::RegisterFunction(state, mt, "InitPostLevelInitState", Lua_InitPostLevelInitStats);
+	lua::RegisterFunction(state, mt, "InitPostLevelInitStats", Lua_InitPostLevelInitStats);
 	lua::RegisterFunction(state, mt, "SetItemState", Lua_PlayerSetItemState);
 	lua::RegisterFunction(state, mt, "AddCacheFlags", Lua_PlayerAddCacheFlags);
 	lua::RegisterFunction(state, mt, "GetHealthType", Lua_PlayerGetHealthType);

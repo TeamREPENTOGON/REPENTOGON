@@ -10,7 +10,7 @@ int Lua_PickupSetAlternatePedestal(lua_State* L) {
 
 	pickup->SetAlternatePedestal(pedestalType);
 
-	return 1;
+	return 0;
 }
 
 int Lua_PickupTryRemoveCollectible(lua_State* L) {
@@ -26,7 +26,7 @@ int Lua_PickupSetForceBlind(lua_State* L) {
 
 	pickup->SetForceBlind(setBlind);
 
-	return 1;
+	return 0;
 }
 
 int Lua_PickupIsBlind(lua_State* L) {

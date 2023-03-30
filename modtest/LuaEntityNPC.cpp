@@ -10,7 +10,7 @@ int Lua_NPCUpdateDirtColor(lua_State* L)
 	bool unk = lua_toboolean(L, 2);
 
 	npc->UpdateDirtColor(unk);
-	return 1;
+	return 0;
 }
 
 int Lua_NPCGetDirtColor(lua_State* L)

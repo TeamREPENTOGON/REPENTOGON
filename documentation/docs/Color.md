@@ -3,6 +3,7 @@
 ## Constants
 ### Color.EmberFade {: aria-label='Constants' }
 [ ](#){: .rep .tooltip .badge }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) EmberFade {: .copyable aria-label='Constants' }
 Used for enemies like Crackles and Coal Spiders. Gibs start orange and fade into grey.
 
 Tint of (0, 0, 0, 1.1)
@@ -25,7 +26,7 @@ While the [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) class doe
 
 ___
 ### Get·Tint () {: aria-label='Functions' }
-#### table GetOffset ( ) {: .copyable aria-label='Functions' }
+#### table GetTint ( ) {: .copyable aria-label='Functions' }
 Returns a table corresponding to the color's current Tint values: `{R, G, B, A}`
 
 ___

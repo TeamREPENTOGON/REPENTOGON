@@ -13,7 +13,7 @@
 ## Functions
 
 ### Anyone·Has·Collectible () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) AnyoneHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+#### boolean AnyoneHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Returns true when any player has the item and false when noone does.
 
 ___
@@ -23,7 +23,7 @@ Returns `nil` if the specified collectible has never been picked up.
 
 ___
 ### Is·Coop·Play () {: aria-label='Functions' }
-#### bool IsCoopPlay () {: .copyable aria-label='Functions' }
+#### boolean IsCoopPlay () {: .copyable aria-label='Functions' }
 Returns `true` if the game is in co-op mode.
 
 ___

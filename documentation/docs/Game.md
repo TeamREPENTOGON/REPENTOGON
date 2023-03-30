@@ -41,7 +41,7 @@ ___
 
 ___
 ### Add·Debug·Flags () {: aria-label='Functions' }
-#### boolean GetDebugFlag ( [BitwiseDebugFlag](enums/BitwiseDebugFlag.md) flag ) {: .copyable aria-label='Functions' }
+#### void AddDebugFlags ( [BitwiseDebugFlag](enums/BitwiseDebugFlag.md) flag ) {: .copyable aria-label='Functions' }
 Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `BitwiseDebugFlag.ENTITY_POSITIONS | BitwiseDebugFlag.HITSPHERES`)
 
 ___

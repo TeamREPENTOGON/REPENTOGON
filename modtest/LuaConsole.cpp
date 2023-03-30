@@ -28,7 +28,7 @@ int Lua_ConsolePrintError(lua_State* L)
 	}
 	str.unk = str.size = strlen(err);
 	console->PrintError(str);
-	return 1;
+	return 0;
 }
 
 int Lua_ConsoleShow(lua_State* L)
@@ -70,7 +70,7 @@ int Lua_ConsolePrintWarning(lua_State* L)
 	}
 	str.unk = str.size = strlen(errstr);
 	console->Print(str, 0xFFFCCA03, 0x96u);
-	return 1;
+	return 0;
 }
 
 int Lua_ConsolePopHistory(lua_State* L) {

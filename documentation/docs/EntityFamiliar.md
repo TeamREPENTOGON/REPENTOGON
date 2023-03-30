@@ -5,7 +5,7 @@
 ## Functions
 
 ### Get·Follower·Priority () {: aria-label='Functions' }
-#### integer GetFollowerPriority ( ) {: .copyable aria-label='Functions' }
+#### [FollowerPriority](enums/FollowerPriority.md) GetFollowerPriority ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Path·Finder () {: aria-label='Functions' }

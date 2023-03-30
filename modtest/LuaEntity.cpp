@@ -11,7 +11,7 @@ int Lua_EntityAddBleeding(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddBleeding(*ref, duration);
-	return 1;
+	return 0;
 }
 
 int Lua_EntityAddMagnetized(lua_State* L)
@@ -20,7 +20,7 @@ int Lua_EntityAddMagnetized(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddMagnetized(*ref, duration);
-	return 1;
+	return 0;
 }
 
 int Lua_EntityAddBaited(lua_State* L)
@@ -29,7 +29,7 @@ int Lua_EntityAddBaited(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddBaited(*ref, duration);
-	return 1;
+	return 0;
 }
 
 int Lua_EntityAddWeakness(lua_State* L)
@@ -38,7 +38,7 @@ int Lua_EntityAddWeakness(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddWeakness(*ref, duration);
-	return 1;
+	return 0;
 }
 
 int Lua_EntityAddBrimstoneMark(lua_State* L)
@@ -47,7 +47,7 @@ int Lua_EntityAddBrimstoneMark(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddBrimstoneMark(*ref, duration);
-	return 1;
+	return 0;
 }
 
 int Lua_EntityAddIce(lua_State* L)
@@ -56,7 +56,7 @@ int Lua_EntityAddIce(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddIce(*ref, duration);
-	return 1;
+	return 0;
 }
 
 int Lua_EntityAddKnockback(lua_State* L)
@@ -67,7 +67,7 @@ int Lua_EntityAddKnockback(lua_State* L)
 	int duration = luaL_checkinteger(L, 4);
 	bool unk = lua_toboolean(L, 5);
 	ent->AddKnockback(*ref, *pos, duration, unk);
-	return 1;
+	return 0;
 }
 
 static int Lua_EntityGetShadowSize(lua_State* L)

@@ -6,7 +6,6 @@
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
 
 ___
-
 ### Get·Camera () {: aria-label='Functions' }
 #### [Camera](Camera.md) GetCamera ( ) {: .copyable aria-label='Functions' }
 Returns a [Camera](Camera.md) object.
@@ -37,6 +36,13 @@ ___
 ### Remove·Grid·Entity·Immediate () {: aria-label='Functions' }
 #### void RemoveGridEntityImmediate ( int GridIndex, int PathTrail, boolean KeepDecoration ) {: .copyable aria-label='Functions' }
 *Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
+
+___
+### Set·Backdrop·Type () {: aria-label='Functions' }
+#### void SetBackdropType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/BackdropType.html), int Unknown ) {: .copyable aria-label='Functions' }
+This function will not work if the Unknown integer is passed as `0`.
+
+The backdrop variant chosen is seeded based on the room, and does not persist when leaving and re-entering. Calling this function again on re-entry will result in the same backdrop variant as before.
 
 ___
 ### Set·Water·Amount () {: aria-label='Functions' }

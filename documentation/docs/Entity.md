@@ -32,16 +32,28 @@ ___
 ___
 ### Get·Animation·State () {: aria-label='Functions' }
 #### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
+
 ___
 ### Get·Null·Offset () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetNullOffset ( string NullLayerName ) {: .copyable aria-label='Functions' }
-Returns position of null layer mark. Alternatively returns Vector.Zero if layer is not visible or for other unknown reasons.
+Returns position of null layer mark. Alternatively returns Vector.Zero if the layer is not visible, has no frame available for the current animation, or for other unknown reasons.
+
 ___
 ### Get·Overlay·Animation·State () {: aria-label='Functions' }
 #### [AnimationState](AnimationState.md) GetOverlayAnimationState ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Pos·Vel () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPosVel ( ) {: .copyable aria-label='Functions' }
+Returns 2 values, both Vectors. 1st the Position of the entity, 2nd the Velocity of the entity.
+
 ___
 ### Get·Shadow·Size () {: aria-label='Functions' }
 #### float GetShadowSize ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Type () {: aria-label='Functions' }
+#### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType () {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Shadow·Size () {: aria-label='Functions' }
