@@ -7,3 +7,4 @@ tags:
 |:--|:--|:--|
 |20 |DONATE_MACHINE_COUNTER {: .copyable } |  |
 |20 |DONATION_MACHINE_COUNTER {: .copyable } |  |
+|21 |EDEN_TOKENS {: .copyable } |  |

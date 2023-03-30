@@ -17,15 +17,6 @@ static int Room_Test(lua_State* L) {
 	return 1;
 }
 
-static void RegisterRailFunctions(lua_State* L) {
-	// Get metatable of Room object
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "Test");
-	lua_pushcfunction(L, Room_Test);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 static int Lua_RemoveGridEntityImmediate(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	int GridIndex = luaL_checkinteger(L, 2);
@@ -47,28 +38,12 @@ static int Lua_RoomSetBackdrop(lua_State* L) {
 	return 0;
 }
 
-static void RegisterRemoveGridEntityImmediate(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "RemoveGridEntityImmediate");
-	lua_pushcfunction(L, Lua_RemoveGridEntityImmediate);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 static int Lua_RoomCanSpawnObstacleAtPosition(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	int GridIndex = luaL_checkinteger(L, 2);
 	bool Force = lua_toboolean(L, 3);
 	lua_pushboolean(L, room->CanSpawnObstacleAtPosition(GridIndex, Force));
 	return 1;
-}
-
-static void RegisterRoomCanSpawnObstacleAtPosition(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "CanSpawnObstacleAtPosition");
-	lua_pushcfunction(L, Lua_RoomCanSpawnObstacleAtPosition);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 int Lua_RoomGetWaterAmount(lua_State* L)
@@ -147,93 +122,22 @@ int Lua_RoomSetWaterCurrent(lua_State* L)
 	return 0;
 }
 
-static void RegisterGetWaterAmount(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "GetWaterAmount");
-	lua_pushcfunction(L, Lua_RoomGetWaterAmount);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-
-static void RegisterSetWaterAmount(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "SetWaterAmount");
-	lua_pushcfunction(L, Lua_RoomSetWaterAmount);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetFloorColor(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "GetFloorColor");
-	lua_pushcfunction(L, Lua_RoomGetFloorColor);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetWaterColor(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "GetWaterColor");
-	lua_pushcfunction(L, Lua_RoomGetWaterColor);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterSetWaterColor(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "SetWaterColor");
-	lua_pushcfunction(L, Lua_RoomSetWaterColor);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterSetWaterCurrent(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "SetWaterCurrent");
-	lua_pushcfunction(L, Lua_RoomSetWaterCurrent);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetWaterColorMultiplier(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "GetWaterColorMultiplier");
-	lua_pushcfunction(L, Lua_RoomGetWaterColorMultiplier);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterSetWaterColorMultiplier(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "SetWaterColorMultiplier");
-	lua_pushcfunction(L, Lua_RoomSetWaterColorMultiplier);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterRoomSetBackdrop(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "SetBackdropType");
-	lua_pushcfunction(L, Lua_RoomSetBackdrop);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterRailFunctions(state);
-	RegisterRemoveGridEntityImmediate(state);
-	RegisterRoomCanSpawnObstacleAtPosition(state);
-	RegisterGetWaterAmount(state);
-	RegisterSetWaterAmount(state);
-	RegisterGetFloorColor(state);
-	RegisterGetWaterColor(state);
-	RegisterSetWaterColor(state);
-	RegisterSetWaterCurrent(state);
-	RegisterGetWaterColorMultiplier(state);
-	RegisterSetWaterColorMultiplier(state);
-	RegisterRoomSetBackdrop(state);
+	lua::Metatables mt = lua::Metatables::ROOM;
+
+	lua::RegisterFunction(state, mt, "Test", Room_Test);
+	lua::RegisterFunction(state, mt, "RemoveGridEntityImmediate", Lua_RemoveGridEntityImmediate);
+	lua::RegisterFunction(state, mt, "CanSpawnObstacleAtPosition", Lua_RoomCanSpawnObstacleAtPosition);
+	lua::RegisterFunction(state, mt, "GetWaterAmount", Lua_RoomGetWaterAmount);
+	lua::RegisterFunction(state, mt, "SetWaterAmount", Lua_RoomSetWaterAmount);
+	lua::RegisterFunction(state, mt, "GetFloorColor", Lua_RoomGetFloorColor);
+	lua::RegisterFunction(state, mt, "GetWaterColor", Lua_RoomGetWaterColor);
+	lua::RegisterFunction(state, mt, "SetWaterColor", Lua_RoomSetWaterColor);
+	lua::RegisterFunction(state, mt, "SetWaterCurrent", Lua_RoomSetWaterCurrent);
+	lua::RegisterFunction(state, mt, "GetWaterColorMultiplier", Lua_RoomGetWaterColorMultiplier);
+	lua::RegisterFunction(state, mt, "SetWaterColorMultiplier", Lua_RoomSetWaterColorMultiplier);
+	lua::RegisterFunction(state, mt, "SetBackdropType", Lua_RoomSetBackdrop);
 }

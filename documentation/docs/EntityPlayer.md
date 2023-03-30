@@ -54,6 +54,10 @@ ___
 #### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
+### Increment·Player·Form·Counter () {: aria-label='Functions' }
+#### void IncrementPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Form, int Num ) {: .copyable aria-label='Functions' }
+
+___
 ### Init·Post·Level·Init·Stats () {: aria-label='Functions' }
 #### void InitPostLevelInitStats ( ) {: .copyable aria-label='Functions' }
 Call this after spawning characters with "special" tears (Forgotten, Lilith, Azazel etc) with InitTwin, or they won't have their proper tear type.
@@ -70,16 +74,17 @@ ___
 
 ___
 ### Set·Can·Shoot () {: aria-label='Functions' }
-#### bool SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
+#### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
 ___
 ### Set·Item·State () {: aria-label='Functions' }
 #### void SetItemState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType ) {: .copyable aria-label='Functions' }
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
+___
+### Teleport () {: aria-label='Functions' }
+#### void Teleport ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, boolean DoEffects = true, boolean TeleportTwinPlayers = false ) {: .copyable aria-label='Functions' }
+Teleports the player to a position within the room. 
 
-### Increment·Player·Form·Counter () {: aria-label='Functions' }
-#### void IncrementPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Form, int Num ) {: .copyable aria-label='Functions' }
-
-
+`DoEffects` controls whether the teleport animation and sound plays. `TeleportTwinPlayers` controls whether twin players (e.g. Esau, Tainted Lazarus w/ Birthright) are teleported alongside this one.
 ___

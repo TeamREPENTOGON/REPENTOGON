@@ -116,6 +116,8 @@ struct Game depends (DailyChallenge)
 		
 	inline int GetCurrentRoomIdx() {return *(int*)((char*)this + 0x18194); }
 
+    inline int GetDimension() {return *(int*)((char*)this + 0x1819C);}
+	
 	inline int GetLastBossRoomListIdx() {return *(int*)((char*)this + 0x181A4); }
 	
 	inline int GetGreedModeWave() { return *(int*)((char*)this + 0x181C4); }

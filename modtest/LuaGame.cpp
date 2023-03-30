@@ -174,18 +174,37 @@ static void RegisterAddDebugFlags(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_GetDimension(lua_State* L){
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, game->GetDimension());
+	return 1;
+}
+
+static void RegisterGetDimension(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::LEVEL);
+	lua_pushstring(L, "GetDimension");
+	lua_pushcfunction(L, Lua_GetDimension);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterAchievementUnlocksDisallowed(state);
-	RegisterGetPlanetariumsVisited(state);
-	RegisterIsHardMode(state);
-	RegisterGetLastDevilRoomStageFix(state);
-	RegisterGetLastLevelWithDamageFix(state);
-	RegisterGetLastLevelWithoutHalfHpFix(state);
-	RegisterGetDebugFlag(state);
-	RegisterGetDebugFlags(state);
-	RegisterToggleDebugFlag(state);
-	RegisterAddDebugFlags(state);
+	lua::Metatables mt = lua::Metatables::GAME;
+	lua::RegisterFunction(state, mt, "AchievementUnlocksDisallowed", Lua_GameAchievementUnlocksDisallowed);
+	lua::RegisterFunction(state, mt, "GetPlanetariumsVisited", Lua_GameGetPlanetariumsVisited);
+	lua::RegisterFunction(state, mt, "IsHardMode", Lua_GameIsHardMode);
+	lua::RegisterFunction(state, mt, "GetLastDevilRoomStage", Lua_GameGetLastDevilRoomStageFix);
+	lua::RegisterFunction(state, mt, "GetLastLevelWithDamage", Lua_GetLastLevelWithDamageFix);
+	lua::RegisterFunction(state, mt, "GetLastLevelWithoutHalfHp", Lua_GetLastLevelWithoutHalfHpFix);
+	lua::RegisterFunction(state, mt, "GetDebugFlag", Lua_GameGetDebugFlag); // this one's on the chopping block
+	lua::RegisterFunction(state, mt, "GetDebugFlags", Lua_GameGetDebugFlags);
+	lua::RegisterFunction(state, mt, "ToggleDebugFlag", Lua_GameToggleDebugFlag); // this too
+	lua::RegisterFunction(state, mt, "AddDebugFlags", Lua_GameAddDebugFlags);
+
+	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
+
 }
