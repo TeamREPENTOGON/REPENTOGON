@@ -238,25 +238,25 @@ ___
 Used for tears fired by players with Number One.
 
 ___
-#### Color.TearScorpio {: aria-label='Constants' }
+### Color.TearScorpio {: aria-label='Constants' }
 [ ](#){: .rep .tooltip .badge }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) TearScorpio {: .copyable aria-label='Constants' }
 Used for poison tears fired by players with Scorpio.
 
 ___
-#### Color.TearSerpentsKiss {: aria-label='Constants' }
+### Color.TearSerpentsKiss {: aria-label='Constants' }
 [ ](#){: .rep .tooltip .badge }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) TearSerpentsKiss {: .copyable aria-label='Constants' }
 Used for poison tears fired by players with Serpent's Kiss.
 
 ___
-#### Color.TearSoy {: aria-label='Constants' }
+### Color.TearSoy {: aria-label='Constants' }
 [ ](#){: .rep .tooltip .badge }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) TearSoy {: .copyable aria-label='Constants' }
 Used for tears fired by players with Soy Milk.
 
 ___
-#### Color.TearTar {: aria-label='Constants' }
+### Color.TearTar {: aria-label='Constants' }
 [ ](#){: .rep .tooltip .badge }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) TearTar {: .copyable aria-label='Constants' }
 Used for tar tears fired by familiars like Little Gish.
