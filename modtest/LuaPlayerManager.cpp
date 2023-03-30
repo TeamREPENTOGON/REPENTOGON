@@ -30,6 +30,22 @@ int Lua_FirstCollectibleOwner(lua_State* L)
 	return 1;
 }
 
+
+int Lua_AnyoneHasCollectible(lua_State* L)
+{
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	int collectible = luaL_checkinteger(L, 2);
+	RNG* rng = new RNG(); 
+	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, true);
+	if (!player) {
+		lua_pushboolean(L,false);
+	}
+	else {
+		lua_pushboolean(L, true);
+	}
+	return 1;
+}
+
 int Lua_SpawnCoPlayer2(lua_State* L)
 {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
@@ -64,6 +80,7 @@ static void RegisterPlayerManager(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "FirstCollectibleOwner", Lua_FirstCollectibleOwner },
+		{ "AnyoneHasCollectible", Lua_AnyoneHasCollectible},
 		{ "SpawnCoPlayer2", Lua_SpawnCoPlayer2 },
 		{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
 		{ NULL, NULL }
