@@ -1475,3 +1475,69 @@ DipSubType = {
 
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)
+
+local function quickRegisterColorPreset(name, R, G, B, A, RO, GO, BO, RC, GC, BC, CA)
+	rawset(getmetatable(Color), name, Color(R, G, B, A or 1, RO or 0, GO or 0, BO or 0))
+	Color[name]:SetColorize(RC or 0, GC or 0, BC or 0, CA or 0)
+end
+
+local colorPresets = {
+	"IpecacTear" = {0.5, 0.9, 0.4},
+	"IpecacProjectile" = {1, 1, 1, 1, 0, 0, 0, 0.4, 2, 0.5, 1},
+	"HomingTear" = {0.4, 0.15, 0.38, 71/255, 0, 116/255},
+	"HomingProjectile" = {1, 1, 1, 1, 0.26, 0.05, 0.4, 0.8, 0.15, 1, 1},
+	"TarTear" = {0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255},
+	"TarProjectile"	= {1, 1, 1, 1, 0, 0, 0, 0.5, 0.5, 0.5, 1},
+	"SoyTear" = {1.5, 2, 2},
+	"SoyProjectile"	= {1, 1, 1, 1, 0.8, 0.7, 0.5, 1, 1, 1, 1},
+	"FireWaveProjectile" = {1, 1, 1, 1, 1, 0.3, 0},
+
+	"CorpsePinkProjectile" = {1, 1, 1, 1, 0, 0, 0, 4, 3.5, 3.2, 1},
+	"CorpseWhiteProjectile" = {1, 1, 1, 1, 0, 0, 0, 2.7, 3, 2, 1},
+	"CorpseGreenProjectile" = {1, 1, 1, 1, 0, 0, 0, 1.5, 2, 1, 1},
+	"CorpseYellowProjectile" = {1, 1, 1, 1, 0, 0, 0, 3.5, 2.5, 1, 1},
+	"CorpseClusterProjectileLight" = {4, 4, 4, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
+	"CorpseClusterProjectileDark" = {1, 1, 1, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
+}
+
+for colorName, colorData in pairs(colorPresets) do
+	quickRegisterColorPreset(colorName, table.unpack(colorData))
+end
+
+-- If someone really hates the handling above the raw data can just be uncommented
+--[[
+rawset(getmetatable(Color), "IpecacTear", Color(0.5, 0.9, 0.4, 1, 0, 0, 0))
+rawset(getmetatable(Color), "IpecacProjectile", Color(1, 1, 1, 1, 0, 0, 0))
+Color.IpecacProjectile:SetColorize(0.4, 2, 0.5, 1)
+
+rawset(getmetatable(Color), "HomingTear", Color(0.4, 0.15, 0.38, 71/255, 0, 116/255))
+rawset(getmetatable(Color), "HomingProjectile", Color(1, 1, 1, 1, 0.26, 0.05, 0.4))
+Color.HomingProjectile:SetColorize(0.8, 0.15, 1, 1)
+
+rawset(getmetatable(Color), "TarTear", Color(0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255))
+rawset(getmetatable(Color), "TarProjectile", Color(1, 1, 1, 1, 0, 0, 0))
+Color.TarProjectile:SetColorize(0.5, 0.5, 0.5, 1)
+
+rawset(getmetatable(Color), "SoyTear", Color(1.5, 2, 2, 1, 0, 0, 0))
+rawset(getmetatable(Color), "SoyProjectile", Color(1, 1, 1, 1, 0.8, 0.7, 0.5))
+Color.SoyProjectile:SetColorize(1, 1, 1, 1)
+
+rawset(getmetatable(Color), "FireWaveProjectile", Color(1, 1, 1, 1, 1, 0.3, 0))
+
+rawset(getmetatable(Color), "CorpsePinkProjectile", Color(1, 1, 1, 1, 0, 0, 0))
+Color.CorpsePinkProjectile:SetColorize(4, 3.5, 3.2, 1)
+
+rawset(getmetatable(Color), "CorpseWhiteProjectile", Color(1, 1, 1, 1, 0, 0, 0))
+Color.CorpseWhiteProjectile:SetColorize(2.7, 3, 2, 1)
+
+rawset(getmetatable(Color), "CorpseGreenProjectile" Color(1, 1, 1, 1, 0, 0, 0))
+Color.CorpseGreenProjectile:SetColorize(1.5, 2, 1, 1)
+
+rawset(getmetatable(Color), "CorpseYellowProjectile", Color(1, 1, 1, 1, 0, 0, 0))
+Color.CorpseYellowProjectile:SetColorize(3.5, 2.5, 1, 1)
+
+rawset(getmetatable(Color), "CorpseClusterProjectileLight", Color(4, 4, 4, 1, 0, 0, 0))
+Color.CorpseClusterProjectileLight:SetColorize(0.63, 0.85, 0.32, 1)
+rawset(getmetatable(Color), "CorpseClusterProjectileDark", Color(1, 1, 1, 1, 0, 0, 0))
+Color.CorpseClusterProjectileDark:SetColorize(0.63, 0.85, 0.32, 1)
+]]
