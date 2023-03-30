@@ -1482,22 +1482,23 @@ local function quickRegisterColorPreset(name, R, G, B, A, RO, GO, BO, RC, GC, BC
 end
 
 local colorPresets = {
-	"IpecacTear" = {0.5, 0.9, 0.4},
-	"IpecacProjectile" = {1, 1, 1, 1, 0, 0, 0, 0.4, 2, 0.5, 1},
-	"HomingTear" = {0.4, 0.15, 0.38, 71/255, 0, 116/255},
-	"HomingProjectile" = {1, 1, 1, 1, 0.26, 0.05, 0.4, 0.8, 0.15, 1, 1},
-	"TarTear" = {0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255},
-	"TarProjectile"	= {1, 1, 1, 1, 0, 0, 0, 0.5, 0.5, 0.5, 1},
-	"SoyTear" = {1.5, 2, 2},
-	"SoyProjectile"	= {1, 1, 1, 1, 0.8, 0.7, 0.5, 1, 1, 1, 1},
-	"FireWaveProjectile" = {1, 1, 1, 1, 1, 0.3, 0},
+	TearIpecac = {0.5, 0.9, 0.4},
+	TearHoming = {0.4, 0.15, 0.38, 1, 71/255, 0, 116/255},
+	TearTar = {0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255},
+	TearSoy = {1.5, 2, 2},
 
-	"CorpsePinkProjectile" = {1, 1, 1, 1, 0, 0, 0, 4, 3.5, 3.2, 1},
-	"CorpseWhiteProjectile" = {1, 1, 1, 1, 0, 0, 0, 2.7, 3, 2, 1},
-	"CorpseGreenProjectile" = {1, 1, 1, 1, 0, 0, 0, 1.5, 2, 1, 1},
-	"CorpseYellowProjectile" = {1, 1, 1, 1, 0, 0, 0, 3.5, 2.5, 1, 1},
-	"CorpseClusterProjectileLight" = {4, 4, 4, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
-	"CorpseClusterProjectileDark" = {1, 1, 1, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
+	ProjectileIpecac = {1, 1, 1, 1, 0, 0, 0, 0.4, 2, 0.5, 1},
+	ProjectileHoming = {1, 1, 1, 1, 0.26, 0.05, 0.4, 0.8, 0.15, 1, 1},
+	ProjectileTar	= {1, 1, 1, 1, 0, 0, 0, 0.5, 0.5, 0.5, 1},
+	ProjectileSoy = {1, 1, 1, 1, 0.8, 0.7, 0.5, 1, 1, 1, 1},
+	ProjectileFireWave = {1, 1, 1, 1, 1, 0.3, 0},
+
+	ProjectileCorpsePink = {1, 1, 1, 1, 0, 0, 0, 4, 3.5, 3.2, 1},
+	ProjectileCorpseWhite = {1, 1, 1, 1, 0, 0, 0, 2.7, 3, 2, 1},
+	ProjectileCorpseGreen = {1, 1, 1, 1, 0, 0, 0, 1.5, 2, 1, 1},
+	ProjectileCorpseYellow = {1, 1, 1, 1, 0, 0, 0, 3.5, 2.5, 1, 1},
+	ProjectileCorpseClusterLight = {4, 4, 4, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
+	ProjectileCorpseClusterDark = {1, 1, 1, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
 }
 
 for colorName, colorData in pairs(colorPresets) do
