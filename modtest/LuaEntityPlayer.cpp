@@ -225,6 +225,20 @@ int Lua_PlayerTeleport(lua_State* L)
 	return 0;
 }
 
+int Lua_PlayerGetMegaBlastDuration(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetMegaBlastDuration());
+	return 1;
+}
+
+int Lua_PlayerSetMegaBlastDuration(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetMegaBlastDuration() = luaL_checkinteger(L,2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -249,4 +263,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetDeadEyeCharge", Lua_PlayerGetDeadEyeCharge);
 	lua::RegisterFunction(state, mt, "RemoveCollectibleByHistoryIndex", lua_PlayerRemoveCollectibleByHistoryIndex);
 	lua::RegisterFunction(state, mt, "Teleport", Lua_PlayerTeleport);
+	lua::RegisterFunction(state, mt, "GetMegaBlastDuration", Lua_PlayerGetMegaBlastDuration);
+	lua::RegisterFunction(state, mt, "SetMegaBlastDuration", Lua_PlayerSetMegaBlastDuration);
 }
