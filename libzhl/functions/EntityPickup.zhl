@@ -18,4 +18,5 @@ __thiscall void Entity_Pickup::SetForceBlind(Entity_Pickup *this<ecx>, bool setB
 
 struct Entity_Pickup {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
+	inline int* GetVarData() { return (int*)((char*)this + 0x4e8); }
 }};

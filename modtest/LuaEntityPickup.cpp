@@ -37,6 +37,20 @@ int Lua_PickupIsBlind(lua_State* L) {
 	return 1;
 }
 
+int Lua_PickupGetVarData(lua_State* L) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushinteger(L, *pickup->GetVarData());
+
+	return 1;
+}
+
+int Lua_PickupSetVarData(lua_State* L) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	*pickup->GetVarData() = lua_tointeger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -46,4 +60,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetAlternatePedestal", Lua_PickupSetAlternatePedestal);
 	lua::RegisterFunction(state, mt, "TryRemoveCollectible", Lua_PickupTryRemoveCollectible);
 	lua::RegisterFunction(state, mt, "SetForceBlind", Lua_PickupSetForceBlind);
+	lua::RegisterFunction(state, mt, "GetVarData", Lua_PickupGetVarData);
+	lua::RegisterFunction(state, mt, "SetVarData", Lua_PickupSetVarData);
 }
