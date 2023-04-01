@@ -6,13 +6,19 @@
 
 #include <lua.hpp>
 #include "LuaCore.h"
-
+/*
+HOOK_GLOBAL(GetXMLNode,(char* thi,int whatevs,char* name)->char**) {
+	printf("name: %s \n", name);
+	char** returnval = super(thi,whatevs,name);
+	printf("ballU: %s \n",*returnval);
+	return returnval;
+}*/
 
 //Completion Makrs Test
 HOOK_METHOD(PauseScreen, Render, () -> void) {
 	super();
 	int playertype = g_Game->GetPlayer(0)->GetPlayerType();
-	if (playertype > 40) {
+	if ((playertype > 40) && (this->status !=2)) {
 		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget"); 
 		Vector* widgtpos = nul->GetPos();
 		Vector* widgtscale = nul->GetScale();

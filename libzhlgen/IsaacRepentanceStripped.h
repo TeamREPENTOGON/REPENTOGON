@@ -546,7 +546,7 @@ struct MenuManager
 
 struct PauseScreen
 {
-	
+	int status; //1 main pause screen 2 options menu
 };
 
 struct Minimap
