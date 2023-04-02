@@ -17,3 +17,11 @@
 Triggers Challenge/Boss Rush ambush.
 
 ___
+### Spawn·Wave () {: aria-label='Functions' }
+#### void SpawnWave ( ) {: .copyable aria-label='Functions' }
+
+___
+### Spawn·Bossrush·Wave () {: aria-label='Functions' }
+#### void SpawnBossrush·Wave ( ) {: .copyable aria-label='Functions' }
+
+___

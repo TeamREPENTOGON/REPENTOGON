@@ -21,6 +21,19 @@ int Lua_AmbushStartChallenge(lua_State* L)
 	return 0;
 }
 
+int Lua_AmbushSpawnBossrushWave(lua_State* L)
+{
+	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
+	ambush->SpawnBossrushWave();
+	return 0;
+}
+
+int Lua_AmbushSpawnWave(lua_State* L)
+{
+	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
+	ambush->SpawnWave();
+	return 0;
+}
 static void RegisterAmbush(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetAmbush");
@@ -35,6 +48,8 @@ static void RegisterAmbush(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "StartChallenge", Lua_AmbushStartChallenge },
+		{ "SpawnBossrushWave", Lua_AmbushSpawnBossrushWave },
+		{ "SpawnWave", Lua_AmbushSpawnWave },
 		{ NULL, NULL }
 	};
 
