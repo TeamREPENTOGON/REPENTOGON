@@ -8,8 +8,8 @@ static constexpr const char* CameraMT = "Camera";
 
 static int Lua_GetCamera(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)room + 0x11F8;
+	Camera** ud = (Camera**)lua_newuserdata(L, sizeof(Camera*));
+	*ud = room->GetCamera();
 	luaL_setmetatable(L, CameraMT);
 	return 1;
 }

@@ -8,8 +8,8 @@ static constexpr const char* AmbushMT = "Ambush";
 
 static int Lua_GetAmbush(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)game + 0x1c31b8;
+	Ambush** ud = (Ambush**)lua_newuserdata(L, sizeof(Ambush*));
+	*ud = game->GetAmbush();
 	luaL_setmetatable(L, AmbushMT);
 	return 1;
 }

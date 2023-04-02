@@ -8,8 +8,8 @@ static constexpr const char* ConsoleMT = "Console";
 
 static int Lua_GetConsole(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)game + 0x1BB60;
+	Console** ud = (Console**)lua_newuserdata(L, sizeof(Console*));
+	*ud = game->GetConsole();
 	luaL_setmetatable(L, ConsoleMT);
 	return 1;
 }
@@ -17,7 +17,6 @@ static int Lua_GetConsole(lua_State* L) {
 int Lua_ConsolePrintError(lua_State* L)
 {
 	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
-	// std::string err = luaL_checkstring(L, 2);
 	IsaacString str;
 	const char* err = luaL_checkstring(L, 2);
 	if (strlen(err) < 16) {
@@ -100,7 +99,7 @@ static void RegisterConsole(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "PrintError", Lua_ConsolePrintError },
-		{ "Show", Lua_ConsoleShow },
+		{ "Show", Lua_ConsoleShow }, // should probably replace this with SetState
 		{ "GetHistory", Lua_ConsoleGetHistory },
 		{ "PopHistory", Lua_ConsolePopHistory },
 		{ "PrintWarning", Lua_ConsolePrintWarning },

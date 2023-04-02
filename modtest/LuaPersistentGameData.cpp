@@ -10,8 +10,8 @@ static const unsigned int PGD_COUNTER_MAX = 495;
 
 static int Lua_GetPersistentGameData(lua_State* L) {
 	Manager* manager = g_Manager;
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)manager + 0x14;
+	PersistentGameData** ud = (PersistentGameData**)lua_newuserdata(L, sizeof(PersistentGameData*));
+	*ud = manager->GetPersistentGameData();
 	luaL_setmetatable(L, PersistentGameDataMT);
 	return 1;
 }

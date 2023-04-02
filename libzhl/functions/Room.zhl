@@ -31,7 +31,7 @@ __thiscall bool Room::CanSpawnObstacleAtPosition(Room *this<ecx>, int GridIndex,
 struct Room depends (Camera, TemporaryEffects, ColorMod, Backdrop, KColor, Vector, EntityList)
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
-	inline bool GetRedHeartDamage() {return *(bool**)((char*)this + 0x120C); }
+	inline bool GetRedHeartDamage() {return *(bool*)((char*)this + 0x120C); }
 	inline EntityList* GetEntityList() {return (EntityList*)((char*)this + 0x1218); }
 	inline float* GetWaterAmount() {return (float*)((char*)this + 0x7134); }
 	inline KColor* GetWaterColor() { return (KColor*)((char*)this + 0x7158 ); }

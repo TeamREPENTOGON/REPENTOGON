@@ -8,8 +8,8 @@ static constexpr const char* ProceduralItemManagerMT = "ProceduralItemManager";
 
 static int Lua_GetProceduralItemManager(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)game + 0x283c20;
+	ProceduralItemManager** ud = (ProceduralItemManager**)lua_newuserdata(L, sizeof(void*));
+	*ud = game->GetProceduralItemManager();
 	luaL_setmetatable(L, ProceduralItemManagerMT);
 	return 1;
 }

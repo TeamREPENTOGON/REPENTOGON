@@ -8,8 +8,8 @@ static constexpr const char* MainMenuGameMT = "MainMenuGame";
 
 static int Lua_GetMainMenuGame(lua_State* L) {
 	MenuManager* menuManager = g_MenuManager;
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)menuManager + 0x80fac;
+	Menu_Game** ud = (Menu_Game**)lua_newuserdata(L, sizeof(Menu_Game*));
+	*ud = menuManager->GetMenuGame();
 	luaL_setmetatable(L, MainMenuGameMT);
 	return 1;
 }

@@ -8,8 +8,8 @@ static constexpr const char* PlayerManagerMT = "PlayerManager";
 
 static int Lua_GetPlayerManager(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)game + 0x1BA40;
+	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
+	*ud = game->GetPlayerManager();
 	luaL_setmetatable(L, PlayerManagerMT);
 	return 1;
 }

@@ -8,9 +8,8 @@ static constexpr const char* RoomConfigHolderMT = "RoomConfigHolder";
 
 static int Lua_GameGetRoomConfigHolder(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)game + 0x1879C;
-	// lua_pushlightuserdata(L, (char*)game + 0x1879C);
+	RoomConfigHolder** ud = (RoomConfigHolder**)lua_newuserdata(L, sizeof(RoomConfigHolder*));
+	*ud = game->GetRoomConfigHolder();
 	luaL_setmetatable(L, RoomConfigHolderMT);
 	return 1;
 }

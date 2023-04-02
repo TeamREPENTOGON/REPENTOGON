@@ -94,7 +94,7 @@ const static FuncSignatureByte Signature_GameGlobalAddres = {
 ".e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (DailyChallenge)
+struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerManager, RoomDescriptor, ProceduralItemManager, RoomConfigHolder)
 {{
 	Game()
 	{
@@ -124,6 +124,8 @@ struct Game depends (DailyChallenge)
 	
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
 		
+	inline RoomConfigHolder* GetRoomConfigHolder() { return (RoomConfigHolder*)((char*)this + 0x1879C); }
+	
 	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
 	
 	inline int GetLastDevilRoomStage() { return *(int*)((char*)this + 0x1C3174); }
@@ -143,6 +145,8 @@ struct Game depends (DailyChallenge)
 	inline unsigned int* GetDebugFlags() { return (unsigned int*)((char*)this + 0X1C3164); }
 	
 	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }
+	
+	inline ProceduralItemManager* GetProceduralItemManager() {return (ProceduralItemManager*)((char*) this + 0x283c20); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 

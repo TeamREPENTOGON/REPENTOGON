@@ -18,7 +18,8 @@ __thiscall ChallengeParam* Manager::GetChallengeParams(Manager *this<ecx>, int c
 "558bec51568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(Manager *this<ecx>, bool unk);
 
-struct Manager {{
+struct Manager depends (StringTable, PersistentGameData) {{
+	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
 }};
 
