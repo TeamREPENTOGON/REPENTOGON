@@ -52,7 +52,13 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	lua::Metatables mt = lua::Metatables::COLOR;
+	lua::Metatables const_mt = lua::Metatables::CONST_COLOR;
+
 	lua::RegisterFunction(state, mt, "GetTint", Lua_ColorGetTint);
 	lua::RegisterFunction(state, mt, "GetColorize", Lua_ColorGetColorize);
 	lua::RegisterFunction(state, mt, "GetOffset", Lua_ColorGetOffset);
+
+	lua::RegisterFunction(state, const_mt, "GetTint", Lua_ColorGetTint);
+	lua::RegisterFunction(state, const_mt, "GetColorize", Lua_ColorGetColorize);
+	lua::RegisterFunction(state, const_mt, "GetOffset", Lua_ColorGetOffset);
 }

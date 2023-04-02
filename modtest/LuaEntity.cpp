@@ -72,14 +72,14 @@ int Lua_EntityAddKnockback(lua_State* L)
 
 static int Lua_EntityGetShadowSize(lua_State* L)
 {
-	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	lua_pushnumber(L, *entity->GetShadowSize());
 	return 1;
 }
 
 static int Lua_EntitySetShadowSize(lua_State* L)
 {
-	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	float shadowSize = luaL_checknumber(L, 2);
 	*entity->GetShadowSize() = shadowSize;
 	return 0;
@@ -87,30 +87,22 @@ static int Lua_EntitySetShadowSize(lua_State* L)
 
 /*int Lua_EntityCopyStatusEffects(lua_State* L)
 {
-	Entity* ent = *(Entity**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY, "Entity") + 4);
-	Entity* copyEnt = *(Entity**)((char*)lua::CheckUserdata(L, 2, lua::Metatables::ENTITY, "Entity") + 4);
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* copyEnt lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 
 	ent->CopyStatusEffects(copyEnt); bruh code
 
 	return 1;
 }
-
-static void RegisterEntityCopyStatusEffects(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "CopyStatusEffects");
-	lua_pushcfunction(L, Lua_EntityCopyStatusEffects);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
 */
 
 static int Lua_EntityGetNullOffset(lua_State* L)
 {
-	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	const char* nullLayerName = luaL_checkstring(L, 2);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	*toLua = entity->GetNullOffset(nullLayerName);
+
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), entity->GetNullOffset(nullLayerName));
+
 	return 1;
 }
 

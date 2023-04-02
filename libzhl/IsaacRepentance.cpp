@@ -510,10 +510,10 @@ namespace _func17
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
-	static FunctionDefinition funcObj("Camera::SetFocusPosition", typeid(void (Camera::*)(const Vector &)), "558bec51568bf1578b7e", argdata, 2, 5, &func);
+	static FunctionDefinition funcObj("Camera::SetFocusPosition", typeid(void (Camera::*)(Vector *)), "558bec51568bf1578b7e", argdata, 2, 5, &func);
 }
 
-__declspec(naked) void Camera::SetFocusPosition(const Vector &pos)
+__declspec(naked) void Camera::SetFocusPosition(Vector *pos)
 {
 	__asm
 	{

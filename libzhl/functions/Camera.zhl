@@ -2,7 +2,7 @@
 __thiscall void Camera::constructor(Camera *this<ecx>, Room* room);
 
 "558bec51568bf1578b7e":
-__thiscall void Camera::SetFocusPosition(Camera *this<ecx>, const Vector& pos);
+__thiscall void Camera::SetFocusPosition(Camera *this<ecx>, Vector* pos);
 
 "558bec83e4f851a1????????568b":
 __thiscall void Camera::DoUpdate(Camera *this<ecx>, bool unk);

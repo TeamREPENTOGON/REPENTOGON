@@ -16,19 +16,16 @@ static int Lua_GetCamera(lua_State* L) {
 
 int Lua_CameraSetFocusPosition(lua_State* L)
 {
-	//Camera* camera = *lua::GetUserdata<Camera**>(L, 1, CameraMT); // this is crashing and i'm not sure why, nor am i in the right mindset to try to debug this :upside_down: we'll cheat for now
-	Vector* vector = lua::UserdataToData<Vector*>(lua_touserdata(L, 2));
-	Room* room = *g_Game->GetCurrentRoom();
-	Camera* camera = room->GetCamera();
-	camera->SetFocusPosition(*vector);
+	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, CameraMT);
+	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	camera->SetFocusPosition(vector);
 	return 0;
 }
 
 int Lua_SnapToPosition(lua_State* L)
 {
-	Vector* vector = lua::UserdataToData<Vector*>(lua_touserdata(L, 2));
-	Room* room = *g_Game->GetCurrentRoom();
-	Camera* camera = room->GetCamera();
+	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, CameraMT);
+	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	camera->SnapToPosition(*vector);
 	return 0;
 }
