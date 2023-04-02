@@ -125,10 +125,11 @@ static int lua_Entity_GetPosVel(lua_State* L) {
 	Vector* pos = (Vector*)((char*)entity + 0x294);
 	Vector* vel = (Vector*)((char*)entity + 0x2B8);
 
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *pos);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *vel);
+	PosVel posVel = PosVel(*pos, *vel);
 
-	return 2;
+	lua::luabridge::UserdataValue<PosVel>::push(L, lua::GetMetatableKey(lua::Metatables::POS_VEL), posVel);
+
+	return 1;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
