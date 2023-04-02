@@ -48,7 +48,7 @@ int Lua_PGDIncreaseEventCounter(lua_State* L)
 
 	pgd->IncreaseEventCounter(eventCounter, num);
 
-	return 1;
+	return 0;
 }
 
 int Lua_PGDGetEventCounter(lua_State* L)

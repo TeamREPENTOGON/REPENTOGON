@@ -18,7 +18,7 @@ int Lua_AmbushStartChallenge(lua_State* L)
 {
 	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
 	ambush->StartChallenge();
-	return 1;
+	return 0;
 }
 
 static void RegisterAmbush(lua_State* L) {
