@@ -68,9 +68,9 @@ int Lua_InitTwin(lua_State* L)
 	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
 	int playerType = luaL_checkinteger(L, 2);
 
-	Entity_Player* toLua = lua::luabridge::UserdataValue<Entity_Player>::place(L, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-	toLua = player->InitTwin(playerType);
-
+	Entity_Player* twinPlayer = player->InitTwin(playerType);
+	lua::luabridge::UserdataPtr::push(L, twinPlayer, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+				
 	return 1;
 }
 

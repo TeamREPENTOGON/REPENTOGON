@@ -72,6 +72,11 @@ ___
 #### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) InitTwin ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 I believe this is used by J&E, Strawman etc.
 
+???+ bug "Bug"
+    The twin player will desync from its main twin on save and continue. This softlocks the game in singleplayer, as the game prompts for a controller.
+	
+	We've received confirmation from \_Kilburn that this is hardcoded to be handled on vanilla characters. We will need to add a workaround for this.
+
 ___
 ### Remove·Collectible·By·History·Index () {: aria-label='Functions' }
 #### void RemoveCollectibleByHistoryIndex ( int Index ) {: .copyable aria-label='Functions' }
