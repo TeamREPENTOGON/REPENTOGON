@@ -37,6 +37,86 @@ static int Lua_RandomCoinJamAnim(lua_State* L) {
 	return 1;
 }
 
+/*static int Lua_GetSlotRNG(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+
+	RNG* toLua = lua::luabridge::UserdataValue<RNG>::place(L, lua::GetMetatableKey(lua::Metatables::RNG));
+	*toLua = *slot->GetSlotRNG();
+	return 1;
+}
+*/
+
+static int Lua_GetState(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, *slot->GetState());
+	return 1;
+}
+
+static int Lua_SetState(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	*slot->GetState() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_GetPrizeType(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, *slot->GetPrizeType());
+	return 1;
+}
+
+static int Lua_SetPrizeType(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	*slot->GetPrizeType() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_GetDonationValue(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, *slot->GetDonationValue());
+	return 1;
+}
+
+static int Lua_SetDonationValue(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	*slot->GetDonationValue() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_GetTimeout(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, *slot->GetTimeout());
+	return 1;
+}
+
+static int Lua_SetTimeout(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	*slot->GetTimeout() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_GetTouch(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, *slot->GetTouch());
+	return 1;
+}
+
+static int Lua_SetTouch(lua_State* L) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	*slot->GetTouch() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
 void RegisterSlotMetatable(lua_State* L) {
 	lua::LuaStackProtector protector(L);
 
@@ -87,6 +167,17 @@ void RegisterSlotMetatable(lua_State* L) {
 		{ "CreateDropsFromExplosion", Lua_CreateDropsFromExplosion },
 		{ "SetPrizeCollectible", Lua_SetPrizeCollectible },
 		{ "RandomCoinJamAnim", Lua_RandomCoinJamAnim },
+		//{ "GetSlotRNG", Lua_GetSlotRNG },
+		{ "GetState", Lua_GetState },
+		{ "SetState", Lua_SetState },
+		{ "GetPrizeType", Lua_GetPrizeType },
+		{ "SetPrizeType", Lua_SetPrizeType },
+		{ "GetDonationValue", Lua_GetDonationValue },
+		{ "SetDonationValue", Lua_SetDonationValue },
+		{ "GetTimeout", Lua_GetTimeout },
+		{ "SetTimeout", Lua_SetTimeout },
+		{ "GetTouch", Lua_GetTouch },
+		{ "SetTouch", Lua_SetTouch },
 		{ NULL, NULL }
 	};
 
