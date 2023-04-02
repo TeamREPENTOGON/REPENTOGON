@@ -5770,6 +5770,64 @@ __declspec(naked) ChallengeParam *Manager::GetChallengeParams(int challengeID)
 namespace _func177
 {
 	static void *func = 0;
+	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x17ff, 0x1ff};
+	static FunctionDefinition funcObj("Manager::StartNewGame", typeid(void (Manager::*)(int , int , UnknownGameStartStruct , int )), "558BEC6AFF68????????64a1000000005083EC60A1????????33C58945F05650", argdata, 5, 5, &func);
+}
+
+__declspec(naked) void Manager::StartNewGame(int playerType, int challenge, UnknownGameStartStruct unk, int difficulty)
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		push [ebp+108]		// difficulty
+		push [ebp+104]		// unk
+		push [ebp+100]		// unk
+		push [ebp+96]		// unk
+		push [ebp+92]		// unk
+		push [ebp+88]		// unk
+		push [ebp+84]		// unk
+		push [ebp+80]		// unk
+		push [ebp+76]		// unk
+		push [ebp+72]		// unk
+		push [ebp+68]		// unk
+		push [ebp+64]		// unk
+		push [ebp+60]		// unk
+		push [ebp+56]		// unk
+		push [ebp+52]		// unk
+		push [ebp+48]		// unk
+		push [ebp+44]		// unk
+		push [ebp+40]		// unk
+		push [ebp+36]		// unk
+		push [ebp+32]		// unk
+		push [ebp+28]		// unk
+		push [ebp+24]		// unk
+		push [ebp+20]		// unk
+		push [ebp+16]		// unk
+		push [ebp+12]		// challenge
+		push [ebp+8]		// playerType
+		call _func177::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		retn 104
+	}
+}
+
+namespace _func178
+{
+	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
 	static FunctionDefinition funcObj("Manager::AchievementUnlocksDisallowed", typeid(bool (Manager::*)(bool )), "558bec51568b35????????8b86", argdata, 2, 1, &func);
 }
@@ -5786,7 +5844,7 @@ __declspec(naked) bool Manager::AchievementUnlocksDisallowed(bool unk)
 		push esi
 		push edi
 		push [ebp+8]		// unk
-		call _func177::func
+		call _func178::func
 		pop edi
 		pop esi
 		pop ebx
@@ -5800,12 +5858,12 @@ __declspec(naked) bool Manager::AchievementUnlocksDisallowed(bool unk)
 
 Manager **__ptr_g_Manager;
 
-namespace _var178
+namespace _var179
 {
 	static VariableDefinition varObj("g_Manager", ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????", &__ptr_g_Manager);
 }
 
-namespace _func179
+namespace _func180
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -5813,38 +5871,6 @@ namespace _func179
 }
 
 __declspec(naked) void Menu_Character::Update()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func179::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func180
-{
-	static void *func = 0;
-	static const short *argdata = NULL;
-	static FunctionDefinition funcObj("Menu_Character::Render", typeid(void (Menu_Character::*)()), "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381eca8000000a1????????33c58945??5657508d45??64a3????????8bf989bd????????80bf????????00", argdata, 0, 4, &func);
-}
-
-__declspec(naked) void Menu_Character::Render()
 {
 	__asm
 	{
@@ -5872,6 +5898,38 @@ __declspec(naked) void Menu_Character::Render()
 namespace _func181
 {
 	static void *func = 0;
+	static const short *argdata = NULL;
+	static FunctionDefinition funcObj("Menu_Character::Render", typeid(void (Menu_Character::*)()), "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381eca8000000a1????????33c58945??5657508d45??64a3????????8bf989bd????????80bf????????00", argdata, 0, 4, &func);
+}
+
+__declspec(naked) void Menu_Character::Render()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func181::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func182
+{
+	static void *func = 0;
 	static short argdata[] = {0x1ff};
 	static FunctionDefinition funcObj("Menu_Character::Init", typeid(void (Menu_Character::*)(Vector *)), "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec48a1????????33c58945??5657508d45??64a3????????8bf1", argdata, 1, 4, &func);
 }
@@ -5889,7 +5947,7 @@ __declspec(naked) void Menu_Character::Init(Vector *unk)
 		push esi
 		push edi
 		push [ebp+8]		// unk
-		call _func181::func
+		call _func182::func
 		pop edi
 		pop esi
 		pop ebx
@@ -5902,7 +5960,7 @@ __declspec(naked) void Menu_Character::Init(Vector *unk)
 	}
 }
 
-namespace _func182
+namespace _func183
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -5910,38 +5968,6 @@ namespace _func182
 }
 
 __declspec(naked) void Menu_Game::Update()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func182::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func183
-{
-	static void *func = 0;
-	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("Menu_Game::PreRenderContinueImg", typeid(void (Menu_Game::*)()), "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec80020000", argdata, 1, 5, &func);
-}
-
-__declspec(naked) void Menu_Game::PreRenderContinueImg()
 {
 	__asm
 	{
@@ -5970,10 +5996,10 @@ namespace _func184
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("MenuManager::constructor", typeid(void (MenuManager::*)()), "538bdc83ec0883e4f083c404558b6b??896c24??8bec6aff68????????64a1????????505383ec28", argdata, 1, 5, &func);
+	static FunctionDefinition funcObj("Menu_Game::PreRenderContinueImg", typeid(void (Menu_Game::*)()), "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec80020000", argdata, 1, 5, &func);
 }
 
-__declspec(naked) void MenuManager::constructor()
+__declspec(naked) void Menu_Game::PreRenderContinueImg()
 {
 	__asm
 	{
@@ -5998,21 +6024,14 @@ __declspec(naked) void MenuManager::constructor()
 	}
 }
 
-MenuManager **__ptr_g_MenuManager;
-
-namespace _var185
-{
-	static VariableDefinition varObj("g_MenuManager", "c745fcffffffff8bc8a3(????????)e8????????", &__ptr_g_MenuManager);
-}
-
-namespace _func186
+namespace _func185
 {
 	static void *func = 0;
-	static const short *argdata = NULL;
-	static FunctionDefinition funcObj("MenuManager::Init", typeid(void (MenuManager::*)()), "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381eca8000000a1????????33c58945??5657508d45??64a3????????8b3d", argdata, 0, 4, &func);
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("MenuManager::constructor", typeid(void (MenuManager::*)()), "538bdc83ec0883e4f083c404558b6b??896c24??8bec6aff68????????64a1????????505383ec28", argdata, 1, 5, &func);
 }
 
-__declspec(naked) void MenuManager::Init()
+__declspec(naked) void MenuManager::constructor()
 {
 	__asm
 	{
@@ -6024,7 +6043,7 @@ __declspec(naked) void MenuManager::Init()
 		push ebx
 		push esi
 		push edi
-		call _func186::func
+		call _func185::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6037,14 +6056,21 @@ __declspec(naked) void MenuManager::Init()
 	}
 }
 
+MenuManager **__ptr_g_MenuManager;
+
+namespace _var186
+{
+	static VariableDefinition varObj("g_MenuManager", "c745fcffffffff8bc8a3(????????)e8????????", &__ptr_g_MenuManager);
+}
+
 namespace _func187
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
-	static FunctionDefinition funcObj("MenuManager::Render", typeid(void (MenuManager::*)()), "558bec83e4f881ece0000000a1????????56", argdata, 0, 4, &func);
+	static FunctionDefinition funcObj("MenuManager::Init", typeid(void (MenuManager::*)()), "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381eca8000000a1????????33c58945??5657508d45??64a3????????8b3d", argdata, 0, 4, &func);
 }
 
-__declspec(naked) void MenuManager::Render()
+__declspec(naked) void MenuManager::Init()
 {
 	__asm
 	{
@@ -6072,6 +6098,38 @@ __declspec(naked) void MenuManager::Render()
 namespace _func188
 {
 	static void *func = 0;
+	static const short *argdata = NULL;
+	static FunctionDefinition funcObj("MenuManager::Render", typeid(void (MenuManager::*)()), "558bec83e4f881ece0000000a1????????56", argdata, 0, 4, &func);
+}
+
+__declspec(naked) void MenuManager::Render()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func188::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func189
+{
+	static void *func = 0;
 	static short argdata[] = {0x1ff};
 	static FunctionDefinition funcObj("MenuManager::SetState", typeid(void (MenuManager::*)(int )), "558bec83ec08538b1d????????568b75", argdata, 1, 4, &func);
 }
@@ -6089,7 +6147,7 @@ __declspec(naked) void MenuManager::SetState(int estate)
 		push esi
 		push edi
 		push [ebp+8]		// estate
-		call _func188::func
+		call _func189::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6102,7 +6160,7 @@ __declspec(naked) void MenuManager::SetState(int estate)
 	}
 }
 
-namespace _func189
+namespace _func190
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -6110,38 +6168,6 @@ namespace _func189
 }
 
 __declspec(naked) void Menu_Title::Update()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func189::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func190
-{
-	static void *func = 0;
-	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("Menu_Title::Render", typeid(void (Menu_Title::*)()), "558bec81eca4000000", argdata, 1, 5, &func);
-}
-
-__declspec(naked) void Menu_Title::Render()
 {
 	__asm
 	{
@@ -6170,10 +6196,10 @@ namespace _func191
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("Minimap::Render", typeid(void (Minimap::*)()), "558bec83e4f081ec18010000a1", argdata, 1, 5, &func);
+	static FunctionDefinition funcObj("Menu_Title::Render", typeid(void (Menu_Title::*)()), "558bec81eca4000000", argdata, 1, 5, &func);
 }
 
-__declspec(naked) void Minimap::Render()
+__declspec(naked) void Menu_Title::Render()
 {
 	__asm
 	{
@@ -6201,6 +6227,38 @@ __declspec(naked) void Minimap::Render()
 namespace _func192
 {
 	static void *func = 0;
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("Minimap::Render", typeid(void (Minimap::*)()), "558bec83e4f081ec18010000a1", argdata, 1, 5, &func);
+}
+
+__declspec(naked) void Minimap::Render()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func192::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func193
+{
+	static void *func = 0;
 	static short argdata[] = {0x1ff, 0x1ff, 0x1ff};
 	static FunctionDefinition funcObj("ModManager::RenderCustomCharacterMenu", typeid(void (*)(int , Vector *, ANM2 *)), "558bec6aff68????????64a1????????5083ec28a1????????33c58945??535657508d45??64a3????????8b7d", argdata, 3, 4, &func);
 }
@@ -6220,7 +6278,7 @@ __declspec(naked) void ModManager::RenderCustomCharacterMenu(int CharacterId, Ve
 		push [ebp+16]		// DefaultSprite
 		push [ebp+12]		// RenderPos
 		push [ebp+8]		// CharacterId
-		call _func192::func
+		call _func193::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6233,7 +6291,7 @@ __declspec(naked) void ModManager::RenderCustomCharacterMenu(int CharacterId, Ve
 	}
 }
 
-namespace _func193
+namespace _func194
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -6254,7 +6312,7 @@ __declspec(naked) void Music::Play(int musicid, float volume)
 		push edi
 		push [ebp+12]		// volume
 		push [ebp+8]		// musicid
-		call _func193::func
+		call _func194::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6267,7 +6325,7 @@ __declspec(naked) void Music::Play(int musicid, float volume)
 	}
 }
 
-namespace _func194
+namespace _func195
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -6288,7 +6346,7 @@ __declspec(naked) void Music::Crossfade(int musicid, float faderate)
 		push edi
 		push [ebp+12]		// faderate
 		push [ebp+8]		// musicid
-		call _func194::func
+		call _func195::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6301,7 +6359,7 @@ __declspec(naked) void Music::Crossfade(int musicid, float faderate)
 	}
 }
 
-namespace _func195
+namespace _func196
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6321,7 +6379,7 @@ __declspec(naked) void Music::PlayJingle(int musicid)
 		push esi
 		push edi
 		push [ebp+8]		// musicid
-		call _func195::func
+		call _func196::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6334,7 +6392,7 @@ __declspec(naked) void Music::PlayJingle(int musicid)
 	}
 }
 
-namespace _func196
+namespace _func197
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6354,7 +6412,7 @@ __declspec(naked) void Music::DisableLayer(int id)
 		push esi
 		push edi
 		push [ebp+8]		// id
-		call _func196::func
+		call _func197::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6367,7 +6425,7 @@ __declspec(naked) void Music::DisableLayer(int id)
 	}
 }
 
-namespace _func197
+namespace _func198
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -6388,7 +6446,7 @@ __declspec(naked) void Music::EnableLayer(int id, bool instant)
 		push edi
 		push [ebp+12]		// instant
 		push [ebp+8]		// id
-		call _func197::func
+		call _func198::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6401,7 +6459,7 @@ __declspec(naked) void Music::EnableLayer(int id, bool instant)
 	}
 }
 
-namespace _func198
+namespace _func199
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -6420,7 +6478,7 @@ __declspec(naked) void PauseScreen::Render()
 		push ebx
 		push esi
 		push edi
-		call _func198::func
+		call _func199::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6433,7 +6491,7 @@ __declspec(naked) void PauseScreen::Render()
 	}
 }
 
-namespace _func199
+namespace _func200
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6452,7 +6510,7 @@ __declspec(naked) bool PersistentGameData::TryUnlock(int achievementID)
 		push esi
 		push edi
 		push [ebp+8]		// achievementID
-		call _func199::func
+		call _func200::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6464,7 +6522,7 @@ __declspec(naked) bool PersistentGameData::TryUnlock(int achievementID)
 	}
 }
 
-namespace _func200
+namespace _func201
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -6485,7 +6543,7 @@ __declspec(naked) void PersistentGameData::IncreaseEventCounter(int eEventCounte
 		push edi
 		push [ebp+12]		// num
 		push [ebp+8]		// eEventCounters
-		call _func200::func
+		call _func201::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6498,7 +6556,7 @@ __declspec(naked) void PersistentGameData::IncreaseEventCounter(int eEventCounte
 	}
 }
 
-namespace _func201
+namespace _func202
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6517,7 +6575,7 @@ __declspec(naked) bool PersistentGameData::Unlocked(int achievementID)
 		push esi
 		push edi
 		push [ebp+8]		// achievementID
-		call _func201::func
+		call _func202::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6529,7 +6587,7 @@ __declspec(naked) bool PersistentGameData::Unlocked(int achievementID)
 	}
 }
 
-namespace _func202
+namespace _func203
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6549,7 +6607,7 @@ __declspec(naked) void PersistentGameData::AddToCollection(int collectibleID)
 		push esi
 		push edi
 		push [ebp+8]		// collectibleID
-		call _func202::func
+		call _func203::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6562,7 +6620,7 @@ __declspec(naked) void PersistentGameData::AddToCollection(int collectibleID)
 	}
 }
 
-namespace _func203
+namespace _func204
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -6581,7 +6639,7 @@ __declspec(naked) void PlayerHUD::Update()
 		push ebx
 		push esi
 		push edi
-		call _func203::func
+		call _func204::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6594,7 +6652,7 @@ __declspec(naked) void PlayerHUD::Update()
 	}
 }
 
-namespace _func204
+namespace _func205
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -6617,7 +6675,7 @@ __declspec(naked) void PlayerHUD::RenderActiveItem(unsigned int slot, const Vect
 		push [ebp+16]		// alpha
 		push [ebp+12]		// pos
 		push [ebp+8]		// slot
-		call _func204::func
+		call _func205::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6630,7 +6688,7 @@ __declspec(naked) void PlayerHUD::RenderActiveItem(unsigned int slot, const Vect
 	}
 }
 
-namespace _func205
+namespace _func206
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6638,37 +6696,6 @@ namespace _func205
 }
 
 __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer(int unk)
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push ecx
-		push ebx
-		push esi
-		push edi
-		push [ebp+8]		// unk
-		call _func205::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop edx
-		mov esp, ebp
-		pop ebp
-		retn 4
-	}
-}
-
-namespace _func206
-{
-	static void *func = 0;
-	static short argdata[] = {0x101, 0x1ff};
-	static FunctionDefinition funcObj("PlayerManager::SpawnCoPlayer2", typeid(Entity_Player *(PlayerManager::*)(int )), "558bec6aff68????????64a1????????5083ec10535657a1????????33c5508d45??64a3????????8bf9837d??ff", argdata, 2, 1, &func);
-}
-
-__declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
 {
 	__asm
 	{
@@ -6695,6 +6722,37 @@ __declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
 namespace _func207
 {
 	static void *func = 0;
+	static short argdata[] = {0x101, 0x1ff};
+	static FunctionDefinition funcObj("PlayerManager::SpawnCoPlayer2", typeid(Entity_Player *(PlayerManager::*)(int )), "558bec6aff68????????64a1????????5083ec10535657a1????????33c5508d45??64a3????????8bf9837d??ff", argdata, 2, 1, &func);
+}
+
+__declspec(naked) Entity_Player *PlayerManager::SpawnCoPlayer2(int unk)
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push ecx
+		push ebx
+		push esi
+		push edi
+		push [ebp+8]		// unk
+		call _func207::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop edx
+		mov esp, ebp
+		pop ebp
+		retn 4
+	}
+}
+
+namespace _func208
+{
+	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff};
 	static FunctionDefinition funcObj("PlayerManager::FirstCollectibleOwner", typeid(Entity_Player *(PlayerManager::*)(CollectibleType , RNG **, bool )), "558bec83e4f883ec0c538b5d??56578bf98b0d", argdata, 4, 1, &func);
 }
@@ -6713,7 +6771,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(Collectibl
 		push [ebp+16]		// unk
 		push [ebp+12]		// rng
 		push [ebp+8]		// collectibleID
-		call _func207::func
+		call _func208::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6725,7 +6783,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstCollectibleOwner(Collectibl
 	}
 }
 
-namespace _func208
+namespace _func209
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -6743,7 +6801,7 @@ __declspec(naked) bool PlayerManager::IsCoopPlay()
 		push ebx
 		push esi
 		push edi
-		call _func208::func
+		call _func209::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6755,7 +6813,7 @@ __declspec(naked) bool PlayerManager::IsCoopPlay()
 	}
 }
 
-namespace _func209
+namespace _func210
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6774,7 +6832,7 @@ __declspec(naked) int PlayerManager::GetNumCollectibles(CollectibleType type)
 		push esi
 		push edi
 		push [ebp+8]		// type
-		call _func209::func
+		call _func210::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6786,7 +6844,7 @@ __declspec(naked) int PlayerManager::GetNumCollectibles(CollectibleType type)
 	}
 }
 
-namespace _func210
+namespace _func211
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff};
@@ -6807,7 +6865,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstTrinketOwner(TrinketType tr
 		push [ebp+16]		// unk
 		push [ebp+12]		// rng
 		push [ebp+8]		// trinketType
-		call _func210::func
+		call _func211::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6819,7 +6877,7 @@ __declspec(naked) Entity_Player *PlayerManager::FirstTrinketOwner(TrinketType tr
 	}
 }
 
-namespace _func211
+namespace _func212
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6838,7 +6896,7 @@ __declspec(naked) bool PlayerManager::HasTemporaryEffect(ItemConfig_Item *item)
 		push esi
 		push edi
 		push [ebp+8]		// item
-		call _func211::func
+		call _func212::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6850,7 +6908,7 @@ __declspec(naked) bool PlayerManager::HasTemporaryEffect(ItemConfig_Item *item)
 	}
 }
 
-namespace _func212
+namespace _func213
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -6870,7 +6928,7 @@ __declspec(naked) int ProceduralItemManager::CreateProceduralItem(unsigned int s
 		push edi
 		push [ebp+12]		// unk
 		push [ebp+8]		// seed
-		call _func212::func
+		call _func213::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6882,7 +6940,7 @@ __declspec(naked) int ProceduralItemManager::CreateProceduralItem(unsigned int s
 	}
 }
 
-namespace _func213
+namespace _func214
 {
 	static void *func = 0;
 	static const short *argdata = NULL;
@@ -6900,7 +6958,7 @@ __declspec(naked) unsigned int __stdcall Random()
 		push ebx
 		push esi
 		push edi
-		call _func213::func
+		call _func214::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6912,7 +6970,7 @@ __declspec(naked) unsigned int __stdcall Random()
 	}
 }
 
-namespace _func214
+namespace _func215
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -6933,7 +6991,7 @@ __declspec(naked) void RNG::SetSeed(unsigned int Seed, unsigned int ShiftIdx)
 		push edi
 		push [ebp+12]		// ShiftIdx
 		push [ebp+8]		// Seed
-		call _func214::func
+		call _func215::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6946,7 +7004,7 @@ __declspec(naked) void RNG::SetSeed(unsigned int Seed, unsigned int ShiftIdx)
 	}
 }
 
-namespace _func215
+namespace _func216
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -6964,7 +7022,7 @@ __declspec(naked) float Room::GetDevilRoomChance()
 		push ebx
 		push esi
 		push edi
-		call _func215::func
+		call _func216::func
 		pop edi
 		pop esi
 		pop ebx
@@ -6976,7 +7034,7 @@ __declspec(naked) float Room::GetDevilRoomChance()
 	}
 }
 
-namespace _func216
+namespace _func217
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -6995,7 +7053,7 @@ __declspec(naked) GridEntity *Room::GetGridEntity(uint32_t idx)
 		push esi
 		push edi
 		push [ebp+8]		// idx
-		call _func216::func
+		call _func217::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7007,7 +7065,7 @@ __declspec(naked) GridEntity *Room::GetGridEntity(uint32_t idx)
 	}
 }
 
-namespace _func217
+namespace _func218
 {
 	static void *func = 0;
 	static short argdata[] = {0x101};
@@ -7015,38 +7073,6 @@ namespace _func217
 }
 
 __declspec(naked) void Room::ShopRestockFull()
-{
-	__asm
-	{
-		push ebp
-		mov ebp, esp
-		push edx
-		push eax
-		push ecx
-		push ebx
-		push esi
-		push edi
-		call _func217::func
-		pop edi
-		pop esi
-		pop ebx
-		pop ecx
-		pop eax
-		pop edx
-		mov esp, ebp
-		pop ebp
-		ret
-	}
-}
-
-namespace _func218
-{
-	static void *func = 0;
-	static short argdata[] = {0x101};
-	static FunctionDefinition funcObj("Room::ShopRestockPartial", typeid(void (Room::*)()), "558bec83ec1c53568bf1", argdata, 1, 5, &func);
-}
-
-__declspec(naked) void Room::ShopRestockPartial()
 {
 	__asm
 	{
@@ -7074,6 +7100,38 @@ __declspec(naked) void Room::ShopRestockPartial()
 namespace _func219
 {
 	static void *func = 0;
+	static short argdata[] = {0x101};
+	static FunctionDefinition funcObj("Room::ShopRestockPartial", typeid(void (Room::*)()), "558bec83ec1c53568bf1", argdata, 1, 5, &func);
+}
+
+__declspec(naked) void Room::ShopRestockPartial()
+{
+	__asm
+	{
+		push ebp
+		mov ebp, esp
+		push edx
+		push eax
+		push ecx
+		push ebx
+		push esi
+		push edi
+		call _func219::func
+		pop edi
+		pop esi
+		pop ebx
+		pop ecx
+		pop eax
+		pop edx
+		mov esp, ebp
+		pop ebp
+		ret
+	}
+}
+
+namespace _func220
+{
+	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff};
 	static FunctionDefinition funcObj("Room::GetShopItemPrice", typeid(int (Room::*)(unsigned int , unsigned int , int )), "558bec83ec30f30f7e05", argdata, 4, 1, &func);
 }
@@ -7092,7 +7150,7 @@ __declspec(naked) int Room::GetShopItemPrice(unsigned int entVariant, unsigned i
 		push [ebp+16]		// shopItemID
 		push [ebp+12]		// entSubType
 		push [ebp+8]		// entVariant
-		call _func219::func
+		call _func220::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7104,7 +7162,7 @@ __declspec(naked) int Room::GetShopItemPrice(unsigned int entVariant, unsigned i
 	}
 }
 
-namespace _func220
+namespace _func221
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -7127,7 +7185,7 @@ __declspec(naked) bool Room::SpawnGridEntity(int GridIndex, unsigned int Type, u
 		push [ebp+16]		// Variant
 		push [ebp+12]		// Type
 		push [ebp+8]		// GridIndex
-		call _func220::func
+		call _func221::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7139,7 +7197,7 @@ __declspec(naked) bool Room::SpawnGridEntity(int GridIndex, unsigned int Type, u
 	}
 }
 
-namespace _func221
+namespace _func222
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -7159,7 +7217,7 @@ __declspec(naked) bool Room::SpawnGridEntity(int GridIndex, GridEntityDesc *Desc
 		push edi
 		push [ebp+12]		// Desc
 		push [ebp+8]		// GridIndex
-		call _func221::func
+		call _func222::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7171,7 +7229,7 @@ __declspec(naked) bool Room::SpawnGridEntity(int GridIndex, GridEntityDesc *Desc
 	}
 }
 
-namespace _func222
+namespace _func223
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff};
@@ -7193,7 +7251,7 @@ __declspec(naked) void Room::RemoveGridEntityImmediate(int GridIndex, int PathTr
 		push [ebp+16]		// KeepDecoration
 		push [ebp+12]		// PathTrail
 		push [ebp+8]		// GridIndex
-		call _func222::func
+		call _func223::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7206,7 +7264,7 @@ __declspec(naked) void Room::RemoveGridEntityImmediate(int GridIndex, int PathTr
 	}
 }
 
-namespace _func223
+namespace _func224
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff};
@@ -7226,7 +7284,7 @@ __declspec(naked) void Room::TriggerClear(bool playSound)
 		push esi
 		push edi
 		push [ebp+8]		// playSound
-		call _func223::func
+		call _func224::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7239,7 +7297,7 @@ __declspec(naked) void Room::TriggerClear(bool playSound)
 	}
 }
 
-namespace _func224
+namespace _func225
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff};
@@ -7259,7 +7317,7 @@ __declspec(naked) bool Room::CanSpawnObstacleAtPosition(int GridIndex, bool Forc
 		push edi
 		push [ebp+12]		// Force
 		push [ebp+8]		// GridIndex
-		call _func224::func
+		call _func225::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7271,7 +7329,7 @@ __declspec(naked) bool Room::CanSpawnObstacleAtPosition(int GridIndex, bool Forc
 	}
 }
 
-namespace _func225
+namespace _func226
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -7293,7 +7351,7 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRoomByStageTypeAndVariant(uin
 		push [ebp+16]		// variant
 		push [ebp+12]		// type
 		push [ebp+8]		// stage
-		call _func225::func
+		call _func226::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7305,7 +7363,7 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRoomByStageTypeAndVariant(uin
 	}
 }
 
-namespace _func226
+namespace _func227
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -7335,7 +7393,7 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRandomRoom(unsigned int seed,
 		push [ebp+16]		// stage
 		push [ebp+12]		// reduceWeight
 		push [ebp+8]		// seed
-		call _func226::func
+		call _func227::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7347,7 +7405,7 @@ __declspec(naked) RoomConfig *RoomConfigHolder::GetRandomRoom(unsigned int seed,
 	}
 }
 
-namespace _func227
+namespace _func228
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -7372,7 +7430,7 @@ __declspec(naked) void SFXManager::Play(int ID, float Volume, int FrameDelay, bo
 		push [ebp+16]		// FrameDelay
 		push [ebp+12]		// Volume
 		push [ebp+8]		// ID
-		call _func227::func
+		call _func228::func
 		pop edi
 		pop esi
 		pop ebx
@@ -7385,7 +7443,7 @@ __declspec(naked) void SFXManager::Play(int ID, float Volume, int FrameDelay, bo
 	}
 }
 
-namespace _func228
+namespace _func229
 {
 	static void *func = 0;
 	static short argdata[] = {0x101, 0x1ff, 0x1ff, 0x1ff, 0x1ff};
@@ -7407,7 +7465,7 @@ __declspec(naked) char *StringTable::GetString(const char *category, int languag
 		push [ebp+16]		// key
 		push [ebp+12]		// language
 		push [ebp+8]		// category
-		call _func228::func
+		call _func229::func
 		pop edi
 		pop esi
 		pop ebx

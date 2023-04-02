@@ -696,3 +696,7 @@ struct Font
 struct Backdrop {
     
 };
+
+struct UnknownGameStartStruct {
+	char pad0[0x5c]; //ANYONE KNOW WHAT THIS IS???? ANYONE????????
+};

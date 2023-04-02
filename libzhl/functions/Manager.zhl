@@ -15,10 +15,13 @@ __stdcall void Manager::RestartGame() //v1.7.9b maybe
 "558bec694508a4":
 __thiscall ChallengeParam* Manager::GetChallengeParams(Manager *this<ecx>, int challengeID);
 
+"558BEC6AFF68????????64a1000000005083EC60A1????????33C58945F05650":
+__thiscall void Manager::StartNewGame(Manager *this<ecx>, int playerType, int challenge,  UnknownGameStartStruct unk, int difficulty);
+
 "558bec51568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(Manager *this<ecx>, bool unk);
 
-struct Manager depends (StringTable, PersistentGameData) {{
+struct Manager depends (StringTable, PersistentGameData, UnknownGameStartStruct) {{
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
 }};

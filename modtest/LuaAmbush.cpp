@@ -34,6 +34,33 @@ int Lua_AmbushSpawnWave(lua_State* L)
 	ambush->SpawnWave();
 	return 0;
 }
+
+int Lua_GetMaxBossrushWaves(lua_State* L)
+{
+	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
+	lua_pushinteger(L, *ambush->GetMaxBossrushWaves());
+	return 1;
+}
+
+int Lua_SetMaxBossrushWaves(lua_State* L)
+{
+	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
+	int amount = luaL_checkinteger(L, 2);
+	if (amount > 25) amount = 25;
+
+	*ambush->GetMaxBossrushWaves() = amount;
+
+	return 0;
+}
+
+int Lua_GetCurrentWave(lua_State* L)
+{
+	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
+	lua_pushinteger(L, *ambush->GetCurrentWave());
+
+	return 1;
+}
+
 static void RegisterAmbush(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetAmbush");
@@ -50,6 +77,11 @@ static void RegisterAmbush(lua_State* L) {
 		{ "StartChallenge", Lua_AmbushStartChallenge },
 		{ "SpawnBossrushWave", Lua_AmbushSpawnBossrushWave },
 		{ "SpawnWave", Lua_AmbushSpawnWave },
+		//{ "GetNumBossesPerWave", Lua_GetNumBossesPerWave },
+		//{ "SetNumBossesPerWave", Lua_SetNumBossesPerWave },
+		{ "GetMaxBossrushWaves", Lua_GetMaxBossrushWaves },
+		{ "SetMaxBossrushWaves", Lua_SetMaxBossrushWaves },
+		{ "GetCurrentWave", Lua_GetCurrentWave },
 		{ NULL, NULL }
 	};
 

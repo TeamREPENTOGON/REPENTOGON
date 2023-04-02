@@ -6,3 +6,9 @@ __thiscall void Ambush::SpawnBossrushWave(Ambush *this<ecx>);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec58a1????????33c58945??5657508d45??64a3????????8bf98b35":
 __thiscall void Ambush::SpawnWave(Ambush *this<ecx>);
+
+struct Ambush {{
+	inline int* GetMaxBossrushWaves() {return (int*)((char*)this + 0x18); }
+	inline int* GetNumBossesPerWave() {return (int*)((char*)this + 0x1C); }
+	inline int* GetCurrentWave() {return (int*)((char*)this + 0x24); }
+}};
