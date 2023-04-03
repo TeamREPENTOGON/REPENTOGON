@@ -66,6 +66,15 @@ int Lua_PlayerManagerIsCoopPlay(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerManagerGetNumCollectibles(lua_State* L)
+{
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	int collectibleID = luaL_checkinteger(L, 2);
+	lua_pushinteger(L, playerManager->GetNumCollectibles((CollectibleType)collectibleID));
+
+	return 1;
+}
+
 static void RegisterPlayerManager(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetPlayerManager");
@@ -83,6 +92,7 @@ static void RegisterPlayerManager(lua_State* L) {
 		{ "AnyoneHasCollectible", Lua_AnyoneHasCollectible},
 		{ "SpawnCoPlayer2", Lua_SpawnCoPlayer2 },
 		{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
+		{ "GetNumCollectibles", Lua_PlayerManagerGetNumCollectibles},
 		{ NULL, NULL }
 	};
 
