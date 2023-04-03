@@ -26,6 +26,16 @@ static int Lua_RemoveGridEntityImmediate(lua_State* L) {
 	return 0;
 }
 
+static int Lua_RoomGetShopItemPrice(lua_State* L) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	unsigned int entVariant = luaL_checkinteger(L, 2);
+	unsigned int entSubtype = luaL_checkinteger(L, 3);
+	int shopItemID = luaL_checkinteger(L, 4);
+
+	lua_pushinteger(L, room->GetShopItemPrice(entVariant, entSubtype, shopItemID));
+	return 1;
+}
+
 static int Lua_RoomSetBackdrop(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	lua_Integer id = luaL_checkinteger(L, 2);
@@ -129,6 +139,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::Metatables mt = lua::Metatables::ROOM;
 
 	lua::RegisterFunction(state, mt, "Test", Room_Test);
+	lua::RegisterFunction(state, mt, "GetShopItemPrice", Lua_RoomGetShopItemPrice);
 	lua::RegisterFunction(state, mt, "RemoveGridEntityImmediate", Lua_RemoveGridEntityImmediate);
 	lua::RegisterFunction(state, mt, "CanSpawnObstacleAtPosition", Lua_RoomCanSpawnObstacleAtPosition);
 	lua::RegisterFunction(state, mt, "GetWaterAmount", Lua_RoomGetWaterAmount);
