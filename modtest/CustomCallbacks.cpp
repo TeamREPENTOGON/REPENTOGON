@@ -8,7 +8,6 @@
 //Callback tracking for optimizations
 std::bitset<500> CallbackState; //I dont think we will add 500 callbacks but lets set it there for now
 HOOK_STATIC(Isaac,SetBuiltInCallbackState, (int callbackid, bool enable)-> void, __cdecl){
-	printf("%d %d", callbackid, enable);
 	if (callbackid > 1000) {
 		CallbackState.set(callbackid - 1000, enable);
 	}
