@@ -1623,3 +1623,43 @@ HOOK_METHOD(Manager, RecordPlayerCompletion, (int unk) -> void) {
 	}
 	super(unk);
 }
+
+//POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1079)
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk) -> void) {
+	super(slot,pos, alpha, unk);
+
+	int callbackid = 1079;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
+			.push(slot)
+			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.push(alpha)
+			.call(1);
+	}
+}
+
+//POST_PLAYERHUD_RENDER_HEARTS (1091)
+HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &pos, float unk2) -> void) {
+	super(unk1, sprite, pos, unk2);
+
+	int callbackid = 1091;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(unk1, lua::Metatables::VECTOR)
+			.push(sprite, lua::Metatables::SPRITE)
+			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.push(unk2)
+			.call(1);
+	}
+}

@@ -325,6 +325,18 @@ struct Entity_Player
 	Entity _entity;
 };
 
+struct ActiveItemDesc
+{
+	int _item;
+	int _charge;
+	int _batteryCharge;
+	int _subCharge;
+	int _timeRechargeCooldown;
+	int _partialCharge;
+	int _varData;
+	
+};
+
 struct History
 {
 	
@@ -469,12 +481,12 @@ struct BossPool
 
 struct HUD 
 {
-	
+	PlayerHUD _playerHUD[7];
 };
 
 struct PlayerHUD 
 {
-	HUD _base;
+	Entity_Player* _player;
 };
 
 struct RunCallbackRegistry
