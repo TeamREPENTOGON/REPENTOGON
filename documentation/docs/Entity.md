@@ -53,7 +53,7 @@ ___
 
 ___
 ### Get·Type () {: aria-label='Functions' }
-#### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType () {: .copyable aria-label='Functions' }
+#### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Shadow·Size () {: aria-label='Functions' }
