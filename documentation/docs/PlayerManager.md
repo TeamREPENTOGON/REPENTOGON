@@ -23,7 +23,7 @@ Returns `nil` if the specified collectible has never been picked up.
 
 ___
 ### Is·Coop·Play () {: aria-label='Functions' }
-#### bool IsCoopPlay ( ) {: .copyable aria-label='Functions' }
+#### boolean IsCoopPlay ( ) {: .copyable aria-label='Functions' }
 Returns `true` if the game is in co-op mode.
 
 ___
