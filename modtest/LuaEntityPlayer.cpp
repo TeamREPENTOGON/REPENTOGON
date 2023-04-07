@@ -239,6 +239,19 @@ int Lua_PlayerSetMegaBlastDuration(lua_State* L)
 	return 0;
 }
 
+int Lua_PlayerGetActiveItemDesc(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int index = luaL_optinteger(L, 2, 0);
+	if (index > 3) {
+		luaL_argerror(L, 2, "ActiveSlot cannot be higher than 3");
+	}
+	ActiveItemDesc* desc = player->GetActiveItemDesc(index);
+	lua::luabridge::UserdataPtr::push(L, desc, lua::GetMetatableKey(lua::Metatables::ACTIVE_ITEM_DESC));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -265,4 +278,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "Teleport", Lua_PlayerTeleport);
 	lua::RegisterFunction(state, mt, "GetMegaBlastDuration", Lua_PlayerGetMegaBlastDuration);
 	lua::RegisterFunction(state, mt, "SetMegaBlastDuration", Lua_PlayerSetMegaBlastDuration);
+	lua::RegisterFunction(state, mt, "GetActiveItemDesc", Lua_PlayerGetActiveItemDesc);
 }

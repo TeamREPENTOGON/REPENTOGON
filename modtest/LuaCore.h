@@ -147,6 +147,7 @@ namespace lua {
         extern const char* NullFrameMT;
         extern const char* EntitySlotMT;;
         extern const char* HistoryMT;;
+        extern const char* PlayerHUDMT;;
     }
 
     void UnloadMetatables();
