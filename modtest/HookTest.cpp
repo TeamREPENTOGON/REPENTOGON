@@ -14,20 +14,6 @@ HOOK_GLOBAL(GetXMLNode,(char* thi,int whatevs,char* name)->char**) {
 	return returnval;
 }*/
 
-//TODO 0x1C _numBossesPerWave
-HOOK_METHOD(Ambush, SpawnBossrushWave, () -> void) {
-	*(int*)(char*)(this + 0x18) = 30;
-	printf("Unknown @ 0x18 value is %d\n", *(int*)(char*)(this + 0x18));
-	printf("Unknown @ 0x24 value is %d\n", *(int*)(char*)(this + 0x24));
-	super();
-}
-
-HOOK_METHOD(Ambush, SpawnWave, () -> void) {
-	printf("Unknown @ 0x18 value is %d\n", *(int*)(char*)(this + 0x18));
-	printf("Unknown @ 0x24 value is %d\n", *(int*)(char*)(this + 0x24));
-	super();
-}
-
 //Completion Makrs Test
 HOOK_METHOD(PauseScreen, Render, () -> void) {
 	super();

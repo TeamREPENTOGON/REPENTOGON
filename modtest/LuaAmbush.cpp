@@ -3,7 +3,9 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "ASMAmbush.h"
 
+extern int ambushWaves;
 static constexpr const char* AmbushMT = "Ambush";
 
 static int Lua_GetAmbush(lua_State* L) {
@@ -53,6 +55,23 @@ int Lua_SetMaxBossrushWaves(lua_State* L)
 	return 0;
 }
 
+int Lua_GetMaxChallengeWaves(lua_State* L)
+{
+	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
+	lua_pushinteger(L, ambushWaves);
+	return 1;
+}
+
+int Lua_SetMaxChallengeWaves(lua_State* L)
+{
+	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
+	int amount = luaL_checkinteger(L, 2);
+
+	ambushWaves = amount;
+
+	return 0;
+}
+
 int Lua_GetCurrentWave(lua_State* L)
 {
 	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
@@ -81,6 +100,8 @@ static void RegisterAmbush(lua_State* L) {
 		//{ "SetNumBossesPerWave", Lua_SetNumBossesPerWave },
 		{ "GetMaxBossrushWaves", Lua_GetMaxBossrushWaves },
 		{ "SetMaxBossrushWaves", Lua_SetMaxBossrushWaves },
+		{ "GetMaxChallengeWaves", Lua_GetMaxChallengeWaves },
+		{ "SetMaxChallengeWaves", Lua_SetMaxChallengeWaves },
 		{ "GetCurrentWave", Lua_GetCurrentWave },
 		{ NULL, NULL }
 	};

@@ -4,7 +4,6 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-
 //Callback tracking for optimizations
 std::bitset<500> CallbackState; //I dont think we will add 500 callbacks but lets set it there for now
 HOOK_STATIC(Isaac,SetBuiltInCallbackState, (int callbackid, bool enable)-> void, __cdecl){
@@ -181,9 +180,6 @@ HOOK_METHOD(HUD, Render, () -> void) {
 
 		lua::LuaCaller(L).push(callbackid).call(1);
 
-		/*FILE* f = fopen("repentogon.log", "a");
-		fprintf(f, "After call to HUD::Render, there are %d elements on the stack\n", lua_gettop(L));
-		fclose(f);*/
 	}
 	super();
 }

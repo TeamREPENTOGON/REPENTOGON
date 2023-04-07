@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include "lua.hpp"
 
+#include "ASMAmbush.h";
+
 /********************************************************************************
 HOOKING
 
@@ -167,5 +169,6 @@ MOD_EXPORT int ModInit(int argc, char **argv)
 	SetWindowTextA(GetActiveWindow(), titlebar);
 	FixLuaDump();
 	printf(":REPENTOGON:\n");
+	PatchHardcodedAmbushWaveCount();
 	return 0;
 }
