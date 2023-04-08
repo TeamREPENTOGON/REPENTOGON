@@ -252,6 +252,13 @@ int Lua_PlayerGetActiveItemDesc(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerTryFakeDeath(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushboolean(L, player->TryFakeDeath());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -279,4 +286,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetMegaBlastDuration", Lua_PlayerGetMegaBlastDuration);
 	lua::RegisterFunction(state, mt, "SetMegaBlastDuration", Lua_PlayerSetMegaBlastDuration);
 	lua::RegisterFunction(state, mt, "GetActiveItemDesc", Lua_PlayerGetActiveItemDesc);
+	lua::RegisterFunction(state, mt, "TryFakeDeath", Lua_PlayerTryFakeDeath);
 }
