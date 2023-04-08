@@ -1,6 +1,7 @@
 name: Build Project and Upload Artifact
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main-msvc
