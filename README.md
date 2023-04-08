@@ -6,6 +6,7 @@ REPENTOGON is a mod for *The Binding of Isaac: Repentance* version v1.7.9b.J835 
 Generally referred to as an "EXE mod" by the community, REPENTOGON works very differently than a traditional mod. Powered by *LibZHL*, the same framework used by *[Antibirth](https://antibirth.com/)*, REPENTOGON hooks directly into the game, allowing direct control over functionality which was previously impossible to replicate in mods, or would require significant  performance-intensive hacks or rewrites to replicate.
 
 # Building
+(Unless you're a developer, we recommend grabbing a build from [GitHub Actions](https://github.com/IsaacZHL/IsaacZHL/actions) instead.)
 ### Requirements
 The nature of this project requires that we use the same compiler as the game. As a result, a Windows system is explicitly required, along with the following:
 * CMake 3.13 or above
