@@ -21,8 +21,10 @@ ModCallbacks.MC_POST_RESTOCK_SHOP = 1071
 ModCallbacks.MC_PRE_CHANGE_ROOM = 1061
 ModCallbacks.MC_POST_PICKUP_SHOP_PURCHASE = 1062
 ModCallbacks.MC_GET_FOLLOWER_PRIORITY = 1063
-ModCallbacks.MC_PRE_NPC_MORPH = 2012 
-ModCallbacks.MC_PRE_PICKUP_MORPH = 2013
+ModCallbacks.MC_PRE_NPC_MORPH = 1212 
+ModCallbacks.MC_PRE_PICKUP_MORPH = 1213
+ModCallbacks.MC_POST_NPC_MORPH = 1214 
+ModCallbacks.MC_POST_PICKUP_MORPH = 1215
 ModCallbacks.MC_PRE_USE_CARD = 1064
 ModCallbacks.MC_PRE_USE_PILL = 1065
 ModCallbacks.MC_GET_SHOP_ITEM_PRICE = 1066
@@ -70,6 +72,8 @@ ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS = 1132
 ModCallbacks.MC_POST_DEVIL_CALCULATE = 1133
 ModCallbacks.MC_COMPLETION_MARK_GET = 1047
 ModCallbacks.MC_USE_PILL = 1000
+ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM = 1079
+ModCallbacks.MC_POST_PLAYERHUD_RENDER_HEARTS = 1091
 
 EntityPartition.ALL = 0xffffffff
 
@@ -1203,7 +1207,7 @@ EntityPoopVariant = {
 	STONE = 11, PETRIFIED = 11,
 	CHUNKY = 12, CORN = 12,
 	FLAMING = 13,
-	STINKY = 15,
+	STINKY = 14, POISON = 14,
 	BLACK = 15,
 	HOLY = 16, WHITE = 16,
 }
@@ -1242,7 +1246,7 @@ MainMenu = {
 
 --to-do--
 EventCounter = {
-	DONATE_MACHINE_COUNTER = 20, DONATION_MACHINE_COUNTER = 20,
+	DONATE_MACHINE_COUNTER = 20, DONATION_MACHINE_COUNTER = 20, EDEN_TOKENS = 21
 }
 
 WispSubType = { -- Unless specified, use CollectibleType
@@ -1459,5 +1463,73 @@ BitwiseDebugFlag = {
 	LUA_MEMORY_USAGE = 8192
 }
 
+DipSubType = {
+	NORMAL = 0,
+	RED = 1,
+	CHUNKY = 2, CORN = 2, 
+	GOLDEN = 3,
+	RAINBOW = 4,
+	BLACK = 5,
+	HOLY = 6, WHITE = 6,
+	STONE = 12, PETRIFIED = 12,
+	FLAMING = 13,
+	STINKY = 14, POISON = 14,
+	BROWNIE = 20,	
+}
+
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)
+
+local function quickRegisterColorPreset(name, R, G, B, A, RO, GO, BO, RC, GC, BC, CA)
+	rawset(getmetatable(Color), name, Color(R, G, B, A or 1, RO or 0, GO or 0, BO or 0))
+	Color[name]:SetColorize(RC or 0, GC or 0, BC or 0, CA or 0)
+end
+
+local colorPresets = {
+	TearIpecac = {0.5, 0.9, 0.4},
+	TearHoming = {0.4, 0.15, 0.38, 1, 71/255, 0, 116/255},
+	TearTar = {0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255},
+	TearSoy = {1.5, 2, 2},
+	TearChocolate = {0.33, 0.18, 0.18, 1, 66/255, 40/255, 40/255},
+	TearAlmond = {1.8, 1.7, 1},
+	TearScorpio = {50/255, 1, 50/255},
+	TearSerpentsKiss = {0.5, 0.97, 0.5},
+	TearCommonCold = {0.4, 0.97, 0.5},
+	TearCoal = {0.2, 0.09, 0.065},
+	TearNumberOne = {1, 1, 0, 1, 45/255, 15/255, 0},
+
+	ProjectileIpecac = {1, 1, 1, 1, 0, 0, 0, 0.4, 2, 0.5, 1},
+	ProjectileHoming = {1, 1, 1, 1, 0.26, 0.05, 0.4, 0.8, 0.15, 1, 1},
+	ProjectileTar	= {1, 1, 1, 1, 0, 0, 0, 0.5, 0.5, 0.5, 1},
+	ProjectileSoy = {1, 1, 1, 1, 0.8, 0.7, 0.5, 1, 1, 1, 1},
+	ProjectileFireWave = {1, 1, 1, 1, 1, 0.3, 0},
+
+	ProjectileCageBlue = {1, 1, 1, 1, 0, 0, 0, 0.8, 1, 0.85, 1},
+	ProjectileMegaSatanBlack = {1, 1, 1, 1, 0, 0, 0, 0.6, 0.6, 0.6, 1},
+	ProjectileMegaSatanWhite = {1, 1, 1, 1, 0, 0, 0, 2, 2, 2, 1},
+	ProjectileHushBlue = {1, 1, 1, 1, 0, 0.2, 0.4},
+	ProjectileHushYellow = {1, 1, 1, 1, 0.4, 0.2, 0},
+	ProjectileHushGreen = {1, 1, 1, 1, 0.2, 0.2, 0},
+
+	LaserIpecac = {1, 1, 1, 1, 0, 0, 0, 1.8, 3, 1, 1},
+	LaserHoming = {1, 1, 1, 1, 0, 0, 0, 3, 1, 3.5, 1},
+	LaserSoy = {1, 1, 1, 1, 0, 0, 0, 5.6, 5, 4.2, 1},
+	LaserChocolate = {1, 1, 1, 1, 0, 0, 0, 3, 1.7, 1.7, 1},
+	LaserAlmond = {1, 1, 1, 1, 0, 0, 0, 5.6, 5.2, 3.8, 1},
+	LaserPoison = {1, 1, 1, 1, 0, 0, 0, 1.8, 4, 1, 1},
+	LaserCoal = {3, 3, 3, 1, -0.5, -0.5, -0.5, 1.3, 1.2, 1.2, 1},
+	LaserFireMind = {1, 1, 1, 1, 0, 0, 0, 5, 3, 1, 1},
+	LaserNumberOne = {1, 1, 1, 1, 0, 0, 0, 5, 4.9, 1, 1},
+	LaserMother = {1, 1, 1, 1, 0, 0, 0, 2, 2.2, 1, 1},
+
+	ProjectileCorpsePink = {1, 1, 1, 1, 0, 0, 0, 4, 3.5, 3.2, 1},
+	ProjectileCorpseWhite = {1, 1, 1, 1, 0, 0, 0, 2.7, 3, 2, 1},
+	ProjectileCorpseGreen = {1, 1, 1, 1, 0, 0, 0, 1.5, 2, 1, 1},
+	ProjectileCorpseYellow = {1, 1, 1, 1, 0, 0, 0, 3.5, 2.5, 1, 1},
+	ProjectileCorpseClusterLight = {4, 4, 4, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
+	ProjectileCorpseClusterDark = {1, 1, 1, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
+}
+
+for colorName, colorData in pairs(colorPresets) do
+	quickRegisterColorPreset(colorName, table.unpack(colorData))
+end

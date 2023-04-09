@@ -2,7 +2,11 @@
 __thiscall void PlayerHUD::Update(PlayerHUD *this<ecx>);
 
 "558bec83e4f081ecc8020000":
-__thiscall void PlayerHUD::RenderActiveItem(PlayerHUD *this<ecx>, unsigned int slot, const Vector& pos, float alpha, float unk4);
+__thiscall void PlayerHUD::RenderActiveItem(PlayerHUD *this<ecx>, unsigned int slot, const Vector& pos, float alpha, float unk);
 
-/*"558bec83e4f881ec24020000a1????????33c4898424????????":
-__thiscall void PlayerHUD::RenderHearts(PlayerHUD *this<ecx>);*/
+"558bec83e4f881ec24020000":
+__thiscall void PlayerHUD::RenderHearts(PlayerHUD *this<ecx>, Vector *unk1, ANM2 *sprite, const Vector& unk2, float unk3);
+
+struct PlayerHUD {{
+	inline Entity_Player* GetPlayer() { return this->_player; }
+}};

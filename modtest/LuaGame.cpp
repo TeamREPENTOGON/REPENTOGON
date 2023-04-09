@@ -4,6 +4,8 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+extern bool overrideMegaSatanEnding;
+
 int Lua_GameAchievementUnlocksDisallowed(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -88,104 +90,34 @@ int Lua_GameAddDebugFlags(lua_State* L)
 	return 0;
 }
 
-static void RegisterAchievementUnlocksDisallowed(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "AchievementUnlocksDisallowed");
-	lua_pushcfunction(L, Lua_GameAchievementUnlocksDisallowed);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+int Lua_GetDimension(lua_State* L){
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, game->GetDimension());
+	return 1;
 }
 
-static void RegisterGetPlanetariumsVisited(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetPlanetariumsVisited");
-	lua_pushcfunction(L, Lua_GameGetPlanetariumsVisited);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterIsHardMode(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "IsHardMode");
-	lua_pushcfunction(L, Lua_GameIsHardMode);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetLastDevilRoomStageFix(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetLastDevilRoomStage");
-	lua_pushcfunction(L, Lua_GameGetLastDevilRoomStageFix);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetLastLevelWithDamageFix(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetLastLevelWithDamage");
-	lua_pushcfunction(L, Lua_GetLastLevelWithDamageFix);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetLastLevelWithoutHalfHpFix(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetLastLevelWithoutHalfHp");
-	lua_pushcfunction(L, Lua_GetLastLevelWithoutHalfHpFix);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetDebugFlag(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetDebugFlag");
-	lua_pushcfunction(L, Lua_GameGetDebugFlag);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetDebugFlags(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetDebugFlags");
-	lua_pushcfunction(L, Lua_GameGetDebugFlags);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterToggleDebugFlag(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "ToggleDebugFlag");
-	lua_pushcfunction(L, Lua_GameToggleDebugFlag);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterAddDebugFlags(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "AddDebugFlags");
-	lua_pushcfunction(L, Lua_GameAddDebugFlags);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+int Lua_GameForceMegaSatanVoidPortal(lua_State* L) {
+	overrideMegaSatanEnding = lua_toboolean(L, 2);
+	return 0;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterAchievementUnlocksDisallowed(state);
-	RegisterGetPlanetariumsVisited(state);
-	RegisterIsHardMode(state);
-	RegisterGetLastDevilRoomStageFix(state);
-	RegisterGetLastLevelWithDamageFix(state);
-	RegisterGetLastLevelWithoutHalfHpFix(state);
-	RegisterGetDebugFlag(state);
-	RegisterGetDebugFlags(state);
-	RegisterToggleDebugFlag(state);
-	RegisterAddDebugFlags(state);
+	lua::Metatables mt = lua::Metatables::GAME;
+	lua::RegisterFunction(state, mt, "AchievementUnlocksDisallowed", Lua_GameAchievementUnlocksDisallowed);
+	lua::RegisterFunction(state, mt, "GetPlanetariumsVisited", Lua_GameGetPlanetariumsVisited);
+	lua::RegisterFunction(state, mt, "IsHardMode", Lua_GameIsHardMode);
+	lua::RegisterFunction(state, mt, "GetLastDevilRoomStage", Lua_GameGetLastDevilRoomStageFix);
+	lua::RegisterFunction(state, mt, "GetLastLevelWithDamage", Lua_GetLastLevelWithDamageFix);
+	lua::RegisterFunction(state, mt, "GetLastLevelWithoutHalfHp", Lua_GetLastLevelWithoutHalfHpFix);
+	lua::RegisterFunction(state, mt, "GetDebugFlag", Lua_GameGetDebugFlag); // this one's on the chopping block
+	lua::RegisterFunction(state, mt, "GetDebugFlags", Lua_GameGetDebugFlags);
+	lua::RegisterFunction(state, mt, "ToggleDebugFlag", Lua_GameToggleDebugFlag); // this too
+	lua::RegisterFunction(state, mt, "AddDebugFlags", Lua_GameAddDebugFlags);
+	lua::RegisterFunction(state, mt, "ForceMegaSatanVoidPortal", Lua_GameForceMegaSatanVoidPortal);
+
+	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
+
 }

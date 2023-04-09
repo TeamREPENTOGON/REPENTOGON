@@ -12,9 +12,7 @@ static int Lua_ColorGetTint(lua_State* L) {
 		lua_pushstring(L, keys[i]);
 		lua_pushnumber(L, color->_tint[i]);
 		lua_settable(L, -3);
-		printf("%d", i);
 	}
-	printf("yea\n");
 	return 1;
 }
 
@@ -49,49 +47,18 @@ static int Lua_ColorGetOffset(lua_State* L) {
 	return 1;
 }
 
-
-static void RegisterColorGetTint(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::COLOR);
-	lua_pushstring(L, "GetTint");
-	lua_pushcfunction(L, Lua_ColorGetTint);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterColorGetColorize(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::COLOR);
-	lua_pushstring(L, "GetColorize");
-	lua_pushcfunction(L, Lua_ColorGetColorize);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterColorGetOffset(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::COLOR);
-	lua_pushstring(L, "GetOffset");
-	lua_pushcfunction(L, Lua_ColorGetOffset);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterColorPresets(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::COLOR);
-	lua_pushstring(L, "GetOffset");
-	lua_pushcfunction(L, Lua_ColorGetOffset);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterColorGetTint(state);
-	RegisterColorGetColorize(state);
-	RegisterColorGetOffset(state);
-	RegisterColorPresets(state);
+	lua::Metatables mt = lua::Metatables::COLOR;
+	lua::Metatables const_mt = lua::Metatables::CONST_COLOR;
+
+	lua::RegisterFunction(state, mt, "GetTint", Lua_ColorGetTint);
+	lua::RegisterFunction(state, mt, "GetColorize", Lua_ColorGetColorize);
+	lua::RegisterFunction(state, mt, "GetOffset", Lua_ColorGetOffset);
+
+	lua::RegisterFunction(state, const_mt, "GetTint", Lua_ColorGetTint);
+	lua::RegisterFunction(state, const_mt, "GetColorize", Lua_ColorGetColorize);
+	lua::RegisterFunction(state, const_mt, "GetOffset", Lua_ColorGetOffset);
 }

@@ -28,6 +28,8 @@ Compared to the vanilla function, this implementation has been further augmented
 ### Add·Active·Charge () {: aria-label='Functions' }
 #### int AddActiveCharge ( int Charge, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, boolean Unknown, boolean Overcharge, boolean Force ) {: .copyable aria-label='Functions' }
 
+Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
+
 ___
 ### Drop·Collectible () {: aria-label='Functions' }
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
@@ -40,7 +42,6 @@ ___
 ### Get·Active·Min·Usable·Charge () {: aria-label='Functions' }
 #### int GetActiveMinUsableCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
-
 ___
 ### Get·Dead·Eye·Charge () {: aria-label='Functions' }
 #### int GetDeadEyeCharge ( ) {: .copyable aria-label='Functions' }
@@ -48,6 +49,10 @@ ___
 ___
 ### Get·Health·Type () {: aria-label='Functions' }
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·History () {: aria-label='Functions' }
+#### [History](History.md) GetHistory ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Total·Active·Charge () {: aria-label='Functions' }
@@ -65,16 +70,24 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 ___
 ### Init·Twin () {: aria-label='Functions' }
 #### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) InitTwin ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
-I believe this is used by J&E, Strawman etc
+I believe this is used by J&E, Strawman etc.
+
+???+ bug "Bug"
+    The twin player will desync from its main twin on save and continue. This softlocks the game in singleplayer, as the game prompts for a controller.
+	
+	We've received confirmation from \_Kilburn that this is hardcoded to be handled on vanilla characters. We will need to add a workaround for this.
+
+___
+### Remove·Collectible·By·History·Index () {: aria-label='Functions' }
+#### void RemoveCollectibleByHistoryIndex ( int Index ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Active·Var·Data () {: aria-label='Functions' }
 #### void SetActiveVarData ( int VarData, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
-
 ___
 ### Set·Can·Shoot () {: aria-label='Functions' }
-#### bool SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
+#### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
 ___
 ### Set·Item·State () {: aria-label='Functions' }
@@ -87,4 +100,12 @@ ___
 Teleports the player to a position within the room. 
 
 `DoEffects` controls whether the teleport animation and sound plays. `TeleportTwinPlayers` controls whether twin players (e.g. Esau, Tainted Lazarus w/ Birthright) are teleported alongside this one.
+
+___
+### Try·Prevent·Death () {: aria-label='Functions' }
+#### boolean TryPreventDeath ( ) {: .copyable aria-label='Functions' }
+Adds a heart container to a character if there are none left, depending on its [HealthType](enums/HealthType.md).
+
+Returns `true` on success, if not then `false`.
+
 ___

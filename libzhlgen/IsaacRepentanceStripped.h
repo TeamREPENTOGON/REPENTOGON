@@ -325,6 +325,18 @@ struct Entity_Player
 	Entity _entity;
 };
 
+struct ActiveItemDesc
+{
+	int _item;
+	int _charge;
+	int _batteryCharge;
+	int _subCharge;
+	int _timeRechargeCooldown;
+	int _partialCharge;
+	int _varData;
+	
+};
+
 struct History
 {
 	
@@ -469,12 +481,12 @@ struct BossPool
 
 struct HUD 
 {
-	
+	PlayerHUD _playerHUD[7];
 };
 
 struct PlayerHUD 
 {
-	HUD _base;
+	Entity_Player* _player;
 };
 
 struct RunCallbackRegistry
@@ -546,7 +558,7 @@ struct MenuManager
 
 struct PauseScreen
 {
-	
+	int status; //1 main pause screen 2 options menu
 };
 
 struct Minimap
@@ -703,4 +715,8 @@ struct KAGE_File
     uint32_t unk1;
     FILE* f;
     uint32_t unk2;
+};
+
+struct UnknownGameStartStruct {
+	char pad0[0x5c]; //ANYONE KNOW WHAT THIS IS???? ANYONE????????
 };

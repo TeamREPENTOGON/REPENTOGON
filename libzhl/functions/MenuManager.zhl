@@ -13,10 +13,12 @@ __thiscall void MenuManager::Render();
 "558bec83ec08538b1d????????568b75":
 __thiscall void MenuManager::SetState(int estate);
 
-struct MenuManager 
+struct MenuManager depends (Menu_Game)
 {{
 	MenuManager()
 	{
 		this->constructor();
 	}
+	
+	inline Menu_Game* GetMenuGame() {return (Menu_Game*)((char*)this + 0x80fac); }
 }};

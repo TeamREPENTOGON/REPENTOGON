@@ -8,6 +8,9 @@
 #include <stdio.h>
 #include "lua.hpp"
 
+#include "ASMAmbush.h";
+#include "ASMMegaSatan.h";
+
 /********************************************************************************
 HOOKING
 
@@ -167,5 +170,7 @@ MOD_EXPORT int ModInit(int argc, char **argv)
 	SetWindowTextA(GetActiveWindow(), titlebar);
 	FixLuaDump();
 	printf(":REPENTOGON:\n");
+	PatchHardcodedAmbushWaveCount();
+	PatchHardcodedMegaSatanGameEnding();
 	return 0;
 }

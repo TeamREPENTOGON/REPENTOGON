@@ -11,16 +11,7 @@ int Lua_EntityAddBleeding(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddBleeding(*ref, duration);
-	return 1;
-}
-
-static void RegisterEntityAddBleeding(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "AddBleeding");
-	lua_pushcfunction(L, Lua_EntityAddBleeding);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_EntityAddMagnetized(lua_State* L)
@@ -29,16 +20,7 @@ int Lua_EntityAddMagnetized(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddMagnetized(*ref, duration);
-	return 1;
-}
-
-static void RegisterEntityAddMagnetized(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "AddMagnetized");
-	lua_pushcfunction(L, Lua_EntityAddMagnetized);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_EntityAddBaited(lua_State* L)
@@ -47,16 +29,7 @@ int Lua_EntityAddBaited(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddBaited(*ref, duration);
-	return 1;
-}
-
-static void RegisterEntityAddBaited(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "AddBaited");
-	lua_pushcfunction(L, Lua_EntityAddBaited);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_EntityAddWeakness(lua_State* L)
@@ -65,16 +38,7 @@ int Lua_EntityAddWeakness(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddWeakness(*ref, duration);
-	return 1;
-}
-
-static void RegisterEntityAddWeakness(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "AddWeakness");
-	lua_pushcfunction(L, Lua_EntityAddWeakness);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_EntityAddBrimstoneMark(lua_State* L)
@@ -83,16 +47,7 @@ int Lua_EntityAddBrimstoneMark(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddBrimstoneMark(*ref, duration);
-	return 1;
-}
-
-static void RegisterEntityAddBrimstoneMark(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "AddBrimstoneMark");
-	lua_pushcfunction(L, Lua_EntityAddBrimstoneMark);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_EntityAddIce(lua_State* L)
@@ -101,16 +56,7 @@ int Lua_EntityAddIce(lua_State* L)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	int duration = luaL_checkinteger(L, 3);
 	ent->AddIce(*ref, duration);
-	return 1;
-}
-
-static void RegisterEntityAddIce(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "AddIce");
-	lua_pushcfunction(L, Lua_EntityAddIce);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_EntityAddKnockback(lua_State* L)
@@ -121,84 +67,43 @@ int Lua_EntityAddKnockback(lua_State* L)
 	int duration = luaL_checkinteger(L, 4);
 	bool unk = lua_toboolean(L, 5);
 	ent->AddKnockback(*ref, *pos, duration, unk);
-	return 1;
-}
-
-static void RegisterEntityAddKnockback(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "AddKnockback");
-	lua_pushcfunction(L, Lua_EntityAddKnockback);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 static int Lua_EntityGetShadowSize(lua_State* L)
 {
-	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	lua_pushnumber(L, *entity->GetShadowSize());
 	return 1;
 }
 
 static int Lua_EntitySetShadowSize(lua_State* L)
 {
-	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	float shadowSize = luaL_checknumber(L, 2);
 	*entity->GetShadowSize() = shadowSize;
 	return 0;
 }
 
-static void RegisterEntityShadowSize(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "GetShadowSize");
-	lua_pushcfunction(L, Lua_EntityGetShadowSize);
-	lua_rawset(L, -3);
-
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "SetShadowSize");
-	lua_pushcfunction(L, Lua_EntitySetShadowSize);
-	lua_rawset(L, -3);
-
-	lua_pop(L, 2);
-}
-
 /*int Lua_EntityCopyStatusEffects(lua_State* L)
 {
-	Entity* ent = *(Entity**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY, "Entity") + 4);
-	Entity* copyEnt = *(Entity**)((char*)lua::CheckUserdata(L, 2, lua::Metatables::ENTITY, "Entity") + 4);
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* copyEnt lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 
 	ent->CopyStatusEffects(copyEnt); bruh code
 
 	return 1;
 }
-
-static void RegisterEntityCopyStatusEffects(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "CopyStatusEffects");
-	lua_pushcfunction(L, Lua_EntityCopyStatusEffects);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
 */
 
 static int Lua_EntityGetNullOffset(lua_State* L)
 {
-	Entity* entity = lua::UserdataToData<Entity*>(lua_touserdata(L, 1));
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	const char* nullLayerName = luaL_checkstring(L, 2);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	*toLua = entity->GetNullOffset(nullLayerName);
-	return 1;
-}
 
-static void RegisterEntityGetNullOffset(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "GetNullOffset");
-	lua_pushcfunction(L, Lua_EntityGetNullOffset);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), entity->GetNullOffset(nullLayerName));
+
+	return 1;
 }
 
 static int lua_Entity_GetType(lua_State* L) {
@@ -212,35 +117,30 @@ static int lua_Entity_GetPosVel(lua_State* L) {
 	Vector* pos = (Vector*)((char*)entity + 0x294);
 	Vector* vel = (Vector*)((char*)entity + 0x2B8);
 
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *pos);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), *vel);
+	PosVel posVel = PosVel(*pos, *vel);
 
-	return 2;
-}
+	lua::luabridge::UserdataValue<PosVel>::push(L, lua::GetMetatableKey(lua::Metatables::POS_VEL), posVel);
 
-static void RegisterEntityGetters(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "GetType");
-	lua_pushcfunction(L, lua_Entity_GetType);
-	lua_rawset(L, -3);
-	lua_pushstring(L, "GetPosVel");
-	lua_pushcfunction(L, lua_Entity_GetPosVel);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 1;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterEntityAddBleeding(state);
-	RegisterEntityAddMagnetized(state);
-	RegisterEntityAddBaited(state);
-	RegisterEntityAddWeakness(state);
-	RegisterEntityAddBrimstoneMark(state);
-	RegisterEntityAddIce(state);
-	RegisterEntityAddKnockback(state);
-	RegisterEntityShadowSize(state);
-	RegisterEntityGetNullOffset(state);
-	RegisterEntityGetters(state);
+	lua::Metatables mt = lua::Metatables::ENTITY;
+	lua::RegisterFunction(state, mt, "AddBleeding", Lua_EntityAddBleeding);
+	lua::RegisterFunction(state, mt, "AddMagnetized", Lua_EntityAddMagnetized);
+	lua::RegisterFunction(state, mt, "AddBaited", Lua_EntityAddBaited);
+	lua::RegisterFunction(state, mt, "AddWeakness", Lua_EntityAddWeakness);
+	lua::RegisterFunction(state, mt, "AddBrimstoneMark", Lua_EntityAddBrimstoneMark);
+	lua::RegisterFunction(state, mt, "AddIce", Lua_EntityAddIce);
+	lua::RegisterFunction(state, mt, "AddKnockback", Lua_EntityAddKnockback);
+	lua::RegisterFunction(state, mt, "GetShadowSize", Lua_EntityGetShadowSize);
+	lua::RegisterFunction(state, mt, "SetShadowSize", Lua_EntitySetShadowSize);
+	lua::RegisterFunction(state, mt, "AddKnockback", Lua_EntityAddKnockback);
+	lua::RegisterFunction(state, mt, "GetNullOffset", Lua_EntityGetNullOffset);
+	lua::RegisterFunction(state, mt, "GetType", lua_Entity_GetType);
+	lua::RegisterFunction(state, mt, "GetPosVel", lua_Entity_GetPosVel);
+
 }

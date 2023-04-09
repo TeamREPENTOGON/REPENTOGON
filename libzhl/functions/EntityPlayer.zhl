@@ -152,12 +152,17 @@ __thiscall void Entity_Player::RemoveCollectibleByHistoryIndex(Entity_Player *th
 "558bec6aff68????????64a1????????5081ec4c010000":
 __thiscall void Entity_Player::Teleport(Entity_Player *this<ecx>,Vector *position, bool doEffects, bool teleportTwinPlayers);
 
+"558bec83e4f881ec1c01000053":
+__thiscall bool Entity_Player::TryFakeDeath(Entity_Player *this<ecx>);
 
 
-struct Entity_Player depends (History) {{
+
+struct Entity_Player depends (ActiveItemDesc, History) {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
+	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
+	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
 }};

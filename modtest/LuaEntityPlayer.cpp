@@ -11,29 +11,20 @@ std::vector<int> fakeItems;
 
 int Lua_GetMultiShotPositionVelocity(lua_State* L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
-	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int loopIndex = luaL_checkinteger(L, 2);
-	WeaponType weaponType = (WeaponType)luaL_checkinteger(L, 3);
-	Vector* shotDirection = *(Vector**)((char*)lua::CheckUserdata(L, 4, lua::Metatables::VECTOR, "Vector") + 4);
+	int weaponType = luaL_checkinteger(L, 3);
+	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::ENTITY, "Vector");
 	float shotSpeed = luaL_checknumber(L, 5);
+
 	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, MultiShotParamsMT);
 	if (multiShotParams->numTears < loopIndex) {
 		luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.NumTears");
 	};
 
-	PosVel* toLua = lua::luabridge::UserdataValue<PosVel>::place(L, lua::GetMetatableKey(lua::Metatables::POS_VEL));
-	*toLua = player->GetMultiShotPositionVelocity(loopIndex, weaponType, *shotDirection, shotSpeed, *multiShotParams);
+	lua::luabridge::UserdataValue<PosVel>::push(L, lua::GetMetatableKey(lua::Metatables::POS_VEL), player->GetMultiShotPositionVelocity(loopIndex, (WeaponType)weaponType, *shotDirection, shotSpeed, *multiShotParams));
 
 	return 1;
-}
-
-static void RegisterMultiShotPositionVelocity(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "GetMultiShotPositionVelocity");
-	lua_pushcfunction(L, Lua_GetMultiShotPositionVelocity);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 static int Lua_GetMultiShotParams(lua_State* L) {
@@ -74,55 +65,31 @@ static void RegisterMultiShotParams(lua_State* L) {
 
 int Lua_InitTwin(lua_State* L)
 {
-	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int playerType = luaL_checkinteger(L, 2);
 
-	Entity_Player* toLua = lua::luabridge::UserdataValue<Entity_Player>::place(L, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
-	toLua = player->InitTwin(playerType);
-
+	Entity_Player* twinPlayer = player->InitTwin(playerType);
+	lua::luabridge::UserdataPtr::push(L, twinPlayer, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+				
 	return 1;
-}
-
-static void RegisterInitTwin(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "InitTwin");
-	lua_pushcfunction(L, Lua_InitTwin);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 int Lua_InitPostLevelInitStats(lua_State* L)
 {
-	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	player->InitPostLevelInitStats();
 
-	return 1;
-}
-
-static void RegisterInitPostLevelInitStats(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "InitPostLevelInitStats");
-	lua_pushcfunction(L, Lua_InitPostLevelInitStats);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_PlayerSetItemState(lua_State* L)
 {
-	Entity_Player* player = *(Entity_Player**)((char*)lua::CheckUserdata(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer") + 4);
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	CollectibleType item = (CollectibleType)luaL_checkinteger(L, 2);
 
 	player->SetItemState(item);
 
 	return 0;
-}
-
-static void RegisterPlayerSetItemState(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "SetItemState");
-	lua_pushcfunction(L, Lua_PlayerSetItemState);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 int Lua_PlayerAddCacheFlags(lua_State* L)
@@ -141,28 +108,11 @@ int Lua_PlayerAddCacheFlags(lua_State* L)
 	return 0;
 }
 
-static void RegisterNewAddCacheFlags(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "AddCacheFlags");
-	lua_pushcfunction(L, Lua_PlayerAddCacheFlags);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 int Lua_PlayerGetHealthType(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, player->GetHealthType());
 	return 1;
-}
-
-static void RegisterPlayerGetHealthType(lua_State* L)
-{
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "GetHealthType");
-	lua_pushcfunction(L, Lua_PlayerGetHealthType);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 int Lua_PlayerGetTotalActiveCharge(lua_State* L) {
@@ -171,14 +121,6 @@ int Lua_PlayerGetTotalActiveCharge(lua_State* L) {
 
 	lua_pushinteger(L, player->GetTotalActiveCharge(slot));
 	return 1;
-}
-
-static void RegisterGetTotalActiveCharge(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "GetTotalActiveCharge");
-	lua_pushcfunction(L, Lua_PlayerGetTotalActiveCharge);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 int Lua_PlayerGetActiveMaxCharge(lua_State* L) {
@@ -190,14 +132,6 @@ int Lua_PlayerGetActiveMaxCharge(lua_State* L) {
 	return 1;
 }
 
-static void RegisterGetActiveMaxCharge(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "GetActiveMaxCharge");
-	lua_pushcfunction(L, Lua_PlayerGetActiveMaxCharge);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 int Lua_PlayerGetActiveMinUsableCharge(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int slot = luaL_checkinteger(L, 2);
@@ -206,29 +140,13 @@ int Lua_PlayerGetActiveMinUsableCharge(lua_State* L) {
 	return 1;
 }
 
-static void RegisterGetActiveMinUsableCharge(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "GetActiveMinUsableCharge");
-	lua_pushcfunction(L, Lua_PlayerGetActiveMinUsableCharge);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 int Lua_PlayerSetActiveVarData(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int vardata = luaL_checkinteger(L, 2);
 	int slot = luaL_checkinteger(L, 3);
 
 	player->SetActiveVarData(vardata, slot);
-	return 1;
-}
-
-static void RegisterPlayerSetActiveVarData(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "SetActiveVarData");
-	lua_pushcfunction(L, Lua_PlayerSetActiveVarData);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_PlayerAddActiveCharge(lua_State* L) {
@@ -245,28 +163,12 @@ int Lua_PlayerAddActiveCharge(lua_State* L) {
 	return 1;
 }
 
-static void RegisterPlayerAddActiveCharge(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "AddActiveCharge");
-	lua_pushcfunction(L, Lua_PlayerAddActiveCharge);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 int Lua_PlayerDropCollectible(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int collectible = luaL_checkinteger(L, 2);
 
 	player->DropCollectible(collectible, 0, false);
-	return 1;
-}
-
-static void RegisterPlayerDropCollectible(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "DropCollectible");
-	lua_pushcfunction(L, Lua_PlayerDropCollectible);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_PlayerIncrementPlayerFormCounter(lua_State* L) {
@@ -275,15 +177,7 @@ int Lua_PlayerIncrementPlayerFormCounter(lua_State* L) {
 	int num = luaL_checkinteger(L, 3);
 
 	player->IncrementPlayerFormCounter(ePlayerForm, num);
-	return 1;
-}
-
-static void RegisterIncrementPlayerFormCounter(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "IncrementPlayerFormCounter");
-	lua_pushcfunction(L, Lua_PlayerIncrementPlayerFormCounter);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	return 0;
 }
 
 int Lua_PlayerTryPreventDeath(lua_State* L) {
@@ -292,27 +186,11 @@ int Lua_PlayerTryPreventDeath(lua_State* L) {
 	return 1;
 }
 
-static void RegisterTryPreventDeath(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "TryPreventDeath");
-	lua_pushcfunction(L, Lua_PlayerTryPreventDeath);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 int lua_PlayerRemoveCollectibleByHistoryIndex(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int index = luaL_checknumber(L, 2);
 	player->RemoveCollectibleByHistoryIndex(index);
 	return 0;
-}
-
-static void RegisterRemoveCollectibleByHistoryIndex(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "RemoveCollectibleByHistoryIndex");
-	lua_pushcfunction(L, lua_PlayerRemoveCollectibleByHistoryIndex);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 int Lua_PlayerSetCanShoot(lua_State* L)
@@ -323,27 +201,11 @@ int Lua_PlayerSetCanShoot(lua_State* L)
 	return 0;
 }
 
-static void RegisterSetCanShoot(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "SetCanShoot");
-	lua_pushcfunction(L, Lua_PlayerSetCanShoot);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 int Lua_PlayerGetDeadEyeCharge(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, player->GetDeadEyeCharge());
 	return 1;
-}
-
-static void RegisterGetDeadEyeCharge(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "GetDeadEyeCharge");
-	lua_pushcfunction(L, Lua_PlayerGetDeadEyeCharge);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 int Lua_PlayerTeleport(lua_State* L)
@@ -363,36 +225,66 @@ int Lua_PlayerTeleport(lua_State* L)
 	return 0;
 }
 
-static void RegisterTeleport(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
-	lua_pushstring(L, "Teleport");
-	lua_pushcfunction(L, Lua_PlayerTeleport);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+int Lua_PlayerGetMegaBlastDuration(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetMegaBlastDuration());
+	return 1;
 }
 
+int Lua_PlayerSetMegaBlastDuration(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetMegaBlastDuration() = luaL_checkinteger(L,2);
+	return 0;
+}
+
+int Lua_PlayerGetActiveItemDesc(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int index = luaL_optinteger(L, 2, 0);
+	if (index > 3) {
+		luaL_argerror(L, 2, "ActiveSlot cannot be higher than 3");
+	}
+	ActiveItemDesc* desc = player->GetActiveItemDesc(index);
+	lua::luabridge::UserdataPtr::push(L, desc, lua::GetMetatableKey(lua::Metatables::ACTIVE_ITEM_DESC));
+
+	return 1;
+}
+
+int Lua_PlayerTryFakeDeath(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushboolean(L, player->TryFakeDeath());
+	return 1;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterMultiShotPositionVelocity(state);
-	RegisterMultiShotParams(state);
-	RegisterInitTwin(state);
-	RegisterInitPostLevelInitStats(state);
-	RegisterPlayerSetItemState(state);
-	RegisterNewAddCacheFlags(state);
-	RegisterPlayerGetHealthType(state);
-	RegisterGetTotalActiveCharge(state);
-	RegisterGetActiveMaxCharge(state);
-	RegisterGetActiveMinUsableCharge(state);
-	RegisterPlayerSetActiveVarData(state);
-	RegisterPlayerAddActiveCharge(state);
-	RegisterPlayerDropCollectible(state);
-	RegisterIncrementPlayerFormCounter(state);
-	RegisterTryPreventDeath(state);
-	RegisterSetCanShoot(state);
-	RegisterGetDeadEyeCharge(state);
-	RegisterRemoveCollectibleByHistoryIndex(state);
-	RegisterTeleport(state);
+	RegisterMultiShotParams(state); // should probably move MultiShotParams to its own file, for consistency
+	lua::Metatables mt = lua::Metatables::ENTITY_PLAYER;
+	lua::RegisterFunction(state, mt, "GetMultiShotPositionVelocity", Lua_GetMultiShotPositionVelocity);
+	lua::RegisterFunction(state, mt, "InitTwin", Lua_InitTwin);
+	lua::RegisterFunction(state, mt, "InitPostLevelInitStats", Lua_InitPostLevelInitStats);
+	lua::RegisterFunction(state, mt, "SetItemState", Lua_PlayerSetItemState);
+	lua::RegisterFunction(state, mt, "AddCacheFlags", Lua_PlayerAddCacheFlags);
+	lua::RegisterFunction(state, mt, "GetHealthType", Lua_PlayerGetHealthType);
+	lua::RegisterFunction(state, mt, "GetTotalActiveCharge", Lua_PlayerGetTotalActiveCharge);
+	lua::RegisterFunction(state, mt, "GetActiveMaxCharge", Lua_PlayerGetActiveMaxCharge);
+	lua::RegisterFunction(state, mt, "GetActiveMinUsableCharge", Lua_PlayerGetActiveMinUsableCharge);
+	lua::RegisterFunction(state, mt, "SetActiveVarData", Lua_PlayerSetActiveVarData);
+	lua::RegisterFunction(state, mt, "AddActiveCharge", Lua_PlayerAddActiveCharge);
+	lua::RegisterFunction(state, mt, "DropCollectible", Lua_PlayerDropCollectible);
+	lua::RegisterFunction(state, mt, "IncrementPlayerFormCounter", Lua_PlayerIncrementPlayerFormCounter);
+	lua::RegisterFunction(state, mt, "TryPreventDeath", Lua_PlayerTryPreventDeath);
+	lua::RegisterFunction(state, mt, "SetCanShoot", Lua_PlayerSetCanShoot);
+	lua::RegisterFunction(state, mt, "GetDeadEyeCharge", Lua_PlayerGetDeadEyeCharge);
+	lua::RegisterFunction(state, mt, "RemoveCollectibleByHistoryIndex", lua_PlayerRemoveCollectibleByHistoryIndex);
+	lua::RegisterFunction(state, mt, "Teleport", Lua_PlayerTeleport);
+	lua::RegisterFunction(state, mt, "GetMegaBlastDuration", Lua_PlayerGetMegaBlastDuration);
+	lua::RegisterFunction(state, mt, "SetMegaBlastDuration", Lua_PlayerSetMegaBlastDuration);
+	lua::RegisterFunction(state, mt, "GetActiveItemDesc", Lua_PlayerGetActiveItemDesc);
+	lua::RegisterFunction(state, mt, "TryFakeDeath", Lua_PlayerTryFakeDeath);
 }

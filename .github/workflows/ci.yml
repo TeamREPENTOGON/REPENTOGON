@@ -1,0 +1,46 @@
+name: Build Project and Upload Artifact
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main-msvc
+    paths:
+      - modtest/**
+      - libzhl/**
+      - libzhlgen/**
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: 'true'
+
+    - name: Configure CMake
+      run: cmake -G "Visual Studio 17 2022" -A "Win32" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Create Artifact Folder
+      shell: powershell
+      run: |
+        cd ${{github.workspace}}/build/Release
+        mkdir artifact
+        mv resources artifact
+        mv dsound.dll artifact
+        mv libzhl.dll artifact
+        mv zhlModTest.dll artifact
+        mv Lua5.3.3r.dll artifact
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: REPENTOGON-main
+        path: ${{github.workspace}}/build/Release/artifact/

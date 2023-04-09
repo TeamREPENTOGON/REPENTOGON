@@ -39,15 +39,6 @@ int Lua_SpriteReplaceSpritesheet(lua_State* L)
 	return 0;
 }
 
-static void RegisterNewReplaceSpriteSheet(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::SPRITE);
-	lua_pushstring(L, "ReplaceSpritesheet");
-	lua_pushcfunction(L, Lua_SpriteReplaceSpritesheet);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-
 /*int Lua_SpriteGetLayer(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
@@ -172,7 +163,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterNewReplaceSpriteSheet(state);
+	lua::Metatables mt = lua::Metatables::SPRITE;
+	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);
 	RegisterLayerState(state);
 }
 

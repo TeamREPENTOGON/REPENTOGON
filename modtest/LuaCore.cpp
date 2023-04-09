@@ -292,6 +292,14 @@ namespace lua {
 		return p;
 	}
 
+	void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func) {
+		lua::PushMetatable(L, mt);
+		lua_pushstring(L, name);
+		lua_pushcfunction(L, func);
+		lua_rawset(L, -3);
+		lua_pop(L, 1);
+	}
+
 	namespace luabridge {
 		UserdataPtr::UserdataPtr(void* const p) {
 			m_p = p;
@@ -530,5 +538,6 @@ namespace lua {
 		const char* NullFrameMT = "NullFrame";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* HistoryMT = "History";
+		const char* PlayerHUDMT = "PlayerHUD";
 	}
 }

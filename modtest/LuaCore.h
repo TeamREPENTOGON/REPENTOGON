@@ -147,6 +147,7 @@ namespace lua {
         extern const char* NullFrameMT;
         extern const char* EntitySlotMT;;
         extern const char* HistoryMT;;
+        extern const char* PlayerHUDMT;;
     }
 
     void UnloadMetatables();
@@ -158,6 +159,8 @@ namespace lua {
     void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
     void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
 
+	void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func);
+	
     template<typename T>
     T GetUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
         void* p = CheckUserdata(L, idx, mt, name);
@@ -262,7 +265,7 @@ namespace lua {
     T UserdataToData(void* ud) {
         return *(T*)((char*)ud + 4);
     }
-
+	
     namespace luabridge {
         extern void* identityKey;
         extern lua_CFunction indexMetaMethod;

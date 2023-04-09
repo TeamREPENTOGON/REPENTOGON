@@ -8,8 +8,8 @@ static constexpr const char* PlayerManagerMT = "PlayerManager";
 
 static int Lua_GetPlayerManager(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	void** ud = (void**)lua_newuserdata(L, sizeof(void*));
-	*ud = (char*)game + 0x1BA40;
+	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
+	*ud = game->GetPlayerManager();
 	luaL_setmetatable(L, PlayerManagerMT);
 	return 1;
 }
@@ -26,6 +26,22 @@ int Lua_FirstCollectibleOwner(lua_State* L)
 	}
 	else {
 		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	}
+	return 1;
+}
+
+
+int Lua_AnyoneHasCollectible(lua_State* L)
+{
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	int collectible = luaL_checkinteger(L, 2);
+	RNG* rng = new RNG(); 
+	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, true);
+	if (!player) {
+		lua_pushboolean(L,false);
+	}
+	else {
+		lua_pushboolean(L, true);
 	}
 	return 1;
 }
@@ -50,6 +66,15 @@ int Lua_PlayerManagerIsCoopPlay(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerManagerGetNumCollectibles(lua_State* L)
+{
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	int collectibleID = luaL_checkinteger(L, 2);
+	lua_pushinteger(L, playerManager->GetNumCollectibles((CollectibleType)collectibleID));
+
+	return 1;
+}
+
 static void RegisterPlayerManager(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetPlayerManager");
@@ -64,8 +89,10 @@ static void RegisterPlayerManager(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "FirstCollectibleOwner", Lua_FirstCollectibleOwner },
+		{ "AnyoneHasCollectible", Lua_AnyoneHasCollectible},
 		{ "SpawnCoPlayer2", Lua_SpawnCoPlayer2 },
 		{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
+		{ "GetNumCollectibles", Lua_PlayerManagerGetNumCollectibles},
 		{ NULL, NULL }
 	};
 
