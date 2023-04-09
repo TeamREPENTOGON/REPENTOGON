@@ -1,4 +1,4 @@
-struct NullFrame {{
+struct NullFrame depends (Vector) {{
 	inline Vector* GetPos() {return (Vector*)((char*)this); }
 	inline Vector* GetScale() {return (Vector*)((char*)this + 0x10); }
 }};
