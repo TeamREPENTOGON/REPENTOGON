@@ -10,18 +10,21 @@ with open("../documentation/mkdocs.yml") as cfg:
     mkdocs = yaml.load(cfg, Loader)
 
 new_mkdocs_enums = [
-    {"ModCallbacks": "enums/ModCallbacks.md"}
-    {"ColorPresets": "enums/ColorFade.md"}
+    {"ModCallbacks": "enums/ModCallbacks.md"},
 ]
 
-blocked_values = [".MC_", "ColorPresets", "Color(", ".ALL", ".Set"]
+blocked_values = [".MC_", "colorPresets", "Color(", "function", "rawset", "pairs", "0xffffffff", ".Set", "Vector", "= {", "SetColorize", ".ALL"]
 
 for value in data:
-    if not value in blocked_values:
+    beaned = False
+    for subvalue in blocked_values:
+        if isinstance(value, int) or subvalue.lower() in value.lower():
+            beaned = True
+    if not beaned: 
         with open(f"../documentation/docs/enums/{value}.md", "w+") as md:
             md.write(f'---\ntags:\n  - Enum\n---\n# Enum "{value}"\n|Value|Enumerator|Comment|\n|:--|:--|:--|\n');
             if type(data[value]) is dict:
-                for i, enum in enumerate(data[value]):
+               for i, enum in enumerate(data[value]):
                     md.write(f"|{data[value][enum]} |{enum} \u007b: .copyable \u007d |  |\n")
             else:
                 md.write(f"|{data[value]} |{value} \u007b: .copyable \u007d |  |\n")
@@ -29,5 +32,6 @@ for value in data:
 
 mkdocs['nav'][1]['Docs'][1]['Enums'] = sorted(new_mkdocs_enums, key=lambda x: list(x.keys())[0])
 
+print(mkdocs['nav'][1]['Docs'][1]['Enums'])
 with open("../documentation/mkdocs.yml", 'w+') as cfg:
     cfg.write(yaml.dump(mkdocs))

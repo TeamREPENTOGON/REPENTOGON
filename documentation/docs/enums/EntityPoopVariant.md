@@ -12,7 +12,8 @@ tags:
 |12 |CHUNKY {: .copyable } |  |
 |12 |CORN {: .copyable } |  |
 |13 |FLAMING {: .copyable } |  |
-|15 |STINKY {: .copyable } |  |
+|14 |STINKY {: .copyable } |  |
+|14 |POISON {: .copyable } |  |
 |15 |BLACK {: .copyable } |  |
 |16 |HOLY {: .copyable } |  |
 |16 |WHITE {: .copyable } |  |

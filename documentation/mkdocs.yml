@@ -46,12 +46,14 @@ nav:
   - Enums:
     - Achievement: enums/Achievement.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
+    - BitwiseDebugFlag: enums/BitwiseDebugFlag.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
     - CompletionType: enums/CompletionType.md
     - ConsoleFont: enums/ConsoleFont.md
     - DebugFlag: enums/DebugFlag.md
     - Dimension: enums/Dimension.md
+    - DipSubType: enums/DipSubType.md
     - Ending: enums/Ending.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
     - EventCounter: enums/EventCounter.md
@@ -69,6 +71,7 @@ nav:
     - ModCallbacks: enums/ModCallbacks.md
     - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
+    - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
     - PressurePlateVariant: enums/PressurePlateVariant.md
