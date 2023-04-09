@@ -777,7 +777,7 @@ HOOK_METHOD(Entity_Player, UseCard, (int cardType, unsigned int useFlag) -> void
 }
 
 
-//(PRE_)USE_PILL (id: 1065/1000)
+//(PRE_)USE_PILL (id: 1065/1001)
 HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int useFlag) -> void) {
 	int callbackid = 1065;
 	lua_State* L = g_LuaEngine->_state;
@@ -804,7 +804,7 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 		}
 	}
 	super(pillEffect, pillColor, useFlag);
-	callbackid = 1000;
+	callbackid = 1001;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
