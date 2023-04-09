@@ -1681,3 +1681,24 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 			.call(1);
 	}
 }
+
+//MC_PRE_GET_LIGHTING_ALPHA
+HOOK_METHOD(Room, GetLightingAlpha, () -> float) {
+	int callbackid = 1150;
+	float originalAlpha = super();
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults result =  lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(originalAlpha)
+			.call(1);
+
+		if (!result) {
+			return lua_tonumber(L, -1);
+		}
+	}
+	else return originalAlpha;
+}

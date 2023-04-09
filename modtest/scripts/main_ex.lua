@@ -218,6 +218,9 @@ local typecheckFunctions = {
 		["boolean"] = true,
 		["number"] = checkInteger
 	},
+	[ModCallbacks.MC_PRE_GET_LIGHTING_ALPHA] = {
+		["number"] = true,
+	},
 }
 
 local typecheckWarnFunctions = {

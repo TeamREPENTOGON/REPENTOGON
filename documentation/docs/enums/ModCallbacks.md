@@ -678,4 +678,11 @@ Alternatively accepts ``true`` to cancel item overlay show
 |:--|:--|:--|:--|:--|
 |1078 |MC_POST_PLAYER_NEW_LEVEL {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | - |
 
+### MC_PRE_GET_LIGHTING_ALPHA
+Accepts a `float` to modify the lighting alpha. Generally this is between 0 and 1 but you can technically go higher than this.
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_PRE_GET_LIGHTING_ALPHA {: .copyable } | (float OriginalAlpha)| - | float |
+
+
 

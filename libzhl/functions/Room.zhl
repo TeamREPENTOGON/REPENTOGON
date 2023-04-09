@@ -28,6 +28,9 @@ __thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);
 "558bec83e4f883ec5ca1????????33c4894424??8b45??894424??":
 __thiscall bool Room::CanSpawnObstacleAtPosition(Room *this<ecx>, int GridIndex, bool Force);
 
+"558bec83e4f883ec14538bd9565783bb????????39":
+__thiscall float Room::GetLightingAlpha(Room *this<ecx>);
+
 struct Room depends (Camera, TemporaryEffects, ColorMod, Backdrop, KColor, Vector, EntityList)
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
