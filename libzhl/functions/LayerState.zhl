@@ -1,4 +1,4 @@
-struct LayerState {{
+struct LayerState depends (Vector) {{
 	inline Vector* GetSize() {return (Vector*)((char*)this + 0x34); }
 	//inline float* GetUnk1() { return (float*)((char*)this + 0x34); }
 	//inline float* GetUnk2() { return (float*)((char*)this + 0x38); }
