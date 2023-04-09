@@ -29,10 +29,12 @@ add_library(lpeg SHARED ${LUA_LPEG_SRC})
 target_link_libraries(lpeg Lua5.3.3r)
 
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
-add_custom_target(ZHL COMMAND lua parsefuncs.lua WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES})
-add_dependencies(ZHL lpeg lfs)
+# add_custom_target(ZHL COMMAND lua parsefuncs.lua WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES})
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND lua parsefuncs.lua WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} lpeg lfs)
+# add_dependencies(ZHL lpeg lfs)
 
-FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp)
+FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp)
+LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp)
 add_library(libzhl SHARED ${ZHL_SRC})
 
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
@@ -46,11 +48,12 @@ add_library(zhlModTest SHARED ${MODTEST_SRC})
 
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "$<TARGET_FILE_DIR:zhlModTest>/resources/scripts")
 		
-add_dependencies(libzhl ZHL)
+# add_dependencies(libzhl ZHL)
+
+add_dependencies(zhlModTest libzhl)
 
 add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
-
 target_link_libraries(zhlModTest Lua5.3.3r libzhl "Zydis")
 target_link_libraries(libzhl Lua5.3.3r "Zydis")
