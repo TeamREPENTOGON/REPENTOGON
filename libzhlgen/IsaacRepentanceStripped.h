@@ -696,3 +696,11 @@ struct Font
 struct Backdrop {
     
 };
+
+struct KAGE_File
+{
+    void* vtable;
+    uint32_t unk1;
+    FILE* f;
+    uint32_t unk2;
+};
