@@ -2,6 +2,7 @@ print("**************************************************************")
 print("********************PARSING FUNCTIONS*************************")
 print("**************************************************************")
 
+res, err = pcall(function()
 local cparser = require("cparser")
 local lfs = require("lfs")
 
@@ -1017,3 +1018,7 @@ f:close()
 f = fileWriter("../libzhl/IsaacRepentance.cpp")
 writeFunctionWrappers(functions, f)
 f:close()
+
+end)
+
+print ("parsefuncs.lua: " .. tostring(res) .. ", " .. tostring(err))
