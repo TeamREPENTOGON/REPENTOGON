@@ -22,7 +22,6 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 	int callbackid = 1004; 
 	if (CallbackState.test(callbackid - 1000)) {
 
-		printf("item get\n");
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua::LuaCaller caller(L);
@@ -40,15 +39,12 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 			.call(1);
 
 		if (!res) {
-			printf("Additem callback run \n");
 			if (lua_istable(L, -1)) { // 6 params 
 				int* result = new int[5];
-				printf("tablesize: %d\n", 5);
 				for (int i = 1; i <= 5; i++) {
 					lua_pushinteger(L, i);
 					lua_gettable(L, -2);
 					result[i - 1] = lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
-					printf("V: %d\n", result[i - 1]);
 					lua_pop(L, 1);
 				}
 				super(result[0], result[1], result[2], result[3], result[4]);
@@ -295,8 +291,6 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-	//printf("Entity type: %d\n", (*heldEntity)->GetVariant());
-
 	lua::LuaResults results = lua::LuaCaller(L).push(1040)
 		//.push((*heldEntity)->GetType())
 		.push(this, lua::Metatables::ENTITY_PLAYER)
@@ -340,7 +334,7 @@ HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
 			.push(ent, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
-		super();
+	super();
 }
 
 //PRE_ROOM_EXIT (1043) (currently using Entity_Player::TriggerRoomExit as the base)
@@ -367,7 +361,6 @@ HOOK_METHOD(Entity_Player, TriggerRoomExit, (bool unk) -> void) {
 HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 	int callbackid = 1034;
 	if (CallbackState.test(callbackid - 1000)) {
-		printf("music plays\n");
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -382,7 +375,6 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				printf("Music callback run \n");
 				int tablesize = lua_rawlen(L, -1);
 				if (tablesize == 2) {
 					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
@@ -390,12 +382,10 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 				}
 			}
 			else if (lua_isinteger(L, -1)) {
-				printf("Music callback run \n");
 				super(lua_tointeger(L, -1), volume);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
-				printf("Music callback run \n");
 				if (!lua_toboolean(L, -1)) {
 					return;
 				}
@@ -408,7 +398,6 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 	int callbackid = 1034;
 	if (CallbackState.test(callbackid - 1000)) {
-		printf("music fades\n");
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -423,7 +412,6 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				printf("Music callback run \n");
 				int tablesize = lua_rawlen(L, -1);
 				if (tablesize == 2) {
 					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
@@ -431,12 +419,10 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 				}
 			}
 			else if (lua_isinteger(L, -1)) {
-				printf("Music callback run \n");
 				super(lua_tointeger(L, -1), faderate);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
-				printf("Music callback run \n");
 				if (!lua_toboolean(L, -1)) {
 					return;
 				}
@@ -451,7 +437,6 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 HOOK_METHOD(Level, Init, () -> void) {
 	int callbackid = 1060;
 	if (CallbackState.test(callbackid - 1000)) {
-		printf("Stage Init \n");
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -615,7 +600,6 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				printf("NPC Morph callback run \n");
 				int tablesize = lua_rawlen(L, -1);
 				if (tablesize == 4) {
 					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToNumber(L, 4));
@@ -627,7 +611,6 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 				}
 			}
 			else if (lua_isboolean(L, -1)) {
-				printf("NPC Morph callback run \n");
 				if (!lua_toboolean(L, -1)) {
 					return;
 				}
@@ -667,7 +650,6 @@ void PostPickupMorph(Entity_Pickup* itm, int EntityType, int Variant, int SubTyp
 HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers) -> void) {
 	int callbackid = 1213;
 	if (CallbackState.test(callbackid - 1000)) {
-		printf("Pickup Morphed \n");
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -687,7 +669,6 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				printf("Pickup Morph callback run \n");
 				int tablesize = lua_rawlen(L, -1);
 				if (tablesize == 6) {
 					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToBoolean(L, 4), lua::callbacks::ToBoolean(L, 5), lua::callbacks::ToBoolean(L, 6));
@@ -699,7 +680,6 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 				}
 			}
 			else if (lua_isboolean(L, -1)) {
-				printf("Pickup Morph callback run \n");
 				if (!lua_toboolean(L, -1)) {
 					return;
 				}
@@ -1190,7 +1170,6 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 	int callbackid = 1038;
 	if (CallbackState.test(callbackid - 1000)) {
-		//printf("Head Rendering \n");
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -1204,13 +1183,11 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				printf("Head Render callback run \n");
 				Vector* newpos = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
 				super(newpos);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
-				printf("Head Render callback run \n");
 				if (!lua_toboolean(L, -1)) {
 					return;
 				}
@@ -1224,7 +1201,6 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 	int callbackid = 1039;
 	if (CallbackState.test(callbackid - 1000)) {
-		//printf("Body Rendering \n");
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -1238,13 +1214,11 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				printf("Body Render callback run \n");
 				Vector* newpos = *(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
 				super(newpos);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
-				printf("Body Render callback run \n");
 				if (!lua_toboolean(L, -1)) {
 					return;
 				}
@@ -1551,12 +1525,11 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 
 //POST_ITEM_OVERLAY_UPDATE (id: 1075)
 HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
+	super(unk);
 	int callbackid = 1075;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
-
-		super(unk);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
