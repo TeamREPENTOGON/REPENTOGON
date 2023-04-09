@@ -15,6 +15,30 @@ for k, v in pairs(ModCallbacks) do
 	callbackIDToName[v] = k
 end
 
+-- I hate Luabridge, we can't have nice things.
+local function GetMetatableType(ret)
+	-- TODO directly pcall in here?
+
+	-- Vector will CRASH THE GAME through a pcall if we try getting __name or __type from it, and getmetatable doesn't work on it.
+	-- We have no choice but to check manually.
+	if ret.X and ret.Y then 
+		return "Vector"
+	else
+	-- Directly trying __name or __type, too, will crash the game on occasion, even through a pcall. 
+	-- Absolute masterclass of an API here. Best in show, really.
+		return getmetatable(ret).__name or getmetatable(ret).__type
+	end
+end
+
+local function checkMetatable(mtType)
+	return function(val)
+		if GetMetatableType(val) ~= mtType then 
+			return "bad return type (" .. mtType .. " expected, got " .. GetMetatableType(val).__type .. ")"
+		end
+	end
+end
+
+
 local function checkInteger(val)
 	if math.type(val) ~= "integer" then
 		return "bad return type (number has no integer representation)"
@@ -52,9 +76,15 @@ local function checkTableTypeFunction(typestrings)
 				paramType = "integer"
 			end
 
-			if paramType ~= typestrings[i] then
-				return "bad return type for table value #" .. tostring(i) .. " (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+			if paramType == "userdata" then
+				paramType = GetMetatableType(param)
 			end
+
+			if paramType ~= typestrings[i] then
+					return "bad return type for table value #" .. tostring(i) .. " (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+			end
+
+			
 		end
 	end
 end
@@ -93,6 +123,101 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_GET_SHADER_PARAMS] = {
 		["table"] = true
 	},
+	[ModCallbacks.MC_PRE_MUSIC_PLAY] = {
+		["table"] = checkTableTypeFunction({"integer", "number", "boolean"}),
+		["boolean"] = true,
+		["number"] = checkInteger
+	},
+	[ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_RENDER_PLAYER_BODY] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_ENTITY_THROW] = {
+		["Vector"] = true
+	},
+	[ModCallbacks.MC_PRE_CHANGE_ROOM] = {
+		["table"] = checkTableTypeFunction({"integer", "integer"}),
+	},
+	[ModCallbacks.MC_PRE_PICKUP_MORPH] = {
+		["table"] = checkTableTypeFunction({"integer", "integer", "integer", "integer", "integer", "integer"})
+	},
+	[ModCallbacks.MC_PRE_FAMILIAR_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_NPC_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_PLAYER_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_PICKUP_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_TEAR_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_PROJECTILE_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_KNIFE_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_EFFECT_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_BOMB_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_SLOT_RENDER] = {
+		["Vector"] = true,
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_GRID_INIT] = {
+		["boolean"] = true,
+		["number"] = checkInteger
+	},
+	[ModCallbacks.MC_PRE_REPLACE_SPRITESHEET] = {
+		["table"] = checkTableTypeFunction({"integer", "string"})
+	},
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY] = {
+		["boolean"] = true,
+		["number"] = checkInteger
+	},
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_ITEMS] = {
+		["number"] = true,
+	},
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS] = {
+		["number"] = true,
+	},
+	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = {
+		["number"] = true,
+	},
+	[ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS] = {
+		["number"] = true,
+	},
+	[ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS] = {
+		["number"] = true,
+	},
+	[ModCallbacks.MC_POST_DEVIL_CALCULATE] = {
+		["number"] = true,
+	},
+	[ModCallbacks.MC_PRE_ITEM_OVERLAY_SHOW] = {
+		["boolean"] = true,
+		["number"] = checkInteger
+	},
 }
 
 local typecheckWarnFunctions = {
@@ -127,6 +252,15 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_NPC_UPDATE,
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
 	ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD,
+	ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH,
+	ModCallbacks.MC_PRE_USE_CARD,
+	ModCallbacks.MC_PRE_USE_PILL,
+	ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR,
+	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY,
+	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY,
+	ModCallbacks.MC_PRE_SLOT_COLLISION,
+	ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS,
+	ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY
 }
 
 for _, callback in ipairs(boolCallbacks) do
@@ -139,7 +273,15 @@ local intCallbacks = {
 	ModCallbacks.MC_PRE_GET_COLLECTIBLE,
 	ModCallbacks.MC_GET_PILL_COLOR,
 	ModCallbacks.MC_GET_PILL_EFFECT,
-	ModCallbacks.MC_GET_TRINKET,	
+	ModCallbacks.MC_GET_TRINKET,
+	ModCallbacks.MC_GET_FOLLOWER_PRIORITY,
+	ModCallbacks.MC_GET_SHOP_ITEM_PRICE,
+	ModCallbacks.MC_PLAYER_GET_HEALTH_TYPE,
+	ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE,
+	ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE,
+	ModCallbacks.MC_PLAYER_GET_HEART_LIMIT,
+	ModCallbacks.MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE,
+
 }
 
 for _, callback in ipairs(intCallbacks) do
@@ -367,11 +509,14 @@ function _RunCallback(callbackID, Param, ...)
 						local typeCheck = typecheckFunctions[callbackID]
 						if typeCheck then
 							local typ = type(ret)
-							if typeCheck[typ] == true then
-							elseif typeCheck[typ] then
-								err = typeCheck[typ](ret, typ, ...)
-							else
-								err = "bad return type (" .. typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
+							if typ == "userdata" then typ = GetMetatableType(ret) end
+							if not err then
+								if typeCheck[typ] == true then
+								elseif typeCheck[typ] then
+									err = typeCheck[typ](ret, typ, ...)
+								else
+									err = "bad return type (" .. typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
+								end
 							end
 							
 							if err then

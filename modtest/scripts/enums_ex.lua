@@ -1485,6 +1485,8 @@ local function quickRegisterColorPreset(name, R, G, B, A, RO, GO, BO, RC, GC, BC
 	Color[name]:SetColorize(RC or 0, GC or 0, BC or 0, CA or 0)
 end
 
+rawset(getmetatable(Vector), "__type", "Vector")
+
 local colorPresets = {
 	TearIpecac = {0.5, 0.9, 0.4},
 	TearHoming = {0.4, 0.15, 0.38, 1, 71/255, 0, 116/255},

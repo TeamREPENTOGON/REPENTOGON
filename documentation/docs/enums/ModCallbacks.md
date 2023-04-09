@@ -2,6 +2,17 @@
 
 This is a list of all new callbacks added by REPENTOGON.
 
+## Modified Old Callbacks
+### MC_USE_PILL
+MC_USE_PILL now passes PillColor as an argument.
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_USE_PILL {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) Effect, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlags.html) Flags, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/PillColor.html) Color) | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) | void |
+
+
+## New Callbacks
 ### MC_PRE_ADD_COLLECTIBLE
 Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData, Player}`
 
@@ -395,8 +406,6 @@ Alternatively accepts `false` to cancel rendering
 |- |MC_PRE_BOMB_RENDER {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_PRE_SLOT_RENDER
-As we don't (yet) have an EntitySlot metatable, this simply returns an Entity. Sorry! :(
-
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
@@ -413,7 +422,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_POST_SLOT_RENDER {: .copyable } | ([EntitySlot[(../EntitySlot.md) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [SlotVariant](SlotVariant.md) | void |
+|- |MC_POST_SLOT_RENDER {: .copyable } | ([EntitySlot](../EntitySlot.md) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [SlotVariant](SlotVariant.md) | void |
 
 ### MC_PRE_GRID_INIT
 This is called when a grid is being placed into a room for the first time.
@@ -601,8 +610,6 @@ Accepts no return parameters.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_POST_SLOT_SET_PRIZE_COLLECTIBLE {: .copyable } | ([EntitySlot](../EntitySlot.md)) | [SlotVariant](SlotVariant.md) | void |
-
-ModCallbacks.MC_POST_DEVIL_CALCULATE = 1133
 
 ### MC_PRE_DEVIL_APPLY_ITEMS
 This callback is run when the game starts to tally up traditional items for devil deal calculation. This is called before the stage penalty.

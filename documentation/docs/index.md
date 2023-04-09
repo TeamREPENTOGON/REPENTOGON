@@ -17,7 +17,7 @@ The API has been ported to use Lua 5.4 instead of 5.3.
   * We have (tentative) plans to migrate to LuaJIT in the future, which is *not* fully compatible with 5.4 (or even 5.2, for that matter). As a result, we ask that mods refrain from relying on any Lua 5.4-specific functionality.
 
 ## Callback Typechecking
-Still a work in progress for the new callbacks added by REPENTOGON, but all vanilla callbacks are now typechecked.
+All callbacks are now typechecked.
 
   * An error is thrown when a callback return type is invalid.
   
