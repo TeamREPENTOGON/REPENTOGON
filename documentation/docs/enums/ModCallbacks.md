@@ -234,6 +234,14 @@ Returning `false` cancels the morph.
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_PICKUP_MORPH {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, int EntityType, int Variant, int SubType, boolean KeepPrice, boolean KeepSeed, boolean IgnoreModifiers)| - | table or boolean |
 
+### MC_POST_PICKUP_MORPH
+Runs after the morph already happened.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_POST_PICKUP_MORPH {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, int PreviousType, int PreviousVariant, int SubType, boolean KeptPrice, boolean KeptSeed, boolean IgnoredModifiers)| - | void |
+
+
 ### MC_PRE_NPC_MORPH
 Accepts a table of parameters: `{EntityType, Variant, SubType, Championid}` or just `{EntityType, Variant, SubType}`. 
 
@@ -242,6 +250,13 @@ Returning `false` cancels the morph.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_NPC_MORPH {: .copyable } | (int EntityType, int Variant, int SubType, int Championid)| - | table or boolean |
+
+### MC_POST_NPC_MORPH
+Runs after the Morph already happened.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_POST_NPC_MORPH {: .copyable } | (int PreviousType, int PreviousVariant, int PreviousSubType)| - | void |
 
 ### MC_PRE_USE_CARD
 Accepts `true` to cancel card use.

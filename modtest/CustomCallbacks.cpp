@@ -577,7 +577,25 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 }
 
 
-//Pre_Morph Callbacks (id:1080)
+//Morph Callbacks (id:1215-1212)
+void PostNPCMorph(Entity_NPC* npc, int EntityType, int Variant, int SubType) {
+	int callbackid = 1214;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(npc, lua::Metatables::ENTITY_NPC)
+			.push(EntityType)
+			.push(Variant)
+			.push(SubType)
+			.call(1);
+	}
+}
+
 HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Championid) -> void) {
 	int callbackid = 1212;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -586,12 +604,9 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		/// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		/// INCONSISTENT CALLBACK ID IN COMMENT AND REALITY
-		/// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(this, lua::Metatables::ENTITY_NPC)
 			.pushnil()
+			.push(this, lua::Metatables::ENTITY_NPC)
 			.push(EntityType)
 			.push(Variant)
 			.push(SubType)
@@ -619,7 +634,33 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 			}
 		}
 	}
+	int pretype = *(this->GetType());
+	int prevar = *(this->GetVariant());
+	int presub = *(this->GetSubType());
 	super(EntityType, Variant, SubType, Championid);
+	PostNPCMorph(this, pretype, prevar, presub);
+}
+
+
+void PostPickupMorph(Entity_Pickup* itm, int EntityType, int Variant, int SubType, bool KeepPrice, bool KeepSeed, bool IgnoreModifiers) {
+	int callbackid = 1215;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(itm, lua::Metatables::ENTITY_PICKUP)
+			.push(EntityType)
+			.push(Variant)
+			.push(SubType)
+			.push(KeepPrice)
+			.push(KeepSeed)
+			.push(IgnoreModifiers)
+			.call(1);
+	}
 }
 
 
@@ -665,7 +706,11 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 			}
 		}
 	}
+	int pretype = *(this->GetType());
+	int prevar = *(this->GetVariant());
+	int presub = *(this->GetSubType());
 	super(EntityType, Variant, SubType, KeepPrice, KeepSeed, IgnoreModifiers);
+	PostPickupMorph(this, pretype, prevar, presub, KeepPrice, KeepSeed, IgnoreModifiers);
 }
 //end of Pre_Morph callvacks
 
