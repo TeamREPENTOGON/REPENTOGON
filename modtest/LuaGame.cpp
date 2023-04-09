@@ -4,6 +4,8 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+extern bool overrideMegaSatanEnding;
+
 int Lua_GameAchievementUnlocksDisallowed(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -94,6 +96,11 @@ int Lua_GetDimension(lua_State* L){
 	return 1;
 }
 
+int Lua_GameForceMegaSatanVoidPortal(lua_State* L) {
+	overrideMegaSatanEnding = lua_toboolean(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -109,6 +116,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetDebugFlags", Lua_GameGetDebugFlags);
 	lua::RegisterFunction(state, mt, "ToggleDebugFlag", Lua_GameToggleDebugFlag); // this too
 	lua::RegisterFunction(state, mt, "AddDebugFlags", Lua_GameAddDebugFlags);
+	lua::RegisterFunction(state, mt, "ForceMegaSatanVoidPortal", Lua_GameForceMegaSatanVoidPortal);
 
 	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
 

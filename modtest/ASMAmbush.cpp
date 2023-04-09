@@ -4,16 +4,10 @@
 #include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include "ASMCore.h"
 
 // Much of this is adapted from Sylmir's WIP Delirium patches, just adapted for use with the LibZHL sigscanner.
 // Thanks Sylmir <3
-DWORD SetPageMemoryRW(void* addr, MEMORY_BASIC_INFORMATION* info) {
-    VirtualQuery(addr, info, sizeof(*info));
-    DWORD old_protect;
-    VirtualProtect(info->BaseAddress, info->RegionSize, PAGE_READWRITE, &old_protect);
-    return old_protect;
-}
-
 int ambushWaves = 3;
 
 void PatchHardcodedAmbushWaveCount() {

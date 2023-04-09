@@ -36,6 +36,13 @@ ___
 Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
 
 ___
+### Force·Mega·Satan·Void·Portal() {: aria-label='Functions' }
+#### void ForceMegaSatanVoidPortal ( bool Force ) {: .copyable aria-label='Functions' }
+Set to `true` to forcefully inhibit the Mega Satan ending without affecting the ability to get Mega Satan completion marks or achievements. Set to `false` to retain vanilla behavior.
+
+(Might be better as a callback, somehow?)
+
+___
 ### Get·Console () {: aria-label='Functions' }
 #### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
 

@@ -540,3 +540,6 @@ FodyWeavers.xsd
 
 .vscode
 .luarc.json
+
+include/IsaacRepentance.h
+libzhl/IsaacRepentance.cpp
