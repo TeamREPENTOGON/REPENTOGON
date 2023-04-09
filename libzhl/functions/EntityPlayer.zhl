@@ -152,6 +152,9 @@ __thiscall void Entity_Player::RemoveCollectibleByHistoryIndex(Entity_Player *th
 "558bec6aff68????????64a1????????5081ec4c010000":
 __thiscall void Entity_Player::Teleport(Entity_Player *this<ecx>,Vector *position, bool doEffects, bool teleportTwinPlayers);
 
+"558bec83e4f881ec1c01000053":
+__thiscall bool Entity_Player::TryFakeDeath(Entity_Player *this<ecx>);
+
 
 
 struct Entity_Player depends (ActiveItemDesc, History) {{
