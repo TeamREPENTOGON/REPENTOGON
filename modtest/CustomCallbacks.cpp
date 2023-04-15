@@ -1796,7 +1796,7 @@ HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTru
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(CollectibleID)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(CollectibleID)
 			.push(OnlyCountTrueItems)
