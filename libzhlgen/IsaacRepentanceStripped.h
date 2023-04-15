@@ -53,6 +53,27 @@ struct Manager
 	StringTable _stringTable; //0x4a234
 };
 
+struct ANM2
+{
+	IsaacString _filename;
+	char _pad1[27];
+	AnimationState _animState;
+	AnimationState _overlayAnimState;
+};
+
+struct LayerState
+{
+	//char pad[0x90];
+	//float _cropY;
+	char pad[0x74];
+	bool _something; 
+	//0x74
+};
+
+struct NullFrame {
+	
+};
+
 struct AnimationState
 {
 	
@@ -564,25 +585,6 @@ struct PauseScreen
 struct Minimap
 {
 
-};
-
-
-struct ANM2
-{
-	IsaacString _filename;
-};
-
-struct LayerState
-{
-	//char pad[0x90];
-	//float _cropY;
-	char pad[0x74];
-	bool _something; 
-	//0x74
-};
-
-struct NullFrame {
-	
 };
 
 struct SFXManager

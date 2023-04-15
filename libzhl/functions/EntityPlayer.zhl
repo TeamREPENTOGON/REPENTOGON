@@ -99,7 +99,7 @@ __thiscall void Entity_Player::TriggerRoomClear(Entity_Player *this<ecx>);
 __thiscall bool Entity_Player::CanUseCollectible(Entity_Player *this<ecx>, CollectibleType collectible, int slot);
 
 "558bec83e4f883ec1c538b5d??56578bf98b0d":
-__thiscall bool Entity_Player::HasCollectible(Entity_Player *this<ecx>, CollectibleType type, bool ignoreModifiers);
+__thiscall bool Entity_Player::HasCollectible(Entity_Player *this<ecx>, int type, bool ignoreModifiers);
 
 "8b91f01500":
 __thiscall int Entity_Player::GetCollectibleCount(Entity_Player *this<ecx>);
@@ -154,6 +154,9 @@ __thiscall void Entity_Player::Teleport(Entity_Player *this<ecx>,Vector *positio
 
 "558bec83e4f881ec1c01000053":
 __thiscall bool Entity_Player::TryFakeDeath(Entity_Player *this<ecx>);
+
+"558bec83e4f883ec145356578bf9837f??01":
+__thiscall int Entity_Player::GetCollectibleNum(Entity_Player *this<ecx>, int collectibleID, bool OnlyCountTrueItems);
 
 
 
