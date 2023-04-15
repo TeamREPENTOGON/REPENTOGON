@@ -1702,3 +1702,61 @@ HOOK_METHOD(Room, GetLightingAlpha, () -> float) {
 	}
 	else return originalAlpha;
 }
+
+//MC_PRE_GRID_LIGHTING_RENDER
+HOOK_METHOD(Room, RenderGridLight, (GridEntity* grid, Vector& offset) -> void) {
+	int callbackid = 1151;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(grid->GetType())
+			.push(grid, lua::Metatables::GRID_ENTITY)
+			.pushUserdataValue(offset, lua::Metatables::VECTOR)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+			else if (lua_isuserdata(L, -1)) {
+				offset = **(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+			}
+		}
+	}
+	super(grid, offset);
+}
+
+//MC_PRE_ENTITY_LIGHTING_RENDER
+HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
+	int callbackid = 1152;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(ent->GetType())
+			.push(ent, lua::Metatables::ENTITY)
+			.pushUserdataValue(offset, lua::Metatables::VECTOR)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+			else if (lua_isuserdata(L, -1)) {
+				offset = **(Vector**)((char*)lua::CheckUserdata(L, -1, lua::Metatables::VECTOR, "Vector") + 4);
+			}
+		}
+	}
+	super(ent, offset);
+}

@@ -6,6 +6,7 @@ __thiscall void GridEntity::Init(IsaacRepentance::GridEntity *this<ecx>, unsigne
 
 struct GridEntity
 {{
+	inline int GetType() {return *(int*)((char*)this + 0x4); }
 	inline GridCollisionClass* GetCollisionClass() { return (GridCollisionClass*)((char*)this + 0x3C); }
 	inline unsigned int* GetGridIndex() { return (unsigned int*)((char*)this + 0x24); }
 }};
