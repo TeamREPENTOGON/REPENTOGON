@@ -15,6 +15,13 @@ for k, v in pairs(ModCallbacks) do
 	callbackIDToName[v] = k
 end
 
+local oldrequire = require
+
+function require(modname)
+    local ret = oldrequire(modname)
+    return ret
+end
+
 -- I hate Luabridge, we can't have nice things.
 local function GetMetatableType(ret)
 	-- TODO directly pcall in here?
