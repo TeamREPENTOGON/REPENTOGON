@@ -8,7 +8,7 @@ Now runs on the main menu, like how it used to be in Afterbirth+.
 Identical otherwise.
 
 |ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|:--|
+|:--|:--|:--|:--|:--|
 |- |MC_INPUT_ACTION {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html),<br>[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html),<br>[ButtonAction](https://wofsauge.github.io/IsaacDocs/rep/enums/ButtonAction.html))|[InputHook](https://wofsauge.github.io/IsaacDocs/rep/enums/InputHook.html) | boolean or float |
 
 ### MC_USE_PILL
