@@ -1810,3 +1810,28 @@ HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTru
 	}
 	return super(CollectibleID, OnlyCountTrueItems);
 }
+
+//PRE_PLAYER_GET_COLLECTIBLE_NUM_TWO (1094)
+HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCountTrueItems) -> int) {
+	int callbackid = 1094;
+	int originalCount = super(CollectibleID, OnlyCountTrueItems);
+	int copyCount = 0;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_getglobal(L, "Isaac");
+		lua_getfield(L, -1, "RunAdditiveCallback");
+		lua_remove(L, lua_absindex(L, -2));
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(copyCount)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(CollectibleID)
+			.push(OnlyCountTrueItems)
+			.call(1);
+		if (!result) {
+			copyCount = lua_tointeger(L, -1);
+		}
+	}
+	return originalCount + copyCount;
+}
