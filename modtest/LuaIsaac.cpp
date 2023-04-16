@@ -233,7 +233,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetRoomEntitiesFix(state);
 	RegisterFindInRadiusFix(state);
 	RegisterGetLoadedModules(state);
-	RegisterCreateTimer(state);
+	RegisterCreateTimer(state);;
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

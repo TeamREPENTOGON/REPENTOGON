@@ -10,6 +10,7 @@
 
 #include "ASMAmbush.h";
 #include "ASMMegaSatan.h";
+#include "ASMInputAction.h";
 
 /********************************************************************************
 HOOKING
@@ -172,5 +173,6 @@ MOD_EXPORT int ModInit(int argc, char **argv)
 	printf(":REPENTOGON:\n");
 	PatchHardcodedAmbushWaveCount();
 	PatchHardcodedMegaSatanGameEnding();
+	PatchInputActionMenuCheck();
 	return 0;
 }
