@@ -19,14 +19,17 @@ void* PerformInputActionMenuPatch(const char* signature) {
 
 
 	MEMORY_BASIC_INFORMATION info;
-	SetPageMemoryRW(addr, &info);
-	
+	DWORD old_protect = SetPageMemoryRW(addr, &info);
+	DWORD _dummy;
+
 	char override_base[] = {
 		// jmp isaac-ng.XXXXXXXX
 		0x90, 0x90, 0x90, 0x90, 0x90, 0x90
 	};
 	memcpy(addr, override_base, 6);
 
+
+	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
 
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 
