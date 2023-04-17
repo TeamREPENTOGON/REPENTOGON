@@ -1777,6 +1777,7 @@ HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCount
 			.push(modCount)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(CollectibleID)
+			.push(OnlyCountTrueItems)
 			.call(1);
 
 		if (!result) {
@@ -1791,6 +1792,7 @@ HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCount
 //PRE_PLAYER_HAS_COLLECTIBLE (1093) [currently lags with enabled debug 12]
 HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTrueItems) -> bool) {
 	int callbackid = 1093;
+
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
