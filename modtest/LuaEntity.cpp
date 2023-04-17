@@ -124,6 +124,21 @@ static int lua_Entity_GetPosVel(lua_State* L) {
 	return 1;
 }
 
+static int Lua_EntityGetBossStatusEffectCooldown(lua_State* L)
+{
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, *entity->GetBossStatusEffectCooldown());
+	return 1;
+}
+
+static int Lua_EntitySetBossStatusEffectCooldown(lua_State* L)
+{
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	int bossStatusEffectCooldown = luaL_checkinteger(L, 2);
+	*entity->GetBossStatusEffectCooldown() = bossStatusEffectCooldown;
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -142,5 +157,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetNullOffset", Lua_EntityGetNullOffset);
 	lua::RegisterFunction(state, mt, "GetType", lua_Entity_GetType);
 	lua::RegisterFunction(state, mt, "GetPosVel", lua_Entity_GetPosVel);
+	lua::RegisterFunction(state, mt, "GetBossStatusEffectCooldown", Lua_EntityGetBossStatusEffectCooldown);
+	lua::RegisterFunction(state, mt, "SetBossStatusEffectCooldown", Lua_EntitySetBossStatusEffectCooldown);
 
 }
