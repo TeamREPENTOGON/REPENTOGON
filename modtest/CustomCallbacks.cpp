@@ -1761,30 +1761,31 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 	super(ent, offset);
 }
 
-//PRE_PLAYER_GET_COLLECTIBLE_NUM (1092)
+//PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM (1092)
 HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCountTrueItems) -> int) {
 	int callbackid = 1092;
 	int originalCount = super(CollectibleID, OnlyCountTrueItems);
-		if (CallbackState.test(callbackid - 1000)) {
-			lua_State* L = g_LuaEngine->_state;
-			lua::LuaStackProtector protector(L);
+	int modCount = 0;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
 
-			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-				.push(CollectibleID)
-				.push(this, lua::Metatables::ENTITY_PLAYER)
-				.push(CollectibleID)
-				.push(originalCount)
-				.push(OnlyCountTrueItems)
-				.call(1);
+		lua_getglobal(L, "Isaac");
+		lua_getfield(L, -1, "RunAdditiveCallback");
+		lua_remove(L, lua_absindex(L, -2));
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(modCount)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(CollectibleID)
+			.call(1);
 
-			if (!result) {
-				if (lua_isinteger(L, -1)) {
-					return lua_tointeger(L, -1);
-				}
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				modCount = lua_tointeger(L, -1);
 			}
+		}
 	}
-	return super(CollectibleID, OnlyCountTrueItems);
+	return originalCount + modCount;
 }
 
 //PRE_PLAYER_HAS_COLLECTIBLE (1093) [currently lags with enabled debug 12]
@@ -1809,29 +1810,4 @@ HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTru
 		}
 	}
 	return super(CollectibleID, OnlyCountTrueItems);
-}
-
-//PRE_PLAYER_GET_COLLECTIBLE_NUM_TWO (1094)
-HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCountTrueItems) -> int) {
-	int callbackid = 1094;
-	int originalCount = super(CollectibleID, OnlyCountTrueItems);
-	int copyCount = 0;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_getglobal(L, "Isaac");
-		lua_getfield(L, -1, "RunAdditiveCallback");
-		lua_remove(L, lua_absindex(L, -2));
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(copyCount)
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(CollectibleID)
-			.push(OnlyCountTrueItems)
-			.call(1);
-		if (!result) {
-			copyCount = lua_tointeger(L, -1);
-		}
-	}
-	return originalCount + copyCount;
 }
