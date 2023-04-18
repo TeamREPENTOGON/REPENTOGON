@@ -1,0 +1,8 @@
+
+struct ModEntry
+{{
+	//inline char* GetDir() { return (char*)(this + 0); } //unreliable (sometimes its there, sometimes it isnt could not find a patters thats consistent)
+	//inline char* GetName() { return (char*)(this + 832); } //unreliable (sometimes its there, sometimes it isnt could not find a patters thats consistent)
+	inline char* GetVersion() { return (char*)(this + 120); } //these last 2 are consistent
+	inline char* GetId() { return (char*)(this + 144); } //these last 2 are consistent (this is the one I needed anyway)
+}};

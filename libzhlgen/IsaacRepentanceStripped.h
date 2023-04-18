@@ -9,12 +9,14 @@ struct PauseScreen;
 struct PersistentGameData;
 struct Music;
 struct Entity;
+struct EntityConfig;
 struct Entity_Player;
 struct History;
 struct ColorMod;
 struct Entity_NPC;
 
 struct Entity_Pickup;
+struct ModEntry;
 struct Entity_Familiar;
 struct GridEntity;
 struct GridEntity_Rock;
@@ -27,6 +29,10 @@ struct HUD;
 struct PlayerHUD;
 struct VTable_Entity;
 struct VTable_EntityPlayer;
+
+struct RapidXML;
+struct xmlnode_rep;
+struct xmldocument_rep;
 
 /* 
 enum eStages 
@@ -85,6 +91,16 @@ struct MenuManager
 };
 
 struct PersistentGameData
+{
+	
+};
+
+struct ModEntry
+{
+
+};
+
+struct EntityConfig
 {
 	
 };
