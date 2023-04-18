@@ -688,6 +688,7 @@ Alternatively accepts ``true`` to cancel item overlay show
 
 ### MC_PRE_GET_LIGHTING_ALPHA
 Accepts a `float` to modify the lighting alpha. Generally this is between 0 and 1 but you can technically go higher than this.
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_GET_LIGHTING_ALPHA {: .copyable } | (float OriginalAlpha)| - | float |
@@ -695,18 +696,17 @@ Accepts a `float` to modify the lighting alpha. Generally this is between 0 and 
 ### MC_PRE_RENDER_GRID_LIGHTING
 Accepts an override [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) for Offset.
 
-Alternatively accepts a `false` to stop the rendering.
+Alternatively accepts `false` to stop the rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_PRE_RENDER_PLAYER_HEAD {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) player, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
-
+|- |MC_PRE_RENDER_GRID_LIGHTING {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) grid, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+ 
 ### MC_PRE_RENDER_ENTITY_LIGHTING
 Accepts an override [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) for Offset.
 
-Alternatively accepts a `false` to stop the rendering.
+Alternatively accepts `false` to stop the rendering.
 
-|ID|Name|Function Args|Optional Args|Return Type|
+ |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_PRE_RENDER_PLAYER_HEAD {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) grid, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
- 
+|- |MC_PRE_RENDER_ENTITY_LIGHTING {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) player, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
