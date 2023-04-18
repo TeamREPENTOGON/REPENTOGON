@@ -2,16 +2,20 @@
 
 ## Functions
 
+### Get·CropY·Offset () {: aria-label='Functions' }
+#### float GetCropYOffset ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Size () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetSize ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·YCrop·Offset () {: aria-label='Functions' }
-#### float GetYCropOffset ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Is·Visible () {: aria-label='Functions' }
 #### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
+
+___
+### Set·CropY·Offset () {: aria-label='Functions' }
+#### void SetCropYOffset ( float YPos ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Size () {: aria-label='Functions' }
@@ -20,9 +24,5 @@ ___
 ___
 ### Set·Visible () {: aria-label='Functions' }
 #### void SetVisible ( boolean Visible ) {: .copyable aria-label='Functions' }
-
-___
-### Set·YCrop·Offset () {: aria-label='Functions' }
-#### void SetYCropOffset ( float YPos ) {: .copyable aria-label='Functions' }
 
 ___
