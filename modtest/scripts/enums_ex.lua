@@ -1250,8 +1250,50 @@ MainMenu = {
 }
 
 --to-do--
+-- helper script to print every change of an event counter:
+-- l local mod = RegisterMod("test", 1); local data = {}; for i=0,495 do data[i] = 0 end function mod:myFunction() for k,v in pairs(data) do local t = Isaac.GetPersistentGameData():GetEventCounter(k) if v~=t then print(k,v,"->",t) data[k] = t end end end mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.myFunction)
 EventCounter = {
-	DONATE_MACHINE_COUNTER = 20, DONATION_MACHINE_COUNTER = 20, EDEN_TOKENS = 21
+	TOTAL_MOM_KILLS = 1, -- Stat from the stat screen. Counts kills of Moms heart (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	TOTAL_ROCKS_DESTROYED = 2, -- Includes all rock types including tinted rocks
+	TOTAL_TINTED_ROCKS_DESTROYED = 3,
+	TOTAL_POOP_DESTROYED = 5, -- Includes all poop types. Red poop counts everytime it gets destroyed
+	TOTAL_PILLS_EATEN = 6, -- Includes all pills including horse pills
+	TOTAL_ARCADES_ENTERED = 9, -- Also includes teleports with goto.
+	TOTAL_DEATHS = 10, -- does not increase when revived
+	TOTAL_ISAAC_KILLS = 11, -- How often was the final boss of cathedral killed. (Isaac) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	TOTAL_SHOPKEEPER_KILLED = 12,
+	TOTAL_SATAN_KILLS = 13, -- How often was the final boss of sheol killed. (Satan) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	TOTAL_SHELLGAMES_PLAYED = 14, -- How often the shellgame was played
+	TOTAL_ANGEL_DEALS_TAKEN = 15,
+	TOTAL_DEVIL_DEALS_TAKEN = 16,
+	TOTAL_BLOOD_DONATION_MACHINE_USED = 17,
+	DONATE_MACHINE_COUNTER = 20,
+	DONATION_MACHINE_COUNTER = 20,
+	EDEN_TOKENS = 21,
+	STREAK_COUNTER = 22, -- counts your current streak.
+	BEST_STREAK = 23,
+	TOTAL_BLUE_BABY_KILLS = 24, -- How often was the final boss of chest killed. (??? - Blue Baby) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	TOTAL_LAMB_KILLS = 25, -- How often was the final boss of dark room killed. (The lamb) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	-- !!! 27 to 110 Seem to be Progression related (0 for not done. 1 for normal difficulty, 2 for hard)
+	-- 27 = moms heart killed?
+	-- 41 = Isaac-boss killed?
+	-- 69 = clearing boss rush for first time?
+	TOTAL_BOSSRUSH_CLEARED = 111,
+	NEGATIVE_STREAK_COUNTER = 113, -- counts your current negative streak. aka consecutive runs ending with death.
+	GREED_DONATION_MACHINE_COUNTER = 115,
+	PROGRESSION_GREED_MODE_CLEARED = 130, -- (value = 0, 1 for greed mode, 2 for greedier?)
+	TOTAL_HUSH_KILLS = 158, -- How often Hush was killed. (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	TOTAL_DELIRIUM_KILLS = 187, -- How often was the final boss of the void was killed. (Delirium) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	-- 188 = something with winning. increased to 1 after wining. decreased to 0 after dying.
+	TOTAL_BATTERIES_COLLECTED = 195, -- Sum of all batteries collected
+	TOTAL_CARDS_USED = 196, -- Sum of cards used
+	TOTAL_SHOP_ITEMS_BOUGHT = 197, -- Sum of shop items bought. this includes devil deals, dark room red chest deals, and black market deals
+	TOTAL_CHESTS_OPENED_WITH_KEY = 198, -- Sum of all golden and Eternal Chests opened. Mega chests dont count
+	TOTAL_SECRET_ROOMS_WALLS_OPENED = 199, -- Includes super secret rooms and counts walls that lead to secret rooms already entered or discovered. Also counts the door towards the mines. Does not count X-Ray Vision effect 
+	TOTAL_BEDS_USED = 202, -- Sleeping in a bed
+	TOTAL_MOTHER_KILLS = 491, -- Killing endboss of Corpse 2 (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	TOTAL_BABY_PLUM_KILLS = 493,
+	NUM_EVENT_COUNTERS = 496,
 }
 
 WispSubType = { -- Unless specified, use CollectibleType
