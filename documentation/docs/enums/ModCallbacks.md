@@ -172,7 +172,7 @@ Accepts no return parameters.
 |- |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, boolean Unknown)| - | void |
 
 ### MC_COMPLETION_MARK_GET
-Accepts no return parameters.
+Can return `false` to cancel the completion event.
 
 Triggers when the player gets a completion mark, getting as a parameter the code for the mark in question.
 

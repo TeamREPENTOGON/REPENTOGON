@@ -1634,10 +1634,18 @@ HOOK_METHOD(Manager, RecordPlayerCompletion, (int unk) -> void) {
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaCaller(L).push(callbackid)
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(unk)
 			.push(unk)
 			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
 	}
 	super(unk);
 }

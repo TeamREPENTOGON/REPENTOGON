@@ -4,7 +4,7 @@ set ("CMAKE_CXX_STANDARD" 17)
 
 project(RepExtender)
 
-include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src" "${CMAKE_SOURCE_DIR}/libs/rapidxml-1.13" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl")
+include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src" "${CMAKE_SOURCE_DIR}/libs/rapidxml-1.13" "${CMAKE_SOURCE_DIR}/libs/rapidjson" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl")
 
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)

@@ -10,6 +10,9 @@ __thiscall bool PersistentGameData::Unlocked(PersistentGameData *this<ecx>, int 
 "558bec8b4508568bf1807e010075??":
 __thiscall void PersistentGameData::AddToCollection(PersistentGameData *this<ecx>, int collectibleID);
 
+"558bec6aff68????????64a1????????5083ec38a1????????33c58945??535657508d45??64a3????????8bf1":
+__thiscall void PersistentGameData::Load(PersistentGameData* this<ecx>,char *filepath);
+
 struct PersistentGameData {{
 	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
 	inline bool IsItemInCollection (int collectibleID) {
