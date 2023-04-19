@@ -28,6 +28,9 @@ __thiscall void Game::MakeShockwave(Game *this<ecx>, const Vector& pos, float am
 "558bec5156578bf98b97":
 __thiscall Entity_Player* Game::GetPlayer(IsaacRepentance::Game *this<ecx>, unsigned int Index);
 
+"8b81????????2b81????????c1f802c3":
+__thiscall int Game::GetNumPlayers(Game *this<ecx>);
+
 "558bec83e4f083ec38a1":
 void Game::Update(Game* this<ecx>);
 

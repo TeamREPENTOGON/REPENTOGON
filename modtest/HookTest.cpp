@@ -6,68 +6,6 @@
 
 #include <lua.hpp>
 #include "LuaCore.h"
-/*
-HOOK_GLOBAL(GetXMLNode,(char* thi,int whatevs,char* name)->char**) {
-	printf("name: %s \n", name);
-	char** returnval = super(thi,whatevs,name);
-	printf("ballU: %s \n",*returnval);
-	return returnval;
-}*/
-
-//Completion Makrs Test
-HOOK_METHOD(PauseScreen, Render, () -> void) {
-	super();
-	int playertype = g_Game->GetPlayer(0)->GetPlayerType();
-	if ((playertype > 40) && (this->status !=2)) {
-		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget"); 
-		Vector* widgtpos = nul->GetPos();
-		Vector* widgtscale = nul->GetScale();
-		CompletionWidget* cmpl = this->GetCompletionWidget();
-
-		ANM2* anm = cmpl->GetANM2();
-
-		for (int i = 1; i <= 11; i++) {
-			anm->SetLayerFrame(i, 1);
-		}
-		anm->Update();
-		cmpl->Render(new Vector((g_WIDTH * 0.6) + widgtpos->x, (g_HEIGHT * 0.5) +widgtpos->y), widgtscale);
-	}
-}
-
-int selectedchar = 0;
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
-	selectedchar = CharacterId;
-	super(CharacterId, RenderPos, DefaultSprite);
-}
-HOOK_METHOD(Menu_Character, Render, () -> void) {
-	super();
-	CompletionWidget* cmpl = this->GetCompletionWidget();
-	if(this->charaslot > 17){
-		Vector* ref = (Vector *)(g_MenuManager + 60);
-		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
-		ANM2* anm = cmpl->GetANM2();
-		
-		for (int i = 1; i <= 11; i++) {
-			anm->SetLayerFrame(i, 1);
-		}
-		anm->Update();	
-		cmpl->Render(new Vector(ref->x + 80, ref->y + 860), new Vector(1, 1));
-
-	}
-}
-//Completion Makrs Test END
-
-HOOK_METHOD(ANM2, SetLayerFrame, (int x,int y) -> void) {
-	//this->Render(new Vector(100, 100), new Vector(0, 0), new Vector(0, 0)); // this crashes
-	super(x,y);
-}
-
-HOOK_METHOD(ANM2, Render, (Vector* x,Vector* y, Vector* z) -> void) {
-	for (int i = 1; i == 101; i++) {
-        this->SetLayerFrame(i, 1);
-	}
-	super(x,y,z);
-}
 
 HOOK_METHOD(Game, StartStageTransition, (bool samestage, int animation, Entity_Player *player) -> void) {
 	printf("Stage Transition \n");
