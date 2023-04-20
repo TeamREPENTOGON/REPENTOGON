@@ -1253,46 +1253,217 @@ MainMenu = {
 -- helper script to print every change of an event counter:
 -- l local mod = RegisterMod("test", 1); local data = {}; for i=0,495 do data[i] = 0 end function mod:myFunction() for k,v in pairs(data) do local t = Isaac.GetPersistentGameData():GetEventCounter(k) if v~=t then print(k,v,"->",t) data[k] = t end end end mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.myFunction)
 EventCounter = {
-	TOTAL_MOM_KILLS = 1, -- Stat from the stat screen. Counts kills of Moms heart (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
-	TOTAL_ROCKS_DESTROYED = 2, -- Includes all rock types including tinted rocks
-	TOTAL_TINTED_ROCKS_DESTROYED = 3,
-	TOTAL_POOP_DESTROYED = 5, -- Includes all poop types. Red poop counts everytime it gets destroyed
-	TOTAL_PILLS_EATEN = 6, -- Includes all pills including horse pills
-	TOTAL_ARCADES_ENTERED = 9, -- Also includes teleports with goto.
-	TOTAL_DEATHS = 10, -- does not increase when revived
-	TOTAL_ISAAC_KILLS = 11, -- How often was the final boss of cathedral killed. (Isaac) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
-	TOTAL_SHOPKEEPER_KILLED = 12,
-	TOTAL_SATAN_KILLS = 13, -- How often was the final boss of sheol killed. (Satan) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
-	TOTAL_SHELLGAMES_PLAYED = 14, -- How often the shellgame was played
-	TOTAL_ANGEL_DEALS_TAKEN = 15,
-	TOTAL_DEVIL_DEALS_TAKEN = 16,
-	TOTAL_BLOOD_DONATION_MACHINE_USED = 17,
+	NULL = 0, -- Seems unused
+	MOM_KILLS = 1, -- Stat from the stat screen. Counts kills of Moms heart (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	ROCKS_DESTROYED = 2, -- Includes all rock types including tinted rocks
+	TINTED_ROCKS_DESTROYED = 3,
+	-- 4 todo. seems to count something rare-ish
+	POOP_DESTROYED = 5, -- Includes all poop types. Red poop counts everytime it gets destroyed
+	PILLS_EATEN = 6, -- Includes all pills including horse pills
+	XIII_DEATH_CARD_USED = 7,
+	-- 8 Seems unused
+	ARCADES_ENTERED = 9, -- Also includes teleports with goto.
+	DEATHS = 10, -- does not increase when revived
+	ISAAC_KILLS = 11, -- How often was the final boss of cathedral killed. (Isaac) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	SHOPKEEPER_KILLED = 12,
+	SATAN_KILLS = 13, -- How often was the final boss of sheol killed. (Satan) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	SHELLGAMES_PLAYED = 14, -- How often the shellgame was played
+	ANGEL_DEALS_TAKEN = 15,
+	DEVIL_DEALS_TAKEN = 16,
+	BLOOD_DONATION_MACHINE_USED = 17,
+	SLOT_MACHINES_BROKEN = 18,
 	DONATE_MACHINE_COUNTER = 20,
 	DONATION_MACHINE_COUNTER = 20,
 	EDEN_TOKENS = 21,
 	STREAK_COUNTER = 22, -- counts your current streak.
 	BEST_STREAK = 23,
-	TOTAL_BLUE_BABY_KILLS = 24, -- How often was the final boss of chest killed. (??? - Blue Baby) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
-	TOTAL_LAMB_KILLS = 25, -- How often was the final boss of dark room killed. (The lamb) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
-	-- !!! 27 to 110 Seem to be Progression related (0 for not done. 1 for normal difficulty, 2 for hard)
-	-- 27 = moms heart killed?
-	-- 41 = Isaac-boss killed?
-	-- 69 = clearing boss rush for first time?
-	TOTAL_BOSSRUSH_CLEARED = 111,
+	BLUE_BABY_KILLS = 24, -- How often was the final boss of chest killed. (??? - Blue Baby) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	LAMB_KILLS = 25, -- How often was the final boss of dark room killed. (The lamb) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	MEGA_SATAN_KILLS = 26,
+	PROGRESSION_KILL_MOMS_HEART_WITH_ISAAC = 27, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_MAGDALENE = 28, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_CAIN = 29, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_JUDAS = 30, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_BLUE_BABY = 31, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_EVE = 32, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_SAMSON = 33, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_AZAZEL = 34, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_LAZARUS = 35, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_EDEN = 36, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_THE_LOST = 37, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_LILITH = 38, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_KEEPER = 39, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_APOLLYON = 40, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_ISAAC = 41, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_MAGDALENE = 42, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_CAIN = 43, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_JUDAS = 44, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_BLUE_BABY = 45, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_EVE = 46, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_SAMSON = 47, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_AZAZEL = 48, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_LAZARUS = 49, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_EDEN = 50, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_THE_LOST = 51, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_LILITH = 52, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_KEEPER = 53, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_APOLLYON = 54, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_ISAAC = 55, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_MAGDALENE = 56, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_CAIN = 57, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_JUDAS = 58, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_BLUE_BABY = 59, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_EVE = 60, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_SAMSON = 61, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_AZAZEL = 62, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_LAZARUS = 63, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_EDEN = 64, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_THE_LOST = 65, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_LILITH = 66, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_KEEPER = 67, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_APOLLYON = 68, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_ISAAC = 69, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_MAGDALENE = 70, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_CAIN = 71, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_JUDAS = 72, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_BLUE_BABY = 73, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_EVE = 74, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_SAMSON = 75, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_AZAZEL = 76, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_LAZARUS = 77, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_EDEN = 78, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_THE_LOST = 79, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_LILITH = 80, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_KEEPER = 81, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_APOLLYON = 82, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_ISAAC = 83, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_MAGDALENE = 84, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_CAIN = 85, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_JUDAS = 86, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_BLUE_BABY = 87, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_EVE = 88, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_SAMSON = 89, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_AZAZEL = 90, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_LAZARUS = 91, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_EDEN = 92, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_THE_LOST = 93, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_LILITH = 94, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_KEEPER = 95, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_APOLLYON = 96, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_ISAAC = 97, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_MAGDALENE = 98, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_CAIN = 99, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_JUDAS = 100, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_BLUE_BABY = 101, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_EVE = 102, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_SAMSON = 103, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_AZAZEL = 104, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_LAZARUS = 105, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_EDEN = 106, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_THE_LOST = 107, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_LILITH = 108, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_KEEPER = 109, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_APOLLYON = 110, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	BOSSRUSHS_CLEARED = 111,
+	-- 112 todo. seems to only be at 1 for a dead god file
 	NEGATIVE_STREAK_COUNTER = 113, -- counts your current negative streak. aka consecutive runs ending with death.
+	-- 114 seems unused. even is 0 on dead god file...
 	GREED_DONATION_MACHINE_COUNTER = 115,
-	PROGRESSION_GREED_MODE_CLEARED = 130, -- (value = 0, 1 for greed mode, 2 for greedier?)
-	TOTAL_HUSH_KILLS = 158, -- How often Hush was killed. (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
-	TOTAL_DELIRIUM_KILLS = 187, -- How often was the final boss of the void was killed. (Delirium) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
-	-- 188 = something with winning. increased to 1 after wining. decreased to 0 after dying.
-	TOTAL_BATTERIES_COLLECTED = 195, -- Sum of all batteries collected
-	TOTAL_CARDS_USED = 196, -- Sum of cards used
-	TOTAL_SHOP_ITEMS_BOUGHT = 197, -- Sum of shop items bought. this includes devil deals, dark room red chest deals, and black market deals
-	TOTAL_CHESTS_OPENED_WITH_KEY = 198, -- Sum of all golden and Eternal Chests opened. Mega chests dont count
-	TOTAL_SECRET_ROOMS_WALLS_OPENED = 199, -- Includes super secret rooms and counts walls that lead to secret rooms already entered or discovered. Also counts the door towards the mines. Does not count X-Ray Vision effect 
-	TOTAL_BEDS_USED = 202, -- Sleeping in a bed
-	TOTAL_MOTHER_KILLS = 491, -- Killing endboss of Corpse 2 (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
-	TOTAL_BABY_PLUM_KILLS = 493,
+	PROGRESSION_KILL_MEGA_SATAN_WITH_ISAAC = 116, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_MAGDALENE = 117, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_CAIN = 118, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_JUDAS = 119, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_BLUE_BABY = 120, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_EVE = 121, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_SAMSON = 122, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_AZAZEL = 123, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_LAZARUS = 124, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_EDEN = 125, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_THE_LOST = 126, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_LILITH = 127, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_KEEPER = 128, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_APOLLYON = 129, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_ISAAC = 130, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_MAGDALENE = 131, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_CAIN = 132, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_JUDAS = 133, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_BLUE_BABY = 134, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_EVE = 135, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_SAMSON = 136, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_AZAZEL = 137, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_LAZARUS = 138, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_EDEN = 139, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_THE_LOST = 140, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_LILITH = 141, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_KEEPER = 142, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_APOLLYON = 143, -- (value = 0, 1 for greed mode, 2 for greedier)
+	PROGRESSION_KILL_HUSH_WITH_ISAAC = 144, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_MAGDALENE = 145, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_CAIN = 146, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_JUDAS = 147, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_BLUE_BABY = 148, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_EVE = 149, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_SAMSON = 150, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_AZAZEL = 151, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_LAZARUS = 152, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_EDEN = 153, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_THE_LOST = 154, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_LILITH = 155, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_KEEPER = 156, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_APOLLYON = 157, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	HUSH_KILLS = 158, -- How often Hush was killed. (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	--159 to 172 seem to count stuff
+	PROGRESSION_KILL_DELIRIUM_WITH_ISAAC = 173, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_MAGDALENE = 174, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_CAIN = 175, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_JUDAS = 176, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_BLUE_BABY = 177, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_EVE = 178, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_SAMSON = 179, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_AZAZEL = 180, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_LAZARUS = 181, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_EDEN = 182, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_THE_LOST = 183, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_LILITH = 184, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_KEEPER = 185, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_DELIRIUM_WITH_APOLLYON = 186, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	DELIRIUM_KILLS = 187, -- How often was the final boss of the void was killed. (Delirium) (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	-- 188 = something with winning. jumps to seemingly random numbers after winning.
+	-- 189 really big counter
+	-- 190 some counter
+	-- 191 and 192 look unused. still at 0 in a dead god file
+	-- 193 counts something very rare. seem to have only happend 7 times in my dead god file
+	RAINBOW_POOP_DESTROYED = 194,
+	BATTERIES_COLLECTED = 195, -- Sum of all batteries collected
+	CARDS_USED = 196, -- Sum of cards used
+	SHOP_ITEMS_BOUGHT = 197, -- Sum of shop items bought. this includes devil deals, dark room red chest deals, and black market deals
+	CHESTS_OPENED_WITH_KEY = 198, -- Sum of all golden and Eternal Chests opened. Mega chests dont count
+	SECRET_ROOMS_WALLS_OPENED = 199, -- Includes super secret rooms and counts walls that lead to secret rooms already entered or discovered. Also counts the door towards the mines. Does not count X-Ray Vision effect 
+	BLOOD_CLOT_ITEM_AQUIRED = 200,
+	RUBBER_CEMENT_ITEM_AQUIRED = 201,
+	BEDS_USED = 202, -- Sleeping in a bed
+	PROGRESSION_KILL_MOMS_HEART_WITH_THE_FORGOTTEN = 203, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_THE_FORGOTTEN = 204, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_THE_FORGOTTEN = 205, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_THE_FORGOTTEN = 206, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_THE_FORGOTTEN = 207, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_LAMB_WITH_THE_FORGOTTEN = 208, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MEGA_SATAN_WITH_THE_FORGOTTEN = 209, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_GREED_MODE_CLEARED_WITH_THE_FORGOTTEN = 210, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_HUSH_WITH_THE_FORGOTTEN = 211, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	-- 212 is a counter of something rare
+	PROGRESSION_KILL_DELIRIUM_WITH_THE_FORGOTTEN = 213, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	-- 214 to 290 are progression related
+	PROGRESSION_KILL_MOMS_HEART_WITH_BETHANY = 286, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_ISAAC_WITH_BETHANY = 287, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_SATAN_WITH_BETHANY = 288, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_BOSSRUSH_CLEARED_WITH_BETHANY = 289, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_BLUE_BABY_WITH_BETHANY = 290, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOTHER_WITH_THE_FORGOTTEN = 437, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	MOTHER_KILLS = 491, -- Killing endboss of Corpse 2 (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy)
+	BABY_PLUM_KILLS = 493,
+	BATTERY_BUMS_KILLED = 494,
+	BATTERY_BUM_COLLECTIBLE_PAYOUTS = 495, -- counts how often the battery bum paid out with a collectible item
 	NUM_EVENT_COUNTERS = 496,
 }
 
