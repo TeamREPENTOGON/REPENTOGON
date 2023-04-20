@@ -1367,7 +1367,7 @@ EventCounter = {
 	BOSSRUSHS_CLEARED = 111,
 	-- 112 todo. seems to only be at 1 for a dead god file
 	NEGATIVE_STREAK_COUNTER = 113, -- counts your current negative streak. aka consecutive runs ending with death.
-	-- 114 seems unused. even is 0 on dead god file...
+	EDENS_BLESSINGS_NEXT_RUN = 114, -- number of edens blessing items added to the player in next run
 	GREED_DONATION_MACHINE_COUNTER = 115,
 	PROGRESSION_KILL_MEGA_SATAN_WITH_ISAAC = 116, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_MEGA_SATAN_WITH_MAGDALENE = 117, -- (0 for not done. 1 for normal difficulty, 2 for hard)
