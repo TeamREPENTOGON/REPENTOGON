@@ -55,9 +55,9 @@ __thiscall Capsule* Entity::GetNullCapsule(Entity *this<ecx>, const char* unk, c
 "558bec83e4c081ecb4000000f30f1005":
 __thiscall bool Entity::RenderShadowLayer(Entity *this<ecx>, Vector *offset);
 
-/*"558becff05":
-static __fastcall bool Entity::ForceCollide(Entity* boom<ecx>, Entity *collider<edx>, bool low);
-*/
+"558becff05":
+static cleanup __cdecl bool Entity::ForceCollide(Entity* boom<ecx>, Entity *collider<edx>, bool low);
+
 
 struct Entity depends (AnimationState)
 {{

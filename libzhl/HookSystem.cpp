@@ -494,3 +494,231 @@ void FunctionHook::Add(const char *name, const type_info &type, void *hook, void
 {
 	new FunctionHook_private(name, type, hook, outInternalSuper, priority);
 }
+
+void FunctionHookCustom::Add(const char* name, const type_info& type, void* hook, void** outInternalSuper, int priority)
+{
+	new FunctionHookCustom_private(name, type, hook, outInternalSuper, priority);
+}
+
+//================================================================================
+// FunctionHook
+
+int FunctionHookCustom_private::Install() {
+	FunctionDefinition* def = dynamic_cast<FunctionDefinition*>(Definition::Find(_name)); // function definition
+	if (!def)
+	{
+		sprintf_s(g_hookLastError, "Failed to install hook for %s: Function not found", _name);
+		return 0;
+	}
+
+	struct ArgData
+	{
+		char r;
+		char s;
+	};
+
+	const ArgData* argd = (const ArgData*)def->GetArgData();
+	int argc = def->GetArgCount();
+	unsigned char* ptr;
+	int stackPos;
+	int k;
+	DWORD oldProtect;
+
+	//==================================================
+	// Internal hook
+	ptr = _internalHook;
+
+	// Prologue
+	P(0x55);					// push ebp
+	P(0x89); P(0xe5);			// mov ebp, esp
+
+	// In original this only computes how many bytes are pushed on the stack.
+	// As the hook needs to be called with a cdecl style convention, all arguments
+	// are pushed on the stack regardless in this case.
+	stackPos = 8;
+	for (int i = 0; i < argc; ++i) {
+		stackPos += 4 * argd[i].s;
+	}
+
+	// Push general purpose registers
+	if (def->IsVoid() || !def->IsLongLong())
+		P(0x52);	// push edx
+	if (def->IsVoid())
+		P(0x50);	// push eax
+	P(0x51);	// push ecx
+	P(0x53);	// push ebx
+	P(0x56);	// push esi
+	P(0x57);	// push edi
+
+	// Copy arguments to their appropriate location
+	k = stackPos;
+	for (int i = argc - 1; i >= 0; --i) {
+		// Removed the case where the function is thiscall.
+		// The calling convention bug cannot occur on thiscall functions.
+		if (argd[i].r >= 0)
+		{
+			P(0x50 + argd[i].r);							// push XXX
+		}
+		else
+		{
+			for (int j = 0; j < argd[i].s; ++j)
+			{
+				k -= 4;
+				P(0xff); P(0x75); P(k);						// push [ebp+8+4*X]
+			}
+		}
+	}
+
+	// Call the hook
+	P(0xE8); PL((unsigned int)_hook - (unsigned int)ptr - 4);	// call _hook
+	if (stackPos > 8 && def->NeedsCallerCleanup()) {
+		P(0x81);
+		P(0xC4);
+		PL(stackPos - 8);
+	}
+
+	// Restore all saved registers
+	P(0x5f);	// pop edi
+	P(0x5e);	// pop esi
+	P(0x5b);	// pop ebx
+	P(0x59);	// pop ecx
+	if (def->IsVoid())
+		P(0x58);	// pop eax
+	if (def->IsVoid() || !def->IsLongLong())
+		P(0x5a);	// pop edx
+
+	// Epilogue
+	P(0x89); P(0xec);				// mov esp, ebp
+	P(0x5d);						// pop ebp
+	if (stackPos > 8 && !def->NeedsCallerCleanup())
+	{
+		P(0xc2); PS(stackPos - 8);	// ret 4*N
+	}
+	else
+		P(0xc3);					// ret
+
+	_hSize = ptr - _internalHook;
+	VirtualProtect(_internalHook, _hSize, PAGE_EXECUTE_READWRITE, &oldProtect);
+
+	// Install the hook with MologieDetours
+	try
+	{
+		_detour = new MologieDetours::Detour<void*>(def->GetAddress(), _internalHook);
+	}
+	catch (MologieDetours::DetourException& e)
+	{
+		sprintf_s(g_hookLastError, "Failed to install hook for %s: %s", _name, e.what());
+		return 0;
+	}
+	void* original = ((MologieDetours::Detour<void*>*)_detour)->GetOriginalFunction();
+
+	//==================================================
+	// Internal super
+	ptr = _internalSuper;
+
+	// Prologue
+	P(0x55);					// push ebp
+	P(0x89); P(0xe5);			// mov ebp, esp
+
+	// Push general purpose registers
+	if (def->IsVoid() || !def->IsLongLong())
+		P(0x52);	// push edx
+	if (def->IsVoid())
+		P(0x50);	// push eax
+	P(0x51);	// push ecx
+	P(0x53);	// push ebx
+	P(0x56);	// push esi
+	P(0x57);	// push edi
+
+	// In the original version, this would perform a check for thiscall
+	// In this version it is not necessary because thiscall functions don't 
+	// suffer from the same problem.
+	stackPos = 8;
+	for (int i = 0; i < argc; ++i)
+		stackPos += 4 * argd[i].s;
+
+	// Stack arguments first
+	int sizePushed = 0;
+	k = stackPos;
+	for (int i = argc - 1; i >= 0; --i)
+	{
+		if (argd[i].r < 0)
+		{
+			for (int j = 0; j < argd[i].s; ++j)
+			{
+				k -= 4;
+				P(0xff); P(0x75); P(k);				// push [ebp+8+4*X]
+				sizePushed += 4;
+			}
+		}
+		else
+			k -= 4 * argd[i].s;
+	}
+
+	// Now register based arguments
+	k = 8;
+	for (int i = 0; i < argc; ++i)
+	{
+		if (argd[i].r >= 0)
+		{
+			P(0x8b); P(0x45 | ((argd[i].r & 7) << 3));
+			P(k);							// mov XXX, [ebp+8+4*X]
+		}
+		k += 4 * argd[i].s;
+	}
+
+	// Call the original function
+	P(0xE8); PL((unsigned int)original - (unsigned int)ptr - 4);	// call original
+
+	// If the function requires caller cleanup, increment the stack pointer here
+	if (def->NeedsCallerCleanup())
+	{
+		if (sizePushed < 128) { P(0x83); P(0xc4); P(sizePushed); }	// add esp, N8
+		else { P(0x81); P(0xc4); PL(sizePushed); }	// add esp, N32
+	}
+
+	// Pop general purpose registers
+	P(0x5f);	// pop edi
+	P(0x5e);	// pop esi
+	P(0x5b);	// pop ebx
+	P(0x59);	// pop ecx
+	if (def->IsVoid())
+		P(0x58);	// pop eax
+	if (def->IsVoid() || !def->IsLongLong())
+		P(0x5a);	// pop edx
+
+	// Epilogue
+	P(0x89); P(0xec);				// mov esp, ebp
+	P(0x5d);						// pop ebp
+	if (stackPos > 8 && !def->NeedsCallerCleanup())
+	{
+		P(0xc2); PS(stackPos - 8);	// ret 4*N
+	}
+	else
+		P(0xc3);					// ret
+
+	_sSize = ptr - _internalSuper;
+	VirtualProtect(_internalSuper, _sSize, PAGE_EXECUTE_READWRITE, &oldProtect);
+
+	// Set the external reference to internalSuper so it can be used inside the user defined hook
+	*_outInternalSuper = _internalSuper;
+
+	Log("Successfully hooked function %s\n", _name);
+
+#ifdef HOOK_LOG
+	if (!g_hookLog) g_hookLog = fopen("hooks.log", "w");
+
+	Log("%s\ninternalHook:\n", _name);
+	for (unsigned int i = 0; i < _hSize; ++i)
+		Log("%02x ", _internalHook[i]);
+
+	Log("\ninternalSuper:\n", _name);
+
+	for (unsigned int i = 0; i < _sSize; ++i)
+		Log("%02x ", _internalSuper[i]);
+
+	Log("\n\n");
+#endif
+
+	return 1;
+}

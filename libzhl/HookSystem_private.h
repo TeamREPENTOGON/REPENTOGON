@@ -71,7 +71,7 @@ public:
 
 class FunctionHook_private
 {
-private:
+protected:
 	char _shortName[128];
 	char _name[256];
 
@@ -93,7 +93,9 @@ public:
 private:
 	static void Add(FunctionHook_private *hook);
 	void SetName(const char *name, const char *type);
-	int Install();
+
+protected:
+	virtual int Install();
 
 public:
 	FunctionHook_private(const char *name, const type_info &type, void *hook, void **outInternalSuper, int priority) :
@@ -108,4 +110,11 @@ public:
 		Add(this);
 	}
 	~FunctionHook_private();
+};
+
+class FunctionHookCustom_private : public FunctionHook_private {
+public:
+	using FunctionHook_private::FunctionHook_private;
+protected:
+	virtual int Install() override;
 };
