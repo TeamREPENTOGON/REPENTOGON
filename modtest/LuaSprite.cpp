@@ -79,22 +79,6 @@ static int Lua_LayerStateSetVisible(lua_State* L)
 	return 0;
 }
 
-/*static int Lua_LayerStateGetUnk1(lua_State* L)
-{
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	lua_pushnumber(L, *layerState->GetUnk1());
-
-	return 1;
-}
-
-static int Lua_LayerStateGetUnk2(lua_State* L)
-{
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	lua_pushnumber(L, *layerState->GetUnk2());
-
-	return 1;
-}
-*/
 
 static int Lua_LayerStateGetSize(lua_State* L)
 {
@@ -113,18 +97,70 @@ static int Lua_LayerStateSetSize(lua_State* L)
 	return 0;
 }
 
-static int Lua_LayerStateGetCropYOffset(lua_State* L)
+static int Lua_LayerStateGetRotation(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	lua_pushnumber(L, *layerState->GetCropYOffset());
+	lua_pushnumber(L, *layerState->GetRotation());
 
 	return 1;
 }
 
-static int Lua_LayerStateSetCropYOffset(lua_State* L)
+static int Lua_LayerStateSetRotation(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	*layerState->GetCropYOffset() = luaL_checknumber(L, 2);
+	*layerState->GetRotation() = lua_tonumber(L, 2);
+
+	return 0;
+}
+
+static int Lua_LayerStateGetPos(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *layerState->GetPos();
+
+	return 1;
+}
+
+static int Lua_LayerStateSetPos(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	*layerState->GetPos() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	return 0;
+}
+
+static int Lua_LayerStateGetColor(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	*toLua = *layerState->GetColor();
+
+	return 1;
+}
+
+static int Lua_LayerStateSetColor(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+
+	*layerState->GetColor() = *color;
+	return 0;
+}
+
+static int Lua_LayerStateGetCropOffset(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *layerState->GetCropOffset();
+
+	return 1;
+}
+
+static int Lua_LayerStateSetCropOffset(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	*layerState->GetCropOffset() = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 
 	return 0;
 }
@@ -145,12 +181,16 @@ static void RegisterLayerState(lua_State* L) {
 	luaL_Reg funcs[] = {
 		{ "IsVisible", Lua_LayerStateIsVisible },
 		{ "SetVisible", Lua_LayerStateSetVisible},
-		{ "GetCropYOffset", Lua_LayerStateGetCropYOffset},
-		{ "SetCropYOffset", Lua_LayerStateSetCropYOffset},
-		//{ "GetUnk1", Lua_LayerStateGetUnk1},
-		//{ "GetUnk2", Lua_LayerStateGetUnk2},
 		{ "GetSize", Lua_LayerStateGetSize},
 		{ "SetSize", Lua_LayerStateSetSize},
+		{ "GetRotation", Lua_LayerStateGetRotation},
+		{ "SetRotation", Lua_LayerStateSetRotation},
+		{ "GetPos", Lua_LayerStateGetPos},
+		{ "SetPos", Lua_LayerStateSetPos},
+		{ "GetColor", Lua_LayerStateGetColor},
+		{ "SetColor", Lua_LayerStateSetColor},
+		{ "GetCropOffset", Lua_LayerStateGetCropOffset},
+		{ "SetCropOffset", Lua_LayerStateSetCropOffset},
 		{ NULL, NULL }
 	};
 

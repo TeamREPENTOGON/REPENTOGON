@@ -1,7 +1,8 @@
-struct LayerState depends (Vector) {{
+struct LayerState depends (Vector, ColorMod) {{
 	inline Vector* GetSize() {return (Vector*)((char*)this + 0x34); }
-	//inline float* GetUnk1() { return (float*)((char*)this + 0x34); }
-	//inline float* GetUnk2() { return (float*)((char*)this + 0x38); }
+	inline float* GetRotation() {return (float*)((char*)this + 0x3c); }
+	inline Vector* GetPos() {return (Vector*)((char*)this + 0x40); }
+	inline ColorMod* GetColor() {return (ColorMod*)((char*)this + 0x48); }
 	inline bool* IsVisible() { return (bool*)((char*)this + 0x74); }
-	inline float* GetCropYOffset() { return (float*)((char*)this + 0x90); }
+	inline Vector* GetCropOffset() { return (Vector*)((char*)this + 0x8c); } 
 }};
