@@ -139,6 +139,15 @@ static int Lua_EntitySetBossStatusEffectCooldown(lua_State* L)
 	return 0;
 }
 
+static int Lua_EntityForceCollide(lua_State* L)
+{
+	Entity* first = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* second = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	bool low = lua_toboolean(L, 3);
+	lua_pushboolean(L, first->ForceCollide(first, second, low));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -159,5 +168,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetPosVel", lua_Entity_GetPosVel);
 	lua::RegisterFunction(state, mt, "GetBossStatusEffectCooldown", Lua_EntityGetBossStatusEffectCooldown);
 	lua::RegisterFunction(state, mt, "SetBossStatusEffectCooldown", Lua_EntitySetBossStatusEffectCooldown);
+	lua::RegisterFunction(state, mt, "ForceCollide", Lua_EntityForceCollide);
 
 }
