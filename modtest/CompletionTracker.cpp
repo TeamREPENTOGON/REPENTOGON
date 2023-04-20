@@ -62,7 +62,7 @@ void SaveCompletionMarksToJson() {
 	std::string directory = jsonpath.substr(0, jsonpath.find_last_of("\\/"));
 	if (!CreateDirectory(directory.c_str(), NULL)) {
 		if (GetLastError() != ERROR_ALREADY_EXISTS) {
-			printf("[REPENTOGON] Error creating Repentogon Save directory");
+			printf("[REPENTOGON] Error creating Repentogon Save directory \n");
 			return ;
 		}
 	}
@@ -85,7 +85,7 @@ void SaveCompletionMarksToJson() {
 
 	ofstream ofs(jsonpath);
 	ofs << buffer.GetString() << std::endl;
-	printf("[REPENTOGON] Completion Marks saved to: %s", jsonpath.c_str());
+	printf("[REPENTOGON] Completion Marks saved to: %s \n", jsonpath.c_str());
 }
 
 void LoadCompletionMarksFromJson() {
@@ -122,7 +122,7 @@ void LoadCompletionMarksFromJson() {
 			CompletionMarks[key][i] = value[i].GetInt();
 		}
 	}
-	printf("[REPENTOGON] Completion Marks loaded from: %s", jsonpath.c_str());
+	printf("[REPENTOGON] Completion Marks loaded from: %s \n", jsonpath.c_str());
 }
 
 int selectedchar = 0;
@@ -178,19 +178,14 @@ array<int, 15> GetMarksForPlayer(int playerid,ANM2* anm) {
 }
 
 
-HOOK_METHOD(PersistentGameData, Load, (char* filepath) -> void) {
-	jsonpath = string(filepath);
-	size_t last_persistentgamedata = jsonpath.rfind("persistentgamedata"); 
-	size_t last_dat = jsonpath.rfind(".dat"); 
-	if (last_persistentgamedata != string::npos && last_dat != string::npos) {
-		jsonpath.replace(last_dat, string(".dat").length(), ".json");
-		jsonpath.replace(last_persistentgamedata, string("persistentgamedata").length(), "Repentogon/moddedcompletionmarks"); 
-	}	
+HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
+	jsonpath = string((char*)&g_SaveDataPath) + "Repentogon/moddedcompletionmarks" + to_string(saveslot) +".json";
+
 	LoadCompletionMarksFromJson();
 	if (!initializedrendercmpl){
 		InitMarkRenderTypes();
 	}
-	super(filepath);
+	super(saveslot);
 }
 /*
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
