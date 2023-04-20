@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.13.0)
 
 set ("CMAKE_CXX_STANDARD" 17)
+set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
 
 project(RepExtender)
 
@@ -48,6 +49,16 @@ add_library(zhlModTest SHARED ${MODTEST_SRC})
 
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "$<TARGET_FILE_DIR:zhlModTest>/resources/scripts")
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/mods" "$<TARGET_FILE_DIR:zhlModTest>/mods")
+
+if(NOT ISAAC_DIRECTORY STREQUAL "")
+    message (STATUS "Files will be installed to " ${ISAAC_DIRECTORY})
+    add_custom_command(TARGET Lua5.3.3r POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/Lua5.3.3r.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET dsound POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/dsound.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:libzhl>/libzhl.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlModTest>/zhlModTest.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "${ISAAC_DIRECTORY}/resources/scripts")
+    add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/mods" "${ISAAC_DIRECTORY}/mods")
+endif()
 		
 # add_dependencies(libzhl ZHL)
 
