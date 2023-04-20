@@ -24,12 +24,17 @@ local ChangeLog={
 
 local Cl=ChangeLog
 
-Cl.ChangelogSprite:Load("../repentogon/gfx/ui/changelog.anm2",true)
-Cl.ChangelogSprite:Play("SwapOut")
-Cl.ChangelogSprite.PlaybackSpeed=0.5        --correct speed for doing Update() inside of xxx_RENDER callback
+function ChangeLog.LoadAssets()
+    Cl.ChangelogSprite:Load("../repentogon/gfx/ui/changelog.anm2",true)
+    Cl.ChangelogSprite:Play("SwapOut")
+    Cl.ChangelogSprite.PlaybackSpeed=0.5        --correct speed for doing Update() inside of xxx_RENDER callback
 
-Cl.NoteSprite:Load("../repentogon/gfx/ui/changelog_tab_paper.anm2",true)
-Cl.NoteSprite:Play("Idle")
+    Cl.NoteSprite:Load("../repentogon/gfx/ui/changelog_tab_paper.anm2",true)
+    Cl.NoteSprite:Play("Idle")
+    Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
+end
+
+Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
 
 local ShouldBeRendered=false                --render of the changelog isn't attempted
 local CurrentState=false                    --changelog paper should be hidden
