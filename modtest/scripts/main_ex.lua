@@ -1,4 +1,8 @@
-REPENTOGON = true
+local repentogon = {
+["Real"]=true,
+["Name"]="REPENTOGON",	--I avoid having to do RegisterMod this way, sorry ;P
+["Extras"]={},
+}
 
 collectgarbage("generational")
 
@@ -591,3 +595,6 @@ if not _LUADEBUG then
 		difftime = os.difftime
 	}
 end
+
+REPENTOGON=repentogon
+pcall(require("repentogon_extras/changelog"))
