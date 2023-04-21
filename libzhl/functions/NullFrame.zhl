@@ -1,4 +1,7 @@
-struct NullFrame depends (Vector) {{
+struct NullFrame depends (Vector, ColorMod) {{
 	inline Vector* GetPos() {return (Vector*)((char*)this); }
+	inline bool* IsVisible() {return (bool*)((char*)this + 0xC); }
 	inline Vector* GetScale() {return (Vector*)((char*)this + 0x10); }
+	inline ColorMod* GetColor() {return (ColorMod*)((char*)this + 0x18); }
+	inline float* GetRotation() {return (float*)((char*)this + 0x44); }
 }};
