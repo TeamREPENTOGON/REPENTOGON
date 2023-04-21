@@ -1,4 +1,5 @@
 local ChangeLog={
+["AssetsLoaded"]=false,
 ["NoteOffset"]=Vector(275,190),
 ["PaperOffset"]=Vector(-37,-15),
 ["ChangelogSprite"]=Sprite(),
@@ -24,23 +25,6 @@ local ChangeLog={
 
 local Cl=ChangeLog
 
-function ChangeLog.LoadAssets()
-    Cl.ChangelogSprite:Load("../repentogon/gfx/ui/changelog.anm2",true)
-    Cl.ChangelogSprite:Play("SwapOut")
-    Cl.ChangelogSprite.PlaybackSpeed=0.5        --correct speed for doing Update() inside of xxx_RENDER callback
-
-    Cl.NoteSprite:Load("../repentogon/gfx/ui/changelog_tab_paper.anm2",true)
-    Cl.NoteSprite:Play("Idle")
-    Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
-end
-
-Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
-
-local ShouldBeRendered=false                --render of the changelog isn't attempted
-local CurrentState=false                    --changelog paper should be hidden
-local ScrollVelocity=0
-local ScrollOffset=Cl.ScrollMargin
-
 local function TextSplit (inputstr, sep)    --shamelessly stolen from the stackoverflow
         if sep == nil then
                 sep = "%s"
@@ -51,6 +35,7 @@ local function TextSplit (inputstr, sep)    --shamelessly stolen from the stacko
         end
         return t
 end
+
 
 function ChangeLog.EvaluateText()
     for i=1,#Cl.Sheets do
@@ -64,7 +49,30 @@ end
 
 Cl.EvaluateText()
 
-Cl.Font:Load("font/teammeatfont10.fnt")
+function ChangeLog.LoadAssets()
+    if #Cl.ChangelogSprite:GetDefaultAnimation()<=0 then
+        Cl.ChangelogSprite:Load("../repentogon/gfx/ui/changelog.anm2",true)
+        Cl.ChangelogSprite:Play("SwapOut")
+        Cl.ChangelogSprite.PlaybackSpeed=0.5        --correct speed for doing Update() inside of xxx_RENDER callback
+
+        Cl.NoteSprite:Load("../repentogon/gfx/ui/changelog_tab_paper.anm2",true)
+        Cl.NoteSprite:Play("Idle")
+    end
+    if not Cl.Font:IsLoaded() then
+        Cl.Font:Load("font/teammeatfont10.fnt")
+    end
+    if Cl.Font:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation())>0 then
+        Cl.AssetsLoaded=true
+        Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
+    end
+end
+
+Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
+
+local ShouldBeRendered=false                --render of the changelog isn't attempted
+local CurrentState=false                    --changelog paper should be hidden
+local ScrollVelocity=0
+local ScrollOffset=Cl.ScrollMargin
 
 local MaxPollCIdx=3
 
@@ -92,6 +100,9 @@ local function IsGivenMenuEntry(id)              --takes MainMenu entry, returns
 end
 
 function ChangeLog.MenuRender()
+    if not Cl.AssetsLoaded then
+        return
+    end
     Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(MainMenu.TITLE, Cl.NoteOffset))
     if IsGivenMenuEntry(MainMenu.TITLE) then
         if IsActionTriggeredAll(ButtonAction.ACTION_MAP) then
@@ -131,6 +142,7 @@ function ChangeLog.MenuRender()
                         Cl.FontColor.Alpha=1
                     end
                     Cl.Font:DrawStringScaledUTF8(line,LogRenderPosition.X + NullPos.X + XOffset, FullY,NullScale.X,NullScale.Y,Cl.FontColor,0,false)
+--                    Isaac.RenderText(line,LogRenderPosition.X + NullPos.X + XOffset, FullY,1,1,1,Cl.FontColor.Alpha)
                     YOffset = YOffset + Cl.LineHeight
                 end
             end
