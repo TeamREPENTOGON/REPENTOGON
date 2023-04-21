@@ -5,9 +5,9 @@ tags:
 # Enum "MainMenu"
 |Value|Enumerator|Comment|
 |:--|:--|:--|
-|1 |TITLE {: .copyable } |  |
+|1 |TITLE {: .copyable } | 0 exists but its unusable |
 |2 |SAVES {: .copyable } |  |
-|3 |GAME {: .copyable } |  |
+|3 |GAME {: .copyable } | the actual menu where all the menus are |
 |4 |DAILYRUN {: .copyable } |  |
 |5 |CHARACTER {: .copyable } |  |
 |6 |SPECIALSEEDS {: .copyable } |  |
