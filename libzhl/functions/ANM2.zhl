@@ -29,6 +29,7 @@ __thiscall void ANM2::RenderLayer(ANM2 *this<ecx>,int param_1,Vector *param_2,Ve
 struct ANM2 depends (AnimationState) {{
 	inline AnimationState* GetAnimationState() {return (AnimationState*)((char*)this + 48); }
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
+	inline unsigned int GetLayerCount() { return *(unsigned int*)((char*)this + 0x80); } 
 }};
 
 

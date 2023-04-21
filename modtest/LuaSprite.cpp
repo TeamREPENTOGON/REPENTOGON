@@ -57,8 +57,13 @@ static int Lua_SpriteGetLayer(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	int layerName = luaL_checkinteger(L, 2);
+	LayerState* toLua = anm2->GetLayer(layerName);
+	unsigned int layerCount = anm2->GetLayerCount();
+	if (layerName > layerCount) {
+		return luaL_error(L, "Invalid layer ID %d, max = %d ", layerName, layerCount);
+	}
 	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
-	*luaLayer = anm2->GetLayer(layerName);
+	*luaLayer = toLua;
 	luaL_setmetatable(L, LayerStateMT);
 	return 1;
 }
