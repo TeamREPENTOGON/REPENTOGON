@@ -81,14 +81,14 @@ Can return `false` to prevent the completion marks from rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_PRE_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseBody,[Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) PauseStats) | - | void |
+|- |MC_PRE_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseBody,[Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseStats) | - | void |
 
 ### MC_POST_PAUSE_SCREEN_RENDER {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|- |MC_POST_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseBody,[Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) PauseStats) | - | void |
+|- |MC_POST_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseBody,[Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseStats) | - | void |
 
 
 ### MC_PRE_COMPLETION_MARKS_RENDER {: .copyable }
