@@ -141,6 +141,8 @@ struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerM
 	
 	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
 	
+	inline int IsPauseMenuOpen() { return (bool)*(int*)((char*)this + 0x10203C); } //in reality this gets the pause menu itself, but the first att is if its opened or not
+	
 	inline DailyChallenge GetDailyChallenge() { return *(DailyChallenge*)((char*)this + 0x1C3204); }
 	
 	inline unsigned int GetChallenge() { return *(unsigned int*)((char*)this + 0x1C319C); }

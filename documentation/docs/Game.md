@@ -84,6 +84,11 @@ ___
 Returns `true` if hard mode or greedier
 
 ___
+### Is·Pause·Menu·Open () {: aria-label='Functions' }
+#### boolean IsPauseMenuOpen ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the pause menu is open
+
+___
 ### Toggle·Debug·Flag () {: aria-label='Functions' }
 #### boolean ToggleDebugFlag ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
 Toggles the given debug flag. Returns the state of the debug flag after toggling (under the hood we just return the value of GetDebugFlag() after running this).

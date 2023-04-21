@@ -14,6 +14,14 @@ int Lua_GameAchievementUnlocksDisallowed(lua_State* L)
 	return 1;
 }
 
+int Lua_GameIsPauseMenuOpen(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushboolean(L, game->IsPauseMenuOpen());
+
+	return 1;
+}
+
 int Lua_GameGetPlanetariumsVisited(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -107,6 +115,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(state);
 	lua::Metatables mt = lua::Metatables::GAME;
 	lua::RegisterFunction(state, mt, "AchievementUnlocksDisallowed", Lua_GameAchievementUnlocksDisallowed);
+	lua::RegisterFunction(state, mt, "IsPauseMenuOpen", Lua_GameIsPauseMenuOpen);
 	lua::RegisterFunction(state, mt, "GetPlanetariumsVisited", Lua_GameGetPlanetariumsVisited);
 	lua::RegisterFunction(state, mt, "IsHardMode", Lua_GameIsHardMode);
 	lua::RegisterFunction(state, mt, "GetLastDevilRoomStage", Lua_GameGetLastDevilRoomStageFix);

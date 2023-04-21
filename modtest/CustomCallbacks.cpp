@@ -602,11 +602,19 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 			if (lua_istable(L, -1)) {
 				int tablesize = lua_rawlen(L, -1);
 				if (tablesize == 4) {
+					int pretype = *(this->GetType());
+					int prevar = *(this->GetVariant());
+					int presub = *(this->GetSubType());
 					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToNumber(L, 4));
+					PostNPCMorph(this, pretype, prevar, presub);
 					return;
 				}
 				else if (tablesize == 3) {
+					int pretype = *(this->GetType());
+					int prevar = *(this->GetVariant());
+					int presub = *(this->GetSubType());
 					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), Championid);
+					PostNPCMorph(this, pretype, prevar, presub);
 					return;
 				}
 			}
@@ -671,11 +679,19 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 			if (lua_istable(L, -1)) {
 				int tablesize = lua_rawlen(L, -1);
 				if (tablesize == 6) {
+					int pretype = *(this->GetType());
+					int prevar = *(this->GetVariant());
+					int presub = *(this->GetSubType());
 					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToBoolean(L, 4), lua::callbacks::ToBoolean(L, 5), lua::callbacks::ToBoolean(L, 6));
+					PostPickupMorph(this, pretype, prevar, presub, KeepPrice, KeepSeed, IgnoreModifiers);
 					return;
 				}
 				else if (tablesize == 3) {
+					int pretype = *(this->GetType());
+					int prevar = *(this->GetVariant());
+					int presub = *(this->GetSubType());
 					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), KeepPrice, KeepSeed, IgnoreModifiers);
+					PostPickupMorph(this, pretype, prevar, presub, KeepPrice, KeepSeed, IgnoreModifiers);
 					return;
 				}
 			}
@@ -696,10 +712,28 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 
 
 
-//PRE_COMPLETION_MARKS_RENDER (id: 1016)
+//PRE/POST_COMPLETION_MARKS_RENDER (id: 1216/1217)
+void PostMarksRender(CompletionWidget* cmp, Vector* pos, Vector* scale) {
+	int callbackid = 1217;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(cmp->GetANM2(), lua::Metatables::SPRITE)
+			.push(pos, lua::Metatables::VECTOR)
+			.push(scale, lua::Metatables::VECTOR)
+			.push(cmp->CharacterId)
+			.call(1);
+	}
+
+}
 HOOK_METHOD(CompletionWidget, Render, (Vector* pos, Vector* scale) -> void) {
 	int callbackid = 1216;
-	if (!CallbackState.test(callbackid - 1000)) { super(pos, scale); return; }
+	if (!(CallbackState.test(callbackid - 1000)|| CallbackState.test((callbackid + 1) - 1000))) { super(pos, scale); return; }
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
@@ -721,6 +755,52 @@ HOOK_METHOD(CompletionWidget, Render, (Vector* pos, Vector* scale) -> void) {
 		}
 		else {
 			super(pos, scale);
+			PostMarksRender(this, pos, scale);
+		}
+	}
+}
+
+//PRE/POST_PAUSE_SCREEN_RENDER (id: 1218/1219)
+void PostPauseScreenRender(PauseScreen* paws) {
+	int callbackid = 1219;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(paws->GetANM2(), lua::Metatables::SPRITE)
+			.push(paws->GetStatsANM2(), lua::Metatables::SPRITE)
+			.call(1);
+	}
+
+
+}
+HOOK_METHOD(PauseScreen, Render, () -> void) {
+	int callbackid = 1218;
+	if (!(CallbackState.test(callbackid - 1000) || CallbackState.test((callbackid + 1) - 1000))) { super(); return; }
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.pushnil()
+		.push(this->GetANM2(), lua::Metatables::SPRITE)
+		.push(this->GetStatsANM2(), lua::Metatables::SPRITE)
+		.call(1);
+
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else {
+			super();
+			PostPauseScreenRender(this);
 		}
 	}
 }
