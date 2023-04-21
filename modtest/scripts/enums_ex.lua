@@ -1983,6 +1983,12 @@ DipSubType = {
 	BROWNIE = 20,	
 }
 
+PAUSEMENUSTATES = {
+	CLOSED=0,
+	OPEN=1,
+	OPTIONS=2,
+}
+
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)
 

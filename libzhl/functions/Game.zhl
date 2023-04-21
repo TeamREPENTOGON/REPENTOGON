@@ -97,7 +97,7 @@ const static FuncSignatureByte Signature_GameGlobalAddres = {
 ".e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerManager, RoomDescriptor, ProceduralItemManager, RoomConfigHolder)
+struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerManager, RoomDescriptor, ProceduralItemManager, RoomConfigHolder, PauseScreen)
 {{
 	Game()
 	{
@@ -142,6 +142,8 @@ struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerM
 	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
 	
 	inline int IsPauseMenuOpen() { return (bool)*(int*)((char*)this + 0x10203C); } //in reality this gets the pause menu itself, but the first att is if its opened or not
+	
+	inline PauseScreen* GetPauseMenu() { return (PauseScreen*)((char*)this + 0x10203C); } 
 	
 	inline DailyChallenge GetDailyChallenge() { return *(DailyChallenge*)((char*)this + 0x1C3204); }
 	

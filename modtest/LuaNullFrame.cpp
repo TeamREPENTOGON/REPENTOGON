@@ -28,11 +28,36 @@ static int Lua_NullFrameGetScale(lua_State* L)
 	return 1;
 }
 
+static int Lua_NullFrameIsVisible(lua_State* L)
+{
+	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
+	lua_pushboolean(L, *nullFrame->IsVisible());
+
+	return 1;
+}
+
 static int Lua_NullFrameGetPos(lua_State* L)
 {
 	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = *nullFrame->GetPos();
+
+	return 1;
+}
+
+static int Lua_NullFrameGetColor(lua_State* L)
+{
+	NullFrame* layerState = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
+	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	*toLua = *layerState->GetColor();
+
+	return 1;
+}
+
+static int Lua_NullFrameGetRotation(lua_State* L)
+{
+	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
+	lua_pushnumber(L, *nullFrame->GetRotation());
 
 	return 1;
 }
@@ -52,7 +77,10 @@ static void RegisterNullFrame(lua_State* L)
 
 	luaL_Reg funcs[] = {
 		{ "GetPos", Lua_NullFrameGetPos},
+		{ "GetRotation", Lua_NullFrameGetRotation},
+		{ "IsVisible", Lua_NullFrameIsVisible},
 		{ "GetScale", Lua_NullFrameGetScale},
+		{ "GetColor", Lua_NullFrameGetColor},
 		{ NULL, NULL }
 	};
 
