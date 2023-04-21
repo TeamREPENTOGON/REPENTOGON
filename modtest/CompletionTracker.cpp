@@ -127,6 +127,7 @@ void LoadCompletionMarksFromJson() {
 
 int selectedchar = 0;
 int ischartainted = false;
+int hidemarks = false;
 
 unordered_map<string, string> GetPlayerDataForMarks(int playerid) {
 	unordered_map<string, string> playerdata = XMLStuff.PlayerData.players[playerid];
@@ -144,6 +145,15 @@ unordered_map<string, string> GetPlayerDataForMarks(int playerid) {
 	return playerdata;
 }
 
+string stolower(char* str)
+{
+	string s = string(str);
+	for (auto& c : s) {
+		c = tolower(c);
+	}
+	return s;
+}
+
 array<int, 15> GetMarksForPlayer(int playerid,ANM2* anm) {
 	array<int, 15> marks;
 	if (XMLStuff.PlayerData.players.count(playerid) > 0) {
@@ -153,6 +163,12 @@ array<int, 15> GetMarksForPlayer(int playerid,ANM2* anm) {
 		if (playerdata.count("bskinparent") > 0) {
 			idx = idx + "-Tainted-";
 			ischartainted = true;
+		}
+		hidemarks = false;
+		if (playerdata.count("nomarks") > 0) {
+			if (strcmp(stolower((char *)playerdata["sourceid"].c_str()).c_str(), "false")) {
+				hidemarks = true;
+			}
 		}
 		marks = CompletionMarks[idx];
 		if (ischartainted) {
@@ -231,7 +247,10 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 		ANM2* anm = cmpl->GetANM2();
 
 		array marks = GetMarksForPlayer(playertype,anm);
-		cmpl->Render(new Vector((g_WIDTH * 0.6) + widgtpos->x, (g_HEIGHT * 0.5) +widgtpos->y), widgtscale);
+		if (!hidemarks){
+			cmpl->CharacterId = playertype;
+			cmpl->Render(new Vector((g_WIDTH * 0.6) + widgtpos->x, (g_HEIGHT * 0.5) +widgtpos->y), widgtscale);
+		}
 	}
 }
 
@@ -244,13 +263,16 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 	super();
 	CompletionWidget* cmpl = this->GetCompletionWidget();
 	if(this->charaslot > 17){
-			
+		
 		Vector* ref = (Vector *)(g_MenuManager + 60);
 		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
 		ANM2* anm = cmpl->GetANM2();
 		
 		array marks = GetMarksForPlayer(selectedchar,anm);
-		cmpl->Render(new Vector(ref->x + 80, ref->y + 860), new Vector(1, 1));
+		if (!hidemarks) {
+			cmpl->CharacterId = selectedchar;
+			cmpl->Render(new Vector(ref->x + 80, ref->y + 860), new Vector(1, 1));
+		}
 
 	}
 }

@@ -75,6 +75,13 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |- |MC_MAIN_MENU_RENDER {: .copyable } | - | - | void |
 
+### MC_PRE_COMPLETION_MARKS_RENDER {: .copyable }
+Can return `false` to prevent the completion marks from rendering.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_PRE_COMPLETION_MARKS_RENDER {: .copyable } |  ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) CompletionMarksSprite,[Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RenderPos,[Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RenderScale,int PlayerType) | - | void |
+
 ### MC_PRE_SFX_PLAY
 Accepts a table of parameters: `{ID, Volume, FrameDelay, Loop, Pitch, Pan}`
 

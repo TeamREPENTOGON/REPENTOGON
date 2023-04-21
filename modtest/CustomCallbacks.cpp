@@ -694,6 +694,38 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 }
 //end of Pre_Morph callvacks
 
+
+
+//PRE_COMPLETION_MARKS_RENDER (id: 1016)
+HOOK_METHOD(CompletionWidget, Render, (Vector* pos, Vector* scale) -> void) {
+	int callbackid = 1216;
+	if (!CallbackState.test(callbackid - 1000)) { super(pos, scale); return; }
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.pushnil()
+		.push(this->GetANM2(), lua::Metatables::SPRITE)
+		.push(pos, lua::Metatables::VECTOR)
+		.push(scale, lua::Metatables::VECTOR)
+		.push(this->CharacterId)
+		.call(1);
+
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else {
+			super(pos, scale);
+		}
+	}
+}
+
+
 //POST_PICKUP_SHOP_PURCHASE (id: 1062)
 void ProcessPostPickupShopPurchase(Entity_Pickup* pickup, Entity_Player* player, int moneySpent)
 {
