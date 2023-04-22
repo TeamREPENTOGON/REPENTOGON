@@ -32,7 +32,7 @@ jobs:
         type ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
         echo "#pragma once" > ${{github.workspace}}/modtest/Version.h
         $sha = git rev-parse --short HEAD
-        echo "#define VERSION=`"$sha`"" >> ${{github.workspace}}/modtest/Version.h
+        echo "#define VERSION `"$sha`"" >> ${{github.workspace}}/modtest/Version.h
         (gc ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog.lua) -replace 'dev build', '%sha%' | Out-File -encoding ASCII ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog.lua
 
     - name: Configure CMake
