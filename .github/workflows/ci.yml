@@ -30,6 +30,11 @@ jobs:
         echo "]]" >> ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
         echo "Resulting lua file:"
         type ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
+        echo #pragma once > ${{github.workspace}}/modtest/Version.h
+        <nul set /p =#define VERSION ^">> ${{github.workspace}}/modtest/Version.h
+        for /F "delims=" %i in ('git rev-parse --short HEAD') do set sha=%i
+        <nul set /p =%sha%^">> ${{github.workspace}}/modtest/Version.h
+        powershell -Command "(gc ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog.lua) -replace 'dev build', '%sha%' | Out-File -encoding ASCII ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog.lua"
 
     - name: Configure CMake
       run: cmake -G "Visual Studio 17 2022" -A "Win32" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}

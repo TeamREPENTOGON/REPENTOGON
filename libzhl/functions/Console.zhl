@@ -7,6 +7,15 @@ __thiscall void Console::RunCommand(Console *this<ecx>, const std::string &in, c
 "558bec6aff68????????64a1000000005083ec60a1????????33c58945ec535657508d45f464a3000000008bf9":
 __thiscall void Console::Print(Console *this<ecx>, const IsaacString &text, unsigned int color, unsigned int unk);
 
+"558bec6aff68????????64a1????????5081ec14020000":
+__thiscall void Console::FillOmnicomplete(Console *this<ecx>);
+
+"558bec83ec3c535657":
+__thiscall void Console::ProcessInput(Console *this<ecx>);
+
+"558bec6aff68????????64a1????????5081ec9c000000a1????????33c58945??535657508d45??64a3????????8bf18975":
+__thiscall void Console::Render(Console *this<ecx>);
+
 struct Console depends (Console_HistoryEntry)
 {{
     inline int* GetState() { return (int*)((char*)this + 0x20); }

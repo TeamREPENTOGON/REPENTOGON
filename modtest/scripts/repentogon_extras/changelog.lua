@@ -2,10 +2,12 @@ local ChangeLog={
 ["AssetsLoaded"]=false,
 ["NoteOffset"]=Vector(275,190),
 ["PaperOffset"]=Vector(-37,-15),
+["VersionOffset"]=Vector(100, 0),
 ["ChangelogSprite"]=Sprite(),
 ["NoteSprite"]=Sprite(),
 
 ["Font"]=Font(),
+["VersionFont"]=Font(),
 ["FontColor"]=KColor(0.20,0.15,0.1,1),
 ["LineHeight"]=12,
 
@@ -103,7 +105,12 @@ function ChangeLog.LoadAssets()
     if not Cl.Font:IsLoaded() then
         Cl.Font:Load("font/teammeatfont10.fnt")
     end
-    if Cl.Font:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation())>0 then
+
+    if not Cl.VersionFont:IsLoaded() then
+        Cl.VersionFont:Load("font/luamini.fnt")
+    end
+
+    if Cl.Font:IsLoaded() and Cl.VersionFont:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation())>0 then
         Cl.AssetsLoaded=true
         Cl.EvaluateText()
         Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
@@ -149,6 +156,8 @@ function ChangeLog.MenuRender()
         return
     end
     Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(MainMenu.TITLE, Cl.NoteOffset))
+    local versionPosition = Isaac.WorldToMenuPosition(MainMenu.TITLE, Cl.VersionOffset)
+    Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X, versionPosition.Y, KColor(67 / 255, 5 / 255, 5 / 255, 1), 200, true)
     if IsGivenMenuEntry(MainMenu.TITLE) then
         if IsActionTriggeredAll(ButtonAction.ACTION_MAP) then
             Cl.CurrentState=not Cl.CurrentState
