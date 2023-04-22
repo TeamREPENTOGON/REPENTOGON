@@ -41,7 +41,7 @@ local function LoadAssets()
     if not font:IsLoaded() then
         font:Load("font/teammeatfont10.fnt")
     end
-    if font:IsLoaded() and #(#StreakSheet:GetDefaultAnimation())>0 then
+    if font:IsLoaded() and #(StreakSheet:GetDefaultAnimation())>0 then
         AssetsLoaded=true
         TextLen=font:GetStringWidthUTF8(TotalStreakText)/2
         Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,LoadAssets)
