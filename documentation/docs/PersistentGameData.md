@@ -9,7 +9,9 @@
         ```lua
         local persistentGameData = Isaac:GetPersistentGameData()
         ```
-        
+???+ warning "Warning"
+    This class' functions should not be called until the game fully initializes! Make sure not to try using them outside of callbacks
+    
 ## Functions
 
 ### Try·Unlock () {: aria-label='Functions' }
@@ -25,6 +27,5 @@ Checks if achievement is unlocked.
 
 ### Get·Event·Counter () {: aria-label='Functions' }
 #### void GetEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter ) {: .copyable aria-label='Functions' }
-
 ___
 
