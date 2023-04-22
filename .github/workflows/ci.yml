@@ -26,7 +26,7 @@ jobs:
       run: |
         echo "return [[" > ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
         git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
-        echo "]]" > ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
+        echo "]]" >> ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
         echo "Resulting lua file:"
         type ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
 
