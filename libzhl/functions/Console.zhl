@@ -16,7 +16,7 @@ __thiscall void Console::ProcessInput(Console *this<ecx>);
 "558bec6aff68????????64a1????????5081ec9c000000a1????????33c58945??535657508d45??64a3????????8bf18975":
 __thiscall void Console::Render(Console *this<ecx>);
 
-struct Console depends (Console_HistoryEntry)
+struct Console depends (std_deque_console_historyentry)
 {{
     inline int* GetState() { return (int*)((char*)this + 0x20); }
 	
