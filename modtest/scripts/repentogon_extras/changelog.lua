@@ -19,6 +19,7 @@ local ChangeLog={
     {
     [1]={
         ["Text"]=require("repentogon_extras/changelog_official_text"),
+        ["TextArray"]={},
         },
     },
 }
@@ -36,18 +37,59 @@ local function TextSplit (inputstr, sep)    --shamelessly stolen from the stacko
         return t
 end
 
+function SplitStringByLength(str, max_length)
+  local result = {}
+  local line = ""
+  for word in string.gmatch(str, "%S+") do
+    if #line + #word + 1 > max_length then
+      table.insert(result, line)
+      line = word
+    else
+      if line == "" then
+        line = word
+      else
+        line = line .. " " .. word
+      end
+    end
+  end
+  if line ~= "" then
+    table.insert(result, line)
+  end
+  return result
+end
 
 function ChangeLog.EvaluateText()
     for i=1,#Cl.Sheets do
-        Cl.Sheets[i].TextArray=TextSplit(Cl.Sheets[i].Text,"\n")
-        for k,v in pairs(Cl.Sheets[i].TextArray) do
-            Cl.Sheets[i].TextArray[k]=string.gsub(v,"/newline/"," ")    --new
-                                                                        --line support
+        local temparray=TextSplit(Cl.Sheets[i].Text,"\n")
+        for k,v in pairs(temparray) do
+            temparray[k]=string.gsub(v,"/newline/"," ")        --new
+            temparray[k]=string.gsub(temparray[k],"/fade/","/f/")
+                                                                            --line support
+            temparray[k]=string.gsub(temparray[k],"https://%S+","(...)")  --replace links with three dots
         end
+
+        local MaxWidth=200
+        local finalarray={}
+        for k,v in pairs(temparray) do
+            local splitbywords=string.gmatch(v,"%w+")
+            local wordcount=0
+            for word in splitbywords do
+                wordcount=wordcount+1
+            end
+            Isaac.DebugString(tostring(wordcount))
+            local limitedarray={}
+            if wordcount>0 then
+                    limitedarray=SplitStringByLength(v,29)
+                for _,str in pairs(limitedarray) do
+                    table.insert(finalarray,str)
+                end
+            else table.insert(finalarray,v)
+            end
+        end
+
+        Cl.Sheets[i].TextArray=finalarray
     end
 end
-
-Cl.EvaluateText()
 
 function ChangeLog.LoadAssets()
     if #Cl.ChangelogSprite:GetDefaultAnimation()<=0 then
@@ -63,6 +105,7 @@ function ChangeLog.LoadAssets()
     end
     if Cl.Font:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation())>0 then
         Cl.AssetsLoaded=true
+        Cl.EvaluateText()
         Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
     end
 end
@@ -75,6 +118,8 @@ local ScrollVelocity=0
 local ScrollOffset=Cl.ScrollMargin
 
 local MaxPollCIdx=3
+
+local UseFade=false
 
 local function IsActionTriggeredAll(action)
     for i=0,MaxPollCIdx do
@@ -125,10 +170,16 @@ function ChangeLog.MenuRender()
                 local NullPos=TextGuideNull:GetPos()
                 local NullScale=TextGuideNull:GetScale()
                 local YOffset=0
-                local BoxSize=190                                                                   --treat text as if it was drawn inside of a box
+                local BoxSize=200                                                                   --treat text as if it was drawn inside of a box
                 local MinOffset=LogRenderPosition.Y + NullPos.Y + 40*NullScale.Y                    --40 is a static offset for the "Change Log" title
                 local MaxOffset=MinOffset + 170*NullScale.Y                                         --170 is a total height of the paper, should get it exposed in the table
-                for _,line in pairs(Cl.Sheets[1].TextArray) do
+                for _,iterline in pairs(Cl.Sheets[1].TextArray) do
+                    if string.find(iterline,"/f/") then
+                        UseFade=true
+                    elseif iterline==" " then
+                        UseFade=false
+                    end
+                    local line=string.gsub(iterline,"/f/","")
                     local XOffset = (-BoxSize/2)*NullScale.X
                     local FullY = LogRenderPosition.Y + NullPos.Y + 40*NullScale.Y + YOffset*NullScale.Y + ScrollOffset
                     if FullY < (MinOffset + Cl.ScrollMargin*NullScale.Y) or FullY > (MaxOffset - Cl.ScrollMargin*NullScale.Y) then
@@ -140,6 +191,9 @@ function ChangeLog.MenuRender()
                         end
                     else
                         Cl.FontColor.Alpha=1
+                    end
+                    if UseFade then
+                        Cl.FontColor.Alpha=Cl.FontColor.Alpha*0.75
                     end
                     Cl.Font:DrawStringScaledUTF8(line,LogRenderPosition.X + NullPos.X + XOffset, FullY,NullScale.X,NullScale.Y,Cl.FontColor,0,false)
 --                    Isaac.RenderText(line,LogRenderPosition.X + NullPos.X + XOffset, FullY,1,1,1,Cl.FontColor.Alpha)
