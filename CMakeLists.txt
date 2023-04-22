@@ -13,6 +13,12 @@ option(ZYDIS_BUILD_EXAMPLES "" OFF)
 option(ZYDIS_BUILD_DOXYGEN "" OFF)
 add_subdirectory("libs/zydis")
 
+option(WITH_STATIC_CRT "" OFF)
+option(ANTLR_BUILD_CPP_TESTS "" OFF)
+option(ANTLR_BUILD_STATIC "" OFF)
+add_subdirectory("libs/antlr4")
+include_directories ("libs/antlr4/runtime/src")
+
 FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/*.c)
 list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/luac.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
@@ -46,6 +52,10 @@ add_library(Lua5.3.3r SHARED ${LUAUP_SRC})]]
 
 FILE(GLOB MODTEST_SRC ${CMAKE_SOURCE_DIR}/modtest/*.cpp)
 add_library(zhlModTest SHARED ${MODTEST_SRC})
+
+FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
+add_executable(zhlparser ${PARSER_SRC})
+target_link_libraries(zhlparser antlr4_shared)
 
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "$<TARGET_FILE_DIR:zhlModTest>/resources/scripts")
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/mods" "$<TARGET_FILE_DIR:zhlModTest>/mods")
