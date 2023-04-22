@@ -17,7 +17,7 @@ __thiscall void Console::ProcessInput(Console *this<ecx>);
 __thiscall void Console::Render(Console *this<ecx>);
 
 "558bec6aff68????????64a1????????5083ec54a1????????33c58945??535657508d45??64a3????????f30f115d":
-__thiscall void Console::RenderHistory(Console *this<ecx>, Font *font, float unk, float unk2, bool unk3);
+__thiscall float Console::RenderHistory(Console *this<ecx>, Font *font, float unk, float unk2, bool unk3);
 
 struct Console depends (IsaacString, Entity_Player, Font)
 {{

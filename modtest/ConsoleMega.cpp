@@ -18,7 +18,10 @@ HOOK_METHOD(Console, Render, () -> void) {
 	super();
 }
 
-HOOK_METHOD(Console, RenderHistory, (Font* font, float unk, float unk2, bool unk3) -> void) {
+/*HOOK_METHOD(Console, RenderHistory, (Font* font, float unk, float unk2, bool unk3) -> float) {
 	//TODO
-	super(font, unk, unk2, unk3);
-}
+	printf("%g, %g, %s\n", unk, unk2, unk3 ? "true" : "false");
+	float what = super(font, unk, unk2, unk3);
+	printf("%g\n", what);
+	return what;
+}*/
