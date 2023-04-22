@@ -597,4 +597,13 @@ if not _LUADEBUG then
 end
 
 REPENTOGON=repentogon
+local oldregmod=RegisterMod
+
+function RegisterMod(name,ver)
+	local out=oldregmod(name,ver)
+	out.Repentogon=REPENTOGON
+	return out
+end
+
 pcall(require("repentogon_extras/changelog"))
+pcall(require("repentogon_extras/daily_stats"))
