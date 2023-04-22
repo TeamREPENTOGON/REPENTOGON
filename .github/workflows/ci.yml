@@ -53,3 +53,4 @@ jobs:
       with:
         name: REPENTOGON-main
         path: ${{github.workspace}}/build/Release/artifact/
+        fetch-depth: 0
