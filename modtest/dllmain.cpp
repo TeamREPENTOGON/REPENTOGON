@@ -173,6 +173,6 @@ MOD_EXPORT int ModInit(int argc, char **argv)
 	printf(":REPENTOGON:\n");
 	PatchHardcodedAmbushWaveCount();
 	PatchHardcodedMegaSatanGameEnding();
-	PatchInputActionMenuCheck();
+	//PatchInputActionMenuCheck();
 	return 0;
 }
