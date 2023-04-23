@@ -71,6 +71,7 @@ nav:
     - ModCallbacks: enums/ModCallbacks.md
     - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
+    - PAUSEMENUSTATES: enums/PAUSEMENUSTATES.md
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
