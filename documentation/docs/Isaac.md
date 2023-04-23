@@ -22,33 +22,33 @@ ___
 Returns a table containing all the marks for the character. Supports both modded and vanilla characters.
 
 ???- info "Table structure & usage"
-	The table has the following fields: 
-	* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) asociated to the marks
-	* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* BossRush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* BlueBaby: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Lamb: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* MegaSatan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* UltraGreed: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Hush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* UltraGreedier: Mostly redundant with UltraGreed when it has a value of 2, no need to set it
-	* Delirium: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-        ```lua
-        local marks = Isaac.GetCompletionMarks(0)
-		if (marks.MomsHeart > 0) then
-			print("got mom")
-		end
-		if (marks.Lamb >= 2) then
-			print("GOATED ON H4RD")
-		end
-		if (Isaac.GetCompletionMarks(0).Delirium > 0) then //doing it the lazy way, fitting deliriums theme
-			print("Got Deli")
-		end
-        ```
+	- The table has the following fields: 
+		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) asociated to the marks
+		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* BossRush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* BlueBaby: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Lamb: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* MegaSatan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* UltraGreed: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Hush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* UltraGreedier: Mostly redundant with UltraGreed when it has a value of 2, no need to set it
+		* Delirium: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+			```lua
+			local marks = Isaac.GetCompletionMarks(0)
+			if (marks.MomsHeart > 0) then
+				print("got mom")
+			end
+			if (marks.Lamb >= 2) then
+				print("GOATED ON H4RD")
+			end
+			if (Isaac.GetCompletionMarks(0).Delirium > 0) then //doing it the lazy way, fitting deliriums theme
+				print("Got Deli")
+			end
+			```
 
 ___
 ### Get·Localized·String () {: aria-label='Functions' }
@@ -77,28 +77,28 @@ ___
 Sets the completion marks of a character to match an input table. Supports both modded and vanilla characters. Requires a table containing all the marks for the character, getting it from Isaac.GetCompletionMarks is adviced for convenience.
 
 ???- info "Table structure & usage"
-	The table needs the following fields: 
-	* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) asociated to the marks
-	* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* BossRush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* BlueBaby: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Lamb: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* MegaSatan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* UltraGreed: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Hush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* UltraGreedier: Mostly redundant with UltraGreed when it has a value of 2, no need to set it
-	* Delirium: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-	* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-        ```lua
-        local marks = Isaac.GetCompletionMarks(0) //getting the current table
-		marks.MomsHeart = 2 // Isaac now will have the hard mark on MHeart
-		marks.Satan = 1 // Isaac will now have the normal mark on Satan
-		marks.BlueBaby = 0 // Removes the BlueBaby Mark if its present
-		Isaac.SetCompletionMarks(marks) //Impacts the changes on the player
-        ```
+	- The table needs the following fields: 
+		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) asociated to the marks
+		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* BossRush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* BlueBaby: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Lamb: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* MegaSatan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* UltraGreed: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Hush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* UltraGreedier: Mostly redundant with UltraGreed when it has a value of 2, no need to set it
+		* Delirium: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+			```lua
+			local marks = Isaac.GetCompletionMarks(0) //getting the current table
+			marks.MomsHeart = 2 // Isaac now will have the hard mark on MHeart
+			marks.Satan = 1 // Isaac will now have the normal mark on Satan
+			marks.BlueBaby = 0 // Removes the BlueBaby Mark if its present
+			Isaac.SetCompletionMarks(marks) //Impacts the changes on the player
+			```
 ___
 ### World·To·Menu·Position () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WorldToMenuPosition ( [MainMenu](enums/MainMenu.md) MenuId, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
