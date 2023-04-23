@@ -45,7 +45,7 @@ Returns a table containing all the marks for the character. Supports both modded
 			if (marks.Lamb >= 2) then
 				print("GOATED ON H4RD")
 			end
-			if (Isaac.GetCompletionMarks(0).Delirium > 0) then //doing it the lazy way, fitting deliriums theme
+			if (Isaac.GetCompletionMarks(0).Delirium > 0) then --doing it the lazy way, fitting deliriums theme
 				print("Got Deli")
 			end
 			```
@@ -93,11 +93,11 @@ Sets the completion marks of a character to match an input table. Supports both 
 		* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
 		* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
 			```lua
-			local marks = Isaac.GetCompletionMarks(0) //getting the current table
-			marks.MomsHeart = 2 // Isaac now will have the hard mark on MHeart
-			marks.Satan = 1 // Isaac will now have the normal mark on Satan
-			marks.BlueBaby = 0 // Removes the BlueBaby Mark if its present
-			Isaac.SetCompletionMarks(marks) //Impacts the changes on the player
+			local marks = Isaac.GetCompletionMarks(0) --getting the current table
+			marks.MomsHeart = 2 --Isaac now will have the hard mark on MHeart
+			marks.Satan = 1 --Isaac will now have the normal mark on Satan
+			marks.BlueBaby = 0 --Removes the BlueBaby Mark if its present
+			Isaac.SetCompletionMarks(marks) --Impacts the changes on the player
 			```
 ___
 ### World·To·Menu·Position () {: aria-label='Functions' }
