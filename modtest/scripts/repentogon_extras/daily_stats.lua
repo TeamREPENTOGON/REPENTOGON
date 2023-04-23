@@ -1,5 +1,3 @@
-local persistentGameData = Isaac.GetPersistentGameData()
-local dailyChallenge = Isaac.GetDailyChallenge()
 local WinStreak=0
 local TotalDailies=0
 local GetStageGoal=0
@@ -62,6 +60,7 @@ local function GetGoalDestination(stage, altPath)
             return goalMap[stage]
         end
     end
+    return 0
 end
 
 local function LoadAssets()
@@ -94,6 +93,7 @@ Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,LoadAssets)
 
 local function RenderDailyStats()
     if ScheduleRefresh and IsGivenMenuEntry(MainMenu.DAILYRUN) then
+        local dailyChallenge=Isaac.GetDailyChallenge()
         WinStreak=Isaac.GetPersistentGameData():GetEventCounter(EventCounter.DAILYS_STREAK)
         TotalDailies=Isaac.GetPersistentGameData():GetEventCounter(EventCounter.DAILYS_PLAYED)
 		GetStageGoal = dailyChallenge:GetStageGoal()
