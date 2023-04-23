@@ -67,7 +67,7 @@ Returns the translation string associated with the given key in the given catego
 
 ___
 ### Set·Completion·Mark () {: aria-label='Functions' }
-#### string SetCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype, int value) {: .copyable aria-label='Functions' }
+#### string SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype, int value) {: .copyable aria-label='Functions' }
 Sets a completion mark of a character to match a specific value from 0 to 2. Supports both modded and vanilla characters. 
 
 
