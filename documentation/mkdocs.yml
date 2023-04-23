@@ -93,6 +93,7 @@ nav:
   - Camera: Camera.md
   - Color: Color.md
   - Console: Console.md
+  - DailyChallenge: DailyChallenge.md
   - Entity:
     - Entity: Entity.md
     - EntityFamiliar: EntityFamiliar.md
@@ -102,15 +103,18 @@ nav:
     - EntitySlot: EntitySlot.md
   - Game: Game.md
   - History: History.md
+  - HUD: HUD.md
   - ItemOverlay: ItemOverlay.md
   - Isaac: Isaac.md
   - LayerState: LayerState.md
   - Level: Level.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
   - MultiShotParams: MultiShotParams.md
+  - MusicManager: MusicManager.md
   - NullFrame: NullFrame.md
   - PersistentGameData: PersistentGameData.md
   - ProceduralItemManager: ProceduralItemManager.md
+  - PlayerHUD: PlayerHUD.md
   - PlayerManager: PlayerManager.md
   - RNG: RNG.md
   - Room: Room.md

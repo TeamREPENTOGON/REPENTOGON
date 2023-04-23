@@ -67,6 +67,10 @@ Returns a table containing all the marks for the character. Supports both modded
 			```
 
 ___
+### Get·Daily·Challenge () {: aria-label='Functions' }
+#### [DailyChallenge](DailyChallenge.md) GetDailyChallenge ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Localized·String () {: aria-label='Functions' }
 #### string GetLocalizedString ( string category, string key, int language ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.

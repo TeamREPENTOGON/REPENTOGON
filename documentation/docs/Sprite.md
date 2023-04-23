@@ -16,3 +16,7 @@ ___
 #### [LayerState](LayerState.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Null·Frame () {: aria-label='Functions' }
+#### [NullFrame](NullFrame.md) GetNullFrame ( int LayerId ) {: .copyable aria-label='Functions' }
+
+___

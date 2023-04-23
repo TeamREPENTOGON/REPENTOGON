@@ -17,6 +17,12 @@
 Returns true when any player has the item and false when noone does.
 
 ___
+
+### Get·Num·Collectibles () {: aria-label='Functions' }
+#### int GetNumCollectibles ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Returns the number of collectibles held by all players.
+
+___
 ### First·Collectible·Owner () {: aria-label='Functions' }
 #### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) FirstCollectibleOwner ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
 Returns `nil` if the specified collectible has never been picked up.
