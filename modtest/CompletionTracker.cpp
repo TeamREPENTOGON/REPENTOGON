@@ -1153,6 +1153,14 @@ array<int, 15> GetMarksForPlayer(int playerid,ANM2* anm = NULL) {
 				hidemarks = true;
 			}
 		}
+		if (marks[CompletionType::ULTRA_GREED] == 2) {
+			marks[CompletionType::ULTRA_GREEDIER] = 2;
+		}
+		if (marks[CompletionType::ULTRA_GREEDIER] > 0) {
+			marks[CompletionType::ULTRA_GREED] = 2;
+			marks[CompletionType::ULTRA_GREEDIER] = 2;
+		}
+
 		marks = CompletionMarks[idx];
 		if (anm){
 			if (ischartainted) {
@@ -1292,8 +1300,9 @@ int Lua_IsaacSetCharacterMarks(lua_State* L)
 	if (marks[CompletionType::ULTRA_GREED] == 2) {
 		marks[CompletionType::ULTRA_GREEDIER] = 2;
 	}
-	if (marks[CompletionType::ULTRA_GREEDIER] == 2) {
+	if (marks[CompletionType::ULTRA_GREEDIER] > 0) {
 		marks[CompletionType::ULTRA_GREED] = 2;
+		marks[CompletionType::ULTRA_GREEDIER] = 2;
 	}
 	if (playertype> 40){
 		CompletionMarks[idx] = marks;
@@ -1343,6 +1352,78 @@ int Lua_IsaacGetCharacterMark(lua_State* L)
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
 		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][completiontype]));
 	}
+	return 1;
+}
+
+int Lua_IsaacClearCompletionMarks(lua_State* L)
+{
+	int playertype = luaL_checkinteger(L, 1);
+	if (playertype > 40) {
+		string idx = GetMarksIdx(playertype);
+		CompletionMarks[idx] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+		SaveCompletionMarksToJson();
+	}
+	else {
+		PersistentGameData* PData = g_Manager->GetPersistentGameData();
+		for (int i = 0; i < 15; i++) {
+			if ((i != 8) && (i != 10) && (i != 11)) {
+					PData->IncreaseEventCounter(MarksToEvents[playertype][i], -PData->GetEventCounter(MarksToEvents[playertype][i]));
+			}
+		}
+	}
+	return 1;
+}
+
+
+int Lua_IsaacFillCompletionMarks(lua_State* L)
+{
+	int playertype = luaL_checkinteger(L, 1);
+	int cmpldif = 2;
+	if (playertype > 40) {
+		string idx = GetMarksIdx(playertype);
+		CompletionMarks[idx] = { 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2 }; 
+		SaveCompletionMarksToJson();
+	}
+	else {
+		PersistentGameData* PData = g_Manager->GetPersistentGameData();
+		for (int i = 0; i < 15; i++) {
+			if ((i != 8) && (i != 10) && (i != 11)) {
+				if (PData->GetEventCounter(MarksToEvents[playertype][i]) < cmpldif) {
+					PData->IncreaseEventCounter(MarksToEvents[playertype][i], 2);
+				}
+			}
+		}
+	}
+	lua_pushnumber(L, cmpldif);
+	return 1;
+}
+
+
+int Lua_IsaacGetFullCompletion(lua_State* L)
+{
+	int playertype = luaL_checkinteger(L, 1);
+	int cmpldif = 2;
+	if (playertype > 40) {
+		array<int, 15> marks = GetMarksForPlayer(playertype);
+		for (int i = 0; i < 15; i++) {
+			if (marks[i] < cmpldif) {
+				if ((i != 8) && (i != 10)) {
+					cmpldif = marks[i];
+				}
+			}
+		}
+	}
+	else {
+		PersistentGameData* PData = g_Manager->GetPersistentGameData();
+		for (int i = 0; i < 15; i++) {
+			if ((i != 8) && (i != 10) && (i != 11)) {
+				if (PData->GetEventCounter(MarksToEvents[playertype][i]) < cmpldif) {
+					cmpldif = PData->GetEventCounter(MarksToEvents[playertype][i]);
+				}
+			}
+		}
+	}
+	lua_pushnumber(L, cmpldif);
 	return 1;
 }
 
@@ -1500,5 +1581,23 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_rawset(state, -3);
 	lua_pop(state, 1);
 
+	lua_getglobal(state, "Isaac");
+	lua_pushstring(state, "AllMarksFilled");
+	lua_pushcfunction(state, Lua_IsaacGetFullCompletion);
+	lua_rawset(state, -3);
+	lua_pop(state, 1);
+
+	lua_getglobal(state, "Isaac");
+	lua_pushstring(state, "FillCompletionMarks");
+	lua_pushcfunction(state, Lua_IsaacFillCompletionMarks);
+	lua_rawset(state, -3);
+	lua_pop(state, 1);
+
+	lua_getglobal(state, "Isaac");
+	lua_pushstring(state, "ClearCompletionMarks");
+	lua_pushcfunction(state, Lua_IsaacClearCompletionMarks);
+	lua_rawset(state, -3);
+	lua_pop(state, 1);
+	
 
 }

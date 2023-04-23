@@ -2,6 +2,12 @@
 
 ## Functions
 
+
+### All·Completion·Marks·Filled () {: aria-label='Functions' }
+#### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
+Checks if a given character has completed all marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
+
+___
 ### Create·Timer () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) CreateTimer ( function Function, int Delay, int Times, boolean Persistent ) {: .copyable aria-label='Functions' }
 Spawns a timer EntityEffect. This entity will run Function function after Delay frames, and will repeat this Times amount of times. Persistent controls whether or not this timer "dies" in the current room, or persists across rooms.
@@ -10,6 +16,16 @@ Spawns a timer EntityEffect. This entity will run Function function after Delay 
     This timer is called every game update. This means the timer only takes into consideration frames in which the game is actively running, not paused, and uses update frames for its Delay parameter (30 frames per second). 
 	
 	If your use case requires that a timer takes paused time into account, stick with a custom timer running on a RENDER callback.
+
+___
+### Clear·Completion·Marks () {: aria-label='Functions' }
+#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
+Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
+
+___
+### Fill·Completion·Marks () {: aria-label='Functions' }
+#### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
+Completes all completion marks for a given character. Supports both modded and vanilla characters. 
 
 ___
 ### Get·Completion·Mark () {: aria-label='Functions' }
