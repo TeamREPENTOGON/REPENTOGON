@@ -13,12 +13,12 @@ Spawns a timer EntityEffect. This entity will run Function function after Delay 
 
 ___
 ### Get·Completion·Mark () {: aria-label='Functions' }
-#### string GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype) {: .copyable aria-label='Functions' }
+#### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype) {: .copyable aria-label='Functions' }
 Gets a completion mark value for a specific character. Supports both modded and vanilla characters. 
 
 ___
 ### Get·Completion·Marks () {: aria-label='Functions' }
-#### string GetCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
+#### table GetCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
 Returns a table containing all the marks for the character. Supports both modded and vanilla characters.
 
 ???- info "Table structure & usage"
@@ -67,13 +67,13 @@ Returns the translation string associated with the given key in the given catego
 
 ___
 ### Set·Completion·Mark () {: aria-label='Functions' }
-#### string SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype, int value) {: .copyable aria-label='Functions' }
+#### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype, int value) {: .copyable aria-label='Functions' }
 Sets a completion mark of a character to match a specific value from 0 to 2. Supports both modded and vanilla characters. 
 
 
 ___
 ### Set·Completion·Marks () {: aria-label='Functions' }
-#### string SetCompletionMarks ( table marks) {: .copyable aria-label='Functions' }
+#### void SetCompletionMarks ( table marks) {: .copyable aria-label='Functions' }
 Sets the completion marks of a character to match an input table. Supports both modded and vanilla characters. Requires a table containing all the marks for the character, getting it from Isaac.GetCompletionMarks is adviced for convenience.
 
 ???- info "Table structure & usage"
