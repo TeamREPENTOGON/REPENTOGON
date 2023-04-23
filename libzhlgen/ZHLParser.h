@@ -19,26 +19,26 @@ public:
     Depends = 22, Typedef = 23, Const = 24, CppRef = 25, Unsigned = 26, 
     Signed = 27, Long = 28, Int = 29, Short = 30, Char = 31, Bool = 32, 
     Float = 33, Double = 34, Void = 35, Visibility = 36, Public = 37, Private = 38, 
-    Protected = 39, Test1 = 40, Test2 = 41, Test3 = 42, Register = 43, GeneralPurposeRegister = 44, 
-    Eax = 45, Ebx = 46, Ecx = 47, Edx = 48, Esi = 49, Edi = 50, Esp = 51, 
-    Ebp = 52, SSERegister = 53, Xmm0 = 54, Xmm1 = 55, Xmm2 = 56, Xmm3 = 57, 
-    Xmm4 = 58, Xmm5 = 59, Xmm6 = 60, Xmm7 = 61, CallingConvention = 62, 
-    Stdcall = 63, Cdecl = 64, Fastcall = 65, Thiscall = 66, Signature = 67, 
-    ReferenceSignature = 68, Name = 69, Number = 70, HexNumber = 71, DecNumber = 72, 
-    GenericCode = 73, Whitespace = 74, Newline = 75, BlockComment = 76, 
-    LineComment = 77, Any = 78
+    Protected = 39, Register = 40, GeneralPurposeRegister = 41, Eax = 42, 
+    Ebx = 43, Ecx = 44, Edx = 45, Esi = 46, Edi = 47, Esp = 48, Ebp = 49, 
+    SSERegister = 50, Xmm0 = 51, Xmm1 = 52, Xmm2 = 53, Xmm3 = 54, Xmm4 = 55, 
+    Xmm5 = 56, Xmm6 = 57, Xmm7 = 58, CallingConvention = 59, Stdcall = 60, 
+    Cdecl = 61, Fastcall = 62, Thiscall = 63, Signature = 64, ReferenceSignature = 65, 
+    Name = 66, Number = 67, HexNumber = 68, DecNumber = 69, GenericCode = 70, 
+    Whitespace = 71, Newline = 72, BlockComment = 73, LineComment = 74, 
+    Any = 75
   };
 
   enum {
-    RuleZhl = 0, RuleTesta = 1, RuleTestb = 2, RuleFunction = 3, RuleReference = 4, 
-    RuleFunArgs = 5, RuleFunArg = 6, RuleArgParam = 7, RuleOptNamedFunArgs = 8, 
-    RuleOptNamedFunArg = 9, RuleTemplateSpec = 10, RuleType = 11, RuleTypeSpecifier = 12, 
-    RuleSimpleType = 13, RuleSimpleTypeSignedness = 14, RuleSimpleTypeLength = 15, 
-    RuleNestedName = 16, RulePointerAttribute = 17, RuleGenericCode = 18, 
-    RuleClass = 19, RuleInheritance = 20, RuleDepends = 21, RuleClassBody = 22, 
-    RuleClassSignature = 23, RuleClassFunction = 24, RuleClassField = 25, 
-    RuleInnerField = 26, RuleFullName = 27, RuleSignature = 28, RuleForwardDecl = 29, 
-    RuleTypedef = 30, RuleFunctionPtr = 31, RuleFptr = 32, RuleMemberPtr = 33
+    RuleZhl = 0, RuleFunction = 1, RuleReference = 2, RuleFunArgs = 3, RuleFunArg = 4, 
+    RuleArgParam = 5, RuleOptNamedFunArgs = 6, RuleOptNamedFunArg = 7, RuleTemplateSpec = 8, 
+    RuleType = 9, RuleTypeSpecifier = 10, RuleSimpleType = 11, RuleSimpleTypeSignedness = 12, 
+    RuleSimpleTypeLength = 13, RuleNestedName = 14, RulePointerAttribute = 15, 
+    RuleGenericCode = 16, RuleClass = 17, RuleInheritance = 18, RuleDepends = 19, 
+    RuleClassBody = 20, RuleClassSignature = 21, RuleClassFunction = 22, 
+    RuleClassField = 23, RuleInnerField = 24, RuleFullName = 25, RuleSignature = 26, 
+    RuleForwardDecl = 27, RuleTypedef = 28, RuleFunctionPtr = 29, RuleFptr = 30, 
+    RuleMemberPtr = 31
   };
 
   explicit ZHLParser(antlr4::TokenStream *input);
@@ -59,8 +59,6 @@ public:
 
 
   class ZhlContext;
-  class TestaContext;
-  class TestbContext;
   class FunctionContext;
   class ReferenceContext;
   class FunArgsContext;
@@ -120,53 +118,18 @@ public:
 
   ZhlContext* zhl();
 
-  class  TestaContext : public antlr4::ParserRuleContext {
-  public:
-    TestaContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *Test1();
-    antlr4::tree::TerminalNode *Test2();
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  TestaContext* testa();
-
-  class  TestbContext : public antlr4::ParserRuleContext {
-  public:
-    TestbContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *Test1();
-    antlr4::tree::TerminalNode *Test3();
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  TestbContext* testb();
-
   class  FunctionContext : public antlr4::ParserRuleContext {
   public:
     FunctionContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     TypeContext *type();
-    std::vector<antlr4::tree::TerminalNode *> Name();
-    antlr4::tree::TerminalNode* Name(size_t i);
+    NestedNameContext *nestedName();
     antlr4::tree::TerminalNode *LeftParen();
     antlr4::tree::TerminalNode *RightParen();
     antlr4::tree::TerminalNode *Semi();
     std::vector<antlr4::tree::TerminalNode *> Qualifier();
     antlr4::tree::TerminalNode* Qualifier(size_t i);
     antlr4::tree::TerminalNode *CallingConvention();
-    std::vector<antlr4::tree::TerminalNode *> Colon();
-    antlr4::tree::TerminalNode* Colon(size_t i);
     FunArgsContext *funArgs();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -733,11 +696,12 @@ public:
     antlr4::tree::TerminalNode* Name(size_t i);
     std::vector<antlr4::tree::TerminalNode *> Colon();
     antlr4::tree::TerminalNode* Colon(size_t i);
-    antlr4::tree::TerminalNode *Star();
     std::vector<antlr4::tree::TerminalNode *> RightParen();
     antlr4::tree::TerminalNode* RightParen(size_t i);
     antlr4::tree::TerminalNode *Semi();
     antlr4::tree::TerminalNode *CallingConvention();
+    std::vector<antlr4::tree::TerminalNode *> Star();
+    antlr4::tree::TerminalNode* Star(size_t i);
     OptNamedFunArgsContext *optNamedFunArgs();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;

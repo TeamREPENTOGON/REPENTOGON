@@ -44,10 +44,6 @@ Public: 'public';
 Private: 'private';
 Protected: 'protected';
 
-Test1: 'test1';
-Test2: 'test2';
-Test3: 'test3';
-
 Register: GeneralPurposeRegister | SSERegister;
 
 GeneralPurposeRegister: Eax | Ebx | Ecx | Edx | Esi | Edi | Esp | Ebp;

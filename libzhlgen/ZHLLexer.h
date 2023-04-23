@@ -19,14 +19,14 @@ public:
     Depends = 22, Typedef = 23, Const = 24, CppRef = 25, Unsigned = 26, 
     Signed = 27, Long = 28, Int = 29, Short = 30, Char = 31, Bool = 32, 
     Float = 33, Double = 34, Void = 35, Visibility = 36, Public = 37, Private = 38, 
-    Protected = 39, Test1 = 40, Test2 = 41, Test3 = 42, Register = 43, GeneralPurposeRegister = 44, 
-    Eax = 45, Ebx = 46, Ecx = 47, Edx = 48, Esi = 49, Edi = 50, Esp = 51, 
-    Ebp = 52, SSERegister = 53, Xmm0 = 54, Xmm1 = 55, Xmm2 = 56, Xmm3 = 57, 
-    Xmm4 = 58, Xmm5 = 59, Xmm6 = 60, Xmm7 = 61, CallingConvention = 62, 
-    Stdcall = 63, Cdecl = 64, Fastcall = 65, Thiscall = 66, Signature = 67, 
-    ReferenceSignature = 68, Name = 69, Number = 70, HexNumber = 71, DecNumber = 72, 
-    GenericCode = 73, Whitespace = 74, Newline = 75, BlockComment = 76, 
-    LineComment = 77, Any = 78
+    Protected = 39, Register = 40, GeneralPurposeRegister = 41, Eax = 42, 
+    Ebx = 43, Ecx = 44, Edx = 45, Esi = 46, Edi = 47, Esp = 48, Ebp = 49, 
+    SSERegister = 50, Xmm0 = 51, Xmm1 = 52, Xmm2 = 53, Xmm3 = 54, Xmm4 = 55, 
+    Xmm5 = 56, Xmm6 = 57, Xmm7 = 58, CallingConvention = 59, Stdcall = 60, 
+    Cdecl = 61, Fastcall = 62, Thiscall = 63, Signature = 64, ReferenceSignature = 65, 
+    Name = 66, Number = 67, HexNumber = 68, DecNumber = 69, GenericCode = 70, 
+    Whitespace = 71, Newline = 72, BlockComment = 73, LineComment = 74, 
+    Any = 75
   };
 
   explicit ZHLLexer(antlr4::CharStream *input);

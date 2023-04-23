@@ -19,12 +19,6 @@ public:
   virtual void enterZhl(ZHLParser::ZhlContext * /*ctx*/) override { }
   virtual void exitZhl(ZHLParser::ZhlContext * /*ctx*/) override { }
 
-  virtual void enterTesta(ZHLParser::TestaContext * /*ctx*/) override { }
-  virtual void exitTesta(ZHLParser::TestaContext * /*ctx*/) override { }
-
-  virtual void enterTestb(ZHLParser::TestbContext * /*ctx*/) override { }
-  virtual void exitTestb(ZHLParser::TestbContext * /*ctx*/) override { }
-
   virtual void enterFunction(ZHLParser::FunctionContext * /*ctx*/) override { }
   virtual void exitFunction(ZHLParser::FunctionContext * /*ctx*/) override { }
 

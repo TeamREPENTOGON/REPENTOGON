@@ -19,14 +19,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitTesta(ZHLParser::TestaContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitTestb(ZHLParser::TestbContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitFunction(ZHLParser::FunctionContext *ctx) override {
     return visitChildren(ctx);
   }

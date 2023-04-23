@@ -17,12 +17,6 @@ public:
   virtual void enterZhl(ZHLParser::ZhlContext *ctx) = 0;
   virtual void exitZhl(ZHLParser::ZhlContext *ctx) = 0;
 
-  virtual void enterTesta(ZHLParser::TestaContext *ctx) = 0;
-  virtual void exitTesta(ZHLParser::TestaContext *ctx) = 0;
-
-  virtual void enterTestb(ZHLParser::TestbContext *ctx) = 0;
-  virtual void exitTestb(ZHLParser::TestbContext *ctx) = 0;
-
   virtual void enterFunction(ZHLParser::FunctionContext *ctx) = 0;
   virtual void exitFunction(ZHLParser::FunctionContext *ctx) = 0;
 

@@ -7,14 +7,8 @@ options {
 zhl:
     (signature | class | genericCode | typedef | functionPtr | forwardDecl)* EOF;
     
-testa:
-    Test1 Test2;
-    
-testb: 
-    Test1 Test3;
-    
 function:
-    Qualifier* CallingConvention? type Name (Colon Colon Name)* LeftParen funArgs? RightParen Semi;
+    Qualifier* CallingConvention? type nestedName LeftParen funArgs? RightParen Semi;
     
 reference:
     Reference type Name Semi;
@@ -113,4 +107,4 @@ fptr:
     type LeftParen CallingConvention? Star+ Name RightParen LeftParen optNamedFunArgs? RightParen Semi;
     
 memberPtr:
-    type LeftParen CallingConvention? Name Colon Colon (Name Colon Colon)* Star Name RightParen LeftParen optNamedFunArgs? RightParen Semi;
+    type LeftParen CallingConvention? Name Colon Colon (Name Colon Colon)* Star+ Name RightParen LeftParen optNamedFunArgs? RightParen Semi;

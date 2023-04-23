@@ -21,10 +21,6 @@ public:
    */
     virtual std::any visitZhl(ZHLParser::ZhlContext *context) = 0;
 
-    virtual std::any visitTesta(ZHLParser::TestaContext *context) = 0;
-
-    virtual std::any visitTestb(ZHLParser::TestbContext *context) = 0;
-
     virtual std::any visitFunction(ZHLParser::FunctionContext *context) = 0;
 
     virtual std::any visitReference(ZHLParser::ReferenceContext *context) = 0;
