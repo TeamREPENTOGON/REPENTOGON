@@ -59,7 +59,7 @@ __thiscall bool Entity::RenderShadowLayer(Entity *this<ecx>, Vector *offset);
 static cleanup __cdecl bool Entity::ForceCollide(Entity* boom<ecx>, Entity *collider<edx>, bool low);
 
 
-struct Entity depends (AnimationState)
+struct Entity depends (AnimationState) {
 {{
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
 	inline unsigned int* GetVariant() { return (unsigned int*)((char*)this + 0x2c); }
@@ -82,4 +82,4 @@ struct Entity depends (AnimationState)
 	{
 		this->constructor();
 	}
-}};
+}} };

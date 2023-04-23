@@ -27,10 +27,10 @@ __thiscall void Manager::StartNewGame(Manager *this<ecx>, int playerType, int ch
 "558bec51568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(Manager *this<ecx>, bool unk);
 
-struct Manager depends (StringTable, PersistentGameData, UnknownGameStartStruct) {{
+struct Manager depends (StringTable, PersistentGameData, UnknownGameStartStruct) { {{
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
-}};
+}} };
 
 ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":
 reference Manager *g_Manager;

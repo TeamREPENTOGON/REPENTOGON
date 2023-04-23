@@ -19,7 +19,7 @@ __thiscall void LevelGenerator::DetermineBossRoom(int shape, const unsigned int 
 
 
 
-struct LevelGenerator
+struct LevelGenerator {
 {{
 	inline int* GetNumBossRooms() { return (int*)((char*)this + 0x38C); }
-}};
+}} };

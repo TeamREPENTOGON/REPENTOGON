@@ -7,9 +7,9 @@ __thiscall void Console::RunCommand(Console *this<ecx>, const std::string &in, c
 "558bec6aff68????????64a1000000005083ec60a1????????33c58945ec535657508d45f464a3000000008bf9":
 __thiscall void Console::Print(Console *this<ecx>, const IsaacString &text, unsigned int color, unsigned int unk);
 
-struct Console depends (Console_HistoryEntry)
+struct Console depends (Console_HistoryEntry) {
 {{
     inline int* GetState() { return (int*)((char*)this + 0x20); }
 	
 	inline std_deque_console_historyentry *GetHistory() { return (std_deque_console_historyentry*)((char*)this + 0x60); }
-}};
+}} };

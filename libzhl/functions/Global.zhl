@@ -4,7 +4,6 @@
 	"xxxxx?xx????xxxx",
 */
 
-struct GlobalPre
 {{
 	#include <windows.h>
 	#include "rapidxml.hpp"
@@ -40,7 +39,7 @@ struct GlobalPre
 
 	typedef std::set<int> std_set_int;
 	
-}};
+}}
 
 //=================================================================================================================
 // This block will be copied right afterwards, unless it "depends" on specific structures
@@ -48,7 +47,6 @@ struct GlobalPre
 // This is useful if you have something like a 2D vector struct and want some predefined vectors for convenience purposes
 
 // struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
-struct GlobalConst
 {{	
 
 	enum WeaponType
@@ -1194,15 +1192,15 @@ struct GlobalConst
 	{
 		return (DWORD)GetModuleHandle(NULL);
 	}
-}};
+}}
 
 
 "558bec568b75??85f674??803e00538bde74??43803b0075??8b51??2bde5785d274??8b0285c074??8b4a??eb??33c9b8????????3bcb75??8d3c??3bc773??2bf08a083a0c??75??403bc772??5f5b8bc25e5dc20c008b75??8b52??85d275??5f5b33c05e5dc20c008b41??5e5dc20c00????????????????????????????e9":
 char** GetXMLNode(char* thi,int unk, char* name);
 
-struct GlobalPost
+struct GlobalPost {
 {{
-}};
+}} };
 
 /*"558bec83e4?51a1????????53565783f801":
 cleanup __cdecl void Kage_PrintLog(int flag, char* Format);

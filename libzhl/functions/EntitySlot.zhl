@@ -16,11 +16,11 @@ virtual __thiscall void Entity_Slot::Init(Entity_Slot *this<ecx>, int Type, int 
 "558bec83e4f883ec3c83":
 virtual __thiscall bool Entity_Slot::HandleCollision(Entity_Slot *this<ecx>, Entity *Collider, bool Low);
 
-struct Entity_Slot depends (RNG) {{
+struct Entity_Slot depends (RNG) { {{
 	inline RNG* GetSlotRNG() { return (RNG*)((char*)this + 0x334); }
 	inline int* GetState() { return (int*)((char*)this + 0x360); }
 	inline int* GetPrizeType() { return (int*)((char*)this + 0x364); }
 	inline int* GetTimeout() { return (int*)((char*)this + 0x36a); }
 	inline int* GetDonationValue() { return (int*)((char*)this + 0x36c); }
 	inline unsigned short* GetTouch() { return (unsigned short*)((char*)this + 0x376); }
-}};
+}} };

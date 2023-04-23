@@ -19,6 +19,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitTesta(ZHLParser::TestaContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitTestb(ZHLParser::TestbContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitFunction(ZHLParser::FunctionContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -39,7 +47,43 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitOptNamedFunArgs(ZHLParser::OptNamedFunArgsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitOptNamedFunArg(ZHLParser::OptNamedFunArgContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitTemplateSpec(ZHLParser::TemplateSpecContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitType(ZHLParser::TypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitTypeSpecifier(ZHLParser::TypeSpecifierContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSimpleType(ZHLParser::SimpleTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSimpleTypeSignedness(ZHLParser::SimpleTypeSignednessContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSimpleTypeLength(ZHLParser::SimpleTypeLengthContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitNestedName(ZHLParser::NestedNameContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitPointerAttribute(ZHLParser::PointerAttributeContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -48,6 +92,10 @@ public:
   }
 
   virtual std::any visitClass(ZHLParser::ClassContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitInheritance(ZHLParser::InheritanceContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -80,6 +128,26 @@ public:
   }
 
   virtual std::any visitSignature(ZHLParser::SignatureContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitForwardDecl(ZHLParser::ForwardDeclContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitTypedef(ZHLParser::TypedefContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFunctionPtr(ZHLParser::FunctionPtrContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitFptr(ZHLParser::FptrContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitMemberPtr(ZHLParser::MemberPtrContext *ctx) override {
     return visitChildren(ctx);
   }
 

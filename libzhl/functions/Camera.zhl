@@ -22,10 +22,10 @@ __thiscall void Camera::UpdateDrag2(Camera *this<ecx>);
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec585657a1????????33c5508d45f464a3000000008bf18975dc":
 __thiscall void Camera::UpdateUltrasmooth(Camera *this<ecx>, bool unk);
 
-struct Camera 
+struct Camera {
 {{
 	Camera(Room* room)
 	{
 		this->constructor(room);
 	}
-}};
+}} };

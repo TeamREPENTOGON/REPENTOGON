@@ -5,10 +5,16 @@ options {
 }
 
 zhl:
-    (signature | class | genericCode)* EOF;
+    (signature | class | genericCode | typedef | functionPtr | forwardDecl)* EOF;
+    
+testa:
+    Test1 Test2;
+    
+testb: 
+    Test1 Test3;
     
 function:
-    Qualifier* type Name Colon Colon Name LeftParen funArgs? RightParen Semi;
+    Qualifier* CallingConvention? type Name (Colon Colon Name)* LeftParen funArgs? RightParen Semi;
     
 reference:
     Reference type Name Semi;
@@ -17,25 +23,64 @@ funArgs:
     funArg (Comma funArg)*;
     
 funArg:
-    Name Ptr* fullName argParam?;
+    type fullName argParam?;
     
 argParam:
-    Lt Register Rt;
+    Lt Register Gt;
+    
+optNamedFunArgs: 
+    optNamedFunArg (Comma optNamedFunArg)*;
+    
+optNamedFunArg:
+    type fullName?;
+    
+templateSpec:
+    Lt type (Comma type)* Gt;
     
 type:
-    Name Ptr*;
+    typeSpecifier templateSpec? pointerAttribute*;
+    
+typeSpecifier:
+    (simpleType | nestedName | Const) typeSpecifier*;
+    
+simpleType:
+    simpleTypeSignedness
+    | simpleTypeSignedness? simpleTypeLength
+    | simpleTypeSignedness? Char
+    | Bool
+    | Void
+    | simpleTypeSignedness? simpleTypeLength* Int
+    | Float
+    | simpleTypeLength? Double
+    ;
+    
+simpleTypeSignedness:
+    Signed | Unsigned;
+    
+simpleTypeLength:
+    Long | Short;
+    
+nestedName:
+    Name (Colon Colon Name)*;
+    
+pointerAttribute:
+    CppRef CppRef? |
+    Star Const?;
     
 genericCode: 
     GenericCode; // LeftBracket LeftBracket Any* RightBracket RightBracket;
     
 class: 
-    (Class | Struct) Name depends? LeftBracket classBody RightBracket Semi;
+    (Class | Struct) Name depends? inheritance? LeftBracket classBody RightBracket Semi;
+    
+inheritance:
+    Visibility? nestedName (Comma Visibility? nestedName);
     
 depends:
     Depends LeftParen (Name Comma)* Name RightParen;
 
 classBody: 
-    (classSignature | genericCode | classField)*;
+    (classSignature | genericCode | classField | typedef | functionPtr | forwardDecl)*;
 
 classSignature:
     Signature classFunction;
@@ -47,10 +92,25 @@ classField:
     type innerField (Comma innerField)* Semi;
     
 innerField:
-    Ptr* fullName;
+    Star* fullName;
     
 fullName:
     Name (LeftRBracket Number RightRBracket)?;
     
 signature:
     ((Signature function) | (ReferenceSignature reference));
+    
+forwardDecl:
+    (Struct | Class) Name Semi;
+    
+typedef:
+    Typedef type Name Semi;
+    
+functionPtr:
+    fptr | memberPtr;
+    
+fptr:
+    type LeftParen CallingConvention? Star+ Name RightParen LeftParen optNamedFunArgs? RightParen Semi;
+    
+memberPtr:
+    type LeftParen CallingConvention? Name Colon Colon (Name Colon Colon)* Star Name RightParen LeftParen optNamedFunArgs? RightParen Semi;

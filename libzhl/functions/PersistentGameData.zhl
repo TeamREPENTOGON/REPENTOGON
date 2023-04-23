@@ -13,11 +13,11 @@ __thiscall void PersistentGameData::AddToCollection(PersistentGameData *this<ecx
 "558bec6aff68????????64a1????????5083ec38a1????????33c58945??535657508d45??64a3????????8bf1":
 __thiscall void PersistentGameData::Load(PersistentGameData* this<ecx>,char *filepath);
 
-struct PersistentGameData {{
+struct PersistentGameData { {{
 	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
 	inline bool IsItemInCollection (int collectibleID) {
 		int savedata = *(int*)((char*)this + collectibleID * 0x1 + 0xa78);
 		printf("savedata %d\n", savedata);
 		return savedata != 0; 
 	}
-}};
+}} };

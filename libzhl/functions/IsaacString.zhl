@@ -1,4 +1,4 @@
-struct IsaacString {{
+struct IsaacString { {{
     const char* Get() const {
         if (size < 16) {
             return text;
@@ -6,4 +6,4 @@ struct IsaacString {{
             return *(char**)text;
         }
     }
-}};
+}} };

@@ -98,7 +98,7 @@ const static FuncSignatureByte Signature_GameGlobalAddres = {
 reference Game *g_Game;
 
 struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerManager, RoomDescriptor, ProceduralItemManager, RoomConfigHolder)
-{{
+{ {{
 	Game()
 	{
 		this->constructor();
@@ -157,4 +157,4 @@ struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerM
     { 
         return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 
     }
-}};
+}} };

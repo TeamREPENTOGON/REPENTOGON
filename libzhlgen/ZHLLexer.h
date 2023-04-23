@@ -12,16 +12,21 @@
 class  ZHLLexer : public antlr4::Lexer {
 public:
   enum {
-    DoubleQuote = 1, Colon = 2, Semi = 3, Cleanup = 4, Static = 5, Virtual = 6, 
-    Declspec = 7, LeftParen = 8, RightParen = 9, Comma = 10, Ptr = 11, Lt = 12, 
-    Rt = 13, LeftRBracket = 14, RightRBracket = 15, LeftBracket = 16, RightBracket = 17, 
-    Class = 18, Struct = 19, Reference = 20, Depends = 21, Register = 22, 
-    GeneralPurposeRegister = 23, Eax = 24, Ebx = 25, Ecx = 26, Edx = 27, 
-    Esi = 28, Edi = 29, Esp = 30, Ebp = 31, SSERegister = 32, Xmm0 = 33, 
-    Xmm1 = 34, Xmm2 = 35, Xmm3 = 36, Xmm4 = 37, Xmm5 = 38, Xmm6 = 39, Xmm7 = 40, 
-    Qualifier = 41, Signature = 42, ReferenceSignature = 43, Name = 44, 
-    GenericCode = 45, Number = 46, Whitespace = 47, Newline = 48, BlockComment = 49, 
-    LineComment = 50, Any = 51
+    DoubleQuote = 1, Colon = 2, Semi = 3, Qualifier = 4, Cleanup = 5, Static = 6, 
+    Virtual = 7, Declspec = 8, LeftParen = 9, RightParen = 10, Comma = 11, 
+    Star = 12, Lt = 13, Gt = 14, LeftRBracket = 15, RightRBracket = 16, 
+    LeftBracket = 17, RightBracket = 18, Class = 19, Struct = 20, Reference = 21, 
+    Depends = 22, Typedef = 23, Const = 24, CppRef = 25, Unsigned = 26, 
+    Signed = 27, Long = 28, Int = 29, Short = 30, Char = 31, Bool = 32, 
+    Float = 33, Double = 34, Void = 35, Visibility = 36, Public = 37, Private = 38, 
+    Protected = 39, Test1 = 40, Test2 = 41, Test3 = 42, Register = 43, GeneralPurposeRegister = 44, 
+    Eax = 45, Ebx = 46, Ecx = 47, Edx = 48, Esi = 49, Edi = 50, Esp = 51, 
+    Ebp = 52, SSERegister = 53, Xmm0 = 54, Xmm1 = 55, Xmm2 = 56, Xmm3 = 57, 
+    Xmm4 = 58, Xmm5 = 59, Xmm6 = 60, Xmm7 = 61, CallingConvention = 62, 
+    Stdcall = 63, Cdecl = 64, Fastcall = 65, Thiscall = 66, Signature = 67, 
+    ReferenceSignature = 68, Name = 69, Number = 70, HexNumber = 71, DecNumber = 72, 
+    GenericCode = 73, Whitespace = 74, Newline = 75, BlockComment = 76, 
+    LineComment = 77, Any = 78
   };
 
   explicit ZHLLexer(antlr4::CharStream *input);

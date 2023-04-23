@@ -4,6 +4,9 @@ DoubleQuote: '"';
 Colon: ':';
 Semi: ';';
 
+Qualifier: 
+    Cleanup | Static | Virtual | Declspec;
+
 Cleanup: 'cleanup';
 Static: 'static';
 Virtual: 'virtual';
@@ -11,9 +14,9 @@ Declspec: '__declspec';
 LeftParen: '(';
 RightParen: ')';
 Comma: ',';
-Ptr: '*';
+Star: '*';
 Lt: '<';
-Rt: '>';
+Gt: '>';
 LeftRBracket: '[';
 RightRBracket: ']';
 LeftBracket: '{';
@@ -22,6 +25,28 @@ Class: 'class';
 Struct: 'struct';
 Reference: 'reference';
 Depends: 'depends';
+Typedef: 'typedef';
+Const: 'const';
+CppRef: '&';
+Unsigned: 'unsigned';
+Signed: 'signed';
+Long: 'long';
+Int: 'int';
+Short: 'short';
+Char: 'char';
+Bool: 'bool';
+Float: 'float';
+Double: 'double';
+Void: 'void';
+
+Visibility: Public | Private | Protected;
+Public: 'public';
+Private: 'private';
+Protected: 'protected';
+
+Test1: 'test1';
+Test2: 'test2';
+Test3: 'test3';
 
 Register: GeneralPurposeRegister | SSERegister;
 
@@ -45,27 +70,30 @@ Xmm5: 'xmm5';
 Xmm6: 'xmm6';
 Xmm7: 'xmm7';
 
-Qualifier: 
-    Cleanup | Static | Virtual | Declspec;
+CallingConvention: Stdcall | Cdecl | Fastcall | Thiscall;
+Stdcall: '__stdcall';
+Cdecl: '__cdecl';
+Fastcall: '__fastcall';
+Thiscall: '__thiscall';
 
 Signature: 
-    DoubleQuote '.'? [0-9a-f]+ DoubleQuote Colon;
+    DoubleQuote '.'? [0-9A-Fa-f?]+ DoubleQuote Colon;
     
 ReferenceSignature:
-    DoubleQuote '.'? [0-9a-f()]+ DoubleQuote Colon;
+    DoubleQuote '.'? [0-9A-Fa-f()?]+ DoubleQuote Colon;
 
-Name: [a-zA-Z0-9_]+;
-
-GenericCode: '<<<' .* '>>>';
-
-fragment HexNumber:
-    '0x' [0-9a-fA-F]+;
-    
-fragment DecNumber:
-    [0-9]+;
+Name: [a-zA-Z_] [a-zA-Z0-9_]*;
 
 Number:
     HexNumber | DecNumber;
+
+HexNumber:
+    '0x' [0-9a-fA-F]+;
+    
+DecNumber:
+    [0-9]+;
+
+GenericCode: '{{' .*? '}}';
 
 Whitespace: [ \t]+ -> skip;
 Newline: ('\r' '\n'? | '\n') -> skip;

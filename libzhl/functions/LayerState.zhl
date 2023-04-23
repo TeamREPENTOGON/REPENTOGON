@@ -1,4 +1,4 @@
-struct LayerState depends (Vector, ColorMod) {{
+struct LayerState depends (Vector, ColorMod) { {{
 	inline IsaacString GetSpritesheetPath() {return *(IsaacString*)((char*)this + 0x8); }
 	inline Vector* GetSize() {return (Vector*)((char*)this + 0x34); }
 	inline float* GetRotation() {return (float*)((char*)this + 0x3c); }
@@ -6,4 +6,4 @@ struct LayerState depends (Vector, ColorMod) {{
 	inline ColorMod* GetColor() {return (ColorMod*)((char*)this + 0x48); }
 	inline bool* IsVisible() { return (bool*)((char*)this + 0x74); }
 	inline Vector* GetCropOffset() { return (Vector*)((char*)this + 0x8c); } 
-}};
+}} };

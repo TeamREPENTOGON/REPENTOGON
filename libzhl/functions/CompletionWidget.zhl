@@ -6,7 +6,7 @@ __thiscall void CompletionWidget::Render(CompletionWidget *this<ecx>,Vector* pos
 void CompletionWidget::Update(CompletionWidget *this<ecx>);
 
 
-struct CompletionWidget depends (ANM2)
+struct CompletionWidget depends (ANM2) {
 {{
 	inline ANM2* GetANM2() { return (ANM2*)((char*)this + 4); } 
-}};
+}} };

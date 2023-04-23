@@ -40,7 +40,7 @@ __thiscall void Room::RenderGridLight(Room *this<ecx>, GridEntity* grid, Vector 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec30010000":
 __thiscall void Room::RenderEntityLight(Room *this<ecx>, Entity* ent, Vector &offset);
 
-struct Room depends (Camera, TemporaryEffects, ColorMod, Backdrop, KColor, Vector, EntityList, GridEntity)
+struct Room depends (Camera, TemporaryEffects, ColorMod, Backdrop, KColor, Vector, EntityList, GridEntity) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() {return *(bool*)((char*)this + 0x120C); }
@@ -59,4 +59,4 @@ struct Room depends (Camera, TemporaryEffects, ColorMod, Backdrop, KColor, Vecto
     inline Backdrop* GetBackdrop() { return (Backdrop*)((char*)this + 0x1D34); }
 	inline Vector* GetWaterCurrent() {return (Vector*)((char*)this + 0x7344); }
 
-}};
+}} };

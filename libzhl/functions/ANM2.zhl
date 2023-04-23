@@ -26,11 +26,11 @@ __thiscall LayerState* ANM2::GetLayer(ANM2 *this<ecx>, int layer);
 __thiscall void ANM2::RenderLayer(ANM2 *this<ecx>,int param_1,Vector *param_2,Vector *param_3,Vector *param_4);
 
 
-struct ANM2 depends (AnimationState) {{
+struct ANM2 depends (AnimationState) { {{
 	inline AnimationState* GetAnimationState() {return (AnimationState*)((char*)this + 48); }
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
 	inline unsigned int GetLayerCount() { return *(unsigned int*)((char*)this + 0x80); } 
-}};
+}} };
 
 
 "f30f100d(????????)f30f1005????????f30f590d????????8b07":

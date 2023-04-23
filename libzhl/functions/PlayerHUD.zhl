@@ -7,6 +7,6 @@ __thiscall void PlayerHUD::RenderActiveItem(PlayerHUD *this<ecx>, unsigned int s
 "558bec83e4f881ec24020000":
 __thiscall void PlayerHUD::RenderHearts(PlayerHUD *this<ecx>, Vector *unk1, ANM2 *sprite, const Vector& unk2, float unk3);
 
-struct PlayerHUD {{
+struct PlayerHUD { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
-}};
+}} };
