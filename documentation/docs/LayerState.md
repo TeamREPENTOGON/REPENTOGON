@@ -2,7 +2,7 @@
 
 ## Functions
 
-### Get·CropY·Offset () {: aria-label='Functions' }
+### Get·Crop·Y·Offset () {: aria-label='Functions' }
 #### float GetCropYOffset ( ) {: .copyable aria-label='Functions' }
 
 ___
@@ -14,7 +14,7 @@ ___
 #### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·CropY·Offset () {: aria-label='Functions' }
+### Set·Crop·Y·Offset () {: aria-label='Functions' }
 #### void SetCropYOffset ( float YPos ) {: .copyable aria-label='Functions' }
 
 ___
