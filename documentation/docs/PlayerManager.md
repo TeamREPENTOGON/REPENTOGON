@@ -17,7 +17,6 @@
 Returns true when any player has the item and false when noone does.
 
 ___
-
 ### Get·Num·Collectibles () {: aria-label='Functions' }
 #### int GetNumCollectibles ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Returns the number of collectibles held by all players.
