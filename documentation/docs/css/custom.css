@@ -11,6 +11,9 @@
     --operator-color: #CE93D8;
     --operator-color-light: #E1BEE7;
     --operator-overview-bg-color: #F3E5F5;
+    --constants-color: #d89393;
+    --constants-color-light: #e7bebe;
+    --constants-overview-bg-color: #f5e5e5;
     --abp-color: #FDD835;
     --rep-color: #F44336;
     --md-typeset-mark-text-color: #000000;
@@ -30,6 +33,10 @@ nav[aria-label='Constructors'] {
 
 nav[aria-label='Operators'] {
     border-left-color: var(--operator-color) !important;
+}
+
+nav[aria-label='Constants'] {
+    border-left-color: var(--constants-color) !important;
 }
 
 .md-typeset h2 {
@@ -53,6 +60,7 @@ nav[aria-label='Operators'] {
 h3[aria-label$='Functions'],
 h3[aria-label$='Variables'],
 h3[aria-label$='Operators'],
+h3[aria-label$='Constants'],
 h3[aria-label$='Constructors'] {
     border-radius: 5px 5px 0px 0px;
     padding: 0px 10px;
@@ -76,9 +84,14 @@ h3[aria-label$='Operators'] {
     background-color: var(--operator-color);
 }
 
+h3[aria-label$='Constants'] {
+    background-color: var(--constants-color);
+}
+
 h4[aria-label$='Functions'],
 h4[aria-label$='Variables'],
 h4[aria-label$='Operators'],
+h4[aria-label$='Constants'],
 h4[aria-label$='Constructors'] {
     border-radius: 0px 5px 5px 5px;
     padding: 2px 10px;
@@ -102,6 +115,10 @@ h4[aria-label$='Constructors'] {
 
 h4[aria-label$='Operators'] {
     background-color: var(--operator-color-light);
+}
+
+h4[aria-label$='Constants'] {
+    background-color: var(--constants-color-light);
 }
 
 .subHeader {
@@ -217,6 +234,9 @@ a.const.tooltip:after {
     --operator-color: #BA68C8;
     --operator-color-light: #272938;
     --operator-overview-bg-color: rgb(186 104 200 / 50%);
+    --constants-color: #c86868;
+    --constants-color-light: #382727;
+    --constants-overview-bg-color: rgba(200, 104, 104, 0.5);
     --md-hue: 232;
 
     --md-primary-fg-color: #4051b5;
@@ -571,6 +591,10 @@ td>.copyButton>span::after {
 
 .contentTable tr[aria-label$='Operators'] {
     background-color: var(--operator-overview-bg-color);
+}
+
+.contentTable tr[aria-label$='Constants'] {
+    background-color: var(--constants-overview-bg-color);
 }
 
 .overviewHeader {
