@@ -1989,7 +1989,7 @@ PAUSEMENUSTATES = {
 	OPTIONS=2,
 }
 
-TaintedMarksGroup {
+TaintedMarksGroup = {
 	BOTH= 0,
 	SOULSTONE= 1,
 	POLAROID_NEGATIVE = 2,
