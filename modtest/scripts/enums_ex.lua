@@ -1984,15 +1984,15 @@ DipSubType = {
 	BROWNIE = 20,	
 }
 
-PAUSEMENUSTATES = {
-	CLOSED=0,
-	OPEN=1,
-	OPTIONS=2,
+PauseMenuStates = {
+	CLOSED = 0,
+	OPEN = 1,
+	OPTIONS = 2,
 }
 
 TaintedMarksGroup = {
-	BOTH= 0,
-	SOULSTONE= 1,
+	BOTH = 0,
+	SOULSTONE = 1,
 	POLAROID_NEGATIVE = 2,
 }
 
