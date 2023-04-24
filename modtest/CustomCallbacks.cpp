@@ -1933,3 +1933,32 @@ HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTru
 	}
 	return super(CollectibleID, OnlyCountTrueItems);
 }
+
+//PRE_MUSIC_PLAY_JINGLE (1094)
+HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> void) {
+	int callbackid = 1094;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(musicId)
+			.push(musicId)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				super(lua_tointeger(L, -1), unusedInt, unusedBool);
+				return;
+			}
+			else if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+	super(musicId, unusedInt, unusedBool);
+}

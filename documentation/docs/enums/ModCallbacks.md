@@ -765,3 +765,12 @@ Alternatively accepts `false` to stop the rendering.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1093 |MC_PRE_PLAYER_HAS_COLLECTIBLE {: .copyable } | [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, boolean OnlyCountTrueItems)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | bool |
+
+### MC_PRE_MUSIC_PLAY_JINGLE
+Accepts a [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) to change the track
+
+Alternatively accepts `false` to cancel the track
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1094 |MC_PRE_MUSIC_PLAY_JINGLE {: .copyable } | ([Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) MusicID)| [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) | [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) or boolean |
