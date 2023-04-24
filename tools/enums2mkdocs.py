@@ -8,8 +8,6 @@ BRANCH_NAME = "main-msvc"
 
 SCRIPT_PATH = os.path.realpath(__file__)
 SOURCE_DIRECTORY = os.path.dirname(SCRIPT_PATH)
-if "GITHUB_WORKSPACE" in os.environ:
-    SOURCE_DIRECTORY = os.environ["GITHUB_WORKSPACE"]
 
 ENUM_FILE_PATH = os.path.join(SOURCE_DIRECTORY, "../modtest/scripts/enums_ex.lua")
 DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../documentation/")
