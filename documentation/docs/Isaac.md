@@ -9,7 +9,7 @@ Checks if a given character has completed all marks and returns the highest diff
 
 ___
 ### All·Tainted·Completion () {: aria-label='Functions' }
-#### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [TaintedMarksGroup](https://repentogon.com/enums/TaintedMarksGroup.html) {: .copyable aria-label='Functions' }
+#### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [TaintedMarksGroup](https://repentogon.com/enums/TaintedMarksGroup.html) complgroup) {: .copyable aria-label='Functions' }
 Checks if a given character has completed all the tainted unlock-related marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
 
 ___
