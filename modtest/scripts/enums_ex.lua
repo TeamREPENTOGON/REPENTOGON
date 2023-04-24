@@ -1989,6 +1989,12 @@ PAUSEMENUSTATES = {
 	OPTIONS=2,
 }
 
+TaintedMarksGroup {
+	BOTH= 0,
+	SOULSTONE= 1,
+	POLAROID_NEGATIVE = 2,
+}
+
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)
 

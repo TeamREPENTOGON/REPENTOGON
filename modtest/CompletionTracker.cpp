@@ -1398,6 +1398,41 @@ int Lua_IsaacFillCompletionMarks(lua_State* L)
 	return 1;
 }
 
+array<int, 6> tduet = { CompletionType::HUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH };
+array<int, 6> tquartet = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::BLUE_BABY,CompletionType::BLUE_BABY};
+array<int, 6> tboth = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::HUSH,CompletionType::BOSS_RUSH };
+int Lua_IsaacGetTaintedFullCompletion(lua_State* L)
+{
+	int playertype = luaL_checkinteger(L, 1);
+	int group = luaL_checkinteger(L, 2);
+	array g = tboth;
+	switch (group) {
+		case 0: g = tboth; break;
+		case 1: g = tduet; break;
+		case 2: g = tquartet; break;
+	}
+	if (group == 1) { g = tduet; }
+	int cmpldif = 2;
+	if (playertype > 40) {
+		array<int, 15> marks = GetMarksForPlayer(playertype);
+		for (int i = 0; i < 6; i++) {
+			if (marks[g[i]] < cmpldif) {
+					cmpldif = marks[g[i]];
+			}
+		}
+	}
+	else {
+		PersistentGameData* PData = g_Manager->GetPersistentGameData();
+		for (int i = 0; i < 6; i++) {
+				if (PData->GetEventCounter(MarksToEvents[playertype][g[i]]) < cmpldif) {
+					cmpldif = PData->GetEventCounter(MarksToEvents[playertype][g[i]]);
+				}
+		}
+	}
+	lua_pushnumber(L, cmpldif);
+	return 1;
+}
+
 
 int Lua_IsaacGetFullCompletion(lua_State* L)
 {
@@ -1584,6 +1619,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_getglobal(state, "Isaac");
 	lua_pushstring(state, "AllMarksFilled");
 	lua_pushcfunction(state, Lua_IsaacGetFullCompletion);
+	lua_rawset(state, -3);
+	lua_pop(state, 1);
+
+	lua_getglobal(state, "Isaac");
+	lua_pushstring(state, "AllTaintedCompletion");
+	lua_pushcfunction(state, Lua_IsaacGetTaintedFullCompletion);
 	lua_rawset(state, -3);
 	lua_pop(state, 1);
 
