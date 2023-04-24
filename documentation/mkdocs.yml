@@ -86,6 +86,7 @@ nav:
     - StbRockSubType: enums/StbRockSubType.md
     - StbTeleporterSubType: enums/StbTeleporterSubType.md
     - StbType: enums/StbType.md
+    - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
     - WispSubType: enums/WispSubType.md
   - Ambush: Ambush.md
