@@ -1962,3 +1962,58 @@ HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> 
 	}
 	super(musicId, unusedInt, unusedBool);
 }
+
+//POST_TRIGGER_COLLECTIBLE_REMOVED (1095) 
+HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (unsigned int collectibleID) -> void) {
+	super(collectibleID);
+	int callbackid = 1095;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(collectibleID)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(collectibleID)
+			.call(1);
+	}
+}
+
+//POST_TRIGGER_TRINKET_ADDED (1096) 
+HOOK_METHOD(Entity_Player, TriggerTrinketAdded, (unsigned int trinketID, bool firstTimePickingUp) -> void) {
+	super(trinketID, firstTimePickingUp);
+	int callbackid = 1096;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(trinketID)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(trinketID)
+			.push(firstTimePickingUp)
+			.call(1);
+	}
+}
+
+//POST_TRIGGER_TRINKET_REMOVED (1097) 
+HOOK_METHOD(Entity_Player, TriggerTrinketRemoved, (unsigned int trinketID) -> void) {
+	super(trinketID);
+	int callbackid = 1097;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(trinketID)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(trinketID)
+			.call(1);
+	}
+}

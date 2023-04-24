@@ -158,6 +158,14 @@ __thiscall bool Entity_Player::TryFakeDeath(Entity_Player *this<ecx>);
 "558bec83e4f883ec145356578bf9837f??01":
 __thiscall int Entity_Player::GetCollectibleNum(Entity_Player *this<ecx>, int collectibleID, bool OnlyCountTrueItems);
 
+"558bec83e4f883ec1c5356578b7d??8bd981ff2e010000":
+__thiscall void Entity_Player::TriggerCollectibleRemoved(Entity_Player *this<ecx>, unsigned int collectibleID);
+
+"558bec83e4f8515356578bf9837f??00":
+__thiscall void Entity_Player::TriggerTrinketAdded(Entity_Player *this<ecx>, unsigned int trinketID, bool firstTimePickingUp);
+
+"558bec83e4f85153568bf157837e??00":
+__thiscall void Entity_Player::TriggerTrinketRemoved(Entity_Player *this<ecx>, unsigned int trinketID);
 
 
 struct Entity_Player depends (ActiveItemDesc, History) {{
