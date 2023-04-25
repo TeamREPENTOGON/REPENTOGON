@@ -29,6 +29,7 @@ struct HUD;
 struct PlayerHUD;
 struct VTable_Entity;
 struct VTable_EntityPlayer;
+struct ShapeRenderer;
 
 struct RapidXML;
 struct xmlnode_rep;
@@ -740,4 +741,14 @@ struct UnknownGameStartStruct {
 };
 
 struct RoomTransition {
+};
+
+struct DestinationQuad {
+	Vector _topLeft;
+	Vector _topRight;
+	Vector _bottomLeft;
+	Vector _bottomRight;
+};
+
+struct ShapeRenderer {
 };

@@ -185,3 +185,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterTest(state);
 }
 */
+
+/*HOOK_METHOD(ShapeRenderer, RenderLine, (Vector* pos1, Vector* pos2, KColor* col1, KColor* col2, const float& thickness) -> int) { // why the FUCK is this float a POINTER
+	printf("ShapeRenderer::RenderLine hook!\n");
+	printf("pos1 (%f, %f) pos2 (%f, %f) unk %f\n", pos1->x, pos1->y, pos2->x, pos2->y, thickness);
+	return super(pos1, pos2, col1, col2, thickness);
+}*/
