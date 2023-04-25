@@ -28,6 +28,16 @@ ___
 Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
 
 ___
+### Draw·Line () {: aria-label='Functions' }
+#### void DrawLine ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos1, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos2, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col1, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col2, int Thickness ) {: .copyable aria-label='Functions' }
+Draws a line between the two given positions this render frame.
+
+___
+### Draw·Quad () {: aria-label='Functions' }
+#### void DrawQuad ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) TopLeftPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) TopRightPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) BottomLeftPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) BottomRightPos, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Color, int Thickness ) {: .copyable aria-label='Functions' }
+Draws a line between the two given positions this render frame. Internally the game uses its own struct for this, DestinationQuad, but I haven't gotten to adding that to Lua yet :crocodile:
+
+___
 ### Fill·Completion·Marks () {: aria-label='Functions' }
 #### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
 Completes all completion marks for a given character. Supports both modded and vanilla characters. 
@@ -76,17 +86,6 @@ ___
 #### [DailyChallenge](DailyChallenge.md) GetDailyChallenge ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Draw·Line () {: aria-label='Functions' }
-#### void DrawLine ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos1, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos2, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col1, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col2, int Thickness ) {: .copyable aria-label='Functions' }
-Draws a line between the two given positions this render frame.
-
-___
-### Draw·Quad () {: aria-label='Functions' }
-#### void DrawQuad ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) TopLeftPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) TopRightPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) BottomLeftPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) BottomRightPos, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Color, int Thickness ) {: .copyable aria-label='Functions' }
-Draws a line between the two given positions this render frame. Internally the game uses its own struct for this, DestinationQuad, but I haven't gotten to adding that to Lua yet :crocodile:
-
-___
-
 ### Get·Localized·String () {: aria-label='Functions' }
 #### string GetLocalizedString ( string category, string key, int language ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.
