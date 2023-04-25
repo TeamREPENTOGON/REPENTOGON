@@ -259,6 +259,60 @@ int Lua_PlayerTryFakeDeath(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerGetBoCContent(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_newtable(L);
+	BagOfCraftingPickup* content = player->GetBagOfCraftingContent();
+	for (int i = 0; i < 8; ++i) {
+		lua_pushinteger(L, i + 1);
+		lua_pushinteger(L, *content++);
+		lua_rawset(L, -3);
+	}
+	return 1;
+}
+
+int Lua_PlayerSetBoCContent(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	return 0;
+}
+
+int Lua_PlayerGetBoCSlot(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int n = lua_gettop(L);
+	if (n != 2) {
+		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: expected 1 parameter, got %d\n", n - 1);
+	}
+
+	int slot = luaL_checkinteger(L, 2);
+	if (slot < 0 || slot > 7) {
+		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: invalid slot id %d\n", slot);
+	}
+
+	lua_pushinteger(L, player->GetBagOfCraftingContent()[slot]);
+	return 1;
+}
+
+int Lua_PlayerSetBoCSlot(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int n = lua_gettop(L);
+	if (n > 3 || n < 2) {
+		return luaL_error(L, "EntityPlayer::SetBagOfCraftingSlot: expected at least 1 parameter and at most 2, got %d\n", n - 1);
+	}
+
+	int slot = luaL_checkinteger(L, 2);
+	if (slot < 0 || slot > 7) {
+		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: invalid slot id %d\n", slot);
+	}
+
+	int8_t pickup = luaL_optinteger(L, 3, BagOfCraftingPickup::BOC_NONE);
+	if (pickup < 0 || pickup >= BagOfCraftingPickup::BOC_MAX) {
+		return luaL_error(L, "EntityPlayer::SetBagOfCraftingSlot: invalid pickup id %d\n", pickup);
+	}
+
+	player->GetBagOfCraftingContent()[slot] = (BagOfCraftingPickup)pickup;
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -287,4 +341,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetMegaBlastDuration", Lua_PlayerSetMegaBlastDuration);
 	lua::RegisterFunction(state, mt, "GetActiveItemDesc", Lua_PlayerGetActiveItemDesc);
 	lua::RegisterFunction(state, mt, "TryFakeDeath", Lua_PlayerTryFakeDeath);
+	lua::RegisterFunction(state, mt, "GetBagOfCraftingContent", Lua_PlayerGetBoCContent);
+	// lua::RegisterFunction(state, mt, "SetBagOfCraftingContent", Lua_PlayerSetBoCContent);
+	lua::RegisterFunction(state, mt, "SetBagOfCraftingSlot", Lua_PlayerSetBoCSlot);
+	lua::RegisterFunction(state, mt, "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot);
 }
