@@ -83,6 +83,10 @@ ModCallbacks.MC_PRE_RENDER_GRID_LIGHTING = 1151
 ModCallbacks.MC_PRE_RENDER_ENTITY_LIGHTING = 1152
 ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM = 1092
 ModCallbacks.MC_PRE_PLAYER_HAS_COLLECTIBLE = 1093
+ModCallbacks.MC_PRE_MUSIC_PLAY_JINGLE = 1094
+ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED = 1095
+ModCallbacks.MC_POST_TRIGGER_TRINKET_ADDED = 1096
+ModCallbacks.MC_POST_TRIGGER_TRINKET_REMOVED = 1097
 
 EntityPartition.ALL = 0xffffffff
 
@@ -514,9 +518,9 @@ Achievement = {
 	DAEMONS_TAIL = 127,
 	ABADDON = 128,
 	ISAACS_HEART = 129,
-	THE_MIND = 130, MIND = 130,
-	THE_BODY = 131, BODY = 131,
-	THE_SOUL = 132, SOUL = 132,
+	THE_MIND_ITEM = 130, MIND = 130,
+	THE_BODY_ITEM = 131, BODY = 131,
+	THE_SOUL_ITEM = 132, SOUL = 132,
 	A_D100 = 133, D100 = 133,
 	BLUE_MAP = 134,
 	THERES_OPTIONS = 135,
@@ -593,7 +597,7 @@ Achievement = {
 	RED_BABY = 206,
 	GREEN_BABY = 207,
 	BROWN_BABY = 208,
-	BLUE_BABY = 209,
+	BLUE_COOP_BABY= 209,
 	LIL_BABY = 210,
 	RAGE_BABY = 211,
 	BLACK_BABY = 212,
@@ -1354,20 +1358,20 @@ EventCounter = {
 	PROGRESSION_KILL_BLUE_BABY_WITH_LILITH = 94, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_BLUE_BABY_WITH_KEEPER = 95, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_BLUE_BABY_WITH_APOLLYON = 96, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_ISAAC = 97, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_MAGDALENE = 98, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_CAIN = 99, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_JUDAS = 100, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_BLUE_BABY = 101, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_EVE = 102, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_SAMSON = 103, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_AZAZEL = 104, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_LAZARUS = 105, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_EDEN = 106, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_THE_LOST = 107, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_LILITH = 108, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_KEEPER = 109, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_APOLLYON = 110, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_ISAAC = 97, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_MAGDALENE = 98, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_CAIN = 99, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_JUDAS = 100, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_BLUE_BABY = 101, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_EVE = 102, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_SAMSON = 103, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_AZAZEL = 104, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_LAZARUS = 105, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_EDEN = 106, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_THE_LOST = 107, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_LILITH = 108, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_KEEPER = 109, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_APOLLYON = 110, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	BOSSRUSHS_CLEARED = 111,
 	UNKNOWN_EVENT_112 = 112,-- seems to only be at 1 for a dead god file
 	NEGATIVE_STREAK_COUNTER = 113, -- counts your current negative streak. aka consecutive runs ending with death.
@@ -1465,7 +1469,7 @@ EventCounter = {
 	PROGRESSION_KILL_SATAN_WITH_THE_FORGOTTEN = 205, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_BOSSRUSH_CLEARED_WITH_THE_FORGOTTEN = 206, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_BLUE_BABY_WITH_THE_FORGOTTEN = 207, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_LAMB_WITH_THE_FORGOTTEN = 208, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_THE_LAMB_WITH_THE_FORGOTTEN = 208, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_MEGA_SATAN_WITH_THE_FORGOTTEN = 209, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_GREED_MODE_CLEARED_WITH_THE_FORGOTTEN = 210, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_HUSH_WITH_THE_FORGOTTEN = 211, -- (0 for not done. 1 for normal difficulty, 2 for hard)
@@ -1473,23 +1477,23 @@ EventCounter = {
 	PROGRESSION_KILL_DELIRIUM_WITH_THE_FORGOTTEN = 213, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_MOMS_HEART_WITH_BETHANY = 214, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_MOMS_HEART_WITH_JACOB_AND_ESAU = 215, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_ISAAC = 216, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_MAGDALENE = 217, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_CAIN = 218, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_JUDAS = 219, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_BLUE_BABY = 220, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_EVE = 221, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_SAMSON = 222, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_AZAZEL = 223, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_LAZARUS = 224, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_EDEN = 225, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_THE_LOST = 226, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_LILITH = 227, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_KEEPER = 228, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_APOLLYON = 229, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_THE_FORGOTTEN = 230, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_BETHANY = 231, -- (0 for not done. 1 for normal difficulty, 2 for hard)
-	PROGRESSION_KILL_MOMS_WITH_T_JACOB_AND_ESAU = 232, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_ISAAC = 216, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_MAGDALENE = 217, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_CAIN = 218, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_JUDAS = 219, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_BLUE_BABY = 220, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_EVE = 221, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_SAMSON = 222, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_AZAZEL = 223, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_LAZARUS = 224, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_EDEN = 225, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_THE_LOST = 226, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_LILITH = 227, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_KEEPER = 228, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_APOLLYON = 229, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_THE_FORGOTTEN = 230, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_BETHANY = 231, -- (0 for not done. 1 for normal difficulty, 2 for hard)
+	PROGRESSION_KILL_MOMS_HEART_WITH_T_JACOB_AND_ESAU = 232, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_ISAAC_WITH_BETHANY = 233, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_ISAAC_WITH_JACOB_AND_ESAU = 234, -- (0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_ISAAC_WITH_T_ISAAC = 235, -- (0 for not done. 1 for normal difficulty, 2 for hard)
@@ -1983,10 +1987,16 @@ DipSubType = {
 	BROWNIE = 20,	
 }
 
-PAUSEMENUSTATES = {
-	CLOSED=0,
-	OPEN=1,
-	OPTIONS=2,
+PauseMenuStates = {
+	CLOSED = 0,
+	OPEN = 1,
+	OPTIONS = 2,
+}
+
+TaintedMarksGroup = {
+	BOTH = 0,
+	SOULSTONE = 1,
+	POLAROID_NEGATIVE = 2,
 }
 
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))

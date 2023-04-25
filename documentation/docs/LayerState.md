@@ -2,20 +2,48 @@
 
 ## Functions
 
-### Get·CropY·Offset () {: aria-label='Functions' }
-#### float GetCropYOffset ( ) {: .copyable aria-label='Functions' }
+### Get·Color () {: aria-label='Functions' }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetColor ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Crop·Offset () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCropOffset ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Pos () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Rotation () {: aria-label='Functions' }
+#### float GetRotation ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Size () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetSize ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Spritesheet·Path () {: aria-label='Functions' }
+#### string GetSpritesheetPath ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Visible () {: aria-label='Functions' }
 #### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·CropY·Offset () {: aria-label='Functions' }
-#### void SetCropYOffset ( float YPos ) {: .copyable aria-label='Functions' }
+### Set·Color () {: aria-label='Functions' }
+#### void SetColor ( [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) Color ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Crop·Offset () {: aria-label='Functions' }
+#### void SetCropOffset ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Pos () {: aria-label='Functions' }
+#### void SetPos ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Rotation () {: aria-label='Functions' }
+#### void SetRotation ( float Rotation ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Size () {: aria-label='Functions' }

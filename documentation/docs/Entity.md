@@ -34,6 +34,10 @@ ___
 #### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Boss·Status·Effect·Cooldown () {: aria-label='Functions' }
+#### int GetBossStatusEffectCooldown ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Null·Offset () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetNullOffset ( string NullLayerName ) {: .copyable aria-label='Functions' }
 Returns position of null layer mark. Alternatively returns Vector.Zero if the layer is not visible, has no frame available for the current animation, or for other unknown reasons.
@@ -54,6 +58,14 @@ ___
 ___
 ### Get·Type () {: aria-label='Functions' }
 #### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
+
+___
+### Force·Collide () {: aria-label='Functions' }
+#### boolean ForceCollide ( [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, bool Low ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Boss·Status·Effect·Cooldown () {: aria-label='Functions' }
+#### void SetBossStatusEffectCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Shadow·Size () {: aria-label='Functions' }

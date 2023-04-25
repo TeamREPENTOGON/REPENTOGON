@@ -1,0 +1,6 @@
+struct DailyChallenge {{
+	inline int GetStageGoal() {return *(int*)((char*)this + 0x50); }
+	inline bool IsAltPath() {return *(bool*)((char*)this + 0x7d); }
+	inline bool IsHardMode() {return *(bool*)((char*)this + 0x80); }
+	inline bool IsMegaSatan() {return *(bool*)((char*)this + 0x84); }
+}};

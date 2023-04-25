@@ -35,6 +35,10 @@ ___
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Active·Item·Desc () {: aria-label='Functions' }
+#### [ActiveItemDesc](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_ActiveItemDesc.html) GetActiveItemDesc ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = ActiveSlot.SLOT_PRIMARY ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Active·Max·Charge () {: aria-label='Functions' }
 #### int GetActiveMaxCharge ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int VarData ) {: .copyable aria-label='Functions' }
 
@@ -53,6 +57,10 @@ ___
 ___
 ### Get·History () {: aria-label='Functions' }
 #### [History](History.md) GetHistory ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Mega·Blast·Duration () {: aria-label='Modified Functions' }
+#### int GetMegaBlastDuration ( ) {: .copyable aria-label='Modified Functions' }
 
 ___
 ### Get·Total·Active·Charge () {: aria-label='Functions' }
@@ -95,11 +103,19 @@ ___
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
 ___
+### Set·Mega·Blast·Duration () {: aria-label='Modified Functions' }
+#### void SetMegaBlastDuration ( int Duration ) {: .copyable aria-label='Modified Functions' }
+
+___
 ### Teleport () {: aria-label='Functions' }
 #### void Teleport ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, boolean DoEffects = true, boolean TeleportTwinPlayers = false ) {: .copyable aria-label='Functions' }
 Teleports the player to a position within the room. 
 
 `DoEffects` controls whether the teleport animation and sound plays. `TeleportTwinPlayers` controls whether twin players (e.g. Esau, Tainted Lazarus w/ Birthright) are teleported alongside this one.
+
+___
+### Try·Fake·Death () {: aria-label='Functions' }
+#### boolean TryFakeDeath ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Try·Prevent·Death () {: aria-label='Functions' }
