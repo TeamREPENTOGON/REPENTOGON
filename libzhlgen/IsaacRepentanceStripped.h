@@ -630,6 +630,11 @@ struct ProceduralItemManager
 	
 };
 
+struct ItemPool
+{
+	
+};
+
 struct Game 
 {
 	uint32_t _stage; // 0x0
@@ -748,6 +753,18 @@ struct DestinationQuad {
 	Vector _topRight;
 	Vector _bottomLeft;
 	Vector _bottomRight;
+};
+
+struct SourceQuad {
+	Vector _topLeft;
+	Vector _topRight;
+	Vector _bottomLeft;
+	Vector _bottomRight;
+	int _coordinateSpaceEnum;
+};
+
+struct PlayerHUDActiveItem {
+	
 };
 
 struct ShapeRenderer {

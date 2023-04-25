@@ -177,4 +177,5 @@ struct Entity_Player depends (ActiveItemDesc, History) {{
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
     inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1e44); }
+	inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
 }};

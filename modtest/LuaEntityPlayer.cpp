@@ -313,6 +313,21 @@ int Lua_PlayerSetBoCSlot(lua_State* L) {
 	return 0;
 }
 
+int Lua_PlayerGetBagOfCraftingOutput(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetBagOfCraftingOutput());
+	return 1;
+}
+
+int Lua_PlayerSetBagOfCraftingOutput(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetBagOfCraftingOutput() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -345,4 +360,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// lua::RegisterFunction(state, mt, "SetBagOfCraftingContent", Lua_PlayerSetBoCContent);
 	lua::RegisterFunction(state, mt, "SetBagOfCraftingSlot", Lua_PlayerSetBoCSlot);
 	lua::RegisterFunction(state, mt, "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot);
+	lua::RegisterFunction(state, mt, "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput);
+	lua::RegisterFunction(state, mt, "SetBagOfCraftingOutput", Lua_PlayerSetBagOfCraftingOutput);
 }
