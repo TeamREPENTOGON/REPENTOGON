@@ -11,7 +11,7 @@ local stats = {
         { "eden tokens",   EventCounter.EDEN_TOKENS,     0, 0 },
         { "",              function() return "" end,     0, 0 }, -- spacer
         { "dailys played", EventCounter.DAILYS_PLAYED,   0, 0 },
-        { "dailies won",   EventCounter.DAILYS_WON,      0, 0 },
+        { "dailys won",   EventCounter.DAILYS_WON,      0, 0 },
     } },
     {
         "BOSS KILLS", {

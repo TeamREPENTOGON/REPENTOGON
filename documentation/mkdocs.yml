@@ -121,6 +121,10 @@ nav:
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
   - Sprite: Sprite.md
+- Changes:
+  - General: changes/General.md
+  - Debugging: changes/Debugging.md
+  - UI: changes/UI.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
 - search:
