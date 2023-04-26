@@ -1,0 +1,2 @@
+"558bec8b0183ec18":
+__thiscall void PlayerHUDActiveItem::RenderGfx(PlayerHUDActiveItem *this<ecx>, SourceQuad* sourceQuad, DestinationQuad* destQuad, const ColorMod& color);

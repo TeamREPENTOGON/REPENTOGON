@@ -97,7 +97,7 @@ const static FuncSignatureByte Signature_GameGlobalAddres = {
 ".e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerManager, RoomDescriptor, ProceduralItemManager, RoomConfigHolder, PauseScreen)
+struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerManager, RoomDescriptor, ProceduralItemManager, RoomConfigHolder, PauseScreen, HUD)
 {{
 	Game()
 	{
@@ -154,6 +154,8 @@ struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerM
 	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return (ProceduralItemManager*)((char*) this + 0x283c20); }
+    
+    inline HUD* GetPlayerHUD(uint32_t playerId) { return (HUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 

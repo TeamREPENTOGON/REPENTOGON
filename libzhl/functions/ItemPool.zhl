@@ -1,0 +1,2 @@
+"558bec64a1????????83ec20":
+__stdcall int ItemPool::GetCardEx(ItemPool *this<ecx>,int Seed, int SpecialChance, int RuneChance, int SuitChance, bool AllowNonCards);

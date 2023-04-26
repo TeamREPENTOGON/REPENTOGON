@@ -18,7 +18,7 @@ struct GlobalPre
 	#include <unordered_map>
 	#include <cmath>
 	#include <queue>
-    #include <cstdint>
+	#include <cstdint>
 	#include <bitset>
 	#undef LoadImage
 	
@@ -34,7 +34,7 @@ struct GlobalPre
 	}
 
 
-    struct Console_HistoryEntry;
+	struct Console_HistoryEntry;
 	
 	typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
 
@@ -111,36 +111,36 @@ struct GlobalConst
 		RIGHT = 0x2,
 		DOWN = 0x3,
 	};
-    
-    enum eRoomShape 
-    {
-        ROOMSHAPE_1x1 = 1,
-        ROOMSHAPE_IH, // Horizontal, narrow
-        ROOMSHAPE_IV, // Vertical, narrow
-        ROOMSHAPE_1x2, // Vertical, two high
-        ROOMSHAPE_IIV, // Vertical, two high, narrow
-        ROOMSHAPE_2x1, // Horizontal, two wide
-        ROOMSHAPE_IIH, // Horizontal, two wide, narrow
-        ROOMSHAPE_2x2,
-        ROOMSHAPE_LTL, 
-        ROOMSHAPE_LTR,
-        ROOMSHAPE_LBL,
-        ROOMSHAPE_LBR,
-        MAX_ROOMSHAPES
-    };
-    
-    enum eDoorSlots 
-    {
-        DOOR_SLOT_LEFT0 = 0, // Left wall, top
-        DOOR_SLOT_UP0, // Top wall, left
-        DOOR_SLOT_RIGHT0, // Right wall, top
-        DOOR_SLOT_DOWN0, // Down wall, left
-        DOOR_SLOT_LEFT1, // Left wall, bottom
-        DOOR_SLOT_UP1, // Top wall, right
-        DOOR_SLOT_RIGHT1, // Right wall, bottom
-        DOOR_SLOT_DOWN1, // Bottom wall, right
-        MAX_DOOR_SLOTS
-    };
+	
+	enum eRoomShape 
+	{
+		ROOMSHAPE_1x1 = 1,
+		ROOMSHAPE_IH, // Horizontal, narrow
+		ROOMSHAPE_IV, // Vertical, narrow
+		ROOMSHAPE_1x2, // Vertical, two high
+		ROOMSHAPE_IIV, // Vertical, two high, narrow
+		ROOMSHAPE_2x1, // Horizontal, two wide
+		ROOMSHAPE_IIH, // Horizontal, two wide, narrow
+		ROOMSHAPE_2x2,
+		ROOMSHAPE_LTL, 
+		ROOMSHAPE_LTR,
+		ROOMSHAPE_LBL,
+		ROOMSHAPE_LBR,
+		MAX_ROOMSHAPES
+	};
+	
+	enum eDoorSlots 
+	{
+		DOOR_SLOT_LEFT0 = 0, // Left wall, top
+		DOOR_SLOT_UP0, // Top wall, left
+		DOOR_SLOT_RIGHT0, // Right wall, top
+		DOOR_SLOT_DOWN0, // Down wall, left
+		DOOR_SLOT_LEFT1, // Left wall, bottom
+		DOOR_SLOT_UP1, // Top wall, right
+		DOOR_SLOT_RIGHT1, // Right wall, bottom
+		DOOR_SLOT_DOWN1, // Bottom wall, right
+		MAX_DOOR_SLOTS
+	};
 
 	enum GridCollisionClass
 	{
@@ -1194,6 +1194,41 @@ struct GlobalConst
 	{
 		return (DWORD)GetModuleHandle(NULL);
 	}
+	
+	enum BagOfCraftingPickup : uint8_t 
+	{
+		BOC_NONE = 0,
+		BOC_RED_HEART = 1,
+		BOC_SOUL_HEART = 2,
+		BOC_BLACK_HEART = 3,
+		BOC_ETERNAL_HEART = 4,
+		BOC_GOLD_HEART = 5,
+		BOC_BONE_HEART = 6,
+		BOC_ROTTEN_HEART = 7,
+		BOC_PENNY = 8,
+		BOC_NICKEL = 9,
+		BOC_DIME = 10,
+		BOC_LUCKY_PENNY = 11,
+		BOC_KEY = 12,
+		BOC_GOLD_KEY = 13,
+		BOC_CHARGED_KEY = 14,
+		BOC_BOMB = 15,
+		BOC_GOLD_BOMB = 16,
+		BOC_GIGA_BOMB = 17,
+		BOC_MINI_BATTERY = 18,
+		BOC_BATTERY = 19,
+		BOC_MEGA_BATTERY = 20,
+		BOC_CARD = 21,
+		BOC_PILL = 22,
+		BOC_RUNE = 23,
+		BOC_DICE_SHARD = 24,
+		BOC_CRACKED_KEY = 25,
+		BOC_GOLD_PENNY = 26,
+		BOC_GOLD_PILL = 27,
+		BOC_GOLD_BATTERY = 28,
+		BOC_POOP = 29,
+        BOC_MAX = 30
+	};
 }};
 
 

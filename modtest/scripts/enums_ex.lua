@@ -1999,6 +1999,39 @@ TaintedMarksGroup = {
 	POLAROID_NEGATIVE = 2,
 }
 
+BagOfCraftingPickup = {
+    BOC_NONE = 0,
+    BOC_RED_HEART = 1,
+    BOC_SOUL_HEART = 2,
+    BOC_BLACK_HEART = 3,
+    BOC_ETERNAL_HEART = 4,
+    BOC_GOLD_HEART = 5,
+    BOC_BONE_HEART = 6,
+    BOC_ROTTEN_HEART = 7,
+    BOC_PENNY = 8,
+    BOC_NICKEL = 9,
+    BOC_DIME = 10,
+    BOC_LUCKY_PENNY = 11,
+    BOC_KEY = 12,
+    BOC_GOLD_KEY = 13,
+    BOC_CHARGED_KEY = 14,
+    BOC_BOMB = 15,
+    BOC_GOLD_BOMB = 16,
+    BOC_GIGA_BOMB = 17,
+    BOC_MINI_BATTERY = 18,
+    BOC_BATTERY = 19,
+    BOC_MEGA_BATTERY = 20,
+    BOC_CARD = 21,
+    BOC_PILL = 22,
+    BOC_RUNE = 23,
+    BOC_DICE_SHARD = 24,
+    BOC_CRACKED_KEY = 25,
+    BOC_GOLD_PENNY = 26,
+    BOC_GOLD_PILL = 27,
+    BOC_GOLD_BATTERY = 28,
+    BOC_POOP = 29,
+}
+
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)
 

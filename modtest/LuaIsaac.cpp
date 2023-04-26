@@ -205,6 +205,38 @@ static int Lua_CreateTimer(lua_State* L) {
 	return 1;
 }
 
+static int Lua_DrawLine(lua_State* L) {
+	Vector* pos1 = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* pos2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	KColor* col1 = lua::GetUserdata<KColor*>(L, 3, lua::Metatables::KCOLOR, "KColor");
+	KColor* col2 = lua::GetUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
+	float thickness = luaL_optnumber(L, 5, 1); // mmmmMMMMMMMMMMMMMMmm
+
+	g_ShapeRenderer->RenderLine(pos1, pos2, col1, col2, thickness);
+
+	return 0;
+}
+
+static int Lua_DrawQuad(lua_State* L) {
+	Vector* postl = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* postr = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* posbl = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* posbr = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	KColor* col = lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
+	float thickness = luaL_optnumber(L, 6, 1); // mmmmMMMMMMMMMMMMMMMMMMMMMMMMMMMMMmmmmmmmm
+
+	DestinationQuad quad; //TODO make a constructor for this
+	quad._topLeft = *postl;
+	quad._topRight = *postr;
+	quad._bottomLeft = *posbl;
+	quad._bottomRight = *posbr;
+
+	g_ShapeRenderer->OutlineQuad(&quad, col, thickness);
+
+	return 0;
+
+}
+
 static void RegisterGetLoadedModules(lua_State* L) {
 	lua_getglobal(L, "Isaac");
 	lua_pushstring(L, "GetLoadedModules");
@@ -217,6 +249,22 @@ static void RegisterCreateTimer(lua_State* L) {
 	lua_getglobal(L, "Isaac");
 	lua_pushstring(L, "CreateTimer");
 	lua_pushcfunction(L, Lua_CreateTimer);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterDrawLine(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "DrawLine");
+	lua_pushcfunction(L, Lua_DrawLine);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+static void RegisterDrawQuad(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "DrawQuad");
+	lua_pushcfunction(L, Lua_DrawQuad);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 }
@@ -234,6 +282,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterFindInRadiusFix(state);
 	RegisterGetLoadedModules(state);
 	RegisterCreateTimer(state);
+	RegisterDrawLine(state);
+	RegisterDrawQuad(state);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

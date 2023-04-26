@@ -15,7 +15,7 @@ struct EntityList depends (EntityList_EL, Entity)
 	inline EntityList_EL* GetWispEL() { return (EntityList_EL*)((char*)this + 0x90); }
 
 	// This exists in the original source code as evidenced in the Switch decomp, but was inlined on PC.
-	int CountWisps(int WispSubtype) {
+	int CountWisps(unsigned int WispSubtype) {
 	
 		EntityList_EL* wisps = this->GetWispEL();
 		unsigned int size = wisps->_size;

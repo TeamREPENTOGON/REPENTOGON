@@ -29,6 +29,7 @@ struct HUD;
 struct PlayerHUD;
 struct VTable_Entity;
 struct VTable_EntityPlayer;
+struct ShapeRenderer;
 
 struct RapidXML;
 struct xmlnode_rep;
@@ -629,6 +630,11 @@ struct ProceduralItemManager
 	
 };
 
+struct ItemPool
+{
+	
+};
+
 struct Game 
 {
 	uint32_t _stage; // 0x0
@@ -740,4 +746,26 @@ struct UnknownGameStartStruct {
 };
 
 struct RoomTransition {
+};
+
+struct DestinationQuad {
+	Vector _topLeft;
+	Vector _topRight;
+	Vector _bottomLeft;
+	Vector _bottomRight;
+};
+
+struct SourceQuad {
+	Vector _topLeft;
+	Vector _topRight;
+	Vector _bottomLeft;
+	Vector _bottomRight;
+	int _coordinateSpaceEnum;
+};
+
+struct PlayerHUDActiveItem {
+	
+};
+
+struct ShapeRenderer {
 };

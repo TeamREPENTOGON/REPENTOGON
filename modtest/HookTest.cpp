@@ -185,3 +185,20 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterTest(state);
 }
 */
+
+/*HOOK_METHOD(ShapeRenderer, RenderLine, (Vector* pos1, Vector* pos2, KColor* col1, KColor* col2, const float& thickness) -> int) { // why the FUCK is this float a POINTER
+	printf("ShapeRenderer::RenderLine hook!\n");
+	printf("pos1 (%f, %f) pos2 (%f, %f) unk %f\n", pos1->x, pos1->y, pos2->x, pos2->y, thickness);
+	return super(pos1, pos2, col1, col2, thickness);
+}*/
+
+/*HOOK_METHOD(PlayerHUDActiveItem, RenderGfx, (SourceQuad* source, DestinationQuad* dest, const ColorMod& color) -> void) {
+	printf("RenderGfx: %f, %f %f %f %f, %f %f %f\n", source->_topLeft.x, source->_topLeft.y, source->_topRight.x, source->_topRight.y, source->_bottomLeft.x, source->_bottomLeft.y, source->_bottomRight.x, source->_bottomRight.y);
+	source->_topLeft.x = source->_topLeft.x + 16.0f;
+	source->_topRight.x = source->_topRight.x + 16.0f;
+	source->_bottomLeft.x = source->_bottomLeft.x + 16.0f;
+	source->_bottomRight.x = source->_bottomRight.x + 16.0f;
+	
+	super(source, dest, color);
+}
+*/

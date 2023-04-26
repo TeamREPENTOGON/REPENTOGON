@@ -612,3 +612,4 @@ end
 
 pcall(require("repentogon_extras/changelog"))
 pcall(require("repentogon_extras/daily_stats"))
+pcall(require("repentogon_extras/stats_menu"))
