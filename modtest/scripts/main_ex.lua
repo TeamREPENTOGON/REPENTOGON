@@ -154,7 +154,12 @@ local typecheckFunctions = {
 		["table"] = checkTableTypeFunction({"integer", "integer"}),
 	},
 	[ModCallbacks.MC_PRE_PICKUP_MORPH] = {
-		["table"] = checkTableTypeFunction({"integer", "integer", "integer", "integer", "integer", "integer"})
+		["table"] = checkTableTypeFunction({"integer", "integer", "integer", "integer", "integer", "integer"}),
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_NPC_MORPH] = {
+		["table"] = checkTableTypeFunction({"integer", "integer", "integer", "integer", "integer", "integer"}),
+		["boolean"] = true
 	},
 	[ModCallbacks.MC_PRE_FAMILIAR_RENDER] = {
 		["Vector"] = true,
