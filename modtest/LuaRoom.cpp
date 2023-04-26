@@ -132,6 +132,16 @@ int Lua_RoomSetWaterCurrent(lua_State* L)
 	return 0;
 }
 
+int Lua_RoomGetEffects(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+
+	TemporaryEffects* effects = room->GetTemporaryEffects();
+	lua::luabridge::UserdataPtr::push(L, effects, lua::GetMetatableKey(lua::Metatables::_TEMPORARY_EFFECTS));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -151,4 +161,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetWaterColorMultiplier", Lua_RoomGetWaterColorMultiplier);
 	lua::RegisterFunction(state, mt, "SetWaterColorMultiplier", Lua_RoomSetWaterColorMultiplier);
 	lua::RegisterFunction(state, mt, "SetBackdropType", Lua_RoomSetBackdrop);
+	lua::RegisterFunction(state, mt, "GetEffects", Lua_RoomGetEffects);
 }
