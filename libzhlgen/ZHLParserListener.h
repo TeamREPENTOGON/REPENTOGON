@@ -71,6 +71,9 @@ public:
   virtual void enterInheritance(ZHLParser::InheritanceContext *ctx) = 0;
   virtual void exitInheritance(ZHLParser::InheritanceContext *ctx) = 0;
 
+  virtual void enterInheritanceDecl(ZHLParser::InheritanceDeclContext *ctx) = 0;
+  virtual void exitInheritanceDecl(ZHLParser::InheritanceDeclContext *ctx) = 0;
+
   virtual void enterDepends(ZHLParser::DependsContext *ctx) = 0;
   virtual void exitDepends(ZHLParser::DependsContext *ctx) = 0;
 

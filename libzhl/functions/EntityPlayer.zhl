@@ -54,7 +54,7 @@ virtual __thiscall void Entity_Player::Init(Entity_Player* this<ecx>, unsigned i
 virtual __thiscall void Entity_Player::Update(Entity_Player* this<ecx>);
 
 "558bec6aff68????????64a1????????5081ec3c010000a1":
-virtual __thiscall bool Entity_Player::TakeDamage(Entity_Player *this<ecx>, float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
+virtual __thiscall bool Entity_Player::TakeDamage(Entity_Player *this<ecx>, float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 
 "558bec83e4f881ec4c01000053":
 __thiscall Entity* Entity_Player::ThrowHeldEntity(Entity_Player *this<ecx>, Vector* Velocity);

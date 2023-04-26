@@ -35,11 +35,11 @@ type:
     typeSpecifier templateSpec? pointerAttribute*;
     
 typeSpecifier:
-    (simpleType | nestedName | Const) typeSpecifier*;
+    Const? (simpleType | nestedName) Const?;
     
 simpleType:
     simpleTypeSignedness
-    | simpleTypeSignedness? simpleTypeLength
+    | simpleTypeSignedness? simpleTypeLength+
     | simpleTypeSignedness? Char
     | Bool
     | Void
@@ -68,7 +68,10 @@ class:
     (Class | Struct) Name depends? inheritance? LeftBracket classBody RightBracket Semi;
     
 inheritance:
-    Visibility? nestedName (Comma Visibility? nestedName);
+    inheritanceDecl (Comma inheritanceDecl);
+
+inheritanceDecl:
+    Visibility? nestedName;
     
 depends:
     Depends LeftParen (Name Comma)* Name RightParen;

@@ -91,6 +91,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitInheritanceDecl(ZHLParser::InheritanceDeclContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitDepends(ZHLParser::DependsContext *ctx) override {
     return visitChildren(ctx);
   }

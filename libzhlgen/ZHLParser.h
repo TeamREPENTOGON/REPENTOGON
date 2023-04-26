@@ -34,11 +34,11 @@ public:
     RuleArgParam = 5, RuleOptNamedFunArgs = 6, RuleOptNamedFunArg = 7, RuleTemplateSpec = 8, 
     RuleType = 9, RuleTypeSpecifier = 10, RuleSimpleType = 11, RuleSimpleTypeSignedness = 12, 
     RuleSimpleTypeLength = 13, RuleNestedName = 14, RulePointerAttribute = 15, 
-    RuleGenericCode = 16, RuleClass = 17, RuleInheritance = 18, RuleDepends = 19, 
-    RuleClassBody = 20, RuleClassSignature = 21, RuleClassFunction = 22, 
-    RuleClassField = 23, RuleInnerField = 24, RuleFullName = 25, RuleSignature = 26, 
-    RuleForwardDecl = 27, RuleTypedef = 28, RuleFunctionPtr = 29, RuleFptr = 30, 
-    RuleMemberPtr = 31
+    RuleGenericCode = 16, RuleClass = 17, RuleInheritance = 18, RuleInheritanceDecl = 19, 
+    RuleDepends = 20, RuleClassBody = 21, RuleClassSignature = 22, RuleClassFunction = 23, 
+    RuleClassField = 24, RuleInnerField = 25, RuleFullName = 26, RuleSignature = 27, 
+    RuleForwardDecl = 28, RuleTypedef = 29, RuleFunctionPtr = 30, RuleFptr = 31, 
+    RuleMemberPtr = 32
   };
 
   explicit ZHLParser(antlr4::TokenStream *input);
@@ -77,6 +77,7 @@ public:
   class GenericCodeContext;
   class ClassContext;
   class InheritanceContext;
+  class InheritanceDeclContext;
   class DependsContext;
   class ClassBodyContext;
   class ClassSignatureContext;
@@ -289,9 +290,8 @@ public:
     virtual size_t getRuleIndex() const override;
     SimpleTypeContext *simpleType();
     NestedNameContext *nestedName();
-    antlr4::tree::TerminalNode *Const();
-    std::vector<TypeSpecifierContext *> typeSpecifier();
-    TypeSpecifierContext* typeSpecifier(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> Const();
+    antlr4::tree::TerminalNode* Const(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -435,11 +435,9 @@ public:
   public:
     InheritanceContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<NestedNameContext *> nestedName();
-    NestedNameContext* nestedName(size_t i);
+    std::vector<InheritanceDeclContext *> inheritanceDecl();
+    InheritanceDeclContext* inheritanceDecl(size_t i);
     antlr4::tree::TerminalNode *Comma();
-    std::vector<antlr4::tree::TerminalNode *> Visibility();
-    antlr4::tree::TerminalNode* Visibility(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -449,6 +447,22 @@ public:
   };
 
   InheritanceContext* inheritance();
+
+  class  InheritanceDeclContext : public antlr4::ParserRuleContext {
+  public:
+    InheritanceDeclContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    NestedNameContext *nestedName();
+    antlr4::tree::TerminalNode *Visibility();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  InheritanceDeclContext* inheritanceDecl();
 
   class  DependsContext : public antlr4::ParserRuleContext {
   public:

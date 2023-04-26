@@ -57,6 +57,8 @@ public:
 
     virtual std::any visitInheritance(ZHLParser::InheritanceContext *context) = 0;
 
+    virtual std::any visitInheritanceDecl(ZHLParser::InheritanceDeclContext *context) = 0;
+
     virtual std::any visitDepends(ZHLParser::DependsContext *context) = 0;
 
     virtual std::any visitClassBody(ZHLParser::ClassBodyContext *context) = 0;

@@ -73,6 +73,9 @@ public:
   virtual void enterInheritance(ZHLParser::InheritanceContext * /*ctx*/) override { }
   virtual void exitInheritance(ZHLParser::InheritanceContext * /*ctx*/) override { }
 
+  virtual void enterInheritanceDecl(ZHLParser::InheritanceDeclContext * /*ctx*/) override { }
+  virtual void exitInheritanceDecl(ZHLParser::InheritanceDeclContext * /*ctx*/) override { }
+
   virtual void enterDepends(ZHLParser::DependsContext * /*ctx*/) override { }
   virtual void exitDepends(ZHLParser::DependsContext * /*ctx*/) override { }
 

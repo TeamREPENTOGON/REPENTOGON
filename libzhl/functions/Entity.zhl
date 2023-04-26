@@ -12,7 +12,7 @@ virtual __thiscall void Entity::PreUpdate(Entity* this<ecx>);
 virtual __thiscall void Entity::Update(Entity* this<ecx>);
 
 "558bec83e4f883ec3c5356578bf9837f??01":
-virtual __thiscall bool Entity::TakeDamage(Entity *this<ecx>, float Damage, unsigned __int64 DamageFlags, EntityRef *Source, int DamageCountdown);
+virtual __thiscall bool Entity::TakeDamage(Entity *this<ecx>, float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 
 /*
 "558bec518b45088d4d08": //bad signature
