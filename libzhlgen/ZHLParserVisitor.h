@@ -63,6 +63,8 @@ public:
 
     virtual std::any visitClassBody(ZHLParser::ClassBodyContext *context) = 0;
 
+    virtual std::any visitClassBodyElement(ZHLParser::ClassBodyElementContext *context) = 0;
+
     virtual std::any visitClassSignature(ZHLParser::ClassSignatureContext *context) = 0;
 
     virtual std::any visitClassFunction(ZHLParser::ClassFunctionContext *context) = 0;

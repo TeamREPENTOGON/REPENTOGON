@@ -141,7 +141,38 @@ struct BasicType {
 };
 
 struct FunctionPtr;
-struct Struct;
+// struct Struct;
+
+struct Function;
+struct Variable;
+struct Signature;
+
+struct Namespace {
+    // std::vector<Namespace> _children;
+    std::vector<Function> _functions;
+    std::vector<Variable> _fields;
+    std::vector<Signature> _signatures;
+};
+
+enum Visibility {
+    PUBLIC,
+    PRIVATE,
+    PROTECTED
+};
+
+struct Type;
+
+struct Struct {
+    Namespace _namespace;
+    std::string _name;
+
+    std::string ToString() const {
+        return _name;
+    }
+
+    std::set<Type*> _deps;
+    std::set<std::pair<Type*, Visibility>> _parents;
+};
 
 struct Type {
     bool _const = false;
@@ -155,8 +186,10 @@ struct Type {
     // contains a Type, which would create an infinite structure if it was added here without an
     // indirection.
     // Nested names are not allowed because properly processing them would require interpreting the files.
-    std::variant<BasicType, FunctionPtr*, Struct*, std::string> _name;
+    std::variant<BasicType, FunctionPtr*, Struct, std::string> _value;
     std::vector<PointerDecl> _pointerDecl;
+
+    bool _pending = true;
 
     ~Type();
 
@@ -334,49 +367,16 @@ struct VariableSignature {
 
 typedef std::variant<Signature, VariableSignature> SignatureV;
 
-struct Namespace {
-    // std::vector<Namespace> _children;
-    std::vector<Function> _functions;
-    std::vector<Variable> _fields;
-    std::vector<Signature> _signatures;
-};
-
-enum Visibility {
-    PUBLIC,
-    PRIVATE,
-    PROTECTED
-};
-
-struct Struct {
-    Namespace _namespace;
-    std::string _name;
-    /*
-     * A struct is pending if its name has been encountered but no definition has 
-     * been found yet. This can happen if the name is used as the return type of 
-     * a function, or used as a dependency.
-     * If a struct is still pending once all files have been processed, the name is 
-     * considered invalid and discarded.
-     */
-    bool _pending = true;
-
-    std::string ToString() const {
-        return _name;
-    }
-
-    std::set<Struct*> _deps;
-    std::set<std::pair<Struct*, Visibility>> _parents;
-};
-
 std::string Type::ToString() const {
     std::ostringstream res;
     if (_const) {
         res << "const ";
     }
 
-    if (std::holds_alternative<BasicType>(_name)) {
-        res << std::get<BasicType>(_name).ToString();
-    } else if (std::holds_alternative<Struct*>(_name)) {
-        res << std::get<Struct*>(_name)->ToString();
+    if (std::holds_alternative<BasicType>(_value)) {
+        res << std::get<BasicType>(_value).ToString();
+    } else if (std::holds_alternative<Struct>(_value)) {
+        res << std::get<Struct>(_value).ToString();
     }
 
     if (_array) {
@@ -391,12 +391,9 @@ std::string Type::ToString() const {
 }
 
 Type::~Type() {
-    if (std::holds_alternative<Struct*>(_name)) {
-        // delete std::get<Struct*>(_name);
-        _name = (Struct*)0;
-    } else if (std::holds_alternative<FunctionPtr*>(_name)) {
+    if (std::holds_alternative<FunctionPtr*>(_value)) {
         // delete std::get<FunctionPtr*>(_name);
-        _name = (FunctionPtr*)0;
+        _value = (FunctionPtr*)0;
     }
 }
 
@@ -509,7 +506,7 @@ ErrorLogger::EndToken ErrorLogger::_end;
 
 class Parser : public ZHLParserBaseVisitor {
 public:
-    Parser(std::map<std::string, Struct*>* types) : _types(types) {
+    Parser(std::map<std::string, Type>* types) : _types(types) {
 
     }
 
@@ -595,7 +592,11 @@ public:
         }
 
         if (parts.size() > 1) {
-            Namespace& nm = GetStructByName(parts.front())->_namespace;
+            Type* t = GetTypeByName(parts.front());
+            if (!std::holds_alternative<Struct>(t->_value)) {
+                throw std::logic_error("Expected Struct");
+            }
+            Namespace& nm = std::get<Struct>(t->_value)._namespace;
             nm._functions.push_back(fn);
         }
 
@@ -749,11 +750,12 @@ public:
         }
 
         if (auto simple = ctx->simpleType()) {
-            result._name = std::any_cast<BasicType>(visit(simple));
+            result._value = std::any_cast<BasicType>(visit(simple));
         } else {
             std::string name = MergeNameParts(std::any_cast<std::vector<std::string>>(visit(ctx->nestedName())));
-            Struct* target = GetStructByName(name);
-            result._name = target;
+            // Struct* target = GetStructByName(name);
+            result._value = name;
+            // result._name = target;
         }
 
         return result;
@@ -833,10 +835,19 @@ public:
         std::vector<std::string> partsStr;
         for (auto x : parts)
             partsStr.push_back(x->toString());
-        std::string type = partsStr[0];
+        std::string typen = partsStr[0];
         // std::cout << "Nested name " << type << std::endl;
 
-        CheckOrRegStruct(type);
+        if (partsStr.size() > 1) {
+            if (auto it = _types->find(typen); it == _types->end()) {
+                Type type;
+                Struct s;
+
+                s._name = typen;
+                type._value = s;
+                (*_types)[typen] = type;
+            }
+        }
 
         return partsStr;
     }
@@ -873,34 +884,51 @@ public:
 
     virtual std::any visitClass(ZHLParser::ClassContext* ctx) override {
         std::string name(ctx->Name()->getText());
-        Struct* st = GetStructByName(name);
-        st->_pending = false;
+        Type* type = GetTypeByName(name);
+        type->_pending = false;
+
+        Struct* st;
+
+        if (!std::holds_alternative<Struct>(type->_value)) {
+            Struct s;
+            s._name = name;
+            type->_value = s._name;
+        }
+
+        st = &(std::get<Struct>(type->_value));
 
         if (auto deps = ctx->depends()) {
-            st->_deps = std::any_cast<std::set<Struct*>>(visit(ctx->depends()));
+            st->_deps = std::any_cast<std::set<Type*>>(visit(ctx->depends()));
         }
         _currentStruct = st;
 
         if (auto inheritance = ctx->inheritance()) {
-            st->_parents = std::any_cast<std::set<std::pair<Struct*, Visibility>>>(visit(ctx->inheritance()));
+            st->_parents = std::any_cast<std::set<std::pair<Type*, Visibility>>>(visit(ctx->inheritance()));
         }
 
         visit(ctx->classBody());
     }
 
     virtual std::any visitDepends(ZHLParser::DependsContext* ctx) override {
-        std::set<Struct*> deps;
+        std::set<Type*> deps;
         auto names = ctx->Name();
 
         for (int i = 0; i < names.size(); ++i) {
             std::string name(names[i]->getText());
-            Struct* st = GetStructByName(name);
-            if (deps.find(st) != deps.end()) {
+            // Struct* st = GetStructByName(name);
+            Type* t = GetTypeByName(name);
+            if (!std::holds_alternative<Struct>(t->_value)) {
+                Struct s;
+                s._name = name;
+                t->_value = s;
+            }
+
+            if (deps.find(t) != deps.end()) {
                 _errors << ErrorLogger::warn << "Specified " << name << " as dependency for " << _currentStruct->_name << " multiple times " << ErrorLogger::_end;
-            } else if (st == _currentStruct) {
+            } else if (name == _currentStruct->_name) {
                 _errors << ErrorLogger::warn << "Specified " << name << " as self dependency " << ErrorLogger::_end;
             } else {
-                deps.insert(st);
+                deps.insert(t);
             }
         }
 
@@ -908,7 +936,11 @@ public:
     }
 
     virtual std::any visitClassBody(ZHLParser::ClassBodyContext* ctx) override {
-        return 0;
+
+    }
+
+    virtual std::any visitClassBodyElement(ZHLParser::ClassBodyElementContext *ctx) override {
+        return visitChildren(ctx);
     }
 
     virtual std::any visitClassSignature(ZHLParser::ClassSignatureContext* ctx) override {
@@ -989,7 +1021,33 @@ public:
     }
 
     virtual std::any visitInheritance(ZHLParser::InheritanceContext* ctx) override {
-        return 0;
+        Visibility vis = Visibility::PUBLIC;
+        std::set<std::pair<Type*, Visibility>> parents;
+
+        for (auto decl: ctx->inheritanceDecl()) {
+            auto content = std::any_cast<std::pair<std::vector<std::string>, std::optional<Visibility>>>(visit(decl));
+            std::vector<std::string>& first = content.first;
+            std::optional<Visibility>& second = content.second;
+
+            if (second) {
+                vis = *second;
+            }
+
+            if (first.size() > 1) {
+                throw std::runtime_error("Nested names not supported");
+            }
+
+            Type* type = GetTypeByName(first.front());
+            if (!std::holds_alternative<Struct>(type->_value)) {
+                Struct s;
+                s._name = first.front();
+                type->_value = s;
+            }
+
+            parents.insert(std::make_pair(type, vis));
+        }
+
+        return parents;
     }
 
     virtual std::any visitInheritanceDecl(ZHLParser::InheritanceDeclContext *ctx) override {
@@ -1019,7 +1077,7 @@ private:
     VariableSignature* _currentReference = nullptr;
 
     ErrorLogger _errors;
-    std::map<std::string, Struct*>* _types;
+    std::map<std::string, Type>* _types;
 
     std::string GetCurrentFunctionQualifiedName(std::string const& name) {
         if (!_currentStruct) {
@@ -1071,29 +1129,45 @@ private:
         return context.str();
     }
 
-    Struct* GetStructByName(std::string const& name) {
+    Type* GetTypeByName(std::string const& name) {
+        if (auto it = _types->find(name); it != _types->end()) {
+            return &(it->second);
+        } else {
+            Type t;
+            auto iter = _types->insert(std::make_pair(name, t));
+            return &(iter.first->second);
+        }
+    }
+
+    /* Struct* GetStructByName(std::string const& name, bool create = false) {
         Struct* st;
         if (auto iter = _types->find(name); iter != _types->end()) {
-            st = iter->second;
+
         } else {
-            st = new Struct;
-            st->_name = name;
-            (*_types)[name] = st;
+            Type* type = new Type;
+            type->_pending = false;
+
+            Struct s;
+            s._name = name;
+            type->_value = s;
+            (*_types)[name] = type;
+
+            st = &(std::get<Struct>(type->_value));
         }
 
         return st;
-    }
+    } */
 
-    void CheckOrRegStruct(std::string const& name) {
+    /* void CheckOrRegStruct(std::string const& name) {
         if (_types->find(name) == _types->end()) {
             Struct* st = new Struct;
             st->_name = name;
             (*_types)[name] = st;
         }
-    }
+    } */
 };
 
-void process_file(std::map<std::string, Struct*>* types, fs::path const& path) {
+void process_file(std::map<std::string, Type>* types, fs::path const& path) {
     //std::cout << "Processing " << path << std::endl;
     std::ifstream stream(path);
 
@@ -1120,7 +1194,7 @@ int main(int argc, char** argv) {
         functions = "../../libzhl/functions";
     }
 
-    std::map<std::string, Struct*> types;
+    std::map<std::string, Type> types;
 	for (fs::directory_entry const& entry : fs::directory_iterator(functions)) {
 		//std::cout << "File " << entry.path() << std::endl;
 		if (!entry.is_regular_file())

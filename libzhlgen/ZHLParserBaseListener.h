@@ -82,6 +82,9 @@ public:
   virtual void enterClassBody(ZHLParser::ClassBodyContext * /*ctx*/) override { }
   virtual void exitClassBody(ZHLParser::ClassBodyContext * /*ctx*/) override { }
 
+  virtual void enterClassBodyElement(ZHLParser::ClassBodyElementContext * /*ctx*/) override { }
+  virtual void exitClassBodyElement(ZHLParser::ClassBodyElementContext * /*ctx*/) override { }
+
   virtual void enterClassSignature(ZHLParser::ClassSignatureContext * /*ctx*/) override { }
   virtual void exitClassSignature(ZHLParser::ClassSignatureContext * /*ctx*/) override { }
 

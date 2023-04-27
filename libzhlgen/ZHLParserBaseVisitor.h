@@ -103,6 +103,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitClassBodyElement(ZHLParser::ClassBodyElementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitClassSignature(ZHLParser::ClassSignatureContext *ctx) override {
     return visitChildren(ctx);
   }

@@ -77,7 +77,10 @@ depends:
     Depends LeftParen (Name Comma)* Name RightParen;
 
 classBody: 
-    (classSignature | genericCode | classField | typedef | functionPtr | forwardDecl)*;
+    classBodyElement*;
+
+classBodyElement:
+    classSignature | genericCode | classField | typedef | functionPtr | forwardDecl;
 
 classSignature:
     Signature classFunction;
