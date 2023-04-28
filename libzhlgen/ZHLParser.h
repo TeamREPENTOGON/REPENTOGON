@@ -35,10 +35,10 @@ public:
     RuleType = 9, RuleTypeSpecifier = 10, RuleSimpleType = 11, RuleSimpleTypeSignedness = 12, 
     RuleSimpleTypeLength = 13, RuleNestedName = 14, RulePointerAttribute = 15, 
     RuleGenericCode = 16, RuleClass = 17, RuleInheritance = 18, RuleInheritanceDecl = 19, 
-    RuleDepends = 20, RuleClassBody = 21, RuleClassBodyElement = 22, RuleClassSignature = 23, 
-    RuleClassFunction = 24, RuleClassField = 25, RuleInnerField = 26, RuleFullName = 27, 
-    RuleSignature = 28, RuleForwardDecl = 29, RuleTypedef = 30, RuleFunctionPtr = 31, 
-    RuleFptr = 32, RuleMemberPtr = 33
+    RuleDepends = 20, RuleClassBody = 21, RuleClassSignature = 22, RuleClassFunction = 23, 
+    RuleClassField = 24, RuleInnerField = 25, RuleFullName = 26, RuleSignature = 27, 
+    RuleForwardDecl = 28, RuleTypedef = 29, RuleFunctionPtr = 30, RuleFptr = 31, 
+    RuleMemberPtr = 32
   };
 
   explicit ZHLParser(antlr4::TokenStream *input);
@@ -80,7 +80,6 @@ public:
   class InheritanceDeclContext;
   class DependsContext;
   class ClassBodyContext;
-  class ClassBodyElementContext;
   class ClassSignatureContext;
   class ClassFunctionContext;
   class ClassFieldContext;
@@ -490,8 +489,18 @@ public:
   public:
     ClassBodyContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<ClassBodyElementContext *> classBodyElement();
-    ClassBodyElementContext* classBodyElement(size_t i);
+    std::vector<ClassSignatureContext *> classSignature();
+    ClassSignatureContext* classSignature(size_t i);
+    std::vector<GenericCodeContext *> genericCode();
+    GenericCodeContext* genericCode(size_t i);
+    std::vector<ClassFieldContext *> classField();
+    ClassFieldContext* classField(size_t i);
+    std::vector<TypedefContext *> typedef_();
+    TypedefContext* typedef_(size_t i);
+    std::vector<FunctionPtrContext *> functionPtr();
+    FunctionPtrContext* functionPtr(size_t i);
+    std::vector<ForwardDeclContext *> forwardDecl();
+    ForwardDeclContext* forwardDecl(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -501,26 +510,6 @@ public:
   };
 
   ClassBodyContext* classBody();
-
-  class  ClassBodyElementContext : public antlr4::ParserRuleContext {
-  public:
-    ClassBodyElementContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    ClassSignatureContext *classSignature();
-    GenericCodeContext *genericCode();
-    ClassFieldContext *classField();
-    TypedefContext *typedef_();
-    FunctionPtrContext *functionPtr();
-    ForwardDeclContext *forwardDecl();
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-
-    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-   
-  };
-
-  ClassBodyElementContext* classBodyElement();
 
   class  ClassSignatureContext : public antlr4::ParserRuleContext {
   public:

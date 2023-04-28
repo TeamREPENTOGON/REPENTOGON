@@ -80,9 +80,6 @@ public:
   virtual void enterClassBody(ZHLParser::ClassBodyContext *ctx) = 0;
   virtual void exitClassBody(ZHLParser::ClassBodyContext *ctx) = 0;
 
-  virtual void enterClassBodyElement(ZHLParser::ClassBodyElementContext *ctx) = 0;
-  virtual void exitClassBodyElement(ZHLParser::ClassBodyElementContext *ctx) = 0;
-
   virtual void enterClassSignature(ZHLParser::ClassSignatureContext *ctx) = 0;
   virtual void exitClassSignature(ZHLParser::ClassSignatureContext *ctx) = 0;
 

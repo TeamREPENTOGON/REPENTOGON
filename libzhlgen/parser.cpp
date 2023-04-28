@@ -41,12 +41,36 @@ struct PointerDecl {
 
     std::string ToString() const {
         std::ostringstream str;
+        if (_const) {
+            str << "const";
+        }
         str << PointerKindToString(_kind);
 
-        if (_const) {
-            str << " const ";
+        return str.str();
+    }
+
+    std::string GetPrefix() const {
+        std::ostringstream str;
+        str << "!";
+        switch (_kind) {
+        case LREF:
+            str << "l";
+            break;
+
+        case RREF:
+            str << "r";
+            break;
+
+        case POINTER:
+            str << "p";
+            break;
         }
 
+        if (_const) {
+            str << "c";
+        }
+
+        str << "!";
         return str.str();
     }
 };
@@ -115,28 +139,94 @@ struct BasicType {
             }
         } else {
             if (_type == BasicTypes::INT || _type == BasicTypes::CHAR) {
-
+                res << "signed ";
             }
         }
 
         if (_length) {
             switch (*_length) {
             case LONG:
-                res << "long";
+                res << "long ";
                 break;
 
             case LONGLONG:
-                res << "long long";
+                res << "long long ";
                 break;
 
             case SHORT:
-                res << "short";
+                res << "short ";
             }
         }
 
         res << BasicTypeToString(_type);
 
         return res.str();
+    }
+
+    std::string GetAbsoluteName() const {
+        std::ostringstream str;
+
+        if (_sign) {
+            switch (*_sign) {
+            case SIGNED:
+                str << "s";
+                break;
+
+            case UNSIGNED:
+                str << "u";
+            }
+        } else {
+            if (_type == INT || _type == CHAR) {
+                str << "s";
+            }
+        }
+
+        switch (_type) {
+        case FLOAT:
+            str << "f";
+            break;
+
+        case DOUBLE:
+            str << "d";
+            break;
+
+        case INT:
+            str << "i";
+            break;
+
+        case CHAR:
+            str << "c";
+            break;
+
+        case BOOL:
+            str << "b";
+            break;
+
+        case VOID:
+            str << "v";
+        }
+
+        if (_length) {
+            switch (*_length) {
+            case LONG:
+                if (_type == INT) {
+                    str << "32";
+                } else {
+                    str << "80";
+                }
+                break;
+
+            case SHORT:
+                str << "16";
+                break;
+
+            case LONGLONG:
+                str << "64";
+                break;
+            }
+        }
+
+        return str.str();
     }
 };
 
@@ -166,13 +256,13 @@ struct Struct {
     Namespace _namespace;
     std::string _name;
 
-    std::string ToString() const {
-        return _name;
-    }
+    std::string ToString(bool full) const;
 
     std::set<Type*> _deps;
     std::set<std::pair<Type*, Visibility>> _parents;
 };
+
+struct EmptyType {};
 
 struct Type {
     bool _const = false;
@@ -186,10 +276,19 @@ struct Type {
     // contains a Type, which would create an infinite structure if it was added here without an
     // indirection.
     // Nested names are not allowed because properly processing them would require interpreting the files.
-    std::variant<BasicType, FunctionPtr*, Struct, std::string> _value;
+    std::variant<EmptyType, BasicType, FunctionPtr*, Struct, std::string> _value;
     std::vector<PointerDecl> _pointerDecl;
-
     bool _pending = true;
+
+    // Name as used to register the type in the global map
+    std::string _name;
+
+    // Points to the true version of this type in case we are dealing with a synonym
+    // e.g. uint32_t has "unsigned int" as synonym.
+    Type* _synonym = nullptr;
+
+    // Points to the base, unqualified  version, of this type.
+    Type* _base = nullptr;
 
     ~Type();
 
@@ -197,11 +296,49 @@ struct Type {
         return !_pointerDecl.empty();
     }
 
-    std::string ToString() const;
+    bool IsEmpty() const {
+        return std::holds_alternative<EmptyType>(_value);
+    }
+
+    std::string ToString(bool full) const;
+
+    Type* GetTrueType() {
+        if (!_synonym) {
+            return this;
+        } else {
+            return _synonym->GetTrueType();
+        }
+    }
+
+    std::string GetPrefix() const {
+        std::ostringstream str;
+
+        if (_pointerDecl.size() != 0) {
+            // std::ostringstream str;
+            for (PointerDecl const& decl: _pointerDecl) {
+                str << decl.GetPrefix();
+            }
+        }
+
+        str << "!!";
+        if (_const) {
+            str << "c!!";
+        }
+        return str.str();
+    }
+
+    std::string GetFullName() const {
+        std::ostringstream str;
+        str << GetPrefix() << _name;
+        if (_name == "") {
+            throw std::runtime_error("Empty name");
+        }
+        return str.str();
+    }
 };
 
 struct FunctionPtr {
-    Type _ret;
+    Type* _ret;
     std::vector<Type> _parameters;
 };
 
@@ -312,13 +449,13 @@ std::string CallingConventionToString(CallingConventions convention) {
 }
 
 struct FunctionParam {
-    Type _type;
+    Type* _type;
     std::string _name;
     std::optional<Registers> _reg;
 
     std::string ToString() const {
         std::ostringstream s;
-        s << _type.ToString() << " " << _name;
+        s << _type->ToString(false) << " " << _name;
         if (_reg) {
             s << "<" << RegisterToString(*_reg) << ">";
         }
@@ -331,7 +468,7 @@ struct Function {
     uint32_t _qualifiers;
     FunctionKind _kind;
     std::optional<CallingConventions> _convention;
-    Type _ret;
+    Type* _ret;
     std::string _name;
     std::vector<FunctionParam> _params;
 
@@ -351,7 +488,7 @@ struct Function {
 };
 
 struct Variable {
-    Type _type;
+    Type* _type;
     std::string _name;
 };
 
@@ -367,27 +504,53 @@ struct VariableSignature {
 
 typedef std::variant<Signature, VariableSignature> SignatureV;
 
-std::string Type::ToString() const {
+std::string Type::ToString(bool full) const {
     std::ostringstream res;
+    res << "[" << GetFullName() << "] ";
     if (_const) {
         res << "const ";
     }
 
-    if (std::holds_alternative<BasicType>(_value)) {
-        res << std::get<BasicType>(_value).ToString();
-    } else if (std::holds_alternative<Struct>(_value)) {
-        res << std::get<Struct>(_value).ToString();
+    if (!_base) {
+        if (std::holds_alternative<BasicType>(_value)) {
+            res << std::get<BasicType>(_value).ToString();
+        } else if (std::holds_alternative<Struct>(_value)) {
+            res << std::get<Struct>(_value).ToString(full);
+        } else {
+            res << "(unresolved) " << std::get<std::string>(_value) << "(" << this << ")";
+        }
+
+        if (_array) {
+            res << "[" << _arraySize << "] ";
+        }
+    } else {
+        if (_pointerDecl.size() > 0) {
+            res << _pointerDecl.front().ToString() << " ";
+        }
+
+        res << _base->ToString(false);
     }
 
-    if (_array) {
-        res << "[" << _arraySize << "] ";
-    }
-
-    for (PointerDecl const& decl: _pointerDecl) {
-        res << decl.ToString() << " ";
-    }
+    // for (PointerDecl const& decl: _pointerDecl) {
+    //    res << decl.ToString() << " ";
+    // }
 
     return res.str();
+}
+
+std::string Struct::ToString(bool full) const {
+    std::ostringstream str;
+    if (full) {
+        str << "Structure " << _name << std::endl;
+        str << "\tSignatures: " << std::endl;
+        for (Signature const& sig: _namespace._signatures) {
+            str << "sig = " << sig._sig << ", fn = " << sig._function.ToString() << std::endl;
+        }
+        str << "\tFields: " << std::endl;
+    } else {
+        str << _name << " ";
+    }
+    return str.str();
 }
 
 Type::~Type() {
@@ -415,7 +578,7 @@ std::string Function::ToString() const {
         }
     }
     str << std::endl;
-    str << "\ttype = " << _ret.ToString() << std::endl;
+    str << "\ttype = " << _ret->ToString(false) << std::endl;
     if (_convention) {
         str << "\tconvention = " << CallingConventionToString(*_convention) << std::endl;
     }
@@ -577,9 +740,9 @@ public:
                     fn._qualifiers |= FunctionQualifiers::CLEANUP;
                 }
             }
-
-            fn._ret = std::any_cast<Type>(visit(ctx->type()));
         }
+
+        fn._ret = std::any_cast<Type*>(visit(ctx->type()));
 
         if (fn.IsVirtual() && fn.IsStatic()) {
             _errors << ErrorLogger::error << "static and virtual qualifiers applied together to function " << GetCurrentFunctionQualifiedName(fn._name) << ErrorLogger::_end;
@@ -589,15 +752,6 @@ public:
         if (fn.IsStatic() && fn._convention && fn._convention == CallingConventions::THISCALL) {
             _errors << ErrorLogger::error << "__thiscall convention applied to static function " << GetCurrentFunctionQualifiedName(fn._name) << ErrorLogger::_end;
             // exit(-1);
-        }
-
-        if (parts.size() > 1) {
-            Type* t = GetTypeByName(parts.front());
-            if (!std::holds_alternative<Struct>(t->_value)) {
-                throw std::logic_error("Expected Struct");
-            }
-            Namespace& nm = std::get<Struct>(t->_value)._namespace;
-            nm._functions.push_back(fn);
         }
 
         if (auto args = ctx->funArgs()) {
@@ -614,7 +768,7 @@ public:
         }
 
         _currentFunction = nullptr;
-        return fn;
+        return std::make_tuple(parts.size() > 1, parts.front(), fn);
     }
 
     virtual std::any visitReference(ZHLParser::ReferenceContext* ctx) override {
@@ -622,7 +776,7 @@ public:
         _currentVariable = &var;
 
         var._name = ctx->Name()->getText();
-        var._type = std::any_cast<Type>(visit(ctx->type()));
+        var._type = std::any_cast<Type*>(visit(ctx->type()));
 
         _currentVariable = nullptr;
         return var;
@@ -674,17 +828,16 @@ public:
         _currentParam = &param;
 
         FullNameV name = std::any_cast<FullNameV>(visit(ctx->fullName()));
+        param._type = std::any_cast<Type*>(visit(ctx->type()));
 
         if (std::holds_alternative<Array>(name)) {
             Array& arr = std::get<Array>(name);
             param._name = arr._name;
-            param._type._array = true;
-            param._type._arraySize = arr._size;
+            param._type->_array = true;
+            param._type->_arraySize = arr._size;
         } else {
             param._name = std::get<std::string>(name);
         }
-
-        param._type = std::any_cast<Type>(visit(ctx->type()));
 
         if (auto argParam = ctx->argParam()) {
             param._reg = std::any_cast<Registers>(visit(argParam));
@@ -731,34 +884,73 @@ public:
     }
 
     virtual std::any visitType(ZHLParser::TypeContext* ctx) override {
-        Type base = std::any_cast<Type>(visit(ctx->typeSpecifier()));
+        // The type if never qualified at first
+        std::pair<Type*, bool> base = std::any_cast<std::pair<Type*, bool>>(visit(ctx->typeSpecifier()));
+        Type* type = base.first;
+        if (base.second) {
+            Type tmp = *type;
+            tmp._const = true;
+            std::string name(tmp.GetFullName());
+            // std::cout << "Adding const: " << type->GetFullName() << " => " << name << std::endl;
+            Type* qualified = GetOrCreateTypeByName(name);
+            if (!qualified->_base) {
+                qualified->_base = type;
+                qualified->_const = true;
+                qualified->_name = name;
+            }
+            type = qualified;
+        }
+
         // std::vector<PointerDecl> pointers;
         for (auto ptrCtx: ctx->pointerAttribute()) {
-            base._pointerDecl.push_back(std::any_cast<PointerDecl>(visit(ptrCtx)));
+            Type tmp = *type;
+            PointerDecl decl = std::any_cast<PointerDecl>(visit(ptrCtx));
+            tmp._pointerDecl.push_back(decl);
+            std::string name(tmp.GetFullName());
+            std::cout << "Adding pointer: " << type->GetFullName() << " => " << name << std::endl;
+            Type* qualified = GetOrCreateTypeByName(name);
+            if (!qualified->_base) {
+                qualified->_base = type;
+                qualified->_pointerDecl.push_back(decl);
+                qualified->_name = name;
+            }
+            type = qualified;
         }
-        return base;
+
+        return type;
     }
 
     virtual std::any visitTypeSpecifier(ZHLParser::TypeSpecifierContext* ctx) override {
-        Type result;
+        Type* result = nullptr;
 
         auto cstQual = ctx->Const();
-        result._const = !cstQual.empty();
+        bool isConst = !cstQual.empty();
 
         if (cstQual.size() == 2) {
             _errors << ErrorLogger::warn << "const used multiple times " << GetContext() << ErrorLogger::_end;
         }
 
         if (auto simple = ctx->simpleType()) {
-            result._value = std::any_cast<BasicType>(visit(simple));
+            // result._value = std::any_cast<BasicType>(visit(simple));
+            BasicType basic = std::any_cast<BasicType>(visit(simple));
+            // std::cout << "Found basic type " << basic.GetAbsoluteName() << std::endl;
+            result = GetOrCreateTypeByName(basic.GetAbsoluteName());
+            result->_value = basic;
         } else {
-            std::string name = MergeNameParts(std::any_cast<std::vector<std::string>>(visit(ctx->nestedName())));
+            // std::string name = MergeNameParts(std::any_cast<std::vector<std::string>>(visit(ctx->nestedName())));
             // Struct* target = GetStructByName(name);
-            result._value = name;
+            // result._value = name;
             // result._name = target;
+
+            std::vector<std::string> parts = std::any_cast<std::vector<std::string>>(visit(ctx->nestedName()));
+            result = GetOrCreateTypeByName(parts.front());
+
+            if (result->IsEmpty()) {
+                result->_value = parts.front();
+            }
         }
 
-        return result;
+        return std::make_pair(result, isConst);
     }
 
     virtual std::any visitSimpleType(ZHLParser::SimpleTypeContext* ctx) override {
@@ -845,6 +1037,7 @@ public:
 
                 s._name = typen;
                 type._value = s;
+                type._name = typen;
                 (*_types)[typen] = type;
             }
         }
@@ -884,29 +1077,35 @@ public:
 
     virtual std::any visitClass(ZHLParser::ClassContext* ctx) override {
         std::string name(ctx->Name()->getText());
-        Type* type = GetTypeByName(name);
+        Type* type = GetOrCreateTypeByName(name);
         type->_pending = false;
 
         Struct* st;
 
+        // std::cout << "Visiting type " << name << std::endl;
         if (!std::holds_alternative<Struct>(type->_value)) {
             Struct s;
             s._name = name;
-            type->_value = s._name;
+            type->_value = s;
+
+            // std::cout << "Type " << name << " was not a structure, now it is (" << type << ")" << std::endl;
         }
 
         st = &(std::get<Struct>(type->_value));
+        st->_name = name;
+        _currentStruct = st;
 
         if (auto deps = ctx->depends()) {
             st->_deps = std::any_cast<std::set<Type*>>(visit(ctx->depends()));
         }
-        _currentStruct = st;
 
         if (auto inheritance = ctx->inheritance()) {
             st->_parents = std::any_cast<std::set<std::pair<Type*, Visibility>>>(visit(ctx->inheritance()));
         }
 
         visit(ctx->classBody());
+
+        return 0;
     }
 
     virtual std::any visitDepends(ZHLParser::DependsContext* ctx) override {
@@ -916,7 +1115,7 @@ public:
         for (int i = 0; i < names.size(); ++i) {
             std::string name(names[i]->getText());
             // Struct* st = GetStructByName(name);
-            Type* t = GetTypeByName(name);
+            Type* t = GetOrCreateTypeByName(name);
             if (!std::holds_alternative<Struct>(t->_value)) {
                 Struct s;
                 s._name = name;
@@ -936,19 +1135,35 @@ public:
     }
 
     virtual std::any visitClassBody(ZHLParser::ClassBodyContext* ctx) override {
+        for (auto classSigCtx: ctx->classSignature()) {
+            Signature signature = std::any_cast<Signature>(visit(classSigCtx));
+            _currentStruct->_namespace._signatures.push_back(signature);
+        }
 
-    }
+        for (auto fieldCtx: ctx->classField()) {
 
-    virtual std::any visitClassBodyElement(ZHLParser::ClassBodyElementContext *ctx) override {
-        return visitChildren(ctx);
+        }
+
+        for (auto genericCodeCtx: ctx->genericCode()) {
+
+        }
+
+        return 0;
     }
 
     virtual std::any visitClassSignature(ZHLParser::ClassSignatureContext* ctx) override {
-        return 0;
+        std::string sig(ctx->Signature()->getText());
+        Function function = std::any_cast<Function>(visit(ctx->classFunction()));
+        Signature signature;
+        signature._sig = sig;
+        signature._function = function;
+        return signature;
     }
 
     virtual std::any visitClassFunction(ZHLParser::ClassFunctionContext* ctx) override {
-        return 0;
+        Function res;
+        return res;
+
     }
 
     virtual std::any visitClassField(ZHLParser::ClassFieldContext* ctx) override {
@@ -984,8 +1199,21 @@ public:
             Signature s;
             fullSignature = sigCtx->getText();
             s._sig = fullSignature.substr(1, fullSignature.size() - 3);
-            s._function = std::any_cast<Function>(visit(ctx->function()));
+            auto results = std::any_cast<std::tuple<bool, std::string, Function>>(visit(ctx->function()));
+            s._function = std::get<Function>(results);
             sig = s;
+
+            if (std::get<bool>(results)) {
+                std::string typen(std::get<std::string>(results));
+                Type* t = GetOrCreateTypeByName(typen);
+                if (!std::holds_alternative<Struct>(t->_value)) {
+                    Struct s;
+                    s._name = typen;
+                    t->_value = s;
+                }
+                Namespace& nm = std::get<Struct>(t->_value)._namespace;
+                nm._signatures.push_back(s);
+            }
 
             //std::cout << "Read function signature " << s._sig << " for " << s._function.ToString() << std::endl; // GetCurrentFunctionQualifiedName(s._function._name) << std::endl;
         } else {
@@ -1037,7 +1265,7 @@ public:
                 throw std::runtime_error("Nested names not supported");
             }
 
-            Type* type = GetTypeByName(first.front());
+            Type* type = GetOrCreateTypeByName(first.front());
             if (!std::holds_alternative<Struct>(type->_value)) {
                 Struct s;
                 s._name = first.front();
@@ -1129,53 +1357,27 @@ private:
         return context.str();
     }
 
-    Type* GetTypeByName(std::string const& name) {
+    Type* GetOrCreateTypeByName(std::string const& name) {
         if (auto it = _types->find(name); it != _types->end()) {
             return &(it->second);
         } else {
             Type t;
+            t._name = name;
             auto iter = _types->insert(std::make_pair(name, t));
             return &(iter.first->second);
         }
     }
-
-    /* Struct* GetStructByName(std::string const& name, bool create = false) {
-        Struct* st;
-        if (auto iter = _types->find(name); iter != _types->end()) {
-
-        } else {
-            Type* type = new Type;
-            type->_pending = false;
-
-            Struct s;
-            s._name = name;
-            type->_value = s;
-            (*_types)[name] = type;
-
-            st = &(std::get<Struct>(type->_value));
-        }
-
-        return st;
-    } */
-
-    /* void CheckOrRegStruct(std::string const& name) {
-        if (_types->find(name) == _types->end()) {
-            Struct* st = new Struct;
-            st->_name = name;
-            (*_types)[name] = st;
-        }
-    } */
 };
 
 void process_file(std::map<std::string, Type>* types, fs::path const& path) {
-    //std::cout << "Processing " << path << std::endl;
+    // std::cout << "Processing " << path << std::endl;
     std::ifstream stream(path);
 
     if (!stream.is_open()) {
         return;
     }
 
-    //std::cout << "Visiting " << path << std::endl;
+    // std::cout << "Visiting " << path << std::endl;
     antlr4::ANTLRInputStream input_stream(stream);
     ZHLLexer lexer(&input_stream);
     antlr4::CommonTokenStream tokens(&lexer);
@@ -1191,7 +1393,7 @@ int main(int argc, char** argv) {
     if (argc != 1) {
         functions = fs::path(argv[1]);
     } else {
-        functions = "../../libzhl/functions";
+        functions = "../IsaacZHL/libzhl/functions";
     }
 
     std::map<std::string, Type> types;
@@ -1207,9 +1409,10 @@ int main(int argc, char** argv) {
         process_file(&types, entry.path());
 	}
 
-    process_file(&types, "../../libzhlgen/IsaacRepentanceStripped.h");
-
-    void (Parser::*foo)(int);
+    process_file(&types, "../IsaacZHL/libzhlgen/IsaacRepentanceStripped.h");
+    for (auto const& [name, type]: types) {
+        std::cout << name << " => " << type.ToString(true) << std::endl;
+    }
 
 	return 0;
 }
