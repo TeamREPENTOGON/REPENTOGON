@@ -202,14 +202,30 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, boolean Unknown)| - | void |
 
-### MC_COMPLETION_MARK_GET
-Can return `false` to cancel the completion event.
+### MC_PRE_COMPLETION_EVENT
+Can return `false` to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.
 
-Triggers when the player gets a completion mark, getting as a parameter the code for the mark in question.
+Triggers when a completion even gets triggered, getting as a parameter the code for the event in question. 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion) | - |
+|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | - |
+
+### MC_POST_COMPLETION_MARK_GET
+Triggers after the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1048 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | - |
+
+### MC_COMPLETION_MARK_GET
+Can return `false` to cancel the completion mark.
+
+Triggers when the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | - |
 
 ### MC_PRE_LEVEL_INIT {: .copyable }
 Accepts no return parameters.
