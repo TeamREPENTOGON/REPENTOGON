@@ -703,7 +703,7 @@ bool PreMarksCallbackTrigger(int markid,int playertpe) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(playertpe)
 			.push(markid)
 			.push(playertpe)
 			.call(1);
@@ -727,7 +727,7 @@ void PostMarksCallbackTrigger(int markid, int playertpe) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
+			.push(playertpe)
 			.push(markid)
 			.push(playertpe)
 			.call(1);
