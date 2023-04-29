@@ -209,7 +209,7 @@ Triggers when a completion even gets triggered, getting as a parameter the code 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1047 |MC_PRE_COMPLETION_EVENT {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | - | void or false |
+|1047 |MC_PRE_COMPLETION_EVENT {: .copyable } | ([CompletionType](CompletionType.md) Completion) | - | void or false |
 
 ### MC_COMPLETION_MARK_GET
 Can return `false` to cancel the completion mark.
