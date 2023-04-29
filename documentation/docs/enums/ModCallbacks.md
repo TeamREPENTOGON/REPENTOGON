@@ -209,14 +209,7 @@ Triggers when a completion even gets triggered, getting as a parameter the code 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | - |
-
-### MC_POST_COMPLETION_MARK_GET
-Triggers after the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
-
-|ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|
-|1048 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | - |
+|1047 |MC_PRE_COMPLETION_EVENT {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | - | void or false |
 
 ### MC_COMPLETION_MARK_GET
 Can return `false` to cancel the completion mark.
@@ -225,7 +218,15 @@ Triggers when the player gets a completion mark, getting as a parameter the code
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | - |
+|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | void or false |
+
+### MC_POST_COMPLETION_MARK_GET
+Triggers after the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1048 |MC_POST_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) |
+
 
 ### MC_PRE_LEVEL_INIT {: .copyable }
 Accepts no return parameters.
