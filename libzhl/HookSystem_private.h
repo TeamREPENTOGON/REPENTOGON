@@ -38,6 +38,8 @@ private:
 public:
 	FunctionDefinition(const char *name, const type_info &type, const char *sig, const short *argdata, int nArgs, unsigned int flags, void **outfunc);
 
+	FunctionDefinition(const char* name, const type_info& type, void* addr, const short* argdata, int nArgs, unsigned int flags, void** outfunc);
+
 	virtual int Load();
 
 	bool IsThiscall() const {return (_flags & 1) != 0;}

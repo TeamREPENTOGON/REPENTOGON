@@ -769,3 +769,6 @@ struct PlayerHUDActiveItem {
 
 struct ShapeRenderer {
 };
+
+struct OpenGL {
+};

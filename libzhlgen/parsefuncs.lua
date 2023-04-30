@@ -800,16 +800,37 @@ local function writeFunctionWrappers(funcs, out)
 				funcptr = string.format("%s(%s::*)(%s)%s", func:toString(), classname, argsToString(func, false), (func.constfunc and " const") or "")
 			end
 			
+			
+			if func.sig:sub(1, #"\\") == "\\" then
+			    func.external = true
+			end
+			
+			
+			
 			if isGlobal then
-				out([[	static FunctionDefinition funcObj("%s", typeid(%s), "%s", argdata, %d, %d, &func);
+			    if func.external then
+					out([[	static FunctionDefinition funcObj("%s", typeid(%s), %s, argdata, %d, %d, &func);
+}
+
+]], func.name, funcptr, func.sig:sub(2) or "", #func.args, flags)
+				else
+					out([[	static FunctionDefinition funcObj("%s", typeid(%s), "%s", argdata, %d, %d, &func);
 }
 
 ]], func.name, funcptr, func.sig or "", #func.args, flags)
+				end
 			else
-				out([[	static FunctionDefinition funcObj("%s::%s", typeid(%s), "%s", argdata, %d, %d, &func);
+				if func.external then
+					out([[	static FunctionDefinition funcObj("%s::%s", typeid(%s), %s, argdata, %d, %d, &func);
+}
+
+]], classname, func.name, funcptr, func.sig:sub(2) or "", #func.args, flags)
+				else
+					out([[	static FunctionDefinition funcObj("%s::%s", typeid(%s), "%s", argdata, %d, %d, &func);
 }
 
 ]], classname, func.name, funcptr, func.sig or "", #func.args, flags)
+				end
 			end
 			
 			local isDestructor = func.virtual and func.name == "Free"

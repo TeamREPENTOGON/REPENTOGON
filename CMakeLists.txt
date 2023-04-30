@@ -5,6 +5,8 @@ set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
 
 project(RepExtender)
 
+find_package(OpenGL REQUIRED)
+
 include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src" "${CMAKE_SOURCE_DIR}/libs/rapidxml-1.13" "${CMAKE_SOURCE_DIR}/libs/rapidjson" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl")
 
 # Zydis
@@ -67,5 +69,5 @@ add_dependencies(zhlModTest libzhl)
 add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
-target_link_libraries(zhlModTest Lua5.3.3r libzhl "Zydis")
+target_link_libraries(zhlModTest Lua5.3.3r libzhl "Zydis" ${OPENGL_LIBRARIES})
 target_link_libraries(libzhl Lua5.3.3r "Zydis")

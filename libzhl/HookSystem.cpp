@@ -157,18 +157,42 @@ FunctionDefinition::FunctionDefinition(const char *name, const type_info &type, 
 	Add(_name, this);
 }
 
+FunctionDefinition::FunctionDefinition(const char* name, const type_info& type, void* addr, const short* argdata, int nArgs, unsigned int flags, void** outfunc) :
+	_address(addr),
+	_argdata(argdata),
+	_nArgs(nArgs),
+	_flags(flags),
+	_outFunc(outfunc)
+{
+	SetName(name, type.raw_name());
+	Add(_name, this);
+}
+
 int FunctionDefinition::Load()
 {
-	SigScan sig(_sig);
-	if(!sig.Scan())
-	{
-		sprintf_s(g_defLastError, "Failed to find address for function %s", _name);
-		return 0;
-	}
+	if (!_address) {
+		// There should be no instance where this isn't set but just in case
+		if (_sig) {
+			SigScan sig(_sig);
+			if (!sig.Scan())
+			{
+				sprintf_s(g_defLastError, "Failed to find address for function %s", _name);
+				return 0;
+			}
 
-	_address = sig.GetAddress<void*>();
-	*_outFunc = _address;
-	Log("Found address for %s: %08x, dist %d\n", _name, (unsigned int)_address, sig.GetDistance());
+			_address = sig.GetAddress<void*>();
+			*_outFunc = _address;
+			Log("Found address for %s: %08x, dist %d\n", _name, (unsigned int)_address, sig.GetDistance());
+		}
+		else {
+			sprintf_s(g_defLastError, "No signature or addresss defined for function %s", _name);
+			return 0;
+		}
+	}
+	else {
+		*_outFunc = _address;
+		Log("Address for %s already defined or manually specified: %08x\n", _name, (unsigned int)_address);
+	}
 
 	return 1;
 }
