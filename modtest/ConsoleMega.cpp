@@ -1,7 +1,13 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include "OpenGL.h"
+#include <GL/GL.h>
 
 // Don't get too excited yet, I'm just filling out the hooks I'll need.
+
+extern HDC glHdc;
+extern HWND glWindow;
+extern HGLRC glContext;
 
 HOOK_METHOD(Console, FillOmnicomplete, () -> void) {
 	// TODO
@@ -16,6 +22,7 @@ HOOK_METHOD(Console, ProcessInput, () -> void) {
 HOOK_METHOD(Console, Render, () -> void) {
 	//TODO
 	super();
+
 }
 
 /*HOOK_METHOD(Console, RenderHistory, (Font* font, float unk, float unk2, bool unk3) -> std_deque_console_historyentry) {

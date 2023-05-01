@@ -157,6 +157,7 @@ function ChangeLog.MenuRender()
     end
     Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(MainMenu.TITLE, Cl.NoteOffset))
     local versionPosition = Isaac.WorldToMenuPosition(MainMenu.TITLE, Cl.VersionOffset)
+	Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X + 1, versionPosition.Y + 1, KColor(0, 0, 0, 0.3), 200, true)
     Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X, versionPosition.Y, KColor(67 / 255, 5 / 255, 5 / 255, 1), 200, true)
     if IsGivenMenuEntry(MainMenu.TITLE) then
         if IsActionTriggeredAll(ButtonAction.ACTION_MAP) then
