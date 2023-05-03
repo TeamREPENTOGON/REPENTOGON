@@ -327,6 +327,48 @@ int Lua_PlayerSetBagOfCraftingOutput(lua_State* L)
 	return 0;
 }
 
+int Lua_PlayerGetFireDelayModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetFireDelayModifier());
+	return 1;
+}
+
+int Lua_PlayerSetFireDelayModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetFireDelayModifier() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+int Lua_PlayerGetDamageModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetDamageModifier());
+	return 1;
+}
+
+int Lua_PlayerSetDamageModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetDamageModifier() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+int Lua_PlayerGetRedStewBonusDuration(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetRedStewBonusDuration());
+	return 1;
+}
+
+int Lua_PlayerSetRedStewBonusDuration(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetRedStewBonusDuration() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -362,4 +404,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot);
 	lua::RegisterFunction(state, mt, "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput);
 	lua::RegisterFunction(state, mt, "SetBagOfCraftingOutput", Lua_PlayerSetBagOfCraftingOutput);
+	lua::RegisterFunction(state, mt, "GetFireDelayModifier", Lua_PlayerGetFireDelayModifier);
+	lua::RegisterFunction(state, mt, "SetFireDelayModifier", Lua_PlayerSetFireDelayModifier);
+	lua::RegisterFunction(state, mt, "GetDamageModifier", Lua_PlayerGetDamageModifier);
+	lua::RegisterFunction(state, mt, "SetDamageModifier", Lua_PlayerSetDamageModifier);
+	lua::RegisterFunction(state, mt, "GetRedStewBonusDuration", Lua_PlayerGetRedStewBonusDuration);
+	lua::RegisterFunction(state, mt, "SetRedStewBonusDuration", Lua_PlayerSetRedStewBonusDuration);
 }

@@ -171,11 +171,14 @@ __thiscall void Entity_Player::TriggerTrinketRemoved(Entity_Player *this<ecx>, u
 struct Entity_Player depends (ActiveItemDesc, History) {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
+	inline int* GetFireDelayModifier() { return (int*)((char*)this + 0x146c); }
+	inline int* GetDamageModifier() { return (int*)((char*)this + 0x1470); }
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
 	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
+	inline int* GetRedStewBonusDuration() { return (int*)((char*)this + 0x1d8c); }
     inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1e44); }
 	inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
 }};
