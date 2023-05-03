@@ -167,6 +167,9 @@ __thiscall void Entity_Player::TriggerTrinketAdded(Entity_Player *this<ecx>, uns
 "558bec83e4f85153568bf157837e??00":
 __thiscall void Entity_Player::TriggerTrinketRemoved(Entity_Player *this<ecx>, unsigned int trinketID);
 
+"558bec83e4f85153565733f6":
+__thiscall int Entity_Player::GetWeaponModifiers(Entity_Player *this<ecx>);
+
 
 struct Entity_Player depends (ActiveItemDesc, History) {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }

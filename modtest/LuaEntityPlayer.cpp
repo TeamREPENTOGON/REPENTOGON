@@ -369,6 +369,13 @@ int Lua_PlayerSetRedStewBonusDuration(lua_State* L)
 	return 0;
 }
 
+int Lua_PlayerGetWeaponModifiers(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->GetWeaponModifiers());
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -410,4 +417,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetDamageModifier", Lua_PlayerSetDamageModifier);
 	lua::RegisterFunction(state, mt, "GetRedStewBonusDuration", Lua_PlayerGetRedStewBonusDuration);
 	lua::RegisterFunction(state, mt, "SetRedStewBonusDuration", Lua_PlayerSetRedStewBonusDuration);
+	lua::RegisterFunction(state, mt, "GetWeaponModifiers", Lua_PlayerGetWeaponModifiers);
 }
