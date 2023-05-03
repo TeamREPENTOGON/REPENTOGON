@@ -2,7 +2,7 @@
 tags:
   - Enum
 ---
-# Enum "PAUSEMENUSTATES"
+# Enum "PauseMenuStates"
 |Value|Enumerator|Comment|
 |:--|:--|:--|
 |0 |CLOSED {: .copyable } |  |

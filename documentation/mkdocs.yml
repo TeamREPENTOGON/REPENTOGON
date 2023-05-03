@@ -46,6 +46,7 @@ nav:
   - Enums:
     - Achievement: enums/Achievement.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
+    - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
     - BitwiseDebugFlag: enums/BitwiseDebugFlag.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
@@ -71,7 +72,7 @@ nav:
     - ModCallbacks: enums/ModCallbacks.md
     - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
-    - PAUSEMENUSTATES: enums/PAUSEMENUSTATES.md
+    - PauseMenuStates: enums/PauseMenuStates.md
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
