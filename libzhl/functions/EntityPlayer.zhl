@@ -170,9 +170,13 @@ __thiscall void Entity_Player::TriggerTrinketRemoved(Entity_Player *this<ecx>, u
 "558bec83e4f85153565733f6":
 __thiscall int Entity_Player::GetWeaponModifiers(Entity_Player *this<ecx>);
 
+"558bec8b45??8a55":
+__thiscall void Entity_Player::EnableWeaponType(Entity_Player *this<ecx>, WeaponType weaponType, bool Set);
 
-struct Entity_Player depends (ActiveItemDesc, History) {{
+
+struct Entity_Player depends (ActiveItemDesc, History, Weapon) {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
+	inline Weapon* GetWeapon() { return (Weapon*)((char*)this + 0x1328); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 	inline int* GetFireDelayModifier() { return (int*)((char*)this + 0x146c); }
 	inline int* GetDamageModifier() { return (int*)((char*)this + 0x1470); }

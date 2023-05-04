@@ -1,0 +1,10 @@
+"558bec83e4f883ec60a1????????33c4894424??8b45":
+virtual __thiscall void Weapon::Fire(Weapon* this<ecx>, const Vector& pos, bool unk1, bool unk2);
+
+struct Weapon {{
+	//owner -> Entity_Player(?) - 0x4
+	//inline float GetFireDelay() { return *(float*)((char*)this + 0xC); } notFiredelay
+	inline float GetMaxFireDelay() { return *(float*)((char*)this + 0x10); }
+	inline int GetWeaponType() { return *(int*)((char*)this + 0x2c); }
+	//inline int GetWeaponModifiers() { return *(int*)((char*)this + 0x30); } another firedelay?
+}};

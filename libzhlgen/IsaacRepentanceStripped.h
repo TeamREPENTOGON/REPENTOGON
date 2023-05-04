@@ -772,3 +772,14 @@ struct ShapeRenderer {
 
 struct OpenGL {
 };
+
+struct VTable_Weapon {
+	void (__thiscall *Free)(Entity *);
+    void (__thiscall *Init)(Weapon *, WeaponType weaponType, Entity* ent);
+    void (__thiscall *Update)(Weapon *, bool unk);
+    void (__thiscall *Fire)(Weapon *, const Vector& pos, bool unk1, bool unk2);
+};
+
+struct Weapon {
+	VTable_Weapon *_vtable;
+};

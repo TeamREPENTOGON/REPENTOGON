@@ -47,7 +47,25 @@ HOOK_METHOD(Game, Update, () -> void) {
 */
 
 /*HOOK_METHOD(Entity_Player, Update, () -> void) {
+	Weapon* wep = this->GetWeapon();
+	int mem = wep->GetFireDelay();
+	if (wep != nullptr) {
+		printf("wep delay %d\n", mem);
+	}
 	super();
+}
+*/
+
+/*HOOK_STATIC(Isaac, CreateWeapon, (WeaponType wepType, Entity* ent) -> Weapon*) {
+	Weapon* ret = super(wepType, ent);
+	printf("createweapon %d %d\n", wepType, ret->GetWeaponType());
+	return ret;
+}
+*/
+
+/*HOOK_METHOD(Weapon, Fire, (const Vector& pos, bool unk1, bool unk2)-> void) {
+	printf("Weapon::Fire %f %f %d %d %d\n", pos.x, pos.y, unk1, unk2);
+	super(pos, unk1, unk2);
 }
 */
 
