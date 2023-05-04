@@ -385,6 +385,34 @@ int Lua_PlayerEnableWeaponType(lua_State* L)
 	return 0;
 }
 
+int Lua_PlayerGetD8DamageModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *player->GetD8DamageModifier());
+	return 1;
+}
+
+int Lua_PlayerGetD8SpeedModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *player->GetD8SpeedModifier());
+	return 1;
+}
+
+int Lua_PlayerGetD8RangeModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *player->GetD8RangeModifier());
+	return 1;
+}
+
+int Lua_PlayerGetD8FireDelayModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *player->GetD8FireDelayModifier());
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -428,4 +456,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetRedStewBonusDuration", Lua_PlayerSetRedStewBonusDuration);
 	lua::RegisterFunction(state, mt, "GetWeaponModifiers", Lua_PlayerGetWeaponModifiers);
 	lua::RegisterFunction(state, mt, "EnableWeaponType", Lua_PlayerEnableWeaponType);
+	lua::RegisterFunction(state, mt, "GetD8DamageModifier", Lua_PlayerGetD8DamageModifier);
+	lua::RegisterFunction(state, mt, "GetD8SpeedModifier", Lua_PlayerGetD8SpeedModifier);
+	lua::RegisterFunction(state, mt, "GetD8RangeModifier", Lua_PlayerGetD8RangeModifier);
+	lua::RegisterFunction(state, mt, "GetD8FireDelayModifier", Lua_PlayerGetD8FireDelayModifier);
 }
