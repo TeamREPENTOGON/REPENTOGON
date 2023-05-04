@@ -2,7 +2,7 @@ REPENTOGON = {
 	["Real"] = true,
 	["Name"] = "REPENTOGON", --I avoid having to do RegisterMod this way, sorry ;P
 	["RESOURCEPATH"] = "../../../resources-repentogon",
-	["Extras"] = {},
+	["Extras"] = {}, -- Tables containing additional REPENTOGON data structures, example: ChangeLog or StatsMenu
 }
 
 collectgarbage("generational")
