@@ -23,8 +23,8 @@ end
 local oldrequire = require
 
 function require(modname)
-    local ret = oldrequire(modname)
-    return ret
+	local ret = oldrequire(modname)
+	return ret
 end
 
 -- I hate Luabridge, we can't have nice things.
@@ -33,18 +33,18 @@ local function GetMetatableType(ret)
 
 	-- Vector will CRASH THE GAME through a pcall if we try getting __name or __type from it, and getmetatable doesn't work on it.
 	-- We have no choice but to check manually.
-	if ret.X and ret.Y then 
+	if ret.X and ret.Y then
 		return "Vector"
 	else
-	-- Directly trying __name or __type, too, will crash the game on occasion, even through a pcall. 
-	-- Absolute masterclass of an API here. Best in show, really.
+		-- Directly trying __name or __type, too, will crash the game on occasion, even through a pcall.
+		-- Absolute masterclass of an API here. Best in show, really.
 		return getmetatable(ret).__name or getmetatable(ret).__type
 	end
 end
 
 local function checkMetatable(mtType)
 	return function(val)
-		if GetMetatableType(val) ~= mtType then 
+		if GetMetatableType(val) ~= mtType then
 			return "bad return type (" .. mtType .. " expected, got " .. GetMetatableType(val).__type .. ")"
 		end
 	end
@@ -60,10 +60,10 @@ end
 local function checkTableSizeFunction(size)
 	return function(val)
 		local tablesize = 0
-		for i, tabletype in pairs(val) do 
+		for i, tabletype in pairs(val) do
 			tablesize = i
 		end
-		
+
 		if tablesize > size then
 			return "bad return table length (" .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
 		end
@@ -73,17 +73,17 @@ end
 local function checkTableTypeFunction(typestrings)
 	return function(tbl)
 		local tablesize = 0
-		for i, tabletype in pairs(tbl) do 
+		for i, tabletype in pairs(tbl) do
 			tablesize = i
 		end
-		
+
 		if tablesize > #typestrings then
 			return "bad return table length (" .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
 		end
-		
+
 		for i, param in pairs(tbl) do
 			local paramType = type(param)
-			
+
 			if paramType == "number" and math.type(param) == "integer" then
 				paramType = "integer"
 			end
@@ -93,10 +93,9 @@ local function checkTableTypeFunction(typestrings)
 			end
 
 			if paramType ~= typestrings[i] then
-					return "bad return type for table value #" .. tostring(i) .. " (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+				return "bad return type for table value #" ..
+				tostring(i) .. " (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
 			end
-
-			
 		end
 	end
 end
@@ -111,11 +110,11 @@ end
 
 local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = {
-		["table"] = checkTableTypeFunction({"integer", "integer", "boolean", "integer", "integer"}),
+		["table"] = checkTableTypeFunction({ "integer", "integer", "boolean", "integer", "integer" }),
 		["number"] = checkInteger
 	},
 	[ModCallbacks.MC_PRE_SFX_PLAY] = {
-		["table"] = checkTableTypeFunction({"integer", "number", "integer", "boolean", "number", "number"}),
+		["table"] = checkTableTypeFunction({ "integer", "number", "integer", "boolean", "number", "number" }),
 		["boolean"] = true
 	},
 	[ModCallbacks.MC_EXECUTE_CMD] = {}, -- returning any value causes the game to crash
@@ -126,7 +125,7 @@ local typecheckFunctions = {
 		["table"] = checkTableSizeFunction(2)
 	},
 	[ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN] = {
-		["table"] = checkTableTypeFunction({"integer", "integer", "integer"})
+		["table"] = checkTableTypeFunction({ "integer", "integer", "integer" })
 	},
 	[ModCallbacks.MC_USE_ITEM] = {
 		["table"] = true,
@@ -136,7 +135,7 @@ local typecheckFunctions = {
 		["table"] = true
 	},
 	[ModCallbacks.MC_PRE_MUSIC_PLAY] = {
-		["table"] = checkTableTypeFunction({"integer", "number", "boolean"}),
+		["table"] = checkTableTypeFunction({ "integer", "number", "boolean" }),
 		["boolean"] = true,
 		["number"] = checkInteger
 	},
@@ -152,14 +151,14 @@ local typecheckFunctions = {
 		["Vector"] = true
 	},
 	[ModCallbacks.MC_PRE_CHANGE_ROOM] = {
-		["table"] = checkTableTypeFunction({"integer", "integer"}),
+		["table"] = checkTableTypeFunction({ "integer", "integer" }),
 	},
 	[ModCallbacks.MC_PRE_PICKUP_MORPH] = {
-		["table"] = checkTableTypeFunction({"integer", "integer", "integer", "integer", "integer", "integer"}),
+		["table"] = checkTableTypeFunction({ "integer", "integer", "integer", "integer", "integer", "integer" }),
 		["boolean"] = true
 	},
 	[ModCallbacks.MC_PRE_NPC_MORPH] = {
-		["table"] = checkTableTypeFunction({"integer", "integer", "integer", "integer", "integer", "integer"}),
+		["table"] = checkTableTypeFunction({ "integer", "integer", "integer", "integer", "integer", "integer" }),
 		["boolean"] = true
 	},
 	[ModCallbacks.MC_PRE_FAMILIAR_RENDER] = {
@@ -207,7 +206,7 @@ local typecheckFunctions = {
 		["number"] = checkInteger
 	},
 	[ModCallbacks.MC_PRE_REPLACE_SPRITESHEET] = {
-		["table"] = checkTableTypeFunction({"integer", "string"})
+		["table"] = checkTableTypeFunction({ "integer", "string" })
 	},
 	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY] = {
 		["boolean"] = true,
@@ -284,7 +283,7 @@ local boolCallbacks = {
 }
 
 for _, callback in ipairs(boolCallbacks) do
-	typecheckFunctions[callback] = {["boolean"] = true}
+	typecheckFunctions[callback] = { ["boolean"] = true }
 end
 
 local intCallbacks = {
@@ -305,7 +304,7 @@ local intCallbacks = {
 }
 
 for _, callback in ipairs(intCallbacks) do
-	typecheckFunctions[callback] = {["number"] = checkInteger}
+	typecheckFunctions[callback] = { ["number"] = checkInteger }
 end
 
 local function setExpectedTypes(typeTable)
@@ -313,9 +312,9 @@ local function setExpectedTypes(typeTable)
 	for typ, func in pairs(typeTable) do
 		validTypes[#validTypes + 1] = typ
 	end
-	
+
 	table.sort(validTypes)
-	
+
 	local expected = ""
 	for i, typ in ipairs(validTypes) do
 		if i ~= #validTypes then
@@ -326,11 +325,11 @@ local function setExpectedTypes(typeTable)
 			expected = expected .. "or " .. typ
 		end
 	end
-	
+
 	if expected == "" then
 		expected = "no return"
 	end
-	
+
 	typeTable.expectedtypes = expected
 end
 
@@ -361,20 +360,26 @@ local function cleanTraceback(level) -- similar to debug.traceback but breaks at
 			msg = msg .. "  in method " .. tostring(info.name) .. "\n"
 		else
 			if info.name then
-				msg = msg .. "  " .. tostring(info.short_src) .. ":" .. tostring(info.currentline) .. ": in function '" .. tostring(info.name) .. "'\n"
+				msg = msg ..
+				"  " ..
+				tostring(info.short_src) ..
+				":" .. tostring(info.currentline) .. ": in function '" .. tostring(info.name) .. "'\n"
 			else
-				msg = msg .. "  " .. tostring(info.short_src) .. ":" .. tostring(info.currentline) .. ": in function at line " .. tostring(info.linedefined) .. "\n"
+				msg = msg ..
+				"  " ..
+				tostring(info.short_src) ..
+				":" .. tostring(info.currentline) .. ": in function at line " .. tostring(info.linedefined) .. "\n"
 			end
 		end
-		
+
 		level = level + 1
 	end
-	
+
 	return msg
 end
 
 local err_input = 1
-local err_decay = 1500 
+local err_decay = 1500
 local err_hud_opacity = 1
 local err_shader_opacity = 1
 local err_color = 0
@@ -389,14 +394,18 @@ local err_min_font = Font()
 
 
 local function RenderErrText(name, opacity)
-    local main_str = name .. " is causing errors!"
-    local detail_str = "Click this message for more info."
+	local main_str = name .. " is causing errors!"
+	local detail_str = "Click this message for more info."
 
-    if not err_bounding_x then 
-        err_bounding_x = (Isaac.GetScreenWidth() / 2) - (math.max(err_main_font:GetStringWidth(main_str), err_main_font:GetStringWidth(detail_str)) / 2) end
+	if not err_bounding_x then
+		err_bounding_x = (Isaac.GetScreenWidth() / 2) -
+		(math.max(err_main_font:GetStringWidth(main_str), err_main_font:GetStringWidth(detail_str)) / 2)
+	end
 
-    err_main_font:DrawString(main_str, (Isaac.GetScreenWidth() / 2) - (err_main_font:GetStringWidth(main_str) / 2), 0, KColor(1, err_color, err_color, opacity), 0, false)
-    err_min_font:DrawString(detail_str, (Isaac.GetScreenWidth() / 2) - (err_min_font:GetStringWidth(detail_str) / 2), 7, KColor(1, err_color, err_color, opacity), 0 , false)
+	err_main_font:DrawString(main_str, (Isaac.GetScreenWidth() / 2) - (err_main_font:GetStringWidth(main_str) / 2), 0,
+		KColor(1, err_color, err_color, opacity), 0, false)
+	err_min_font:DrawString(detail_str, (Isaac.GetScreenWidth() / 2) - (err_min_font:GetStringWidth(detail_str) / 2), 7,
+		KColor(1, err_color, err_color, opacity), 0, false)
 end
 
 local printedWarnings = {}
@@ -409,17 +418,20 @@ local function logWarning(callbackID, modName, warn)
 
 	table.insert(printedWarnings, warn)
 
-	Game():GetConsole():PrintWarning('"' .. cbName .. '" from "' .. modName .. '" failed: ' ..  warn .. "\n(This warning will not reappear until the next Lua reload.)")
-	Isaac.DebugString('Error in "' ..cbName .. '" call from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload.)")
+	Game():GetConsole():PrintWarning('"' ..
+	cbName ..
+	'" from "' .. modName .. '" failed: ' .. warn .. "\n(This warning will not reappear until the next Lua reload.)")
+	Isaac.DebugString('Error in "' ..
+	cbName ..
+	'" call from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload.)")
 end
 
 local err_dupecount = 1
 
 local function logError(callbackID, modName, err)
-	
 	--[[ In order to squash multiple instances of an error into one line,
-	     we want to get the *last* instance of "(x*)" for comparison here, 
-		 so we can remove our (x2) (x3) etc. from a comparison. 
+	     we want to get the *last* instance of "(x*)" for comparison here,
+		 so we can remove our (x2) (x3) etc. from a comparison.
 
 	     Unfortunately, Lua has no support for removing the last instance of a pattern,
 		 but it very much has support for removing the *first* instance of a pattern.
@@ -427,23 +439,22 @@ local function logError(callbackID, modName, err)
 		 This is likely not the best for performance, but this only runs when there's an error anyways-
 		 all bets are already off the table at that point.
 	  ]]
-
 	local console = Game():GetConsole()
 	local ohistory = console:GetHistory()
 	local history = {}
 
-	--[[ First, inverse the table, as console history is returned last-to-first. 
+	--[[ First, inverse the table, as console history is returned last-to-first.
 	     Next, concatenate the table with \n so we can compare with our tracebacks.
 	  ]]
-	for i=#ohistory, 1, -1 do
-		history[#history+1] = ohistory[i]
+	for i = #ohistory, 1, -1 do
+		history[#history + 1] = ohistory[i]
 	end
 
 	history = table.concat(history, "\n"):reverse()
 
 	local cbName = callbackIDToName[callbackID] or callbackID
-	local consoleLog = '"' .. cbName .. '" from "' .. modName .. '" failed: ' ..  err
-	
+	local consoleLog = '"' .. cbName .. '" from "' .. modName .. '" failed: ' .. err
+
 	-- We add a \n to our comparison to account for the parsed history having one.
 	local historyComparison = (consoleLog .. "\n"):reverse()
 
@@ -459,67 +470,66 @@ local function logError(callbackID, modName, err)
 		console:PopHistory(select(2, string.gsub(parsedHistory, "\n", "")))
 		consoleLog = consoleLog .. " (x" .. err_dupecount .. ")"
 	else
-		err_dupecount = 1 
+		err_dupecount = 1
 	end
-	
+
 	console:PrintError(consoleLog)
-	Isaac.DebugString('Error in "' ..cbName .. '" call from "' .. modName .. '": ' .. err) -- this should be replaced with a proper log function so it can have the [INFO] header
+	Isaac.DebugString('Error in "' .. cbName .. '" call from "' .. modName .. '": ' .. err) -- this should be replaced with a proper log function so it can have the [INFO] header
 
-        if not err_shown then 	
+	if not err_shown then
+		local errdisp = RegisterMod("REPENTOGON Error Display", 1)
 
-            local errdisp = RegisterMod("REPENTOGON Error Display", 1)	
-
-            err_main_font:Load("font/pftempestasevencondensed.fnt")	
-	    err_min_font:Load("font/luaminioutlined.fnt") 
-            local mouse = Sprite()
-            mouse:Load("gfx/ui/cursor.anm2", true)
-	    mouse:Play("Idle")
-	    local mousecontrol_off=not Options.MouseControl	--i bet its expensive to straight up call this every frame
-
-
-            errdisp:AddPriorityCallback(ModCallbacks.MC_HUD_RENDER, INT_MIN, function()
-                if err_input < ERR_INPUT_TARGET then
-                    err_color = math.sin((err_input * 200)/ err_decay) / 2 + .5
-		    err_input = err_input + 1 
-		    err_decay = err_decay + 1
-		else
-                    err_color = 0
-		end
-
-		if err_hud_opacity > 0.3 then err_hud_opacity = err_hud_opacity - (0.7 / ERR_INPUT_TARGET) end
-		RenderErrText(modName, err_hud_opacity)
+		err_main_font:Load("font/pftempestasevencondensed.fnt")
+		err_min_font:Load("font/luaminioutlined.fnt")
+		local mouse = Sprite()
+		mouse:Load("gfx/ui/cursor.anm2", true)
+		mouse:Play("Idle")
+		local mousecontrol_off = not Options.MouseControl --i bet its expensive to straight up call this every frame
 
 
-               mouse.Color = Color(1, 1, 1, err_hud_opacity)
-               local mouse_pos = Isaac.WorldToScreen(Input.GetMousePosition(true))
+		errdisp:AddPriorityCallback(ModCallbacks.MC_HUD_RENDER, INT_MIN, function()
+			if err_input < ERR_INPUT_TARGET then
+				err_color = math.sin((err_input * 200) / err_decay) / 2 + .5
+				err_input = err_input + 1
+				err_decay = err_decay + 1
+			else
+				err_color = 0
+			end
 
-               if mouse_pos.X > err_bounding_x and mouse_pos.X < Isaac.GetScreenWidth() - err_bounding_x and mouse_pos.Y < 18 then 
-                   mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity) 
-                   if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
-                       Game():GetConsole():Show()
-                   end
-               end
-               
-		if mousecontrol_off then
-              		mouse:Render(mouse_pos)
-		end
-            end)
-									
-	    errdisp:AddPriorityCallback(ModCallbacks.MC_GET_SHADER_PARAMS, INT_MIN, function()
-		if err_shader_opacity > 0 then err_shader_opacity = err_shader_opacity - (1 /  ERR_INPUT_TARGET) end
-		RenderErrText(modName, err_shader_opacity)
-	    end)
+			if err_hud_opacity > 0.3 then err_hud_opacity = err_hud_opacity - (0.7 / ERR_INPUT_TARGET) end
+			RenderErrText(modName, err_hud_opacity)
 
-        err_shown = true
-    end
+
+			mouse.Color = Color(1, 1, 1, err_hud_opacity)
+			local mouse_pos = Isaac.WorldToScreen(Input.GetMousePosition(true))
+
+			if mouse_pos.X > err_bounding_x and mouse_pos.X < Isaac.GetScreenWidth() - err_bounding_x and mouse_pos.Y < 18 then
+				mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity)
+				if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
+					Game():GetConsole():Show()
+				end
+			end
+
+			if mousecontrol_off then
+				mouse:Render(mouse_pos)
+			end
+		end)
+
+		errdisp:AddPriorityCallback(ModCallbacks.MC_GET_SHADER_PARAMS, INT_MIN, function()
+			if err_shader_opacity > 0 then err_shader_opacity = err_shader_opacity - (1 / ERR_INPUT_TARGET) end
+			RenderErrText(modName, err_shader_opacity)
+		end)
+
+		err_shown = true
+	end
 end
 
 function _RunCallback(callbackID, Param, ...)
-    local callbacks = Isaac.GetCallbacks(callbackID)
+	local callbacks = Isaac.GetCallbacks(callbackID)
 	if callbacks then
 		for _, callback in ipairs(callbacks) do
 			local matchFunc = getmetatable(callbacks).__matchParams or defaultCallbackMeta.__matchParams
-			if matchFunc(Param, callback.Param) then				
+			if matchFunc(Param, callback.Param) then
 				local status, ret = xpcall(callback.Function, function(msg)
 					return msg .. "\n" .. cleanTraceback(2)
 				end, callback.Mod, ...)
@@ -535,16 +545,18 @@ function _RunCallback(callbackID, Param, ...)
 								elseif typeCheck[typ] then
 									err = typeCheck[typ](ret, typ, ...)
 								else
-									err = "bad return type (" .. typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
+									err = "bad return type (" ..
+									typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
 								end
 							end
-							
+
 							if err then
 								local info = debug_getinfo(callback.Function, "S")
-								logError(callbackID, callback.Mod.Name, info.short_src .. ": " .. info.linedefined .. ": " .. err)
+								logError(callbackID, callback.Mod.Name,
+									info.short_src .. ": " .. info.linedefined .. ": " .. err)
 							end
 						end
-						
+
 						local typeCheckWarn = typecheckWarnFunctions[callbackID]
 						if typeCheckWarn then
 							local typ = type(ret)
@@ -552,12 +564,14 @@ function _RunCallback(callbackID, Param, ...)
 							elseif typeCheckWarn[typ] then
 								warn = typeCheckWarn[typ](ret, typ, ...)
 							else
-								warn = "bad return type (" .. typeCheckWarn.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
+								warn = "bad return type (" ..
+								typeCheckWarn.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
 							end
-							
+
 							if warn then
 								local info = debug_getinfo(callback.Function, "S")
-								logWarning(callbackID, callback.Mod.Name, info.short_src .. ": " .. info.linedefined .. ": " .. warn)
+								logWarning(callbackID, callback.Mod.Name,
+									info.short_src .. ": " .. info.linedefined .. ": " .. warn)
 							end
 						end
 
@@ -602,11 +616,11 @@ if not _LUADEBUG then
 	}
 end
 
-local oldregmod=RegisterMod
+local oldregmod = RegisterMod
 
-function RegisterMod(name,ver)
-	local out=oldregmod(name,ver)
-	out.Repentogon=REPENTOGON
+function RegisterMod(name, ver)
+	local out = oldregmod(name, ver)
+	out.Repentogon = REPENTOGON
 	return out
 end
 

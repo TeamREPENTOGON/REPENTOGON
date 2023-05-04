@@ -11,7 +11,7 @@ local stats = {
         { "eden tokens",   EventCounter.EDEN_TOKENS,     0, 0 },
         { "",              function() return "" end,     0, 0 }, -- spacer
         { "dailys played", EventCounter.DAILYS_PLAYED,   0, 0 },
-        { "dailys won",   EventCounter.DAILYS_WON,      0, 0 },
+        { "dailys won",    EventCounter.DAILYS_WON,      0, 0 },
     } },
     {
         "BOSS KILLS", {
@@ -30,37 +30,37 @@ local stats = {
     } },
     {
         "SHOPPING", {
-        { "shopkeeper killed",                EventCounter.SHOPKEEPER_KILLED,              0, 0 },
-        { "items bought",                     EventCounter.SHOP_ITEMS_BOUGHT,              0, 0 },
-        { "angel deals taken",                EventCounter.ANGEL_DEALS_TAKEN,              0, 0 },
-        { "devil deals taken",                EventCounter.DEVIL_DEALS_TAKEN,              0, 0 },
-        { "",                                 function() return "" end,                    0, 0 }, -- spacer
-        { { "donation machine", "coins" },    EventCounter.DONATION_MACHINE_COUNTER,       0, 0 },
+        { "shopkeeper killed",                   EventCounter.SHOPKEEPER_KILLED,              0, 0 },
+        { "items bought",                        EventCounter.SHOP_ITEMS_BOUGHT,              0, 0 },
+        { "angel deals taken",                   EventCounter.ANGEL_DEALS_TAKEN,              0, 0 },
+        { "devil deals taken",                   EventCounter.DEVIL_DEALS_TAKEN,              0, 0 },
+        { "",                                    function() return "" end,                    0, 0 }, -- spacer
+        { { "donation machine", "coins" },       EventCounter.DONATION_MACHINE_COUNTER,       0, 0 },
         { { "greed donation", "machine coins" }, EventCounter.GREED_DONATION_MACHINE_COUNTER, 0, 0 },
     } },
     {
         "GAMBLING", {
-        { "arcades entered",                     EventCounter.ARCADES_ENTERED,                 0, 0 },
-        { "shellgames played",                   EventCounter.SHELLGAMES_PLAYED,               0, 0 },
-        { { "blood donation", "machine used" },  EventCounter.BLOOD_DONATION_MACHINE_USED,     0, 0 },
-        { { "slot machines", "broken" },         EventCounter.SLOT_MACHINES_BROKEN,            0, 0 },
-        { { "golden chests", "opened" },         EventCounter.CHESTS_OPENED_WITH_KEY,          0, 0 },
-        { { "secret room", "walls broken" },     EventCounter.SECRET_ROOMS_WALLS_OPENED,       0, 0 },
+        { "arcades entered",                    EventCounter.ARCADES_ENTERED,             0, 0 },
+        { "shellgames played",                  EventCounter.SHELLGAMES_PLAYED,           0, 0 },
+        { { "blood donation", "machine used" }, EventCounter.BLOOD_DONATION_MACHINE_USED, 0, 0 },
+        { { "slot machines", "broken" },        EventCounter.SLOT_MACHINES_BROKEN,        0, 0 },
+        { { "golden chests", "opened" },        EventCounter.CHESTS_OPENED_WITH_KEY,      0, 0 },
+        { { "secret room", "walls broken" },    EventCounter.SECRET_ROOMS_WALLS_OPENED,   0, 0 },
     } },
     {
         "CHAOS", {
-        { "rocks destroyed",            EventCounter.ROCKS_DESTROYED,        0, 0 },
+        { "rocks destroyed",               EventCounter.ROCKS_DESTROYED,        0, 0 },
         { { "tinted rocks", "destroyed" }, EventCounter.TINTED_ROCKS_DESTROYED, 0, 0 },
-        { "poop destroyed",             EventCounter.POOP_DESTROYED,         0, 0 },
+        { "poop destroyed",                EventCounter.POOP_DESTROYED,         0, 0 },
         { { "rainbow poop", "destroyed" }, EventCounter.RAINBOW_POOP_DESTROYED, 0, 0 },
-        { "pills eaten",                EventCounter.PILLS_EATEN,            0, 0 },
-        { "cards used",                 EventCounter.CARDS_USED,             0, 0 },
-        { "batteries collected",        EventCounter.BATTERIES_COLLECTED,    0, 0 },
-        { "battery bums killed",        EventCounter.BATTERY_BUMS_KILLED,    0, 0 },
+        { "pills eaten",                   EventCounter.PILLS_EATEN,            0, 0 },
+        { "cards used",                    EventCounter.CARDS_USED,             0, 0 },
+        { "batteries collected",           EventCounter.BATTERIES_COLLECTED,    0, 0 },
+        { "battery bums killed",           EventCounter.BATTERY_BUMS_KILLED,    0, 0 },
     } },
     {
         "MISC", {
-        { "beds used",                  EventCounter.BEDS_USED,              0, 0 },
+        { "beds used",                              EventCounter.BEDS_USED,                       0, 0 },
         { { "battery bum", "collectible payouts" }, EventCounter.BATTERY_BUM_COLLECTIBLE_PAYOUTS, 0, 0 },
     } },
 }
