@@ -94,12 +94,12 @@ function ChangeLog.EvaluateText()
 end
 
 function ChangeLog.LoadAssets()
-    if #Cl.ChangelogSprite:GetDefaultAnimation()<=0 then
-        Cl.ChangelogSprite:Load("../repentogon/gfx/ui/changelog.anm2",true)
+    if #Cl.ChangelogSprite:GetDefaultAnimation() <= 0 then
+        Cl.ChangelogSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog.anm2", true)
         Cl.ChangelogSprite:Play("SwapOut")
-        Cl.ChangelogSprite.PlaybackSpeed=0.5        --correct speed for doing Update() inside of xxx_RENDER callback
+        Cl.ChangelogSprite.PlaybackSpeed = 0.5 --correct speed for doing Update() inside of xxx_RENDER callback
 
-        Cl.NoteSprite:Load("../repentogon/gfx/ui/changelog_tab_paper.anm2",true)
+        Cl.NoteSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog_tab_paper.anm2", true)
         Cl.NoteSprite:Play("Idle")
     end
     if not Cl.Font:IsLoaded() then
@@ -120,7 +120,6 @@ end
 Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_MAIN_MENU_RENDER,ChangeLog.LoadAssets)
 
 local ShouldBeRendered=false                --render of the changelog isn't attempted
-local CurrentState=false                    --changelog paper should be hidden
 local ScrollVelocity=0
 local ScrollOffset=Cl.ScrollMargin
 

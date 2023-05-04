@@ -47,7 +47,7 @@ jobs:
         cd ${{github.workspace}}/build/Release
         mkdir artifact
         mv resources artifact
-        mv mods artifact
+        mv resources-repentogon artifact
         mv dsound.dll artifact
         mv libzhl.dll artifact
         mv zhlModTest.dll artifact

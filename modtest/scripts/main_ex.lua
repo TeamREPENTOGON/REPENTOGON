@@ -1,7 +1,8 @@
-local repentogon = {
-["Real"]=true,
-["Name"]="REPENTOGON",	--I avoid having to do RegisterMod this way, sorry ;P
-["Extras"]={},
+REPENTOGON = {
+	["Real"] = true,
+	["Name"] = "REPENTOGON", --I avoid having to do RegisterMod this way, sorry ;P
+	["RESOURCEPATH"] = "../../../resources-repentogon",
+	["Extras"] = {},
 }
 
 collectgarbage("generational")
@@ -601,7 +602,6 @@ if not _LUADEBUG then
 	}
 end
 
-REPENTOGON=repentogon
 local oldregmod=RegisterMod
 
 function RegisterMod(name,ver)
