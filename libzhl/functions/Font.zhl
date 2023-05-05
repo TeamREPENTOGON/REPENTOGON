@@ -16,7 +16,7 @@ __thiscall int Font::GetStringWidth(Font* this<ecx>, const char* str);
 "558bec568bf18b4d088bd1578d7a01908a024284c075f968000200002bd768????????e838990000":
 __thiscall int Font::GetStringWidthUTF8(Font* this<ecx>, const char* str);
 
-struct Font depends (DrawStringEntry, DrawStringScaledEntry) {
+struct Font {
 {{
 
 }} };

@@ -1,0 +1,22 @@
+struct RoomConfig depends (IsaacString, StaticArray)
+{
+    int32_t StageId; // 0x0
+    int32_t Mode; // 0x4
+    int32_t Type; // 0x8
+    int32_t Variant; // 0xC
+    int32_t Subtype; // 0x10
+    IsaacString Name; // 0x14
+    int32_t Difficulty; // 0x2C
+    float InitialWeight; // 0x30
+    float Weight; // 0x34
+    int32_t Doors; // 0x38
+    int32_t unk7; // 0x3C
+    StaticArray Spawns; // 0x40
+    int8_t Width; // 0x46
+    int8_t Height; // 0x47
+    int32_t Shape; // 0x48
+    int32_t unk9; // 0x4C
+    int32_t unk10; // 0x50
+    int32_t unk11; // 0x54
+    int32_t unk12; // 0x58
+}; // 0x5C

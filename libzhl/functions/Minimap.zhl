@@ -1,2 +1,6 @@
 "558bec83e4f081ec18010000a1":
 __thiscall void Minimap::Render(Minimap * this<ecx>);
+
+struct Minimap {
+
+};

@@ -1,0 +1,11 @@
+struct GridEntityDesc
+{
+    int _type;
+    int _variant;
+    int _state;
+    int _spawnCount;
+    unsigned int _spawnSeed;
+    int _varData;
+    bool _initialized;
+    unsigned int _variableSeed;
+};

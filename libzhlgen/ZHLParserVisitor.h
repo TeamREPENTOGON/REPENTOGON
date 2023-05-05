@@ -21,6 +21,10 @@ public:
    */
     virtual std::any visitZhl(ZHLParser::ZhlContext *context) = 0;
 
+    virtual std::any visitTypeInfo(ZHLParser::TypeInfoContext *context) = 0;
+
+    virtual std::any visitTypeInfoDef(ZHLParser::TypeInfoDefContext *context) = 0;
+
     virtual std::any visitFunction(ZHLParser::FunctionContext *context) = 0;
 
     virtual std::any visitReference(ZHLParser::ReferenceContext *context) = 0;
@@ -63,6 +67,12 @@ public:
 
     virtual std::any visitClassBody(ZHLParser::ClassBodyContext *context) = 0;
 
+    virtual std::any visitVtable(ZHLParser::VtableContext *context) = 0;
+
+    virtual std::any visitVtableEntry(ZHLParser::VtableEntryContext *context) = 0;
+
+    virtual std::any visitVtableSignature(ZHLParser::VtableSignatureContext *context) = 0;
+
     virtual std::any visitClassSignature(ZHLParser::ClassSignatureContext *context) = 0;
 
     virtual std::any visitClassFunction(ZHLParser::ClassFunctionContext *context) = 0;
@@ -70,6 +80,8 @@ public:
     virtual std::any visitClassField(ZHLParser::ClassFieldContext *context) = 0;
 
     virtual std::any visitInnerField(ZHLParser::InnerFieldContext *context) = 0;
+
+    virtual std::any visitInnerFieldPtr(ZHLParser::InnerFieldPtrContext *context) = 0;
 
     virtual std::any visitFullName(ZHLParser::FullNameContext *context) = 0;
 

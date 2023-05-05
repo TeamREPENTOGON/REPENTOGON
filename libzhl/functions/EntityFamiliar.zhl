@@ -4,7 +4,7 @@ __thiscall int Entity_Familiar::GetFollowerPriority(Entity_Familiar *this<ecx>);
 "558bec83e4c083ec745356578bf9e8":
 __thiscall void Entity_Familiar::Render(Entity_Familiar *this<ecx>, Vector *offset);
 
-struct Entity_Familiar depends (NPCAI_Pathfinder) {
+struct Entity_Familiar : public Entity {
 {{
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
 }} };

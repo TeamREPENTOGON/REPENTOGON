@@ -44,20 +44,22 @@ void zhlparserParserInitialize() {
   assert(zhlparserParserStaticData == nullptr);
   auto staticData = std::make_unique<ZHLParserStaticData>(
     std::vector<std::string>{
-      "zhl", "function", "reference", "funArgs", "funArg", "argParam", "optNamedFunArgs", 
-      "optNamedFunArg", "templateSpec", "type", "typeSpecifier", "simpleType", 
-      "simpleTypeSignedness", "simpleTypeLength", "nestedName", "pointerAttribute", 
-      "genericCode", "class", "inheritance", "inheritanceDecl", "depends", 
-      "classBody", "classSignature", "classFunction", "classField", "innerField", 
-      "fullName", "signature", "forwardDecl", "typedef", "functionPtr", 
-      "fptr", "memberPtr"
+      "zhl", "typeInfo", "typeInfoDef", "function", "reference", "funArgs", 
+      "funArg", "argParam", "optNamedFunArgs", "optNamedFunArg", "templateSpec", 
+      "type", "typeSpecifier", "simpleType", "simpleTypeSignedness", "simpleTypeLength", 
+      "nestedName", "pointerAttribute", "genericCode", "class", "inheritance", 
+      "inheritanceDecl", "depends", "classBody", "vtable", "vtableEntry", 
+      "vtableSignature", "classSignature", "classFunction", "classField", 
+      "innerField", "innerFieldPtr", "fullName", "signature", "forwardDecl", 
+      "typedef", "functionPtr", "fptr", "memberPtr"
     },
     std::vector<std::string>{
       "", "'\"'", "':'", "';'", "", "'cleanup'", "'static'", "'virtual'", 
       "'__declspec'", "'('", "')'", "','", "'*'", "'<'", "'>'", "'['", "']'", 
       "'{'", "'}'", "'class'", "'struct'", "'reference'", "'depends'", "'typedef'", 
       "'const'", "'&'", "'unsigned'", "'signed'", "'long'", "'int'", "'short'", 
-      "'char'", "'bool'", "'float'", "'double'", "'void'", "", "'public'", 
+      "'char'", "'bool'", "'float'", "'double'", "'void'", "'TypeInfo'", 
+      "'Size'", "'Synonym'", "'__vtable'", "'skip'", "'override'", "", "'public'", 
       "'private'", "'protected'", "", "", "'eax'", "'ebx'", "'ecx'", "'edx'", 
       "'esi'", "'edi'", "'esp'", "'ebp'", "", "'xmm0'", "'xmm1'", "'xmm2'", 
       "'xmm3'", "'xmm4'", "'xmm5'", "'xmm6'", "'xmm7'", "", "'__stdcall'", 
@@ -69,142 +71,162 @@ void zhlparserParserInitialize() {
       "Lt", "Gt", "LeftRBracket", "RightRBracket", "LeftBracket", "RightBracket", 
       "Class", "Struct", "Reference", "Depends", "Typedef", "Const", "CppRef", 
       "Unsigned", "Signed", "Long", "Int", "Short", "Char", "Bool", "Float", 
-      "Double", "Void", "Visibility", "Public", "Private", "Protected", 
-      "Register", "GeneralPurposeRegister", "Eax", "Ebx", "Ecx", "Edx", 
-      "Esi", "Edi", "Esp", "Ebp", "SSERegister", "Xmm0", "Xmm1", "Xmm2", 
-      "Xmm3", "Xmm4", "Xmm5", "Xmm6", "Xmm7", "CallingConvention", "Stdcall", 
-      "Cdecl", "Fastcall", "Thiscall", "Signature", "ReferenceSignature", 
+      "Double", "Void", "Type", "Size", "Synonym", "Vtable", "Skip", "Override", 
+      "Visibility", "Public", "Private", "Protected", "Register", "GeneralPurposeRegister", 
+      "Eax", "Ebx", "Ecx", "Edx", "Esi", "Edi", "Esp", "Ebp", "SSERegister", 
+      "Xmm0", "Xmm1", "Xmm2", "Xmm3", "Xmm4", "Xmm5", "Xmm6", "Xmm7", "CallingConvention", 
+      "Stdcall", "Cdecl", "Fastcall", "Thiscall", "Signature", "ReferenceSignature", 
       "Name", "Number", "HexNumber", "DecNumber", "GenericCode", "Whitespace", 
       "Newline", "BlockComment", "LineComment", "Any"
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,75,374,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
+  	4,1,81,434,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,
   	7,7,7,2,8,7,8,2,9,7,9,2,10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,
   	14,2,15,7,15,2,16,7,16,2,17,7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,
   	21,2,22,7,22,2,23,7,23,2,24,7,24,2,25,7,25,2,26,7,26,2,27,7,27,2,28,7,
-  	28,2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,1,0,1,0,1,0,1,0,1,0,1,0,5,
-  	0,73,8,0,10,0,12,0,76,9,0,1,0,1,0,1,1,5,1,81,8,1,10,1,12,1,84,9,1,1,1,
-  	3,1,87,8,1,1,1,1,1,1,1,1,1,3,1,93,8,1,1,1,1,1,1,1,1,2,1,2,1,2,1,2,1,2,
-  	1,3,1,3,1,3,5,3,106,8,3,10,3,12,3,109,9,3,1,4,1,4,1,4,3,4,114,8,4,1,5,
-  	1,5,1,5,1,5,1,6,1,6,1,6,5,6,123,8,6,10,6,12,6,126,9,6,1,7,1,7,3,7,130,
-  	8,7,1,8,1,8,1,8,1,8,5,8,136,8,8,10,8,12,8,139,9,8,1,8,1,8,1,9,1,9,3,9,
-  	145,8,9,1,9,5,9,148,8,9,10,9,12,9,151,9,9,1,10,3,10,154,8,10,1,10,1,10,
-  	3,10,158,8,10,1,10,3,10,161,8,10,1,11,1,11,3,11,165,8,11,1,11,4,11,168,
-  	8,11,11,11,12,11,169,1,11,3,11,173,8,11,1,11,1,11,1,11,1,11,3,11,179,
-  	8,11,1,11,5,11,182,8,11,10,11,12,11,185,9,11,1,11,1,11,1,11,3,11,190,
-  	8,11,1,11,3,11,193,8,11,1,12,1,12,1,13,1,13,1,14,1,14,1,14,1,14,5,14,
-  	203,8,14,10,14,12,14,206,9,14,1,15,1,15,3,15,210,8,15,1,15,1,15,3,15,
-  	214,8,15,3,15,216,8,15,1,16,1,16,1,17,1,17,1,17,3,17,223,8,17,1,17,3,
-  	17,226,8,17,1,17,1,17,1,17,1,17,1,17,1,18,1,18,1,18,1,18,1,19,3,19,238,
-  	8,19,1,19,1,19,1,20,1,20,1,20,1,20,5,20,246,8,20,10,20,12,20,249,9,20,
-  	1,20,1,20,1,20,1,21,1,21,1,21,1,21,1,21,1,21,5,21,260,8,21,10,21,12,21,
-  	263,9,21,1,22,1,22,1,22,1,23,5,23,269,8,23,10,23,12,23,272,9,23,1,23,
-  	1,23,1,23,1,23,1,23,1,23,1,23,1,24,1,24,1,24,1,24,5,24,285,8,24,10,24,
-  	12,24,288,9,24,1,24,1,24,1,25,5,25,293,8,25,10,25,12,25,296,9,25,1,25,
-  	1,25,1,26,1,26,1,26,1,26,3,26,304,8,26,1,27,1,27,1,27,1,27,3,27,310,8,
-  	27,1,28,1,28,1,28,1,28,1,29,1,29,1,29,1,29,1,29,1,30,1,30,3,30,323,8,
-  	30,1,31,1,31,1,31,3,31,328,8,31,1,31,4,31,331,8,31,11,31,12,31,332,1,
-  	31,1,31,1,31,1,31,3,31,339,8,31,1,31,1,31,1,31,1,32,1,32,1,32,3,32,347,
-  	8,32,1,32,1,32,1,32,1,32,1,32,1,32,5,32,355,8,32,10,32,12,32,358,9,32,
-  	1,32,4,32,361,8,32,11,32,12,32,362,1,32,1,32,1,32,1,32,3,32,369,8,32,
-  	1,32,1,32,1,32,1,32,0,0,33,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,
-  	32,34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,0,3,1,0,26,27,2,0,
-  	28,28,30,30,1,0,19,20,399,0,74,1,0,0,0,2,82,1,0,0,0,4,97,1,0,0,0,6,102,
-  	1,0,0,0,8,110,1,0,0,0,10,115,1,0,0,0,12,119,1,0,0,0,14,127,1,0,0,0,16,
-  	131,1,0,0,0,18,142,1,0,0,0,20,153,1,0,0,0,22,192,1,0,0,0,24,194,1,0,0,
-  	0,26,196,1,0,0,0,28,198,1,0,0,0,30,215,1,0,0,0,32,217,1,0,0,0,34,219,
-  	1,0,0,0,36,232,1,0,0,0,38,237,1,0,0,0,40,241,1,0,0,0,42,261,1,0,0,0,44,
-  	264,1,0,0,0,46,270,1,0,0,0,48,280,1,0,0,0,50,294,1,0,0,0,52,299,1,0,0,
-  	0,54,309,1,0,0,0,56,311,1,0,0,0,58,315,1,0,0,0,60,322,1,0,0,0,62,324,
-  	1,0,0,0,64,343,1,0,0,0,66,73,3,54,27,0,67,73,3,34,17,0,68,73,3,32,16,
-  	0,69,73,3,58,29,0,70,73,3,60,30,0,71,73,3,56,28,0,72,66,1,0,0,0,72,67,
-  	1,0,0,0,72,68,1,0,0,0,72,69,1,0,0,0,72,70,1,0,0,0,72,71,1,0,0,0,73,76,
-  	1,0,0,0,74,72,1,0,0,0,74,75,1,0,0,0,75,77,1,0,0,0,76,74,1,0,0,0,77,78,
-  	5,0,0,1,78,1,1,0,0,0,79,81,5,4,0,0,80,79,1,0,0,0,81,84,1,0,0,0,82,80,
-  	1,0,0,0,82,83,1,0,0,0,83,86,1,0,0,0,84,82,1,0,0,0,85,87,5,59,0,0,86,85,
-  	1,0,0,0,86,87,1,0,0,0,87,88,1,0,0,0,88,89,3,18,9,0,89,90,3,28,14,0,90,
-  	92,5,9,0,0,91,93,3,6,3,0,92,91,1,0,0,0,92,93,1,0,0,0,93,94,1,0,0,0,94,
-  	95,5,10,0,0,95,96,5,3,0,0,96,3,1,0,0,0,97,98,5,21,0,0,98,99,3,18,9,0,
-  	99,100,5,66,0,0,100,101,5,3,0,0,101,5,1,0,0,0,102,107,3,8,4,0,103,104,
-  	5,11,0,0,104,106,3,8,4,0,105,103,1,0,0,0,106,109,1,0,0,0,107,105,1,0,
-  	0,0,107,108,1,0,0,0,108,7,1,0,0,0,109,107,1,0,0,0,110,111,3,18,9,0,111,
-  	113,3,52,26,0,112,114,3,10,5,0,113,112,1,0,0,0,113,114,1,0,0,0,114,9,
-  	1,0,0,0,115,116,5,13,0,0,116,117,5,40,0,0,117,118,5,14,0,0,118,11,1,0,
-  	0,0,119,124,3,14,7,0,120,121,5,11,0,0,121,123,3,14,7,0,122,120,1,0,0,
-  	0,123,126,1,0,0,0,124,122,1,0,0,0,124,125,1,0,0,0,125,13,1,0,0,0,126,
-  	124,1,0,0,0,127,129,3,18,9,0,128,130,3,52,26,0,129,128,1,0,0,0,129,130,
-  	1,0,0,0,130,15,1,0,0,0,131,132,5,13,0,0,132,137,3,18,9,0,133,134,5,11,
-  	0,0,134,136,3,18,9,0,135,133,1,0,0,0,136,139,1,0,0,0,137,135,1,0,0,0,
-  	137,138,1,0,0,0,138,140,1,0,0,0,139,137,1,0,0,0,140,141,5,14,0,0,141,
-  	17,1,0,0,0,142,144,3,20,10,0,143,145,3,16,8,0,144,143,1,0,0,0,144,145,
-  	1,0,0,0,145,149,1,0,0,0,146,148,3,30,15,0,147,146,1,0,0,0,148,151,1,0,
-  	0,0,149,147,1,0,0,0,149,150,1,0,0,0,150,19,1,0,0,0,151,149,1,0,0,0,152,
-  	154,5,24,0,0,153,152,1,0,0,0,153,154,1,0,0,0,154,157,1,0,0,0,155,158,
-  	3,22,11,0,156,158,3,28,14,0,157,155,1,0,0,0,157,156,1,0,0,0,158,160,1,
-  	0,0,0,159,161,5,24,0,0,160,159,1,0,0,0,160,161,1,0,0,0,161,21,1,0,0,0,
-  	162,193,3,24,12,0,163,165,3,24,12,0,164,163,1,0,0,0,164,165,1,0,0,0,165,
-  	167,1,0,0,0,166,168,3,26,13,0,167,166,1,0,0,0,168,169,1,0,0,0,169,167,
-  	1,0,0,0,169,170,1,0,0,0,170,193,1,0,0,0,171,173,3,24,12,0,172,171,1,0,
-  	0,0,172,173,1,0,0,0,173,174,1,0,0,0,174,193,5,31,0,0,175,193,5,32,0,0,
-  	176,193,5,35,0,0,177,179,3,24,12,0,178,177,1,0,0,0,178,179,1,0,0,0,179,
-  	183,1,0,0,0,180,182,3,26,13,0,181,180,1,0,0,0,182,185,1,0,0,0,183,181,
-  	1,0,0,0,183,184,1,0,0,0,184,186,1,0,0,0,185,183,1,0,0,0,186,193,5,29,
-  	0,0,187,193,5,33,0,0,188,190,3,26,13,0,189,188,1,0,0,0,189,190,1,0,0,
-  	0,190,191,1,0,0,0,191,193,5,34,0,0,192,162,1,0,0,0,192,164,1,0,0,0,192,
-  	172,1,0,0,0,192,175,1,0,0,0,192,176,1,0,0,0,192,178,1,0,0,0,192,187,1,
-  	0,0,0,192,189,1,0,0,0,193,23,1,0,0,0,194,195,7,0,0,0,195,25,1,0,0,0,196,
-  	197,7,1,0,0,197,27,1,0,0,0,198,204,5,66,0,0,199,200,5,2,0,0,200,201,5,
-  	2,0,0,201,203,5,66,0,0,202,199,1,0,0,0,203,206,1,0,0,0,204,202,1,0,0,
-  	0,204,205,1,0,0,0,205,29,1,0,0,0,206,204,1,0,0,0,207,209,5,25,0,0,208,
-  	210,5,25,0,0,209,208,1,0,0,0,209,210,1,0,0,0,210,216,1,0,0,0,211,213,
-  	5,12,0,0,212,214,5,24,0,0,213,212,1,0,0,0,213,214,1,0,0,0,214,216,1,0,
-  	0,0,215,207,1,0,0,0,215,211,1,0,0,0,216,31,1,0,0,0,217,218,5,70,0,0,218,
-  	33,1,0,0,0,219,220,7,2,0,0,220,222,5,66,0,0,221,223,3,40,20,0,222,221,
-  	1,0,0,0,222,223,1,0,0,0,223,225,1,0,0,0,224,226,3,36,18,0,225,224,1,0,
-  	0,0,225,226,1,0,0,0,226,227,1,0,0,0,227,228,5,17,0,0,228,229,3,42,21,
-  	0,229,230,5,18,0,0,230,231,5,3,0,0,231,35,1,0,0,0,232,233,3,38,19,0,233,
-  	234,5,11,0,0,234,235,3,38,19,0,235,37,1,0,0,0,236,238,5,36,0,0,237,236,
-  	1,0,0,0,237,238,1,0,0,0,238,239,1,0,0,0,239,240,3,28,14,0,240,39,1,0,
-  	0,0,241,242,5,22,0,0,242,247,5,9,0,0,243,244,5,66,0,0,244,246,5,11,0,
-  	0,245,243,1,0,0,0,246,249,1,0,0,0,247,245,1,0,0,0,247,248,1,0,0,0,248,
-  	250,1,0,0,0,249,247,1,0,0,0,250,251,5,66,0,0,251,252,5,10,0,0,252,41,
-  	1,0,0,0,253,260,3,44,22,0,254,260,3,32,16,0,255,260,3,48,24,0,256,260,
-  	3,58,29,0,257,260,3,60,30,0,258,260,3,56,28,0,259,253,1,0,0,0,259,254,
-  	1,0,0,0,259,255,1,0,0,0,259,256,1,0,0,0,259,257,1,0,0,0,259,258,1,0,0,
-  	0,260,263,1,0,0,0,261,259,1,0,0,0,261,262,1,0,0,0,262,43,1,0,0,0,263,
-  	261,1,0,0,0,264,265,5,64,0,0,265,266,3,46,23,0,266,45,1,0,0,0,267,269,
-  	5,4,0,0,268,267,1,0,0,0,269,272,1,0,0,0,270,268,1,0,0,0,270,271,1,0,0,
-  	0,271,273,1,0,0,0,272,270,1,0,0,0,273,274,3,18,9,0,274,275,5,66,0,0,275,
-  	276,5,9,0,0,276,277,3,6,3,0,277,278,5,10,0,0,278,279,5,3,0,0,279,47,1,
-  	0,0,0,280,281,3,18,9,0,281,286,3,50,25,0,282,283,5,11,0,0,283,285,3,50,
-  	25,0,284,282,1,0,0,0,285,288,1,0,0,0,286,284,1,0,0,0,286,287,1,0,0,0,
-  	287,289,1,0,0,0,288,286,1,0,0,0,289,290,5,3,0,0,290,49,1,0,0,0,291,293,
-  	5,12,0,0,292,291,1,0,0,0,293,296,1,0,0,0,294,292,1,0,0,0,294,295,1,0,
-  	0,0,295,297,1,0,0,0,296,294,1,0,0,0,297,298,3,52,26,0,298,51,1,0,0,0,
-  	299,303,5,66,0,0,300,301,5,15,0,0,301,302,5,67,0,0,302,304,5,16,0,0,303,
-  	300,1,0,0,0,303,304,1,0,0,0,304,53,1,0,0,0,305,306,5,64,0,0,306,310,3,
-  	2,1,0,307,308,5,65,0,0,308,310,3,4,2,0,309,305,1,0,0,0,309,307,1,0,0,
-  	0,310,55,1,0,0,0,311,312,7,2,0,0,312,313,5,66,0,0,313,314,5,3,0,0,314,
-  	57,1,0,0,0,315,316,5,23,0,0,316,317,3,18,9,0,317,318,5,66,0,0,318,319,
-  	5,3,0,0,319,59,1,0,0,0,320,323,3,62,31,0,321,323,3,64,32,0,322,320,1,
-  	0,0,0,322,321,1,0,0,0,323,61,1,0,0,0,324,325,3,18,9,0,325,327,5,9,0,0,
-  	326,328,5,59,0,0,327,326,1,0,0,0,327,328,1,0,0,0,328,330,1,0,0,0,329,
-  	331,5,12,0,0,330,329,1,0,0,0,331,332,1,0,0,0,332,330,1,0,0,0,332,333,
-  	1,0,0,0,333,334,1,0,0,0,334,335,5,66,0,0,335,336,5,10,0,0,336,338,5,9,
-  	0,0,337,339,3,12,6,0,338,337,1,0,0,0,338,339,1,0,0,0,339,340,1,0,0,0,
-  	340,341,5,10,0,0,341,342,5,3,0,0,342,63,1,0,0,0,343,344,3,18,9,0,344,
-  	346,5,9,0,0,345,347,5,59,0,0,346,345,1,0,0,0,346,347,1,0,0,0,347,348,
-  	1,0,0,0,348,349,5,66,0,0,349,350,5,2,0,0,350,356,5,2,0,0,351,352,5,66,
-  	0,0,352,353,5,2,0,0,353,355,5,2,0,0,354,351,1,0,0,0,355,358,1,0,0,0,356,
-  	354,1,0,0,0,356,357,1,0,0,0,357,360,1,0,0,0,358,356,1,0,0,0,359,361,5,
-  	12,0,0,360,359,1,0,0,0,361,362,1,0,0,0,362,360,1,0,0,0,362,363,1,0,0,
-  	0,363,364,1,0,0,0,364,365,5,66,0,0,365,366,5,10,0,0,366,368,5,9,0,0,367,
-  	369,3,12,6,0,368,367,1,0,0,0,368,369,1,0,0,0,369,370,1,0,0,0,370,371,
-  	5,10,0,0,371,372,5,3,0,0,372,65,1,0,0,0,45,72,74,82,86,92,107,113,124,
-  	129,137,144,149,153,157,160,164,169,172,178,183,189,192,204,209,213,215,
-  	222,225,237,247,259,261,270,286,294,303,309,322,327,332,338,346,356,362,
-  	368
+  	28,2,29,7,29,2,30,7,30,2,31,7,31,2,32,7,32,2,33,7,33,2,34,7,34,2,35,7,
+  	35,2,36,7,36,2,37,7,37,2,38,7,38,1,0,1,0,1,0,1,0,1,0,1,0,1,0,5,0,86,8,
+  	0,10,0,12,0,89,9,0,1,0,1,0,1,1,1,1,1,1,1,1,4,1,97,8,1,11,1,12,1,98,1,
+  	1,1,1,1,1,1,2,1,2,1,2,1,2,1,2,1,2,1,2,3,2,111,8,2,1,3,5,3,114,8,3,10,
+  	3,12,3,117,9,3,1,3,3,3,120,8,3,1,3,1,3,1,3,1,3,3,3,126,8,3,1,3,1,3,1,
+  	3,1,4,1,4,1,4,1,4,1,4,1,5,1,5,1,5,5,5,139,8,5,10,5,12,5,142,9,5,1,6,1,
+  	6,1,6,3,6,147,8,6,1,7,1,7,1,7,1,7,1,8,1,8,1,8,5,8,156,8,8,10,8,12,8,159,
+  	9,8,1,9,1,9,3,9,163,8,9,1,10,1,10,1,10,1,10,5,10,169,8,10,10,10,12,10,
+  	172,9,10,1,10,1,10,1,11,1,11,3,11,178,8,11,1,11,5,11,181,8,11,10,11,12,
+  	11,184,9,11,1,12,3,12,187,8,12,1,12,1,12,3,12,191,8,12,1,12,3,12,194,
+  	8,12,1,13,1,13,3,13,198,8,13,1,13,4,13,201,8,13,11,13,12,13,202,1,13,
+  	3,13,206,8,13,1,13,1,13,1,13,1,13,3,13,212,8,13,1,13,5,13,215,8,13,10,
+  	13,12,13,218,9,13,1,13,1,13,1,13,3,13,223,8,13,1,13,3,13,226,8,13,1,14,
+  	1,14,1,15,1,15,1,16,1,16,1,16,1,16,5,16,236,8,16,10,16,12,16,239,9,16,
+  	1,17,1,17,3,17,243,8,17,1,17,1,17,3,17,247,8,17,3,17,249,8,17,1,18,1,
+  	18,1,19,1,19,1,19,3,19,256,8,19,1,19,1,19,3,19,260,8,19,1,19,1,19,1,19,
+  	1,19,1,19,1,20,1,20,1,20,5,20,270,8,20,10,20,12,20,273,9,20,1,21,3,21,
+  	276,8,21,1,21,1,21,1,22,1,22,1,22,1,22,5,22,284,8,22,10,22,12,22,287,
+  	9,22,1,22,1,22,1,22,1,23,1,23,1,23,1,23,1,23,1,23,5,23,298,8,23,10,23,
+  	12,23,301,9,23,1,24,1,24,1,24,4,24,306,8,24,11,24,12,24,307,1,24,1,24,
+  	1,24,1,25,1,25,3,25,315,8,25,1,26,1,26,3,26,319,8,26,1,27,1,27,1,27,1,
+  	28,5,28,325,8,28,10,28,12,28,328,9,28,1,28,1,28,1,28,1,28,1,28,1,28,1,
+  	28,1,29,1,29,1,29,1,29,5,29,341,8,29,10,29,12,29,344,9,29,1,29,1,29,1,
+  	30,5,30,349,8,30,10,30,12,30,352,9,30,1,30,1,30,1,31,1,31,3,31,358,8,
+  	31,1,32,1,32,1,32,1,32,3,32,364,8,32,1,33,1,33,1,33,1,33,3,33,370,8,33,
+  	1,34,1,34,1,34,1,34,1,35,1,35,1,35,1,35,1,35,1,36,1,36,3,36,383,8,36,
+  	1,37,1,37,1,37,3,37,388,8,37,1,37,4,37,391,8,37,11,37,12,37,392,1,37,
+  	1,37,1,37,1,37,3,37,399,8,37,1,37,1,37,1,37,1,38,1,38,1,38,3,38,407,8,
+  	38,1,38,1,38,1,38,1,38,1,38,1,38,5,38,415,8,38,10,38,12,38,418,9,38,1,
+  	38,4,38,421,8,38,11,38,12,38,422,1,38,1,38,1,38,1,38,3,38,429,8,38,1,
+  	38,1,38,1,38,1,38,0,0,39,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,
+  	34,36,38,40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,0,3,
+  	1,0,26,27,2,0,28,28,30,30,1,0,19,20,461,0,87,1,0,0,0,2,92,1,0,0,0,4,110,
+  	1,0,0,0,6,115,1,0,0,0,8,130,1,0,0,0,10,135,1,0,0,0,12,143,1,0,0,0,14,
+  	148,1,0,0,0,16,152,1,0,0,0,18,160,1,0,0,0,20,164,1,0,0,0,22,175,1,0,0,
+  	0,24,186,1,0,0,0,26,225,1,0,0,0,28,227,1,0,0,0,30,229,1,0,0,0,32,231,
+  	1,0,0,0,34,248,1,0,0,0,36,250,1,0,0,0,38,252,1,0,0,0,40,266,1,0,0,0,42,
+  	275,1,0,0,0,44,279,1,0,0,0,46,299,1,0,0,0,48,302,1,0,0,0,50,314,1,0,0,
+  	0,52,316,1,0,0,0,54,320,1,0,0,0,56,326,1,0,0,0,58,336,1,0,0,0,60,350,
+  	1,0,0,0,62,355,1,0,0,0,64,359,1,0,0,0,66,369,1,0,0,0,68,371,1,0,0,0,70,
+  	375,1,0,0,0,72,382,1,0,0,0,74,384,1,0,0,0,76,403,1,0,0,0,78,86,3,66,33,
+  	0,79,86,3,38,19,0,80,86,3,36,18,0,81,86,3,70,35,0,82,86,3,72,36,0,83,
+  	86,3,68,34,0,84,86,3,2,1,0,85,78,1,0,0,0,85,79,1,0,0,0,85,80,1,0,0,0,
+  	85,81,1,0,0,0,85,82,1,0,0,0,85,83,1,0,0,0,85,84,1,0,0,0,86,89,1,0,0,0,
+  	87,85,1,0,0,0,87,88,1,0,0,0,88,90,1,0,0,0,89,87,1,0,0,0,90,91,5,0,0,1,
+  	91,1,1,0,0,0,92,93,5,36,0,0,93,94,5,72,0,0,94,96,5,17,0,0,95,97,3,4,2,
+  	0,96,95,1,0,0,0,97,98,1,0,0,0,98,96,1,0,0,0,98,99,1,0,0,0,99,100,1,0,
+  	0,0,100,101,5,18,0,0,101,102,5,3,0,0,102,3,1,0,0,0,103,104,5,37,0,0,104,
+  	105,5,73,0,0,105,111,5,3,0,0,106,107,5,38,0,0,107,108,3,22,11,0,108,109,
+  	5,3,0,0,109,111,1,0,0,0,110,103,1,0,0,0,110,106,1,0,0,0,111,5,1,0,0,0,
+  	112,114,5,4,0,0,113,112,1,0,0,0,114,117,1,0,0,0,115,113,1,0,0,0,115,116,
+  	1,0,0,0,116,119,1,0,0,0,117,115,1,0,0,0,118,120,5,65,0,0,119,118,1,0,
+  	0,0,119,120,1,0,0,0,120,121,1,0,0,0,121,122,3,22,11,0,122,123,3,32,16,
+  	0,123,125,5,9,0,0,124,126,3,10,5,0,125,124,1,0,0,0,125,126,1,0,0,0,126,
+  	127,1,0,0,0,127,128,5,10,0,0,128,129,5,3,0,0,129,7,1,0,0,0,130,131,5,
+  	21,0,0,131,132,3,22,11,0,132,133,5,72,0,0,133,134,5,3,0,0,134,9,1,0,0,
+  	0,135,140,3,12,6,0,136,137,5,11,0,0,137,139,3,12,6,0,138,136,1,0,0,0,
+  	139,142,1,0,0,0,140,138,1,0,0,0,140,141,1,0,0,0,141,11,1,0,0,0,142,140,
+  	1,0,0,0,143,144,3,22,11,0,144,146,3,64,32,0,145,147,3,14,7,0,146,145,
+  	1,0,0,0,146,147,1,0,0,0,147,13,1,0,0,0,148,149,5,13,0,0,149,150,5,46,
+  	0,0,150,151,5,14,0,0,151,15,1,0,0,0,152,157,3,18,9,0,153,154,5,11,0,0,
+  	154,156,3,18,9,0,155,153,1,0,0,0,156,159,1,0,0,0,157,155,1,0,0,0,157,
+  	158,1,0,0,0,158,17,1,0,0,0,159,157,1,0,0,0,160,162,3,22,11,0,161,163,
+  	3,64,32,0,162,161,1,0,0,0,162,163,1,0,0,0,163,19,1,0,0,0,164,165,5,13,
+  	0,0,165,170,3,22,11,0,166,167,5,11,0,0,167,169,3,22,11,0,168,166,1,0,
+  	0,0,169,172,1,0,0,0,170,168,1,0,0,0,170,171,1,0,0,0,171,173,1,0,0,0,172,
+  	170,1,0,0,0,173,174,5,14,0,0,174,21,1,0,0,0,175,177,3,24,12,0,176,178,
+  	3,20,10,0,177,176,1,0,0,0,177,178,1,0,0,0,178,182,1,0,0,0,179,181,3,34,
+  	17,0,180,179,1,0,0,0,181,184,1,0,0,0,182,180,1,0,0,0,182,183,1,0,0,0,
+  	183,23,1,0,0,0,184,182,1,0,0,0,185,187,5,24,0,0,186,185,1,0,0,0,186,187,
+  	1,0,0,0,187,190,1,0,0,0,188,191,3,26,13,0,189,191,3,32,16,0,190,188,1,
+  	0,0,0,190,189,1,0,0,0,191,193,1,0,0,0,192,194,5,24,0,0,193,192,1,0,0,
+  	0,193,194,1,0,0,0,194,25,1,0,0,0,195,226,3,28,14,0,196,198,3,28,14,0,
+  	197,196,1,0,0,0,197,198,1,0,0,0,198,200,1,0,0,0,199,201,3,30,15,0,200,
+  	199,1,0,0,0,201,202,1,0,0,0,202,200,1,0,0,0,202,203,1,0,0,0,203,226,1,
+  	0,0,0,204,206,3,28,14,0,205,204,1,0,0,0,205,206,1,0,0,0,206,207,1,0,0,
+  	0,207,226,5,31,0,0,208,226,5,32,0,0,209,226,5,35,0,0,210,212,3,28,14,
+  	0,211,210,1,0,0,0,211,212,1,0,0,0,212,216,1,0,0,0,213,215,3,30,15,0,214,
+  	213,1,0,0,0,215,218,1,0,0,0,216,214,1,0,0,0,216,217,1,0,0,0,217,219,1,
+  	0,0,0,218,216,1,0,0,0,219,226,5,29,0,0,220,226,5,33,0,0,221,223,3,30,
+  	15,0,222,221,1,0,0,0,222,223,1,0,0,0,223,224,1,0,0,0,224,226,5,34,0,0,
+  	225,195,1,0,0,0,225,197,1,0,0,0,225,205,1,0,0,0,225,208,1,0,0,0,225,209,
+  	1,0,0,0,225,211,1,0,0,0,225,220,1,0,0,0,225,222,1,0,0,0,226,27,1,0,0,
+  	0,227,228,7,0,0,0,228,29,1,0,0,0,229,230,7,1,0,0,230,31,1,0,0,0,231,237,
+  	5,72,0,0,232,233,5,2,0,0,233,234,5,2,0,0,234,236,5,72,0,0,235,232,1,0,
+  	0,0,236,239,1,0,0,0,237,235,1,0,0,0,237,238,1,0,0,0,238,33,1,0,0,0,239,
+  	237,1,0,0,0,240,242,5,25,0,0,241,243,5,25,0,0,242,241,1,0,0,0,242,243,
+  	1,0,0,0,243,249,1,0,0,0,244,246,5,12,0,0,245,247,5,24,0,0,246,245,1,0,
+  	0,0,246,247,1,0,0,0,247,249,1,0,0,0,248,240,1,0,0,0,248,244,1,0,0,0,249,
+  	35,1,0,0,0,250,251,5,76,0,0,251,37,1,0,0,0,252,253,7,2,0,0,253,255,5,
+  	72,0,0,254,256,3,44,22,0,255,254,1,0,0,0,255,256,1,0,0,0,256,259,1,0,
+  	0,0,257,258,5,2,0,0,258,260,3,40,20,0,259,257,1,0,0,0,259,260,1,0,0,0,
+  	260,261,1,0,0,0,261,262,5,17,0,0,262,263,3,46,23,0,263,264,5,18,0,0,264,
+  	265,5,3,0,0,265,39,1,0,0,0,266,271,3,42,21,0,267,268,5,11,0,0,268,270,
+  	3,42,21,0,269,267,1,0,0,0,270,273,1,0,0,0,271,269,1,0,0,0,271,272,1,0,
+  	0,0,272,41,1,0,0,0,273,271,1,0,0,0,274,276,5,42,0,0,275,274,1,0,0,0,275,
+  	276,1,0,0,0,276,277,1,0,0,0,277,278,3,32,16,0,278,43,1,0,0,0,279,280,
+  	5,22,0,0,280,285,5,9,0,0,281,282,5,72,0,0,282,284,5,11,0,0,283,281,1,
+  	0,0,0,284,287,1,0,0,0,285,283,1,0,0,0,285,286,1,0,0,0,286,288,1,0,0,0,
+  	287,285,1,0,0,0,288,289,5,72,0,0,289,290,5,10,0,0,290,45,1,0,0,0,291,
+  	298,3,48,24,0,292,298,3,54,27,0,293,298,3,36,18,0,294,298,3,58,29,0,295,
+  	298,3,72,36,0,296,298,3,68,34,0,297,291,1,0,0,0,297,292,1,0,0,0,297,293,
+  	1,0,0,0,297,294,1,0,0,0,297,295,1,0,0,0,297,296,1,0,0,0,298,301,1,0,0,
+  	0,299,297,1,0,0,0,299,300,1,0,0,0,300,47,1,0,0,0,301,299,1,0,0,0,302,
+  	303,5,39,0,0,303,305,5,17,0,0,304,306,3,50,25,0,305,304,1,0,0,0,306,307,
+  	1,0,0,0,307,305,1,0,0,0,307,308,1,0,0,0,308,309,1,0,0,0,309,310,5,18,
+  	0,0,310,311,5,3,0,0,311,49,1,0,0,0,312,315,3,52,26,0,313,315,5,40,0,0,
+  	314,312,1,0,0,0,314,313,1,0,0,0,315,51,1,0,0,0,316,318,3,54,27,0,317,
+  	319,5,41,0,0,318,317,1,0,0,0,318,319,1,0,0,0,319,53,1,0,0,0,320,321,5,
+  	70,0,0,321,322,3,56,28,0,322,55,1,0,0,0,323,325,5,4,0,0,324,323,1,0,0,
+  	0,325,328,1,0,0,0,326,324,1,0,0,0,326,327,1,0,0,0,327,329,1,0,0,0,328,
+  	326,1,0,0,0,329,330,3,22,11,0,330,331,5,72,0,0,331,332,5,9,0,0,332,333,
+  	3,10,5,0,333,334,5,10,0,0,334,335,5,3,0,0,335,57,1,0,0,0,336,337,3,22,
+  	11,0,337,342,3,60,30,0,338,339,5,11,0,0,339,341,3,60,30,0,340,338,1,0,
+  	0,0,341,344,1,0,0,0,342,340,1,0,0,0,342,343,1,0,0,0,343,345,1,0,0,0,344,
+  	342,1,0,0,0,345,346,5,3,0,0,346,59,1,0,0,0,347,349,3,62,31,0,348,347,
+  	1,0,0,0,349,352,1,0,0,0,350,348,1,0,0,0,350,351,1,0,0,0,351,353,1,0,0,
+  	0,352,350,1,0,0,0,353,354,3,64,32,0,354,61,1,0,0,0,355,357,5,12,0,0,356,
+  	358,5,24,0,0,357,356,1,0,0,0,357,358,1,0,0,0,358,63,1,0,0,0,359,363,5,
+  	72,0,0,360,361,5,15,0,0,361,362,5,73,0,0,362,364,5,16,0,0,363,360,1,0,
+  	0,0,363,364,1,0,0,0,364,65,1,0,0,0,365,366,5,70,0,0,366,370,3,6,3,0,367,
+  	368,5,71,0,0,368,370,3,8,4,0,369,365,1,0,0,0,369,367,1,0,0,0,370,67,1,
+  	0,0,0,371,372,7,2,0,0,372,373,5,72,0,0,373,374,5,3,0,0,374,69,1,0,0,0,
+  	375,376,5,23,0,0,376,377,3,22,11,0,377,378,5,72,0,0,378,379,5,3,0,0,379,
+  	71,1,0,0,0,380,383,3,74,37,0,381,383,3,76,38,0,382,380,1,0,0,0,382,381,
+  	1,0,0,0,383,73,1,0,0,0,384,385,3,22,11,0,385,387,5,9,0,0,386,388,5,65,
+  	0,0,387,386,1,0,0,0,387,388,1,0,0,0,388,390,1,0,0,0,389,391,5,12,0,0,
+  	390,389,1,0,0,0,391,392,1,0,0,0,392,390,1,0,0,0,392,393,1,0,0,0,393,394,
+  	1,0,0,0,394,395,5,72,0,0,395,396,5,10,0,0,396,398,5,9,0,0,397,399,3,16,
+  	8,0,398,397,1,0,0,0,398,399,1,0,0,0,399,400,1,0,0,0,400,401,5,10,0,0,
+  	401,402,5,3,0,0,402,75,1,0,0,0,403,404,3,22,11,0,404,406,5,9,0,0,405,
+  	407,5,65,0,0,406,405,1,0,0,0,406,407,1,0,0,0,407,408,1,0,0,0,408,409,
+  	5,72,0,0,409,410,5,2,0,0,410,416,5,2,0,0,411,412,5,72,0,0,412,413,5,2,
+  	0,0,413,415,5,2,0,0,414,411,1,0,0,0,415,418,1,0,0,0,416,414,1,0,0,0,416,
+  	417,1,0,0,0,417,420,1,0,0,0,418,416,1,0,0,0,419,421,5,12,0,0,420,419,
+  	1,0,0,0,421,422,1,0,0,0,422,420,1,0,0,0,422,423,1,0,0,0,423,424,1,0,0,
+  	0,424,425,5,72,0,0,425,426,5,10,0,0,426,428,5,9,0,0,427,429,3,16,8,0,
+  	428,427,1,0,0,0,428,429,1,0,0,0,429,430,1,0,0,0,430,431,5,10,0,0,431,
+  	432,5,3,0,0,432,77,1,0,0,0,52,85,87,98,110,115,119,125,140,146,157,162,
+  	170,177,182,186,190,193,197,202,205,211,216,222,225,237,242,246,248,255,
+  	259,271,275,285,297,299,307,314,318,326,342,350,357,363,369,382,387,392,
+  	398,406,416,422,428
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -311,6 +333,14 @@ ZHLParser::ForwardDeclContext* ZHLParser::ZhlContext::forwardDecl(size_t i) {
   return getRuleContext<ZHLParser::ForwardDeclContext>(i);
 }
 
+std::vector<ZHLParser::TypeInfoContext *> ZHLParser::ZhlContext::typeInfo() {
+  return getRuleContexts<ZHLParser::TypeInfoContext>();
+}
+
+ZHLParser::TypeInfoContext* ZHLParser::ZhlContext::typeInfo(size_t i) {
+  return getRuleContext<ZHLParser::TypeInfoContext>(i);
+}
+
 
 size_t ZHLParser::ZhlContext::getRuleIndex() const {
   return ZHLParser::RuleZhl;
@@ -350,59 +380,273 @@ ZHLParser::ZhlContext* ZHLParser::zhl() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(74);
+    setState(87);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (((((_la - 19) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 19)) & 2498090418438067) != 0)) {
-      setState(72);
+      ((1ULL << (_la - 19)) & 159877786771914675) != 0)) {
+      setState(85);
       _errHandler->sync(this);
       switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 0, _ctx)) {
       case 1: {
-        setState(66);
+        setState(78);
         signature();
         break;
       }
 
       case 2: {
-        setState(67);
+        setState(79);
         class_();
         break;
       }
 
       case 3: {
-        setState(68);
+        setState(80);
         genericCode();
         break;
       }
 
       case 4: {
-        setState(69);
+        setState(81);
         typedef_();
         break;
       }
 
       case 5: {
-        setState(70);
+        setState(82);
         functionPtr();
         break;
       }
 
       case 6: {
-        setState(71);
+        setState(83);
         forwardDecl();
+        break;
+      }
+
+      case 7: {
+        setState(84);
+        typeInfo();
         break;
       }
 
       default:
         break;
       }
-      setState(76);
+      setState(89);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(77);
+    setState(90);
     match(ZHLParser::EOF);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- TypeInfoContext ------------------------------------------------------------------
+
+ZHLParser::TypeInfoContext::TypeInfoContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoContext::Type() {
+  return getToken(ZHLParser::Type, 0);
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoContext::Name() {
+  return getToken(ZHLParser::Name, 0);
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoContext::LeftBracket() {
+  return getToken(ZHLParser::LeftBracket, 0);
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoContext::RightBracket() {
+  return getToken(ZHLParser::RightBracket, 0);
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoContext::Semi() {
+  return getToken(ZHLParser::Semi, 0);
+}
+
+std::vector<ZHLParser::TypeInfoDefContext *> ZHLParser::TypeInfoContext::typeInfoDef() {
+  return getRuleContexts<ZHLParser::TypeInfoDefContext>();
+}
+
+ZHLParser::TypeInfoDefContext* ZHLParser::TypeInfoContext::typeInfoDef(size_t i) {
+  return getRuleContext<ZHLParser::TypeInfoDefContext>(i);
+}
+
+
+size_t ZHLParser::TypeInfoContext::getRuleIndex() const {
+  return ZHLParser::RuleTypeInfo;
+}
+
+void ZHLParser::TypeInfoContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterTypeInfo(this);
+}
+
+void ZHLParser::TypeInfoContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitTypeInfo(this);
+}
+
+
+std::any ZHLParser::TypeInfoContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ZHLParserVisitor*>(visitor))
+    return parserVisitor->visitTypeInfo(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ZHLParser::TypeInfoContext* ZHLParser::typeInfo() {
+  TypeInfoContext *_localctx = _tracker.createInstance<TypeInfoContext>(_ctx, getState());
+  enterRule(_localctx, 2, ZHLParser::RuleTypeInfo);
+  size_t _la = 0;
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(92);
+    match(ZHLParser::Type);
+    setState(93);
+    match(ZHLParser::Name);
+    setState(94);
+    match(ZHLParser::LeftBracket);
+    setState(96); 
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    do {
+      setState(95);
+      typeInfoDef();
+      setState(98); 
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    } while (_la == ZHLParser::Size
+
+    || _la == ZHLParser::Synonym);
+    setState(100);
+    match(ZHLParser::RightBracket);
+    setState(101);
+    match(ZHLParser::Semi);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- TypeInfoDefContext ------------------------------------------------------------------
+
+ZHLParser::TypeInfoDefContext::TypeInfoDefContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoDefContext::Size() {
+  return getToken(ZHLParser::Size, 0);
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoDefContext::Number() {
+  return getToken(ZHLParser::Number, 0);
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoDefContext::Semi() {
+  return getToken(ZHLParser::Semi, 0);
+}
+
+tree::TerminalNode* ZHLParser::TypeInfoDefContext::Synonym() {
+  return getToken(ZHLParser::Synonym, 0);
+}
+
+ZHLParser::TypeContext* ZHLParser::TypeInfoDefContext::type() {
+  return getRuleContext<ZHLParser::TypeContext>(0);
+}
+
+
+size_t ZHLParser::TypeInfoDefContext::getRuleIndex() const {
+  return ZHLParser::RuleTypeInfoDef;
+}
+
+void ZHLParser::TypeInfoDefContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterTypeInfoDef(this);
+}
+
+void ZHLParser::TypeInfoDefContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitTypeInfoDef(this);
+}
+
+
+std::any ZHLParser::TypeInfoDefContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ZHLParserVisitor*>(visitor))
+    return parserVisitor->visitTypeInfoDef(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ZHLParser::TypeInfoDefContext* ZHLParser::typeInfoDef() {
+  TypeInfoDefContext *_localctx = _tracker.createInstance<TypeInfoDefContext>(_ctx, getState());
+  enterRule(_localctx, 4, ZHLParser::RuleTypeInfoDef);
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    setState(110);
+    _errHandler->sync(this);
+    switch (_input->LA(1)) {
+      case ZHLParser::Size: {
+        enterOuterAlt(_localctx, 1);
+        setState(103);
+        match(ZHLParser::Size);
+        setState(104);
+        match(ZHLParser::Number);
+        setState(105);
+        match(ZHLParser::Semi);
+        break;
+      }
+
+      case ZHLParser::Synonym: {
+        enterOuterAlt(_localctx, 2);
+        setState(106);
+        match(ZHLParser::Synonym);
+        setState(107);
+        type();
+        setState(108);
+        match(ZHLParser::Semi);
+        break;
+      }
+
+    default:
+      throw NoViableAltException(this);
+    }
    
   }
   catch (RecognitionException &e) {
@@ -483,7 +727,7 @@ std::any ZHLParser::FunctionContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::FunctionContext* ZHLParser::function() {
   FunctionContext *_localctx = _tracker.createInstance<FunctionContext>(_ctx, getState());
-  enterRule(_localctx, 2, ZHLParser::RuleFunction);
+  enterRule(_localctx, 6, ZHLParser::RuleFunction);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -495,42 +739,42 @@ ZHLParser::FunctionContext* ZHLParser::function() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(82);
+    setState(115);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Qualifier) {
-      setState(79);
+      setState(112);
       match(ZHLParser::Qualifier);
-      setState(84);
+      setState(117);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(86);
+    setState(119);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::CallingConvention) {
-      setState(85);
+      setState(118);
       match(ZHLParser::CallingConvention);
     }
-    setState(88);
+    setState(121);
     type();
-    setState(89);
+    setState(122);
     nestedName();
-    setState(90);
+    setState(123);
     match(ZHLParser::LeftParen);
-    setState(92);
+    setState(125);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (((((_la - 24) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 24)) & 4398046515197) != 0)) {
-      setState(91);
+      ((1ULL << (_la - 24)) & 281474976714749) != 0)) {
+      setState(124);
       funArgs();
     }
-    setState(94);
+    setState(127);
     match(ZHLParser::RightParen);
-    setState(95);
+    setState(128);
     match(ZHLParser::Semi);
    
   }
@@ -592,7 +836,7 @@ std::any ZHLParser::ReferenceContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::ReferenceContext* ZHLParser::reference() {
   ReferenceContext *_localctx = _tracker.createInstance<ReferenceContext>(_ctx, getState());
-  enterRule(_localctx, 4, ZHLParser::RuleReference);
+  enterRule(_localctx, 8, ZHLParser::RuleReference);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -603,13 +847,13 @@ ZHLParser::ReferenceContext* ZHLParser::reference() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(97);
+    setState(130);
     match(ZHLParser::Reference);
-    setState(98);
+    setState(131);
     type();
-    setState(99);
+    setState(132);
     match(ZHLParser::Name);
-    setState(100);
+    setState(133);
     match(ZHLParser::Semi);
    
   }
@@ -671,7 +915,7 @@ std::any ZHLParser::FunArgsContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::FunArgsContext* ZHLParser::funArgs() {
   FunArgsContext *_localctx = _tracker.createInstance<FunArgsContext>(_ctx, getState());
-  enterRule(_localctx, 6, ZHLParser::RuleFunArgs);
+  enterRule(_localctx, 10, ZHLParser::RuleFunArgs);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -683,17 +927,17 @@ ZHLParser::FunArgsContext* ZHLParser::funArgs() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(102);
+    setState(135);
     funArg();
-    setState(107);
+    setState(140);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Comma) {
-      setState(103);
+      setState(136);
       match(ZHLParser::Comma);
-      setState(104);
+      setState(137);
       funArg();
-      setState(109);
+      setState(142);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -753,7 +997,7 @@ std::any ZHLParser::FunArgContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::FunArgContext* ZHLParser::funArg() {
   FunArgContext *_localctx = _tracker.createInstance<FunArgContext>(_ctx, getState());
-  enterRule(_localctx, 8, ZHLParser::RuleFunArg);
+  enterRule(_localctx, 12, ZHLParser::RuleFunArg);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -765,16 +1009,16 @@ ZHLParser::FunArgContext* ZHLParser::funArg() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(110);
+    setState(143);
     type();
-    setState(111);
+    setState(144);
     fullName();
-    setState(113);
+    setState(146);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::Lt) {
-      setState(112);
+      setState(145);
       argParam();
     }
    
@@ -833,7 +1077,7 @@ std::any ZHLParser::ArgParamContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::ArgParamContext* ZHLParser::argParam() {
   ArgParamContext *_localctx = _tracker.createInstance<ArgParamContext>(_ctx, getState());
-  enterRule(_localctx, 10, ZHLParser::RuleArgParam);
+  enterRule(_localctx, 14, ZHLParser::RuleArgParam);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -844,11 +1088,11 @@ ZHLParser::ArgParamContext* ZHLParser::argParam() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(115);
+    setState(148);
     match(ZHLParser::Lt);
-    setState(116);
+    setState(149);
     match(ZHLParser::Register);
-    setState(117);
+    setState(150);
     match(ZHLParser::Gt);
    
   }
@@ -910,7 +1154,7 @@ std::any ZHLParser::OptNamedFunArgsContext::accept(tree::ParseTreeVisitor *visit
 
 ZHLParser::OptNamedFunArgsContext* ZHLParser::optNamedFunArgs() {
   OptNamedFunArgsContext *_localctx = _tracker.createInstance<OptNamedFunArgsContext>(_ctx, getState());
-  enterRule(_localctx, 12, ZHLParser::RuleOptNamedFunArgs);
+  enterRule(_localctx, 16, ZHLParser::RuleOptNamedFunArgs);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -922,17 +1166,17 @@ ZHLParser::OptNamedFunArgsContext* ZHLParser::optNamedFunArgs() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(119);
+    setState(152);
     optNamedFunArg();
-    setState(124);
+    setState(157);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Comma) {
-      setState(120);
+      setState(153);
       match(ZHLParser::Comma);
-      setState(121);
+      setState(154);
       optNamedFunArg();
-      setState(126);
+      setState(159);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -988,7 +1232,7 @@ std::any ZHLParser::OptNamedFunArgContext::accept(tree::ParseTreeVisitor *visito
 
 ZHLParser::OptNamedFunArgContext* ZHLParser::optNamedFunArg() {
   OptNamedFunArgContext *_localctx = _tracker.createInstance<OptNamedFunArgContext>(_ctx, getState());
-  enterRule(_localctx, 14, ZHLParser::RuleOptNamedFunArg);
+  enterRule(_localctx, 18, ZHLParser::RuleOptNamedFunArg);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1000,14 +1244,14 @@ ZHLParser::OptNamedFunArgContext* ZHLParser::optNamedFunArg() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(127);
+    setState(160);
     type();
-    setState(129);
+    setState(162);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::Name) {
-      setState(128);
+      setState(161);
       fullName();
     }
    
@@ -1078,7 +1322,7 @@ std::any ZHLParser::TemplateSpecContext::accept(tree::ParseTreeVisitor *visitor)
 
 ZHLParser::TemplateSpecContext* ZHLParser::templateSpec() {
   TemplateSpecContext *_localctx = _tracker.createInstance<TemplateSpecContext>(_ctx, getState());
-  enterRule(_localctx, 16, ZHLParser::RuleTemplateSpec);
+  enterRule(_localctx, 20, ZHLParser::RuleTemplateSpec);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1090,23 +1334,23 @@ ZHLParser::TemplateSpecContext* ZHLParser::templateSpec() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(131);
+    setState(164);
     match(ZHLParser::Lt);
-    setState(132);
+    setState(165);
     type();
-    setState(137);
+    setState(170);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Comma) {
-      setState(133);
+      setState(166);
       match(ZHLParser::Comma);
-      setState(134);
+      setState(167);
       type();
-      setState(139);
+      setState(172);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(140);
+    setState(173);
     match(ZHLParser::Gt);
    
   }
@@ -1168,7 +1412,7 @@ std::any ZHLParser::TypeContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::TypeContext* ZHLParser::type() {
   TypeContext *_localctx = _tracker.createInstance<TypeContext>(_ctx, getState());
-  enterRule(_localctx, 18, ZHLParser::RuleType);
+  enterRule(_localctx, 22, ZHLParser::RuleType);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1181,27 +1425,27 @@ ZHLParser::TypeContext* ZHLParser::type() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(142);
+    setState(175);
     typeSpecifier();
-    setState(144);
+    setState(177);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::Lt) {
-      setState(143);
+      setState(176);
       templateSpec();
     }
-    setState(149);
+    setState(182);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(146);
+        setState(179);
         pointerAttribute(); 
       }
-      setState(151);
+      setState(184);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 11, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 13, _ctx);
     }
    
   }
@@ -1263,7 +1507,7 @@ std::any ZHLParser::TypeSpecifierContext::accept(tree::ParseTreeVisitor *visitor
 
 ZHLParser::TypeSpecifierContext* ZHLParser::typeSpecifier() {
   TypeSpecifierContext *_localctx = _tracker.createInstance<TypeSpecifierContext>(_ctx, getState());
-  enterRule(_localctx, 20, ZHLParser::RuleTypeSpecifier);
+  enterRule(_localctx, 24, ZHLParser::RuleTypeSpecifier);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1275,15 +1519,15 @@ ZHLParser::TypeSpecifierContext* ZHLParser::typeSpecifier() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(153);
+    setState(186);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::Const) {
-      setState(152);
+      setState(185);
       match(ZHLParser::Const);
     }
-    setState(157);
+    setState(190);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case ZHLParser::Unsigned:
@@ -1296,13 +1540,13 @@ ZHLParser::TypeSpecifierContext* ZHLParser::typeSpecifier() {
       case ZHLParser::Float:
       case ZHLParser::Double:
       case ZHLParser::Void: {
-        setState(155);
+        setState(188);
         simpleType();
         break;
       }
 
       case ZHLParser::Name: {
-        setState(156);
+        setState(189);
         nestedName();
         break;
       }
@@ -1310,12 +1554,12 @@ ZHLParser::TypeSpecifierContext* ZHLParser::typeSpecifier() {
     default:
       throw NoViableAltException(this);
     }
-    setState(160);
+    setState(193);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::Const) {
-      setState(159);
+      setState(192);
       match(ZHLParser::Const);
     }
    
@@ -1398,7 +1642,7 @@ std::any ZHLParser::SimpleTypeContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::SimpleTypeContext* ZHLParser::simpleType() {
   SimpleTypeContext *_localctx = _tracker.createInstance<SimpleTypeContext>(_ctx, getState());
-  enterRule(_localctx, 22, ZHLParser::RuleSimpleType);
+  enterRule(_localctx, 26, ZHLParser::RuleSimpleType);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1409,35 +1653,35 @@ ZHLParser::SimpleTypeContext* ZHLParser::simpleType() {
     exitRule();
   });
   try {
-    setState(192);
+    setState(225);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 21, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 23, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(162);
+      setState(195);
       simpleTypeSignedness();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(164);
+      setState(197);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == ZHLParser::Unsigned
 
       || _la == ZHLParser::Signed) {
-        setState(163);
+        setState(196);
         simpleTypeSignedness();
       }
-      setState(167); 
+      setState(200); 
       _errHandler->sync(this);
       _la = _input->LA(1);
       do {
-        setState(166);
+        setState(199);
         simpleTypeLength();
-        setState(169); 
+        setState(202); 
         _errHandler->sync(this);
         _la = _input->LA(1);
       } while (_la == ZHLParser::Long
@@ -1448,84 +1692,84 @@ ZHLParser::SimpleTypeContext* ZHLParser::simpleType() {
 
     case 3: {
       enterOuterAlt(_localctx, 3);
-      setState(172);
+      setState(205);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == ZHLParser::Unsigned
 
       || _la == ZHLParser::Signed) {
-        setState(171);
+        setState(204);
         simpleTypeSignedness();
       }
-      setState(174);
+      setState(207);
       match(ZHLParser::Char);
       break;
     }
 
     case 4: {
       enterOuterAlt(_localctx, 4);
-      setState(175);
+      setState(208);
       match(ZHLParser::Bool);
       break;
     }
 
     case 5: {
       enterOuterAlt(_localctx, 5);
-      setState(176);
+      setState(209);
       match(ZHLParser::Void);
       break;
     }
 
     case 6: {
       enterOuterAlt(_localctx, 6);
-      setState(178);
+      setState(211);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == ZHLParser::Unsigned
 
       || _la == ZHLParser::Signed) {
-        setState(177);
+        setState(210);
         simpleTypeSignedness();
       }
-      setState(183);
+      setState(216);
       _errHandler->sync(this);
       _la = _input->LA(1);
       while (_la == ZHLParser::Long
 
       || _la == ZHLParser::Short) {
-        setState(180);
+        setState(213);
         simpleTypeLength();
-        setState(185);
+        setState(218);
         _errHandler->sync(this);
         _la = _input->LA(1);
       }
-      setState(186);
+      setState(219);
       match(ZHLParser::Int);
       break;
     }
 
     case 7: {
       enterOuterAlt(_localctx, 7);
-      setState(187);
+      setState(220);
       match(ZHLParser::Float);
       break;
     }
 
     case 8: {
       enterOuterAlt(_localctx, 8);
-      setState(189);
+      setState(222);
       _errHandler->sync(this);
 
       _la = _input->LA(1);
       if (_la == ZHLParser::Long
 
       || _la == ZHLParser::Short) {
-        setState(188);
+        setState(221);
         simpleTypeLength();
       }
-      setState(191);
+      setState(224);
       match(ZHLParser::Double);
       break;
     }
@@ -1585,7 +1829,7 @@ std::any ZHLParser::SimpleTypeSignednessContext::accept(tree::ParseTreeVisitor *
 
 ZHLParser::SimpleTypeSignednessContext* ZHLParser::simpleTypeSignedness() {
   SimpleTypeSignednessContext *_localctx = _tracker.createInstance<SimpleTypeSignednessContext>(_ctx, getState());
-  enterRule(_localctx, 24, ZHLParser::RuleSimpleTypeSignedness);
+  enterRule(_localctx, 28, ZHLParser::RuleSimpleTypeSignedness);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1597,7 +1841,7 @@ ZHLParser::SimpleTypeSignednessContext* ZHLParser::simpleTypeSignedness() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(194);
+    setState(227);
     _la = _input->LA(1);
     if (!(_la == ZHLParser::Unsigned
 
@@ -1660,7 +1904,7 @@ std::any ZHLParser::SimpleTypeLengthContext::accept(tree::ParseTreeVisitor *visi
 
 ZHLParser::SimpleTypeLengthContext* ZHLParser::simpleTypeLength() {
   SimpleTypeLengthContext *_localctx = _tracker.createInstance<SimpleTypeLengthContext>(_ctx, getState());
-  enterRule(_localctx, 26, ZHLParser::RuleSimpleTypeLength);
+  enterRule(_localctx, 30, ZHLParser::RuleSimpleTypeLength);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1672,7 +1916,7 @@ ZHLParser::SimpleTypeLengthContext* ZHLParser::simpleTypeLength() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(196);
+    setState(229);
     _la = _input->LA(1);
     if (!(_la == ZHLParser::Long
 
@@ -1743,7 +1987,7 @@ std::any ZHLParser::NestedNameContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::NestedNameContext* ZHLParser::nestedName() {
   NestedNameContext *_localctx = _tracker.createInstance<NestedNameContext>(_ctx, getState());
-  enterRule(_localctx, 28, ZHLParser::RuleNestedName);
+  enterRule(_localctx, 32, ZHLParser::RuleNestedName);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1755,19 +1999,19 @@ ZHLParser::NestedNameContext* ZHLParser::nestedName() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(198);
+    setState(231);
     match(ZHLParser::Name);
-    setState(204);
+    setState(237);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Colon) {
-      setState(199);
+      setState(232);
       match(ZHLParser::Colon);
-      setState(200);
+      setState(233);
       match(ZHLParser::Colon);
-      setState(201);
+      setState(234);
       match(ZHLParser::Name);
-      setState(206);
+      setState(239);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
@@ -1831,7 +2075,7 @@ std::any ZHLParser::PointerAttributeContext::accept(tree::ParseTreeVisitor *visi
 
 ZHLParser::PointerAttributeContext* ZHLParser::pointerAttribute() {
   PointerAttributeContext *_localctx = _tracker.createInstance<PointerAttributeContext>(_ctx, getState());
-  enterRule(_localctx, 30, ZHLParser::RulePointerAttribute);
+  enterRule(_localctx, 34, ZHLParser::RulePointerAttribute);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -1842,19 +2086,19 @@ ZHLParser::PointerAttributeContext* ZHLParser::pointerAttribute() {
     exitRule();
   });
   try {
-    setState(215);
+    setState(248);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case ZHLParser::CppRef: {
         enterOuterAlt(_localctx, 1);
-        setState(207);
+        setState(240);
         match(ZHLParser::CppRef);
-        setState(209);
+        setState(242);
         _errHandler->sync(this);
 
-        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 23, _ctx)) {
+        switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 25, _ctx)) {
         case 1: {
-          setState(208);
+          setState(241);
           match(ZHLParser::CppRef);
           break;
         }
@@ -1867,14 +2111,14 @@ ZHLParser::PointerAttributeContext* ZHLParser::pointerAttribute() {
 
       case ZHLParser::Star: {
         enterOuterAlt(_localctx, 2);
-        setState(211);
+        setState(244);
         match(ZHLParser::Star);
-        setState(213);
+        setState(246);
         _errHandler->sync(this);
 
         _la = _input->LA(1);
         if (_la == ZHLParser::Const) {
-          setState(212);
+          setState(245);
           match(ZHLParser::Const);
         }
         break;
@@ -1931,7 +2175,7 @@ std::any ZHLParser::GenericCodeContext::accept(tree::ParseTreeVisitor *visitor) 
 
 ZHLParser::GenericCodeContext* ZHLParser::genericCode() {
   GenericCodeContext *_localctx = _tracker.createInstance<GenericCodeContext>(_ctx, getState());
-  enterRule(_localctx, 32, ZHLParser::RuleGenericCode);
+  enterRule(_localctx, 36, ZHLParser::RuleGenericCode);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -1942,7 +2186,7 @@ ZHLParser::GenericCodeContext* ZHLParser::genericCode() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(217);
+    setState(250);
     match(ZHLParser::GenericCode);
    
   }
@@ -1993,6 +2237,10 @@ ZHLParser::DependsContext* ZHLParser::ClassContext::depends() {
   return getRuleContext<ZHLParser::DependsContext>(0);
 }
 
+tree::TerminalNode* ZHLParser::ClassContext::Colon() {
+  return getToken(ZHLParser::Colon, 0);
+}
+
 ZHLParser::InheritanceContext* ZHLParser::ClassContext::inheritance() {
   return getRuleContext<ZHLParser::InheritanceContext>(0);
 }
@@ -2024,7 +2272,7 @@ std::any ZHLParser::ClassContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::ClassContext* ZHLParser::class_() {
   ClassContext *_localctx = _tracker.createInstance<ClassContext>(_ctx, getState());
-  enterRule(_localctx, 34, ZHLParser::RuleClass);
+  enterRule(_localctx, 38, ZHLParser::RuleClass);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2036,7 +2284,7 @@ ZHLParser::ClassContext* ZHLParser::class_() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(219);
+    setState(252);
     _la = _input->LA(1);
     if (!(_la == ZHLParser::Class
 
@@ -2047,33 +2295,33 @@ ZHLParser::ClassContext* ZHLParser::class_() {
       _errHandler->reportMatch(this);
       consume();
     }
-    setState(220);
+    setState(253);
     match(ZHLParser::Name);
-    setState(222);
+    setState(255);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::Depends) {
-      setState(221);
+      setState(254);
       depends();
     }
-    setState(225);
+    setState(259);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
-    if (_la == ZHLParser::Visibility
-
-    || _la == ZHLParser::Name) {
-      setState(224);
+    if (_la == ZHLParser::Colon) {
+      setState(257);
+      match(ZHLParser::Colon);
+      setState(258);
       inheritance();
     }
-    setState(227);
+    setState(261);
     match(ZHLParser::LeftBracket);
-    setState(228);
+    setState(262);
     classBody();
-    setState(229);
+    setState(263);
     match(ZHLParser::RightBracket);
-    setState(230);
+    setState(264);
     match(ZHLParser::Semi);
    
   }
@@ -2100,8 +2348,12 @@ ZHLParser::InheritanceDeclContext* ZHLParser::InheritanceContext::inheritanceDec
   return getRuleContext<ZHLParser::InheritanceDeclContext>(i);
 }
 
-tree::TerminalNode* ZHLParser::InheritanceContext::Comma() {
-  return getToken(ZHLParser::Comma, 0);
+std::vector<tree::TerminalNode *> ZHLParser::InheritanceContext::Comma() {
+  return getTokens(ZHLParser::Comma);
+}
+
+tree::TerminalNode* ZHLParser::InheritanceContext::Comma(size_t i) {
+  return getToken(ZHLParser::Comma, i);
 }
 
 
@@ -2131,7 +2383,8 @@ std::any ZHLParser::InheritanceContext::accept(tree::ParseTreeVisitor *visitor) 
 
 ZHLParser::InheritanceContext* ZHLParser::inheritance() {
   InheritanceContext *_localctx = _tracker.createInstance<InheritanceContext>(_ctx, getState());
-  enterRule(_localctx, 36, ZHLParser::RuleInheritance);
+  enterRule(_localctx, 40, ZHLParser::RuleInheritance);
+  size_t _la = 0;
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -2142,13 +2395,20 @@ ZHLParser::InheritanceContext* ZHLParser::inheritance() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(232);
+    setState(266);
     inheritanceDecl();
-
-    setState(233);
-    match(ZHLParser::Comma);
-    setState(234);
-    inheritanceDecl();
+    setState(271);
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    while (_la == ZHLParser::Comma) {
+      setState(267);
+      match(ZHLParser::Comma);
+      setState(268);
+      inheritanceDecl();
+      setState(273);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    }
    
   }
   catch (RecognitionException &e) {
@@ -2201,7 +2461,7 @@ std::any ZHLParser::InheritanceDeclContext::accept(tree::ParseTreeVisitor *visit
 
 ZHLParser::InheritanceDeclContext* ZHLParser::inheritanceDecl() {
   InheritanceDeclContext *_localctx = _tracker.createInstance<InheritanceDeclContext>(_ctx, getState());
-  enterRule(_localctx, 38, ZHLParser::RuleInheritanceDecl);
+  enterRule(_localctx, 42, ZHLParser::RuleInheritanceDecl);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2213,15 +2473,15 @@ ZHLParser::InheritanceDeclContext* ZHLParser::inheritanceDecl() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(237);
+    setState(275);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::Visibility) {
-      setState(236);
+      setState(274);
       match(ZHLParser::Visibility);
     }
-    setState(239);
+    setState(277);
     nestedName();
    
   }
@@ -2295,7 +2555,7 @@ std::any ZHLParser::DependsContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::DependsContext* ZHLParser::depends() {
   DependsContext *_localctx = _tracker.createInstance<DependsContext>(_ctx, getState());
-  enterRule(_localctx, 40, ZHLParser::RuleDepends);
+  enterRule(_localctx, 44, ZHLParser::RuleDepends);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -2307,27 +2567,27 @@ ZHLParser::DependsContext* ZHLParser::depends() {
   try {
     size_t alt;
     enterOuterAlt(_localctx, 1);
-    setState(241);
+    setState(279);
     match(ZHLParser::Depends);
-    setState(242);
+    setState(280);
     match(ZHLParser::LeftParen);
-    setState(247);
+    setState(285);
     _errHandler->sync(this);
-    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 29, _ctx);
+    alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 32, _ctx);
     while (alt != 2 && alt != atn::ATN::INVALID_ALT_NUMBER) {
       if (alt == 1) {
-        setState(243);
+        setState(281);
         match(ZHLParser::Name);
-        setState(244);
+        setState(282);
         match(ZHLParser::Comma); 
       }
-      setState(249);
+      setState(287);
       _errHandler->sync(this);
-      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 29, _ctx);
+      alt = getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 32, _ctx);
     }
-    setState(250);
+    setState(288);
     match(ZHLParser::Name);
-    setState(251);
+    setState(289);
     match(ZHLParser::RightParen);
    
   }
@@ -2344,6 +2604,14 @@ ZHLParser::DependsContext* ZHLParser::depends() {
 
 ZHLParser::ClassBodyContext::ClassBodyContext(ParserRuleContext *parent, size_t invokingState)
   : ParserRuleContext(parent, invokingState) {
+}
+
+std::vector<ZHLParser::VtableContext *> ZHLParser::ClassBodyContext::vtable() {
+  return getRuleContexts<ZHLParser::VtableContext>();
+}
+
+ZHLParser::VtableContext* ZHLParser::ClassBodyContext::vtable(size_t i) {
+  return getRuleContext<ZHLParser::VtableContext>(i);
 }
 
 std::vector<ZHLParser::ClassSignatureContext *> ZHLParser::ClassBodyContext::classSignature() {
@@ -2368,14 +2636,6 @@ std::vector<ZHLParser::ClassFieldContext *> ZHLParser::ClassBodyContext::classFi
 
 ZHLParser::ClassFieldContext* ZHLParser::ClassBodyContext::classField(size_t i) {
   return getRuleContext<ZHLParser::ClassFieldContext>(i);
-}
-
-std::vector<ZHLParser::TypedefContext *> ZHLParser::ClassBodyContext::typedef_() {
-  return getRuleContexts<ZHLParser::TypedefContext>();
-}
-
-ZHLParser::TypedefContext* ZHLParser::ClassBodyContext::typedef_(size_t i) {
-  return getRuleContext<ZHLParser::TypedefContext>(i);
 }
 
 std::vector<ZHLParser::FunctionPtrContext *> ZHLParser::ClassBodyContext::functionPtr() {
@@ -2421,7 +2681,7 @@ std::any ZHLParser::ClassBodyContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::ClassBodyContext* ZHLParser::classBody() {
   ClassBodyContext *_localctx = _tracker.createInstance<ClassBodyContext>(_ctx, getState());
-  enterRule(_localctx, 42, ZHLParser::RuleClassBody);
+  enterRule(_localctx, 46, ZHLParser::RuleClassBody);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2433,46 +2693,46 @@ ZHLParser::ClassBodyContext* ZHLParser::classBody() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(261);
+    setState(299);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (((((_la - 19) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 19)) & 2427721674260403) != 0)) {
-      setState(259);
+      ((1ULL << (_la - 19)) & 155374187145461667) != 0)) {
+      setState(297);
       _errHandler->sync(this);
-      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 30, _ctx)) {
+      switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 33, _ctx)) {
       case 1: {
-        setState(253);
-        classSignature();
+        setState(291);
+        vtable();
         break;
       }
 
       case 2: {
-        setState(254);
-        genericCode();
+        setState(292);
+        classSignature();
         break;
       }
 
       case 3: {
-        setState(255);
-        classField();
+        setState(293);
+        genericCode();
         break;
       }
 
       case 4: {
-        setState(256);
-        typedef_();
+        setState(294);
+        classField();
         break;
       }
 
       case 5: {
-        setState(257);
+        setState(295);
         functionPtr();
         break;
       }
 
       case 6: {
-        setState(258);
+        setState(296);
         forwardDecl();
         break;
       }
@@ -2480,9 +2740,265 @@ ZHLParser::ClassBodyContext* ZHLParser::classBody() {
       default:
         break;
       }
-      setState(263);
+      setState(301);
       _errHandler->sync(this);
       _la = _input->LA(1);
+    }
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- VtableContext ------------------------------------------------------------------
+
+ZHLParser::VtableContext::VtableContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* ZHLParser::VtableContext::Vtable() {
+  return getToken(ZHLParser::Vtable, 0);
+}
+
+tree::TerminalNode* ZHLParser::VtableContext::LeftBracket() {
+  return getToken(ZHLParser::LeftBracket, 0);
+}
+
+tree::TerminalNode* ZHLParser::VtableContext::RightBracket() {
+  return getToken(ZHLParser::RightBracket, 0);
+}
+
+tree::TerminalNode* ZHLParser::VtableContext::Semi() {
+  return getToken(ZHLParser::Semi, 0);
+}
+
+std::vector<ZHLParser::VtableEntryContext *> ZHLParser::VtableContext::vtableEntry() {
+  return getRuleContexts<ZHLParser::VtableEntryContext>();
+}
+
+ZHLParser::VtableEntryContext* ZHLParser::VtableContext::vtableEntry(size_t i) {
+  return getRuleContext<ZHLParser::VtableEntryContext>(i);
+}
+
+
+size_t ZHLParser::VtableContext::getRuleIndex() const {
+  return ZHLParser::RuleVtable;
+}
+
+void ZHLParser::VtableContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterVtable(this);
+}
+
+void ZHLParser::VtableContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitVtable(this);
+}
+
+
+std::any ZHLParser::VtableContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ZHLParserVisitor*>(visitor))
+    return parserVisitor->visitVtable(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ZHLParser::VtableContext* ZHLParser::vtable() {
+  VtableContext *_localctx = _tracker.createInstance<VtableContext>(_ctx, getState());
+  enterRule(_localctx, 48, ZHLParser::RuleVtable);
+  size_t _la = 0;
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(302);
+    match(ZHLParser::Vtable);
+    setState(303);
+    match(ZHLParser::LeftBracket);
+    setState(305); 
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    do {
+      setState(304);
+      vtableEntry();
+      setState(307); 
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    } while (_la == ZHLParser::Skip
+
+    || _la == ZHLParser::Signature);
+    setState(309);
+    match(ZHLParser::RightBracket);
+    setState(310);
+    match(ZHLParser::Semi);
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- VtableEntryContext ------------------------------------------------------------------
+
+ZHLParser::VtableEntryContext::VtableEntryContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+ZHLParser::VtableSignatureContext* ZHLParser::VtableEntryContext::vtableSignature() {
+  return getRuleContext<ZHLParser::VtableSignatureContext>(0);
+}
+
+tree::TerminalNode* ZHLParser::VtableEntryContext::Skip() {
+  return getToken(ZHLParser::Skip, 0);
+}
+
+
+size_t ZHLParser::VtableEntryContext::getRuleIndex() const {
+  return ZHLParser::RuleVtableEntry;
+}
+
+void ZHLParser::VtableEntryContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterVtableEntry(this);
+}
+
+void ZHLParser::VtableEntryContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitVtableEntry(this);
+}
+
+
+std::any ZHLParser::VtableEntryContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ZHLParserVisitor*>(visitor))
+    return parserVisitor->visitVtableEntry(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ZHLParser::VtableEntryContext* ZHLParser::vtableEntry() {
+  VtableEntryContext *_localctx = _tracker.createInstance<VtableEntryContext>(_ctx, getState());
+  enterRule(_localctx, 50, ZHLParser::RuleVtableEntry);
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    setState(314);
+    _errHandler->sync(this);
+    switch (_input->LA(1)) {
+      case ZHLParser::Signature: {
+        enterOuterAlt(_localctx, 1);
+        setState(312);
+        vtableSignature();
+        break;
+      }
+
+      case ZHLParser::Skip: {
+        enterOuterAlt(_localctx, 2);
+        setState(313);
+        match(ZHLParser::Skip);
+        break;
+      }
+
+    default:
+      throw NoViableAltException(this);
+    }
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- VtableSignatureContext ------------------------------------------------------------------
+
+ZHLParser::VtableSignatureContext::VtableSignatureContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+ZHLParser::ClassSignatureContext* ZHLParser::VtableSignatureContext::classSignature() {
+  return getRuleContext<ZHLParser::ClassSignatureContext>(0);
+}
+
+tree::TerminalNode* ZHLParser::VtableSignatureContext::Override() {
+  return getToken(ZHLParser::Override, 0);
+}
+
+
+size_t ZHLParser::VtableSignatureContext::getRuleIndex() const {
+  return ZHLParser::RuleVtableSignature;
+}
+
+void ZHLParser::VtableSignatureContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterVtableSignature(this);
+}
+
+void ZHLParser::VtableSignatureContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitVtableSignature(this);
+}
+
+
+std::any ZHLParser::VtableSignatureContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ZHLParserVisitor*>(visitor))
+    return parserVisitor->visitVtableSignature(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ZHLParser::VtableSignatureContext* ZHLParser::vtableSignature() {
+  VtableSignatureContext *_localctx = _tracker.createInstance<VtableSignatureContext>(_ctx, getState());
+  enterRule(_localctx, 52, ZHLParser::RuleVtableSignature);
+  size_t _la = 0;
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(316);
+    classSignature();
+    setState(318);
+    _errHandler->sync(this);
+
+    _la = _input->LA(1);
+    if (_la == ZHLParser::Override) {
+      setState(317);
+      match(ZHLParser::Override);
     }
    
   }
@@ -2536,7 +3052,7 @@ std::any ZHLParser::ClassSignatureContext::accept(tree::ParseTreeVisitor *visito
 
 ZHLParser::ClassSignatureContext* ZHLParser::classSignature() {
   ClassSignatureContext *_localctx = _tracker.createInstance<ClassSignatureContext>(_ctx, getState());
-  enterRule(_localctx, 44, ZHLParser::RuleClassSignature);
+  enterRule(_localctx, 54, ZHLParser::RuleClassSignature);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -2547,9 +3063,9 @@ ZHLParser::ClassSignatureContext* ZHLParser::classSignature() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(264);
+    setState(320);
     match(ZHLParser::Signature);
-    setState(265);
+    setState(321);
     classFunction();
    
   }
@@ -2627,7 +3143,7 @@ std::any ZHLParser::ClassFunctionContext::accept(tree::ParseTreeVisitor *visitor
 
 ZHLParser::ClassFunctionContext* ZHLParser::classFunction() {
   ClassFunctionContext *_localctx = _tracker.createInstance<ClassFunctionContext>(_ctx, getState());
-  enterRule(_localctx, 46, ZHLParser::RuleClassFunction);
+  enterRule(_localctx, 56, ZHLParser::RuleClassFunction);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2639,27 +3155,27 @@ ZHLParser::ClassFunctionContext* ZHLParser::classFunction() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(270);
+    setState(326);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Qualifier) {
-      setState(267);
+      setState(323);
       match(ZHLParser::Qualifier);
-      setState(272);
+      setState(328);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(273);
+    setState(329);
     type();
-    setState(274);
+    setState(330);
     match(ZHLParser::Name);
-    setState(275);
+    setState(331);
     match(ZHLParser::LeftParen);
-    setState(276);
+    setState(332);
     funArgs();
-    setState(277);
+    setState(333);
     match(ZHLParser::RightParen);
-    setState(278);
+    setState(334);
     match(ZHLParser::Semi);
    
   }
@@ -2729,7 +3245,7 @@ std::any ZHLParser::ClassFieldContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::ClassFieldContext* ZHLParser::classField() {
   ClassFieldContext *_localctx = _tracker.createInstance<ClassFieldContext>(_ctx, getState());
-  enterRule(_localctx, 48, ZHLParser::RuleClassField);
+  enterRule(_localctx, 58, ZHLParser::RuleClassField);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2741,23 +3257,23 @@ ZHLParser::ClassFieldContext* ZHLParser::classField() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(280);
+    setState(336);
     type();
-    setState(281);
+    setState(337);
     innerField();
-    setState(286);
+    setState(342);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Comma) {
-      setState(282);
+      setState(338);
       match(ZHLParser::Comma);
-      setState(283);
+      setState(339);
       innerField();
-      setState(288);
+      setState(344);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(289);
+    setState(345);
     match(ZHLParser::Semi);
    
   }
@@ -2780,12 +3296,12 @@ ZHLParser::FullNameContext* ZHLParser::InnerFieldContext::fullName() {
   return getRuleContext<ZHLParser::FullNameContext>(0);
 }
 
-std::vector<tree::TerminalNode *> ZHLParser::InnerFieldContext::Star() {
-  return getTokens(ZHLParser::Star);
+std::vector<ZHLParser::InnerFieldPtrContext *> ZHLParser::InnerFieldContext::innerFieldPtr() {
+  return getRuleContexts<ZHLParser::InnerFieldPtrContext>();
 }
 
-tree::TerminalNode* ZHLParser::InnerFieldContext::Star(size_t i) {
-  return getToken(ZHLParser::Star, i);
+ZHLParser::InnerFieldPtrContext* ZHLParser::InnerFieldContext::innerFieldPtr(size_t i) {
+  return getRuleContext<ZHLParser::InnerFieldPtrContext>(i);
 }
 
 
@@ -2815,7 +3331,7 @@ std::any ZHLParser::InnerFieldContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::InnerFieldContext* ZHLParser::innerField() {
   InnerFieldContext *_localctx = _tracker.createInstance<InnerFieldContext>(_ctx, getState());
-  enterRule(_localctx, 50, ZHLParser::RuleInnerField);
+  enterRule(_localctx, 60, ZHLParser::RuleInnerField);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2827,18 +3343,92 @@ ZHLParser::InnerFieldContext* ZHLParser::innerField() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(294);
+    setState(350);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Star) {
-      setState(291);
-      match(ZHLParser::Star);
-      setState(296);
+      setState(347);
+      innerFieldPtr();
+      setState(352);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(297);
+    setState(353);
     fullName();
+   
+  }
+  catch (RecognitionException &e) {
+    _errHandler->reportError(this, e);
+    _localctx->exception = std::current_exception();
+    _errHandler->recover(this, _localctx->exception);
+  }
+
+  return _localctx;
+}
+
+//----------------- InnerFieldPtrContext ------------------------------------------------------------------
+
+ZHLParser::InnerFieldPtrContext::InnerFieldPtrContext(ParserRuleContext *parent, size_t invokingState)
+  : ParserRuleContext(parent, invokingState) {
+}
+
+tree::TerminalNode* ZHLParser::InnerFieldPtrContext::Star() {
+  return getToken(ZHLParser::Star, 0);
+}
+
+tree::TerminalNode* ZHLParser::InnerFieldPtrContext::Const() {
+  return getToken(ZHLParser::Const, 0);
+}
+
+
+size_t ZHLParser::InnerFieldPtrContext::getRuleIndex() const {
+  return ZHLParser::RuleInnerFieldPtr;
+}
+
+void ZHLParser::InnerFieldPtrContext::enterRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->enterInnerFieldPtr(this);
+}
+
+void ZHLParser::InnerFieldPtrContext::exitRule(tree::ParseTreeListener *listener) {
+  auto parserListener = dynamic_cast<ZHLParserListener *>(listener);
+  if (parserListener != nullptr)
+    parserListener->exitInnerFieldPtr(this);
+}
+
+
+std::any ZHLParser::InnerFieldPtrContext::accept(tree::ParseTreeVisitor *visitor) {
+  if (auto parserVisitor = dynamic_cast<ZHLParserVisitor*>(visitor))
+    return parserVisitor->visitInnerFieldPtr(this);
+  else
+    return visitor->visitChildren(this);
+}
+
+ZHLParser::InnerFieldPtrContext* ZHLParser::innerFieldPtr() {
+  InnerFieldPtrContext *_localctx = _tracker.createInstance<InnerFieldPtrContext>(_ctx, getState());
+  enterRule(_localctx, 62, ZHLParser::RuleInnerFieldPtr);
+  size_t _la = 0;
+
+#if __cplusplus > 201703L
+  auto onExit = finally([=, this] {
+#else
+  auto onExit = finally([=] {
+#endif
+    exitRule();
+  });
+  try {
+    enterOuterAlt(_localctx, 1);
+    setState(355);
+    match(ZHLParser::Star);
+    setState(357);
+    _errHandler->sync(this);
+
+    _la = _input->LA(1);
+    if (_la == ZHLParser::Const) {
+      setState(356);
+      match(ZHLParser::Const);
+    }
    
   }
   catch (RecognitionException &e) {
@@ -2899,7 +3489,7 @@ std::any ZHLParser::FullNameContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::FullNameContext* ZHLParser::fullName() {
   FullNameContext *_localctx = _tracker.createInstance<FullNameContext>(_ctx, getState());
-  enterRule(_localctx, 52, ZHLParser::RuleFullName);
+  enterRule(_localctx, 64, ZHLParser::RuleFullName);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -2911,18 +3501,18 @@ ZHLParser::FullNameContext* ZHLParser::fullName() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(299);
+    setState(359);
     match(ZHLParser::Name);
-    setState(303);
+    setState(363);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::LeftRBracket) {
-      setState(300);
+      setState(360);
       match(ZHLParser::LeftRBracket);
-      setState(301);
+      setState(361);
       match(ZHLParser::Number);
-      setState(302);
+      setState(362);
       match(ZHLParser::RightRBracket);
     }
    
@@ -2985,7 +3575,7 @@ std::any ZHLParser::SignatureContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::SignatureContext* ZHLParser::signature() {
   SignatureContext *_localctx = _tracker.createInstance<SignatureContext>(_ctx, getState());
-  enterRule(_localctx, 54, ZHLParser::RuleSignature);
+  enterRule(_localctx, 66, ZHLParser::RuleSignature);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -2996,21 +3586,21 @@ ZHLParser::SignatureContext* ZHLParser::signature() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(309);
+    setState(369);
     _errHandler->sync(this);
     switch (_input->LA(1)) {
       case ZHLParser::Signature: {
-        setState(305);
+        setState(365);
         match(ZHLParser::Signature);
-        setState(306);
+        setState(366);
         function();
         break;
       }
 
       case ZHLParser::ReferenceSignature: {
-        setState(307);
+        setState(367);
         match(ZHLParser::ReferenceSignature);
-        setState(308);
+        setState(368);
         reference();
         break;
       }
@@ -3078,7 +3668,7 @@ std::any ZHLParser::ForwardDeclContext::accept(tree::ParseTreeVisitor *visitor) 
 
 ZHLParser::ForwardDeclContext* ZHLParser::forwardDecl() {
   ForwardDeclContext *_localctx = _tracker.createInstance<ForwardDeclContext>(_ctx, getState());
-  enterRule(_localctx, 56, ZHLParser::RuleForwardDecl);
+  enterRule(_localctx, 68, ZHLParser::RuleForwardDecl);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -3090,7 +3680,7 @@ ZHLParser::ForwardDeclContext* ZHLParser::forwardDecl() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(311);
+    setState(371);
     _la = _input->LA(1);
     if (!(_la == ZHLParser::Class
 
@@ -3101,9 +3691,9 @@ ZHLParser::ForwardDeclContext* ZHLParser::forwardDecl() {
       _errHandler->reportMatch(this);
       consume();
     }
-    setState(312);
+    setState(372);
     match(ZHLParser::Name);
-    setState(313);
+    setState(373);
     match(ZHLParser::Semi);
    
   }
@@ -3165,7 +3755,7 @@ std::any ZHLParser::TypedefContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::TypedefContext* ZHLParser::typedef_() {
   TypedefContext *_localctx = _tracker.createInstance<TypedefContext>(_ctx, getState());
-  enterRule(_localctx, 58, ZHLParser::RuleTypedef);
+  enterRule(_localctx, 70, ZHLParser::RuleTypedef);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3176,13 +3766,13 @@ ZHLParser::TypedefContext* ZHLParser::typedef_() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(315);
+    setState(375);
     match(ZHLParser::Typedef);
-    setState(316);
+    setState(376);
     type();
-    setState(317);
+    setState(377);
     match(ZHLParser::Name);
-    setState(318);
+    setState(378);
     match(ZHLParser::Semi);
    
   }
@@ -3236,7 +3826,7 @@ std::any ZHLParser::FunctionPtrContext::accept(tree::ParseTreeVisitor *visitor) 
 
 ZHLParser::FunctionPtrContext* ZHLParser::functionPtr() {
   FunctionPtrContext *_localctx = _tracker.createInstance<FunctionPtrContext>(_ctx, getState());
-  enterRule(_localctx, 60, ZHLParser::RuleFunctionPtr);
+  enterRule(_localctx, 72, ZHLParser::RuleFunctionPtr);
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -3246,19 +3836,19 @@ ZHLParser::FunctionPtrContext* ZHLParser::functionPtr() {
     exitRule();
   });
   try {
-    setState(322);
+    setState(382);
     _errHandler->sync(this);
-    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 37, _ctx)) {
+    switch (getInterpreter<atn::ParserATNSimulator>()->adaptivePredict(_input, 44, _ctx)) {
     case 1: {
       enterOuterAlt(_localctx, 1);
-      setState(320);
+      setState(380);
       fptr();
       break;
     }
 
     case 2: {
       enterOuterAlt(_localctx, 2);
-      setState(321);
+      setState(381);
       memberPtr();
       break;
     }
@@ -3354,7 +3944,7 @@ std::any ZHLParser::FptrContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::FptrContext* ZHLParser::fptr() {
   FptrContext *_localctx = _tracker.createInstance<FptrContext>(_ctx, getState());
-  enterRule(_localctx, 62, ZHLParser::RuleFptr);
+  enterRule(_localctx, 74, ZHLParser::RuleFptr);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -3366,46 +3956,46 @@ ZHLParser::FptrContext* ZHLParser::fptr() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(324);
+    setState(384);
     type();
-    setState(325);
+    setState(385);
     match(ZHLParser::LeftParen);
-    setState(327);
+    setState(387);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::CallingConvention) {
-      setState(326);
+      setState(386);
       match(ZHLParser::CallingConvention);
     }
-    setState(330); 
+    setState(390); 
     _errHandler->sync(this);
     _la = _input->LA(1);
     do {
-      setState(329);
+      setState(389);
       match(ZHLParser::Star);
-      setState(332); 
+      setState(392); 
       _errHandler->sync(this);
       _la = _input->LA(1);
     } while (_la == ZHLParser::Star);
-    setState(334);
+    setState(394);
     match(ZHLParser::Name);
-    setState(335);
+    setState(395);
     match(ZHLParser::RightParen);
-    setState(336);
+    setState(396);
     match(ZHLParser::LeftParen);
-    setState(338);
+    setState(398);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (((((_la - 24) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 24)) & 4398046515197) != 0)) {
-      setState(337);
+      ((1ULL << (_la - 24)) & 281474976714749) != 0)) {
+      setState(397);
       optNamedFunArgs();
     }
-    setState(340);
+    setState(400);
     match(ZHLParser::RightParen);
-    setState(341);
+    setState(401);
     match(ZHLParser::Semi);
    
   }
@@ -3507,7 +4097,7 @@ std::any ZHLParser::MemberPtrContext::accept(tree::ParseTreeVisitor *visitor) {
 
 ZHLParser::MemberPtrContext* ZHLParser::memberPtr() {
   MemberPtrContext *_localctx = _tracker.createInstance<MemberPtrContext>(_ctx, getState());
-  enterRule(_localctx, 64, ZHLParser::RuleMemberPtr);
+  enterRule(_localctx, 76, ZHLParser::RuleMemberPtr);
   size_t _la = 0;
 
 #if __cplusplus > 201703L
@@ -3519,66 +4109,66 @@ ZHLParser::MemberPtrContext* ZHLParser::memberPtr() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(343);
+    setState(403);
     type();
-    setState(344);
+    setState(404);
     match(ZHLParser::LeftParen);
-    setState(346);
+    setState(406);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (_la == ZHLParser::CallingConvention) {
-      setState(345);
+      setState(405);
       match(ZHLParser::CallingConvention);
     }
-    setState(348);
+    setState(408);
     match(ZHLParser::Name);
-    setState(349);
+    setState(409);
     match(ZHLParser::Colon);
-    setState(350);
+    setState(410);
     match(ZHLParser::Colon);
-    setState(356);
+    setState(416);
     _errHandler->sync(this);
     _la = _input->LA(1);
     while (_la == ZHLParser::Name) {
-      setState(351);
+      setState(411);
       match(ZHLParser::Name);
-      setState(352);
+      setState(412);
       match(ZHLParser::Colon);
-      setState(353);
+      setState(413);
       match(ZHLParser::Colon);
-      setState(358);
+      setState(418);
       _errHandler->sync(this);
       _la = _input->LA(1);
     }
-    setState(360); 
+    setState(420); 
     _errHandler->sync(this);
     _la = _input->LA(1);
     do {
-      setState(359);
+      setState(419);
       match(ZHLParser::Star);
-      setState(362); 
+      setState(422); 
       _errHandler->sync(this);
       _la = _input->LA(1);
     } while (_la == ZHLParser::Star);
-    setState(364);
+    setState(424);
     match(ZHLParser::Name);
-    setState(365);
+    setState(425);
     match(ZHLParser::RightParen);
-    setState(366);
+    setState(426);
     match(ZHLParser::LeftParen);
-    setState(368);
+    setState(428);
     _errHandler->sync(this);
 
     _la = _input->LA(1);
     if (((((_la - 24) & ~ 0x3fULL) == 0) &&
-      ((1ULL << (_la - 24)) & 4398046515197) != 0)) {
-      setState(367);
+      ((1ULL << (_la - 24)) & 281474976714749) != 0)) {
+      setState(427);
       optNamedFunArgs();
     }
-    setState(370);
+    setState(430);
     match(ZHLParser::RightParen);
-    setState(371);
+    setState(431);
     match(ZHLParser::Semi);
    
   }

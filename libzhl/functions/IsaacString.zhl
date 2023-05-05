@@ -6,4 +6,9 @@ struct IsaacString { {{
             return *(char**)text;
         }
     }
-}} };
+}} 
+
+    char text[16];
+    uint32_t size; // 0x10
+    uint32_t unk; // 0x14
+};

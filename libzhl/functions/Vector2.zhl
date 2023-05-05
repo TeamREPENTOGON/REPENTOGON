@@ -23,4 +23,6 @@ struct Vector { {{
 		return Vector(x * amount, y * amount);
 	}
 
-}} };
+}} 
+    float x, y;
+};

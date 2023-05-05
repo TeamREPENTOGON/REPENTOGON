@@ -16,7 +16,7 @@ __thiscall bool Entity_Pickup::TryRemoveCollectible(Entity_Pickup *this<ecx>);
 "558bec518379??64":
 __thiscall void Entity_Pickup::SetForceBlind(Entity_Pickup *this<ecx>, bool setBlind);
 
-struct Entity_Pickup { {{
+struct Entity_Pickup : public Entity { {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
 	inline int* GetVarData() { return (int*)((char*)this + 0x4e8); }
 }} };

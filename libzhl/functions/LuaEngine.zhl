@@ -9,3 +9,11 @@ __thiscall bool LuaEngine::RunBundledScript(LuaEngine *this<ecx>, const char *pa
 
 "8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;
+
+struct LuaEngine {
+    char pad0[0x10];
+    RunCallbackRegistry* runCallbackRegistry; // 0x10
+    char pad1[0x4]; // 0x14
+    lua_State* _state; // 0x18
+    int32_t _runCallbackRegistryKey; // 0x1C
+};

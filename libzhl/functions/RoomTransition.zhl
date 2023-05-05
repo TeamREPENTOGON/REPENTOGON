@@ -1,2 +1,6 @@
 "558bec83e4f883ec38f30f1005????????56578bf9":
 __thiscall void RoomTransition::ChangeRoom(RoomTransition *this<ecx>);
+
+struct RoomTransition {
+
+};

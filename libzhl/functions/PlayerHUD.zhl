@@ -9,4 +9,6 @@ __thiscall void PlayerHUD::RenderHearts(PlayerHUD *this<ecx>, Vector *unk1, ANM2
 
 struct PlayerHUD { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
-}} };
+}} 
+    Entity_Player* _player;
+};

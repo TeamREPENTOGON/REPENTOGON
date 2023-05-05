@@ -160,7 +160,7 @@ __thiscall int Entity_Player::GetCollectibleNum(Entity_Player *this<ecx>, int co
 
 
 
-struct Entity_Player depends (ActiveItemDesc, History) { {{
+struct Entity_Player : public Entity { {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }

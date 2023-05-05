@@ -1,0 +1,4 @@
+struct RunCallbackRegistry {
+    lua_State* state;
+    int32_t key;
+};

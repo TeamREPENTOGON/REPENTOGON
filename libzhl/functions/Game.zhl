@@ -97,7 +97,7 @@ const static FuncSignatureByte Signature_GameGlobalAddres = {
 ".e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerManager, RoomDescriptor, ProceduralItemManager, RoomConfigHolder)
+struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager)
 { {{
 	Game()
 	{
@@ -157,4 +157,36 @@ struct Game depends (DailyChallenge, Console, ItemOverlay, Ambush, Room, PlayerM
     { 
         return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 
     }
-}} };
+}} 
+    uint32_t _stage; // 0x0
+    uint32_t _stageType; // 0x4
+    bool _bossChallenge; //0x8
+    bool _devilRoomDisabled; //0x9
+    char _pad0[2]; // probably nothing?
+    uint32_t _curses; // 0xC
+    RoomDescriptor _gridRooms[507]; // 0x14
+    RoomDescriptor _negativeGridRooms[18]; // 0x16c7c
+    uint32_t _roomOffset[507]; // 0x1796c
+    uint32_t _nbRooms; // 0x1815C
+    uint32_t _startingRoomIdx; // 0x18160
+    Room* _room; // 0x18190
+    uint32_t _currentRoomIdx; // 0x18194;
+    uint32_t _lastRoomIdx; // 0x18198
+    uint32_t _currentDimensionIdx; // 0x1819C
+    uint32_t _lastRoomDimensionIdx; // 0x181A0
+    uint32_t _lastBossRoomListIdx; //0X181A4
+    uint32_t _leaveDoor; // 0x181A8
+    uint32_t _enterDoor; // 0x181AC
+    uint32_t _greedModeWave; // 0x181C4
+    unsigned int _stateFlags; // 0x1822C
+    uint32_t _greedModeTreasureRoomIdx; // 0x18200
+    RoomConfigHolder _roomConfigs; // 0x1879C
+    PlayerManager _playerManager; // 0x1AB40 
+    Console _console; // 0x1BB60
+    ItemOverlay _itemOverlay; // 0x1BCC0
+    int _treasureRoomsVisited; // 0x1C3178
+    int _planetariumsVisited; // 0x1C317C
+    Ambush _ambush; // 0x1c31b8
+    uint32_t _difficulty; // 0x243624
+    ProceduralItemManager _proceduralItemManager; // 0x283c20 
+};

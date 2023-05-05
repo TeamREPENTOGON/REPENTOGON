@@ -82,4 +82,13 @@ struct Entity depends (AnimationState) {
 	{
 		this->constructor();
 	}
-}} };
+}} 
+    char pad0[28];
+    unsigned int _index; //0x20
+    unsigned int _collisionIndex; //0x24
+    unsigned int _type; //0x28
+    unsigned int _variant; //0x2c
+    unsigned int _subtype; //0x30
+    unsigned int _shadowSize; //0x150   
+    bool _visible; // 0x169 
+};

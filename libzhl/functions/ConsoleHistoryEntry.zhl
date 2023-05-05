@@ -1,0 +1,4 @@
+struct Console_HistoryEntry depends (IsaacString)
+{
+    IsaacString _text;
+};

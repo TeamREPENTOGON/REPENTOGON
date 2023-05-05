@@ -30,7 +30,12 @@ __thiscall bool Manager::AchievementUnlocksDisallowed(Manager *this<ecx>, bool u
 struct Manager depends (StringTable, PersistentGameData, UnknownGameStartStruct) { {{
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
-}} };
+}} 
+    char unk1[0x13];
+    PersistentGameData _persistentGameData;
+    StringTable _stringTable;
+};
+
 
 ".e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":
 reference Manager *g_Manager;

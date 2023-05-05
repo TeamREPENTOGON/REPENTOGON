@@ -9,4 +9,13 @@ struct GridEntity {
 	inline int GetType() {return *(int*)((char*)this + 0x4); }
 	inline GridCollisionClass* GetCollisionClass() { return (GridCollisionClass*)((char*)this + 0x3C); }
 	inline unsigned int* GetGridIndex() { return (unsigned int*)((char*)this + 0x24); }
-}} };
+}} 
+    int _unk; 
+    GridEntityType _type; // 0x4
+    int _variant; // 0x8
+    int _state;
+    int _unk2;
+    int _varData;
+    int _unk3;
+    unsigned int _collisionClass; // 0x3C
+};

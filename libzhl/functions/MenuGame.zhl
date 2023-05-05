@@ -4,7 +4,7 @@ __thiscall void Menu_Game::Update(Menu_Game *this<ecx>);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec80020000":
 __thiscall void Menu_Game::PreRenderContinueImg(Menu_Game *this<ecx>);
 
-struct Menu_Game depends (ANM2, AnimationState) { {{
+struct Menu_Game { {{
 	inline ANM2* GetContinueWidgetSprite() { return (ANM2*)((char*)this + 0x124) ; }
 	inline AnimationState* GetContinueWidgetAnimationState() { return (AnimationState*)((char*)this + 0x154) ; }
 }} };

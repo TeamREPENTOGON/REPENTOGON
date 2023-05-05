@@ -3,3 +3,7 @@ __thiscall void GridEntity_Rock::Update(GridEntity_Rock *this<ecx>);
 
 "558bec83ec40a1????????33c58945??538b1d":
 __thiscall bool GridEntity_Rock::Destroy(GridEntity_Rock *this<ecx>, bool Immediate); 
+
+struct GridEntity_Rock : public GridEntity {
+
+};

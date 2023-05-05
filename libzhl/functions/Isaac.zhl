@@ -17,3 +17,7 @@ static __cdecl void Isaac::SetBuiltInCallbackState(int callbackid, bool enabled)
 
 "558becff7508ff15????????83c4045dc3cccccccccccccccccccccccccccccc8a410c":
 static __cdecl void Isaac::free(void *block);
+
+struct Isaac {
+
+};

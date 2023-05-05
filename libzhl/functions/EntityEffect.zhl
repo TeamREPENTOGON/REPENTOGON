@@ -3,3 +3,7 @@ __thiscall void Entity_Effect::Render(Entity_Effect *this<ecx>, Vector *offset);
 
 "558bec83e4f856578bfa":
 static __cdecl Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);
+
+struct Entity_Effect : public Entity {
+
+};

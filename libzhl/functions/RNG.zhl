@@ -6,3 +6,9 @@ __thiscall void RNG::SetSeed(RNG *this<ecx>, unsigned int Seed, unsigned int Shi
 
 "558bec568bf18b16":
 __thiscall void RNG::RandomInt(RNG *this<ecx>, unsigned int param_1);
+
+struct RNG
+{
+  unsigned int _seed; //0x0
+  char pad0[0xC]; // probably ShiftIdx?
+}; //0x10

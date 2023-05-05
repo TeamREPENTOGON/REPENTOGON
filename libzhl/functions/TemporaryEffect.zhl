@@ -1,0 +1,6 @@
+struct TemporaryEffect
+{
+    ItemConfig_Item *_item;
+    int _unk;
+    int _unk2;
+};

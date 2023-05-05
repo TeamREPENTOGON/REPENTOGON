@@ -1,0 +1,5 @@
+struct ItemConfig_Item
+{
+    int _type; //0x0
+    int _id; //0x4
+};

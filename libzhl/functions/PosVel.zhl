@@ -1,4 +1,4 @@
-struct PosVel {
+struct PosVel depends (Vector) {
 {{
 	PosVel() : pos(Vector()), vel(Vector()) {}
 	PosVel(Vector _pos, Vector _vel) : pos(_pos), vel(_vel) {}
@@ -23,4 +23,6 @@ struct PosVel {
 		return PosVel(pos * amount, vel * amount);
 	}
 
-}} };
+}} 
+    Vector pos, vel;
+};

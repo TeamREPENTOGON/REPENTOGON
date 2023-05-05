@@ -15,4 +15,9 @@ struct EntityList_EL {
     {
     
     }
-}} };
+}} 
+    bool _sublist;
+    Entity** _data;
+    unsigned int _capacity;
+    unsigned int _size;
+};

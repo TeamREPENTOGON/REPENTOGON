@@ -38,6 +38,12 @@ Bool: 'bool';
 Float: 'float';
 Double: 'double';
 Void: 'void';
+Type: 'TypeInfo';
+Size: 'Size';
+Synonym: 'Synonym';
+Vtable: '__vtable';
+Skip: 'skip';
+Override: 'override';
 
 Visibility: Public | Private | Protected;
 Public: 'public';

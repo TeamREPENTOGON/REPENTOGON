@@ -19,6 +19,14 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitTypeInfo(ZHLParser::TypeInfoContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitTypeInfoDef(ZHLParser::TypeInfoDefContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitFunction(ZHLParser::FunctionContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -103,6 +111,18 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitVtable(ZHLParser::VtableContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitVtableEntry(ZHLParser::VtableEntryContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitVtableSignature(ZHLParser::VtableSignatureContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitClassSignature(ZHLParser::ClassSignatureContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -116,6 +136,10 @@ public:
   }
 
   virtual std::any visitInnerField(ZHLParser::InnerFieldContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitInnerFieldPtr(ZHLParser::InnerFieldPtrContext *ctx) override {
     return visitChildren(ctx);
   }
 

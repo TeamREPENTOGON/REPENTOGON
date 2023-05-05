@@ -1,0 +1,5 @@
+struct DailyChallenge
+{
+    unsigned int _id; //0x0
+    unsigned int _seed; //0x4
+};

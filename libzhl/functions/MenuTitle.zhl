@@ -3,3 +3,7 @@ __thiscall void Menu_Title::Update(Menu_Title *this<ecx>);
 
 "558bec81eca4000000": //challengesmenu-->"558bec83ec3453568bf157":
 __thiscall void Menu_Title::Render(Menu_Title *this<ecx>);
+
+struct Menu_Title {
+
+};

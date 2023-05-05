@@ -19,6 +19,12 @@ public:
   virtual void enterZhl(ZHLParser::ZhlContext * /*ctx*/) override { }
   virtual void exitZhl(ZHLParser::ZhlContext * /*ctx*/) override { }
 
+  virtual void enterTypeInfo(ZHLParser::TypeInfoContext * /*ctx*/) override { }
+  virtual void exitTypeInfo(ZHLParser::TypeInfoContext * /*ctx*/) override { }
+
+  virtual void enterTypeInfoDef(ZHLParser::TypeInfoDefContext * /*ctx*/) override { }
+  virtual void exitTypeInfoDef(ZHLParser::TypeInfoDefContext * /*ctx*/) override { }
+
   virtual void enterFunction(ZHLParser::FunctionContext * /*ctx*/) override { }
   virtual void exitFunction(ZHLParser::FunctionContext * /*ctx*/) override { }
 
@@ -82,6 +88,15 @@ public:
   virtual void enterClassBody(ZHLParser::ClassBodyContext * /*ctx*/) override { }
   virtual void exitClassBody(ZHLParser::ClassBodyContext * /*ctx*/) override { }
 
+  virtual void enterVtable(ZHLParser::VtableContext * /*ctx*/) override { }
+  virtual void exitVtable(ZHLParser::VtableContext * /*ctx*/) override { }
+
+  virtual void enterVtableEntry(ZHLParser::VtableEntryContext * /*ctx*/) override { }
+  virtual void exitVtableEntry(ZHLParser::VtableEntryContext * /*ctx*/) override { }
+
+  virtual void enterVtableSignature(ZHLParser::VtableSignatureContext * /*ctx*/) override { }
+  virtual void exitVtableSignature(ZHLParser::VtableSignatureContext * /*ctx*/) override { }
+
   virtual void enterClassSignature(ZHLParser::ClassSignatureContext * /*ctx*/) override { }
   virtual void exitClassSignature(ZHLParser::ClassSignatureContext * /*ctx*/) override { }
 
@@ -93,6 +108,9 @@ public:
 
   virtual void enterInnerField(ZHLParser::InnerFieldContext * /*ctx*/) override { }
   virtual void exitInnerField(ZHLParser::InnerFieldContext * /*ctx*/) override { }
+
+  virtual void enterInnerFieldPtr(ZHLParser::InnerFieldPtrContext * /*ctx*/) override { }
+  virtual void exitInnerFieldPtr(ZHLParser::InnerFieldPtrContext * /*ctx*/) override { }
 
   virtual void enterFullName(ZHLParser::FullNameContext * /*ctx*/) override { }
   virtual void exitFullName(ZHLParser::FullNameContext * /*ctx*/) override { }

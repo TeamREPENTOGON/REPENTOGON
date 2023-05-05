@@ -9,3 +9,7 @@ __thiscall void Level::ChangeRoom(Level* this<ecx>, int targetRoomIDX, int dimen
 
 "558bec83ec1856576a":
 __thiscall bool Level::TryInitializeExtraBossRoom(Level* this<ecx>, unsigned int seed);
+
+struct Level {
+
+};

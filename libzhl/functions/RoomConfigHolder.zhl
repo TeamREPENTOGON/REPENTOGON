@@ -3,3 +3,8 @@ __thiscall RoomConfig* RoomConfigHolder::GetRoomByStageTypeAndVariant(RoomConfig
 
 "558bec6aff68????????64a1????????5083ec74a1????????33c58945??535657508d45??64a3????????894d":
 __thiscall RoomConfig* RoomConfigHolder::GetRandomRoom(RoomConfigHolder *this<ecx>, unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int unk1, unsigned int unk2, int minDifficulty, int maxDifficulty, const unsigned int &requiredDoors, unsigned int roomSubtype, int unk3);
+
+struct RoomConfigHolder depends (RoomConfigs)
+{
+    RoomConfigs configs[36];
+}; // 0xC4 * 36

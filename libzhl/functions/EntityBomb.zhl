@@ -1,2 +1,6 @@
 "558bec83e4c081ecb400000053":
 __thiscall void Entity_Bomb::Render(Entity_Bomb *this<ecx>, Vector *offset);
+
+struct Entity_Bomb : public Entity {
+
+};

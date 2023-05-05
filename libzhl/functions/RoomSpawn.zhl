@@ -1,0 +1,8 @@
+struct RoomSpawn depends (StaticArray)
+{
+    uint16_t X; // 0x0
+    uint16_t Y; // 0x2
+    StaticArray Entries;
+    char pad[2]; // 0xA
+    float SumWeights; // 0xC
+}; // 0x10 (absolutely sure)

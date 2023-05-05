@@ -17,6 +17,12 @@ public:
   virtual void enterZhl(ZHLParser::ZhlContext *ctx) = 0;
   virtual void exitZhl(ZHLParser::ZhlContext *ctx) = 0;
 
+  virtual void enterTypeInfo(ZHLParser::TypeInfoContext *ctx) = 0;
+  virtual void exitTypeInfo(ZHLParser::TypeInfoContext *ctx) = 0;
+
+  virtual void enterTypeInfoDef(ZHLParser::TypeInfoDefContext *ctx) = 0;
+  virtual void exitTypeInfoDef(ZHLParser::TypeInfoDefContext *ctx) = 0;
+
   virtual void enterFunction(ZHLParser::FunctionContext *ctx) = 0;
   virtual void exitFunction(ZHLParser::FunctionContext *ctx) = 0;
 
@@ -80,6 +86,15 @@ public:
   virtual void enterClassBody(ZHLParser::ClassBodyContext *ctx) = 0;
   virtual void exitClassBody(ZHLParser::ClassBodyContext *ctx) = 0;
 
+  virtual void enterVtable(ZHLParser::VtableContext *ctx) = 0;
+  virtual void exitVtable(ZHLParser::VtableContext *ctx) = 0;
+
+  virtual void enterVtableEntry(ZHLParser::VtableEntryContext *ctx) = 0;
+  virtual void exitVtableEntry(ZHLParser::VtableEntryContext *ctx) = 0;
+
+  virtual void enterVtableSignature(ZHLParser::VtableSignatureContext *ctx) = 0;
+  virtual void exitVtableSignature(ZHLParser::VtableSignatureContext *ctx) = 0;
+
   virtual void enterClassSignature(ZHLParser::ClassSignatureContext *ctx) = 0;
   virtual void exitClassSignature(ZHLParser::ClassSignatureContext *ctx) = 0;
 
@@ -91,6 +106,9 @@ public:
 
   virtual void enterInnerField(ZHLParser::InnerFieldContext *ctx) = 0;
   virtual void exitInnerField(ZHLParser::InnerFieldContext *ctx) = 0;
+
+  virtual void enterInnerFieldPtr(ZHLParser::InnerFieldPtrContext *ctx) = 0;
+  virtual void exitInnerFieldPtr(ZHLParser::InnerFieldPtrContext *ctx) = 0;
 
   virtual void enterFullName(ZHLParser::FullNameContext *ctx) = 0;
   virtual void exitFullName(ZHLParser::FullNameContext *ctx) = 0;

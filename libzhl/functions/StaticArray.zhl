@@ -1,0 +1,5 @@
+struct StaticArray
+{
+    void* data;
+    uint16_t size;
+};

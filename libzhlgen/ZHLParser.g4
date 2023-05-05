@@ -5,7 +5,14 @@ options {
 }
 
 zhl:
-    (signature | class | genericCode | typedef | functionPtr | forwardDecl)* EOF;
+    (signature | class | genericCode | typedef | functionPtr | forwardDecl | typeInfo)* EOF;
+
+typeInfo:
+    Type Name LeftBracket typeInfoDef+ RightBracket Semi;
+
+typeInfoDef:
+    Size Number Semi |
+    Synonym type Semi;
     
 function:
     Qualifier* CallingConvention? type nestedName LeftParen funArgs? RightParen Semi;
@@ -65,10 +72,10 @@ genericCode:
     GenericCode; // LeftBracket LeftBracket Any* RightBracket RightBracket;
     
 class: 
-    (Class | Struct) Name depends? inheritance? LeftBracket classBody RightBracket Semi;
+    (Class | Struct) Name depends? (Colon inheritance)? LeftBracket classBody RightBracket Semi;
     
 inheritance:
-    inheritanceDecl (Comma inheritanceDecl);
+    inheritanceDecl (Comma inheritanceDecl)*;
 
 inheritanceDecl:
     Visibility? nestedName;
@@ -77,7 +84,16 @@ depends:
     Depends LeftParen (Name Comma)* Name RightParen;
 
 classBody: 
-    (classSignature | genericCode | classField | typedef | functionPtr | forwardDecl)*;
+    (vtable | classSignature | genericCode | classField | functionPtr | forwardDecl)*;
+
+vtable:
+    Vtable LeftBracket vtableEntry+ RightBracket Semi;
+
+vtableEntry:
+    vtableSignature | Skip;
+
+vtableSignature:
+    classSignature Override?;
 
 classSignature:
     Signature classFunction;
@@ -89,7 +105,10 @@ classField:
     type innerField (Comma innerField)* Semi;
     
 innerField:
-    Star* fullName;
+    innerFieldPtr* fullName;
+
+innerFieldPtr:
+    Star Const?;
     
 fullName:
     Name (LeftRBracket Number RightRBracket)?;

@@ -19,3 +19,8 @@ __thiscall Entity_Player* PlayerManager::FirstTrinketOwner(PlayerManager* this<e
 
 "558bec8b511056":
 __thiscall bool PlayerManager::HasTemporaryEffect(PlayerManager *this<ecx>, ItemConfig_Item *item);
+
+struct PlayerManager depends (RNG)
+{
+    RNG _rng; //0x0
+};
