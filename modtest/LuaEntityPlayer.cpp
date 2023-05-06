@@ -420,6 +420,20 @@ int Lua_PlayerGetEpiphoraFireDelayModifier(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerGetPeeBurstCooldown(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetPeeBurstCooldown());
+	return 1;
+}
+
+int Lua_PlayerGetMaxPeeBurstCooldown(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetMaxPeeBurstCooldown());
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -468,4 +482,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetD8RangeModifier", Lua_PlayerGetD8RangeModifier);
 	lua::RegisterFunction(state, mt, "GetD8FireDelayModifier", Lua_PlayerGetD8FireDelayModifier);
 	lua::RegisterFunction(state, mt, "GetEpiphoraFireDelayModifier", Lua_PlayerGetEpiphoraFireDelayModifier);
+	lua::RegisterFunction(state, mt, "GetPeeBurstCooldown", Lua_PlayerGetPeeBurstCooldown);
+	lua::RegisterFunction(state, mt, "GetMaxPeeBurstCooldown", Lua_PlayerGetMaxPeeBurstCooldown);
 }

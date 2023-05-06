@@ -173,7 +173,6 @@ __thiscall int Entity_Player::GetWeaponModifiers(Entity_Player *this<ecx>);
 "558bec8b45??8a55":
 __thiscall void Entity_Player::EnableWeaponType(Entity_Player *this<ecx>, WeaponType weaponType, bool Set);
 
-
 struct Entity_Player depends (ActiveItemDesc, History, Weapon) {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Weapon* GetWeapon() { return (Weapon*)((char*)this + 0x1328); }
@@ -184,6 +183,8 @@ struct Entity_Player depends (ActiveItemDesc, History, Weapon) {{
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
 	inline int* GetEpiphoraFireDelayModifier() { return (int*)((char*)this + 0x17c4); }
 	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
+	inline int* GetPeeBurstCooldown() { return (int*)((char*)this + 0x1818); }
+	inline int* GetMaxPeeBurstCooldown() { return (int*)((char*)this + 0x181c); }
 	inline float* GetD8DamageModifier() { return (float*)((char*)this + 0x185C); }
 	inline float* GetD8SpeedModifier() { return (float*)((char*)this + 0x1860); }
 	inline float* GetD8RangeModifier() { return (float*)((char*)this + 0x1864); }
