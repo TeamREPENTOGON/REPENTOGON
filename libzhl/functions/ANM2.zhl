@@ -1,29 +1,29 @@
 "558bec83e4f8515356578bf98b57":
-__thiscall void ANM2::Render(ANM2 *this<ecx> ,Vector* position,Vector* topleftclamp,Vector* bottomrightclamp);
+__thiscall void ANM2::Render(Vector* position,Vector* topleftclamp,Vector* bottomrightclamp);
 
 "558bec83ec10568bf1578b7e":
-__thiscall void ANM2::Update(ANM2 *this<ecx>);
+__thiscall void ANM2::Update();
 
 "558bec8379??0056":
-__thiscall void ANM2::SetLayerFrame(ANM2 *this<ecx>,int layerid,int frame);
+__thiscall void ANM2::SetLayerFrame(int layerid,int frame);
 
 "558bec8b45??568bf185c078":
-__thiscall void ANM2::ReplaceSpritesheet(ANM2 *this<ecx>, int LayerId, IsaacString &PngFilename);
+__thiscall void ANM2::ReplaceSpritesheet(int LayerId, IsaacString &PngFilename);
 
 "558bec6aff68????????64a1????????5083ec28535657a1????????33c5508d45??64a3????????8bf933c9":
-__thiscall void ANM2::LoadGraphics(ANM2 *this<ecx>, bool unk);
+__thiscall void ANM2::LoadGraphics(bool unk);
 
 "558bec6aff68????????64a1????????505657a1????????33c5508d45??64a3????????8bf9837f??00":
-__thiscall void ANM2::Reset(ANM2 *this<ecx>);
+__thiscall void ANM2::Reset();
 
 "558bec51538b9980000000":
-__thiscall LayerState* ANM2::GetLayer(ANM2 *this<ecx>, const char* layerName);
+__thiscall LayerState* ANM2::GetLayer(const char* layerName);
 
 "558bec5156578b7d??8bf1":
-__thiscall LayerState* ANM2::GetLayer(ANM2 *this<ecx>, int layer);
+__thiscall LayerState* ANM2::GetLayer(int layer);
 
 "558bec5153568bf15780be????????00":
-__thiscall void ANM2::RenderLayer(ANM2 *this<ecx>,int param_1,Vector *param_2,Vector *param_3,Vector *param_4);
+__thiscall void ANM2::RenderLayer(int param_1,Vector *param_2,Vector *param_3,Vector *param_4);
 
 
 struct ANM2 depends (AnimationState, IsaacString) { {{

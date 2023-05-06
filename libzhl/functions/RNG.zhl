@@ -2,10 +2,10 @@
 unsigned int Random();
 
 "558bec8b450889018b450c8d":
-__thiscall void RNG::SetSeed(RNG *this<ecx>, unsigned int Seed, unsigned int ShiftIdx);
+__thiscall void RNG::SetSeed(unsigned int Seed, unsigned int ShiftIdx);
 
 "558bec568bf18b16":
-__thiscall void RNG::RandomInt(RNG *this<ecx>, unsigned int param_1);
+__thiscall void RNG::RandomInt(unsigned int param_1);
 
 struct RNG
 {

@@ -1,8 +1,8 @@
 "558bec8b5508c6":
-__thiscall void EntityList_EL::constructor(EntityList_EL *this<ecx>, EntityList_EL *source);
+__thiscall void EntityList_EL::constructor(EntityList_EL *source);
 
 "8039007509ff7104":
-__thiscall void EntityList_EL::Destroy(EntityList_EL* this<ecx>);
+__thiscall void EntityList_EL::Destroy();
 
 struct EntityList_EL {
 {{

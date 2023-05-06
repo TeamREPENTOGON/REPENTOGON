@@ -1,5 +1,5 @@
 "558bec56578bf9807f??00":
-__thiscall bool History::RemoveHistoryItemByIndex(History *this<ecx>, int index);
+__thiscall bool History::RemoveHistoryItemByIndex(int index);
 
 struct History {
 

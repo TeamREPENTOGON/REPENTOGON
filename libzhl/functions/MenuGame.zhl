@@ -1,8 +1,8 @@
 "558bec6aff68????????64a1????????5081ecd4000000a1????????33c58945??53":
-__thiscall void Menu_Game::Update(Menu_Game *this<ecx>);
+__thiscall void Menu_Game::Update();
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec80020000":
-__thiscall void Menu_Game::PreRenderContinueImg(Menu_Game *this<ecx>);
+__thiscall void Menu_Game::PreRenderContinueImg();
 
 struct Menu_Game { {{
 	inline ANM2* GetContinueWidgetSprite() { return (ANM2*)((char*)this + 0x124) ; }

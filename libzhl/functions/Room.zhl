@@ -1,44 +1,44 @@
 "558bec83ec08f30f1005????????56578bf9f30f1145??8b0d":
-__thiscall float Room::GetDevilRoomChance(Room* this<ecx>);
+__thiscall float Room::GetDevilRoomChance();
 
 "558bec8b45??3dbf01000077??8b44":
-__thiscall GridEntity* Room::GetGridEntity(Room* this<ecx>, uint32_t idx);
+__thiscall GridEntity* Room::GetGridEntity(uint32_t idx);
 
 "558bec6aff68????????64a1????????5083ec7ca1????????33c58945??535657508d45??64a3????????8bd9":
-__thiscall void Room::ShopRestockFull(Room* this<ecx>);
+__thiscall void Room::ShopRestockFull();
 
 "558bec83ec1c53568bf1":
-__thiscall void Room::ShopRestockPartial(Room* this<ecx>);
+__thiscall void Room::ShopRestockPartial();
 
 "558bec83ec30f30f7e05":
-__thiscall int Room::GetShopItemPrice(Room* this<ecx>, unsigned int entVariant, unsigned int entSubType, int shopItemID);
+__thiscall int Room::GetShopItemPrice(unsigned int entVariant, unsigned int entSubType, int shopItemID);
 
 "558bec53568b75??8bd95785f6":
-__thiscall bool Room::SpawnGridEntity(Room *this<ecx>, int GridIndex, unsigned int Type, unsigned int Variant, unsigned int Seed, int VarData);
+__thiscall bool Room::SpawnGridEntity(int GridIndex, unsigned int Type, unsigned int Variant, unsigned int Seed, int VarData);
 
 "558bec5153568b75??8bd95785f6":
-__thiscall bool Room::SpawnGridEntity(Room *this<ecx>, int GridIndex, GridEntityDesc *Desc);
+__thiscall bool Room::SpawnGridEntity(int GridIndex, GridEntityDesc *Desc);
 
 "558bec8b55??568bf181fabf010000":
-__thiscall void Room::RemoveGridEntityImmediate(Room *this<ecx>, int GridIndex, int PathTrail, bool KeepDecoration);
+__thiscall void Room::RemoveGridEntityImmediate(int GridIndex, int PathTrail, bool KeepDecoration);
 
 "558bec83ec08538bd956578b3d":
-__thiscall void Room::TriggerClear(Room *this<ecx>, bool playSound);
+__thiscall void Room::TriggerClear(bool playSound);
 
 "558bec83e4f883ec5ca1????????33c4894424??8b45??894424??":
-__thiscall bool Room::CanSpawnObstacleAtPosition(Room *this<ecx>, int GridIndex, bool Force);
+__thiscall bool Room::CanSpawnObstacleAtPosition(int GridIndex, bool Force);
 
 "558bec83e4f883ec14538bd9565783bb????????39":
-__thiscall float Room::GetLightingAlpha(Room *this<ecx>);
+__thiscall float Room::GetLightingAlpha();
 
 "558bec83e4f881ec8000000056578bf9897c24??e8":
-__thiscall void Room::PreRender(Room *this<ecx>);
+__thiscall void Room::PreRender();
 
 "558bec83ec6cf30f7e05":
-__thiscall void Room::RenderGridLight(Room *this<ecx>, GridEntity* grid, Vector &offset);
+__thiscall void Room::RenderGridLight(GridEntity* grid, Vector &offset);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec30010000":
-__thiscall void Room::RenderEntityLight(Room *this<ecx>, Entity* ent, Vector &offset);
+__thiscall void Room::RenderEntityLight(Entity* ent, Vector &offset);
 
 struct Room depends (EntityList, TemporaryEffects) {
 {{

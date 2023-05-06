@@ -1,9 +1,9 @@
 
 "558bec518b55??5356578b02":
-__thiscall void CompletionWidget::Render(CompletionWidget *this<ecx>,Vector* pos,Vector* scale);
+__thiscall void CompletionWidget::Render(Vector* pos,Vector* scale);
 
 "558bec83ec6ca1????????33c58945??0f280d":
-void CompletionWidget::Update(CompletionWidget *this<ecx>);
+__thiscall void CompletionWidget::Update();
 
 
 struct CompletionWidget {

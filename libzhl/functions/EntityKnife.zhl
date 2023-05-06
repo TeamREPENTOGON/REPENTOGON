@@ -1,5 +1,5 @@
 "558bec83e4f881ece000000056":
-__thiscall void Entity_Knife::Render(Entity_Knife *this<ecx>, Vector *offset);
+__thiscall void Entity_Knife::Render(Vector *offset);
 
 struct Entity_Knife : public Entity {
 

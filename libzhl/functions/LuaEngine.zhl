@@ -1,11 +1,11 @@
 "558bec83e4f883ec0856578bf9897c24":
-__thiscall void LuaEngine::Init(LuaEngine *this<ecx>, bool Debug);
+__thiscall void LuaEngine::Init(bool Debug);
 
 "558bec6aff68????????64a1????????5081ec3c01000053":
-__thiscall void LuaEngine::RegisterClasses(LuaEngine *this<ecx>);
+__thiscall void LuaEngine::RegisterClasses();
 
 "558bec535657682d010000":
-__thiscall bool LuaEngine::RunBundledScript(LuaEngine *this<ecx>, const char *path);
+__thiscall bool LuaEngine::RunBundledScript(const char *path);
 
 "8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;

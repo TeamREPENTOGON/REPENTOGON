@@ -1,12 +1,11 @@
-
 "558bec83e4f883ec1856578b3d":
-void Manager::Update();
+static void Manager::Update();
 
 "558bec83ec105356578b3d????????85ff":
-void Manager::RecordPlayerCompletion(int eCompletionEvent);
+static void Manager::RecordPlayerCompletion(int eCompletionEvent);
 
 "558bec81ec38040000":
-__thiscall void Manager::LoadGameState(Manager *this<ecx>,int saveslot);
+__thiscall void Manager::LoadGameState(int saveslot);
 
 "68(????????)ffd683f8ff74??24113c1074??6800040000e8????????68????????68????????8bf0680004000056e8????????83c4146a0068????????56ff15????????50ff15????????56e8????????8b35???????":
 reference IsaacString g_SaveDataPath;
@@ -19,13 +18,13 @@ __stdcall void Manager::RestartGame() //v1.7.9b maybe
 */
 
 "558bec694508a4":
-__thiscall ChallengeParam* Manager::GetChallengeParams(Manager *this<ecx>, int challengeID);
+__thiscall ChallengeParam* Manager::GetChallengeParams(int challengeID);
 
 "558BEC6AFF68????????64a1000000005083EC60A1????????33C58945F05650":
-__thiscall void Manager::StartNewGame(Manager *this<ecx>, int playerType, int challenge,  UnknownGameStartStruct unk, int difficulty);
+__thiscall void Manager::StartNewGame(int playerType, int challenge,  UnknownGameStartStruct unk, int difficulty);
 
 "558bec51568b35????????8b86":
-__thiscall bool Manager::AchievementUnlocksDisallowed(Manager *this<ecx>, bool unk);
+__thiscall bool Manager::AchievementUnlocksDisallowed(bool unk);
 
 struct Manager depends (StringTable, PersistentGameData, UnknownGameStartStruct) { {{
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }

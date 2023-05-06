@@ -1,22 +1,20 @@
-struct ModEntry;
-
 "558bec51538b5d??568bf18975": 
-__thiscall void Music::Play(Music* this<ecx>, int musicid,float volume);
+__thiscall void Music::Play(int musicid,float volume);
 
 "558bec51538b5d??56578bf985db":
-__thiscall void Music::Crossfade(Music* this<ecx>, int musicid,float faderate);
+__thiscall void Music::Crossfade(int musicid,float faderate);
 
 "558bec51568bf1578b860c030000":
-__thiscall void Music::PlayJingle(Music *this<ecx>, int musicid, int unusedInt, bool unusedBool);
+__thiscall void Music::PlayJingle(int musicid, int unusedInt, bool unusedBool);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b89c010100":
-__thiscall void Music::LoadConfig(Music* this<ecx>,char* xmlpath,bool unk);
+__thiscall void Music::LoadConfig(char* xmlpath,bool unk);
 
 "558bec6b01":
-__thiscall void Music::DisableLayer(Music *this<ecx>, int id);
+__thiscall void Music::DisableLayer(int id);
 
 "558bec83e4f851568bf18b4d":
-__thiscall void Music::EnableLayer(Music *this<ecx>, int id, bool instant);
+__thiscall void Music::EnableLayer(int id, bool instant);
 
 struct Music {
 {{

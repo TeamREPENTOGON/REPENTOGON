@@ -1,7 +1,7 @@
 struct TemporaryEffects
 {
     int _unk;
-    std::vector<TemporaryEffect> _effects;
+    vector_TemporaryEffect _effects;
     int _unk2;
     int _disabled;
     Entity_Player* _player;

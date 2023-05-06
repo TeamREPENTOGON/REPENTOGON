@@ -2,19 +2,19 @@
 __thiscall void Entity_Pickup::Morph(int EntityType,int Variant,int SubType,bool KeepPrice,bool KeepSeed,bool IgnoreModifiers);
 
 "558bec6aff68????????64a1????????5083ec54535657a1????????33c5508d45??64a3????????894d":
-__thiscall void Entity_Pickup::TriggerShopPurchase(Entity_Pickup* this<ecx>, Entity_Player* player, int spentMoney);
+__thiscall void Entity_Pickup::TriggerShopPurchase(Entity_Player* player, int spentMoney);
 
 "558bec83e4c083ec3453568bf15780be????????000f84????????80be????????000f84????????83be????????00":
-__thiscall void Entity_Pickup::Render(Entity_Pickup *this<ecx>, Vector *offset);
+__thiscall void Entity_Pickup::Render(Vector *offset);
 
 "558bec83e4f883ec145356578bf9837f??64":
-__thiscall void Entity_Pickup::SetAlternatePedestal(Entity_Pickup *this<ecx>, int pedestalType);
+__thiscall void Entity_Pickup::SetAlternatePedestal(int pedestalType);
 
 "568bf18b46??83f864":
-__thiscall bool Entity_Pickup::TryRemoveCollectible(Entity_Pickup *this<ecx>);
+__thiscall bool Entity_Pickup::TryRemoveCollectible();
 
 "558bec518379??64":
-__thiscall void Entity_Pickup::SetForceBlind(Entity_Pickup *this<ecx>, bool setBlind);
+__thiscall void Entity_Pickup::SetForceBlind(bool setBlind);
 
 struct Entity_Pickup : public Entity { {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }

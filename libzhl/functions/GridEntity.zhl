@@ -1,8 +1,8 @@
 "558bec6aff68????????64a1????????5051535657a1????????33c5508d45??64a3????????8bda":
-GridEntity* CreateGridEntity(GridEntityType type, unsigned int seed);
+__fastcall GridEntity* CreateGridEntity(GridEntityType type, unsigned int seed);
 
 "558bec8b45??568bf18946??8b06":
-__thiscall void GridEntity::Init(IsaacRepentance::GridEntity *this<ecx>, unsigned int Seed);
+__thiscall void GridEntity::Init(unsigned int Seed);
 
 struct GridEntity {
 {{

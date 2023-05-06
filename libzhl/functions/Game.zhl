@@ -1,5 +1,5 @@
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec105657a1????????33c5508d45??64a3????????8bf9897d":
-__thiscall void Game::constructor(Game *this<eax>);
+__thiscall void Game::constructor();
 
 
 /*
@@ -10,59 +10,59 @@ FuncSignature Signature_GameIsPaused = {
 */
 
 "83b9????????008b15":
-bool Game::IsPaused(Game *this<eax>);
+__thiscall bool Game::IsPaused();
 
 "a1????????8b80????????83f80174??83f80374??32c0":
-bool Game::IsHardMode(Game *this<eax>);
+static bool Game::IsHardMode();
 
 "558bec83e4f883ec6c8b45":
-__thiscall Entity* Game::Spawn(Game *this<ecx>, unsigned int type, unsigned int variant, const Vector& position, const Vector& velocity, Entity* spawner, unsigned int subtype, unsigned int seed, unsigned int unk);
+__thiscall Entity* Game::Spawn(unsigned int type, unsigned int variant, const Vector& position, const Vector& velocity, Entity* spawner, unsigned int subtype, unsigned int seed, unsigned int unk);
 
 
 "558beca1????????538b5d":
-__thiscall void Game::ShakeScreen(Game *this<ecx>, int timeout);
+__thiscall void Game::ShakeScreen(int timeout);
 
 "558bec83ec088b45??56":
-__thiscall void Game::MakeShockwave(Game *this<ecx>, const Vector& pos, float amplitude, float speed, int duration);
+__thiscall void Game::MakeShockwave(const Vector& pos, float amplitude, float speed, int duration);
 
 "558bec5156578bf98b97":
-__thiscall Entity_Player* Game::GetPlayer(IsaacRepentance::Game *this<ecx>, unsigned int Index);
+__thiscall Entity_Player* Game::GetPlayer(unsigned int Index);
 
 "8b81????????2b81????????c1f802c3":
-__thiscall int Game::GetNumPlayers(Game *this<ecx>);
+__thiscall int Game::GetNumPlayers();
 
 "558bec83e4f083ec38a1":
-void Game::Update(Game* this<ecx>);
+__thiscall void Game::Update();
 
 "568bf180be????????008d8e":
-__thiscall bool Game::AchievementUnlocksDisallowed(Game *this<ecx>);
+__thiscall bool Game::AchievementUnlocksDisallowed();
 
 "558bec83ec1c53568b75??578bf9":
-__thiscall bool Game::PlaceRoom(Game *this<ecx>, LevelGenerator_Room *room, RoomConfig *data, unsigned int Seed, int dimension);
+__thiscall bool Game::PlaceRoom(LevelGenerator_Room *room, RoomConfig *data, unsigned int Seed, int dimension);
 
 "558bec83e4f8515356578bf96aff":
-__thiscall void Game::UpdateVisibility(Game *this<ecx>);
+__thiscall void Game::UpdateVisibility();
 
 "558bec8b45??85c079":
-__thiscall uint32_t* Game::GetRoomDescriptorsOffsetsArrayForDimension(Game *this<ecx>, uint32_t dimension);
+__thiscall uint32_t* Game::GetRoomDescriptorsOffsetsArrayForDimension(uint32_t dimension);
 
 "558bec6aff68????????64a1????????505657a1????????33c5508d45??64a3????????8bf164a1":
-__thiscall RoomDescriptor* Game::GetRoomByIdx(Game *this<ecx>, uint32_t idx, int32_t dimension);
+__thiscall RoomDescriptor* Game::GetRoomByIdx(uint32_t idx, int32_t dimension);
 
 "558bec83ec1cf30f1005":
-__thiscall float Game::GetPlanetariumChance(Game *this<ecx>);
+__thiscall float Game::GetPlanetariumChance();
 
 "558bec83ec0c568bf18b0d":
 __thiscall void Game::StartStageTransition(bool SameStage,int param_2,Entity_Player *param_3);
 
 "558bec83e4f881ec1802":
-__thiscall void Game::Render(Game *this<ecx>);
+__thiscall void Game::Render();
 
 "558bec8b0d????????8b5508":
-__thiscall void Game::ToggleDebugFlag(Game *this<ecx>, unsigned int debug);
+__thiscall void Game::ToggleDebugFlag(unsigned int debug);
 
 "558bec8b5508b801000000568bf18bca83e11fc1ea05d3e085849664":
-__thiscall bool Game::GetDebugFlag(Game *this<ecx>, unsigned int debug);
+__thiscall bool Game::GetDebugFlag(unsigned int debug);
 
 //out potential target
 /*

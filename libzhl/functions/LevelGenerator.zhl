@@ -1,22 +1,19 @@
 "558bec83e4f883ec0c538b5d??b8398ee338":
-__thiscall int LevelGenerator::PlaceRoom(LevelGenerator *this<ecx>, LevelGenerator_Room *room);
+__thiscall int LevelGenerator::PlaceRoom(LevelGenerator_Room *room);
 
 // This appears to be used for "special" generation: Greed Mode, Blue Womb, Home, probably others
 "558bec6aff68????????64a1????????5083ec50a1????????33c58945??5657508d45??64a3????????8bf98b45":
-__thiscall LevelGenerator_Room* LevelGenerator::CreateRoom(LevelGenerator *this<ecx>, int x, int y, int shape, int connectX, int connectY, Direction connectDir);
+__thiscall LevelGenerator_Room* LevelGenerator::CreateRoom(int x, int y, int shape, int connectX, int connectY, Direction connectDir);
 
 "558bec83ec088a45":
-__thiscall void LevelGenerator::Generate(LevelGenerator *this<ecx>, int unk, bool unk2, bool unk3, bool unk4, const unsigned int &allowedShapes, int unk5, LevelGenerator_Room* startRoom);
+__thiscall void LevelGenerator::Generate(int unk, bool unk2, bool unk3, bool unk4, const unsigned int &allowedShapes, int unk5, LevelGenerator_Room* startRoom);
 
 "558bec83e4f8515356578bf98bb7":
-__thiscall LevelGenerator_Room* LevelGenerator::GetNewEndRoom(LevelGenerator *this<ecx>, int roomShape, const unsigned int &possibleDoors);
+__thiscall LevelGenerator_Room* LevelGenerator::GetNewEndRoom(int roomShape, const unsigned int &possibleDoors);
 
 
 "558bec83e4f883ec245356578bf989":
 __thiscall void LevelGenerator::DetermineBossRoom(int shape, const unsigned int &possibleDoors);
-
-
-
 
 
 struct LevelGenerator {

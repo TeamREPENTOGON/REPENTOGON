@@ -1,5 +1,5 @@
 "558bec83e4f083ec48a1????????8b55":
-__thiscall int BossPool::GetBossId(BossPool *this<ecx>, int leveltype, int levelvariant, RNG* rng);
+__thiscall int BossPool::GetBossId(int leveltype, int levelvariant, RNG* rng);
 
 struct BossPool {
 

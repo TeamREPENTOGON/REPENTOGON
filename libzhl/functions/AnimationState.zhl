@@ -1,11 +1,11 @@
 "558bec83ec085356578bf9897d":
-__thiscall NullFrame* AnimationState::GetNullFrame(AnimationState* this<ecx>, const char* nullLayerName);
+__thiscall NullFrame* AnimationState::GetNullFrame(const char* nullLayerName);
 
 "558bec53568bf1578b4e??85c975??68????????6a03":
-__thiscall NullFrame* AnimationState::GetNullFrame(AnimationState* this<ecx>, int nullLayerID);
+__thiscall NullFrame* AnimationState::GetNullFrame(int nullLayerID);
 
 "558BEC51538BD95657895D??837B??0075??68????????6A03E8????????83C4088B3333FF8B9E????????85DB74??8BB6????????837E??108BC672??8B068B4D??8A103A1175??84D274??8A50??3A51??75??83C00283C10284D275??33C0EB??1BC083C80185C074??4783C6183BFB72??32C05F5E5B8BE55DC2040085FF78??8BCFB801000000D3E08B4D??5F5E5B8541??0F95C08BE55DC204":
-__thiscall bool AnimationState::IsEventTriggered(AnimationState* this<ecx>, const char* eventName);
+__thiscall bool AnimationState::IsEventTriggered(const char* eventName);
 
 struct AnimationState {
 

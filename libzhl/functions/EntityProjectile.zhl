@@ -1,5 +1,5 @@
 "558bec83ec2ca1????????5356f30f7e05":
-__thiscall void Entity_Projectile::Render(Entity_Projectile *this<ecx>, Vector *offset);
+__thiscall void Entity_Projectile::Render(Vector *offset);
 
 struct Entity_Projectile : public Entity {
 

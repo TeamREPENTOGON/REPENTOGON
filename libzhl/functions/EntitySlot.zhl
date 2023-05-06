@@ -1,20 +1,12 @@
 "558bec56ff75??8bf1e8????????8b46":
-__thiscall void Entity_Slot::Render(Entity_Slot *this<ecx>, Vector *offset);
-
-"558bec6aff68????????64a1000000005081ecc0000000a1????????33c58945f053":
-virtual __thiscall void Entity_Slot::Update(Entity_Slot *this<ecx>);
+__thiscall void Entity_Slot::Render(Vector *offset);
 
 "558bec81ec94000000a1":
-__thiscall void Entity_Slot::CreateDropsFromExplosion(Entity_Slot *this<ecx>);
+__thiscall void Entity_Slot::CreateDropsFromExplosion();
 
 "558bec83e4f8518b4508538b":
-__thiscall void Entity_Slot::SetPrizeCollectible(Entity_Slot *this<ecx>, int CollectibleType);
+__thiscall void Entity_Slot::SetPrizeCollectible(int CollectibleType);
 
-"558beca1????????81":
-virtual __thiscall void Entity_Slot::Init(Entity_Slot *this<ecx>, int Type, int Variant, int SubType, int Seed);
-
-"558bec83e4f883ec3c83":
-virtual __thiscall bool Entity_Slot::HandleCollision(Entity_Slot *this<ecx>, Entity *Collider, bool Low);
 
 struct Entity_Slot : public Entity { {{
 	inline RNG* GetSlotRNG() { return (RNG*)((char*)this + 0x334); }
@@ -23,4 +15,17 @@ struct Entity_Slot : public Entity { {{
 	inline int* GetTimeout() { return (int*)((char*)this + 0x36a); }
 	inline int* GetDonationValue() { return (int*)((char*)this + 0x36c); }
 	inline unsigned short* GetTouch() { return (unsigned short*)((char*)this + 0x376); }
-}} };
+}}
+    __vtable {
+        override
+        "558beca1????????81":
+        void Init(unsigned int Type, unsigned int Variant, unsigned int SubType, unsigned int Seed);
+
+        "558bec83e4f883ec3c83":
+        bool HandleCollision(Entity *Collider, bool Low);
+
+        override
+        "558bec6aff68????????64a1000000005081ecc0000000a1????????33c58945f053":
+        void Update();
+    };
+};

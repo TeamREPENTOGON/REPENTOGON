@@ -1,12 +1,12 @@
 "558bec83ec78535657":
-__thiscall void EntityList::RenderShadows(EntityList *this<ecx>, Vector *offset);
+__thiscall void EntityList::RenderShadows(Vector *offset);
 
 
 "558bec6aff68????????64a1000000005083ec24535657a1????????33c5508d45f464a3000000008bf18b":
-__thiscall EntityList_EL* EntityList::QueryType(EntityList* this<ecx>, EntityList_EL* result, int Type, int Variant, int Subtype, bool Cache, bool IgnoreFriendly);
+__thiscall EntityList_EL* EntityList::QueryType(EntityList_EL* result, int Type, int Variant, int Subtype, bool Cache, bool IgnoreFriendly);
 
 "558bec83e4f883ec14535657f3":
-__thiscall void EntityList::QueryRadius(EntityList* this<ecx>, EntityList_EL* result, Vector* Position, float Radius, unsigned int Partitions);
+__thiscall void EntityList::QueryRadius(EntityList_EL* result, Vector* Position, float Radius, unsigned int Partitions);
 
 struct EntityList {
 {{

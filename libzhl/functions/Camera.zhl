@@ -1,26 +1,26 @@
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec285657a1????????33c5508d45??64a3????????8bf1":
-__thiscall void Camera::constructor(Camera *this<ecx>, Room* room);
+__thiscall void Camera::constructor(Room* room);
 
 "558bec51568bf1578b7e":
-__thiscall void Camera::SetFocusPosition(Camera *this<ecx>, Vector* pos);
+__thiscall void Camera::SetFocusPosition(Vector* pos);
 
 "558bec83e4f851a1????????568b":
-__thiscall void Camera::DoUpdate(Camera *this<ecx>, bool unk);
+__thiscall void Camera::DoUpdate(bool unk);
 
 "538bdc83ec0883e4f883c404558b6b04896c24048bec83ec10568bf1c7":
-__thiscall void Camera::SnapToPosition(Camera *this<ecx>, const Vector& pos);
+__thiscall void Camera::SnapToPosition(const Vector& pos);
 
 
 "558bec83e4F883ec188d0424c7":
-__thiscall Vector* Camera::ClampedToRoom(Camera *this<ecx>, Vector& pos); 
+__thiscall Vector* Camera::ClampedToRoom(Vector& pos); 
 
 // Active cam OFF
 "558bec83ec148d":
-__thiscall void Camera::UpdateDrag2(Camera *this<ecx>);
+__thiscall void Camera::UpdateDrag2();
 
 // Active cam ON
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec585657a1????????33c5508d45f464a3000000008bf18975dc":
-__thiscall void Camera::UpdateUltrasmooth(Camera *this<ecx>, bool unk);
+__thiscall void Camera::UpdateUltrasmooth(bool unk);
 
 struct Camera {
 {{

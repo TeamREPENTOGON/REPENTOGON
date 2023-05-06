@@ -1,22 +1,22 @@
 "558becff7528f30f104514ff7524":
-__thiscall void Font::DrawString(Font* this<ecx>, DrawStringEntry entry);
+__thiscall void Font::DrawString(DrawStringEntry entry);
 
 "558bec568bf18b4d088bd1578d7a01908a024284c075f968000200002bd768????????e868980000":
-__thiscall void Font::DrawStringUTF8(Font* this<ecx>, DrawStringEntry entry);
+__thiscall void Font::DrawStringUTF8(DrawStringEntry entry);
 
 "558BEC83E4F883EC5453568B752C578BF985F67475FF7508E8D3FCFFFF":
-__thiscall void Font::DrawStringScaled(Font* this<ecx>, DrawStringScaledEntry entry);
+__thiscall void Font::DrawStringScaled(DrawStringScaledEntry entry);
 
 "558BEC568BF18B4D088BD1578D7A01908A024284C075F968000200002BD768????????e8b8900000":
-__thiscall void Font::DrawStringScaledUTF8(Font* this<ecx>, DrawStringScaledEntry entry);
+__thiscall void Font::DrawStringScaledUTF8(DrawStringScaledEntry entry);
 
 "558bec83e4f883ec145356578b7d0833f68bd18974240c8954241cc7442410ffffffff":
-__thiscall int Font::GetStringWidth(Font* this<ecx>, const char* str);
+__thiscall int Font::GetStringWidth(const char* str);
 
 "558bec568bf18b4d088bd1578d7a01908a024284c075f968000200002bd768????????e838990000":
-__thiscall int Font::GetStringWidthUTF8(Font* this<ecx>, const char* str);
+__thiscall int Font::GetStringWidthUTF8(const char* str);
 
 struct Font {
-{{
 
-}} };
+
+};
