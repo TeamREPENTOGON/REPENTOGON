@@ -135,6 +135,7 @@ struct Type {
     bool IsArray() const;
     bool IsResolved() const;
     bool IsStruct() const;
+    bool IsBasic() const;
 
     Struct const& GetStruct() const;
 
@@ -177,14 +178,16 @@ enum FunctionKind {
 };
 
 enum Registers {
+    // Written in x86 order : eax = 0, edx = 3 etc.
     EAX,
-    EBX,
     ECX,
     EDX,
-    EDI,
-    ESI,
+    EBX,
     ESP,
     EBP,
+    ESI,
+    EDI,
+
     XMM0,
     XMM1,
     XMM2,
@@ -219,7 +222,7 @@ struct FunctionParam {
 };
 
 struct Function {
-    uint32_t _qualifiers;
+    uint32_t _qualifiers = 0;
     FunctionKind _kind;
     std::optional<CallingConventions> _convention;
     Type* _ret;
@@ -259,7 +262,7 @@ typedef std::variant<Signature, VariableSignature> SignatureV;
 
 struct Array {
     std::string _name;
-    size_t _size;
+    size_t _size = 0;
 };
 
 typedef std::variant<Type*, size_t> TypeInfoV;

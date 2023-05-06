@@ -46,7 +46,7 @@ void CodeEmitter::ProcessFile(fs::path const& file) {
         std::cerr << "Error while parsing " << file << std::endl;
         throw std::runtime_error("Parse error");
     }
-    Parser p2(&_global, &_types);
+    Parser p2(&_global, &_types, file.string());
     p2.visit(tree);
 }
 
@@ -54,9 +54,23 @@ void CodeEmitter::Emit() {
     CheckDependencies();
     CheckVTables();
 
+    EmitDecl();
+    ForwardDecl();
+
     for (auto const& [_, type] : _types) {
         if (type.IsStruct()) {
             Emit(type.GetStruct());
+        }
+    }
+}
+
+void CodeEmitter::ForwardDecl() {
+    for (auto const& [_, type] : _types) {
+        if (type.IsStruct()) {
+            Emit("struct ");
+            Emit(type.GetStruct()._name);
+            Emit(";");
+            EmitNL();
         }
     }
 }
@@ -89,6 +103,9 @@ void CodeEmitter::Emit(Struct const& s) {
     _processingStructures.insert(s._name);
 
     EmitDependencies(s);
+
+    _currentStructure = &s;
+
     EmitDecl();
     EmitTab();
     Emit("struct ");
@@ -136,6 +153,8 @@ void CodeEmitter::Emit(Struct const& s) {
 
     _processingStructures.erase(s._name);
     _emittedStructures.insert(s._name);
+
+    _currentStructure = nullptr;
 }
 
 void CodeEmitter::Dump() {
@@ -519,6 +538,8 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
     }
     Emit(fun);
     EmitNL();
+
+    EmitAssembly(var);
 }
 
 void CodeEmitter::Emit(Function const& fun) {
@@ -583,4 +604,314 @@ void CodeEmitter::Emit(PointerDecl const& ptr) {
     if (ptr._const) {
         Emit(" const");
     }
+}
+
+enum FunctionDefFlags {
+    DEF_THISCALL = 1 << 0,
+    DEF_CLEANUP = 1 << 1,
+    DEF_VOID = 1 << 2,
+    DEF_LONGLONG = 1 << 3
+};
+
+void CodeEmitter::EmitAssembly(Signature const& sig) {
+    uint32_t depth = _emitDepth;
+    size_t stackSize = 0;
+    _emitDepth = 0;
+    EmitImpl();
+
+    // Start namespace
+    Emit("namespace _fun");
+    Emit(std::to_string(_nEmittedFuns));
+    Emit(" {");
+    EmitNL();
+    IncrDepth();
+
+    // Function pointer
+    EmitTab();
+    Emit("static void* func = 0;");
+    EmitNL();
+    EmitTab();
+
+    // Parameters
+    Emit("static ArgData args[] = {");
+    EmitNL();
+    IncrDepth();
+    Function const& fn = sig._function;
+    bool hasImplicitOutput = fn._ret->size() > 8;
+    if (fn._convention && *fn._convention == FASTCALL) {
+        Registers next = ECX;
+        for (int i = 0; i < fn._params.size(); ++i) {
+            FunctionParam const& param = fn._params[i];
+            EmitTab();
+            if (next != EAX && (param._type->IsPointer() || (param._type->IsBasic() && std::get<BasicType>(param._type->_value).size() <= 4))) {
+                Emit("{ HookSystem::GPRegisters::");
+                if (next == ECX) {
+                    Emit("ECX");
+                    next = EDX;
+                }
+                else {
+                    Emit("EDX");
+                    next = EAX;
+                }
+
+                Emit(", 0 } /* " + param._name + " */");
+                stackSize += 4;
+            }
+            else {
+                int paramSize = (int)std::ceil(param._type->size() / 4.f);
+                if (paramSize == 0) {
+                    std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
+                }
+                Emit("{ HookSystem::NoRegister(), ");
+                Emit(std::to_string(paramSize));
+                Emit(" } /* " + param._name + " */");
+                stackSize += paramSize * 4;
+            }
+
+            if (hasImplicitOutput || i != fn._params.size() - 1) {
+                Emit(", ");
+            }
+            EmitNL();
+        }
+    }
+    else {
+        for (int i = 0; i < fn._params.size(); ++i) {
+            EmitTab();
+            FunctionParam const& param = fn._params[i];
+
+            if (param._reg) {
+                Registers reg = *param._reg;
+                if (reg < XMM0) {
+                    Emit("{ HookSystem::GPRegisters::");
+                }
+                else {
+                    Emit("{ HookSystem::XMMRegisters::");
+                }
+
+                std::string regStr = RegisterToString(reg);
+                std::transform(regStr.begin(), regStr.end(), regStr.begin(), ::toupper);
+                Emit(regStr);
+                Emit(", 0 } /* " + param._name + " */");
+
+                stackSize += 4;
+            }
+            else {
+                int paramSize = (int)std::ceil(param._type->size() / 4.f);
+                if (paramSize == 0) {
+                    std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
+                }
+                Emit("{ HookSystem::NoRegister(), ");
+                Emit(std::to_string(paramSize));
+                Emit(" } /* " + param._name + " */");
+
+                stackSize += paramSize * 4;
+            }
+
+            if (hasImplicitOutput || i != fn._params.size() - 1) {
+                Emit(", ");
+            }
+            EmitNL();
+        }
+    }
+
+    if (hasImplicitOutput) {
+        EmitTab();
+        Emit("{ HookSystem::NoRegister(), 1 } // implicit_output"); // 1: pointer
+        EmitNL();
+
+        stackSize += 4; // Pointer
+    }
+
+    DecrDepth();
+
+    EmitTab();
+    Emit("};");
+    EmitNL();
+
+    // Function definition object
+    EmitTab();
+    Emit("static FunctionDefinition func(\"");
+    if (_currentStructure) {
+        Emit(_currentStructure->_name);
+        Emit("::");
+    }
+    Emit(fn._name);
+    Emit("\", typeid(");
+    Emit(*fn._ret);
+    Emit(" (");
+    if (_currentStructure && fn._kind == METHOD) {
+        Emit(_currentStructure->_name);
+        Emit("::");
+    }
+    Emit("*)(");
+    for (int i = 0; i < fn._params.size(); ++i) {
+        FunctionParam const& param = fn._params[i];
+        Emit(*param._type);
+        if (i != fn._params.size() - 1) {
+            Emit(", ");
+        }
+    }
+    Emit(")), \"");
+    Emit(sig._sig);
+    Emit("\", args, ");
+    Emit(std::to_string(fn._params.size() + (hasImplicitOutput ? 1 : 0)));
+    uint32_t flags = 0;
+    if (fn._kind == METHOD) {
+        flags |= FunctionDefFlags::DEF_THISCALL;
+    }
+
+    if (fn.IsCleanup()) {
+        flags |= FunctionDefFlags::DEF_CLEANUP;
+    }
+
+    if (fn._ret->IsBasic() && std::get<BasicType>(fn._ret->_value)._type == VOID) {
+        flags |= FunctionDefFlags::DEF_VOID;
+    }
+
+    if (fn._ret->size() == 8) {
+        flags |= FunctionDefFlags::DEF_LONGLONG;
+    }
+
+    Emit(", ");
+    Emit(std::to_string(flags));
+    Emit(", &func);");
+    EmitNL();
+
+    // End namespace
+    DecrDepth();
+    Emit("}");
+    EmitNL();
+    EmitNL();
+
+    // Function implementation
+    Emit("__declspec(naked) ");
+    Emit(*fn._ret);
+    Emit(" ");
+    if (_currentStructure) {
+        Emit(_currentStructure->_name);
+        Emit("::");
+    }
+
+    Emit(fn._name);
+    Emit("(");
+    for (int i = 0; i < fn._params.size(); ++i) {
+        FunctionParam const& param = fn._params[i];
+        Emit(*param._type);
+        Emit(" ");
+        Emit(param._name);
+
+        if (i != fn._params.size() - 1) {
+            Emit(", ");
+        }
+    }
+    Emit(") {");
+    EmitNL();
+
+    IncrDepth();
+    EmitInstruction("__asm {");
+    IncrDepth();
+
+    // Prologue
+    EmitInstruction("push ebp");
+    EmitInstruction("mov ebp, esp");
+    // Save parameters
+    if (flags & FunctionDefFlags::DEF_VOID) {
+        EmitInstruction("push eax");
+    }
+
+    if (flags & FunctionDefFlags::DEF_VOID || !(flags & FunctionDefFlags::DEF_LONGLONG)) {
+        EmitInstruction("push edx");
+    }
+
+    EmitInstruction("push ebx");
+    EmitInstruction("push ecx");
+    EmitInstruction("push esi");
+    EmitInstruction("push edi");
+
+    // Call function
+    // Iterate through arguments in reverse order
+    size_t k = stackSize + 8;
+    for (int i = fn._params.size() - 1; i >= 0; --i) {
+        FunctionParam const& param = fn._params[i];
+        if (param._reg) {
+            Registers reg = *param._reg;
+            std::string regStr = RegisterToString(reg);
+            std::ostringstream ins;
+            if (reg < XMM0) {
+                ins << "mov ";
+            }
+            else {
+                ins << "movd ";
+            }
+
+            k -= 4;
+            ins << regStr << " [ebp + " << k << "] // " << param._name;
+            EmitInstruction(ins.str());
+
+        }
+        else {
+            int count = (int)std::ceil(param._type->size() / 4.f);
+            for (int j = 0; j < count; ++j) {
+                k -= 4;
+                std::ostringstream ins;
+                ins << "push [ebp + " << k << "] // " << param._name;
+                EmitInstruction(ins.str());
+            }
+        }
+    }
+
+    if (hasImplicitOutput) {
+        k -= 4;
+        std::ostringstream ins;
+        ins << "push [ebp + " << k << "] // implicit_output";
+    }
+
+    if (k != 8) {
+        std::cerr << "[WARN] Expected to have 8 bytes remaining on stack, but " << k << " bytes remain" << std::endl;
+    }
+
+    std::ostringstream callIns;
+    callIns << "call _fun" << _nEmittedFuns;
+    EmitInstruction(callIns.str());
+
+    if (flags & FunctionDefFlags::DEF_CLEANUP && stackSize > 0) {
+        std::ostringstream retIns;
+        retIns << "add esp, " << stackSize;
+        EmitInstruction(retIns.str());
+    }
+
+    // Epilogue
+    EmitInstruction("pop edi");
+    EmitInstruction("pop esi");
+    EmitInstruction("pop ecx");
+    EmitInstruction("pop ebx");
+
+    if (flags & FunctionDefFlags::DEF_VOID || !(flags & FunctionDefFlags::DEF_LONGLONG)) {
+        EmitInstruction("pop edx");
+    }
+
+    if (flags & FunctionDefFlags::DEF_VOID) {
+        EmitInstruction("pop eax");
+    }
+
+    EmitInstruction("mov esp, ebp");
+    EmitInstruction("pop ebp");
+
+    DecrDepth();
+    Emit("}");
+    EmitNL();
+    DecrDepth();
+    Emit("}");
+    EmitNL();
+    EmitNL();
+
+    EmitDecl();
+    _emitDepth = depth;
+    ++_nEmittedFuns;
+}
+
+void CodeEmitter::EmitInstruction(std::string const& ins) {
+    EmitTab();
+    Emit(ins);
+    EmitNL();
 }

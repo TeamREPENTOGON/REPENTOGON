@@ -639,11 +639,11 @@ public:
     TypeContext *type();
     antlr4::tree::TerminalNode *Name();
     antlr4::tree::TerminalNode *LeftParen();
-    FunArgsContext *funArgs();
     antlr4::tree::TerminalNode *RightParen();
     antlr4::tree::TerminalNode *Semi();
     std::vector<antlr4::tree::TerminalNode *> Qualifier();
     antlr4::tree::TerminalNode* Qualifier(size_t i);
+    FunArgsContext *funArgs();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

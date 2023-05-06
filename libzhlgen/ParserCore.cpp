@@ -1,7 +1,7 @@
 #include "ParserCore.h"
 
 ErrorLogger::~ErrorLogger() {
-    if (_filename) {
+    if (_filename && !_errors.empty()) {
         std::cerr << "In file " << *_filename << std::endl;
     }
     for (std::string const& err : _errors) {
@@ -58,8 +58,8 @@ bool ErrorLogger::IsErrored() {
 
 ErrorLogger::EndToken ErrorLogger::_end;
 
-Parser::Parser(Namespace* global, std::map<std::string, Type>* types) : _global(global), _types(types) {
-
+Parser::Parser(Namespace* global, std::map<std::string, Type>* types, std::string const& filename) : _global(global), _types(types) {
+    _errors.SetFile(filename);
 }
 
 std::any Parser::visitZhl(ZHLParser::ZhlContext* ctx) {
@@ -96,10 +96,19 @@ std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
             else {
                 fn._convention = CallingConventions::THISCALL;
             }
+
+            fn._kind = METHOD;
         }
     }
 
     ReadQualifiers(ctx->Qualifier(), fn);
+
+    if (parts.size() > 1 && !fn.IsStatic()) {
+        fn._kind = METHOD;
+    }
+    else {
+        fn._kind = FUNCTION;
+    }
 
     fn._ret = std::any_cast<Type*>(visit(ctx->type()));
 
@@ -583,8 +592,17 @@ std::any Parser::visitClassFunction(ZHLParser::ClassFunctionContext* ctx) {
     res._name = ctx->Name()->getText();
     ReadQualifiers(ctx->Qualifier(), res);
     res._ret = std::any_cast<Type*>(visit(ctx->type()));
-    res._params = std::any_cast<std::vector<FunctionParam>>(visit(ctx->funArgs()));
-    res._kind = FunctionKind::METHOD;
+
+    if (auto argsCtx = ctx->funArgs()) {
+        res._params = std::any_cast<std::vector<FunctionParam>>(visit(argsCtx));
+    }
+
+    if (!res.IsStatic()) {
+        res._kind = METHOD;
+    }
+    else {
+        res._kind = FUNCTION;
+    }
 
     _currentFunction = nullptr;
     return res;
@@ -997,7 +1015,8 @@ void Parser::ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qual
             }
         }
         else if (text == "cleanup") {
-            if (fn.IsCleanup() && !fn._convention) {
+            if (fn.IsCleanup()) {
+                std::cerr << "Nyah ? " << fn._qualifiers << std::endl;
                 WarnRepeatedFunctionQualifier(fn._name, text);
             }
             else if (fn._convention) {

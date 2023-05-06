@@ -38,6 +38,8 @@ private:
 	void CheckDependencies();
 	void CheckDependencies(Type const& t);
 
+	void ForwardDecl();
+
 	void Emit(Type const& type);
 	void Emit(Struct const& s);
 	void Emit(std::string const& s);
@@ -46,6 +48,9 @@ private:
 	void Emit(std::variant<Signature, Skip> const& sig);
 	void Emit(PointerDecl const& ptr);
 	void Emit(Function const& fun);
+
+	void EmitAssembly(Signature const& sig);
+	void EmitInstruction(std::string const& ins);
 	
 	void EmitType(BasicType const& t);
 	void EmitType(Struct const& s);
@@ -74,8 +79,9 @@ private:
 	std::ofstream _decls, _impl;
 	std::ofstream* _emitContext = nullptr;
 	Variable const* _variableContext = nullptr;
-	Struct* _currentStructure;
+	Struct const* _currentStructure;
 	uint32_t _virtualFnUnk = 0;
+	uint32_t _nEmittedFuns = 0;
 
 	// Allow for a white / grey / black coloration of the dependencies graph
 	std::set<std::string> _emittedStructures;
@@ -84,5 +90,5 @@ private:
 	std::set<std::string> _vtableProcessingStructures;
 	ErrorLogger _logger;
 
-	int _emitDepth = 0;
+	uint32_t _emitDepth = 0;
 };

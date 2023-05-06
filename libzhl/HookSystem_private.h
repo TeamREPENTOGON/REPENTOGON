@@ -1,6 +1,64 @@
 #pragma once
 
+#include <variant>
+
 #include "HookSystem.h"
+#include "mologie_detours.h"
+
+// WTF Windows ?
+#ifdef VOID
+#undef VOID
+#endif
+
+namespace HookSystem {
+
+	enum FunctionFlags {
+		THISCALL = 1 << 0,
+		CLEANUP = 1 << 1,
+		VOID = 1 << 2,
+		LONGLONG = 1 << 3
+	};
+
+	struct NoRegister {};
+
+	enum GPRegisters : uint8_t {
+		EAX,
+		ECX,
+		EDX,
+		EBX,
+		ESP,
+		EBP,
+		ESI,
+		EDI
+	};
+
+	enum XMMRegisters : uint8_t {
+		XMM0,
+		XMM1,
+		XMM2,
+		XMM3,
+		XMM4,
+		XMM5,
+		XMM6,
+		XMM7,
+		XMM8
+	};
+
+	typedef std::variant<NoRegister, GPRegisters, XMMRegisters> Register;
+
+	struct ArgData {
+		Register _register;
+		// Expressed as the division of the real size by 4 (x86 stack aligned on a 32 bits boundary)
+		// Example: a structure is 10 bytes wide (2 ints + 1 short)
+		// Passing this structure on the stack will push 12 bytes (32 bits alignment).
+		// 12 = 3 * 4, so _size would be 3 when passing such a structure.
+		size_t _size = 0;
+
+		bool IsRegister() const;
+		bool IsGPRegister() const;
+		bool IsXMMRegister() const;
+	};
+}
 
 class LIBZHL_API Definition
 {
@@ -25,7 +83,7 @@ private:
 	char _name[256];
 
 	const char *_sig;
-	const short *_argdata;
+	const HookSystem::ArgData *_argdata;
 	int _nArgs;
 	void **_outFunc;
 	void *_address;
@@ -36,16 +94,16 @@ private:
 	void SetName(const char *name, const char *type);
 
 public:
-	FunctionDefinition(const char *name, const type_info &type, const char *sig, const short *argdata, int nArgs, unsigned int flags, void **outfunc);
+	FunctionDefinition(const char *name, const type_info &type, const char *sig, const HookSystem::ArgData *argdata, int nArgs, unsigned int flags, void **outfunc);
 
 	virtual int Load();
 
-	bool IsThiscall() const {return (_flags & 1) != 0;}
-	bool NeedsCallerCleanup() const {return (_flags & 2) != 0;}
-	bool IsVoid() const {return (_flags & 4) != 0;}
-	bool IsLongLong() const {return (_flags & 8) != 0;}
+	bool IsThiscall() const {return (_flags & HookSystem::THISCALL) != 0;}
+	bool NeedsCallerCleanup() const {return (_flags & HookSystem::CLEANUP) != 0;}
+	bool IsVoid() const {return (_flags & HookSystem::VOID) != 0;}
+	bool IsLongLong() const {return (_flags & HookSystem::LONGLONG) != 0;}
 
-	const short *GetArgData() const {return _argdata;}
+	const HookSystem::ArgData *GetArgData() const {return _argdata;}
 	int GetArgCount() const {return _nArgs;}
 	void *GetAddress() const {return _address;}
 };
@@ -84,7 +142,7 @@ protected:
 	unsigned int _sSize;
 	int _priority;
 
-	void *_detour;
+	MologieDetours::Detour<void*> *_detour = nullptr;
 	
 public:
 	static int Init();
@@ -93,6 +151,16 @@ public:
 private:
 	static void Add(FunctionHook_private *hook);
 	void SetName(const char *name, const char *type);
+
+	static void Push(HookSystem::GPRegisters reg, unsigned char* text);
+	static void Mov(HookSystem::GPRegisters dst, HookSystem::GPRegisters src, unsigned char* text);
+	static void Pop(HookSystem::GPRegisters reg, unsigned char* text);
+	static void Ret(unsigned short n, unsigned char* text);
+	static void DecrESP(unsigned char size, unsigned char* text);
+	static void IncrESP(unsigned char size, unsigned char* text);
+
+	void EmitPrologue(FunctionDefinition const* def, unsigned char* text);
+	void EmitEpilogue(FunctionDefinition const* def, unsigned char stackPos, unsigned char* text);
 
 protected:
 	virtual int Install();

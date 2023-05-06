@@ -269,6 +269,10 @@ bool Type::IsStruct() const {
     return std::holds_alternative<Struct>(_value);
 }
 
+bool Type::IsBasic() const {
+    return std::holds_alternative<BasicType>(_value);
+}
+
 bool Type::IsResolved() const {
     if (std::holds_alternative<std::string>(_value)) {
         return _synonym != nullptr || _size;

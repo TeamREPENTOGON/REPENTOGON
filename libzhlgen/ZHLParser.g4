@@ -93,13 +93,13 @@ vtableEntry:
     vtableSignature | Skip;
 
 vtableSignature:
-    classSignature Override?;
+    Override? classSignature;
 
 classSignature:
     Signature classFunction;
 
 classFunction:
-    Qualifier* type Name LeftParen funArgs RightParen Semi;
+    Qualifier* type Name LeftParen funArgs? RightParen Semi;
     
 classField:
     type innerField (Comma innerField)* Semi;

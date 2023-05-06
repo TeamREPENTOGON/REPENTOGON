@@ -1,0 +1,51 @@
+TypeInfo uint32_t {
+    Synonym unsigned int;
+};
+
+TypeInfo uint16_t {
+    Synonym unsigned short;
+};
+
+TypeInfo uint8_t {
+    Synonym unsigned char;
+};
+
+TypeInfo int32_t {
+    Synonym int;
+};
+
+TypeInfo int16_t {
+    Synonym short;
+};
+
+TypeInfo int8_t {
+    Synonym char;
+};
+
+TypeInfo CollectibleType {
+    Size 4;
+};
+
+TypeInfo Direction {
+    Size 4;
+};
+
+TypeInfo GridEntityType {
+    Size 4;
+};
+
+TypeInfo TrinketType {
+    Size 4;
+};
+
+TypeInfo WeaponType {
+    Size 4;
+};
+
+TypeInfo vector_TemporaryEffect {
+    Size 12;
+};
+
+TypeInfo std_set_int {
+    Size 8;
+};

@@ -47,7 +47,7 @@ private:
 
 class Parser : public ZHLParserBaseVisitor {
 public:
-    Parser(Namespace* global, std::map<std::string, Type>* types);
+    Parser(Namespace* global, std::map<std::string, Type>* types, std::string const& filename);
     virtual std::any visitZhl(ZHLParser::ZhlContext* ctx);
     virtual std::any visitFunction(ZHLParser::FunctionContext* ctx);
     virtual std::any visitReference(ZHLParser::ReferenceContext* ctx);
