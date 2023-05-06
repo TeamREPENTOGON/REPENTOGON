@@ -413,6 +413,13 @@ int Lua_PlayerGetD8FireDelayModifier(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerGetEpiphoraFireDelayModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetEpiphoraFireDelayModifier());
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -460,4 +467,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetD8SpeedModifier", Lua_PlayerGetD8SpeedModifier);
 	lua::RegisterFunction(state, mt, "GetD8RangeModifier", Lua_PlayerGetD8RangeModifier);
 	lua::RegisterFunction(state, mt, "GetD8FireDelayModifier", Lua_PlayerGetD8FireDelayModifier);
+	lua::RegisterFunction(state, mt, "GetEpiphoraFireDelayModifier", Lua_PlayerGetEpiphoraFireDelayModifier);
 }

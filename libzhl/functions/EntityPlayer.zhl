@@ -182,6 +182,7 @@ struct Entity_Player depends (ActiveItemDesc, History, Weapon) {{
 	inline int* GetDamageModifier() { return (int*)((char*)this + 0x1470); }
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
+	inline int* GetEpiphoraFireDelayModifier() { return (int*)((char*)this + 0x17c4); }
 	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
 	inline float* GetD8DamageModifier() { return (float*)((char*)this + 0x185C); }
 	inline float* GetD8SpeedModifier() { return (float*)((char*)this + 0x1860); }
