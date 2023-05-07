@@ -46,6 +46,7 @@ nav:
   - Enums:
     - Achievement: enums/Achievement.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
+    - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
     - BitwiseDebugFlag: enums/BitwiseDebugFlag.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
@@ -71,6 +72,7 @@ nav:
     - ModCallbacks: enums/ModCallbacks.md
     - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
+    - PauseMenuStates: enums/PauseMenuStates.md
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
@@ -85,13 +87,16 @@ nav:
     - StbRockSubType: enums/StbRockSubType.md
     - StbTeleporterSubType: enums/StbTeleporterSubType.md
     - StbType: enums/StbType.md
+    - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
+    - WeaponModifier: enums/WeaponModifier.md
     - WispSubType: enums/WispSubType.md
   - Ambush: Ambush.md
   - AnimationState: AnimationState.md
   - Camera: Camera.md
   - Color: Color.md
   - Console: Console.md
+  - DailyChallenge: DailyChallenge.md
   - Entity:
     - Entity: Entity.md
     - EntityFamiliar: EntityFamiliar.md
@@ -101,20 +106,27 @@ nav:
     - EntitySlot: EntitySlot.md
   - Game: Game.md
   - History: History.md
+  - HUD: HUD.md
   - ItemOverlay: ItemOverlay.md
   - Isaac: Isaac.md
   - LayerState: LayerState.md
   - Level: Level.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
   - MultiShotParams: MultiShotParams.md
+  - MusicManager: MusicManager.md
   - NullFrame: NullFrame.md
   - PersistentGameData: PersistentGameData.md
   - ProceduralItemManager: ProceduralItemManager.md
+  - PlayerHUD: PlayerHUD.md
   - PlayerManager: PlayerManager.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
   - Sprite: Sprite.md
+- Changes:
+  - General: changes/General.md
+  - Debugging: changes/Debugging.md
+  - UI: changes/UI.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
 - search:

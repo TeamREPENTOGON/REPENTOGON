@@ -1,0 +1,13 @@
+struct Weapon { {{
+	//owner -> Entity_Player(?) - 0x4
+	inline float GetFireDelay() { return *(float*)((char*)this + 0xC); }
+	inline float GetMaxFireDelay() { return *(float*)((char*)this + 0x10); }
+	inline int GetWeaponType() { return *(int*)((char*)this + 0x2c); }
+	inline int GetModifiers() { return *(int*)((char*)this + 0x30); }
+	inline int GetNumFired() { return *(int*)((char*)this + 0x34); }
+}}
+    __vtable {
+        "558bec83e4f883ec60a1????????33c4894424??8b45":
+        void Weapon::Fire(const Vector& pos, bool unk1, bool unk2);
+    };
+};

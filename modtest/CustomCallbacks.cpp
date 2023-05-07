@@ -1737,9 +1737,11 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	}
 }
 
-//PRE_COMPLETION_MARK_GET (1047) 
+//COMPLETION_MARK_GET 1047
+//POST_COMPLETION_MARK_GET 1048 // There are in CompletionTracker.cpp for convenience
+//PRE_COMPLETION_EVENT (1049) 
 HOOK_STATIC(Manager, RecordPlayerCompletion, (int unk) -> void, __stdcall) {
-	int callbackid = 1047;
+	int callbackid = 1049;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1932,4 +1934,88 @@ HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTru
 		}
 	}
 	return super(CollectibleID, OnlyCountTrueItems);
+}
+
+//PRE_MUSIC_PLAY_JINGLE (1094)
+HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> void) {
+	int callbackid = 1094;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(musicId)
+			.push(musicId)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				super(lua_tointeger(L, -1), unusedInt, unusedBool);
+				return;
+			}
+			else if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+	super(musicId, unusedInt, unusedBool);
+}
+
+//POST_TRIGGER_COLLECTIBLE_REMOVED (1095) 
+HOOK_METHOD(Entity_Player, TriggerCollectibleRemoved, (unsigned int collectibleID) -> void) {
+	super(collectibleID);
+	int callbackid = 1095;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(collectibleID)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(collectibleID)
+			.call(1);
+	}
+}
+
+//POST_TRIGGER_TRINKET_ADDED (1096) 
+HOOK_METHOD(Entity_Player, TriggerTrinketAdded, (unsigned int trinketID, bool firstTimePickingUp) -> void) {
+	super(trinketID, firstTimePickingUp);
+	int callbackid = 1096;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(trinketID)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(trinketID)
+			.push(firstTimePickingUp)
+			.call(1);
+	}
+}
+
+//POST_TRIGGER_TRINKET_REMOVED (1097) 
+HOOK_METHOD(Entity_Player, TriggerTrinketRemoved, (unsigned int trinketID) -> void) {
+	super(trinketID);
+	int callbackid = 1097;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(trinketID)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(trinketID)
+			.call(1);
+	}
 }

@@ -148,6 +148,22 @@ static int Lua_EntityForceCollide(lua_State* L)
 	return 1;
 }
 
+static int Lua_EntitySetDead(lua_State* L)
+{
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	bool isDead = lua_toboolean(L, 2);
+	*entity->IsDead() = isDead;
+	return 0;
+}
+
+static int Lua_EntitySetInvincible(lua_State* L)
+{
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	bool isInvincible = lua_toboolean(L, 2);
+	*entity->IsInvincible() = isInvincible;
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -169,5 +185,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetBossStatusEffectCooldown", Lua_EntityGetBossStatusEffectCooldown);
 	lua::RegisterFunction(state, mt, "SetBossStatusEffectCooldown", Lua_EntitySetBossStatusEffectCooldown);
 	lua::RegisterFunction(state, mt, "ForceCollide", Lua_EntityForceCollide);
-
+	lua::RegisterFunction(state, mt, "SetDead", Lua_EntitySetDead);
+	lua::RegisterFunction(state, mt, "SetInvincible", Lua_EntitySetInvincible);
 }

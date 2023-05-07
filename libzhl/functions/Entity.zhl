@@ -63,7 +63,9 @@ struct Entity depends (AnimationState) {
 	}
 	inline float* GetShadowSize() { return (float*)((char*)this + 0x150); }
 	inline bool* GetVisible() { return (bool*)((char*)this + 0x169); }
+	inline bool* IsDead() { return (bool*)((char*)this + 0x16b); }
 	inline int* GetBossStatusEffectCooldown() { return (int*)((char*)this + 0x230); }
+	inline bool* IsInvincible() { return (bool*)((char*)this + 0x308); }
 	
 	Entity() 
 	{

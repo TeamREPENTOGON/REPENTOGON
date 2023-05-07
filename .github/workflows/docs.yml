@@ -5,9 +5,23 @@ on:
         branches:
             - main-msvc
         paths:
+            - modtest/scripts/enums_ex.lua
             - documentation/**
 
 jobs:
+    enums_update:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout the repository
+              uses: actions/checkout@v3
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                python-version: '3.10'
+                cache: 'pip' # caching pip dependencies
+            - run: pip install -r ./tools/requirements.txt
+            - name: Convert enums to mkdocs
+              run: python ./tools/enums2mkdocs.py
     code_checks:
         runs-on: ubuntu-latest
         steps:

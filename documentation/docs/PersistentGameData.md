@@ -7,24 +7,28 @@
 
     ???+ example "Example Code"
         ```lua
-        local persistentGameData = Isaac:GetPersistentGameData()
+        local persistentGameData = Isaac.GetPersistentGameData()
         ```
-        
+???+ warning "Warning"
+    This class' functions should not be called until the game fully initializes! Make sure not to try using them outside of callbacks
+    
 ## Functions
 
 ### Try·Unlock () {: aria-label='Functions' }
 #### boolean TryUnlock ( [Achievement](enums/Achievement.md) Unlock ) {: .copyable aria-label='Functions' }
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
 
+___
 ### Unlocked () {: aria-label='Functions' }
 #### boolean Unlocked ( [Achievement](enums/Achievement.md) Unlock ) {: .copyable aria-label='Functions' }
 Checks if achievement is unlocked.
 
+___
 ### Increase·Event·Counter () {: aria-label='Functions' }
 #### void IncreaseEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter, int Num ) {: .copyable aria-label='Functions' }
 
+___
 ### Get·Event·Counter () {: aria-label='Functions' }
 #### void GetEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter ) {: .copyable aria-label='Functions' }
-
 ___
 

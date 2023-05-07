@@ -202,14 +202,31 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, boolean Unknown)| - | void |
 
-### MC_COMPLETION_MARK_GET
-Can return `false` to cancel the completion event.
+### MC_PRE_COMPLETION_EVENT
+Can return `false` to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.
 
-Triggers when the player gets a completion mark, getting as a parameter the code for the mark in question.
+Triggers when a completion even gets triggered, getting as a parameter the code for the event in question. 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion) | - |
+|1047 |MC_PRE_COMPLETION_EVENT {: .copyable } | ([CompletionType](CompletionType.md) Completion) | - | void or false |
+
+### MC_COMPLETION_MARK_GET
+Can return `false` to cancel the completion mark.
+
+Triggers when the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void or false |
+
+### MC_POST_COMPLETION_MARK_GET
+Triggers after the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1048 |MC_POST_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) |
+
 
 ### MC_PRE_LEVEL_INIT {: .copyable }
 Accepts no return parameters.
@@ -717,6 +734,18 @@ Alternatively accepts ``true`` to cancel item overlay show
 |:--|:--|:--|:--|:--|
 |1078 |MC_POST_PLAYER_NEW_LEVEL {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | - |
 
+### MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1079 |MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset, float Alpha)| - | - |
+
+### MC_POST_PLAYERHUD_RENDER_HEARTS
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1091 |MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset(?), [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) HeartsSprite, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, float Unknown)| - | - |
+
 ### MC_PRE_GET_LIGHTING_ALPHA
 Accepts a `float` to modify the lighting alpha. Generally this is between 0 and 1 but you can technically go higher than this.
 
@@ -741,3 +770,24 @@ Alternatively accepts `false` to stop the rendering.
  |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_RENDER_ENTITY_LIGHTING {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) player, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+
+### MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | int ModCount, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, boolean OnlyCountTrueItems)| - | int |
+
+### MC_PRE_PLAYER_HAS_COLLECTIBLE
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1093 |MC_PRE_PLAYER_HAS_COLLECTIBLE {: .copyable } | [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, boolean OnlyCountTrueItems)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | bool |
+
+### MC_PRE_MUSIC_PLAY_JINGLE
+Accepts a [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) to change the track
+
+Alternatively accepts `false` to cancel the track
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1094 |MC_PRE_MUSIC_PLAY_JINGLE {: .copyable } | ([Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) MusicID)| [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) | [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) or boolean |

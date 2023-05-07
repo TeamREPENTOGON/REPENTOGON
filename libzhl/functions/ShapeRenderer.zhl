@@ -1,0 +1,17 @@
+"558bec83e4f88b45??83ec28":
+__thiscall int ShapeRenderer::RenderLine(Vector* pos1, Vector* pos2, KColor* col1, KColor* col2, const float &thickness);
+
+"8b0d(????????)8d95????????0f2805????????5252520f1185????????c705????????????????8b01528d95????????52ff50??e9":
+reference ShapeRenderer* g_ShapeRenderer;
+
+struct ShapeRenderer depends (DestinationQuad, KColor, Vector) {
+{{
+	int OutlineQuad(DestinationQuad* quad, KColor* col, float thickness) 
+	{ // LOOK, OUR FLOAT IS NOT A POINTER! ISN'T THAT A CONCEPT??????? WHAT????????
+		int ret = this->RenderLine(&quad->_topLeft, &quad->_topRight, col, col, thickness);
+		this->RenderLine(&quad->_topRight, &quad->_bottomRight, col, col, thickness);
+		this->RenderLine(&quad->_bottomRight, &quad->_bottomLeft, col, col, thickness);
+		this->RenderLine(&quad->_bottomLeft, &quad->_topLeft, col, col, thickness);
+		return ret;
+	}
+}} };

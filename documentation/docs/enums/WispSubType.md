@@ -6,9 +6,9 @@ tags:
 |Value|Enumerator|Comment|
 |:--|:--|:--|
 |65536 |SPECIAL_FLAG {: .copyable } |  |
-|65536 |NOTCHED_AXE_COAL {: .copyable } |  |
-|65537 |NOTCHED_AXE_IRON {: .copyable } |  |
-|65538 |NOTCHED_AXE_GOLD {: .copyable } |  |
+|65536 |NOTCHED_AXE_COAL {: .copyable } | 0 &#124; SPECIAL_FLAG |
+|65537 |NOTCHED_AXE_IRON {: .copyable } | 1 &#124; SPECIAL_FLAG |
+|65538 |NOTCHED_AXE_GOLD {: .copyable } | etc |
 |65539 |NOTCHED_AXE_DIAMON {: .copyable } |  |
 |65540 |NOTCHED_AXE_REDSTONE {: .copyable } |  |
 |65541 |JAR_OF_FLIES_1 {: .copyable } |  |

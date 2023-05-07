@@ -47,7 +47,25 @@ HOOK_METHOD(Game, Update, () -> void) {
 */
 
 /*HOOK_METHOD(Entity_Player, Update, () -> void) {
+	Weapon* wep = this->GetWeapon();
+	int mem = wep->GetFireDelay();
+	if (wep != nullptr) {
+		printf("wep delay %d\n", mem);
+	}
 	super();
+}
+*/
+
+/*HOOK_STATIC(Isaac, CreateWeapon, (WeaponType wepType, Entity* ent) -> Weapon*) {
+	Weapon* ret = super(wepType, ent);
+	printf("createweapon %d %d\n", wepType, ret->GetWeaponType());
+	return ret;
+}
+*/
+
+/*HOOK_METHOD(Weapon, Fire, (const Vector& pos, bool unk1, bool unk2)-> void) {
+	printf("Weapon::Fire %f %f %d %d %f\n", pos.x, pos.y, unk1, unk2, this->GetFireDelay());
+	super(pos, unk1, unk2);
 }
 */
 
@@ -183,5 +201,22 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	RegisterTest(state);
+}
+*/
+
+/*HOOK_METHOD(ShapeRenderer, RenderLine, (Vector* pos1, Vector* pos2, KColor* col1, KColor* col2, const float& thickness) -> int) { // why the FUCK is this float a POINTER
+	printf("ShapeRenderer::RenderLine hook!\n");
+	printf("pos1 (%f, %f) pos2 (%f, %f) unk %f\n", pos1->x, pos1->y, pos2->x, pos2->y, thickness);
+	return super(pos1, pos2, col1, col2, thickness);
+}*/
+
+/*HOOK_METHOD(PlayerHUDActiveItem, RenderGfx, (SourceQuad* source, DestinationQuad* dest, const ColorMod& color) -> void) {
+	printf("RenderGfx: %f, %f %f %f %f, %f %f %f\n", source->_topLeft.x, source->_topLeft.y, source->_topRight.x, source->_topRight.y, source->_bottomLeft.x, source->_bottomLeft.y, source->_bottomRight.x, source->_bottomRight.y);
+	source->_topLeft.x = source->_topLeft.x + 16.0f;
+	source->_topRight.x = source->_topRight.x + 16.0f;
+	source->_bottomLeft.x = source->_bottomLeft.x + 16.0f;
+	source->_bottomRight.x = source->_bottomRight.x + 16.0f;
+	
+	super(source, dest, color);
 }
 */

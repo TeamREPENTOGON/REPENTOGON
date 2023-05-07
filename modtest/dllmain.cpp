@@ -167,12 +167,12 @@ MOD_EXPORT int ModInit(int argc, char **argv)
 {
 	Definition::Init();
 	ZHL::Init();
-	sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON v%d.%d.%d)", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH);
+	sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON %s)", VERSION);
 	SetWindowTextA(GetActiveWindow(), titlebar);
 	FixLuaDump();
 	printf(":REPENTOGON:\n");
 	PatchHardcodedAmbushWaveCount();
 	PatchHardcodedMegaSatanGameEnding();
-	PatchInputActionMenuCheck();
+	//PatchInputActionMenuCheck();
 	return 0;
 }

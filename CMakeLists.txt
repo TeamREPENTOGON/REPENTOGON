@@ -5,7 +5,9 @@ set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
 
 project(RepExtender)
 
-include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src" "${CMAKE_SOURCE_DIR}/libs/rapidxml-1.13" "${CMAKE_SOURCE_DIR}/libs/rapidjson" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl")
+find_package(OpenGL REQUIRED)
+
+include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.4.5/src" "${CMAKE_SOURCE_DIR}/libs/rapidxml-1.13" "${CMAKE_SOURCE_DIR}/libs/rapidjson" "${CMAKE_SOURCE_DIR}/libs/LuaSource-2.0/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" "${CMAKE_SOURCE_DIR}/libs/imgui/backends")
 
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
@@ -23,8 +25,8 @@ FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
 add_executable(zhlparser ${PARSER_SRC})
 target_link_libraries(zhlparser antlr4_shared)
 
-FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/*.c)
-list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/luac.c")
+FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.4.5/src/*.c)
+list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.4.5/src/luac.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
 add_library(Lua5.3.3r SHARED ${LUA_SRC})
 
@@ -51,14 +53,16 @@ add_library(libzhl SHARED ${ZHL_SRC})
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
 
-#[[FILE(GLOB LUAUP_SRC ${CMAKE_SOURCE_DIR}/Lua54Upgrader/*.cpp)
-add_library(Lua5.3.3r SHARED ${LUAUP_SRC})]]
+FILE(GLOB IMGUI_SRC ${CMAKE_SOURCE_DIR}/libs/imgui/*.cpp)
+FILE(GLOB IMGUI_BACKENDS_DIR ${CMAKE_SOURCE_DIR}/libs/imgui/backends/)
+set(IMGUI_BACKENDS_DIR ${CMAKE_SOURCE_DIR}/libs/imgui/backends/)
+add_library(imgui ${IMGUI_SRC} ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.h ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3_loader.h ${IMGUI_BACKENDS_DIR}/imgui_impl_win32.h ${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp)
 
 FILE(GLOB MODTEST_SRC ${CMAKE_SOURCE_DIR}/modtest/*.cpp)
 add_library(zhlModTest SHARED ${MODTEST_SRC})
 
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "$<TARGET_FILE_DIR:zhlModTest>/resources/scripts")
-add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/mods" "$<TARGET_FILE_DIR:zhlModTest>/mods")
+add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/resources-repentogon" "$<TARGET_FILE_DIR:zhlModTest>/resources-repentogon")
 
 if(NOT ISAAC_DIRECTORY STREQUAL "")
     message (STATUS "Files will be installed to " ${ISAAC_DIRECTORY})
@@ -67,7 +71,7 @@ if(NOT ISAAC_DIRECTORY STREQUAL "")
     add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:libzhl>/libzhl.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlModTest>/zhlModTest.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "${ISAAC_DIRECTORY}/resources/scripts")
-    add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/mods" "${ISAAC_DIRECTORY}/mods")
+    add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/resources-repentogon" "${ISAAC_DIRECTORY}/resources-repentogon")
 endif()
 		
 # add_dependencies(libzhl ZHL)
@@ -77,5 +81,5 @@ add_dependencies(zhlModTest libzhl)
 add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
-target_link_libraries(zhlModTest Lua5.3.3r libzhl "Zydis")
+target_link_libraries(zhlModTest Lua5.3.3r libzhl "Zydis" imgui ${OPENGL_LIBRARIES})
 target_link_libraries(libzhl Lua5.3.3r "Zydis")

@@ -4,6 +4,10 @@
 --8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
 ## Functions
 
+### Get·Var·Data () {: aria-label='Functions' }
+#### int GetVarData ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Blind () {: aria-label='Functions' }
 #### boolean IsBlind ( ) {: .copyable aria-label='Functions' }
 
@@ -14,6 +18,10 @@ ___
 #### void SetAlternatePedestal ( int PedestalType ) {: .copyable aria-label='Functions' }
 
 Sets the graphics of the item pedestal. Does nothing for non-collectible EntityPickups.
+
+___
+### Set·Var·Data () {: aria-label='Functions' }
+#### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Force·Blind () {: aria-label='Functions' }

@@ -37,6 +37,15 @@ static int Lua_PlayerHUDRenderActiveItem(lua_State* L) {
 
 }
 
+static int Lua_PlayerHUDGetBatteryBarSprite(lua_State* L)
+{
+	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	ANM2* sprite = playerHUD->GetBatteryBarSprite();
+	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 1;
+}
+
 static void RegisterPlayerHUD(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::HUD);
 	lua_pushstring(L, "GetPlayerHUD");
@@ -52,6 +61,7 @@ static void RegisterPlayerHUD(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetPlayer", Lua_PlayerHUDGetPlayer },
 		{ "RenderActiveItem", Lua_PlayerHUDRenderActiveItem },
+		{ "GetBatteryBarSprite", Lua_PlayerHUDGetBatteryBarSprite},
 		{ NULL, NULL }
 	};
 

@@ -34,7 +34,6 @@ extern "C"
 
 
 struct Console_HistoryEntry;
-
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
@@ -1193,8 +1192,45 @@ static DWORD GetBaseAddress()
 {
         return (DWORD)GetModuleHandle(NULL);
 }
-}}
 
+enum BagOfCraftingPickup : uint8_t 
+{
+        BOC_NONE = 0,
+        BOC_RED_HEART = 1,
+        BOC_SOUL_HEART = 2,
+        BOC_BLACK_HEART = 3,
+        BOC_ETERNAL_HEART = 4,
+        BOC_GOLD_HEART = 5,
+        BOC_BONE_HEART = 6,
+        BOC_ROTTEN_HEART = 7,
+        BOC_PENNY = 8,
+        BOC_NICKEL = 9,
+        BOC_DIME = 10,
+        BOC_LUCKY_PENNY = 11,
+        BOC_KEY = 12,
+        BOC_GOLD_KEY = 13,
+        BOC_CHARGED_KEY = 14,
+        BOC_BOMB = 15,
+        BOC_GOLD_BOMB = 16,
+        BOC_GIGA_BOMB = 17,
+        BOC_MINI_BATTERY = 18,
+        BOC_BATTERY = 19,
+        BOC_MEGA_BATTERY = 20,
+        BOC_CARD = 21,
+        BOC_PILL = 22,
+        BOC_RUNE = 23,
+        BOC_DICE_SHARD = 24,
+        BOC_CRACKED_KEY = 25,
+        BOC_GOLD_PENNY = 26,
+        BOC_GOLD_PILL = 27,
+        BOC_GOLD_BATTERY = 28,
+        BOC_POOP = 29,
+        BOC_MAX = 30
+};
+
+	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
+	static void* wglSwapBuffersAddr = GetProcAddress(GetModuleHandle("opengl32.dll"), "wglSwapBuffers");
+}}
 
 "558bec568b75??85f674??803e00538bde74??43803b0075??8b51??2bde5785d274??8b0285c074??8b4a??eb??33c9b8????????3bcb75??8d3c??3bc773??2bf08a083a0c??75??403bc772??5f5b8bc25e5dc20c008b75??8b52??85d275??5f5b33c05e5dc20c008b41??5e5dc20c00????????????????????????????e9":
 char** GetXMLNode(char* thi,int unk, char* name);

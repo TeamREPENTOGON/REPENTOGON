@@ -58,7 +58,7 @@ tags:
 |30 |SCISSORS {: .copyable } |  |
 |31 |THE_PARASITE {: .copyable } |  |
 |31 |PARASITE {: .copyable } |  |
-|209 |BLUE_BABY {: .copyable } |  |
+|32 |BLUE_BABY {: .copyable } |  |
 |32 |QQQ {: .copyable } |  |
 |33 |EVERYTHING_IS_TERRIBLE {: .copyable } |  |
 |34 |IT_LIVES {: .copyable } |  |
@@ -127,7 +127,7 @@ tags:
 |79 |AZAZEL {: .copyable } |  |
 |80 |LAZARUS {: .copyable } |  |
 |81 |EDEN {: .copyable } |  |
-|132 |THE_SOUL {: .copyable } |  |
+|82 |THE_SOUL {: .copyable } |  |
 |82 |THE_LOST {: .copyable } |  |
 |82 |LOST {: .copyable } |  |
 |83 |DEAD_BOY {: .copyable } |  |
@@ -190,10 +190,11 @@ tags:
 |127 |DAEMONS_TAIL {: .copyable } |  |
 |128 |ABADDON {: .copyable } |  |
 |129 |ISAACS_HEART {: .copyable } |  |
-|130 |THE_MIND {: .copyable } |  |
+|130 |THE_MIND_ITEM {: .copyable } |  |
 |130 |MIND {: .copyable } |  |
-|131 |THE_BODY {: .copyable } |  |
+|131 |THE_BODY_ITEM {: .copyable } |  |
 |131 |BODY {: .copyable } |  |
+|132 |THE_SOUL_ITEM {: .copyable } |  |
 |132 |SOUL {: .copyable } |  |
 |133 |A_D100 {: .copyable } |  |
 |133 |D100 {: .copyable } |  |
@@ -290,6 +291,7 @@ tags:
 |206 |RED_BABY {: .copyable } |  |
 |207 |GREEN_BABY {: .copyable } |  |
 |208 |BROWN_BABY {: .copyable } |  |
+|209 |BLUE_COOP_BABY {: .copyable } |  |
 |210 |LIL_BABY {: .copyable } |  |
 |211 |RAGE_BABY {: .copyable } |  |
 |212 |BLACK_BABY {: .copyable } |  |

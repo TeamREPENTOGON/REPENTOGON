@@ -259,6 +259,182 @@ int Lua_PlayerTryFakeDeath(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerGetBoCContent(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_newtable(L);
+	BagOfCraftingPickup* content = player->GetBagOfCraftingContent();
+	for (int i = 0; i < 8; ++i) {
+		lua_pushinteger(L, i + 1);
+		lua_pushinteger(L, *content++);
+		lua_rawset(L, -3);
+	}
+	return 1;
+}
+
+int Lua_PlayerSetBoCContent(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	return 0;
+}
+
+int Lua_PlayerGetBoCSlot(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int n = lua_gettop(L);
+	if (n != 2) {
+		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: expected 1 parameter, got %d\n", n - 1);
+	}
+
+	int slot = luaL_checkinteger(L, 2);
+	if (slot < 0 || slot > 7) {
+		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: invalid slot id %d\n", slot);
+	}
+
+	lua_pushinteger(L, player->GetBagOfCraftingContent()[slot]);
+	return 1;
+}
+
+int Lua_PlayerSetBoCSlot(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int n = lua_gettop(L);
+	if (n > 3 || n < 2) {
+		return luaL_error(L, "EntityPlayer::SetBagOfCraftingSlot: expected at least 1 parameter and at most 2, got %d\n", n - 1);
+	}
+
+	int slot = luaL_checkinteger(L, 2);
+	if (slot < 0 || slot > 7) {
+		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: invalid slot id %d\n", slot);
+	}
+
+	int8_t pickup = luaL_optinteger(L, 3, BagOfCraftingPickup::BOC_NONE);
+	if (pickup < 0 || pickup >= BagOfCraftingPickup::BOC_MAX) {
+		return luaL_error(L, "EntityPlayer::SetBagOfCraftingSlot: invalid pickup id %d\n", pickup);
+	}
+
+	player->GetBagOfCraftingContent()[slot] = (BagOfCraftingPickup)pickup;
+	return 0;
+}
+
+int Lua_PlayerGetBagOfCraftingOutput(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetBagOfCraftingOutput());
+	return 1;
+}
+
+int Lua_PlayerSetBagOfCraftingOutput(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetBagOfCraftingOutput() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+int Lua_PlayerGetFireDelayModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetFireDelayModifier());
+	return 1;
+}
+
+int Lua_PlayerSetFireDelayModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetFireDelayModifier() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+int Lua_PlayerGetDamageModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetDamageModifier());
+	return 1;
+}
+
+int Lua_PlayerSetDamageModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetDamageModifier() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+int Lua_PlayerGetRedStewBonusDuration(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetRedStewBonusDuration());
+	return 1;
+}
+
+int Lua_PlayerSetRedStewBonusDuration(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*player->GetRedStewBonusDuration() = luaL_checkinteger(L, 2);
+	return 0;
+}
+
+int Lua_PlayerGetWeaponModifiers(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->GetWeaponModifiers());
+	return 1;
+}
+
+int Lua_PlayerEnableWeaponType(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int weaponType = luaL_checkinteger(L, 2);
+	bool set = lua_toboolean(L, 3);
+	player->EnableWeaponType((WeaponType)weaponType, set);
+	return 0;
+}
+
+int Lua_PlayerGetD8DamageModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *player->GetD8DamageModifier());
+	return 1;
+}
+
+int Lua_PlayerGetD8SpeedModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *player->GetD8SpeedModifier());
+	return 1;
+}
+
+int Lua_PlayerGetD8RangeModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *player->GetD8RangeModifier());
+	return 1;
+}
+
+int Lua_PlayerGetD8FireDelayModifier(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *player->GetD8FireDelayModifier());
+	return 1;
+}
+
+int Lua_PlayerGetEpiphoraCharge(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetEpiphoraCharge());
+	return 1;
+}
+
+int Lua_PlayerGetPeeBurstCooldown(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetPeeBurstCooldown());
+	return 1;
+}
+
+int Lua_PlayerGetMaxPeeBurstCooldown(lua_State* L)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetMaxPeeBurstCooldown());
+	return 1;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -287,4 +463,25 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetMegaBlastDuration", Lua_PlayerSetMegaBlastDuration);
 	lua::RegisterFunction(state, mt, "GetActiveItemDesc", Lua_PlayerGetActiveItemDesc);
 	lua::RegisterFunction(state, mt, "TryFakeDeath", Lua_PlayerTryFakeDeath);
+	lua::RegisterFunction(state, mt, "GetBagOfCraftingContent", Lua_PlayerGetBoCContent);
+	// lua::RegisterFunction(state, mt, "SetBagOfCraftingContent", Lua_PlayerSetBoCContent);
+	lua::RegisterFunction(state, mt, "SetBagOfCraftingSlot", Lua_PlayerSetBoCSlot);
+	lua::RegisterFunction(state, mt, "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot);
+	lua::RegisterFunction(state, mt, "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput);
+	lua::RegisterFunction(state, mt, "SetBagOfCraftingOutput", Lua_PlayerSetBagOfCraftingOutput);
+	lua::RegisterFunction(state, mt, "GetFireDelayModifier", Lua_PlayerGetFireDelayModifier);
+	lua::RegisterFunction(state, mt, "SetFireDelayModifier", Lua_PlayerSetFireDelayModifier);
+	lua::RegisterFunction(state, mt, "GetDamageModifier", Lua_PlayerGetDamageModifier);
+	lua::RegisterFunction(state, mt, "SetDamageModifier", Lua_PlayerSetDamageModifier);
+	lua::RegisterFunction(state, mt, "GetRedStewBonusDuration", Lua_PlayerGetRedStewBonusDuration);
+	lua::RegisterFunction(state, mt, "SetRedStewBonusDuration", Lua_PlayerSetRedStewBonusDuration);
+	lua::RegisterFunction(state, mt, "GetWeaponModifiers", Lua_PlayerGetWeaponModifiers);
+	lua::RegisterFunction(state, mt, "EnableWeaponType", Lua_PlayerEnableWeaponType);
+	lua::RegisterFunction(state, mt, "GetD8DamageModifier", Lua_PlayerGetD8DamageModifier);
+	lua::RegisterFunction(state, mt, "GetD8SpeedModifier", Lua_PlayerGetD8SpeedModifier);
+	lua::RegisterFunction(state, mt, "GetD8RangeModifier", Lua_PlayerGetD8RangeModifier);
+	lua::RegisterFunction(state, mt, "GetD8FireDelayModifier", Lua_PlayerGetD8FireDelayModifier);
+	lua::RegisterFunction(state, mt, "GetEpiphoraCharge", Lua_PlayerGetEpiphoraCharge);
+	lua::RegisterFunction(state, mt, "GetPeeBurstCooldown", Lua_PlayerGetPeeBurstCooldown);
+	lua::RegisterFunction(state, mt, "GetMaxPeeBurstCooldown", Lua_PlayerGetMaxPeeBurstCooldown);
 }

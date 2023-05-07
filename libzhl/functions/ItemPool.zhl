@@ -1,0 +1,6 @@
+"558bec64a1????????83ec20":
+static __stdcall int ItemPool::GetCardEx(int Seed, int SpecialChance, int RuneChance, int SuitChance, bool AllowNonCards);
+
+struct ItemPool {
+
+};

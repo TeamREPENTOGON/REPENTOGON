@@ -149,14 +149,37 @@ __thiscall bool Entity_Player::TryFakeDeath();
 "558bec83e4f883ec145356578bf9837f??01":
 __thiscall int Entity_Player::GetCollectibleNum(int collectibleID, bool OnlyCountTrueItems);
 
+"558bec83e4f883ec1c5356578b7d??8bd981ff2e010000":
+__thiscall void Entity_Player::TriggerCollectibleRemoved(unsigned int collectibleID);
 
+"558bec83e4f8515356578bf9837f??00":
+__thiscall void Entity_Player::TriggerTrinketAdded(unsigned int trinketID, bool firstTimePickingUp);
+
+"558bec83e4f85153568bf157837e??00":
+__thiscall void Entity_Player::TriggerTrinketRemoved(unsigned int trinketID);
+
+"558bec83e4f85153565733f6":
+__thiscall int Entity_Player::GetWeaponModifiers();
+
+"558bec8b45??8a55":
+__thiscall void Entity_Player::EnableWeaponType(WeaponType weaponType, bool Set);
 
 struct Entity_Player : public Entity { {{
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
+	inline Weapon* GetWeapon() { return (Weapon*)((char*)this + 0x1328); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
+	inline int* GetFireDelayModifier() { return (int*)((char*)this + 0x146c); }
+	inline int* GetDamageModifier() { return (int*)((char*)this + 0x1470); }
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
+	inline int* GetEpiphoraCharge() { return (int*)((char*)this + 0x17c4); }
 	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
+	inline int* GetPeeBurstCooldown() { return (int*)((char*)this + 0x1818); }
+	inline int* GetMaxPeeBurstCooldown() { return (int*)((char*)this + 0x181c); }
+	inline float* GetD8DamageModifier() { return (float*)((char*)this + 0x185C); }
+	inline float* GetD8SpeedModifier() { return (float*)((char*)this + 0x1860); }
+	inline float* GetD8RangeModifier() { return (float*)((char*)this + 0x1864); }
+	inline float* GetD8FireDelayModifier() { return (float*)((char*)this + 0x1868); }
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
 }} 
@@ -173,4 +196,9 @@ struct Entity_Player : public Entity { {{
         "558bec6aff68????????64a1????????5081ec3c010000a1":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
     };
+    
+    inline int* GetRedStewBonusDuration() { return (int*)((char*)this + 0x1d8c); }
+    inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1e44); }
+    inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
 };
+>>>>>>> main-msvc

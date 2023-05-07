@@ -1,0 +1,6 @@
+"558bec8b0183ec18":
+void PlayerHUDActiveItem::RenderGfx(SourceQuad* sourceQuad, DestinationQuad* destQuad, const ColorMod& color);
+
+struct PlayerHUDActiveItem {
+
+};
