@@ -25,6 +25,8 @@ FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
 add_executable(zhlparser ${PARSER_SRC})
 target_link_libraries(zhlparser antlr4_shared)
 
+add_custom_command(TARGET zhlparser POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:antlr4_shared>/antlr4-runtime.dll" "$<TARGET_FILE_DIR:zhlparser>")
+
 FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.4.5/src/*.c)
 list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.4.5/src/luac.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
