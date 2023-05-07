@@ -8,7 +8,7 @@ namespace fs = std::filesystem;
 
 class CodeEmitter {
 public:
-	CodeEmitter();
+	CodeEmitter(bool test);
 
 	void ProcessZHLFiles(fs::path const& base);
 	void ProcessFile(fs::path const& path);
@@ -34,6 +34,8 @@ private:
 	void CheckVTableInternalConsistency(Struct const& s);
 	void CheckVTableHierarchyConsistency(Struct const& s, std::vector<Struct const*> const& parents);
 
+	void BuildExternalNamespaces();
+
 	void AssertReady(Type const* t);
 	void CheckDependencies();
 	void CheckDependencies(Type const& t);
@@ -49,6 +51,8 @@ private:
 	void Emit(PointerDecl const& ptr);
 	void Emit(Function const& fun);
 	void Emit(VariableSignature const& sig);
+	void EmitNamespace(std::string const& name);
+	void Emit(ExternalFunction const& fn);
 
 	void EmitAssembly(Signature const& sig);
 	void EmitAssembly(VariableSignature const& sig);
@@ -59,6 +63,10 @@ private:
 	void EmitType(FunctionPtr* ptr);
 	void EmitType(std::string const& s);
 	void EmitType(EmptyType const&);
+
+	std::tuple<bool, uint32_t> EmitArgData(Function const& fn);
+	void EmitTypeID(Function const& fn);
+	uint32_t GetFlags(Function const& fn) const;
 
 	void EmitGlobalPrologue();
 	void EmitImplPrologue();
@@ -80,14 +88,16 @@ private:
 
 	Namespace _global;
 	std::map<std::string, Type> _types;
+	std::map<std::string, std::vector<ExternalFunction const*>> _externals;
 
 	std::ofstream _decls, _impl;
 	std::ofstream* _emitContext = nullptr;
 	Variable const* _variableContext = nullptr;
-	Struct const* _currentStructure;
+	Struct const* _currentStructure = nullptr;
 	uint32_t _virtualFnUnk = 0;
 	uint32_t _nEmittedFuns = 0;
 	uint32_t _nEmittedVars = 0;
+	uint32_t _nEmittedExternal = 0;
 
 	// Allows for a white / grey / black coloration of the dependencies graph
 	std::set<std::string> _emittedStructures;

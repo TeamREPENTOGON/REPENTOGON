@@ -19,6 +19,9 @@ public:
   virtual void enterZhl(ZHLParser::ZhlContext * /*ctx*/) override { }
   virtual void exitZhl(ZHLParser::ZhlContext * /*ctx*/) override { }
 
+  virtual void enterExternalFunc(ZHLParser::ExternalFuncContext * /*ctx*/) override { }
+  virtual void exitExternalFunc(ZHLParser::ExternalFuncContext * /*ctx*/) override { }
+
   virtual void enterTypeInfo(ZHLParser::TypeInfoContext * /*ctx*/) override { }
   virtual void exitTypeInfo(ZHLParser::TypeInfoContext * /*ctx*/) override { }
 

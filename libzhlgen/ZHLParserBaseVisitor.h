@@ -19,6 +19,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitExternalFunc(ZHLParser::ExternalFuncContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitTypeInfo(ZHLParser::TypeInfoContext *ctx) override {
     return visitChildren(ctx);
   }

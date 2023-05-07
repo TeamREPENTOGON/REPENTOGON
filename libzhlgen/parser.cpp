@@ -3,10 +3,22 @@
 #include "CodeEmitter.h"
 
 int main(int argc, char** argv) {
-    CodeEmitter emitter;
-    emitter.ProcessZHLFiles("../libzhl/functions");
+    bool test = false;
+    if (argc == 2) {
+        test = strcmp(argv[1], "--test") == 0;
+    }
+
+    std::string zhlPath = "../libzhl/functions";
+    std::string extraTypesPath = "../libzhl/functions/ExtraTypes";
+    if (test) {
+        zhlPath = "../../libzhl/functions";
+        extraTypesPath = "../../libzhl/functions/ExtraTypes";
+    }
+
+    CodeEmitter emitter(test);
+    emitter.ProcessZHLFiles(zhlPath);
     // emitter.ProcessFile("D:/Dev/Isaac/IsaacZHL/libzhlgen/IsaacRepentanceStripped.h");
-    emitter.ProcessFile("../libzhl/functions/ExtraTypes");
+    emitter.ProcessFile(extraTypesPath);
     emitter.Dump();
     emitter.Emit();
 

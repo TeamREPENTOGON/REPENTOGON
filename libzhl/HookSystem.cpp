@@ -175,7 +175,7 @@ FunctionDefinition::FunctionDefinition(const char *name, const type_info &type, 
 	Add(_name, this);
 }
 
-FunctionDefinition::FunctionDefinition(const char* name, const type_info& type, void* addr, const short* argdata, int nArgs, unsigned int flags, void** outfunc) :
+FunctionDefinition::FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc) :
 	_address(addr),
 	_argdata(argdata),
 	_nArgs(nArgs),

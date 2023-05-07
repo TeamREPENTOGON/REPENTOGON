@@ -62,6 +62,7 @@ struct Function;
 struct Variable;
 struct Signature;
 struct VariableSignature;
+struct ExternalFunction;
 
 typedef std::string GenericCode;
 
@@ -72,6 +73,7 @@ struct Namespace {
     std::vector<Variable> _fields;
     std::vector<Signature> _signatures;
     std::vector<VariableSignature> _references;
+    std::vector<ExternalFunction> _externs;
 };
 
 enum Visibility {
@@ -248,6 +250,14 @@ struct Function {
 
     bool operator==(const Function& other) const;
     bool operator!=(const Function& other) const;
+};
+
+struct ExternalFunction {
+    std::string _dll;
+    std::string _name;
+    std::string _namespace;
+
+    Function _fn;
 };
 
 struct Variable {

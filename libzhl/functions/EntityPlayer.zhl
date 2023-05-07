@@ -197,8 +197,9 @@ struct Entity_Player : public Entity { {{
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
     };
     
+    {{ 
     inline int* GetRedStewBonusDuration() { return (int*)((char*)this + 0x1d8c); }
     inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1e44); }
     inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
+    }}
 };
->>>>>>> main-msvc

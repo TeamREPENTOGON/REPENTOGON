@@ -951,6 +951,26 @@ std::any Parser::visitTypeInfoDef(ZHLParser::TypeInfoDefContext* ctx) {
     return result;
 }
 
+std::any Parser::visitExternalFunc(ZHLParser::ExternalFuncContext* ctx) {
+    ExternalFunction func;
+    std::vector<antlr4::tree::TerminalNode*> names = ctx->Name();
+    func._dll = names[0]->getText() + ".dll";
+    func._name = names[1]->getText();
+    auto [nested, first, fn] = std::any_cast<std::tuple<bool, std::string, Function>>(visit(ctx->function()));
+
+    if (!nested) {
+        _errors << ErrorLogger::error << " External function " << fn._name << " from library " << func._dll << " specified without an englobing namespace" << ErrorLogger::_end;
+        return 0;
+    }
+
+    func._namespace = first;
+    func._fn = fn;
+
+    _global->_externs.push_back(func);
+
+    return 0;
+}
+
 std::string Parser::GetCurrentFunctionQualifiedName(std::string const& name) {
     if (!_currentStruct) {
         return name;

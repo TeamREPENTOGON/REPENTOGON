@@ -17,6 +17,9 @@ public:
   virtual void enterZhl(ZHLParser::ZhlContext *ctx) = 0;
   virtual void exitZhl(ZHLParser::ZhlContext *ctx) = 0;
 
+  virtual void enterExternalFunc(ZHLParser::ExternalFuncContext *ctx) = 0;
+  virtual void exitExternalFunc(ZHLParser::ExternalFuncContext *ctx) = 0;
+
   virtual void enterTypeInfo(ZHLParser::TypeInfoContext *ctx) = 0;
   virtual void exitTypeInfo(ZHLParser::TypeInfoContext *ctx) = 0;
 

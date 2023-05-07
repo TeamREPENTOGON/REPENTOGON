@@ -53,3 +53,7 @@ TypeInfo std_set_int {
 TypeInfo std_string {
     Size 24;
 };
+
+TypeInfo HDC {
+    Size 4;
+};

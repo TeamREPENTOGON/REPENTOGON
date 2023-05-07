@@ -9,6 +9,7 @@ __thiscall void PlayerHUD::RenderHearts(Vector *unk1, ANM2 *sprite, const Vector
 
 struct PlayerHUD { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
+        inline ANM2* GetBatteryBarSprite() { return (ANM2*)((char*)this + 0xc36e8); }
 }} 
     Entity_Player* _player;
 };

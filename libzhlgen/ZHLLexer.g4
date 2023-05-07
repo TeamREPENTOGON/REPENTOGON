@@ -11,6 +11,7 @@ Cleanup: 'cleanup';
 Static: 'static';
 Virtual: 'virtual';
 Declspec: '__declspec';
+External: 'external';
 LeftParen: '(';
 RightParen: ')';
 Comma: ',';

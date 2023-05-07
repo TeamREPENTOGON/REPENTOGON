@@ -2,9 +2,4 @@
 // wglSwapBuffersAddr is defined in Global.zhl, and corresponds to wglSwapBuffers in opengl32.dll.
 // The backslash here "escapes" the sigscanner, directly feeding the contents of this string into the resulting .cpp file.
 
-"\wglSwapBuffersAddr":
-bool OpenGL::wglSwapBuffers(HDC hdc);
-
-struct OpenGL {
-
-};
+external(opengl32, wglSwapBuffers) __stdcall bool OpenGL::wglSwapBuffers(HDC hdc);

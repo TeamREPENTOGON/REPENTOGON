@@ -89,6 +89,7 @@ public:
     virtual std::any visitVtable(ZHLParser::VtableContext* ctx);
     virtual std::any visitVtableEntry(ZHLParser::VtableEntryContext* ctx);
     virtual std::any visitVtableSignature(ZHLParser::VtableSignatureContext* ctx);
+    virtual std::any visitExternalFunc(ZHLParser::ExternalFuncContext* ctx);
 
 private:
     Namespace* _global;

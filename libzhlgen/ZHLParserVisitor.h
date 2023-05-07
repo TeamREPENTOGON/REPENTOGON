@@ -21,6 +21,8 @@ public:
    */
     virtual std::any visitZhl(ZHLParser::ZhlContext *context) = 0;
 
+    virtual std::any visitExternalFunc(ZHLParser::ExternalFuncContext *context) = 0;
+
     virtual std::any visitTypeInfo(ZHLParser::TypeInfoContext *context) = 0;
 
     virtual std::any visitTypeInfoDef(ZHLParser::TypeInfoDefContext *context) = 0;

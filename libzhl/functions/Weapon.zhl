@@ -8,6 +8,6 @@ struct Weapon { {{
 }}
     __vtable {
         "558bec83e4f883ec60a1????????33c4894424??8b45":
-        void Weapon::Fire(const Vector& pos, bool unk1, bool unk2);
+        void Fire(const Vector& pos, bool unk1, bool unk2);
     };
 };

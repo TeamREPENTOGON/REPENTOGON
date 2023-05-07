@@ -5,7 +5,10 @@ options {
 }
 
 zhl:
-    (signature | class | genericCode | typedef | functionPtr | forwardDecl | typeInfo)* EOF;
+    (signature | class | genericCode | typedef | functionPtr | forwardDecl | typeInfo | externalFunc)* EOF;
+
+externalFunc:
+    External LeftParen Name Comma Name RightParen function;
 
 typeInfo:
     Type Name LeftBracket typeInfoDef+ RightBracket Semi;

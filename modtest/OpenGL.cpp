@@ -1,5 +1,7 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+
+#include <Windows.h>
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
@@ -32,7 +34,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 }
 
 
-HOOK_METHOD(OpenGL, wglSwapBuffers, (HDC hdc) -> bool) {
+HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
 
     static bool initialized = false;
 	if (!initialized) {
