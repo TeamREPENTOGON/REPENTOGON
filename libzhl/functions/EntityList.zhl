@@ -6,7 +6,7 @@ __thiscall void EntityList::RenderShadows(Vector *offset);
 __thiscall EntityList_EL* EntityList::QueryType(EntityList_EL* result, int Type, int Variant, int Subtype, bool Cache, bool IgnoreFriendly);
 
 "558bec83e4f883ec14535657f3":
-__thiscall void EntityList::QueryRadius(EntityList_EL* result, Vector* Position, float Radius, unsigned int Partitions);
+void EntityList::QueryRadius(EntityList_EL* result, Vector* Position, float Radius<xmm3>, unsigned int Partitions);
 
 struct EntityList depends (Entity, EntityList_EL) {
 {{

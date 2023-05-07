@@ -94,7 +94,7 @@ int Lua_IsaacFindInRadiusFix(lua_State* L)
 	const void* queryRadius = lua_topointer(g_LuaEngine->_state, -1);
 	lua_pop(g_LuaEngine->_state, 1);
 
-	__asm {
+	/* __asm {
 		push ecx;
 		mov ecx, list;
 		push partition;
@@ -103,7 +103,9 @@ int Lua_IsaacFindInRadiusFix(lua_State* L)
 		movss xmm3, radius;
 		call queryRadius;
 		pop ecx;
-	}
+	} */
+
+	list->QueryRadius(&res, pos, radius, partition);
 
 	unsigned int size = res._size;
 
