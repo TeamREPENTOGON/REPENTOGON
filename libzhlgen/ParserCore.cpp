@@ -707,7 +707,9 @@ std::any Parser::visitSignature(ZHLParser::SignatureContext* ctx) {
         fullSignature = ctx->ReferenceSignature()->getText();
         s._sig = fullSignature.substr(1, fullSignature.size() - 3);
         s._variable = std::any_cast<Variable>(visit(ctx->reference()));
+        sig = s;
 
+        _global->_references.push_back(s);
         //std::cout << "Read reference signature " << s._sig << " for variable " << s._variable._name << std::endl;
     }
 

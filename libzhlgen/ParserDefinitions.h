@@ -61,6 +61,7 @@ struct BasicType {
 struct Function;
 struct Variable;
 struct Signature;
+struct VariableSignature;
 
 typedef std::string GenericCode;
 
@@ -70,6 +71,7 @@ struct Namespace {
     std::vector<GenericCode> _generic;
     std::vector<Variable> _fields;
     std::vector<Signature> _signatures;
+    std::vector<VariableSignature> _references;
 };
 
 enum Visibility {

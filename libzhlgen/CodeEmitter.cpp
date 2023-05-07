@@ -55,18 +55,33 @@ void CodeEmitter::Emit() {
     CheckVTables();
 
     EmitDecl();
-    ForwardDecl();
+    EmitGlobalPrologue();
+
+    EmitForwardDecl();
+
+    for (GenericCode const& code : _global._generic) {
+        Emit(code);
+        EmitNL();
+    }
 
     for (auto const& [_, type] : _types) {
         if (type.IsStruct()) {
             Emit(type.GetStruct());
         }
     }
+
+    for (Signature const& sig : _global._signatures) {
+        Emit(sig, false);
+    }
+
+    for (VariableSignature const& sig : _global._references) {
+        Emit(sig);
+    }
 }
 
-void CodeEmitter::ForwardDecl() {
+void CodeEmitter::EmitForwardDecl() {
     for (auto const& [_, type] : _types) {
-        if (type.IsStruct()) {
+        if (type.IsStruct() && !type._pending) {
             Emit("struct ");
             Emit(type.GetStruct()._name);
             Emit(";");
@@ -845,7 +860,7 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
             }
 
             k -= 4;
-            ins << regStr << " [ebp + " << k << "] // " << param._name;
+            ins << regStr << ", [ebp + " << k << "] // " << param._name;
             EmitInstruction(ins.str());
 
         }
@@ -898,6 +913,7 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
     EmitInstruction("pop ebp");
 
     DecrDepth();
+    EmitTab();
     Emit("}");
     EmitNL();
     DecrDepth();
@@ -913,5 +929,60 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
 void CodeEmitter::EmitInstruction(std::string const& ins) {
     EmitTab();
     Emit(ins);
+    EmitNL();
+}
+
+void CodeEmitter::Emit(VariableSignature const& sig) {
+    std::string refName("__ptr_" + sig._variable._name);
+
+    Emit("extern LIBZHL_API ");
+    Emit(*sig._variable._type);
+    Emit("* ");
+    Emit(refName);;
+    Emit(";");
+    EmitNL();
+    Emit("#define ");
+    Emit(sig._variable._name);
+    Emit(" (*");
+    Emit(refName);
+    Emit(")");
+    EmitNL();
+
+    EmitAssembly(sig);
+}
+
+void CodeEmitter::EmitAssembly(VariableSignature const& sig) {
+    EmitImpl();
+
+    Emit("namespace _var");
+    Emit(std::to_string(_nEmittedVars));
+    Emit(" {");
+    EmitNL();
+    IncrDepth();
+    EmitTab();
+    Emit("static VariableDefinition varObj(\"");
+    Emit(sig._variable._name);
+    Emit("\", \"");
+    Emit(sig._sig);
+    Emit("\", &");
+    Emit("__ptr_" + sig._variable._name);
+    Emit(");");
+    EmitNL();
+    DecrDepth();
+    Emit("}");
+    EmitNL(); 
+    EmitNL();
+
+    ++_nEmittedVars;
+
+    EmitDecl();
+}
+
+void CodeEmitter::EmitGlobalPrologue() {
+    Emit("#pragma once");
+    EmitNL();
+    EmitNL();
+    Emit("#include \"libzhl.h\"");
+    EmitNL();
     EmitNL();
 }
