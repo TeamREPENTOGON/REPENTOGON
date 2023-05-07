@@ -28,11 +28,11 @@ static int Lua_PlayerGetWeapon(lua_State* L) {
 	return 1;
 }
 
-//static int Lua_WeaponGetFireDelay(lua_State* L) {
-//	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
-//	lua_pushnumber(L, weapon->GetFireDelay());
-//	return 1;
-//}
+static int Lua_WeaponGetFireDelay(lua_State* L) {
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
+	lua_pushnumber(L, weapon->GetFireDelay());
+	return 1;
+}
 
 static int Lua_WeaponGetMaxFireDelay(lua_State* L) {
 	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
@@ -46,11 +46,17 @@ static int Lua_WeaponGetWeaponType(lua_State* L) {
 	return 1;
 }
 
-//static int Lua_WeaponGetWeaponModifiers(lua_State* L) {
-//	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
-//	lua_pushinteger(L, weapon->GetWeaponModifiers());
-//	return 1;
-//}
+static int Lua_WeaponGetModifiers(lua_State* L) {
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
+	lua_pushinteger(L, weapon->GetModifiers());
+	return 1;
+}
+
+static int Lua_WeaponGetNumFired(lua_State* L) {
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
+	lua_pushinteger(L, weapon->GetNumFired());
+	return 1;
+}
 
 static void RegisterWeapon(lua_State* L)
 {
@@ -66,10 +72,11 @@ static void RegisterWeapon(lua_State* L)
 	lua_settable(L, -3);
 
 	luaL_Reg functions[] = {
-		//{ "GetFireDelay", Lua_WeaponGetFireDelay },
+		{ "GetFireDelay", Lua_WeaponGetFireDelay },
 		{ "GetMaxFireDelay", Lua_WeaponGetMaxFireDelay },
 		{ "GetWeaponType", Lua_WeaponGetWeaponType },
-		//{ "GetWeaponModifiers", Lua_WeaponGetWeaponModifiers },
+		{ "GetModifiers", Lua_WeaponGetModifiers },
+		{ "GetNumFired", Lua_WeaponGetNumFired },
 		{ NULL, NULL }
 	};
 

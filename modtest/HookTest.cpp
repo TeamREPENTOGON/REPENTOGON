@@ -64,7 +64,7 @@ HOOK_METHOD(Game, Update, () -> void) {
 */
 
 /*HOOK_METHOD(Weapon, Fire, (const Vector& pos, bool unk1, bool unk2)-> void) {
-	printf("Weapon::Fire %f %f %d %d %d\n", pos.x, pos.y, unk1, unk2);
+	printf("Weapon::Fire %f %f %d %d %f\n", pos.x, pos.y, unk1, unk2, this->GetFireDelay());
 	super(pos, unk1, unk2);
 }
 */

@@ -2034,6 +2034,20 @@ BagOfCraftingPickup = {
     BOC_POOP = 29,
 }
 
+WeaponModifier = {
+	CHOCOLATE_MILK = 1,
+	CURSED_EYE = 2,
+	BRIMSTONE = 4,
+	MONSTROS_LUNG = 8,
+	LUDOVICO_TECHNIQUE = 16,
+	ANTI_GRAVITY = 32,
+	TRACTOR_BEAM = 64,
+	SOY_MILK = 128, ALMOND_MILK = 128,
+	NEPTUNUS = 256,
+	AZAZELS_SNEEZE = 512,
+	C_SECTION = 2048,
+}
+
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)
 

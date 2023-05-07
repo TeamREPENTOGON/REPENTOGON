@@ -3,8 +3,9 @@ virtual __thiscall void Weapon::Fire(Weapon* this<ecx>, const Vector& pos, bool 
 
 struct Weapon {{
 	//owner -> Entity_Player(?) - 0x4
-	//inline float GetFireDelay() { return *(float*)((char*)this + 0xC); } notFiredelay
+	inline float GetFireDelay() { return *(float*)((char*)this + 0xC); }
 	inline float GetMaxFireDelay() { return *(float*)((char*)this + 0x10); }
 	inline int GetWeaponType() { return *(int*)((char*)this + 0x2c); }
-	//inline int GetWeaponModifiers() { return *(int*)((char*)this + 0x30); } another firedelay?
+	inline int GetModifiers() { return *(int*)((char*)this + 0x30); }
+	inline int GetNumFired() { return *(int*)((char*)this + 0x34); }
 }};
