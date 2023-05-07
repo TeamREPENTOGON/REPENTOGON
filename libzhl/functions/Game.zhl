@@ -94,7 +94,7 @@ const static FuncSignatureByte Signature_GameGlobalAddres = {
 };
 */
 
-".e8????????c745fcffffffffa3(????????)e8":
+"e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
 struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager)

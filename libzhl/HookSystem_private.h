@@ -152,15 +152,15 @@ private:
 	static void Add(FunctionHook_private *hook);
 	void SetName(const char *name, const char *type);
 
-	static void Push(HookSystem::GPRegisters reg, unsigned char* text);
-	static void Mov(HookSystem::GPRegisters dst, HookSystem::GPRegisters src, unsigned char* text);
-	static void Pop(HookSystem::GPRegisters reg, unsigned char* text);
-	static void Ret(unsigned short n, unsigned char* text);
-	static void DecrESP(unsigned char size, unsigned char* text);
-	static void IncrESP(unsigned char size, unsigned char* text);
+	[[nodiscard]] static unsigned char* Push(HookSystem::GPRegisters reg, unsigned char* text);
+	[[nodiscard]] static unsigned char* Mov(HookSystem::GPRegisters dst, HookSystem::GPRegisters src, unsigned char* text);
+	[[nodiscard]] static unsigned char* Pop(HookSystem::GPRegisters reg, unsigned char* text);
+	[[nodiscard]] static unsigned char* Ret(unsigned short n, unsigned char* text);
+	[[nodiscard]] static unsigned char* DecrESP(unsigned char size, unsigned char* text);
+	[[nodiscard]] static unsigned char* IncrESP(unsigned char size, unsigned char* text);
 
-	void EmitPrologue(FunctionDefinition const* def, unsigned char* text);
-	void EmitEpilogue(FunctionDefinition const* def, unsigned char stackPos, unsigned char* text);
+	[[nodiscard]] unsigned char* EmitPrologue(FunctionDefinition const* def, unsigned char* text);
+	[[nodiscard]] unsigned char* EmitEpilogue(FunctionDefinition const* def, unsigned char stackPos, unsigned char* text);
 
 protected:
 	virtual int Install();

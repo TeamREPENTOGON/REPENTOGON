@@ -934,6 +934,13 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
     EmitInstruction("mov esp, ebp");
     EmitInstruction("pop ebp");
 
+    if (!fn.IsCleanup()) {
+        EmitInstruction("ret " + std::to_string(stackSize));
+    }
+    else {
+        EmitInstruction("ret");
+    }
+
     DecrDepth();
     EmitTab();
     Emit("}");

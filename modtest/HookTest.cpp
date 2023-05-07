@@ -148,7 +148,7 @@ HOOK_METHOD(Entity_Player, AddPrettyFly, () -> void) {
 HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 	return false;
 }
-HOOK_METHOD(Manager, RecordPlayerCompletion, (int eEvent) -> void) {
+HOOK_STATIC(Manager, RecordPlayerCompletion, (int eEvent) -> void, __stdcall) {
 	super(eEvent);
 }
 

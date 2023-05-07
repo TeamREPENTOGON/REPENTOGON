@@ -49,3 +49,7 @@ TypeInfo vector_TemporaryEffect {
 TypeInfo std_set_int {
     Size 8;
 };
+
+TypeInfo std_string {
+    Size 24;
+};

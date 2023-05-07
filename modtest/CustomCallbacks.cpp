@@ -1527,7 +1527,7 @@ HOOK_METHOD(Entity_Slot, HandleCollision, (Entity* collider, bool Low) -> bool) 
 }
 
 //POST_SLOT_INIT (1121)
-HOOK_METHOD(Entity_Slot, Init, (int Type, int Variant, int SubType, int Seed) -> void) {
+HOOK_METHOD(Entity_Slot, Init, (unsigned int Type, unsigned int Variant, unsigned int SubType, unsigned int Seed) -> void) {
 	super(Type, Variant, SubType, Seed);
 	int callbackid = 1121;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -1738,7 +1738,7 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 }
 
 //PRE_COMPLETION_MARK_GET (1047) 
-HOOK_METHOD(Manager, RecordPlayerCompletion, (int unk) -> void) {
+HOOK_STATIC(Manager, RecordPlayerCompletion, (int unk) -> void, __stdcall) {
 	int callbackid = 1047;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;

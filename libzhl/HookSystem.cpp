@@ -171,6 +171,7 @@ FunctionDefinition::FunctionDefinition(const char *name, const type_info &type, 
 	_outFunc(outfunc)
 {
 	SetName(name, type.raw_name());
+	Log("Adding function %s\n", _name);
 	Add(_name, this);
 }
 
@@ -237,24 +238,27 @@ FunctionHook_private::~FunctionHook_private()
 		delete (MologieDetours::Detour<void*>*)_detour;
 }
 
-void FunctionHook_private::Push(HookSystem::GPRegisters reg, unsigned char* text) {
+unsigned char* FunctionHook_private::Push(HookSystem::GPRegisters reg, unsigned char* text) {
 	*text = 0x50 + reg;
 	++text;
+	return text;
 }
 
-void FunctionHook_private::Pop(HookSystem::GPRegisters reg, unsigned char* text) {
+unsigned char* FunctionHook_private::Pop(HookSystem::GPRegisters reg, unsigned char* text) {
 	*text = 0x58 + reg;
 	++text;
+	return text;
 }
 
-void FunctionHook_private::Mov(HookSystem::GPRegisters dst, HookSystem::GPRegisters src, unsigned char* text) {
+unsigned char* FunctionHook_private::Mov(HookSystem::GPRegisters dst, HookSystem::GPRegisters src, unsigned char* text) {
 	*text = 0x89;
 	++text;
 	*text = 0xC0 | src << 3 | dst;
 	++text;
+	return text;
 }
 
-void FunctionHook_private::Ret(unsigned short size, unsigned char* ptr) {
+unsigned char* FunctionHook_private::Ret(unsigned short size, unsigned char* ptr) {
 	if (size == 0) {
 		*ptr = 0xC3;
 		ptr++;
@@ -265,11 +269,13 @@ void FunctionHook_private::Ret(unsigned short size, unsigned char* ptr) {
 		*(unsigned short*)ptr = size;
 		ptr += 2;
 	}
+
+	return ptr;
 }
 
-void FunctionHook_private::IncrESP(unsigned char size, unsigned char* text) {
+unsigned char* FunctionHook_private::IncrESP(unsigned char size, unsigned char* text) {
 	if (size == 0) {
-		return;
+		return text;
 	}
 
 	*text = 0x83;
@@ -278,11 +284,13 @@ void FunctionHook_private::IncrESP(unsigned char size, unsigned char* text) {
 	text++;
 	*text = size;
 	text++;
+
+	return text;
 }
 
-void FunctionHook_private::DecrESP(unsigned char size, unsigned char* text) {
+unsigned char* FunctionHook_private::DecrESP(unsigned char size, unsigned char* text) {
 	if (size == 0) {
-		return;
+		return text;
 	}
 
 	*text = 0x83;
@@ -291,63 +299,70 @@ void FunctionHook_private::DecrESP(unsigned char size, unsigned char* text) {
 	text++;
 	*text = size;
 	text++;
+
+	return text;
 }
 
-void FunctionHook_private::EmitPrologue(FunctionDefinition const* def, unsigned char* ptr) {
+unsigned char* FunctionHook_private::EmitPrologue(FunctionDefinition const* def, unsigned char* ptr) {
 	using namespace HookSystem;
-	Push(EBP, ptr);
-	Mov(EBP, ESP, ptr);
+	ptr = Push(EBP, ptr);
+	ptr = Mov(EBP, ESP, ptr);
 
 	/// Preserve registers 
 
 	// If the function doesn't return a value, eax must be preserved
 	if (def->IsVoid()) {
-		Push(EAX, ptr);
+		ptr = Push(EAX, ptr);
 	}
 
 	// If the function needs less than 32 bits to return a value, or if the function doesn't return anything preserve edx
 	if (!def->IsLongLong() || def->IsVoid()) {
-		Push(EDX, ptr);
+		ptr = Push(EDX, ptr);
 	}
 
 	// Preserve ebx, ecx, edi, esi in all cases
-	Push(EBX, ptr);
-	Push(ECX, ptr);
-	Push(EDI, ptr);
-	Push(ESI, ptr);
+	ptr = Push(EBX, ptr);
+	ptr = Push(ECX, ptr);
+	ptr = Push(EDI, ptr);
+	ptr = Push(ESI, ptr);
+
+	return ptr;
 }
 
-void FunctionHook_private::EmitEpilogue(FunctionDefinition const* def, unsigned char stackPos, unsigned char* ptr) {
+unsigned char* FunctionHook_private::EmitEpilogue(FunctionDefinition const* def, unsigned char stackPos, unsigned char* ptr) {
 	using namespace HookSystem;
 
-	Pop(ESI, ptr);
-	Pop(EDI, ptr);
-	Pop(ECX, ptr);
-	Pop(EBX, ptr);
+	ptr = Pop(ESI, ptr);
+	ptr = Pop(EDI, ptr);
+	ptr = Pop(ECX, ptr);
+	ptr = Pop(EBX, ptr);
 
 	if (!def->IsLongLong() || def->IsVoid()) {
-		Pop(EDX, ptr);
+		ptr = Pop(EDX, ptr);
 	}
 
 	if (def->IsVoid()) {
-		Pop(EAX, ptr);
+		ptr = Pop(EAX, ptr);
 	}
 
-	Mov(ESP, EBP, ptr);
-	Pop(EBP, ptr);
+	ptr = Mov(ESP, EBP, ptr);
+	ptr = Pop(EBP, ptr);
 
 	// If the function is **callee** cleanup, clean the stack
 	if (stackPos > 0 && !def->NeedsCallerCleanup()) {
-		Ret(stackPos, ptr);
+		ptr = Ret(stackPos, ptr);
 	}
 	else {
-		Ret(0, ptr);
+		ptr = Ret(0, ptr);
 	}
+
+	return ptr;
 }
 
 int FunctionHook_private::Install()
 {
 	using namespace HookSystem;
+	Log("Installing hook for function %s\n", _name);
 
 	FunctionDefinition* def = dynamic_cast<FunctionDefinition*>(Definition::Find(_name));
 	if (!def)
@@ -365,7 +380,7 @@ int FunctionHook_private::Install()
 	/// Detours will be used to redirect the original function to the hook caller.
 
 	unsigned char* ptr = _internalHook;
-	EmitPrologue(def, ptr);
+	ptr = EmitPrologue(def, ptr);
 
 	/// Call the hook
 
@@ -399,16 +414,16 @@ int FunctionHook_private::Install()
 	// Iterate in reverse order as arguments need to be pushed in reverse order.
 	// Farthest argument of the call to the original function must be pushed first.
 	for (int i = argc - 1; i >= 0; --i) {
-		if (i == 0 && def->IsThiscall()) {
+		/* if (i == 0 && def->IsThiscall()) {
 			continue; // Just assume "this" is already in the appropriate register
-		}
+		} */
 
 		HookSystem::ArgData const& data = args[i];
 		// Arg passed in register, push it onto the stack
 		if (data.IsRegister()) {
 			if (data.IsGPRegister()) {
 				HookSystem::GPRegisters reg = std::get<HookSystem::GPRegisters>(data._register);
-				Push(reg, ptr);
+				ptr = Push(reg, ptr);
 			}
 			else {
 				HookSystem::XMMRegisters reg = std::get<HookSystem::XMMRegisters>(data._register);
@@ -416,7 +431,7 @@ int FunctionHook_private::Install()
 				// the new position of the stack pointer. With XMM registers, decrement the stack
 				// pointer and movd from the XMM register into the position of the stack pointer
 
-				DecrESP(4, ptr);
+				ptr = DecrESP(4, ptr);
 				// movd [esp], xmmX
 				P(0x66); P(0x0F); P(0x7E); P(reg << 3 | GPRegisters::ESP); P(0x24); 
 			}
@@ -443,11 +458,11 @@ int FunctionHook_private::Install()
 
 	// If the function needs caller cleanup, we clean the stack
 	if (def->NeedsCallerCleanup() && pushed > 0) {
-		IncrESP(pushed, ptr); // add esp, pushed
+		ptr = IncrESP(pushed, ptr); // add esp, pushed
 	}
 
 	/// Clean after the hook has been called
-	EmitEpilogue(def, stackPos - 8, ptr);
+	ptr = EmitEpilogue(def, stackPos - 8, ptr);
 	
 	DWORD oldProtect = 0;
 	_hSize = ptr - _internalHook;
@@ -469,7 +484,7 @@ int FunctionHook_private::Install()
 
 	ptr = _internalSuper;
 
-	EmitPrologue(def, ptr);
+	ptr = EmitPrologue(def, ptr);
 
 	// Start at 8 to ignore the prologue and return address
 	stackPos = 8;
@@ -479,9 +494,9 @@ int FunctionHook_private::Install()
 	for (int i = 0; i < argc; ++i) {
 		if (args[i].IsRegister()) {
 			// Skip "this", already in ecx, not on the stack
-			if (i == 0 && def->IsThiscall()) {
+			/* if (i == 0 && def->IsThiscall()) {
 				continue;
-			}
+			} */
 
 			stackPos += 4;
 		}
@@ -499,9 +514,9 @@ int FunctionHook_private::Install()
 		HookSystem::ArgData const& data = args[i];
 
 		// Thiscall function, "this" parameter -> do nothing, this is already in ecx
-		if (i == 0 && def->IsThiscall()) {
+		/* if (i == 0 && def->IsThiscall()) {
 			continue;
-		}
+		} */
 
 		// All arguments of super are on the stack, retrieve them and put them in the appropriate place
 		if (data.IsRegister()) {
@@ -532,10 +547,10 @@ int FunctionHook_private::Install()
 	P(0xE8); PL(diff);
 
 	if (def->NeedsCallerCleanup() && stackPos > 8) {
-		IncrESP(stackPos - 8, ptr);
+		ptr = IncrESP(stackPos - 8, ptr);
 	}
 
-	EmitEpilogue(def, pushed, ptr);
+	ptr = EmitEpilogue(def, pushed, ptr);
 
 	_sSize = ptr - _internalSuper;
 	VirtualProtect(_internalSuper, _sSize, PAGE_EXECUTE_READWRITE, &oldProtect);
@@ -543,6 +558,8 @@ int FunctionHook_private::Install()
 	*_outInternalSuper = _internalSuper;
 
 	Log("Successfully hooked function %s\n", _name);
+
+	return 1;
 }
 
 /* int FunctionHook_private::Install()

@@ -211,7 +211,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 }
 */
 
-HOOK_METHOD_PRIORITY(Manager, RecordPlayerCompletion,100, (int eEvent) -> void) {
+HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion,100, (int eEvent) -> void, __stdcall) {
 	int numplayers = g_Game->GetNumPlayers();
 	for(int i = 0;i<numplayers;i++){
 		int playertype = g_Game->GetPlayer(i)->GetPlayerType();
