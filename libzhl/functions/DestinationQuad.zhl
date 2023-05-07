@@ -1,0 +1,3 @@
+struct DestinationQuad depends (Vector) {
+    Vector _topLeft, _topRight, _bottomLeft, _bottomRight;
+};

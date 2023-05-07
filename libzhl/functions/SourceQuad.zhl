@@ -1,0 +1,4 @@
+struct SourceQuad depends(Vector) {
+    Vector _topLeft, _topRight, _bottomLeft, _bottomRight;
+    int __coordinateSpaceEnum;
+};
