@@ -61,6 +61,7 @@ private:
 	void EmitType(EmptyType const&);
 
 	void EmitGlobalPrologue();
+	void EmitImplPrologue();
 
 	void EmitTab();
 	void EmitNL();

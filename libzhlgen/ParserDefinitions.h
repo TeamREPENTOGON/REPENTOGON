@@ -96,6 +96,10 @@ struct Struct {
 
     std::string ToString(bool full) const;
     size_t size() const;
+    std::string GetTemplateName() const;
+
+    bool _template = false;
+    std::vector<Type*> _templateParams;
 };
 
 struct EmptyType {};
@@ -117,7 +121,7 @@ struct Type {
     std::vector<PointerDecl> _pointerDecl;
     bool _pending = true;
 
-    // Name as used to register the type in the global map
+    // Name used to register the type in the global map
     std::string _name;
 
     // Points to the true version of this type in case we are dealing with a synonym
@@ -127,8 +131,13 @@ struct Type {
     // Points to the base, unqualified  version, of this type.
     Type* _base = nullptr;
 
-    // If set, this overrides computation of the size (but no pointer size)
+    // If set, this overrides computation of the size (but not pointer size)
     std::optional<size_t> _size;
+
+    // If set to true, indicates that this is the base for a template. 
+    // Such a type is never resolved to anything other than a string, and is
+    // used as a base key to get an instanciation of a template type.
+    bool _templateBase = false;
 
     ~Type();
 
@@ -138,6 +147,7 @@ struct Type {
     bool IsResolved() const;
     bool IsStruct() const;
     bool IsBasic() const;
+    bool IsFunctionPointer() const;
 
     Struct const& GetStruct() const;
 

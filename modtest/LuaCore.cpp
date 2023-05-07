@@ -332,14 +332,14 @@ namespace lua {
 		lua_CFunction indexMetaMethod;
 
 		namespace index {
-			static const short* argdata = nullptr;
+			static const HookSystem::ArgData* argdata = nullptr;
 			static FunctionDefinition indexMetaMethodDef("luabrige::Namespace::ClassBase::indexMetaMethod", typeid(lua_CFunction), 
 				"558bec83ec0c53568b7508576a0156ff15????????6a0256ff15", argdata, 1, 0, (void**)&indexMetaMethod);
 		}
 
 		lua_CFunction newIndexMetaMethod;
 		namespace newIndex {
-			static const short* argdata = nullptr;
+			static const HookSystem::ArgData* argdata = nullptr;
 			static FunctionDefinition newIndexMetaMethodDef("luabridge::Namespace::ClassBase::newIndexMetaMethod", typeid(lua_CFunction),
 				"558bec53568b7508576a0156ff15????????8b1d", argdata, 1, 0, (void**)&newIndexMetaMethod);
 		}

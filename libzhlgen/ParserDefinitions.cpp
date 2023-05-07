@@ -283,6 +283,10 @@ bool Type::IsResolved() const {
     // return !std::holds_alternative<std::string>(_value) && !IsEmpty();
 }
 
+bool Type::IsFunctionPointer() const {
+    return std::holds_alternative<FunctionPtr*>(_value);
+}
+
 Struct const& Type::GetStruct() const {
     return std::get<Struct>(_value);
 }
@@ -467,6 +471,23 @@ size_t Struct::size() const {
     size_t s = 0;
     std::for_each(_namespace._fields.begin(), _namespace._fields.end(), [&s](Variable const& var) -> void { s += var._type->size();  });
     return s;
+}
+
+std::string Struct::GetTemplateName() const {
+    if (!_template) {
+        return _name;
+    }
+
+    std::ostringstream result;
+    result << _name << "<";
+    for (int i = 0; i < _templateParams.size(); ++i) {
+        result << _templateParams[i]->_name;
+        if (i != _templateParams.size() - 1) {
+            result << ", ";
+        }
+    }
+    result << ">";
+    return result.str();
 }
 
 std::string RegisterToString(Registers reg) {

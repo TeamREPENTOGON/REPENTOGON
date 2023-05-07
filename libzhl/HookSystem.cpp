@@ -267,6 +267,32 @@ void FunctionHook_private::Ret(unsigned short size, unsigned char* ptr) {
 	}
 }
 
+void FunctionHook_private::IncrESP(unsigned char size, unsigned char* text) {
+	if (size == 0) {
+		return;
+	}
+
+	*text = 0x83;
+	text++;
+	*text = 0xC4;
+	text++;
+	*text = size;
+	text++;
+}
+
+void FunctionHook_private::DecrESP(unsigned char size, unsigned char* text) {
+	if (size == 0) {
+		return;
+	}
+
+	*text = 0x83;
+	text++;
+	*text = 0xEC;
+	text++;
+	*text = size;
+	text++;
+}
+
 void FunctionHook_private::EmitPrologue(FunctionDefinition const* def, unsigned char* ptr) {
 	using namespace HookSystem;
 	Push(EBP, ptr);

@@ -8,7 +8,7 @@ __thiscall EntityList_EL* EntityList::QueryType(EntityList_EL* result, int Type,
 "558bec83e4f883ec14535657f3":
 __thiscall void EntityList::QueryRadius(EntityList_EL* result, Vector* Position, float Radius, unsigned int Partitions);
 
-struct EntityList {
+struct EntityList depends (Entity, EntityList_EL) {
 {{
     inline EntityList_EL* GetUpdateEL() { return (EntityList_EL*)((char*)this + 0x40); }
     inline EntityList_EL* GetTempEL() { return (EntityList_EL*)((char*)this + 0x70); }

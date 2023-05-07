@@ -256,13 +256,36 @@ std::any Parser::visitOptNamedFunArg(ZHLParser::OptNamedFunArgContext* ctx) {
 }
 
 std::any Parser::visitTemplateSpec(ZHLParser::TemplateSpecContext* ctx) {
-    return 0;
+    std::vector<Type*> types;
+    for (auto typeCtx : ctx->type()) {
+        types.push_back(std::any_cast<Type*>(visit(typeCtx)));
+    }
+    return types;
 }
 
 std::any Parser::visitType(ZHLParser::TypeContext* ctx) {
     // The type if never qualified at first
     std::pair<Type*, bool> base = std::any_cast<std::pair<Type*, bool>>(visit(ctx->typeSpecifier()));
     Type* type = base.first;
+
+    if (auto templateSpecCtx = ctx->templateSpec()) {
+        if (!std::holds_alternative<std::string>(type->_value)) {
+            _errors << ErrorLogger::error << " Type " << type->GetFullName() << " used as base template, but already resolved" << ErrorLogger::_end;
+            return type;
+        }
+        type->_templateBase = true;
+
+        Struct s;
+        s._name = std::get<std::string>(type->_value);
+        s._template = true;
+        s._templateParams = std::any_cast<std::vector<Type*>>(visit(templateSpecCtx));
+        
+        type = GetOrCreateTypeByName(s.GetTemplateName());
+        if (type->IsEmpty()) {
+            type->_value = s;
+        }
+    }
+
     if (base.second) {
         type = ConstQualify(type);
     }
@@ -338,11 +361,6 @@ std::any Parser::visitSimpleType(ZHLParser::SimpleTypeContext* ctx) {
         }
         else {
             basic._sign = std::any_cast<Signedness>(visit(sign));
-        }
-    }
-    else {
-        if (basic._type == BasicTypes::CHAR || basic._type == BasicTypes::INT) {
-            basic._sign = Signedness::SIGNED;
         }
     }
 
@@ -443,6 +461,11 @@ std::any Parser::visitPointerAttribute(ZHLParser::PointerAttributeContext* ctx) 
 std::any Parser::visitGenericCode(ZHLParser::GenericCodeContext* ctx) {
     std::string code(ctx->GenericCode()->getText());
     std::string stripped = code.substr(3, code.length() - 6);
+    if (code.length() < 6) {
+        stripped = "";
+    }
+
+    // std::cerr << "GENERIC CODE: " << code << " (" << code.size() << ", " << code.length() << ")" << std::endl;
 
     if (_currentStruct) {
         _currentStruct->_namespace._generic.push_back(stripped);
@@ -578,7 +601,7 @@ std::any Parser::visitVtableSignature(ZHLParser::VtableSignatureContext* ctx) {
 }
 
 std::any Parser::visitClassSignature(ZHLParser::ClassSignatureContext* ctx) {
-    std::string sig(ctx->Signature()->getText());
+    std::string sig(ReadSignature(ctx->Signature()->getText()));
     Function function = std::any_cast<Function>(visit(ctx->classFunction()));
     Signature signature;
     signature._sig = sig;
@@ -661,9 +684,9 @@ std::any Parser::visitFullName(ZHLParser::FullNameContext* ctx) {
     if (ctx->RightRBracket()) {
         Array arr;
         arr._name = name;
-        std::stringstream s;
-        s << ctx->Number()->getText();
-        s >> arr._size;
+        std::string number(ctx->Number()->getText());
+        // std::cerr << "[INFO] Array length = " << number << std::endl;
+        arr._size = std::stoull(number, nullptr, 0);
         result = arr;
     }
     else {
@@ -674,13 +697,11 @@ std::any Parser::visitFullName(ZHLParser::FullNameContext* ctx) {
 }
 
 std::any Parser::visitSignature(ZHLParser::SignatureContext* ctx) {
-    std::string fullSignature;
     SignatureV sig;
 
     if (auto sigCtx = ctx->Signature()) {
         Signature s;
-        fullSignature = sigCtx->getText();
-        s._sig = fullSignature.substr(1, fullSignature.size() - 3);
+        s._sig = ReadSignature(sigCtx->getText());
         auto results = std::any_cast<std::tuple<bool, std::string, Function>>(visit(ctx->function()));
         s._function = std::get<Function>(results);
         sig = s;
@@ -704,8 +725,7 @@ std::any Parser::visitSignature(ZHLParser::SignatureContext* ctx) {
     }
     else {
         VariableSignature s;
-        fullSignature = ctx->ReferenceSignature()->getText();
-        s._sig = fullSignature.substr(1, fullSignature.size() - 3);
+        s._sig = ReadSignature(ctx->ReferenceSignature()->getText());
         s._variable = std::any_cast<Variable>(visit(ctx->reference()));
         sig = s;
 
@@ -1018,7 +1038,6 @@ void Parser::ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qual
         }
         else if (text == "cleanup") {
             if (fn.IsCleanup()) {
-                std::cerr << "Nyah ? " << fn._qualifiers << std::endl;
                 WarnRepeatedFunctionQualifier(fn._name, text);
             }
             else if (fn._convention) {
@@ -1082,4 +1101,8 @@ Type* Parser::ConstQualify(Type const* source) {
     }
 
     return qualified;
+}
+
+std::string Parser::ReadSignature(const std::string& signature) {
+    return signature.substr(1, signature.length() - 3);
 }

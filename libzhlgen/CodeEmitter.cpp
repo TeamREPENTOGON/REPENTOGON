@@ -9,7 +9,7 @@ void CodeEmitter::TypeEmitter::operator()(T const& t) {
     _emitter->EmitType(t);
 }
 
-CodeEmitter::CodeEmitter() : _decls("IsaacRepentance.h"), _impl("IsaacRepentance.cpp") {
+CodeEmitter::CodeEmitter() : _decls("../include/IsaacRepentance.h"), _impl("../libzhl/IsaacRepentance.cpp") {
 
 }
 
@@ -56,6 +56,7 @@ void CodeEmitter::Emit() {
 
     EmitDecl();
     EmitGlobalPrologue();
+    EmitImplPrologue();
 
     EmitForwardDecl();
 
@@ -65,7 +66,7 @@ void CodeEmitter::Emit() {
     }
 
     for (auto const& [_, type] : _types) {
-        if (type.IsStruct()) {
+        if (type.IsStruct() && !type._pending) {
             Emit(type.GetStruct());
         }
     }
@@ -209,6 +210,17 @@ void CodeEmitter::EmitType(BasicType const& t) {
 
 void CodeEmitter::EmitType(Struct const& s) {
     Emit(s._name);
+
+    if (s._template) {
+        Emit("<");
+        for (int i = 0; i < s._templateParams.size(); ++i) {
+            Emit(*s._templateParams[i]);
+            if (i != s._templateParams.size() - 1) {
+                Emit(", ");
+            }
+        }
+        Emit(">");
+    }
 }
 
 void CodeEmitter::EmitType(FunctionPtr* ptr) {
@@ -648,104 +660,109 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
     EmitTab();
 
     // Parameters
-    Emit("static ArgData args[] = {");
-    EmitNL();
-    IncrDepth();
     Function const& fn = sig._function;
     bool hasImplicitOutput = fn._ret->size() > 8;
-    if (fn._convention && *fn._convention == FASTCALL) {
-        Registers next = ECX;
-        for (int i = 0; i < fn._params.size(); ++i) {
-            FunctionParam const& param = fn._params[i];
-            EmitTab();
-            if (next != EAX && (param._type->IsPointer() || (param._type->IsBasic() && std::get<BasicType>(param._type->_value).size() <= 4))) {
-                Emit("{ HookSystem::GPRegisters::");
-                if (next == ECX) {
-                    Emit("ECX");
-                    next = EDX;
-                }
-                else {
-                    Emit("EDX");
-                    next = EAX;
-                }
-
-                Emit(", 0 } /* " + param._name + " */");
-                stackSize += 4;
-            }
-            else {
-                int paramSize = (int)std::ceil(param._type->size() / 4.f);
-                if (paramSize == 0) {
-                    std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
-                }
-                Emit("{ HookSystem::NoRegister(), ");
-                Emit(std::to_string(paramSize));
-                Emit(" } /* " + param._name + " */");
-                stackSize += paramSize * 4;
-            }
-
-            if (hasImplicitOutput || i != fn._params.size() - 1) {
-                Emit(", ");
-            }
-            EmitNL();
-        }
+    if (!hasImplicitOutput && fn._params.size() == 0) {
+        Emit("static HookSystem::ArgData* args = nullptr;");
     }
     else {
-        for (int i = 0; i < fn._params.size(); ++i) {
-            EmitTab();
-            FunctionParam const& param = fn._params[i];
-
-            if (param._reg) {
-                Registers reg = *param._reg;
-                if (reg < XMM0) {
+        Emit("static HookSystem::ArgData args[] = {");
+        EmitNL();
+        IncrDepth();
+        if (fn._convention && *fn._convention == FASTCALL) {
+            Registers next = ECX;
+            for (int i = 0; i < fn._params.size(); ++i) {
+                FunctionParam const& param = fn._params[i];
+                EmitTab();
+                if (next != EAX && (param._type->IsPointer() || (param._type->IsBasic() && std::get<BasicType>(param._type->_value).size() <= 4))) {
                     Emit("{ HookSystem::GPRegisters::");
+                    if (next == ECX) {
+                        Emit("ECX");
+                        next = EDX;
+                    }
+                    else {
+                        Emit("EDX");
+                        next = EAX;
+                    }
+
+                    Emit(", 0 } /* " + param._name + " */");
+                    stackSize += 4;
                 }
                 else {
-                    Emit("{ HookSystem::XMMRegisters::");
+                    int paramSize = (int)std::ceil(param._type->size() / 4.f);
+                    if (paramSize == 0) {
+                        std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
+                    }
+                    Emit("{ HookSystem::NoRegister(), ");
+                    Emit(std::to_string(paramSize));
+                    Emit(" } /* " + param._name + " */");
+                    stackSize += paramSize * 4;
                 }
 
-                std::string regStr = RegisterToString(reg);
-                std::transform(regStr.begin(), regStr.end(), regStr.begin(), ::toupper);
-                Emit(regStr);
-                Emit(", 0 } /* " + param._name + " */");
-
-                stackSize += 4;
-            }
-            else {
-                int paramSize = (int)std::ceil(param._type->size() / 4.f);
-                if (paramSize == 0) {
-                    std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
+                if (hasImplicitOutput || i != fn._params.size() - 1) {
+                    Emit(", ");
                 }
-                Emit("{ HookSystem::NoRegister(), ");
-                Emit(std::to_string(paramSize));
-                Emit(" } /* " + param._name + " */");
-
-                stackSize += paramSize * 4;
+                EmitNL();
             }
-
-            if (hasImplicitOutput || i != fn._params.size() - 1) {
-                Emit(", ");
-            }
-            EmitNL();
         }
-    }
+        else {
+            for (int i = 0; i < fn._params.size(); ++i) {
+                EmitTab();
+                FunctionParam const& param = fn._params[i];
 
-    if (hasImplicitOutput) {
+                if (param._reg) {
+                    Registers reg = *param._reg;
+                    if (reg < XMM0) {
+                        Emit("{ HookSystem::GPRegisters::");
+                    }
+                    else {
+                        Emit("{ HookSystem::XMMRegisters::");
+                    }
+
+                    std::string regStr = RegisterToString(reg);
+                    std::transform(regStr.begin(), regStr.end(), regStr.begin(), ::toupper);
+                    Emit(regStr);
+                    Emit(", 0 } /* " + param._name + " */");
+
+                    stackSize += 4;
+                }
+                else {
+                    int paramSize = (int)std::ceil(param._type->size() / 4.f);
+                    if (paramSize == 0) {
+                        std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
+                    }
+                    Emit("{ HookSystem::NoRegister(), ");
+                    Emit(std::to_string(paramSize));
+                    Emit(" } /* " + param._name + " */");
+
+                    stackSize += paramSize * 4;
+                }
+
+                if (hasImplicitOutput || i != fn._params.size() - 1) {
+                    Emit(", ");
+                }
+                EmitNL();
+            }
+        }
+
+        if (hasImplicitOutput) {
+            EmitTab();
+            Emit("{ HookSystem::NoRegister(), 1 } // implicit_output"); // 1: pointer
+            EmitNL();
+
+            stackSize += 4; // Pointer
+        }
+
+        DecrDepth();
         EmitTab();
-        Emit("{ HookSystem::NoRegister(), 1 } // implicit_output"); // 1: pointer
-        EmitNL();
-
-        stackSize += 4; // Pointer
+        Emit("};");
     }
 
-    DecrDepth();
-
-    EmitTab();
-    Emit("};");
     EmitNL();
 
     // Function definition object
     EmitTab();
-    Emit("static FunctionDefinition func(\"");
+    Emit("static FunctionDefinition fn(\"");
     if (_currentStructure) {
         Emit(_currentStructure->_name);
         Emit("::");
@@ -802,6 +819,11 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
     Emit("__declspec(naked) ");
     Emit(*fn._ret);
     Emit(" ");
+    if (fn._convention && *fn._convention != THISCALL) {
+        Emit(CallingConventionToString(*fn._convention));
+        Emit(" ");
+    }
+
     if (_currentStructure) {
         Emit(_currentStructure->_name);
         Emit("::");
@@ -886,7 +908,7 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
     }
 
     std::ostringstream callIns;
-    callIns << "call _fun" << _nEmittedFuns;
+    callIns << "call _fun" << _nEmittedFuns << "::func";
     EmitInstruction(callIns.str());
 
     if (flags & FunctionDefFlags::DEF_CLEANUP && stackSize > 0) {
@@ -952,6 +974,8 @@ void CodeEmitter::Emit(VariableSignature const& sig) {
 }
 
 void CodeEmitter::EmitAssembly(VariableSignature const& sig) {
+    std::string refName("__ptr_" + sig._variable._name);
+
     EmitImpl();
 
     Emit("namespace _var");
@@ -965,12 +989,17 @@ void CodeEmitter::EmitAssembly(VariableSignature const& sig) {
     Emit("\", \"");
     Emit(sig._sig);
     Emit("\", &");
-    Emit("__ptr_" + sig._variable._name);
+    Emit(refName);
     Emit(");");
     EmitNL();
     DecrDepth();
     Emit("}");
-    EmitNL(); 
+    EmitNL();
+    Emit(*sig._variable._type);
+    Emit(" ");
+    Emit(sig._variable._name);
+    Emit(";");
+    EmitNL();
     EmitNL();
 
     ++_nEmittedVars;
@@ -985,4 +1014,15 @@ void CodeEmitter::EmitGlobalPrologue() {
     Emit("#include \"libzhl.h\"");
     EmitNL();
     EmitNL();
+}
+
+void CodeEmitter::EmitImplPrologue() {
+    EmitImpl();
+    Emit("#include \"HookSystem_private.h\"");
+    EmitNL();
+    Emit("#include \"IsaacRepentance.h\"");
+    EmitNL();
+    EmitNL();
+
+    EmitDecl();
 }

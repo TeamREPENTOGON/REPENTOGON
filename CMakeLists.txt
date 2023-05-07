@@ -19,25 +19,29 @@ option(ANTLR_BUILD_STATIC "" OFF)
 add_subdirectory("libs/antlr4")
 include_directories ("libs/antlr4/runtime/src")
 
+FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
+add_executable(zhlparser ${PARSER_SRC})
+target_link_libraries(zhlparser antlr4_shared)
+
 FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/*.c)
 list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/luac.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
 add_library(Lua5.3.3r SHARED ${LUA_SRC})
 
-add_executable(lua "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/lua.c")
-target_link_libraries (lua Lua5.3.3r)
+# add_executable(lua "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/lua.c")
+# target_link_libraries (lua Lua5.3.3r)
 
-FILE(GLOB LUA_LFS_SRC ${CMAKE_SOURCE_DIR}/libs/luafilesystem/src/*.c)
-add_library(lfs SHARED ${LUA_LFS_SRC})
-target_link_libraries(lfs Lua5.3.3r)
+# FILE(GLOB LUA_LFS_SRC ${CMAKE_SOURCE_DIR}/libs/luafilesystem/src/*.c)
+# add_library(lfs SHARED ${LUA_LFS_SRC})
+# target_link_libraries(lfs Lua5.3.3r)
 
-FILE (GLOB LUA_LPEG_SRC ${CMAKE_SOURCE_DIR}/libs/lpeg-1.0.2/*.c)
-add_library(lpeg SHARED ${LUA_LPEG_SRC})
-target_link_libraries(lpeg Lua5.3.3r)
+# FILE (GLOB LUA_LPEG_SRC ${CMAKE_SOURCE_DIR}/libs/lpeg-1.0.2/*.c)
+# add_library(lpeg SHARED ${LUA_LPEG_SRC})
+# target_link_libraries(lpeg Lua5.3.3r)
 
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
 # add_custom_target(ZHL COMMAND lua parsefuncs.lua WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES})
-add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND lua parsefuncs.lua WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} lpeg lfs)
+add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND zhlparser WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser)
 # add_dependencies(ZHL lpeg lfs)
 
 FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp)
@@ -52,10 +56,6 @@ add_library(Lua5.3.3r SHARED ${LUAUP_SRC})]]
 
 FILE(GLOB MODTEST_SRC ${CMAKE_SOURCE_DIR}/modtest/*.cpp)
 add_library(zhlModTest SHARED ${MODTEST_SRC})
-
-FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
-add_executable(zhlparser ${PARSER_SRC})
-target_link_libraries(zhlparser antlr4_shared)
 
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "$<TARGET_FILE_DIR:zhlModTest>/resources/scripts")
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/mods" "$<TARGET_FILE_DIR:zhlModTest>/mods")

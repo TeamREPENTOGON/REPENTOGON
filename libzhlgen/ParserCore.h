@@ -118,4 +118,6 @@ private:
     Type* PointerQualify(Type const* source, PointerDecl const& decl);
     Type* ArrayQualify(Type const* source, Array const& array);
     Type* ConstQualify(Type const* source);
+
+    std::string ReadSignature(std::string const& sig);
 };
