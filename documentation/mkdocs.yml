@@ -89,6 +89,7 @@ nav:
     - StbType: enums/StbType.md
     - TaintedMarksGroup: enums/TaintedMarksGroup.md
     - TeleporterVariant: enums/TeleporterVariant.md
+    - WeaponModifier: enums/WeaponModifier.md
     - WispSubType: enums/WispSubType.md
   - Ambush: Ambush.md
   - AnimationState: AnimationState.md
