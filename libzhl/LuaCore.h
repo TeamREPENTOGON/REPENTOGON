@@ -1,6 +1,7 @@
 #pragma once
 
 #include "lua.hpp"
+#include "libzhl.h"
 
 struct lua_State;
 
@@ -143,23 +144,23 @@ namespace lua {
 
     namespace metatables
     {
-        extern const char* AnimationStateMT;;
-        extern const char* NullFrameMT;
-        extern const char* EntitySlotMT;;
-        extern const char* HistoryMT;;
-        extern const char* PlayerHUDMT;;
+        extern LIBZHL_API const char* AnimationStateMT;;
+        extern LIBZHL_API const char* NullFrameMT;
+        extern LIBZHL_API const char* EntitySlotMT;;
+        extern LIBZHL_API const char* HistoryMT;;
+        extern LIBZHL_API const char* PlayerHUDMT;;
     }
 
-    void UnloadMetatables();
-    void RegisterMetatable(Metatables metatable, void* key);
-    void PushMetatable(lua_State* L, Metatables metatable);
-    void* GetMetatableKey(Metatables metatable);
-    Metatables GetMetatableIdxFromName(std::string const& name);
+    LIBZHL_API void UnloadMetatables();
+    LIBZHL_API void RegisterMetatable(Metatables metatable, void* key);
+    LIBZHL_API void PushMetatable(lua_State* L, Metatables metatable);
+    LIBZHL_API  void* GetMetatableKey(Metatables metatable);
+    LIBZHL_API Metatables GetMetatableIdxFromName(std::string const& name);
 
-    void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
-    void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
+    LIBZHL_API void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
+    LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
 
-	void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func);
+    LIBZHL_API void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func);
 	
     template<typename T>
     T GetUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
@@ -177,7 +178,7 @@ namespace lua {
 
     class LuaResults;
 
-    class LuaCaller {
+    class LIBZHL_API LuaCaller {
     public:
         LuaCaller(lua_State* L);
 
@@ -221,7 +222,7 @@ namespace lua {
         int _n = 0;
     };
 
-    class LuaStackProtector {
+    class LIBZHL_API LuaStackProtector {
     public:
         LuaStackProtector(lua_State* L, int n = 0);
         ~LuaStackProtector();
@@ -238,7 +239,7 @@ namespace lua {
         int _n;
     };
 
-    class LuaResults {
+    class LIBZHL_API LuaResults {
     public:
         friend LuaResults LuaCaller::call(int);
 
@@ -267,15 +268,15 @@ namespace lua {
     }
 	
     namespace luabridge {
-        extern void* identityKey;
-        extern lua_CFunction indexMetaMethod;
-        extern lua_CFunction newIndexMetaMethod;
+        extern LIBZHL_API void* identityKey;
+        extern LIBZHL_API lua_CFunction indexMetaMethod;
+        extern LIBZHL_API lua_CFunction newIndexMetaMethod;
 
         inline void* getIdentityKey() {
             return identityKey;
         }
 
-        class Userdata {
+        class LIBZHL_API Userdata {
         protected:
             void* m_p = nullptr;
 
@@ -317,7 +318,7 @@ namespace lua {
             }
         };
 
-        class UserdataPtr : public Userdata {
+        class LIBZHL_API UserdataPtr : public Userdata {
         private:
             UserdataPtr(UserdataPtr const&);
             UserdataPtr& operator= (UserdataPtr const&);
@@ -330,12 +331,12 @@ namespace lua {
         };
     }
 
-    bool luaL_optboolean(lua_State* L, int idx, bool default);
+    LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default);
 
     namespace callbacks {
-        int ToInteger(lua_State* L, int stackPosition);
-        double ToNumber(lua_State* L, int stackPosition);
-        bool ToBoolean(lua_State* L, int stackPosition);
-		const char* ToString(lua_State* L, int stackPosition);
+        LIBZHL_API int ToInteger(lua_State* L, int stackPosition);
+        LIBZHL_API double ToNumber(lua_State* L, int stackPosition);
+        LIBZHL_API bool ToBoolean(lua_State* L, int stackPosition);
+        LIBZHL_API const char* ToString(lua_State* L, int stackPosition);
     }
 }

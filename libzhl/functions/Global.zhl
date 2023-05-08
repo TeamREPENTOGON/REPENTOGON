@@ -19,6 +19,7 @@
 #include <queue>
 #include <cstdint>
 #include <bitset>
+#include <rttidata.h>
 #undef LoadImage
 
 using namespace rapidxml;

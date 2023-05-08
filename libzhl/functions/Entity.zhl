@@ -45,7 +45,6 @@ __thiscall bool Entity::RenderShadowLayer(Vector *offset);
 "558becff05":
 static cleanup bool Entity::ForceCollide(Entity* boom<ecx>, Entity *collider<edx>, bool low);
 
-
 struct Entity depends (AnimationState) {
 {{
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
@@ -66,6 +65,8 @@ struct Entity depends (AnimationState) {
 	inline bool* IsDead() { return (bool*)((char*)this + 0x16b); }
 	inline int* GetBossStatusEffectCooldown() { return (int*)((char*)this + 0x230); }
 	inline bool* IsInvincible() { return (bool*)((char*)this + 0x308); }
+
+    inline Entity_NPC* ToNPC() { return (Entity_NPC*)__RTDynamicCast(this, 0, (void*)__ptr_EntityRTTI, (void*)__ptr_EntityNPCRTTI, false); }
 	
 	Entity() 
 	{
@@ -92,3 +93,6 @@ struct Entity depends (AnimationState) {
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
     };
 };
+
+"568bf18b861403000085c074306a0068????????68(????????)":
+reference void* EntityRTTI;

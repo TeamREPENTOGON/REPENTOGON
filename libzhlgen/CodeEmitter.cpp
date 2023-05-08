@@ -73,6 +73,10 @@ void CodeEmitter::Emit() {
         EmitNL();
     }
 
+    for (VariableSignature const& sig : _global._references) {
+        Emit(sig);
+    }
+
     for (auto const& [_, type] : _types) {
         if (type.IsStruct() && !type._pending) {
             Emit(type.GetStruct());
@@ -81,10 +85,6 @@ void CodeEmitter::Emit() {
 
     for (Signature const& sig : _global._signatures) {
         Emit(sig, false);
-    }
-
-    for (VariableSignature const& sig : _global._references) {
-        Emit(sig);
     }
 
     BuildExternalNamespaces();

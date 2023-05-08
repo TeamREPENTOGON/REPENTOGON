@@ -11,4 +11,17 @@ __thiscall void Entity_NPC::UpdateDirtColor(bool unk);
 struct Entity_NPC : public Entity {
 {{
 	inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xBFC); }
+    inline uint32_t* GetDeliriumBossType() { return (uint32_t*)((char*)this + 0xB18); }
+    inline uint32_t* GetDeliriumBossVariant() { return (uint32_t*)((char*)this + 0xB1C); }
+    inline uint16_t* GetDeliriumTransformationTimer() { return (uint16_t*)((char*)this + 0xB20); }
+    inline uint8_t* GetDeliriumRemainingAttacks() { return (uint8_t*)((char*)this + 0xB22); }
+    inline uint8_t* GetDeliriumState() { return (uint8_t*)((char*)this + 0xB23); }
+    inline uint32_t* GetDeliriumAttackID() { return (uint32_t*)((char*)this + 0xB28); }
+    inline uint8_t* GetDeliriumAttackAngle() { return (uint8_t*)((char*)this + 0xB2C); }
+    inline uint32_t* GetDeliriumCycleID() { return (uint32_t*)((char*)this + 0xB34); }
 }} };
+
+
+
+"568bf18b861403000085c074306a0068(????????)68":
+reference void* EntityNPCRTTI;
