@@ -210,7 +210,7 @@ HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
 
 /*
 bool no = false;
-HOOK_METHOD(Manager, Update, () -> void) {
+HOOK_STATIC(Manager, Update, () -> void) {
 	if (!no) {
 		no = true;
 

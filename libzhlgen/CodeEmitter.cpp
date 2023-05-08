@@ -600,6 +600,11 @@ void CodeEmitter::Emit(Function const& fun) {
             Emit(" ");
         }
     }
+    else {
+        if (fun._kind == FUNCTION && !fun.IsCleanup()) {
+            Emit("__stdcall ");
+        }
+    }
 
     Emit(fun._name);
     Emit("(");
@@ -706,9 +711,16 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
     Emit("__declspec(naked) ");
     Emit(*fn._ret);
     Emit(" ");
-    if (fn._convention && *fn._convention != THISCALL) {
-        Emit(CallingConventionToString(*fn._convention));
-        Emit(" ");
+    if (fn._convention) {
+        if (*fn._convention != THISCALL) {
+            Emit(CallingConventionToString(*fn._convention));
+            Emit(" ");
+        }
+    }
+    else {
+        if (fn._kind == FUNCTION && !fn.IsCleanup()) {
+            Emit("__stdcall ");
+        }
     }
 
     if (_currentStructure) {
