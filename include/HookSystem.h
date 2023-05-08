@@ -38,9 +38,12 @@ public:
 };
 
 //=================================================================================================
-
+// static_assert(std::is_class_v<_classname>);
+// static_assert(std::is_member_function_pointer_v<decltype(_classname::_name)>); 
 #define _DEFINE_METHOD_HOOK1(_id, _classname, _name, _priority, _type) \
 	namespace { namespace Hook_##_id { \
+		static_assert(std::is_class_v<_classname>, "Cannot HOOK_METHOD on something that is not a class"); \
+		static_assert(std::is_member_function_pointer_v<decltype(&_classname::_name)>, "Cannot HOOK_METHOD on something that is not a method (use HOOK_STATIC for static methods)"); \
 		static void *internalSuper = NULL; \
 		struct wrapper : public _classname { \
 			auto hook _type ; \
@@ -59,6 +62,8 @@ public:
 //=================================================================================================
 
 #define _DEFINE_STATIC_HOOK1(_id, _classname, _name, _priority, _type, _conv, _hookKind) \
+	static_assert(std::is_class_v<_classname>, "Cannot HOOK_STATIC on something that is not a class"); \
+	static_assert(!std::is_member_function_pointer_v<decltype(&_classname::_name)>, "Cannot HOOK_STATIC on something that is not a static method (use HOOK_METHOD for a non static method)"); \
 	namespace { namespace Hook_##_id { \
 		static void *internalSuper = NULL; \
 		struct wrapper : public _classname { \
