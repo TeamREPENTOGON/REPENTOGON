@@ -800,6 +800,7 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
         k -= 4;
         std::ostringstream ins;
         ins << "push [ebp + " << k << "] // implicit_output";
+        EmitInstruction(ins.str());
     }
 
     if (k != 8) {
