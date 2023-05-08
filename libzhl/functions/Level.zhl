@@ -10,6 +10,9 @@ __thiscall void Level::ChangeRoom(int targetRoomIDX, int dimension);
 "558bec83ec1856576a":
 __thiscall bool Level::TryInitializeExtraBossRoom(unsigned int seed);
 
+"558bec83e4f883ec54a1????????33c4894424??8b45":
+__thiscall bool Level::CanSpawnDoorOutline(int roomIDX, unsigned int doorSlot);
+
 struct Level {
 
 };
