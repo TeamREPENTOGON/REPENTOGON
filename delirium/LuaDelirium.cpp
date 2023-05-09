@@ -347,4 +347,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(L);
 	RegisterMemoryFunctions(L);
 	RegisterDeliriumFunctions(L);
+
+	delirium::PatchSkipFrames();
+	delirium::AddPreTransformationCallback();
+	delirium::AddTransformationCallback();
 }

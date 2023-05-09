@@ -48,6 +48,7 @@ public:
 	};
 
 	friend class ProtectionGuard;
+	friend class ASMPatch;
 
 	static constexpr const size_t PAGE_SIZE = 4096;
 	~ASMPatcher();
@@ -62,11 +63,15 @@ public:
 	void* AttemptPatchFunction(const char* beginSig, const char* endSig, const char* patchSig, const char* with);
 	void* PatchFromSig(const char* sig, const char* with);
 	void* PatchAt(void* at, const char* with);
+	void* PatchAt(void* at, ASMPatch* with);
+	void* Patch(void* at, void* page, const char* with);
 
 	static ptrdiff_t JumpOffset(const void* next, const void* target);
 	static std::unique_ptr<char[]> EncodeJump(const void* at, const void* target);
 	static void* EncodeAndWriteJump(void* at, const void* target);
 	static std::unique_ptr<char[]> EncodeCondJump(CondJumps cond, const void* at, const void* target);
+
+	static void SetExecutable(char* text);
 
 	template<typename T>
 	static std::enable_if_t<std::is_integral_v<T>> EndianConvert(T* t) {
@@ -126,25 +131,25 @@ public:
 	ASMPatch& operator=(const ASMPatch& other) = delete;
 
 	ASMPatch& AddBytes(const char* bytes);
-	ASMPatch& AddRelativeJump(ptrdiff_t distance);
-	ASMPatch& AddConditionalRelativeJump(ASMPatcher::CondJumps cond, ptrdiff_t distance);
+	ASMPatch& AddRelativeJump(void* target);
+	ASMPatch& AddConditionalRelativeJump(ASMPatcher::CondJumps cond, void* target);
 	ASMPatch& AddInternalCall(void* addr);
 	ASMPatch& AddDLLCall(void* addr);
 
 	size_t Length() const;
-	std::unique_ptr<char[]> ToASM(const char* patchBase, const char* writeAt) const;
+	std::unique_ptr<char[]> ToASM(void* at) const;
 
 private:
 	class LIBZHL_API ASMNode {
 	public:
-		virtual std::unique_ptr<char[]> ToASM(const char* base, const char* at) const = 0;
+		virtual std::unique_ptr<char[]> ToASM(void* at) const = 0;
 		virtual size_t Length() const = 0;
 	};
 
 	class LIBZHL_API ASMBytes : public ASMNode {
 	public:
 		ASMBytes(const char* bytes);
-		std::unique_ptr<char[]> ToASM(const char*, const char*) const override;
+		std::unique_ptr<char[]> ToASM(void*) const override;
 		size_t Length() const override;
 
 	private:
@@ -153,29 +158,54 @@ private:
 
 	class LIBZHL_API ASMJump : public ASMNode {
 	public:
-		ASMJump(ptrdiff_t dist);
-		std::unique_ptr<char[]> ToASM(const char* base, const char* at) const override;
+		ASMJump(void* target);
+		std::unique_ptr<char[]> ToASM(void* at) const override;
 		size_t Length() const override;
 
 	private:
-		ptrdiff_t _dist;
+		void* _target;
 	};
 
 	class LIBZHL_API ASMCondJump : public ASMNode {
 	public:
-		ASMCondJump(ASMPatcher::CondJumps cond, ptrdiff_t dist);
-		std::unique_ptr<char[]> ToASM(const char* base, const char* at) const override;
+		ASMCondJump(ASMPatcher::CondJumps cond, void* target);
+		std::unique_ptr<char[]> ToASM(void* at) const override;
 		size_t Length() const override;
 
 	private:
 		ASMPatcher::CondJumps _cond;
-		ptrdiff_t _dist;
+		void* _target;
+	};
+
+	class LIBZHL_API ASMInternalCall : public ASMNode {
+	public:
+		ASMInternalCall(void* target);
+		std::unique_ptr<char[]> ToASM(void* at) const override;
+		size_t Length() const override;
+
+	private:
+		void* _target;
 	};
 
 	// friend void* ASMPatcher::PatchAt(void*, const char*);
 
 	std::vector<std::unique_ptr<ASMNode>> _nodes;
 	size_t _size = 0;
+};
+
+/// Box a type, preventing Visual Studio from moving a value of such a type in a register.
+/// Only works on fundamental types (char, int, float, pointers).
+template<typename T>
+struct Box {
+	std::enable_if_t<std::disjunction_v<std::is_fundamental<T>, std::is_pointer<T>>, T> _t;
+
+	T& Get() {
+		return _t;
+	}
+
+	T const& Get() const {
+		return _t;
+	}
 };
 
 #define sASMPatcher ASMPatcher::instance()

@@ -40,7 +40,18 @@ void* ASMPatcher::PatchFromSig(const char* sig, const char* with) {
 	return PatchAt(scan.GetAddress(), with);
 }
 
+void* ASMPatcher::PatchAt(void* at, ASMPatch* with) {
+	void* targetPage = GetAllocPage(with->Length(), true);
+	std::unique_ptr<char[]> text = with->ToASM(targetPage);
+	return Patch(at, targetPage, text.get());
+}
+
 void* ASMPatcher::PatchAt(void* at, const char* with) {
+	void* targetPage = GetAllocPage(with, true);
+	return Patch(at, targetPage, with);
+}
+
+void* ASMPatcher::Patch(void* at, void* targetPage, const char* with) {
 	FILE* f = fopen("repentogon.log", "a");
 	fprintf(f, "Patching at %p\n", at);
 	bool expected = false;
@@ -49,8 +60,8 @@ void* ASMPatcher::PatchAt(void* at, const char* with) {
 		return nullptr;
 	}
 
-	void* targetPage = GetAllocPage(with, true);
-	ProtectionGuard inputGuard(at, PAGE_READWRITE);
+	// void* targetPage = GetAllocPage(with, true);
+	ProtectionGuard inputGuard(at, PAGE_EXECUTE_READWRITE);
 	ProtectionGuard outputGuard(targetPage, PAGE_READWRITE, PAGE_EXECUTE_READWRITE);
 
 	ZydisDisassembledInstruction instruction;
@@ -315,15 +326,22 @@ ASMPatch& ASMPatch::AddBytes(const char* bytes) {
 	return *this;
 }
 
-ASMPatch& ASMPatch::AddRelativeJump(ptrdiff_t dist) {
-	std::unique_ptr<ASMNode> ptr(new ASMJump(dist));
+ASMPatch& ASMPatch::AddRelativeJump(void* target) {
+	std::unique_ptr<ASMNode> ptr(new ASMJump(target));
 	_size += ptr->Length();
 	_nodes.push_back(std::move(ptr));
 	return *this;
 }
 
-ASMPatch& ASMPatch::AddConditionalRelativeJump(ASMPatcher::CondJumps cond, ptrdiff_t dist) {
-	std::unique_ptr<ASMNode> ptr(new ASMCondJump(cond, dist));
+ASMPatch& ASMPatch::AddConditionalRelativeJump(ASMPatcher::CondJumps cond, void* target) {
+	std::unique_ptr<ASMNode> ptr(new ASMCondJump(cond, target));
+	_size += ptr->Length();
+	_nodes.push_back(std::move(ptr));
+	return *this;
+}
+
+ASMPatch& ASMPatch::AddInternalCall(void* addr) {
+	std::unique_ptr<ASMNode> ptr(new ASMInternalCall(addr));
 	_size += ptr->Length();
 	_nodes.push_back(std::move(ptr));
 	return *this;
@@ -335,7 +353,7 @@ ASMPatch::ASMBytes::ASMBytes(const char* bytes) : _bytes()  {
 	_bytes.reset(buffer);
 }
 
-std::unique_ptr<char[]> ASMPatch::ASMBytes::ToASM(const char*, const char*) const {
+std::unique_ptr<char[]> ASMPatch::ASMBytes::ToASM(void*) const {
 	std::unique_ptr<char[]> result(new char[Length() + 1]);
 	strcpy(result.get(), _bytes.get());
 	return result;
@@ -345,12 +363,12 @@ size_t ASMPatch::ASMBytes::Length() const {
 	return strlen(_bytes.get());
 }
 
-ASMPatch::ASMJump::ASMJump(ptrdiff_t dist) : _dist(dist) {
+ASMPatch::ASMJump::ASMJump(void* target) : _target(target) {
 
 }
 
-std::unique_ptr<char[]> ASMPatch::ASMJump::ToASM(const char* base, const char* at) const {
-	std::unique_ptr<char[]> jump = ASMPatcher::EncodeJump(at, base + _dist);
+std::unique_ptr<char[]> ASMPatch::ASMJump::ToASM(void* at) const {
+	std::unique_ptr<char[]> jump = ASMPatcher::EncodeJump(at, _target);
 	return jump;
 }
 
@@ -358,12 +376,12 @@ size_t ASMPatch::ASMJump::Length() const {
 	return 5;
 }
 
-ASMPatch::ASMCondJump::ASMCondJump(ASMPatcher::CondJumps cond, ptrdiff_t dist) : _cond(cond), _dist(dist) {
+ASMPatch::ASMCondJump::ASMCondJump(ASMPatcher::CondJumps cond, void* target) : _cond(cond), _target(target) {
 
 }
 
-std::unique_ptr<char[]> ASMPatch::ASMCondJump::ToASM(const char* base, const char* at) const {
-	std::unique_ptr<char[]> jump = ASMPatcher::EncodeCondJump(_cond, at, base + _dist);
+std::unique_ptr<char[]> ASMPatch::ASMCondJump::ToASM(void* at) const {
+	std::unique_ptr<char[]> jump = ASMPatcher::EncodeCondJump(_cond, at, _target);
 	return jump;
 }
 
@@ -371,19 +389,36 @@ size_t ASMPatch::ASMCondJump::Length() const {
 	return 6;
 }
 
-std::unique_ptr<char[]> ASMPatch::ToASM(const char* patchBase, const char* writeAt) const {
-	std::unique_ptr<char[]> result(new char[_size]);
+ASMPatch::ASMInternalCall::ASMInternalCall(void* target) : _target(target) {
+
+}
+
+std::unique_ptr<char[]> ASMPatch::ASMInternalCall::ToASM(void* at) const {
+	std::unique_ptr<char[]> call(new char[5]);
+	call[0] = '\xE8';
+	ptrdiff_t diff = ASMPatcher::JumpOffset((char*)at + 5, _target);
+	memcpy(call.get() + 1, &diff, sizeof(ptrdiff_t));
+	return call;
+}
+
+size_t ASMPatch::ASMInternalCall::Length() const {
+	return 5;
+}
+
+std::unique_ptr<char[]> ASMPatch::ToASM(void* at) const {
+	std::unique_ptr<char[]> result(new char[_size + 1]);
 	size_t pos = 0;
-	const char* begin = writeAt;
+	void* begin = at;
 
 	for (std::unique_ptr<ASMNode> const& ptr : _nodes) {
 		// memcpy because strings are not zero terminated
-		std::unique_ptr<char[]> res = ptr->ToASM(patchBase, begin);
+		std::unique_ptr<char[]> res = ptr->ToASM(begin);
 		memcpy(result.get() + pos, res.get(), ptr->Length());
 		pos += ptr->Length();
-		begin = writeAt + pos;
+		begin = (char*)at + pos;
 	}
 
+	result.get()[_size] = '\0';
 	return result;
 }
 

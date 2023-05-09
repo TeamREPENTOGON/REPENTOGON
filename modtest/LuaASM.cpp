@@ -80,8 +80,8 @@ static int Lua_ASMPatch_AddJump(lua_State* L) {
 	ASMPatch** ud = (ASMPatch**)luaL_checkudata(L, 1, ASMPatchTestMT);
 	ASMPatch* patch = *ud;
 
-	lua_Integer offset = luaL_checkinteger(L, 2);
-	patch->AddRelativeJump(offset);
+	lua_Integer addr = luaL_checkinteger(L, 2);
+	patch->AddRelativeJump((void*)addr);
 
 	return 0;
 }
@@ -91,8 +91,8 @@ static int Lua_ASMPatch_AddCJump(lua_State* L) {
 	ASMPatch* patch = *ud;
 
 	ASMPatcher::CondJumps cond = (ASMPatcher::CondJumps)luaL_checkinteger(L, 2);
-	lua_Integer offset = luaL_checkinteger(L, 3);
-	patch->AddConditionalRelativeJump(cond, offset);
+	lua_Integer addr = luaL_checkinteger(L, 3);
+	patch->AddConditionalRelativeJump(cond, (void*)addr);
 
 	return 0;
 }
@@ -103,7 +103,7 @@ static int Lua_ASMPatch_ToASM(lua_State* L) {
 
 	char* base = (char*)luaL_checkinteger(L, 2);
 	char* at = (char*)luaL_checkinteger(L, 3);
-	std::unique_ptr<char[]> result = patch->ToASM(base, at);
+	std::unique_ptr<char[]> result = patch->ToASM(base);
 
 	char* start = result.get();
 	ZyanU64 addrBase = (ZyanU64)at;
