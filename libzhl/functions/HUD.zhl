@@ -14,5 +14,5 @@ struct HUD depends (PlayerHUD) { {{
 	//inline PlayerHUD GetPlayerHUD(int index) { return _playerHUD[index]; } 
 	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }
 }} 
-    PlayerHUD _playerHUD[7];
+    PlayerHUD _playerHUD[8];
 };
