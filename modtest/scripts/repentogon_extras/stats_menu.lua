@@ -123,31 +123,34 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 
 local function RenderExtraStats()
-    if StatsMenu.ScheduleRefresh and IsGivenMenuEntry(MainMenu.STATS) then
-        local gameData = Isaac.GetPersistentGameData()
-        MaxCategoryID = #StatsMenu.Stats + 1
-        for i, categoryData in ipairs(StatsMenu.Stats) do
-            for j, stat in ipairs(categoryData[2]) do
-                if type(stat[2]) == "function" then
-                    StatsMenu.Stats[i][2][j][3] = stat[2]()
-                else
-                    StatsMenu.Stats[i][2][j][3] = gameData:GetEventCounter(stat[2])
+    if IsGivenMenuEntry(MainMenu.STATS) then
+        if StatsMenu.ScheduleRefresh then
+            local gameData = Isaac.GetPersistentGameData()
+            MaxCategoryID = #StatsMenu.Stats + 1
+            for i, categoryData in ipairs(StatsMenu.Stats) do
+                for j, stat in ipairs(categoryData[2]) do
+                    if type(stat[2]) == "function" then
+                        StatsMenu.Stats[i][2][j][3] = stat[2]()
+                    else
+                        StatsMenu.Stats[i][2][j][3] = gameData:GetEventCounter(stat[2])
+                    end
+                    StatsMenu.Stats[i][2][j][4] = font:GetStringWidthUTF8(tostring(StatsMenu.Stats[i][2][j][3])) / 2
                 end
-                StatsMenu.Stats[i][2][j][4] = font:GetStringWidthUTF8(tostring(StatsMenu.Stats[i][2][j][3])) / 2
             end
+            StatsMenu.ScheduleRefresh = false
         end
-        StatsMenu.ScheduleRefresh = false
-    end
 
-    if IsActionTriggeredAll(ButtonAction.ACTION_MENULEFT) then
-        SFXManager():Play(SoundEffect.SOUND_PAPER_IN)
-        StatsMenu.CurrentlyDisplayedCategoryID = (StatsMenu.CurrentlyDisplayedCategoryID - 1) % MaxCategoryID
-        if StatsMenu.CurrentlyDisplayedCategoryID == 0 then
-            StatsMenu.CurrentlyDisplayedCategoryID = MaxCategoryID - 1
+        if IsActionTriggeredAll(ButtonAction.ACTION_MENULEFT) then
+            SFXManager():Play(SoundEffect.SOUND_PAPER_IN)
+            StatsMenu.CurrentlyDisplayedCategoryID = (StatsMenu.CurrentlyDisplayedCategoryID - 1) % MaxCategoryID
+            if StatsMenu.CurrentlyDisplayedCategoryID == 0 then
+                StatsMenu.CurrentlyDisplayedCategoryID = MaxCategoryID - 1
+            end
+        elseif IsActionTriggeredAll(ButtonAction.ACTION_MENURIGHT) then
+            SFXManager():Play(SoundEffect.SOUND_PAPER_IN)
+            StatsMenu.CurrentlyDisplayedCategoryID = math.max(
+            (StatsMenu.CurrentlyDisplayedCategoryID + 1) % MaxCategoryID, 1)
         end
-    elseif IsActionTriggeredAll(ButtonAction.ACTION_MENURIGHT) then
-        SFXManager():Play(SoundEffect.SOUND_PAPER_IN)
-        StatsMenu.CurrentlyDisplayedCategoryID = math.max((StatsMenu.CurrentlyDisplayedCategoryID + 1) % MaxCategoryID, 1)
     end
 
     -- render stat page over original stat page, to allow for custom content
