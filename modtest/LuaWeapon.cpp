@@ -4,14 +4,12 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* WeaponMT = "WeaponMT";
-
 static int Lua_CreateWeapon(lua_State* L) {
 	Weapon** ud = (Weapon**)lua_newuserdata(L, sizeof(Weapon*));
-	int wepType = luaL_checkinteger(L, 2);
-	Entity* ent = lua::GetUserdata<Entity*>(L, 3, lua::Metatables::ENTITY, "Entity");
+	int wepType = luaL_checkinteger(L, 1);
+	Entity* ent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	*ud = Isaac::CreateWeapon((WeaponType)wepType, ent);
-	luaL_setmetatable(L, WeaponMT);
+	luaL_setmetatable(L, lua::metatables::WeaponMT);
 	return 1;
 }
 
@@ -24,36 +22,63 @@ static int Lua_PlayerGetWeapon(lua_State* L) {
 	}
 	Weapon** luaWeapon = (Weapon**)lua_newuserdata(L, sizeof(Weapon*));
 	*luaWeapon = toLua;
-	luaL_setmetatable(L, WeaponMT);
+	luaL_setmetatable(L, lua::metatables::WeaponMT);
+	return 1;
+}
+
+static int Lua_WeaponGetOwner(lua_State* L) {
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
+	Entity* ent = weapon->GetOwner();
+	if (!ent) {
+		lua_pushnil(L);
+	}
+	else {
+		lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
+	}
 	return 1;
 }
 
 static int Lua_WeaponGetFireDelay(lua_State* L) {
-	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
 	lua_pushnumber(L, weapon->GetFireDelay());
 	return 1;
 }
 
 static int Lua_WeaponGetMaxFireDelay(lua_State* L) {
-	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
 	lua_pushnumber(L, weapon->GetMaxFireDelay());
 	return 1;
 }
 
+static int Lua_WeaponGetCharge(lua_State* L) {
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
+	lua_pushnumber(L, weapon->GetCharge());
+	return 1;
+}
+
+static int Lua_WeaponGetDirection(lua_State* L)
+{
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *weapon->GetDirection();
+
+	return 1;
+}
+
 static int Lua_WeaponGetWeaponType(lua_State* L) {
-	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
 	lua_pushinteger(L, weapon->GetWeaponType());
 	return 1;
 }
 
 static int Lua_WeaponGetModifiers(lua_State* L) {
-	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
 	lua_pushinteger(L, weapon->GetModifiers());
 	return 1;
 }
 
 static int Lua_WeaponGetNumFired(lua_State* L) {
-	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, WeaponMT);
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
 	lua_pushinteger(L, weapon->GetNumFired());
 	return 1;
 }
@@ -66,14 +91,17 @@ static void RegisterWeapon(lua_State* L)
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 
-	luaL_newmetatable(L, WeaponMT);
+	luaL_newmetatable(L, lua::metatables::WeaponMT);
 	lua_pushstring(L, "__index");
 	lua_pushvalue(L, -2);
 	lua_settable(L, -3);
 
 	luaL_Reg functions[] = {
+		{ "GetOwner", Lua_WeaponGetOwner },
 		{ "GetFireDelay", Lua_WeaponGetFireDelay },
 		{ "GetMaxFireDelay", Lua_WeaponGetMaxFireDelay },
+		{ "GetCharge", Lua_WeaponGetCharge },
+		{ "GetDirection", Lua_WeaponGetDirection },
 		{ "GetWeaponType", Lua_WeaponGetWeaponType },
 		{ "GetModifiers", Lua_WeaponGetModifiers },
 		{ "GetNumFired", Lua_WeaponGetNumFired },
@@ -88,7 +116,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
+	RegisterWeapon(state);
 	lua::Metatables mt = lua::Metatables::ENTITY_PLAYER;
 	lua::RegisterFunction(state, mt, "GetWeapon", Lua_PlayerGetWeapon);
-	RegisterWeapon(state);
 }

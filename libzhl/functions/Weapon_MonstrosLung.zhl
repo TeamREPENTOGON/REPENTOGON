@@ -1,0 +1,11 @@
+
+
+struct Weapon_MonstrosLung : public Weapon { {{
+
+}}
+    __vtable {
+        override
+        "558bec83e4f883ec585657ff75":
+        void Fire(const Vector& shootPos, bool IsShooting, bool IsInterpolated);
+    };
+};

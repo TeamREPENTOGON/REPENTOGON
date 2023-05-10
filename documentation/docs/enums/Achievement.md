@@ -466,8 +466,8 @@ tags:
 |341 |GREEDIER {: .copyable } |  |
 |342 |BURNING_BASEMENT {: .copyable } |  |
 |343 |FLOODED_CAVES {: .copyable } |  |
-|343 |DANK_DEPTHS {: .copyable } |  |
-|344 |SCARRED_WOMB {: .copyable } |  |
+|344 |DANK_DEPTHS {: .copyable } |  |
+|345 |SCARRED_WOMB {: .copyable } |  |
 |346 |SOMETHING_WICKED {: .copyable } |  |
 |347 |SOMETHING_WICKED_PLUS {: .copyable } |  |
 |347 |SOMETHING_WICKED_2 {: .copyable } |  |
