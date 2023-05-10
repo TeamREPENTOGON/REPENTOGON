@@ -149,6 +149,7 @@ namespace lua {
         extern LIBZHL_API const char* EntitySlotMT;;
         extern LIBZHL_API const char* HistoryMT;;
         extern LIBZHL_API const char* PlayerHUDMT;;
+        extern LIBZHL_API const char* WeaponMT;;
     }
 
     LIBZHL_API void UnloadMetatables();

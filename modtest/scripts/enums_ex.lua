@@ -89,6 +89,7 @@ ModCallbacks.MC_PRE_MUSIC_PLAY_JINGLE = 1094
 ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED = 1095
 ModCallbacks.MC_POST_TRIGGER_TRINKET_ADDED = 1096
 ModCallbacks.MC_POST_TRIGGER_TRINKET_REMOVED = 1097
+ModCallbacks.MC_POST_FIRE_WEAPON = 1098
 
 EntityPartition.ALL = 0xffffffff
 
@@ -2047,6 +2048,7 @@ WeaponModifier = {
 	AZAZELS_SNEEZE = 512,
 	C_SECTION = 2048,
 }
+
 
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)

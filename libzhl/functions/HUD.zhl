@@ -10,6 +10,9 @@ __thiscall void HUD::PostUpdate();
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec88000000a1????????33c58945??5657508d45??64a3????????8bf180be????????00":
 __thiscall void HUD::LoadGraphics();
 
+"558bec8b55??33c0391174??4081c1b006000083f80872??5dc20400":
+__thiscall void HUD::FlashRedHearts(Entity_Player *player);
+
 struct HUD depends (PlayerHUD) { {{
 	//inline PlayerHUD GetPlayerHUD(int index) { return _playerHUD[index]; } 
 	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }

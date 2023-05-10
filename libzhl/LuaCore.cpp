@@ -539,5 +539,6 @@ namespace lua {
 		const char* EntitySlotMT = "EntitySlot";
 		const char* HistoryMT = "History";
 		const char* PlayerHUDMT = "PlayerHUD";
+		const char* WeaponMT = "Weapon";
 	}
 }

@@ -2019,3 +2019,24 @@ HOOK_METHOD(Entity_Player, TriggerTrinketRemoved, (unsigned int trinketID) -> vo
 			.call(1);
 	}
 }
+
+//POST_FIRE_WEAPON (1098)
+HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& pos, int FireAmount) -> void) {
+	super(pos, FireAmount);
+	int callbackid = 1098;
+	Entity* ent = this->GetOwner();
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.push(FireAmount)
+			.push(ent, lua::Metatables::ENTITY)
+			//.push(this, lua::metatables::WeaponMT)
+			.call(1);
+	}
+}
