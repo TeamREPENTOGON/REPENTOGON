@@ -64,7 +64,7 @@ private:
 	void EmitType(std::string const& s);
 	void EmitType(EmptyType const&);
 
-	std::tuple<bool, uint32_t> EmitArgData(Function const& fn);
+	std::tuple<bool, uint32_t, uint32_t> EmitArgData(Function const& fn);
 	void EmitTypeID(Function const& fn);
 	uint32_t GetFlags(Function const& fn) const;
 

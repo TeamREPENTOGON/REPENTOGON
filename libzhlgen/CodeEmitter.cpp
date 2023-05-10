@@ -678,7 +678,7 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
 
     // Parameters
     Function const& fn = sig._function;
-    auto [hasImplicitOutput, stackSize] = EmitArgData(fn);
+    auto [hasImplicitOutput, stackSize, fnStackSize] = EmitArgData(fn);
 
     // Function definition object
     EmitTab();
@@ -811,9 +811,9 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
     callIns << "call _fun" << _nEmittedFuns << "::func";
     EmitInstruction(callIns.str());
 
-    if (flags & FunctionDefFlags::DEF_CLEANUP && stackSize > 0) {
+    if (flags & FunctionDefFlags::DEF_CLEANUP && fnStackSize > 0) {
         std::ostringstream retIns;
-        retIns << "add esp, " << stackSize;
+        retIns << "add esp, " << fnStackSize;
         EmitInstruction(retIns.str());
     }
 
@@ -979,7 +979,7 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
     Emit("static void* func = 0;");
     EmitNL();
     EmitTab();
-    auto [hasImplicitOutput, _] = EmitArgData(fn._fn);
+    auto [hasImplicitOutput, _, __] = EmitArgData(fn._fn);
     EmitTab();
     Emit("static FunctionDefinition fn(\"");
     Emit(fn._namespace);
@@ -1003,9 +1003,10 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
     _emitDepth = depth;
 }
 
-std::tuple<bool, uint32_t> CodeEmitter::EmitArgData(Function const& fn) {
+std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn) {
     bool hasImplicitOutput = fn._ret->size() > 8;
     uint32_t stackSize = 0;
+    uint32_t fnStackSize = 0;
 
     if (!hasImplicitOutput && fn._params.size() == 0) {
         Emit("static HookSystem::ArgData* args = nullptr;");
@@ -1042,6 +1043,7 @@ std::tuple<bool, uint32_t> CodeEmitter::EmitArgData(Function const& fn) {
                     Emit(std::to_string(paramSize));
                     Emit(" } /* " + param._name + " */");
                     stackSize += paramSize * 4;
+                    fnStackSize += paramSize * 4;
                 }
 
                 if (hasImplicitOutput || i != fn._params.size() - 1) {
@@ -1081,6 +1083,7 @@ std::tuple<bool, uint32_t> CodeEmitter::EmitArgData(Function const& fn) {
                     Emit(" } /* " + param._name + " */");
 
                     stackSize += paramSize * 4;
+                    fnStackSize += paramSize * 4;
                 }
 
                 if (hasImplicitOutput || i != fn._params.size() - 1) {
@@ -1105,7 +1108,7 @@ std::tuple<bool, uint32_t> CodeEmitter::EmitArgData(Function const& fn) {
 
     EmitNL();
 
-    return std::make_tuple(hasImplicitOutput, stackSize);
+    return std::make_tuple(hasImplicitOutput, stackSize, fnStackSize);
 }
 
 void CodeEmitter::EmitTypeID(Function const& fn) {
