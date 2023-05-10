@@ -139,6 +139,7 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 
 local function RenderExtraStats()
+    if IsGivenMenuEntry(MainMenu.SAVES) then StatsMenu.ScheduleRefresh = true end
     if IsGivenMenuEntry(MainMenu.STATS) then
         if StatsMenu.ScheduleRefresh then
             local gameData = Isaac.GetPersistentGameData()
@@ -165,7 +166,7 @@ local function RenderExtraStats()
         elseif IsActionTriggeredAll(ButtonAction.ACTION_MENURIGHT) then
             SFXManager():Play(SoundEffect.SOUND_PAPER_IN)
             StatsMenu.CurrentlyDisplayedCategoryID = math.max(
-            (StatsMenu.CurrentlyDisplayedCategoryID + 1) % MaxCategoryID, 1)
+                (StatsMenu.CurrentlyDisplayedCategoryID + 1) % MaxCategoryID, 1)
         end
     end
 
