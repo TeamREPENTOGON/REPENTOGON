@@ -12,10 +12,26 @@ local StatsMenu = {
     Stats = {
         {
             "GAME STATS", {
-            { "deaths",        EventCounter.DEATHS },
-            { "items",         function() return "TODO" end },
-            { "mom kills",     EventCounter.MOM_KILLS },
-            { "secrets",       function() return "TODO" end },
+            { "deaths",    EventCounter.DEATHS },
+            { "items",     function() return "TODO" end },
+            { "mom kills", EventCounter.MOM_KILLS },
+            { "secrets", function()
+                local gameData = Isaac.GetPersistentGameData()
+                local sum = 0
+                local unlocked = 0
+                local previousValues = {}
+                for _, value in pairs(Achievement) do
+                    if not previousValues[value] then
+                        sum = sum + 1
+                        previousValues[value] = true
+                        if gameData:Unlocked(value) then
+                            unlocked = unlocked + 1
+                        end
+                    end
+                end
+
+                return unlocked .. "/" .. sum
+            end },
             { "best streak",   EventCounter.BEST_STREAK },
             { "",              function() return "" end }, -- spacer
             { "eden tokens",   EventCounter.EDEN_TOKENS },
