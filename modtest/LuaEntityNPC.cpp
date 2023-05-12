@@ -23,6 +23,23 @@ int Lua_NPCGetDirtColor(lua_State* L)
 	return 1;
 }
 
+int Lua_NPCGetControllerId(lua_State* L)
+{
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+
+	lua_pushnumber(L,*npc->GetControllerId());
+
+	return 1;
+}
+
+int Lua_NPCSetControllerId(lua_State* L)
+{
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	int unk = lua_tonumber(L, 2);
+
+	npc->SetControllerId(unk);
+	return 0;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -31,4 +48,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::Metatables mt = lua::Metatables::ENTITY_NPC;
 	lua::RegisterFunction(state, mt, "UpdateDirtColor", Lua_NPCUpdateDirtColor);
 	lua::RegisterFunction(state, mt, "GetDirtColor", Lua_NPCGetDirtColor);
+	lua::RegisterFunction(state, mt, "GetControllerId", Lua_NPCGetControllerId);
+	lua::RegisterFunction(state, mt, "SetControllerId", Lua_NPCSetControllerId);
 }
