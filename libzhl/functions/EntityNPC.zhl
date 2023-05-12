@@ -19,8 +19,8 @@ struct Entity_NPC : public Entity {
     inline uint32_t* GetDeliriumAttackID() { return (uint32_t*)((char*)this + 0xB28); }
     inline uint8_t* GetDeliriumAttackAngle() { return (uint8_t*)((char*)this + 0xB2C); }
     inline uint32_t* GetDeliriumCycleID() { return (uint32_t*)((char*)this + 0xB34); }
-	inline int* GetControllerId() { return (int*)((char*)this + 0xE6C); }
-	inline void SetControllerId(int x) { *(int*)((char*)this + 0xE6C) = x; }
+	inline int32_t * GetControllerId() { return (int32_t *)((char*)this + 0xE6C); }
+	inline void SetControllerId(int32_t  x) { *(int32_t *)((char*)this + 0xE6C) = x; }
 }} };
 
 
