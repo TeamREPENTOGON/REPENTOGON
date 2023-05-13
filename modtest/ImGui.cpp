@@ -19,7 +19,6 @@ WNDPROC windowProc;
 bool menuShown = false;
 bool imguiConsoleEnabled = false;
 static bool imguiInitialized = false;
-static ImGuiTextBuffer logBuf;
 
 static void HelpMarker(const char* desc)
 {
@@ -41,6 +40,7 @@ struct LogViewer {
     bool showConsole;
     bool autoscroll;
 
+    ImGuiTextBuffer logBuf;
     ImGuiTextFilter filter;
     ImVector<int> offsets;
 
@@ -52,6 +52,18 @@ struct LogViewer {
         showRepentogon = true;
         showConsole = true;
         autoscroll = true;
+    }
+
+    void AddLog(const char* fmt, ...) IM_FMTARGS(2)
+    {
+        int old_size = logBuf.size();
+        va_list args;
+        va_start(args, fmt);
+        logBuf.appendfv(fmt, args);
+        va_end(args);
+        for (int new_size = logBuf.size(); old_size < new_size; old_size++)
+            if (logBuf[old_size] == '\n')
+                offsets.push_back(old_size + 1);
     }
 
     void Draw() {
@@ -73,10 +85,25 @@ struct LogViewer {
             ImGui::SameLine();
             ImGui::Checkbox("Console", &showConsole);
             ImGui::Separator();
+
             if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) {
                 const char* buf_begin = logBuf.begin();
                 const char* buf_end = logBuf.end();
-                ImGui::TextUnformatted(buf_begin, buf_end);
+
+                if (filter.IsActive())
+                {
+                    for (int line_no = 0; line_no < offsets.Size; line_no++)
+                    {
+                        const char* line_start = buf_begin + offsets[line_no];
+                        const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
+                        if (filter.PassFilter(line_start, line_end))
+                            ImGui::TextUnformatted(line_start, line_end);
+                    }
+                }
+                else
+                {
+                    ImGui::TextUnformatted(buf_begin, buf_end);
+                }
 
                 if (autoscroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
                     ImGui::SetScrollHereY(1.0f);
@@ -88,6 +115,7 @@ struct LogViewer {
     }
 };
 
+static LogViewer logViewer;
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -122,12 +150,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
         ImGui::CaptureMouseFromApp();
         ImGui::GetStyle().WindowTitleAlign = ImVec2(0.5f, 0.5f);
 		imguiInitialized = true;
-
-        static LogViewer log;
-        logBuf.append("[REPENTOGON] Initialized Dear ImGui\n");
+        logViewer.AddLog("[REPENTOGON] Initialized Dear ImGui\n");
 	}
-
-    static LogViewer log;
 
     if (menuShown) {
 
@@ -140,14 +164,14 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
             if (ImGui::BeginMenu("Tools"))
             {
                 if (ImGui::MenuItem("Console (UNIMPLEMENTED)", NULL, &imguiConsoleEnabled)) {}
-                if (ImGui::MenuItem("Log Viewer (UNFINISHED)", NULL, &log.enabled)) {}
+                if (ImGui::MenuItem("Log Viewer (UNFINISHED)", NULL, &logViewer.enabled)) {}
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
         }
 
-        if (log.enabled) {
-            log.Draw();
+        if (logViewer.enabled) {
+            logViewer.Draw();
         }
 
         ImGui::Render();
@@ -156,13 +180,13 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
 
-    else if (log.pinned) {
+    else if (logViewer.pinned) {
 
         // Show the log viewer and draw the overlay without hooking any input
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
-        log.Draw();
+        logViewer.Draw();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
@@ -175,15 +199,13 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
 */
 
 static void __stdcall LogMessageCallback(const char* logMessage) {
-    logBuf.appendf("[GAME] %s", logMessage);
+    logViewer.AddLog("[GAME] %s", logMessage);
 };
 
 void ASMPatchLogMessage() {
-    printf("hopes and dreams\n");
     SigScan scanner("8d51??8a014184c075??2bca80b9????????0a");
     scanner.Scan();
     void* addr = scanner.GetAddress();
-    printf("patchin at %p\n", addr);
 
     ASMPatch patch;
     patch.AddBytes("\x55\x89\xe5\x50\x52\x53\x51\x56\x57"); // Push the entire stack
@@ -200,6 +222,6 @@ void ASMPatchLogMessage() {
 }
 
 HOOK_METHOD(Console, Print, (const IsaacString& text, unsigned int color, unsigned int unk) -> void) {
-    logBuf.appendf("[CONSOLE] %s", text.Get()); //TODO figure out a clean way to pass through the color
+    logViewer.AddLog("[CONSOLE] %s", text.Get()); //TODO figure out a clean way to pass through the color
     super(text, color, unk);
 }
