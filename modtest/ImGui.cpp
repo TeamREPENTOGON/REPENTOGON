@@ -5,10 +5,12 @@
 #include "ASMLogMessage.h"
 
 #include <Windows.h>
+#include <gl/GL.h>
+#include <sstream>
+
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
-#include <gl/GL.h>
 
 // this blogpost https://werwolv.net/blog/dll_injection was a big help, thanks werwolv! 
 
@@ -42,6 +44,7 @@ struct LogViewer {
 
     ImGuiTextBuffer logBuf;
     ImGuiTextFilter filter;
+    ImGuiTextFilter internalFilter;
     ImVector<int> offsets;
 
     LogViewer()
@@ -86,18 +89,43 @@ struct LogViewer {
             ImGui::Checkbox("Console", &showConsole);
             ImGui::Separator();
 
+            std::vector<const char*> internalFilterStrings;
+
+            if (!showGame) {
+                internalFilterStrings.push_back("-[GAME]");
+            }
+
+            if (!showConsole) {
+                internalFilterStrings.push_back("-[CONSOLE]");
+            }
+
+            if (!showRepentogon) {
+                internalFilterStrings.push_back("-[REPENTOGON]");
+            }
+
+            std::stringstream internalFilterRes;
+            std::string delim = ",";
+
+            std::copy(internalFilterStrings.begin(), internalFilterStrings.end(),
+                std::ostream_iterator<std::string>(internalFilterRes, delim.c_str()));
+            
+            internalFilter = internalFilterRes.str().c_str();
+
             if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) {
                 const char* buf_begin = logBuf.begin();
                 const char* buf_end = logBuf.end();
 
-                if (filter.IsActive())
+
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+                if (internalFilter.IsActive() || filter.IsActive())
                 {
                     for (int line_no = 0; line_no < offsets.Size; line_no++)
                     {
                         const char* line_start = buf_begin + offsets[line_no];
                         const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
-                        if (filter.PassFilter(line_start, line_end))
-                            ImGui::TextUnformatted(line_start, line_end);
+                        if (!internalFilter.IsActive() || internalFilter.PassFilter(line_start, line_end))
+                            if (!filter.IsActive() || filter.PassFilter(line_start, line_end))
+                                ImGui::TextUnformatted(line_start, line_end);
                     }
                 }
                 else
@@ -109,7 +137,8 @@ struct LogViewer {
                     ImGui::SetScrollHereY(1.0f);
                 ImGui::EndChild();
             }
-
+            ImGui::PopStyleVar();
+            
             ImGui::End();
         }
     }
@@ -136,6 +165,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 }
 
 HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
+
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
         windowProc = (WNDPROC)SetWindowLongPtr(window,
