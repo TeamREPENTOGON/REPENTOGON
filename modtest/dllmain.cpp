@@ -11,6 +11,7 @@
 #include "ASMAmbush.h";
 #include "ASMMegaSatan.h";
 #include "ASMInputAction.h";
+#include "ASMLogMessage.h";
 
 /********************************************************************************
 HOOKING
@@ -161,24 +162,6 @@ static void FixLuaDump()
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 }
 
-
-static void __stdcall LogMessageCallback() {
-	printf("call me...");
-};
-
-void ASMPatchLogMessage() {
-	printf("hopes and dreams\n");
-	SigScan scanner("8d51??8a014184c075??2bca80b9????????0a");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-	printf("patchin at %p\n", addr);
-
-	ASMPatch patch;
-	patch.AddBytes("\x8d\x51\x01\x8a\x01");
-	patch.AddRelativeJump((char*)addr + 0x5);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
 static char titlebar[128];
 // This small function loads all the hooks and must be present in every mod
 MOD_EXPORT int ModInit(int argc, char **argv)
@@ -191,7 +174,6 @@ MOD_EXPORT int ModInit(int argc, char **argv)
 	printf(":REPENTOGON:\n");
 	PatchHardcodedAmbushWaveCount();
 	PatchHardcodedMegaSatanGameEnding();
-	// Uncomment this if you want your game to hang... YOU'VE BEEN WARNED
-	//ASMPatchLogMessage();
+	ASMPatchLogMessage();
 	return 0;
 }

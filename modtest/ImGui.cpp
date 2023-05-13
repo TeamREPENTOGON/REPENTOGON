@@ -1,8 +1,8 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "SigScan.h"
-
 #include "ASMPatcher.hpp"
+#include "ASMLogMessage.h"
 
 #include <Windows.h>
 #include "imgui.h"
@@ -19,7 +19,6 @@ WNDPROC windowProc;
 bool menuShown = false;
 bool imguiConsoleEnabled = false;
 static bool imguiInitialized = false;
-
 static ImGuiTextBuffer logBuf;
 
 static void HelpMarker(const char* desc)
@@ -64,11 +63,11 @@ struct LogViewer {
             ImGui::SameLine();
             ImGui::Checkbox("Autoscroll", &autoscroll);
             ImGui::SameLine();
-            filter.Draw("Filter (unimplemented)", -100.0f);
+            filter.Draw("Filter", -100.0f);
 
             ImGui::Text("Show:");
             ImGui::SameLine();
-            ImGui::Checkbox("Game (buggy)", &showGame);
+            ImGui::Checkbox("Game", &showGame);
             ImGui::SameLine();
             ImGui::Checkbox("REPENTOGON", &showRepentogon);
             ImGui::SameLine();
@@ -171,11 +170,34 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
 	return super(hdc);
 }
 
-/*HOOK_STATIC(KAGE, LogMessage, (int flag, const char* string) -> void) {
-    //super(flag, string); // for this to work we need to get varargs working in libzhl
+/* 
+* LOG VIEWER PRINTS
+*/
 
-    logBuf.append("[GAME] *snip*\n");
-}*/
+static void __stdcall LogMessageCallback(const char* logMessage) {
+    logBuf.appendf("[GAME] %s", logMessage);
+};
+
+void ASMPatchLogMessage() {
+    printf("hopes and dreams\n");
+    SigScan scanner("8d51??8a014184c075??2bca80b9????????0a");
+    scanner.Scan();
+    void* addr = scanner.GetAddress();
+    printf("patchin at %p\n", addr);
+
+    ASMPatch patch;
+    patch.AddBytes("\x55\x89\xe5\x50\x52\x53\x51\x56\x57"); // Push the entire stack
+    patch.AddBytes("\x51"); // Push ECX one more time, for use on our function (this will be consumed)
+    patch.AddInternalCall(LogMessageCallback);
+    patch.AddBytes("\x5f\x5e\x59\x5b\x5a\x58\x89\xec\x5d"); // Pop the entire stack
+    patch.AddBytes("\x8D\x51\x01"); // lea edx,dword pointer ds:[ecx+1]
+    patch.AddBytes("\x8A\x01"); // mov al,byte ptr ds:[ecx]
+    patch.AddBytes("\x41"); // inc ecx
+    patch.AddBytes("\x84\xC0"); // test al, al
+    patch.AddBytes("\x75\xF9"); // jne xxxxxxxx (Work around a broken jmp)
+    patch.AddRelativeJump((char*)addr + 0x11);
+    sASMPatcher.PatchAt(addr, &patch);
+}
 
 HOOK_METHOD(Console, Print, (const IsaacString& text, unsigned int color, unsigned int unk) -> void) {
     logBuf.appendf("[CONSOLE] %s", text.Get()); //TODO figure out a clean way to pass through the color
