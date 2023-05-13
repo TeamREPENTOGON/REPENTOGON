@@ -1,5 +1,1 @@
-// Our version of LibZHL supports direct addresses, fully bypassing the sigscanner. This is useful for hooking into external DLLs.
-// wglSwapBuffersAddr is defined in Global.zhl, and corresponds to wglSwapBuffers in opengl32.dll.
-// The backslash here "escapes" the sigscanner, directly feeding the contents of this string into the resulting .cpp file.
-
 external(opengl32, wglSwapBuffers) __stdcall bool OpenGL::wglSwapBuffers(HDC hdc);

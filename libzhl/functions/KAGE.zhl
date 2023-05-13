@@ -1,2 +1,13 @@
 "558bec56578bf933d28b4d086a006a00e87b2300008bf083c40885f67447":
 bool KAGE_File::OpenFileRB(const char* name);
+
+// This isn't really "accurate" but LibZHL can't hook static globals
+"558bec83e4f851a1????????53565783f801":
+//static cleanup void KAGE::LogMessage(int flag, const char* string, ...);
+static cleanup void KAGE::LogMessage(int flag, const char* string);
+
+//"b9(????????)8d51??8a014184c075??2bca80b9????????0a":
+//reference const char* KAGE_LogMessageBuffer;
+
+struct KAGE  {
+};

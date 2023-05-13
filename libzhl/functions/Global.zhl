@@ -1239,7 +1239,3 @@ char** GetXMLNode(char* thi,int unk, char* name);
 struct GlobalPost {
 {{
 }} };
-
-/*"558bec83e4?51a1????????53565783f801":
-cleanup __cdecl void Kage_PrintLog(int flag, char* Format);
-*/
