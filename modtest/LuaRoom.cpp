@@ -4,14 +4,6 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static int Room_GetRailType(lua_State* L) {
-
-}
-
-static int Room_SetRailType(lua_State* L) {
-
-}
-
 static int Room_Test(lua_State* L) {
 	lua_pushinteger(L, 12);
 	return 1;
@@ -142,6 +134,37 @@ int Lua_RoomGetEffects(lua_State* L)
 	return 1;
 }
 
+static int lua_RoomGetRail(lua_State* L) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	lua_Integer index = luaL_checkinteger(L, 2);
+
+	if (!room->IsValidGridIndex(index, false)) {
+		return luaL_error(L, "Invalid grind index %lld\n", index);
+	}
+
+	lua_pushinteger(L, room->GetRailType(index));
+
+	return 1;
+}
+
+static int lua_RoomSetRail(lua_State* L) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	lua_Integer index = luaL_checkinteger(L, 2);
+
+	if (!room->IsValidGridIndex(index, false)) {
+		return luaL_error(L, "Invalid grind index %lld\n", index);
+	}
+
+	lua_Integer rail = luaL_checkinteger(L, 3);
+	if (!Room::IsValidRailType(rail)) {
+		return luaL_error(L, "Invalid rail type %lld\n", index);
+	}
+
+	room->SetRailType(index, (RailType)rail);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -162,4 +185,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetWaterColorMultiplier", Lua_RoomSetWaterColorMultiplier);
 	lua::RegisterFunction(state, mt, "SetBackdropType", Lua_RoomSetBackdrop);
 	lua::RegisterFunction(state, mt, "GetEffects", Lua_RoomGetEffects);
+	lua::RegisterFunction(state, mt, "GetRail", lua_RoomGetRail);
+	lua::RegisterFunction(state, mt, "SetRail", lua_RoomSetRail);
 }

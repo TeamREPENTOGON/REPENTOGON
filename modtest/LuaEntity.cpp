@@ -164,6 +164,20 @@ static int Lua_EntitySetInvincible(lua_State* L)
 	return 0;
 }
 
+static int lua_EntityGiveMinecart(lua_State* L) {
+	if (int n = lua_gettop(L); n != 3) {
+		return luaL_error(L, "Expected two parameters, got %d\n", n - 1);
+	}
+
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* velocity = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+
+	Entity* minecart = entity->GiveMinecart(position, velocity);
+	lua::luabridge::UserdataPtr::push(L, minecart, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -187,4 +201,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "ForceCollide", Lua_EntityForceCollide);
 	lua::RegisterFunction(state, mt, "SetDead", Lua_EntitySetDead);
 	lua::RegisterFunction(state, mt, "SetInvincible", Lua_EntitySetInvincible);
+	lua::RegisterFunction(state, mt, "GiveMinecart", lua_EntityGiveMinecart);
 }

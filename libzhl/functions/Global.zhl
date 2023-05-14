@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <bitset>
 #include <rttidata.h>
+#include <lua.hpp>
 #undef LoadImage
 
 using namespace rapidxml;
@@ -28,11 +29,9 @@ using namespace rapidxml;
         #define M_PI 3.14159265358979323846
 #endif
 
-extern "C"
-{
-        #include "lstate.h"
+extern "C" {
+    #include "lstate.h"
 }
-
 
 struct Console_HistoryEntry;
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
@@ -1227,6 +1226,21 @@ enum BagOfCraftingPickup : uint8_t
         BOC_GOLD_BATTERY = 28,
         BOC_POOP = 29,
         BOC_MAX = 30
+};
+
+enum RailType : uint8_t {
+    RAIL_HORIZONTAL = 0,
+    RAIL_VERTICAL = 1,
+    RAIL_UP_RIGHT = 2,
+    RAIL_DOWN_RIGHT = 3,
+    RAIL_UP_LEFT = 4,
+    RAIL_DOWN_LEFT = 5,
+    RAIL_CROSSING = 6,
+    RAIL_DOOR_LEFT = 144,
+    RAIL_DOOR_BOTTOM = 145,
+    RAIL_DOOR_RIGHT = 160,
+    RAIL_DOOR_TOP = 161,
+    RAIL_NONE = 255
 };
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed

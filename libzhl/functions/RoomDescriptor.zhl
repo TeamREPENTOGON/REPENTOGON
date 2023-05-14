@@ -1,4 +1,4 @@
-struct RoomDescriptor 
+struct RoomDescriptor depends (RoomConfig)
 {
     int32_t GridIndex; // 0x0
     int32_t SafeGridIndex; // 0x4

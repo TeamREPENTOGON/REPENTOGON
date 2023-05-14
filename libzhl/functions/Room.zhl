@@ -40,7 +40,7 @@ __thiscall void Room::RenderGridLight(GridEntity* grid, Vector &offset);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec30010000":
 __thiscall void Room::RenderEntityLight(Entity* ent, Vector &offset);
 
-struct Room depends (EntityList, TemporaryEffects) {
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() {return *(bool*)((char*)this + 0x120C); }
@@ -58,7 +58,13 @@ struct Room depends (EntityList, TemporaryEffects) {
 	inline TemporaryEffects* GetTemporaryEffects() {return (TemporaryEffects*)((char*)this + 0x71F4); }
     inline Backdrop* GetBackdrop() { return (Backdrop*)((char*)this + 0x1D34); }
 	inline Vector* GetWaterCurrent() {return (Vector*)((char*)this + 0x7344); }
-
+    inline RailType* GetRails() { return (RailType*)((char*)this + 0x7350); }
+    inline RailType GetRailType(uint8_t gridIndex) { return GetRails()[gridIndex]; }
+    inline void SetRailType(uint8_t gridIndex, RailType railType) { GetRails()[gridIndex] = railType; }
+    static bool LIBZHL_API IsValidRailType(lua_Integer rail);
+    inline bool IsValidGridIndex(lua_Integer index, bool includeWalls = true) const {
+        return _descriptor->Data->IsValidGridIndex(index, includeWalls);
+    }
 }} 
     char pad0[0x4];
     RoomDescriptor* _descriptor; //0x04

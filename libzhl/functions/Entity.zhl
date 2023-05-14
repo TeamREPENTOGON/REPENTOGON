@@ -96,3 +96,6 @@ struct Entity depends (AnimationState) {
 
 "568bf18b861403000085c074306a0068????????68(????????)":
 reference void* EntityRTTI;
+
+"558bec51535657894dfce8914d03008b75088b0d????????506a006a0068????????566a0068c5030000e8013ed9ff":
+__thiscall Entity_NPC* Entity::GiveMinecart(Vector* position, Vector* velocity);
