@@ -63,20 +63,20 @@ struct LogViewer {
     {
         std::stringstream ss(fmt);
         std::string token;
+        int old_size = logBuf.size();
         while (std::getline(ss, token, '\n')) {
             int size = std::snprintf(nullptr, 0, "%s %s\n", type, token.c_str());
             std::string res(size + 1, '\0');
             std::sprintf(&res[0], "%s %s\n", type, token.c_str());
 
-            int old_size = logBuf.size();
             va_list args;
             va_start(args, fmt);
             logBuf.appendfv(res.c_str(), args);
             va_end(args);
-            for (int new_size = logBuf.size(); old_size < new_size; old_size++)
-                if (logBuf[old_size] == '\n')
-                    offsets.push_back(old_size + 1);
         }
+        for (int new_size = logBuf.size(); old_size < new_size; old_size++)
+            if (logBuf[old_size] == '\n')
+                offsets.push_back(old_size + 1);
     }
 
     void Draw() {
@@ -121,7 +121,7 @@ struct LogViewer {
             
             internalFilter = internalFilterRes.str().c_str();
 
-            if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), false)) {
+            if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysHorizontalScrollbar)) {
                 const char* buf_begin = logBuf.begin();
                 const char* buf_end = logBuf.end();
 
@@ -134,7 +134,7 @@ struct LogViewer {
                     const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
                     if (!internalFilter.IsActive() || internalFilter.PassFilter(line_start, line_end))
                         if (!filter.IsActive() || filter.PassFilter(line_start, line_end))
-                            ImGui::TextWrapped(line_start, line_end);
+                            ImGui::TextUnformatted(line_start, line_end);
                 }
 
                 if (autoscroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
