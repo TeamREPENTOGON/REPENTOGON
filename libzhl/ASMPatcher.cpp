@@ -347,6 +347,17 @@ ASMPatch& ASMPatch::AddInternalCall(void* addr) {
 	return *this;
 }
 
+ASMPatch& ASMPatch::AddZeroes(uint32_t n) {
+	if (n == 0) {
+		throw std::runtime_error("Cannot add 0 zeroes to an ASMPatch");
+	}
+
+	std::unique_ptr<ASMNode> ptr(new ASMZeroes(n));
+	_size += ptr->Length();
+	_nodes.push_back(std::move(ptr));
+	return *this;
+}
+
 ASMPatch::ASMBytes::ASMBytes(const char* bytes) : _bytes()  {
 	char* buffer = new char[strlen(bytes) + 1];
 	strcpy(buffer, bytes);
@@ -370,6 +381,20 @@ ASMPatch::ASMJump::ASMJump(void* target) : _target(target) {
 std::unique_ptr<char[]> ASMPatch::ASMJump::ToASM(void* at) const {
 	std::unique_ptr<char[]> jump = ASMPatcher::EncodeJump(at, _target);
 	return jump;
+}
+
+ASMPatch::ASMZeroes::ASMZeroes(uint32_t n) : _n(n) {
+
+}
+
+std::unique_ptr<char[]> ASMPatch::ASMZeroes::ToASM(void*) const {
+	std::unique_ptr<char[]> content(new char[_n]);
+	memset(content.get(), 0, _n);
+	return content;
+}
+
+size_t ASMPatch::ASMZeroes::Length() const {
+	return _n;
 }
 
 size_t ASMPatch::ASMJump::Length() const {
@@ -411,7 +436,7 @@ std::unique_ptr<char[]> ASMPatch::ToASM(void* at) const {
 	void* begin = at;
 
 	for (std::unique_ptr<ASMNode> const& ptr : _nodes) {
-		// memcpy because strings are not zero terminated
+		// memcpy because strings are not zero terminated (or contain zeroes)
 		std::unique_ptr<char[]> res = ptr->ToASM(begin);
 		memcpy(result.get() + pos, res.get(), ptr->Length());
 		pos += ptr->Length();

@@ -131,6 +131,7 @@ public:
 	ASMPatch& operator=(const ASMPatch& other) = delete;
 
 	ASMPatch& AddBytes(const char* bytes);
+	ASMPatch& AddZeroes(uint32_t n = 1);
 	ASMPatch& AddRelativeJump(void* target);
 	ASMPatch& AddConditionalRelativeJump(ASMPatcher::CondJumps cond, void* target);
 	ASMPatch& AddInternalCall(void* addr);
@@ -154,6 +155,16 @@ private:
 
 	private:
 		std::unique_ptr<char[]> _bytes;
+	};
+
+	class LIBZHL_API ASMZeroes : public ASMNode {
+	public:
+		ASMZeroes(uint32_t n);
+		std::unique_ptr<char[]> ToASM(void* at) const override;
+		size_t Length() const override;
+
+	private:
+		uint32_t _n;
 	};
 
 	class LIBZHL_API ASMJump : public ASMNode {
