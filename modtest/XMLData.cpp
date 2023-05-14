@@ -24,8 +24,6 @@ bool iscontent = false;
 
 XMLData XMLStuff;
 
-extern LogViewer logViewer;
-
 IsaacString toIsaacString(string s) {
 	IsaacString str;
 	const char* err = s.c_str();

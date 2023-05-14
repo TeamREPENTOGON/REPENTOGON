@@ -141,3 +141,5 @@ struct LogViewer {
         }
     }
 };
+
+extern LogViewer logViewer;

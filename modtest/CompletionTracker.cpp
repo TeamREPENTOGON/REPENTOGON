@@ -23,7 +23,6 @@ using namespace std;
 
 extern XMLData XMLStuff;
 extern std::bitset<500> CallbackState;
-extern LogViewer logViewer;
 
 unordered_map <int, int> CompletionTypeRender;
 bool initializedrendercmpl = false;
