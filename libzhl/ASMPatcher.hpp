@@ -62,9 +62,9 @@ public:
 
 	void* AttemptPatchFunction(const char* beginSig, const char* endSig, const char* patchSig, const char* with);
 	void* PatchFromSig(const char* sig, const char* with);
-	void* PatchAt(void* at, const char* with);
+	void* PatchAt(void* at, const char* with, size_t len = 0);
 	void* PatchAt(void* at, ASMPatch* with);
-	void* Patch(void* at, void* page, const char* with);
+	void* Patch(void* at, void* page, const char* with, size_t len);
 
 	static ptrdiff_t JumpOffset(const void* next, const void* target);
 	static std::unique_ptr<char[]> EncodeJump(const void* at, const void* target);

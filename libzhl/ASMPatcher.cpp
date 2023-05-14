@@ -43,15 +43,15 @@ void* ASMPatcher::PatchFromSig(const char* sig, const char* with) {
 void* ASMPatcher::PatchAt(void* at, ASMPatch* with) {
 	void* targetPage = GetAllocPage(with->Length(), true);
 	std::unique_ptr<char[]> text = with->ToASM(targetPage);
-	return Patch(at, targetPage, text.get());
+	return Patch(at, targetPage, text.get(), with->Length());
 }
 
-void* ASMPatcher::PatchAt(void* at, const char* with) {
+void* ASMPatcher::PatchAt(void* at, const char* with, size_t len) {
 	void* targetPage = GetAllocPage(with, true);
-	return Patch(at, targetPage, with);
+	return Patch(at, targetPage, with, len);
 }
 
-void* ASMPatcher::Patch(void* at, void* targetPage, const char* with) {
+void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len) {
 	FILE* f = fopen("repentogon.log", "a");
 	fprintf(f, "Patching at %p\n", at);
 	bool expected = false;
@@ -109,7 +109,10 @@ void* ASMPatcher::Patch(void* at, void* targetPage, const char* with) {
 	}
 
 	EncodeAndWriteJump(at, targetPage);
-	size_t textLen = strlen(with);
+	size_t textLen = len;
+	if (textLen == 0) {
+		textLen = strlen(with);
+	}
 	memcpy(targetPage, with, textLen);
 	_firstAvailable = (char*)_firstAvailable + textLen;
 	_bytesRemaining -= textLen;
