@@ -3,9 +3,8 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "ASMAmbush.h"
 
-extern int ambushWaves;
+int ambushWaves = 3;
 static constexpr const char* AmbushMT = "Ambush";
 
 static int Lua_GetAmbush(lua_State* L) {

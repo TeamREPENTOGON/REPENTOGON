@@ -8,10 +8,7 @@
 #include <stdio.h>
 #include "lua.hpp"
 
-#include "ASMAmbush.h";
-#include "ASMMegaSatan.h";
-#include "ASMInputAction.h";
-#include "ASMLogMessage.h";
+#include "ASMPatches.h"; 
 
 /********************************************************************************
 HOOKING
@@ -168,12 +165,10 @@ MOD_EXPORT int ModInit(int argc, char **argv)
 {
 	Definition::Init();
 	ZHL::Init();
+	printf(":REPENTOGON:\n");
 	sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON %s)", VERSION);
 	SetWindowTextA(GetActiveWindow(), titlebar);
 	FixLuaDump();
-	printf(":REPENTOGON:\n");
-	PatchHardcodedAmbushWaveCount();
-	PatchHardcodedMegaSatanGameEnding();
-	ASMPatchLogMessage();
+	PerformASMPatches();
 	return 0;
 }

@@ -2,7 +2,6 @@
 #include "HookSystem.h"
 #include "SigScan.h"
 #include "ASMPatcher.hpp"
-#include "ASMLogMessage.h"
 #include "LogViewer.h"
 
 #include <Windows.h>
@@ -110,28 +109,10 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
 * LOG VIEWER PRINTS
 */
 
-static void __stdcall LogMessageCallback(const char* logMessage) {
+void __stdcall LogMessageCallback(const char* logMessage) {
     logViewer.AddLog("[GAME]", logMessage);
 };
 
-void ASMPatchLogMessage() {
-    SigScan scanner("8d51??8a014184c075??2bca80b9????????0a");
-    scanner.Scan();
-    void* addr = scanner.GetAddress();
-
-    ASMPatch patch;
-    patch.AddBytes("\x55\x89\xe5\x50\x52\x53\x51\x56\x57"); // Push the entire stack
-    patch.AddBytes("\x51"); // Push ECX one more time, for use on our function (this will be consumed)
-    patch.AddInternalCall(LogMessageCallback);
-    patch.AddBytes("\x5f\x5e\x59\x5b\x5a\x58\x89\xec\x5d"); // Pop the entire stack
-    patch.AddBytes("\x8D\x51\x01"); // lea edx,dword pointer ds:[ecx+1]
-    patch.AddBytes("\x8A\x01"); // mov al,byte ptr ds:[ecx]
-    patch.AddBytes("\x41"); // inc ecx
-    patch.AddBytes("\x84\xC0"); // test al, al
-    patch.AddBytes("\x75\xF9"); // jne xxxxxxxx (Work around a broken jmp)
-    patch.AddRelativeJump((char*)addr + 0x11);
-    sASMPatcher.PatchAt(addr, &patch);
-}
 
 HOOK_METHOD(Console, Print, (const IsaacString& text, unsigned int color, unsigned int unk) -> void) {
     logViewer.AddLog("[CONSOLE]", text.Get()); //TODO figure out a clean way to pass through the color

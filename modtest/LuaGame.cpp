@@ -4,7 +4,8 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-extern bool overrideMegaSatanEnding;
+bool overrideMegaSatanEnding = false;
+
 
 int Lua_GameAchievementUnlocksDisallowed(lua_State* L)
 {
