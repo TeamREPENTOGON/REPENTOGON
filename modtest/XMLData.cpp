@@ -13,6 +13,9 @@
 #include "HookSystem.h"
 #include "mologie_detours.h"
 #include "rapidxml.hpp"
+
+#include "LogViewer.h"
+
 using namespace rapidxml;
 using namespace std;
 
@@ -20,6 +23,8 @@ char* lastmodid = "";
 bool iscontent = false;
 
 XMLData XMLStuff;
+
+extern LogViewer logViewer;
 
 IsaacString toIsaacString(string s) {
 	IsaacString str;
@@ -77,7 +82,7 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 		lastmodid = new char[path.length() + 1]; //this is the sort of stuff I dont like about C++
 		strcpy(lastmodid, path.c_str());
 	}
-	printf("Mod ID: %s \n", lastmodid);
+	logViewer.AddLog("[REPENTOGON]", "Mod ID: %s \n", lastmodid);
 	
 }
 
@@ -106,7 +111,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				unordered_map<string, string> collidermod = XMLStuff.ModData.mods[XMLStuff.ModData.modbyid[collider["sourceid"]]];
 				unordered_map<string, string>  lastmod = XMLStuff.ModData.mods[XMLStuff.ModData.modbyid[lastmodid]];
 				//g_Game->GetConsole()->PrintError(toIsaacString("[XML] The entity:" + entity["name"] + "(From: " + lastmodid + ") collides with " + collider["name"] + "from (" + collidermod["name"] + ")"));
-				printf("[XML] The entity: %s(From: %s) collides with %s (from %s) \n", entity["name"].c_str(), lastmod["name"].c_str(), collider["name"].c_str(), collidermod["name"].c_str());
+				logViewer.AddLog("[REPENTOGON]", "[XML] The entity: %s(From: %s) collides with %s (from %s) \n", entity["name"].c_str(), lastmod["name"].c_str(), collider["name"].c_str(), collidermod["name"].c_str());
 			}	
 			entity["sourceid"] = lastmodid;
 			XMLStuff.EntityData.entities[idx] = entity;

@@ -7,13 +7,17 @@
 #include <lua.hpp>
 #include "LuaCore.h"
 
+#include "LogViewer.h"
+
+extern LogViewer logViewer;
+
 HOOK_METHOD(Game, StartStageTransition, (bool samestage, int animation, Entity_Player *player) -> void) {
-	printf("Stage Transition \n");
+	logViewer.AddLog("[REPENTOGON]", "Stage Transition \n");
 	super(samestage, animation, player);
 }
 
 HOOK_METHOD(Level, SetStage, (int stageid, int alt) -> void) {
-	printf("Setting Stage \n");
+	logViewer.AddLog("[REPENTOGON]", "Setting Stage \n");
 	super(stageid, alt);
 }
 

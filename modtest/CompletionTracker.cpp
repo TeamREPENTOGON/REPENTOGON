@@ -16,10 +16,14 @@
 
 #include "XMLData.h"
 #include "CompletionTracker.h"
+
+#include "LogViewer.h"
+
 using namespace std;
 
 extern XMLData XMLStuff;
 extern std::bitset<500> CallbackState;
+extern LogViewer logViewer;
 
 unordered_map <int, int> CompletionTypeRender;
 bool initializedrendercmpl = false;
@@ -630,7 +634,7 @@ void SaveCompletionMarksToJson() {
 	std::string directory = jsonpath.substr(0, jsonpath.find_last_of("\\/"));
 	if (!CreateDirectory(directory.c_str(), NULL)) {
 		if (GetLastError() != ERROR_ALREADY_EXISTS) {
-			printf("[REPENTOGON] Error creating Repentogon Save directory \n");
+			logViewer.AddLog("[REPENTOGON]", "Error creating Repentogon Save directory\n");
 			return ;
 		}
 	}
@@ -653,14 +657,14 @@ void SaveCompletionMarksToJson() {
 
 	ofstream ofs(jsonpath);
 	ofs << buffer.GetString() << std::endl;
-	printf("[REPENTOGON] Completion Marks saved to: %s \n", jsonpath.c_str());
+	logViewer.AddLog("[REPENTOGON]", "Completion Marks saved to : % s \n", jsonpath.c_str());
 }
 
 void LoadCompletionMarksFromJson() {
 	CompletionMarks.clear();
 	ifstream ifs(jsonpath);
 	if (!ifs.good()) {
-		printf("[REPENTOGON] No marks for saveslot in: %s \n", jsonpath.c_str());
+		logViewer.AddLog("[REPENTOGON]", "No marks for saveslot in: %s \n", jsonpath.c_str());
 		return;
 	}
 
@@ -690,7 +694,7 @@ void LoadCompletionMarksFromJson() {
 			CompletionMarks[key][i] = value[i].GetInt();
 		}
 	}
-	printf("[REPENTOGON] Completion Marks loaded from: %s \n", jsonpath.c_str());
+	logViewer.AddLog("[REPENTOGON]", "Completion Marks loaded from: %s \n", jsonpath.c_str());
 }
 
 
