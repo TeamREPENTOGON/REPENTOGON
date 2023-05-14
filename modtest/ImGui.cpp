@@ -127,15 +127,31 @@ struct LogViewer {
 
 
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-                //TODO : a second pass that uses Cutter, should be faster when no filters are active
-                for (int line_no = 0; line_no < offsets.Size; line_no++)
-                {
-                    const char* line_start = buf_begin + offsets[line_no];
-                    const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
-                    if (!internalFilter.IsActive() || internalFilter.PassFilter(line_start, line_end))
-                        if (!filter.IsActive() || filter.PassFilter(line_start, line_end))
-                            ImGui::TextUnformatted(line_start, line_end);
+                if (internalFilter.IsActive() || filter.IsActive()) {
+                    for (int line_no = 0; line_no < offsets.Size; line_no++)
+                    {
+                        const char* line_start = buf_begin + offsets[line_no];
+                        const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
+                        if (!internalFilter.IsActive() || (internalFilter.IsActive() && internalFilter.PassFilter(line_start, line_end)))
+                            if (!filter.IsActive() || (filter.IsActive() && filter.PassFilter(line_start, line_end)))
+                                ImGui::TextUnformatted(line_start, line_end);
+                    }
                 }
+                else {
+                    ImGuiListClipper clipper;
+                    clipper.Begin(offsets.Size);
+                    while (clipper.Step())
+                    {
+                        for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
+                        {
+                            const char* line_start = buf_begin + offsets[line_no];
+                            const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
+                            ImGui::TextUnformatted(line_start, line_end);
+                        }
+                    }
+                    clipper.End();
+                }
+               
 
                 if (autoscroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
                     ImGui::SetScrollHereY(1.0f);
