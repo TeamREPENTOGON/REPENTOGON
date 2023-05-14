@@ -7,10 +7,12 @@
 #include <Windows.h>
 #include <gl/GL.h>
 #include <sstream>
+#include <format>
 
 #include "imgui.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
+
 
 // this blogpost https://werwolv.net/blog/dll_injection was a big help, thanks werwolv! 
 
@@ -57,16 +59,24 @@ struct LogViewer {
         autoscroll = true;
     }
 
-    void AddLog(const char* fmt, ...) IM_FMTARGS(2)
+    void AddLog(const char* type, const char* fmt, ...) IM_FMTARGS(2)
     {
-        int old_size = logBuf.size();
-        va_list args;
-        va_start(args, fmt);
-        logBuf.appendfv(fmt, args);
-        va_end(args);
-        for (int new_size = logBuf.size(); old_size < new_size; old_size++)
-            if (logBuf[old_size] == '\n')
-                offsets.push_back(old_size + 1);
+        std::stringstream ss(fmt);
+        std::string token;
+        while (std::getline(ss, token, '\n')) {
+            int size = std::snprintf(nullptr, 0, "%s %s\n", type, token.c_str());
+            std::string res(size + 1, '\0');
+            std::sprintf(&res[0], "%s %s\n", type, token.c_str());
+
+            int old_size = logBuf.size();
+            va_list args;
+            va_start(args, fmt);
+            logBuf.appendfv(res.c_str(), args);
+            va_end(args);
+            for (int new_size = logBuf.size(); old_size < new_size; old_size++)
+                if (logBuf[old_size] == '\n')
+                    offsets.push_back(old_size + 1);
+        }
     }
 
     void Draw() {
@@ -111,26 +121,20 @@ struct LogViewer {
             
             internalFilter = internalFilterRes.str().c_str();
 
-            if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar)) {
+            if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), false)) {
                 const char* buf_begin = logBuf.begin();
                 const char* buf_end = logBuf.end();
 
 
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-                if (internalFilter.IsActive() || filter.IsActive())
+                //TODO : a second pass that uses Cutter, should be faster when no filters are active
+                for (int line_no = 0; line_no < offsets.Size; line_no++)
                 {
-                    for (int line_no = 0; line_no < offsets.Size; line_no++)
-                    {
-                        const char* line_start = buf_begin + offsets[line_no];
-                        const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
-                        if (!internalFilter.IsActive() || internalFilter.PassFilter(line_start, line_end))
-                            if (!filter.IsActive() || filter.PassFilter(line_start, line_end))
-                                ImGui::TextUnformatted(line_start, line_end);
-                    }
-                }
-                else
-                {
-                    ImGui::TextUnformatted(buf_begin, buf_end);
+                    const char* line_start = buf_begin + offsets[line_no];
+                    const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
+                    if (!internalFilter.IsActive() || internalFilter.PassFilter(line_start, line_end))
+                        if (!filter.IsActive() || filter.PassFilter(line_start, line_end))
+                            ImGui::TextWrapped(line_start, line_end);
                 }
 
                 if (autoscroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
@@ -180,7 +184,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
         ImGui::CaptureMouseFromApp();
         ImGui::GetStyle().WindowTitleAlign = ImVec2(0.5f, 0.5f);
 		imguiInitialized = true;
-        logViewer.AddLog("[REPENTOGON] Initialized Dear ImGui\n");
+        logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui\n");
 	}
 
     if (menuShown) {
@@ -194,7 +198,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
             if (ImGui::BeginMenu("Tools"))
             {
                 if (ImGui::MenuItem("Console (UNIMPLEMENTED)", NULL, &imguiConsoleEnabled)) {}
-                if (ImGui::MenuItem("Log Viewer (UNFINISHED)", NULL, &logViewer.enabled)) {}
+                if (ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled)) {}
                 ImGui::EndMenu();
             }
             ImGui::EndMainMenuBar();
@@ -229,7 +233,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc) -> bool, __stdcall) {
 */
 
 static void __stdcall LogMessageCallback(const char* logMessage) {
-    logViewer.AddLog("[GAME] %s", logMessage);
+    logViewer.AddLog("[GAME]", logMessage);
 };
 
 void ASMPatchLogMessage() {
@@ -252,6 +256,6 @@ void ASMPatchLogMessage() {
 }
 
 HOOK_METHOD(Console, Print, (const IsaacString& text, unsigned int color, unsigned int unk) -> void) {
-    logViewer.AddLog("[CONSOLE] %s", text.Get()); //TODO figure out a clean way to pass through the color
+    logViewer.AddLog("[CONSOLE]", text.Get()); //TODO figure out a clean way to pass through the color
     super(text, color, unk);
 }
