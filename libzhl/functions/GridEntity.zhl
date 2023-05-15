@@ -4,18 +4,25 @@ __fastcall GridEntity* CreateGridEntity(GridEntityType type, unsigned int seed);
 "558bec8b45??568bf18946??8b06":
 __thiscall void GridEntity::Init(unsigned int Seed);
 
-struct GridEntity {
+"558bec83ec488a55":
+__thiscall void GridEntity::hurt_func(Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4);
+
+"558bec83ec148bd1f30f115d":
+__thiscall void GridEntity::hurt_surroundings(int Damage, unsigned long long DamageFlags, float unk3, bool unk4);
+
+struct GridEntity depends (GridEntityDesc) {
 {{
+	inline GridEntityDesc* GetDesc() {return (GridEntityDesc*)((char*)this + 0x4); }
 	inline int GetType() {return *(int*)((char*)this + 0x4); }
 	inline GridCollisionClass* GetCollisionClass() { return (GridCollisionClass*)((char*)this + 0x3C); }
 	inline unsigned int* GetGridIndex() { return (unsigned int*)((char*)this + 0x24); }
 }} 
-    int _unk; 
-    GridEntityType _type; // 0x4
-    int _variant; // 0x8
-    int _state;
-    int _unk2;
-    int _varData;
-    int _unk3;
-    unsigned int _collisionClass; // 0x3C
+	
+	__vtable {
+        "558bec83e4f8a1????????8d5424??83ec3c8b80????????53568bf10f1080????????8b88????????0f1088????????57f30f7e90????????8d86????????3bc274??660fd650??0f11008948??0f1148??8d4424":
+        void Render(const Vector& Offset);
+		
+		"8b016a048b40":
+		bool Destroy(bool Immediate);
+    };
 };

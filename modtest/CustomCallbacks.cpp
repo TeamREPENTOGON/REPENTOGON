@@ -104,7 +104,7 @@ HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned __int64 damageFla
 
 //GRID_ROCK_UPDATE (id: 1010)
 
-void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int variant) {
+void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int type) {
 	int callbackid = 1010;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -113,9 +113,9 @@ void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int variant) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid)
+			.push(type)
 			.push(gridRock, lua::Metatables::GRID_ENTITY_ROCK)
-			.pushnil()
-			.push(variant)
+			.push(type)
 			.call(1); // Sylmir note: original version said there was 1 result on the stack
 	}
 }
@@ -123,8 +123,8 @@ void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int variant) {
 HOOK_METHOD(GridEntity_Rock, Update, () -> void) {
 	GridEntity_Rock* rockGridEnt = (GridEntity_Rock*)this;
 
-	int variant = this->_variant;
-	ProcessGridRockUpdate(this, variant);
+	int type = this->GetDesc()->_type;
+	ProcessGridRockUpdate(this, type);
 	super();
 }
 
@@ -2038,5 +2038,104 @@ HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& pos, int FireAmount) -> voi
 			.push(ent, lua::Metatables::ENTITY)
 			//.push(this, lua::metatables::WeaponMT)
 			.call(1);
+	}
+}
+
+/*HOOK_METHOD(Weapon, Fire, (const Vector& pos, bool unk1, bool unk2)-> void) {
+	super(pos, unk1, unk2);
+	int callbackid = 1099;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(this, lua::metatables::WeaponMT)
+			.call(1);
+	}
+}
+*/
+
+//POST_GRID_ROCK_DESTROY (1011)
+void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, int type) {
+	int callbackid = 1011;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(type)
+			.push(gridRock, lua::Metatables::GRID_ENTITY_ROCK)
+			.push(type)
+			.push(Immediate)
+			.call(1);
+	}
+}
+
+
+HOOK_METHOD(GridEntity_Rock, Destroy, (bool Immediate) -> bool) {
+	bool result = super(Immediate);
+	GridEntity_Rock* gridRock = (GridEntity_Rock*)this;
+	int gridType = gridRock->GetDesc()->_type;
+	if (result) ProcessGridRockDestroy(gridRock,Immediate, gridType);
+	return result;
+	
+}
+
+//(POST_)GRID_HURT_DAMAGE (1012/1013)
+void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4) {
+	int callbackid = 1013;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(type)
+			.push(gridEnt, lua::Metatables::GRID_ENTITY)
+			.push(ent, lua::Metatables::ENTITY)
+			.push(Damage)
+			.push(DamageFlags)
+			.push(unk3)
+			.push(unk4)
+			.call(1);
+	}
+}
+
+HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4) -> void) {
+	int callbackid = 1012;
+	if (!(CallbackState.test(callbackid - 1000) || CallbackState.test((callbackid + 1) - 1000))) { super(ent, Damage, DamageFlags, unk3, unk4); return; }
+	int gridType = this->GetDesc()->_type;
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		.push(gridType)
+		.push(this, lua::Metatables::GRID_ENTITY)
+		.push(ent, lua::Metatables::ENTITY)
+		.push(Damage)
+		.push(DamageFlags)
+		.push(unk3)
+		.push(unk4)
+		.call(1);
+
+	if (!result) {
+		if (lua_isboolean(L, -1)) {
+			if (lua_toboolean(L, -1)) {
+				return;
+			}
+		}
+		else {
+			super(ent, Damage, DamageFlags, unk3, unk4);
+			ProcessPostGridHurtDamage(this, gridType, ent, Damage, DamageFlags, unk3, unk4);
+		}
 	}
 }

@@ -1,5 +1,3 @@
-
-
 struct Weapon_Brimstone : public Weapon { {{
 
 }}

@@ -165,6 +165,7 @@ __thiscall int Entity_Player::GetWeaponModifiers();
 __thiscall void Entity_Player::EnableWeaponType(WeaponType weaponType, bool Set);
 
 struct Entity_Player : public Entity { {{
+	inline int* GetMetronomeCollectibleID() { return (int*)((char*)this + 0x12d8); } 
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Weapon* GetWeapon() { return (Weapon*)((char*)this + 0x1328); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }

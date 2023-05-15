@@ -67,8 +67,9 @@ HOOK_METHOD(Game, Update, () -> void) {
 }
 */
 
-/*HOOK_METHOD(Weapon, Fire, (const Vector& pos, bool unk1, bool unk2)-> void) {
-	printf("Weapon::Fire %f %f %d %d %f\n", pos.x, pos.y, unk1, unk2, this->GetFireDelay());
+/*HOOK_METHOD(Weapon_MonstrosLung, Fire, (const Vector& pos, bool unk1, bool unk2)-> void) {
+	printf("Weapon::Fire %f %f %d %d %f\n", pos.x, pos.y, unk1, unk2, this->GetCharge());
+	printf("Weapon::DirVector: %f %f\n", this->GetDirection()->x, this->GetDirection()->y);
 	super(pos, unk1, unk2);
 }
 */
@@ -222,5 +223,11 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	source->_bottomRight.x = source->_bottomRight.x + 16.0f;
 	
 	super(source, dest, color);
+}
+*/
+
+/*HOOK_STATIC(GridEntity_Rock, SpawnDrops, (const Vector& pos, int GridEntityType, int GridEntityVariant, unsigned int Seed, bool Unk, int BackdropType) -> void) {
+	printf("GridEntity::SpawnDrops %f %f, %d %d %d %d %d \n", pos.x, pos.y, GridEntityType, GridEntityVariant, Seed, Unk, BackdropType );
+	super(pos, GridEntityType, GridEntityVariant, Seed, Unk, BackdropType);
 }
 */
