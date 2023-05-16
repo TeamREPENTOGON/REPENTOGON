@@ -6,6 +6,8 @@
 #include <time.h>
 #include "version.h"
 
+#include <string>
+
 typedef int (*ModInitFunc)(int, char **);
 
 static int argc = 0;
@@ -24,7 +26,7 @@ static bool HasCommandLineArgument(const char *arg)
 	return false;
 }
 
-static std::vector<HMODULE> mods;
+static std::vector<std::pair<std::string, HMODULE>> mods;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -63,7 +65,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 					int n = strlen(fileName);
 					if(n >= 4 && !_stricmp(fileName + n - 4, ".dll") && !_strnicmp(fileName, "zhl", 3))
 					{
-						mods.push_back(LoadLibraryA(findData.cFileName));
+						mods.push_back(std::make_pair(findData.cFileName, LoadLibraryA(findData.cFileName)));
 						//printf("loaded mod %s\n", fileName);
 					}
 				}
@@ -74,11 +76,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		// Call all initialization functions once all the mods have been loaded
 		for(auto it = mods.begin() ; it != mods.end() ; ++it)
 		{
-			ModInitFunc init = (ModInitFunc)GetProcAddress(*it, "ModInit");
+			ModInitFunc init = (ModInitFunc)GetProcAddress(it->second, "ModInit");
 			if(init)
 				init(argc, argv);
 			else
-				printf("failed to find ModInit (%08x)\n", *it);
+				printf("failed to find ModInit (%s, %08x)\n", it->first.c_str(), it->second);
 		}
 
 		printf("Loaded all mods in %d msecs\n", GetTickCount() - startTime);
