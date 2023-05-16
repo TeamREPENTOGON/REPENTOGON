@@ -47,6 +47,16 @@ static void RegisterSpawnRockDrops(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static int Lua_GridEntityGetRenderPosition(lua_State* L)
+{
+	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "Entity");
+	//Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector* buffer = new Vector(0, 0);
+	*toLua = *gridEnt->GetRenderPosition(buffer);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -54,6 +64,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::Metatables mt = lua::Metatables::GRID_ENTITY;
 	lua::RegisterFunction(state, mt, "HurtDamage", Lua_GridEntityHurtDamage);
 	lua::RegisterFunction(state, mt, "HurtSurroundings", Lua_GridEntityHurtSurroundings);
+	lua::RegisterFunction(state, mt, "GetRenderPosition", Lua_GridEntityGetRenderPosition);
 	//lua::Metatables rockMt = lua::Metatables::CONST_GRID_ENTITY_ROCK;
 	//lua::RegisterFunction(state, rockMt, "SpawnDrops", Lua_GridEntityRockSpawnDrops);
 	RegisterSpawnRockDrops(state);

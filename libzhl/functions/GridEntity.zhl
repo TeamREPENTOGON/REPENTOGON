@@ -10,6 +10,9 @@ __thiscall void GridEntity::hurt_func(Entity* ent, int Damage, int DamageFlags, 
 "558bec83ec148bd1f30f115d":
 __thiscall void GridEntity::hurt_surroundings(int Damage, unsigned long long DamageFlags, float unk3, bool unk4);
 
+"558bec83ec088b41":
+__thiscall Vector* GridEntity::GetRenderPosition(Vector* buffer);
+
 struct GridEntity depends (GridEntityDesc) {
 {{
 	inline GridEntityDesc* GetDesc() {return (GridEntityDesc*)((char*)this + 0x4); }
