@@ -2111,3 +2111,14 @@ local colorPresets = {
 for colorName, colorData in pairs(colorPresets) do
 	quickRegisterColorPreset(colorName, table.unpack(colorData))
 end
+
+ImGuiElement = {
+    CollapsingHeader = 0,
+	TreeNode = 1,
+    Text = 2,
+    SeparatorText = 3,
+    BulletText = 4,
+    Separator = 5,
+    SameLine = 6,
+    Button = 7,
+}
