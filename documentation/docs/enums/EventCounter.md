@@ -164,20 +164,20 @@ tags:
 |156 |PROGRESSION_KILL_HUSH_WITH_KEEPER {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |157 |PROGRESSION_KILL_HUSH_WITH_APOLLYON {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |158 |HUSH_KILLS {: .copyable } | How often Hush was killed. (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy) |
-|159 |UNKNOWN_EVENT_159 {: .copyable } |  |
-|160 |UNKNOWN_EVENT_160 {: .copyable } |  |
-|161 |UNKNOWN_EVENT_161 {: .copyable } |  |
-|162 |UNKNOWN_EVENT_162 {: .copyable } |  |
-|163 |UNKNOWN_EVENT_163 {: .copyable } |  |
-|164 |UNKNOWN_EVENT_164 {: .copyable } |  |
-|165 |UNKNOWN_EVENT_165 {: .copyable } |  |
-|166 |UNKNOWN_EVENT_166 {: .copyable } |  |
-|167 |UNKNOWN_EVENT_167 {: .copyable } |  |
-|168 |UNKNOWN_EVENT_168 {: .copyable } |  |
-|169 |UNKNOWN_EVENT_169 {: .copyable } |  |
-|170 |UNKNOWN_EVENT_170 {: .copyable } |  |
-|171 |UNKNOWN_EVENT_171 {: .copyable } |  |
-|172 |UNKNOWN_EVENT_172 {: .copyable } |  |
+|159 |GREED_MODE_COINS_DONATED_WITH_ISAAC {: .copyable } |  |
+|160 |GREED_MODE_COINS_DONATED_WITH_MAGDALENE {: .copyable } |  |
+|161 |GREED_MODE_COINS_DONATED_WITH_CAIN {: .copyable } |  |
+|162 |GREED_MODE_COINS_DONATED_WITH_JUDAS {: .copyable } |  |
+|163 |GREED_MODE_COINS_DONATED_WITH_BLUE {: .copyable } |  |
+|164 |GREED_MODE_COINS_DONATED_WITH_EVE {: .copyable } |  |
+|165 |GREED_MODE_COINS_DONATED_WITH_SAMSON {: .copyable } |  |
+|166 |GREED_MODE_COINS_DONATED_WITH_AZAZEL {: .copyable } |  |
+|167 |GREED_MODE_COINS_DONATED_WITH_LAZARUS {: .copyable } |  |
+|168 |GREED_MODE_COINS_DONATED_WITH_EDEN {: .copyable } |  |
+|169 |GREED_MODE_COINS_DONATED_WITH_THE {: .copyable } |  |
+|170 |GREED_MODE_COINS_DONATED_WITH_LILITH {: .copyable } |  |
+|171 |GREED_MODE_COINS_DONATED_WITH_KEEPER {: .copyable } |  |
+|172 |GREED_MODE_COINS_DONATED_WITH_APOLLYON {: .copyable } |  |
 |173 |PROGRESSION_KILL_DELIRIUM_WITH_ISAAC {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |174 |PROGRESSION_KILL_DELIRIUM_WITH_MAGDALENE {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |175 |PROGRESSION_KILL_DELIRIUM_WITH_CAIN {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
@@ -217,7 +217,7 @@ tags:
 |209 |PROGRESSION_KILL_MEGA_SATAN_WITH_THE_FORGOTTEN {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |210 |PROGRESSION_GREED_MODE_CLEARED_WITH_THE_FORGOTTEN {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |211 |PROGRESSION_KILL_HUSH_WITH_THE_FORGOTTEN {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
-|212 |UNKNOWN_EVENT_212 {: .copyable } | is a counter of something rare |
+|212 |GREED_MODE_COINS_DONATED_WITH_FORGOTTEN {: .copyable } |  |
 |213 |PROGRESSION_KILL_DELIRIUM_WITH_THE_FORGOTTEN {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |214 |PROGRESSION_KILL_MOMS_HEART_WITH_BETHANY {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |215 |PROGRESSION_KILL_MOMS_HEART_WITH_JACOB_AND_ESAU {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
@@ -390,24 +390,24 @@ tags:
 |382 |PROGRESSION_KILL_HUSH_WITH_T_THE_FORGOTTEN {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |383 |PROGRESSION_KILL_HUSH_WITH_T_BETHANY {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |384 |PROGRESSION_KILL_HUSH_WITH_T_JACOB_AND_ESAU {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
-|385 |UNKNOWN_EVENT_385 {: .copyable } |  |
-|386 |UNKNOWN_EVENT_386 {: .copyable } |  |
-|387 |UNKNOWN_EVENT_387 {: .copyable } |  |
-|388 |UNKNOWN_EVENT_388 {: .copyable } |  |
-|389 |UNKNOWN_EVENT_389 {: .copyable } |  |
-|390 |UNKNOWN_EVENT_390 {: .copyable } |  |
-|391 |UNKNOWN_EVENT_391 {: .copyable } |  |
-|392 |UNKNOWN_EVENT_392 {: .copyable } |  |
-|393 |UNKNOWN_EVENT_393 {: .copyable } |  |
-|394 |UNKNOWN_EVENT_394 {: .copyable } |  |
-|395 |UNKNOWN_EVENT_395 {: .copyable } |  |
-|396 |UNKNOWN_EVENT_396 {: .copyable } |  |
-|397 |UNKNOWN_EVENT_397 {: .copyable } |  |
-|398 |UNKNOWN_EVENT_398 {: .copyable } |  |
-|399 |UNKNOWN_EVENT_399 {: .copyable } |  |
-|400 |UNKNOWN_EVENT_400 {: .copyable } |  |
-|401 |UNKNOWN_EVENT_401 {: .copyable } |  |
-|402 |UNKNOWN_EVENT_402 {: .copyable } |  |
+|385 |GREED_MODE_COINS_DONATED_WITH_BETHANY {: .copyable } |  |
+|386 |GREED_MODE_COINS_DONATED_WITH_JACOB_AND_ESAU {: .copyable } |  |
+|387 |GREED_MODE_COINS_DONATED_WITH_T_ISAAC {: .copyable } |  |
+|388 |GREED_MODE_COINS_DONATED_WITH_T_MAGDALENE {: .copyable } |  |
+|389 |GREED_MODE_COINS_DONATED_WITH_T_CAIN {: .copyable } |  |
+|390 |GREED_MODE_COINS_DONATED_WITH_T_JUDAS {: .copyable } |  |
+|391 |GREED_MODE_COINS_DONATED_WITH_T_BLUE_BABY {: .copyable } |  |
+|392 |GREED_MODE_COINS_DONATED_WITH_T_EVE {: .copyable } |  |
+|393 |GREED_MODE_COINS_DONATED_WITH_T_SAMSON {: .copyable } |  |
+|394 |GREED_MODE_COINS_DONATED_WITH_T_AZAZEL {: .copyable } |  |
+|395 |GREED_MODE_COINS_DONATED_WITH_T_LAZARUS {: .copyable } |  |
+|396 |GREED_MODE_COINS_DONATED_WITH_T_EDEN {: .copyable } |  |
+|397 |GREED_MODE_COINS_DONATED_WITH_T_THE_LOST {: .copyable } |  |
+|398 |GREED_MODE_COINS_DONATED_WITH_T_LILITH {: .copyable } |  |
+|399 |GREED_MODE_COINS_DONATED_WITH_T_KEEPER {: .copyable } |  |
+|400 |GREED_MODE_COINS_DONATED_WITH_T_THE_FORGOTTEN {: .copyable } |  |
+|401 |GREED_MODE_COINS_DONATED_WITH_T_BETHANY {: .copyable } |  |
+|402 |GREED_MODE_COINS_DONATED_WITH_T_JACOB_AND_ESAU {: .copyable } |  |
 |404 |PROGRESSION_KILL_DELIRIUM_WITH_BETHANY {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |405 |PROGRESSION_KILL_DELIRIUM_WITH_JACOB_AND_ESAU {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |406 |PROGRESSION_KILL_DELIRIUM_WITH_T_ISAAC {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
