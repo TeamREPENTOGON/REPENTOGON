@@ -38,11 +38,23 @@ struct XMLMod {
 
 	unordered_map<string, int> modplayers;
 	unordered_map<string, int> modentities;
+	unordered_map<string, int> modmusictracks;
 	int nomods;
 };
 
+typedef unordered_map<string, string> XMLAttributes;
+
+
+struct XMLMusic {
+	unordered_map<int, XMLAttributes> tracks;
+	unordered_map<string, int> musicbyname;
+	unordered_map<string, int> musicbynamemod;
+	unordered_map<string, int> musicbymod;
+	int maxid;
+};
+
 struct XMLPlayer {
-	unordered_map<int, unordered_map<string, string>> players;
+	unordered_map<int, XMLAttributes> players;
 	unordered_map<string, int> playerbyname;
 	unordered_map<string, int> playerbynamemod;
 	unordered_map<string, int> playerbymod;
@@ -50,7 +62,7 @@ struct XMLPlayer {
 };
 
 struct XMLEntity {
-	unordered_map<tuple<int,int,int>, unordered_map<string, string>> entities; //idx is type-var-sub vector
+	unordered_map<tuple<int,int,int>, XMLAttributes> entities; //idx is type-var-sub vector
 	unordered_map<string, tuple<int, int, int>> entitybyname;
 	unordered_map<string, tuple<int, int, int>> entitybynamemod;
 	unordered_map<string, tuple<int, int, int>> entitybytype;
@@ -61,6 +73,7 @@ struct XMLEntity {
 struct XMLData {
 	XMLPlayer PlayerData;
 	XMLEntity EntityData;
+	XMLMusic MusicData;
 	XMLMod ModData;
 };
 extern XMLData XMLStuff;

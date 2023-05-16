@@ -15,11 +15,13 @@
 #include "rapidxml.hpp"
 
 #include "LogViewer.h"
+#include <lua.hpp>
+#include "LuaCore.h"
 
 using namespace rapidxml;
 using namespace std;
 
-char* lastmodid = "";
+char* lastmodid = "BaseGame";
 bool iscontent = false;
 
 XMLData XMLStuff;
@@ -87,6 +89,9 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 
 void ProcessXmlNode(xml_node<char>* node) {
 	if (!node) { return; }
+	Manager* manager = g_Manager;
+	StringTable* stringTable = manager->GetStringTable();
+	uint32_t unk;
 	if ((strcmp(node->name(), "entity") == 0))
 	{
 		for (xml_node<char>* auxnode = node; auxnode; auxnode = auxnode->next_sibling()) {
@@ -99,19 +104,44 @@ void ProcessXmlNode(xml_node<char>* node) {
 					subattr = attr;
 				}
 			}
-			int var = -1;
-			int sub = -1;
+			int type = stoi(entity["id"]);
+			int var = 0;
+			int sub = 0;
+			
 			if (entity["variant"].length() > 0) { var = stoi(entity["variant"]); }
 			if (entity["subtype"].length() > 0) { sub = stoi(entity["subtype"]); }
-			tuple idx = { stoi(entity["id"]), var, sub };
+			tuple idx = { type, var, sub };
 			if (iscontent && (XMLStuff.EntityData.entities.count(idx) > 0)) {
 				unordered_map<string, string> collider = XMLStuff.EntityData.entities[idx];
 				unordered_map<string, string> collidermod = XMLStuff.ModData.mods[XMLStuff.ModData.modbyid[collider["sourceid"]]];
 				unordered_map<string, string>  lastmod = XMLStuff.ModData.mods[XMLStuff.ModData.modbyid[lastmodid]];
 				//g_Game->GetConsole()->PrintError(toIsaacString("[XML] The entity:" + entity["name"] + "(From: " + lastmodid + ") collides with " + collider["name"] + "from (" + collidermod["name"] + ")"));
-				logViewer.AddLog("[REPENTOGON]", "[XML] The entity: %s(From: %s) collides with %s (from %s) \n", entity["name"].c_str(), lastmod["name"].c_str(), collider["name"].c_str(), collidermod["name"].c_str());
+				if (false){
+					printf("[XML] The entity: %s(From: %s) collides with %s (from %s) \n", entity["name"].c_str(), lastmod["name"].c_str(), collider["name"].c_str(), collidermod["name"].c_str());
+				}
+				//Conflict resolve emulation begin
+				if ((type < 10) || (type >= 1000)) {
+					do {
+						var += 1;
+						idx = { type, var, sub };
+					} while (XMLStuff.EntityData.entities.count(idx) > 0);
+				}
+				else {
+					do {
+						type += 1;
+						idx = { type, var, sub };
+					} while (XMLStuff.EntityData.entities.count(idx) > 0);
+				}
+				//Conflict resolve emulation end
 			}	
+			entity["id"] = to_string(type);
+			entity["type"] = to_string(type);
+			entity["variant"] = to_string(var);
 			entity["sourceid"] = lastmodid;
+			if (entity["name"].find("#") != string::npos) {
+				entity["untranslatedname"] = entity["name"];
+				entity["name"] = string(stringTable->GetString("Entities", 0, entity["name"].substr(1, entity["name"].length()).c_str(), &unk));
+			}
 			XMLStuff.EntityData.entities[idx] = entity;
 			XMLStuff.EntityData.entitybyname[entity["name"]] = idx;
 			XMLStuff.EntityData.entitybytype[entity["id"]] = idx;
@@ -159,6 +189,43 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.PlayerData.players[id] = player;
 			XMLStuff.ModData.modplayers[lastmodid] += 1;
 			}
+	}
+	else if ((strcmp(node->name(), "music") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			unordered_map<string, string> music;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				music[stringlower(attr->name())] = string(attr->value());
+			}
+			if (music.count("id") > 0) {
+				id = stoi(music["id"]);
+			}
+			else {
+				XMLStuff.MusicData.maxid = XMLStuff.MusicData.maxid + 1;
+				music["id"] = to_string(XMLStuff.MusicData.maxid);
+				id = XMLStuff.MusicData.maxid;
+			}
+			if (id > XMLStuff.MusicData.maxid) {
+				XMLStuff.MusicData.maxid = id;
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				music[attr->name()] = attr->value();
+			}
+
+			music["sourceid"] = lastmodid;
+
+			//printf("Music: %s \n", music["name"].c_str());
+
+			XMLStuff.MusicData.musicbynamemod[music["name"] + lastmodid] = id;
+			XMLStuff.MusicData.musicbymod[lastmodid] = id;
+			XMLStuff.MusicData.musicbyname[music["name"]] = id;
+			XMLStuff.MusicData.tracks[id] = music;
+			XMLStuff.ModData.modmusictracks[lastmodid] += 1;
+		}
 	}
 	else if ((strcmp(node->name(), "name") == 0) && node->parent() && (strcmp(node->parent()->name(), "metadata") == 0)) {
 		xml_node<char>* daddy = node->parent();
@@ -239,4 +306,72 @@ HOOK_STATIC(Manager, Update, () -> void) {
 	super();
 }
 */
+
+
+bool Lua_PushXMLNode(lua_State* L, XMLAttributes node)
+{
+	lua_newtable(L);
+	for each (const auto & att in node)
+	{
+		printf("attr: %s / %s \n", att.first.c_str(), att.second.c_str());
+		lua_pushstring(L, att.first.c_str());
+		lua_pushstring(L, att.second.c_str());
+		lua_settable(L, -3);
+	}
+
+	return true;
+}
+
+
+int Lua_GetEntityXML(lua_State* L)
+{
+	string entityname = string( lua_tostring(L, 1));
+	XMLAttributes entity = XMLStuff.EntityData.entities[XMLStuff.EntityData.entitybyname[entityname]];
+	printf("entityname %s %d", entityname.c_str(), entity.count("id"));
+	Lua_PushXMLNode(L, entity);
+	return 1;
+}
+
+int Lua_GetPlayerXML(lua_State* L)
+{
+	string entityname = string(lua_tostring(L, 1));
+	XMLAttributes entity = XMLStuff.PlayerData.players[XMLStuff.PlayerData.playerbyname[entityname]];
+	printf("playername %s %d", entityname.c_str(), entity.count("id"));
+	Lua_PushXMLNode(L, entity);
+	return 1;
+}
+
+int Lua_GetMusicXML(lua_State* L)
+{
+	string entityname = string(lua_tostring(L, 1));
+	XMLAttributes entity = XMLStuff.MusicData.tracks[XMLStuff.MusicData.musicbyname[entityname]];
+	printf("musicname %s %d", entityname.c_str(), entity.count("id"));
+	Lua_PushXMLNode(L, entity);
+	return 1;
+}
+
+
+
+HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+	super();
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_newtable(L); 
+	lua_pushstring(L, "GetEntityByName"); 
+	lua_pushcfunction(L, Lua_GetEntityXML); 
+	lua_settable(L, -3);
+	lua_pushstring(L, "GetPlayerByName");
+	lua_pushcfunction(L, Lua_GetPlayerXML);
+	lua_settable(L, -3);
+	lua_pushstring(L, "GetMusicByName");
+	lua_pushcfunction(L, Lua_GetMusicXML);
+	lua_settable(L, -3);
+	lua_setglobal(L, "XMLData"); 
+	//lua_pop(L, 1);
+}
+
+
+
+
 #endif
