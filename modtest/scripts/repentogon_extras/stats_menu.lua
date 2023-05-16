@@ -77,6 +77,7 @@ local StatsMenu = {
             "CHAOS", {
             { "rocks destroyed",               EventCounter.ROCKS_DESTROYED },
             { { "tinted rocks", "destroyed" }, EventCounter.TINTED_ROCKS_DESTROYED },
+            { { "super special", "rocks destroyed" }, EventCounter.SUPER_SPECIAL_ROCKS_DESTROYED },
             { "poop destroyed",                EventCounter.POOP_DESTROYED },
             { { "rainbow poop", "destroyed" }, EventCounter.RAINBOW_POOP_DESTROYED },
             { "pills eaten",                   EventCounter.PILLS_EATEN },

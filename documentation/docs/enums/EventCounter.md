@@ -9,7 +9,7 @@ tags:
 |1 |MOM_KILLS {: .copyable } | Stat from the stat screen. Counts kills of Moms heart (Does only count instances where the kill is combined with run "progression". aka in final room and spawning a trapdoor/chest/trophy) |
 |2 |ROCKS_DESTROYED {: .copyable } | Includes all rock types including tinted rocks |
 |3 |TINTED_ROCKS_DESTROYED {: .copyable } |  |
-|4 |UNKNOWN_EVENT_4 {: .copyable } | seems to count something rare-ish |
+|4 |SUPER_SPECIAL_ROCKS_DESTROYED {: .copyable } | Super Special Rocks are Tinted Rock variants with smaller marks and lack of discoloration |
 |5 |POOP_DESTROYED {: .copyable } | Includes all poop types. Red poop counts everytime it gets destroyed |
 |6 |PILLS_EATEN {: .copyable } | Includes all pills including horse pills |
 |7 |XIII_DEATH_CARD_USED {: .copyable } |  |
