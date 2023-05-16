@@ -196,7 +196,7 @@ tags:
 |188 |CHARACTER_LAST_RUN_WIN {: .copyable } | Potential Bitmask containing the ids of the characters that won the last run, including coop. gets cleared on run restart. TODO: Usage and pattern still unknown!!! |
 |189 |UNKNOWN_EVENT_189 {: .copyable } | really big counter |
 |190 |DAILYS_PLAYED {: .copyable } | counts dailies played |
-|191 |DAILYS_SYNC_ACTIVE {: .copyable } | Seems to be set to 1 when daily is finished and score is submitted. set to 0 when daily ranking is loaded |
+|191 |DAILY_RUN_IS_ACTIVE {: .copyable } | Set to 1 when daily is currently played. Set to 0 when trophy was collected |
 |192 |DAILYS_STREAK {: .copyable } | Numbers of dailies won in a row |
 |193 |DAILYS_WON {: .copyable } | Number of dailies won |
 |194 |RAINBOW_POOP_DESTROYED {: .copyable } |  |
