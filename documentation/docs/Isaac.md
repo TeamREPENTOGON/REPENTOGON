@@ -107,7 +107,7 @@ Returns the translation string associated with the given key in the given catego
 
 ___
 ### Set·Clipboard () {: aria-label='Functions' }
-#### string SetClipboard (string clipboarddata) {: .copyable aria-label='Functions' }
+#### boolean SetClipboard ( string clipboarddata) {: .copyable aria-label='Functions' }
 Sets the contents of the clipboard to the provided string.
 
 ___
