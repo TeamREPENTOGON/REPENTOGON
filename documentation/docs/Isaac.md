@@ -43,6 +43,11 @@ ___
 Completes all completion marks for a given character. Supports both modded and vanilla characters. 
 
 ___
+### Get·Clipboard () {: aria-label='Functions' }
+#### string GetClipboard () {: .copyable aria-label='Functions' }
+Gets the contents of the clipboard as long as they are in text form, otherwise it will just return nil.
+
+___
 ### Get·Completion·Mark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype) {: .copyable aria-label='Functions' }
 Gets a completion mark value for a specific character. Supports both modded and vanilla characters. 
@@ -99,6 +104,11 @@ ___
 ### Get·String () {: aria-label='Functions' }
 #### string GetString ( string category, string key) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
+
+___
+### Set·Clipboard () {: aria-label='Functions' }
+#### string SetClipboard (string clipboarddata) {: .copyable aria-label='Functions' }
+Sets the contents of the clipboard to the provided string.
 
 ___
 ### Set·Completion·Mark () {: aria-label='Functions' }

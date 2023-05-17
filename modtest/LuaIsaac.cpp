@@ -5,6 +5,9 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+#include "Windows.h"
+#include <string>
+
 static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
 
@@ -271,6 +274,89 @@ static void RegisterDrawQuad(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+
+int Lua_SetClipboard(lua_State* L) {
+	const char* text = luaL_checkstring(L, 1);
+
+	if (!OpenClipboard(NULL)) {
+		lua_pushboolean(L, false);
+		return 2;
+	}
+
+	EmptyClipboard();
+	size_t textLength = strlen(text);
+
+	//allocate global memory to hold the text
+	HGLOBAL hData = GlobalAlloc(GMEM_MOVEABLE, textLength + 1);
+	if (hData == NULL) {
+		CloseClipboard();
+		lua_pushboolean(L, false);
+		return 2;
+	}
+
+	//lock the global memory to get a pointer to the data
+	char* pszText = static_cast<char*>(GlobalLock(hData));
+	if (pszText == NULL) {
+		CloseClipboard();
+		GlobalFree(hData);
+		lua_pushboolean(L, false);
+		return 2;
+	}
+
+	strcpy_s(pszText, textLength + 1, text); //copy the text to the global memory
+	GlobalUnlock(hData);//unlock the global memory
+	SetClipboardData(CF_TEXT, hData);
+	CloseClipboard();
+	lua_pushboolean(L, true);
+
+	return 1;
+}
+
+int Lua_GetClipboard(lua_State* L) {	
+	if (!OpenClipboard(NULL)) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	HANDLE hData = GetClipboardData(CF_TEXT); //get the clipboard data handle
+	if (hData == NULL) {
+		CloseClipboard();
+		lua_pushnil(L);
+		return 1;
+	}
+
+	char* pszText = static_cast<char*>(GlobalLock(hData)); 	//lock the handle to get a pointer to the data
+	if (pszText == NULL) {
+		CloseClipboard();
+		lua_pushnil(L);
+		return 1;
+	}
+	std::string clipboardText(pszText);
+
+	//unlock and close the clipboard
+	GlobalUnlock(hData);
+	CloseClipboard();
+
+	lua_pushstring(L, clipboardText.c_str());
+
+	return 1;
+}
+
+static void RegisterClipboardStuff(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "SetClipboard");
+	lua_pushcfunction(L, Lua_SetClipboard);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "GetClipboard");
+	lua_pushcfunction(L, Lua_GetClipboard);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -286,6 +372,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterCreateTimer(state);
 	RegisterDrawLine(state);
 	RegisterDrawQuad(state);
+	RegisterClipboardStuff(state);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
