@@ -40,6 +40,15 @@ __thiscall void Room::RenderGridLight(GridEntity* grid, Vector &offset);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec81ec30010000":
 __thiscall void Room::RenderEntityLight(Entity* ent, Vector &offset);
 
+"558bec8bc18b4d??81f9bf01000077??8b4c????85c974??8379??00":
+__thiscall bool Room::CanPickupGridEntity(int GridIndex);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec4001000056":
+__thiscall bool Room::PickupGridEntity(int GridIndex, GridEntityDesc* Desc, ANM2* Sprite);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec40010000a1????????33c58945??5657508d45??64a3????????8bf98d8d":
+__thiscall Entity_Effect* Room::PickupGridEntity(int GridIndex);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }

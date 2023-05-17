@@ -20,6 +20,9 @@ __thiscall Entity_Player* PlayerManager::FirstTrinketOwner(TrinketType trinketTy
 "558bec8b511056":
 __thiscall bool PlayerManager::HasTemporaryEffect(ItemConfig_Item *item);
 
+"558bec83e4f883ec0ca1????????53568bd9":
+__thiscall int PlayerManager::GetTrinketMultiplier(int TrinketID);
+
 struct PlayerManager depends (RNG)
 {
     RNG _rng; //0x0

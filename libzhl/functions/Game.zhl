@@ -64,35 +64,8 @@ __thiscall void Game::ToggleDebugFlag(unsigned int debug);
 "558bec8b5508b801000000568bf18bca83e11fc1ea05d3e085849664":
 __thiscall bool Game::GetDebugFlag(unsigned int debug);
 
-//out potential target
-/*
-		01444061 e8  3a  1a       CALL       IsaacRepentance::Game::Game?                     int * Game?(Game * param_1)
-				 e1  ff
-		01444066 c7  45  fc       MOV        dword ptr [EBP  + local_14 ],0xffffffff
-				 ff  ff  ff  ff
-		0144406d a3  5c  d6       MOV        [g_Game? ],EAX                                   = ??
-				 78  01
-		01444072 e8  19  4c       CALL       IsaacRepentance::Game::Init?                     void Init?(void)
-				 e1  ff
-
-
-Signature base : \xE8\x00\x00\x00\x00
-				 \xC7\x45\xFC\xFF\xFF\xFF\xFF
-				 \xA3\x00\x00\x00\x00
-				 \xE8\x00\x00\x00\x00\x8B x????xxxxxxxx????x????x
-
-const static unsigned char Signature_GameGlobalAddresSig[] = {
-	0xE8,0x00,0x00,0x00,0x00,
-	0xC7,0x45,0xFC,0xFF,0xFF,0xFF,0xFF,
-	0xA3,0x00,0x00,0x00,0x00,
-	0xE8
-};
-
-const static FuncSignatureByte Signature_GameGlobalAddres = {
-	Signature_GameGlobalAddresSig,
-	"b????bbbbbbbbvvvvb"
-};
-*/
+"558bec6aff68????????64a1????????5083ec78535657a1????????33c5508d45??64a3????????f30f1155":
+__thiscall Entity* Game::SpawnBombCrater(Vector* Pos);
 
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;

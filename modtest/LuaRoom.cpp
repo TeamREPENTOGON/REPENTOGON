@@ -165,6 +165,24 @@ static int lua_RoomSetRail(lua_State* L) {
 	return 0;
 }
 
+static int Lua_RoomCanPickupGridEntity(lua_State* L) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	int gridIndex = luaL_checkinteger(L, 2);
+	lua_pushboolean(L, room->CanPickupGridEntity(gridIndex));
+	return 1;
+}
+
+int Lua_RoomPickupGridEntity(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
+	int gridIndex = luaL_checkinteger(L, 2);
+	Entity_Effect* ent = room->PickupGridEntity(gridIndex);
+
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -187,4 +205,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetEffects", Lua_RoomGetEffects);
 	lua::RegisterFunction(state, mt, "GetRail", lua_RoomGetRail);
 	lua::RegisterFunction(state, mt, "SetRail", lua_RoomSetRail);
+	lua::RegisterFunction(state, mt, "CanPickupGridEntity", Lua_RoomCanPickupGridEntity);
+	lua::RegisterFunction(state, mt, "PickupGridEntity", Lua_RoomPickupGridEntity);
 }

@@ -75,6 +75,31 @@ int Lua_PlayerManagerGetNumCollectibles(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerManagerGetTrinketMultiplier(lua_State* L)
+{
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	int trinketID = luaL_checkinteger(L, 2);
+	lua_pushinteger(L, playerManager->GetTrinketMultiplier((TrinketType)trinketID));
+
+	return 1;
+}
+
+int Lua_FirstTrinketOwner(lua_State* L)
+{
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	int trinket = luaL_checkinteger(L, 2);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
+	bool unk = lua_toboolean(L, 4);
+	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, unk);
+	if (!player) {
+		lua_pushnil(L);
+	}
+	else {
+		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	}
+	return 1;
+}
+
 static void RegisterPlayerManager(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetPlayerManager");
@@ -93,6 +118,8 @@ static void RegisterPlayerManager(lua_State* L) {
 		{ "SpawnCoPlayer2", Lua_SpawnCoPlayer2 },
 		{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
 		{ "GetNumCollectibles", Lua_PlayerManagerGetNumCollectibles},
+		{ "GetTrinketMultiplier", Lua_PlayerManagerGetTrinketMultiplier},
+		{ "FirstTrinketOwner", Lua_FirstTrinketOwner },
 		{ NULL, NULL }
 	};
 

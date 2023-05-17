@@ -118,6 +118,15 @@ int Lua_GameForceMegaSatanVoidPortal(lua_State* L) {
 	return 0;
 }
 
+int Lua_GameSpawnBombCrater(lua_State* L) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Entity* crater = game->SpawnBombCrater(pos);
+	lua::luabridge::UserdataPtr::push(L, crater, lua::GetMetatableKey(lua::Metatables::ENTITY));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -136,6 +145,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "ToggleDebugFlag", Lua_GameToggleDebugFlag); // this too
 	lua::RegisterFunction(state, mt, "AddDebugFlags", Lua_GameAddDebugFlags);
 	lua::RegisterFunction(state, mt, "ForceMegaSatanVoidPortal", Lua_GameForceMegaSatanVoidPortal);
+	//lua::RegisterFunction(state, mt, "SpawnBombCrater", Lua_GameSpawnBombCrater);
 
 	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
 
