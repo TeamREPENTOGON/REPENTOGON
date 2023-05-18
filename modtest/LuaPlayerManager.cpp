@@ -118,7 +118,7 @@ static void RegisterPlayerManager(lua_State* L) {
 		{ "SpawnCoPlayer2", Lua_SpawnCoPlayer2 },
 		{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
 		{ "GetNumCollectibles", Lua_PlayerManagerGetNumCollectibles},
-		{ "GetTrinketMultiplier", Lua_PlayerManagerGetTrinketMultiplier},
+		{ "GetTotalTrinketMultiplier", Lua_PlayerManagerGetTrinketMultiplier},
 		{ "FirstTrinketOwner", Lua_FirstTrinketOwner },
 		{ NULL, NULL }
 	};
