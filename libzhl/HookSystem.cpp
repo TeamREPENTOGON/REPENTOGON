@@ -483,9 +483,11 @@ int FunctionHook_private::Install()
 	// If the function needs caller cleanup, we clean the stack
 	if (def->NeedsCallerCleanup() && pushed > 0) {
 		ptr = IncrESP(pushed, ptr); // add esp, pushed
+		// Use pushed because the hook takes everything on the stack
 	}
 
 	/// Clean after the hook has been called
+	// Use stackPos - 8 because the calling convention may not have passed all arguments on the stack
 	ptr = EmitEpilogue(def, stackPos - 8, ptr);
 	
 	DWORD oldProtect = 0;
@@ -570,11 +572,13 @@ int FunctionHook_private::Install()
 	// call originalFunction
 	P(0xE8); PL(diff);
 
-	if (def->NeedsCallerCleanup() && stackPos > 8) {
-		ptr = IncrESP(stackPos - 8, ptr);
+	if (def->NeedsCallerCleanup() && pushed > 0) {
+		ptr = IncrESP(pushed, ptr);
+		// Use pushed because the super function may not take everything on the stack
 	}
 
-	ptr = EmitEpilogue(def, pushed, ptr);
+	// Use stackPos - 8 because the trampoline takes everything on the stack
+	ptr = EmitEpilogue(def, stackPos - 8, ptr);
 
 	_sSize = ptr - _internalSuper;
 	VirtualProtect(_internalSuper, _sSize, PAGE_EXECUTE_READWRITE, &oldProtect);
