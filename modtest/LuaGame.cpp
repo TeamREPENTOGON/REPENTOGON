@@ -127,6 +127,14 @@ int Lua_GameSpawnBombCrater(lua_State* L) {
 	return 1;
 }
 
+int Lua_GameDevolveEnemy(lua_State* L) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	Entity* ent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	game->DevolveEnemy(ent);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -146,6 +154,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "AddDebugFlags", Lua_GameAddDebugFlags);
 	lua::RegisterFunction(state, mt, "ForceMegaSatanVoidPortal", Lua_GameForceMegaSatanVoidPortal);
 	//lua::RegisterFunction(state, mt, "SpawnBombCrater", Lua_GameSpawnBombCrater);
+	lua::RegisterFunction(state, mt, "DevolveEnemy", Lua_GameDevolveEnemy);
 
 	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
 
