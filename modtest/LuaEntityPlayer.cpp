@@ -441,6 +441,18 @@ int Lua_PlayerGetMetronomeCollectibleID(lua_State* L)
 	return 1;
 }
 
+int Lua_PlayerGetMarkedTarget(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Effect* target = player->GetMarkedTarget();
+	if (!target) {
+		lua_pushnil(L);
+	}
+	else {
+		lua::luabridge::UserdataPtr::push(L, target, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	}
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -492,4 +504,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetPeeBurstCooldown", Lua_PlayerGetPeeBurstCooldown);
 	lua::RegisterFunction(state, mt, "GetMaxPeeBurstCooldown", Lua_PlayerGetMaxPeeBurstCooldown);
 	lua::RegisterFunction(state, mt, "GetMetronomeCollectibleID", Lua_PlayerGetMetronomeCollectibleID);
+	lua::RegisterFunction(state, mt, "GetMarkedTarget", Lua_PlayerGetMarkedTarget);
 }

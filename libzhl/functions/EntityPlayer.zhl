@@ -183,6 +183,7 @@ struct Entity_Player : public Entity { {{
 	inline float* GetD8FireDelayModifier() { return (float*)((char*)this + 0x1868); }
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
+        inline Entity_Effect* GetMarkedTarget() { return *(Entity_Effect**)((char*)this + 0x1354); }
 }} 
     __vtable {
         override
