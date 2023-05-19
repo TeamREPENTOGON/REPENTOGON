@@ -59,6 +59,16 @@ ___
 #### [History](History.md) GetHistory ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Marked·Target () {: aria-label='Functions' }
+#### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) GetMarkedTarget ( ) { : .copyable aria-label='Functions' }
+
+Returns the entity effect representing the target of the [Marked](https://bindingofisaacrebirth.fandom.com/wiki/Marked) item. 
+If the target is not displayed on the ground, this function returns nil.
+
+___
+### Get·Mega·Blast·Duration () {: aria-label='Modified Functions' }
+
+___
 ### Get·Mega·Blast·Duration () {: aria-label='Modified Functions' }
 #### int GetMegaBlastDuration ( ) {: .copyable aria-label='Modified Functions' }
 
