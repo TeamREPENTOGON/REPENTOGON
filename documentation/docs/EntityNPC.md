@@ -15,7 +15,7 @@ Instructs the entity to update its dirt color. This is generally done automatica
 
 ___
 ### Get·Controller·Id() {: aria-label='Functions' }
-#### int GetControllerId () {: .copyable aria-label='Functions' }
+#### int GetControllerId ( ) {: .copyable aria-label='Functions' }
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return -1 when its not being controlled by any player.
 
 ___

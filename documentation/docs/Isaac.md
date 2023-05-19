@@ -44,7 +44,7 @@ Completes all completion marks for a given character. Supports both modded and v
 
 ___
 ### Get·Clipboard () {: aria-label='Functions' }
-#### string GetClipboard () {: .copyable aria-label='Functions' }
+#### string GetClipboard ( ) {: .copyable aria-label='Functions' }
 Gets the contents of the clipboard as long as they are in text form, otherwise it will just return nil.
 
 ___
