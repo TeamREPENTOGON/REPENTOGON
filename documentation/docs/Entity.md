@@ -38,6 +38,14 @@ ___
 #### int GetBossStatusEffectCooldown ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Minecart () {: aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) GetMinecart ( ) {: .copyable aria-label='Functions' }
+Returns the minecart the entity is riding.
+
+???+ Return behavior
+    If the entity is not riding a minecart, this function returns `nil`.
+
+___
 ### Get·Null·Offset () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetNullOffset ( string NullLayerName ) {: .copyable aria-label='Functions' }
 Returns position of null layer mark. Alternatively returns Vector.Zero if the layer is not visible, has no frame available for the current animation, or for other unknown reasons.
