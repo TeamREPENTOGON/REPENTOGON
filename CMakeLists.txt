@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.13.0)
 
 set ("CMAKE_CXX_STANDARD" 17)
 set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
+set (CMAKE_BUILD_TYPE "Debug")
 
 project(RepExtender)
 
@@ -14,6 +15,7 @@ option(ZYDIS_BUILD_TOOLS "" OFF)
 option(ZYDIS_BUILD_EXAMPLES "" OFF)
 option(ZYDIS_BUILD_DOXYGEN "" OFF)
 add_subdirectory("libs/zydis")
+target_compile_options("Zydis" PUBLIC "/MD")
 
 option(WITH_STATIC_CRT "" OFF)
 option(ANTLR_BUILD_CPP_TESTS "" OFF)
@@ -51,21 +53,26 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND
 FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp)
 LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp)
 add_library(libzhl SHARED ${ZHL_SRC})
+target_compile_options(libzhl PUBLIC "/MD")
 
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
+target_compile_options(dsound PUBLIC "/MD")
 
 FILE(GLOB IMGUI_SRC ${CMAKE_SOURCE_DIR}/libs/imgui/*.cpp)
 FILE(GLOB IMGUI_BACKENDS_DIR ${CMAKE_SOURCE_DIR}/libs/imgui/backends/)
 set(IMGUI_BACKENDS_DIR ${CMAKE_SOURCE_DIR}/libs/imgui/backends/)
 add_library(imgui ${IMGUI_SRC} ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.cpp ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3.h ${IMGUI_BACKENDS_DIR}/imgui_impl_opengl3_loader.h ${IMGUI_BACKENDS_DIR}/imgui_impl_win32.h ${IMGUI_BACKENDS_DIR}/imgui_impl_win32.cpp)
+target_compile_options(imgui PUBLIC "/MD")
 
 FILE(GLOB MODTEST_SRC ${CMAKE_SOURCE_DIR}/modtest/*.cpp)
 add_library(zhlModTest SHARED ${MODTEST_SRC})
+target_compile_options(zhlModTest PUBLIC "/MD")
 
 FILE(GLOB DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.cpp)
 add_library(zhlDelirium SHARED ${DELIRIUM_SRC})
 target_link_libraries(zhlDelirium libzhl)
+target_compile_options(zhlDelirium PUBLIC "/MD")
 
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/scripts" "$<TARGET_FILE_DIR:zhlModTest>/resources/scripts")
 add_custom_command(TARGET zhlModTest POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/modtest/resources-repentogon" "$<TARGET_FILE_DIR:zhlModTest>/resources-repentogon")
