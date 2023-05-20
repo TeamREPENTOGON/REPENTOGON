@@ -246,31 +246,3 @@ HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neigh
 	}
 	fclose(f);
 }
-
-HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4, unsigned int const& allowedShapes, unsigned int numDeadEnds, LevelGenerator_Room* startRoom) -> void) {
-	super(unk, unk2, unk3, unk4, allowedShapes, numDeadEnds, startRoom);
-
-	vector_LevelGenRoom* allRooms = GetAllRooms();
-	std::ofstream stream("repentogon.log", std::ios::app);
-	stream << "After the call to Generate: " << std::endl; 
-	stream << " - Dead ends (" << GetDeadEnds()->size() << "): ";
-	for (int idx : *GetDeadEnds()) {
-		stream << idx << " ";
-	}
-	stream << std::endl;
-	stream << " - Non dead ends (" << GetNonDeadEnds()->size() << "): ";
-	for (int idx : *GetNonDeadEnds()) {
-		stream << idx << " ";
-	}
-	stream << std::endl;
-	stream << " - Rooms are as follows : " << std::endl;
-	for (LevelGenerator_Room const& room : *allRooms) {
-		stream << "\tRoom " << room._generationIndex << " at (" << room._gridColIdx << ", " << room._gridLineIdx << ") of shape " << room._shape << " with allowed door slots " << room._doors << " connects to ";
-		for (auto const& neighbor : room._neighbors) {
-			stream << neighbor << " ";
-		}
-		stream << std::endl;
-	}
-
-	stream.flush();
-}

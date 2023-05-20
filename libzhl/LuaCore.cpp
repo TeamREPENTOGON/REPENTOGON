@@ -87,6 +87,30 @@ namespace lua {
 		_metatables[metatable] = key;
 	}
 
+	void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc) {
+		luaL_newmetatable(L, metaname);
+		lua_pushstring(L, "__index");
+		lua_pushvalue(L, -2);
+		lua_rawset(L, -3);
+
+		lua_pushstring(L, "__type");
+		lua_pushstring(L, name);
+		lua_rawset(L, -3);
+
+		lua_pushstring(L, "__class");
+		lua_pushstring(L, name);
+		lua_rawset(L, -3);
+
+		if (gc) {
+			lua_pushstring(L, "__gc");
+			lua_pushcfunction(L, gc);
+			lua_rawset(L, -3);
+		}
+
+		luaL_setfuncs(L, functions, 0);
+		lua_pop(L, 1);
+	}
+
 	static void InitMetatableIdxFromName() {
 		_metatable_idx_from_name["PillEffect"] = Metatables::PILL_EFFECT;
 		_metatable_idx_from_name["Spawn"] = Metatables::SPAWN;
@@ -540,5 +564,7 @@ namespace lua {
 		const char* HistoryMT = "History";
 		const char* PlayerHUDMT = "PlayerHUD";
 		const char* WeaponMT = "Weapon";
+		const char* LevelGeneratorMT = "LevelGenerator";
+		const char* LevelGeneratorRoomMT = "LevelGeneratorMT";
 	}
 }
