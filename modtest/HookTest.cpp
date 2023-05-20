@@ -238,11 +238,8 @@ HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neigh
 	LevelGenerator_Room& room = (*GetAllRooms())[generationIndex];
 	FILE* f = fopen("repentogon.log", "a");
 	fprintf(f, "Computing neighbors for room at position %d (assumed to be at (%d, %d))\n", generationIndex, room._gridColIdx, room._gridLineIdx);
-	STLVector<LevelGenerator_Room>* asIsaacVect = reinterpret_cast<STLVector<LevelGenerator_Room>*>(neighbors);
-	// fprintf(f, "Vector: (%p, %p) %p, %p, %p\n", neighbors, asIsaacVect, asIsaacVect->first, asIsaacVect->last, asIsaacVect->end);
-	size_t n = (size_t)((ptrdiff_t)asIsaacVect->last - (ptrdiff_t)asIsaacVect->first) / sizeof(LevelGenerator_Room);
-	for (int i = 0; i < n; ++i) {
-		fprintf(f, "\t(%d, %d, %d)\n", asIsaacVect->first[i]._gridColIdx, asIsaacVect->first[i]._gridLineIdx, asIsaacVect->first[i]._shape);
+	for (int i = 0; i < neighbors->size(); ++i) {
+		fprintf(f, "\t(%d, %d, %d)\n", (*neighbors)[i]._gridColIdx, (*neighbors)[i]._gridLineIdx, (*neighbors)[i]._shape);
 	}
 	fclose(f);
 }
