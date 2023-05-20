@@ -178,6 +178,20 @@ static int lua_EntityGiveMinecart(lua_State* L) {
 	return 1;
 }
 
+static int lua_EntityGetMinecart(lua_State* L) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity_NPC* minecart = entity->GetMinecart();
+
+	if (!minecart) {
+		lua_pushnil(L);
+	}
+	else {
+		lua::luabridge::UserdataPtr::push(L, minecart, lua::GetMetatableKey(lua::Metatables::ENTITY_NPC));
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -202,4 +216,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetDead", Lua_EntitySetDead);
 	lua::RegisterFunction(state, mt, "SetInvincible", Lua_EntitySetInvincible);
 	lua::RegisterFunction(state, mt, "GiveMinecart", lua_EntityGiveMinecart);
+	lua::RegisterFunction(state, mt, "GetMinecart", lua_EntityGetMinecart);
 }

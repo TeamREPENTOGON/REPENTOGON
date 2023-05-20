@@ -66,6 +66,8 @@ struct Entity depends (AnimationState) {
 	inline int* GetBossStatusEffectCooldown() { return (int*)((char*)this + 0x230); }
 	inline bool* IsInvincible() { return (bool*)((char*)this + 0x308); }
 
+    inline Entity_NPC* GetMinecart() { return *(Entity_NPC**)((char*)this + 0x32C); }
+
     inline Entity_NPC* ToNPC() { return (Entity_NPC*)__RTDynamicCast(this, 0, (void*)__ptr_EntityRTTI, (void*)__ptr_EntityNPCRTTI, false); }
 	
 	Entity() 
