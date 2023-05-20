@@ -57,3 +57,7 @@ TypeInfo std_string {
 TypeInfo HDC {
     Size 4;
 };
+
+TypeInfo vector_LevelGenRoom {
+    Size 12;
+};

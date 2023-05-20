@@ -1,8 +1,13 @@
 struct LevelGenerator_Room
 {
-    char pad0[0x8]; // 0x0
+    char pad0[0x4]; // 0x0
+    uint32_t _generationIndex; // 0x4
     uint32_t _gridColIdx; // 0x8
     uint32_t _gridLineIdx; // 0xC
-    char pad1[0xC]; // 0x10
+    char pad1[0x8]; // 0x10
+    uint32_t _shape; // 0x18
     uint32_t _doors; // 0x1C
-};
+    char pad2[0x10]; // 0x20
+    std_set_int _neighbors; // 0x30
+    char pad3[0x10]; // 0x38
+}; // 0x48

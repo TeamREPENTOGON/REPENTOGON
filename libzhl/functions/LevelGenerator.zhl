@@ -6,7 +6,7 @@ __thiscall int LevelGenerator::PlaceRoom(LevelGenerator_Room *room);
 __thiscall LevelGenerator_Room* LevelGenerator::CreateRoom(int x, int y, int shape, int connectX, int connectY, Direction connectDir);
 
 "558bec83ec088a45":
-__thiscall void LevelGenerator::Generate(int unk, bool unk2, bool unk3, bool unk4, const unsigned int &allowedShapes, int unk5, LevelGenerator_Room* startRoom);
+__thiscall void LevelGenerator::Generate(int unk, bool unk2, bool unk3, bool unk4, const unsigned int &allowedShapes, uint32_t numDeadEnds, LevelGenerator_Room* startRoom);
 
 "558bec83e4f8515356578bf98bb7":
 __thiscall LevelGenerator_Room* LevelGenerator::GetNewEndRoom(int roomShape, const unsigned int &possibleDoors);
@@ -15,8 +15,13 @@ __thiscall LevelGenerator_Room* LevelGenerator::GetNewEndRoom(int roomShape, con
 "558bec83e4f883ec245356578bf989":
 __thiscall void LevelGenerator::DetermineBossRoom(int shape, const unsigned int &possibleDoors);
 
+"558bec6aff68????????64a1000000005081ec68010000":
+__thiscall void LevelGenerator::get_neighbor_candidates(vector_LevelGenRoom* neighbors, uint32_t generationIndex, bool unk);
 
-struct LevelGenerator {
+struct LevelGenerator depends (LevelGenerator_Room) {
 {{
-	inline int* GetNumBossRooms() { return (int*)((char*)this + 0x38C); }
+    inline int* GetNumBossRooms() { return (int*)((char*)this + 0x38C); }
+    inline std::vector<LevelGenerator_Room>* GetAllRooms() { return (std::vector<LevelGenerator_Room>*)((char*)this + 0x364); }
+    inline std::vector<int>* GetDeadEnds() { return (std::vector<int>*)((char*)this + 0x370); }
+    inline std::vector<int>* GetNonDeadEnds() { return (std::vector<int>*)((char*)this + 0x37C); }
 }} };
