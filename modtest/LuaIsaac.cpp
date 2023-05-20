@@ -356,6 +356,27 @@ static void RegisterClipboardStuff(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+#include "XMLData.h"
+static int Lua_GetSubTypwByName(lua_State* L) {
+	string text = string(luaL_checkstring(L, 1));
+	if (XMLStuff.EntityData.entitybyname.count(text) > 0)
+	{
+		XMLAttributes ent = XMLStuff.EntityData.entities[XMLStuff.EntityData.entitybyname[text]];
+		if ((ent.count("subtype") > 0) && (ent["subtype"].length() > 0)) {
+			lua_pushnumber(L, stoi(ent["subtype"]));
+			return 1;
+		}
+	};
+	lua_pushnumber(L, 0);
+	return 1;
+}
+static void RegisterGetSubByName(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "GetEntitySubTypeByName");
+	lua_pushcfunction(L, Lua_GetSubTypwByName);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -373,6 +394,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterDrawLine(state);
 	RegisterDrawQuad(state);
 	RegisterClipboardStuff(state);
+	RegisterGetSubByName(state);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

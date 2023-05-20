@@ -96,6 +96,11 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.
 
 ___
+### Get·Entity·SubType·By·Name () {: aria-label='Functions' }
+#### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
+Gets the entity SubType by entity name.
+
+___
 ### Get·Persistent·Game·Data () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
 Should probably be moved to Game for consistency.
