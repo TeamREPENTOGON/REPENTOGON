@@ -27,6 +27,7 @@ __thiscall void Manager::StartNewGame(int playerType, int challenge,  UnknownGam
 __thiscall bool Manager::AchievementUnlocksDisallowed(bool unk);
 
 struct Manager depends (StringTable, PersistentGameData, UnknownGameStartStruct) { {{
+	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
 	inline DailyChallenge* GetDailyChallenge() { return (DailyChallenge*)((char*)this + 0x1ea750); } 
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }

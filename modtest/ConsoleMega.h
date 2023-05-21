@@ -74,4 +74,19 @@ struct ConsoleMega {
     }
 };
 
+HOOK_METHOD(Console, RunCommand, (const std_string& in, const std_string& out, Entity_Player* player) -> void) {
+
+    // If we're in-game, return the player; otherwise don't. Should be fine for most functions, but some obviously don't work! Throw errors for those.
+    if (g_Manager->GetState() != 2 || !g_Game) {
+        if (in.rfind("giveitem", 0) == 0) {
+            this->PrintError("[ERROR] Giveitem can't be used if not in-game!");
+            return;
+        }
+    }
+    else if (!player)
+        player = g_Game->GetPlayerManager()->GetPlayer(0);
+
+    super(in, out, player);
+}
+
 extern ConsoleMega console;

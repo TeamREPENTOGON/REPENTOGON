@@ -23,6 +23,9 @@ __thiscall bool PlayerManager::HasTemporaryEffect(ItemConfig_Item *item);
 "558bec83e4f883ec0ca1????????53568bd9":
 __thiscall int PlayerManager::GetTrinketMultiplier(int TrinketID);
 
+"558bec568bf18b56??8bc22b46":
+__thiscall Entity_Player* PlayerManager::GetPlayer(int param1);
+
 struct PlayerManager depends (RNG)
 {
     RNG _rng; //0x0
