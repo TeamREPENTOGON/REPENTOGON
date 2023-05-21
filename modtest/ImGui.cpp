@@ -22,10 +22,10 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 HWND window;
 WNDPROC windowProc;
 bool menuShown = false;
-bool imguiConsoleEnabled = false;
 static bool imguiInitialized = false;
 
 LogViewer logViewer;
+ConsoleMega console;
 CustomImGui customImGui;
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -75,7 +75,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("Tools")) {
-                if (ImGui::MenuItem("Console (UNIMPLEMENTED)", NULL, &imguiConsoleEnabled)) { }
+                if (ImGui::MenuItem("Console (UNFINISHED)", NULL, &console.enabled)) { }
                 if (ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled)) { }
                 if (ImGui::MenuItem("Custom ImGui", NULL, &customImGui.enabled)) { }
                 ImGui::EndMenu();
@@ -90,26 +90,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
             customImGui.Draw();
         }
 
-        if (imguiConsoleEnabled) {
-            if (ImGui::Begin("Console", &imguiConsoleEnabled)) {
-                std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
-
-                for (auto entry = history->rbegin(); entry != history->rend(); ++entry) {
-                    int colorMap = entry->GetColorMap();
-
-                    // The console stores colors like this, because we can't have nice things.
-                    // g_colorDouble is used for other things but it isn't really evident what those things are yet, so this will have to do.
-                    // Decomp shows it as 0 but it... clearly isn't, so whatever.
-                    float red = ((colorMap >> 0x10 & 0xFF) + g_colorDouble) / 255;
-                    float green = ((colorMap >> 8 & 0xFF) + g_colorDouble)/ 255;
-                    float blue = ((colorMap & 0xFF) + g_colorDouble) / 255;
-                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(red, green, blue, 1));
-                    ImGui::TextUnformatted(entry->_text.Get());
-                    ImGui::PopStyleColor();
-                }
-
-                ImGui::End();
-            }
+        if (console.enabled) {
+            console.Draw();
         }
 
         ImGui::Render();
