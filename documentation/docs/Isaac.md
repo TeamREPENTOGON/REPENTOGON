@@ -96,7 +96,7 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.
 
 ___
-### Get·Entity·SubType·By·Name () {: aria-label='Functions' }
+### Get·Entity·Sub·Type·By·Name () {: aria-label='Functions' }
 #### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
 Gets the entity SubType by entity name.
 
