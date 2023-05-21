@@ -65,7 +65,7 @@ jobs:
                 if_key_exists: fail 
 
             - name: Deploy Repentogon Docs
-              if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
+              if:   ( github.event_name == 'push' && github.ref == 'refs/heads/main-msvc' ) || github.event_name == 'workflow_dispatch' 
               run: |
                    cd documentation
                    mkdocs build
@@ -75,7 +75,7 @@ jobs:
               run: echo "/bin" >> $GITHUB_PATH
               
             - name: Upload to Website
-              if:   github.event_name == 'push' && github.ref == 'refs/heads/main-msvc'
+              if:   ( github.event_name == 'push' && github.ref == 'refs/heads/main-msvc' ) || github.event_name == 'workflow_dispatch' 
               run: |
                    cd documentation
                    rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
