@@ -22,10 +22,14 @@ __thiscall void Camera::UpdateDrag2();
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec585657a1????????33c5508d45f464a3000000008bf18975dc":
 __thiscall void Camera::UpdateUltrasmooth(bool unk);
 
-struct Camera {
+struct Camera depends (Room) {
 {{
+
+	inline bool* ShouldOverride() { return (bool*)((char*)this + 0x8C); }
+	
 	Camera(Room* room)
 	{
 		this->constructor(room);
 	}
+
 }} };

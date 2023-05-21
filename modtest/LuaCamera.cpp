@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "LogViewer.h"
 
 static constexpr const char* CameraMT = "Camera";
 
@@ -18,15 +19,22 @@ int Lua_CameraSetFocusPosition(lua_State* L)
 {
 	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, CameraMT);
 	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	camera->SetFocusPosition(vector);
+	*camera->ShouldOverride() = true;
+	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	return 0;
 }
 
 int Lua_SnapToPosition(lua_State* L)
 {
+	
 	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, CameraMT);
 	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	camera->SnapToPosition(*vector);
+	*camera->ShouldOverride() = true;
+	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	return 0;
 }
 

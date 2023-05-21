@@ -15,13 +15,15 @@ void ASMPatchLogMessage() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	printf("[REPENTOGON] Adding LogMessage callback for ImGui at %p\n", addr);
+
 	ASMPatch patch;
 	patch.AddBytes("\x51") // Push ECX to the stack, so we can restore it as the function expects later
 	    .AddBytes("\x51") // Push ECX one more time, for use on our function (this will be consumed).
 	    .AddInternalCall(LogMessageCallback)
 	    .AddBytes("\x59") // Pop ECX
 
-	// Reintroduce overwritten assembly + some extra to work around some broken jumps
+		// Reintroduce overwritten assembly + some extra to work around some broken jumps
 	    .AddBytes("\x8D\x51\x01") // lea edx,dword pointer ds:[ecx+1]
 	    .AddBytes("\x8A\x01") // mov al,byte ptr ds:[ecx]
 	    .AddBytes("\x41") // inc ecx
