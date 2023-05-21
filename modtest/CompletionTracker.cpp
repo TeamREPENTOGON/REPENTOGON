@@ -921,7 +921,7 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 		array marks = GetMarksForPlayer(playertype,anm);
 		if (!hidemarks){
 			cmpl->CharacterId = playertype;
-			cmpl->Render(new Vector((g_WIDTH * 0.6) + widgtpos->x, (g_HEIGHT * 0.5) +widgtpos->y), widgtscale);
+			cmpl->Render(new Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) +widgtpos->y), widgtscale);
 		}
 	}
 }
@@ -1192,7 +1192,7 @@ int Lua_IsaacGetCharacterMarks(lua_State* L)
 	int playertype = luaL_checkinteger(L, 1);
 	if (playertype > 40) {
 		array<int, 15> marks = GetMarksForPlayer(playertype);
-		lua_newtable(L, 0);
+		lua_newtable(L);
 		lua_pushstring(L, "PlayerType");
 		lua_pushnumber(L, playertype);
 		lua_settable(L, -3);
@@ -1240,7 +1240,7 @@ int Lua_IsaacGetCharacterMarks(lua_State* L)
 	else {
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
 		array<int, 15> marks = GetMarksForPlayer(playertype);
-		lua_newtable(L, 0);
+		lua_newtable(L);
 		lua_pushstring(L, "PlayerType");
 		lua_pushnumber(L, playertype);
 		lua_settable(L, -3);

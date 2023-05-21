@@ -10,7 +10,7 @@ static int Lua_LevelPlaceRoom(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
 	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 2, RoomPlacerMT);
 	RoomConfig* config = lua::GetUserdata<RoomConfig*>(L, 3, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-	uint64_t seed = luaL_checkinteger(L, 4);
+	uint32_t seed = luaL_checkinteger(L, 4);
 
 	bool result = game->PlaceRoom(room, config, seed, 0);
 	lua_pushboolean(L, result);

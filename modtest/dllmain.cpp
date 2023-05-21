@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "lua.hpp"
 
-#include "ASMPatches.h"; 
+#include "ASMPatches.h"
 
 /********************************************************************************
 HOOKING

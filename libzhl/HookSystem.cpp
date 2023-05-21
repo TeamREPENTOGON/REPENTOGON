@@ -463,7 +463,7 @@ int FunctionHook_private::Install()
 			pushed += 4;
 		}
 		else {
-			for (int j = 0; j < data._size; ++j) {
+			for (size_t j = 0; j < data._size; ++j) {
 				// push dword ptr ss:[ebp+8+k]
 				k -= 4;
 				P(0xFF); P(0x75); P(k);
@@ -557,7 +557,7 @@ int FunctionHook_private::Install()
 			}
 		}
 		else {
-			for (int j = 0; j < data._size; ++j) {
+			for (size_t j = 0; j < data._size; ++j) {
 				// push [ebp + k]
 				k -= 4;
 				P(0xFF); P(0x75); P(k); 

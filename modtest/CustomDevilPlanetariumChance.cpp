@@ -52,7 +52,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     float chance = 0;
 
     if (!g_Game->_devilRoomDisabled) { 
-        chance += 0.01;
+        chance += 0.01f;
 
         //MC_PRE_DEVIL_APPLY_ITEMS
         lua_getglobal(L, "Isaac");
@@ -69,44 +69,44 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         //MC_PRE_DEVIL_APPLY_ITEMS
 
         if (manager->FirstCollectibleOwner(COLLECTIBLE_PENTAGRAM, &rng, true))
-            chance += 0.1;
+            chance += 0.1f;
         if (manager->GetNumCollectibles(COLLECTIBLE_PENTAGRAM) > 1)
-            chance += 0.05;
+            chance += 0.05f;
 
         if (manager->FirstCollectibleOwner(COLLECTIBLE_BLACK_CANDLE, &rng, true))
-            chance += 0.15;
+            chance += 0.15f;
         if (manager->FirstCollectibleOwner(COLLECTIBLE_BOOK_OF_BELIAL, &rng, true) || manager->FirstCollectibleOwner(COLLECTIBLE_BOOK_OF_BELIAL_PASSIVE, &rng, true))
-            chance += 0.125;
+            chance += 0.125f;
         if (manager->FirstCollectibleOwner(COLLECTIBLE_BOOK_OF_REVELATIONS, &rng, true))
-            chance += 0.175;
+            chance += 0.175f;
 
         if ((flags & 1) != 0) //Beggar killed, haven't identified the right enum yet
-            chance += 0.35;
+            chance += 0.35f;
 
         if (desc && desc->ListIndex == g_Game->GetLastBossRoomListIdx() && room->GetRedHeartDamage()) {
             if (hasActOfContrition)
-                chance += 0.15;
+                chance += 0.15f;
         }
         else
-            chance += 0.35;
+            chance += 0.35f;
 
         if ((flags & 4) != 0) { // Took red heart damage (excluding sac rooms and such)
             if (hasActOfContrition)
-                chance += 0.4;
+                chance += 0.4f;
         }
         else
-            chance += 0.99;
+            chance += 0.99f;
 
         if ((flags & 0x40) != 0) // Shopkeeper crushkilled
-            chance += 0.1;
+            chance += 0.1f;
 
         if (manager->FirstTrinketOwner(TRINKET_NUMBER_MAGNET, &rng, true))
-            chance += 0.1;
+            chance += 0.1f;
 
         if (manager->FirstCollectibleOwner(COLLECTIBLE_SAUSAGE, &rng, true))
-            chance += 0.069; // nice
+            chance += 0.069f; // nice
 
-        chance += (0.1 * list->CountWisps(COLLECTIBLE_SATANIC_BIBLE));
+        chance += (0.1f * list->CountWisps(COLLECTIBLE_SATANIC_BIBLE));
 
         unsigned int lastDevilRoomStage = g_Game->GetLastDevilRoomStage();
         bool shouldApplyStagePenalty = true;
@@ -157,13 +157,13 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
 
     if (manager->FirstCollectibleOwner(COLLECTIBLE_GOAT_HEAD, &rng, true))
-        chance = 66.6; // the game truncates the value anyways... but hey, vanilla game does it, i have to be accurate
+        chance = 66.6f; // the game truncates the value anyways... but hey, vanilla game does it, i have to be accurate
      
     if (!this->GetTemporaryEffects()->_disabled) {
         for (TemporaryEffect effect : this->GetTemporaryEffects()->_effects) {
             int type = effect._item->_type;
             if ((type == 1 || type == 3 || type == 4) && effect._item->_id == COLLECTIBLE_GOAT_HEAD) // Passive, active and familiar types. TODO Need to add enums
-                chance = 66.6;
+                chance = 66.6f;
         }
     }
 
@@ -237,7 +237,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     bool hasTelescopeLens = manager->FirstTrinketOwner(TRINKET_TELESCOPE_LENS, 0, true);
     bool shouldBypassPlanetariumRestriction = false;
     bool shouldApplyStageRestriction = true;
-    float chance = 0.01;
+    float chance = 0.01f;
 
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
     lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -294,7 +294,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         }
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
         if (treasureRoomsVisited < stage - 1 || shouldBypassTreasureRestriction) {
-            chance += ((stage - treasureRoomsVisited - 1) * 0.2);
+            chance += ((stage - treasureRoomsVisited - 1) * 0.2f);
 
             // no idea if these values to FirstCollectibleOwner are right, but... trust in the decomp, i guess?
             // second is 0 for now, gotta figure out why FirstCollectibleOwner even... needs RNG, that doesn't make sense to me
@@ -319,16 +319,16 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         //MC_PRE_PLANETARIUM_APPLY_ITEMS
 
         if (g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_MAGIC_8_BALL, 0, true))
-            chance += 0.15;
+            chance += 0.15f;
 
         if (g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_CRYSTAL_BALL, 0, true))
-            chance += 0.15;
+            chance += 0.15f;
 
         if (g_Game->GetPlayerManager()->FirstCollectibleOwner(COLLECTIBLE_SAUSAGE, 0, true))
-            chance += 0.069; //teehee
+            chance += 0.069f; //teehee
 
         if (hasTelescopeLens)
-            chance += 0.15;
+            chance += 0.15f;
     }
     //MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
     lua_getglobal(L, "Isaac");
@@ -346,7 +346,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     //MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
 
     if (hasTelescopeLens)
-        chance += 0.09;
+        chance += 0.09f;
 
     //MC_POST_PLANETARIUM_CALCULATE
     lua_getglobal(L, "Isaac");

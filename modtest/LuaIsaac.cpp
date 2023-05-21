@@ -24,7 +24,7 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 	bool ignoreFriendly = false;
 	if lua_isboolean(L, 5)
 		ignoreFriendly = lua_toboolean(L, 5);
-	lua_newtable(L, 0);
+	lua_newtable(L);
 	EntityList_EL res(*list->GetUpdateEL());
 
 	list->QueryType(&res, type, variant, subtype, cache, ignoreFriendly);
@@ -55,7 +55,7 @@ int Lua_IsaacGetRoomEntitiesFix(lua_State* L)
 {
 	Room* room = *g_Game->GetCurrentRoom();
 	EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
-	lua_newtable(L, 0);
+	lua_newtable(L);
 	unsigned int size = res->_size;
 
 	if (size) {
@@ -91,7 +91,7 @@ int Lua_IsaacFindInRadiusFix(lua_State* L)
 
 	EntityList_EL res;
 	EntityList_EL* resPtr = &res;
-	lua_newtable(L, 0);
+	lua_newtable(L);
 
 	lua_rawgeti(g_LuaEngine->_state, LUA_REGISTRYINDEX, QueryRadiusRef);
 	const void* queryRadius = lua_topointer(g_LuaEngine->_state, -1);

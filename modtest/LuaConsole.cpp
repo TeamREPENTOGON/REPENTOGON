@@ -34,7 +34,7 @@ int Lua_ConsoleGetHistory(lua_State* L)
 	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
 	std::deque<Console_HistoryEntry> *history = console->GetHistory();
 
-	lua_newtable(L, 0);
+	lua_newtable(L);
 	unsigned int idx = 1;
 	for (const Console_HistoryEntry entry : *history) {
 		lua_pushnumber(L, idx);

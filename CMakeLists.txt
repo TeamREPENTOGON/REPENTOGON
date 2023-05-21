@@ -26,6 +26,11 @@ include_directories ("libs/antlr4/runtime/src")
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
 add_executable(zhlparser ${PARSER_SRC})
 target_link_libraries(zhlparser antlr4_shared)
+target_compile_options(zhlparser PUBLIC "/wd4251" "/wd4275")
+# wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
+# wd4275 ignore warning C4275: non - DLL-interface class 'class_1' used as base for DLL-interface class 'class_2'
+target_compile_options(antlr4_shared PUBLIC "/wd4100" "/wd4244" "/wd4251" "/wd4275" "/wd4996")
+# ignore all warnings from that lib. We are not the author, so we dont care about them
 
 add_custom_command(TARGET zhlparser POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:antlr4_shared>/antlr4-runtime.dll" "$<TARGET_FILE_DIR:zhlparser>")
 
@@ -53,11 +58,13 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND
 FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp)
 LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp)
 add_library(libzhl SHARED ${ZHL_SRC})
-target_compile_options(libzhl PUBLIC "/MD")
+target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
+# wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
+# wd4996 ignores warning C4996: using a depricated function
 
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
-target_compile_options(dsound PUBLIC "/MD")
+target_compile_options(dsound PUBLIC "/MD" "/wd4996")
 
 FILE(GLOB IMGUI_SRC ${CMAKE_SOURCE_DIR}/libs/imgui/*.cpp)
 FILE(GLOB IMGUI_BACKENDS_DIR ${CMAKE_SOURCE_DIR}/libs/imgui/backends/)
@@ -67,7 +74,7 @@ target_compile_options(imgui PUBLIC "/MD")
 
 FILE(GLOB MODTEST_SRC ${CMAKE_SOURCE_DIR}/modtest/*.cpp)
 add_library(zhlModTest SHARED ${MODTEST_SRC})
-target_compile_options(zhlModTest PUBLIC "/MD")
+target_compile_options(zhlModTest PUBLIC "/MD" "/wd4251" "/wd4996")
 
 FILE(GLOB DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.cpp)
 add_library(zhlDelirium SHARED ${DELIRIUM_SRC})

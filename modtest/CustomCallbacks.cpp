@@ -242,11 +242,11 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 		if (lua_istable(L, -1)) {
 			if (lua_rawlen(L, -1) == 6) {
 				ID = lua::callbacks::ToInteger(L, 1);
-				Volume = lua::callbacks::ToNumber(L, 2);
+				Volume = (float) lua::callbacks::ToNumber(L, 2);
 				FrameDelay = lua::callbacks::ToInteger(L, 3);
 				Loop = lua::callbacks::ToBoolean(L, 4);
-				Pitch = lua::callbacks::ToNumber(L, 5);
-				Pan = lua::callbacks::ToNumber(L, 6);
+				Pitch = (float) lua::callbacks::ToNumber(L, 5);
+				Pan = (float) lua::callbacks::ToNumber(L, 6);
 				super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 				ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 			}
@@ -377,7 +377,7 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 			if (lua_istable(L, -1)) {
 				int tablesize = lua_rawlen(L, -1);
 				if (tablesize == 2) {
-					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
+					super(lua::callbacks::ToInteger(L, 1), (float) lua::callbacks::ToNumber(L, 2));
 					return;
 				}
 			}
@@ -414,7 +414,7 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 			if (lua_istable(L, -1)) {
 				int tablesize = lua_rawlen(L, -1);
 				if (tablesize == 2) {
-					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToNumber(L, 2));
+					super(lua::callbacks::ToInteger(L, 1), (float) lua::callbacks::ToNumber(L, 2));
 					return;
 				}
 			}
@@ -605,7 +605,7 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
 					int presub = *(this->GetSubType());
-					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToNumber(L, 4));
+					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2), lua::callbacks::ToInteger(L, 3), lua::callbacks::ToInteger(L, 4));
 					PostNPCMorph(this, pretype, prevar, presub);
 					return;
 				}
@@ -613,7 +613,7 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
 					int presub = *(this->GetSubType());
-					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), Championid);
+					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2), lua::callbacks::ToInteger(L, 3), Championid);
 					PostNPCMorph(this, pretype, prevar, presub);
 					return;
 				}
@@ -682,7 +682,7 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
 					int presub = *(this->GetSubType());
-					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), lua::callbacks::ToBoolean(L, 4), lua::callbacks::ToBoolean(L, 5), lua::callbacks::ToBoolean(L, 6));
+					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2), lua::callbacks::ToInteger(L, 3), lua::callbacks::ToBoolean(L, 4), lua::callbacks::ToBoolean(L, 5), lua::callbacks::ToBoolean(L, 6));
 					PostPickupMorph(this, pretype, prevar, presub, KeepPrice, KeepSeed, IgnoreModifiers);
 					return;
 				}
@@ -690,7 +690,7 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
 					int presub = *(this->GetSubType());
-					super(lua::callbacks::ToNumber(L, 1), lua::callbacks::ToNumber(L, 2), lua::callbacks::ToNumber(L, 3), KeepPrice, KeepSeed, IgnoreModifiers);
+					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2), lua::callbacks::ToInteger(L, 3), KeepPrice, KeepSeed, IgnoreModifiers);
 					PostPickupMorph(this, pretype, prevar, presub, KeepPrice, KeepSeed, IgnoreModifiers);
 					return;
 				}
@@ -1822,7 +1822,7 @@ HOOK_METHOD(Room, GetLightingAlpha, () -> float) {
 			return lua_tonumber(L, -1);
 		}
 	}
-	else return originalAlpha;
+	return originalAlpha;
 }
 
 //MC_PRE_GRID_LIGHTING_RENDER

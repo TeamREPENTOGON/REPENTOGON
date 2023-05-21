@@ -4,7 +4,7 @@
 
 static int Lua_ColorGetTint(lua_State* L) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::COLOR, "Color");
-	lua_newtable(L, 0);
+	lua_newtable(L);
 
 	const char* keys[4] = {"R", "G", "B", "A"};
 
@@ -18,7 +18,7 @@ static int Lua_ColorGetTint(lua_State* L) {
 
 static int Lua_ConstColorGetTint(lua_State* L) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
-	lua_newtable(L, 0);
+	lua_newtable(L);
 
 	const char* keys[4] = { "R", "G", "B", "A" };
 
@@ -32,7 +32,7 @@ static int Lua_ConstColorGetTint(lua_State* L) {
 
 static int Lua_ColorGetColorize(lua_State* L) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::COLOR, "Color");
-	lua_newtable(L, 0);
+	lua_newtable(L);
 
 	const char* keys[4] = { "R", "G", "B", "A" };
 
@@ -47,7 +47,7 @@ static int Lua_ColorGetColorize(lua_State* L) {
 
 static int Lua_ConstColorGetColorize(lua_State* L) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
-	lua_newtable(L, 0);
+	lua_newtable(L);
 
 	const char* keys[4] = { "R", "G", "B", "A" };
 
@@ -63,7 +63,7 @@ static int Lua_ConstColorGetColorize(lua_State* L) {
 
 static int Lua_ColorGetOffset(lua_State* L) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::COLOR, "Color");
-	lua_newtable(L, 0);
+	lua_newtable(L);
 
 	const char* keys[3] = { "R", "G", "B" };
 
@@ -78,7 +78,7 @@ static int Lua_ColorGetOffset(lua_State* L) {
 
 static int Lua_ConstColorGetOffset(lua_State* L) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
-	lua_newtable(L, 0);
+	lua_newtable(L);
 
 	const char* keys[3] = { "R", "G", "B" };
 

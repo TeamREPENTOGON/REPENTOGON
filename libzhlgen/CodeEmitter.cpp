@@ -141,7 +141,7 @@ void CodeEmitter::Emit(Struct const& s) {
     Emit(s._name);
     if (!s._parents.empty()) {
         Emit(" : ");
-        for (int i = 0; i < s._parents.size(); ++i) { 
+        for (size_t i = 0; i < s._parents.size(); ++i) {
             Emit(VisibilityToString(std::get<Visibility>(s._parents[i])));
             Emit(" ");
             Emit(std::get<Type*>(s._parents[i])->GetStruct()._name);
@@ -226,7 +226,7 @@ void CodeEmitter::EmitType(Struct const& s) {
 
     if (s._template) {
         Emit("<");
-        for (int i = 0; i < s._templateParams.size(); ++i) {
+        for (size_t i = 0; i < s._templateParams.size(); ++i) {
             Emit(*s._templateParams[i]);
             if (i != s._templateParams.size() - 1) {
                 Emit(", ");
@@ -254,7 +254,7 @@ void CodeEmitter::EmitType(FunctionPtr* ptr) {
         Emit(_variableContext->_name);
         Emit(")(");
 
-        for (int i = 0; i < ptr->_parameters.size(); ++i) {
+        for (size_t i = 0; i < ptr->_parameters.size(); ++i) {
             Emit(*(ptr->_parameters[i]));
             if (i != ptr->_parameters.size()) {
                 Emit(", ");
@@ -274,7 +274,7 @@ void CodeEmitter::EmitType(EmptyType const&) {
 }
 
 void CodeEmitter::EmitTab() {
-    for (int i = 0; i < _emitDepth; ++i) {
+    for (size_t i = 0; i < _emitDepth; ++i) {
         *_emitContext << "\t";
     }
 }
@@ -608,7 +608,7 @@ void CodeEmitter::Emit(Function const& fun) {
 
     Emit(fun._name);
     Emit("(");
-    for (int i = 0; i < fun._params.size(); ++i) {
+    for (size_t i = 0; i < fun._params.size(); ++i) {
         Emit(*(fun._params[i]._type));
         Emit(" ");
         Emit(fun._params[i]._name);
@@ -730,7 +730,7 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
 
     Emit(fn._name);
     Emit("(");
-    for (int i = 0; i < fn._params.size(); ++i) {
+    for (size_t i = 0; i < fn._params.size(); ++i) {
         FunctionParam const& param = fn._params[i];
         Emit(*param._type);
         Emit(" ");
@@ -1017,7 +1017,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
         IncrDepth();
         if (fn._convention && *fn._convention == FASTCALL) {
             Registers next = ECX;
-            for (int i = 0; i < fn._params.size(); ++i) {
+            for (size_t i = 0; i < fn._params.size(); ++i) {
                 FunctionParam const& param = fn._params[i];
                 EmitTab();
                 if (next != EAX && (param._type->IsPointer() || (param._type->IsBasic() && std::get<BasicType>(param._type->_value).size() <= 4))) {
@@ -1053,7 +1053,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
             }
         }
         else {
-            for (int i = 0; i < fn._params.size(); ++i) {
+            for (size_t i = 0; i < fn._params.size(); ++i) {
                 EmitTab();
                 FunctionParam const& param = fn._params[i];
 
@@ -1120,7 +1120,7 @@ void CodeEmitter::EmitTypeID(Function const& fn) {
         Emit("::");
     }
     Emit("*)(");
-    for (int i = 0; i < fn._params.size(); ++i) {
+    for (size_t i = 0; i < fn._params.size(); ++i) {
         FunctionParam const& param = fn._params[i];
         Emit(*param._type);
         if (i != fn._params.size() - 1) {

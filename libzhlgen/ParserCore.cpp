@@ -514,7 +514,7 @@ std::any Parser::visitDepends(ZHLParser::DependsContext* ctx) {
     std::set<Type*> deps;
     auto names = ctx->Name();
 
-    for (int i = 0; i < names.size(); ++i) {
+    for (size_t i = 0; i < names.size(); ++i) {
         std::string name(names[i]->getText());
         // Struct* st = GetStructByName(name);
         Type* t = GetOrCreateTypeByName(name);
@@ -986,7 +986,7 @@ void Parser::WarnRepeatedFunctionQualifier(std::string const& name, std::string 
 
 std::string Parser::MergeNameParts(std::vector<std::string> const& parts) {
     std::ostringstream s;
-    for (int i = 0; i < parts.size(); ++i) {
+    for (size_t i = 0; i < parts.size(); ++i) {
         s << parts[i];
         if (i != parts.size() - 1) {
             s << "::";

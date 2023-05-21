@@ -480,7 +480,7 @@ std::string Struct::GetTemplateName() const {
 
     std::ostringstream result;
     result << _name << "<";
-    for (int i = 0; i < _templateParams.size(); ++i) {
+    for (size_t i = 0; i < _templateParams.size(); ++i) {
         result << _templateParams[i]->_name;
         if (i != _templateParams.size() - 1) {
             result << ", ";
@@ -615,7 +615,7 @@ std::string FunctionPtr::GetName() const {
     }
     stream << "*)(";
 
-    for (int i = 0; i < _parameters.size(); ++i) {
+    for (size_t i = 0; i < _parameters.size(); ++i) {
         stream << _parameters[i]->GetFullName();
         if (i != _parameters.size() - 1) {
             stream << "|";
@@ -641,7 +641,7 @@ std::string FunctionPtr::ToString() const {
 
     str << "*)(";
 
-    for (int i = 0; i < _parameters.size(); ++i) {
+    for (size_t i = 0; i < _parameters.size(); ++i) {
         str << _parameters[i]->ToString(false);
 
         if (i != _parameters.size() - 1) {
@@ -687,7 +687,7 @@ bool Function::operator==(const Function& other) const {
         return false;
     }
 
-    for (int i = 0; i < _params.size(); ++i) {
+    for (size_t i = 0; i < _params.size(); ++i) {
         if (_params[i] != other._params[i]) {
             return false;
         }
