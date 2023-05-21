@@ -1,5 +1,5 @@
 "558bec83e4f883ec0c538b5d??b8398ee338":
-__thiscall int LevelGenerator::PlaceRoom(LevelGenerator_Room *room);
+__thiscall bool LevelGenerator::place_room(LevelGenerator_Room *room);
 
 // This appears to be used for "special" generation: Greed Mode, Blue Womb, Home, probably others
 "558bec6aff68????????64a1????????5083ec50a1????????33c58945??5657508d45??64a3????????8bf98b45":
@@ -17,6 +17,9 @@ __thiscall void LevelGenerator::DetermineBossRoom(int shape, const unsigned int 
 
 "558bec6aff68????????64a1000000005081ec68010000":
 __thiscall void LevelGenerator::get_neighbor_candidates(vector_LevelGenRoom* neighbors, uint32_t generationIndex, bool unk);
+
+"558bec83e4f883ec0c5356578bf98b87700300008d9f70030000":
+__thiscall void LevelGenerator::calc_required_doors();
 
 struct LevelGenerator depends (LevelGenerator_Room) {
 {{

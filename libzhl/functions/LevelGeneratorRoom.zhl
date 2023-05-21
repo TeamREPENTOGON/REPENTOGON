@@ -1,13 +1,23 @@
 struct LevelGenerator_Room
 {
-    char pad0[0x4]; // 0x0
+    bool _unk1; // 0x0
+    char pad0[0x3]; // 0x1
     uint32_t _generationIndex; // 0x4
     uint32_t _gridColIdx; // 0x8
     uint32_t _gridLineIdx; // 0xC
-    char pad1[0x8]; // 0x10
+    uint32_t _horizontalSize; // 0x10
+    uint32_t _verticalSize; // 0x14
     uint32_t _shape; // 0x18
     uint32_t _doors; // 0x1C
-    char pad2[0x10]; // 0x20
+    int32_t _originNeighborConnectDir; // 0x20
+    int32_t _originNeighborConnectDirAdjust; // 0x24
+    int32_t _linkColIdx; // 0x28
+    int32_t _linkLineIdx; // 0x2C
     std_set_int _neighbors; // 0x30
-    char pad3[0x10]; // 0x38
+    uint32_t _setExtraField; // 0x38
+    bool _deadEnd; // 0x3C
+    char pad2[0x3]; // 0x3D
+    uint32_t _distanceFromStart; // 0x40
+    bool _unk8; // 0x44
+    char pad3[0x3]; // 0x45
 }; // 0x48
