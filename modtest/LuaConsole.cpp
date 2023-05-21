@@ -44,7 +44,7 @@ int Lua_ConsoleGetHistory(lua_State* L)
 
 	lua_newtable(L, 0);
 	unsigned int idx = 1;
-	for (Console_HistoryEntry entry : *history) {
+	for (const Console_HistoryEntry entry : *history) {
 		lua_pushnumber(L, idx);
 		lua_pushstring(L, entry._text.Get());
 		lua_settable(L, -3);

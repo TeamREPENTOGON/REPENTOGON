@@ -1,4 +1,10 @@
+"f20f5804c5(????????)8bc1c1e8080fb6c0660f5ae0":
+reference double g_colorDouble;
+
 struct Console_HistoryEntry depends (IsaacString)
 {
+	{{
+		inline int GetColorMap() {return *(int*)((char*)this + 0x1C); }
+	}}
     IsaacString _text;
 };
