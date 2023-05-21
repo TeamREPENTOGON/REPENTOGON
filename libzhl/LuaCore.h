@@ -152,6 +152,7 @@ namespace lua {
         extern LIBZHL_API const char* WeaponMT;
         extern LIBZHL_API const char* LevelGeneratorMT;
         extern LIBZHL_API const char* LevelGeneratorRoomMT;
+        extern LIBZHL_API const char* MinimapMT;
     }
 
     LIBZHL_API void UnloadMetatables();

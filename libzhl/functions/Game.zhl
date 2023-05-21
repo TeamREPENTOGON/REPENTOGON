@@ -130,7 +130,9 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return (ProceduralItemManager*)((char*) this + 0x283c20); }
     
-    inline HUD* GetPlayerHUD(uint32_t playerId) { return (HUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
+	inline HUD* GetPlayerHUD(uint32_t playerId) { return (HUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
+	
+	inline Minimap* GetMinimap() { return (Minimap*)((char*)this + 0x1a2ab0); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 

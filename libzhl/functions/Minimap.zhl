@@ -1,5 +1,11 @@
+"558bec8b15????????83ec0c":
+__thiscall void Minimap::Update();
+
 "558bec83e4f081ec18010000a1":
 __thiscall void Minimap::Render();
+
+"558bec568b75??578bf98b0d":
+__thiscall Vector* Minimap::GetDisplayedSize();
 
 struct Minimap {
 
