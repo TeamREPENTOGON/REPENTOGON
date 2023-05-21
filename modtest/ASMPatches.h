@@ -4,6 +4,13 @@ extern int ambushWaves;
 extern bool overrideMegaSatanEnding;
 extern void __stdcall LogMessageCallback(const char* logMessage);
 
+static DWORD SetPageMemoryRW(void* addr, MEMORY_BASIC_INFORMATION* info) {
+	VirtualQuery(addr, info, sizeof(*info));
+	DWORD old_protect;
+	VirtualProtect(info->BaseAddress, info->RegionSize, PAGE_READWRITE, &old_protect);
+	return old_protect;
+}
+
 /* This patch hooks KAGE_LogMessage by hand. LibZHL can't properly hook functions with varargs, and we need varargs to properly get log messages.
 *  So, we'll just do it manually, not a big deal.
 *  We manually call a trampoline function that takes a const char* as an input, and prints it to our ImGui log.
@@ -99,8 +106,37 @@ void ASMPatchMegaSatanEnding() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+/* Console::RunCommand takes a Player param for commands that need to run on a player.
+*  RunCommand will attempt to derive this from PlayerManager if not set.
+*  This prevents commands from being run on the main menu.
+*  We will handle this on our end in two parts- one hook, and one patch. This is the patch side of that.
+*  We just skip over the check by replacing the conditional JMP with an unconditional one.
+*/
+void ASMPatchConsoleRunCommand() {
+	SigScan scanner("75??8b0d????????5781c140ba0100");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Console::RunCommand Player requirement %p\n", addr);
+
+	MEMORY_BASIC_INFORMATION info;
+	DWORD old_protect = SetPageMemoryRW(addr, &info);
+	DWORD _dummy;
+
+	char override_base[] = {
+		0xEB
+	};
+	memcpy(addr, override_base, 1);
+
+
+	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
+
+	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+}
+
 static void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
 	ASMPatchMegaSatanEnding();
+	ASMPatchConsoleRunCommand();
 }

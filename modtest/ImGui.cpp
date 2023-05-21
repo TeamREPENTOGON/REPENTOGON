@@ -123,8 +123,8 @@ void __stdcall LogMessageCallback(const char* logMessage)
     logViewer.AddLog("[GAME]", logMessage);
 };
 
-HOOK_METHOD(Console, Print, (const IsaacString& text, unsigned int color, unsigned int unk)->void)
+HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsigned int unk) -> void)
 {
-    logViewer.AddLog("[CONSOLE]", text.Get());
+    logViewer.AddLog("[CONSOLE]", text.c_str());
     super(text, color, unk);
 }
