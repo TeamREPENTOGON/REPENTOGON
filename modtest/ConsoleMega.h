@@ -17,9 +17,9 @@ struct ConsoleMega {
         std::string printin = std::string("> ") + input + "\n";
         std::string out;
 
-        g_Game->GetConsole()->Print(printin, 0xFF808080, 0x150);
+        g_Game->GetConsole()->Print(printin, 0xFF808080, 0x96u);
         g_Game->GetConsole()->RunCommand(input, out, NULL);
-        g_Game->GetConsole()->Print(out.c_str(), 0XFFD3D3D3, 0X150);
+        g_Game->GetConsole()->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
         memset(inputBuf, 0, sizeof(inputBuf));
     }
 
