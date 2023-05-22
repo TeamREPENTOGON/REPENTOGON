@@ -36,6 +36,11 @@ ___
 Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
 
 ___
+### Add·Debug·Flags () {: aria-label='Functions' }
+#### void AddDebugFlags ( [BitwiseDebugFlag](enums/BitwiseDebugFlag.md) flag ) {: .copyable aria-label='Functions' }
+Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `BitwiseDebugFlag.ENTITY_POSITIONS | BitwiseDebugFlag.HITSPHERES`)
+
+___
 ### Force·Mega·Satan·Void·Portal() {: aria-label='Functions' }
 #### void ForceMegaSatanVoidPortal ( boolean Force ) {: .copyable aria-label='Functions' }
 Set to `true` to forcefully inhibit the Mega Satan ending without affecting the ability to get Mega Satan completion marks or achievements. Set to `false` to retain vanilla behavior.
@@ -43,13 +48,12 @@ Set to `true` to forcefully inhibit the Mega Satan ending without affecting the 
 (Might be better as a callback, somehow?)
 
 ___
-### Get·Console () {: aria-label='Functions' }
-#### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
+### Devolve·Enemy () {: aria-label='Functions' }
+#### void DevolveEnemy ( [Entity](Entity.md) ) {: .copyable aria-label='Functions' }
 
 ___
-### Add·Debug·Flags () {: aria-label='Functions' }
-#### void AddDebugFlags ( [BitwiseDebugFlag](enums/BitwiseDebugFlag.md) flag ) {: .copyable aria-label='Functions' }
-Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `BitwiseDebugFlag.ENTITY_POSITIONS | BitwiseDebugFlag.HITSPHERES`)
+### Get·Console () {: aria-label='Functions' }
+#### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Debug·Flag () {: aria-label='Functions' }
@@ -62,8 +66,16 @@ ___
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
+### Get·Dimension () {: aria-label='Functions' }
+#### int GetDimension ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Minimap () {: aria-label='Functions' }
 #### [Minimap](Minimap.md) GetMinimap ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Pause·Menu·State () {: aria-label='Functions' }
+#### int GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Procedural·Item·Manager () {: aria-label='Functions' }
@@ -91,6 +103,10 @@ ___
 ### Is·Pause·Menu·Open () {: aria-label='Functions' }
 #### boolean IsPauseMenuOpen ( ) {: .copyable aria-label='Functions' }
 Returns `true` if the pause menu is open
+
+___
+### Spawn·Bomb·Crater () {: aria-label='Functions' }
+#### [Entity](Entity.md) SpawnBombCrater ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
 
 ___
 ### Toggle·Debug·Flag () {: aria-label='Functions' }

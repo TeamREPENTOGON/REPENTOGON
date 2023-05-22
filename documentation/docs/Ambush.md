@@ -44,7 +44,7 @@ ___
 
 ___
 ### Spawn·Bossrush·Wave () {: aria-label='Functions' }
-#### void SpawnBossrush·Wave ( ) {: .copyable aria-label='Functions' }
+#### void SpawnBossrushWave ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Start·Challenge () {: aria-label='Functions' }

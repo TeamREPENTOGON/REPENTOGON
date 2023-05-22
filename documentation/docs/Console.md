@@ -20,8 +20,8 @@ This is ordered last-to-first- the first entry will be the currently blank line 
 
 ___
 ### Pop·History () {: aria-label='Functions' }
-#### void PopHistory ( ) {: .copyable aria-label='Functions' }
-Removes previous lines from history. The line currently awaiting user input in the console counts as a part of the history, but this is already accounted for on the C++ side.
+#### void PopHistory ( int amount = 1) {: .copyable aria-label='Functions' }
+Removes previous lines from history. Optionally, use amount to define how many entries should be removed. The line currently awaiting user input in the console counts as a part of the history, but this is already accounted for on the C++ side.
 
 ___
 ### Print·Error () {: aria-label='Functions' }

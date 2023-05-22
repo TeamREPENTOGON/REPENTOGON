@@ -35,6 +35,10 @@ ___
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 
 ___
+### Enable·Weapon·Type() {: aria-label='Functions' }
+#### void EnableWeaponType ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, boolean Set ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Active·Item·Desc () {: aria-label='Functions' }
 #### [ActiveItemDesc](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_ActiveItemDesc.html) GetActiveItemDesc ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = ActiveSlot.SLOT_PRIMARY ) {: .copyable aria-label='Functions' }
 
@@ -47,8 +51,51 @@ ___
 #### int GetActiveMinUsableCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Bag·Of·Crafting·Content () {: aria-label='Functions' }
+#### table GetBagOfCraftingContent ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Bag·Of·Crafting·Output () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetBagOfCraftingOutput ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Bag·Of·Crafting·Slot () {: aria-label='Functions' }
+#### int GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
+Gets the current content of the bag in the given Slot ID.
+___
+### Get·D8·Damage·Modifier () {: aria-label='Functions' }
+#### int GetD8DamageModifier ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·D8·Speed·Modifier () {: aria-label='Functions' }
+#### int GetD8SpeedModifier ( ) {: .copyable aria-label='Functions' }
+
+___
+
+### Get·D8·Range·Modifier () {: aria-label='Functions' }
+#### int GetD8RangeModifier ( ) {: .copyable aria-label='Functions' }
+
+___
+
+### Get·D8·Fire·Delay·Modifier () {: aria-label='Functions' }
+#### int GetD8FireDelayModifier ( ) {: .copyable aria-label='Functions' }
+
+___
+
+### Get·Damage·Modifier () {: aria-label='Functions' }
+#### int GetDamageModifier ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Dead·Eye·Charge () {: aria-label='Functions' }
 #### int GetDeadEyeCharge ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Epiphora·Charge () {: aria-label='Functions' }
+#### int GetEpiphoraCharge ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Fire·Delay·Modifier () {: aria-label='Functions' }
+#### int GetFireDelayModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Health·Type () {: aria-label='Functions' }
@@ -66,15 +113,36 @@ Returns the entity effect representing the target of the [Marked](https://bindin
 If the target is not displayed on the ground, this function returns nil.
 
 ___
-### Get·Mega·Blast·Duration () {: aria-label='Modified Functions' }
+### Get·Max·Pee·Burst·Cooldown () {: aria-label='Functions' }
+#### int GetMaxPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Metronome·Collectible·ID () {: aria-label='Functions' }
+#### int GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Mega·Blast·Duration () {: aria-label='Modified Functions' }
 #### int GetMegaBlastDuration ( ) {: .copyable aria-label='Modified Functions' }
 
 ___
+### Get·Pee·Burst·Cooldown () {: aria-label='Functions' }
+#### int GetPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
+#### int GetRedStewBonusDuration ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Total·Active·Charge () {: aria-label='Functions' }
 #### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+
+_____
+### Get·Weapon () {: aria-label='Functions' }
+#### [Weapon](Weapon.md) GetWeapon ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Weapon·Modifiers () {: aria-label='Functions' }
+#### int GetWeaponModifiers ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Increment·Player·Form·Counter () {: aria-label='Functions' }
@@ -104,9 +172,29 @@ ___
 #### void SetActiveVarData ( int VarData, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Bag·Of·Crafting·Content () {: aria-label='Functions' }
+#### void SetBagOfCraftingContent ( table ContentTable ) {: .copyable aria-label='Functions' }
+**NOT IMPLEMENTED**
+___
+### Set·Bag·Of·Crafting·Output () {: aria-label='Functions' }
+#### void SetBagOfCraftingOutput ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleID ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Bag·Of·Crafting·Slot () {: aria-label='Functions' }
+#### void SetBagOfCraftingSlot ( int SlotID, int PickupID ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Can·Shoot () {: aria-label='Functions' }
 #### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
+___
+### Set·Damage·Modifier () {: aria-label='Functions' }
+#### void SetDamageModifier ( int Modifier ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Fire·Delay·Modifier () {: aria-label='Functions' }
+#### void SetFireDelayModifier ( int Modifier ) {: .copyable aria-label='Functions' }
+
 ___
 ### Set·Item·State () {: aria-label='Functions' }
 #### void SetItemState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType ) {: .copyable aria-label='Functions' }
@@ -115,6 +203,10 @@ This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 ___
 ### Set·Mega·Blast·Duration () {: aria-label='Modified Functions' }
 #### void SetMegaBlastDuration ( int Duration ) {: .copyable aria-label='Modified Functions' }
+
+___
+### Set·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
+#### void SetRedStewBonusDuration ( int Duration ) {: .copyable aria-label='Functions' }
 
 ___
 ### Teleport () {: aria-label='Functions' }

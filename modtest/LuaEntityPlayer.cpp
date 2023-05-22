@@ -273,6 +273,7 @@ int Lua_PlayerGetBoCContent(lua_State* L) {
 
 int Lua_PlayerSetBoCContent(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	// TODO: Implement this
 	return 0;
 }
 
