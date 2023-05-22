@@ -62,6 +62,10 @@ ___
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
+### Get·Minimap () {: aria-label='Functions' }
+#### [Minimap](Minimap.md) GetMinimap ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Procedural·Item·Manager () {: aria-label='Functions' }
 #### [ProceduralItemManager](ProceduralItemManager.md) GetProceduralItemManager ( ) {: .copyable aria-label='Functions' }
 

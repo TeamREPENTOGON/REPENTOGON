@@ -13,11 +13,12 @@ static int Lua_GameGetMinimap(lua_State* L)
 	return 1;
 }
 
-static int Lua_MinimapGetDisplayedSize(lua_State* L) //crashes, not sure why
+static int Lua_MinimapGetDisplayedSize(lua_State* L)
 {
 	Minimap* minimap = *lua::GetUserdata<Minimap**>(L, 1, lua::metatables::MinimapMT);
-
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), minimap->GetDisplayedSize());
+	Vector buffer;
+	buffer = *minimap->GetDisplayedSize(buffer);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), buffer);
 
 	return 1;
 }
@@ -35,7 +36,7 @@ static void RegisterMinimap(lua_State* L) {
 	lua_settable(L, -3);
 
 	luaL_Reg funcs[] = {
-		//{ "GetDisplayedSize", Lua_MinimapGetDisplayedSize },
+		{ "GetDisplayedSize", Lua_MinimapGetDisplayedSize },
 		{ NULL, NULL }
 	};
 
