@@ -112,6 +112,7 @@ nav:
   - LayerState: LayerState.md
   - Level: Level.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
+  - Minimap: Minimap.md
   - MultiShotParams: MultiShotParams.md
   - MusicManager: MusicManager.md
   - NullFrame: NullFrame.md
