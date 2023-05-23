@@ -123,6 +123,7 @@ nav:
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
+  - RoomTransition: RoomTransition.md
   - Sprite: Sprite.md
 - Changes:
   - General: changes/General.md

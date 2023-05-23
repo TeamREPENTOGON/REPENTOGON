@@ -95,6 +95,10 @@ ___
 #### [RoomConfigHolder](RoomConfigHolder.md) GetRoomConfigHolder ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Room·Transition () {: aria-label='Functions' }
+#### [RoomTransition](RoomTransition.md) GetRoomTransition ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Hard·Mode () {: aria-label='Functions' }
 #### boolean IsHardMode ( ) {: .copyable aria-label='Functions' }
 Returns `true` if hard mode or greedier
