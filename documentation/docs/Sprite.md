@@ -45,7 +45,7 @@ ___
 
 ___
 ### Is·Visible () {: aria-label='Functions' }
-#### boolean IsVisible () {: .copyable aria-label='Functions' }
+#### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Color () {: aria-label='Functions' }
