@@ -9,7 +9,7 @@
 #### table GetEntityByName ( string name ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the entities2.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
 ???- info "Table usage"
-		```lua
+		``` lua
 			print("Monstro's type:", XMLData.GetEntityByName("Monstro").type)
 		```
 ___
@@ -18,7 +18,7 @@ ___
 #### table GetPlayerByName ( string name ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the players.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
 ???- info "Table usage"
-		```lua
+		``` lua
 			print("Isaac's bomb number:", XMLData.GetPlayerByName("Isaac").bombs)
 		```
 ___
@@ -27,7 +27,7 @@ ___
 #### table GetModByName ( string name ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the metadata.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
 ???- info "Table usage"
-		```lua
+		``` lua
 			print("Car mod's version:", XMLData.GetModByName("Car").version)
 		```
 ___
