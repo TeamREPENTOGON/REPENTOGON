@@ -16,7 +16,7 @@ Returns a [Camera](Camera.md) object.
 
 ___
 ### Get·Effects () {: aria-label='Functions' }
-#### [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) GetEffects  ( ) {: .copyable aria-label='Functions' }
+#### [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) GetEffects ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Floor·Color () {: aria-label='Functions' }
