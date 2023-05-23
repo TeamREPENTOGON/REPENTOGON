@@ -1,7 +1,23 @@
 # Class "Isaac"
+## Modified Functions
 
+### Find·By·Type () {: aria-label='Modified Functions' }
+[ ](#){: .rep .tooltip .badge }
+#### table FindByType ( [EntityType](enums/EntityType.md) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
+Same as vanilla, but much faster.
+___
+### Find·In·Radius () {: aria-label='Modified Functions' }
+[ ](#){: .rep .tooltip .badge }
+#### table FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
+Same as in vanilla, but much faster and with fixed search for effects.
+___
+### Get·Room·Entities () {: aria-label='Modified Functions' }
+[ ](#){: .abrep .tooltip .badge }
+#### table GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
+Same as vanilla, but much faster.
+
+___
 ## Functions
-
 
 ### All·Marks·Filled () {: aria-label='Functions' }
 #### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
@@ -93,6 +109,11 @@ Returns a table containing all the marks for the character. Supports both modded
 ___
 ### Get·Daily·Challenge () {: aria-label='Functions' }
 #### [DailyChallenge](DailyChallenge.md) GetDailyChallenge ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Loaded·Modules () {: aria-label='Functions' }
+#### table GetLoadedModules ( ) {: .copyable aria-label='Functions' }
+Returns a key - value table containing all loaded script files, where the key is the name or path of a given script file, and the value the return value of that file after loading. (In most cases its true or a table)
 
 ___
 ### Get·Localized·String () {: aria-label='Functions' }

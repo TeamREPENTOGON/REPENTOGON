@@ -18,6 +18,62 @@ if "GITHUB_WORKSPACE" in os.environ:
 ignoreFunctionWords = ["Register","_Test","__gc", "Patch", "FixMusicManager"]
 ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp", "LuaImGui.cpp"]
 
+parentClass = {
+               "Ambush":"Game",
+               "AnimationState":"Entity",
+               "Camera": "Room",
+               "Console":"Game",
+               "DailyChallenge":"Isaac",
+               "EntitySlot":"Entity",
+               "GridEntity":"Isaac",
+               "History":"EntityPlayer",
+               "ItemOverlay":"Game",
+               "LocalizationStuff":"Isaac",
+               "MainMenu":"Game",
+               "Minimap":"Game",
+               "NullFrame":"AnimationState",
+               "PersistentGameData":"Isaac",
+               "PlayerHUD":"HUD",
+               "PlayerManager":"Game",
+               "ProceduralItemManager":"Game",
+               "RoomTransition":"Game",
+               "RoomConfigHolder":"Game",
+               "Weapon":"Isaac,EntityPlayer",
+               }
+
+
+def searchInDocFile(docFilePath, luaFunctions):
+    if os.path.isfile(docFilePath):
+        docFile = open(docFilePath, 'r')
+        for line in docFile:
+            if "####" in line: # function header
+                filterLinks = re.sub("\]\([a-zA-z0-9\.\/:]*html\)", "", line)
+                filterMdLinks = re.sub("\]\(.*md\)", "", filterLinks).replace("[","")
+                filteredLine = filterMdLinks.split("####")[1].split("{:")[0].replace(")","").strip()
+                lineSplit = filteredLine.split(" (")
+
+                returnType = lineSplit[0].split(" ")[0]
+                functionName = lineSplit[0].split(" ")[1]
+                
+                arguments = []
+
+                if len(lineSplit) >1:
+                    args = filteredLine.split(" (")[1].strip()
+                    if args != "":
+                        for pair in args.split(","):
+                            cleanPair = pair.strip()
+                            argType = cleanPair.split(" ")[0]
+                            arguments.append(argType)
+                
+
+                # compare with CPP content
+                for func in luaFunctions:
+                    if func[0] == functionName:
+                        func[3] = True
+    else:
+        print("###### No doc file found for file: "+docFilePath)
+
+
 for file in glob.glob(CPP_FOLDER_PATH+"Lua*.cpp", recursive=True):
     skip = False
     for ignoreFile in ignoreFiles:
@@ -83,36 +139,11 @@ for file in glob.glob(CPP_FOLDER_PATH+"Lua*.cpp", recursive=True):
     if className == "":
         className = os.path.basename(file).split("Lua")[1].split(".")[0]
     
-    docFilePath =DOCS_FOLDER_PATH+className+".md"
-    if os.path.isfile(docFilePath):
-        docFile = open(docFilePath, 'r')
-        for line in docFile:
-            if "####" in line: # function header
-                filterLinks = re.sub("\]\([a-zA-z0-9\.\/:]*html\)", "", line)
-                filterMdLinks = re.sub("\]\(.*md\)", "", filterLinks).replace("[","")
-                filteredLine = filterMdLinks.split("####")[1].split("{:")[0].replace(")","").strip()
-                lineSplit = filteredLine.split(" (")
-
-                returnType = lineSplit[0].split(" ")[0]
-                functionName = lineSplit[0].split(" ")[1]
-                
-                arguments = []
-
-                if len(lineSplit) >1:
-                    args = filteredLine.split(" (")[1].strip()
-                    if args != "":
-                        for pair in args.split(","):
-                            cleanPair = pair.strip()
-                            argType = cleanPair.split(" ")[0]
-                            arguments.append(argType)
-                
-
-                # compare with CPP content
-                for func in luaFunctions:
-                    if func[0] == functionName:
-                        func[3] = True
-    else:
-        print("###### No doc file found for file: "+docFilePath)
+    # search in own documentation and the parent documentation
+    searchInDocFile(DOCS_FOLDER_PATH + className + ".md", luaFunctions)
+    if className in parentClass:
+        for parent in parentClass[className].split(","):
+            searchInDocFile(DOCS_FOLDER_PATH + parent + ".md", luaFunctions)
 
     # Print missing matches
     for func in luaFunctions:
@@ -120,6 +151,6 @@ for file in glob.glob(CPP_FOLDER_PATH+"Lua*.cpp", recursive=True):
             if ignoreWord in func[0]:
                 func[3] = True
         
-        if func[0] != "Get"+className and not func[3]:
+        if not func[3]:
             print("\t Missing: "+func[0]+ "\targs:"+str(func[1])+ "\topt-args:"+str(func[2]))
         

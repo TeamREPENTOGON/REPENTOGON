@@ -70,6 +70,10 @@ ___
 #### int GetDimension ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Main·Menu () {: aria-label='Functions' }
+#### [MainMenu](MainMenu.md) GetMainMenu ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Minimap () {: aria-label='Functions' }
 #### [Minimap](Minimap.md) GetMinimap ( ) {: .copyable aria-label='Functions' }
 
