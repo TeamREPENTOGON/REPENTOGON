@@ -28,6 +28,11 @@ ___
 #### void IncreaseEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter, int Num ) {: .copyable aria-label='Functions' }
 
 ___
+### Is·Item·In·Collection () {: aria-label='Functions' }
+#### boolean IsItemInCollection ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleId ) {: .copyable aria-label='Functions' }
+Checks if an item is in the collection. Aka. its at least picked up once in any run.
+
+___
 ### Get·Event·Counter () {: aria-label='Functions' }
 #### void GetEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter ) {: .copyable aria-label='Functions' }
 ___
