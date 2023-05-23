@@ -125,6 +125,7 @@ nav:
   - RoomConfigHolder: RoomConfigHolder.md
   - RoomTransition: RoomTransition.md
   - Sprite: Sprite.md
+  - XMLData: XMLData.md
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
