@@ -11,6 +11,6 @@ ___
 
 ___
 ### Get·Overlay·Animation·State () {: aria-label='Functions' }
-#### userdata GetOverlayAnimationState () {: .copyable aria-label='Functions' }
+#### userdata GetOverlayAnimationState ( ) {: .copyable aria-label='Functions' }
 
 ___

@@ -13,7 +13,7 @@ ___
 ## Functions
 
 ### Get·Color () {: aria-label='Functions' }
-#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetColor () {: .copyable aria-label='Functions' }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Crop·Offset () {: aria-label='Functions' }
@@ -29,19 +29,19 @@ ___
 
 ___
 ### Get·Pos () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos () {: .copyable aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Rotation () {: aria-label='Functions' }
-#### int GetRotation () {: .copyable aria-label='Functions' }
+#### int GetRotation ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Size () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetSize () {: .copyable aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetSize ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Spritesheet·Path () {: aria-label='Functions' }
-#### string GetSpritesheetPath () {: .copyable aria-label='Functions' }
+#### string GetSpritesheetPath ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Visible () {: aria-label='Functions' }
@@ -69,6 +69,6 @@ ___
 
 ___
 ### Set·Visible () {: aria-label='Functions' }
-#### void SetVisible (boolean Visible) {: .copyable aria-label='Functions' }
+#### void SetVisible ( boolean Visible ) {: .copyable aria-label='Functions' }
 
 ___

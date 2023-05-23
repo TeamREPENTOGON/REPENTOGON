@@ -22,7 +22,7 @@ ___
 
 ___
 ### Is·Rendering·Boss·Intro () {: aria-label='Functions' }
-#### bool IsRenderingBossIntro ( ) {: .copyable aria-label='Functions' }
+#### boolean IsRenderingBossIntro ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Start·Boss·Intro () {: aria-label='Functions' }
