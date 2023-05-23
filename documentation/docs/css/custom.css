@@ -2,7 +2,7 @@
     --function-color: #90CAF9;
     --function-color-light: #BBDEFB;
     --mod-function-color: #8cf1ff;
-    --mod-function-color-light: #a0e5fd;
+    --mod-function-color-light: #b5fffe;
     --var-color: #A5D6A7;
     --var-color-light: #E8F5E9;
     --constructor-color: #FFCC80;
@@ -117,7 +117,7 @@ h4[aria-label$='Functions'] {
 }
 
 h4[aria-label$='Modified Functions'] {
-    background-color: var(--function-color-light);
+    background-color: var(--mod-function-color-light);
 }
 
 h4[aria-label$='Variables'] {
@@ -594,6 +594,10 @@ td>.copyButton>span::after {
 
 .contentTable tr[aria-label$='Functions'] {
     background-color: var(--function-overview-bg-color);
+}
+
+.contentTable tr[aria-label$='Modified Functions'] {
+    background-color: var(--mod-function-overview-bg-color);
 }
 
 .contentTable tr[aria-label$='Variables'] {
