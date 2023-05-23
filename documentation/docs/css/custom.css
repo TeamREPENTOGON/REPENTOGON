@@ -1,6 +1,8 @@
 :root {
     --function-color: #90CAF9;
     --function-color-light: #BBDEFB;
+    --mod-function-color: #8cf1ff;
+    --mod-function-color-light: #a0e5fd;
     --var-color: #A5D6A7;
     --var-color-light: #E8F5E9;
     --constructor-color: #FFCC80;
@@ -21,6 +23,10 @@
 
 nav[aria-label='Functions'] {
     border-left-color: var(--function-color) !important;
+}
+
+nav[aria-label='Modified Functions'] {
+    border-left-color: var(--mod-function-color) !important;
 }
 
 nav[aria-label='Variables'] {
@@ -72,6 +78,10 @@ h3[aria-label$='Functions'] {
     background-color: var(--function-color);
 }
 
+h3[aria-label$='Modified Functions'] {
+    background-color: var(--mod-function-color);
+}
+
 h3[aria-label$='Variables'] {
     background-color: var(--var-color);
 }
@@ -89,6 +99,7 @@ h3[aria-label$='Constants'] {
 }
 
 h4[aria-label$='Functions'],
+h4[aria-label$='Modified Functions'],
 h4[aria-label$='Variables'],
 h4[aria-label$='Operators'],
 h4[aria-label$='Constants'],
@@ -102,6 +113,10 @@ h4[aria-label$='Constructors'] {
 }
 
 h4[aria-label$='Functions'] {
+    background-color: var(--function-color-light);
+}
+
+h4[aria-label$='Modified Functions'] {
     background-color: var(--function-color-light);
 }
 
