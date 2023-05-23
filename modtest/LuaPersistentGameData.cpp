@@ -7,6 +7,7 @@
 static constexpr const char* PersistentGameDataMT = "PersistentGameData";
 
 static const unsigned int PGD_COUNTER_MAX = 495;
+static const unsigned int COLLECITBLE_MAX = 732;
 
 static int Lua_GetPersistentGameData(lua_State* L) {
 	Manager* manager = g_Manager;
@@ -65,6 +66,18 @@ int Lua_PGDGetEventCounter(lua_State* L)
 	return 1;
 }
 
+int Lua_PGDIsItemInCollection(lua_State* L) {
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	int collectID = luaL_checkinteger(L, 2);
+
+	if (collectID > COLLECITBLE_MAX)
+		luaL_error(L, "bad argument #2 to 'IsItemInCollection' (CollectibleType cannot be higher than %d)", COLLECITBLE_MAX);
+
+	lua_pushboolean(L, pgd->IsItemInCollection(collectID));
+
+	return 1;
+}
+
 static void RegisterPersistentGameData(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
@@ -83,6 +96,7 @@ static void RegisterPersistentGameData(lua_State* L)
 		{ "Unlocked", Lua_PGDUnlocked },
 		{ "IncreaseEventCounter", Lua_PGDIncreaseEventCounter},
 		{ "GetEventCounter", Lua_PGDGetEventCounter},
+		{ "IsItemInCollection", Lua_PGDIsItemInCollection},
 		{ NULL, NULL }
 	};
 
