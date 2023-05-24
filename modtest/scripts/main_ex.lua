@@ -628,5 +628,8 @@ pcall(require("repentogon_extras/changelog"))
 pcall(require("repentogon_extras/daily_stats"))
 pcall(require("repentogon_extras/stats_menu"))
 
+-- TESTING !!
+pcall(require("repentogon_tests/test_imgui"))
+
 -- load console last to prevent other custom rendered stuff from obstructing it
 pcall(require("repentogon_extras/main_menu_console"))
