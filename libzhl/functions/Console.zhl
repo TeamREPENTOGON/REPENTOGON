@@ -5,7 +5,7 @@ __thiscall void Console::PrintError(const std_string &err);
 __thiscall void Console::RunCommand(const std_string &in, const std_string &out, Entity_Player *player);
 
 "558bec6aff68????????64a1000000005083ec60a1????????33c58945ec535657508d45f464a3000000008bf9":
-__thiscall void Console::Print(const std_string &text, unsigned int color, unsigned int unk);
+__thiscall void Console::Print(const std_string &text, unsigned int color, unsigned int fadeTime);
 
 "558bec6aff68????????64a1????????5081ec14020000":
 __thiscall void Console::FillOmnicomplete();
@@ -24,4 +24,7 @@ struct Console depends (Console_HistoryEntry) {
     inline int* GetState() { return (int*)((char*)this + 0x20); }
 	
 	inline std_deque_console_historyentry *GetHistory() { return (std_deque_console_historyentry*)((char*)this + 0x60); }
-}} };
+	
+	enum Color: unsigned int {WHITE = 0xFFD3D3D3};
+}} 
+};

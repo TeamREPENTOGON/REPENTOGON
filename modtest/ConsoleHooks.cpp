@@ -1,7 +1,11 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include "ConsoleMega.h"
 
-HOOK_METHOD(Console, RunCommand, (const std_string& in, const std_string& out, Entity_Player* player) -> void) {
+#include <iostream> 
+#include <sstream>
+
+HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out, Entity_Player* player) -> void) {
 
     // If we're in-game, return the player; otherwise don't. Many functions obviously don't work! Throw errors for those.
     if (g_Manager->GetState() != 2 || !g_Game) {
@@ -38,6 +42,48 @@ HOOK_METHOD(Console, RunCommand, (const std_string& in, const std_string& out, E
     }
     else if (!player)
         player = g_Game->GetPlayerManager()->GetPlayer(0);
+
+    if (in.rfind("help", 0) == 0) {
+
+        std::vector<std::string> cmdlets; //TODO split this into a generic parsing function
+
+        std::stringstream sstream(in);
+        std::string cmdlet;
+        char space = ' ';
+        while (std::getline(sstream, cmdlet, space)) {
+            cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
+            cmdlets.push_back(cmdlet);
+            if (cmdlets.size() == 2) {
+                break;
+            }
+        }
+
+        if (cmdlets.size() == 1) {
+            this->Print("How helpful!\nHere's a list of commands:\n", Console::Color::WHITE, 0x96U);
+
+            for (ConsoleCommand command : console.commands) {
+                // i know it isn't pretty but sprintf was crashing and this works, so whatever
+                this->Print("  - ", Console::Color::WHITE, 0x96U);
+                this->Print(command.name, Console::Color::WHITE, 0x96U);
+                this->Print(" - ", Console::Color::WHITE, 0x96U);
+                this->Print(command.desc, Console::Color::WHITE, 0x96U);
+                this->Print("\n", Console::Color::WHITE, 0x96U);
+            }
+        }
+        else {
+            for (ConsoleCommand command : console.commands) {
+                if (command.name == cmdlets[1]) {
+                    this->Print(command.name, Console::Color::WHITE, 0x96U);
+                    this->Print(" - ", Console::Color::WHITE, 0x96U);
+                    this->Print(command.helpText, Console::Color::WHITE, 0x96U);
+                    this->Print("\n", Console::Color::WHITE, 0x96U);
+                    break;
+                }
+            }
+        }
+
+        return;
+    }
 
     super(in, out, player);
 }
