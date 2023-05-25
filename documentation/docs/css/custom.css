@@ -240,6 +240,9 @@ a.const.tooltip:after {
 [data-md-color-scheme="slate"] {
     --function-color: #405e9a;
     --function-color-light: #272938;
+    --mod-function-color: #028b99;
+    --mod-function-color-light: #272938;
+    --mod-function-overview-bg-color: rgb(3 207 204 / 50%);
     --var-color: #128676;
     --var-color-light: #272938;
     --constructor-color: #e65100;
