@@ -64,6 +64,8 @@ nav:
     - Giantbook: enums/Giantbook.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
+    - ImGuiCallback: enums/ImGuiCallback.md
+    - ImGuiElement: enums/ImGuiElement.md
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
     - Language: enums/Language.md
@@ -76,6 +78,7 @@ nav:
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
+    - PocketItemType: enums/PocketItemType.md
     - PressurePlateVariant: enums/PressurePlateVariant.md
     - ProjectileMode: enums/ProjectileMode.md
     - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
