@@ -121,8 +121,8 @@ ___
 #### int GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Mega·Blast·Duration () {: aria-label='Modified Functions' }
-#### int GetMegaBlastDuration ( ) {: .copyable aria-label='Modified Functions' }
+### Get·Mega·Blast·Duration () {: aria-label='Functions' }
+#### int GetMegaBlastDuration ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Pee·Burst·Cooldown () {: aria-label='Functions' }
@@ -201,8 +201,8 @@ ___
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
 ___
-### Set·Mega·Blast·Duration () {: aria-label='Modified Functions' }
-#### void SetMegaBlastDuration ( int Duration ) {: .copyable aria-label='Modified Functions' }
+### Set·Mega·Blast·Duration () {: aria-label='Functions' }
+#### void SetMegaBlastDuration ( int Duration ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Red·Stew·Bonus·Duration () {: aria-label='Functions' }

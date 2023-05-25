@@ -4,8 +4,8 @@ Currently, this class does not have any new additions in REPENTOGON, only reimpl
 
 ## Modified Functions
 
-### Replace·Spritesheet () {: aria-label='Functions' }
-#### void ReplaceSpritesheet ( int LayerId, string PngFilename, bool︎ LoadGraphics = false ) {: .copyable aria-label='Functions' }
+### Replace·Spritesheet () {: aria-label='Modified Functions' }
+#### void ReplaceSpritesheet ( int LayerId, string PngFilename, bool︎ LoadGraphics = false ) {: .copyable aria-label='Modified Functions' }
 Now accepts an optional `bool` to determine if Sprite:LoadGraphics should be called after replacing the spritesheet. In most cases, you'll want to do this.
 
 ___

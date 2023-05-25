@@ -14,17 +14,17 @@ ___
 Now returns a proper [ItemOverlay](ItemOverlay.md) metatable.
 
 ___
-### Get·Last·Devil·Room·Stage () {: aria-label='Functions' }
-#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastDevilRoomStage ( ) {: .copyable aria-label='Functions' }
+### Get·Last·Devil·Room·Stage () {: aria-label='Modified Functions' }
+#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastDevilRoomStage ( ) {: .copyable aria-label='Modified Functions' }
 Now returns integer instead of unusable userdata.
 ___
-### Get·Last·Level·With·Damage () {: aria-label='Functions' }
-#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastLevelWithDamage ( ) {: .copyable aria-label='Functions' }
+### Get·Last·Level·With·Damage () {: aria-label='Modified Functions' }
+#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastLevelWithDamage ( ) {: .copyable aria-label='Modified Functions' }
 Now returns integer instead of unusable userdata.
 
 ___
-### Get·Last·Level·Without·Half·Hp () {: aria-label='Functions' }
-#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastLevelWithoutHalfHp ( ) {: .copyable aria-label='Functions' }
+### Get·Last·Level·Without·Half·Hp () {: aria-label='Modified Functions' }
+#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastLevelWithoutHalfHp ( ) {: .copyable aria-label='Modified Functions' }
 Now returns integer instead of unusable userdata.
 
 ___
