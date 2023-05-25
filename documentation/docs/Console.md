@@ -38,6 +38,8 @@ ___
 #### void Show ( ) {: .copyable aria-label='Functions' }
 Opens the debug console. This works even if the debug console is disabled.
 
+This is on the chopping block (recent changes have made this command redundant / unnecessary)
+
 ???+ note "Console input"
     If the console has not been manually opened by the end-user since game start, this will be a read-only copy. This is intentional- we skip some initialization steps, solely setting the console's state to force it to open.
 	

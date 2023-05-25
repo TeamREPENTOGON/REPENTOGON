@@ -171,6 +171,20 @@ struct CustomImGui {
         return false;
     }
 
+
+    bool SetWindowState(const char* windowName, bool newState) IM_FMTARGS(2)
+    {
+        for (auto window = windows->begin(); window != windows->end(); ++window) {
+            if (strcmp(window->name.c_str(), windowName) != 0) {
+                continue;
+            }
+            window->parentMenuItem->isActive = newState;
+            return true;
+        }
+        return false;
+    }
+
+
     void RunCallbacks(Element* element) IM_FMTARGS(2)
     {
         for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {

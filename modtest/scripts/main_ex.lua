@@ -426,6 +426,20 @@ local function logWarning(callbackID, modName, warn)
 	'" call from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload.)")
 end
 
+local function imGuiError(errortext)
+	local imgui = Isaac.GetImGui()
+	local window = "Error Display"
+	imgui:AddElementToMenu("REPENTOGON Error Display", ImGuiElement.Menu)
+	imgui:AddElementToMenu(window, ImGuiElement.MenuItem, "REPENTOGON Error Display")
+
+	imgui:AddWindow(window, window)
+	imgui:AddElementToWindow(window, "Below is the first crash causing errors. This is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", ImGuiElement.Text)
+	imgui:AddElementToWindow(window, errortext, ImGuiElement.Text)
+	imgui:AddElementToWindow(window, "Copy to Clipboard", ImGuiElement.Button)
+	imgui:AddCallbackToWindowElement(window, "Copy to Clipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
+	imgui:SetWindowState(window, true)
+end
+
 local err_dupecount = 1
 
 local function logError(callbackID, modName, err)
@@ -486,6 +500,7 @@ local function logError(callbackID, modName, err)
 		mouse:Play("Idle")
 		local mousecontrol_off = not Options.MouseControl --i bet its expensive to straight up call this every frame
 
+		imGuiError(consoleLog)
 
 		errdisp:AddPriorityCallback(ModCallbacks.MC_HUD_RENDER, INT_MIN, function()
 			if err_input < ERR_INPUT_TARGET then
@@ -506,7 +521,7 @@ local function logError(callbackID, modName, err)
 			if mouse_pos.X > err_bounding_x and mouse_pos.X < Isaac.GetScreenWidth() - err_bounding_x and mouse_pos.Y < 18 then
 				mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity)
 				if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
-					Game():GetConsole():Show()
+					Isaac.GetImGui():Show()
 				end
 			end
 

@@ -110,7 +110,31 @@ static int Lua_RemoveWindow(lua_State* L)
 
     imGui->RemoveWindow(windowName);
 
-    return 1;
+    return 0;
+}
+
+extern bool menuShown;
+static int Lua_ImGuiShow(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);  
+    menuShown = true;
+
+    return 0;
+}
+
+static int Lua_ImGuiSetWindowState(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* windowName = luaL_checkstring(L, 2);
+    bool newState = lua_toboolean(L, 3);
+    
+    bool success = imGui->SetWindowState(windowName, newState);
+
+    if (!success) {
+        return luaL_error(L, "Error changing state of window '%s'", windowName);
+    }
+
+    return 0;
 }
 
 static void RegisterCustomImGui(lua_State* L)
@@ -133,6 +157,8 @@ static void RegisterCustomImGui(lua_State* L)
         { "AddElementToMenu", Lua_AddElementToMenu },
         { "AddWindow", Lua_AddWindow },
         { "RemoveWindow", Lua_RemoveWindow },
+        { "SetWindowState", Lua_ImGuiSetWindowState },
+        { "Show", Lua_ImGuiShow },
         { NULL, NULL }
     };
 
