@@ -6,6 +6,7 @@
 #include "HookSystem.h"
 
 static constexpr const char* MultiShotParamsMT = "MultiShotParams";
+static constexpr const char* PocketItemMT = "PocketItem";
 
 std::vector<int> fakeItems;
 
@@ -454,12 +455,56 @@ int Lua_PlayerGetMarkedTarget(lua_State* L) {
 	return 1;
 }
 
+int Lua_PlayerGetPocketItem(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");	
+	int slotID = luaL_checkinteger(L, 2);
+	PocketItem** ud = (PocketItem**)lua_newuserdata(L, sizeof(PocketItem*));
+	*ud = player->GetPocketItem(slotID);
+	luaL_setmetatable(L, PocketItemMT);
+	return 1;
+}
+
+int Lua_PocketItemGetSlot(lua_State* L) {
+	PocketItem* pocketItem = *lua::GetUserdata<PocketItem**>(L, 1, PocketItemMT);
+	lua_pushinteger(L, pocketItem->_slot);
+	return 1;
+}
+
+int Lua_PocketItemGetType(lua_State* L) {
+	PocketItem* pocketItem = *lua::GetUserdata<PocketItem**>(L, 1, PocketItemMT);
+	lua_pushinteger(L, pocketItem->_type);
+	return 1;
+}
+
+static void RegisterPocketItem(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "GetPocketItem");
+	lua_pushcfunction(L, Lua_PlayerGetPocketItem);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	luaL_newmetatable(L, PocketItemMT);
+	lua_pushstring(L, "__index");
+	lua_pushvalue(L, -2);
+	lua_settable(L, -3);
+
+	luaL_Reg functions[] = {
+		{ "GetSlot", Lua_PocketItemGetSlot},
+		{ "GetType", Lua_PocketItemGetType},
+		{ NULL, NULL }
+	};
+
+	luaL_setfuncs(L, functions, 0);
+	lua_pop(L, 1);
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	RegisterMultiShotParams(state); // should probably move MultiShotParams to its own file, for consistency
+	RegisterPocketItem(state);
 	lua::Metatables mt = lua::Metatables::ENTITY_PLAYER;
 	lua::RegisterFunction(state, mt, "GetMultiShotPositionVelocity", Lua_GetMultiShotPositionVelocity);
 	lua::RegisterFunction(state, mt, "InitTwin", Lua_InitTwin);
