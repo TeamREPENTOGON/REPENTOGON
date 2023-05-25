@@ -1,9 +1,23 @@
 #include "imgui.h"
 
+struct ConsoleCommand {
+    const char* name; // The name of the command.
+    const char* desc; // A short (usually one sentence) description of the command. Will show up when just typing `help`
+    const char* helpText; // The help text for the command. Will show up when doing `help (command)`
+    bool showOnMenu;
+
+    ConsoleCommand(const char* cmdName, const char* cmdDesc, const char* cmdHelpText, bool cmdShowOnMenu) {
+        name = cmdName;
+        desc = cmdDesc;
+        helpText = cmdHelpText;
+        showOnMenu = cmdShowOnMenu;
+    }
+};
+
 struct ConsoleMega {
     bool enabled;
     char inputBuf[1024];
-    ImVector<int> offsets;
+    std::vector<ConsoleCommand> commands;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -11,15 +25,18 @@ struct ConsoleMega {
     {
         enabled = true;
         memset(inputBuf, 0, sizeof(inputBuf));
+        commands = {
+            ConsoleCommand("help", "Displays help (how else would you get here?)", "Hi, i'm the help text!", true) 
+        };
     }
 
     void ExecuteCommand(char* input) {
         std::string printin = std::string("> ") + input + "\n";
         std::string out;
 
-        g_Game->GetConsole()->Print(printin, 0xFF808080, 0x150);
+        g_Game->GetConsole()->Print(printin, 0xFF808080, 0x96u);
         g_Game->GetConsole()->RunCommand(input, out, NULL);
-        g_Game->GetConsole()->Print(out.c_str(), 0XFFD3D3D3, 0X150);
+        g_Game->GetConsole()->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
         memset(inputBuf, 0, sizeof(inputBuf));
     }
 
@@ -73,20 +90,5 @@ struct ConsoleMega {
         ImGui::PopStyleVar();
     }
 };
-
-HOOK_METHOD(Console, RunCommand, (const std_string& in, const std_string& out, Entity_Player* player) -> void) {
-
-    // If we're in-game, return the player; otherwise don't. Should be fine for most functions, but some obviously don't work! Throw errors for those.
-    if (g_Manager->GetState() != 2 || !g_Game) {
-        if (in.rfind("giveitem", 0) == 0) {
-            this->PrintError("[ERROR] Giveitem can't be used if not in-game!");
-            return;
-        }
-    }
-    else if (!player)
-        player = g_Game->GetPlayerManager()->GetPlayer(0);
-
-    super(in, out, player);
-}
 
 extern ConsoleMega console;

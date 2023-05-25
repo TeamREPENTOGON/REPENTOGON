@@ -2,6 +2,9 @@
 
 ## Functions
 
+### Can·Spawn·Door·Outline () {: aria-label='Functions' }
+#### boolean CanSpawnDoorOutline ( int RoomIdx, [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) DoorSlot) {: .copyable aria-label='Functions' }
+___
 ### Get·Dimension () {: aria-label='Functions' }
 #### [Dimension](enums/Dimension.md) GetDimension ( ) {: .copyable aria-label='Functions' }
 ___

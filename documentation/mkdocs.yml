@@ -64,6 +64,8 @@ nav:
     - Giantbook: enums/Giantbook.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
+    - ImGuiCallback: enums/ImGuiCallback.md
+    - ImGuiElement: enums/ImGuiElement.md
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
     - Language: enums/Language.md
@@ -76,6 +78,7 @@ nav:
     - PedestalType: enums/PedestalType.md
     - PillCardSlot: enums/PillCardSlot.md
     - PlayerVariant: enums/PlayerVariant.md
+    - PocketItemType: enums/PocketItemType.md
     - PressurePlateVariant: enums/PressurePlateVariant.md
     - ProjectileMode: enums/ProjectileMode.md
     - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
@@ -112,6 +115,7 @@ nav:
   - LayerState: LayerState.md
   - Level: Level.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
+  - Minimap: Minimap.md
   - MultiShotParams: MultiShotParams.md
   - MusicManager: MusicManager.md
   - NullFrame: NullFrame.md
@@ -122,7 +126,9 @@ nav:
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
+  - RoomTransition: RoomTransition.md
   - Sprite: Sprite.md
+  - XMLData: XMLData.md
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md

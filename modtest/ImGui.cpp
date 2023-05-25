@@ -77,22 +77,19 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
             if (ImGui::BeginMenu("Tools")) {
                 if (ImGui::MenuItem("Console (UNFINISHED)", NULL, &console.enabled)) { }
                 if (ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled)) { }
-                if (ImGui::MenuItem("Custom ImGui", NULL, &customImGui.enabled)) { }
                 ImGui::EndMenu();
             }
+            customImGui.DrawMenu();
             ImGui::EndMainMenuBar();
         }
-
         if (logViewer.enabled) {
             logViewer.Draw();
-        }
-        if (customImGui.enabled) {
-            customImGui.Draw();
         }
 
         if (console.enabled) {
             console.Draw();
         }
+        customImGui.DrawWindows();
 
         ImGui::Render();
 

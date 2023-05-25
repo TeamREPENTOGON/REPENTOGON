@@ -68,12 +68,24 @@ ___
 #### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Give·Minecart () {: aria-label='Functions' }
+#### [EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) GiveMinecart ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity ) {: .copyable aria-label='Functions' }
+
+___
 ### Force·Collide () {: aria-label='Functions' }
 #### boolean ForceCollide ( [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, bool Low ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Boss·Status·Effect·Cooldown () {: aria-label='Functions' }
 #### void SetBossStatusEffectCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Dead () {: aria-label='Functions' }
+#### void SetDead ( boolean isDead ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Invincible () {: aria-label='Functions' }
+#### void SetInvincible ( boolean isInvincible ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Shadow·Size () {: aria-label='Functions' }

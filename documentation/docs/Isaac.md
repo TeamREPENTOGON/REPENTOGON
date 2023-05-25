@@ -1,15 +1,31 @@
 # Class "Isaac"
+## Modified Functions
 
+### Find·By·Type () {: aria-label='Modified Functions' }
+[ ](#){: .rep .tooltip .badge }
+#### table FindByType ( [EntityType](enums/EntityType.md) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
+Same as vanilla, but much faster.
+___
+### Find·In·Radius () {: aria-label='Modified Functions' }
+[ ](#){: .rep .tooltip .badge }
+#### table FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
+Same as in vanilla, but much faster and with fixed search for effects.
+___
+### Get·Room·Entities () {: aria-label='Modified Functions' }
+[ ](#){: .abrep .tooltip .badge }
+#### table GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
+Same as vanilla, but much faster.
+
+___
 ## Functions
 
-
 ### All·Marks·Filled () {: aria-label='Functions' }
-#### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
+#### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
 Checks if a given character has completed all marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
 
 ___
 ### All·Tainted·Completion () {: aria-label='Functions' }
-#### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [TaintedMarksGroup](https://repentogon.com/enums/TaintedMarksGroup.html) complgroup) {: .copyable aria-label='Functions' }
+#### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [TaintedMarksGroup](https://repentogon.com/enums/TaintedMarksGroup.html) complgroup) {: .copyable aria-label='Functions' }
 Checks if a given character has completed all the tainted unlock-related marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
 
 ___
@@ -24,8 +40,12 @@ Spawns a timer EntityEffect. This entity will run Function function after Delay 
 
 ___
 ### Clear·Completion·Marks () {: aria-label='Functions' }
-#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
+#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
 Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
+
+___
+### Create·Weapon () {: aria-label='Functions' }
+#### [Entity](Entity.md) CreateWeapon ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) Type, [Entity](Entity.md) entity ) {: .copyable aria-label='Functions' }
 
 ___
 ### Draw·Line () {: aria-label='Functions' }
@@ -39,7 +59,7 @@ Draws a line between the two given positions this render frame. Internally the g
 
 ___
 ### Fill·Completion·Marks () {: aria-label='Functions' }
-#### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
+#### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
 Completes all completion marks for a given character. Supports both modded and vanilla characters. 
 
 ___
@@ -49,30 +69,30 @@ Gets the contents of the clipboard as long as they are in text form, otherwise i
 
 ___
 ### Get·Completion·Mark () {: aria-label='Functions' }
-#### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype) {: .copyable aria-label='Functions' }
+#### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype) {: .copyable aria-label='Functions' }
 Gets a completion mark value for a specific character. Supports both modded and vanilla characters. 
 
 ___
 ### Get·Completion·Marks () {: aria-label='Functions' }
-#### table GetCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype) {: .copyable aria-label='Functions' }
+#### table GetCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
 Returns a table containing all the marks for the character. Supports both modded and vanilla characters.
 
 ???- info "Table structure & usage"
 	- The table has the following fields: 
-		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) asociated to the marks
-		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* BossRush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* BlueBaby: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Lamb: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* MegaSatan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* UltraGreed: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Hush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) asociated to the marks
+		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* BossRush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* BlueBaby: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Lamb: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* MegaSatan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* UltraGreed: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Hush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 		* UltraGreedier: Mostly redundant with UltraGreed when it has a value of 2, no need to set it
-		* Delirium: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Delirium: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 			```lua
 			local marks = Isaac.GetCompletionMarks(0)
 			if (marks.MomsHeart > 0) then
@@ -89,6 +109,11 @@ Returns a table containing all the marks for the character. Supports both modded
 ___
 ### Get·Daily·Challenge () {: aria-label='Functions' }
 #### [DailyChallenge](DailyChallenge.md) GetDailyChallenge ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Loaded·Modules () {: aria-label='Functions' }
+#### table GetLoadedModules ( ) {: .copyable aria-label='Functions' }
+Returns a key - value table containing all loaded script files, where the key is the name or path of a given script file, and the value the return value of that file after loading. (In most cases its true or a table)
 
 ___
 ### Get·Localized·String () {: aria-label='Functions' }
@@ -117,7 +142,7 @@ Sets the contents of the clipboard to the provided string.
 
 ___
 ### Set·Completion·Mark () {: aria-label='Functions' }
-#### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype, int value) {: .copyable aria-label='Functions' }
+#### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype, int value) {: .copyable aria-label='Functions' }
 Sets a completion mark of a character to match a specific value from 0 to 2. Supports both modded and vanilla characters. 
 
 
@@ -128,20 +153,20 @@ Sets the completion marks of a character to match an input table. Supports both 
 
 ???- info "Table structure & usage"
 	- The table needs the following fields: 
-		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html?h=playerty) asociated to the marks
-		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* BossRush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* BlueBaby: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Lamb: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* MegaSatan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* UltraGreed: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Hush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) asociated to the marks
+		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* BossRush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* BlueBaby: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Lamb: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* MegaSatan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* UltraGreed: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Hush: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 		* UltraGreedier: Mostly redundant with UltraGreed when it has a value of 2, no need to set it
-		* Delirium: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
-		* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html?h=difficul) 0-2 indicating the completion
+		* Delirium: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Mother: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
+		* Beast: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 			```lua
 			local marks = Isaac.GetCompletionMarks(0) --getting the current table
 			marks.MomsHeart = 2 --Isaac now will have the hard mark on MHeart
@@ -149,6 +174,10 @@ Sets the completion marks of a character to match an input table. Supports both 
 			marks.BlueBaby = 0 --Removes the BlueBaby Mark if its present
 			Isaac.SetCompletionMarks(marks) --Impacts the changes on the player
 			```
+___
+### Spawn·Rock·Drops () {: aria-label='Functions' }
+#### void SpawnRockDrops ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, int gridType, int gridVariant, int seed, boolean unknown, int backdropType = 0 ) {: .copyable aria-label='Functions' }
+
 ___
 ### World·To·Menu·Position () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WorldToMenuPosition ( [MainMenu](enums/MainMenu.md) MenuId, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }

@@ -4,8 +4,10 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+static constexpr const char* RngMT = "RNG";
+
 int Lua_RNGSetSeed(lua_State* L) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, "RNG");
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
 
 	unsigned int seed = luaL_checkinteger(L, 2);
 	unsigned int shiftidx = luaL_optinteger(L, 3, 35);

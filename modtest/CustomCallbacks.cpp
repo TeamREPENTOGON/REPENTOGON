@@ -2178,3 +2178,36 @@ HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4,
 
 	stream.flush(); */
 }
+
+//POST_NIGHTMARE_SCENE_RENDER (1102)
+HOOK_METHOD(NightmareScene, Render, () -> void) {
+	super();
+	int callbackid = 1102;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			//.push(this, lua::metatables::NightmareSceneMT)
+			.call(1);
+	}
+}
+
+//POST_NIGHTMARE_SCENE_SHOW (1103)
+HOOK_METHOD(NightmareScene, Show, (bool unk) -> void) {
+	super(unk);
+	int callbackid = 1103;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			//.push(this, lua::metatables::NightmareSceneMT)
+			.push(unk)
+			.call(1);
+	}
+}

@@ -566,5 +566,7 @@ namespace lua {
 		const char* WeaponMT = "Weapon";
 		const char* LevelGeneratorMT = "LevelGenerator";
 		const char* LevelGeneratorRoomMT = "LevelGeneratorMT";
+		const char* MinimapMT = "Minimap";
+		const char* NightmareSceneMT = "NightmareScene";
 	}
 }

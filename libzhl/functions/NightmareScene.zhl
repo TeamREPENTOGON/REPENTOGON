@@ -1,0 +1,13 @@
+"558bec83e4f881ec80000000a1????????33c4894424??a1":
+__thiscall void NightmareScene::Render();
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec68020000a1????????33c58945??5657508d45??64a3????????8bf9":
+__thiscall void NightmareScene::Show(bool unk);
+
+struct NightmareScene depends (ANM2) { {{
+	inline ANM2* GetBackgroundSprite() { return (ANM2*)((char*)this + 0x20); }
+	inline ANM2* GetBubbleSprite() { return (ANM2*)((char*)this + 0x134); }
+	inline ANM2* GetProgressBarSprite() { return (ANM2*)((char*)this + 0x248); }
+	inline int* GetProgressBarMap() { return (int*)((char*)this + 0x36c); }
+	inline bool* IsDogmaNightmare() { return (bool*)((char*)this + 0x5e8); }
+}} };

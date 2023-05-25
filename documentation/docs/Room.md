@@ -2,6 +2,10 @@
 
 ## Functions
 
+### Can·Pickup·Grid·Entity () {: aria-label='Functions' }
+#### boolean CanPickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
+Returns true if the gridentity at the given position can be picked up.
+___
 ### Can·Spawn·Obstacle·At·Position () {: aria-label='Functions' }
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
 
@@ -11,8 +15,16 @@ ___
 Returns a [Camera](Camera.md) object.
 
 ___
+### Get·Effects () {: aria-label='Functions' }
+#### [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) GetEffects ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Floor·Color () {: aria-label='Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetWaterColor ( ) {: .copyable aria-label='Functions' }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetFloorColor ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Rail () {: aria-label='Functions' }
+#### [StbRailVariant](enums/StbRailVariant.md) GetRail ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Shop·Item·Price () {: aria-label='Functions' }
@@ -33,6 +45,10 @@ ___
 #### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetWaterColorMultiplier ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Pickup·Grid·Entity () {: aria-label='Functions' }
+#### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) PickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
+
+___
 ### Remove·Grid·Entity·Immediate () {: aria-label='Functions' }
 #### void RemoveGridEntityImmediate ( int GridIndex, int PathTrail, boolean KeepDecoration ) {: .copyable aria-label='Functions' }
 *Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
@@ -45,8 +61,12 @@ This function will not work if the Unknown integer is passed as `0`.
 The backdrop variant chosen is seeded based on the room, and does not persist when leaving and re-entering. Calling this function again on re-entry will result in the same backdrop variant as before.
 
 ___
+### Set·Rail () {: aria-label='Functions' }
+#### void SetRail ( [StbRailVariant](enums/StbRailVariant.md) RailVariant ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Water·Amount () {: aria-label='Functions' }
-#### void GetWaterAmount ( float Amount ) {: .copyable aria-label='Functions' }
+#### void SetWaterAmount ( float Amount ) {: .copyable aria-label='Functions' }
 Sets the amount of water that should be in the current room. Vanilla typically uses 0 for no water and 1 for water. You can technically go higher than this for some interesting results.
 
 ___

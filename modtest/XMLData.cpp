@@ -341,6 +341,15 @@ int Lua_GetPlayerXML(lua_State* L)
 	return 1;
 }
 
+int Lua_GetModXML(lua_State* L)
+{
+	string entityname = string(lua_tostring(L, 1));
+	XMLAttributes entity = XMLStuff.ModData.mods[XMLStuff.ModData.modbyname[entityname]];
+	printf("modname %s %d", entityname.c_str(), entity.count("id"));
+	Lua_PushXMLNode(L, entity);
+	return 1;
+}
+
 int Lua_GetMusicXML(lua_State* L)
 {
 	string entityname = string(lua_tostring(L, 1));
@@ -366,6 +375,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_settable(L, -3);
 	lua_pushstring(L, "GetMusicByName");
 	lua_pushcfunction(L, Lua_GetMusicXML);
+	lua_settable(L, -3);
+	lua_pushstring(L, "GetModByName");
+	lua_pushcfunction(L, Lua_GetModXML);
 	lua_settable(L, -3);
 	lua_setglobal(L, "XMLData"); 
 	//lua_pop(L, 1);

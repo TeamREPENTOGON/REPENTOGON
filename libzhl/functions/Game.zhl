@@ -73,7 +73,7 @@ static void Game::DevolveEnemy(Entity* ent);
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager) { {{
+struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition) { {{
 	Game()
 	{
 		this->constructor();
@@ -130,7 +130,11 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return (ProceduralItemManager*)((char*) this + 0x283c20); }
     
-    inline HUD* GetPlayerHUD(uint32_t playerId) { return (HUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
+	inline HUD* GetPlayerHUD(uint32_t playerId) { return (HUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
+	
+	inline Minimap* GetMinimap() { return (Minimap*)((char*)this + 0x1a2ab0); }
+	
+	inline RoomTransition* GetRoomTransition() { return (RoomTransition*)((char*)this + 0x1b6c0); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 

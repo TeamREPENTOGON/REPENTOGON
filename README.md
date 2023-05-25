@@ -48,3 +48,10 @@ We assume Git Bash for the duration of this tutorial, as well as CMake GUI.
 7. Open the generated .sln in Visual Studio.
 8. Build the project. Unless you're a developer, we recommend Release mode for performance.
 9. When the build is finished, copy `resources`, `dsound.dll`, `libzhl.dll`, `zhlModTest.dll`, and `Lua5.3.3r.dll` to the game's folder. Overwrite `Lua5.3.3r.dll` when prompted.
+
+# License
+REPENTOGON is licensed under the GNU General Public License version 2.
+
+LibZHL is licensed under the MIT license. All contents in the `libzhl` folder are therefore licensed under MIT, with the exceptions of the following files and folders, which are components of REPENTOGON:
+* `libzhl/functions` and its contents
+* `libzhl/IsaacRepentance_static.cpp`
