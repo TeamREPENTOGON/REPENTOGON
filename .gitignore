@@ -157,6 +157,9 @@ luac.out
 *.user
 *.userosscache
 *.sln.docstates
+*.csv
+*.xlsx
+*.py
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
