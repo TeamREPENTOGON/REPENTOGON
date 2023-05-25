@@ -21,18 +21,15 @@ struct LuaLevelGeneratorRoom {
 
 enum LinkDirection {
 	LINK_DIRECTION_INVALID = -1,
-	LINK_DIRECTION_LEFT,
-	LINK_DIRECTION_DOWN,
 	LINK_DIRECTION_RIGHT,
+	LINK_DIRECTION_DOWN,
+	LINK_DIRECTION_LEFT,
 	LINK_DIRECTION_UP,
-	LINK_DIRECTION_ADJ_LEFT,
-	LINK_DIRECTION_ADJ_DOWN,
 	LINK_DIRECTION_ADJ_RIGHT,
+	LINK_DIRECTION_ADJ_DOWN,
+	LINK_DIRECTION_ADJ_LEFT,
 	LINK_DIRECTION_ADJ_UP
 };
-
-// Used to indicate if 
-static constexpr uint32_t LevelGeneratorRoom_INVALID = std::numeric_limits<uint32_t>::max();
 
 static void ExtractRooms(lua_State* L, bool deadEnds);
 static void PushRoom(lua_State* L, int i, LevelGenerator* generator, LevelGenerator_Room& room);
@@ -47,10 +44,10 @@ static std::vector<int> ShapeToIndices(int col, int line, eRoomShape shape);
 static std::vector<int> ShapeToIndices(int index, eRoomShape shape);
 static std::tuple<int, int> ShapeToDimensions(eRoomShape shape);
 static std::tuple<bool, std::pair<int, int>> Connects(LevelGenerator_Room const& source, LevelGenerator_Room const& target);
-static bool IsInitialized(LevelGenerator_Room const& room);
 static LinkDirection ComputeLinkDirection(int source, int target);
 static bool RequiresAdjustment(eRoomShape shape);
 static LinkDirection ComputeAdjustedLinkDirection(LevelGenerator_Room const& source, int index);
+static std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, LevelGenerator_Room const& target);
 
 LUA_FUNCTION(lua_LGR_gc) {
 	LuaLevelGeneratorRoom* data = GetLGR(L);
@@ -241,12 +238,6 @@ std::tuple<bool, std::pair<int, int>> Connects(LevelGenerator_Room const& source
 	return std::make_tuple(false, std::make_pair(-1, -1));
 }
 
-bool IsInitialized(LevelGenerator_Room const& room) {
-	return room._gridColIdx != LevelGeneratorRoom_INVALID &&
-		room._gridLineIdx != LevelGeneratorRoom_INVALID &&
-		room._shape != LevelGeneratorRoom_INVALID;
-}
-
 LinkDirection ComputeLinkDirection(int source, int target) {
 	if (target == source - 13) {
 		return LINK_DIRECTION_DOWN;
@@ -288,6 +279,142 @@ LinkDirection ComputeAdjustedLinkDirection(LevelGenerator_Room const& source, in
 	}
 }
 
+// Return col, line
+std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, LevelGenerator_Room const& target) {
+	switch (target._shape) {
+	case ROOMSHAPE_1x1:
+	case ROOMSHAPE_IH:
+	case ROOMSHAPE_IV:
+		return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+
+	case ROOMSHAPE_1x2:
+	case ROOMSHAPE_IIV:
+		switch (target._originNeighborConnectDir) {
+		case LINK_DIRECTION_RIGHT: // Not used for IIV
+		case LINK_DIRECTION_LEFT: // Not used for IIV
+			// -> T | S || S |    T
+			//    T | ? || ? | -> T
+			if (source._gridLineIdx <= target._gridLineIdx) {
+				return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+			}
+			// T    | ? || ? |    T
+			// -> T | S || S | -> T
+			else {
+				return std::make_tuple(target._gridColIdx, target._gridLineIdx + 1);
+			}
+			break;
+
+		case LINK_DIRECTION_UP:
+			//    S
+			// -> T
+			//    T
+			return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+
+			//    T
+			// -> T
+			//    S
+		case LINK_DIRECTION_DOWN:
+			return std::make_tuple(target._gridColIdx, target._gridLineIdx + 1);
+		}
+
+	case ROOMSHAPE_2x1:
+	case ROOMSHAPE_IIH:
+		switch (target._originNeighborConnectDir) {
+			// T | -> T | S
+		case LINK_DIRECTION_RIGHT:
+			return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx);
+
+			// S | -> T | T
+		case LINK_DIRECTION_LEFT:
+			return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+
+		case LINK_DIRECTION_UP: // Not used for IIH
+		case LINK_DIRECTION_DOWN: // Not used for IIH
+			//    S     // Or under
+			// -> T | T
+			if (target._gridColIdx <= source._gridColIdx) {
+				return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+			}
+			// ? |    S // Or under
+			// T | -> T
+			else {
+				return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx);
+			}
+		}
+
+	default:
+		switch (target._originNeighborConnectDir) {
+		case LINK_DIRECTION_UP:
+			switch (target._shape) {
+			case ROOMSHAPE_LTL:
+				return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx);
+
+			case ROOMSHAPE_LTR:
+				return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+
+			default:
+				if (target._gridColIdx <= source._gridColIdx) {
+					return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+				}
+				else {
+					return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx);
+				}
+			}
+
+		case LINK_DIRECTION_LEFT:
+			switch (target._shape) {
+			case ROOMSHAPE_LTL:
+				return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx);
+
+			case ROOMSHAPE_LBL:
+				return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+
+			default:
+				if (source._gridLineIdx <= target._gridLineIdx) {
+					return std::make_tuple(target._gridColIdx, target._gridLineIdx);
+				}
+				else {
+					return std::make_tuple(target._gridColIdx, target._gridLineIdx + 1);
+				}
+			}
+
+		case LINK_DIRECTION_RIGHT:
+			switch (target._shape) {
+			case ROOMSHAPE_LTR:
+				return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx + 1);
+
+			case ROOMSHAPE_LBR:
+				return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx);
+
+			default:
+				if (source._gridLineIdx <= target._gridLineIdx) {
+					return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx);
+				}
+				else {
+					return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx + 1);
+				}
+			}
+
+		case LINK_DIRECTION_DOWN:
+			switch (target._shape) {
+			case ROOMSHAPE_LBL:
+				return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx + 1);
+
+			case ROOMSHAPE_LBR:
+				return std::make_tuple(target._gridColIdx, target._gridLineIdx + 1);
+
+			default:
+				if (target._gridColIdx <= source._gridColIdx) {
+					return std::make_tuple(target._gridColIdx, target._gridLineIdx + 1);
+				}
+				else {
+					return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx + 1);
+				}
+			}
+		}
+	}
+}
+
 LUA_FUNCTION(lua_LG_GetAllRooms) {
 	LevelGenerator* generator = GetLevelGenerator(L);
 	lua_newtable(L);
@@ -309,7 +436,7 @@ LUA_FUNCTION(lua_LG_GetDeadEnds) {
 	return 1;
 }
 
-LUA_FUNCTION(lua_LG_NewRoomData) {
+/* LUA_FUNCTION(lua_LG_NewRoomData) {
 	LevelGenerator_Room* room = new LevelGenerator_Room;
 	room->_doors = room->_distanceFromStart
 		= room->_horizontalSize
@@ -332,13 +459,89 @@ LUA_FUNCTION(lua_LG_NewRoomData) {
 	data->cleanup = true;
 	data->room = room;
 	return 1;
-}
+} */
 
 LUA_FUNCTION(lua_LG_PlaceRoom) {
 	LevelGenerator* generator = GetLevelGenerator(L);
-	LuaLevelGeneratorRoom* data = GetLGR(L, 2);
-	bool result = generator->place_room(data->room);
+
+	lua_Integer column = luaL_checkinteger(L, 2);
+	if (column < 0 || column > 12) {
+		return luaL_error(L, "Invalid column %lld, value must be between 0 and 12 (inclusive)", column);
+	}
+
+	lua_Integer line = luaL_checkinteger(L, 3);
+	if (line < 0 || line > 12) {
+		return luaL_error(L, "Invalid line %lld, value must be between 0 and 12 (inclusive)", line);
+	}
+
+	lua_Integer shape = luaL_checkinteger(L, 4);
+	if (shape < 0 || shape >= eRoomShape::MAX_ROOMSHAPES) {
+		return luaL_error(L, "Invalid room shape %lld, value must be between 0 and %d (inclusive)", shape, eRoomShape::MAX_ROOMSHAPES);
+	}
+
+	eRoomShape eShape = (eRoomShape)shape;
+
+	auto [ok, errors] = ValidateRoomPlacement(generator, column, line, eShape);
+	if (!ok) {
+		std::ostringstream err;
+		err << "Invalid room data (shape = " << shape << ", coordinates (" << line << ", " << column << ")), this would collide with room";
+		std::vector<int> const& conflicts = *errors;
+		if (conflicts.size() > 1) {
+			err << "s:";
+		}
+
+		err << " ";
+		for (int conflict : conflicts) {
+			LevelGenerator_Room const& room = generator->GetAllRooms()->at(conflict);
+			err << conflict << " at (" << room._gridLineIdx << ", " << room._gridColIdx << "); ";
+		}
+
+		return luaL_error(L, err.str().c_str());
+	}
+
+	LuaLevelGeneratorRoom* neighborData = GetLGR(L, 5);
+
+	// Reverse engineering is_placement_valid, the following must be known :
+	// gridCol, lineCol, horizontal / vertical size, shape, originNeighborConnect*, col / line link, distance from start
+
+	LevelGenerator_Room room;
+	room._gridColIdx = column;
+	room._gridLineIdx = line;
+	room._shape = eShape;
+	std::tie(room._horizontalSize, room._verticalSize) = ShapeToDimensions(eShape);
+	room._distanceFromStart = neighborData->room->_distanceFromStart + 1;
+
+	auto [connects, connection] = Connects(room, *neighborData->room);
+	if (!connects) {
+		return luaL_error(L, "Source room placement does not allow a connection with the target room");
+	}
+
+	auto [sourceIndex, targetIndex] = connection;
+	LinkDirection dir = ComputeLinkDirection(sourceIndex, targetIndex);
+	if (dir == LINK_DIRECTION_INVALID) {
+		return luaL_error(L, "Unable to compute the basic link direction with the neighbor");
+	}
+
+	if (RequiresAdjustment(eShape)) {
+		dir = ComputeAdjustedLinkDirection(room, targetIndex);
+		if (dir == LINK_DIRECTION_INVALID) {
+			return luaL_error(L, "Unable to compute adjusted link direction with the neighbor");
+		}
+	}
+
+	room._originNeighborConnectDir = dir;
+	room._originNeighborConnectDirAdjust = dir;
+
+	std::tie(room._linkColIdx, room._linkLineIdx) = ComputeSafeConnection(*neighborData->room, room);
+
+	if (!generator->is_placement_valid(&room._gridColIdx, eShape)) {
+		return luaL_error(L, "Error while adding room: placement is invalid");
+	}
+
+	bool result = generator->place_room(&room);
+
 	if (result) {
+		generator->calc_required_doors();
 		lua_pushinteger(L, generator->GetAllRooms()->back()._generationIndex);
 	}
 	else {
@@ -392,113 +595,11 @@ LUA_FUNCTION(lua_LGR_Neighbors) {
 	return 1;
 }
 
-LUA_FUNCTION(lua_LGR_SetCoordsAndShape) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
-	lua_Integer col = luaL_checkinteger(L, 2);
-	lua_Integer line = luaL_checkinteger(L, 3);
-	lua_Integer shape = luaL_checkinteger(L, 4);
-
-	if (col < 0 || col > 12) {
-		return luaL_argerror(L, 2, "Column parameter must be between 0 and 12 (inclusive)");
-	}
-
-	if (line < 0 || line > 12) {
-		return luaL_argerror(L, 3, "Line parameter must be between 0 and 12 (inclusive)");
-	}
-
-	if (shape < 0 || shape >= eRoomShape::MAX_ROOMSHAPES) {
-		char buffer[4096];
-		sprintf(buffer, "Shape parameter must be between 0 and %d\n", eRoomShape::MAX_ROOMSHAPES);
-		return luaL_argerror(L, 4, buffer);
-	}
-
-	auto [ok, errors] = ValidateRoomPlacement(data->context, col, line, (eRoomShape)shape);
-	if (!ok) {
-		std::ostringstream err;
-		err << "Invalid room data (shape = " << shape << ", coordinates (" << line << ", " << col << ")), this would collide with room";
-		std::vector<int> const& conflicts = *errors;
-		if (conflicts.size() > 1) {
-			err << "s:";
-		}
-
-		err << " ";
-		for (int conflict : conflicts) {
-			LevelGenerator_Room const& room = data->context->GetAllRooms()->at(conflict);
-			err << conflict << " at (" << room._gridLineIdx << ", " << room._gridColIdx << "); ";
-		}
-
-		return luaL_error(L, err.str().c_str());
-	}
-
-	LevelGenerator_Room* room = data->room;
-	room->_gridColIdx = col;
-	room->_linkColIdx = line;
-	room->_shape = shape;
-	std::tie(room->_horizontalSize, room->_verticalSize) = ShapeToDimensions((eRoomShape)shape);
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_LGR_SetGenerationNeighbor) {
-	LuaLevelGeneratorRoom* data = GetLGR(L);
-	LevelGenerator_Room* room;
-
-	if (lua_type(L, 2) == LUA_TNUMBER) {
-		lua_Integer value = luaL_checkinteger(L, 2);
-		if (int n = data->context->GetAllRooms()->size(); value >= n || n < 0) {
-			std::ostringstream err;
-			err << "Invalid generation neighbor room " << value << ". Highest available value " << n;
-			return luaL_argerror(L, 2, err.str().c_str());
-		}
-
-		room = &(data->context->GetAllRooms()->at(value));
-	}
-	else if (lua_type(L, 2) == LUA_TUSERDATA) {
-		LuaLevelGeneratorRoom* other = GetLGR(L, 2);
-		room = other->room;
-	}
-	else {
-		return luaL_argerror(L, 2, "Expected number of LevelGeneratorRoom");
-	}
-
-	if (!IsInitialized(*data->room)) {
-		return luaL_error(L, "Room missing position on the grid and/or shape, no connection can be established");
-	}
-
-	auto [connects, connection] = Connects(*room, *data->room);
-	if (!connects) {
-		return luaL_error(L, "Source room placement does not allow a connection with the target room");
-	}
-
-	auto [sourceIndex, targetIndex] = connection;
-	LinkDirection dir = ComputeLinkDirection(sourceIndex, targetIndex);
-	if (dir == LINK_DIRECTION_INVALID) {
-		return luaL_error(L, "Unable to compute the basic link direction with the neighbor");
-	}
-
-	if (RequiresAdjustment((eRoomShape)room->_shape)) {
-		dir = ComputeAdjustedLinkDirection(*room, targetIndex);
-		if (dir == LINK_DIRECTION_INVALID) {
-			return luaL_error(L, "Unable to compute adjusted link direction with the neighbor");
-		}
-	}
-
-	data->room->_originNeighborConnectDir = dir;
-	data->room->_originNeighborConnectDirAdjust = dir;
-
-	return 0;
-}
-
-LUA_FUNCTION(lua_LGR_Connect) {
-	return 0;
-}
-
 static void RegisterLevelGenerator(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetAllRooms", lua_LG_GetAllRooms },
 		{ "GetDeadEnds", lua_LG_GetDeadEnds },
 		{ "GetNonDeadEnds", lua_LG_GetNonDeadEnds },
-		{ "NewRoomData", lua_LG_NewRoomData },
 		{ "PlaceRoom", lua_LG_PlaceRoom },
 		{ NULL, NULL }
 	};
@@ -514,13 +615,10 @@ static void RegisterLevelGeneratorRoom(lua_State* L) {
 		{ "Line", lua_LGR_Line },
 		{ "Shape", lua_LGR_Shape },
 		{ "Neighbors", lua_LGR_Neighbors },
-		{ "SetCoordsAndShape", lua_LGR_SetCoordsAndShape },
-		{ "SetGenerationNeighbor", lua_LGR_SetGenerationNeighbor },
-		{ "Connect", lua_LGR_Connect },
 		{ NULL, NULL }
 	};
 
-	lua::RegisterNewClass(L, "LevelGeneratorRoom", lua::metatables::LevelGeneratorRoomMT, functions, lua_LGR_gc);
+	lua::RegisterNewClass(L, "LevelGeneratorRoom", lua::metatables::LevelGeneratorRoomMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

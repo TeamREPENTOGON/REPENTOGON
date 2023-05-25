@@ -11,7 +11,6 @@ __thiscall void LevelGenerator::Generate(int unk, bool unk2, bool unk3, bool unk
 "558bec83e4f8515356578bf98bb7":
 __thiscall LevelGenerator_Room* LevelGenerator::GetNewEndRoom(int roomShape, const unsigned int &possibleDoors);
 
-
 "558bec83e4f883ec245356578bf989":
 __thiscall void LevelGenerator::DetermineBossRoom(int shape, const unsigned int &possibleDoors);
 
@@ -20,6 +19,9 @@ __thiscall void LevelGenerator::get_neighbor_candidates(vector_LevelGenRoom* nei
 
 "558bec83e4f883ec0c5356578bf98b87700300008d9f70030000":
 __thiscall void LevelGenerator::calc_required_doors();
+
+"558bec83e4f883ec2453568b750c33db578b7d08894c240c":
+__thiscall bool LevelGenerator::is_placement_valid(uint32_t* position, uint32_t shape);
 
 struct LevelGenerator depends (LevelGenerator_Room) {
 {{
