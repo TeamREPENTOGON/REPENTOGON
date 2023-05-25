@@ -433,7 +433,7 @@ local function imGuiError(errortext)
 	imgui:AddElementToMenu(window, ImGuiElement.MenuItem, "REPENTOGON Error Display")
 
 	imgui:AddWindow(window, window)
-	imgui:AddElementToWindow(window, "Below is the first crash causing errors. This is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", ImGuiElement.Text)
+	imgui:AddElementToWindow(window, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", ImGuiElement.Text)
 	imgui:AddElementToWindow(window, errortext, ImGuiElement.Text)
 	imgui:AddElementToWindow(window, "Copy to Clipboard", ImGuiElement.Button)
 	imgui:AddCallbackToWindowElement(window, "Copy to Clipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
