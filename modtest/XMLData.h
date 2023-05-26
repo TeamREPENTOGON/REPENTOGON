@@ -50,7 +50,7 @@ struct XMLMusic {
 	unordered_map<string, int> musicbyname;
 	unordered_map<string, int> musicbynamemod;
 	unordered_map<string, int> musicbymod;
-	int maxid;
+	int maxid = 118; //last vanilla music track, for now I need to do this here, may scrap it later and fully automate it
 };
 
 struct XMLPlayer {

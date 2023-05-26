@@ -8,7 +8,7 @@ __thiscall void Music::Crossfade(int musicid,float faderate);
 __thiscall void Music::PlayJingle(int musicid, int unusedInt, bool unusedBool);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b89c010100":
-__thiscall void Music::LoadConfig(char* xmlpath,bool unk);
+__thiscall void Music::LoadConfig(char* xmlpath,bool ismod);
 
 "558bec6b01":
 __thiscall void Music::DisableLayer(int id);

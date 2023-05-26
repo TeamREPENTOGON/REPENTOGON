@@ -26,6 +26,72 @@ bool iscontent = false;
 
 XMLData XMLStuff;
 
+
+void ClearXMLData() {
+	XMLStuff.PlayerData.players.clear();
+	XMLStuff.PlayerData.playerbymod.clear();
+	XMLStuff.PlayerData.playerbyname.clear();
+	XMLStuff.PlayerData.playerbynamemod.clear();
+
+	XMLStuff.EntityData.entities.clear();
+	XMLStuff.EntityData.entitybyname.clear();
+	XMLStuff.EntityData.entitybynamemod.clear();
+	XMLStuff.EntityData.entitybytype.clear();
+	XMLStuff.EntityData.entitybytypevar.clear();
+	XMLStuff.EntityData.maxid = 0;
+
+	XMLStuff.MusicData.musicbymod.clear();
+	XMLStuff.MusicData.musicbyname.clear();
+	XMLStuff.MusicData.musicbynamemod.clear();
+	XMLStuff.MusicData.tracks.clear();
+	XMLStuff.MusicData.maxid = 118; //last music track, will probably make it automatic later, like the other stuff
+
+	XMLStuff.ModData.mods.clear();
+	XMLStuff.ModData.modbyid.clear();
+	XMLStuff.ModData.modbyname.clear();
+	XMLStuff.ModData.modentities.clear();
+	XMLStuff.ModData.modmusictracks.clear();
+	XMLStuff.ModData.modplayers.clear();
+	XMLStuff.ModData.mods.clear();
+	XMLStuff.ModData.nomods = 0;
+}
+
+bool no = false;
+void PrintXMLStuff() {
+	/*
+	no = true;
+	printf("music \n");
+	for (const auto& player : XMLStuff.MusicData.tracks) {
+		for each (const auto & att in player.second)
+		{
+			printf("%s ='%s'", att.first.c_str(), att.second.c_str());
+		}
+		printf("\n");
+	}
+	printf("music----------------------------- \n");
+	
+	printf("playerdata \n");
+	for (const auto& player : XMLStuff.PlayerData.players) {
+		for each (const auto& att in player.second)
+		{
+			printf("%s ='%s'", att.first.c_str(), att.second.c_str());
+		}
+		printf("\n");
+	}
+	printf("moddata----------------------------- \n");
+
+	for (const auto& mod : XMLStuff.ModData.mods) {
+		for each (const auto& att in mod.second)
+		{
+			printf("%s ='%s'", att.first.c_str(), att.second.c_str());
+		}
+		printf("\n");
+	}
+	*/
+}
+
+
+
 IsaacString toIsaacString(string s) {
 	IsaacString str;
 	const char* err = s.c_str();
@@ -108,9 +174,18 @@ void ProcessXmlNode(xml_node<char>* node) {
 			int var = 0;
 			int sub = 0;
 			
-			if (entity["variant"].length() > 0) { var = stoi(entity["variant"]); }
+			
 			if (entity["subtype"].length() > 0) { sub = stoi(entity["subtype"]); }
 			tuple idx = { type, var, sub };
+			if (entity["variant"].length() > 0) { var = stoi(entity["variant"]); idx = { type, var, sub };}
+			else if((type < 10) || (type >= 1000)) {
+				while (XMLStuff.EntityData.entities.count(idx) > 0) {
+					var += 1;
+					idx = { type, var, sub };
+				} 
+			}
+
+			
 			if (iscontent && (XMLStuff.EntityData.entities.count(idx) > 0)) {
 				unordered_map<string, string> collider = XMLStuff.EntityData.entities[idx];
 				unordered_map<string, string> collidermod = XMLStuff.ModData.mods[XMLStuff.ModData.modbyid[collider["sourceid"]]];
@@ -218,13 +293,13 @@ void ProcessXmlNode(xml_node<char>* node) {
 
 			music["sourceid"] = lastmodid;
 
-			//printf("Music: %s \n", music["name"].c_str());
 
 			XMLStuff.MusicData.musicbynamemod[music["name"] + lastmodid] = id;
 			XMLStuff.MusicData.musicbymod[lastmodid] = id;
 			XMLStuff.MusicData.musicbyname[music["name"]] = id;
 			XMLStuff.MusicData.tracks[id] = music;
 			XMLStuff.ModData.modmusictracks[lastmodid] += 1;
+			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	}
 	else if ((strcmp(node->name(), "name") == 0) && node->parent() && (strcmp(node->parent()->name(), "metadata") == 0)) {
@@ -264,48 +339,26 @@ HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)-
 	return super(name, size, casesensitive);
 }
 
+HOOK_METHOD(Manager, LoadConfigs,()->void) {
+	//printf("yoyoyo ",this);
+	super();
+}
 
-HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool unk)->void) {
-	//printf("Music: %s", xmlpath);
-	super(xmlpath,  unk);
+HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
+	//printf("music: %s \n", xmlpath);
+	super(xmlpath, ismod);
 }
 
 
 //d:\steam\steamapps\common\the binding of isaac rebirth/mods/musicar/content/entities2.xml
 HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
+	if(mod != NULL){
+		printf("ModID: %s", mod->GetId());
+	}
 	ProcessModEntry(xmlpath, mod);
 	super(xmlpath, mod);
 }
 
-
-/*
-bool no = false;
-HOOK_STATIC(Manager, Update, () -> void) {
-	if (!no) {
-		no = true;
-
-		printf("playerdata \n");
-		for (const auto& player : XMLStuff.PlayerData.players) {
-			for each (const auto& att in player.second)
-			{
-				printf("%s ='%s'", att.first.c_str(), att.second.c_str());
-			}
-			printf("\n");
-		}
-		printf("moddata----------------------------- \n");
-
-		for (const auto& mod : XMLStuff.ModData.mods) {
-			for each (const auto& att in mod.second)
-			{
-				printf("%s ='%s'", att.first.c_str(), att.second.c_str());
-			}
-			printf("\n");
-		}
-
-	}
-	super();
-}
-*/
 
 
 bool Lua_PushXMLNode(lua_State* L, XMLAttributes node)
@@ -359,9 +412,8 @@ int Lua_GetMusicXML(lua_State* L)
 	return 1;
 }
 
-
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+	ClearXMLData();
 	super();
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
@@ -381,6 +433,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_settable(L, -3);
 	lua_setglobal(L, "XMLData"); 
 	//lua_pop(L, 1);
+	
 }
 
 
