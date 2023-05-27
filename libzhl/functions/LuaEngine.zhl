@@ -7,10 +7,25 @@ __thiscall void LuaEngine::RegisterClasses();
 "558bec535657682d010000":
 __thiscall bool LuaEngine::RunBundledScript(const char *path);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec90000000a1????????33c58945??5657508d45??64a3????????8bf989bd????????8b43??50":
+__thiscall void LuaEngine::RunScript(const char *path);
+
+"558bec83e4f88b15????????56":
+__thiscall void LuaEngine::constructor();
+
 "8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;
 
-struct LuaEngine {
+struct LuaEngine depends (RunCallbackRegistry) {
+	{{
+	
+		inline bool GetLuaDebug() {return *(bool*)((char*)this + 0xC); }
+		
+		LuaEngine() {
+			this->constructor();
+		}
+	}}
+	
     char pad0[0x10];
     RunCallbackRegistry* runCallbackRegistry; // 0x10
     char pad1[0x4]; // 0x14

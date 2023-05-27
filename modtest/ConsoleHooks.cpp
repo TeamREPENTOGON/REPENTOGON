@@ -1,9 +1,65 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "ConsoleMega.h"
+#include "LogViewer.h"
 
+#include "XMLData.h"
+
+#include <filesystem>
 #include <iostream> 
 #include <sstream>
+
+void LuaReset() {
+    // JSG already did some great XML parsing work, let's reuse that instead of reinventing the wheel.
+    // Unfortunately the XML data is cleared when running RegisterClasses which LuaEngine init does. Cache the result before we proceed.
+    XMLData preReloadXMLStuff = XMLStuff;
+
+    g_LuaEngine->constructor();
+    g_LuaEngine->Init(true);
+
+    // We are building our own map here so that this is *solely* a Lua reset and not an XML one.
+    // Calling existing game functions will try to load XML too, they are intertwined.
+    std::map<string, string> modsToReload;
+
+    for (auto& mod : preReloadXMLStuff.ModData.mods) {
+
+        // Mod's first entry is "load order" (which is 100% irrelevant for Lua) and the second entry is the parsed XML.
+        // We care about the name and the directory.
+        std::string modName;
+        std::string modPath;
+
+        for (auto& modMap : std::get<1>(mod)) {
+            std::string key = modMap.first;
+            const char* value = modMap.second.c_str();
+
+            if (key == "name") {
+                modName = value;
+            }
+            else if (key == "directory") {
+                modPath = value;
+            }
+        }
+
+        modsToReload[modName] = modPath;
+    }
+
+    // This is an ordered map and we stored by mod name, so the load order should be identical to the vanilla game.
+    for (auto& mod : modsToReload) {
+        std::string modPath = std::string("mods") + "\\" + mod.second;
+
+        std::string disableItPath = modPath + "\\disable.it";
+        std::string mainLuaPath = modPath + "\\main.lua";
+
+        if (std::filesystem::exists(disableItPath))
+            continue;
+
+        if (std::filesystem::exists(mainLuaPath)) {
+            logViewer.AddLog("%s has a main.lua and is being reloaded\n", mod.first.c_str());
+            g_LuaEngine->RunScript(mainLuaPath.c_str());
+        }
+    }
+}
+
 
 HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out, Entity_Player* player) -> void) {
 
@@ -45,6 +101,17 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
     }
     else if (!player)
         player = g_Game->GetPlayerManager()->GetPlayer(0);
+
+    if (in.rfind("luareset", 0) == 0) {
+        LuaReset();
+        return;
+    }
+
+    if (in.rfind("netstart", 0) == 0) {
+        this->Print("Reloading Lua, please be patient!", Console::Color::WHITE, 0x96U);
+        LuaReset();
+        // Don't return here, to let the normal netstart command run afterwards
+    }
 
     if (in.rfind("help", 0) == 0) {
 
