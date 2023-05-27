@@ -318,6 +318,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 		}
 		int idx;
+		if (mod.count("id") <= 0) { mod["id"] = mod["name"]; }
 		if (XMLStuff.ModData.modbyid.find(mod["id"]) != XMLStuff.ModData.modbyid.end()) {
 			idx = XMLStuff.ModData.modbyid[mod["id"]];
 		}
@@ -348,7 +349,13 @@ HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	//printf("music: %s \n", xmlpath);
 	super(xmlpath, ismod);
 }
-
+/*
+HOOK_METHOD(ModEntry, GetContentPath, (char** param_1, IsaacString* param_2)->void) {
+	printf("music: %s // %s \n", &param_1, param_2->text);
+	super(param_1, param_2);
+	printf("music: %s // %s \n", &param_1, param_2->text);
+}
+*/
 
 //d:\steam\steamapps\common\the binding of isaac rebirth/mods/musicar/content/entities2.xml
 HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {

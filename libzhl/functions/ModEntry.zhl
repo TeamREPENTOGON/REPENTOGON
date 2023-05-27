@@ -1,4 +1,8 @@
 
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec58a1????????33c58945??5657508d45??64a3????????8b51":
+__thiscall void ModEntry::GetContentPath(char**param_1,IsaacString* param_2);
+
 struct ModEntry {
 {{
 	//inline char* GetDir() { return (char*)(this + 0); } //unreliable (sometimes its there, sometimes it isnt could not find a patters thats consistent)
