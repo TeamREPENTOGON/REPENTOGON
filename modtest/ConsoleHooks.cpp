@@ -107,12 +107,6 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
         return;
     }
 
-    if (in.rfind("netstart", 0) == 0) {
-        this->Print("Reloading Lua, please be patient!", Console::Color::WHITE, 0x96U);
-        LuaReset();
-        // Don't return here, to let the normal netstart command run afterwards
-    }
-
     if (in.rfind("help", 0) == 0) {
 
         std::vector<std::string> cmdlets; //TODO split this into a generic parsing function
@@ -161,4 +155,10 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
     }
 
     super(in, out, player);
+
+    if (in.rfind("netstart", 0) == 0) {
+        this->Print("Reloading Lua, please be patient!", Console::Color::WHITE, 0x96U);
+        LuaReset();
+        return;
+    }
 }
