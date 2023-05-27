@@ -504,6 +504,12 @@ static void RegisterPocketItem(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+int Lua_PlayerGetWildCardItem(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetWildCardItem());
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -558,4 +564,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetMetronomeCollectibleID", Lua_PlayerGetMetronomeCollectibleID);
 	lua::RegisterFunction(state, mt, "GetMarkedTarget", Lua_PlayerGetMarkedTarget);
 	lua::RegisterFunction(state, mt, "IsLocalPlayer", Lua_PlayerIsLocalPlayer);
+	lua::RegisterFunction(state, mt, "GetWildCardItem", Lua_PlayerGetWildCardItem);
 }
