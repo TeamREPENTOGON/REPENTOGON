@@ -7,8 +7,11 @@
 
 HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out, Entity_Player* player) -> void) {
 
-    // If we're in-game, return the player; otherwise don't. Many functions obviously don't work! Throw errors for those.
-    if (g_Manager->GetState() != 2 || !g_Game) {
+    // Normally, the console explicitly expects a player to run any command, and will actively try to find one (and will crash otherwise)
+    // We ASM patched this out to let commands run on the menu, so now we reintroduce this ourselves.
+    // If we're in-game, return the player; otherwise don't. Many functions obviously don't work out of the game! Throw errors for those.
+    bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
+    if (!inGame) {
 
         std::vector<const char*> bannedCommands = {
             "challenge", // goes to a daily run, maybe another patch would fix that? one way ticket to cheat city otherwise
@@ -25,10 +28,10 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
             "metro",
             "remove",
             "reseed",
+            "restart", // same as challenge
             "seed",
             "spawn",
             "time", // always returns 0
-            "restart", // same as challenge
         };
 
         for (const char* command : bannedCommands) {
@@ -58,26 +61,31 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
             }
         }
 
-        if (cmdlets.size() == 1) {
-            this->Print("How helpful!\nHere's a list of commands:\n", Console::Color::WHITE, 0x96U);
+        if (!inGame)
+            this->Print("(Only commands enabled to show outside of the game will appear right now.)\n", Console::Color::WHITE, 0x96U);
 
+        if (cmdlets.size() == 1) {
             for (ConsoleCommand command : console.commands) {
-                // i know it isn't pretty but sprintf was crashing and this works, so whatever
-                this->Print("  - ", Console::Color::WHITE, 0x96U);
-                this->Print(command.name, Console::Color::WHITE, 0x96U);
-                this->Print(" - ", Console::Color::WHITE, 0x96U);
-                this->Print(command.desc, Console::Color::WHITE, 0x96U);
-                this->Print("\n", Console::Color::WHITE, 0x96U);
+                if (inGame || (!inGame && command.showOnMenu)) {
+                    // i know it isn't pretty but sprintf was crashing and this works, so whatever
+                    this->Print("  - ", Console::Color::WHITE, 0x96U);
+                    this->Print(command.name, Console::Color::WHITE, 0x96U);
+                    this->Print(" - ", Console::Color::WHITE, 0x96U);
+                    this->Print(command.desc, Console::Color::WHITE, 0x96U);
+                    this->Print("\n", Console::Color::WHITE, 0x96U);
+                }
             }
         }
         else {
             for (ConsoleCommand command : console.commands) {
-                if (command.name == cmdlets[1]) {
-                    this->Print(command.name, Console::Color::WHITE, 0x96U);
-                    this->Print(" - ", Console::Color::WHITE, 0x96U);
-                    this->Print(command.helpText, Console::Color::WHITE, 0x96U);
-                    this->Print("\n", Console::Color::WHITE, 0x96U);
-                    break;
+                if (inGame || (!inGame && command.showOnMenu)) {
+                    if (command.name == cmdlets[1]) {
+                        this->Print(command.name, Console::Color::WHITE, 0x96U);
+                        this->Print(" - ", Console::Color::WHITE, 0x96U);
+                        this->Print(command.helpText, Console::Color::WHITE, 0x96U);
+                        this->Print("\n", Console::Color::WHITE, 0x96U);
+                        break;
+                    }
                 }
             }
         }

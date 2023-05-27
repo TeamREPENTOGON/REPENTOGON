@@ -117,7 +117,7 @@ void ASMPatchConsoleRunCommand() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Console::RunCommand Player requirement %p\n", addr);
+	printf("[REPENTOGON] Patching Console::RunCommand Player requirement at %p\n", addr);
 
 	MEMORY_BASIC_INFORMATION info;
 	DWORD old_protect = SetPageMemoryRW(addr, &info);

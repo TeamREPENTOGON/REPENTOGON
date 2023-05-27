@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "ConsoleMega.h"
 
 static constexpr const char* ConsoleMT = "Console";
 
@@ -68,6 +69,17 @@ int Lua_ConsolePopHistory(lua_State* L) {
 	return 0;
 }
 
+int Lua_RegisterCommand(lua_State* L) {
+	const char* name = luaL_checkstring(L, 2);
+	const char* desc = luaL_checkstring(L, 3);
+	const char* helpText = luaL_checkstring(L, 4);
+	bool showOnMenu = lua::luaL_optboolean(L, 5, false);
+
+	console.RegisterCommand(name, desc, helpText, showOnMenu);
+
+	return 0;
+}
+
 static void RegisterConsole(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetConsole");
@@ -86,6 +98,7 @@ static void RegisterConsole(lua_State* L) {
 		{ "GetHistory", Lua_ConsoleGetHistory },
 		{ "PopHistory", Lua_ConsolePopHistory },
 		{ "PrintWarning", Lua_ConsolePrintWarning },
+		{ "RegisterCommand", Lua_RegisterCommand },
 		{ NULL, NULL }
 	};
 
