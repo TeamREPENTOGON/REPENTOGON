@@ -476,6 +476,12 @@ int Lua_PocketItemGetType(lua_State* L) {
 	return 1;
 }
 
+int Lua_PlayerIsLocalPlayer(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushboolean(L, player->IsLocalPlayer());
+	return 1;
+}
+
 static void RegisterPocketItem(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
 	lua_pushstring(L, "GetPocketItem");
@@ -551,4 +557,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetMaxPeeBurstCooldown", Lua_PlayerGetMaxPeeBurstCooldown);
 	lua::RegisterFunction(state, mt, "GetMetronomeCollectibleID", Lua_PlayerGetMetronomeCollectibleID);
 	lua::RegisterFunction(state, mt, "GetMarkedTarget", Lua_PlayerGetMarkedTarget);
+	lua::RegisterFunction(state, mt, "IsLocalPlayer", Lua_PlayerIsLocalPlayer);
 }

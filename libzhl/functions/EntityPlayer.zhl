@@ -167,6 +167,9 @@ __thiscall void Entity_Player::EnableWeaponType(WeaponType weaponType, bool Set)
 "558bec8b45??05d9020000":
 __thiscall PocketItem* Entity_Player::GetPocketItem(int SlotID);
 
+"a1????????568b90????????8bb0":
+__thiscall bool Entity_Player::IsLocalPlayer();
+
 struct Entity_Player : public Entity { {{
 	inline int* GetMetronomeCollectibleID() { return (int*)((char*)this + 0x12d8); } 
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
