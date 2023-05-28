@@ -37,6 +37,7 @@ static void Manager::RestartGame();
 
 struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
+	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
 	inline NightmareScene* GetNightmareScene() { return (NightmareScene*)((char*)this + 0x211BC); }
 	inline ModManager* GetModManager() { return (ModManager*)((char*)this + 0x29FD8); }

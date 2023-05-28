@@ -39,7 +39,7 @@ typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
 typedef std::string std_string;
-	
+typedef std::vector<ModEntry*> vector_ModEntryPointer;
 }}
 
 //=================================================================================================================
