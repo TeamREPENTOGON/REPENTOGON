@@ -135,6 +135,16 @@ int Lua_GameDevolveEnemy(lua_State* L) {
 	return 0;
 }
 
+LUA_FUNCTION(lua_GameStartStageTransition) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	bool sameStage = lua_toboolean(L, 2);
+	int transition = luaL_checkinteger(L, 3);
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
+
+	game->StartStageTransition(sameStage, transition, player);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -157,5 +167,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "DevolveEnemy", Lua_GameDevolveEnemy);
 
 	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
+	lua::RegisterFunction(state, mt, "StartStageTransition", lua_GameStartStageTransition);
 
 }
