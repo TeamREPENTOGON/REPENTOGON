@@ -109,8 +109,8 @@ struct ConsoleMega {
             ImGui::Separator();
 
             bool reclaimFocus = false;
-            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll; //| ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-            if (ImGui::InputTextWithHint("", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags)) {
+            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll; // | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+            if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags)) {
                 char* s = inputBuf;
                 Strtrim(s);
                 if (s[0])

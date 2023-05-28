@@ -133,9 +133,9 @@ struct LogViewer {
 
                 if (autoscroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
                     ImGui::SetScrollHereY(1.0f);
+                ImGui::PopStyleVar();
                 ImGui::EndChild();
             }
-            ImGui::PopStyleVar();
 
             ImGui::End();
         }
