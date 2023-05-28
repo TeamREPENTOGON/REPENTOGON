@@ -33,7 +33,7 @@ enum class IMGUI_CALLBACK {
     Deactivated,
     DeactivatedAfterEdit,
     ToggledOpen,
-}; 
+};
 
 static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
 
@@ -50,6 +50,7 @@ struct Element {
     bool useroverride_isVisible = false;
 
     bool evaluatedVisibleState = false; // used for imgui to use
+    bool lastEvalVisibleState = false; // used for imgui to use
 
     bool isActive = false; // active = clicked
     int clickCounter = 0;
@@ -73,17 +74,31 @@ struct Element {
 
     void AddCallback(int type, int callbackID)
     {
+        RemoveCallback(type);
         callbacks.insert(std::pair<IMGUI_CALLBACK, int>(static_cast<IMGUI_CALLBACK>(type), callbackID));
     }
 
     void RemoveCallback(int type)
     {
-        callbacks.erase(static_cast<IMGUI_CALLBACK>(type));
+        if (callbacks.count(static_cast<IMGUI_CALLBACK>(type))) {
+            callbacks.erase(static_cast<IMGUI_CALLBACK>(type));
+        }
     }
 
     void EvaluateVisible()
     {
-        evaluatedVisibleState = triggerElement != NULL && triggerElement->isActive || useroverride_isVisible;
+
+        bool newEval = triggerElement != NULL && triggerElement->isActive || useroverride_isVisible;
+        // Workaround: There are 3 ways to change visibility of a window - the trigger element gets clicked, the SetVisible() function is called
+        //   or the user clicks on the (X) to close the window. that action does not have a callback and can only be detected when the visibility
+        //   boolean variable was changed unexpected.
+        if (lastEvalVisibleState == newEval && newEval != evaluatedVisibleState) {
+            // user closed the window via imgui (X) button
+            SetVisible(evaluatedVisibleState);
+            newEval = evaluatedVisibleState;
+        }
+        evaluatedVisibleState = newEval;
+        lastEvalVisibleState = newEval;
     }
 
     void SetVisible(bool newState)
@@ -106,6 +121,13 @@ struct CustomImGui {
         enabled = false;
         menuElements = new std::list<Element>();
         windows = new std::list<Element>();
+    }
+
+    void Reset()
+    {
+        enabled = false;
+        menuElements->clear();
+        windows->clear();
     }
 
     bool AddElement(const char* parentId, const char* id, const char* text, int type) IM_FMTARGS(2)
@@ -184,6 +206,22 @@ struct CustomImGui {
             return true;
         }
         return false;
+    }
+
+    bool UpdateText(const char* elementId, const char* newText)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL) {
+            element->name = std::string(newText);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool ElementExists(const char* elementId)
+    {
+        return GetElementById(elementId) != NULL;
     }
 
     bool SetVisible(const char* elementId, bool newState) IM_FMTARGS(2)
