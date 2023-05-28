@@ -17,6 +17,7 @@
 #include "LogViewer.h"
 #include <lua.hpp>
 #include "LuaCore.h"
+#include <filesystem>
 
 using namespace rapidxml;
 using namespace std;
@@ -152,6 +153,45 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 	
 }
 
+ModEntry* GetModEntryById(string Id) {
+	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+		if ((mod->GetId() != NULL) && (strcmp(Id.c_str(), mod->GetId()) == 0)) {
+			return mod;
+		}
+	}
+}
+
+ModEntry* GetModEntryByName(string Name) {
+	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+		if (strcmp(Name.c_str(), mod->GetName().c_str())==0) {
+			return mod;
+		}
+	}
+}
+
+ModEntry* GetModEntryByDir(string Dir) {
+	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+		if (strcmp(Dir.c_str(), mod->GetDir().c_str())==0) {
+			return mod;
+		}
+	}
+}
+
+void UpdateXMLModEntryData() {
+	for (ModEntry* entry : g_Manager->GetModManager()->_mods) {
+		int idx = 0;
+		XMLAttributes mod;
+		if ((entry->GetId() != NULL) &&(string(entry->GetId()).length() > 0)) { idx = XMLStuff.ModData.modbyid[string(entry->GetId())]; }
+		else { idx = XMLStuff.ModData.modbyname[entry->GetName()];}
+		mod = XMLStuff.ModData.mods[idx];
+		mod["realdirectory"] = entry->GetDir();
+		mod["fulldirectory"] = std::filesystem::current_path().string() + "/mods/" + entry->GetDir();
+		if (entry->IsEnabled()) { mod["enabled"] = "true"; }
+		else { mod["enabled"] = "false"; }
+		XMLStuff.ModData.mods[idx] = mod;
+		
+	}
+}
 
 void ProcessXmlNode(xml_node<char>* node) {
 	if (!node) { return; }
@@ -318,7 +358,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 		}
 		int idx;
-		if (mod.count("id") <= 0) { mod["id"] = mod["name"]; }
+		if (mod.count("id") <= 0) { mod["id"] = mod["name"];  }
+
 		if (XMLStuff.ModData.modbyid.find(mod["id"]) != XMLStuff.ModData.modbyid.end()) {
 			idx = XMLStuff.ModData.modbyid[mod["id"]];
 		}
@@ -326,6 +367,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.ModData.nomods = XMLStuff.ModData.nomods + 1;
 			idx = XMLStuff.ModData.nomods;
 		}
+			
+		
 		XMLStuff.ModData.mods[idx] = mod;
 		XMLStuff.ModData.modbyid[mod["id"]] = idx;
 		XMLStuff.ModData.modbydirectory[mod["directory"]] = idx;
@@ -343,6 +386,7 @@ HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)-
 HOOK_METHOD(Manager, LoadConfigs,()->void) {
 	//printf("yoyoyo ",this);
 	super();
+	UpdateXMLModEntryData();
 }
 
 HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
