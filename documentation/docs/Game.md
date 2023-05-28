@@ -28,6 +28,11 @@ ___
 Now returns integer instead of unusable userdata.
 
 ___
+### Start·Stage·Transition ()  {: aria-label='Modified Functions' }
+#### void StartStageTransition ( boolean SameStage, int TransitionOverride, [EntityPlayer](EntityPlayer.md) player ) {: .copyable aria-label='Modified Functions' }
+Fixed the crash that sometimes occured due to an incorrect call on the C++ side.
+
+___
 
 ## Functions
 
