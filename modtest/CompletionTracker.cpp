@@ -81,7 +81,7 @@ void initreversenum() {
 
 
 
- 
+
 extern unordered_map<int, unordered_map<int, int>> MarksToEvents;
 extern unordered_map<int, int> EventsToPlayerType;
 extern unordered_map<int, int> EventsToCompletionType;
@@ -616,9 +616,9 @@ void initmarkstoevents() {
 	BT_JACOB_AND_ESAU[CompletionType::ULTRA_GREEDIER] = MEventCounter::PROGRESSION_GREED_MODE_CLEARED_WITH_T_JACOB_AND_ESAU;
 	BT_JACOB_AND_ESAU[CompletionType::BOSS_RUSH] = MEventCounter::PROGRESSION_BOSSRUSH_CLEARED_WITH_T_JACOB_AND_ESAU;
 	MarksToEvents[37] = BT_JACOB_AND_ESAU;
-	MarksToEvents[38] = BLaz; 
+	MarksToEvents[38] = BLaz;
 	MarksToEvents[39] = BT_JACOB_AND_ESAU;
-	MarksToEvents[40] = BBoner; 
+	MarksToEvents[40] = BBoner;
 
 	initEventsToPlayerType();
 }
@@ -634,7 +634,7 @@ void SaveCompletionMarksToJson() {
 	if (!CreateDirectory(directory.c_str(), NULL)) {
 		if (GetLastError() != ERROR_ALREADY_EXISTS) {
 			logViewer.AddLog("[REPENTOGON]", "Error creating Repentogon Save directory\n");
-			return ;
+			return;
 		}
 	}
 
@@ -697,7 +697,7 @@ void LoadCompletionMarksFromJson() {
 }
 
 
-bool PreMarksCallbackTrigger(int markid,int playertpe) {
+bool PreMarksCallbackTrigger(int markid, int playertpe) {
 	int callbackid = 1047;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -789,14 +789,14 @@ string GetMarksIdx(int playerid) {
 	return idx;
 }
 
-array<int, 15> GetMarksForPlayer(int playerid,ANM2* anm = NULL) {
+array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
 	array<int, 15> marks;
 	if (XMLStuff.PlayerData.players.count(playerid) > 0) {
 		unordered_map<string, string> playerdata = GetPlayerDataForMarks(playerid);
 		string idx = GetMarksIdx(playerid);
 		hidemarks = false;
 		if (playerdata.count("nomarks") > 0) {
-			if (strcmp(stolower((char *)playerdata["sourceid"].c_str()).c_str(), "false") == 0) {
+			if (strcmp(stolower((char*)playerdata["sourceid"].c_str()).c_str(), "false") == 0) {
 				hidemarks = true;
 			}
 		}
@@ -809,7 +809,7 @@ array<int, 15> GetMarksForPlayer(int playerid,ANM2* anm = NULL) {
 		}
 
 		marks = CompletionMarks[idx];
-		if (anm){
+		if (anm) {
 			if (ischartainted) {
 				anm->SetLayerFrame(0, marks[CompletionTypeRender[0]] + 3);
 			}
@@ -834,10 +834,10 @@ array<int, 15> GetMarksForPlayer(int playerid,ANM2* anm = NULL) {
 
 
 HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
-	jsonpath = string((char*)&g_SaveDataPath) + "Repentogon/moddedcompletionmarks" + to_string(saveslot) +".json";
+	jsonpath = string((char*)&g_SaveDataPath) + "Repentogon/moddedcompletionmarks" + to_string(saveslot) + ".json";
 
 	LoadCompletionMarksFromJson();
-	if (!initializedrendercmpl){
+	if (!initializedrendercmpl) {
 		InitMarkRenderTypes();
 		initreversenum();
 		initmarkstoevents();
@@ -854,13 +854,13 @@ HOOK_METHOD_PRIORITY(PersistentGameData, IncreaseEventCounter, 0, (int eEvent, i
 		int cplmtype = EventsToCompletionType[eEvent];
 		int difficulty = g_Game->GetDifficulty();
 		bool hardmode = ((difficulty == 1) || (difficulty == 3));
-		if (hardmode && (lastcmplevent == eEvent) && (val == 1)){
+		if (hardmode && (lastcmplevent == eEvent) && (val == 1)) {
 			if (evntreturnedfalse) {
 				evntreturnedfalse = false;
 				return;
 			}
 			else {
-				super(eEvent,val);
+				super(eEvent, val);
 			}
 		}
 		if (!PreMarksCallbackTrigger(cplmtype, playertype)) {
@@ -870,33 +870,33 @@ HOOK_METHOD_PRIORITY(PersistentGameData, IncreaseEventCounter, 0, (int eEvent, i
 			}
 			return;
 		}
-		super(eEvent,val);
+		super(eEvent, val);
 		if (val > 0) { PostMarksCallbackTrigger(cplmtype, playertype); }
 		if (hardmode && (val == 1)) {
 			lastcmplevent = eEvent;
 		}
 	}
-	super(eEvent,val);
-	
+	super(eEvent, val);
+
 }
 
 
-HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion,100, (int eEvent) -> void, __stdcall) {
+HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion, 100, (int eEvent) -> void, __stdcall) {
 	int numplayers = g_Game->GetNumPlayers();
-	for(int i = 0;i<numplayers;i++){
+	for (int i = 0; i < numplayers; i++) {
 		int playertype = g_Game->GetPlayer(i)->GetPlayerType();
-		if (playertype > 40){
+		if (playertype > 40) {
 			string idx = GetMarksIdx(playertype);
 			if (CompletionMarks.count(idx) == 0) {
-				CompletionMarks[idx] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+				CompletionMarks[idx] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 			}
 			int difficulty = g_Game->GetDifficulty();
 			int marktype = 1;
 			if ((difficulty == 1) || (difficulty == 3)) { //1:hard 3:greedier
 				marktype = 2;
 			}
-			if (CompletionMarks[idx][eEvent] != marktype){
-				if (PreMarksCallbackTrigger(eEvent, playertype)){
+			if (CompletionMarks[idx][eEvent] != marktype) {
+				if (PreMarksCallbackTrigger(eEvent, playertype)) {
 					CompletionMarks[idx][eEvent] = marktype;
 					PostMarksCallbackTrigger(eEvent, playertype);
 				}
@@ -910,18 +910,18 @@ HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion,100, (int eEvent) -> void, 
 HOOK_METHOD(PauseScreen, Render, () -> void) {
 	super();
 	int playertype = g_Game->GetPlayer(0)->GetPlayerType();
-	if ((playertype > 40) && (this->status !=2)) {
-		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget"); 
+	if ((playertype > 40) && (this->status != 2)) {
+		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget");
 		Vector* widgtpos = nul->GetPos();
 		Vector* widgtscale = nul->GetScale();
 		CompletionWidget* cmpl = this->GetCompletionWidget();
 
 		ANM2* anm = cmpl->GetANM2();
 
-		array marks = GetMarksForPlayer(playertype,anm);
-		if (!hidemarks){
+		array marks = GetMarksForPlayer(playertype, anm);
+		if (!hidemarks) {
 			cmpl->CharacterId = playertype;
-			cmpl->Render(new Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) +widgtpos->y), widgtscale);
+			cmpl->Render(new Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
 		}
 	}
 }
@@ -934,13 +934,13 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 HOOK_METHOD(Menu_Character, Render, () -> void) {
 	super();
 	CompletionWidget* cmpl = this->GetCompletionWidget();
-	if(this->charaslot > 17){
-		
-		Vector* ref = (Vector *)(g_MenuManager + 60);
+	if (this->charaslot > 17) {
+
+		Vector* ref = (Vector*)(g_MenuManager + 60);
 		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
 		ANM2* anm = cmpl->GetANM2();
-		
-		array marks = GetMarksForPlayer(selectedchar,anm);
+
+		array marks = GetMarksForPlayer(selectedchar, anm);
 		if (!hidemarks) {
 			cmpl->CharacterId = selectedchar;
 			cmpl->Render(new Vector(ref->x + 80, ref->y + 860), new Vector(1, 1));
@@ -957,26 +957,27 @@ int Lua_IsaacSetCharacterMarks(lua_State* L)
 {
 	int playertype = 0;
 	int length = 0;
-	array<int, 15> marks = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-	if (lua_istable(L, -1)) { 
-		lua_pushnil(L); 
+	array<int, 15> marks = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+	if (lua_istable(L, -1)) {
+		lua_pushnil(L);
 		while (lua_next(L, -2) != 0) { //need to use lua_next because normal method wont work with string indexes
-			if (lua_isstring(L, -2)) { 
-				const char* key = lua_tostring(L, -2); 
+			if (lua_isstring(L, -2)) {
+				const char* key = lua_tostring(L, -2);
 				int value = lua_tointeger(L, -1);
 				if (reversemarksenum.count(key) > 0) {
 					if ((value < 0) || (value > 2)) {
-						return luaL_error(L, "Invalid Completion Marks value for %s is invalid(%d)",key, value);
+						return luaL_error(L, "Invalid Completion Marks value for %s is invalid(%d)", key, value);
 					}
-						marks[reversemarksenum[key]] = value;
-				}else if(strcmp(key, "PlayerType") == 0) {
+					marks[reversemarksenum[key]] = value;
+				}
+				else if (strcmp(key, "PlayerType") == 0) {
 					playertype = value;
 				}
 				else {
-					return luaL_error(L, "Invalid Completion Marks table index: %s",key);
+					return luaL_error(L, "Invalid Completion Marks table index: %s", key);
 				}
 			}
-			lua_pop(L, 1); 
+			lua_pop(L, 1);
 			length++;
 		}
 	}
@@ -994,7 +995,7 @@ int Lua_IsaacSetCharacterMarks(lua_State* L)
 		marks[CompletionType::ULTRA_GREED] = 2;
 		marks[CompletionType::ULTRA_GREEDIER] = 2;
 	}
-	if (playertype> 40){
+	if (playertype > 40) {
 		for (int i = 0; i < 15; i++) {
 			if (marks[i] > 0) {
 				if (PreMarksCallbackTrigger(i, playertype)) {
@@ -1011,7 +1012,7 @@ int Lua_IsaacSetCharacterMarks(lua_State* L)
 	else {
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
 		for (int i = 0; i < 12; i++) {
-			if ((marks[actualmarks[i]] == 0) || PreMarksCallbackTrigger(actualmarks[i],playertype)) {
+			if ((marks[actualmarks[i]] == 0) || PreMarksCallbackTrigger(actualmarks[i], playertype)) {
 				PData->IncreaseEventCounter(MarksToEvents[playertype][actualmarks[i]], -PData->GetEventCounter(MarksToEvents[playertype][actualmarks[i]]));
 				PData->IncreaseEventCounter(MarksToEvents[playertype][actualmarks[i]], marks[actualmarks[i]]);
 				if (marks[actualmarks[i]] > 0) {
@@ -1050,7 +1051,7 @@ int Lua_IsaacClearCompletionMarks(lua_State* L)
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
 		for (int i = 0; i < 15; i++) {
 			if ((i != 8) && (i != 10) && (i != 11)) {
-					PData->IncreaseEventCounter(MarksToEvents[playertype][i], -PData->GetEventCounter(MarksToEvents[playertype][i]));
+				PData->IncreaseEventCounter(MarksToEvents[playertype][i], -PData->GetEventCounter(MarksToEvents[playertype][i]));
 			}
 		}
 	}
@@ -1090,7 +1091,7 @@ int Lua_IsaacFillCompletionMarks(lua_State* L)
 }
 
 array<int, 6> tduet = { CompletionType::HUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH };
-array<int, 6> tquartet = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::BLUE_BABY,CompletionType::BLUE_BABY};
+array<int, 6> tquartet = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::BLUE_BABY,CompletionType::BLUE_BABY };
 array<int, 6> tboth = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::HUSH,CompletionType::BOSS_RUSH };
 int Lua_IsaacGetTaintedFullCompletion(lua_State* L)
 {
@@ -1098,9 +1099,9 @@ int Lua_IsaacGetTaintedFullCompletion(lua_State* L)
 	int group = luaL_checkinteger(L, 2);
 	array g = tboth;
 	switch (group) {
-		case 0: g = tboth; break;
-		case 1: g = tduet; break;
-		case 2: g = tquartet; break;
+	case 0: g = tboth; break;
+	case 1: g = tduet; break;
+	case 2: g = tquartet; break;
 	}
 	if (group == 1) { g = tduet; }
 	int cmpldif = 2;
@@ -1108,16 +1109,16 @@ int Lua_IsaacGetTaintedFullCompletion(lua_State* L)
 		array<int, 15> marks = GetMarksForPlayer(playertype);
 		for (int i = 0; i < 6; i++) {
 			if (marks[g[i]] < cmpldif) {
-					cmpldif = marks[g[i]];
+				cmpldif = marks[g[i]];
 			}
 		}
 	}
 	else {
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
 		for (int i = 0; i < 6; i++) {
-				if (PData->GetEventCounter(MarksToEvents[playertype][g[i]]) < cmpldif) {
-					cmpldif = PData->GetEventCounter(MarksToEvents[playertype][g[i]]);
-				}
+			if (PData->GetEventCounter(MarksToEvents[playertype][g[i]]) < cmpldif) {
+				cmpldif = PData->GetEventCounter(MarksToEvents[playertype][g[i]]);
+			}
 		}
 	}
 	lua_pushnumber(L, cmpldif);
@@ -1161,20 +1162,20 @@ int Lua_IsaacSetCharacterMark(lua_State* L)
 	if ((value < 0) || (value > 2)) {
 		return luaL_error(L, "Invalid Completion Marks value!(%d)", value);
 	}
-	if (playertype > 40){
+	if (playertype > 40) {
 		if ((value == 0) || PreMarksCallbackTrigger(completiontype, playertype)) {
 			array<int, 15> marks = GetMarksForPlayer(playertype);
 			marks[completiontype] = value;
 			string idx = GetMarksIdx(playertype);
 			CompletionMarks[idx] = marks;
 			SaveCompletionMarksToJson();
-			if (value > 0){
+			if (value > 0) {
 				PostMarksCallbackTrigger(completiontype, playertype);
 			}
 		}
 	}
 	else {
-		if ((value == 0) ||(PreMarksCallbackTrigger(completiontype, playertype))) {
+		if ((value == 0) || (PreMarksCallbackTrigger(completiontype, playertype))) {
 			PersistentGameData* PData = g_Manager->GetPersistentGameData();
 			PData->IncreaseEventCounter(MarksToEvents[playertype][completiontype], -PData->GetEventCounter(MarksToEvents[playertype][completiontype]));
 			PData->IncreaseEventCounter(MarksToEvents[playertype][completiontype], value);
@@ -1235,7 +1236,7 @@ int Lua_IsaacGetCharacterMarks(lua_State* L)
 		lua_pushstring(L, "Beast");
 		lua_pushnumber(L, marks[14]);
 		lua_settable(L, -3);
-		
+
 	}
 	else {
 		PersistentGameData* PData = g_Manager->GetPersistentGameData();
@@ -1283,7 +1284,7 @@ int Lua_IsaacGetCharacterMarks(lua_State* L)
 		lua_pushstring(L, "Beast");
 		lua_pushnumber(L, PData->GetEventCounter(MarksToEvents[playertype][CompletionType::BEAST]));
 		lua_settable(L, -3);
-	
+
 	}
 	return 1;
 }
@@ -1340,6 +1341,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_pushcfunction(state, Lua_IsaacClearCompletionMarks);
 	lua_rawset(state, -3);
 	lua_pop(state, 1);
-	
+
 
 }

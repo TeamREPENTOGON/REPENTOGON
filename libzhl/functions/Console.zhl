@@ -19,6 +19,9 @@ __thiscall void Console::Render();
 "558bec6aff68????????64a1????????5083ec54a1????????33c58945??535657508d45??64a3????????f30f115d":
 __thiscall std_deque_console_historyentry* Console::RenderHistory(Font *font, float unk, float unk2, bool unk3);
 
+"558bec81ec0c010000a1????????33c58945??57":
+__thiscall void Console::SaveCommandHistory();
+
 struct Console depends (Console_HistoryEntry) {
 {{
     inline int* GetState() { return (int*)((char*)this + 0x20); }

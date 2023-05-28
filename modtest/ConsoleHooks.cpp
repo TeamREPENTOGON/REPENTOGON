@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <iostream> 
+#include <fstream>
 #include <sstream>
 
 void LuaReset() {
@@ -30,6 +31,27 @@ void LuaReset() {
     }
 }
 
+HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsigned int fadeTime) -> void) {
+    // Commands always print in history as ("> ") with a color of 0xFF808080.
+    // Armed with this info, we can fix commands not saving on game crash by saving it every time.
+    // Kinda hacky, but whatever.
+
+    if (text.rfind(">", 0) == 0 && color == 0xFF808080) {
+        // Initially I was calling SaveCommandHistory() but it seems to also close the console, no good.
+        // Do it outselves.
+        char historyPath[256];
+        snprintf(historyPath, 256, "%s%s", (char*)&g_SaveDataPath, "cmd_history.txt");
+
+        std::ofstream history;
+        history.open(historyPath, std::ios::trunc);
+        
+        for (const std::string entry : *this->GetCommandHistory()) {
+            history << entry << std::endl;
+        }
+        history.close();
+    }
+    super(text, color, fadeTime);
+}
 
 HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out, Entity_Player* player) -> void) {
 
