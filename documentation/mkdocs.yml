@@ -110,8 +110,9 @@ nav:
   - Game: Game.md
   - History: History.md
   - HUD: HUD.md
-  - ItemOverlay: ItemOverlay.md
+  - ImGui: ImGui.md
   - Isaac: Isaac.md
+  - ItemOverlay: ItemOverlay.md
   - LayerState: LayerState.md
   - Level: Level.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
