@@ -360,7 +360,7 @@ HOOK_METHOD(ModEntry, GetContentPath, (char** param_1, IsaacString* param_2)->vo
 //d:\steam\steamapps\common\the binding of isaac rebirth/mods/musicar/content/entities2.xml
 HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
 	if(mod != NULL){
-		//printf("ModID: %s", mod->GetId());
+		printf("ModID: %s", mod->GetId());
 	}
 	ProcessModEntry(xmlpath, mod);
 	super(xmlpath, mod);

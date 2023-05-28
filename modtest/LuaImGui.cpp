@@ -27,9 +27,14 @@ static int Lua_AddElement(lua_State* L)
     int type = (int)luaL_checkinteger(L, 4);
     const char* text = luaL_optstring(L, 5, "");
 
+    if (imGui->ElementExists(id))
+    {
+      return luaL_error(L, "Element with id '%s' exists already.", id);
+    }
+
     bool success = imGui->AddElement(parentId, id, text, type);
     if (!success) {
-        return luaL_error(L, "Parent element '%s' not found.", text, parentId);
+        return luaL_error(L, "Parent element '%s' not found.", parentId);
     }
 
     return 1;
@@ -61,6 +66,11 @@ static int Lua_CreateMenu(lua_State* L)
     const char* id = luaL_checkstring(L, 2);
     const char* text = luaL_checkstring(L, 3);
 
+    if (imGui->ElementExists(id))
+    {
+      return luaL_error(L, "Element with id '%s' exists already.", id);
+    }
+
     bool success = imGui->CreateMenuElement(id, text);
     if (!success) {
         return luaL_error(L, "Error while adding new Menu '%s'", id);
@@ -85,6 +95,11 @@ static int Lua_CreateWindow(lua_State* L)
 
     const char* id = luaL_checkstring(L, 2);
     const char* title = luaL_checkstring(L, 3);
+
+    if (imGui->ElementExists(id))
+    {
+      return luaL_error(L, "Element with id '%s' exists already.", id);
+    }
 
     bool success = imGui->CreateWindowElement(id, title);
     if (!success) {
@@ -136,6 +151,21 @@ static int Lua_RemoveCallback(lua_State* L)
     return 1;
 }
 
+static int Lua_UpdateText(lua_State* L)
+{
+  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+  const char* id = luaL_checkstring(L, 2);
+  const char* text = luaL_checkstring(L, 3);
+
+  bool success = imGui->UpdateText(id, text);
+  if (!success) {
+    return luaL_error(L, "No element with id '%s' found.", id);
+  }
+
+  return 1;
+}
+
 extern bool menuShown;
 static int Lua_ImGuiShow(lua_State* L)
 {
@@ -151,6 +181,24 @@ static int Lua_ImGuiHide(lua_State* L)
     menuShown = false;
 
     return 0;
+}
+
+static int Lua_ImGuiReset(lua_State* L)
+{
+  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+  imGui->Reset();
+
+  return 0;
+}
+
+static int Lua_ElementExists(lua_State* L)
+{
+  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+  const char* id = luaL_checkstring(L, 2);
+
+  lua_pushboolean(L, imGui->ElementExists(id));
+
+  return 1;
 }
 
 static int Lua_ImGuiSetVisible(lua_State* L)
@@ -191,6 +239,9 @@ static void RegisterCustomImGui(lua_State* L)
         { "RemoveWindow", Lua_RemoveWindow },
         { "LinkWindowToElement", Lua_LinkWindowToElement },
         { "SetVisible", Lua_ImGuiSetVisible },
+        { "ElementExists", Lua_ElementExists },
+        { "UpdateText", Lua_UpdateText },
+        { "Reset", Lua_ImGuiReset },
         { "Show", Lua_ImGuiShow },
         { "Hide", Lua_ImGuiHide },
         { NULL, NULL }

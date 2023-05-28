@@ -427,17 +427,23 @@ local function logWarning(callbackID, modName, warn)
 end
 
 local function imGuiError(errortext)
-	--[[local imgui = Isaac.GetImGui()
-	local window = "Error Display"
-	imgui:AddElementToMenu("REPENTOGON Error Display", ImGuiElement.Menu)
-	imgui:AddElementToMenu(window, ImGuiElement.MenuItem, "REPENTOGON Error Display")
-
-	imgui:AddWindow(window, window)
-	imgui:AddElementToWindow(window, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", ImGuiElement.Text)
-	imgui:AddElementToWindow(window, errortext, ImGuiElement.Text)
-	imgui:AddElementToWindow(window, "Copy to Clipboard", ImGuiElement.Button)
-	imgui:AddCallbackToWindowElement(window, "Copy to Clipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
-	imgui:SetWindowState(window, true)]]
+	local imgui = Isaac.GetImGui()
+	local windowId = "ErrorDisplayWindow"
+	if not imgui:ElementExists("ErrorDisplayMenu") then
+		imgui:CreateMenu("ErrorDisplayMenu", "REPENTOGON Error Display")
+		imgui:AddElement("ErrorDisplayMenu", "ErrorDisplayMenuEntry", ImGuiElement.MenuItem, "Error Display")
+	
+		imgui:CreateWindow(windowId, "Error Display")
+		imgui:LinkWindowToElement(windowId, "ErrorDisplayMenuEntry")
+	
+		imgui:AddElement(windowId, "", ImGuiElement.Text, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n")
+		imgui:AddElement(windowId, "ErrorDisplayText", ImGuiElement.Text, errortext)
+		imgui:AddElement(windowId, "ErrorDisplayCopyToClipboard", ImGuiElement.Button, "Copy to Clipboard")
+		imgui:AddCallback("ErrorDisplayCopyToClipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
+	else
+		imgui:UpdateText("ErrorDisplayText", errortext)
+	end
+	imgui:SetVisible(window, true)
 end
 
 local err_dupecount = 1
@@ -638,6 +644,9 @@ function RegisterMod(name, ver)
 	out.Repentogon = REPENTOGON
 	return out
 end
+
+-- Reset Imgui Data after reload of all mods
+Isaac.GetImGui():Reset()
 
 pcall(require("repentogon_extras/changelog"))
 pcall(require("repentogon_extras/daily_stats"))

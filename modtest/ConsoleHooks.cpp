@@ -2,75 +2,32 @@
 #include "HookSystem.h"
 #include "ConsoleMega.h"
 #include "LogViewer.h"
-
-#include "XMLData.h"
+#include "LuaCore.h"
 
 #include <filesystem>
 #include <iostream> 
 #include <sstream>
 
 void LuaReset() {
-    // JSG already did some great XML parsing work, let's reuse that instead of reinventing the wheel.
-    // Unfortunately the XML data is cleared when running RegisterClasses which LuaEngine init does. Cache the result before we proceed.
-
-    logViewer.AddLog("[REPENTOGON]", "Begin reset.\n");
-    XMLData preReloadXMLStuff = XMLStuff;
-
-    g_LuaEngine->constructor();
-    g_LuaEngine->Init(g_LuaEngine->GetLuaDebug());
-    logViewer.AddLog("[REPENTOGON]", "Reinit finished\n");
-
     // We are building our own map here so that this is *solely* a Lua reset and not an XML one.
     // Calling existing game functions will try to load XML too, they are intertwined.
-    std::map<string, string> modsToReload;
+    std::map<std::string, std::string> modsToReload;
 
-    logViewer.AddLog("[REPENTOGON]", "Loading mods\n");
-
-    for (auto& mod : preReloadXMLStuff.ModData.mods) {
-
-        // Mod's first entry is "load order" (which is 100% irrelevant for Lua) and the second entry is the parsed XML.
-        // We care about the name and the directory.
-        std::string modName;
-        std::string modPath;
-
-        for (auto& modMap : std::get<1>(mod)) {
-            std::string key = modMap.first;
-            const char* value = modMap.second.c_str();
-
-            if (key == "name") {
-                modName = value;
-            }
-            else if (key == "directory") {
-                modPath = value;
-            }
+    for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+        if (mod != NULL && mod->IsEnabled()) {
+            modsToReload[mod->GetName()] = mod->GetDir();
         }
-
-        modsToReload[modName] = modPath;
     }
 
-    logViewer.AddLog("[REPENTOGON]", "Map built\n");
+    g_LuaEngine->constructor();
+    g_LuaEngine->Init(false);
+
     // This is an ordered map and we stored by mod name, so the load order should be identical to the vanilla game.
     for (auto& mod : modsToReload) {
-        std::string modPath = std::filesystem::current_path().string() + "/mods" + "/" + mod.second;
-        std::string disableItPath = modPath + "/disable.it";
-        std::string mainLuaPath = modPath + "/main.lua";
+        std::string modPath = std::filesystem::current_path().string() + "/mods/" + mod.second + "/main.lua";
+        g_LuaEngine->RunScript(modPath.c_str());
 
-        if (std::filesystem::exists(disableItPath)) {
-            logViewer.AddLog("[REPENTOGON]", "%s is disabled, skipping\n", mod.first.c_str());
-            continue;
-        }
-
-
-        if (std::filesystem::exists(mainLuaPath)) {
-            logViewer.AddLog("[REPENTOGON]", "%s has a main.lua and is being reloaded\n", mod.first.c_str());
-            g_LuaEngine->RunScript(mainLuaPath.c_str());
-        }
     }
-
-
-    //HACK
-    //std::string junk;
-    //g_Game->GetConsole()->RunCommand("restart", junk, (Entity_Player*)NULL);
 }
 
 
