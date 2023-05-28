@@ -28,7 +28,7 @@ Technically, removing `dsound.dll` and verifying integrity is all that's needed,
 The nature of this project requires that we use the same compiler as the game. As a result, a Windows system is explicitly required, along with the following:
 * CMake 3.13 or above
 * Git
-* Visual Studio
+* Visual Studio 2019 or above
 * Doxygen (for now, looking into removing this in the future)
 
 ### Steps
