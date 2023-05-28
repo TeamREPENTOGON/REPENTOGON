@@ -111,6 +111,10 @@ ___
 #### [DailyChallenge](DailyChallenge.md) GetDailyChallenge ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Im·Gui () {: aria-label='Functions' }
+#### [ImGui](ImGui.md) GetImGui ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Loaded·Modules () {: aria-label='Functions' }
 #### table GetLoadedModules ( ) {: .copyable aria-label='Functions' }
 Returns a key - value table containing all loaded script files, where the key is the name or path of a given script file, and the value the return value of that file after loading. (In most cases its true or a table)
