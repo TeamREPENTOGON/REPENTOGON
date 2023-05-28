@@ -129,6 +129,7 @@ nav:
   - RoomConfigHolder: RoomConfigHolder.md
   - RoomTransition: RoomTransition.md
   - Sprite: Sprite.md
+  - StageTransition: StageTransition.md
   - XMLData: XMLData.md
 - Changes:
   - General: changes/General.md

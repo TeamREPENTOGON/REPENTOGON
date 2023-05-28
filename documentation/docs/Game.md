@@ -108,6 +108,10 @@ ___
 #### [RoomTransition](RoomTransition.md) GetRoomTransition ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Stage·Transition () {: aria-label='Functions' }
+#### [StageTransition](StageTransition.md) GetStageTransition ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Hard·Mode () {: aria-label='Functions' }
 #### boolean IsHardMode ( ) {: .copyable aria-label='Functions' }
 Returns `true` if hard mode or greedier
