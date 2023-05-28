@@ -1,6 +1,7 @@
 #include <lua.hpp>
 
 #include "IsaacRepentance.h"
+#include "LogViewer.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
@@ -2209,5 +2210,45 @@ HOOK_METHOD(NightmareScene, Show, (bool unk) -> void) {
 			//.push(this, lua::metatables::NightmareSceneMT)
 			.push(unk)
 			.call(1);
+	}
+}
+
+// PRE_LEVEL_SELECT (1104)
+HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
+	logViewer.AddLog("[REPENTOGON]", "Level::SetStage: stageid: %d, alt: %d\n", levelType, stageType);
+	int callbackId = 1104;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		int startTop = lua_gettop(L);
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(levelType)
+			.push(stageType)
+			.call(LUA_MULTRET);
+
+		int resTop = lua_gettop(L);
+		if (startTop == resTop) {
+			super(levelType, stageType);
+			return;
+		}
+		else {
+			lua_rawgeti(L, -1, 1);
+			int level = lua_tointeger(L, -1);
+			lua_pop(L, 1);
+
+			lua_rawgeti(L, -1, 2);
+			int type = lua_tointeger(L, -1);
+			lua_pop(L, 1);
+
+			logViewer.AddLog("[REPENTOGON]", "MC_PRE_SELECT_LEVEL %d %d", level, type);
+			super(level, type);
+			return;
+		}
+	}
+	else {
+		super(levelType, stageType);
 	}
 }
