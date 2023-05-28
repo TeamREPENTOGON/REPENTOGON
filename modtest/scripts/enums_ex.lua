@@ -2116,16 +2116,18 @@ for colorName, colorData in pairs(colorPresets) do
 end
 
 ImGuiElement = {
-	Menu = 0,
-	MenuItem = 1,
-	CollapsingHeader = 2,
-	TreeNode = 3,
-	Text = 4,
-	SeparatorText = 5,
-	BulletText = 6,
-	Separator = 7,
-	SameLine = 8,
-	Button = 9,
+	Window = 0,
+	Menu = 1,
+	MenuItem = 2,
+	Popup = 3,
+	CollapsingHeader = 4,
+	TreeNode = 5,
+	Separator = 6,
+	SeparatorText = 7,
+	Text = 8,
+	BulletText = 9,
+	SameLine = 10,
+	Button = 11,
 }
 
 ImGuiCallback = {

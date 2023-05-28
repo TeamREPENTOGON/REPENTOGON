@@ -1,30 +1,51 @@
-local imgui =Isaac.GetImGui() 
+local imgui = Isaac.GetImGui()
 
 -- Create Menu entry
-Isaac.GetImGui():AddElementToMenu("Test Menu", ImGuiElement.Menu)
-
+imgui:CreateMenu("testMenu", "Test Menu")
 -- Create Menu item that opens an empty window
-Isaac.GetImGui():AddElementToMenu("Minimal Window test", ImGuiElement.MenuItem,"Test Menu")
-Isaac.GetImGui():AddWindow("Minimal Window test", "Minimal Window")
+imgui:AddElement("testMenu", "menuElem1", ImGuiElement.MenuItem, "Minimal Window test")
 
+imgui:CreateWindow("testWindow", "Minimal Window test")
+imgui:LinkWindowToElement("testWindow", "menuElem1")
 -- Menu item callback
-Isaac.GetImGui():AddElementToMenu("Menu Item Callback test", ImGuiElement.MenuItem, "Test Menu")
-Isaac.GetImGui():AddCallbackToMenuElement("Menu Item Callback test", ImGuiCallback.Clicked, function (i) print("Clicked Counter "..i) end)
+imgui:AddElement("testMenu", "menuElem2", ImGuiElement.MenuItem, "Menu Item Callback test")
+imgui:AddCallback("menuElem2", ImGuiCallback.Clicked, function (i) print("Clicked Counter "..i) end)
 
 -- Add big testing window
-imgui:AddElementToMenu("Test Window", ImGuiElement.MenuItem,"Test Menu")
-local testWindow = "Super cool test window"
-imgui:AddWindow("Test Window", testWindow) 
+imgui:AddElement("testMenu", "menuElem3", ImGuiElement.MenuItem, "Awesome Test Menu")
 
-imgui:AddElementToWindow(testWindow, "Test Category", ImGuiElement.CollapsingHeader, "") 
-imgui:AddElementToWindow(testWindow, "A test text thats pretty long and stuff", ImGuiElement.Text, "Test Category") 
-imgui:AddElementToWindow(testWindow, "Separator text", ImGuiElement.SeparatorText, "Test Category") 
-imgui:AddElementToWindow(testWindow, "Test SubTree", ImGuiElement.TreeNode, "Test Category") 
-imgui:AddElementToWindow(testWindow, "Bullet point 1", ImGuiElement.BulletText, "Test SubTree") 
-imgui:AddElementToWindow(testWindow, "Bullet point 2", ImGuiElement.BulletText, "Test SubTree") 
-imgui:AddElementToWindow(testWindow, "Bullet point 3", ImGuiElement.BulletText, "Test SubTree") 
-imgui:AddElementToWindow(testWindow, "", ImGuiElement.Separator, "Test Category") 
-imgui:AddElementToWindow(testWindow, "A funky button", ImGuiElement.Button, "Test Category")
-imgui:AddCallbackToWindowElement(testWindow, "A hoverable button", ImGuiCallback.Hovered, function (i) print("Hover") end) 
-imgui:AddElementToWindow(testWindow, "", ImGuiElement.SameLine, "Test Category") 
-imgui:AddElementToWindow(testWindow, "A button in the same line", ImGuiElement.Button, "Test Category")
+imgui:CreateWindow("testWindow2", "Awesome Test Window")
+imgui:LinkWindowToElement("testWindow2", "menuElem3")
+
+
+imgui:AddElement("testWindow2", "cat1", ImGuiElement.CollapsingHeader, "Test Category") 
+imgui:AddElement("cat1", "", ImGuiElement.Text, "A test text thats pretty long and stuff")
+imgui:AddElement("cat1", "", ImGuiElement.SeparatorText, "Separator text")
+imgui:AddElement("cat1", "tree1", ImGuiElement.TreeNode, "Test SubTree")
+imgui:AddElement("tree1", "", ImGuiElement.BulletText, "Bullet point 1")
+imgui:AddElement("tree1", "", ImGuiElement.BulletText, "Bullet point 2")
+imgui:AddElement("tree1", "", ImGuiElement.BulletText, "Bullet point 3")
+imgui:AddElement("cat1", "", ImGuiElement.Separator)
+imgui:AddElement("cat1", "button1", ImGuiElement.Button, "A funky button")
+imgui:AddCallback("button1", ImGuiCallback.Hovered, function (i) print("Hover") end)
+imgui:AddElement("cat1", "", ImGuiElement.SameLine)
+imgui:AddElement("cat1", "button2", ImGuiElement.Button, "A button in the same line")
+
+
+imgui:AddElement("testWindow2", "", ImGuiElement.Separator)
+
+-- open window via button
+imgui:AddElement("testWindow2", "button_window", ImGuiElement.Button, "open a window")
+imgui:CreateWindow("testWindow3", "button Window")
+imgui:LinkWindowToElement("testWindow3", "button_window")
+
+-- open popup via button
+imgui:AddElement("testWindow2", "button_popup2", ImGuiElement.Button, "open a popup")
+
+imgui:AddElement("testWindow2", "popup", ImGuiElement.Popup, "Test Popup")
+imgui:AddElement("popup", "", ImGuiElement.Text, "Test popup text")
+imgui:LinkWindowToElement("popup", "button_popup2")
+
+-- open popup via SetVisible
+imgui:AddElement("testWindow2", "button_popup3", ImGuiElement.Button, "open a popup via SetVisible()")
+imgui:AddCallback("button_popup3", ImGuiCallback.Clicked, function (i) imgui:SetVisible("popup", true) end)

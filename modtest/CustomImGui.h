@@ -7,21 +7,22 @@
 
 #include "LuaCore.h"
 
-namespace Repentogon {
-enum class ELEMENT_TYPE {
+enum class IMGUI_ELEMENT {
+    Window,
     Menu,
     MenuItem,
+    Popup,
     CollapsingHeader,
     TreeNode,
-    Text,
-    SeparatorText,
-    BulletText,
     Separator,
+    SeparatorText,
+    Text,
+    BulletText,
     SameLine,
     Button,
 };
 
-enum class CALLBACK_TYPE {
+enum class IMGUI_CALLBACK {
     Clicked,
     Hovered,
     Active,
@@ -32,23 +33,36 @@ enum class CALLBACK_TYPE {
     Deactivated,
     DeactivatedAfterEdit,
     ToggledOpen,
-};
+}; 
 
-}
+static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
 
 struct Element {
+    std::string id;
     std::string name;
-    Repentogon::ELEMENT_TYPE type;
+    IMGUI_ELEMENT type;
     std::list<Element>* children;
-    bool isActive = false;
-    bool isEnabled = true;
-    std::map<Repentogon::CALLBACK_TYPE, int> callbacks; // type, StackID
+
+    Element* triggerElement = NULL; // element that when clicked, activates this element (Window)
+    Element* triggerPopup = NULL; // popup that gets triggered when clicking this element
+    std::map<IMGUI_CALLBACK, int> callbacks; // type, StackID
+
+    bool useroverride_isVisible = false;
+
+    bool evaluatedVisibleState = false; // used for imgui to use
+
+    bool isActive = false; // active = clicked
     int clickCounter = 0;
 
-    Element(const char* elemName, int elemType)
+    Element(const char* elemId, const char* elemName, int elemType)
     {
-        name = std::string(elemName); // ugly copy into std::string, because i dont know how to copy const char* into another const char pointer :(
-        type = static_cast<Repentogon::ELEMENT_TYPE>(elemType);
+        if (elemId[0] == '\0') {
+            id = std::string(IGNORE_ID); // Elements without ID get ignored in searches
+        } else {
+            id = std::string(elemId);
+        }
+        name = std::string(elemName);
+        type = static_cast<IMGUI_ELEMENT>(elemType);
         children = new std::list<Element>();
     }
 
@@ -59,96 +73,84 @@ struct Element {
 
     void AddCallback(int type, int callbackID)
     {
-        callbacks.insert(std::pair<Repentogon::CALLBACK_TYPE, int>(static_cast<Repentogon::CALLBACK_TYPE>(type), callbackID));
-    }
-};
-
-struct Window {
-    std::string name;
-    Element* parentMenuItem;
-    std::list<Element>* elements;
-
-    Window(Element* menuItemParent, const char* windowName)
-    {
-        name = std::string(windowName);
-        parentMenuItem = menuItemParent;
-        elements = new std::list<Element>();
+        callbacks.insert(std::pair<IMGUI_CALLBACK, int>(static_cast<IMGUI_CALLBACK>(type), callbackID));
     }
 
-    bool IsEnabled()
+    void RemoveCallback(int type)
     {
-        return parentMenuItem->isActive;
+        callbacks.erase(static_cast<IMGUI_CALLBACK>(type));
+    }
+
+    void EvaluateVisible()
+    {
+        evaluatedVisibleState = triggerElement != NULL && triggerElement->isActive || useroverride_isVisible;
+    }
+
+    void SetVisible(bool newState)
+    {
+        if (triggerElement != NULL) {
+            triggerElement->isActive = newState;
+        } else {
+            useroverride_isVisible = newState;
+        }
     }
 };
 
 struct CustomImGui {
     bool enabled;
     std::list<Element>* menuElements;
-    std::list<Window>* windows;
+    std::list<Element>* windows;
 
     CustomImGui()
     {
         enabled = false;
         menuElements = new std::list<Element>();
-        windows = new std::list<Window>();
+        windows = new std::list<Element>();
     }
 
-    bool AddElementToWindow(const char* windowName, const char* name, int type, const char* parentName) IM_FMTARGS(2)
+    bool AddElement(const char* parentId, const char* id, const char* text, int type) IM_FMTARGS(2)
     {
-        for (auto window = windows->begin(); window != windows->end(); ++window) {
-            if (strcmp(window->name.c_str(), windowName) != 0) {
-                continue;
-            }
-            if ((parentName != NULL) && (parentName[0] == '\0')) { // no parent given / string empty
-                window->elements->push_back(Element(name, type));
-            } else {
-                Element* parent = GetElement(parentName, window->elements);
-                if (parent != NULL) {
-                    parent->AddChild(Element(name, type));
-                }
-            }
-            return true;
-        }
-        return false;
-    }
-
-    bool AddElementToMenu(const char* name, int type, const char* parentName) IM_FMTARGS(2)
-    {
-        if ((parentName != NULL) && (parentName[0] == '\0')) { // no parent given / string empty
-            menuElements->push_back(Element(name, type));
-            return true;
-        } else {
-            Element* parent = GetElement(parentName, menuElements);
-            if (parent != NULL) {
-                parent->AddChild(Element(name, type));
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool AddWindow(const char* parentName, const char* name) IM_FMTARGS(2)
-    {
-        Element* parent = GetElement(parentName, menuElements);
+        Element* parent = GetElementById(parentId);
         if (parent != NULL) {
-            windows->push_back(Window(parent, name));
+            parent->AddChild(Element(id, text, type));
             return true;
         }
         return false;
     }
 
-    void RemoveWindow(const char* windowName) IM_FMTARGS(2)
+    bool CreateMenuElement(const char* id, const char* text) IM_FMTARGS(2)
+    {
+        menuElements->push_back(Element(id, text, static_cast<int>(IMGUI_ELEMENT::Menu)));
+        return true;
+    }
+
+    void RemoveMenu(const char* menuId) IM_FMTARGS(2)
+    {
+        for (auto menu = menuElements->begin(); menu != menuElements->end(); ++menu) {
+            if (strcmp(menu->id.c_str(), menuId) == 0) {
+                menuElements->erase(menu);
+            }
+        }
+    }
+
+    Element* CreateWindowElement(const char* id, const char* name) IM_FMTARGS(2)
+    {
+        windows->push_back(Element(id, name, static_cast<int>(IMGUI_ELEMENT::Window)));
+        return &windows->back();
+    }
+
+    void RemoveWindow(const char* windowId) IM_FMTARGS(2)
     {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
-            if (strcmp(window->name.c_str(), windowName) == 0) {
+            if (strcmp(window->id.c_str(), windowId) == 0) {
                 windows->erase(window);
             }
         }
     }
 
-    bool AddCallbackToMenuElement(const char* parentName, int type, int callbackID) IM_FMTARGS(2)
+    bool AddCallback(const char* parentId, int type, int callbackID) IM_FMTARGS(2)
     {
-        Element* parent = GetElement(parentName, menuElements);
+        Element* parent = GetElementById(parentId);
         if (parent != NULL) {
             parent->AddCallback(type, callbackID);
             return true;
@@ -156,86 +158,106 @@ struct CustomImGui {
         return false;
     }
 
-    bool AddCallbackToWindowElement(const char* windowName, const char* parentName, int type, int callbackID) IM_FMTARGS(2)
+    bool RemoveCallback(const char* parentId, int type) IM_FMTARGS(2)
     {
-        for (auto window = windows->begin(); window != windows->end(); ++window) {
-            if (strcmp(window->name.c_str(), windowName) != 0) {
-                continue;
-            }
-            Element* parent = GetElement(parentName, window->elements);
-            if (parent != NULL) {
-                parent->AddCallback(type, callbackID);
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-    bool SetWindowState(const char* windowName, bool newState) IM_FMTARGS(2)
-    {
-        for (auto window = windows->begin(); window != windows->end(); ++window) {
-            if (strcmp(window->name.c_str(), windowName) != 0) {
-                continue;
-            }
-            window->parentMenuItem->isActive = newState;
+        Element* parent = GetElementById(parentId);
+        if (parent != NULL) {
+            parent->RemoveCallback(type);
             return true;
         }
         return false;
     }
 
+    bool LinkWindowToElement(const char* windowId, const char* elementId) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        Element* window = GetElementById(windowId);
+        if (window != NULL && element != NULL) {
+            if (window->type == IMGUI_ELEMENT::Popup) {
+                element->triggerPopup = window;
+            } else {
+                window->triggerElement = element;
+            }
+            if (element->type != IMGUI_ELEMENT::MenuItem) {
+                element->AddCallback(static_cast<int>(IMGUI_CALLBACK::Clicked), 0);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    bool SetVisible(const char* elementId, bool newState) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL) {
+            element->SetVisible(newState);
+            return true;
+        }
+        return false;
+    }
+
+    void OpenPopup(const char* popupId)
+    {
+        ImGui::OpenPopup(popupId);
+    }
 
     void RunCallbacks(Element* element) IM_FMTARGS(2)
     {
         for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
             switch (callback->first) {
-            case Repentogon::CALLBACK_TYPE::Clicked:
+            case IMGUI_CALLBACK::Clicked:
                 if (ImGui::IsItemClicked()) {
                     element->clickCounter++;
+                    element->isActive = !element->isActive;
+                    if (element->triggerPopup != NULL) {
+                        OpenPopup(element->triggerPopup->id.c_str());
+                    }
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::Hovered:
+            case IMGUI_CALLBACK::Hovered:
                 if (ImGui::IsItemHovered()) {
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::Active:
+            case IMGUI_CALLBACK::Active:
                 if (ImGui::IsItemActive()) {
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::Focused:
+            case IMGUI_CALLBACK::Focused:
                 if (ImGui::IsItemFocused()) {
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::Visible:
+            case IMGUI_CALLBACK::Visible:
                 if (ImGui::IsItemVisible()) {
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::Edited:
+            case IMGUI_CALLBACK::Edited:
                 if (ImGui::IsItemEdited()) {
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::Activated:
+            case IMGUI_CALLBACK::Activated:
                 if (ImGui::IsItemActivated()) {
+                    element->isActive = true;
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::Deactivated:
+            case IMGUI_CALLBACK::Deactivated:
                 if (ImGui::IsItemDeactivated()) {
+                    element->isActive = false;
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::DeactivatedAfterEdit:
+            case IMGUI_CALLBACK::DeactivatedAfterEdit:
                 if (ImGui::IsItemDeactivatedAfterEdit()) {
                     RunCallback(element, callback->second);
                 }
                 break;
-            case Repentogon::CALLBACK_TYPE::ToggledOpen:
+            case IMGUI_CALLBACK::ToggledOpen:
                 if (ImGui::IsItemToggledOpen()) {
                     RunCallback(element, callback->second);
                 }
@@ -245,6 +267,7 @@ struct CustomImGui {
             }
         }
     }
+
     void RunCallback(Element* element, int callbackID) IM_FMTARGS(2)
     {
         if (callbackID == 0) {
@@ -260,13 +283,26 @@ struct CustomImGui {
                                      .call(1);
     }
 
-    Element* GetElement(const char* name, std::list<Element>* list)
+    Element* GetElementById(const char* parentId) IM_FMTARGS(2)
+    {
+        Element* parent = GetElementByList(parentId, menuElements);
+        if (parent != NULL) {
+            return parent;
+        }
+        parent = GetElementByList(parentId, windows);
+        if (parent != NULL) {
+            return parent;
+        }
+        return false;
+    }
+
+    Element* GetElementByList(const char* id, std::list<Element>* list)
     {
         for (auto element = list->begin(); element != list->end(); ++element) {
-            if (strcmp(element->name.c_str(), name) == 0) {
+            if (strcmp(element->id.c_str(), id) == 0 && !(strcmp(element->id.c_str(), IGNORE_ID) == 0)) {
                 return &(*element);
             }
-            Element* childResult = GetElement(name, element->children);
+            Element* childResult = GetElementByList(id, element->children);
             if (childResult != NULL) {
                 return childResult;
             }
@@ -276,25 +312,16 @@ struct CustomImGui {
 
     void DrawMenu()
     {
-        // if (ImGui::MenuItem("Custom ImGui", NULL, &enabled)) { }
         DrawMenuElements(menuElements);
     }
 
     void DrawWindows()
     {
-        if (enabled && ImGui::Begin("Custom ImGui Menu", &enabled)) {
-            if (ImGui::CollapsingHeader("Some initial Category")) {
-                ImGui::Text("Initial text is coolis cool because:");
-                ImGui::BulletText("Testing is easier");
-                ImGui::BulletText("We see stuff");
-            }
-            ImGui::End();
-        }
-
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
-            if (window->IsEnabled() && ImGui::Begin(window->name.c_str(), &window->parentMenuItem->isActive)) {
-                DrawElements(window->elements);
+            window->EvaluateVisible();
+            if (window->evaluatedVisibleState && ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState)) {
+                DrawElements(window->children);
                 ImGui::End();
             }
         }
@@ -306,17 +333,16 @@ struct CustomImGui {
             const char* name = element->name.c_str();
 
             switch (element->type) {
-            case Repentogon::ELEMENT_TYPE::Menu:
+            case IMGUI_ELEMENT::Menu:
                 if (ImGui::BeginMenu(name)) {
                     RunCallbacks(&(*element));
                     DrawMenuElements(element->children);
                     ImGui::EndMenu();
                 }
                 break;
-            case Repentogon::ELEMENT_TYPE::MenuItem:
+            case IMGUI_ELEMENT::MenuItem:
                 ImGui::MenuItem(name, NULL, &element->isActive);
                 RunCallbacks(&(*element));
-
                 break;
             default:
                 break;
@@ -329,39 +355,50 @@ struct CustomImGui {
         for (auto element = elements->begin(); element != elements->end(); ++element) {
             const char* name = element->name.c_str();
             switch (element->type) {
-            case Repentogon::ELEMENT_TYPE::CollapsingHeader:
+            case IMGUI_ELEMENT::CollapsingHeader:
                 if (ImGui::CollapsingHeader(name)) {
                     RunCallbacks(&(*element));
                     DrawElements(element->children);
                 }
                 break;
-            case Repentogon::ELEMENT_TYPE::TreeNode:
+            case IMGUI_ELEMENT::TreeNode:
                 if (ImGui::TreeNode(name)) {
                     RunCallbacks(&(*element));
                     DrawElements(element->children);
                 }
                 break;
-            case Repentogon::ELEMENT_TYPE::Text:
+            case IMGUI_ELEMENT::Popup:
+                if (element->useroverride_isVisible) {
+                    // make popup visible when user changes visibility to true
+                    OpenPopup(element->id.c_str());
+                    element->useroverride_isVisible = false;
+                }
+                if (ImGui::BeginPopup(element->id.c_str())) {
+                    DrawElements(element->children);
+                    ImGui::EndPopup();
+                }
+                break;
+            case IMGUI_ELEMENT::Text:
                 ImGui::Text(name);
                 RunCallbacks(&(*element));
                 break;
-            case Repentogon::ELEMENT_TYPE::SeparatorText:
+            case IMGUI_ELEMENT::SeparatorText:
                 ImGui::SeparatorText(name);
                 RunCallbacks(&(*element));
                 break;
-            case Repentogon::ELEMENT_TYPE::BulletText:
+            case IMGUI_ELEMENT::BulletText:
                 ImGui::BulletText(name);
                 RunCallbacks(&(*element));
                 break;
-            case Repentogon::ELEMENT_TYPE::Separator:
+            case IMGUI_ELEMENT::Separator:
                 ImGui::Separator();
                 RunCallbacks(&(*element));
                 break;
-            case Repentogon::ELEMENT_TYPE::SameLine:
+            case IMGUI_ELEMENT::SameLine:
                 ImGui::SameLine();
                 RunCallbacks(&(*element));
                 break;
-            case Repentogon::ELEMENT_TYPE::Button:
+            case IMGUI_ELEMENT::Button:
                 ImGui::Button(name);
                 RunCallbacks(&(*element));
                 break;
@@ -371,4 +408,5 @@ struct CustomImGui {
         }
     }
 };
+
 extern CustomImGui customImGui;

@@ -18,86 +18,77 @@ static int Lua_CustomImGui(lua_State* L)
     return 1;
 }
 
-static int Lua_AddElementToWindow(lua_State* L)
+static int Lua_AddElement(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    const char* windowName = luaL_checkstring(L, 2);
-    const char* text = luaL_checkstring(L, 3);
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
     int type = (int)luaL_checkinteger(L, 4);
-    const char* parentName = luaL_optstring(L, 5, "");
+    const char* text = luaL_optstring(L, 5, "");
 
-    bool success = imGui->AddElementToWindow(windowName, text, type, parentName);
+    bool success = imGui->AddElement(parentId, id, text, type);
     if (!success) {
-        return luaL_error(L, "Error while adding element '%s' to window with name '%s'", text, windowName);
+        return luaL_error(L, "Parent element '%s' not found.", text, parentId);
     }
 
     return 1;
 }
 
-static int Lua_AddElementToMenu(lua_State* L)
+static int Lua_LinkWindowToElement(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    const char* text = luaL_checkstring(L, 2);
-    int type = (int)luaL_checkinteger(L, 3);
-    const char* parentName = luaL_optstring(L, 4, "");
+    const char* windowId = luaL_checkstring(L, 2);
+    const char* elementId = luaL_checkstring(L, 3);
 
-    bool success = imGui->AddElementToMenu(text, type, parentName);
+    if (imGui->GetElementById(windowId) == NULL) {
+        return luaL_error(L, "No window with id '%s' exists", windowId);
+    }
+
+    bool success = imGui->LinkWindowToElement(windowId, elementId);
     if (!success) {
-        return luaL_error(L, "Error while adding element '%s' to menu '%s'", text, parentName);
+        return luaL_error(L, "Element with id '%s' not found", elementId);
     }
 
     return 1;
 }
 
-static int Lua_AddWindow(lua_State* L)
+static int Lua_CreateMenu(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    const char* parentName = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 2);
     const char* text = luaL_checkstring(L, 3);
 
-    bool success = imGui->AddWindow(parentName, text);
+    bool success = imGui->CreateMenuElement(id, text);
     if (!success) {
-        return luaL_error(L, "Error while adding new Window '%s' to menu entry '%s'", text, parentName);
+        return luaL_error(L, "Error while adding new Menu '%s'", id);
     }
 
     return 1;
 }
 
-static int Lua_AddCallbackToMenuElement(lua_State* L)
+static int Lua_RemoveMenu(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
-    const char* parentName = luaL_checkstring(L, 2);
-    int type = (int)luaL_checkinteger(L, 3);
-    if (!lua_isfunction(L, 4)) {
-        return luaL_error(L, "Argument 4 is not a function!");
-    }
-    lua_pushvalue(L, 4); // push function on stack
-    int stackID = luaL_ref(L, LUA_REGISTRYINDEX); // get unique key
-    bool success = imGui->AddCallbackToMenuElement(parentName, type, stackID);
-    if (!success) {
-        return luaL_error(L, "Error adding callback to element '%s'", parentName);
-    }
+    const char* menuId = luaL_checkstring(L, 2);
 
-    return 1;
+    imGui->RemoveMenu(menuId);
+
+    return 0;
 }
 
-static int Lua_AddCallbackToWindowElement(lua_State* L)
+static int Lua_CreateWindow(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
-    const char* windowName = luaL_checkstring(L, 2);
-    const char* parentName = luaL_checkstring(L, 3);
-    int type = (int)luaL_checkinteger(L, 4);
-    if (!lua_isfunction(L, 5)) {
-        return luaL_error(L, "Argument 5 is not a function!");
-    }
-    lua_pushvalue(L, 5); // push function on stack
-    int stackID = luaL_ref(L, LUA_REGISTRYINDEX); // get unique key
-    bool success = imGui->AddCallbackToWindowElement(windowName, parentName, type, stackID);
+
+    const char* id = luaL_checkstring(L, 2);
+    const char* title = luaL_checkstring(L, 3);
+
+    bool success = imGui->CreateWindowElement(id, title);
     if (!success) {
-        return luaL_error(L, "Error adding callback to element '%s'", parentName);
+        return luaL_error(L, "Error while adding new Window '%s'", id);
     }
 
     return 1;
@@ -106,32 +97,72 @@ static int Lua_AddCallbackToWindowElement(lua_State* L)
 static int Lua_RemoveWindow(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
-    const char* windowName = luaL_checkstring(L, 2);
+    const char* windowId = luaL_checkstring(L, 2);
 
-    imGui->RemoveWindow(windowName);
+    imGui->RemoveWindow(windowId);
 
     return 0;
+}
+
+static int Lua_AddCallback(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* parentId = luaL_checkstring(L, 2);
+    int type = (int)luaL_checkinteger(L, 3);
+    if (!lua_isfunction(L, 4)) {
+        return luaL_error(L, "Argument 4 is not a function!");
+    }
+    lua_pushvalue(L, 4); // push function on stack
+    int stackID = luaL_ref(L, LUA_REGISTRYINDEX); // get unique key
+    bool success = imGui->AddCallback(parentId, type, stackID);
+    if (!success) {
+        return luaL_error(L, "No element '%s' found.", parentId);
+    }
+
+    return 1;
+}
+
+static int Lua_RemoveCallback(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* parentId = luaL_checkstring(L, 2);
+    int type = (int)luaL_checkinteger(L, 3);
+
+    bool success = imGui->RemoveCallback(parentId, type);
+    if (!success) {
+        return luaL_error(L, "No element '%s' found.", parentId);
+    }
+
+    return 1;
 }
 
 extern bool menuShown;
 static int Lua_ImGuiShow(lua_State* L)
 {
-    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);  
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     menuShown = true;
 
     return 0;
 }
 
-static int Lua_ImGuiSetWindowState(lua_State* L)
+static int Lua_ImGuiHide(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
-    const char* windowName = luaL_checkstring(L, 2);
+    menuShown = false;
+
+    return 0;
+}
+
+static int Lua_ImGuiSetVisible(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
     bool newState = lua_toboolean(L, 3);
-    
-    bool success = imGui->SetWindowState(windowName, newState);
+
+    bool success = imGui->SetVisible(elementId, newState);
 
     if (!success) {
-        return luaL_error(L, "Error changing state of window '%s'", windowName);
+        return luaL_error(L, "Element with id '%s' not found", elementId);
     }
 
     return 0;
@@ -151,14 +182,17 @@ static void RegisterCustomImGui(lua_State* L)
     lua_settable(L, -3);
 
     luaL_Reg functions[] = {
-        { "AddCallbackToMenuElement", Lua_AddCallbackToMenuElement },
-        { "AddCallbackToWindowElement", Lua_AddCallbackToWindowElement },
-        { "AddElementToWindow", Lua_AddElementToWindow },
-        { "AddElementToMenu", Lua_AddElementToMenu },
-        { "AddWindow", Lua_AddWindow },
+        { "AddCallback", Lua_AddCallback },
+        { "RemoveCallback", Lua_RemoveCallback },
+        { "AddElement", Lua_AddElement },
+        { "CreateMenu", Lua_CreateMenu },
+        { "RemoveMenu", Lua_RemoveMenu },
+        { "CreateWindow", Lua_CreateWindow },
         { "RemoveWindow", Lua_RemoveWindow },
-        { "SetWindowState", Lua_ImGuiSetWindowState },
+        { "LinkWindowToElement", Lua_LinkWindowToElement },
+        { "SetVisible", Lua_ImGuiSetVisible },
         { "Show", Lua_ImGuiShow },
+        { "Hide", Lua_ImGuiHide },
         { NULL, NULL }
     };
 
