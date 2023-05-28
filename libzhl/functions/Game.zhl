@@ -138,6 +138,8 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	inline Minimap* GetMinimap() { return (Minimap*)((char*)this + 0x1a2ab0); }
 	
 	inline RoomTransition* GetRoomTransition() { return (RoomTransition*)((char*)this + 0x1b6c0); }
+
+        inline StageTransition* GetStageTransition() { return (StageTransition*)((char*)this + 0x1ba0c); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 

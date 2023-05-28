@@ -1,0 +1,4 @@
+struct StageTransition {
+    char unk[0x10];
+    bool _sameStage; // 0x10
+};
