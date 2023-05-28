@@ -83,7 +83,8 @@ struct ConsoleMega {
         if (ImGui::Begin("Console", &enabled)) {
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
-            if (ImGui::BeginChild("Text View", ImVec2(0, 0), true)) {
+            // -27 = fill remaining window space minus 27px. fixes issue where the input is outside the window frame
+            if (ImGui::BeginChild("Text View", ImVec2(0, -27), true)) {
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.
@@ -97,9 +98,9 @@ struct ConsoleMega {
                     * Decomp shows it as 0 but it... clearly isn't, so whatever.
                     */
 
-                    float red = ((colorMap >> 0x10 & 0xFF) + g_colorDouble) / 255;
-                    float green = ((colorMap >> 8 & 0xFF) + g_colorDouble) / 255;
-                    float blue = ((colorMap & 0xFF) + g_colorDouble) / 255;
+                    float red = (float)((colorMap >> 0x10 & 0xFF) + g_colorDouble) / 255.f;
+                    float green = (float)((colorMap >> 8 & 0xFF) + g_colorDouble) / 255.f;
+                    float blue = (float)((colorMap & 0xFF) + g_colorDouble) / 255.f;
 
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(red, green, blue, 1));
                     ImGui::TextWrapped(entry->_text.Get());
@@ -111,6 +112,8 @@ struct ConsoleMega {
 
             bool reclaimFocus = false;
             ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll; // | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+
+            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
             if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags)) {
                 char* s = inputBuf;
                 Strtrim(s);
@@ -118,6 +121,7 @@ struct ConsoleMega {
                     ExecuteCommand(s);
                 reclaimFocus = true;
             }
+            ImGui::PopItemWidth();
 
             ImGui::SetItemDefaultFocus();
             if (reclaimFocus)

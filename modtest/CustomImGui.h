@@ -362,6 +362,7 @@ struct CustomImGui {
                 DrawElements(window->children);
                 ImGui::End();
             }
+            ImGui::PopStyleVar();
         }
     }
 

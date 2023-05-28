@@ -1,13 +1,12 @@
 #include "imgui.h"
 #include <iostream>
-#include <string>
 #include <sstream>
+#include <string>
 
 static void HelpMarker(const char* desc)
 {
     ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort) && ImGui::BeginTooltip())
-    {
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort) && ImGui::BeginTooltip()) {
         ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
         ImGui::TextUnformatted(desc);
         ImGui::PopTextWrapPos();
@@ -58,16 +57,21 @@ struct LogViewer {
                 offsets.push_back(old_size + 1);
     }
 
-    void Draw() {
-        if (ImGui::Begin("Log Viewer", &enabled))
-        {
-            ImGui::Checkbox("Pin Window", &pinned);
+    void Draw()
+    {
+        if (ImGui::Begin("Log Viewer", &enabled)) {
+            filter.Draw("Filter", -110.0f);
             ImGui::SameLine();
-            HelpMarker("Pinning a window will keep it visible even after closing Dev Tools.");
-            ImGui::SameLine();
-            ImGui::Checkbox("Autoscroll", &autoscroll);
-            ImGui::SameLine();
-            filter.Draw("Filter", -100.0f);
+            if (ImGui::Button("Options")) {
+                ImGui::OpenPopup("LogViewerPopup");
+            }
+            if (ImGui::BeginPopup("LogViewerPopup")) {
+                ImGui::Checkbox("Pin Window", &pinned);
+                ImGui::SameLine();
+                HelpMarker("Pinning a window will keep it visible even after closing Dev Tools.");
+                ImGui::Checkbox("Autoscroll", &autoscroll);
+                ImGui::EndPopup();
+            }
 
             ImGui::Text("Show:");
             ImGui::SameLine();
@@ -106,22 +110,18 @@ struct LogViewer {
 
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
                 if (internalFilter.IsActive() || filter.IsActive()) {
-                    for (int line_no = 0; line_no < offsets.Size; line_no++)
-                    {
+                    for (int line_no = 0; line_no < offsets.Size; line_no++) {
                         const char* line_start = buf_begin + offsets[line_no];
                         const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
                         if (!internalFilter.IsActive() || (internalFilter.IsActive() && internalFilter.PassFilter(line_start, line_end)))
                             if (!filter.IsActive() || (filter.IsActive() && filter.PassFilter(line_start, line_end)))
                                 ImGui::TextUnformatted(line_start, line_end);
                     }
-                }
-                else {
+                } else {
                     ImGuiListClipper clipper;
                     clipper.Begin(offsets.Size);
-                    while (clipper.Step())
-                    {
-                        for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
-                        {
+                    while (clipper.Step()) {
+                        for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++) {
                             const char* line_start = buf_begin + offsets[line_no];
                             const char* line_end = (line_no + 1 < offsets.Size) ? (buf_begin + offsets[line_no + 1] - 1) : buf_end;
                             ImGui::TextUnformatted(line_start, line_end);
@@ -129,7 +129,6 @@ struct LogViewer {
                     }
                     clipper.End();
                 }
-
 
                 if (autoscroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
                     ImGui::SetScrollHereY(1.0f);
