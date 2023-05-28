@@ -12,14 +12,19 @@
 void LuaReset() {
     // JSG already did some great XML parsing work, let's reuse that instead of reinventing the wheel.
     // Unfortunately the XML data is cleared when running RegisterClasses which LuaEngine init does. Cache the result before we proceed.
+
+    logViewer.AddLog("[REPENTOGON]", "Begin reset.\n");
     XMLData preReloadXMLStuff = XMLStuff;
 
     g_LuaEngine->constructor();
-    g_LuaEngine->Init(true);
+    g_LuaEngine->Init(g_LuaEngine->GetLuaDebug());
+    logViewer.AddLog("[REPENTOGON]", "Reinit finished\n");
 
     // We are building our own map here so that this is *solely* a Lua reset and not an XML one.
     // Calling existing game functions will try to load XML too, they are intertwined.
     std::map<string, string> modsToReload;
+
+    logViewer.AddLog("[REPENTOGON]", "Loading mods\n");
 
     for (auto& mod : preReloadXMLStuff.ModData.mods) {
 
@@ -43,21 +48,29 @@ void LuaReset() {
         modsToReload[modName] = modPath;
     }
 
+    logViewer.AddLog("[REPENTOGON]", "Map built\n");
     // This is an ordered map and we stored by mod name, so the load order should be identical to the vanilla game.
     for (auto& mod : modsToReload) {
-        std::string modPath = std::string("mods") + "\\" + mod.second;
+        std::string modPath = std::filesystem::current_path().string() + "/mods" + "/" + mod.second;
+        std::string disableItPath = modPath + "/disable.it";
+        std::string mainLuaPath = modPath + "/main.lua";
 
-        std::string disableItPath = modPath + "\\disable.it";
-        std::string mainLuaPath = modPath + "\\main.lua";
-
-        if (std::filesystem::exists(disableItPath))
+        if (std::filesystem::exists(disableItPath)) {
+            logViewer.AddLog("[REPENTOGON]", "%s is disabled, skipping\n", mod.first.c_str());
             continue;
+        }
+
 
         if (std::filesystem::exists(mainLuaPath)) {
-            logViewer.AddLog("%s has a main.lua and is being reloaded\n", mod.first.c_str());
+            logViewer.AddLog("[REPENTOGON]", "%s has a main.lua and is being reloaded\n", mod.first.c_str());
             g_LuaEngine->RunScript(mainLuaPath.c_str());
         }
     }
+
+
+    //HACK
+    //std::string junk;
+    //g_Game->GetConsole()->RunCommand("restart", junk, (Entity_Player*)NULL);
 }
 
 
@@ -155,10 +168,4 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
     }
 
     super(in, out, player);
-
-//    if (in.rfind("netstart", 0) == 0) {
-//        this->Print("Reloading Lua, please be patient!", Console::Color::WHITE, 0x96U);
-//        LuaReset();
-//        return;
-//    }                     sorry jerb, for now i want to test without automatic luareset
 }

@@ -233,6 +233,30 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 }
 */
 
+extern void LuaReset();
+bool netStartInitialized = false; // temp
+/*HOOK_METHOD(Manager, ExecuteStartGame, () -> void) {
+	if (this->GetNetStart() && !netStartInitialized) {
+		printf("Resetting Lua- please be patient...\n");
+		//LuaReset();
+		printf("Done.\n");
+		netStartInitialized = true;
+	}
+	super();
+}*/
+
+// Too crashy... let's try earlier.
+/*HOOK_METHOD(Game, NetStart, (void* unk, int challenge, Seeds seed, unsigned int difficulty, GameState* state) -> void) {
+	if (!netStartInitialized) {
+		printf("Resetting Lua- please be patient...\n");
+		LuaReset();
+		printf("Done.\n"); 
+
+		netStartInitialized = true;
+	}
+	super(unk, challenge, seed, difficulty, state);
+}*/
+
 HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neighbors, uint32_t generationIndex, bool unk) -> void) {
 	super(neighbors, generationIndex, unk);
 	LevelGenerator_Room& room = (*GetAllRooms())[generationIndex];

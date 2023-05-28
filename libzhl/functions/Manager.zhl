@@ -29,12 +29,20 @@ __thiscall void Manager::StartNewGame(int playerType, int challenge,  UnknownGam
 "558bec51568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(bool unk);
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct) { {{
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd0000000a1????????33c58945??5657508d45??64a3????????8bf989bd":
+__thiscall void Manager::ExecuteStartGame();
+
+"558bec6aff68????????64a1????????5083ec68a1????????33c58945??535657508d45??64a3????????c745??00000000":
+static void Manager::RestartGame();
+
+struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
 	inline NightmareScene* GetNightmareScene() { return (NightmareScene*)((char*)this + 0x211BC); }
+	inline ModManager* GetModManager() { return (ModManager*)((char*)this + 0x29FD8); }
 	inline DailyChallenge* GetDailyChallenge() { return (DailyChallenge*)((char*)this + 0x1ea750); } 
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
+	inline bool GetNetStart() { return *(bool*)((char*)this + 0x1ea804); }
 }} 
     char unk1[0x13];
     PersistentGameData _persistentGameData;

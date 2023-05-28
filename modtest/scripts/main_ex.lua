@@ -427,7 +427,7 @@ local function logWarning(callbackID, modName, warn)
 end
 
 local function imGuiError(errortext)
-	local imgui = Isaac.GetImGui()
+	--[[local imgui = Isaac.GetImGui()
 	local window = "Error Display"
 	imgui:AddElementToMenu("REPENTOGON Error Display", ImGuiElement.Menu)
 	imgui:AddElementToMenu(window, ImGuiElement.MenuItem, "REPENTOGON Error Display")
@@ -437,7 +437,7 @@ local function imGuiError(errortext)
 	imgui:AddElementToWindow(window, errortext, ImGuiElement.Text)
 	imgui:AddElementToWindow(window, "Copy to Clipboard", ImGuiElement.Button)
 	imgui:AddCallbackToWindowElement(window, "Copy to Clipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
-	imgui:SetWindowState(window, true)
+	imgui:SetWindowState(window, true)]]
 end
 
 local err_dupecount = 1

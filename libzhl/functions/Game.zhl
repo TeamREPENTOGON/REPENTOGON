@@ -70,10 +70,13 @@ __thiscall Entity* Game::SpawnBombCrater(Vector* Pos);
 "558bec83ec3ca1????????33c58945??538b1d":
 static void Game::DevolveEnemy(Entity* ent);
 
+"558bec6aff68????????64a1????????5081ecb8000000a1????????33c58945??535657508d45??64a3????????8b45":
+__thiscall void Game::NetStart(void *unk, int challenge, Seeds seed, unsigned int difficulty, GameState *state);
+
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition) { {{
+struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds) { {{
 	Game()
 	{
 		this->constructor();
