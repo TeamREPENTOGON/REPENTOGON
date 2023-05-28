@@ -156,9 +156,9 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
 
     super(in, out, player);
 
-    if (in.rfind("netstart", 0) == 0) {
-        this->Print("Reloading Lua, please be patient!", Console::Color::WHITE, 0x96U);
-        LuaReset();
-        return;
-    }
+//    if (in.rfind("netstart", 0) == 0) {
+//        this->Print("Reloading Lua, please be patient!", Console::Color::WHITE, 0x96U);
+//        LuaReset();
+//        return;
+//    }                     sorry jerb, for now i want to test without automatic luareset
 }
