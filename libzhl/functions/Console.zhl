@@ -24,6 +24,7 @@ struct Console depends (Console_HistoryEntry) {
     inline int* GetState() { return (int*)((char*)this + 0x20); }
 	
 	inline std_deque_console_historyentry *GetHistory() { return (std_deque_console_historyentry*)((char*)this + 0x60); }
+	inline deque_string *GetCommandHistory() { return (deque_string*)((char*)this + 0x74); }
 	
 	enum Color: unsigned int {WHITE = 0xFFD3D3D3};
 }} 

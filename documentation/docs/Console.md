@@ -19,8 +19,13 @@ Returns a table containing every previous entry printed to the console this run.
 This is ordered last-to-first- the first entry will be the currently blank line awaiting user input, followed by the previous print, and so on. The last line will always be `Repentance Console`.
 
 ___
+### Get·Command·History () {: aria-label='Functions' }
+#### table GetCommandHistory ( ) {: .copyable aria-label='Functions' }
+Returns a table containing current command history.
+
+___
 ### Pop·History () {: aria-label='Functions' }
-#### void PopHistory ( int amount = 1) {: .copyable aria-label='Functions' }
+#### void PopHistory ( int amount = 1 ) {: .copyable aria-label='Functions' }
 Removes previous lines from history. Optionally, use amount to define how many entries should be removed. The line currently awaiting user input in the console counts as a part of the history, but this is already accounted for on the C++ side.
 
 ___
@@ -33,14 +38,4 @@ ___
 #### void PrintWarning ( string Warning ) {: .copyable aria-label='Functions' }
 Prints a warning to the console, warnings display in yellow text.
 
-___
-### Show () {: aria-label='Functions' }
-#### void Show ( ) {: .copyable aria-label='Functions' }
-Opens the debug console. This works even if the debug console is disabled.
-
-This is on the chopping block (recent changes have made this command redundant / unnecessary)
-
-???+ note "Console input"
-    If the console has not been manually opened by the end-user since game start, this will be a read-only copy. This is intentional- we skip some initialization steps, solely setting the console's state to force it to open.
-	
 ___

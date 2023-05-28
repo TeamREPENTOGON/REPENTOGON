@@ -47,6 +47,26 @@ int Lua_ConsoleGetHistory(lua_State* L)
 	return 1;
 }
 
+int Lua_ConsoleGetCommandHistory(lua_State* L)
+{
+	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+	std::deque<std::string> commandHistory = *console->GetCommandHistory();
+
+	lua_newtable(L);
+	unsigned int idx = 1;
+
+	std::reverse(commandHistory.begin(), commandHistory.end());
+
+	for (const std::string entry : commandHistory) {
+		lua_pushnumber(L, idx);
+		lua_pushstring(L, entry.c_str());
+		lua_settable(L, -3);
+		idx++;
+		
+	}
+	return 1;
+}
+
 int Lua_ConsolePrintWarning(lua_State* L)
 {
 	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
@@ -95,6 +115,7 @@ static void RegisterConsole(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "PrintError", Lua_ConsolePrintError },
 		{ "Show", Lua_ConsoleShow }, // should probably replace this with SetState
+		{ "GetCommandHistory", Lua_ConsoleGetCommandHistory },
 		{ "GetHistory", Lua_ConsoleGetHistory },
 		{ "PopHistory", Lua_ConsolePopHistory },
 		{ "PrintWarning", Lua_ConsolePrintWarning },
