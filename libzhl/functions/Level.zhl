@@ -22,6 +22,12 @@ __thiscall bool Level::HasMirrorDimension();
 "568bf18b0d????????8b81????????83f80274??83f80374??8b168d42??83f80577??8b89????????33c081e1000001000bc175??8b46??83f80474??83f80574":
 __thiscall bool Level::HasPhotoDoor();
 
+"558bec83e4f883ec1c53568b35????????894c2408":
+__thiscall std_string Level::GetName();
+
+"538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505383ec70a1????????33c58945ec5657508d45f464a3000000008bc28945888bf9":
+cleanup void GetLevelName(std_string* result<ecx>, uint32_t levelStage<edx>, uint32_t stageType, uint32_t curseMask, uint32_t unk, uint32_t unk2, bool unk3);
+
 struct Level {
 
 };
