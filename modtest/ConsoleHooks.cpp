@@ -187,9 +187,17 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         std::vector<std::string> cmdlets = ParseCommand(in, 2);
         for (ConsoleMacro macro : console.macros) {
             if (cmdlets[1] == macro.name) {
+                bool firstCommandRan = false;
+                int test_it = 0;
                 for (std::string command : macro.commands) {
+                    this->GetCommandHistory()->push_front(command);
                     this->RunCommand(command, out, player);
                 }
+
+                for (int i = 0; i < macro.commands.size(); ++i) {
+                    this->GetCommandHistory()->pop_front();
+                }
+
                 res.append("Macro finished.\n");
 
                 if (out == nullptr)
