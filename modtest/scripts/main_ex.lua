@@ -443,7 +443,7 @@ local function imGuiError(errortext)
 	else
 		imgui:UpdateText("ErrorDisplayText", errortext)
 	end
-	imgui:SetVisible(window, true)
+	imgui:SetVisible(windowId, true)
 end
 
 local err_dupecount = 1
@@ -654,6 +654,3 @@ pcall(require("repentogon_extras/stats_menu"))
 
 -- TESTING !!
 pcall(require("repentogon_tests/test_imgui"))
-
--- load console last to prevent other custom rendered stuff from obstructing it
-pcall(require("repentogon_extras/main_menu_console"))
