@@ -18,6 +18,7 @@ struct ConsoleMega {
     bool enabled;
     char inputBuf[1024];
     std::vector<ConsoleCommand> commands;
+    unsigned int historyPos;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -25,6 +26,7 @@ struct ConsoleMega {
     {
         enabled = true;
         memset(inputBuf, 0, sizeof(inputBuf));
+        historyPos = 0;
 
         RegisterCommand("challenge", "Start a challenge run", "Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n", false);
         RegisterCommand("clear", "Clear the debug console", "Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.", true);
@@ -60,8 +62,6 @@ struct ConsoleMega {
         RegisterCommand("spawn", "Spawn an entity", "Spawns a new entity. Syntax is (type).(variant).(subtype).(champion).\nExample:\n(spawn 5.40.1) will spawn a bomb.", false);
         RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false);
         RegisterCommand("time", "Print frames since run started", "Prints the amount of frames which has passed since the run started.", false);
-
-
     }
 
     void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu) {
@@ -69,13 +69,17 @@ struct ConsoleMega {
     }
 
     void ExecuteCommand(char* input) {
-        std::string printin = std::string("> ") + input + "\n";
+        Console* console = g_Game->GetConsole();
+
+        std::string printin = std::string(">") + input + "\n";
         std::string out;
 
-        g_Game->GetConsole()->Print(printin, 0xFF808080, 0x96u);
-        g_Game->GetConsole()->RunCommand(input, out, NULL);
-        g_Game->GetConsole()->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
+        console->GetCommandHistory()->push_front(input);
+        console->Print(printin, 0xFF808080, 0x96u);
+        console->RunCommand(input, out, NULL);
+        console->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
         memset(inputBuf, 0, sizeof(inputBuf));
+        historyPos = 0;
     }
 
     void Draw() {
@@ -111,10 +115,10 @@ struct ConsoleMega {
             ImGui::Separator();
 
             bool reclaimFocus = false;
-            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll; // | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
-
+            
             ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-            if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags)) {
+            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+            if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
                 Strtrim(s);
                 if (s[0])
@@ -130,6 +134,49 @@ struct ConsoleMega {
             ImGui::End();
         }
         ImGui::PopStyleVar();
+    }
+
+    static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
+    {
+        ConsoleMega* console = (ConsoleMega*)data->UserData;
+        return console->TextEditCallback(data);
+    }
+
+    int TextEditCallback(ImGuiInputTextCallbackData* data)
+    {
+        switch (data->EventFlag)
+        {
+        case ImGuiInputTextFlags_CallbackCompletion:
+            {
+                //TODO
+            }
+        case ImGuiInputTextFlags_CallbackHistory:
+            {
+                std::deque<std::string> history = *(g_Game->GetConsole())->GetCommandHistory();
+
+                const int prev_history_pos = historyPos;
+
+                if (data->EventKey == ImGuiKey_UpArrow) {
+                    // Increment history.
+                    if (++historyPos > history.size())
+                        historyPos = prev_history_pos;
+                }
+                else if (data->EventKey == ImGuiKey_DownArrow) {
+                    if(historyPos != 0)
+                        if (--historyPos <= 0)
+                            historyPos = 0;
+                }
+
+                if (prev_history_pos != historyPos) {
+                    printf("%d %d", history.size(), historyPos);
+                    std::string entry = historyPos ? history[historyPos - 1] : "";
+                    entry.erase(std::remove(entry.begin(), entry.end(), '\n'), entry.end());
+                    data->DeleteChars(0, data->BufTextLen);
+                    data->InsertChars(0, entry.c_str());
+                }
+            }
+        }
+        return 0;
     }
 };
 
