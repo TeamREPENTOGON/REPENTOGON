@@ -194,7 +194,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
                     this->RunCommand(command, out, player);
                 }
 
-                for (int i = 0; i < macro.commands.size(); ++i) {
+                for (unsigned int i = 0; i < macro.commands.size(); ++i) {
                     this->GetCommandHistory()->pop_front();
                 }
 
