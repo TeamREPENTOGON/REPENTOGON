@@ -11,4 +11,6 @@ enum AutocompleteType {
 	MACRO,
 	SFX,
 	CURSE,
+	METRO,
+	DELIRIOUS
 }

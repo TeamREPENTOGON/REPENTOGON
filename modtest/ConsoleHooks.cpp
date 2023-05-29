@@ -23,7 +23,7 @@ void LuaReset() {
     bool debug = g_LuaEngine->GetLuaDebug();
 
     g_LuaEngine->destroy();
-    g_LuaEngine->Init(debug);
+    g_LuaEngine->Init(false);
 
     // Reset the lua data of all entities in the room before we continue.
     // Right now they're invalid, dangling pointers. Let's reset them.
@@ -36,25 +36,24 @@ void LuaReset() {
         while (size) {
             Entity* ent = *data;
             LuaBridgeRef* ref = ent->GetLuaRef();
-            Isaac::free(ref);
-            ref = nullptr;
-
-            LuaBridgeRef* newRef = (LuaBridgeRef*)operator new(8u);
-            lua_createtable(L, 0, 0);
-            newRef->_state = 0;
-            newRef->_ref = luaL_ref(L, -1001000);
-            ref = newRef;
+            if (ref) { // Should always exist, this is just a safeguard
+                LuaBridgeRef* newRef = (LuaBridgeRef*)operator new(8u);
+                lua_createtable(L, 0, 0);
+                newRef->_state = 0;
+                newRef->_ref = luaL_ref(L, -1001000);
+                ref = newRef;
+            }
 
             ++data;
             --size;
+
         }
     }
-
     // This is an ordered map and we stored by mod name, so the load order should be identical to the vanilla game.
     for (auto& mod : modsToReload) {
         std::string modPath = std::filesystem::current_path().string() + "/mods/" + mod.second + "/main.lua";
-        g_LuaEngine->RunScript(modPath.c_str());
-
+        if (std::filesystem::exists(modPath)) 
+            g_LuaEngine->RunScript(modPath.c_str());
     }
 }
 
