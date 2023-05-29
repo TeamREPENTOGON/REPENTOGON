@@ -14,13 +14,50 @@ struct ConsoleCommand {
     }
 };
 
+struct ConsoleMacro {
+    std::string name;
+    std::vector<std::string> commands;
+
+    ConsoleMacro(std::string macroName, std::vector<std::string>* macroCommands) {
+        name = macroName;
+        commands = *macroCommands;
+    }
+};
+
 struct ConsoleMega {
     bool enabled;
     char inputBuf[1024];
     std::vector<ConsoleCommand> commands;
     unsigned int historyPos;
+    std::vector<ConsoleMacro> macros;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
+
+    enum AutocompleteType {
+        ENTITY,
+        GOTO,
+        STAGE,
+        GRID,
+        DEBUG_FLAG,
+        ITEM,
+        CHALLENGE,
+        COMBO,
+        CUTSCENE,
+        MACRO,
+        SFX,
+        CURSE,
+        METRO,
+        DELIRIOUS
+    };
+
+
+    void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu) {
+        commands.push_back(ConsoleCommand(name, desc, helpText, showOnMenu));
+    }
+
+    void RegisterMacro(const char* macroName, std::vector<std::string> &macroCommands) {
+        macros.push_back(ConsoleMacro(macroName, &macroCommands));
+    }
 
     ConsoleMega()
     {
@@ -62,10 +99,9 @@ struct ConsoleMega {
         RegisterCommand("spawn", "Spawn an entity", "Spawns a new entity. Syntax is (type).(variant).(subtype).(champion).\nExample:\n(spawn 5.40.1) will spawn a bomb.", false);
         RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false);
         RegisterCommand("time", "Print frames since run started", "Prints the amount of frames which has passed since the run started.", false);
-    }
 
-    void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu) {
-        commands.push_back(ConsoleCommand(name, desc, helpText, showOnMenu));
+        RegisterMacro("mom", std::vector<std::string>{ "stage 6", "g Bible", "g k5", "debug 3", "debug 4" });
+
     }
 
     void ExecuteCommand(char* input) {
@@ -76,7 +112,7 @@ struct ConsoleMega {
 
         console->GetCommandHistory()->push_front(input);
         console->Print(printin, 0xFF808080, 0x96u);
-        console->RunCommand(input, out, NULL);
+        console->RunCommand(std::string(input), &out, NULL);
         console->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;

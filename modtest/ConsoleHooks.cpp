@@ -8,6 +8,7 @@
 #include <iostream> 
 #include <fstream>
 #include <sstream>
+#include <string>
 
 void LuaReset() {
     // We are building our own map here so that this is *solely* a Lua reset and not an XML one.
@@ -79,12 +80,34 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
     super(text, color, fadeTime);
 }
 
-HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out, Entity_Player* player) -> void) {
+std::vector<std::string> ParseCommand(std::string command, int size = 0) {
+    std::vector<std::string> cmdlets; //TODO split this into a generic parsing function
+
+    std::stringstream sstream(command);
+    std::string cmdlet;
+    char space = ' ';
+    while (std::getline(sstream, cmdlet, space)) {
+        cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
+        cmdlets.push_back(cmdlet);
+        if (size > 0 && cmdlets.size() == size) {
+            break;
+        }
+    }
+    return cmdlets;
+}
+
+void PrintToConsole(Console* console, std::string* out) {
+
+}
+
+HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Player* player) -> void) {
 
     // Normally, the console explicitly expects a player to run any command, and will actively try to find one (and will crash otherwise)
     // We ASM patched this out to let commands run on the menu, so now we reintroduce this ourselves.
     // If we're in-game, return the player; otherwise don't. Many functions obviously don't work out of the game! Throw errors for those.
     bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
+    std::string res;
+
     if (!inGame) {
 
         std::vector<const char*> bannedCommands = {
@@ -127,31 +150,16 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
 
     if (in.rfind("help", 0) == 0) {
 
-        std::vector<std::string> cmdlets; //TODO split this into a generic parsing function
-
-        std::stringstream sstream(in);
-        std::string cmdlet;
-        char space = ' ';
-        while (std::getline(sstream, cmdlet, space)) {
-            cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
-            cmdlets.push_back(cmdlet);
-            if (cmdlets.size() == 2) {
-                break;
-            }
-        }
+        std::vector<std::string> cmdlets = ParseCommand(in, 2);
 
         if (!inGame)
-            this->Print("(Only commands enabled to show outside of the game will appear right now.)\n", Console::Color::WHITE, 0x96U);
+            res.append("(Only commands enabled to show outside of the game will appear right now.)\n");
 
         if (cmdlets.size() == 1) {
             for (ConsoleCommand command : console.commands) {
                 if (inGame || (!inGame && command.showOnMenu)) {
                     // i know it isn't pretty but sprintf was crashing and this works, so whatever
-                    this->Print("  - ", Console::Color::WHITE, 0x96U);
-                    this->Print(command.name, Console::Color::WHITE, 0x96U);
-                    this->Print(" - ", Console::Color::WHITE, 0x96U);
-                    this->Print(command.desc, Console::Color::WHITE, 0x96U);
-                    this->Print("\n", Console::Color::WHITE, 0x96U);
+                    res.append("  - ").append(command.name).append(" - ").append(command.desc).append("\n");
                 }
             }
         }
@@ -159,16 +167,39 @@ HOOK_METHOD(Console, RunCommand, (const std::string& in, const std::string& out,
             for (ConsoleCommand command : console.commands) {
                 if (inGame || (!inGame && command.showOnMenu)) {
                     if (command.name == cmdlets[1]) {
-                        this->Print(command.name, Console::Color::WHITE, 0x96U);
-                        this->Print(" - ", Console::Color::WHITE, 0x96U);
-                        this->Print(command.helpText, Console::Color::WHITE, 0x96U);
-                        this->Print("\n", Console::Color::WHITE, 0x96U);
+                        res.append(command.name).append(" - ").append(command.helpText).append("\n");
                         break;
                     }
                 }
             }
         }
 
+
+        if (out == nullptr)
+            this->Print(res.c_str(), Console::Color::WHITE, 0x96U);
+        else
+            out->append(res);
+
+        return;
+    }
+
+    if (in.rfind("macro", 0) == 0) {
+        std::vector<std::string> cmdlets = ParseCommand(in, 2);
+        for (ConsoleMacro macro : console.macros) {
+            if (cmdlets[1] == macro.name) {
+                for (std::string command : macro.commands) {
+                    this->RunCommand(command, out, player);
+                }
+                res.append("Macro finished.\n");
+
+                if (out == nullptr)
+                    this->Print(res.c_str(), Console::Color::WHITE, 0x96U);
+                else
+                    out->append(res);
+                return;
+            }
+        }
+        this->PrintError("No macro with that name.\n");
         return;
     }
 
