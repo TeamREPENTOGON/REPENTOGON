@@ -858,7 +858,7 @@ public:
       Perform an explicit conversion.
   */
   template <class T>
-  T cast () const
+  T cast () const;
   {
     StackPop p (m_L, 1);
     push (m_L);

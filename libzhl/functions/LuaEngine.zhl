@@ -11,7 +11,7 @@ __thiscall bool LuaEngine::RunBundledScript(const char *path);
 __thiscall void LuaEngine::RunScript(const char *path);
 
 "558bec83e4f88b15????????56":
-__thiscall void LuaEngine::constructor();
+__thiscall void LuaEngine::destroy();
 
 "8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;
@@ -20,10 +20,7 @@ struct LuaEngine depends (RunCallbackRegistry) {
 	{{
 	
 		inline bool GetLuaDebug() {return *(bool*)((char*)this + 0xC); }
-		
-		LuaEngine() {
-			this->constructor();
-		}
+
 	}}
 	
     char pad0[0x10];

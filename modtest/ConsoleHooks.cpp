@@ -20,8 +20,35 @@ void LuaReset() {
         }
     }
 
-    g_LuaEngine->constructor();
-    g_LuaEngine->Init(false);
+    bool debug = g_LuaEngine->GetLuaDebug();
+
+    g_LuaEngine->destroy();
+    g_LuaEngine->Init(debug);
+
+    // Reset the lua data of all entities in the room before we continue.
+    // Right now they're invalid, dangling pointers. Let's reset them.
+    Room* room = *g_Game->GetCurrentRoom();
+    EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
+    unsigned int size = res->_size;
+    lua_State* L = g_LuaEngine->_state;
+    if (size) {
+        Entity** data = res->_data;
+        while (size) {
+            Entity* ent = *data;
+            LuaBridgeRef* ref = ent->GetLuaRef();
+            Isaac::free(ref);
+            ref = nullptr;
+
+            LuaBridgeRef* newRef = (LuaBridgeRef*)operator new(8u);
+            lua_createtable(L, 0, 0);
+            newRef->_state = 0;
+            newRef->_ref = luaL_ref(L, -1001000);
+            ref = newRef;
+
+            ++data;
+            --size;
+        }
+    }
 
     // This is an ordered map and we stored by mod name, so the load order should be identical to the vanilla game.
     for (auto& mod : modsToReload) {
@@ -32,7 +59,7 @@ void LuaReset() {
 }
 
 HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsigned int fadeTime) -> void) {
-    // Commands always print in history as ("> ") with a color of 0xFF808080.
+    // Commands always print in history as (">") with a color of 0xFF808080.
     // Armed with this info, we can fix commands not saving on game crash by saving it every time.
     // Kinda hacky, but whatever.
 
