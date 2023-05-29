@@ -651,6 +651,7 @@ Isaac.GetImGui():Reset()
 pcall(require("repentogon_extras/changelog"))
 pcall(require("repentogon_extras/daily_stats"))
 pcall(require("repentogon_extras/stats_menu"))
+pcall(require("repentogon_extras/onlinestub"))
 
 -- TESTING !!
 pcall(require("repentogon_tests/test_imgui"))
