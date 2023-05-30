@@ -173,7 +173,7 @@ __thiscall bool Entity_Player::IsLocalPlayer();
 struct Entity_Player : public Entity { {{
 	inline int* GetMetronomeCollectibleID() { return (int*)((char*)this + 0x12d8); } 
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
-	inline Weapon* GetWeapon() { return (Weapon*)((char*)this + 0x1328); }
+	inline Weapon** GetWeapon(int index) { return (Weapon**)((char*)this + index * 4 + 0x1328); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 	inline int* GetFireDelayModifier() { return (int*)((char*)this + 0x146c); }
 	inline int* GetDamageModifier() { return (int*)((char*)this + 0x1470); }
