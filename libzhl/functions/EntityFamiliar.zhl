@@ -7,4 +7,5 @@ __thiscall void Entity_Familiar::Render(Vector *offset);
 struct Entity_Familiar : public Entity {
 {{
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
+	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); } 
 }} };
