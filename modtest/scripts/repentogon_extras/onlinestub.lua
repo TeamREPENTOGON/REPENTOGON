@@ -4,7 +4,7 @@ local stubvec=Vector(-1,-1)
 rng:SetSeed(1)  --placeholder seed
 local isonline=false
 local checkonline=true
-
+local con=nil
 if REPENTOGON.NoOnlineStub then
     return
 end
@@ -62,7 +62,8 @@ function Input.GetActionValue(act,cidx)
     if (not isonline) or cidx~=0 then
         return REPENTOGON.Extras.UnsafeFuncs.ActionValue(act,cidx)
     end
-    return 0.0
+    local pl=Isaac.GetPlayer()
+    if pl then return REPENTOGON.Extras.UnsafeFuncs.ActionValue(act,pl.ControllerIndex) else return 0.0 end
 end
 
 function Input.GetButtonValue(act,cidx)
@@ -90,14 +91,16 @@ function Input.IsActionPressed(act,cidx)
     if (not isonline) or cidx~=0 then
         return REPENTOGON.Extras.UnsafeFuncs.ActionPress(act,cidx)
     end
-    return false
+    local pl=Isaac.GetPlayer()
+    if pl then return REPENTOGON.Extras.UnsafeFuncs.ActionPress(act,pl.ControllerIndex) else return false end
 end
 
 function Input.IsActionTriggered(act,cidx)
     if (not isonline) or cidx~=0 then
         return REPENTOGON.Extras.UnsafeFuncs.ActionTrigger(act,cidx)
     end
-    return false
+    local pl=Isaac.GetPlayer()
+    if pl then return REPENTOGON.Extras.UnsafeFuncs.ActionTriggerda(act,pl.ControllerIndex) else return false end
 end
 
 
@@ -190,6 +193,30 @@ function REPENTOGON.Extras.IsOnlineStub()
     return isonline
 end
 
+local function ScheduleLuaReset()
+    if Game():GetFrameCount()>30 then
+        Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,ScheduleLuaReset)
+        print('Please, run the "luareset" debug command :)')
+        if not REPENTOGON.Extras.NoImGui then
+            Isaac.GetImGui():CreateWindow("luareset-warning","A rather important message!")
+            Isaac.GetImGui():AddElement("luareset-warning","luareset-text",ImGuiElement.Text,'Hey, folks, can you please have one person run the "luareset" command for me?')
+            Isaac.GetImGui():AddElement("luareset-warning","luareset-okay",ImGuiElement.Button,"Okay, I will!")
+            Isaac.GetImGui():AddCallback("luareset-okay",ImGuiCallback.Clicked,function() Isaac.GetImGui():RemoveWindow("luareset-warning") Isaac.GetImGui():Hide() end)
+            Isaac.GetImGui():SetVisible("luareset-warning",true)
+            Isaac.GetImGui():Show()
+        end
+--        Isaac.ExecuteCommand("luareset")
+    end
+end
+
+local function ScheduleRestart()
+    if Game():GetFrameCount()>1 then
+        Isaac.ExecuteCommand("seed "..Game():GetSeeds():GetStartSeedString())
+        Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,ScheduleRestart)
+        Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,ScheduleLuaReset)
+    end
+end
+
 local function SetOnlineRNG()
     if not checkonline then
         return
@@ -198,6 +225,10 @@ local function SetOnlineRNG()
     stubdata={}
     isonline=CheckOnlineCoop()  --will be set to false on local only runs
     rng:SetSeed(Game():GetSeeds():GetStartSeed(),35)
+    if isonline then
+        REPENTOGON.Extras.UnlinkCB()
+        Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,ScheduleRestart)
+    end
 end
 
 local function ResetStubData()
@@ -235,7 +266,29 @@ local function DogmaStub(_,npc)
     end
 end
 
+local function DesyncDetect()
+    if isonline and not REPENTOGON.Extras.NoImGui then
+        if not con then con=Game():GetConsole() end
+        local conhist=con:GetHistory()
+        for i=1,5 do
+            if string.match(conhist[i],"Checksum mismatch") then
+                print("\n\n\n\n\n")
+                Isaac.GetImGui():CreateWindow("desync-warning","Fuck.")
+                Isaac.GetImGui():AddElement("desync-warning","desync-text",ImGuiElement.Text,'Shit just happened, want to try a "rewind"? Maybe a "restart"?')
+                Isaac.GetImGui():AddElement("desync-warning","desync-rewind",ImGuiElement.Button,"Please rewind!")
+                Isaac.GetImGui():AddElement("desync-warning","desync-restart",ImGuiElement.Button,"I choose a restart")
+                Isaac.GetImGui():AddCallback("desync-rewind",ImGuiCallback.Clicked,function() Isaac.GetImGui():RemoveWindow("desync-warning") Isaac.GetImGui():Hide() Isaac.ExecuteCommand("rewind") end)
+                Isaac.GetImGui():AddCallback("desync-restart",ImGuiCallback.Clicked,function() Isaac.GetImGui():RemoveWindow("desync-warning") Isaac.GetImGui():Hide() Isaac.ExecuteCommand("restart") end)
+                Isaac.GetImGui():SetVisible("desync-warning",true)
+                Isaac.GetImGui():Show()
+                break
+            end
+        end
+    end
+end
+
 function REPENTOGON.Extras.StubCallbacks()
+    Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,DesyncDetect)
     Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_ENTITY_KILL,DogmaStub,950)
     Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_RENDER,render)
     Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_PRE_GAME_EXIT,ResetStubData)
