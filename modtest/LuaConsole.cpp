@@ -100,6 +100,34 @@ int Lua_RegisterCommand(lua_State* L) {
 	return 0;
 }
 
+int Lua_RegisterMacro(lua_State* L) {
+	lua::LuaStackProtector protector(L);
+	const char* name = luaL_checkstring(L, 2);
+	if (!lua_istable(L, 3)) {
+
+		std::string err = "Expected a table of strings, got ";
+		err.append(lua_typename(L, lua_type(L, 3)));
+		luaL_argerror(L, 3, err.c_str());
+
+		return 0;
+	}
+
+	std::vector<std::string> commands;
+	// Get the number of vertices we received.
+	unsigned int len = lua_rawlen(L, 3);
+
+	for (int i = 1; i <= len; ++i) {
+		lua_pushinteger(L, i);
+		lua_gettable(L, 3);
+		if (lua_type(L, -1) == LUA_TNIL) break;
+		commands.push_back(luaL_checkstring(L, -1));
+		lua_pop(L, 1);
+	}
+
+	console.RegisterMacro(name, commands);
+	return 0;
+}
+
 static void RegisterConsole(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetConsole");
@@ -120,6 +148,7 @@ static void RegisterConsole(lua_State* L) {
 		{ "PopHistory", Lua_ConsolePopHistory },
 		{ "PrintWarning", Lua_ConsolePrintWarning },
 		{ "RegisterCommand", Lua_RegisterCommand },
+		{ "RegisterMacro", Lua_RegisterMacro },
 		{ NULL, NULL }
 	};
 

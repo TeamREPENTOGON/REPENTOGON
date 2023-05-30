@@ -68,7 +68,7 @@ struct Entity depends (AnimationState) {
 
     inline Entity_NPC* GetMinecart() { return *(Entity_NPC**)((char*)this + 0x32C); }
 	
-	inline LuaBridgeRef* GetLuaRef() { return *(LuaBridgeRef**)((char*)this + 0x35C); }
+	inline LuaBridgeRef** GetLuaRef() { return (LuaBridgeRef**)((char*)this + 0x35C); }
 	
     inline Entity_NPC* ToNPC() { return (Entity_NPC*)__RTDynamicCast(this, 0, (void*)__ptr_EntityRTTI, (void*)__ptr_EntityNPCRTTI, false); }
 	

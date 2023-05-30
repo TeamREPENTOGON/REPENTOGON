@@ -18,6 +18,9 @@ static __cdecl void Isaac::SetBuiltInCallbackState(int callbackid, bool enabled)
 "558becff7508ff15????????83c4045dc3cccccccccccccccccccccccccccccc8a410c":
 static __cdecl void Isaac::free(void *block);
 
+"558beceb":
+static __cdecl void* Isaac::operator_new(unsigned int size);
+
 "53578bf98bda":
 static cleanup Weapon* Isaac::CreateWeapon(WeaponType type<ecx>, Entity* ent<edx>);
 

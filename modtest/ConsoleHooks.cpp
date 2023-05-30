@@ -36,13 +36,13 @@ void LuaReset() {
         Entity** data = res->_data;
         while (size) {
             Entity* ent = *data;
-            LuaBridgeRef* ref = ent->GetLuaRef();
-            if (ref) { // Should always exist, this is just a safeguard
-                LuaBridgeRef* newRef = (LuaBridgeRef*)operator new(8u);
+
+            if (*ent->GetLuaRef()) { // Should always exist, this is just a safeguard
+                LuaBridgeRef* newRef = (LuaBridgeRef*)Isaac::operator_new(8u);
                 lua_createtable(L, 0, 0);
-                newRef->_state = 0;
+                newRef->_state = g_LuaEngine->_state;
                 newRef->_ref = luaL_ref(L, -1001000);
-                ref = newRef;
+                *ent->GetLuaRef() = newRef;
             }
 
             ++data;
