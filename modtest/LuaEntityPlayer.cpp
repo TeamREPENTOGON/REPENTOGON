@@ -510,6 +510,24 @@ int Lua_PlayerGetWildCardItem(lua_State* L) {
 	return 1;
 }
 
+int Lua_PlayerGetWildCardItemType(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *player->GetWildCardItemType());
+	return 1;
+}
+
+static int Lua_PlayerSetWeapon(lua_State* L) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 2, lua::metatables::WeaponMT);
+	int index = luaL_checkinteger(L, 3);
+	if (index < 0 || index > 4) {
+		return luaL_argerror(L, 2, "Index must be between 0 and 4");
+	}
+	*player->GetWeapon(index) = weapon;
+
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -565,4 +583,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetMarkedTarget", Lua_PlayerGetMarkedTarget);
 	lua::RegisterFunction(state, mt, "IsLocalPlayer", Lua_PlayerIsLocalPlayer);
 	lua::RegisterFunction(state, mt, "GetWildCardItem", Lua_PlayerGetWildCardItem);
+	//lua::RegisterFunction(state, mt, "GetWildCardItemType", Lua_PlayerGetWildCardItemType);
+	lua::RegisterFunction(state, mt, "SetWeapon", Lua_PlayerSetWeapon);
 }

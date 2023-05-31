@@ -3,11 +3,11 @@
 ???+ info
     You can get this class by using the following functions:
 
-    * [Isaac:GetDailyChallenge](Isaac.md#getdailychallenge)
+    * [Isaac.GetDailyChallenge](Isaac.md#getdailychallenge)
 
     ???+ example "Example Code"
         ```lua
-        local dailyChallenge = Isaac.DailyChallenge()
+        local dailyChallenge = Isaac.GetDailyChallenge()
         ```
 ???+ warning "Warning"
     This class' functions should not be called until the game fully initializes! Make sure not to try using them outside of callbacks

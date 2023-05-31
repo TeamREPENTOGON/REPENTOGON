@@ -29,18 +29,6 @@ static int Lua_PlayerGetWeapon(lua_State* L) {
 	return 1;
 }
 
-static int Lua_PlayerSetWeapon(lua_State* L) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 2, lua::metatables::WeaponMT);
-	int index = luaL_checkinteger(L, 3);
-	if (index < 0 || index > 4) {
-		return luaL_argerror(L, 2, "Index must be between 0 and 4");
-	}
-	*player->GetWeapon(index) = weapon;
-
-	return 0;
-}
-
 static int Lua_FanGetWeapon(lua_State* L) {
 	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	Weapon** ud = (Weapon**)lua_newuserdata(L, sizeof(Weapon*));
@@ -146,6 +134,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterWeapon(state);
 	lua::Metatables mt = lua::Metatables::ENTITY_PLAYER;
 	lua::RegisterFunction(state, mt, "GetWeapon", Lua_PlayerGetWeapon);
-	lua::RegisterFunction(state, mt, "SetWeapon", Lua_PlayerSetWeapon);
 	lua::RegisterFunction(state, lua::Metatables::ENTITY_FAMILIAR, "GetWeapon", Lua_FanGetWeapon);
 }

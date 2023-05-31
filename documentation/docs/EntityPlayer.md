@@ -21,7 +21,11 @@ ___
 This magically vanished from the API some time after 1.7.8.
 
 Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than [MultiShotParams:GetNumTears()](MultiShotParams.md#getnumtears).
+### Get·Pocket·Item () {: aria-label='Modified Functions' }
+#### [PocketItem](PocketItem.md) GetPocketItem ( int SlotId ) {: .copyable aria-label='Modified Functions' }
+Now returns a proper `PocketItem` object.
 
+___
 
 ## Functions
 
@@ -145,6 +149,10 @@ ___
 #### int GetWeaponModifiers ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Wild·Card·Item () {: aria-label='Functions' }
+#### int GetWildCardItem ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Increment·Player·Form·Counter () {: aria-label='Functions' }
 #### void IncrementPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Form, int Num ) {: .copyable aria-label='Functions' }
 
@@ -162,6 +170,10 @@ I believe this is used by J&E, Strawman etc.
     The twin player will desync from its main twin on save and continue. This softlocks the game in singleplayer, as the game prompts for a controller.
 	
 	We've received confirmation from \_Kilburn that this is hardcoded to be handled on vanilla characters. We will need to add a workaround for this.
+
+___
+### Is·Local·Player () {: aria-label='Functions' }
+#### boolean IsLocalPlayer ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Remove·Collectible·By·History·Index () {: aria-label='Functions' }
@@ -207,6 +219,10 @@ ___
 ___
 ### Set·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
 #### void SetRedStewBonusDuration ( int Duration ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Weapon () {: aria-label='Functions' }
+#### void SetWeapon ( [Weapon](Weapon.md) Weapon, int WeaponSlot ) {: .copyable aria-label='Functions' }
 
 ___
 ### Teleport () {: aria-label='Functions' }

@@ -2,17 +2,14 @@
 ## Modified Functions
 
 ### Find·By·Type () {: aria-label='Modified Functions' }
-[ ](#){: .rep .tooltip .badge }
-#### table FindByType ( [EntityType](enums/EntityType.md) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
+#### table FindByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
 Same as vanilla, but much faster.
 ___
 ### Find·In·Radius () {: aria-label='Modified Functions' }
-[ ](#){: .rep .tooltip .badge }
-#### table FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
+#### table FindInRadius ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
 Same as in vanilla, but much faster and with fixed search for effects.
 ___
 ### Get·Room·Entities () {: aria-label='Modified Functions' }
-[ ](#){: .abrep .tooltip .badge }
 #### table GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
 Same as vanilla, but much faster.
 
@@ -45,7 +42,7 @@ Deletes all completion marks for a given character. Supports both modded and van
 
 ___
 ### Create·Weapon () {: aria-label='Functions' }
-#### [Entity](Entity.md) CreateWeapon ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) Type, [Entity](Entity.md) entity ) {: .copyable aria-label='Functions' }
+#### [Weapon](Weapon.md) CreateWeapon ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) Type, [Entity](Entity.md) Owner ) {: .copyable aria-label='Functions' }
 
 ___
 ### Draw·Line () {: aria-label='Functions' }
@@ -128,6 +125,10 @@ ___
 ### Get·Entity·Sub·Type·By·Name () {: aria-label='Functions' }
 #### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
 Gets the entity SubType by entity name.
+
+___
+### Get·Nightmare·Scene () {: aria-label='Functions' }
+#### [NightmareScene](NightmareScene.md) GetNightmareScene ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Persistent·Game·Data () {: aria-label='Functions' }

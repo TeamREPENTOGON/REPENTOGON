@@ -107,29 +107,36 @@ nav:
     - EntityPlayer: EntityPlayer.md
     - EntityPickup: EntityPickup.md
     - EntitySlot: EntitySlot.md
+  - Font: Font.md
   - Game: Game.md
+  - GridEntity: GridEntity.md
   - History: History.md
   - HUD: HUD.md
   - ImGui: ImGui.md
   - Isaac: Isaac.md
   - ItemOverlay: ItemOverlay.md
+  - ItemPool: ItemPool.md
   - LayerState: LayerState.md
   - Level: Level.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
+  - MainMenu: MainMenu.md
   - Minimap: Minimap.md
   - MultiShotParams: MultiShotParams.md
   - MusicManager: MusicManager.md
+  - NightmareScene: NightmareScene.md
   - NullFrame: NullFrame.md
   - PersistentGameData: PersistentGameData.md
   - ProceduralItemManager: ProceduralItemManager.md
   - PlayerHUD: PlayerHUD.md
   - PlayerManager: PlayerManager.md
+  - PocketItem: PocketItem.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
   - RoomTransition: RoomTransition.md
   - Sprite: Sprite.md
   - StageTransition: StageTransition.md
+  - Weapon: Weapon.md
   - XMLData: XMLData.md
 - Changes:
   - General: changes/General.md
