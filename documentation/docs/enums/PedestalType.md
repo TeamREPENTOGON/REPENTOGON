@@ -18,7 +18,7 @@ tags:
 |10 |CHEST {: .copyable } |  |
 |11 |MOMS_CHEST {: .copyable } |  |
 |12 |OLD_CHEST {: .copyable } |  |
-|13 |WOODEN_CEHST {: .copyable } |  |
+|13 |WOODEN_CHEST {: .copyable } |  |
 |14 |MEGA_CHEST {: .copyable } |  |
 |15 |CONFESSIONAL {: .copyable } |  |
 |16 |GOLDEN_CHEST_COIN_SLOT {: .copyable } |  |
