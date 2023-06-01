@@ -510,11 +510,12 @@ int Lua_PlayerGetWildCardItem(lua_State* L) {
 	return 1;
 }
 
-int Lua_PlayerGetWildCardItemType(lua_State* L) {
+/*int Lua_PlayerGetWildCardItemType(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, *player->GetWildCardItemType());
 	return 1;
 }
+*/
 
 static int Lua_PlayerSetWeapon(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
