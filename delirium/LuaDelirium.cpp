@@ -349,7 +349,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterDeliriumFunctions(L);
 }
 
-__declspec(dllexport) int ModInit(int argc, char** argv) {
+extern "C" __declspec(dllexport) int ModInit(int argc, char** argv) {
 	delirium::PatchSkipFrames();
 	delirium::AddPreTransformationCallback();
 	delirium::AddTransformationCallback();
