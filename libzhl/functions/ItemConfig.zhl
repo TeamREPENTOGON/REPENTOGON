@@ -1,0 +1,6 @@
+"558bec6aff68????????64a1????????5051b820010100":
+__thiscall void ItemConfig::LoadPocketItems(char *xmlpath,int ismod); //no clue what ismod is on this case, but if its highrt than 0 then its a mod
+
+struct ItemConfig
+{
+};

@@ -5,6 +5,16 @@
         
 ## Functions
 
+### Get·Card·By·Name () {: aria-label='Functions' }
+#### table GetCardByName ( string name ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the cards/runes/souls on pocketitems.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
+???- info "Table usage"
+	```lua
+	print("Soul Of Isaac's desc:", XMLData.GetCardByName("Soul of Isaac").description)
+	```
+___
+
+
 ### Get·Entity·By·Name () {: aria-label='Functions' }
 #### table GetEntityByName ( string name ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the entities2.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
@@ -29,6 +39,15 @@ Returns a table containing the attributes of the music.xml that match the given 
 ???- info "Table usage"
 	```lua
 	print("Basement track loop:", XMLData.GetMusicByName("Basement").loop)
+	```
+___
+
+### Get·Pill·By·Name () {: aria-label='Functions' }
+#### table GetPillByName ( string name ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the pill effects on pocketitems.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
+???- info "Table usage"
+	```lua
+	print("Range Up's announcer sfx:", XMLData.GetPillByName("Range Up").announcer)
 	```
 ___
 

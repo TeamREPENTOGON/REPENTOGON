@@ -35,9 +35,14 @@ struct XMLMod {
 	unordered_map<string, int> modbyname; //tainteds get added a "-Tainted-" at the end as an index
 	unordered_map<string, int> modbyid;
 	unordered_map<string, int> modbydirectory;
+	unordered_map<string, int> modbyfullpath;
+	unordered_map<string, int> modbyfolder;
 
+	unordered_map<int, ModEntry*> modentries;
 	unordered_map<string, int> modplayers;
 	unordered_map<string, int> modentities;
+	unordered_map<string, int> modcards;
+	unordered_map<string, int> modpills;
 	unordered_map<string, int> modmusictracks;
 	int nomods;
 };
@@ -51,6 +56,24 @@ struct XMLMusic {
 	unordered_map<string, int> musicbynamemod;
 	unordered_map<string, int> musicbymod;
 	int maxid = 118; //last vanilla music track, for now I need to do this here, may scrap it later and fully automate it
+};
+
+struct XMLCard {
+	unordered_map<int, XMLAttributes> cards;
+	unordered_map<string, int> cardbyname;
+	unordered_map<string, int> cardbynamemod;
+	unordered_map<string, int> cardbymod;
+	unordered_map<string, int> cardbypickup;
+	int maxid;
+};
+
+struct XMLPill {
+	unordered_map<int, XMLAttributes> pills;
+	unordered_map<string, int> pillbyname;
+	unordered_map<string, int> pillbynamemod;
+	unordered_map<string, int> pillbymod;
+	unordered_map<string, int> pillbypickup;
+	int maxid;
 };
 
 struct XMLPlayer {
@@ -70,10 +93,13 @@ struct XMLEntity {
 	int maxid;
 };
 
+
 struct XMLData {
 	XMLPlayer PlayerData;
 	XMLEntity EntityData;
 	XMLMusic MusicData;
+	XMLPill PillData;
+	XMLCard CardData;
 	XMLMod ModData;
 };
 extern XMLData XMLStuff;

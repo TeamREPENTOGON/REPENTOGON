@@ -18,6 +18,7 @@
 #include <lua.hpp>
 #include "LuaCore.h"
 #include <filesystem>
+#include <regex>
 
 using namespace rapidxml;
 using namespace std;
@@ -177,6 +178,19 @@ ModEntry* GetModEntryByDir(string Dir) {
 	}
 }
 
+ModEntry* GetModEntryByContentPath(string path) {
+	if ((path.find("/content/") != string::npos) && (path.find("/mods/") != string::npos)) {
+		std::regex regex("/mods/(.*?)/content/");
+		std::smatch match;
+		if (std::regex_search(path, match, regex)) {
+			if (XMLStuff.ModData.modbyfolder.count(match.str(1)) > 0) {
+				return XMLStuff.ModData.modentries[XMLStuff.ModData.modbyfolder[match.str(1)]];
+			}
+		}
+	}
+	return NULL;
+}
+
 void UpdateXMLModEntryData() {
 	for (ModEntry* entry : g_Manager->GetModManager()->_mods) {
 		int idx = 0;
@@ -186,9 +200,13 @@ void UpdateXMLModEntryData() {
 		mod = XMLStuff.ModData.mods[idx];
 		mod["realdirectory"] = entry->GetDir();
 		mod["fulldirectory"] = std::filesystem::current_path().string() + "/mods/" + entry->GetDir();
+		
 		if (entry->IsEnabled()) { mod["enabled"] = "true"; }
 		else { mod["enabled"] = "false"; }
 		XMLStuff.ModData.mods[idx] = mod;
+		XMLStuff.ModData.modentries[idx] = entry;
+		XMLStuff.ModData.modbyfullpath[mod["fulldirectory"]] = idx;
+		XMLStuff.ModData.modbyfolder[mod["realdirectory"]] = idx;
 		
 	}
 }
@@ -305,6 +323,82 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.ModData.modplayers[lastmodid] += 1;
 			}
 	}
+	else if ((strcmp(node->name(), "pocketitems") == 0)) {
+		int id = 1;
+		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+			if ((strcmp(auxnode->name(), "card") == 0) || (strcmp(auxnode->name(), "rune") == 0)) {
+				unordered_map<string, string> card;
+				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					card[stringlower(attr->name())] = string(attr->value());
+				}
+				if (card.count("id")) { //leaving this here in case theres an actual way of assigning an id for a pilleffect that I dont know of
+					id = stoi(card["id"]);
+				}
+				else {
+					XMLStuff.CardData.maxid = XMLStuff.CardData.maxid + 1;
+					card["id"] = to_string(XMLStuff.CardData.maxid);
+					id = XMLStuff.CardData.maxid;
+				}
+				if (id > XMLStuff.CardData.maxid) {
+					XMLStuff.CardData.maxid = id;
+				}
+				card["sourceid"] = lastmodid;
+
+				if (card["name"].find("#") != string::npos) {
+					card["untranslatedname"] = card["name"];
+					card["name"] = string(stringTable->GetString("PocketItems", 0, card["name"].substr(1, card["name"].length()).c_str(), &unk));
+				}
+
+				if (card["description"].find("#") != string::npos) {
+					card["untranslateddescription"] = card["name"];
+					card["description"] = string(stringTable->GetString("PocketItems", 0, card["description"].substr(1, card["description"].length()).c_str(), &unk));
+				}
+
+				XMLStuff.CardData.cardbynamemod[card["name"] + lastmodid] = id;
+				XMLStuff.CardData.cardbymod[lastmodid] = id;
+				XMLStuff.CardData.cardbyname[card["name"]] = id;
+				XMLStuff.CardData.cards[id] = card;
+				XMLStuff.ModData.modcards[lastmodid] += 1;
+			}
+			else if ((strcmp(auxnode->name(), "pilleffect") == 0)) {
+
+				unordered_map<string, string> pill;
+				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					pill[stringlower(attr->name())] = string(attr->value());
+				}
+				if (pill.count("id")) { //leaving this here in case theres an actual way of assigning an id for a pilleffect that I dont know of
+					id = stoi(pill["id"]);
+				}
+				else {
+					XMLStuff.PillData.maxid = XMLStuff.PillData.maxid + 1;
+					pill["id"] = to_string(XMLStuff.PillData.maxid);
+					id = XMLStuff.PillData.maxid;
+				}
+				if (id > XMLStuff.PillData.maxid) {
+					XMLStuff.PillData.maxid = id;
+				}
+				pill["sourceid"] = lastmodid;
+
+				if (pill["name"].find("#") != string::npos) {
+					pill["untranslatedname"] = pill["name"];
+					pill["name"] = string(stringTable->GetString("PocketItems", 0, pill["name"].substr(1, pill["name"].length()).c_str(), &unk));
+				}
+
+				if (pill["description"].find("#") != string::npos) {
+					pill["untranslateddescription"] = pill["name"];
+					pill["description"] = string(stringTable->GetString("PocketItems", 0, pill["description"].substr(1, pill["description"].length()).c_str(), &unk));
+				}
+
+				XMLStuff.PillData.pillbynamemod[pill["name"] + lastmodid] = id;
+				XMLStuff.PillData.pillbymod[lastmodid] = id;
+				XMLStuff.PillData.pillbyname[pill["name"]] = id;
+				XMLStuff.PillData.pills[id] = pill;
+				XMLStuff.ModData.modpills[lastmodid] += 1;
+			}
+		}
+	}
 	else if ((strcmp(node->name(), "music") == 0)) {
 		int id = 1;
 		xml_node<char>* daddy = node;
@@ -330,7 +424,6 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				music[attr->name()] = attr->value();
 			}
-
 			music["sourceid"] = lastmodid;
 
 
@@ -386,11 +479,17 @@ HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)-
 HOOK_METHOD(Manager, LoadConfigs,()->void) {
 	//printf("yoyoyo ",this);
 	super();
-	UpdateXMLModEntryData();
+	UpdateXMLModEntryData(); //resources are already loaded by this point only mod content remains
+}
+
+HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, int ismod)->void) {
+	//printf("pocket: %s %d \n", xmlpath,ismod);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
 }
 
 HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
-	//printf("music: %s \n", xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
 }
 /*
@@ -404,7 +503,7 @@ HOOK_METHOD(ModEntry, GetContentPath, (char** param_1, IsaacString* param_2)->vo
 //d:\steam\steamapps\common\the binding of isaac rebirth/mods/musicar/content/entities2.xml
 HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
 	if(mod != NULL){
-		printf("ModID: %s", mod->GetId());
+		//printf("ModID: %s", mod->GetId());
 	}
 	ProcessModEntry(xmlpath, mod);
 	super(xmlpath, mod);
@@ -463,6 +562,24 @@ int Lua_GetMusicXML(lua_State* L)
 	return 1;
 }
 
+int Lua_GetPillXML(lua_State* L)
+{
+	string entityname = string(lua_tostring(L, 1));
+	XMLAttributes pill = XMLStuff.PillData.pills[XMLStuff.PillData.pillbyname[entityname]];
+	printf("pillname %s %d", entityname.c_str(), pill.count("id"));
+	Lua_PushXMLNode(L, pill);
+	return 1;
+}
+
+int Lua_GetCardXML(lua_State* L)
+{
+	string entityname = string(lua_tostring(L, 1));
+	XMLAttributes pill = XMLStuff.CardData.cards[XMLStuff.CardData.cardbyname[entityname]];
+	printf("pillname %s %d", entityname.c_str(), pill.count("id"));
+	Lua_PushXMLNode(L, pill);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	ClearXMLData();
 	super();
@@ -478,6 +595,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_settable(L, -3);
 	lua_pushstring(L, "GetMusicByName");
 	lua_pushcfunction(L, Lua_GetMusicXML);
+	lua_settable(L, -3);
+	lua_pushstring(L, "GetCardByName");
+	lua_pushcfunction(L, Lua_GetCardXML);
+	lua_settable(L, -3);
+	lua_pushstring(L, "GetPillByName");
+	lua_pushcfunction(L, Lua_GetPillXML);
 	lua_settable(L, -3);
 	lua_pushstring(L, "GetModByName");
 	lua_pushcfunction(L, Lua_GetModXML);
