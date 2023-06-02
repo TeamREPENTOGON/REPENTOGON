@@ -13,6 +13,12 @@ static int Lua_CreateWeapon(lua_State* L) {
 	return 1;
 }
 
+static int Lua_DestoryWeapon(lua_State* L) {
+	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 1, lua::metatables::WeaponMT);
+	Isaac::DestoryWeapon(&weapon);
+	return 0;
+}
+
 static int Lua_PlayerGetWeapon(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int index = luaL_checkinteger(L, 2);
@@ -103,6 +109,12 @@ static void RegisterWeapon(lua_State* L)
 	lua_getglobal(L, "Isaac");
 	lua_pushstring(L, "CreateWeapon");
 	lua_pushcfunction(L, Lua_CreateWeapon);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "DestroyWeapon");
+	lua_pushcfunction(L, Lua_DestoryWeapon);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 

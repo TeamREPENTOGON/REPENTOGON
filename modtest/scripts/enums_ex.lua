@@ -2129,6 +2129,7 @@ ImGuiElement = {
 	BulletText = 9,
 	SameLine = 10,
 	Button = 11,
+	SmallButton = 12,
 }
 
 ImGuiCallback = {

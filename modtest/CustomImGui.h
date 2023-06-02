@@ -20,6 +20,7 @@ enum class IMGUI_ELEMENT {
     BulletText,
     SameLine,
     Button,
+    SmallButton,
 };
 
 enum class IMGUI_CALLBACK {
@@ -42,6 +43,7 @@ struct Element {
     std::string name;
     IMGUI_ELEMENT type;
     std::list<Element>* children;
+    Element* parent;
 
     Element* triggerElement = NULL; // element that when clicked, activates this element (Window)
     Element* triggerPopup = NULL; // popup that gets triggered when clicking this element
@@ -70,6 +72,7 @@ struct Element {
     void AddChild(Element element)
     {
         children->push_back(element);
+        element.parent = this;
     }
 
     void AddCallback(int type, int callbackID)
@@ -138,6 +141,23 @@ struct CustomImGui {
             return true;
         }
         return false;
+    }
+
+    void RemoveElement(const char* elementId) IM_FMTARGS(2)
+    {
+        Element* element = GetElementByList(elementId, menuElements);
+        if (element == NULL) {
+            element = GetElementByList(elementId, windows);
+            if (element == NULL) {
+                return;
+            }
+        }
+        for (auto elem = element->parent->children->begin(); elem != element->parent->children->end(); ++elem) {
+            if (strcmp(elem->id.c_str(), elementId) == 0) {
+                element->parent->children->erase(elem);
+                return;
+            }
+        }
     }
 
     bool CreateMenuElement(const char* id, const char* text) IM_FMTARGS(2)
@@ -441,6 +461,10 @@ struct CustomImGui {
                 ImGui::Button(name);
                 RunCallbacks(&(*element));
                 break;
+            case IMGUI_ELEMENT::SmallButton:
+              ImGui::SmallButton(name);
+              RunCallbacks(&(*element));
+              break;
             default:
                 break;
             }
