@@ -42,6 +42,12 @@ void ClearXMLData() {
 	XMLStuff.EntityData.entitybytypevar.clear();
 	XMLStuff.EntityData.maxid = 0;
 
+	XMLStuff.CardData.cards.clear();
+	XMLStuff.CardData.cardbyname.clear();
+	XMLStuff.CardData.cardbynamemod.clear();
+	XMLStuff.CardData.cardbypickup.clear();
+	XMLStuff.CardData.maxid = 0;
+
 	XMLStuff.MusicData.musicbymod.clear();
 	XMLStuff.MusicData.musicbyname.clear();
 	XMLStuff.MusicData.musicbynamemod.clear();
@@ -49,10 +55,16 @@ void ClearXMLData() {
 	XMLStuff.MusicData.maxid = 118; //last music track, will probably make it automatic later, like the other stuff
 
 	XMLStuff.ModData.mods.clear();
+	XMLStuff.ModData.modentries.clear();
 	XMLStuff.ModData.modbyid.clear();
 	XMLStuff.ModData.modbyname.clear();
+	XMLStuff.ModData.modbyfolder.clear();
+	XMLStuff.ModData.modbydirectory.clear();
+	XMLStuff.ModData.modbyfullpath.clear();
 	XMLStuff.ModData.modentities.clear();
 	XMLStuff.ModData.modmusictracks.clear();
+	XMLStuff.ModData.modcards.clear();
+	XMLStuff.ModData.modpills.clear();
 	XMLStuff.ModData.modplayers.clear();
 	XMLStuff.ModData.mods.clear();
 	XMLStuff.ModData.nomods = 0;
