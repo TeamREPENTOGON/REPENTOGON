@@ -347,8 +347,11 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(L);
 	RegisterMemoryFunctions(L);
 	RegisterDeliriumFunctions(L);
+}
 
+__declspec(dllexport) int ModInit(int argc, char** argv) {
 	delirium::PatchSkipFrames();
 	delirium::AddPreTransformationCallback();
 	delirium::AddTransformationCallback();
+	return 0;
 }
