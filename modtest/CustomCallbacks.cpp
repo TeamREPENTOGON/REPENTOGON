@@ -2022,9 +2022,9 @@ HOOK_METHOD(Entity_Player, TriggerTrinketRemoved, (unsigned int trinketID) -> vo
 	}
 }
 
-//POST_FIRE_WEAPON (1098)
-HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& pos, int FireAmount) -> void) {
-	super(pos, FireAmount);
+//POST_TRIGGER_WEAPON_FIRED (1098)
+HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& dir, int FireAmount) -> void) {
+	super(dir, FireAmount);
 	int callbackid = 1098;
 	Entity* ent = this->GetOwner();
 	if (CallbackState.test(callbackid - 1000)) {
@@ -2035,8 +2035,8 @@ HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& pos, int FireAmount) -> voi
 
 		lua::LuaCaller caller(L);
 		caller.push(callbackid)
-			.pushnil()
-			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.push(this->GetWeaponType())
+			.pushUserdataValue(dir, lua::Metatables::VECTOR)
 			.push(FireAmount)
 			.push(ent, lua::Metatables::ENTITY);
 		
@@ -2059,22 +2059,40 @@ HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& pos, int FireAmount) -> voi
 	}
 }
 
-/*HOOK_METHOD(Weapon, Fire, (const Vector& pos, bool unk1, bool unk2)-> void) {
-	super(pos, unk1, unk2);
-	int callbackid = 1099;
+//POST_WEAPON_FIRE (1105)
+HOOK_METHOD(Weapon, Fire, (const Vector& dir, bool isShooting, bool isInterpolated)-> void) {
+	super(dir, isShooting, isInterpolated);
+	int callbackid = 1105;
+	Entity* ent = this->GetOwner();
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.push(this, lua::metatables::WeaponMT)
+		lua::LuaCaller caller(L);
+		caller.push(callbackid)
+			.push(this->GetWeaponType());
+		WeaponData* data = new (caller.pushUd(sizeof(WeaponData), lua::metatables::WeaponMT)) WeaponData;
+		data->weapon = this;
+		if (Entity_Familiar* familiar = ent->ToFamiliar()) {
+			data->owner = familiar;
+		}
+		else if (Entity_Player* player = ent->ToPlayer()) {
+			data->owner = player;
+			for (int i = 0; i < 4; ++i) {
+				if (*(player->GetWeapon(i)) == this) {
+					data->slot = i;
+					break;
+				}
+			}
+		}
+		caller.pushUserdataValue(dir, lua::Metatables::VECTOR)
+			.push(isShooting)
+			.push(isInterpolated)
 			.call(1);
 	}
 }
-*/
 
 //POST_GRID_ROCK_DESTROY (1011)
 void ProcessGridRockDestroy(GridEntity_Rock* gridRock, bool Immediate, int type) {

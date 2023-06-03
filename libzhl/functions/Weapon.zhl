@@ -7,11 +7,23 @@ __thiscall void Weapon::SetBlinkTime(int Delay);
 "558bec83e4f081ec88020000":
 __thiscall void Weapon::TriggerTearFired(const Vector& pos, int FireAmount);
 
+"558bec83e4f851568b71??85f674??8b46??83f80174??83f80375??8b86":
+__thiscall bool Weapon::IsAxisAligned();
+
+"558bec6aff68????????64a1????????5083ec50a1????????33c58945??53":
+__thiscall bool Weapon::IsItemAnimFinished(unsigned int collectibleID);
+
+"558bec83ec24a1????????33c58945??538b59":
+__thiscall void Weapon::ClearItemAnim(unsigned int collectibleID);
+
+"558bec8b51??85d274??837a??0174??8bc2":
+__thiscall void Weapon::SetHeadLockTime(int Time);
+
 struct Weapon { {{
 	inline Entity* GetOwner() { return *(Entity**)((char*)this + 0x4); }
-	inline float GetFireDelay() { return *(float*)((char*)this + 0xC); }
+	inline float* GetFireDelay() { return (float*)((char*)this + 0xC); }
 	inline float GetMaxFireDelay() { return *(float*)((char*)this + 0x10); }
-	inline float GetCharge() { return *(float*)((char*)this + 0x14); }
+	inline float* GetCharge() { return (float*)((char*)this + 0x14); }
 	inline Vector* GetDirection() {return (Vector*)((char*)this + 0x1c); }
 	inline int GetWeaponType() { return *(int*)((char*)this + 0x2c); }
 	inline int GetModifiers() { return *(int*)((char*)this + 0x30); }

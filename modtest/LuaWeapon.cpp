@@ -78,8 +78,15 @@ static int Lua_WeaponGetOwner(lua_State* L) {
 
 static int Lua_WeaponGetFireDelay(lua_State* L) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	lua_pushnumber(L, weapon->GetFireDelay());
+	lua_pushnumber(L, *weapon->GetFireDelay());
 	return 1;
+}
+
+static int Lua_WeaponSetFireDelay(lua_State* L) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	float delay = luaL_checknumber(L, 2);
+	*weapon->GetCharge() = delay;
+	return 0;
 }
 
 static int Lua_WeaponGetMaxFireDelay(lua_State* L) {
@@ -90,8 +97,15 @@ static int Lua_WeaponGetMaxFireDelay(lua_State* L) {
 
 static int Lua_WeaponGetCharge(lua_State* L) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	lua_pushnumber(L, weapon->GetCharge());
+	lua_pushnumber(L, *weapon->GetCharge());
 	return 1;
+}
+
+static int Lua_WeaponSetCharge(lua_State* L) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	float charge = luaL_checknumber(L, 2);
+	*weapon->GetCharge() = charge;
+	return 0;
 }
 
 static int Lua_WeaponGetDirection(lua_State* L)
@@ -121,6 +135,43 @@ static int Lua_WeaponGetNumFired(lua_State* L) {
 	return 1;
 }
 
+static int Lua_WeaponPlayItemAnim(lua_State* L) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	unsigned int itemID = luaL_checkinteger(L, 2);
+	int anim = luaL_checkinteger(L, 3);
+	const Vector* position = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	float charge = luaL_checknumber(L, 5);
+	weapon->PlayItemAnim(itemID, anim, *position, charge);
+	return 0;
+}
+
+static int Lua_WeaponIsAxisAligned(lua_State* L) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	lua_pushboolean(L, weapon->IsAxisAligned());
+	return 1;
+}
+
+static int Lua_WeaponIsItemAnimFinished(lua_State* L) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	unsigned int item = luaL_checkinteger(L, 2);
+	lua_pushboolean(L, weapon->IsItemAnimFinished(item));
+	return 1;
+}
+
+static int Lua_WeaponClearItemAnim(lua_State* L) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	unsigned int item = luaL_checkinteger(L, 2);
+	weapon->ClearItemAnim(item);
+	return 0;
+}
+
+static int Lua_WeaponSetHeadLockTime(lua_State* L) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	unsigned int time = luaL_checkinteger(L, 2);
+	weapon->SetHeadLockTime(time);
+	return 0;
+}
+
 static void RegisterWeapon(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
@@ -143,12 +194,19 @@ static void RegisterWeapon(lua_State* L)
 	luaL_Reg functions[] = {
 		{ "GetOwner", Lua_WeaponGetOwner },
 		{ "GetFireDelay", Lua_WeaponGetFireDelay },
+		{ "SetFireDelay", Lua_WeaponSetFireDelay },
 		{ "GetMaxFireDelay", Lua_WeaponGetMaxFireDelay },
 		{ "GetCharge", Lua_WeaponGetCharge },
+		{ "SetCharge", Lua_WeaponSetCharge },
 		{ "GetDirection", Lua_WeaponGetDirection },
 		{ "GetWeaponType", Lua_WeaponGetWeaponType },
 		{ "GetModifiers", Lua_WeaponGetModifiers },
 		{ "GetNumFired", Lua_WeaponGetNumFired },
+		{ "PlayItemAnim", Lua_WeaponPlayItemAnim },
+		{ "IsAxisAligned", Lua_WeaponIsAxisAligned },
+		{ "IsItemAnimFinished", Lua_WeaponIsItemAnimFinished },
+		{ "ClearItemAnim", Lua_WeaponClearItemAnim },
+		{ "SetHeadLockTime", Lua_WeaponSetHeadLockTime },
 		{ NULL, NULL }
 	};
 
