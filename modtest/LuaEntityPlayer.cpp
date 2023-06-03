@@ -4,6 +4,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "LuaWeapon.h"
 
 static constexpr const char* MultiShotParamsMT = "MultiShotParams";
 static constexpr const char* PocketItemMT = "PocketItem";
@@ -519,12 +520,14 @@ int Lua_PlayerGetWildCardItem(lua_State* L) {
 
 static int Lua_PlayerSetWeapon(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Weapon* weapon = *lua::GetUserdata<Weapon**>(L, 2, lua::metatables::WeaponMT);
+	WeaponData* weaponData = lua::GetUserdata<WeaponData*>(L, 2, lua::metatables::WeaponMT);
 	int index = luaL_checkinteger(L, 3);
 	if (index < 0 || index > 4) {
 		return luaL_argerror(L, 2, "Index must be between 0 and 4");
 	}
-	*player->GetWeapon(index) = weapon;
+	*player->GetWeapon(index) = weaponData->weapon;
+	weaponData->owner = player;
+	weaponData->slot = index;
 
 	return 0;
 }
