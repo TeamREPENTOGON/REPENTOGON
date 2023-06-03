@@ -4,6 +4,7 @@
 #include "LogViewer.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "LuaWeapon.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState; //I dont think we will add 500 callbacks but lets set it there for now
@@ -2032,13 +2033,29 @@ HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& pos, int FireAmount) -> voi
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		lua::LuaCaller caller(L);
+		caller.push(callbackid)
 			.pushnil()
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
 			.push(FireAmount)
-			.push(ent, lua::Metatables::ENTITY)
-			//.push(this, lua::metatables::WeaponMT)
-			.call(1);
+			.push(ent, lua::Metatables::ENTITY);
+		
+		WeaponData* data = new (caller.pushUd(sizeof(WeaponData), lua::metatables::WeaponMT)) WeaponData;
+		data->weapon = this;
+		if (Entity_Familiar* familiar = ent->ToFamiliar()) {
+			data->owner = familiar;
+		}
+		else if (Entity_Player* player = ent->ToPlayer()) {
+			data->owner = player;
+			for (int i = 0; i < 4; ++i) {
+				if (*(player->GetWeapon(i)) == this) {
+					data->slot = i;
+					break;
+				}
+			}
+		}
+
+		lua::LuaResults result = caller.call(1);
 	}
 }
 

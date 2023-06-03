@@ -213,3 +213,6 @@ struct Entity_Player : public Entity { {{
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
     }}
 };
+
+"f30f1087c40200006a0068(????????)68????????f30f59c1":
+reference void* EntityPlayerRTTI;

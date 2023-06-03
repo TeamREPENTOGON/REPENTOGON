@@ -222,6 +222,7 @@ namespace lua {
             return *this;
         }
 
+        void* pushUd(size_t size, const char* mt);
         LuaResults call(int nresults);
 
     private:

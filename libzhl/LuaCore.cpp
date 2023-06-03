@@ -493,6 +493,13 @@ namespace lua {
 		return *this;
 	}
 
+	void* LuaCaller::pushUd(size_t s, const char* mt) {
+		void* result = lua_newuserdata(_L, s);
+		luaL_setmetatable(_L, mt);
+		++_n;
+		return result;
+	}
+
 	LuaResults LuaCaller::call(int nresults) {
 		int n = lua_gettop(_L) - _n - 1; // Expected amount after poping everything (number of params + function)
 		int result = lua_pcall(_L, _n, nresults, 0);
