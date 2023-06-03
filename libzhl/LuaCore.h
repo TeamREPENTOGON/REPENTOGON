@@ -214,7 +214,15 @@ namespace lua {
         LuaCaller& pushvalue(int idx);
         LuaCaller& push(const char* fmt, va_list va);
         LuaCaller& push(void* ptr, Metatables meta);
-        LuaCaller& push(void* ptr, const char* meta); 
+        LuaCaller& pushLuabridge(void* ptr, const char* meta); 
+        template<typename T>
+        std::enable_if_t<std::is_pointer_v<T>, LuaCaller&> push(T ptr, const char* meta) {
+            void** result = (void**)lua_newuserdata(_L, sizeof(void*));
+            *result = ptr;
+            luaL_setmetatable(_L, meta);
+            ++_n;
+            return *this;
+        }
         template<typename T>
         LuaCaller& pushUserdataValue(T const& t, Metatables meta) {
             luabridge::UserdataValue<T>::push(_L, GetMetatableKey(meta), t);

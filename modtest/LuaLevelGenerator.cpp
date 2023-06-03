@@ -212,7 +212,7 @@ void PushRoom(lua_State* L, int i, LevelGenerator* generator, LevelGenerator_Roo
 }
 
 LevelGenerator* GetLevelGenerator(lua_State* L, int idx) {
-	return lua::UserdataToData<LevelGenerator*>(luaL_checkudata(L, idx, lua::metatables::LevelGeneratorMT));
+	return *lua::GetUserdata<LevelGenerator**>(L, idx, lua::metatables::LevelGeneratorMT);
 }
 
 LuaLevelGeneratorRoom* GetLGR(lua_State* L, int idx) {

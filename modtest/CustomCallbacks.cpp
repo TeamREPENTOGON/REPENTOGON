@@ -1252,7 +1252,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.pushUserdataValue(*offset, lua::Metatables::VECTOR)
 			.call(1);
 
@@ -1274,7 +1274,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.pushUserdataValue(*offset, lua::Metatables::VECTOR)
 			.call(1);
 	}
@@ -1514,7 +1514,7 @@ HOOK_METHOD(Entity_Slot, HandleCollision, (Entity* collider, bool Low) -> bool) 
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.push(collider, lua::Metatables::ENTITY)
 			.push(Low)
 			.call(1);
@@ -1540,7 +1540,7 @@ HOOK_METHOD(Entity_Slot, Init, (unsigned int Type, unsigned int Variant, unsigne
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(Variant)
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.call(1);
 	}
 }
@@ -1557,7 +1557,7 @@ HOOK_METHOD(Entity_Slot, Update, () -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.call(1);
 	}
 }
@@ -1574,7 +1574,7 @@ HOOK_METHOD(Entity_Slot, CreateDropsFromExplosion, () -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.call(1);
 
 		if (!result) {
@@ -1592,7 +1592,7 @@ HOOK_METHOD(Entity_Slot, CreateDropsFromExplosion, () -> void) {
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.call(1);
 	}
 }
@@ -1609,7 +1609,7 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.push(id)
 			.call(1);
 
@@ -1631,7 +1631,7 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
-			.push(this, lua::metatables::EntitySlotMT)
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.push(id)
 			.call(1);
 	}
@@ -2171,7 +2171,10 @@ HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4,
 	lua::LuaStackProtector protector(L);
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-	lua::LuaResults result = lua::LuaCaller(L).push(callbackId).push(12).push(this, lua::metatables::LevelGeneratorMT).call(0);
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+		.push(12)
+		.push(this, lua::metatables::LevelGeneratorMT)
+		.call(0);
 
 	/* std::ofstream stream("repentogon.log", std::ios::app);
 	stream << "After the call to Generate: " << std::endl;
@@ -2208,7 +2211,7 @@ HOOK_METHOD(NightmareScene, Render, () -> void) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			//.push(this, lua::metatables::NightmareSceneMT)
+			.push(this, lua::metatables::NightmareSceneMT)
 			.call(1);
 	}
 }
@@ -2224,7 +2227,7 @@ HOOK_METHOD(NightmareScene, Show, (bool unk) -> void) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			//.push(this, lua::metatables::NightmareSceneMT)
+			.push(this, lua::metatables::NightmareSceneMT)
 			.push(unk)
 			.call(1);
 	}

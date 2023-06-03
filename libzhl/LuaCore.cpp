@@ -486,7 +486,7 @@ namespace lua {
 		return *this;
 	}
 
-	LuaCaller& LuaCaller::push(void* ptr, const char* meta)
+	LuaCaller& LuaCaller::pushLuabridge(void* ptr, const char* meta)
 	{
 		luabridge::UserdataPtr::push(_L, ptr, meta);
 		++_n;
