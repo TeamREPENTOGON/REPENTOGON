@@ -41,6 +41,8 @@ struct XMLMod {
 	unordered_map<int, ModEntry*> modentries;
 	unordered_map<string, int> modplayers;
 	unordered_map<string, int> modentities;
+	unordered_map<string, int> moditems;
+	unordered_map<string, int> modtrinkets;
 	unordered_map<string, int> modcards;
 	unordered_map<string, int> modpills;
 	unordered_map<string, int> modmusictracks;
@@ -56,6 +58,23 @@ struct XMLMusic {
 	unordered_map<string, int> musicbynamemod;
 	unordered_map<string, int> musicbymod;
 	int maxid = 118; //last vanilla music track, for now I need to do this here, may scrap it later and fully automate it
+};
+
+struct XMLItem {
+	unordered_map<int, XMLAttributes> items;
+	unordered_map<string, int> itembyname;
+	unordered_map<string, int> itembynamemod;
+	unordered_map<string, int> itembymod;
+	int maxid;
+};
+
+struct XMLTrinket {
+	unordered_map<int, XMLAttributes> trinkets;
+	unordered_map<string, int> trinketbyname;
+	unordered_map<string, int> trinketbynamemod;
+	unordered_map<string, int> trinketbymod;
+	unordered_map<string, int> trinketbypickup;
+	int maxid;
 };
 
 struct XMLCard {
@@ -97,6 +116,8 @@ struct XMLEntity {
 struct XMLData {
 	XMLPlayer PlayerData;
 	XMLEntity EntityData;
+	XMLItem ItemData;
+	XMLTrinket TrinketData;
 	XMLMusic MusicData;
 	XMLPill PillData;
 	XMLCard CardData;

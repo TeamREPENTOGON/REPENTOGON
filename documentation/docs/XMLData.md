@@ -24,6 +24,15 @@ Returns a table containing the attributes of the entities2.xml that match the gi
 	```
 ___
 
+### Get·Item·By·Name () {: aria-label='Functions' }
+#### table GetItemByName ( string name ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the items(collectibles) on items.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
+???- info "Table usage"
+	```lua
+	print("Sad Onion's description:", XMLData.GetItemByName("The Sad Onion").description)
+	```
+___
+
 ### Get·Mod·By·Name () {: aria-label='Functions' }
 #### table GetModByName ( string name ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the metadata.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
@@ -57,6 +66,15 @@ Returns a table containing the attributes of the players.xml that match the give
 ???- info "Table usage"
 	```lua
 	print("Isaac's bomb number:", XMLData.GetPlayerByName("Isaac").bombs)
+	```
+___
+
+### Get·Trinket·By·Name () {: aria-label='Functions' }
+#### table GetTrinketByName ( string name ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the trinkets on items.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
+???- info "Table usage"
+	```lua
+	print("AAA Batteries description:", XMLData.GetTrinketByName("AAA Battery").description)
 	```
 ___
 

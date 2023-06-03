@@ -344,7 +344,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				{
 					card[stringlower(attr->name())] = string(attr->value());
 				}
-				if (card.count("id")) { //leaving this here in case theres an actual way of assigning an id for a pilleffect that I dont know of
+				if (card.count("id") && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) { 
 					id = stoi(card["id"]);
 				}
 				else {
@@ -380,7 +380,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				{
 					pill[stringlower(attr->name())] = string(attr->value());
 				}
-				if (pill.count("id")) { //leaving this here in case theres an actual way of assigning an id for a pilleffect that I dont know of
+				if (pill.count("id") && ((strcmp(lastmodid,"BaseGame") == 0) || !iscontent)) { 
 					id = stoi(pill["id"]);
 				}
 				else {
@@ -408,6 +408,96 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.PillData.pillbyname[pill["name"]] = id;
 				XMLStuff.PillData.pills[id] = pill;
 				XMLStuff.ModData.modpills[lastmodid] += 1;
+			}
+		}
+	}
+	else if ((strcmp(node->name(), "items") == 0)) {
+		xml_node<char>* daddy = node;
+		int id = 1;
+		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+			if ((strcmp(auxnode->name(), "active") == 0) || (strcmp(auxnode->name(), "passive") == 0) || (strcmp(auxnode->name(), "familiar") == 0)) {
+				unordered_map<string, string> item;
+				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					item[stringlower(attr->name())] = string(attr->value());
+				}
+				if ((item["name"].length() == 0) && (strcmp(lastmodid, "BaseGame") == 0)) { return; } //items_metadata lazy bypass
+				if (item.count("id") && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+					id = stoi(item["id"]);
+				}
+				else {
+					XMLStuff.ItemData.maxid = XMLStuff.ItemData.maxid + 1;
+					item["id"] = to_string(XMLStuff.ItemData.maxid);
+					id = XMLStuff.ItemData.maxid;
+				}
+				if (id > XMLStuff.ItemData.maxid) {
+					XMLStuff.ItemData.maxid = id;
+				}
+				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					item[attr->name()] = attr->value();
+				}
+
+				item["sourceid"] = lastmodid;
+				item["type"] = auxnode->name();
+				//printf("iname: %s // %s (%s) \n", item["name"].c_str(), item["description"].c_str(), item["id"].c_str());
+				if (item["name"].find("#") != string::npos) {
+					item["untranslatedname"] = item["name"];
+					item["name"] = string(stringTable->GetString("Items", 0, item["name"].substr(1, item["name"].length()).c_str(), &unk));
+				}
+
+				if (item["description"].find("#") != string::npos) {
+					item["untranslateddescription"] = item["description"];
+					item["description"] = string(stringTable->GetString("Items", 0, item["description"].substr(1, item["description"].length()).c_str(), &unk));
+				}
+
+				XMLStuff.ItemData.itembynamemod[item["name"] + lastmodid] = id;
+				XMLStuff.ItemData.itembymod[lastmodid] = id;
+				XMLStuff.ItemData.itembyname[item["name"]] = id;
+				XMLStuff.ItemData.items[id] = item;
+				XMLStuff.ModData.moditems[lastmodid] += 1;
+			}
+			else if ((strcmp(auxnode->name(), "trinket") == 0)) {
+				unordered_map<string, string> trinket;
+				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					trinket[stringlower(attr->name())] = string(attr->value());
+				}
+				if ((trinket["name"].length() == 0) && (strcmp(lastmodid, "BaseGame") == 0)) { return; } //items_metadata lazy bypass
+				if (trinket.count("id") && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+					id = stoi(trinket["id"]);
+				}
+				else {
+					XMLStuff.TrinketData.maxid = XMLStuff.TrinketData.maxid + 1;
+					trinket["id"] = to_string(XMLStuff.TrinketData.maxid);
+					id = XMLStuff.TrinketData.maxid;
+				}
+				if (id > XMLStuff.TrinketData.maxid) {
+					XMLStuff.TrinketData.maxid = id;
+				}
+				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					trinket[attr->name()] = attr->value();
+				}
+
+				trinket["sourceid"] = lastmodid;
+				trinket["type"] = auxnode->name();
+				//printf("tname: %s // %s (%s) \n", trinket["name"].c_str(), trinket["description"].c_str(), trinket["id"].c_str());
+				if (trinket["name"].find("#") != string::npos) {
+					trinket["untranslatedname"] = trinket["name"];
+					trinket["name"] = string(stringTable->GetString("Items", 0, trinket["name"].substr(1, trinket["name"].length()).c_str(), &unk));
+				}
+
+				if (trinket["description"].find("#") != string::npos) {
+					trinket["untranslateddescription"] = trinket["description"];
+					trinket["description"] = string(stringTable->GetString("Items", 0, trinket["description"].substr(1, trinket["description"].length()).c_str(), &unk));
+				}
+
+				XMLStuff.TrinketData.trinketbynamemod[trinket["name"] + lastmodid] = id;
+				XMLStuff.TrinketData.trinketbymod[lastmodid] = id;
+				XMLStuff.TrinketData.trinketbyname[trinket["name"]] = id;
+				XMLStuff.TrinketData.trinkets[id] = trinket;
+				XMLStuff.ModData.modtrinkets[lastmodid] += 1;
 			}
 		}
 	}
@@ -500,6 +590,12 @@ HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, int ismod)->void) {
 	super(xmlpath, ismod);
 }
 
+HOOK_METHOD(ItemConfig, Load, (char* xmlpath, int ismod)->void) {
+	printf("item: %s %d \n", xmlpath,ismod);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
+}
+
 HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -540,6 +636,7 @@ bool Lua_PushXMLNode(lua_State* L, XMLAttributes node)
 
 int Lua_GetEntityXML(lua_State* L)
 {
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected string, got %s", lua_typename(L, lua_type(L, 1))); }
 	string entityname = string( lua_tostring(L, 1));
 	XMLAttributes entity = XMLStuff.EntityData.entities[XMLStuff.EntityData.entitybyname[entityname]];
 	printf("entityname %s %d", entityname.c_str(), entity.count("id"));
@@ -549,6 +646,7 @@ int Lua_GetEntityXML(lua_State* L)
 
 int Lua_GetPlayerXML(lua_State* L)
 {
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected string, got %s", lua_typename(L, lua_type(L, 1))); }
 	string entityname = string(lua_tostring(L, 1));
 	XMLAttributes entity = XMLStuff.PlayerData.players[XMLStuff.PlayerData.playerbyname[entityname]];
 	printf("playername %s %d", entityname.c_str(), entity.count("id"));
@@ -558,6 +656,7 @@ int Lua_GetPlayerXML(lua_State* L)
 
 int Lua_GetModXML(lua_State* L)
 {
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected string, got %s", lua_typename(L, lua_type(L, 1))); }
 	string entityname = string(lua_tostring(L, 1));
 	XMLAttributes entity = XMLStuff.ModData.mods[XMLStuff.ModData.modbyname[entityname]];
 	printf("modname %s %d", entityname.c_str(), entity.count("id"));
@@ -567,6 +666,7 @@ int Lua_GetModXML(lua_State* L)
 
 int Lua_GetMusicXML(lua_State* L)
 {
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected string, got %s", lua_typename(L, lua_type(L, 1))); }
 	string entityname = string(lua_tostring(L, 1));
 	XMLAttributes entity = XMLStuff.MusicData.tracks[XMLStuff.MusicData.musicbyname[entityname]];
 	printf("musicname %s %d", entityname.c_str(), entity.count("id"));
@@ -576,6 +676,7 @@ int Lua_GetMusicXML(lua_State* L)
 
 int Lua_GetPillXML(lua_State* L)
 {
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected string, got %s", lua_typename(L, lua_type(L, 1))); }
 	string entityname = string(lua_tostring(L, 1));
 	XMLAttributes pill = XMLStuff.PillData.pills[XMLStuff.PillData.pillbyname[entityname]];
 	printf("pillname %s %d", entityname.c_str(), pill.count("id"));
@@ -585,10 +686,31 @@ int Lua_GetPillXML(lua_State* L)
 
 int Lua_GetCardXML(lua_State* L)
 {
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected string, got %s", lua_typename(L, lua_type(L, 1))); }
 	string entityname = string(lua_tostring(L, 1));
 	XMLAttributes pill = XMLStuff.CardData.cards[XMLStuff.CardData.cardbyname[entityname]];
-	printf("pillname %s %d", entityname.c_str(), pill.count("id"));
+	printf("cardname %s %d", entityname.c_str(), pill.count("id"));
 	Lua_PushXMLNode(L, pill);
+	return 1;
+}
+
+int Lua_GetTrinketXML(lua_State* L)
+{
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected string, got %s", lua_typename(L, lua_type(L, 1))); }
+	string entityname = string(lua_tostring(L, 1));
+	XMLAttributes trinket = XMLStuff.TrinketData.trinkets[XMLStuff.TrinketData.trinketbyname[entityname]];
+	printf("cardname %s %d", entityname.c_str(), trinket.count("id"));
+	Lua_PushXMLNode(L, trinket);
+	return 1;
+}
+
+int Lua_GetItemXML(lua_State* L)
+{
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected string, got %s", lua_typename(L, lua_type(L, 1))); }
+	string entityname = string(lua_tostring(L, 1));
+	XMLAttributes Item = XMLStuff.ItemData.items[XMLStuff.ItemData.itembyname[entityname]];
+	printf("cardname %s %d", entityname.c_str(), Item.count("id"));
+	Lua_PushXMLNode(L, Item);
 	return 1;
 }
 
@@ -610,6 +732,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_settable(L, -3);
 	lua_pushstring(L, "GetCardByName");
 	lua_pushcfunction(L, Lua_GetCardXML);
+	lua_settable(L, -3);
+	lua_pushstring(L, "GetItemByName");
+	lua_pushcfunction(L, Lua_GetItemXML);
+	lua_settable(L, -3);
+	lua_pushstring(L, "GetTrinketByName");
+	lua_pushcfunction(L, Lua_GetTrinketXML);
 	lua_settable(L, -3);
 	lua_pushstring(L, "GetPillByName");
 	lua_pushcfunction(L, Lua_GetPillXML);
