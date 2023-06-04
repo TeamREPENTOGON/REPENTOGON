@@ -15,7 +15,7 @@ Returns a table containing the attributes of the entity on entities2.xml that ma
 ___
 
 ### Get·Entry·By·Name () {: aria-label='Functions' }
-#### table GetEntryByName ( [XMLNode](/enums/XMLNode.md) nodetype, string name ) {: .copyable aria-label='Functions' }
+#### table GetEntryByName ( [XMLNode](/enums/XMLNode.html) nodetype, string name ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the corresponding xml, the matching nodetype(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given name parameter. All of the attributes are lowercase for ease of access.
 ???- info "Table usage"
 	```lua
