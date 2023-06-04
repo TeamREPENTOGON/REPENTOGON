@@ -754,16 +754,16 @@ int ischartainted = false;
 int hidemarks = false;
 
 unordered_map<string, string> GetPlayerDataForMarks(int playerid) {
-	unordered_map<string, string> playerdata = XMLStuff.PlayerData.players[playerid];
+	unordered_map<string, string> playerdata = XMLStuff.PlayerData->nodes[playerid];
 	if (playerdata.count("completionparent") > 0) {
 		string aidx = playerdata["sourceid"] + "-" + playerdata["completionparent"];
-		if (XMLStuff.PlayerData.playerbynamemod.count(aidx) == 0) {
-			if (XMLStuff.PlayerData.playerbyname.count(playerdata["completionparent"]) > 0) {
-				return XMLStuff.PlayerData.players[XMLStuff.PlayerData.playerbyname[playerdata["completionparent"]]];
+		if (XMLStuff.PlayerData->bynamemod.count(aidx) == 0) {
+			if (XMLStuff.PlayerData->byname.count(playerdata["completionparent"]) > 0) {
+				return XMLStuff.PlayerData->nodes[XMLStuff.PlayerData->byname[playerdata["completionparent"]]];
 			}
 		}
 		else {
-			return XMLStuff.PlayerData.players[XMLStuff.PlayerData.playerbynamemod[aidx]];
+			return XMLStuff.PlayerData->nodes[XMLStuff.PlayerData->bynamemod[aidx]];
 		}
 	}
 	return playerdata;
@@ -791,7 +791,7 @@ string GetMarksIdx(int playerid) {
 
 array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
 	array<int, 15> marks;
-	if (XMLStuff.PlayerData.players.count(playerid) > 0) {
+	if (XMLStuff.PlayerData->nodes.count(playerid) > 0) {
 		unordered_map<string, string> playerdata = GetPlayerDataForMarks(playerid);
 		string idx = GetMarksIdx(playerid);
 		hidemarks = false;

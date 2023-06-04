@@ -30,98 +30,124 @@ struct hash<tuple<int, int, int>> {
 };
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
 
-struct XMLMod {
-	unordered_map<int, unordered_map<string, string>> mods; //idx is loadorder
-	unordered_map<string, int> modbyname; //tainteds get added a "-Tainted-" at the end as an index
-	unordered_map<string, int> modbyid;
-	unordered_map<string, int> modbydirectory;
-	unordered_map<string, int> modbyfullpath;
-	unordered_map<string, int> modbyfolder;
-
-	unordered_map<int, ModEntry*> modentries;
-	unordered_map<string, int> modplayers;
-	unordered_map<string, int> modentities;
-	unordered_map<string, int> moditems;
-	unordered_map<string, int> modtrinkets;
-	unordered_map<string, int> modcards;
-	unordered_map<string, int> modpills;
-	unordered_map<string, int> modmusictracks;
-	int nomods;
-};
-
 typedef unordered_map<string, string> XMLAttributes;
 
-
-struct XMLMusic {
-	unordered_map<int, XMLAttributes> tracks;
-	unordered_map<string, int> musicbyname;
-	unordered_map<string, int> musicbynamemod;
-	unordered_map<string, int> musicbymod;
-	int maxid = 118; //last vanilla music track, for now I need to do this here, may scrap it later and fully automate it
-};
-
-struct XMLItem {
-	unordered_map<int, XMLAttributes> items;
-	unordered_map<string, int> itembyname;
-	unordered_map<string, int> itembynamemod;
-	unordered_map<string, int> itembymod;
+class XMLDataHolder {
+public:
+	unordered_map<int, XMLAttributes> nodes;
+	unordered_map<string, int> byname;
+	unordered_map<string, int> bynamemod;
+	unordered_map<string, int> bymod;
 	int maxid;
+
+	XMLAttributes GetNodeByName(string name) {
+		return this->nodes[this->byname[name]];
+	}
+	XMLAttributes GetNodeByNameMod(string name) {
+		return this->nodes[this->bynamemod[name]];
+	}
+	XMLAttributes GetNodesByMod(string name) {
+		return this->nodes[this->bynamemod[name]];
+	}
 };
 
-struct XMLTrinket {
-	unordered_map<int, XMLAttributes> trinkets;
-	unordered_map<string, int> trinketbyname;
-	unordered_map<string, int> trinketbynamemod;
-	unordered_map<string, int> trinketbymod;
-	unordered_map<string, int> trinketbypickup;
-	int maxid;
+
+class XMLMod: public XMLDataHolder {
+public:
+	unordered_map<string, int> byid;
+	unordered_map<string, int> bydirectory;
+	unordered_map<string, int> byfullpath;
+	unordered_map<string, int> byfolder;
+
+	unordered_map<int, ModEntry*> modentries;
+	unordered_map<string, int> players;
+	unordered_map<string, int> entities;
+	unordered_map<string, int> items;
+	unordered_map<string, int> trinkets;
+	unordered_map<string, int> cards;
+	unordered_map<string, int> pills;
+	unordered_map<string, int> musictracks;
 };
 
-struct XMLCard {
-	unordered_map<int, XMLAttributes> cards;
-	unordered_map<string, int> cardbyname;
-	unordered_map<string, int> cardbynamemod;
-	unordered_map<string, int> cardbymod;
-	unordered_map<string, int> cardbypickup;
-	int maxid;
+
+
+
+class XMLMusic: public XMLDataHolder {
+public:
+	XMLMusic(){
+		this->maxid = 118;//last vanilla music track, for now I need to do this here, may scrap it later and fully automate it
+	}	
 };
 
-struct XMLPill {
-	unordered_map<int, XMLAttributes> pills;
-	unordered_map<string, int> pillbyname;
-	unordered_map<string, int> pillbynamemod;
-	unordered_map<string, int> pillbymod;
-	unordered_map<string, int> pillbypickup;
-	int maxid;
+class XMLItem : public XMLDataHolder {
+
 };
 
-struct XMLPlayer {
-	unordered_map<int, XMLAttributes> players;
-	unordered_map<string, int> playerbyname;
-	unordered_map<string, int> playerbynamemod;
-	unordered_map<string, int> playerbymod;
-	int maxid;
+class XMLTrinket : public XMLDataHolder {
+public:
+	unordered_map<string, int> bypickup;
 };
 
-struct XMLEntity {
-	unordered_map<tuple<int,int,int>, XMLAttributes> entities; //idx is type-var-sub vector
-	unordered_map<string, tuple<int, int, int>> entitybyname;
-	unordered_map<string, tuple<int, int, int>> entitybynamemod;
-	unordered_map<string, tuple<int, int, int>> entitybytype;
-	unordered_map<tuple<int, int, int>, tuple<int, int, int>> entitybytypevar;
+class XMLCard : public XMLDataHolder {
+public:
+	unordered_map<string, int> bypickup;
+};
+
+class XMLPill : public XMLDataHolder {
+public:
+	unordered_map<string, int> bypickup;
+};
+
+class XMLPlayer : public XMLDataHolder {
+};
+
+class XMLEntity {
+public:
+	unordered_map<tuple<int, int, int>, XMLAttributes> nodes; //idx is type-var-sub vector
+	unordered_map<string, tuple<int, int, int>> byname;
+	unordered_map<string, tuple<int, int, int>> bynamemod;
+	unordered_map<string, tuple<int, int, int>> bytype;
+	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
+
+	XMLAttributes GetNodeByName(string name) {
+		return this->nodes[this->byname[name]];
+	}
+	XMLAttributes GetNodeByNameMod(string name) {
+		return this->nodes[this->bynamemod[name]];
+	}
+	XMLAttributes GetNodesByMod(string name) {
+		return this->nodes[this->bynamemod[name]];
+	}
+	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub,bool strict ) {
+		tuple idx = { type, var, sub };
+		XMLAttributes none;
+		if (this->nodes.count({ type, var, sub }) > 0) {
+			return this->nodes[{ type, var, sub }];
+		}
+		else if (strict) {
+			return none;
+		}
+		else if (this->nodes.count({ type, var, 0 })) {
+			return this->nodes[{ type, var, 0 }];
+		}
+		else if (this->nodes.count({ type, 0, 0 })) {
+			return this->nodes[{ type, 0, 0 }];
+		}
+		return none;
+	}
 	int maxid;
 };
 
 
 struct XMLData {
-	XMLPlayer PlayerData;
-	XMLEntity EntityData;
-	XMLItem ItemData;
-	XMLTrinket TrinketData;
-	XMLMusic MusicData;
-	XMLPill PillData;
-	XMLCard CardData;
-	XMLMod ModData;
+	XMLPlayer* PlayerData = new XMLPlayer();
+	XMLEntity* EntityData = new XMLEntity();
+	XMLItem* ItemData = new XMLItem();
+	XMLTrinket* TrinketData = new XMLTrinket();
+	XMLMusic* MusicData = new XMLMusic();
+	XMLPill* PillData = new XMLPill();
+	XMLCard* CardData = new XMLCard();
+	XMLMod* ModData = new XMLMod();
 };
 extern XMLData XMLStuff;
 

@@ -359,9 +359,9 @@ static void RegisterClipboardStuff(lua_State* L) {
 #include "XMLData.h"
 static int Lua_GetSubTypwByName(lua_State* L) {
 	string text = string(luaL_checkstring(L, 1));
-	if (XMLStuff.EntityData.entitybyname.count(text) > 0)
+	if (XMLStuff.EntityData->byname.count(text) > 0)
 	{
-		XMLAttributes ent = XMLStuff.EntityData.entities[XMLStuff.EntityData.entitybyname[text]];
+		XMLAttributes ent = XMLStuff.EntityData->GetNodeByName(text);
 		if ((ent.count("subtype") > 0) && (ent["subtype"].length() > 0)) {
 			lua_pushnumber(L, stoi(ent["subtype"]));
 			return 1;

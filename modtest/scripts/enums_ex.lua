@@ -2158,3 +2158,13 @@ ItemAnim = {
 	SHOOT = 2,
 	SHOOT_ALT = 3,
 }
+
+XMLNode = {
+	MOD = 0,
+	ENTITY = 1,
+	PLAYER = 2,
+	ITEM = 3,
+	TRINKET = 4,
+	PILL = 5,
+	CARD = 6,
+}

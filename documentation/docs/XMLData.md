@@ -5,76 +5,33 @@
         
 ## Functions
 
-### Get·Card·By·Name () {: aria-label='Functions' }
-#### table GetCardByName ( string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the cards/runes/souls on pocketitems.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
+### Get·Entity·By·Type·Var·Sub () {: aria-label='Functions' }
+#### table GetEntityByTypeVarSub ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) type, int variant = 0 , int subtype = 0, bool strict = false) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the entity on entities2.xml that match the given type and/or variant and/or subtype. The strict parameter determines if it should only return a value when all 3 attributes(type, var and sub) match or return whatever matches the type and take the rest as maybes. All of the attributes are lowercase for ease of access.
 ???- info "Table usage"
 	```lua
-	print("Soul Of Isaac's desc:", XMLData.GetCardByName("Soul of Isaac").description)
+	print("Monstro's BossID:", XMLData.GetEntityByTypeVarSub(20).bossid)
+	```
+___
+
+### Get·Entry·By·Name () {: aria-label='Functions' }
+#### table GetEntryByName ( [XMLNode](XMLNode.md) nodetype, string name ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the corresponding xml, the matching nodetype(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given name parameter. All of the attributes are lowercase for ease of access.
+???- info "Table usage"
+	```lua
+	print("Sad Onion's description:", XMLData.GetEntryByName(XMLNode.ITEM,"The Sad Onion").description)
+	```
+___
+
+### Get·Entry·From·Entity () {: aria-label='Functions' }
+#### table GetEntryFromEntity ( [Entity](Entity.md) entity, bool autoxmlpick = true, bool strict) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the provided entity. The autoxmlpick parameter determines if only entities2.xml should be used or if it should pick the xml that matches the entitytype(Ex: items.xml for pedestal collectibles) . The strict parameter determines if it should only return a value when the type,variant and subtype attributes match or return whatever matches the type and take the rest as maybes. All of the attributes are lowercase for ease of access.
+???- info "Table usage"
+	```lua
+	print("Player's birthright:", XMLData.GetEntryFromEntity(Isaac.GetPlayer()).birthright)
 	```
 ___
 
 
-### Get·Entity·By·Name () {: aria-label='Functions' }
-#### table GetEntityByName ( string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the entities2.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
-???- info "Table usage"
-	```lua
-	print("Monstro's type:", XMLData.GetEntityByName("Monstro").type)
-	```
-___
 
-### Get·Item·By·Name () {: aria-label='Functions' }
-#### table GetItemByName ( string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the items(collectibles) on items.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
-???- info "Table usage"
-	```lua
-	print("Sad Onion's description:", XMLData.GetItemByName("The Sad Onion").description)
-	```
-___
-
-### Get·Mod·By·Name () {: aria-label='Functions' }
-#### table GetModByName ( string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the metadata.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
-???- info "Table usage"
-	```lua
-	print("Car mod's version:", XMLData.GetModByName("Car").version)
-	```
-___
-
-### Get·Music·By·Name () {: aria-label='Functions' }
-#### table GetMusicByName ( string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the music.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
-???- info "Table usage"
-	```lua
-	print("Basement track loop:", XMLData.GetMusicByName("Basement").loop)
-	```
-___
-
-### Get·Pill·By·Name () {: aria-label='Functions' }
-#### table GetPillByName ( string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the pill effects on pocketitems.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
-???- info "Table usage"
-	```lua
-	print("Range Up's announcer sfx:", XMLData.GetPillByName("Range Up").announcer)
-	```
-___
-
-### Get·Player·By·Name () {: aria-label='Functions' }
-#### table GetPlayerByName ( string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the players.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
-???- info "Table usage"
-	```lua
-	print("Isaac's bomb number:", XMLData.GetPlayerByName("Isaac").bombs)
-	```
-___
-
-### Get·Trinket·By·Name () {: aria-label='Functions' }
-#### table GetTrinketByName ( string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the trinkets on items.xml that match the given name attribute. All of the attributes are lowercase for ease of access.
-???- info "Table usage"
-	```lua
-	print("AAA Batteries description:", XMLData.GetTrinketByName("AAA Battery").description)
-	```
-___
 
