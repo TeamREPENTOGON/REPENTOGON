@@ -568,10 +568,10 @@ void ProcessXmlNode(xml_node<char>* node) {
 
 		for (xml_node<char>* auxnode = daddy->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 			{
-				if (auxnode->value() && (strcmp(node->name(), "tag") != 0)){
+				if (auxnode->value() && (strcmp(auxnode->name(), "tag") != 0)){
 					mod[auxnode->name()] = auxnode->value();
 				}
-				else if ((strcmp(auxnode->name(), "tag") == 0) && auxnode->first_attribute("id") && auxnode->first_attribute("id")->value()) {
+				else if ((strcmp(auxnode->name(), "tag") == 0) && auxnode->first_attribute("id")) {
 					tags += string(auxnode->first_attribute("id")->value()) +", ";
 				}
 			}
@@ -587,12 +587,11 @@ void ProcessXmlNode(xml_node<char>* node) {
 			idx = XMLStuff.ModData->maxid;
 		}
 			
-		
+		mod["tags"] = tags;
 		XMLStuff.ModData->nodes[idx] = mod;
 		XMLStuff.ModData->byid[mod["id"]] = idx;
 		XMLStuff.ModData->bydirectory[mod["directory"]] = idx;
 		XMLStuff.ModData->byname[mod["name"]] = idx;
-		mod["tags"] = tags;
 	}
 }
 
