@@ -276,7 +276,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				player[stringlower(attr->name())] = string(attr->value());
 			}
-			if (player.count("id") > 0) {
+			if ((player.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = stoi(player["id"]);
 			}
 			else {
@@ -496,7 +496,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				music[stringlower(attr->name())] = string(attr->value());
 			}
-			if (music.count("id") > 0) {
+			if ((music.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = stoi(music["id"]);
 			}
 			else {
@@ -532,7 +532,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				sound[stringlower(attr->name())] = string(attr->value());
 			}
-			if (sound.count("id") > 0) {
+			if ((sound.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = stoi(sound["id"]);
 			}
 			else {
