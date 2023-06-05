@@ -552,7 +552,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if ((sound.count("name") == 0) && (XMLStuff.SoundData->childs[id]["sample"].size() > 0) && (XMLStuff.SoundData->childs[id]["sample"][0].count("path") != 0)) {
 				sound["name"] = getFileName(XMLStuff.SoundData->childs[id]["sample"][0]["path"]);
 			}
-			printf("sound: %s (%d) \n",sound["name"].c_str(),id);
+			//printf("sound: %s (%d) \n",sound["name"].c_str(),id);
 			XMLStuff.SoundData->bynamemod[sound["name"] + lastmodid] = id;
 			XMLStuff.SoundData->bymod[lastmodid] = id;
 			XMLStuff.SoundData->byname[sound["name"]] = id;

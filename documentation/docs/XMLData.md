@@ -12,6 +12,8 @@ Returns a table containing the attributes of the entity on entities2.xml that ma
 	```lua
 	print("Monstro's BossID:", XMLData.GetEntityByTypeVarSub(20).bossid)
 	```
+???+ note "child nodes"
+    Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
 
 ### Get·Entry·By·Name () {: aria-label='Functions' }
@@ -21,6 +23,8 @@ Returns a table containing the attributes of the corresponding xml, the matching
 	```lua
 	print("Sad Onion's description:", XMLData.GetEntryByName(XMLNode.ITEM,"The Sad Onion").description)
 	```
+???+ note "child nodes"
+    Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
 
 ### Get·Entry·From·Entity () {: aria-label='Functions' }
@@ -30,6 +34,8 @@ Returns a table containing the attributes of the provided entity. The autoxmlpic
 	```lua
 	print("Player's birthright:", XMLData.GetEntryFromEntity(Isaac.GetPlayer()).birthright)
 	```
+???+ note "child nodes"
+    Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
 
 
