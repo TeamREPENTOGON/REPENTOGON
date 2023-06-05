@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cctype>
 
+
 #include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
@@ -31,13 +32,30 @@ struct hash<tuple<int, int, int>> {
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
 
 typedef unordered_map<string, string> XMLAttributes;
+typedef unordered_map<int, XMLAttributes> XMLNodes;
+typedef unordered_map<string, std::vector <XMLAttributes>> XMLChilds;
+typedef unordered_map<int, XMLChilds> XMLKinder;
+typedef unordered_map<tuple<int, int, int>, XMLChilds> XMLEntityKinder;
+typedef unordered_map<string, int> XMLNodeIdxLookup;
+
+
+inline string stringlower(char* str)
+{
+	string s = string(str);
+	for (auto& c : s) {
+		c = tolower(c);
+	}
+	return s;
+}
+
 
 class XMLDataHolder {
 public:
-	unordered_map<int, XMLAttributes> nodes;
-	unordered_map<string, int> byname;
-	unordered_map<string, int> bynamemod;
-	unordered_map<string, int> bymod;
+	XMLNodes nodes;
+	XMLKinder childs;
+	XMLNodeIdxLookup byname;
+	XMLNodeIdxLookup bynamemod;
+	XMLNodeIdxLookup bymod;
 	int maxid;
 
 	XMLAttributes GetNodeByName(string name) {
@@ -49,24 +67,38 @@ public:
 	XMLAttributes GetNodesByMod(string name) {
 		return this->nodes[this->bynamemod[name]];
 	}
+
+	void ProcessChilds(xml_node<char>* parentnode, int id) {
+
+		for (xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
+			XMLAttributes child;
+			for (xml_attribute<>* attr = auxnodebabe->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				child[stringlower(attr->name())] = string(attr->value());
+			}
+			this->childs[id][auxnodebabe->name()].push_back(child);
+		}
+	}
+
 };
 
 
 class XMLMod: public XMLDataHolder {
 public:
-	unordered_map<string, int> byid;
-	unordered_map<string, int> bydirectory;
-	unordered_map<string, int> byfullpath;
-	unordered_map<string, int> byfolder;
+	XMLNodeIdxLookup byid;
+	XMLNodeIdxLookup bydirectory;
+	XMLNodeIdxLookup byfullpath;
+	XMLNodeIdxLookup byfolder;
 
 	unordered_map<int, ModEntry*> modentries;
-	unordered_map<string, int> players;
-	unordered_map<string, int> entities;
-	unordered_map<string, int> items;
-	unordered_map<string, int> trinkets;
-	unordered_map<string, int> cards;
-	unordered_map<string, int> pills;
-	unordered_map<string, int> musictracks;
+	XMLNodeIdxLookup players;
+	XMLNodeIdxLookup entities;
+	XMLNodeIdxLookup items;
+	XMLNodeIdxLookup trinkets;
+	XMLNodeIdxLookup cards;
+	XMLNodeIdxLookup pills;
+	XMLNodeIdxLookup musictracks;
+	XMLNodeIdxLookup sounds;
 };
 
 
@@ -78,6 +110,14 @@ public:
 		this->maxid = 118;//last vanilla music track, for now I need to do this here, may scrap it later and fully automate it
 	}	
 };
+
+class XMLSound : public XMLDataHolder {
+public:
+	XMLSound() {
+		this->maxid = 832;//last vanilla music track, for now I need to do this here, may scrap it later and fully automate it		
+	}	
+};
+
 
 class XMLItem : public XMLDataHolder {
 
@@ -104,6 +144,7 @@ class XMLPlayer : public XMLDataHolder {
 class XMLEntity {
 public:
 	unordered_map<tuple<int, int, int>, XMLAttributes> nodes; //idx is type-var-sub vector
+	XMLEntityKinder childs;
 	unordered_map<string, tuple<int, int, int>> byname;
 	unordered_map<string, tuple<int, int, int>> bynamemod;
 	unordered_map<string, tuple<int, int, int>> bytype;
@@ -135,6 +176,19 @@ public:
 		}
 		return none;
 	}
+
+	void ProcessChilds(xml_node<char>* parentnode, tuple<int, int, int> id) {
+
+		for (xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
+			XMLAttributes child;
+			for (xml_attribute<>* attr = auxnodebabe->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				child[stringlower(attr->name())] = string(attr->value());
+			}
+			this->childs[id][auxnodebabe->name()].push_back(child);
+		}
+	}
+
 	int maxid;
 };
 
@@ -145,6 +199,7 @@ struct XMLData {
 	XMLItem* ItemData = new XMLItem();
 	XMLTrinket* TrinketData = new XMLTrinket();
 	XMLMusic* MusicData = new XMLMusic();
+	XMLSound* SoundData = new XMLSound();
 	XMLPill* PillData = new XMLPill();
 	XMLCard* CardData = new XMLCard();
 	XMLMod* ModData = new XMLMod();

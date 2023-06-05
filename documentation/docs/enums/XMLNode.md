@@ -12,3 +12,5 @@ tags:
 |4 |TRINKET {: .copyable } | |
 |5 |PILL {: .copyable } | |
 |6 |CARD {: .copyable } | |
+|7 |MUSIC {: .copyable } | |
+|8 |SOUNDS {: .copyable } | |

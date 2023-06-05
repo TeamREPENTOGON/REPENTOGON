@@ -753,8 +753,8 @@ int selectedchar = 0;
 int ischartainted = false;
 int hidemarks = false;
 
-unordered_map<string, string> GetPlayerDataForMarks(int playerid) {
-	unordered_map<string, string> playerdata = XMLStuff.PlayerData->nodes[playerid];
+XMLAttributes GetPlayerDataForMarks(int playerid) {
+	XMLAttributes playerdata = XMLStuff.PlayerData->nodes[playerid];
 	if (playerdata.count("completionparent") > 0) {
 		string aidx = playerdata["sourceid"] + "-" + playerdata["completionparent"];
 		if (XMLStuff.PlayerData->bynamemod.count(aidx) == 0) {
@@ -779,7 +779,7 @@ string stolower(char* str)
 }
 
 string GetMarksIdx(int playerid) {
-	unordered_map<string, string> playerdata = GetPlayerDataForMarks(playerid);
+	XMLAttributes playerdata = GetPlayerDataForMarks(playerid);
 	string idx = playerdata["sourceid"] + "-" + playerdata["name"];
 	ischartainted = false;
 	if (playerdata.count("bskinparent") > 0) {
@@ -792,7 +792,7 @@ string GetMarksIdx(int playerid) {
 array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
 	array<int, 15> marks;
 	if (XMLStuff.PlayerData->nodes.count(playerid) > 0) {
-		unordered_map<string, string> playerdata = GetPlayerDataForMarks(playerid);
+		XMLAttributes playerdata = GetPlayerDataForMarks(playerid);
 		string idx = GetMarksIdx(playerid);
 		hidemarks = false;
 		if (playerdata.count("nomarks") > 0) {

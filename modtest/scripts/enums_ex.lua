@@ -2167,4 +2167,6 @@ XMLNode = {
 	TRINKET = 4,
 	PILL = 5,
 	CARD = 6,
+	MUSIC = 7,
+	SOUND = 8,
 }
