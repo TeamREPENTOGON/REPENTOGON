@@ -36,7 +36,7 @@ void ASMPatchLogMessage() {
 	    .AddBytes("\x41") // inc ecx
 	    .AddBytes("\x84\xC0") // test al, al
 	    .AddBytes("\x75\xF9") // jne xxxxxxxx
-	    .AddRelativeJump((char*)addr + 0x11);
+	    .AddRelativeJump((char*)addr + 10);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -53,7 +53,7 @@ void ASMPatchAmbushWaveCount() {
 	printf("[REPENTOGON] Patching hardcoded ambush wave count at %p\n", addr);
 
 	char ptrMov[] = {
-		0x8B, 0X1D, 0, 0, 0, 0
+		0x8B, 0X1D, 0, 0, 0, 0, 0
 	};
 
 	void* ptr = &ambushWaves;
