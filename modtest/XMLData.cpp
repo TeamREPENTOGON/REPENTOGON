@@ -26,6 +26,9 @@ using namespace std;
 char* lastmodid = "BaseGame";
 bool iscontent = false;
 
+vector<string> xmlerrors;
+string currpath;
+
 XMLData XMLStuff;
 
 
@@ -597,52 +600,83 @@ void ProcessXmlNode(xml_node<char>* node) {
 
 HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)->xml_node<char>*) {
 	xml_node<char>* node = super(name, size, casesensitive);
-	ProcessXmlNode(node);
-	return super(name, size, casesensitive);
+	if (node != nullptr) {
+		xml_attribute<char>* err =  node->first_attribute("xmlerror");
+		if ((currpath.length() > 0) && (err != nullptr)){
+			string error = "[XMLParsingError] " + xmlerrors[stoi(err->value())] + " in " + currpath;
+			g_Game->GetConsole()->PrintError(error);
+			KAGE::LogMessage(3,(error + "\n").c_str());
+			printf("%s \n", error.c_str());
+		}
+		ProcessXmlNode(node);
+	}
+	return node;
+}
+
+char * rootnodename(char* a) {
+	string input = (string)a;
+	size_t start = input.find('<'); 
+	if (start == string::npos) {
+		return ""; 
+	}
+	start++;  
+	size_t end = input.find('>', start); 
+	if (end == string::npos) {
+		return "";  
+	}
+	size_t length = end - start;
+	string str = input.substr(start, length);
+	printf(" %d %d %d %s", end, length, start, str.c_str());
+	char* mutableCharPtr = new char[str.length() + 1];
+	strcpy(mutableCharPtr, str.c_str());
+	return mutableCharPtr;
 }
 
 HOOK_METHOD(Manager, LoadConfigs,()->void) {
-	//printf("yoyoyo ",this);
 	super();
 	UpdateXMLModEntryData(); //resources are already loaded by this point only mod content remains
 }
 
 HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, int ismod)->void) {
-	//printf("pocket: %s %d \n", xmlpath,ismod);
+	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
+	currpath = "";
 }
 
 HOOK_METHOD(ItemConfig, Load, (char* xmlpath, int ismod)->void) {
-	//printf("item: %s %d \n", xmlpath,ismod);
+	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
+	currpath = "";
 }
 
 HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
+	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
+	currpath = "";
 }
 
 HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
+	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
+	currpath = "";
 }
-/*
-HOOK_METHOD(ModEntry, GetContentPath, (char** param_1, IsaacString* param_2)->void) {
-	printf("music: %s // %s \n", &param_1, param_2->text);
-	super(param_1, param_2);
-	printf("music: %s // %s \n", &param_1, param_2->text);
-}
-*/
 
-//d:\steam\steamapps\common\the binding of isaac rebirth/mods/musicar/content/entities2.xml
 HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
-	if(mod != NULL){
-		//printf("ModID: %s", mod->GetId());
-	}
+	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, mod);
 	super(xmlpath, mod);
+	currpath = "";
+}
+
+HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, int ismod)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
+	currpath = "";
 }
 
 
@@ -828,5 +862,52 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 
 
+//Crash Prevention//
+int getLineNumber(const char* data, const char* errorOffset) {
+	int lineNumber = 1;
+	const char* current = data;
+	while (current < errorOffset) {
+		if (*current == '\n') {
+			lineNumber++;
+		}
+		current++;
+	}
+	return lineNumber;
+}
+
+
+HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
+	try {
+		super(xmldata);
+	}
+	catch (rapidxml::parse_error err) {
+		int lineNumber = getLineNumber(xmldata, err.where<char>());
+		string a = string(xmldata);
+		xmlerrors.push_back(err.what() + string(" at line ") + to_string(lineNumber));
+		if (a.find("<ent") < 50) {
+			a = "<entities anm2root=\"gfx/\" version=\"5\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </entities>";
+		}
+		else if (a.find("<mus") < 50) {
+			a = "<music root=\"music/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </music>";
+		}
+		else if (a.find("<pock") < 50) {
+			a = "<pocketitems xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </pocketitems>";
+		}
+		else if (a.find("<item") < 50) {
+			a = "<items gfxroot=\"gfx/items/\" version=\"1\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </items>";
+		}
+		else if (a.find("<so") < 50) {
+			a = "<sounds root=\"sfx/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </sounds>";
+		}
+		else if (a.find("<play") < 50) {
+			a = "<players nameimageroot=\"gfx/ui/boss/\" portraitroot=\"gfx/ui/stage/\" root=\"gfx/characters/costumes/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </players>";
+		}
+		//printf("asdad: %s", a.c_str());
+		xmldata = new char[a.length() + 1];
+		strcpy(xmldata, a.c_str());
+		super(xmldata);
+	}
+}
+//Crash Prevention//
 
 #endif
