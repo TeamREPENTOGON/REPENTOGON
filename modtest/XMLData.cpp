@@ -25,6 +25,7 @@ using namespace std;
 
 char* lastmodid = "BaseGame";
 bool iscontent = false;
+bool isitemmetadata = false;
 
 vector<string> xmlerrors;
 string currpath;
@@ -386,49 +387,62 @@ void ProcessXmlNode(xml_node<char>* node) {
 		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 			string meh = stringlower(auxnode->name());
 			const char* auxnodename = meh.c_str();
-			if ((strcmp(auxnodename, "active") == 0) || (strcmp(auxnodename, "passive") == 0) || (strcmp(auxnodename, "familiar") == 0)) {
+			if ((strcmp(auxnodename, "active") == 0) || (strcmp(auxnodename, "passive") == 0) || (strcmp(auxnodename, "familiar") == 0) || (strcmp(auxnodename, "item") == 0)) {
 				XMLAttributes item;
 				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 				{
 					item[stringlower(attr->name())] = string(attr->value());
 				}
-				if ((item["name"].length() == 0) && (strcmp(lastmodid, "BaseGame") == 0)) { return; } //items_metadata lazy bypass
-				if (item.count("id") && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
-					id = stoi(item["id"]);
+				if (isitemmetadata) { //items_metadata lazy bypass
+					if (item.count("id") > 0) {
+						if (strcmp(lastmodid, "BaseGame") != 0) {
+							item["id"] = to_string(XMLStuff.ItemData->byrelativeid[lastmodid + item["id"]]);
+						}
+						id = stoi(item["id"]);
+						XMLAttributes s = XMLStuff.ItemData->nodes[id];
+						s["tags"] = item["tags"];
+						s["quality"] = item["quality"];
+						XMLStuff.ItemData->nodes[id] = s;
+					}
 				}
-				else {
-					if (item.count("id") > 0) { item["relativeid"] = item["id"]; }
-					XMLStuff.ItemData->maxid += 1;
-					item["id"] = to_string(XMLStuff.ItemData->maxid);
-					id = XMLStuff.ItemData->maxid;
-				}
-				if (id > XMLStuff.ItemData->maxid) {
-					XMLStuff.ItemData->maxid = id;
-				}
-				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
-				{
-					item[stringlower(attr->name())] = attr->value();
-				}
+				else { 
+					if (item.count("id") && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+						id = stoi(item["id"]);
+					}
+					else {
+						if (item.count("id") > 0) { item["relativeid"] = item["id"]; }
+						XMLStuff.ItemData->maxid += 1;
+						item["id"] = to_string(XMLStuff.ItemData->maxid);
+						id = XMLStuff.ItemData->maxid;
+					}
+					if (id > XMLStuff.ItemData->maxid) {
+						XMLStuff.ItemData->maxid = id;
+					}
+					for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+					{
+						item[stringlower(attr->name())] = attr->value();
+					}
 
-				item["sourceid"] = lastmodid;
-				item["type"] = auxnodename;
-				//printf("iname: %s // %s (%s) \n", item["name"].c_str(), item["description"].c_str(), item["id"].c_str());
-				if (item["name"].find("#") != string::npos) {
-					item["untranslatedname"] = item["name"];
-					item["name"] = string(stringTable->GetString("Items", 0, item["name"].substr(1, item["name"].length()).c_str(), &unk));
-				}
+					item["sourceid"] = lastmodid;
+					item["type"] = auxnodename;
+					//printf("iname: %s // %s (%s) \n", item["name"].c_str(), item["description"].c_str(), item["id"].c_str());
+					if (item["name"].find("#") != string::npos) {
+						item["untranslatedname"] = item["name"];
+						item["name"] = string(stringTable->GetString("Items", 0, item["name"].substr(1, item["name"].length()).c_str(), &unk));
+					}
 
-				if (item["description"].find("#") != string::npos) {
-					item["untranslateddescription"] = item["description"];
-					item["description"] = string(stringTable->GetString("Items", 0, item["description"].substr(1, item["description"].length()).c_str(), &unk));
+					if (item["description"].find("#") != string::npos) {
+						item["untranslateddescription"] = item["description"];
+						item["description"] = string(stringTable->GetString("Items", 0, item["description"].substr(1, item["description"].length()).c_str(), &unk));
+					}
+					if (item.count("relativeid") > 0) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
+					XMLStuff.ItemData->ProcessChilds(auxnode, id);
+					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
+					XMLStuff.ItemData->bymod[lastmodid] = id;
+					XMLStuff.ItemData->byname[item["name"]] = id;
+					XMLStuff.ItemData->nodes[id] = item;
+					XMLStuff.ModData->items[lastmodid] += 1;
 				}
-				if (item.count("relativeid") > 0) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
-				XMLStuff.ItemData->ProcessChilds(auxnode, id);
-				XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
-				XMLStuff.ItemData->bymod[lastmodid] = id;
-				XMLStuff.ItemData->byname[item["name"]] = id;
-				XMLStuff.ItemData->nodes[id] = item;
-				XMLStuff.ModData->items[lastmodid] += 1;
 			}
 			else if ((strcmp(auxnodename, "trinket") == 0)) {
 				XMLAttributes trinket;
@@ -436,43 +450,56 @@ void ProcessXmlNode(xml_node<char>* node) {
 				{
 					trinket[stringlower(attr->name())] = string(attr->value());
 				}
-				if ((trinket["name"].length() == 0) && (strcmp(lastmodid, "BaseGame") == 0)) { return; } //items_metadata lazy bypass
-				if (trinket.count("id") && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
-					id = stoi(trinket["id"]);
+				if (isitemmetadata) { //items_metadata lazy bypass
+					if (trinket.count("id") > 0) {
+						if (strcmp(lastmodid, "BaseGame") != 0) {
+							trinket["id"] = to_string(XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["id"]]);
+						}
+						id = stoi(trinket["id"]);
+						XMLAttributes s = XMLStuff.TrinketData->nodes[id];
+						s["tags"] = trinket["tags"];
+						s["quality"] = trinket["quality"];
+						XMLStuff.TrinketData->nodes[id] = s;
+					}
 				}
 				else {
-					if (trinket.count("id") > 0) { trinket["relativeid"] = trinket["id"]; }
-					XMLStuff.TrinketData->maxid += 1;
-					trinket["id"] = to_string(XMLStuff.TrinketData->maxid);
-					id = XMLStuff.TrinketData->maxid;
-				}
-				if (id > XMLStuff.TrinketData->maxid) {
-					XMLStuff.TrinketData->maxid = id;
-				}
-				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
-				{
-					trinket[stringlower(attr->name())] = attr->value();
-				}
+					if (trinket.count("id") && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+						id = stoi(trinket["id"]);
+					}
+					else {
+						if (trinket.count("id") > 0) { trinket["relativeid"] = trinket["id"]; }
+						XMLStuff.TrinketData->maxid += 1;
+						trinket["id"] = to_string(XMLStuff.TrinketData->maxid);
+						id = XMLStuff.TrinketData->maxid;
+					}
+					if (id > XMLStuff.TrinketData->maxid) {
+						XMLStuff.TrinketData->maxid = id;
+					}
+					for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+					{
+						trinket[stringlower(attr->name())] = attr->value();
+					}
 
-				trinket["sourceid"] = lastmodid;
-				trinket["type"] = auxnode->name();
-				//printf("tname: %s // %s (%s) \n", trinket["name"].c_str(), trinket["description"].c_str(), trinket["id"].c_str());
-				if (trinket["name"].find("#") != string::npos) {
-					trinket["untranslatedname"] = trinket["name"];
-					trinket["name"] = string(stringTable->GetString("Items", 0, trinket["name"].substr(1, trinket["name"].length()).c_str(), &unk));
-				}
+					trinket["sourceid"] = lastmodid;
+					trinket["type"] = auxnode->name();
+					//printf("tname: %s // %s (%s) \n", trinket["name"].c_str(), trinket["description"].c_str(), trinket["id"].c_str());
+					if (trinket["name"].find("#") != string::npos) {
+						trinket["untranslatedname"] = trinket["name"];
+						trinket["name"] = string(stringTable->GetString("Items", 0, trinket["name"].substr(1, trinket["name"].length()).c_str(), &unk));
+					}
 
-				if (trinket["description"].find("#") != string::npos) {
-					trinket["untranslateddescription"] = trinket["description"];
-					trinket["description"] = string(stringTable->GetString("Items", 0, trinket["description"].substr(1, trinket["description"].length()).c_str(), &unk));
+					if (trinket["description"].find("#") != string::npos) {
+						trinket["untranslateddescription"] = trinket["description"];
+						trinket["description"] = string(stringTable->GetString("Items", 0, trinket["description"].substr(1, trinket["description"].length()).c_str(), &unk));
+					}
+					if (trinket.count("relativeid") > 0) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
+					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
+					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
+					XMLStuff.TrinketData->bymod[lastmodid] = id;
+					XMLStuff.TrinketData->byname[trinket["name"]] = id;
+					XMLStuff.TrinketData->nodes[id] = trinket;
+					XMLStuff.ModData->trinkets[lastmodid] += 1;
 				}
-				if (trinket.count("relativeid") > 0) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
-				XMLStuff.TrinketData->ProcessChilds(auxnode, id);
-				XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
-				XMLStuff.TrinketData->bymod[lastmodid] = id;
-				XMLStuff.TrinketData->byname[trinket["name"]] = id;
-				XMLStuff.TrinketData->nodes[id] = trinket;
-				XMLStuff.ModData->trinkets[lastmodid] += 1;
 			}
 		}
 	}
@@ -838,6 +865,14 @@ HOOK_METHOD(ItemConfig, Load, (char* xmlpath, int ismod)->void) {
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
+	currpath = "";
+}
+HOOK_METHOD(ItemConfig, LoadMetadata, (char* xmlpath, int ismod)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	isitemmetadata = true;
+	super(xmlpath, ismod);
+	isitemmetadata = false;
 	currpath = "";
 }
 
