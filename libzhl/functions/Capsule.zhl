@@ -1,3 +1,7 @@
-struct Capsule {
+struct Capsule { {{
+	inline float* GetSus() { return (float*)((char*)this); }
+	inline Vector* GetVec1() { return (Vector*)((char*)this); }
+	inline Vector* GetVec2() { return (Vector*)((char*)this + 0x8); }
+}} 
 
 };

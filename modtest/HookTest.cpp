@@ -267,3 +267,10 @@ HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neigh
 	}
 	fclose(f);
 }
+
+/*HOOK_METHOD(Entity, GetCollisionCapsule, (Capsule* capsule, const Vector& vec)-> Capsule*) {
+	Capsule* ret = super(capsule, vec);
+	printf("GetCollisionCapsule: %f %f %f %f\n", ret->GetVec1()->x, ret->GetVec1()->y, ret->GetVec2()->x, ret->GetVec2()->y);
+	return ret;
+}
+*/
