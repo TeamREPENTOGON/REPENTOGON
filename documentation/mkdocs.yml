@@ -94,7 +94,7 @@ nav:
     - TeleporterVariant: enums/TeleporterVariant.md
     - WeaponModifier: enums/WeaponModifier.md
     - WispSubType: enums/WispSubType.md
-	- XMLNode: enums/XMLNode.md
+    - XMLNode: enums/XMLNode.md
   - Ambush: Ambush.md
   - AnimationState: AnimationState.md
   - Camera: Camera.md
