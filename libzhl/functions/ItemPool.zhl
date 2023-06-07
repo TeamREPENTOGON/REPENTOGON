@@ -1,6 +1,9 @@
 "558bec64a1????????83ec20":
 static __stdcall int ItemPool::GetCardEx(int Seed, int SpecialChance, int RuneChance, int SuitChance, bool AllowNonCards);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b8e4000100":
+__thiscall void ItemPool::load_pools(char *xmlpath,char ismod);
+
 struct ItemPool {
 
 };

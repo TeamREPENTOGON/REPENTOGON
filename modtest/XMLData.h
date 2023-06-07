@@ -56,7 +56,18 @@ public:
 	XMLNodeIdxLookup byname;
 	XMLNodeIdxLookup bynamemod;
 	XMLNodeIdxLookup bymod;
+	XMLNodeIdxLookup byrelativeid;
 	int maxid;
+	int defmaxid;
+
+	void Clear() {
+		nodes.clear();
+		byname.clear();
+		bynamemod.clear();
+		bymod.clear();
+		byrelativeid.clear();
+		maxid = defmaxid;
+	}
 
 	XMLAttributes GetNodeByName(string name) {
 		return this->nodes[this->byname[name]];
@@ -69,6 +80,10 @@ public:
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, int id) {
+		ProcessChilds(parentnode, id, "");
+	}
+
+	void ProcessChilds(xml_node<char>* parentnode, int id, string lastmodid) {
 
 		for (xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
 			XMLAttributes child;
@@ -76,7 +91,10 @@ public:
 			{
 				child[stringlower(attr->name())] = string(attr->value());
 			}
-			this->childs[id][auxnodebabe->name()].push_back(child);
+			if (lastmodid.length() > 0) {
+				child["sourceid"] = lastmodid;
+			}
+			this->childs[id][stringlower(auxnodebabe->name())].push_back(child);
 		}
 	}
 
@@ -94,11 +112,42 @@ public:
 	XMLNodeIdxLookup players;
 	XMLNodeIdxLookup entities;
 	XMLNodeIdxLookup items;
+	XMLNodeIdxLookup itempools;
 	XMLNodeIdxLookup trinkets;
 	XMLNodeIdxLookup cards;
 	XMLNodeIdxLookup pills;
 	XMLNodeIdxLookup musictracks;
 	XMLNodeIdxLookup sounds;
+	XMLNodeIdxLookup challenges;
+	XMLNodeIdxLookup nightmares;
+	XMLNodeIdxLookup costumes;
+	XMLNodeIdxLookup nullcostumes;
+
+	void Clear() {
+		nodes.clear();
+		modentries.clear();
+		byid.clear();
+		byname.clear();
+		byfolder.clear();
+		bydirectory.clear();
+		byfullpath.clear();
+		players.clear();
+		entities.clear();
+		items.clear();
+		itempools.clear();
+		trinkets.clear();
+		cards.clear();
+		pills.clear();
+		musictracks.clear();
+		sounds.clear();
+		challenges.clear();
+		nightmares.clear();
+		costumes.clear();
+		nullcostumes.clear();
+		maxid = 0;
+	
+	}
+
 };
 
 
@@ -106,20 +155,46 @@ public:
 
 class XMLMusic: public XMLDataHolder {
 public:
-	XMLMusic(){
-		this->maxid = 118;//last vanilla music track, for now I need to do this here, may scrap it later and fully automate it
-	}	
+	XMLMusic(int m) {
+		this->maxid = m;
+		this->defmaxid = m;
+	}
 };
 
 class XMLSound : public XMLDataHolder {
 public:
-	XMLSound() {
-		this->maxid = 832;//last vanilla music track, for now I need to do this here, may scrap it later and fully automate it		
-	}	
+	XMLSound(int m) {
+		this->maxid = m;
+		this->defmaxid = m;
+	}
 };
 
 
 class XMLItem : public XMLDataHolder {
+	
+};
+
+class XMLItemPools : public XMLDataHolder {
+
+};
+
+class XMLNightmare : public XMLDataHolder {
+
+};
+
+class XMLCostume : public XMLDataHolder {
+	
+};
+
+class XMLNullCostume : public XMLDataHolder {
+public:
+	XMLNullCostume(int m) {
+		this->maxid = m;
+		this->defmaxid = m;
+	}
+};
+
+class XMLChallenge : public XMLDataHolder {
 
 };
 
@@ -148,7 +223,17 @@ public:
 	unordered_map<string, tuple<int, int, int>> byname;
 	unordered_map<string, tuple<int, int, int>> bynamemod;
 	unordered_map<string, tuple<int, int, int>> bytype;
+	XMLNodeIdxLookup bymod;
 	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
+
+	void Clear() {
+		nodes.clear();
+		byname.clear();
+		bynamemod.clear();
+		bymod.clear();
+		bytypevar.clear();
+		maxid = 0;
+	}
 
 	XMLAttributes GetNodeByName(string name) {
 		return this->nodes[this->byname[name]];
@@ -196,13 +281,21 @@ public:
 struct XMLData {
 	XMLPlayer* PlayerData = new XMLPlayer();
 	XMLEntity* EntityData = new XMLEntity();
-	XMLItem* ItemData = new XMLItem();
+	XMLItem*   ItemData = new XMLItem();
+	XMLItemPools* PoolData = new XMLItemPools();
 	XMLTrinket* TrinketData = new XMLTrinket();
-	XMLMusic* MusicData = new XMLMusic();
-	XMLSound* SoundData = new XMLSound();
+	XMLMusic* MusicData = new XMLMusic(118);
+	XMLSound* SoundData = new XMLSound(832);
 	XMLPill* PillData = new XMLPill();
 	XMLCard* CardData = new XMLCard();
+	XMLChallenge* ChallengeData = new XMLChallenge();
+	XMLNightmare* NightmareData = new XMLNightmare();
+	XMLCostume* CostumeData = new XMLCostume();
+	XMLNullCostume* NullCostumeData = new XMLNullCostume(130);
+
 	XMLMod* ModData = new XMLMod();
+
+
 };
 extern XMLData XMLStuff;
 

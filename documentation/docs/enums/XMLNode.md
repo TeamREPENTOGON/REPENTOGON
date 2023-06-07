@@ -13,4 +13,9 @@ tags:
 |5 |PILL {: .copyable } | |
 |6 |CARD {: .copyable } | |
 |7 |MUSIC {: .copyable } | |
-|8 |SOUNDS {: .copyable } | |
+|8 |SOUND {: .copyable } | |
+|9 |CHALLENGE {: .copyable } | |
+|10 |ITEMPOOL {: .copyable } | |
+|11 |NIGHTMARE {: .copyable } | |
+|12 |COSTUME {: .copyable } | |
+|13 |NULLCOSTUME {: .copyable } | |

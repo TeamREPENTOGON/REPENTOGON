@@ -33,44 +33,19 @@ XMLData XMLStuff;
 
 
 void ClearXMLData() {
-	XMLStuff.PlayerData->nodes.clear();
-	XMLStuff.PlayerData->bymod.clear();
-	XMLStuff.PlayerData->byname.clear();
-	XMLStuff.PlayerData->bynamemod.clear();
-
-	XMLStuff.EntityData->nodes.clear();
-	XMLStuff.EntityData->byname.clear();
-	XMLStuff.EntityData->bynamemod.clear();
-	XMLStuff.EntityData->bytype.clear();
-	XMLStuff.EntityData->bytypevar.clear();
-	XMLStuff.EntityData->maxid = 0;
-
-	XMLStuff.CardData->nodes.clear();
-	XMLStuff.CardData->byname.clear();
-	XMLStuff.CardData->bynamemod.clear();
-	XMLStuff.CardData->bypickup.clear();
-	XMLStuff.CardData->maxid = 0;
-
-	XMLStuff.MusicData->nodes.clear();
-	XMLStuff.MusicData->byname.clear();
-	XMLStuff.MusicData->bymod.clear();
-	XMLStuff.MusicData->bynamemod.clear();
-	XMLStuff.MusicData->maxid = 118; //last music track, will probably make it automatic later, like the other stuff
-
-	XMLStuff.ModData->nodes.clear();
-	XMLStuff.ModData->modentries.clear();
-	XMLStuff.ModData->byid.clear();
-	XMLStuff.ModData->byname.clear();
-	XMLStuff.ModData->byfolder.clear();
-	XMLStuff.ModData->bydirectory.clear();
-	XMLStuff.ModData->byfullpath.clear();
-	XMLStuff.ModData->entities.clear();
-	XMLStuff.ModData->musictracks.clear();
-	XMLStuff.ModData->cards.clear();
-	XMLStuff.ModData->pills.clear();
-	XMLStuff.ModData->players.clear();
-	XMLStuff.ModData->items.clear();
-	XMLStuff.ModData->maxid = 0;
+	XMLStuff.PlayerData->Clear();
+	XMLStuff.ItemData->Clear();
+	XMLStuff.PoolData->Clear();
+	XMLStuff.TrinketData->Clear();
+	XMLStuff.MusicData->Clear();
+	XMLStuff.SoundData->Clear();
+	XMLStuff.PillData->Clear();
+	XMLStuff.CardData->Clear();
+	XMLStuff.ChallengeData->Clear();
+	XMLStuff.NightmareData->Clear();
+	XMLStuff.CostumeData->Clear();
+	XMLStuff.NullCostumeData->Clear();
+	XMLStuff.ModData->Clear();
 }
 
 IsaacString toIsaacString(string s) {
@@ -205,7 +180,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
 	uint32_t unk;
-	if ((strcmp(node->name(), "entity") == 0))
+	string middleman = stringlower(node->name());
+	const char* nodename = middleman.c_str();//fucking christ, dude, C++ has these things that drive you nuts sometimes...
+	if ((strcmp(nodename, "entity") == 0))
 	{
 		for (xml_node<char>* auxnode = node; auxnode; auxnode = auxnode->next_sibling()) {
 			XMLAttributes entity;
@@ -213,9 +190,6 @@ void ProcessXmlNode(xml_node<char>* node) {
 			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 			{
 				entity[stringlower(attr->name())] = attr->value();
-				if (strcmp(stringlower(attr->name()).c_str(), "subtype") == 0) {
-					subattr = attr;
-				}
 			}
 			int type = stoi(entity["id"]);
 			int var = 0;
@@ -270,7 +244,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.EntityData->bytype[entity["id"]] = idx;
 		}
 	}
-	else if ((strcmp(node->name(),"player") == 0)) {
+	else if ((strcmp(nodename,"player") == 0)) {
 		int id = 1;
 		xml_node<char>* daddy = node->parent();
 		for (xml_node<char>* auxnode = node; auxnode; auxnode = auxnode->next_sibling()) {
@@ -283,6 +257,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				id = stoi(player["id"]);
 			}
 			else {
+				if (player.count("id") > 0) { player["relativeid"] = player["id"]; }
 				XMLStuff.PlayerData->maxid += 1;
 				player["id"] = to_string(XMLStuff.PlayerData->maxid);
 				id = XMLStuff.PlayerData->maxid;
@@ -292,7 +267,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
 			{
-				player[attr->name()] = attr->value();
+				player[stringlower(attr->name())] = attr->value();
 			}
 
 			if (player["name"].find("#") != string::npos) {
@@ -318,12 +293,14 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 
 			player["sourceid"] = lastmodid;
+			if (player.count("relativeid") > 0) { XMLStuff.PlayerData->byrelativeid[lastmodid + player["relativeid"]] = id;}
+
 			XMLStuff.PlayerData->ProcessChilds(auxnode, id);
 			XMLStuff.PlayerData->nodes[id] = player;
 			XMLStuff.ModData->players[lastmodid] += 1;
 			}
 	}
-	else if ((strcmp(node->name(), "pocketitems") == 0)) {
+	else if ((strcmp(nodename, "pocketitems") == 0)) {
 		int id = 1;
 		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 			if ((strcmp(auxnode->name(), "card") == 0) || (strcmp(auxnode->name(), "rune") == 0)) {
@@ -336,6 +313,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					id = stoi(card["id"]);
 				}
 				else {
+					if (card.count("id") > 0) { card["relativeid"] = card["id"]; }
 					XMLStuff.CardData->maxid +=  1;
 					card["id"] = to_string(XMLStuff.CardData->maxid);
 					id = XMLStuff.CardData->maxid;
@@ -354,6 +332,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					card["untranslateddescription"] = card["name"];
 					card["description"] = string(stringTable->GetString("PocketItems", 0, card["description"].substr(1, card["description"].length()).c_str(), &unk));
 				}
+				if (card.count("relativeid") > 0) { XMLStuff.CardData->byrelativeid[lastmodid + card["relativeid"]] = id; }
 				XMLStuff.CardData->ProcessChilds(auxnode, id);
 				XMLStuff.CardData->nodes[id] = card;
 				XMLStuff.CardData->bynamemod[card["name"] + lastmodid] = id;
@@ -372,6 +351,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					id = stoi(pill["id"]);
 				}
 				else {
+					if (pill.count("id") > 0) { pill["relativeid"] = pill["id"]; }
 					XMLStuff.PillData->maxid += 1;
 					pill["id"] = to_string(XMLStuff.PillData->maxid);
 					id = XMLStuff.PillData->maxid;
@@ -390,6 +370,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					pill["untranslateddescription"] = pill["name"];
 					pill["description"] = string(stringTable->GetString("PocketItems", 0, pill["description"].substr(1, pill["description"].length()).c_str(), &unk));
 				}
+				if (pill.count("relativeid") > 0) { XMLStuff.PillData->byrelativeid[lastmodid + pill["relativeid"]] = id; }
 				XMLStuff.PillData->ProcessChilds(auxnode, id);
 				XMLStuff.PillData->byname[pill["name"]] = id;
 				XMLStuff.PillData->bynamemod[pill["name"] + lastmodid] = id;
@@ -399,11 +380,13 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 		}
 	}
-	else if ((strcmp(node->name(), "items") == 0)) {
+	else if ((strcmp(nodename, "items") == 0)) {
 		xml_node<char>* daddy = node;
 		int id = 1;
 		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-			if ((strcmp(auxnode->name(), "active") == 0) || (strcmp(auxnode->name(), "passive") == 0) || (strcmp(auxnode->name(), "familiar") == 0)) {
+			string meh = stringlower(auxnode->name());
+			const char* auxnodename = meh.c_str();
+			if ((strcmp(auxnodename, "active") == 0) || (strcmp(auxnodename, "passive") == 0) || (strcmp(auxnodename, "familiar") == 0)) {
 				XMLAttributes item;
 				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 				{
@@ -414,6 +397,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					id = stoi(item["id"]);
 				}
 				else {
+					if (item.count("id") > 0) { item["relativeid"] = item["id"]; }
 					XMLStuff.ItemData->maxid += 1;
 					item["id"] = to_string(XMLStuff.ItemData->maxid);
 					id = XMLStuff.ItemData->maxid;
@@ -423,11 +407,11 @@ void ProcessXmlNode(xml_node<char>* node) {
 				}
 				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
 				{
-					item[attr->name()] = attr->value();
+					item[stringlower(attr->name())] = attr->value();
 				}
 
 				item["sourceid"] = lastmodid;
-				item["type"] = auxnode->name();
+				item["type"] = auxnodename;
 				//printf("iname: %s // %s (%s) \n", item["name"].c_str(), item["description"].c_str(), item["id"].c_str());
 				if (item["name"].find("#") != string::npos) {
 					item["untranslatedname"] = item["name"];
@@ -438,6 +422,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					item["untranslateddescription"] = item["description"];
 					item["description"] = string(stringTable->GetString("Items", 0, item["description"].substr(1, item["description"].length()).c_str(), &unk));
 				}
+				if (item.count("relativeid") > 0) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
 				XMLStuff.ItemData->ProcessChilds(auxnode, id);
 				XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
 				XMLStuff.ItemData->bymod[lastmodid] = id;
@@ -445,7 +430,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.ItemData->nodes[id] = item;
 				XMLStuff.ModData->items[lastmodid] += 1;
 			}
-			else if ((strcmp(auxnode->name(), "trinket") == 0)) {
+			else if ((strcmp(auxnodename, "trinket") == 0)) {
 				XMLAttributes trinket;
 				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 				{
@@ -456,6 +441,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					id = stoi(trinket["id"]);
 				}
 				else {
+					if (trinket.count("id") > 0) { trinket["relativeid"] = trinket["id"]; }
 					XMLStuff.TrinketData->maxid += 1;
 					trinket["id"] = to_string(XMLStuff.TrinketData->maxid);
 					id = XMLStuff.TrinketData->maxid;
@@ -465,7 +451,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				}
 				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
 				{
-					trinket[attr->name()] = attr->value();
+					trinket[stringlower(attr->name())] = attr->value();
 				}
 
 				trinket["sourceid"] = lastmodid;
@@ -480,6 +466,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					trinket["untranslateddescription"] = trinket["description"];
 					trinket["description"] = string(stringTable->GetString("Items", 0, trinket["description"].substr(1, trinket["description"].length()).c_str(), &unk));
 				}
+				if (trinket.count("relativeid") > 0) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
 				XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 				XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
 				XMLStuff.TrinketData->bymod[lastmodid] = id;
@@ -489,7 +476,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 		}
 	}
-	else if ((strcmp(node->name(), "music") == 0)) {
+	else if ((strcmp(nodename, "music") == 0)) {
 		int id = 1;
 		xml_node<char>* daddy = node;
 		xml_node<char>* babee = node->first_node();
@@ -503,6 +490,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				id = stoi(music["id"]);
 			}
 			else {
+				if (music.count("id") > 0) { music["relativeid"] = music["id"]; }
 				XMLStuff.MusicData->maxid = XMLStuff.MusicData->maxid + 1;
 				music["id"] = to_string(XMLStuff.MusicData->maxid);
 				id = XMLStuff.MusicData->maxid;
@@ -516,7 +504,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 			music["sourceid"] = lastmodid;
 			XMLStuff.MusicData->ProcessChilds(auxnode, id);
-
+			if (music.count("relativeid") > 0) { XMLStuff.MusicData->byrelativeid[lastmodid + music["relativeid"]] = id; }
 			XMLStuff.MusicData->bynamemod[music["name"] + lastmodid] = id;
 			XMLStuff.MusicData->bymod[lastmodid] = id;
 			XMLStuff.MusicData->byname[music["name"]] = id;
@@ -525,7 +513,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	}
-	else if ((strcmp(node->name(), "sounds") == 0)) {
+	else if ((strcmp(nodename, "sounds") == 0)) {
 		int id = 1;
 		xml_node<char>* daddy = node;
 		xml_node<char>* babee = node->first_node();
@@ -539,6 +527,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				id = stoi(sound["id"]);
 			}
 			else {
+				if (sound.count("id") > 0) { sound["relativeid"] = sound["id"]; }
 				XMLStuff.SoundData->maxid = XMLStuff.SoundData->maxid + 1;
 				sound["id"] = to_string(XMLStuff.SoundData->maxid);
 				id = XMLStuff.SoundData->maxid;
@@ -548,7 +537,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
 			{
-				sound[attr->name()] = attr->value();
+				sound[stringlower(attr->name())] = attr->value();
 			}
 			sound["sourceid"] = lastmodid;
 			XMLStuff.SoundData->ProcessChilds(auxnode, id);
@@ -556,6 +545,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				sound["name"] = getFileName(XMLStuff.SoundData->childs[id]["sample"][0]["path"]);
 			}
 			//printf("sound: %s (%d) \n",sound["name"].c_str(),id);
+			if (sound.count("relativeid") > 0) { XMLStuff.SoundData->byrelativeid[lastmodid + sound["relativeid"]] = id; }
 			XMLStuff.SoundData->bynamemod[sound["name"] + lastmodid] = id;
 			XMLStuff.SoundData->bymod[lastmodid] = id;
 			XMLStuff.SoundData->byname[sound["name"]] = id;
@@ -564,17 +554,217 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	}
-	else if ((strcmp(node->name(), "name") == 0) && node->parent() && (strcmp(node->parent()->name(), "metadata") == 0)) {
+	else if ((strcmp(nodename, "challenges") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes challenge;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				challenge[stringlower(attr->name())] = string(attr->value());
+			}
+			if ((challenge.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+				id = stoi(challenge["id"]);
+			}
+			else {
+				if (challenge.count("id") > 0) { challenge["relativeid"] = challenge["id"]; }
+				XMLStuff.ChallengeData->maxid = XMLStuff.ChallengeData->maxid + 1;
+				challenge["id"] = to_string(XMLStuff.ChallengeData->maxid);
+				id = XMLStuff.ChallengeData->maxid;
+			}
+			if (id > XMLStuff.ChallengeData->maxid) {
+				XMLStuff.ChallengeData->maxid = id;
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				challenge[stringlower(attr->name())] = attr->value();
+			}
+			challenge["sourceid"] = lastmodid;
+			if (challenge.count("relativeid") > 0) { XMLStuff.ChallengeData->byrelativeid[lastmodid + challenge["relativeid"]] = id; }
+			XMLStuff.ChallengeData->ProcessChilds(auxnode, id);
+			XMLStuff.ChallengeData->bynamemod[challenge["name"] + lastmodid] = id;
+			XMLStuff.ChallengeData->bymod[lastmodid] = id;
+			XMLStuff.ChallengeData->byname[challenge["name"]] = id;
+			XMLStuff.ChallengeData->nodes[id] = challenge;
+			XMLStuff.ModData->challenges[lastmodid] += 1;
+		}
+	}
+	else if ((strcmp(nodename, "nightmares") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes nightmare;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				nightmare[stringlower(attr->name())] = string(attr->value());
+			}
+			if ((nightmare.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+				id = stoi(nightmare["id"]);
+			}
+			else {
+				if (nightmare.count("id") > 0) { nightmare["relativeid"] = nightmare["id"]; }
+				XMLStuff.NightmareData->maxid = XMLStuff.NightmareData->maxid + 1;
+				nightmare["id"] = to_string(XMLStuff.NightmareData->maxid);
+				id = XMLStuff.NightmareData->maxid;
+			}
+			if (id > XMLStuff.NightmareData->maxid) {
+				XMLStuff.NightmareData->maxid = id;
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				nightmare[stringlower(attr->name())] = attr->value();
+			}
+			if ((nightmare.count("name") == 0) && (nightmare.count("anm2") != 0)) {
+				nightmare["name"] = getFileName(nightmare["anm2"]);
+			}
+
+			nightmare["sourceid"] = lastmodid;
+			if (nightmare.count("relativeid") > 0) { XMLStuff.NightmareData->byrelativeid[lastmodid + nightmare["relativeid"]] = id; }
+			XMLStuff.NightmareData->ProcessChilds(auxnode, id);
+			XMLStuff.NightmareData->bynamemod[nightmare["name"] + lastmodid] = id;
+			XMLStuff.NightmareData->bymod[lastmodid] = id;
+			XMLStuff.NightmareData->byname[nightmare["name"]] = id;
+			XMLStuff.NightmareData->nodes[id] = nightmare;
+			XMLStuff.ModData->nightmares[lastmodid] += 1;
+		}
+	}
+	else if ((strcmp(nodename, "costumes") == 0)) {
+		int id = 1;
+		int idnull = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes costume;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				costume[stringlower(attr->name())] = stringlower(attr->value());
+			}
+			if ((strcmp(costume["type"].c_str(), "passive") == 0) || (strcmp(costume["type"].c_str(), "active") == 0) || (strcmp(costume["type"].c_str(), "trinket") == 0) || (strcmp(costume["type"].c_str(), "familiar") == 0)){
+				if ((costume.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+					id = stoi(costume["id"]);
+				}
+				else {
+					XMLStuff.CostumeData->maxid = XMLStuff.CostumeData->maxid + 1;
+					if (costume.count("id") > 0) {
+						costume["relativeid"] = costume["id"];
+						if ((costume.count("type") > 0)) {
+							if ((strcmp(costume["type"].c_str(), "trinket") == 0)) {
+								costume["id"] = to_string(XMLStuff.TrinketData->byrelativeid[lastmodid + costume["relativeid"]]);
+							}
+							else {
+								costume["id"] = to_string(XMLStuff.ItemData->byrelativeid[lastmodid + costume["relativeid"]]);
+							}
+						}
+					}
+					else {
+						costume["id"] = to_string(XMLStuff.NullCostumeData->maxid + 5000); //lol just to be safe its unordered, it fiiiine (this should only happen if modders fuck up too, it should always have an id)
+					}					
+					id = stoi(costume["id"]);
+				}
+				if (id > XMLStuff.CostumeData->maxid) {
+					XMLStuff.CostumeData->maxid = id;
+				}
+				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					costume[stringlower(attr->name())] = attr->value();
+				}
+				if ((costume.count("name") == 0) && (costume.count("anm2path") != 0)) {
+					costume["name"] = getFileName(costume["anm2path"]);
+				}
+				costume["sourceid"] = lastmodid;
+				//printf("costume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
+				if (costume.count("relativeid") > 0) { XMLStuff.CostumeData->byrelativeid[lastmodid + costume["relativeid"]] = id; }
+				XMLStuff.CostumeData->ProcessChilds(auxnode, id);
+				XMLStuff.CostumeData->bynamemod[costume["name"] + lastmodid] = id;
+				XMLStuff.CostumeData->bymod[lastmodid] = id;
+				XMLStuff.CostumeData->byname[costume["name"]] = id;
+				XMLStuff.CostumeData->nodes[id] = costume;
+				XMLStuff.ModData->costumes[lastmodid] += 1;
+			}
+			else {
+				if ((costume.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+					idnull = stoi(costume["id"]);
+				}
+				else {
+					if (costume.count("id") > 0) {costume["relativeid"] = costume["id"];}
+					XMLStuff.NullCostumeData->maxid = XMLStuff.NullCostumeData->maxid + 1;
+					costume["id"] = to_string(XMLStuff.NullCostumeData->maxid);
+					idnull = XMLStuff.NullCostumeData->maxid;
+				}
+				if (idnull > XMLStuff.NullCostumeData->maxid) {
+					XMLStuff.NullCostumeData->maxid = idnull;
+					costume["id"] = idnull;
+				}
+				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					costume[stringlower(attr->name())] = attr->value();
+				}
+				if ((costume.count("name") == 0) && (costume.count("anm2path") != 0)) {
+					costume["name"] = getFileName(costume["anm2path"]);
+				}
+				costume["sourceid"] = lastmodid;
+				if (costume.count("relativeid") > 0) { XMLStuff.NullCostumeData->byrelativeid[lastmodid + costume["relativeid"]] = id; }
+				//printf("nullcostume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
+				XMLStuff.NullCostumeData->ProcessChilds(auxnode, idnull);
+				XMLStuff.NullCostumeData->bynamemod[costume["name"] + lastmodid] = idnull;
+				XMLStuff.NullCostumeData->bymod[lastmodid] = idnull;
+				XMLStuff.NullCostumeData->byname[costume["name"]] = idnull;
+				XMLStuff.NullCostumeData->nodes[idnull] = costume;
+				XMLStuff.ModData->nullcostumes[lastmodid] += 1;
+			
+			}
+		}
+	}
+	else if ((strcmp(nodename, "itempools") == 0)) {
+		int id = -1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes itempool;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				itempool[stringlower(attr->name())] = string(attr->value());
+			}
+			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent){
+				XMLStuff.PoolData->maxid = XMLStuff.PoolData->maxid + 1;
+				id = XMLStuff.PoolData->maxid;
+			}
+			else {
+				id = XMLStuff.PoolData->byname[itempool["name"]];
+			}
+
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				itempool[stringlower(attr->name())] = attr->value();
+			}
+
+			itempool["sourceid"] = lastmodid;
+			XMLStuff.PoolData->ProcessChilds(auxnode, id);
+			
+			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
+				XMLStuff.PoolData->bynamemod[itempool["name"] + lastmodid] = id;
+				XMLStuff.PoolData->bymod[lastmodid] = id;
+				XMLStuff.PoolData->byname[itempool["name"]] = id;
+				XMLStuff.PoolData->nodes[id] = itempool;
+			}
+			XMLStuff.ModData->itempools[lastmodid] += 1;
+			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+		}
+	}
+	else if ((strcmp(nodename, "name") == 0) && node->parent() && (strcmp(stringlower(node->parent()->name()).c_str(), "metadata") == 0)) {
 		xml_node<char>* daddy = node->parent();
 		XMLAttributes mod;
 		string tags = "";
-
 		for (xml_node<char>* auxnode = daddy->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 			{
-				if (auxnode->value() && (strcmp(auxnode->name(), "tag") != 0)){
-					mod[auxnode->name()] = auxnode->value();
+				string meh = stringlower(auxnode->name());
+				const char* auxnodename = meh.c_str();
+				if (auxnode->value() && (strcmp(auxnodename, "tag") != 0)){
+					mod[auxnodename] = auxnode->value();
 				}
-				else if ((strcmp(auxnode->name(), "tag") == 0) && auxnode->first_attribute("id")) {
+				else if ((strcmp(auxnodename, "tag") == 0) && auxnode->first_attribute("id")) {
 					tags += string(auxnode->first_attribute("id")->value()) +", ";
 				}
 			}
@@ -603,7 +793,7 @@ HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)-
 	if (node != nullptr) {
 		xml_attribute<char>* err =  node->first_attribute("xmlerror");
 		if ((currpath.length() > 0) && (err != nullptr)){
-			string error = "[XMLParsingError] " + xmlerrors[stoi(err->value())] + " in " + currpath;
+			string error = "[XMLError] " + xmlerrors[stoi(err->value())] + " in " + currpath;
 			g_Game->GetConsole()->PrintError(error);
 			KAGE::LogMessage(3,(error + "\n").c_str());
 			printf("%s \n", error.c_str());
@@ -665,10 +855,38 @@ HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	currpath = "";
 }
 
+HOOK_METHOD(Manager, LoadChallenges, (char* xmlpath, char ismod)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
+	currpath = "";
+}
+
+HOOK_METHOD(NightmareScene, LoadConfig, (char* xmlpath)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath);
+	currpath = "";
+}
+
+HOOK_METHOD(ItemConfig, LoadCostumes, (char* xmlpath, int ismod)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
+	currpath = "";
+}
+
 HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, mod);
 	super(xmlpath, mod);
+	currpath = "";
+}
+
+HOOK_METHOD(ItemPool, load_pools, (char* xmlpath, char ismod)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
 	currpath = "";
 }
 
@@ -711,7 +929,7 @@ bool Lua_PushXMLNode(lua_State* L, XMLAttributes node, unordered_map<string, vec
 	}
 	for each (const auto & att in childs)
 	{
-		printf("---childattr: %s / %s \n", att.first.c_str(), att.first.c_str());
+		//printf("---childattr: %s / %s \n", att.first.c_str(), att.first.c_str());
 		lua_pushstring(L, att.first.c_str());
 		Lua_PushXMLSubNodes(L, childs[att.first]);
 		lua_settable(L, -3);
@@ -834,6 +1052,26 @@ int Lua_GetEntryByNameXML(lua_State* L)
 		Node = XMLStuff.SoundData->GetNodeByName(entityname);
 		Childs = XMLStuff.SoundData->childs[XMLStuff.SoundData->byname[entityname]];
 		break;
+	case 9:
+		Node = XMLStuff.ChallengeData->GetNodeByName(entityname);
+		Childs = XMLStuff.ChallengeData->childs[XMLStuff.ChallengeData->byname[entityname]];
+		break;
+	case 10:
+		Node = XMLStuff.PoolData->GetNodeByName(entityname);
+		Childs = XMLStuff.PoolData->childs[XMLStuff.PoolData->byname[entityname]];
+		break;
+	case 11:
+		Node = XMLStuff.NightmareData->GetNodeByName(entityname);
+		Childs = XMLStuff.NightmareData->childs[XMLStuff.NightmareData->byname[entityname]];
+		break;
+	case 12:
+		Node = XMLStuff.CostumeData->GetNodeByName(entityname);
+		Childs = XMLStuff.CostumeData->childs[XMLStuff.CostumeData->byname[entityname]];
+		break;
+	case 13:
+		Node = XMLStuff.NullCostumeData->GetNodeByName(entityname);
+		Childs = XMLStuff.CostumeData->childs[XMLStuff.NullCostumeData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -882,7 +1120,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	}
 	catch (rapidxml::parse_error err) {
 		int lineNumber = getLineNumber(xmldata, err.where<char>());
-		string a = string(xmldata);
+		string a = stringlower((char *)string(xmldata).substr(0,60).c_str());
 		xmlerrors.push_back(err.what() + string(" at line ") + to_string(lineNumber));
 		if (a.find("<ent") < 50) {
 			a = "<entities anm2root=\"gfx/\" version=\"5\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </entities>";
@@ -893,6 +1131,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		else if (a.find("<pock") < 50) {
 			a = "<pocketitems xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </pocketitems>";
 		}
+		else if (a.find("<itempo") < 50) {
+			a = "<ItemPools xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </ItemPools>";
+		}
 		else if (a.find("<item") < 50) {
 			a = "<items gfxroot=\"gfx/items/\" version=\"1\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </items>";
 		}
@@ -901,6 +1142,18 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (a.find("<play") < 50) {
 			a = "<players nameimageroot=\"gfx/ui/boss/\" portraitroot=\"gfx/ui/stage/\" root=\"gfx/characters/costumes/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </players>";
+		}
+		else if (a.find("<chal") < 50) {
+			a = "<challenges version=\"1\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </challenges>";
+		}	
+		else if (a.find("<ni") < 50) { //I made this match 2 letters, because adding the 3rd one made me uncomfortable
+			a = "<nightmares root=\"gfx/ui/stage/\" progressAnm2=\"progress.anm2\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </nightmares>";
+		}
+		else if (a.find("<cos") < 50) { 
+			a = "<costumes anm2root=\"gfx/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </costumes>";
+		}
+		else if (a.find("<cus") < 50) { //typo
+			a = "<costumes anm2root=\"gfx/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </costumes>";
 		}
 		//printf("asdad: %s", a.c_str());
 		xmldata = new char[a.length() + 1];
