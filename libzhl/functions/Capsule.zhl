@@ -2,8 +2,8 @@
 static cleanup bool Capsule::Collide(Capsule* Cap1<ecx>, Capsule* Cap2<edx>, Vector* vec);
 
 struct Capsule depends (Vector) { {{
-	inline Vector* GetVec1() { return (Vector*)((char*)this); }
-	inline Vector* GetVec2() { return (Vector*)((char*)this + 0x8); }
+	inline Vector* GetVec1() { return &_vec1; }
+	inline Vector* GetVec2() { return &_vec2; }
 }} 
 	Vector _vec1;
 	Vector _vec2;

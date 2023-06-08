@@ -9,10 +9,10 @@ static constexpr const char* CapsuleMT = "Capsule";
 static int Lua_EntityGetNullCapsule(lua_State* L) {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	const char* str = luaL_checkstring(L, 2);
-	Capsule& res = *ent->GetNullCapsule(nullptr, str);
+	Capsule res = ent->GetNullCapsule(str);
 
-	Capsule** ud = (Capsule**)lua_newuserdata(L, sizeof(Capsule*));
-	*ud = &res;
+	Capsule* ud = (Capsule*)lua_newuserdata(L, sizeof(Capsule));
+	*ud = res;
 	luaL_setmetatable(L, CapsuleMT);
 	return 1;
 };
@@ -29,7 +29,7 @@ static int Lua_EntityGetCollisionCapsule(lua_State* L) {
 
 static int Lua_CapsuleGetVec1(lua_State* L)
 {
-	Capsule* capsule = *lua::GetUserdata<Capsule**>(L, 1, CapsuleMT);
+	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, CapsuleMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = *capsule->GetVec1();
 
