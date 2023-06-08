@@ -34,7 +34,7 @@ __thiscall void Entity::AddIce(const EntityRef& ref, int duration);
 __thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
 
 "558bec83e4f883ec14568bf1837e??00":
-__thiscall Vector Entity::GetNullOffset(const char* nullLayerName);
+__thiscall Vector* Entity::GetNullOffset(const char* nullLayerName);
 
 "558bec83e4f883ec24568bf1837e7000":
 __thiscall Capsule* Entity::GetNullCapsule(Capsule* result, const char* nullLayerName);
@@ -46,7 +46,7 @@ __thiscall bool Entity::RenderShadowLayer(Vector *offset);
 static cleanup bool Entity::ForceCollide(Entity* boom<ecx>, Entity *collider<edx>, bool low);
 
 "558bec83e4f883ec088b45":
-__thiscall Capsule* Entity::GetCollisionCapsule(Capsule* result, const Vector& vec);
+__thiscall Capsule Entity::GetCollisionCapsule(Vector* vec);
 
 struct Entity depends (AnimationState) {
 {{
