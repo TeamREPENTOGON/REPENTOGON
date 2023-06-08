@@ -2131,6 +2131,12 @@ ImGuiElement = {
 	SameLine = 10,
 	Button = 11,
 	SmallButton = 12,
+    InputInt = 13,
+    InputFloat = 14,
+    DragInt = 15,
+    DragFloat = 16,
+    SliderInt = 17,
+    SliderFloat = 18,
 }
 
 ImGuiCallback = {
