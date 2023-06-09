@@ -35,6 +35,16 @@ static int Lua_CapsuleGetVec1(lua_State* L)
 
 	return 1;
 }
+
+static int Lua_CapsuleCollide(lua_State* L)
+{
+	Capsule* cap1 = lua::GetUserdata<Capsule*>(L, 1, CapsuleMT);
+	Capsule* cap2 = lua::GetUserdata<Capsule*>(L, 2, CapsuleMT);
+	Vector* vec = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	lua_pushboolean(L, cap1->Collide(cap1, cap2, vec));
+	return 1;
+}
+
 static void RegisterCapsule(lua_State* L) {
 
 	luaL_newmetatable(L, CapsuleMT);
@@ -44,7 +54,7 @@ static void RegisterCapsule(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "GetVec1", Lua_CapsuleGetVec1 },
-		//{ "GetVec2", Lua_AmbushStartChallenge },
+		{ "Collide", Lua_CapsuleCollide },
 		{ NULL, NULL }
 	};
 
