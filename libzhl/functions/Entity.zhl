@@ -50,6 +50,7 @@ __thiscall Capsule Entity::GetCollisionCapsule(Vector* vec);
 
 struct Entity depends (AnimationState) {
 {{
+	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
 	inline unsigned int* GetVariant() { return (unsigned int*)((char*)this + 0x2c); }
 	inline unsigned int* GetSubType() { return (unsigned int*)((char*)this + 0x30); }

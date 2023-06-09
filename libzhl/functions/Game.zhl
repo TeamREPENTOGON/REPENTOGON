@@ -76,7 +76,7 @@ __thiscall void Game::NetStart(void *unk, int challenge, Seeds seed, unsigned in
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds) { {{
+struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer) { {{
 	Game()
 	{
 		this->constructor();
@@ -140,6 +140,8 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	inline RoomTransition* GetRoomTransition() { return (RoomTransition*)((char*)this + 0x1b6c0); }
 
         inline StageTransition* GetStageTransition() { return (StageTransition*)((char*)this + 0x1ba0c); }
+	
+	inline DebugRenderer* GetDebugRenderer() { return (DebugRenderer*)((char*)this + 0x283bf8); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 
