@@ -28,3 +28,6 @@ ___
 Places a room into the game. Returns `true` if successful.
 
 ___
+### Set·Name () {: aria-label='Functions' }
+#### void SetName ( string name ) {: .copyable aria-label='Functions' }
+___

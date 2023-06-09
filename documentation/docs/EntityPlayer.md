@@ -129,6 +129,10 @@ ___
 #### int GetMegaBlastDuration ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Num·Tears () {: aria-label='Functions' }
+#### int GetNumTears ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Pee·Burst·Cooldown () {: aria-label='Functions' }
 #### int GetPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
 

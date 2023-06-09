@@ -26,6 +26,10 @@ ___
 Checks if a given character has completed all the tainted unlock-related marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
 
 ___
+### Can·Start·True·Coop () {: aria-label='Functions' }
+#### boolean CanStartTrueCoop ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Create·Timer () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) CreateTimer ( function Function, int Delay, int Times, boolean Persistent ) {: .copyable aria-label='Functions' }
 Spawns a timer EntityEffect. This entity will run Function function after Delay frames, and will repeat this Times amount of times. Persistent controls whether or not this timer "dies" in the current room, or persists across rooms.
@@ -43,6 +47,10 @@ Deletes all completion marks for a given character. Supports both modded and van
 ___
 ### Create·Weapon () {: aria-label='Functions' }
 #### [Weapon](Weapon.md) CreateWeapon ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) Type, [Entity](Entity.md) Owner ) {: .copyable aria-label='Functions' }
+
+___
+### Destroy·Weapon () {: aria-label='Functions' }
+#### void DestroyWeapon ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Draw·Line () {: aria-label='Functions' }

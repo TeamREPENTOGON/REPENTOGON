@@ -71,6 +71,11 @@ ___
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
+### Get·Debug·Renderer () {: aria-label='Functions' }
+#### [DebugRenderer](DebugRenderer.md) GetDebugRenderer ( ) {: .copyable aria-label='Functions' }
+Used to render debug info like collision shapes.
+
+___
 ### Get·Dimension () {: aria-label='Functions' }
 #### int GetDimension ( ) {: .copyable aria-label='Functions' }
 
