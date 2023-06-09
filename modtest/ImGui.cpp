@@ -60,6 +60,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         ImGui::StyleColorsDark();
         ImGui::GetStyle().AntiAliasedFill = false;
         ImGui::GetStyle().AntiAliasedLines = false;
+        ImGui::GetStyle().FrameRounding = 4.0f; // rounded edges (default was 0)
+        ImGui::GetStyle().FramePadding.x = 6.0f; // more padding inside of objects to prevent ugly text clipping (default was 4)
         ImGui::CaptureMouseFromApp();
         ImGui::GetStyle().WindowTitleAlign = ImVec2(0.5f, 0.5f);
         imguiInitialized = true;
