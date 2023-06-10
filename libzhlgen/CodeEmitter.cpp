@@ -580,6 +580,17 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
     EmitNL();
 
     EmitAssembly(var, isVirtual);
+
+    // Emit function twice, one with the vtable, one without.
+    // This allows parent calls, otherwise only virtual calls would be possible 
+    // as the parent call would enter a virtual call.
+    if (isVirtual) {
+        Signature copy(var);
+        std::ostringstream name;
+        name << "Original_" << var._function._name;
+        copy._function._name = name.str();
+        Emit(copy, false);
+    }
 }
 
 void CodeEmitter::Emit(Function const& fun) {
