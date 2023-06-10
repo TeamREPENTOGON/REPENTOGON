@@ -534,6 +534,31 @@ uint32_t Struct::GetVirtualFunctionSlot(Signature const& signature, bool checkPa
     }
 }
 
+uint32_t Struct::GetVirtualFunctionSlot(Function const& fn) const {
+    if (_parents.size() > 1) {
+        throw std::runtime_error("Multiple inheritance not supported");
+    }
+
+    uint32_t result = 0;
+    if (_parents.size() == 1) {
+        result = std::get<Type*>(_parents.front())->GetStruct().GetNbVirtualFunctions();
+    }
+    
+    for (auto const& fun : _virtualFunctions) {
+        if (!std::holds_alternative<Function>(fun)) {
+            ++result;
+            continue;
+        }
+
+        if (std::get<Function>(fun) == fn) {
+            return result;
+        }
+    }
+
+    throw std::runtime_error("Function not found");
+    return 0;
+}
+
 uint32_t Struct::GetNbVirtualFunctions() const {
     if (_parents.size() > 1) {
         throw std::runtime_error("Multiple inheritance not supported");
@@ -652,7 +677,7 @@ std::string FunctionParam::ToString() const {
 }
 
 bool Function::IsVirtual() const {
-    return _qualifiers & VIRTUAL;
+    return _qualifiers & VIRTUAL || _qualifiers & PURE;
 }
 
 bool Function::IsCleanup() const {
@@ -661,6 +686,10 @@ bool Function::IsCleanup() const {
 
 bool Function::IsStatic() const {
     return _qualifiers & STATIC;
+}
+
+bool Function::IsPure() const {
+    return _qualifiers & PURE;
 }
 
 std::string Function::ToString() const {

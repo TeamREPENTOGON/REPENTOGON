@@ -166,7 +166,7 @@ void CodeEmitter::Emit(Struct const& s) {
         Emit(sig, true);
     }
 
-    for (std::variant<Signature, Skip> const& sig : s._virtualFunctions) {
+    for (std::variant<Signature, Skip, Function> const& sig : s._virtualFunctions) {
         Emit(sig);
     }
 
@@ -400,11 +400,12 @@ void CodeEmitter::CheckVTableInternalConsistency(Struct const& s) {
     // a function not declared as override.
 
     for (Signature const& sig : s._overridenVirtualFunctions) {
-        for (std::variant<Signature, Skip> const& fn : s._virtualFunctions) {
-            if (std::holds_alternative<Signature>(fn)) {
-                Signature const& other = std::get<Signature>(fn);
-                if (other._function._name == sig._function._name) {
-                    if (other._function == sig._function) {
+        for (std::variant<Signature, Skip, Function> const& fn : s._virtualFunctions) {
+            Function const* function = GetFunction(fn);
+
+            if (function) {
+                if (function->_name == sig._function._name) {
+                    if (*function == sig._function) {
                         std::ostringstream str;
                         str << "[FATAL] In structure " << s._name << ", virtual function " << sig._function._name << " overrides itself" << std::endl;
                         throw std::runtime_error(str.str());
@@ -422,11 +423,11 @@ void CodeEmitter::CheckVTableHierarchyConsistency(Struct const& s, std::vector<S
     for (Signature const& sig : s._overridenVirtualFunctions) {
         bool found = false;
         for (Struct const* parent : parents) {
-            for (std::variant<Signature, Skip> const& fn : parent->_virtualFunctions) {
-                if (std::holds_alternative<Signature>(fn)) {
-                    Signature const& other = std::get<Signature>(fn);
-                    if (other._function._name == sig._function._name) {
-                        if (other._function == sig._function) {
+            for (std::variant<Signature, Skip, Function> const& fn : parent->_virtualFunctions) {
+                Function const* function = GetFunction(fn);
+                if (function) {
+                    if (function->_name == sig._function._name) {
+                        if (*function == sig._function) {
                             found = true;
                             break;
                         }
@@ -447,19 +448,19 @@ void CodeEmitter::CheckVTableHierarchyConsistency(Struct const& s, std::vector<S
     }
 
     // Check that each function declared as not override is not actually an override.
-    for (std::variant<Signature, Skip> const& fun : s._virtualFunctions) {
+    for (std::variant<Signature, Skip, Function> const& fun : s._virtualFunctions) {
         if (std::holds_alternative<Skip>(fun)) {
             continue;
         }
 
-        Signature const& currentFun = std::get<Signature>(fun);
+        Function const* source = GetFunction(fun);
         std::optional<std::string> badOverride;
 
         for (Struct const* parent : parents) {
-            for (std::variant<Signature, Skip> const& other : parent->_virtualFunctions) {
-                if (std::holds_alternative<Signature>(other)) {
-                    Signature const& otherFun = std::get<Signature>(other);
-                    if (currentFun._function == otherFun._function) {
+            for (std::variant<Signature, Skip, Function> const& other : parent->_virtualFunctions) {
+                Function const* function = GetFunction(other);
+                if (function) {
+                    if (*source == *function) {
                         badOverride = parent->_name;
                         break;
                     }
@@ -468,7 +469,7 @@ void CodeEmitter::CheckVTableHierarchyConsistency(Struct const& s, std::vector<S
 
             if (badOverride) {
                 std::ostringstream str;
-                str << "Structure " << s._name << " specified function " << currentFun._function._name <<
+                str << "Structure " << s._name << " specified function " << source->_name <<
                     " as a non override, but it overrides its parent in class " << *badOverride << std::endl;
                 throw std::runtime_error(str.str());
             }
@@ -565,8 +566,6 @@ void CodeEmitter::Emit(Variable const& var) {
     EmitNL();
 
     _variableContext = nullptr;
-
-    void (CodeEmitter:: * foo[10])();
 }
 
 void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
@@ -576,10 +575,10 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
     /* if (isVirtual) {
         Emit("virtual ");
     } */
-    Emit(fun);
+    EmitFunction(fun);
     EmitNL();
 
-    EmitAssembly(var, isVirtual);
+    EmitAssembly(var, isVirtual, false);
 
     // Emit function twice, one with the vtable, one without.
     // This allows parent calls, otherwise only virtual calls would be possible 
@@ -593,7 +592,7 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
     }
 }
 
-void CodeEmitter::Emit(Function const& fun) {
+void CodeEmitter::EmitFunction(Function const& fun) {
     uint32_t qualifiers = fun._qualifiers;
     if (qualifiers & STATIC) {
         Emit("static ");
@@ -630,15 +629,26 @@ void CodeEmitter::Emit(Function const& fun) {
     Emit(");");
 }
 
-void CodeEmitter::Emit(std::variant<Signature, Skip> const& sig) {
+void CodeEmitter::Emit(std::variant<Signature, Skip, Function> const& sig) {
     if (std::holds_alternative<Skip>(sig)) {
         Emit("virtual void unk");
         Emit(std::to_string(_virtualFnUnk));
         Emit("() { }");
         ++_virtualFnUnk;
     }
-    else {
+    else if (std::holds_alternative<Signature>(sig)) {
         Emit(std::get<Signature>(sig), true);
+    }
+    else {
+        Function const& fn = std::get<Function>(sig);
+        EmitFunction(fn);
+        EmitNL();
+        EmitAssembly(fn, true, false);
+
+        Function copy = fn;
+        copy._name.append("_Original");
+        EmitFunction(copy);
+        EmitAssembly(copy, true, true);
     }
 }
 
@@ -669,54 +679,75 @@ enum FunctionDefFlags {
     DEF_LONGLONG = 1 << 3
 };
 
-void CodeEmitter::EmitAssembly(Signature const& sig, bool isVirtual) {
+void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure) {
     uint32_t depth = _emitDepth;
     _emitDepth = 0;
     EmitImpl();
 
-    // Start namespace
-    Emit("namespace _fun");
-    Emit(std::to_string(_nEmittedFuns));
-    Emit(" {");
-    EmitNL();
-    IncrDepth();
+    Function const* fnPtr;
+    if (std::holds_alternative<Signature>(sig)) {
+        fnPtr = &std::get<Signature>(sig)._function;
+    }
+    else {
+        fnPtr = &std::get<Function>(sig);
+    }
 
-    // Function pointer
-    EmitTab();
-    Emit("static void* func = 0;");
-    EmitNL();
-    EmitTab();
+    Function const& fn = *fnPtr;
+    bool emittingPureVirtual = std::holds_alternative<Function>(sig);
+
+    if (!isPure) {
+        // Start namespace
+        Emit("namespace _fun");
+        Emit(std::to_string(_nEmittedFuns));
+        Emit(" {");
+        EmitNL();
+        IncrDepth();
+
+        // Function pointer
+        EmitTab();
+        Emit("static void* func = 0;");
+        EmitNL();
+        EmitTab();
+    }
 
     // Parameters
-    Function const& fn = sig._function;
-    auto [hasImplicitOutput, stackSize, fnStackSize] = EmitArgData(fn);
+    uint32_t flags = GetFlags(fn);
+    bool hasImplicitOutput;
+    uint32_t stackSize, fnStackSize;
+    if (!isPure) {
+        std::tie(hasImplicitOutput, stackSize, fnStackSize) = EmitArgData(fn);
+    }
 
     // Function definition object
-    EmitTab();
-    Emit("static FunctionDefinition fn(\"");
-    if (_currentStructure) {
-        Emit(_currentStructure->_name);
-        Emit("::");
+    if (!isPure) {
+        if (!emittingPureVirtual) {
+            EmitTab();
+            Emit("static FunctionDefinition fn(\"");
+            if (_currentStructure) {
+                Emit(_currentStructure->_name);
+                Emit("::");
+            }
+            Emit(fn._name);
+            Emit("\", ");
+            EmitTypeID(fn);
+            Emit(", \"");
+            Emit(std::get<Signature>(sig)._sig);
+            Emit("\", args, ");
+            Emit(std::to_string(fn._params.size() + (hasImplicitOutput ? 1 : 0)));
+
+            Emit(", ");
+            Emit(std::to_string(flags));
+            Emit(", &func);");
+            EmitNL();
+
+        }
+
+        // End namespace
+        DecrDepth();
+        Emit("}");
+        EmitNL();
+        EmitNL();
     }
-    Emit(fn._name);
-    Emit("\", ");
-    EmitTypeID(sig._function);
-    Emit(", \"");
-    Emit(sig._sig);
-    Emit("\", args, ");
-    Emit(std::to_string(fn._params.size() + (hasImplicitOutput ? 1 : 0)));
-    uint32_t flags = GetFlags(fn);
-
-    Emit(", ");
-    Emit(std::to_string(flags));
-    Emit(", &func);");
-    EmitNL();
-
-    // End namespace
-    DecrDepth();
-    Emit("}");
-    EmitNL();
-    EmitNL();
 
     // Function implementation
     Emit("__declspec(naked) ");
@@ -758,109 +789,128 @@ void CodeEmitter::EmitAssembly(Signature const& sig, bool isVirtual) {
     EmitInstruction("__asm {");
     IncrDepth();
 
-    // Prologue
-    EmitInstruction("push ebp");
-    EmitInstruction("mov ebp, esp");
-    // Save parameters
-    if (flags & FunctionDefFlags::DEF_VOID) {
-        EmitInstruction("push eax");
-    }
+    if (!isPure) {
+        // Prologue
+        EmitInstruction("push ebp");
+        EmitInstruction("mov ebp, esp");
+        // Save parameters
+        if (flags & FunctionDefFlags::DEF_VOID) {
+            EmitInstruction("push eax");
+        }
 
-    if (flags & FunctionDefFlags::DEF_VOID || !(flags & FunctionDefFlags::DEF_LONGLONG)) {
-        EmitInstruction("push edx");
-    }
+        if (flags & FunctionDefFlags::DEF_VOID || !(flags & FunctionDefFlags::DEF_LONGLONG)) {
+            EmitInstruction("push edx");
+        }
 
-    EmitInstruction("push ebx");
-    EmitInstruction("push ecx");
-    EmitInstruction("push esi");
-    EmitInstruction("push edi");
+        EmitInstruction("push ebx");
+        EmitInstruction("push ecx");
+        EmitInstruction("push esi");
+        EmitInstruction("push edi");
 
-    // Call function
-    // Iterate through arguments in reverse order
-    size_t k = stackSize + 8;
-    for (int i = fn._params.size() - 1; i >= 0; --i) {
-        FunctionParam const& param = fn._params[i];
-        if (param._reg) {
-            Registers reg = *param._reg;
-            std::string regStr = RegisterToString(reg);
-            std::ostringstream ins;
-            if (reg < XMM0) {
-                ins << "mov ";
+        // Call function
+        // Iterate through arguments in reverse order
+        size_t k = stackSize + 8;
+        for (int i = fn._params.size() - 1; i >= 0; --i) {
+            FunctionParam const& param = fn._params[i];
+            if (param._reg) {
+                Registers reg = *param._reg;
+                std::string regStr = RegisterToString(reg);
+                std::ostringstream ins;
+                if (reg < XMM0) {
+                    ins << "mov ";
+                }
+                else {
+                    ins << "movd ";
+                }
+
+                k -= 4;
+                ins << regStr << ", [ebp + " << k << "] // " << param._name;
+                EmitInstruction(ins.str());
+
             }
             else {
-                ins << "movd ";
+                int count = (int)std::ceil(param._type->size() / 4.f);
+                for (int j = 0; j < count; ++j) {
+                    k -= 4;
+                    std::ostringstream ins;
+                    ins << "push [ebp + " << k << "] // " << param._name;
+                    EmitInstruction(ins.str());
+                }
             }
+        }
 
+        if (hasImplicitOutput) {
             k -= 4;
-            ins << regStr << ", [ebp + " << k << "] // " << param._name;
+            std::ostringstream ins;
+            ins << "push [ebp + " << k << "] // implicit_output";
             EmitInstruction(ins.str());
+        }
 
+        if (k != 8) {
+            std::cerr << "[WARN] Expected to have 8 bytes remaining on stack, but " << k << " bytes remain" << std::endl;
+        }
+
+        if (isVirtual) {
+            std::ostringstream mov, call;
+            mov << "mov eax, [ecx]";
+            EmitInstruction(mov.str());
+
+            uint32_t position;
+            if (std::holds_alternative<Signature>(sig)) {
+                position = _currentStructure->GetVirtualFunctionSlot(std::get<Signature>(sig), true);
+            }
+            else {
+                position = _currentStructure->GetVirtualFunctionSlot(std::get<Function>(sig));
+            }
+            call << "call [eax + " << position * 4 << "]";
+            EmitInstruction(call.str());
         }
         else {
-            int count = (int)std::ceil(param._type->size() / 4.f);
-            for (int j = 0; j < count; ++j) {
-                k -= 4;
-                std::ostringstream ins;
-                ins << "push [ebp + " << k << "] // " << param._name;
-                EmitInstruction(ins.str());
-            }
+            std::ostringstream callIns;
+            callIns << "call _fun" << _nEmittedFuns << "::func";
+            EmitInstruction(callIns.str());
+        }
+
+        if (flags & FunctionDefFlags::DEF_CLEANUP && fnStackSize > 0) {
+            std::ostringstream retIns;
+            retIns << "add esp, " << fnStackSize;
+            EmitInstruction(retIns.str());
+        }
+
+        // Epilogue
+        EmitInstruction("pop edi");
+        EmitInstruction("pop esi");
+        EmitInstruction("pop ecx");
+        EmitInstruction("pop ebx");
+
+        if (flags & FunctionDefFlags::DEF_VOID || !(flags & FunctionDefFlags::DEF_LONGLONG)) {
+            EmitInstruction("pop edx");
+        }
+
+        if (flags & FunctionDefFlags::DEF_VOID) {
+            EmitInstruction("pop eax");
+        }
+
+        EmitInstruction("mov esp, ebp");
+        EmitInstruction("pop ebp");
+
+        if (!fn.IsCleanup()) {
+            EmitInstruction("ret " + std::to_string(stackSize));
+        }
+        else {
+            EmitInstruction("ret");
         }
     }
-
-    if (hasImplicitOutput) {
-        k -= 4;
-        std::ostringstream ins;
-        ins << "push [ebp + " << k << "] // implicit_output";
-        EmitInstruction(ins.str());
-    }
-
-    if (k != 8) {
-        std::cerr << "[WARN] Expected to have 8 bytes remaining on stack, but " << k << " bytes remain" << std::endl;
-    }
-
-    if (isVirtual) {
+    else {
+        // Call the function regardless, so the pure call handler can react
         std::ostringstream mov, call;
-        mov << "mov eax, [ecx]";
+        mov << "mov eax, 0";
         EmitInstruction(mov.str());
 
-        uint32_t position = _currentStructure->GetVirtualFunctionSlot(sig, true);
-        call << "call [eax + " << position * 4 << "]";
+        // uint32_t position = _currentStructure->GetVirtualFunctionSlot(std::get<Function>(sig));
+        // call << "call [eax + " << position * 4 << "]";
+        call << "call eax";
         EmitInstruction(call.str());
-    }
-    else {
-        std::ostringstream callIns;
-        callIns << "call _fun" << _nEmittedFuns << "::func";
-        EmitInstruction(callIns.str());
-    }
-
-    if (flags & FunctionDefFlags::DEF_CLEANUP && fnStackSize > 0) {
-        std::ostringstream retIns;
-        retIns << "add esp, " << fnStackSize;
-        EmitInstruction(retIns.str());
-    }
-
-    // Epilogue
-    EmitInstruction("pop edi");
-    EmitInstruction("pop esi");
-    EmitInstruction("pop ecx");
-    EmitInstruction("pop ebx");
-
-    if (flags & FunctionDefFlags::DEF_VOID || !(flags & FunctionDefFlags::DEF_LONGLONG)) {
-        EmitInstruction("pop edx");
-    }
-
-    if (flags & FunctionDefFlags::DEF_VOID) {
-        EmitInstruction("pop eax");
-    }
-
-    EmitInstruction("mov esp, ebp");
-    EmitInstruction("pop ebp");
-
-    if (!fn.IsCleanup()) {
-        EmitInstruction("ret " + std::to_string(stackSize));
-    }
-    else {
-        EmitInstruction("ret");
     }
 
     DecrDepth();
@@ -973,7 +1023,7 @@ void CodeEmitter::EmitNamespace(std::string const& name) {
     IncrDepth();
     for (const ExternalFunction* fn : funcs) {
         EmitTab();
-        Emit(fn->_fn);
+        EmitFunction(fn->_fn);
         Emit(*fn);
         EmitNL();
     }
@@ -1171,4 +1221,16 @@ uint32_t CodeEmitter::GetFlags(Function const& fn) const {
     }
 
     return flags;
+}
+
+Function const* CodeEmitter::GetFunction(std::variant<Signature, Skip, Function> const& fn) {
+    if (std::holds_alternative<Signature>(fn)) {
+        return &(std::get<Signature>(fn)._function);
+    }
+    else if (std::holds_alternative<Function>(fn)) {
+        return &std::get<Function>(fn);
+    }
+    else {
+        return nullptr;
+    }
 }

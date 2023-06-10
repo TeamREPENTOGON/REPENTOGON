@@ -135,6 +135,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitFunctionName(ZHLParser::FunctionNameContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitClassField(ZHLParser::ClassFieldContext *ctx) override {
     return visitChildren(ctx);
   }

@@ -44,6 +44,7 @@ Size: 'Size';
 Synonym: 'Synonym';
 Vtable: '__vtable';
 Skip: 'skip';
+Pure: 'pure';
 Override: 'override';
 
 Visibility: Public | Private | Protected;
@@ -84,6 +85,11 @@ Signature:
     
 ReferenceSignature:
     DoubleQuote '.'? [0-9A-Fa-f()?]+ DoubleQuote Colon;
+
+Operator: 'operator';
+
+OpSymbol: ('+' | '-' | '*' | '/') '='? | 
+    '==' | '=';
 
 Name: [a-zA-Z_] [a-zA-Z0-9_]*;
 

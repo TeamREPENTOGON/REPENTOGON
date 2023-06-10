@@ -104,6 +104,9 @@ public:
   virtual void enterClassFunction(ZHLParser::ClassFunctionContext *ctx) = 0;
   virtual void exitClassFunction(ZHLParser::ClassFunctionContext *ctx) = 0;
 
+  virtual void enterFunctionName(ZHLParser::FunctionNameContext *ctx) = 0;
+  virtual void exitFunctionName(ZHLParser::FunctionNameContext *ctx) = 0;
+
   virtual void enterClassField(ZHLParser::ClassFieldContext *ctx) = 0;
   virtual void exitClassField(ZHLParser::ClassFieldContext *ctx) = 0;
 

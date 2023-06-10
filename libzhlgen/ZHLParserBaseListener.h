@@ -106,6 +106,9 @@ public:
   virtual void enterClassFunction(ZHLParser::ClassFunctionContext * /*ctx*/) override { }
   virtual void exitClassFunction(ZHLParser::ClassFunctionContext * /*ctx*/) override { }
 
+  virtual void enterFunctionName(ZHLParser::FunctionNameContext * /*ctx*/) override { }
+  virtual void exitFunctionName(ZHLParser::FunctionNameContext * /*ctx*/) override { }
+
   virtual void enterClassField(ZHLParser::ClassFieldContext * /*ctx*/) override { }
   virtual void exitClassField(ZHLParser::ClassFieldContext * /*ctx*/) override { }
 

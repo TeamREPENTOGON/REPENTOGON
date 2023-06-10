@@ -79,6 +79,8 @@ public:
 
     virtual std::any visitClassFunction(ZHLParser::ClassFunctionContext *context) = 0;
 
+    virtual std::any visitFunctionName(ZHLParser::FunctionNameContext *context) = 0;
+
     virtual std::any visitClassField(ZHLParser::ClassFieldContext *context) = 0;
 
     virtual std::any visitInnerField(ZHLParser::InnerFieldContext *context) = 0;

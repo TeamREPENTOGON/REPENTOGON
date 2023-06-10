@@ -93,13 +93,14 @@ struct Struct {
     std::string _name;
     std::set<Type*> _deps;
     std::vector<std::tuple<Type*, Visibility>> _parents;
-    std::vector<std::variant<Signature, Skip>> _virtualFunctions;
+    std::vector<std::variant<Signature, Skip, Function /* Pure virtual */>> _virtualFunctions;
     std::vector<Signature> _overridenVirtualFunctions;
 
     std::string ToString(bool full) const;
     size_t size() const;
     std::string GetTemplateName() const;
     uint32_t GetVirtualFunctionSlot(Signature const& sig, bool checkParent) const;
+    uint32_t GetVirtualFunctionSlot(Function const& fn) const;
     uint32_t GetVirtualFunctionSlotInternal(Signature const& sig) const;
     uint32_t GetNbVirtualFunctions() const;
     std::tuple<Struct*, Signature*> GetVirtualFunctionSource(Function const& fn) const;
@@ -222,7 +223,8 @@ std::string RegisterToString(Registers reg);
 enum FunctionQualifiers {
     STATIC = 1 << 0,
     VIRTUAL = 1 << 1,
-    CLEANUP = 1 << 2
+    CLEANUP = 1 << 2,
+    PURE = 1 << 3
 };
 
 std::string CallingConventionToString(CallingConventions convention);
@@ -250,6 +252,7 @@ struct Function {
     bool IsVirtual() const;
     bool IsCleanup() const;
     bool IsStatic() const;
+    bool IsPure() const;
     std::string ToString() const;
 
     bool operator==(const Function& other) const;

@@ -47,14 +47,14 @@ private:
 	void Emit(std::string const& s);
 	void Emit(Variable const& var);
 	void Emit(Signature const& sig, bool isVirtual);
-	void Emit(std::variant<Signature, Skip> const& sig);
+	void Emit(std::variant<Signature, Skip, Function> const& sig);
 	void Emit(PointerDecl const& ptr);
-	void Emit(Function const& fun);
+	void EmitFunction(Function const& fun);
 	void Emit(VariableSignature const& sig);
 	void EmitNamespace(std::string const& name);
 	void Emit(ExternalFunction const& fn);
 
-	void EmitAssembly(Signature const& sig, bool isVirtual);
+	void EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure);
 	void EmitAssembly(VariableSignature const& sig);
 	void EmitInstruction(std::string const& ins);
 	
@@ -107,4 +107,6 @@ private:
 	ErrorLogger _logger;
 
 	uint32_t _emitDepth = 0;
+
+	static Function const* GetFunction(std::variant<Signature, Skip, Function> const& fn);
 };

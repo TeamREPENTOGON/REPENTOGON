@@ -87,7 +87,7 @@ std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
         }
         else if (convention == "__thiscall") {
             if (!_currentStruct) {
-                if (ctx->nestedName()->Name().size() == 1) {
+                if (ctx->nestedName()->functionName().size() == 0) {
                     _errors << ErrorLogger::error << "__thiscall convention applied to non member function " << fn._name << ErrorLogger::_end;
                     // exit(-1);
                 }
@@ -413,12 +413,11 @@ std::any Parser::visitSimpleTypeLength(ZHLParser::SimpleTypeLengthContext* ctx) 
 }
 
 std::any Parser::visitNestedName(ZHLParser::NestedNameContext* ctx) {
-    std::vector<antlr4::tree::TerminalNode*> parts = ctx->Name();
     std::vector<std::string> partsStr;
-    for (auto x : parts)
-        partsStr.push_back(x->toString());
+    partsStr.push_back(ctx->Name()->getText());
+    if (auto functionName = ctx->functionName(); !functionName.empty())
+        partsStr.push_back(std::any_cast<std::string>(visit(ctx->functionName().front())));
     std::string typen = partsStr[0];
-    // std::cout << "Nested name " << type << std::endl;
 
     if (partsStr.size() > 1) {
         if (auto it = _types->find(typen); it == _types->end()) {
@@ -580,6 +579,11 @@ std::any Parser::visitVtableEntry(ZHLParser::VtableEntryContext* ctx) {
     if (ctx->Skip()) {
         _currentStruct->_virtualFunctions.push_back(Skip());
     }
+    else if (ctx->Pure()) {
+        Function func = std::any_cast<Function>(visit(ctx->classFunction()));
+        func._qualifiers |= PURE;
+        _currentStruct->_virtualFunctions.push_back(func);
+    } 
     else {
         VirtualFunction function = std::any_cast<VirtualFunction>(visit(ctx->vtableSignature()));
         if (function._override) {
@@ -609,10 +613,21 @@ std::any Parser::visitClassSignature(ZHLParser::ClassSignatureContext* ctx) {
     return signature;
 }
 
+std::any Parser::visitFunctionName(ZHLParser::FunctionNameContext* ctx) {
+    if (ctx->Name()) {
+        return ctx->Name()->getText();
+    }
+    else {
+        std::ostringstream result;
+        result << "operator" << ctx->OpSymbol()->getText();
+        return result.str();
+    }
+}
+
 std::any Parser::visitClassFunction(ZHLParser::ClassFunctionContext* ctx) {
     Function res;
     _currentFunction = &res;
-    res._name = ctx->Name()->getText();
+    res._name = std::any_cast<std::string>(visit(ctx->functionName()));
     ReadQualifiers(ctx->Qualifier(), res);
     res._ret = std::any_cast<Type*>(visit(ctx->type()));
 

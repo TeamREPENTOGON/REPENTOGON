@@ -65,7 +65,7 @@ simpleTypeLength:
     Long | Short;
     
 nestedName:
-    Name (Colon Colon Name)*;
+    Name (Colon Colon functionName)*;
     
 pointerAttribute:
     CppRef CppRef? |
@@ -93,7 +93,7 @@ vtable:
     Vtable LeftBracket vtableEntry+ RightBracket Semi;
 
 vtableEntry:
-    vtableSignature | Skip;
+    vtableSignature | Skip Semi | Pure classFunction;
 
 vtableSignature:
     Override? classSignature;
@@ -102,8 +102,11 @@ classSignature:
     Signature classFunction;
 
 classFunction:
-    Qualifier* type Name LeftParen funArgs? RightParen Semi;
-    
+    Qualifier* type functionName LeftParen funArgs? RightParen Semi;
+
+functionName:
+    Name | Operator OpSymbol;
+
 classField:
     type innerField (Comma innerField)* Semi;
     

@@ -19,15 +19,15 @@ public:
     Depends = 23, Typedef = 24, Const = 25, CppRef = 26, Unsigned = 27, 
     Signed = 28, Long = 29, Int = 30, Short = 31, Char = 32, Bool = 33, 
     Float = 34, Double = 35, Void = 36, Type = 37, Size = 38, Synonym = 39, 
-    Vtable = 40, Skip = 41, Override = 42, Visibility = 43, Public = 44, 
-    Private = 45, Protected = 46, Register = 47, GeneralPurposeRegister = 48, 
-    Eax = 49, Ebx = 50, Ecx = 51, Edx = 52, Esi = 53, Edi = 54, Esp = 55, 
-    Ebp = 56, SSERegister = 57, Xmm0 = 58, Xmm1 = 59, Xmm2 = 60, Xmm3 = 61, 
-    Xmm4 = 62, Xmm5 = 63, Xmm6 = 64, Xmm7 = 65, CallingConvention = 66, 
-    Stdcall = 67, Cdecl = 68, Fastcall = 69, Thiscall = 70, Signature = 71, 
-    ReferenceSignature = 72, Name = 73, Number = 74, HexNumber = 75, DecNumber = 76, 
-    GenericCode = 77, Whitespace = 78, Newline = 79, BlockComment = 80, 
-    LineComment = 81, Any = 82
+    Vtable = 40, Skip = 41, Pure = 42, Override = 43, Visibility = 44, Public = 45, 
+    Private = 46, Protected = 47, Register = 48, GeneralPurposeRegister = 49, 
+    Eax = 50, Ebx = 51, Ecx = 52, Edx = 53, Esi = 54, Edi = 55, Esp = 56, 
+    Ebp = 57, SSERegister = 58, Xmm0 = 59, Xmm1 = 60, Xmm2 = 61, Xmm3 = 62, 
+    Xmm4 = 63, Xmm5 = 64, Xmm6 = 65, Xmm7 = 66, CallingConvention = 67, 
+    Stdcall = 68, Cdecl = 69, Fastcall = 70, Thiscall = 71, Signature = 72, 
+    ReferenceSignature = 73, Operator = 74, OpSymbol = 75, Name = 76, Number = 77, 
+    HexNumber = 78, DecNumber = 79, GenericCode = 80, Whitespace = 81, Newline = 82, 
+    BlockComment = 83, LineComment = 84, Any = 85
   };
 
   enum {
@@ -39,9 +39,10 @@ public:
     RulePointerAttribute = 18, RuleGenericCode = 19, RuleClass = 20, RuleInheritance = 21, 
     RuleInheritanceDecl = 22, RuleDepends = 23, RuleClassBody = 24, RuleVtable = 25, 
     RuleVtableEntry = 26, RuleVtableSignature = 27, RuleClassSignature = 28, 
-    RuleClassFunction = 29, RuleClassField = 30, RuleInnerField = 31, RuleInnerFieldPtr = 32, 
-    RuleFullName = 33, RuleSignature = 34, RuleForwardDecl = 35, RuleTypedef = 36, 
-    RuleFunctionPtr = 37, RuleFptr = 38, RuleMemberPtr = 39
+    RuleClassFunction = 29, RuleFunctionName = 30, RuleClassField = 31, 
+    RuleInnerField = 32, RuleInnerFieldPtr = 33, RuleFullName = 34, RuleSignature = 35, 
+    RuleForwardDecl = 36, RuleTypedef = 37, RuleFunctionPtr = 38, RuleFptr = 39, 
+    RuleMemberPtr = 40
   };
 
   explicit ZHLParser(antlr4::TokenStream *input);
@@ -91,6 +92,7 @@ public:
   class VtableSignatureContext;
   class ClassSignatureContext;
   class ClassFunctionContext;
+  class FunctionNameContext;
   class ClassFieldContext;
   class InnerFieldContext;
   class InnerFieldPtrContext;
@@ -436,10 +438,11 @@ public:
   public:
     NestedNameContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<antlr4::tree::TerminalNode *> Name();
-    antlr4::tree::TerminalNode* Name(size_t i);
+    antlr4::tree::TerminalNode *Name();
     std::vector<antlr4::tree::TerminalNode *> Colon();
     antlr4::tree::TerminalNode* Colon(size_t i);
+    std::vector<FunctionNameContext *> functionName();
+    FunctionNameContext* functionName(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -614,6 +617,9 @@ public:
     virtual size_t getRuleIndex() const override;
     VtableSignatureContext *vtableSignature();
     antlr4::tree::TerminalNode *Skip();
+    antlr4::tree::TerminalNode *Semi();
+    antlr4::tree::TerminalNode *Pure();
+    ClassFunctionContext *classFunction();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -661,7 +667,7 @@ public:
     ClassFunctionContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     TypeContext *type();
-    antlr4::tree::TerminalNode *Name();
+    FunctionNameContext *functionName();
     antlr4::tree::TerminalNode *LeftParen();
     antlr4::tree::TerminalNode *RightParen();
     antlr4::tree::TerminalNode *Semi();
@@ -677,6 +683,23 @@ public:
   };
 
   ClassFunctionContext* classFunction();
+
+  class  FunctionNameContext : public antlr4::ParserRuleContext {
+  public:
+    FunctionNameContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *Name();
+    antlr4::tree::TerminalNode *Operator();
+    antlr4::tree::TerminalNode *OpSymbol();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  FunctionNameContext* functionName();
 
   class  ClassFieldContext : public antlr4::ParserRuleContext {
   public:
