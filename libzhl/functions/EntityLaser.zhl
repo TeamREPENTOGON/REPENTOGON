@@ -1,0 +1,6 @@
+"558bec83e4f883ec2ca1????????33c4894424??5356578bf9837f??02":
+__thiscall void Entity_Laser::ResetSpriteScale();
+
+struct Entity_Laser : public Entity { {{
+	inline float* GetScale() { return (float*)((char*)this + 0x430); }
+}} };

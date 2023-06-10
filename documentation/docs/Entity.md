@@ -38,12 +38,24 @@ ___
 #### int GetBossStatusEffectCooldown ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Collision·Capsule () {: aria-label='Functions' }
+#### [Capsule](Capsule.md) GetCollisionCapsule ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) vec ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Debug·Shape () {: aria-label='Functions' }
+#### [Shape](Shape.md) GetDebugShape ( boolean unknown ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Minecart () {: aria-label='Functions' }
 #### [EntityNPC](EntityNPC.md) GetMinecart ( ) {: .copyable aria-label='Functions' }
 Returns the minecart the entity is riding.
 
 ???+ Return behavior
     If the entity is not riding a minecart, this function returns `nil`.
+
+___
+### Get·Null·Capsule () {: aria-label='Functions' }
+#### [Capsule](Capsule.md) GetNullCapsule ( string NullLayerName ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Null·Offset () {: aria-label='Functions' }

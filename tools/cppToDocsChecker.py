@@ -22,8 +22,11 @@ parentClass = {
                "Ambush":"Game",
                "AnimationState":"Entity",
                "Camera": "Room",
+               "Capsule": "Entity",
                "Console":"Game",
                "DailyChallenge":"Isaac",
+               "DebugRenderer":"Game,Entity,Shape",
+               "EntityPlayer":"PocketItem",
                "EntitySlot":"Entity",
                "GridEntity":"Isaac",
                "History":"EntityPlayer",
@@ -32,6 +35,7 @@ parentClass = {
                "LocalizationStuff":"Isaac",
                "MainMenu":"Game",
                "Minimap":"Game",
+               "NightmareScene":"Isaac",
                "NullFrame":"AnimationState",
                "PersistentGameData":"Isaac",
                "PlayerHUD":"HUD",
@@ -39,6 +43,7 @@ parentClass = {
                "ProceduralItemManager":"Game",
                "RoomTransition":"Game",
                "RoomConfigHolder":"Game",
+               "StageTransition":"Game",
                "Weapon":"Isaac,EntityPlayer",
                }
 
@@ -102,6 +107,10 @@ for file in glob.glob(CPP_FOLDER_PATH+"Lua*.cpp", recursive=True):
 
             functionDef = line.split("(lua_State")[0]
             functionName = functionDef.split(" ")[len(functionDef.split(" "))-1]
+        elif "LUA_FUNCTION(" in line:
+            # function body found
+            isInsideFunction = True
+            functionName = line.split("(")[1].split(")")[0].strip()
         elif "lua::RegisterFunction" in line:
             # check if an existing function name was mentioned in a later line. this means the function got registered under a new name
             for func in luaFunctions:
@@ -129,7 +138,7 @@ for file in glob.glob(CPP_FOLDER_PATH+"Lua*.cpp", recursive=True):
             elif "lua::GetUserdata" in line and "(L, 1" not in line:
                 # special args like vectors
                 functionArgs.append(line.strip().split(" ")[0])
-            elif "}" == line.strip():
+            elif "}" == line.strip() or "};" == line.strip():
                 luaFunctions.append([functionName, functionArgs, functionOptArgs,False])
 
                 functionName = ""

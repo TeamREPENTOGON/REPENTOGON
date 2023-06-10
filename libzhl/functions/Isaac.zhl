@@ -27,6 +27,9 @@ static cleanup Weapon* Isaac::CreateWeapon(WeaponType type<ecx>, Entity* ent<edx
 "568bf18b0e85c974??8b01":
 static cleanup void Isaac::DestoryWeapon(Weapon** wep<ecx>);
 
+"a1????????8b80????????83e010":
+static bool Isaac::CanStartTrueCoop();
+
 struct Isaac {
 
 };

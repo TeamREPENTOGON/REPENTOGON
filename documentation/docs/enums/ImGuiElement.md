@@ -17,3 +17,10 @@ tags:
 |9 |BulletText {: .copyable } |  |
 |10 |SameLine {: .copyable } |  |
 |11 |Button {: .copyable } |  |
+|12 |SmallButton {: .copyable } |  |
+|13 |InputInt {: .copyable } |  |
+|14 |InputFloat {: .copyable } |  |
+|15 |DragInt {: .copyable } |  |
+|16 |DragFloat {: .copyable } |  |
+|17 |SliderInt {: .copyable } |  |
+|18 |SliderFloat {: .copyable } |  |

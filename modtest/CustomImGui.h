@@ -21,6 +21,12 @@ enum class IMGUI_ELEMENT {
     SameLine,
     Button,
     SmallButton,
+    InputInt,
+    InputFloat,
+    DragInt,
+    DragFloat,
+    SliderInt,
+    SliderFloat,
 };
 
 enum class IMGUI_CALLBACK {
@@ -38,6 +44,51 @@ enum class IMGUI_CALLBACK {
 
 static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
 
+struct Data {
+    int clickCounter = 0;
+};
+
+struct IntData : Data {
+    int defaultVal = 0;
+    int currentVal = 0;
+    int minVal = INT_MIN;
+    int maxVal = INT_MAX;
+    int step = 1;
+    int stepFast = 100;
+    float speed = 1;
+    const char* formatting = "%d%";
+
+    void setDefaultVal(int val)
+    {
+        defaultVal = val;
+        currentVal = val;
+    }
+};
+
+struct FloatData : Data {
+    float defaultVal = 0;
+    float currentVal = 0;
+    float minVal = (float)INT_MIN;
+    float maxVal = (float)INT_MAX;
+    float step = 1;
+    float stepFast = 100;
+    float speed = 1;
+    const char* formatting = "%.3f";
+
+    void setDefaultVal(float val)
+    {
+        defaultVal = val;
+        currentVal = val;
+    }
+};
+
+struct ColorData : Data {
+    float r = 0;
+    float g = 0;
+    float b = 0;
+    float a = 1;
+};
+
 struct Element {
     std::string id;
     std::string name;
@@ -49,13 +100,17 @@ struct Element {
     Element* triggerPopup = NULL; // popup that gets triggered when clicking this element
     std::map<IMGUI_CALLBACK, int> callbacks; // type, StackID
 
+    Data data; // i want to only use this in the future for all data types, but im to stupid to get the cast to work correctly :(
+    IntData intData;
+    FloatData floatData;
+    ColorData colorData;
+
     bool useroverride_isVisible = false;
 
     bool evaluatedVisibleState = false; // used for imgui to use
     bool lastEvalVisibleState = false; // used for imgui to use
 
     bool isActive = false; // active = clicked
-    int clickCounter = 0;
 
     Element(const char* elemId, const char* elemName, int elemType)
     {
@@ -88,9 +143,54 @@ struct Element {
         }
     }
 
+    void AddData(Data dataObj)
+    {
+        data = dataObj;
+    }
+    void AddData(IntData dataObj)
+    {
+        intData = dataObj;
+    }
+    void AddData(FloatData dataObj)
+    {
+        floatData = dataObj;
+    }
+    void AddData(ColorData dataObj)
+    {
+        colorData = dataObj;
+    }
+
+    IntData* GetIntData()
+    {
+        return &intData;
+    }
+    FloatData* GetFloatData()
+    {
+        return &floatData;
+    }
+    ColorData* GetColorData()
+    {
+        return &colorData;
+    }
+
+    float GetCallbackData()
+    {
+        switch (type) {
+        case IMGUI_ELEMENT::InputInt:
+        case IMGUI_ELEMENT::DragInt:
+        case IMGUI_ELEMENT::SliderInt:
+            return (float)intData.currentVal;
+        case IMGUI_ELEMENT::InputFloat:
+        case IMGUI_ELEMENT::DragFloat:
+        case IMGUI_ELEMENT::SliderFloat:
+            return floatData.currentVal;
+        default:
+            return (float)data.clickCounter;
+        }
+    }
+
     void EvaluateVisible()
     {
-
         bool newEval = triggerElement != NULL && triggerElement->isActive || useroverride_isVisible;
         // Workaround: There are 3 ways to change visibility of a window - the trigger element gets clicked, the SetVisible() function is called
         //   or the user clicks on the (X) to close the window. that action does not have a callback and can only be detected when the visibility
@@ -265,7 +365,7 @@ struct CustomImGui {
             switch (callback->first) {
             case IMGUI_CALLBACK::Clicked:
                 if (ImGui::IsItemClicked()) {
-                    element->clickCounter++;
+                    element->data.clickCounter++;
                     element->isActive = !element->isActive;
                     if (element->triggerPopup != NULL) {
                         OpenPopup(element->triggerPopup->id.c_str());
@@ -337,19 +437,19 @@ struct CustomImGui {
         lua_rawgeti(L, LUA_REGISTRYINDEX, callbackID);
 
         lua::LuaResults result = lua::LuaCaller(L)
-                                     .push(element->clickCounter)
+                                     .push(element->GetCallbackData())
                                      .call(1);
     }
 
-    Element* GetElementById(const char* parentId) IM_FMTARGS(2)
+    Element* GetElementById(const char* elementID) IM_FMTARGS(2)
     {
-        Element* parent = GetElementByList(parentId, menuElements);
-        if (parent != NULL) {
-            return parent;
+        Element* element = GetElementByList(elementID, menuElements);
+        if (element != NULL) {
+            return element;
         }
-        parent = GetElementByList(parentId, windows);
-        if (parent != NULL) {
-            return parent;
+        element = GetElementByList(elementID, windows);
+        if (element != NULL) {
+            return element;
         }
         return false;
     }
@@ -462,9 +562,51 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SmallButton:
-              ImGui::SmallButton(name);
-              RunCallbacks(&(*element));
-              break;
+                ImGui::SmallButton(name);
+                RunCallbacks(&(*element));
+                break;
+            case IMGUI_ELEMENT::InputInt:
+                if (element->GetIntData() != nullptr) {
+                    IntData* data = element->GetIntData();
+                    ImGui::InputInt(name, &data->currentVal, data->step, data->stepFast);
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::InputFloat:
+                if (element->GetFloatData() != nullptr) {
+                    FloatData* data = element->GetFloatData();
+                    ImGui::InputFloat(name, &data->currentVal, data->step, data->stepFast);
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::DragInt:
+                if (element->GetIntData() != nullptr) {
+                    IntData* data = element->GetIntData();
+                    ImGui::DragInt(name, &data->currentVal, data->speed, data->minVal, data->maxVal, data->formatting);
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::DragFloat:
+                if (element->GetFloatData() != nullptr) {
+                    FloatData* data = element->GetFloatData();
+                    ImGui::DragFloat(name, &data->currentVal, data->speed, data->minVal, data->maxVal, data->formatting);
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::SliderInt:
+                if (element->GetIntData() != nullptr) {
+                    IntData* data = element->GetIntData();
+                    ImGui::SliderInt(name, &data->currentVal, data->minVal, data->maxVal, data->formatting);
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::SliderFloat:
+                if (element->GetFloatData() != nullptr) {
+                    FloatData* data = element->GetFloatData();
+                    ImGui::SliderFloat(name, &data->currentVal, data->minVal, data->maxVal, data->formatting);
+                    RunCallbacks(&(*element));
+                }
+                break;
             default:
                 break;
             }

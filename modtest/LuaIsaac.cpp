@@ -378,6 +378,19 @@ static void RegisterGetSubByName(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static int Lua_IsaacCanStartTrueCoop(lua_State* L) {
+	lua_pushboolean(L, !Isaac::CanStartTrueCoop());
+	return 1;
+}
+
+static void RegisterIsaacCanStartTrueCoop(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "CanStartTrueCoop");
+	lua_pushcfunction(L, Lua_IsaacCanStartTrueCoop);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -395,6 +408,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterDrawQuad(state);
 	RegisterClipboardStuff(state);
 	RegisterGetSubByName(state);
+	RegisterIsaacCanStartTrueCoop(state);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
