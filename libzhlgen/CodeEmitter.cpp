@@ -573,13 +573,13 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
     EmitTab();
     Function const& fun = var._function;
     Emit("LIBZHL_API ");
-    if (isVirtual) {
+    /* if (isVirtual) {
         Emit("virtual ");
-    }
+    } */
     Emit(fun);
     EmitNL();
 
-    EmitAssembly(var);
+    EmitAssembly(var, isVirtual);
 }
 
 void CodeEmitter::Emit(Function const& fun) {
@@ -658,7 +658,7 @@ enum FunctionDefFlags {
     DEF_LONGLONG = 1 << 3
 };
 
-void CodeEmitter::EmitAssembly(Signature const& sig) {
+void CodeEmitter::EmitAssembly(Signature const& sig, bool isVirtual) {
     uint32_t depth = _emitDepth;
     _emitDepth = 0;
     EmitImpl();
@@ -807,9 +807,20 @@ void CodeEmitter::EmitAssembly(Signature const& sig) {
         std::cerr << "[WARN] Expected to have 8 bytes remaining on stack, but " << k << " bytes remain" << std::endl;
     }
 
-    std::ostringstream callIns;
-    callIns << "call _fun" << _nEmittedFuns << "::func";
-    EmitInstruction(callIns.str());
+    if (isVirtual) {
+        std::ostringstream mov, call;
+        mov << "mov eax, [ecx]";
+        EmitInstruction(mov.str());
+
+        uint32_t position = _currentStructure->GetVirtualFunctionSlot(sig, true);
+        call << "call [eax + " << position * 4 << "]";
+        EmitInstruction(call.str());
+    }
+    else {
+        std::ostringstream callIns;
+        callIns << "call _fun" << _nEmittedFuns << "::func";
+        EmitInstruction(callIns.str());
+    }
 
     if (flags & FunctionDefFlags::DEF_CLEANUP && fnStackSize > 0) {
         std::ostringstream retIns;

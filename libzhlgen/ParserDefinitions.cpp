@@ -1,5 +1,6 @@
-#include <sstream>
 #include <algorithm>
+#include <iostream>
+#include <sstream>
 
 #include "ParserDefinitions.h"
 
@@ -490,6 +491,93 @@ std::string Struct::GetTemplateName() const {
     return result.str();
 }
 
+uint32_t Struct::GetVirtualFunctionSlotInternal(Signature const& signature) const {
+    uint32_t result = 0;
+    for (auto const& fn : _virtualFunctions) {
+        if (std::holds_alternative<Signature>(fn)) {
+            Signature const& sig = std::get<Signature>(fn);
+            if (sig == signature) {
+                return result;
+            }
+        }
+
+        result++;
+    }
+
+    throw std::runtime_error("Virtual function not registered");
+    return 0;
+}
+
+uint32_t Struct::GetVirtualFunctionSlot(Signature const& signature, bool checkParent) const {
+    if (_parents.size() > 1) {
+        throw std::runtime_error("I don't want to implement multiple inheritance, are you sure there is no other way to design this ?");
+    }
+
+    if (_parents.size() == 0) {
+        return GetVirtualFunctionSlotInternal(signature);
+    }
+    else {
+        if (checkParent) {
+            auto [parent, sig] = GetVirtualFunctionSource(signature._function);
+            if (!parent) {
+                uint32_t result = std::get<Type*>(_parents.front())->GetStruct().GetNbVirtualFunctions();
+                return result + GetVirtualFunctionSlotInternal(signature);
+            }
+            else {
+                return parent->GetVirtualFunctionSlot(*sig, false);
+            }
+        }
+        else {
+            uint32_t result = std::get<Type*>(_parents.front())->GetStruct().GetNbVirtualFunctions();
+            return result + GetVirtualFunctionSlotInternal(signature);
+        }
+    }
+}
+
+uint32_t Struct::GetNbVirtualFunctions() const {
+    if (_parents.size() > 1) {
+        throw std::runtime_error("Multiple inheritance not supported");
+    }
+
+    uint32_t count = _virtualFunctions.size();
+    if (_parents.size() == 1) {
+        count += std::get<Type*>(_parents.front())->GetStruct().GetNbVirtualFunctions();
+    }
+
+    return count;
+}
+
+std::tuple<Struct*, Signature*> Struct::GetVirtualFunctionSource(Function const& fn) const {
+    if (_parents.size() > 1) {
+        throw std::runtime_error("Multiple inhertiance not supported");
+    }
+
+    std::cout << "GetVirtualFunctionSource " << _name << "::" << fn._name << std::endl;
+    Struct* resStruct = nullptr;
+    Signature* resSignature = nullptr;
+    if (_parents.size() == 1) {
+        Struct const& parent = std::get<Type*>(_parents.front())->GetStruct();
+        std::cout << "GetVirtualFunctionSource " << _name << "::" << fn._name << ", going for parent " << parent._name << std::endl;
+        std::tie(resStruct, resSignature) = parent.GetVirtualFunctionSource(fn);
+    }
+
+    if (!resStruct) {
+        for (auto const& function : _virtualFunctions) {
+            if (std::holds_alternative<Skip>(function)) {
+                continue;
+            }
+
+            if (std::get<Signature>(function)._function == fn) {
+                resStruct = const_cast<Struct*>(this);
+                resSignature = const_cast<Signature*>(&(std::get<Signature>(function)));
+                break;
+            }
+        }
+    }
+
+    return std::make_tuple(resStruct, resSignature);
+}
+
 std::string RegisterToString(Registers reg) {
     switch (reg) {
     case EAX:
@@ -786,4 +874,11 @@ std::string SignednessToString(Signedness sign) {
     }
 
     return "??signdeness??";
+}
+
+bool Signature::operator==(Signature const& other) const {
+    if (&other == this)
+        return true;
+
+    return _sig == other._sig;
 }

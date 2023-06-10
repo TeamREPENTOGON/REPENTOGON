@@ -54,7 +54,7 @@ private:
 	void EmitNamespace(std::string const& name);
 	void Emit(ExternalFunction const& fn);
 
-	void EmitAssembly(Signature const& sig);
+	void EmitAssembly(Signature const& sig, bool isVirtual);
 	void EmitAssembly(VariableSignature const& sig);
 	void EmitInstruction(std::string const& ins);
 	
