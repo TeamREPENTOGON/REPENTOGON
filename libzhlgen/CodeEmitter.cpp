@@ -1076,7 +1076,7 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
 }
 
 std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn) {
-    bool hasImplicitOutput = fn._ret->size() > 8;
+    bool hasImplicitOutput = fn._ret->size() > 8 || (fn._ret->IsStruct() && fn._kind == METHOD);
     uint32_t stackSize = 0;
     uint32_t fnStackSize = 0;
 
