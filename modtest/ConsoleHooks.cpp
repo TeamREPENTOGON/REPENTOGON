@@ -7,7 +7,6 @@
 #include <filesystem>
 #include <iostream> 
 #include <fstream>
-#include <sstream>
 #include <string>
 
 void LuaReset() {
@@ -78,22 +77,6 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
         history.close();
     }
     super(text, color, fadeTime);
-}
-
-std::vector<std::string> ParseCommand(std::string command, int size = 0) {
-    std::vector<std::string> cmdlets; //TODO split this into a generic parsing function
-
-    std::stringstream sstream(command);
-    std::string cmdlet;
-    char space = ' ';
-    while (std::getline(sstream, cmdlet, space)) {
-        cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
-        cmdlets.push_back(cmdlet);
-        if (size > 0 && cmdlets.size() == size) {
-            break;
-        }
-    }
-    return cmdlets;
 }
 
 void PrintToConsole(Console* console, std::string* out) {

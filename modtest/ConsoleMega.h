@@ -1,4 +1,5 @@
 #include "imgui.h"
+#include <sstream>
 
 struct ConsoleCommand {
     const char* name; // The name of the command.
@@ -24,16 +25,34 @@ struct ConsoleMacro {
     }
 };
 
+static std::vector<std::string> ParseCommand(std::string command, int size = 0) {
+    std::vector<std::string> cmdlets;
+
+    std::stringstream sstream(command);
+    std::string cmdlet;
+    char space = ' ';
+    while (std::getline(sstream, cmdlet, space)) {
+        cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
+        cmdlets.push_back(cmdlet);
+        if (size > 0 && cmdlets.size() == size) {
+            break;
+        }
+    }
+    return cmdlets;
+}
+
 struct ConsoleMega {
     bool enabled;
     char inputBuf[1024];
     std::vector<ConsoleCommand> commands;
     unsigned int historyPos;
     std::vector<ConsoleMacro> macros;
+    std::vector<std::string> autocompleteBuffer;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
     enum AutocompleteType {
+        NONE,
         ENTITY,
         GOTO,
         STAGE,
@@ -51,7 +70,7 @@ struct ConsoleMega {
     };
 
 
-    void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu) {
+    void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu, AutocompleteType autocomplete = NONE) {
         commands.push_back(ConsoleCommand(name, desc, helpText, showOnMenu));
     }
 
@@ -65,7 +84,7 @@ struct ConsoleMega {
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
 
-        RegisterCommand("challenge", "Start a challenge run", "Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n", false);
+        RegisterCommand("challenge", "Start a challenge run", "Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n", false, CHALLENGE);
         RegisterCommand("clear", "Clear the debug console", "Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.", true);
         RegisterCommand("clearcache", "Clear the sprite cache", "Clears the game's sprite cache. This can be useful for trying to deal with memory issues.\nThis also has the side effect of reloading modded sprites without needing a full game restart.", true);
         RegisterCommand("clearseeds", "Clear easter egg seeds in the current run", "Clears any \"special\" seed effects in the current run.\nExample:\nThe seed effect GFVE LLLL is applied in a run. Running clearseeds will remove this effect.", false);
@@ -79,6 +98,7 @@ struct ConsoleMega {
         RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false);
         RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false);
         RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false);
+        RegisterCommand("help", "Get info about commands", "Retrieve further info about a command and its syntax.", true);
         RegisterCommand("listcollectibles", "List current items", "Lists the items the player currently has.", false);
         RegisterCommand("lua", "Run Lua code", "Runs the given Lua code immediately. Anything which would work in a standard file will work here.\nThis command also has shorthand which is just (l).", true);
         RegisterCommand("luamod", "Reload a Lua mod", "Reloads Lua code for the given mod folder.\nExample:\n(luamod testmod) will reload Lua code for the mod in the folder \"testmod\".", true);
@@ -148,7 +168,7 @@ struct ConsoleMega {
                     int colorMap = entry->GetColorMap();
 
                     /* 
-                    * The vanilla console stores colors like this, because we can't have nice things.
+                    * The vanilla console stores color as a bitwise flag because we can't have nice things.
                     * g_colorDouble is used for other things but it isn't really evident what those things are yet, so this will have to do.
                     * Decomp shows it as 0 but it... clearly isn't, so whatever.
                     */
@@ -163,12 +183,26 @@ struct ConsoleMega {
                 }
                 ImGui::EndChild();
             }
+
             ImGui::Separator();
 
             bool reclaimFocus = false;
             
-            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory;
+           ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+           if (autocompleteBuffer.size() > 0) {
+               ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
+               ImGui::SetNextWindowSize(ImVec2(ImGui::GetWindowSize().x, 300));
+               if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
+                   for (std::string autocompleteText : autocompleteBuffer) {
+                       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
+                       ImGui::TextUnformatted(autocompleteText.c_str());
+                       ImGui::PopStyleColor();
+                   }
+                   ImGui::EndPopup();
+                }
+               ImGui::OpenPopup("Console Autocomplete");
+            }
+            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit;
             if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
                 Strtrim(s);
@@ -197,18 +231,48 @@ struct ConsoleMega {
     {
         switch (data->EventFlag)
         {
-        case ImGuiInputTextFlags_CallbackCompletion:
+            case ImGuiInputTextFlags_CallbackCompletion:
             {
-                //TODO
+                /*
+                * implement tab complete for individual commands
+                * 
+                * once command in:
+                * switch/case based on AutocompleteType
+                */
+
+                //printf(data->Buf);
             }
-        case ImGuiInputTextFlags_CallbackHistory:
+            case ImGuiInputTextFlags_CallbackEdit:
+            {
+                /*
+                * split string
+                * if only one, then command isn't done yet (unless there's a space after)
+                * autocomplete commands first, then take it from there
+                */
+                std::string strBuf = data->Buf;
+                std::vector<std::string> cmdlets = ParseCommand(strBuf);
+                autocompleteBuffer.clear();
+
+                printf("%d\n", cmdlets.size());
+                // as a proof of concept just autocomplete commands for now
+                if (cmdlets.size() == 1) {
+                    for (ConsoleCommand command : commands) {
+                        std::string commandName = command.name; // TODO probably better to just make command.name an std::string in the struct
+                        printf("%s\n", data->Buf);
+                        printf("%s\n", commandName.c_str());
+                        if(commandName.rfind(data->Buf,  0) == 0)
+                            autocompleteBuffer.push_back(command.name);
+                    }
+                }
+                printf("size %d\n", autocompleteBuffer.size());
+            }
+            case ImGuiInputTextFlags_CallbackHistory:
             {
                 std::deque<std::string> history = *(g_Game->GetConsole())->GetCommandHistory();
 
                 const int prev_history_pos = historyPos;
 
                 if (data->EventKey == ImGuiKey_UpArrow) {
-                    // Increment history.
                     if (++historyPos > history.size())
                         historyPos = prev_history_pos;
                 }
@@ -218,8 +282,7 @@ struct ConsoleMega {
                             historyPos = 0;
                 }
 
-                if (prev_history_pos != historyPos) {
-                    printf("%d %d", history.size(), historyPos);
+                if (prev_history_pos != historyPos) {;
                     std::string entry = historyPos ? history[historyPos - 1] : "";
                     entry.erase(std::remove(entry.begin(), entry.end(), '\n'), entry.end());
                     data->DeleteChars(0, data->BufTextLen);
