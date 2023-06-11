@@ -48,6 +48,8 @@ struct ConsoleMega {
     unsigned int historyPos;
     std::vector<ConsoleMacro> macros;
     std::vector<std::string> autocompleteBuffer;
+    unsigned int autocompletePos;
+    bool autocompleteActive = false;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -191,10 +193,13 @@ struct ConsoleMega {
            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
            if (autocompleteBuffer.size() > 0) {
                ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
-               ImGui::SetNextWindowSize(ImVec2(ImGui::GetWindowSize().x, 300));
+               ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 300));
                if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
                    for (std::string autocompleteText : autocompleteBuffer) {
-                       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
+                       if (autocompletePos > 0 && autocompleteText == autocompleteBuffer[autocompletePos - 1]) 
+                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+                       else 
+                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
                        ImGui::TextUnformatted(autocompleteText.c_str());
                        ImGui::PopStyleColor();
                    }
@@ -233,14 +238,17 @@ struct ConsoleMega {
         {
             case ImGuiInputTextFlags_CallbackCompletion:
             {
-                /*
-                * implement tab complete for individual commands
-                * 
-                * once command in:
-                * switch/case based on AutocompleteType
-                */
+                if (autocompleteBuffer.size() > 0) {
+                    ++autocompletePos;
+                    if (autocompletePos > autocompleteBuffer.size())
+                        autocompletePos = 1;
 
-                //printf(data->Buf);
+                    autocompleteActive = true;
+                    data->DeleteChars(0, data->BufTextLen);
+                    data->InsertChars(0, autocompleteBuffer[autocompletePos - 1].c_str());
+                    autocompleteActive = false;
+                }
+                break;
             }
             case ImGuiInputTextFlags_CallbackEdit:
             {
@@ -249,22 +257,23 @@ struct ConsoleMega {
                 * if only one, then command isn't done yet (unless there's a space after)
                 * autocomplete commands first, then take it from there
                 */
-                std::string strBuf = data->Buf;
-                std::vector<std::string> cmdlets = ParseCommand(strBuf);
-                autocompleteBuffer.clear();
 
-                printf("%d\n", cmdlets.size());
-                // as a proof of concept just autocomplete commands for now
-                if (cmdlets.size() == 1) {
-                    for (ConsoleCommand command : commands) {
-                        std::string commandName = command.name; // TODO probably better to just make command.name an std::string in the struct
-                        printf("%s\n", data->Buf);
-                        printf("%s\n", commandName.c_str());
-                        if(commandName.rfind(data->Buf,  0) == 0)
-                            autocompleteBuffer.push_back(command.name);
+                if (!autocompleteActive) {
+                    std::string strBuf = data->Buf;
+                    std::vector<std::string> cmdlets = ParseCommand(strBuf);
+                    autocompleteBuffer.clear();
+                    autocompletePos = 0;
+
+                    // as a proof of concept just autocomplete commands for now
+                    if (cmdlets.size() == 1) {
+                        for (ConsoleCommand command : commands) {
+                            std::string commandName = command.name; // TODO probably better to just make command.name an std::string in the struct
+                            if (commandName.rfind(data->Buf, 0) == 0)
+                                autocompleteBuffer.push_back(command.name);
+                        }
                     }
                 }
-                printf("size %d\n", autocompleteBuffer.size());
+                break;
             }
             case ImGuiInputTextFlags_CallbackHistory:
             {
@@ -288,6 +297,7 @@ struct ConsoleMega {
                     data->DeleteChars(0, data->BufTextLen);
                     data->InsertChars(0, entry.c_str());
                 }
+                break;
             }
         }
         return 0;
