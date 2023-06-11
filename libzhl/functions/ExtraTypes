@@ -61,3 +61,7 @@ TypeInfo HDC {
 TypeInfo vector_LevelGenRoom {
     Size 12;
 };
+
+TypeInfo CRITICAL_SECTION {
+    Size 0x18;
+};

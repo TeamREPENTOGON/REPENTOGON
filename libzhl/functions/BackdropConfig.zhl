@@ -1,0 +1,21 @@
+struct BackdropConfig {
+    uint32_t backdropId; // 0x0
+    std_string gfx; // 0x4
+    std_string waterGfx; // 0x1c
+    std_string lFloorGfx; // 0x34
+    std_string nFloorGfx; // 0x4c;
+    uint32_t walls; // 0x64;
+    uint32_t wallVariants; // 0x68
+    uint32_t floors; // 0x6c;
+    uint32_t floorVariants; // 0x70;
+    uint32_t unk1; // 0x74
+    std_string props; // 0x78
+    std_string rocks; // 0x90
+    std_string pit; // 0xA8
+    std_string waterPit; // 0xc0;
+    std_string bridge; // 0xd8;
+    std_string door; // 0xf0;
+    std_string holeInWall; // 0x108
+    std_string spikes; // 0x120
+    uint32_t waterPitsMode; // 0x138
+}; // 0x13C

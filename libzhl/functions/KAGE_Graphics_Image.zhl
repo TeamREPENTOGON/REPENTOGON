@@ -1,0 +1,31 @@
+struct KAGE_Graphics_ImageBase_VertexAttributeDescriptor {
+    char const* const* name;
+    uint32_t param;
+};
+
+struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphics_Color) {
+    __vtable {
+        skip;
+        skip;
+        skip;
+        "558bec8b45108b1150505050ff750cff7508ff5208":
+        void Render(SourceQuad& source, DestinationQuad& dest, KAGE_Graphics_Color& color);
+        "558bec83ec248b4508568bf10f1000":
+        void Render(SourceQuad& source, DestinationQuad& dest, KAGE_Graphics_Color& col1, KAGE_Graphics_Color& col2, KAGE_Graphics_Color& col3, KAGE_Graphics_Color& col4);
+    };
+};
+
+struct Kage_Graphics_ImagePNG : public KAGE_Graphics_ImageBase {
+
+};
+
+struct KAGE_Graphics_ImagePIC : public KAGE_Graphics_ImageBase {
+
+};
+
+struct KAGE_Graphics_ImagePCX : public KAGE_Graphics_ImageBase {
+
+};
+
+"8b098b8710010000c1e80924010fb6c05068(????????)518d45d850":
+reference KAGE_Graphics_ImageBase_VertexAttributeDescriptor g_VertexAttributeDescriptor_Position;

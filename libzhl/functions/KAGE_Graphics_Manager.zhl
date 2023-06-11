@@ -1,0 +1,27 @@
+struct KAGE_Graphics_Manager {
+    KAGE_Graphics_ImageBase* currentRenderTarget; // 0x18
+    bool unk; // 0x1C
+    uint32_t openGLFramebufferID; // 0xC8
+
+    "558bec518a450c53568b75088bd9576a0089731888431ce864020000ffb3c8000000":
+    void SetCurrentRenderTarget(KAGE_Graphics_ImageBase* target, bool unk);
+    
+    "568bf157837e1800744683ec10c744240c00000000":
+    void Clear();
+
+    "568bf1c7461400000000e841c60000":
+    void Present();
+};
+
+struct Rendering {
+
+};
+
+"558bec83e4f88b0d????????565783f910721568????????6a03e8a12d3000":
+static void Rendering::PushCurrentRenderTarget();
+
+"51833d????????00750f68????????6a03e8ca2c300083c408e872150000":
+static void Rendering::RestorePreviousRenderTarget();
+
+"83cb10c745fc030000008b7dcc8b4f108bc18b571483e02083c800744d807f700074126a00b9(????????)":
+reference KAGE_Graphics_Manager g_KAGE_Graphics_Manager;

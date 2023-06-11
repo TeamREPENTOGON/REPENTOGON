@@ -2253,7 +2253,7 @@ HOOK_METHOD(NightmareScene, Show, (bool unk) -> void) {
 
 // PRE_LEVEL_SELECT (1104)
 HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
-	logViewer.AddLog("[REPENTOGON]", "Level::SetStage: stageid: %d, alt: %d\n", levelType, stageType);
+	// logViewer.AddLog("[REPENTOGON]", "Level::SetStage: stageid: %d, alt: %d\n", levelType, stageType);
 	int callbackId = 1104;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -2288,5 +2288,67 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 	}
 	else {
 		super(levelType, stageType);
+	}
+}
+
+HOOK_METHOD(Backdrop, RenderWalls, (Vector const& renderOffset, ColorMod mod) -> void) {
+	int callbackId = 1106;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(&mod, lua::Metatables::COLOR)
+			.call(0);
+	}
+
+	super(renderOffset, mod);
+}
+
+HOOK_METHOD(Backdrop, RenderFloor, (Vector const& renderOffset, ColorMod mod) -> void) {
+	int callbackId = 1107;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(&mod, lua::Metatables::COLOR)
+			.call(0);
+	}
+
+	super(renderOffset, mod);
+}
+
+HOOK_METHOD(Backdrop, RenderWater, (Vector const& renderOffset) -> void) {
+	int callbackId = 1108;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.call(0);
+	}
+
+	super(renderOffset);
+}
+
+HOOK_METHOD(Backdrop, pre_render_walls, () -> void) {
+	super();
+
+	int callbackId = 1109;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.call(0);
 	}
 }

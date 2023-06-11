@@ -1,0 +1,9 @@
+struct KAGE_SmartPointer_ImageBase depends (KAGE_System_Mutex) {
+    void* vtable; // 0x0
+    uint16_t strong; // 0x4
+    uint16_t weak; // 0x6
+    KAGE_System_Mutex mutex; // 0x8
+    KAGE_Graphics_ImageBase* image; // 0x14
+}; // 0x18
+
+

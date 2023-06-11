@@ -1,0 +1,24 @@
+struct KAGE_Graphics_Color {
+    float r, g, b, a;
+
+    {{
+    KAGE_Graphics_Color() {
+        r = g = b = a = 0;
+    }
+
+    KAGE_Graphics_Color(KColor const& other) {
+        r = other._red;
+        g = other._green;
+        b = other._blue;
+        a = other._alpha;
+    }
+
+    KAGE_Graphics_Color& operator=(KColor const& other) {
+        r = other._red;
+        g = other._green;
+        b = other._blue;
+        a = other._alpha;
+        return *this;
+    }
+    }}
+};
