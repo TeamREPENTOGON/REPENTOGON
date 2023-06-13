@@ -45,6 +45,14 @@ LUA_FUNCTION(lua_LevelSetName) {
 	return 0;
 }
 
+LUA_FUNCTION(lua_LevelIsStageAvailable) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	int levelStage = luaL_checkinteger(L, 2);
+	int stageType = luaL_checkinteger(L, 3);
+	lua_pushboolean(L, level->IsStageAvailable(levelStage, stageType));
+	return 1;
+}
+
 /* HOOK_METHOD(Level, GetName, () -> std::string) {
 	std::string name = super();
 	if (!CustomStageName.empty()) {
@@ -72,4 +80,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "HasMirrorDimension", Lua_LevelHasMirrorDimension);
 	lua::RegisterFunction(state, mt, "HasPhotoDoor", Lua_LevelHasPhotoDoor);
 	lua::RegisterFunction(state, mt, "SetName", lua_LevelSetName);
+	lua::RegisterFunction(state, mt, "IsStageAvailable", lua_LevelIsStageAvailable);
 }

@@ -13,9 +13,10 @@ __thiscall void HUD::LoadGraphics();
 "558bec8b55??33c0391174??4081c1b006000083f80872??5dc20400":
 __thiscall void HUD::FlashRedHearts(Entity_Player *player);
 
-struct HUD depends (PlayerHUD) { {{
+struct HUD depends (PlayerHUD, ANM2) { {{
 	//inline PlayerHUD GetPlayerHUD(int index) { return _playerHUD[index]; } 
 	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }
+	inline ANM2* GetPickupsHUDSprite() { return (ANM2*)((char*)this + 0xc3910); }
 }} 
     PlayerHUD _playerHUD[8];
 };

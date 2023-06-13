@@ -49,6 +49,9 @@ __thiscall bool Room::PickupGridEntity(int GridIndex, GridEntityDesc* Desc, ANM2
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec40010000a1????????33c58945??5657508d45??64a3????????8bf98d8d":
 __thiscall Entity_Effect* Room::PickupGridEntity(int GridIndex);
 
+"558bec8b55??568bf185d2":
+__thiscall int Room::GetGridIndexByTile(int GridRow, int GridColumn);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }

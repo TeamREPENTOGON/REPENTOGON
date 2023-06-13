@@ -13,6 +13,12 @@ __thiscall void PersistentGameData::AddToCollection(int collectibleID);
 "558bec6aff68????????64a1????????5083ec38a1????????33c58945??535657508d45??64a3????????8bf1":
 __thiscall void PersistentGameData::Load(char const *filepath);
 
+"558bec83ec0c57ff750c8bf98b0d????????ff75088d89889f0200e8????????85c074??80b8e80000000074??568b308d8f0c0f0000":
+__thiscall int PersistentGameData::GetBestiaryDeathCount(int EntityType, int EntityVariant);
+
+"558bec83ec0c57ff750c8bf98b0d????????ff75088d89889f0200e8????????85c074??80b8e80000000074??568b308d8ffc0e0000":
+__thiscall int PersistentGameData::GetBestiaryKillCount(int EntityType, int EntityVariant);
+
 struct PersistentGameData { {{
 	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
 	inline bool IsItemInCollection (int collectibleID) {
@@ -20,3 +26,4 @@ struct PersistentGameData { {{
 		return savedata != false; 
 	}
 }} };
+

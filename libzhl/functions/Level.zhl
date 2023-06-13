@@ -31,6 +31,9 @@ cleanup void GetLevelName(std_string* result<ecx>, uint32_t levelStage<edx>, uin
 "558bec83ec1453568b35????????8bc18945fc33db578b4004":
 __thiscall void Level::SetNextStage();
 
+"558bec518b0d????????5356":
+static bool Level::IsStageAvailable(int LevelStage, int StageType);
+
 struct Level {
 
 };

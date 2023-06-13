@@ -180,6 +180,16 @@ int Lua_RoomPickupGridEntity(lua_State* L)
 	return 1;
 }
 
+int Lua_RoomGetGridIndexByTile(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
+	int gridRow  = luaL_checkinteger(L, 2);
+	int gridColumn = luaL_checkinteger(L, 3);
+	lua_pushinteger(L, room->GetGridIndexByTile(gridRow, gridColumn));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -203,4 +213,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetRail", lua_RoomSetRail);
 	lua::RegisterFunction(state, mt, "CanPickupGridEntity", Lua_RoomCanPickupGridEntity);
 	lua::RegisterFunction(state, mt, "PickupGridEntity", Lua_RoomPickupGridEntity);
+	lua::RegisterFunction(state, mt, "GetGridIndexByTile", Lua_RoomGetGridIndexByTile);
 }

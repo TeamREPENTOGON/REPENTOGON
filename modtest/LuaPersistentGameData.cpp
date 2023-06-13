@@ -78,6 +78,24 @@ int Lua_PGDIsItemInCollection(lua_State* L) {
 	return 1;
 }
 
+int Lua_PGDGetBestiaryKillCount(lua_State* L)
+{
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	int entType = luaL_checkinteger(L, 2);
+	int entVariant = luaL_checkinteger(L, 3);
+	lua_pushinteger(L, pgd->GetBestiaryKillCount(entType, entVariant));
+	return 1;
+}
+
+int Lua_PGDGetBestiaryDeathCount(lua_State* L)
+{
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	int entType = luaL_checkinteger(L, 2);
+	int entVariant = luaL_checkinteger(L, 3);
+	lua_pushinteger(L, pgd->GetBestiaryDeathCount(entType, entVariant));
+	return 1;
+}
+
 static void RegisterPersistentGameData(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
@@ -97,6 +115,8 @@ static void RegisterPersistentGameData(lua_State* L)
 		{ "IncreaseEventCounter", Lua_PGDIncreaseEventCounter},
 		{ "GetEventCounter", Lua_PGDGetEventCounter},
 		{ "IsItemInCollection", Lua_PGDIsItemInCollection},
+		{ "GetBestiaryKillCount", Lua_PGDGetBestiaryKillCount},
+		{ "GetBestiaryDeathCount", Lua_PGDGetBestiaryDeathCount},
 		{ NULL, NULL }
 	};
 

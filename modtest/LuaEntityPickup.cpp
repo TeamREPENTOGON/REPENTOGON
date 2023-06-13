@@ -51,6 +51,13 @@ int Lua_PickupSetVarData(lua_State* L) {
 	return 0;
 }
 
+int Lua_PickupSetNewOptionsPickupIndex(lua_State* L) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushinteger(L, pickup->SetNewOptionsPickupIndex());
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -62,4 +69,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetForceBlind", Lua_PickupSetForceBlind);
 	lua::RegisterFunction(state, mt, "GetVarData", Lua_PickupGetVarData);
 	lua::RegisterFunction(state, mt, "SetVarData", Lua_PickupSetVarData);
+	lua::RegisterFunction(state, mt, "SetNewOptionsPickupIndex", Lua_PickupSetNewOptionsPickupIndex);
 }
