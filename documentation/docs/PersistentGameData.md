@@ -14,6 +14,18 @@
     
 ## Functions
 
+### Get·Event·Counter () {: aria-label='Functions' }
+#### void GetEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Bestiary·Death·Count () {: aria-label='Functions' }
+#### void GetBestiaryDeathCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Bestiary·Kill·Count () {: aria-label='Functions' }
+#### void GetBestiaryKillCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
+
+___
 ### Try·Unlock () {: aria-label='Functions' }
 #### boolean TryUnlock ( [Achievement](enums/Achievement.md) Unlock ) {: .copyable aria-label='Functions' }
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
@@ -32,8 +44,5 @@ ___
 #### boolean IsItemInCollection ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleId ) {: .copyable aria-label='Functions' }
 Checks if an item is in the collection. Aka. its at least picked up once in any run.
 
-___
-### Get·Event·Counter () {: aria-label='Functions' }
-#### void GetEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter ) {: .copyable aria-label='Functions' }
 ___
 

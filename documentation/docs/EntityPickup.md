@@ -20,14 +20,18 @@ ___
 Sets the graphics of the item pedestal. Does nothing for non-collectible EntityPickups.
 
 ___
-### Set·Var·Data () {: aria-label='Functions' }
-#### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
-
-___
 ### Set·Force·Blind () {: aria-label='Functions' }
 #### void SetForceBlind ( boolean SetBlind ) {: .copyable aria-label='Functions' }
 
 Hides pedestal items similar to Curse of the Blind. Does nothing for non-collectible EntityPickups.
+
+___
+### Set·New·Options·Pickup·Index () {: aria-label='Functions' }
+#### int SetNewOptionsPickupIndex ( ) {: .copyable aria-label='Functions' }
+Returns the new pickup index.
+___
+### Set·Var·Data () {: aria-label='Functions' }
+#### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
 
 ___
 ### Try·Remove·Collectible () {: aria-label='Functions' }

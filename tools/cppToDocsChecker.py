@@ -15,12 +15,13 @@ if "GITHUB_WORKSPACE" in os.environ:
     DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "documentation/docs/")
     CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "modtest/")
 
-ignoreFunctionWords = ["Register","_Test","__gc", "Patch", "FixMusicManager"]
+ignoreFunctionWords = ["Register","_Test","__gc", "Patch", "FixMusicManager", "lua_LGR_gc", "lua_Image_gc", "lua_Transformer_gc"]
 ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp"]
 
 parentClass = {
                "Ambush":"Game",
                "AnimationState":"Entity",
+               "Backdrop":"Room",
                "Camera": "Room",
                "Capsule": "Entity",
                "Console":"Game",
@@ -33,6 +34,7 @@ parentClass = {
                "ItemOverlay":"Game",
                "ImGui":"Isaac",
                "LocalizationStuff":"Isaac",
+               "LevelGenerator": "LevelGeneratorRoom",
                "MainMenu":"Game",
                "Minimap":"Game",
                "NightmareScene":"Isaac",

@@ -23,6 +23,10 @@ ___
 Returns `true` if the floor has the photo door used to enter Mausoleum/Gehenna leading to the Ascent sequence.
 
 ___
+### Is·Stage·Available () {: aria-label='Functions' }
+#### void IsStageAvailable ( int levelStage, int stageType ) {: .copyable aria-label='Functions' }
+
+___
 ### Place·Room () {: aria-label='Functions' }
 #### boolean PlaceRoom ( [LevelGeneratorEntry](LevelGeneratorEntry.md) Room, [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) RoomConfig, int Seed ) {: .copyable aria-label='Functions' }
 Places a room into the game. Returns `true` if successful.

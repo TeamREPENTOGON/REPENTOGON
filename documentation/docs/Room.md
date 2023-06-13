@@ -10,6 +10,11 @@ ___
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Backdrop () {: aria-label='Functions' }
+#### [Backdrop](Backdrop.md) GetBackdrop ( ) {: .copyable aria-label='Functions' }
+Returns a [Backdrop](Backdrop.md) object.
+
+___
 ### Get·Camera () {: aria-label='Functions' }
 #### [Camera](Camera.md) GetCamera ( ) {: .copyable aria-label='Functions' }
 Returns a [Camera](Camera.md) object.
@@ -21,6 +26,10 @@ ___
 ___
 ### Get·Floor·Color () {: aria-label='Functions' }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetFloorColor ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Grid·Index·By·Tile () {: aria-label='Functions' }
+#### int GetGridIndexByTile ( int gridRow, int gridColumn ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Rail () {: aria-label='Functions' }
