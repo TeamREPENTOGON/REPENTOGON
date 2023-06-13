@@ -1,17 +1,35 @@
 #include "imgui.h"
+#include "XMLData.h"
+
 #include <sstream>
+#include <cctype>
 
 struct ConsoleCommand {
-    const char* name; // The name of the command.
-    const char* desc; // A short (usually one sentence) description of the command. Will show up when just typing `help`
-    const char* helpText; // The help text for the command. Will show up when doing `help (command)`
-    bool showOnMenu;
-
-    ConsoleCommand(const char* cmdName, const char* cmdDesc, const char* cmdHelpText, bool cmdShowOnMenu) {
+    std::string name = ""; // The name of the command.
+    const char* desc = ""; // A short (usually one sentence) description of the command. Will show up when just typing `help`
+    const char* helpText = ""; // The help text for the command. Will show up when doing `help (command)`
+    bool showOnMenu = false;
+    unsigned int autocompleteType = 0;
+    ConsoleCommand(const char* cmdName, const char* cmdDesc, const char* cmdHelpText, bool cmdShowOnMenu, unsigned int cmdAutocompleteType = 0) {
         name = cmdName;
         desc = cmdDesc;
         helpText = cmdHelpText;
         showOnMenu = cmdShowOnMenu;
+        autocompleteType = cmdAutocompleteType;
+    }
+    
+    ConsoleCommand() {
+
+    }
+};
+
+struct AutocompleteEntry {
+    std::string autocompleteText;
+    std::string autocompleteDesc;
+
+    AutocompleteEntry(std::string text, std::string desc) {
+        autocompleteText = text;
+        autocompleteDesc = desc;
     }
 };
 
@@ -47,7 +65,7 @@ struct ConsoleMega {
     std::vector<ConsoleCommand> commands;
     unsigned int historyPos;
     std::vector<ConsoleMacro> macros;
-    std::vector<std::string> autocompleteBuffer;
+    std::vector<AutocompleteEntry> autocompleteBuffer;
     unsigned int autocompletePos;
     bool autocompleteActive = false;
 
@@ -73,7 +91,7 @@ struct ConsoleMega {
 
 
     void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu, AutocompleteType autocomplete = NONE) {
-        commands.push_back(ConsoleCommand(name, desc, helpText, showOnMenu));
+        commands.push_back(ConsoleCommand(name, desc, helpText, showOnMenu, autocomplete));
     }
 
     void RegisterMacro(const char* macroName, std::vector<std::string> &macroCommands) {
@@ -95,6 +113,7 @@ struct ConsoleMega {
         RegisterCommand("costumetest", "Give the player random costumes", "Gives the player a specified amount of random costumes.\nExample:\n(costumetest 34) will give the player 34 random costumes.", false);
         RegisterCommand("curse", "Add curses to the current run", "Permanently (until overridden) adds curses to the run. This command uses a bitmask- the curse with an ID of 1 is 1, 2 is 2, 3 is 4, 4 is 8, and so on. In this manner, desired curse ID's are tallied up and multiple can be enabled simultaneously.\nExample:\n(curse 96) will enable Curse of the Blind and Curse of the Maze simultaneously.", false);
         RegisterCommand("cutscene", "Play a cutscene", "Immediately plays the specified cutscenne.\nExample:\n(cutscene 1) will immediately play the game's intro.", true);
+        RegisterCommand("debug", "Enable a debug flag", "Enables the specified debug flag.\nExample:\n(debug 3) will grant the player infinite HP.", false, DEBUG_FLAG);
         RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false);
         RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
         RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false);
@@ -153,6 +172,7 @@ struct ConsoleMega {
         console->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
+        autocompleteBuffer.clear();
     }
 
     void Draw() {
@@ -195,12 +215,17 @@ struct ConsoleMega {
                ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
                ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 300));
                if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
-                   for (std::string autocompleteText : autocompleteBuffer) {
-                       if (autocompletePos > 0 && autocompleteText == autocompleteBuffer[autocompletePos - 1]) 
+                   for (AutocompleteEntry entry : autocompleteBuffer) {
+                       if (autocompletePos > 0 && entry.autocompleteText == autocompleteBuffer[autocompletePos - 1].autocompleteText) 
                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
                        else 
                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
-                       ImGui::TextUnformatted(autocompleteText.c_str());
+                       ImGui::TextUnformatted(entry.autocompleteText.c_str());
+                       ImGui::SameLine();
+                       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
+                       entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
+                       ImGui::TextUnformatted(entry.autocompleteDesc.c_str());
+                       ImGui::PopStyleColor();
                        ImGui::PopStyleColor();
                    }
                    ImGui::EndPopup();
@@ -245,31 +270,69 @@ struct ConsoleMega {
 
                     autocompleteActive = true;
                     data->DeleteChars(0, data->BufTextLen);
-                    data->InsertChars(0, autocompleteBuffer[autocompletePos - 1].c_str());
+                    data->InsertChars(0, autocompleteBuffer[autocompletePos - 1].autocompleteText.c_str());
                     autocompleteActive = false;
                 }
                 break;
             }
             case ImGuiInputTextFlags_CallbackEdit:
             {
-                /*
-                * split string
-                * if only one, then command isn't done yet (unless there's a space after)
-                * autocomplete commands first, then take it from there
-                */
-
                 if (!autocompleteActive) {
                     std::string strBuf = data->Buf;
                     std::vector<std::string> cmdlets = ParseCommand(strBuf);
                     autocompleteBuffer.clear();
                     autocompletePos = 0;
 
-                    // as a proof of concept just autocomplete commands for now
                     if (cmdlets.size() == 1) {
                         for (ConsoleCommand command : commands) {
-                            std::string commandName = command.name; // TODO probably better to just make command.name an std::string in the struct
-                            if (commandName.rfind(data->Buf, 0) == 0)
-                                autocompleteBuffer.push_back(command.name);
+                            bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
+
+                            if (command.name.rfind(data->Buf, 0) == 0)
+                                if(inGame || (!inGame && command.showOnMenu == true))
+                                    autocompleteBuffer.push_back(AutocompleteEntry(command.name, command.desc));
+                        }
+                    }
+
+                    if (cmdlets.size() >= 2 || std::isspace(static_cast<unsigned char>(strBuf.back()))) {
+                        std::string commandName = cmdlets.front();
+                        commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
+
+                        ConsoleCommand command;
+                        for (ConsoleCommand commandIter : commands) {
+                            if (commandName == commandIter.name) {
+                                command = commandIter;
+                                break;
+                            }
+                        }
+
+                        switch (command.autocompleteType) {
+                            case DEBUG_FLAG: {
+                                if (cmdlets.size() < 3) {
+                                    std::vector<AutocompleteEntry> debug = {
+                                        AutocompleteEntry(cmdlets.front() + " 1", "Entity Positions"),
+                                        AutocompleteEntry(cmdlets.front() + " 2", "Grid"),
+                                        AutocompleteEntry(cmdlets.front() + " 3", "Infinite HP"),
+                                        AutocompleteEntry(cmdlets.front() + " 4", "High Damage"),
+                                        AutocompleteEntry(cmdlets.front() + " 5", "Show Room Info"),
+                                        AutocompleteEntry(cmdlets.front() + " 6", "Show Hitspheres"),
+                                        AutocompleteEntry(cmdlets.front() + " 7", "Show Damage Values"),
+                                        AutocompleteEntry(cmdlets.front() + " 8", "Infinite Item Charges"),
+                                        AutocompleteEntry(cmdlets.front() + " 9", "High Luck"),
+                                        AutocompleteEntry(cmdlets.front() + " 10", "Quick Kill"),
+                                        AutocompleteEntry(cmdlets.front() + " 11", "Grid Info"),
+                                        AutocompleteEntry(cmdlets.front() + " 12", "Player Item Info"),
+                                        AutocompleteEntry(cmdlets.front() + " 13", "Show Grid Collision Points"),
+                                        AutocompleteEntry(cmdlets.front() + " 14", "Show Lua Memory Usage"),
+                                    };
+
+                                    for (AutocompleteEntry entry : debug) {
+                                        if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
+                                            autocompleteBuffer.push_back(entry);
+                                        }
+                                    }
+                                }
+                                break;
+                            }
                         }
                     }
                 }

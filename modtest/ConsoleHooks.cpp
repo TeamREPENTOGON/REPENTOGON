@@ -99,6 +99,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
             "combo",
             "costumetest",
             "curse",
+            "debug",
             "delirious",
             "goto",
             "giveitem",
