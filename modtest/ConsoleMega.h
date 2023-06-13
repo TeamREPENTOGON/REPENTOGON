@@ -27,7 +27,7 @@ struct AutocompleteEntry {
     std::string autocompleteText;
     std::string autocompleteDesc;
 
-    AutocompleteEntry(std::string text, std::string desc) {
+    AutocompleteEntry(std::string text, std::string desc = "") {
         autocompleteText = text;
         autocompleteDesc = desc;
     }
@@ -125,7 +125,7 @@ struct ConsoleMega {
         RegisterCommand("luamod", "Reload a Lua mod", "Reloads Lua code for the given mod folder.\nExample:\n(luamod testmod) will reload Lua code for the mod in the folder \"testmod\".", true);
         RegisterCommand("luareset", "[EXPERIMENTAL] Reset the Lua context", "Destroys the current Lua context and recreates it from scratch. This is mostly a backend command meant to help sync up networked play.\nThis has Unforeseen Consequences if done in-game, please only do this on the menu unless you know what you're doing. Please?", true);
         RegisterCommand("luarun", "Run a Lua file", "Runs a given Lua file immediately.\nExample:\n(luarun mods/test/test.lua) would run \"test.lua\" inside the \"test\" mod folder.", true);
-        RegisterCommand("macro", "Trigger a set of commands", "The game has some precoded macros that act as shortcuts. Not gonna bother documenting them because this feature sucks and we're gonna overhaul it. Sorry!", false);
+        RegisterCommand("macro", "Trigger a set of commands", "Run a set of commands in a specified order. These are effectively shortcuts. Refer to autocomplete for a list of macro commands.", false, MACRO);
         RegisterCommand("metro", "Force Metronome to be a certain item", "Overrides the next item Metronome will become.\nExample:\n(metro c1) will force Metronome to become The Sad Onion.", false);
         RegisterCommand("playsfx", "Play a sound effect", "Plays a sound effect immediately.\nExample:\n(playsfx 187) will play an incorrect buzzer.", true);
         RegisterCommand("prof", "[BROKEN] Start profiling", "Supposed to log information to a CSV. Blame Nicalis!", true);
@@ -220,12 +220,17 @@ struct ConsoleMega {
                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
                        else 
                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
+
                        ImGui::TextUnformatted(entry.autocompleteText.c_str());
-                       ImGui::SameLine();
-                       ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
-                       entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
-                       ImGui::TextUnformatted(entry.autocompleteDesc.c_str());
-                       ImGui::PopStyleColor();
+
+                       if (!entry.autocompleteDesc.empty()) {
+                           ImGui::SameLine();
+                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
+                           entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
+                           ImGui::TextUnformatted(entry.autocompleteDesc.c_str());
+                           ImGui::PopStyleColor();
+                       }
+
                        ImGui::PopStyleColor();
                    }
                    ImGui::EndPopup();
@@ -293,7 +298,7 @@ struct ConsoleMega {
                         }
                     }
 
-                    if (cmdlets.size() >= 2 || std::isspace(static_cast<unsigned char>(strBuf.back()))) {
+                    if (cmdlets.size() == 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
                         std::string commandName = cmdlets.front();
                         commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
 
@@ -307,28 +312,35 @@ struct ConsoleMega {
 
                         switch (command.autocompleteType) {
                             case DEBUG_FLAG: {
-                                if (cmdlets.size() < 3) {
-                                    std::vector<AutocompleteEntry> debug = {
-                                        AutocompleteEntry(cmdlets.front() + " 1", "Entity Positions"),
-                                        AutocompleteEntry(cmdlets.front() + " 2", "Grid"),
-                                        AutocompleteEntry(cmdlets.front() + " 3", "Infinite HP"),
-                                        AutocompleteEntry(cmdlets.front() + " 4", "High Damage"),
-                                        AutocompleteEntry(cmdlets.front() + " 5", "Show Room Info"),
-                                        AutocompleteEntry(cmdlets.front() + " 6", "Show Hitspheres"),
-                                        AutocompleteEntry(cmdlets.front() + " 7", "Show Damage Values"),
-                                        AutocompleteEntry(cmdlets.front() + " 8", "Infinite Item Charges"),
-                                        AutocompleteEntry(cmdlets.front() + " 9", "High Luck"),
-                                        AutocompleteEntry(cmdlets.front() + " 10", "Quick Kill"),
-                                        AutocompleteEntry(cmdlets.front() + " 11", "Grid Info"),
-                                        AutocompleteEntry(cmdlets.front() + " 12", "Player Item Info"),
-                                        AutocompleteEntry(cmdlets.front() + " 13", "Show Grid Collision Points"),
-                                        AutocompleteEntry(cmdlets.front() + " 14", "Show Lua Memory Usage"),
-                                    };
+                                std::vector<AutocompleteEntry> debug = {
+                                    AutocompleteEntry(cmdlets.front() + " 1", "Entity Positions"),
+                                    AutocompleteEntry(cmdlets.front() + " 2", "Grid"),
+                                    AutocompleteEntry(cmdlets.front() + " 3", "Infinite HP"),
+                                    AutocompleteEntry(cmdlets.front() + " 4", "High Damage"),
+                                    AutocompleteEntry(cmdlets.front() + " 5", "Show Room Info"),
+                                    AutocompleteEntry(cmdlets.front() + " 6", "Show Hitspheres"),
+                                    AutocompleteEntry(cmdlets.front() + " 7", "Show Damage Values"),
+                                    AutocompleteEntry(cmdlets.front() + " 8", "Infinite Item Charges"),
+                                    AutocompleteEntry(cmdlets.front() + " 9", "High Luck"),
+                                    AutocompleteEntry(cmdlets.front() + " 10", "Quick Kill"),
+                                    AutocompleteEntry(cmdlets.front() + " 11", "Grid Info"),
+                                    AutocompleteEntry(cmdlets.front() + " 12", "Player Item Info"),
+                                    AutocompleteEntry(cmdlets.front() + " 13", "Show Grid Collision Points"),
+                                    AutocompleteEntry(cmdlets.front() + " 14", "Show Lua Memory Usage"),
+                                };
 
-                                    for (AutocompleteEntry entry : debug) {
-                                        if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
-                                            autocompleteBuffer.push_back(entry);
-                                        }
+                                for (AutocompleteEntry entry : debug) {
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
+                                        autocompleteBuffer.push_back(entry);
+                                    }
+                                }
+                                break;
+                            }
+
+                            case MACRO: {
+                                for (ConsoleMacro macro : macros) {
+                                    if ((cmdlets.front() + " " + macro.name).rfind(data->Buf, 0) == 0) {
+                                        autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + macro.name));
                                     }
                                 }
                                 break;
