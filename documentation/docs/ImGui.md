@@ -7,16 +7,25 @@ For element types we use the same names as in ImGui itself. You can find an inte
 
 ## Functions
 
+### Add·Button () {: aria-label='Functions' }
+#### void AddButton ( string parentId, string elementId, string text = "", function clickCallback = nil, boolean isSmall = false ) {: .copyable aria-label='Functions' }
+___
 ### Add·Callback () {: aria-label='Functions' }
 #### void AddCallback ( string elementId, [ImGuiCallback](enums/ImGuiCallback.md) type , function func ) {: .copyable aria-label='Functions' }
 Add a callback to an ImGui-element. An element can have one callback per type.
 ___
-### Add·Element () {: aria-label='Functions' }
-#### void AddElement ( string parentId, string elementId = "", [ImGuiElement](enums/ImGuiElement.md) type, string text = "" ) {: .copyable aria-label='Functions' }
-Adds an element to a given parent.
+### Add·Checkbox () {: aria-label='Functions' }
+#### void AddCheckbox ( string parentId, string elementId, string text = "", function changeCallback = nil, boolean isActive = false ) {: .copyable aria-label='Functions' }
 ___
-### Add·Button () {: aria-label='Functions' }
-#### void AddButton ( string parentId, string elementId, string text = "", function clickCallback = nil, boolean isSmall = false ) {: .copyable aria-label='Functions' }
+### Add·Combobox () {: aria-label='Functions' }
+#### void AddCombobox ( string parentId, string elementId, string text = "", function changeCallback = nil, table options, int selectedIndex = 0, boolean isSlider = false ) {: .copyable aria-label='Functions' }
+Adds a Combobox element which represents a single line element that allows you to select a value from a dropdown menu. If `isSlider` is set to true, instead of a dropdown menu, the values can be selected by interacting with a slider element.
+
+???+ example "Example Code"
+    ```lua
+    local imgui = Isaac.GetImGui()
+    imgui:AddCombobox("catInput", "combobox1", "Combobox", function(index, val) print(index, val) end, { "Item 1", "Item 2", "Item 3" }, 1)
+    ```
 ___
 ### Add·Drag·Float () {: aria-label='Functions' }
 #### void AddDragFloat ( string parentId, string elementId, string text = "", function changeCallback = nil, float defaultVal = 0, float speed = 1, float min = INTEGER_MIN, float min = INTEGER_MAX, string formatting = "%.3f" ) {: .copyable aria-label='Functions' }
@@ -24,11 +33,47 @@ ___
 ### Add·Drag·Integer () {: aria-label='Functions' }
 #### void AddDragInteger ( string parentId, string elementId, string text = "", function changeCallback = nil, int defaultVal = 0, float speed = 1, int min = INTEGER_MIN, int min = INTEGER_MAX, string formatting = "%d%" ) {: .copyable aria-label='Functions' }
 ___
+### Add·Element () {: aria-label='Functions' }
+#### void AddElement ( string parentId, string elementId = "", [ImGuiElement](enums/ImGuiElement.md) type, string text = "" ) {: .copyable aria-label='Functions' }
+Adds a generic element to a given parent. Useful to add control elements like "SameLine", "Bullet" or "Text".
+___
+### Add·Input·Color () {: aria-label='Functions' }
+#### void AddInputColor ( string parentId, string elementId, string text = "", function changeCallback = nil, float r = 0, float g = 0, float b = 0) {: .copyable aria-label='Functions' }
+#### void AddInputColor ( string parentId, string elementId, string text = "", function changeCallback = nil, float r = 0, float g = 0, float b = 0, float a = 1 ) {: .copyable aria-label='Functions' }
+Adds a color input element. If the parameter `a` is set, it acts as an RGBA input. Otherwise its just an RGB input. The float values are between 0 and 1.
+
+The callback gets passed the r,g,b and a values as seperate parameters.
+
+???+ example "Example Code"
+    ```lua
+    local imgui = Isaac.GetImGui()
+    imgui:AddInputColor("catInput", "inputColorRGB", "RGB input", function(r, g, b) print(r, g, b) end, 1, 0.25, 0.45)
+    imgui:AddInputColor("catInput", "inputColorRGBA", "RGBA input", function(r, g, b, a) print(r, g, b, a) end, 0.5, 0.5, 0.5,
+        0.5)
+    ```
+___
 ### Add·Input·Float () {: aria-label='Functions' }
 #### void AddInputFloat ( string parentId, string elementId, string text = "", function changeCallback = nil, float defaultVal = 0, float step = 1, float stepFast = 100  ) {: .copyable aria-label='Functions' }
 ___
 ### Add·Input·Integer () {: aria-label='Functions' }
 #### void AddInputInteger ( string parentId, string elementId, string text = "", function changeCallback = nil, int defaultVal = 0, int step = 1, int stepFast = 100  ) {: .copyable aria-label='Functions' }
+___
+### Add·Input·Text () {: aria-label='Functions' }
+#### void AddInputText ( string parentId, string elementId, string description = "", function changeCallback = nil, string defaultVal = "", string hintText = "" ) {: .copyable aria-label='Functions' }
+Adds a text input element. The text from `hintText` will get displayed as a "placeholder" inside the input element, if the input of the element is empty.
+___
+### Add·Input·Text·Multiline () {: aria-label='Functions' }
+#### void AddInputTextMultiline ( string parentId, string elementId, string description = "", function changeCallback = nil, string defaultVal = "", float displayedLines = 6 ) {: .copyable aria-label='Functions' }
+Adds a text input element that allows to input multiple lines of text. The attribute `displayedLines` can be used to change the height of the element.
+___
+### Add·Radio·Buttons () {: aria-label='Functions' }
+#### void AddRadioButtons ( string parentId, string elementId, function changeCallback = nil, table options, int selectedIndex = 0, boolean renderSameLine = true ) {: .copyable aria-label='Functions' }
+
+???+ example "Example Code"
+    ```lua
+    local imgui = Isaac.GetImGui()
+    imgui:AddRadioButtons("catInput", "radioButtons", function(index) print(index) end, { "Radio 1", "Radio 2", "Radio 3" }, 1)
+    ```
 ___
 ### Add·Slider·Float () {: aria-label='Functions' }
 #### void AddSliderFloat ( string parentId, string elementId, string text = "", function changeCallback = nil, float defaultVal = 0, float min = INTEGER_MIN, float min = INTEGER_MAX, string formatting = "%.3f" ) {: .copyable aria-label='Functions' }

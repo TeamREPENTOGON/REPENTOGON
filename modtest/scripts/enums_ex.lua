@@ -2141,6 +2141,14 @@ ImGuiElement = {
     DragFloat = 16,
     SliderInt = 17,
     SliderFloat = 18,
+    ColorEdit = 19,
+    HelpMarker = 20,
+    Checkbox = 21,
+    RadioButton = 22,
+    Combobox = 23,
+    InputText = 24,
+    InputTextWithHint = 25,
+    InputTextMultiline = 26
 }
 
 ImGuiCallback = {

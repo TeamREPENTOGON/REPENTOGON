@@ -24,3 +24,11 @@ tags:
 |16 |DragFloat {: .copyable } |  |
 |17 |SliderInt {: .copyable } |  |
 |18 |SliderFloat {: .copyable } |  |
+|19 |ColorEdit {: .copyable } |  |
+|20 |HelpMarker {: .copyable } |  |
+|21 |Checkbox {: .copyable } |  |
+|22 |RadioButton {: .copyable } |  |
+|23 |Combobox {: .copyable } |  |
+|24 |InputText {: .copyable } |  |
+|25 |InputTextWithHint {: .copyable } |  |
+|26 |InputTextMultiline {: .copyable } |  |

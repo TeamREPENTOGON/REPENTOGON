@@ -27,6 +27,14 @@ enum class IMGUI_ELEMENT {
     DragFloat,
     SliderInt,
     SliderFloat,
+    ColorEdit,
+    HelpMarker,
+    Checkbox,
+    RadioButton,
+    Combobox,
+    InputText,
+    InputTextWithHint,
+    InputTextMultiline
 };
 
 enum class IMGUI_CALLBACK {
@@ -46,6 +54,24 @@ static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
 
 struct Data {
     int clickCounter = 0;
+};
+
+struct MiscData : Data {
+    bool checked = false; // used for Checkbox
+    int index = 0; // used for RadioButtons
+    bool sameLine = true; // used for RadioButtons
+    bool isSlider = false; // used for switch from Combobox to Enum Slider
+    std::list<std::string>* values = new std::list<std::string>(); // used for RadioButtons and Combobox
+    std::string inputText = ""; // Used for Text input
+    std::string hintText = ""; // Used for Text input
+    float lineCount = 6;
+
+    const char* getCurrentValue()
+    {
+        auto curValue = values->begin();
+        std::advance(curValue, index); // get element at index
+        return (index >= 0 && index < (int)values->size()) ? (*curValue).c_str() : "Unknown";
+    }
 };
 
 struct IntData : Data {
@@ -87,6 +113,16 @@ struct ColorData : Data {
     float g = 0;
     float b = 0;
     float a = 1;
+    float useAlpha = false;
+    float rgba[4] = { 0, 0, 0, 1 };
+
+    void init()
+    {
+        rgba[0] = r;
+        rgba[1] = g;
+        rgba[2] = b;
+        rgba[3] = a;
+    }
 };
 
 struct Element {
@@ -104,6 +140,7 @@ struct Element {
     IntData intData;
     FloatData floatData;
     ColorData colorData;
+    MiscData miscData;
 
     bool useroverride_isVisible = false;
 
@@ -159,6 +196,10 @@ struct Element {
     {
         colorData = dataObj;
     }
+    void AddData(MiscData dataObj)
+    {
+        miscData = dataObj;
+    }
 
     IntData* GetIntData()
     {
@@ -172,20 +213,48 @@ struct Element {
     {
         return &colorData;
     }
+    MiscData* GetMiscData()
+    {
+        return &miscData;
+    }
 
-    float GetCallbackData()
+    void PropagateCallbackData(lua::LuaCaller* caller)
     {
         switch (type) {
         case IMGUI_ELEMENT::InputInt:
         case IMGUI_ELEMENT::DragInt:
         case IMGUI_ELEMENT::SliderInt:
-            return (float)intData.currentVal;
+            caller->push(intData.currentVal);
+            break;
         case IMGUI_ELEMENT::InputFloat:
         case IMGUI_ELEMENT::DragFloat:
         case IMGUI_ELEMENT::SliderFloat:
-            return floatData.currentVal;
+            caller->push(floatData.currentVal);
+            break;
+        case IMGUI_ELEMENT::ColorEdit:
+            caller->push(colorData.rgba[0]);
+            caller->push(colorData.rgba[1]);
+            caller->push(colorData.rgba[2]);
+            if (colorData.useAlpha) {
+                caller->push(colorData.rgba[3]);
+            }
+            break;
+        case IMGUI_ELEMENT::Checkbox:
+            caller->push(miscData.checked);
+            break;
+        case IMGUI_ELEMENT::RadioButton:
+        case IMGUI_ELEMENT::Combobox:
+            caller->push(miscData.index);
+            caller->push(miscData.getCurrentValue());
+            break;
+        case IMGUI_ELEMENT::InputText:
+        case IMGUI_ELEMENT::InputTextWithHint:
+        case IMGUI_ELEMENT::InputTextMultiline:
+            caller->push(miscData.inputText.c_str());
+            break;
         default:
-            return (float)data.clickCounter;
+            caller->push((float)data.clickCounter);
+            break;
         }
     }
 
@@ -436,9 +505,9 @@ struct CustomImGui {
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, callbackID);
 
-        lua::LuaResults result = lua::LuaCaller(L)
-                                     .push(element->GetCallbackData())
-                                     .call(1);
+        lua::LuaCaller caller = lua::LuaCaller(L);
+        element->PropagateCallbackData(&caller);
+        caller.call(1);
     }
 
     Element* GetElementById(const char* elementID) IM_FMTARGS(2)
@@ -467,6 +536,68 @@ struct CustomImGui {
         }
         return NULL;
     }
+
+    /* From https://github.com/pthom/imgui/blob/DemoCodeDocking/misc/cpp/imgui_stdlib.cpp */
+    struct InputTextCallback_UserData {
+        std::string* Str;
+        ImGuiInputTextCallback ChainCallback;
+        void* ChainCallbackUserData;
+    };
+
+    static int InputTextCallback(ImGuiInputTextCallbackData* data)
+    {
+        InputTextCallback_UserData* user_data = (InputTextCallback_UserData*)data->UserData;
+        if (data->EventFlag == ImGuiInputTextFlags_CallbackResize) {
+            // Resize string callback
+            // If for some reason we refuse the new length (BufTextLen) and/or capacity (BufSize) we need to set them back to what we want.
+            std::string* str = user_data->Str;
+            IM_ASSERT(data->Buf == str->c_str());
+            str->resize(data->BufTextLen);
+            data->Buf = (char*)str->c_str();
+        } else if (user_data->ChainCallback) {
+            // Forward to user callback, if any
+            data->UserData = user_data->ChainCallbackUserData;
+            return user_data->ChainCallback(data);
+        }
+        return 0;
+    }
+
+    bool StringInputText(const char* label, std::string* str, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data)
+    {
+        IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
+        flags |= ImGuiInputTextFlags_CallbackResize;
+
+        InputTextCallback_UserData cb_user_data;
+        cb_user_data.Str = str;
+        cb_user_data.ChainCallback = callback;
+        cb_user_data.ChainCallbackUserData = user_data;
+        return ImGui::InputText(label, (char*)str->c_str(), str->capacity() + 1, flags, InputTextCallback, &cb_user_data);
+    }
+
+    bool StringInputTextWithHint(const char* label, const char* hint, std::string* str, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data)
+    {
+        IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
+        flags |= ImGuiInputTextFlags_CallbackResize;
+
+        InputTextCallback_UserData cb_user_data;
+        cb_user_data.Str = str;
+        cb_user_data.ChainCallback = callback;
+        cb_user_data.ChainCallbackUserData = user_data;
+        return ImGui::InputTextWithHint(label, hint, (char*)str->c_str(), str->capacity() + 1, flags, InputTextCallback, &cb_user_data);
+    }
+
+    bool StringInputTextMultiline(const char* label, std::string* str, const ImVec2& size, ImGuiInputTextFlags flags, ImGuiInputTextCallback callback, void* user_data)
+    {
+        IM_ASSERT((flags & ImGuiInputTextFlags_CallbackResize) == 0);
+        flags |= ImGuiInputTextFlags_CallbackResize;
+
+        InputTextCallback_UserData cb_user_data;
+        cb_user_data.Str = str;
+        cb_user_data.ChainCallback = callback;
+        cb_user_data.ChainCallbackUserData = user_data;
+        return ImGui::InputTextMultiline(label, (char*)str->c_str(), str->capacity() + 1, size, flags, InputTextCallback, &cb_user_data);
+    }
+    // End Custom Text input implementaiton with String as Input
 
     void DrawMenu()
     {
@@ -604,6 +735,83 @@ struct CustomImGui {
                 if (element->GetFloatData() != nullptr) {
                     FloatData* data = element->GetFloatData();
                     ImGui::SliderFloat(name, &data->currentVal, data->minVal, data->maxVal, data->formatting);
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::ColorEdit:
+                if (element->GetColorData() != nullptr) {
+                    ColorData* data = element->GetColorData();
+                    if (data->useAlpha) {
+                        ImGui::ColorEdit4(name, data->rgba);
+                    } else {
+                        ImGui::ColorEdit3(name, data->rgba);
+                    }
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::Checkbox:
+                if (element->GetMiscData() != nullptr) {
+                    MiscData* data = element->GetMiscData();
+                    ImGui::Checkbox(name, &data->checked);
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::RadioButton:
+                if (element->GetMiscData() != nullptr) {
+                    MiscData* data = element->GetMiscData();
+                    int counter = 0;
+                    for (auto elemName = data->values->begin(); elemName != data->values->end(); ++elemName) {
+                        ImGui::RadioButton(elemName->c_str(), &data->index, counter);
+                        RunCallbacks(&(*element));
+                        if (data->sameLine && counter < (int)data->values->size() - 1) {
+                            ImGui::SameLine();
+                        }
+                        ++counter;
+                    }
+                }
+                break;
+            case IMGUI_ELEMENT::Combobox:
+                if (element->GetMiscData() != nullptr) {
+                    MiscData* data = element->GetMiscData();
+                    if (data->isSlider) {
+                        ImGui::SliderInt(name, &data->index, 0, data->values->size() - 1, data->getCurrentValue());
+                        RunCallbacks(&(*element));
+                    } else {
+                        if (ImGui::BeginCombo(name, data->getCurrentValue())) {
+                            int counter = 0;
+                            for (auto elemName = data->values->begin(); elemName != data->values->end(); ++elemName) {
+                                const bool is_selected = (data->index == counter);
+                                if (ImGui::Selectable(elemName->c_str(), is_selected)) {
+                                    data->index = counter;
+                                    RunCallbacks(&(*element));
+                                }
+                                if (is_selected) {
+                                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                                    ImGui::SetItemDefaultFocus();
+                                }
+                                ++counter;
+                            }
+                            ImGui::EndCombo();
+                        }
+                    }
+                }
+                break;
+            case IMGUI_ELEMENT::InputText:
+            case IMGUI_ELEMENT::InputTextWithHint:
+                if (element->GetMiscData() != nullptr) {
+                    MiscData* data = element->GetMiscData();
+                    if (data->hintText.empty()) {
+                        StringInputText(name, &data->inputText, NULL, NULL, NULL);
+                    } else {
+                        StringInputTextWithHint(name, data->hintText.c_str(), &data->inputText, NULL, NULL, NULL);
+                    }
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::InputTextMultiline:
+                if (element->GetMiscData() != nullptr) {
+                    MiscData* data = element->GetMiscData();
+                    StringInputTextMultiline(name, &data->inputText, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * data->lineCount), NULL, NULL, NULL);
                     RunCallbacks(&(*element));
                 }
                 break;

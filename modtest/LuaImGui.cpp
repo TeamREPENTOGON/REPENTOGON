@@ -392,6 +392,204 @@ static int Lua_AddSliderFloat(lua_State* L)
     return 1;
 }
 
+static int Lua_AddInputColor(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    ColorData data = ColorData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    int stackID = CheckAndSetCallback(L, 5);
+    data.r = (float)luaL_optnumber(L, 6, 0);
+    data.g = (float)luaL_optnumber(L, 7, 0);
+    data.b = (float)luaL_optnumber(L, 8, 0);
+    data.useAlpha = !lua_isnoneornil(L, 9);
+    data.a = (float)luaL_optnumber(L, 9, 1);
+
+    data.init();
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::ColorEdit);
+
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    if (lua_isfunction(L, 5)) {
+        imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+    }
+    return 1;
+}
+
+static int Lua_AddCheckbox(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    MiscData data = MiscData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    int stackID = CheckAndSetCallback(L, 5);
+    data.checked = lua_toboolean(L, 6);
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::Checkbox);
+
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    if (lua_isfunction(L, 5)) {
+        imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+    }
+
+    return 1;
+}
+
+static int Lua_AddRadioButtons(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    MiscData data = MiscData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    int stackID = CheckAndSetCallback(L, 4);
+    if (!lua_istable(L, 5)) {
+        return luaL_error(L, "Argument 5 needs to be a table!");
+    }
+    data.index = (int)luaL_optinteger(L, 6, 0);
+    if (!lua_isnoneornil(L, 7)) {
+        data.sameLine = lua_toboolean(L, 7);
+    }
+
+    // get table input
+    auto tableLength = lua_rawlen(L, 5);
+    for (auto i = 1; i <= tableLength; ++i) {
+        lua_pushinteger(L, i);
+        lua_gettable(L, 5);
+        if (lua_type(L, -1) == LUA_TNIL)
+            break;
+        data.values->push_back(luaL_checkstring(L, -1));
+        lua_pop(L, 1);
+    }
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::RadioButton);
+
+    imGui->AddElement(parentId, id, "", type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    if (lua_isfunction(L, 4)) {
+        imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+    }
+
+    return 1;
+}
+
+static int Lua_AddCombobox(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    MiscData data = MiscData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    int stackID = CheckAndSetCallback(L, 5);
+    if (!lua_istable(L, 6)) {
+        return luaL_error(L, "Argument 6 needs to be a table!");
+    }
+    data.index = (int)luaL_optinteger(L, 7, 0);
+    data.isSlider = lua_toboolean(L, 8);
+
+    // get table input
+    auto tableLength = lua_rawlen(L, 6);
+    for (auto i = 1; i <= tableLength; ++i) {
+        lua_pushinteger(L, i);
+        lua_gettable(L, 6);
+        if (lua_type(L, -1) == LUA_TNIL)
+            break;
+        data.values->push_back(luaL_checkstring(L, -1));
+        lua_pop(L, 1);
+    }
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::Combobox);
+
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    if (lua_isfunction(L, 5)) {
+        imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+    }
+
+    return 1;
+}
+
+static int Lua_AddInputText(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    MiscData data = MiscData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    int stackID = CheckAndSetCallback(L, 5);
+    data.inputText = luaL_optstring(L, 6, "");
+    data.hintText = luaL_optstring(L, 7, "");
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::InputText);
+
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    if (lua_isfunction(L, 5)) {
+        imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+    }
+    return 1;
+}
+
+static int Lua_AddInputTextMultiline(lua_State* L)
+{
+  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+  MiscData data = MiscData();
+  const char* parentId = luaL_checkstring(L, 2);
+  const char* id = luaL_checkstring(L, 3);
+  const char* text = luaL_optstring(L, 4, "");
+  int stackID = CheckAndSetCallback(L, 5);
+  data.inputText = luaL_optstring(L, 6, "");
+  data.lineCount = luaL_optnumber(L, 7, 6);
+
+  EvalIDAndParent(L, imGui, id, parentId);
+
+  int type = static_cast<int>(IMGUI_ELEMENT::InputTextMultiline);
+
+  imGui->AddElement(parentId, id, text, type);
+  Element* createdElement = imGui->GetElementById(id);
+
+  createdElement->AddData(data);
+
+  if (lua_isfunction(L, 5)) {
+    imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+  }
+  return 1;
+}
+
 extern bool menuShown;
 static int Lua_ImGuiShow(lua_State* L)
 {
@@ -475,6 +673,12 @@ static void RegisterCustomImGui(lua_State* L)
         { "AddDragFloat", Lua_AddDragFloat },
         { "AddSliderInteger", Lua_AddSliderInteger },
         { "AddSliderFloat", Lua_AddSliderFloat },
+        { "AddInputColor", Lua_AddInputColor },
+        { "AddCheckbox", Lua_AddCheckbox },
+        { "AddRadioButtons", Lua_AddRadioButtons },
+        { "AddCombobox", Lua_AddCombobox },
+        { "AddInputText", Lua_AddInputText },
+        { "AddInputTextMultiline", Lua_AddInputTextMultiline },
         { "Reset", Lua_ImGuiReset },
         { "Show", Lua_ImGuiShow },
         { "Hide", Lua_ImGuiHide },
