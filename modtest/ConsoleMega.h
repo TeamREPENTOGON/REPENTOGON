@@ -108,7 +108,7 @@ struct ConsoleMega {
         RegisterCommand("clear", "Clear the debug console", "Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.", true);
         RegisterCommand("clearcache", "Clear the sprite cache", "Clears the game's sprite cache. This can be useful for trying to deal with memory issues.\nThis also has the side effect of reloading modded sprites without needing a full game restart.", true);
         RegisterCommand("clearseeds", "Clear easter egg seeds in the current run", "Clears any \"special\" seed effects in the current run.\nExample:\nThe seed effect GFVE LLLL is applied in a run. Running clearseeds will remove this effect.", false);
-        RegisterCommand("combo", "Give items from a specified pool", "Gives a specified number of items from a specified item pool.\nExample:\n(combo 4.6) will give six random items from the Angel item pool.\nNo, I don't know why they made a bespoke ID system for this one (1) command.", false);
+        RegisterCommand("combo", "Give items from a specified pool", "Gives a specified number of items from a specified item pool.\nExample:\n(combo 4.6) will give six random items from the Angel item pool.\nNo, I don't know why they made a bespoke ID system for this one (1) command.", false, COMBO);
         RegisterCommand("copy", "Copy previous commands to clipboard", "Copies a specified amount of previous console commands to the system clipboard.\nExample:\n(copy 3) will copy the previous three commands.", true);
         RegisterCommand("costumetest", "Give the player random costumes", "Gives the player a specified amount of random costumes.\nExample:\n(costumetest 34) will give the player 34 random costumes.", false);
         RegisterCommand("curse", "Add curses to the current run", "Permanently (until overridden) adds curses to the run. This command uses a bitmask- the curse with an ID of 1 is 1, 2 is 2, 3 is 4, 4 is 8, and so on. In this manner, desired curse ID's are tallied up and multiple can be enabled simultaneously.\nExample:\n(curse 96) will enable Curse of the Blind and Curse of the Maze simultaneously.", false);
@@ -420,6 +420,35 @@ struct ConsoleMega {
                                 break;
                             }
 
+
+                            case COMBO: {
+                                std::vector<AutocompleteEntry> combo = {
+                                    AutocompleteEntry(cmdlets.front() + " 0.", "Treasure"),
+                                    AutocompleteEntry(cmdlets.front() + " 1.", "Shop"),
+                                    AutocompleteEntry(cmdlets.front() + " 2.", "Boss"),
+                                    AutocompleteEntry(cmdlets.front() + " 3.", "Devil"),
+                                    AutocompleteEntry(cmdlets.front() + " 4.", "Angel"),
+                                    AutocompleteEntry(cmdlets.front() + " 5.", "Secret"),
+                                    AutocompleteEntry(cmdlets.front() + " 6.", "Library"),
+                                    AutocompleteEntry(cmdlets.front() + " 7.", "Challenge"),
+                                    AutocompleteEntry(cmdlets.front() + " 8.", "Golden Chest"),
+                                    AutocompleteEntry(cmdlets.front() + " 9.", "Red Chest"),
+                                    AutocompleteEntry(cmdlets.front() + " 10.", "Beggar"),
+                                    AutocompleteEntry(cmdlets.front() + " 11.", "Demon Beggar"),
+                                    AutocompleteEntry(cmdlets.front() + " 12.", "Curse"),
+                                    AutocompleteEntry(cmdlets.front() + " 13.", "Key Master"),
+                                    AutocompleteEntry(cmdlets.front() + " 14.", "Boss Rush"),
+                                    AutocompleteEntry(cmdlets.front() + " 15.", "Dungeon"),
+                                };
+
+                                for (AutocompleteEntry entry : combo) {
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
+                                        autocompleteBuffer.push_back(entry);
+                                    }
+                                }
+                                break;
+                            }
+
                             case CUTSCENE: {
                                 std::vector<AutocompleteEntry> cutscene = {
                                     AutocompleteEntry(cmdlets.front() + " 1", "Intro"),
@@ -457,7 +486,7 @@ struct ConsoleMega {
                                 }
                                 break;
                             }
-                                        
+                                  
                             case MACRO: {
                                 for (ConsoleMacro macro : macros) {
                                     if ((cmdlets.front() + " " + macro.name).rfind(data->Buf, 0) == 0) {
