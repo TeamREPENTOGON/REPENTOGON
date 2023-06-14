@@ -213,11 +213,13 @@ struct ConsoleMega {
            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
            if (autocompleteBuffer.size() > 0) {
                ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
-               ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 300));
+               ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 302)); // 302 is chosen here to have a "pixel perfect" scroll to the bottom
                if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
                    for (AutocompleteEntry entry : autocompleteBuffer) {
-                       if (autocompletePos > 0 && entry.autocompleteText == autocompleteBuffer[autocompletePos - 1].autocompleteText) 
+                       if (autocompletePos > 0 && entry.autocompleteText == autocompleteBuffer[autocompletePos - 1].autocompleteText) {
                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+                           ImGui::SetScrollHereY();
+                       }
                        else 
                            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
 
