@@ -420,6 +420,19 @@ struct ConsoleMega {
                                 break;
                             }
 
+                            case CHALLENGE: {
+                                XMLNodes data = XMLStuff.ChallengeData->nodes;
+                                for (auto node : data) {
+                                    int id = node.first;
+                                    std::string name;
+                                    if (id == 45) 
+                                        name = "DELETE THIS"; // Internally the challenge has no name, this is the somewhat canon one.
+                                    else
+                                        name = node.second["name"].c_str();
+                                    autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + std::to_string(id), name));
+                                }
+                                break;
+                            }
 
                             case COMBO: {
                                 std::vector<AutocompleteEntry> combo = {
