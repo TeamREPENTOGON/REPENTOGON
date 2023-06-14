@@ -138,7 +138,7 @@ struct ConsoleMega {
         RegisterCommand("restart", "Restart on a new run", "Restarts the game on a new run. Accepts an optional argument which is the character ID.\nExample:\n(restart 3) starts a new run as Judas.", false);
         RegisterCommand("seed", "Start a new run with the given seed", "Starts a new run with the given seed.\nExample:\n(seed N1CA L1SY) will start a new run with the seed N1CA L1SY.", false);
         RegisterCommand("spawn", "Spawn an entity", "Spawns a new entity. Syntax is (type).(variant).(subtype).(champion).\nExample:\n(spawn 5.40.1) will spawn a bomb.", false);
-        RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false);
+        RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false, STAGE);
         RegisterCommand("time", "Print frames since run started", "Prints the amount of frames which has passed since the run started.", false);
 
 
@@ -313,6 +313,87 @@ struct ConsoleMega {
                         }
 
                         switch (command.autocompleteType) {
+                            case STAGE: {
+                                std::vector<AutocompleteEntry> stage;
+                                // TODO: I'd *love* to add a callback here for StageAPI stages.
+                                if (g_Game->GetDifficulty() == 2 || g_Game->GetDifficulty() == 3) { // Greed mode
+                                    stage = {
+                                        AutocompleteEntry(cmdlets.front() + " 1", "Basement"),
+                                        AutocompleteEntry(cmdlets.front() + " 1a", "Cellar"),
+                                        AutocompleteEntry(cmdlets.front() + " 1b", "Burning Basement"),
+                                        AutocompleteEntry(cmdlets.front() + " 2", "Caves"),
+                                        AutocompleteEntry(cmdlets.front() + " 2a", "Catacombs"),
+                                        AutocompleteEntry(cmdlets.front() + " 2b", "Flooded Caves"),
+                                        AutocompleteEntry(cmdlets.front() + " 3", "Depths"),
+                                        AutocompleteEntry(cmdlets.front() + " 3a", "Necropolis"),
+                                        AutocompleteEntry(cmdlets.front() + " 3b", "Dank Depths"),
+                                        AutocompleteEntry(cmdlets.front() + " 4", "Womb"),
+                                        AutocompleteEntry(cmdlets.front() + " 4a", "Utero"),
+                                        AutocompleteEntry(cmdlets.front() + " 4b", "Scarred Womb"),
+                                        AutocompleteEntry(cmdlets.front() + " 5", "Sheol"),
+                                        AutocompleteEntry(cmdlets.front() + " 6", "The Shop"),
+                                        AutocompleteEntry(cmdlets.front() + " 7", "Ultra Greed")
+                                    };
+                                }
+                                else {
+                                    stage = {
+                                        AutocompleteEntry(cmdlets.front() + " 1", "Basement I"),
+                                        AutocompleteEntry(cmdlets.front() + " 1a", "Cellar I"),
+                                        AutocompleteEntry(cmdlets.front() + " 1b", "Burning Basement I"),
+                                        AutocompleteEntry(cmdlets.front() + " 1c", "Downpour I"),
+                                        AutocompleteEntry(cmdlets.front() + " 1d", "Dross I"),
+                                        AutocompleteEntry(cmdlets.front() + " 2", "Basement II"),
+                                        AutocompleteEntry(cmdlets.front() + " 2a", "Cellar II"),
+                                        AutocompleteEntry(cmdlets.front() + " 2b", "Burning Basement II"),
+                                        AutocompleteEntry(cmdlets.front() + " 2c", "Downpour II"),
+                                        AutocompleteEntry(cmdlets.front() + " 2d", "Dross II"),
+                                        AutocompleteEntry(cmdlets.front() + " 3", "Caves I"),
+                                        AutocompleteEntry(cmdlets.front() + " 3a", "Catacombs I"),
+                                        AutocompleteEntry(cmdlets.front() + " 3b", "Flooded Caves I"),
+                                        AutocompleteEntry(cmdlets.front() + " 3c", "Mines I"),
+                                        AutocompleteEntry(cmdlets.front() + " 3d", "Ashpit I"),
+                                        AutocompleteEntry(cmdlets.front() + " 4", "Caves II"),
+                                        AutocompleteEntry(cmdlets.front() + " 4a", "Catacombs II"),
+                                        AutocompleteEntry(cmdlets.front() + " 4b", "Flooded Caves II"),
+                                        AutocompleteEntry(cmdlets.front() + " 4c", "Mines II"),
+                                        AutocompleteEntry(cmdlets.front() + " 4d", "Ashpit II"),
+                                        AutocompleteEntry(cmdlets.front() + " 5", "Depths I"),
+                                        AutocompleteEntry(cmdlets.front() + " 5a", "Necropolis I"),
+                                        AutocompleteEntry(cmdlets.front() + " 5b", "Dank Depths I"),
+                                        AutocompleteEntry(cmdlets.front() + " 5c", "Mausoleum I"),
+                                        AutocompleteEntry(cmdlets.front() + " 5d", "Gehenna I"),
+                                        AutocompleteEntry(cmdlets.front() + " 6", "Depths II"),
+                                        AutocompleteEntry(cmdlets.front() + " 6a", "Necropolis II"),
+                                        AutocompleteEntry(cmdlets.front() + " 6b", "Dank Depths II"),
+                                        AutocompleteEntry(cmdlets.front() + " 6c", "Mausoleum II"),
+                                        AutocompleteEntry(cmdlets.front() + " 6d", "Gehenna II"),
+                                        AutocompleteEntry(cmdlets.front() + " 7", "Womb I"),
+                                        AutocompleteEntry(cmdlets.front() + " 7a", "Utero I"),
+                                        AutocompleteEntry(cmdlets.front() + " 7b", "Scarred Womb I"),
+                                        AutocompleteEntry(cmdlets.front() + " 7c", "Corpse I"),
+                                        AutocompleteEntry(cmdlets.front() + " 8", "Womb II"),
+                                        AutocompleteEntry(cmdlets.front() + " 8a", "Utero II"),
+                                        AutocompleteEntry(cmdlets.front() + " 8b", "Scarred Womb II"),
+                                        AutocompleteEntry(cmdlets.front() + " 8c", "Corpse II"),
+                                        AutocompleteEntry(cmdlets.front() + " 9", "??? / Blue Womb"),
+                                        AutocompleteEntry(cmdlets.front() + " 10", "Sheol"),
+                                        AutocompleteEntry(cmdlets.front() + " 10a", "Cathedral"),
+                                        AutocompleteEntry(cmdlets.front() + " 11", "Dark Room"),
+                                        AutocompleteEntry(cmdlets.front() + " 11a", "Chest"),
+                                        AutocompleteEntry(cmdlets.front() + " 12", "The Void"),
+                                        AutocompleteEntry(cmdlets.front() + " 13", "Home (day)"),
+                                        AutocompleteEntry(cmdlets.front() + " 13a", "Home (night)")
+                                    };
+                                }
+
+                                for (AutocompleteEntry entry : stage) {
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
+                                        autocompleteBuffer.push_back(entry);
+                                    }
+                                }
+                                break;
+                            }
+
                             case DEBUG_FLAG: {
                                 std::vector<AutocompleteEntry> debug = {
                                     AutocompleteEntry(cmdlets.front() + " 1", "Entity Positions"),
