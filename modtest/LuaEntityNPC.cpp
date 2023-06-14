@@ -41,6 +41,15 @@ int Lua_NPCSetControllerId(lua_State* L)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_NPCTryForceTarget) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Entity* target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	int duration = luaL_checkinteger(L, 3);
+
+	lua_pushboolean(L, npc->TryForceTarget(target, duration));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -50,4 +59,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetDirtColor", Lua_NPCGetDirtColor);
 	lua::RegisterFunction(state, mt, "GetControllerId", Lua_NPCGetControllerId);
 	lua::RegisterFunction(state, mt, "SetControllerId", Lua_NPCSetControllerId);
+	lua::RegisterFunction(state, mt, "TryForceTarget", Lua_NPCTryForceTarget);
 }
