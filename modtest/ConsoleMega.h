@@ -112,7 +112,7 @@ struct ConsoleMega {
         RegisterCommand("copy", "Copy previous commands to clipboard", "Copies a specified amount of previous console commands to the system clipboard.\nExample:\n(copy 3) will copy the previous three commands.", true);
         RegisterCommand("costumetest", "Give the player random costumes", "Gives the player a specified amount of random costumes.\nExample:\n(costumetest 34) will give the player 34 random costumes.", false);
         RegisterCommand("curse", "Add curses to the current run", "Permanently (until overridden) adds curses to the run. This command uses a bitmask- the curse with an ID of 1 is 1, 2 is 2, 3 is 4, 4 is 8, and so on. In this manner, desired curse ID's are tallied up and multiple can be enabled simultaneously.\nExample:\n(curse 96) will enable Curse of the Blind and Curse of the Maze simultaneously.", false);
-        RegisterCommand("cutscene", "Play a cutscene", "Immediately plays the specified cutscenne.\nExample:\n(cutscene 1) will immediately play the game's intro.", true);
+        RegisterCommand("cutscene", "Play a cutscene", "Immediately plays the specified cutscenne.\nExample:\n(cutscene 1) will immediately play the game's intro.", true, CUTSCENE);
         RegisterCommand("debug", "Enable a debug flag", "Enables the specified debug flag.\nExample:\n(debug 3) will grant the player infinite HP.", false, DEBUG_FLAG);
         RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false);
         RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
@@ -326,7 +326,7 @@ struct ConsoleMega {
                                     AutocompleteEntry(cmdlets.front() + " 11", "Grid Info"),
                                     AutocompleteEntry(cmdlets.front() + " 12", "Player Item Info"),
                                     AutocompleteEntry(cmdlets.front() + " 13", "Show Grid Collision Points"),
-                                    AutocompleteEntry(cmdlets.front() + " 14", "Show Lua Memory Usage"),
+                                    AutocompleteEntry(cmdlets.front() + " 14", "Show Lua Memory Usage")
                                 };
 
                                 for (AutocompleteEntry entry : debug) {
@@ -337,6 +337,44 @@ struct ConsoleMega {
                                 break;
                             }
 
+                            case CUTSCENE: {
+                                std::vector<AutocompleteEntry> cutscene = {
+                                    AutocompleteEntry(cmdlets.front() + " 1", "Intro"),
+                                    AutocompleteEntry(cmdlets.front() + " 2", "Credits"),
+                                    AutocompleteEntry(cmdlets.front() + " 3", "Epilogue"),
+                                    AutocompleteEntry(cmdlets.front() + " 4", "Womb (Eden)"),
+                                    AutocompleteEntry(cmdlets.front() + " 5", "Womb (Rubber Cement)"),
+                                    AutocompleteEntry(cmdlets.front() + " 6", "Womb (Noose)"),
+                                    AutocompleteEntry(cmdlets.front() + " 7", "Womb (Wire Coat Hanger)"),
+                                    AutocompleteEntry(cmdlets.front() + " 8", "Womb (Everything is Terrible)"),
+                                    AutocompleteEntry(cmdlets.front() + " 9", "Womb (Ipecac)"),
+                                    AutocompleteEntry(cmdlets.front() + " 10", "Womb (Experimental Treatment)"),
+                                    AutocompleteEntry(cmdlets.front() + " 11", "Womb (A Quarter)"),
+                                    AutocompleteEntry(cmdlets.front() + " 12", "Womb (Dr. Fetus)"),
+                                    AutocompleteEntry(cmdlets.front() + " 13", "Womb (???)"),
+                                    AutocompleteEntry(cmdlets.front() + " 14", "Womb (It Lives!)"),
+                                    AutocompleteEntry(cmdlets.front() + " 15", "Sheol"),
+                                    AutocompleteEntry(cmdlets.front() + " 16", "Cathedral"),
+                                    AutocompleteEntry(cmdlets.front() + " 17", "Chest"),
+                                    AutocompleteEntry(cmdlets.front() + " 18", "Dark Room"),
+                                    AutocompleteEntry(cmdlets.front() + " 19", "Mega Satan"),
+                                    AutocompleteEntry(cmdlets.front() + " 20", "Blue Womb"),
+                                    AutocompleteEntry(cmdlets.front() + " 21", "Greed Mode"),
+                                    AutocompleteEntry(cmdlets.front() + " 22", "The Void"),
+                                    AutocompleteEntry(cmdlets.front() + " 23", "Greedier"),
+                                    AutocompleteEntry(cmdlets.front() + " 24", "Mother"),
+                                    AutocompleteEntry(cmdlets.front() + " 25", "Dogma"),
+                                    AutocompleteEntry(cmdlets.front() + " 26", "The Beast")
+                                };
+
+                                for (AutocompleteEntry entry : cutscene) {
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
+                                        autocompleteBuffer.push_back(entry);
+                                    }
+                                }
+                                break;
+                            }
+                                        
                             case MACRO: {
                                 for (ConsoleMacro macro : macros) {
                                     if ((cmdlets.front() + " " + macro.name).rfind(data->Buf, 0) == 0) {
