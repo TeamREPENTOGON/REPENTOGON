@@ -116,7 +116,7 @@ struct ConsoleMega {
         RegisterCommand("debug", "Enable a debug flag", "Enables the specified debug flag.\nExample:\n(debug 3) will grant the player infinite HP.", false, DEBUG_FLAG);
         RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false);
         RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
-        RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false);
+        RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM);
         RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false);
         RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false);
         RegisterCommand("help", "Get info about commands", "Retrieve further info about a command and its syntax.", true);
@@ -130,7 +130,7 @@ struct ConsoleMega {
         RegisterCommand("playsfx", "Play a sound effect", "Plays a sound effect immediately.\nExample:\n(playsfx 187) will play an incorrect buzzer.", true);
         RegisterCommand("prof", "[BROKEN] Start profiling", "Supposed to log information to a CSV. Blame Nicalis!", true);
         RegisterCommand("profstop", "[BROKEN] Stop profiling", "Supposed to stop profiling but profiling is broken because we can't have nice things.", true);
-        RegisterCommand("remove", "Remove an item", "Removes an item from the player immediately. Accepts the same syntax as give, look at that command's help for more info.", false);
+        RegisterCommand("remove", "Remove an item", "Removes an item from the player immediately. Accepts the same syntax as give, look at that command's help for more info.", false, ITEM);
         RegisterCommand("reloadfx", "Reload floor overlays", "Reloads the current floor's effects.", false);
         RegisterCommand("reloadshaders", "Reload in-game shaders", "Reloads any currently loaded shaders.", false);
         RegisterCommand("repeat", "Repeat prior commands", "Repeats the previously entered command X amount of times.\nExample:\n(giveitem 1) is used to give the player The Sad Onion. (repeat 5) is then used to give the player The Sad Onion five more times.", true);
@@ -300,7 +300,7 @@ struct ConsoleMega {
                         }
                     }
 
-                    if (cmdlets.size() == 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
+                    if (cmdlets.size() >= 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
                         std::string commandName = cmdlets.front();
                         commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
 
@@ -311,6 +311,8 @@ struct ConsoleMega {
                                 break;
                             }
                         }
+
+                        std::vector<AutocompleteEntry> entries;
 
                         switch (command.autocompleteType) {
                             case STAGE: {
@@ -420,16 +422,58 @@ struct ConsoleMega {
                                 break;
                             }
 
+                            case ITEM: {
+                                std::vector<std::pair<XMLNodes, std::string>> XMLPairs = {
+                                    {XMLStuff.ItemData->nodes, " c"},
+                                    {XMLStuff.TrinketData->nodes, " t"},
+                                    {XMLStuff.CardData->nodes, " k"},
+                                    {XMLStuff.PillData->nodes, " p"},
+
+                                };
+                                //XMLNodes items = XMLStuff.ItemData->nodes;
+                                //XMLNodes trinkets = XMLStuff.TrinketData->nodes;
+                                //XMLNodes cards = XMLStuff.CardData->nodes;
+                                //XMLNodes pills = XMLStuff.PillData->nodes;
+                                for (std::pair<XMLNodes, std::string> XMLPair : XMLPairs) {
+                                    for (auto node : XMLPair.first) {
+                                        int id = node.first;
+                                        std::string name = node.second["name"];
+                                        AutocompleteEntry entry = AutocompleteEntry(cmdlets.front() + XMLPair.second + std::to_string(id), name);
+
+                                        // We also need to check for name, so tab autocomplete works with names as well.
+                                        // Lowercase string for this.
+                                        std::string lowerBuf = data->Buf;
+                                        std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
+                                            [](unsigned char c) { return std::tolower(c); });
+
+                                        std::string lowerName = (cmdlets.front() + " " + name);
+                                        std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
+                                            [](unsigned char c) { return std::tolower(c); });
+
+                                        if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerName.rfind(lowerBuf, 0) == 0)
+                                            autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + XMLPair.second + std::to_string(id), name));
+                                    }
+                                }
+
+                                
+                                break;
+                            }
+
                             case CHALLENGE: {
-                                XMLNodes data = XMLStuff.ChallengeData->nodes;
-                                for (auto node : data) {
+                                XMLNodes challenges = XMLStuff.ChallengeData->nodes;
+                                for (auto node : challenges) {
                                     int id = node.first;
                                     std::string name;
                                     if (id == 45) 
                                         name = "DELETE THIS"; // Internally the challenge has no name, this is the somewhat canon one.
                                     else
-                                        name = node.second["name"].c_str();
-                                    autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + std::to_string(id), name));
+                                        name = node.second["name"];
+
+                                    AutocompleteEntry entry = AutocompleteEntry(cmdlets.front() + " " + std::to_string(id), name);
+
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0)
+                                        autocompleteBuffer.push_back(entry);
+
                                 }
                                 break;
                             }
