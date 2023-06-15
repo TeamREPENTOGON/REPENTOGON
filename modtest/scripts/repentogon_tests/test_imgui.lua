@@ -49,6 +49,11 @@ imgui:LinkWindowToElement("popup", "button_popup2")
 imgui:AddElement("catWindows", "button_popup3", ImGuiElement.Button, "open a popup via SetVisible()")
 imgui:AddCallback("button_popup3", ImGuiCallback.Clicked, function(val) imgui:SetVisible("popup", true) end)
 
+imgui:AddElement("catWindows", "tooltipButton", ImGuiElement.Button, "A button with tooltip and helpmarker")
+-- imgui:AddCallback("tooltipButton", ImGuiCallback.Hovered, function(val) print("Hovered") end) -- sanity check if tooltip on an object with hover callback works -- yes it works :) deactivated for less spam
+imgui:SetTooltip("tooltipButton", "My cool tooltip")
+imgui:SetHelpmarker("tooltipButton", "My cool Helpmarker")
+
 --------- CATEGORY INPUTS ---------
 imgui:AddElement("testWindow2", "catInput", ImGuiElement.CollapsingHeader, "Input types")
 imgui:AddInputInteger("catInput", "inputInt", "int input", function(val) print(val) end, 10, 5, 500)
@@ -70,3 +75,20 @@ imgui:AddInputText("catInput", "inputText", "text input", function(val) print(va
 imgui:AddInputText("catInput", "inputTextwHint", "text input w hint", function(val) print(val) end, "", "Some Hint")
 imgui:AddInputTextMultiline("catInput", "inputTextMulti", "Multiline text input", function(val) print(val) end,
     "Some\nCool text with linebreaks\nAnd Stuff", 7)
+
+--------- Tab Testing ---------
+imgui:AddTabBar("testWindow2", "tabBar1")
+imgui:AddTab("tabBar1", "tab1", "Tab 1")
+imgui:AddElement("tab1", "", ImGuiElement.Text, "This is tab 1")
+imgui:AddTab("tabBar1", "tab2", "Tab 2")
+imgui:AddElement("tab2", "", ImGuiElement.Text, "This is tab 2")
+imgui:AddTab("tabBar1", "tab3", "Tab 3")
+imgui:AddElement("tab3", "", ImGuiElement.Text, "This is tab 3")
+
+imgui:AddElement("testWindow2", "", ImGuiElement.Separator)
+--------- Render callback ---------
+imgui:AddElement("testWindow2", "mousePosText", ImGuiElement.Text, "")
+imgui:AddCallback("mousePosText", ImGuiCallback.Render, function(val)
+    local mousePos = imgui:GetMousePosition()
+    imgui:UpdateText("mousePosText", "MousePos: " .. mousePos.X .. "\t" .. mousePos.Y)
+end)

@@ -81,6 +81,16 @@ ___
 ### Add·Slider·Integer () {: aria-label='Functions' }
 #### void AddSliderInteger ( string parentId, string elementId, string text = "", function changeCallback = nil, int defaultVal = 0, int min = INTEGER_MIN, int min = INTEGER_MAX, string formatting = "%d%" ) {: .copyable aria-label='Functions' }
 ___
+### Add·Tab·Bar () {: aria-label='Functions' }
+#### void AddTabBar ( string parentId, string elementId ) {: .copyable aria-label='Functions' }
+A TabBar is a container which is used to store Tab elements.
+___
+### Add·Tab () {: aria-label='Functions' }
+#### void AddTab ( string parentId, string elementId, string text ) {: .copyable aria-label='Functions' }
+A tab is a clickable area that shows another page or area.
+
+The parent object needs to be a TabBar.
+___
 ### Create·Menu () {: aria-label='Functions' }
 #### void CreateMenu ( string elementId, string text = "" ) {: .copyable aria-label='Functions' }
 Creates an entry to the main menu bar of Repentogon.
@@ -92,6 +102,10 @@ ___
 ### Element·Exists () {: aria-label='Functions' }
 #### boolean ElementExists ( string elementId ) {: .copyable aria-label='Functions' }
 Returns true if an element with the given ID exists already.
+___
+### Get·Mouse·Position () {: aria-label='Functions' }
+#### void GetMousePosition ( ) {: .copyable aria-label='Functions' }
+Returns the mouse position in Screen coordinates.
 ___
 ### Hide () {: aria-label='Functions' }
 #### void Hide ( ) {: .copyable aria-label='Functions' }
@@ -131,6 +145,14 @@ ___
 ### Reset () {: aria-label='Functions' }
 #### void Reset ( ) {: .copyable aria-label='Functions' }
 Removes all custom defined Imgui elements and resets imgui back to its original state.
+___
+### Set·Helpmarker () {: aria-label='Functions' }
+#### void SetHelpmarker ( string elementId, string text ) {: .copyable aria-label='Functions' }
+Adds a helpmarker to a given element. A Helpmarker is a `(?)` element rendered on the right of an element, which when hovered displays a tooltip.
+___
+### Set·Tooltip () {: aria-label='Functions' }
+#### void SetTooltip ( string elementId, string text ) {: .copyable aria-label='Functions' }
+Adds a tooltip to a given element. The tooltip is visible when the user hovers over the element.
 ___
 ### Set·Visible () {: aria-label='Functions' }
 #### void SetVisible ( string elementId, boolean visible ) {: .copyable aria-label='Functions' }

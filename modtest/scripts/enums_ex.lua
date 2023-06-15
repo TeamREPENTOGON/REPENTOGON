@@ -2132,7 +2132,7 @@ ImGuiElement = {
 	SeparatorText = 7,
 	Text = 8,
 	BulletText = 9,
-	SameLine = 10,
+	SameLine = 10, -- used to render the next element in the same line
 	Button = 11,
 	SmallButton = 12,
     InputInt = 13,
@@ -2142,13 +2142,14 @@ ImGuiElement = {
     SliderInt = 17,
     SliderFloat = 18,
     ColorEdit = 19,
-    HelpMarker = 20,
-    Checkbox = 21,
-    RadioButton = 22,
-    Combobox = 23,
-    InputText = 24,
-    InputTextWithHint = 25,
-    InputTextMultiline = 26
+    TabBar = 20,
+    Tab = 21,
+    Checkbox = 22,
+    RadioButton = 23,
+    Combobox = 24,
+    InputText = 25,
+    InputTextWithHint = 26,
+    InputTextMultiline = 27
 }
 
 ImGuiCallback = {
@@ -2162,6 +2163,7 @@ ImGuiCallback = {
     Deactivated = 7,
     DeactivatedAfterEdit = 8,
     ToggledOpen = 9,
+	Render = 10 -- Gets executed before an object gets rendered
 }
 
 PocketItemType = {

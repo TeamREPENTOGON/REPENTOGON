@@ -15,3 +15,4 @@ tags:
 |7 |Deactivated {: .copyable } |  |
 |8 |DeactivatedAfterEdit {: .copyable } |  |
 |9 |ToggledOpen {: .copyable } |  |
+|10 |Render {: .copyable } | Gets executed before an object gets rendered |

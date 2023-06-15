@@ -47,14 +47,9 @@ static int Lua_AddElement(lua_State* L)
     int type = (int)luaL_checkinteger(L, 4);
     const char* text = luaL_optstring(L, 5, "");
 
-    if (imGui->ElementExists(id)) {
-        return luaL_error(L, "Element with id '%s' exists already.", id);
-    }
+    EvalIDAndParent(L, imGui, id, parentId);
 
-    bool success = imGui->AddElement(parentId, id, text, type);
-    if (!success) {
-        return luaL_error(L, "Parent element '%s' not found.", parentId);
-    }
+    imGui->AddElement(parentId, id, text, type);
 
     return 1;
 }
@@ -494,6 +489,42 @@ static int Lua_AddRadioButtons(lua_State* L)
     return 1;
 }
 
+static int Lua_AddTabBar(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::TabBar);
+
+    imGui->AddElement(parentId, id, "", type);
+
+    return 1;
+}
+
+static int Lua_AddTab(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_checkstring(L, 4);
+
+    EvalIDAndParent(L, imGui, id, parentId);
+    if (imGui->GetElementById(parentId)->type != IMGUI_ELEMENT::TabBar) {
+        return luaL_error(L, "The given parent element is not of type 'TabBar'!");
+    }
+
+    int type = static_cast<int>(IMGUI_ELEMENT::Tab);
+
+    imGui->AddElement(parentId, id, text, type);
+
+    return 1;
+}
+
 static int Lua_AddCombobox(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
@@ -565,29 +596,76 @@ static int Lua_AddInputText(lua_State* L)
 
 static int Lua_AddInputTextMultiline(lua_State* L)
 {
-  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-  MiscData data = MiscData();
-  const char* parentId = luaL_checkstring(L, 2);
-  const char* id = luaL_checkstring(L, 3);
-  const char* text = luaL_optstring(L, 4, "");
-  int stackID = CheckAndSetCallback(L, 5);
-  data.inputText = luaL_optstring(L, 6, "");
-  data.lineCount = luaL_optnumber(L, 7, 6);
+    MiscData data = MiscData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    int stackID = CheckAndSetCallback(L, 5);
+    data.inputText = luaL_optstring(L, 6, "");
+    data.lineCount = (float)luaL_optnumber(L, 7, 6);
 
-  EvalIDAndParent(L, imGui, id, parentId);
+    EvalIDAndParent(L, imGui, id, parentId);
 
-  int type = static_cast<int>(IMGUI_ELEMENT::InputTextMultiline);
+    int type = static_cast<int>(IMGUI_ELEMENT::InputTextMultiline);
 
-  imGui->AddElement(parentId, id, text, type);
-  Element* createdElement = imGui->GetElementById(id);
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
 
-  createdElement->AddData(data);
+    createdElement->AddData(data);
 
-  if (lua_isfunction(L, 5)) {
-    imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
-  }
-  return 1;
+    if (lua_isfunction(L, 5)) {
+        imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+    }
+    return 1;
+}
+
+static int Lua_SetTooltip(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    const char* id = luaL_checkstring(L, 2);
+    const char* text = luaL_checkstring(L, 3);
+
+    bool success = imGui->SetTooltipText(id, text);
+    if (!success) {
+        return luaL_error(L, "No element with id '%s' found.", id);
+    }
+
+    return 1;
+}
+
+static int Lua_SetHelpmarker(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    const char* id = luaL_checkstring(L, 2);
+    const char* text = luaL_checkstring(L, 3);
+
+    bool success = imGui->SetHelpMarkerText(id, text);
+    if (!success) {
+        return luaL_error(L, "No element with id '%s' found.", id);
+    }
+
+    return 1;
+}
+
+static int Lua_GetMousePos(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    ImGuiIO& io = ImGui::GetIO();
+    float x = -1;
+    float y = -1;
+    if (ImGui::IsMousePosValid()) {
+        x = io.MousePos.x;
+        y = io.MousePos.y;
+    }
+
+    lua::LuaCaller(L).pushUserdataValue(*new Vector(x, y), lua::Metatables::VECTOR);
+
+    return 1;
 }
 
 extern bool menuShown;
@@ -679,6 +757,11 @@ static void RegisterCustomImGui(lua_State* L)
         { "AddCombobox", Lua_AddCombobox },
         { "AddInputText", Lua_AddInputText },
         { "AddInputTextMultiline", Lua_AddInputTextMultiline },
+        { "AddTabBar", Lua_AddTabBar },
+        { "AddTab", Lua_AddTab },
+        { "SetTooltip", Lua_SetTooltip },
+        { "SetHelpmarker", Lua_SetHelpmarker },
+        { "GetMousePosition", Lua_GetMousePos },
         { "Reset", Lua_ImGuiReset },
         { "Show", Lua_ImGuiShow },
         { "Hide", Lua_ImGuiHide },

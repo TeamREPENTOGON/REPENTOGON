@@ -28,7 +28,8 @@ enum class IMGUI_ELEMENT {
     SliderInt,
     SliderFloat,
     ColorEdit,
-    HelpMarker,
+    TabBar,
+    Tab,
     Checkbox,
     RadioButton,
     Combobox,
@@ -48,12 +49,15 @@ enum class IMGUI_CALLBACK {
     Deactivated,
     DeactivatedAfterEdit,
     ToggledOpen,
+    Render
 };
 
 static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
 
 struct Data {
     int clickCounter = 0;
+    std::string tooltipText = "";
+    std::string helpmarkerText = "";
 };
 
 struct MiscData : Data {
@@ -408,6 +412,28 @@ struct CustomImGui {
         return false;
     }
 
+    bool SetTooltipText(const char* elementId, const char* newText)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL) {
+            element->data.tooltipText = std::string(newText);
+            return true;
+        }
+
+        return false;
+    }
+
+    bool SetHelpMarkerText(const char* elementId, const char* newText)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL) {
+            element->data.helpmarkerText = std::string(newText);
+            return true;
+        }
+
+        return false;
+    }
+
     bool ElementExists(const char* elementId)
     {
         return GetElementById(elementId) != NULL;
@@ -426,6 +452,15 @@ struct CustomImGui {
     void OpenPopup(const char* popupId)
     {
         ImGui::OpenPopup(popupId);
+    }
+
+    void RunPreRenderCallbacks(Element* element) IM_FMTARGS(2)
+    {
+        for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
+            if (callback->first == IMGUI_CALLBACK::Render) {
+                RunCallback(element, callback->second);
+            }
+        }
     }
 
     void RunCallbacks(Element* element) IM_FMTARGS(2)
@@ -537,6 +572,17 @@ struct CustomImGui {
         return NULL;
     }
 
+    static void HelpMarker(const char* desc)
+    {
+        ImGui::TextDisabled("(?)");
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort) && ImGui::BeginTooltip()) {
+            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+            ImGui::TextUnformatted(desc);
+            ImGui::PopTextWrapPos();
+            ImGui::EndTooltip();
+        }
+    }
+
     /* From https://github.com/pthom/imgui/blob/DemoCodeDocking/misc/cpp/imgui_stdlib.cpp */
     struct InputTextCallback_UserData {
         std::string* Str;
@@ -617,6 +663,18 @@ struct CustomImGui {
         }
     }
 
+    void HandleElementExtras(Element* element)
+    {
+        if (!element->data.tooltipText.empty()) {
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip(element->data.tooltipText.c_str());
+        }
+        if (!element->data.helpmarkerText.empty()) {
+            ImGui::SameLine();
+            HelpMarker(element->data.helpmarkerText.c_str());
+        }
+    }
+
     void DrawMenuElements(std::list<Element>* elements)
     {
         for (auto element = elements->begin(); element != elements->end(); ++element) {
@@ -644,6 +702,8 @@ struct CustomImGui {
     {
         for (auto element = elements->begin(); element != elements->end(); ++element) {
             const char* name = element->name.c_str();
+            RunPreRenderCallbacks(&(*element));
+
             switch (element->type) {
             case IMGUI_ELEMENT::CollapsingHeader:
                 if (ImGui::CollapsingHeader(name)) {
@@ -666,6 +726,20 @@ struct CustomImGui {
                 if (ImGui::BeginPopup(element->id.c_str())) {
                     DrawElements(element->children);
                     ImGui::EndPopup();
+                }
+                break;
+            case IMGUI_ELEMENT::TabBar:
+                if (ImGui::BeginTabBar(element->id.c_str(), ImGuiTabBarFlags_None)) {
+                    RunCallbacks(&(*element));
+                    DrawElements(element->children);
+                    ImGui::EndTabBar();
+                }
+                break;
+            case IMGUI_ELEMENT::Tab:
+                if (ImGui::BeginTabItem(name)) {
+                    RunCallbacks(&(*element));
+                    DrawElements(element->children);
+                    ImGui::EndTabItem();
                 }
                 break;
             case IMGUI_ELEMENT::Text:
@@ -818,6 +892,7 @@ struct CustomImGui {
             default:
                 break;
             }
+            HandleElementExtras(&(*element));
         }
     }
 };
