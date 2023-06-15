@@ -10,12 +10,15 @@ struct ConsoleCommand {
     const char* helpText = ""; // The help text for the command. Will show up when doing `help (command)`
     bool showOnMenu = false;
     unsigned int autocompleteType = 0;
-    ConsoleCommand(const char* cmdName, const char* cmdDesc, const char* cmdHelpText, bool cmdShowOnMenu, unsigned int cmdAutocompleteType = 0) {
+    std::vector<std::string> aliases;
+
+    ConsoleCommand(const char* cmdName, const char* cmdDesc, const char* cmdHelpText, bool cmdShowOnMenu, unsigned int cmdAutocompleteType = 0, std::vector<std::string> cmdAliases = {}) {
         name = cmdName;
         desc = cmdDesc;
         helpText = cmdHelpText;
         showOnMenu = cmdShowOnMenu;
         autocompleteType = cmdAutocompleteType;
+        aliases = cmdAliases;
     }
     
     ConsoleCommand() {
@@ -90,8 +93,8 @@ struct ConsoleMega {
     };
 
 
-    void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu, AutocompleteType autocomplete = NONE) {
-        commands.push_back(ConsoleCommand(name, desc, helpText, showOnMenu, autocomplete));
+    void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu, AutocompleteType autocomplete = NONE, std::vector<std::string> aliases = {}) {
+        commands.push_back(ConsoleCommand(name, desc, helpText, showOnMenu, autocomplete, aliases));
     }
 
     void RegisterMacro(const char* macroName, std::vector<std::string> &macroCommands) {
@@ -116,7 +119,7 @@ struct ConsoleMega {
         RegisterCommand("debug", "Enable a debug flag", "Enables the specified debug flag.\nExample:\n(debug 3) will grant the player infinite HP.", false, DEBUG_FLAG);
         RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false);
         RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
-        RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM);
+        RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM, {"g"});
         RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false);
         RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false);
         RegisterCommand("help", "Get info about commands", "Retrieve further info about a command and its syntax.", true);
@@ -295,8 +298,9 @@ struct ConsoleMega {
                             bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
 
                             if (command.name.rfind(data->Buf, 0) == 0)
-                                if(inGame || (!inGame && command.showOnMenu == true))
+                                if (inGame || (!inGame && command.showOnMenu == true)) {
                                     autocompleteBuffer.push_back(AutocompleteEntry(command.name, command.desc));
+                                }
                         }
                     }
 
@@ -309,6 +313,12 @@ struct ConsoleMega {
                             if (commandName == commandIter.name) {
                                 command = commandIter;
                                 break;
+                            }
+                            for (std::string alias : commandIter.aliases) {
+                                if (commandName == alias) {
+                                    command = commandIter;
+                                    break;
+                                }
                             }
                         }
 
