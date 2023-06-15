@@ -573,11 +573,26 @@ struct ConsoleMega {
                             std::transform(lowerText.begin(), lowerText.end(), lowerText.begin(),
                                 [](unsigned char c) { return std::tolower(c); });
 
-                            std::string lowerDesc = cmdlets.front() + " " + entry.autocompleteDesc;
+                            // Since we already split by space, let's take advantage of that. 
+                            // Construct a new string with our current input minus the command, and use it for position-agnostic description searching.
+                            std::string lowerDescBuf;
+
+                            for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
+                                lowerDescBuf += *it;
+                                if (it != cmdlets.end() - 1) {
+                                    lowerDescBuf += " ";
+                                }
+                            }
+
+                            std::transform(lowerDescBuf.begin(), lowerDescBuf.end(), lowerDescBuf.begin(),
+                                [](unsigned char c) { return std::tolower(c); });
+
+
+                            std::string lowerDesc = entry.autocompleteDesc;
                             std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
                                 [](unsigned char c) { return std::tolower(c); });
 
-                            if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.rfind(lowerBuf, 0) == 0) {
+                            if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
                                 autocompleteBuffer.push_back(entry);
                             }
                         }
