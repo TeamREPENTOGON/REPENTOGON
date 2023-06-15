@@ -124,7 +124,7 @@ struct ConsoleMega {
         RegisterCommand("curse", "Add curses to the current run", "Permanently (until overridden) adds curses to the run. This command uses a bitmask- the curse with an ID of 1 is 1, 2 is 2, 3 is 4, 4 is 8, and so on. In this manner, desired curse ID's are tallied up and multiple can be enabled simultaneously.\nExample:\n(curse 96) will enable Curse of the Blind and Curse of the Maze simultaneously.", true, CURSE);
         RegisterCommand("cutscene", "Play a cutscene", "Immediately plays the specified cutscenne.\nExample:\n(cutscene 1) will immediately play the game's intro.", true, CUTSCENE);
         RegisterCommand("debug", "Enable a debug flag", "Enables the specified debug flag.\nExample:\n(debug 3) will grant the player infinite HP.", false, DEBUG_FLAG);
-        RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false);
+        RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false, DELIRIOUS);
         RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
         RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM, {"g"});
         RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false);
@@ -572,6 +572,75 @@ struct ConsoleMega {
                                 }
                                 break;
                             }
+
+                            case DELIRIOUS: {
+                                entries = {
+                                    AutocompleteEntry("0", "None"),
+                                    AutocompleteEntry("1", "Monstro"),
+                                    AutocompleteEntry("2", "Larry Jr."),
+                                    AutocompleteEntry("3", "Chub"),
+                                    AutocompleteEntry("4", "Gurdy"),
+                                    AutocompleteEntry("5", "Monstro II"),
+                                    AutocompleteEntry("6", "Scolex"),
+                                    AutocompleteEntry("7", "Famine"),
+                                    AutocompleteEntry("8", "Pestilence"),
+                                    AutocompleteEntry("9", "War"),
+                                    AutocompleteEntry("10", "Death"),
+                                    AutocompleteEntry("11", "The Duke of Flies"),
+                                    AutocompleteEntry("12", "Peep"),
+                                    AutocompleteEntry("13", "Loki"),
+                                    AutocompleteEntry("14", "Blastocyst"),
+                                    AutocompleteEntry("15", "Gemini"),
+                                    AutocompleteEntry("16", "Fistula"),
+                                    AutocompleteEntry("17", "Gish"),
+                                    AutocompleteEntry("18", "Steven"),
+                                    AutocompleteEntry("19", "C.H.A.D."),
+                                    AutocompleteEntry("20", "The Headless Horseman"),
+                                    AutocompleteEntry("21", "The Fallen"),
+                                    AutocompleteEntry("22", "The Hollow"),
+                                    AutocompleteEntry("23", "Carrion Queen"),
+                                    AutocompleteEntry("24", "Gurdy Jr."),
+                                    AutocompleteEntry("25", "The Husk"),
+                                    AutocompleteEntry("26", "The Bloat"),
+                                    AutocompleteEntry("27", "Lokii"),
+                                    AutocompleteEntry("28", "The Blighted Ovum"),
+                                    AutocompleteEntry("29", "Teratoma"),
+                                    AutocompleteEntry("30", "The Widow"),
+                                    AutocompleteEntry("31", "Mask of Infamy"),
+                                    AutocompleteEntry("32", "The Wretched"),
+                                    AutocompleteEntry("33", "Pin"),
+                                    AutocompleteEntry("34", "Conquest"),
+                                    AutocompleteEntry("35", "Daddy Long Legs"),
+                                    AutocompleteEntry("36", "Triachnid"),
+                                    AutocompleteEntry("37", "The Haunt"),
+                                    AutocompleteEntry("38", "Dingle"),
+                                    AutocompleteEntry("39", "Mega Maw"),
+                                    AutocompleteEntry("40", "The Gate"),
+                                    AutocompleteEntry("41", "Mega Fatty"),
+                                    AutocompleteEntry("42", "The Cage"),
+                                    AutocompleteEntry("43", "Mama Gurdy"),
+                                    AutocompleteEntry("44", "Dark One"),
+                                    AutocompleteEntry("45", "The Adversary"),
+                                    AutocompleteEntry("46", "Polycephalus"),
+                                    AutocompleteEntry("47", "Mr. Fred"),
+                                    AutocompleteEntry("48", "Mega Satan"),
+                                    AutocompleteEntry("49", "Gurgling"),
+                                    AutocompleteEntry("50", "The Stain"),
+                                    AutocompleteEntry("51", "Brownie"),
+                                    AutocompleteEntry("52", "The Forsaken"),
+                                    AutocompleteEntry("53", "Little Horn"),
+                                    AutocompleteEntry("54", "Rag Man"),
+                                    AutocompleteEntry("55", "Hush"),
+                                    AutocompleteEntry("56", "Dangle"),
+                                    AutocompleteEntry("57", "Turdling"),
+                                    AutocompleteEntry("58", "The Frail"),
+                                    AutocompleteEntry("59", "Rag Mega"),
+                                    AutocompleteEntry("60", "Sisters Vis"),
+                                    AutocompleteEntry("61", "Big Horn")
+                                };
+                                break;
+                            }
+
                         }
 
                         for (AutocompleteEntry entry : entries) {
