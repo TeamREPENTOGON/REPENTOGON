@@ -7,3 +7,6 @@
 [submodule "libs/imgui"]
 	path = libs/imgui
 	url = https://github.com/ocornut/imgui
+[submodule "libs/NaturalSort"]
+	path = libs/NaturalSort
+	url = https://github.com/scopeInfinity/NaturalSort

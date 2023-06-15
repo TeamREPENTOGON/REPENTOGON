@@ -1,5 +1,6 @@
 #include "imgui.h"
 #include "XMLData.h"
+#include "natural_sort.hpp"
 
 #include <sstream>
 #include <cctype>
@@ -34,6 +35,12 @@ struct AutocompleteEntry {
         autocompleteText = text;
         autocompleteDesc = desc;
     }
+
+    bool operator<(const AutocompleteEntry& ae) const
+    {
+        return (SI::natural::compare(autocompleteText, ae.autocompleteText));
+    }
+
 };
 
 struct ConsoleMacro {
@@ -322,7 +329,7 @@ struct ConsoleMega {
                             }
                         }
 
-                        std::vector<AutocompleteEntry> entries;
+                        std::set<AutocompleteEntry> entries;
 
                         switch (command.autocompleteType) {
                             case ENTITY: {
@@ -335,7 +342,7 @@ struct ConsoleMega {
                                     std::string name = entity.second["name"];
                                     std::string id = std::to_string(type) + "." + std::to_string(variant) + "." + std::to_string(subtype);
 
-                                    entries.push_back(AutocompleteEntry(id, name));
+                                    entries.insert(AutocompleteEntry(id, name));
                                 }
 
                                 break;
@@ -446,7 +453,7 @@ struct ConsoleMega {
                                     for (auto node : XMLPair.first) {
                                         int id = node.first;
                                         std::string name = node.second["name"];
-                                        entries.push_back(AutocompleteEntry(XMLPair.second + std::to_string(id), name));
+                                        entries.insert(AutocompleteEntry(XMLPair.second + std::to_string(id), name));
                                     }
                                 }
                                 break;
@@ -462,7 +469,7 @@ struct ConsoleMega {
                                     else
                                         name = node.second["name"];
 
-                                    entries.push_back(AutocompleteEntry(std::to_string(id), name));
+                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
                                 }
                                 break;
                             }
@@ -523,7 +530,7 @@ struct ConsoleMega {
                                   
                             case MACRO: {
                                 for (ConsoleMacro macro : macros) {
-                                    entries.push_back(AutocompleteEntry(macro.name));
+                                    entries.insert(AutocompleteEntry(macro.name));
                                 }
                                 break;
                             }
@@ -556,7 +563,7 @@ struct ConsoleMega {
                                 for (auto node : items) {
                                     int id = node.first;
                                     std::string name = node.second["name"];
-                                    entries.push_back(AutocompleteEntry("c" + std::to_string(id), name));
+                                    entries.insert(AutocompleteEntry("c" + std::to_string(id), name));
                                 }
                                 break;
                             }
