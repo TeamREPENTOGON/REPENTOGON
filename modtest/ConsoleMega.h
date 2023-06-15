@@ -114,7 +114,7 @@ struct ConsoleMega {
         RegisterCommand("combo", "Give items from a specified pool", "Gives a specified number of items from a specified item pool.\nExample:\n(combo 4.6) will give six random items from the Angel item pool.\nNo, I don't know why they made a bespoke ID system for this one (1) command.", false, COMBO);
         RegisterCommand("copy", "Copy previous commands to clipboard", "Copies a specified amount of previous console commands to the system clipboard.\nExample:\n(copy 3) will copy the previous three commands.", true);
         RegisterCommand("costumetest", "Give the player random costumes", "Gives the player a specified amount of random costumes.\nExample:\n(costumetest 34) will give the player 34 random costumes.", false);
-        RegisterCommand("curse", "Add curses to the current run", "Permanently (until overridden) adds curses to the run. This command uses a bitmask- the curse with an ID of 1 is 1, 2 is 2, 3 is 4, 4 is 8, and so on. In this manner, desired curse ID's are tallied up and multiple can be enabled simultaneously.\nExample:\n(curse 96) will enable Curse of the Blind and Curse of the Maze simultaneously.", false);
+        RegisterCommand("curse", "Add curses to the current run", "Permanently (until overridden) adds curses to the run. This command uses a bitmask- the curse with an ID of 1 is 1, 2 is 2, 3 is 4, 4 is 8, and so on. In this manner, desired curse ID's are tallied up and multiple can be enabled simultaneously.\nExample:\n(curse 96) will enable Curse of the Blind and Curse of the Maze simultaneously.", true, CURSE);
         RegisterCommand("cutscene", "Play a cutscene", "Immediately plays the specified cutscenne.\nExample:\n(cutscene 1) will immediately play the game's intro.", true, CUTSCENE);
         RegisterCommand("debug", "Enable a debug flag", "Enables the specified debug flag.\nExample:\n(debug 3) will grant the player infinite HP.", false, DEBUG_FLAG);
         RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false);
@@ -130,7 +130,7 @@ struct ConsoleMega {
         RegisterCommand("luarun", "Run a Lua file", "Runs a given Lua file immediately.\nExample:\n(luarun mods/test/test.lua) would run \"test.lua\" inside the \"test\" mod folder.", true);
         RegisterCommand("macro", "Trigger a set of commands", "Run a set of commands in a specified order. These are effectively shortcuts. Refer to autocomplete for a list of macro commands.", false, MACRO, {"m"});
         RegisterCommand("metro", "Force Metronome to be a certain item", "Overrides the next item Metronome will become.\nExample:\n(metro c1) will force Metronome to become The Sad Onion.", false, METRO);
-        RegisterCommand("playsfx", "Play a sound effect", "Plays a sound effect immediately.\nExample:\n(playsfx 187) will play an incorrect buzzer.", true);
+        RegisterCommand("playsfx", "Play a sound effect", "Plays a sound effect immediately.\nExample:\n(playsfx 187) will play an incorrect buzzer.", true, SFX);
         RegisterCommand("prof", "[BROKEN] Start profiling", "Supposed to log information to a CSV. Blame Nicalis!", true);
         RegisterCommand("profstop", "[BROKEN] Stop profiling", "Supposed to stop profiling but profiling is broken because we can't have nice things.", true);
         RegisterCommand("remove", "Remove an item", "Removes an item from the player immediately. Accepts the same syntax as give, look at that command's help for more info.", false, ITEM);
@@ -140,7 +140,7 @@ struct ConsoleMega {
         RegisterCommand("reseed", "Reseed the current floor", "Reseeds the current floor, generating a brand new layout for it.", false);
         RegisterCommand("restart", "Restart on a new run", "Restarts the game on a new run. Accepts an optional argument which is the character ID.\nExample:\n(restart 3) starts a new run as Judas.", false);
         RegisterCommand("seed", "Start a new run with the given seed", "Starts a new run with the given seed.\nExample:\n(seed N1CA L1SY) will start a new run with the seed N1CA L1SY.", false);
-        RegisterCommand("spawn", "Spawn an entity", "Spawns a new entity. Syntax is (type).(variant).(subtype).(champion).\nExample:\n(spawn 5.40.1) will spawn a bomb.", false);
+        RegisterCommand("spawn", "Spawn an entity", "Spawns a new entity. Syntax is (type).(variant).(subtype).(champion).\nExample:\n(spawn 5.40.1) will spawn a bomb.", false, ENTITY);
         RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false, STAGE);
         RegisterCommand("time", "Print frames since run started", "Prints the amount of frames which has passed since the run started.", false);
 
@@ -325,6 +325,32 @@ struct ConsoleMega {
                         std::vector<AutocompleteEntry> entries;
 
                         switch (command.autocompleteType) {
+                            case ENTITY: {
+                                std::unordered_map<tuple<int, int, int>, XMLAttributes> entities = XMLStuff.EntityData->nodes;
+                                for (auto entity : entities) {
+                                    int type = get<0>(entity.first);
+                                    int variant = get<1>(entity.first);
+                                    int subtype = get<2>(entity.first);
+
+                                    std::string name = entity.second["name"];
+                                    std::string id = std::to_string(type) + "." + std::to_string(variant) + "." + std::to_string(subtype);
+
+                                    AutocompleteEntry entry = AutocompleteEntry(cmdlets.front() + " " + id, name);
+
+                                    std::string lowerBuf = data->Buf;
+                                    std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
+                                        [](unsigned char c) { return std::tolower(c); });
+
+                                    std::string lowerName = (cmdlets.front() + " " + name);
+                                    std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
+                                        [](unsigned char c) { return std::tolower(c); });
+
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerName.rfind(lowerBuf, 0) == 0)
+                                        autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + id, name));
+                                }
+
+                                break;
+                            }
                             case STAGE: {
                                 std::vector<AutocompleteEntry> stage;
                                 // TODO: I'd *love* to add a callback here for StageAPI stages.
@@ -553,6 +579,34 @@ struct ConsoleMega {
                                 for (ConsoleMacro macro : macros) {
                                     if ((cmdlets.front() + " " + macro.name).rfind(data->Buf, 0) == 0) {
                                         autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + macro.name));
+                                    }
+                                }
+                                break;
+                            }
+
+                            case SFX: {
+                                // TODO (might not be possible cleanly since sounds don't really have names?) 
+                                break;
+                            }
+
+                            case CURSE: {
+                                // Not sure if modded curses show up in the vanilla menu, but this is better than nothing in the meantime.
+                                // TODO Would be sick if we did our own bitwise calculation and displayed the result
+                                std::vector<AutocompleteEntry> curse = {
+                                    AutocompleteEntry(cmdlets.front() + " 0", "None"),
+                                    AutocompleteEntry(cmdlets.front() + " 1", "Darkness"),
+                                    AutocompleteEntry(cmdlets.front() + " 2", "Labyrinth"),
+                                    AutocompleteEntry(cmdlets.front() + " 4", "Lost"),
+                                    AutocompleteEntry(cmdlets.front() + " 8", "Unknown"),
+                                    AutocompleteEntry(cmdlets.front() + " 16", "Cursed"),
+                                    AutocompleteEntry(cmdlets.front() + " 32", "Maze"),
+                                    AutocompleteEntry(cmdlets.front() + " 64", "Blind"),
+                                    AutocompleteEntry(cmdlets.front() + " 128", "Giant"),
+                                };
+
+                                for (AutocompleteEntry entry : curse) {
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
+                                        autocompleteBuffer.push_back(entry);
                                     }
                                 }
                                 break;
