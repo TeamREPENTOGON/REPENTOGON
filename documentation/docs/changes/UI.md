@@ -2,14 +2,8 @@
 
 ## Title Screen
 
-Smaller changes are:
-
-- Aboth the title, the current REPENTOGON commit hash is displayed
-- Added changelog toggle
-
-## Changelog
-
-Using TAB, its now possible to open a scrollable changelog with the recent changes made by REPENTOGON.
+- The current REPENTOGON commit hash is displayed above the title screen logo.
+- A scrollable changelog displaying the commit history starting from the currently downloaded build is accessable by pressing TAB while on the title screen.
 
 ## Stats Menu
 
