@@ -20,7 +20,11 @@ Returns the ControllerId for the NPC, which indicates which player is controllin
 
 ___
 ### Set·Controller·Id() {: aria-label='Functions' }
-#### int SetControllerId ( int ControllerId) {: .copyable aria-label='Functions' }
+#### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
 Sets the ControllerId for the NPC, which indicates which player will control it. Set it to -1 for no player controls(back to normal behaviour).
+
+___
+### Try·Force·Target() {: aria-label='Functions' }
+#### boolean TryForceTarget ( [Entity](Entity.md) target, int duration ) {: .copyable aria-label='Functions' }
 
 ___
