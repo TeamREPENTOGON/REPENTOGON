@@ -536,7 +536,12 @@ struct ConsoleMega {
                             }
 
                             case SFX: {
-                                // TODO (might not be possible cleanly since sounds don't really have names?) 
+                                XMLNodes sounds = XMLStuff.SoundData->nodes;
+                                for (auto node : sounds) {
+                                    int id = node.first;
+                                    std::string name = node.second["name"];
+                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                }
                                 break;
                             }
 
