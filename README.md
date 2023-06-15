@@ -52,6 +52,6 @@ We assume Git Bash for the duration of this tutorial, as well as CMake GUI.
 # License
 REPENTOGON is licensed under the GNU General Public License version 2.
 
-LibZHL is licensed under the MIT license. All contents in the `libzhl` folder are therefore licensed under MIT, with the exceptions of the following files and folders, which are components of REPENTOGON:
+LibZHL is licensed under the MIT license. All contents in the `libzhl` and `libzhlgen` folders are therefore licensed under MIT, with the exceptions of the following files and folders, which are components of REPENTOGON:
 * `libzhl/functions` and its contents
 * `libzhl/IsaacRepentance_static.cpp`
