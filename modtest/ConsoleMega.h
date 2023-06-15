@@ -335,158 +335,120 @@ struct ConsoleMega {
                                     std::string name = entity.second["name"];
                                     std::string id = std::to_string(type) + "." + std::to_string(variant) + "." + std::to_string(subtype);
 
-                                    AutocompleteEntry entry = AutocompleteEntry(cmdlets.front() + " " + id, name);
-
-                                    std::string lowerBuf = data->Buf;
-                                    std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
-                                        [](unsigned char c) { return std::tolower(c); });
-
-                                    std::string lowerName = (cmdlets.front() + " " + name);
-                                    std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
-                                        [](unsigned char c) { return std::tolower(c); });
-
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerName.rfind(lowerBuf, 0) == 0)
-                                        autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + id, name));
+                                    entries.push_back(AutocompleteEntry(id, name));
                                 }
 
                                 break;
                             }
                             case STAGE: {
-                                std::vector<AutocompleteEntry> stage;
                                 // TODO: I'd *love* to add a callback here for StageAPI stages.
                                 if (g_Game->GetDifficulty() == 2 || g_Game->GetDifficulty() == 3) { // Greed mode
-                                    stage = {
-                                        AutocompleteEntry(cmdlets.front() + " 1", "Basement"),
-                                        AutocompleteEntry(cmdlets.front() + " 1a", "Cellar"),
-                                        AutocompleteEntry(cmdlets.front() + " 1b", "Burning Basement"),
-                                        AutocompleteEntry(cmdlets.front() + " 2", "Caves"),
-                                        AutocompleteEntry(cmdlets.front() + " 2a", "Catacombs"),
-                                        AutocompleteEntry(cmdlets.front() + " 2b", "Flooded Caves"),
-                                        AutocompleteEntry(cmdlets.front() + " 3", "Depths"),
-                                        AutocompleteEntry(cmdlets.front() + " 3a", "Necropolis"),
-                                        AutocompleteEntry(cmdlets.front() + " 3b", "Dank Depths"),
-                                        AutocompleteEntry(cmdlets.front() + " 4", "Womb"),
-                                        AutocompleteEntry(cmdlets.front() + " 4a", "Utero"),
-                                        AutocompleteEntry(cmdlets.front() + " 4b", "Scarred Womb"),
-                                        AutocompleteEntry(cmdlets.front() + " 5", "Sheol"),
-                                        AutocompleteEntry(cmdlets.front() + " 6", "The Shop"),
-                                        AutocompleteEntry(cmdlets.front() + " 7", "Ultra Greed")
+                                    entries = {
+                                        AutocompleteEntry("1", "Basement"),
+                                        AutocompleteEntry("1a", "Cellar"),
+                                        AutocompleteEntry("1b", "Burning Basement"),
+                                        AutocompleteEntry("2", "Caves"),
+                                        AutocompleteEntry("2a", "Catacombs"),
+                                        AutocompleteEntry("2b", "Flooded Caves"),
+                                        AutocompleteEntry("3", "Depths"),
+                                        AutocompleteEntry("3a", "Necropolis"),
+                                        AutocompleteEntry("3b", "Dank Depths"),
+                                        AutocompleteEntry("4", "Womb"),
+                                        AutocompleteEntry("4a", "Utero"),
+                                        AutocompleteEntry("4b", "Scarred Womb"),
+                                        AutocompleteEntry("5", "Sheol"),
+                                        AutocompleteEntry("6", "The Shop"),
+                                        AutocompleteEntry("7", "Ultra Greed")
                                     };
                                 }
                                 else {
-                                    stage = {
-                                        AutocompleteEntry(cmdlets.front() + " 1", "Basement I"),
-                                        AutocompleteEntry(cmdlets.front() + " 1a", "Cellar I"),
-                                        AutocompleteEntry(cmdlets.front() + " 1b", "Burning Basement I"),
-                                        AutocompleteEntry(cmdlets.front() + " 1c", "Downpour I"),
-                                        AutocompleteEntry(cmdlets.front() + " 1d", "Dross I"),
-                                        AutocompleteEntry(cmdlets.front() + " 2", "Basement II"),
-                                        AutocompleteEntry(cmdlets.front() + " 2a", "Cellar II"),
-                                        AutocompleteEntry(cmdlets.front() + " 2b", "Burning Basement II"),
-                                        AutocompleteEntry(cmdlets.front() + " 2c", "Downpour II"),
-                                        AutocompleteEntry(cmdlets.front() + " 2d", "Dross II"),
-                                        AutocompleteEntry(cmdlets.front() + " 3", "Caves I"),
-                                        AutocompleteEntry(cmdlets.front() + " 3a", "Catacombs I"),
-                                        AutocompleteEntry(cmdlets.front() + " 3b", "Flooded Caves I"),
-                                        AutocompleteEntry(cmdlets.front() + " 3c", "Mines I"),
-                                        AutocompleteEntry(cmdlets.front() + " 3d", "Ashpit I"),
-                                        AutocompleteEntry(cmdlets.front() + " 4", "Caves II"),
-                                        AutocompleteEntry(cmdlets.front() + " 4a", "Catacombs II"),
-                                        AutocompleteEntry(cmdlets.front() + " 4b", "Flooded Caves II"),
-                                        AutocompleteEntry(cmdlets.front() + " 4c", "Mines II"),
-                                        AutocompleteEntry(cmdlets.front() + " 4d", "Ashpit II"),
-                                        AutocompleteEntry(cmdlets.front() + " 5", "Depths I"),
-                                        AutocompleteEntry(cmdlets.front() + " 5a", "Necropolis I"),
-                                        AutocompleteEntry(cmdlets.front() + " 5b", "Dank Depths I"),
-                                        AutocompleteEntry(cmdlets.front() + " 5c", "Mausoleum I"),
-                                        AutocompleteEntry(cmdlets.front() + " 5d", "Gehenna I"),
-                                        AutocompleteEntry(cmdlets.front() + " 6", "Depths II"),
-                                        AutocompleteEntry(cmdlets.front() + " 6a", "Necropolis II"),
-                                        AutocompleteEntry(cmdlets.front() + " 6b", "Dank Depths II"),
-                                        AutocompleteEntry(cmdlets.front() + " 6c", "Mausoleum II"),
-                                        AutocompleteEntry(cmdlets.front() + " 6d", "Gehenna II"),
-                                        AutocompleteEntry(cmdlets.front() + " 7", "Womb I"),
-                                        AutocompleteEntry(cmdlets.front() + " 7a", "Utero I"),
-                                        AutocompleteEntry(cmdlets.front() + " 7b", "Scarred Womb I"),
-                                        AutocompleteEntry(cmdlets.front() + " 7c", "Corpse I"),
-                                        AutocompleteEntry(cmdlets.front() + " 8", "Womb II"),
-                                        AutocompleteEntry(cmdlets.front() + " 8a", "Utero II"),
-                                        AutocompleteEntry(cmdlets.front() + " 8b", "Scarred Womb II"),
-                                        AutocompleteEntry(cmdlets.front() + " 8c", "Corpse II"),
-                                        AutocompleteEntry(cmdlets.front() + " 9", "??? / Blue Womb"),
-                                        AutocompleteEntry(cmdlets.front() + " 10", "Sheol"),
-                                        AutocompleteEntry(cmdlets.front() + " 10a", "Cathedral"),
-                                        AutocompleteEntry(cmdlets.front() + " 11", "Dark Room"),
-                                        AutocompleteEntry(cmdlets.front() + " 11a", "Chest"),
-                                        AutocompleteEntry(cmdlets.front() + " 12", "The Void"),
-                                        AutocompleteEntry(cmdlets.front() + " 13", "Home (day)"),
-                                        AutocompleteEntry(cmdlets.front() + " 13a", "Home (night)")
+                                    entries = {
+                                        AutocompleteEntry("1", "Basement I"),
+                                        AutocompleteEntry("1a", "Cellar I"),
+                                        AutocompleteEntry("1b", "Burning Basement I"),
+                                        AutocompleteEntry("1c", "Downpour I"),
+                                        AutocompleteEntry("1d", "Dross I"),
+                                        AutocompleteEntry("2", "Basement II"),
+                                        AutocompleteEntry("2a", "Cellar II"),
+                                        AutocompleteEntry("2b", "Burning Basement II"),
+                                        AutocompleteEntry("2c", "Downpour II"),
+                                        AutocompleteEntry("2d", "Dross II"),
+                                        AutocompleteEntry("3", "Caves I"),
+                                        AutocompleteEntry("3a", "Catacombs I"),
+                                        AutocompleteEntry("3b", "Flooded Caves I"),
+                                        AutocompleteEntry("3c", "Mines I"),
+                                        AutocompleteEntry("3d", "Ashpit I"),
+                                        AutocompleteEntry("4", "Caves II"),
+                                        AutocompleteEntry("4a", "Catacombs II"),
+                                        AutocompleteEntry("4b", "Flooded Caves II"),
+                                        AutocompleteEntry("4c", "Mines II"),
+                                        AutocompleteEntry("4d", "Ashpit II"),
+                                        AutocompleteEntry("5", "Depths I"),
+                                        AutocompleteEntry("5a", "Necropolis I"),
+                                        AutocompleteEntry("5b", "Dank Depths I"),
+                                        AutocompleteEntry("5c", "Mausoleum I"),
+                                        AutocompleteEntry("5d", "Gehenna I"),
+                                        AutocompleteEntry("6", "Depths II"),
+                                        AutocompleteEntry("6a", "Necropolis II"),
+                                        AutocompleteEntry("6b", "Dank Depths II"),
+                                        AutocompleteEntry("6c", "Mausoleum II"),
+                                        AutocompleteEntry("6d", "Gehenna II"),
+                                        AutocompleteEntry("7", "Womb I"),
+                                        AutocompleteEntry("7a", "Utero I"),
+                                        AutocompleteEntry("7b", "Scarred Womb I"),
+                                        AutocompleteEntry("7c", "Corpse I"),
+                                        AutocompleteEntry("8", "Womb II"),
+                                        AutocompleteEntry("8a", "Utero II"),
+                                        AutocompleteEntry("8b", "Scarred Womb II"),
+                                        AutocompleteEntry("8c", "Corpse II"),
+                                        AutocompleteEntry("9", "??? / Blue Womb"),
+                                        AutocompleteEntry("10", "Sheol"),
+                                        AutocompleteEntry("10a", "Cathedral"),
+                                        AutocompleteEntry("11", "Dark Room"),
+                                        AutocompleteEntry("11a", "Chest"),
+                                        AutocompleteEntry("12", "The Void"),
+                                        AutocompleteEntry("13", "Home (day)"),
+                                        AutocompleteEntry("13a", "Home (night)")
                                     };
-                                }
-
-                                for (AutocompleteEntry entry : stage) {
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
-                                        autocompleteBuffer.push_back(entry);
-                                    }
                                 }
                                 break;
                             }
 
                             case DEBUG_FLAG: {
-                                std::vector<AutocompleteEntry> debug = {
-                                    AutocompleteEntry(cmdlets.front() + " 1", "Entity Positions"),
-                                    AutocompleteEntry(cmdlets.front() + " 2", "Grid"),
-                                    AutocompleteEntry(cmdlets.front() + " 3", "Infinite HP"),
-                                    AutocompleteEntry(cmdlets.front() + " 4", "High Damage"),
-                                    AutocompleteEntry(cmdlets.front() + " 5", "Show Room Info"),
-                                    AutocompleteEntry(cmdlets.front() + " 6", "Show Hitspheres"),
-                                    AutocompleteEntry(cmdlets.front() + " 7", "Show Damage Values"),
-                                    AutocompleteEntry(cmdlets.front() + " 8", "Infinite Item Charges"),
-                                    AutocompleteEntry(cmdlets.front() + " 9", "High Luck"),
-                                    AutocompleteEntry(cmdlets.front() + " 10", "Quick Kill"),
-                                    AutocompleteEntry(cmdlets.front() + " 11", "Grid Info"),
-                                    AutocompleteEntry(cmdlets.front() + " 12", "Player Item Info"),
-                                    AutocompleteEntry(cmdlets.front() + " 13", "Show Grid Collision Points"),
-                                    AutocompleteEntry(cmdlets.front() + " 14", "Show Lua Memory Usage")
+                                entries = {
+                                    AutocompleteEntry("1", "Entity Positions"),
+                                    AutocompleteEntry("2", "Grid"),
+                                    AutocompleteEntry("3", "Infinite HP"),
+                                    AutocompleteEntry("4", "High Damage"),
+                                    AutocompleteEntry("5", "Show Room Info"),
+                                    AutocompleteEntry("6", "Show Hitspheres"),
+                                    AutocompleteEntry("7", "Show Damage Values"),
+                                    AutocompleteEntry("8", "Infinite Item Charges"),
+                                    AutocompleteEntry("9", "High Luck"),
+                                    AutocompleteEntry("10", "Quick Kill"),
+                                    AutocompleteEntry("11", "Grid Info"),
+                                    AutocompleteEntry("12", "Player Item Info"),
+                                    AutocompleteEntry("13", "Show Grid Collision Points"),
+                                    AutocompleteEntry("14", "Show Lua Memory Usage")
                                 };
-
-                                for (AutocompleteEntry entry : debug) {
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
-                                        autocompleteBuffer.push_back(entry);
-                                    }
-                                }
                                 break;
                             }
 
                             case ITEM: {
                                 std::vector<std::pair<XMLNodes, std::string>> XMLPairs = {
-                                    {XMLStuff.ItemData->nodes, " c"},
-                                    {XMLStuff.TrinketData->nodes, " t"},
-                                    {XMLStuff.CardData->nodes, " k"},
-                                    {XMLStuff.PillData->nodes, " p"},
+                                    {XMLStuff.ItemData->nodes, "c"},
+                                    {XMLStuff.TrinketData->nodes, "t"},
+                                    {XMLStuff.CardData->nodes, "k"},
+                                    {XMLStuff.PillData->nodes, "p"},
                                 };
 
                                 for (std::pair<XMLNodes, std::string> XMLPair : XMLPairs) {
                                     for (auto node : XMLPair.first) {
                                         int id = node.first;
                                         std::string name = node.second["name"];
-                                        AutocompleteEntry entry = AutocompleteEntry(cmdlets.front() + XMLPair.second + std::to_string(id), name);
-
-                                        // We also need to check for name, so tab autocomplete works with names as well.
-                                        // Lowercase string for this.
-                                        std::string lowerBuf = data->Buf;
-                                        std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
-                                            [](unsigned char c) { return std::tolower(c); });
-
-                                        std::string lowerName = (cmdlets.front() + " " + name);
-                                        std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
-                                            [](unsigned char c) { return std::tolower(c); });
-
-                                        if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerName.rfind(lowerBuf, 0) == 0)
-                                            autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + XMLPair.second + std::to_string(id), name));
+                                        entries.push_back(AutocompleteEntry(XMLPair.second + std::to_string(id), name));
                                     }
                                 }
-
                                 break;
                             }
 
@@ -500,86 +462,68 @@ struct ConsoleMega {
                                     else
                                         name = node.second["name"];
 
-                                    AutocompleteEntry entry = AutocompleteEntry(cmdlets.front() + " " + std::to_string(id), name);
-
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0)
-                                        autocompleteBuffer.push_back(entry);
-
+                                    entries.push_back(AutocompleteEntry(std::to_string(id), name));
                                 }
                                 break;
                             }
 
                             case COMBO: {
-                                std::vector<AutocompleteEntry> combo = {
-                                    AutocompleteEntry(cmdlets.front() + " 0.", "Treasure"),
-                                    AutocompleteEntry(cmdlets.front() + " 1.", "Shop"),
-                                    AutocompleteEntry(cmdlets.front() + " 2.", "Boss"),
-                                    AutocompleteEntry(cmdlets.front() + " 3.", "Devil"),
-                                    AutocompleteEntry(cmdlets.front() + " 4.", "Angel"),
-                                    AutocompleteEntry(cmdlets.front() + " 5.", "Secret"),
-                                    AutocompleteEntry(cmdlets.front() + " 6.", "Library"),
-                                    AutocompleteEntry(cmdlets.front() + " 7.", "Challenge"),
-                                    AutocompleteEntry(cmdlets.front() + " 8.", "Golden Chest"),
-                                    AutocompleteEntry(cmdlets.front() + " 9.", "Red Chest"),
-                                    AutocompleteEntry(cmdlets.front() + " 10.", "Beggar"),
-                                    AutocompleteEntry(cmdlets.front() + " 11.", "Demon Beggar"),
-                                    AutocompleteEntry(cmdlets.front() + " 12.", "Curse"),
-                                    AutocompleteEntry(cmdlets.front() + " 13.", "Key Master"),
-                                    AutocompleteEntry(cmdlets.front() + " 14.", "Boss Rush"),
-                                    AutocompleteEntry(cmdlets.front() + " 15.", "Dungeon"),
+                                entries = {
+                                    AutocompleteEntry("0.", "Treasure"),
+                                    AutocompleteEntry("1.", "Shop"),
+                                    AutocompleteEntry("2.", "Boss"),
+                                    AutocompleteEntry("3.", "Devil"),
+                                    AutocompleteEntry("4.", "Angel"),
+                                    AutocompleteEntry("5.", "Secret"),
+                                    AutocompleteEntry("6.", "Library"),
+                                    AutocompleteEntry("7.", "Challenge"),
+                                    AutocompleteEntry("8.", "Golden Chest"),
+                                    AutocompleteEntry("9.", "Red Chest"),
+                                    AutocompleteEntry("10.", "Beggar"),
+                                    AutocompleteEntry("11.", "Demon Beggar"),
+                                    AutocompleteEntry("12.", "Curse"),
+                                    AutocompleteEntry("13.", "Key Master"),
+                                    AutocompleteEntry("14.", "Boss Rush"),
+                                    AutocompleteEntry("15.", "Dungeon"),
                                 };
-
-                                for (AutocompleteEntry entry : combo) {
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
-                                        autocompleteBuffer.push_back(entry);
-                                    }
-                                }
                                 break;
                             }
 
                             case CUTSCENE: {
-                                std::vector<AutocompleteEntry> cutscene = {
-                                    AutocompleteEntry(cmdlets.front() + " 1", "Intro"),
-                                    AutocompleteEntry(cmdlets.front() + " 2", "Credits"),
-                                    AutocompleteEntry(cmdlets.front() + " 3", "Epilogue"),
-                                    AutocompleteEntry(cmdlets.front() + " 4", "Womb (Eden)"),
-                                    AutocompleteEntry(cmdlets.front() + " 5", "Womb (Rubber Cement)"),
-                                    AutocompleteEntry(cmdlets.front() + " 6", "Womb (Noose)"),
-                                    AutocompleteEntry(cmdlets.front() + " 7", "Womb (Wire Coat Hanger)"),
-                                    AutocompleteEntry(cmdlets.front() + " 8", "Womb (Everything is Terrible)"),
-                                    AutocompleteEntry(cmdlets.front() + " 9", "Womb (Ipecac)"),
-                                    AutocompleteEntry(cmdlets.front() + " 10", "Womb (Experimental Treatment)"),
-                                    AutocompleteEntry(cmdlets.front() + " 11", "Womb (A Quarter)"),
-                                    AutocompleteEntry(cmdlets.front() + " 12", "Womb (Dr. Fetus)"),
-                                    AutocompleteEntry(cmdlets.front() + " 13", "Womb (???)"),
-                                    AutocompleteEntry(cmdlets.front() + " 14", "Womb (It Lives!)"),
-                                    AutocompleteEntry(cmdlets.front() + " 15", "Sheol"),
-                                    AutocompleteEntry(cmdlets.front() + " 16", "Cathedral"),
-                                    AutocompleteEntry(cmdlets.front() + " 17", "Chest"),
-                                    AutocompleteEntry(cmdlets.front() + " 18", "Dark Room"),
-                                    AutocompleteEntry(cmdlets.front() + " 19", "Mega Satan"),
-                                    AutocompleteEntry(cmdlets.front() + " 20", "Blue Womb"),
-                                    AutocompleteEntry(cmdlets.front() + " 21", "Greed Mode"),
-                                    AutocompleteEntry(cmdlets.front() + " 22", "The Void"),
-                                    AutocompleteEntry(cmdlets.front() + " 23", "Greedier"),
-                                    AutocompleteEntry(cmdlets.front() + " 24", "Mother"),
-                                    AutocompleteEntry(cmdlets.front() + " 25", "Dogma"),
-                                    AutocompleteEntry(cmdlets.front() + " 26", "The Beast")
+                                entries = {
+                                    AutocompleteEntry("1", "Intro"),
+                                    AutocompleteEntry("2", "Credits"),
+                                    AutocompleteEntry("3", "Epilogue"),
+                                    AutocompleteEntry("4", "Womb (Eden)"),
+                                    AutocompleteEntry("5", "Womb (Rubber Cement)"),
+                                    AutocompleteEntry("6", "Womb (Noose)"),
+                                    AutocompleteEntry("7", "Womb (Wire Coat Hanger)"),
+                                    AutocompleteEntry("8", "Womb (Everything is Terrible)"),
+                                    AutocompleteEntry("9", "Womb (Ipecac)"),
+                                    AutocompleteEntry("10", "Womb (Experimental Treatment)"),
+                                    AutocompleteEntry("11", "Womb (A Quarter)"),
+                                    AutocompleteEntry("12", "Womb (Dr. Fetus)"),
+                                    AutocompleteEntry("13", "Womb (???)"),
+                                    AutocompleteEntry("14", "Womb (It Lives!)"),
+                                    AutocompleteEntry("15", "Sheol"),
+                                    AutocompleteEntry("16", "Cathedral"),
+                                    AutocompleteEntry("17", "Chest"),
+                                    AutocompleteEntry("18", "Dark Room"),
+                                    AutocompleteEntry("19", "Mega Satan"),
+                                    AutocompleteEntry("20", "Blue Womb"),
+                                    AutocompleteEntry("21", "Greed Mode"),
+                                    AutocompleteEntry("22", "The Void"),
+                                    AutocompleteEntry("23", "Greedier"),
+                                    AutocompleteEntry("24", "Mother"),
+                                    AutocompleteEntry("25", "Dogma"),
+                                    AutocompleteEntry("26", "The Beast")
                                 };
-
-                                for (AutocompleteEntry entry : cutscene) {
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
-                                        autocompleteBuffer.push_back(entry);
-                                    }
-                                }
                                 break;
                             }
                                   
                             case MACRO: {
                                 for (ConsoleMacro macro : macros) {
-                                    if ((cmdlets.front() + " " + macro.name).rfind(data->Buf, 0) == 0) {
-                                        autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + macro.name));
-                                    }
+                                    entries.push_back(AutocompleteEntry(macro.name));
                                 }
                                 break;
                             }
@@ -592,23 +536,18 @@ struct ConsoleMega {
                             case CURSE: {
                                 // Not sure if modded curses show up in the vanilla menu, but this is better than nothing in the meantime.
                                 // TODO Would be sick if we did our own bitwise calculation and displayed the result
-                                std::vector<AutocompleteEntry> curse = {
-                                    AutocompleteEntry(cmdlets.front() + " 0", "None"),
-                                    AutocompleteEntry(cmdlets.front() + " 1", "Darkness"),
-                                    AutocompleteEntry(cmdlets.front() + " 2", "Labyrinth"),
-                                    AutocompleteEntry(cmdlets.front() + " 4", "Lost"),
-                                    AutocompleteEntry(cmdlets.front() + " 8", "Unknown"),
-                                    AutocompleteEntry(cmdlets.front() + " 16", "Cursed"),
-                                    AutocompleteEntry(cmdlets.front() + " 32", "Maze"),
-                                    AutocompleteEntry(cmdlets.front() + " 64", "Blind"),
-                                    AutocompleteEntry(cmdlets.front() + " 128", "Giant"),
+                                entries = {
+                                    AutocompleteEntry("0", "None"),
+                                    AutocompleteEntry("1", "Darkness"),
+                                    AutocompleteEntry("2", "Labyrinth"),
+                                    AutocompleteEntry("4", "Lost"),
+                                    AutocompleteEntry("8", "Unknown"),
+                                    AutocompleteEntry("16", "Cursed"),
+                                    AutocompleteEntry("32", "Maze"),
+                                    AutocompleteEntry("64", "Blind"),
+                                    AutocompleteEntry("128", "Giant"),
                                 };
 
-                                for (AutocompleteEntry entry : curse) {
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0) {
-                                        autocompleteBuffer.push_back(entry);
-                                    }
-                                }
                                 break;
                             }
 
@@ -617,20 +556,29 @@ struct ConsoleMega {
                                 for (auto node : items) {
                                     int id = node.first;
                                     std::string name = node.second["name"];
-                                    AutocompleteEntry entry = AutocompleteEntry(cmdlets.front() + " c" + std::to_string(id), name);
-
-                                    std::string lowerBuf = data->Buf;
-                                    std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
-                                        [](unsigned char c) { return std::tolower(c); });
-
-                                    std::string lowerName = (cmdlets.front() + " " + name);
-                                    std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
-                                        [](unsigned char c) { return std::tolower(c); });
-
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerName.rfind(lowerBuf, 0) == 0)
-                                        autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " c" + std::to_string(id), name));
+                                    entries.push_back(AutocompleteEntry("c" + std::to_string(id), name));
                                 }
                                 break;
+                            }
+                        }
+
+                        for (AutocompleteEntry entry : entries) {
+                            entry.autocompleteText = cmdlets.front() + " " + entry.autocompleteText;
+
+                            std::string lowerBuf = data->Buf;
+                            std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
+                                [](unsigned char c) { return std::tolower(c); });
+
+                            std::string lowerText = entry.autocompleteText;
+                            std::transform(lowerText.begin(), lowerText.end(), lowerText.begin(),
+                                [](unsigned char c) { return std::tolower(c); });
+
+                            std::string lowerDesc = cmdlets.front() + " " + entry.autocompleteDesc;
+                            std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
+                                [](unsigned char c) { return std::tolower(c); });
+
+                            if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.rfind(lowerBuf, 0) == 0) {
+                                autocompleteBuffer.push_back(entry);
                             }
                         }
                     }
