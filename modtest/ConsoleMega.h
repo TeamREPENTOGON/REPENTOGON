@@ -128,8 +128,8 @@ struct ConsoleMega {
         RegisterCommand("luamod", "Reload a Lua mod", "Reloads Lua code for the given mod folder.\nExample:\n(luamod testmod) will reload Lua code for the mod in the folder \"testmod\".", true);
         RegisterCommand("luareset", "[EXPERIMENTAL] Reset the Lua context", "Destroys the current Lua context and recreates it from scratch. This is mostly a backend command meant to help sync up networked play.\nThis has Unforeseen Consequences if done in-game, please only do this on the menu unless you know what you're doing. Please?", true);
         RegisterCommand("luarun", "Run a Lua file", "Runs a given Lua file immediately.\nExample:\n(luarun mods/test/test.lua) would run \"test.lua\" inside the \"test\" mod folder.", true);
-        RegisterCommand("macro", "Trigger a set of commands", "Run a set of commands in a specified order. These are effectively shortcuts. Refer to autocomplete for a list of macro commands.", false, MACRO);
-        RegisterCommand("metro", "Force Metronome to be a certain item", "Overrides the next item Metronome will become.\nExample:\n(metro c1) will force Metronome to become The Sad Onion.", false);
+        RegisterCommand("macro", "Trigger a set of commands", "Run a set of commands in a specified order. These are effectively shortcuts. Refer to autocomplete for a list of macro commands.", false, MACRO, {"m"});
+        RegisterCommand("metro", "Force Metronome to be a certain item", "Overrides the next item Metronome will become.\nExample:\n(metro c1) will force Metronome to become The Sad Onion.", false, METRO);
         RegisterCommand("playsfx", "Play a sound effect", "Plays a sound effect immediately.\nExample:\n(playsfx 187) will play an incorrect buzzer.", true);
         RegisterCommand("prof", "[BROKEN] Start profiling", "Supposed to log information to a CSV. Blame Nicalis!", true);
         RegisterCommand("profstop", "[BROKEN] Stop profiling", "Supposed to stop profiling but profiling is broken because we can't have nice things.", true);
@@ -438,12 +438,8 @@ struct ConsoleMega {
                                     {XMLStuff.TrinketData->nodes, " t"},
                                     {XMLStuff.CardData->nodes, " k"},
                                     {XMLStuff.PillData->nodes, " p"},
-
                                 };
-                                //XMLNodes items = XMLStuff.ItemData->nodes;
-                                //XMLNodes trinkets = XMLStuff.TrinketData->nodes;
-                                //XMLNodes cards = XMLStuff.CardData->nodes;
-                                //XMLNodes pills = XMLStuff.PillData->nodes;
+
                                 for (std::pair<XMLNodes, std::string> XMLPair : XMLPairs) {
                                     for (auto node : XMLPair.first) {
                                         int id = node.first;
@@ -465,7 +461,6 @@ struct ConsoleMega {
                                     }
                                 }
 
-                                
                                 break;
                             }
 
@@ -559,6 +554,27 @@ struct ConsoleMega {
                                     if ((cmdlets.front() + " " + macro.name).rfind(data->Buf, 0) == 0) {
                                         autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + macro.name));
                                     }
+                                }
+                                break;
+                            }
+
+                            case METRO: {
+                                XMLNodes items = XMLStuff.ItemData->nodes;
+                                for (auto node : items) {
+                                    int id = node.first;
+                                    std::string name = node.second["name"];
+                                    AutocompleteEntry entry = AutocompleteEntry(cmdlets.front() + " c" + std::to_string(id), name);
+
+                                    std::string lowerBuf = data->Buf;
+                                    std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
+                                        [](unsigned char c) { return std::tolower(c); });
+
+                                    std::string lowerName = (cmdlets.front() + " " + name);
+                                    std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(),
+                                        [](unsigned char c) { return std::tolower(c); });
+
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerName.rfind(lowerBuf, 0) == 0)
+                                        autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " c" + std::to_string(id), name));
                                 }
                                 break;
                             }
