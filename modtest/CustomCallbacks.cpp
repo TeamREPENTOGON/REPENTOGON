@@ -1,4 +1,6 @@
 #include <lua.hpp>
+#include <optional>
+#include <cstring>
 
 #include "IsaacRepentance.h"
 #include "LogViewer.h"
@@ -265,6 +267,95 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	}
 }
 //SFX_PRE/POST_PLAY callbacks end
+
+// PRE/POST_X_COLLISION callbacks
+struct PreCollisionResult {
+	bool skip_internal_code = false;
+	std::optional<bool> override_result = std::nullopt;
+};
+
+// New PRE_X_COLLISION
+PreCollisionResult ProcessPreCollisionCallback(const int callbackid, const lua::Metatables entity_metatable, const int discriminator, Entity* entity, Entity* collider, bool low) {
+	PreCollisionResult result;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackid)
+			.push(discriminator)
+			.push(entity, entity_metatable)
+			.push(collider, lua::Metatables::ENTITY)
+			.push(low)
+			.call(1);
+
+		if (!lua_result) {
+			if (lua_isboolean(L, -1)) {
+				// Vanilla boolean returns always skip internal code.
+				result.skip_internal_code = true;
+				result.override_result = lua_toboolean(L, -1);
+			}
+			else if (lua_istable(L, -1)) {
+				// New table return format.
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2) && lua_isboolean(L, -1)) {
+						const std::string key = lua_tostring(L, -2);
+						const bool value = lua_toboolean(L, -1);
+						if (key == "SkipCollisionEffects") {
+							result.skip_internal_code = value;
+						}
+						else if (key == "Collide") {
+							result.override_result = !value;
+						}
+					}
+					lua_pop(L, 1);
+				}
+			}
+		}
+	}
+
+	return result;
+}
+
+// POST_X_COLLISION
+void ProcessPostCollisionCallback(const int callbackid, const lua::Metatables entity_metatable, const int discriminator, Entity* entity, Entity* collider, bool low) {
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(discriminator)
+			.push(entity, entity_metatable)
+			.push(collider, lua::Metatables::ENTITY)
+			.push(low)
+			.call(1);
+	}
+}
+
+// PRE/POST_FAMILIAR_COLLISION (1140/1141)
+HOOK_METHOD(Entity_Familiar, handle_collision, (Entity* collider, bool low) -> bool) {
+	const lua::Metatables entity_metatable = lua::Metatables::ENTITY_FAMILIAR;
+	const int discriminator = *this->GetVariant();
+
+	const PreCollisionResult pre_collision_result = ProcessPreCollisionCallback(1140, entity_metatable, discriminator, this, collider, low);
+
+	bool result = false;
+
+	if (!pre_collision_result.skip_internal_code) {
+		result = super(collider, low);
+		ProcessPostCollisionCallback(1141, entity_metatable, discriminator, this, collider, low);
+	}
+	if (pre_collision_result.override_result.has_value()) {
+		result = *pre_collision_result.override_result;
+	}
+	return result;
+}
+// PRE/POST_X_COLLISION callbacks end
 
 //PRE/POST_ENTITY_THROW (1040/1041)
 void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {

@@ -237,6 +237,10 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_GET_LIGHTING_ALPHA] = {
 		["number"] = true,
 	},
+	[ModCallbacks.MC_PRE_FAMILIAR_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
 }
 
 local typecheckWarnFunctions = {
@@ -259,7 +263,6 @@ local typecheckWarnFunctions = {
 local boolCallbacks = {
 	ModCallbacks.MC_PRE_USE_ITEM,
 	ModCallbacks.MC_ENTITY_TAKE_DMG,
-	ModCallbacks.MC_PRE_FAMILIAR_COLLISION,
 	ModCallbacks.MC_PRE_PICKUP_COLLISION,
 	ModCallbacks.MC_PRE_TEAR_COLLISION,
 	ModCallbacks.MC_PRE_PROJECTILE_COLLISION,
