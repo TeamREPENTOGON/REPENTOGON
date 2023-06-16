@@ -122,6 +122,9 @@ public:
 	XMLNodeIdxLookup nightmares;
 	XMLNodeIdxLookup costumes;
 	XMLNodeIdxLookup nullcostumes;
+	XMLNodeIdxLookup wisps;
+	XMLNodeIdxLookup wispcolors;
+	XMLNodeIdxLookup curses;
 
 	void Clear() {
 		nodes.clear();
@@ -144,6 +147,9 @@ public:
 		nightmares.clear();
 		costumes.clear();
 		nullcostumes.clear();
+		wisps.clear();
+		wispcolors.clear();
+		curses.clear();
 		maxid = 0;
 	
 	}
@@ -169,6 +175,14 @@ public:
 	}
 };
 
+
+class XMLWisp : public XMLDataHolder {
+
+};
+
+class XMLWispColor : public XMLDataHolder {
+
+};
 
 class XMLItem : public XMLDataHolder {
 	
@@ -196,6 +210,14 @@ public:
 
 class XMLChallenge : public XMLDataHolder {
 
+};
+
+class XMLCurse : public XMLDataHolder {
+public:
+	XMLCurse(int m) {
+		this->maxid = m;
+		this->defmaxid = m;
+	}
 };
 
 class XMLTrinket : public XMLDataHolder {
@@ -291,7 +313,10 @@ struct XMLData {
 	XMLChallenge* ChallengeData = new XMLChallenge();
 	XMLNightmare* NightmareData = new XMLNightmare();
 	XMLCostume* CostumeData = new XMLCostume();
+	XMLWisp* WispData = new XMLWisp();
+	XMLWispColor* WispColorData = new XMLWispColor();
 	XMLNullCostume* NullCostumeData = new XMLNullCostume(130);
+	XMLCurse* CurseData = new XMLCurse(1);
 
 	XMLMod* ModData = new XMLMod();
 
