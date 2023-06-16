@@ -93,7 +93,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
 
     if (!inGame) {
 
-        std::vector<const char*> bannedCommands = {
+        std::vector<std::string> bannedCommands = {
             "challenge", // goes to a daily run, maybe another patch would fix that? one way ticket to cheat city otherwise
             "clearseeds",
             "combo",
@@ -103,9 +103,11 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
             "delirious",
             "goto",
             "giveitem",
+            "g",
             "gridspawn",
             "listcollectibles",
-            "macro", // this may be useful if reimplemented
+            "macro",
+            "m",
             "metro",
             "remove",
             "reseed",
@@ -115,10 +117,10 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
             "time", // always returns 0
         };
 
-        for (const char* command : bannedCommands) {
-            if (in.rfind(command, 0) == 0) {
+        for (std::string command : bannedCommands) {
+            if (in == command || in.rfind(command + " ", 0) == 0) {
                 char err[256];
-                sprintf(err, "[ERROR] %s can't be used if not in-game!", command);
+                sprintf(err, "[ERROR] %s can't be used if not in-game!", command.c_str());
                 this->PrintError(err);
                 return;
             }
