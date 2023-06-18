@@ -17,8 +17,8 @@ static int Lua_GridEntityRockSpawnDrops(lua_State* L)
 }
 
 static void RegisterSpawnRockDrops(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "SpawnRockDrops");
+	lua_getglobal(L, "GridEntityRock");
+	lua_pushstring(L, "SpawnDrops");
 	lua_pushcfunction(L, Lua_GridEntityRockSpawnDrops);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
