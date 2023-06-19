@@ -190,6 +190,7 @@ string getFileName(const string& filePath) {
 
 void ProcessXmlNode(xml_node<char>* node) {
 	if (!node) { return; }
+	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
 	uint32_t unk;
@@ -349,7 +350,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.CardData->ProcessChilds(auxnode, id);
 				XMLStuff.CardData->nodes[id] = card;
 				XMLStuff.CardData->bynamemod[card["name"] + lastmodid] = id;
-				XMLStuff.CardData->bymod[lastmodid] = id;
+				XMLStuff.CardData->bymod[lastmodid].push_back(id);
+				XMLStuff.CardData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.CardData->byname[card["name"]] = id;
 				XMLStuff.ModData->cards[lastmodid] += 1;
 			}
@@ -387,7 +389,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.PillData->ProcessChilds(auxnode, id);
 				XMLStuff.PillData->byname[pill["name"]] = id;
 				XMLStuff.PillData->bynamemod[pill["name"] + lastmodid] = id;
-				XMLStuff.PillData->bymod[lastmodid] = id;
+				XMLStuff.PillData->bymod[lastmodid].push_back(id);
+				XMLStuff.PillData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.PillData->nodes[id] = pill;
 				XMLStuff.ModData->pills[lastmodid] += 1;
 			}
@@ -450,7 +453,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 					if (item.count("relativeid") > 0) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
-					XMLStuff.ItemData->bymod[lastmodid] = id;
+					XMLStuff.ItemData->bymod[lastmodid].push_back(id);
+					XMLStuff.ItemData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.ItemData->byname[item["name"]] = id;
 					XMLStuff.ItemData->nodes[id] = item;
 					XMLStuff.ModData->items[lastmodid] += 1;
@@ -507,7 +511,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 					if (trinket.count("relativeid") > 0) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
-					XMLStuff.TrinketData->bymod[lastmodid] = id;
+					XMLStuff.TrinketData->bymod[lastmodid].push_back(id);
+					XMLStuff.TrinketData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.TrinketData->byname[trinket["name"]] = id;
 					XMLStuff.TrinketData->nodes[id] = trinket;
 					XMLStuff.ModData->trinkets[lastmodid] += 1;
@@ -545,7 +550,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.MusicData->ProcessChilds(auxnode, id);
 			if (music.count("relativeid") > 0) { XMLStuff.MusicData->byrelativeid[lastmodid + music["relativeid"]] = id; }
 			XMLStuff.MusicData->bynamemod[music["name"] + lastmodid] = id;
-			XMLStuff.MusicData->bymod[lastmodid] = id;
+			XMLStuff.MusicData->bymod[lastmodid].push_back(id);
+			XMLStuff.MusicData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.MusicData->byname[music["name"]] = id;
 			XMLStuff.MusicData->nodes[id] = music;
 			XMLStuff.ModData->musictracks[lastmodid] += 1;
@@ -586,7 +592,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//printf("sound: %s (%d) \n",sound["name"].c_str(),id);
 			if (sound.count("relativeid") > 0) { XMLStuff.SoundData->byrelativeid[lastmodid + sound["relativeid"]] = id; }
 			XMLStuff.SoundData->bynamemod[sound["name"] + lastmodid] = id;
-			XMLStuff.SoundData->bymod[lastmodid] = id;
+			XMLStuff.SoundData->bymod[lastmodid].push_back(id);
+			XMLStuff.SoundData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.SoundData->byname[sound["name"]] = id;
 			XMLStuff.SoundData->nodes[id] = sound;
 			XMLStuff.ModData->sounds[lastmodid] += 1;
@@ -623,7 +630,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (challenge.count("relativeid") > 0) { XMLStuff.ChallengeData->byrelativeid[lastmodid + challenge["relativeid"]] = id; }
 			XMLStuff.ChallengeData->ProcessChilds(auxnode, id);
 			XMLStuff.ChallengeData->bynamemod[challenge["name"] + lastmodid] = id;
-			XMLStuff.ChallengeData->bymod[lastmodid] = id;
+			XMLStuff.ChallengeData->bymod[lastmodid].push_back(id);
+			XMLStuff.ChallengeData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.ChallengeData->byname[challenge["name"]] = id;
 			XMLStuff.ChallengeData->nodes[id] = challenge;
 			XMLStuff.ModData->challenges[lastmodid] += 1;
@@ -661,7 +669,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 				if (color.count("relativeid") > 0) { XMLStuff.WispColorData->byrelativeid[lastmodid + color["relativeid"]] = id; }
 				XMLStuff.WispColorData->ProcessChilds(auxnode, id);
 				XMLStuff.WispColorData->bynamemod[color["name"] + lastmodid] = id;
-				XMLStuff.WispColorData->bymod[lastmodid] = id;
+				XMLStuff.WispColorData->bymod[lastmodid].push_back(id);
+				XMLStuff.WispColorData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.WispColorData->byname[color["name"]] = id;
 				XMLStuff.WispColorData->nodes[id] = color;
 				XMLStuff.ModData->wispcolors[lastmodid] += 1;
@@ -705,7 +714,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 					//printf("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
 					XMLStuff.WispData->ProcessChilds(auxnode, id);
 					XMLStuff.WispData->bynamemod[wisp["name"] + lastmodid] = id;
-					XMLStuff.WispData->bymod[lastmodid] = id;
+					XMLStuff.WispData->bymod[lastmodid].push_back(id);
+					XMLStuff.WispData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.WispData->byname[wisp["name"]] = id;
 					XMLStuff.WispData->nodes[id] = wisp;
 					XMLStuff.ModData->wisps[lastmodid] += 1;
@@ -748,7 +758,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (nightmare.count("relativeid") > 0) { XMLStuff.NightmareData->byrelativeid[lastmodid + nightmare["relativeid"]] = id; }
 			XMLStuff.NightmareData->ProcessChilds(auxnode, id);
 			XMLStuff.NightmareData->bynamemod[nightmare["name"] + lastmodid] = id;
-			XMLStuff.NightmareData->bymod[lastmodid] = id;
+			XMLStuff.NightmareData->bymod[lastmodid].push_back(id);
+			XMLStuff.NightmareData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.NightmareData->byname[nightmare["name"]] = id;
 			XMLStuff.NightmareData->nodes[id] = nightmare;
 			XMLStuff.ModData->nightmares[lastmodid] += 1;
@@ -791,7 +802,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			printf("curse: %d - %s \n", id, curse["name"].c_str());
 			XMLStuff.CurseData->ProcessChilds(auxnode, id);
 			XMLStuff.CurseData->bynamemod[curse["name"] + lastmodid] = id;
-			XMLStuff.CurseData->bymod[lastmodid] = id;
+			XMLStuff.CurseData->bymod[lastmodid].push_back(id);
+			XMLStuff.CurseData->byfilepathmulti.tab[currpath].push_back(id);
 			if (XMLStuff.CurseData->byname.count(curse["name"]) == 0) { //to prioritize vanilla in case of Curse of the Giant hacky
 				XMLStuff.CurseData->byname[curse["name"]] = id;
 			}
@@ -847,7 +859,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 				if (costume.count("relativeid") > 0) { XMLStuff.CostumeData->byrelativeid[lastmodid + costume["relativeid"]] = id; }
 				XMLStuff.CostumeData->ProcessChilds(auxnode, id);
 				XMLStuff.CostumeData->bynamemod[costume["name"] + lastmodid] = id;
-				XMLStuff.CostumeData->bymod[lastmodid] = id;
+				XMLStuff.CostumeData->bymod[lastmodid].push_back(id);
+				XMLStuff.CostumeData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.CostumeData->byname[costume["name"]] = id;
 				XMLStuff.CostumeData->nodes[id] = costume;
 				XMLStuff.ModData->costumes[lastmodid] += 1;
@@ -878,7 +891,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 				//printf("nullcostume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
 				XMLStuff.NullCostumeData->ProcessChilds(auxnode, idnull);
 				XMLStuff.NullCostumeData->bynamemod[costume["name"] + lastmodid] = idnull;
-				XMLStuff.NullCostumeData->bymod[lastmodid] = idnull;
+				XMLStuff.NullCostumeData->bymod[lastmodid].push_back(idnull);
+				XMLStuff.NullCostumeData->byfilepathmulti.tab[currpath].push_back(idnull);
 				XMLStuff.NullCostumeData->byname[costume["name"]] = idnull;
 				XMLStuff.NullCostumeData->nodes[idnull] = costume;
 				XMLStuff.ModData->nullcostumes[lastmodid] += 1;
@@ -914,7 +928,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			
 			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
 				XMLStuff.PoolData->bynamemod[itempool["name"] + lastmodid] = id;
-				XMLStuff.PoolData->bymod[lastmodid] = id;
+				XMLStuff.PoolData->bymod[lastmodid].push_back(id);
+				XMLStuff.PoolData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.PoolData->byname[itempool["name"]] = id;
 				XMLStuff.PoolData->nodes[id] = itempool;
 			}
@@ -1391,5 +1406,26 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	}
 }
 //Crash Prevention//
+
+//Sneaky modreloader code
+#include <limits.h>
+#include <iostream>
+
+void GameRestart() {
+	char path[1024];
+	STARTUPINFO si = {};
+	PROCESS_INFORMATION pi = {};
+	LPSTR commandLine = GetCommandLine();
+	if (CreateProcess(NULL, commandLine, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+		TerminateProcess(GetCurrentProcess(), 0);
+	}
+}
+bool once = false;
+HOOK_METHOD(ModManager, Reset, () -> void) {
+	//super();
+	GameRestart();
+}
+
+//Sneaky modreloader code
 
 #endif

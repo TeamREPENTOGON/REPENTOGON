@@ -37,6 +37,7 @@ typedef unordered_map<string, std::vector <XMLAttributes>> XMLChilds;
 typedef unordered_map<int, XMLChilds> XMLKinder;
 typedef unordered_map<tuple<int, int, int>, XMLChilds> XMLEntityKinder;
 typedef unordered_map<string, int> XMLNodeIdxLookup;
+typedef unordered_map<string, vector<int>> XMLNodeIdxLookupMultiple;
 
 
 inline string stringlower(char* str)
@@ -49,14 +50,35 @@ inline string stringlower(char* str)
 }
 
 
+class XMLNodeTable {
+public:
+	XMLNodeIdxLookupMultiple tab;
+	vector<int> Get(string index) {
+		if (tab.find(index) != tab.end()) {
+			return tab[index];
+		}
+	}
+	void Set(string index,int id) {
+		if (tab.find(index) != tab.end()) {
+			vector<int> v;
+			v.push_back(id);
+			tab[index] = v;
+		}else{
+			tab[index].push_back(id);
+		}
+	}
+};
+
+
 class XMLDataHolder {
 public:
 	XMLNodes nodes;
 	XMLKinder childs;
 	XMLNodeIdxLookup byname;
 	XMLNodeIdxLookup bynamemod;
-	XMLNodeIdxLookup bymod;
+	XMLNodeIdxLookupMultiple bymod;
 	XMLNodeIdxLookup byrelativeid;
+	XMLNodeTable byfilepathmulti;
 	int maxid;
 	int defmaxid;
 
@@ -66,7 +88,24 @@ public:
 		bynamemod.clear();
 		bymod.clear();
 		byrelativeid.clear();
+		byfilepathmulti.tab.clear();
 		maxid = defmaxid;
+	}
+
+	void ClearByPath(string path) {
+		if (byfilepathmulti.tab.find(path) != byfilepathmulti.tab.end()) {
+			for each (int idx in byfilepathmulti.Get(path)) {
+				XMLAttributes node = nodes[idx];
+				if (byname[node["name"]] == idx) { byname.erase(node["name"]); }
+				if (bynamemod[node["name"] + node["sourceid"]] == idx) { bynamemod.erase(node["name"] + node["sourceid"]); }
+				bymod.erase(node["sourceid"]);
+				byrelativeid.erase(node["sourceid"] + node["name"]);
+				nodes.erase(idx);
+				childs.erase(idx);
+				maxid -= 1;
+			}
+			byfilepathmulti.tab[path].clear();
+		}
 	}
 
 	XMLAttributes GetNodeByName(string name) {
@@ -218,6 +257,21 @@ public:
 		this->maxid = m;
 		this->defmaxid = m;
 	}
+	void Clear() {
+			for each (auto& n in nodes) {;
+				XMLAttributes node = n.second;
+				if (strcmp(node["sourceid"].c_str(), "BaseGame") != 0) {
+					int idx = n.first;
+					if (byname[node["name"]] == idx) { byname.erase(node["name"]); }
+					if (bynamemod[node["name"] + node["sourceid"]] == idx) { bynamemod.erase(node["name"] + node["sourceid"]); }
+					bymod.erase(node["sourceid"]);
+					byrelativeid.erase(node["sourceid"] + node["name"]);
+					nodes.erase(idx);
+					childs.erase(idx);
+					maxid = maxid / 2 ;
+				}
+			}
+		}
 };
 
 class XMLTrinket : public XMLDataHolder {
@@ -320,7 +374,7 @@ struct XMLData {
 
 	XMLMod* ModData = new XMLMod();
 
-
+	
 };
 extern XMLData XMLStuff;
 
