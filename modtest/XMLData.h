@@ -161,8 +161,11 @@ public:
 	XMLNodeIdxLookup nightmares;
 	XMLNodeIdxLookup costumes;
 	XMLNodeIdxLookup nullcostumes;
+	XMLNodeIdxLookup bombcostumes;
 	XMLNodeIdxLookup wisps;
 	XMLNodeIdxLookup wispcolors;
+	XMLNodeIdxLookup locusts;
+	XMLNodeIdxLookup locustcolors;
 	XMLNodeIdxLookup curses;
 
 	void Clear() {
@@ -186,8 +189,11 @@ public:
 		nightmares.clear();
 		costumes.clear();
 		nullcostumes.clear();
+		bombcostumes.clear();
 		wisps.clear();
 		wispcolors.clear();
+		locusts.clear();
+		locustcolors.clear();
 		curses.clear();
 		maxid = 0;
 	
@@ -223,6 +229,14 @@ class XMLWispColor : public XMLDataHolder {
 
 };
 
+class XMLLocust : public XMLDataHolder {
+
+};
+
+class XMLLocustColor : public XMLDataHolder {
+
+};
+
 class XMLItem : public XMLDataHolder {
 	
 };
@@ -237,6 +251,14 @@ class XMLNightmare : public XMLDataHolder {
 
 class XMLCostume : public XMLDataHolder {
 	
+};
+
+class XMLBombCostume : public XMLDataHolder {
+public:
+	XMLBombCostume(int m) {
+		this->maxid = m;
+		this->defmaxid = m;
+	}
 };
 
 class XMLNullCostume : public XMLDataHolder {
@@ -369,7 +391,10 @@ struct XMLData {
 	XMLCostume* CostumeData = new XMLCostume();
 	XMLWisp* WispData = new XMLWisp();
 	XMLWispColor* WispColorData = new XMLWispColor();
+	XMLWisp* LocustData = new XMLWisp();
+	XMLWispColor* LocustColorData = new XMLWispColor();
 	XMLNullCostume* NullCostumeData = new XMLNullCostume(130);
+	XMLBombCostume* BombCostumeData = new XMLBombCostume(19);
 	XMLCurse* CurseData = new XMLCurse(1);
 
 	XMLMod* ModData = new XMLMod();

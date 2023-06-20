@@ -520,6 +520,45 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 		}
 	}
+	else if ((strcmp(nodename, "bombcostumes") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes bombcostume;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				bombcostume[stringlower(attr->name())] = string(attr->value());
+			}
+			if ((bombcostume.count("variant") > 0)){ // && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+				id = toint(bombcostume["variant"]);
+			}
+			else {
+				if (bombcostume.count("variant") > 0) { bombcostume["relativeid"] = bombcostume["variant"]; }
+				XMLStuff.BombCostumeData->maxid = XMLStuff.BombCostumeData->maxid + 1;
+				bombcostume["id"] = to_string(XMLStuff.BombCostumeData->maxid);
+				id = XMLStuff.BombCostumeData->maxid;
+			}
+			if (id > XMLStuff.BombCostumeData->maxid) {
+				XMLStuff.BombCostumeData->maxid = id;
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				bombcostume[attr->name()] = attr->value();
+			}
+			if (bombcostume.count("name") == 0) { bombcostume["name"] = bombcostume["variant"]; }
+			bombcostume["sourceid"] = lastmodid;
+			XMLStuff.BombCostumeData->ProcessChilds(auxnode, id);
+			if (bombcostume.count("relativeid") > 0) { XMLStuff.BombCostumeData->byrelativeid[lastmodid + bombcostume["relativeid"]] = id; }
+			XMLStuff.BombCostumeData->bynamemod[bombcostume["name"] + lastmodid] = id;
+			XMLStuff.BombCostumeData->bymod[lastmodid].push_back(id);
+			XMLStuff.BombCostumeData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.BombCostumeData->byname[bombcostume["name"]] = id;
+			XMLStuff.BombCostumeData->nodes[id] = bombcostume;
+			XMLStuff.ModData->bombcostumes[lastmodid] += 1;
+			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+		}
+	}
 	else if ((strcmp(nodename, "music") == 0)) {
 		int id = 1;
 		xml_node<char>* daddy = node;
@@ -724,6 +763,93 @@ void ProcessXmlNode(xml_node<char>* node) {
 
 			}
 		}
+	else if ((strcmp(nodename, "locusts") == 0)) {
+		xml_node<char>* daddy = node;
+		int id = 1;
+		for (xml_node<char>* auxnode = node->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+			string middleman = stringlower(auxnode->name());
+			const char* nodename = middleman.c_str();
+			if ((strcmp(nodename, "color") == 0)) {
+				XMLAttributes color;
+				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					color[stringlower(attr->name())] = string(attr->value());
+				}
+				if ((color.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+					id = toint(color["id"]);
+				}
+				else {
+					if (color.count("id") > 0) { color["relativeid"] = color["id"]; }
+					XMLStuff.LocustColorData->maxid = XMLStuff.LocustColorData->maxid + 1;
+					color["id"] = to_string(XMLStuff.LocustColorData->maxid);
+					id = XMLStuff.LocustColorData->maxid;
+				}
+				if (id > XMLStuff.LocustColorData->maxid) {
+					XMLStuff.LocustColorData->maxid = id;
+				}
+				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					color[stringlower(attr->name())] = attr->value();
+				}
+				color["sourceid"] = lastmodid;
+				if (color.count("relativeid") > 0) { XMLStuff.LocustColorData->byrelativeid[lastmodid + color["relativeid"]] = id; }
+				XMLStuff.LocustColorData->ProcessChilds(auxnode, id);
+				XMLStuff.LocustColorData->bynamemod[color["name"] + lastmodid] = id;
+				XMLStuff.LocustColorData->bymod[lastmodid].push_back(id);
+				XMLStuff.LocustColorData->byfilepathmulti.tab[currpath].push_back(id);
+				XMLStuff.LocustColorData->byname[color["name"]] = id;
+				XMLStuff.LocustColorData->nodes[id] = color;
+				XMLStuff.ModData->locustcolors[lastmodid] += 1;
+			}
+			else if ((strcmp(nodename, "locust") == 0)) {
+				XMLAttributes locust;
+				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					locust[stringlower(attr->name())] = string(attr->value());
+				}
+				if ((locust.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+					id = toint(locust["id"]);
+				}
+				else {
+					if (locust.count("id") > 0) { locust["relativeid"] = locust["id"]; }
+					XMLStuff.LocustData->maxid = XMLStuff.LocustData->maxid + 1;
+					locust["id"] = to_string(XMLStuff.LocustData->maxid);
+					id = XMLStuff.LocustData->maxid;
+				}
+				if (id > XMLStuff.LocustData->maxid) {
+					XMLStuff.LocustData->maxid = id;
+				}
+				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					locust[stringlower(attr->name())] = attr->value();
+				}
+				locust["sourceid"] = lastmodid;
+				if (locust.count("relativeid") > 0) {
+					id = toint(XMLStuff.ItemData->nodes[XMLStuff.ItemData->byrelativeid[lastmodid + locust["relativeid"]]]["id"]);
+					locust["id"] = to_string(id);
+					XMLStuff.WispData->byrelativeid[lastmodid + locust["relativeid"]] = id;
+					locust["name"] = XMLStuff.ItemData->nodes[XMLStuff.ItemData->byrelativeid[lastmodid + locust["relativeid"]]]["name"];
+				}
+				else {
+					locust["name"] = XMLStuff.ItemData->nodes[toint(locust["id"])]["name"];
+				}
+				if (id == 0) {
+					id = XMLStuff.LocustData->maxid + 2000;
+					locust["id"] = to_string(id);
+				}
+				//printf("Wisp #%d(%s) : %s \n", toint(wisp["id"]), wisp["id"].c_str(), wisp["name"].c_str());
+				XMLStuff.LocustData->ProcessChilds(auxnode, id);
+				XMLStuff.LocustData->bynamemod[locust["name"] + lastmodid] = id;
+				XMLStuff.LocustData->bymod[lastmodid].push_back(id);
+				XMLStuff.LocustData->byfilepathmulti.tab[currpath].push_back(id);
+				XMLStuff.LocustData->byname[locust["name"]] = id;
+				XMLStuff.LocustData->nodes[id] = locust;
+				XMLStuff.ModData->locusts[lastmodid] += 1;
+
+			}
+
+		}
+		}
 	else if ((strcmp(nodename, "nightmares") == 0)) {
 		int id = 1;
 		xml_node<char>* daddy = node;
@@ -799,7 +925,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			curse["sourcepath"] = currpath;
 			curse["sourceid"] = lastmodid;
 			if (curse.count("relativeid") > 0) { XMLStuff.CurseData->byrelativeid[lastmodid + curse["relativeid"]] = id; }
-			printf("curse: %d - %s \n", id, curse["name"].c_str());
+			//printf("curse: %d - %s \n", id, curse["name"].c_str());
 			XMLStuff.CurseData->ProcessChilds(auxnode, id);
 			XMLStuff.CurseData->bynamemod[curse["name"] + lastmodid] = id;
 			XMLStuff.CurseData->bymod[lastmodid].push_back(id);
@@ -1000,7 +1126,7 @@ char * rootnodename(char* a) {
 	}
 	size_t length = end - start;
 	string str = input.substr(start, length);
-	printf(" %d %d %d %s", end, length, start, str.c_str());
+	//printf(" %d %d %d %s", end, length, start, str.c_str());
 	char* mutableCharPtr = new char[str.length() + 1];
 	strcpy(mutableCharPtr, str.c_str());
 	return mutableCharPtr;
@@ -1042,7 +1168,7 @@ HOOK_METHOD(ItemConfig, Load, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(RoomConfig, LoadCurses, (char* xmlpath, bool ismod)->void) {
-	printf("curse you %s \n", xmlpath);
+	//printf("curse you %s \n", xmlpath);
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1055,6 +1181,28 @@ HOOK_METHOD(ItemConfig, LoadWispConfig, (char* xmlpath, int ismod)->void) {
 	super(xmlpath, ismod);
 	currpath = "";
 }
+
+HOOK_METHOD(ItemConfig, LoadLocustConfig, (char* xmlpath, int ismod)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
+	currpath = "";
+}
+
+HOOK_METHOD(ItemConfig, LoadBombConfigRules, (char* xmlpath, int ismod)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
+	currpath = "";
+}
+
+HOOK_METHOD(ItemConfig, LoadCraftingRecipes, (char* xmlpath, int ismod)->void) {
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, ismod);
+	currpath = "";
+}
+
 HOOK_METHOD(ItemConfig, LoadMetadata, (char* xmlpath, int ismod)->void) {
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
@@ -1307,6 +1455,18 @@ int Lua_GetEntryByNameXML(lua_State* L)
 		Node = XMLStuff.CurseData->GetNodeByName(entityname);
 		Childs = XMLStuff.CurseData->childs[XMLStuff.CurseData->byname[entityname]];
 		break;
+	case 17:
+		Node = XMLStuff.LocustData->GetNodeByName(entityname);
+		Childs = XMLStuff.LocustData->childs[XMLStuff.LocustData->byname[entityname]];
+		break;
+	case 18:
+		Node = XMLStuff.LocustColorData->GetNodeByName(entityname);
+		Childs = XMLStuff.LocustColorData->childs[XMLStuff.LocustColorData->byname[entityname]];
+		break;
+	case 19:
+		Node = XMLStuff.BombCostumeData->GetNodeByName(entityname);
+		Childs = XMLStuff.BombCostumeData->childs[XMLStuff.BombCostumeData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -1387,11 +1547,17 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		else if (a.find("<cos") < 50) { 
 			a = "<costumes anm2root=\"gfx/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </costumes>";
 		}
+		else if (a.find("<bomb") < 50) {
+			a = "<bombcostumes anm2root=\"gfx/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </bombcostumes>";
+		}
 		else if (a.find("<cus") < 50) { //typo
 			a = "<costumes anm2root=\"gfx/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </costumes>";
 		}
 		else if (a.find("<curs") < 50) { 
 			a = "<curses xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </curses>";
+		}
+		else if (a.find("<loc") < 50) {
+			a = "<locusts gfxroot=\"gfx/familiar/wisps/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </locusts>";
 		}
 		else if (a.find("<wis") < 50) { 
 			a = "<wisps gfxroot=\"gfx/familiar/wisps/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </wisps>";
@@ -1420,7 +1586,6 @@ void GameRestart() {
 		TerminateProcess(GetCurrentProcess(), 0);
 	}
 }
-bool once = false;
 HOOK_METHOD(ModManager, Reset, () -> void) {
 	//super();
 	GameRestart();

@@ -19,3 +19,9 @@ tags:
 |11 |NIGHTMARE {: .copyable } |  |
 |12 |COSTUME {: .copyable } |  |
 |13 |NULLCOSTUME {: .copyable } |  |
+|14 |WISP {: .copyable } |  |
+|15 |WISPCOLOR {: .copyable } |  |
+|16 |CURSE {: .copyable } |  |
+|17 |LOCUST {: .copyable } |  |
+|18 |LOCUSTCOLOR {: .copyable } |  |
+|19 |BOMBCOSTUME {: .copyable } |  |
