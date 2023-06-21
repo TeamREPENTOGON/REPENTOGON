@@ -9,9 +9,9 @@ This documentation covers the additions and modifications made to the Lua API by
 
 Happily serving:
 
-- over 300 new or improved functions
-- over 80 new callbacks
+- over 400 new or improved functions
+- over 85 new callbacks
 - over 30 new rideable dragons
-- over 45 new enums
+- over 50 new enums
 
 **A list of non API related changes can be found in the "changes" tab!**
