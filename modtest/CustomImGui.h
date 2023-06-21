@@ -7,6 +7,8 @@
 
 #include "LuaCore.h"
 
+extern int handleWindowFlags(int flags);
+
 enum class IMGUI_ELEMENT {
     Window,
     Menu,
@@ -655,7 +657,7 @@ struct CustomImGui {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
             window->EvaluateVisible();
-            if (window->evaluatedVisibleState && ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState)) {
+            if (window->evaluatedVisibleState && ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
                 DrawElements(window->children);
                 ImGui::End();
             }

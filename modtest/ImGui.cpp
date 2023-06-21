@@ -1,4 +1,5 @@
 #include "ASMPatcher.hpp"
+#include "ConsoleMega.h"
 #include "CustomImGui.h"
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
@@ -27,6 +28,14 @@ static bool imguiInitialized = false;
 LogViewer logViewer;
 ConsoleMega console;
 CustomImGui customImGui;
+
+int handleWindowFlags(int flags)
+{
+    // disable interactive parts of imgui
+    if (!menuShown)
+        flags = flags | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
+    return flags;
+}
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -129,8 +138,10 @@ void __stdcall LogMessageCallback(const char* logMessage)
     logViewer.AddLog("[GAME]", logMessage);
 };
 
-HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsigned int unk) -> void)
+HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsigned int unk)->void)
 {
     logViewer.AddLog("[CONSOLE]", text.c_str());
     super(text, color, unk);
 }
+
+extern int handleWindowFlags(int flags);

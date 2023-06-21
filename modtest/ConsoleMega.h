@@ -5,6 +5,8 @@
 #include <sstream>
 #include <cctype>
 
+extern int handleWindowFlags(int flags);
+
 struct ConsoleCommand {
     std::string name = ""; // The name of the command.
     const char* desc = ""; // A short (usually one sentence) description of the command. Will show up when just typing `help`
@@ -187,7 +189,7 @@ struct ConsoleMega {
 
     void Draw() {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
-        if (ImGui::Begin("Console", &enabled)) {
+        if (ImGui::Begin("Console", &enabled, handleWindowFlags(0))) {
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
             // -27 = fill remaining window space minus 27px. fixes issue where the input is outside the window frame

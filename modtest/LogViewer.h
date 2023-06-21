@@ -3,6 +3,8 @@
 #include <sstream>
 #include <string>
 
+extern int handleWindowFlags(int flags);
+
 static void HelpMarker(const char* desc)
 {
     ImGui::TextDisabled("(?)");
@@ -59,7 +61,7 @@ struct LogViewer {
 
     void Draw()
     {
-        if (ImGui::Begin("Log Viewer", &enabled)) {
+        if (ImGui::Begin("Log Viewer", &enabled, handleWindowFlags(0))) {
             filter.Draw("Filter", -110.0f);
             ImGui::SameLine();
             if (ImGui::Button("Options")) {
