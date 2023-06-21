@@ -4,7 +4,6 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LogViewer.h"
-#include "ConsoleMega.h"
 #include "SigScan.h"
 
 #include <Windows.h>
@@ -85,12 +84,11 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         printf("[REPENTOGON] Dear ImGui initialized! Any further logs can be seen in the in-game log viewer.\n");
     }
 
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplWin32_NewFrame();
+    ImGui::NewFrame();
+
     if (menuShown) {
-
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("Tools")) {
                 if (ImGui::MenuItem("Console (UNFINISHED)", NULL, &console.enabled)) { }
@@ -100,31 +98,21 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
             customImGui.DrawMenu();
             ImGui::EndMainMenuBar();
         }
-        if (logViewer.enabled) {
-            logViewer.Draw();
-        }
 
         if (console.enabled) {
             console.Draw();
         }
         customImGui.DrawWindows();
-
-        ImGui::Render();
-
-        // Draw the overlay
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
-
-    else if (logViewer.pinned) {
-
-        // Show the log viewer and draw the overlay without hooking any input
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
+    if (logViewer.enabled || logViewer.pinned) {
+        // Show the log viewer and draw the overlay
         logViewer.Draw();
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }
+
+    ImGui::Render();
+
+    // Draw the overlay
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     return super(hdc);
 }
