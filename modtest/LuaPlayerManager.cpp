@@ -17,7 +17,7 @@ static int Lua_GetPlayerManager(lua_State* L) {
 int Lua_FirstCollectibleOwner(lua_State* L)
 {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
-	int collectible = luaL_checkinteger(L, 2);
+	int collectible = (int)luaL_checkinteger(L, 2);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 	bool unk = lua_toboolean(L, 4);
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, unk);
@@ -34,7 +34,7 @@ int Lua_FirstCollectibleOwner(lua_State* L)
 int Lua_AnyoneHasCollectible(lua_State* L)
 {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
-	int collectible = luaL_checkinteger(L, 2);
+	int collectible = (int)luaL_checkinteger(L, 2);
 	RNG* rng = new RNG(); 
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, true);
 	if (!player) {
@@ -49,7 +49,7 @@ int Lua_AnyoneHasCollectible(lua_State* L)
 int Lua_SpawnCoPlayer2(lua_State* L)
 {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
-	int playerType = luaL_checkinteger(L, 2);
+	int playerType = (int)luaL_checkinteger(L, 2);
 
 	Entity_Player* player = playerManager->SpawnCoPlayer2(playerType);
 	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
@@ -69,7 +69,7 @@ int Lua_PlayerManagerIsCoopPlay(lua_State* L)
 int Lua_PlayerManagerGetNumCollectibles(lua_State* L)
 {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
-	int collectibleID = luaL_checkinteger(L, 2);
+	int collectibleID = (int)luaL_checkinteger(L, 2);
 	lua_pushinteger(L, playerManager->GetNumCollectibles((CollectibleType)collectibleID));
 
 	return 1;
@@ -78,7 +78,7 @@ int Lua_PlayerManagerGetNumCollectibles(lua_State* L)
 int Lua_PlayerManagerGetTrinketMultiplier(lua_State* L)
 {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
-	int trinketID = luaL_checkinteger(L, 2);
+	int trinketID = (int)luaL_checkinteger(L, 2);
 	lua_pushinteger(L, playerManager->GetTrinketMultiplier((TrinketType)trinketID));
 
 	return 1;
@@ -87,7 +87,7 @@ int Lua_PlayerManagerGetTrinketMultiplier(lua_State* L)
 int Lua_FirstTrinketOwner(lua_State* L)
 {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
-	int trinket = luaL_checkinteger(L, 2);
+	int trinket = (int)luaL_checkinteger(L, 2);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 	bool unk = lua_toboolean(L, 4);
 	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, unk);

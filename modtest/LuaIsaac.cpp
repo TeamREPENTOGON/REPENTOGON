@@ -15,9 +15,9 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 {
 	Room* room = *g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
-	int type = luaL_checkinteger(L, 1);
-	int variant = luaL_optinteger(L, 2, -1);
-	int subtype = luaL_optinteger(L, 3, -1);
+	int type = (int)luaL_checkinteger(L, 1);
+	int variant = (int)luaL_optinteger(L, 2, -1);
+	int subtype = (int)luaL_optinteger(L, 3, -1);
 	bool cache = false;
 	if lua_isboolean(L, 4)
 		cache = lua_toboolean(L, 4);
@@ -86,8 +86,8 @@ int Lua_IsaacFindInRadiusFix(lua_State* L)
 	Room* room = *g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	float radius = luaL_checknumber(L, 2);
-	unsigned int partition = luaL_optinteger(L, 3, -1);
+	float radius = (float)luaL_checknumber(L, 2);
+	unsigned int partition = (unsigned int)luaL_optinteger(L, 3, -1);
 
 	EntityList_EL res;
 	EntityList_EL* resPtr = &res;
@@ -184,12 +184,12 @@ static int Lua_CreateTimer(lua_State* L) {
 		return luaL_error(L, "Expected function, got %s", lua_typename(L, lua_type(L, 1)));
 	}
 
-	int delay = luaL_checkinteger(L, 2);
+	int delay = (int)luaL_checkinteger(L, 2);
 	if (delay < 0) {
 		delay = 1;
 	}
 
-	int times = luaL_optinteger(L, 3, 0);
+	int times = (int)luaL_optinteger(L, 3, 0);
 	if(times < 0)
 		times = 1;
 
@@ -215,7 +215,7 @@ static int Lua_DrawLine(lua_State* L) {
 	Vector* pos2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	KColor* col1 = lua::GetUserdata<KColor*>(L, 3, lua::Metatables::KCOLOR, "KColor");
 	KColor* col2 = lua::GetUserdata<KColor*>(L, 4, lua::Metatables::KCOLOR, "KColor");
-	float thickness = luaL_optnumber(L, 5, 1); // mmmmMMMMMMMMMMMMMMmm
+	float thickness = (float)luaL_optnumber(L, 5, 1); // mmmmMMMMMMMMMMMMMMmm
 
 	g_ShapeRenderer->RenderLine(pos1, pos2, col1, col2, thickness);
 
@@ -228,7 +228,7 @@ static int Lua_DrawQuad(lua_State* L) {
 	Vector* posbl = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	Vector* posbr = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	KColor* col = lua::GetUserdata<KColor*>(L, 5, lua::Metatables::KCOLOR, "KColor");
-	float thickness = luaL_optnumber(L, 6, 1); // mmmmMMMMMMMMMMMMMMMMMMMMMMMMMMMMMmmmmmmmm
+	float thickness = (float)luaL_optnumber(L, 6, 1); // mmmmMMMMMMMMMMMMMMMMMMMMMMMMMMMMMmmmmmmmm
 
 	DestinationQuad quad; //TODO make a constructor for this
 	quad._topLeft = *postl;

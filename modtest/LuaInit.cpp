@@ -237,7 +237,7 @@ HOOK_STATIC(Isaac, GetRoomEntities, (void* holder) -> void*, __cdecl) {
 	lua_pushstring(L, "toto");
 	lua_rawset(L, -3); */
 	lua_pop(L, 1); 
-	luaL_unref(L, LUA_REGISTRYINDEX, *key);
+	luaL_unref(L, LUA_REGISTRYINDEX, (int)*key);
 	lua_createtable(L, 0, 0);
 	fprintf(f, "createtable\n");
 	DumpTable(L, f);

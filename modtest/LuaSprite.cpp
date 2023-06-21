@@ -15,7 +15,7 @@ int Lua_SpriteReplaceSpritesheet(lua_State* L)
 {
 	bool loadGraphics = false;
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	int layerId = luaL_checkinteger(L, 2);
+	int layerId = (int)luaL_checkinteger(L, 2);
 
 	IsaacString str;
 	const char* filename = luaL_checkstring(L, 3);
@@ -56,7 +56,7 @@ int Lua_SpriteReplaceSpritesheet(lua_State* L)
 static int Lua_SpriteGetLayer(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	unsigned int layerName = luaL_checkinteger(L, 2);
+	unsigned int layerName = (unsigned int)luaL_checkinteger(L, 2);
 	LayerState* toLua = anm2->GetLayer(layerName);
 	unsigned int layerCount = anm2->GetLayerCount();
 	if (layerName > layerCount) {
@@ -120,7 +120,7 @@ static int Lua_LayerStateGetRotation(lua_State* L)
 static int Lua_LayerStateSetRotation(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	*layerState->GetRotation() = lua_tonumber(L, 2);
+	*layerState->GetRotation() = (float)lua_tonumber(L, 2);
 
 	return 0;
 }

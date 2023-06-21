@@ -6,7 +6,7 @@
 
 int Lua_PickupSetAlternatePedestal(lua_State* L) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	int pedestalType = luaL_checkinteger(L, 2);
+	int pedestalType = (int)luaL_checkinteger(L, 2);
 
 	pickup->SetAlternatePedestal(pedestalType);
 
@@ -46,7 +46,7 @@ int Lua_PickupGetVarData(lua_State* L) {
 
 int Lua_PickupSetVarData(lua_State* L) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	*pickup->GetVarData() = lua_tointeger(L, 2);
+	*pickup->GetVarData() = (int)lua_tointeger(L, 2);
 
 	return 0;
 }

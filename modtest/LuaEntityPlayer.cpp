@@ -14,10 +14,10 @@ std::vector<int> fakeItems;
 int Lua_GetMultiShotPositionVelocity(lua_State* L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
-	int loopIndex = luaL_checkinteger(L, 2);
-	int weaponType = luaL_checkinteger(L, 3);
+	int loopIndex = (int)luaL_checkinteger(L, 2);
+	int weaponType = (int)luaL_checkinteger(L, 3);
 	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::ENTITY, "Vector");
-	float shotSpeed = luaL_checknumber(L, 5);
+	float shotSpeed = (float)luaL_checknumber(L, 5);
 
 	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, MultiShotParamsMT);
 	if (multiShotParams->numTears < loopIndex) {
@@ -31,7 +31,7 @@ int Lua_GetMultiShotPositionVelocity(lua_State* L) // This *should* be in the AP
 
 static int Lua_GetMultiShotParams(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int weaponType = luaL_checkinteger(L, 2);
+	int weaponType = (int)luaL_checkinteger(L, 2);
 	Weapon_MultiShotParams* ud = (Weapon_MultiShotParams*)lua_newuserdata(L, sizeof(Weapon_MultiShotParams));
 	*ud = player->GetMultiShotParams((WeaponType)weaponType);
 	luaL_setmetatable(L, MultiShotParamsMT);
@@ -68,7 +68,7 @@ static void RegisterMultiShotParams(lua_State* L) {
 int Lua_InitTwin(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int playerType = luaL_checkinteger(L, 2);
+	int playerType = (int)luaL_checkinteger(L, 2);
 
 	Entity_Player* twinPlayer = player->InitTwin(playerType);
 	lua::luabridge::UserdataPtr::push(L, twinPlayer, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
@@ -98,7 +98,7 @@ int Lua_PlayerAddCacheFlags(lua_State* L)
 {
 	bool evaluateCache = false;
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int flags = luaL_checkinteger(L, 2);
+	int flags = (int)luaL_checkinteger(L, 2);
 	if (lua_isboolean(L, 3))
 		evaluateCache = lua_toboolean(L, 3);
 
@@ -119,7 +119,7 @@ int Lua_PlayerGetHealthType(lua_State* L)
 
 int Lua_PlayerGetTotalActiveCharge(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int slot = luaL_checkinteger(L, 2);
+	int slot = (int)luaL_checkinteger(L, 2);
 
 	lua_pushinteger(L, player->GetTotalActiveCharge(slot));
 	return 1;
@@ -127,8 +127,8 @@ int Lua_PlayerGetTotalActiveCharge(lua_State* L) {
 
 int Lua_PlayerGetActiveMaxCharge(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int item = luaL_checkinteger(L, 2);
-	int vardata = luaL_checkinteger(L, 3);
+	int item = (int)luaL_checkinteger(L, 2);
+	int vardata = (int)luaL_checkinteger(L, 3);
 
 	lua_pushinteger(L, player->GetActiveMaxCharge(item,vardata));
 	return 1;
@@ -136,7 +136,7 @@ int Lua_PlayerGetActiveMaxCharge(lua_State* L) {
 
 int Lua_PlayerGetActiveMinUsableCharge(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int slot = luaL_checkinteger(L, 2);
+	int slot = (int)luaL_checkinteger(L, 2);
 
 	lua_pushinteger(L, player->GetActiveMinUsableCharge(slot));
 	return 1;
@@ -144,8 +144,8 @@ int Lua_PlayerGetActiveMinUsableCharge(lua_State* L) {
 
 int Lua_PlayerSetActiveVarData(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int vardata = luaL_checkinteger(L, 2);
-	int slot = luaL_checkinteger(L, 3);
+	int vardata = (int)luaL_checkinteger(L, 2);
+	int slot = (int)luaL_checkinteger(L, 3);
 
 	player->SetActiveVarData(vardata, slot);
 	return 0;
@@ -153,8 +153,8 @@ int Lua_PlayerSetActiveVarData(lua_State* L) {
 
 int Lua_PlayerAddActiveCharge(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	unsigned int charge = luaL_checkinteger(L, 2);
-	int slot = luaL_checkinteger(L, 3);
+	unsigned int charge = (unsigned int)luaL_checkinteger(L, 2);
+	int slot = (int)luaL_checkinteger(L, 3);
 	bool unknown = lua_toboolean(L, 4);
 	bool overcharge = lua_toboolean(L, 5);
 	bool force = lua_toboolean(L, 6);
@@ -167,7 +167,7 @@ int Lua_PlayerAddActiveCharge(lua_State* L) {
 
 int Lua_PlayerDropCollectible(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int collectible = luaL_checkinteger(L, 2);
+	int collectible = (int)luaL_checkinteger(L, 2);
 
 	player->DropCollectible(collectible, 0, false);
 	return 0;
@@ -175,8 +175,8 @@ int Lua_PlayerDropCollectible(lua_State* L) {
 
 int Lua_PlayerIncrementPlayerFormCounter(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int ePlayerForm = luaL_checkinteger(L, 2);
-	int num = luaL_checkinteger(L, 3);
+	int ePlayerForm = (int)luaL_checkinteger(L, 2);
+	int num = (int)luaL_checkinteger(L, 3);
 
 	player->IncrementPlayerFormCounter(ePlayerForm, num);
 	return 0;
@@ -190,7 +190,7 @@ int Lua_PlayerTryPreventDeath(lua_State* L) {
 
 int lua_PlayerRemoveCollectibleByHistoryIndex(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int index = luaL_checknumber(L, 2);
+	int index = (int)luaL_checknumber(L, 2);
 	player->RemoveCollectibleByHistoryIndex(index);
 	return 0;
 }
@@ -237,14 +237,14 @@ int Lua_PlayerGetMegaBlastDuration(lua_State* L)
 int Lua_PlayerSetMegaBlastDuration(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetMegaBlastDuration() = luaL_checkinteger(L,2);
+	*player->GetMegaBlastDuration() = (int)luaL_checkinteger(L,2);
 	return 0;
 }
 
 int Lua_PlayerGetActiveItemDesc(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int index = luaL_optinteger(L, 2, 0);
+	int index = (int)luaL_optinteger(L, 2, 0);
 	if (index > 3) {
 		luaL_argerror(L, 2, "ActiveSlot cannot be higher than 3");
 	}
@@ -286,7 +286,7 @@ int Lua_PlayerGetBoCSlot(lua_State* L) {
 		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: expected 1 parameter, got %d\n", n - 1);
 	}
 
-	int slot = luaL_checkinteger(L, 2);
+	int slot = (int)luaL_checkinteger(L, 2);
 	if (slot < 0 || slot > 7) {
 		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: invalid slot id %d\n", slot);
 	}
@@ -302,12 +302,12 @@ int Lua_PlayerSetBoCSlot(lua_State* L) {
 		return luaL_error(L, "EntityPlayer::SetBagOfCraftingSlot: expected at least 1 parameter and at most 2, got %d\n", n - 1);
 	}
 
-	int slot = luaL_checkinteger(L, 2);
+	int slot = (int)luaL_checkinteger(L, 2);
 	if (slot < 0 || slot > 7) {
 		return luaL_error(L, "EntityPlayer::GetBagOfCraftingSlot: invalid slot id %d\n", slot);
 	}
 
-	int8_t pickup = luaL_optinteger(L, 3, BagOfCraftingPickup::BOC_NONE);
+	int8_t pickup = (int8_t)luaL_optinteger(L, 3, BagOfCraftingPickup::BOC_NONE);
 	if (pickup < 0 || pickup >= BagOfCraftingPickup::BOC_MAX) {
 		return luaL_error(L, "EntityPlayer::SetBagOfCraftingSlot: invalid pickup id %d\n", pickup);
 	}
@@ -326,7 +326,7 @@ int Lua_PlayerGetBagOfCraftingOutput(lua_State* L)
 int Lua_PlayerSetBagOfCraftingOutput(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetBagOfCraftingOutput() = luaL_checkinteger(L, 2);
+	*player->GetBagOfCraftingOutput() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -340,7 +340,7 @@ int Lua_PlayerGetFireDelayModifier(lua_State* L)
 int Lua_PlayerSetFireDelayModifier(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetFireDelayModifier() = luaL_checkinteger(L, 2);
+	*player->GetFireDelayModifier() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -354,7 +354,7 @@ int Lua_PlayerGetDamageModifier(lua_State* L)
 int Lua_PlayerSetDamageModifier(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetDamageModifier() = luaL_checkinteger(L, 2);
+	*player->GetDamageModifier() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -368,7 +368,7 @@ int Lua_PlayerGetRedStewBonusDuration(lua_State* L)
 int Lua_PlayerSetRedStewBonusDuration(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetRedStewBonusDuration() = luaL_checkinteger(L, 2);
+	*player->GetRedStewBonusDuration() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -382,7 +382,7 @@ int Lua_PlayerGetWeaponModifiers(lua_State* L)
 int Lua_PlayerEnableWeaponType(lua_State* L)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int weaponType = luaL_checkinteger(L, 2);
+	int weaponType = (int)luaL_checkinteger(L, 2);
 	bool set = lua_toboolean(L, 3);
 	player->EnableWeaponType((WeaponType)weaponType, set);
 	return 0;
@@ -458,7 +458,7 @@ int Lua_PlayerGetMarkedTarget(lua_State* L) {
 
 int Lua_PlayerGetPocketItem(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");	
-	int slotID = luaL_checkinteger(L, 2);
+	int slotID = (int)luaL_checkinteger(L, 2);
 	PocketItem** ud = (PocketItem**)lua_newuserdata(L, sizeof(PocketItem*));
 	*ud = player->GetPocketItem(slotID);
 	luaL_setmetatable(L, PocketItemMT);
@@ -521,7 +521,7 @@ int Lua_PlayerGetWildCardItem(lua_State* L) {
 static int Lua_PlayerSetWeapon(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	WeaponData* weaponData = lua::GetUserdata<WeaponData*>(L, 2, lua::metatables::WeaponMT);
-	int index = luaL_checkinteger(L, 3);
+	int index = (int)luaL_checkinteger(L, 3);
 	if (index < 0 || index > 4) {
 		return luaL_argerror(L, 2, "Index must be between 0 and 4");
 	}

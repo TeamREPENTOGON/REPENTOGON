@@ -963,7 +963,7 @@ int Lua_IsaacSetCharacterMarks(lua_State* L)
 		while (lua_next(L, -2) != 0) { //need to use lua_next because normal method wont work with string indexes
 			if (lua_isstring(L, -2)) {
 				const char* key = lua_tostring(L, -2);
-				int value = lua_tointeger(L, -1);
+				int value = (int)lua_tointeger(L, -1);
 				if (reversemarksenum.count(key) > 0) {
 					if ((value < 0) || (value > 2)) {
 						return luaL_error(L, "Invalid Completion Marks value for %s is invalid(%d)", key, value);
@@ -1026,8 +1026,8 @@ int Lua_IsaacSetCharacterMarks(lua_State* L)
 
 int Lua_IsaacGetCharacterMark(lua_State* L)
 {
-	int completiontype = luaL_checkinteger(L, 2);
-	int playertype = luaL_checkinteger(L, 1);
+	int completiontype = (int)luaL_checkinteger(L, 2);
+	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
 		array<int, 15> marks = GetMarksForPlayer(playertype);
 		lua_pushnumber(L, marks[completiontype]);
@@ -1041,7 +1041,7 @@ int Lua_IsaacGetCharacterMark(lua_State* L)
 
 int Lua_IsaacClearCompletionMarks(lua_State* L)
 {
-	int playertype = luaL_checkinteger(L, 1);
+	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
 		string idx = GetMarksIdx(playertype);
 		CompletionMarks[idx] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
@@ -1061,7 +1061,7 @@ int Lua_IsaacClearCompletionMarks(lua_State* L)
 
 int Lua_IsaacFillCompletionMarks(lua_State* L)
 {
-	int playertype = luaL_checkinteger(L, 1);
+	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
 	if (playertype > 40) {
 		string idx = GetMarksIdx(playertype);
@@ -1095,8 +1095,8 @@ array<int, 6> tquartet = { CompletionType::ISAAC,CompletionType::SATAN,Completio
 array<int, 6> tboth = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::HUSH,CompletionType::BOSS_RUSH };
 int Lua_IsaacGetTaintedFullCompletion(lua_State* L)
 {
-	int playertype = luaL_checkinteger(L, 1);
-	int group = luaL_checkinteger(L, 2);
+	int playertype = (int)luaL_checkinteger(L, 1);
+	int group = (int)luaL_checkinteger(L, 2);
 	array g = tboth;
 	switch (group) {
 	case 0: g = tboth; break;
@@ -1128,7 +1128,7 @@ int Lua_IsaacGetTaintedFullCompletion(lua_State* L)
 
 int Lua_IsaacGetFullCompletion(lua_State* L)
 {
-	int playertype = luaL_checkinteger(L, 1);
+	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
 	if (playertype > 40) {
 		array<int, 15> marks = GetMarksForPlayer(playertype);
@@ -1156,9 +1156,9 @@ int Lua_IsaacGetFullCompletion(lua_State* L)
 
 int Lua_IsaacSetCharacterMark(lua_State* L)
 {
-	int completiontype = luaL_checkinteger(L, 2);
-	int playertype = luaL_checkinteger(L, 1);
-	int value = luaL_checkinteger(L, 3);
+	int completiontype = (int)luaL_checkinteger(L, 2);
+	int playertype = (int)luaL_checkinteger(L, 1);
+	int value = (int)luaL_checkinteger(L, 3);
 	if ((value < 0) || (value > 2)) {
 		return luaL_error(L, "Invalid Completion Marks value!(%d)", value);
 	}
@@ -1190,7 +1190,7 @@ int Lua_IsaacSetCharacterMark(lua_State* L)
 
 int Lua_IsaacGetCharacterMarks(lua_State* L)
 {
-	int playertype = luaL_checkinteger(L, 1);
+	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
 		array<int, 15> marks = GetMarksForPlayer(playertype);
 		lua_newtable(L);

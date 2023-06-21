@@ -78,7 +78,7 @@ int Lua_ConsolePrintWarning(lua_State* L)
 
 int Lua_ConsolePopHistory(lua_State* L) {
 	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
-	int amount = luaL_optinteger(L, 2, 1);
+	int amount = (int)luaL_optinteger(L, 2, 1);
 	std::deque<Console_HistoryEntry>* history = console->GetHistory();
 	amount++;
 
@@ -114,9 +114,9 @@ int Lua_RegisterMacro(lua_State* L) {
 
 	std::vector<std::string> commands;
 	// Get the number of vertices we received.
-	unsigned int len = lua_rawlen(L, 3);
+	unsigned int len = (unsigned int)lua_rawlen(L, 3);
 
-	for (int i = 1; i <= len; ++i) {
+	for (unsigned int i = 1; i <= len; ++i) {
 		lua_pushinteger(L, i);
 		lua_gettable(L, 3);
 		if (lua_type(L, -1) == LUA_TNIL) break;

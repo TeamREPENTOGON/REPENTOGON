@@ -24,7 +24,7 @@ static int Lua_CreateDropsFromExplosion(lua_State* L) {
 static int Lua_SetPrizeCollectible(lua_State* L) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	int collectible = luaL_checkinteger(L, 2);
+	int collectible = (int)luaL_checkinteger(L, 2);
 	slot->SetPrizeCollectible(collectible);
 	return 0;
 }
@@ -57,7 +57,7 @@ static int Lua_GetState(lua_State* L) {
 static int Lua_SetState(lua_State* L) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	*slot->GetState() = luaL_checkinteger(L, 2);
+	*slot->GetState() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -71,7 +71,7 @@ static int Lua_GetPrizeType(lua_State* L) {
 static int Lua_SetPrizeType(lua_State* L) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	*slot->GetPrizeType() = luaL_checkinteger(L, 2);
+	*slot->GetPrizeType() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -85,7 +85,7 @@ static int Lua_GetDonationValue(lua_State* L) {
 static int Lua_SetDonationValue(lua_State* L) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	*slot->GetDonationValue() = luaL_checkinteger(L, 2);
+	*slot->GetDonationValue() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -99,7 +99,7 @@ static int Lua_GetTimeout(lua_State* L) {
 static int Lua_SetTimeout(lua_State* L) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	*slot->GetTimeout() = luaL_checkinteger(L, 2);
+	*slot->GetTimeout() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -113,7 +113,7 @@ static int Lua_GetTouch(lua_State* L) {
 static int Lua_SetTouch(lua_State* L) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	*slot->GetTouch() = luaL_checkinteger(L, 2);
+	*slot->GetTouch() = (unsigned short)luaL_checkinteger(L, 2);
 	return 0;
 }
 

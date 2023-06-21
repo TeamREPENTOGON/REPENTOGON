@@ -1312,12 +1312,12 @@ bool Lua_PushXMLNode(lua_State* L, XMLAttributes node, unordered_map<string, vec
 int Lua_FromTypeVarSub(lua_State* L)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected EntityType as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
-	int etype = lua_tonumber(L, 1);
+	int etype = (int)lua_tonumber(L, 1);
 	int evar = 0;
 	int esub = 0;
 	bool strict = false;
-	if (lua_isnumber(L, 2)) { evar = lua_tonumber(L, 2); }
-	if (lua_isnumber(L, 3)) { esub = lua_tonumber(L, 3); }
+	if (lua_isnumber(L, 2)) { evar = (int)lua_tonumber(L, 2); }
+	if (lua_isnumber(L, 3)) { esub = (int)lua_tonumber(L, 3); }
 	if (lua_isboolean(L, 4)) { strict = lua_toboolean(L, 4); }
 	XMLAttributes Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict);
 	tuple idx = { toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) };
@@ -1382,7 +1382,7 @@ int Lua_GetEntryByNameXML(lua_State* L)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	if (!lua_isstring(L, 2)) { return luaL_error(L, "Expected string as parameter #2, got %s", lua_typename(L, lua_type(L, 1))); }
-	int nodetype = lua_tonumber(L, 1);
+	int nodetype = (int)lua_tonumber(L, 1);
 	string entityname = string(lua_tostring(L, 2));
 	XMLAttributes Node;
 	XMLChilds Childs;

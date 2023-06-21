@@ -464,17 +464,17 @@ LUA_FUNCTION(lua_LG_GetDeadEnds) {
 LUA_FUNCTION(lua_LG_PlaceRoom) {
 	LevelGenerator* generator = GetLevelGenerator(L);
 
-	lua_Integer column = luaL_checkinteger(L, 2);
+	int column = (int)luaL_checkinteger(L, 2);
 	if (column < 0 || column > 12) {
 		return luaL_error(L, "Invalid column %lld, value must be between 0 and 12 (inclusive)", column);
 	}
 
-	lua_Integer line = luaL_checkinteger(L, 3);
+	int line = (int)luaL_checkinteger(L, 3);
 	if (line < 0 || line > 12) {
 		return luaL_error(L, "Invalid line %lld, value must be between 0 and 12 (inclusive)", line);
 	}
 
-	lua_Integer shape = luaL_checkinteger(L, 4);
+	int shape = (int)luaL_checkinteger(L, 4);
 	if (shape < 0 || shape >= eRoomShape::MAX_ROOMSHAPES) {
 		return luaL_error(L, "Invalid room shape %lld, value must be between 0 and %d (inclusive)", shape, eRoomShape::MAX_ROOMSHAPES);
 	}

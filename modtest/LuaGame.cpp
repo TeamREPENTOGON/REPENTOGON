@@ -74,7 +74,7 @@ int Lua_GetLastLevelWithoutHalfHpFix(lua_State* L)
 int Lua_GameGetDebugFlag(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	unsigned int flag = luaL_checkinteger(L, 2) - 1;
+	unsigned int flag = (unsigned int)luaL_checkinteger(L, 2) - 1;
 	lua_pushboolean(L, game->GetDebugFlag(flag));
 
 	return 1;
@@ -92,7 +92,7 @@ int Lua_GameGetDebugFlags(lua_State* L)
 int Lua_GameToggleDebugFlag(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	unsigned int flag = luaL_checkinteger(L, 2) - 1;
+	unsigned int flag = (unsigned int)luaL_checkinteger(L, 2) - 1;
 	game->ToggleDebugFlag(flag);
 	lua_pushboolean(L, game->GetDebugFlag(flag));
 
@@ -102,7 +102,7 @@ int Lua_GameToggleDebugFlag(lua_State* L)
 int Lua_GameAddDebugFlags(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	unsigned int flags = luaL_checkinteger(L, 2);
+	unsigned int flags = (unsigned int)luaL_checkinteger(L, 2);
 	*game->GetDebugFlags() |= flags;
 	return 0;
 }
@@ -138,7 +138,7 @@ int Lua_GameDevolveEnemy(lua_State* L) {
 LUA_FUNCTION(lua_GameStartStageTransition) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	bool sameStage = lua_toboolean(L, 2);
-	int transition = luaL_checkinteger(L, 3);
+	int transition = (int)luaL_checkinteger(L, 3);
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
 
 	game->StartStageTransition(sameStage, transition, player);

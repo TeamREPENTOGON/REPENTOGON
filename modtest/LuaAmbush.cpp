@@ -46,7 +46,7 @@ int Lua_GetMaxBossrushWaves(lua_State* L)
 int Lua_SetMaxBossrushWaves(lua_State* L)
 {
 	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
-	int amount = luaL_checkinteger(L, 2);
+	int amount = (int)luaL_checkinteger(L, 2);
 	if (amount > 25) amount = 25;
 
 	*ambush->GetMaxBossrushWaves() = amount;
@@ -64,7 +64,7 @@ int Lua_GetMaxChallengeWaves(lua_State* L)
 int Lua_SetMaxChallengeWaves(lua_State* L)
 {
 	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, AmbushMT);
-	int amount = luaL_checkinteger(L, 2);
+	int amount = (int)luaL_checkinteger(L, 2);
 
 	ambushWaves = amount;
 

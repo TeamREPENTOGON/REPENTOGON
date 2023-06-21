@@ -29,7 +29,7 @@ static int Lua_RoomDescriptorGetAllowedDoorsConst(lua_State* L) {
 
 static int Lua_RoomDescriptorSetAllowedDoors(lua_State* L) {
 	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
-	int doors = luaL_checkinteger(L, 2);
+	int doors = (int)luaL_checkinteger(L, 2);
 	descriptor->AllowedDoors = doors;
 	return 0;
 }
@@ -62,7 +62,7 @@ static int Lua_RoomDescriptorGetDoorsConst(lua_State* L) {
 }
 
 static void _RoomDescriptorDoorsGet(lua_State* L, RoomDescriptor* descriptor) {
-	int slot = luaL_checkinteger(L, 2);
+	int slot = (int)luaL_checkinteger(L, 2);
 	if (slot < 0 || slot > 7) {
 		luaL_error(L, "Invalid door slot %d\n", slot);
 		return;
@@ -87,12 +87,12 @@ static int Lua_RoomDescriptorDoorsSet(lua_State* L) {
 	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, RoomDescriptorDoors);
 	RoomDescriptor* descriptor = *ptr;
 
-	int slot = luaL_checkinteger(L, 2);
+	int slot = (int)luaL_checkinteger(L, 2);
 	if (slot < 0 || slot > 7) {
 		return luaL_error(L, "Invalid door slot %d\n", slot);
 	}
 
-	int value = luaL_checkinteger(L, 3);
+	int value = (int)luaL_checkinteger(L, 3);
 	if (value < -1 || value > 255) {
 		return luaL_error(L, "Invalid door mask %d\n", value);
 	}

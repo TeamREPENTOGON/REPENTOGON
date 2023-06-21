@@ -14,35 +14,35 @@ static bool ValidateMusicID(Music* music, int id, int& max) {
 
 static int lua_MusicManager_Play(lua_State* L) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = luaL_checkinteger(L, 2);
+	int musicId = (int)luaL_checkinteger(L, 2);
 	int max;
 	
 	if (!ValidateMusicID(music, musicId, max)) {
 		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = %d", musicId, max - 1);
 	}
 	
-	float volume = luaL_optnumber(L, 3, -1);
+	float volume = (float)luaL_optnumber(L, 3, -1);
 	music->Play(musicId, volume);
 	return 0;
 }
 
 static int lua_MusicManager_Crossfade(lua_State* L) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = luaL_checkinteger(L, 2);
+	int musicId = (int)luaL_checkinteger(L, 2);
 	int max;
 
 	if (!ValidateMusicID(music, musicId, max)) {
 		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = %d", musicId, max - 1);
 	}
 
-	float volume = luaL_optnumber(L, 3, 0.08);
+	float volume = (float)luaL_optnumber(L, 3, 0.08);
 	music->Crossfade(musicId, volume);
 	return 0;
 }
 
 static int Lua_MusicManager_PlayJingle(lua_State* L) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = luaL_checkinteger(L, 2);
+	int musicId = (int)luaL_checkinteger(L, 2);
 	music->PlayJingle(musicId, 140, false);
 
 	return 0;

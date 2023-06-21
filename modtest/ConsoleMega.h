@@ -233,13 +233,13 @@ struct ConsoleMega {
                            ImGui::SetScrollHereY();
                        }
                        else 
-                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
+                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
 
                        ImGui::TextUnformatted(entry.autocompleteText.c_str());
 
                        if (!entry.autocompleteDesc.empty()) {
                            ImGui::SameLine();
-                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7, 0.7, 0.7, 1));
+                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
                            entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
                            ImGui::TextUnformatted(entry.autocompleteDesc.c_str());
                            ImGui::PopStyleColor();

@@ -36,7 +36,7 @@ int Lua_IsaacGetLocalizedString(lua_State* L) {
 	if (*translateString == '#') {
 		++translateString;
 	}
-	uint32_t language = luaL_checkinteger(L, 3);
+	uint32_t language = (uint32_t)luaL_checkinteger(L, 3);
 	uint32_t unk;
 
 	const char* retStr = stringTable->GetString(category, language, translateString, &unk);

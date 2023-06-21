@@ -6,8 +6,8 @@
 
 static int Lua_LevelCanSpawnDoorOutline(lua_State* L) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	int roomIDX = luaL_checkinteger(L, 2);
-	unsigned int doorSlot = luaL_checkinteger(L, 3);
+	int roomIDX = (int)luaL_checkinteger(L, 2);
+	unsigned int doorSlot = (unsigned int)luaL_checkinteger(L, 3);
 	lua_pushboolean(L, level->CanSpawnDoorOutline(roomIDX, doorSlot));
 	return 1;
 }
@@ -47,8 +47,8 @@ LUA_FUNCTION(lua_LevelSetName) {
 
 LUA_FUNCTION(lua_LevelIsStageAvailable) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	int levelStage = luaL_checkinteger(L, 2);
-	int stageType = luaL_checkinteger(L, 3);
+	int levelStage = (int)luaL_checkinteger(L, 2);
+	int stageType = (int)luaL_checkinteger(L, 3);
 	lua_pushboolean(L, level->IsStageAvailable(levelStage, stageType));
 	return 1;
 }

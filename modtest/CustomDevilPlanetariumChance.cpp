@@ -64,7 +64,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
             .call(1);
 
         if (!preApplyItemsResult) {
-                chance = lua_tonumber(L, -1);
+                chance = (float)lua_tonumber(L, -1);
         }
         //MC_PRE_DEVIL_APPLY_ITEMS
 
@@ -152,7 +152,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         .call(1);
 
     if (!preApplySpecialItemsResult) {
-        chance = lua_tonumber(L, -1);
+        chance = (float)lua_tonumber(L, -1);
     }
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
 
@@ -180,7 +180,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         .call(1);
 
     if (!postDevilCalculateResult) {
-        chance = lua_tonumber(L, -1);
+        chance = (float)lua_tonumber(L, -1);
     }
     //MC_POST_DEVIL_CALCULATE
 
@@ -284,7 +284,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
 
         if (!preApplyTreasureResult) {
             if (lua_isinteger(L, -1)) {
-                treasureRoomsVisited = lua_tointeger(L, -1);
+                treasureRoomsVisited = (int)lua_tointeger(L, -1);
             }
             else if (lua_isboolean(L, -1)) {
                 shouldBypassTreasureRestriction = !lua_toboolean(L, -1);
@@ -314,7 +314,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
 
         if (!preApplyItemsResult) {
             if(lua_isnumber(L, -1))
-                chance = lua_tonumber(L, -1);
+                chance = (float)lua_tonumber(L, -1);
         }
         //MC_PRE_PLANETARIUM_APPLY_ITEMS
 
@@ -341,7 +341,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
 
     if (!preApplyLensResult) {
         if(lua_isnumber(L, -1))
-            chance = lua_tonumber(L, -1);
+            chance = (float)lua_tonumber(L, -1);
     }
     //MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
 
@@ -359,7 +359,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
 
     if (!postCalculateResult) 
         if(lua_isnumber(L, -1))
-            chance = lua_tonumber(L, -1);
+            chance = (float)lua_tonumber(L, -1);
     //MC_POST_PLANETARIUM_CALCULATE
 
     if (chance > 1.f)

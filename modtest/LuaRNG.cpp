@@ -9,8 +9,8 @@ static constexpr const char* RngMT = "RNG";
 int Lua_RNGSetSeed(lua_State* L) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
 
-	unsigned int seed = luaL_checkinteger(L, 2);
-	unsigned int shiftidx = luaL_optinteger(L, 3, 35);
+	unsigned int seed = (unsigned int)luaL_checkinteger(L, 2);
+	unsigned int shiftidx = (unsigned int)luaL_optinteger(L, 3, 35);
 
 	if (seed <= 0) {
 		luaL_argerror(L, 2, "RNG seed must be an integer above 0");

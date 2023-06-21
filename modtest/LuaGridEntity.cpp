@@ -7,11 +7,11 @@
 static int Lua_GridEntityRockSpawnDrops(lua_State* L)
 {
 	Vector* position = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	int gridType = luaL_checkinteger(L, 2);
-	int gridVariant = luaL_checkinteger(L, 3);
-	unsigned int seed = luaL_checkinteger(L, 4);
+	int gridType = (int)luaL_checkinteger(L, 2);
+	int gridVariant = (int)luaL_checkinteger(L, 3);
+	unsigned int seed = (unsigned int)luaL_checkinteger(L, 4);
 	bool unk = lua_toboolean(L, 5);
-	int backdropType = luaL_optinteger(L, 6, 0);
+	int backdropType = (int)luaL_optinteger(L, 6, 0);
 	GridEntity_Rock::SpawnDrops(*position, gridType, gridVariant, seed, unk, backdropType);
 	return 0;
 }
@@ -28,9 +28,9 @@ static int Lua_GridEntityHurtDamage(lua_State* L)
 {
 	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	Entity* entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	int damage = luaL_checkinteger(L, 3);
-	int damageFlags = luaL_checkinteger(L, 4);
-	float unk3 = luaL_checknumber(L, 5);
+	int damage = (int)luaL_checkinteger(L, 3);
+	int damageFlags = (int)luaL_checkinteger(L, 4);
+	float unk3 = (float)luaL_checknumber(L, 5);
 	bool unk4 = lua_toboolean(L, 6);
 	gridEnt->hurt_func(entity, damage, damageFlags, unk3, unk4);
 	return 0;
@@ -39,9 +39,9 @@ static int Lua_GridEntityHurtDamage(lua_State* L)
 static int Lua_GridEntityHurtSurroundings(lua_State* L)
 {
 	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	int damage = luaL_checkinteger(L, 2);
-	int damageFlags = luaL_checkinteger(L, 3);
-	float unk3 = luaL_checknumber(L, 4);
+	int damage = (int)luaL_checkinteger(L, 2);
+	int damageFlags = (int)luaL_checkinteger(L, 3);
+	float unk3 = (float)luaL_checknumber(L, 4);
 	bool unk4 = lua_toboolean(L, 5);
 	gridEnt->hurt_surroundings(damage, damageFlags, unk3, unk4);
 	return 0;
@@ -97,8 +97,8 @@ static int Lua_GridEntityRockUpdateNeighbors(lua_State* L)
 static int Lua_GridEntityRockPlayBreakSound(lua_State* L)
 {
 	GridEntity_Rock* gridEnt = lua::GetUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	int gridType = luaL_checkinteger(L, 2);
-	int backdrop = luaL_optinteger(L, 3, 0);
+	int gridType = (int)luaL_checkinteger(L, 2);
+	int backdrop = (int)luaL_optinteger(L, 3, 0);
 	gridEnt->PlayBreakSound(gridType, backdrop);
 	return 0;
 }
@@ -106,7 +106,7 @@ static int Lua_GridEntityRockPlayBreakSound(lua_State* L)
 static int Lua_GridEntityRockGetAltRockType(lua_State* L)
 {
 	GridEntity_Rock* gridEnt = lua::GetUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	int backdrop = luaL_optinteger(L, 2, 0);
+	int backdrop = (int)luaL_optinteger(L, 2, 0);
 	lua_pushinteger(L, gridEnt->GetAltRockType(backdrop));
 	return 1;
 }
@@ -114,7 +114,7 @@ static int Lua_GridEntityRockGetAltRockType(lua_State* L)
 static int Lua_GridEntityRockRegisterRockDestroyed(lua_State* L)
 {
 	GridEntity_Rock* gridEnt = lua::GetUserdata<GridEntity_Rock*>(L, 1, lua::Metatables::GRID_ENTITY_ROCK, "GridEntityRock");
-	int gridType = luaL_checkinteger(L, 2);
+	int gridType = (int)luaL_checkinteger(L, 2);
 	gridEnt->RegisterRockDestroyed(gridType);
 	return 0;
 }

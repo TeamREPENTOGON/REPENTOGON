@@ -35,7 +35,7 @@ int Lua_NPCGetControllerId(lua_State* L)
 int Lua_NPCSetControllerId(lua_State* L)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	int unk = lua_tonumber(L, 2);
+	int unk = (int)lua_tonumber(L, 2);
 
 	npc->SetControllerId(unk);
 	return 0;
@@ -44,7 +44,7 @@ int Lua_NPCSetControllerId(lua_State* L)
 LUA_FUNCTION(Lua_NPCTryForceTarget) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Entity* target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	int duration = luaL_checkinteger(L, 3);
+	int duration = (int)luaL_checkinteger(L, 3);
 
 	lua_pushboolean(L, npc->TryForceTarget(target, duration));
 	return 1;

@@ -17,8 +17,8 @@ static int Lua_GetProceduralItemManager(lua_State* L) {
 int Lua_PIMCreateProceduralItem(lua_State* L)
 {
 	ProceduralItemManager* pim = *lua::GetUserdata<ProceduralItemManager**>(L, 1, ProceduralItemManagerMT);
-	unsigned int seed = luaL_checkinteger(L, 2);
-	unsigned int unk = luaL_checkinteger(L, 3);
+	unsigned int seed = (unsigned int)luaL_checkinteger(L, 2);
+	unsigned int unk = (unsigned int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pim->CreateProceduralItem(seed, unk));
 	return 1;
 }

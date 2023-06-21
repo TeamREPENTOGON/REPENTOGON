@@ -19,7 +19,7 @@ static int Lua_GetDebugRenderer(lua_State* L)
 
 static int Lua_DebugRendererGet(lua_State* L) {
 	DebugRenderer* debugRenderer = *lua::GetUserdata<DebugRenderer**>(L, 1, DebugRendererMT);
-	int index = luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 2);
 	bool unk = lua_toboolean(L, 3);
 	Shape** ud = (Shape**)lua_newuserdata(L, sizeof(Shape*));
 	*ud = debugRenderer->Get(index, unk);
@@ -46,7 +46,7 @@ static int Lua_ShapeGetTimeout(lua_State* L) {
 
 static int Lua_ShapeSetTimeout(lua_State* L) {
 	Shape* shape = *lua::GetUserdata<Shape**>(L, 1, ShapeMT);
-	*shape->GetTimeout() = luaL_checkinteger(L, 2);
+	*shape->GetTimeout() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 

@@ -23,8 +23,8 @@ static int Lua_RoomTransitionGetVersusScreenSprite(lua_State* L) {
 
 static int Lua_RoomTransitionStartBossIntro(lua_State* L) {
 	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, RoomTransitionMT);
-	int bossID1 = luaL_checkinteger(L, 2);
-	int bossID2 = luaL_optinteger(L, 3, 0);
+	int bossID1 = (int)luaL_checkinteger(L, 2);
+	int bossID2 = (int)luaL_optinteger(L, 3, 0);
 
 	roomTransition->StartBossIntro(bossID1, bossID2);
 	return 0;

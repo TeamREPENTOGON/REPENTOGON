@@ -9,7 +9,7 @@ int Lua_EntityAddBleeding(lua_State* L)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	int duration = luaL_checkinteger(L, 3);
+	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddBleeding(*ref, duration);
 	return 0;
 }
@@ -18,7 +18,7 @@ int Lua_EntityAddMagnetized(lua_State* L)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	int duration = luaL_checkinteger(L, 3);
+	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddMagnetized(*ref, duration);
 	return 0;
 }
@@ -27,7 +27,7 @@ int Lua_EntityAddBaited(lua_State* L)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	int duration = luaL_checkinteger(L, 3);
+	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddBaited(*ref, duration);
 	return 0;
 }
@@ -36,7 +36,7 @@ int Lua_EntityAddWeakness(lua_State* L)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	int duration = luaL_checkinteger(L, 3);
+	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddWeakness(*ref, duration);
 	return 0;
 }
@@ -45,7 +45,7 @@ int Lua_EntityAddBrimstoneMark(lua_State* L)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	int duration = luaL_checkinteger(L, 3);
+	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddBrimstoneMark(*ref, duration);
 	return 0;
 }
@@ -54,7 +54,7 @@ int Lua_EntityAddIce(lua_State* L)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
-	int duration = luaL_checkinteger(L, 3);
+	int duration = (int)luaL_checkinteger(L, 3);
 	ent->AddIce(*ref, duration);
 	return 0;
 }
@@ -64,7 +64,7 @@ int Lua_EntityAddKnockback(lua_State* L)
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector"); //replace with const?
-	int duration = luaL_checkinteger(L, 4);
+	int duration = (int)luaL_checkinteger(L, 4);
 	bool unk = lua_toboolean(L, 5);
 	ent->AddKnockback(*ref, *pos, duration, unk);
 	return 0;
@@ -80,7 +80,7 @@ static int Lua_EntityGetShadowSize(lua_State* L)
 static int Lua_EntitySetShadowSize(lua_State* L)
 {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	float shadowSize = luaL_checknumber(L, 2);
+	float shadowSize = (float)luaL_checknumber(L, 2);
 	*entity->GetShadowSize() = shadowSize;
 	return 0;
 }
@@ -134,7 +134,7 @@ static int Lua_EntityGetBossStatusEffectCooldown(lua_State* L)
 static int Lua_EntitySetBossStatusEffectCooldown(lua_State* L)
 {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	int bossStatusEffectCooldown = luaL_checkinteger(L, 2);
+	int bossStatusEffectCooldown = (int)luaL_checkinteger(L, 2);
 	*entity->GetBossStatusEffectCooldown() = bossStatusEffectCooldown;
 	return 0;
 }

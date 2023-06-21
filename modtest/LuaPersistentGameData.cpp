@@ -20,7 +20,7 @@ static int Lua_GetPersistentGameData(lua_State* L) {
 int Lua_PGDTryUnlock(lua_State* L)
 {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
-	int unlock = luaL_checkinteger(L, 2);
+	int unlock = (int)luaL_checkinteger(L, 2);
 
 	bool success = pgd->TryUnlock(unlock);
 	lua_pushboolean(L, success);
@@ -30,7 +30,7 @@ int Lua_PGDTryUnlock(lua_State* L)
 int Lua_PGDUnlocked(lua_State* L)
 {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
-	int unlock = luaL_checkinteger(L, 2);
+	int unlock = (int)luaL_checkinteger(L, 2);
 
 	bool unlocked = pgd->Unlocked(unlock);
 	lua_pushboolean(L, unlocked);
@@ -40,12 +40,12 @@ int Lua_PGDUnlocked(lua_State* L)
 int Lua_PGDIncreaseEventCounter(lua_State* L)
 {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
-	int eventCounter = luaL_checkinteger(L, 2);
+	int eventCounter = (int)luaL_checkinteger(L, 2);
 
 	if (eventCounter > PGD_COUNTER_MAX)
 		luaL_error(L, "bad argument #2 to 'IncreaseEventCounter' (EventCounter cannot be higher than %d)", PGD_COUNTER_MAX);
 
-	int num = luaL_checkinteger(L, 3);
+	int num = (int)luaL_checkinteger(L, 3);
 
 	pgd->IncreaseEventCounter(eventCounter, num);
 
@@ -55,7 +55,7 @@ int Lua_PGDIncreaseEventCounter(lua_State* L)
 int Lua_PGDGetEventCounter(lua_State* L)
 {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
-	int eventCounter = luaL_checkinteger(L, 2);
+	int eventCounter = (int)luaL_checkinteger(L, 2);
 
 	if (eventCounter > PGD_COUNTER_MAX)
 		luaL_error(L, "bad argument #2 to 'GetEventCounter' (EventCounter cannot be higher than %d)", PGD_COUNTER_MAX);
@@ -68,7 +68,7 @@ int Lua_PGDGetEventCounter(lua_State* L)
 
 int Lua_PGDIsItemInCollection(lua_State* L) {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
-	int collectID = luaL_checkinteger(L, 2);
+	int collectID = (int)luaL_checkinteger(L, 2);
 
 	if (collectID > COLLECITBLE_MAX)
 		luaL_error(L, "bad argument #2 to 'IsItemInCollection' (CollectibleType cannot be higher than %d)", COLLECITBLE_MAX);
@@ -81,8 +81,8 @@ int Lua_PGDIsItemInCollection(lua_State* L) {
 int Lua_PGDGetBestiaryKillCount(lua_State* L)
 {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
-	int entType = luaL_checkinteger(L, 2);
-	int entVariant = luaL_checkinteger(L, 3);
+	int entType = (int)luaL_checkinteger(L, 2);
+	int entVariant = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pgd->GetBestiaryKillCount(entType, entVariant));
 	return 1;
 }
@@ -90,8 +90,8 @@ int Lua_PGDGetBestiaryKillCount(lua_State* L)
 int Lua_PGDGetBestiaryDeathCount(lua_State* L)
 {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
-	int entType = luaL_checkinteger(L, 2);
-	int entVariant = luaL_checkinteger(L, 3);
+	int entType = (int)luaL_checkinteger(L, 2);
+	int entVariant = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pgd->GetBestiaryDeathCount(entType, entVariant));
 	return 1;
 }

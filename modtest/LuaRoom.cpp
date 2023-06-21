@@ -8,8 +8,8 @@ static constexpr const char* RoomMT = "Room";
 
 static int Lua_RemoveGridEntityImmediate(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
-	int GridIndex = luaL_checkinteger(L, 2);
-	int PathTrail = luaL_checkinteger(L, 3);
+	int GridIndex = (int)luaL_checkinteger(L, 2);
+	int PathTrail = (int)luaL_checkinteger(L, 3);
 	bool KeepDecoration = lua_toboolean(L, 4);
 	room->RemoveGridEntityImmediate(GridIndex, PathTrail, KeepDecoration);
 	return 0;
@@ -17,9 +17,9 @@ static int Lua_RemoveGridEntityImmediate(lua_State* L) {
 
 static int Lua_RoomGetShopItemPrice(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
-	unsigned int entVariant = luaL_checkinteger(L, 2);
-	unsigned int entSubtype = luaL_checkinteger(L, 3);
-	int shopItemID = luaL_checkinteger(L, 4);
+	unsigned int entVariant = (unsigned int)luaL_checkinteger(L, 2);
+	unsigned int entSubtype = (unsigned int)luaL_checkinteger(L, 3);
+	int shopItemID = (int)luaL_checkinteger(L, 4);
 
 	lua_pushinteger(L, room->GetShopItemPrice(entVariant, entSubtype, shopItemID));
 	return 1;
@@ -33,13 +33,13 @@ static int Lua_RoomSetBackdrop(lua_State* L) {
 	}
 	lua_Integer changeDecoration = luaL_checkinteger(L, 3);
 	Backdrop* backdrop = room->GetBackdrop();
-	backdrop->Init(id, changeDecoration);
+	backdrop->Init((unsigned int)id, (unsigned int)changeDecoration);
 	return 0;
 }
 
 static int Lua_RoomCanSpawnObstacleAtPosition(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
-	int GridIndex = luaL_checkinteger(L, 2);
+	int GridIndex = (int)luaL_checkinteger(L, 2);
 	bool Force = lua_toboolean(L, 3);
 	lua_pushboolean(L, room->CanSpawnObstacleAtPosition(GridIndex, Force));
 	return 1;
@@ -56,7 +56,7 @@ int Lua_RoomGetWaterAmount(lua_State* L)
 int Lua_RoomSetWaterAmount(lua_State* L)
 {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
-	float amount = luaL_checknumber(L, 2);
+	float amount = (float)luaL_checknumber(L, 2);
 	*room->GetWaterAmount() = amount;
 
 	return 0;
@@ -164,7 +164,7 @@ static int lua_RoomSetRail(lua_State* L) {
 
 static int Lua_RoomCanPickupGridEntity(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
-	int gridIndex = luaL_checkinteger(L, 2);
+	int gridIndex = (int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, room->CanPickupGridEntity(gridIndex));
 	return 1;
 }
@@ -172,7 +172,7 @@ static int Lua_RoomCanPickupGridEntity(lua_State* L) {
 int Lua_RoomPickupGridEntity(lua_State* L)
 {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
-	int gridIndex = luaL_checkinteger(L, 2);
+	int gridIndex = (int)luaL_checkinteger(L, 2);
 	Entity_Effect* ent = room->PickupGridEntity(gridIndex);
 
 	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
@@ -183,8 +183,8 @@ int Lua_RoomPickupGridEntity(lua_State* L)
 int Lua_RoomGetGridIndexByTile(lua_State* L)
 {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
-	int gridRow  = luaL_checkinteger(L, 2);
-	int gridColumn = luaL_checkinteger(L, 3);
+	int gridRow  = (int)luaL_checkinteger(L, 2);
+	int gridColumn = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, room->GetGridIndexByTile(gridRow, gridColumn));
 
 	return 1;

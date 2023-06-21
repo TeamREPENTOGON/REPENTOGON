@@ -22,7 +22,7 @@ int Lua_WorldToMenuPosition(lua_State* L)
 		if (n != 2) {
 			return luaL_error(L, "Expected two parameters(MenuId,WorldPosition) got %d\n", n);
 		}
-		int menuid = luaL_checkinteger(L, 1);
+		int menuid = (int)luaL_checkinteger(L, 1);
 		Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 		Vector* ref = (Vector *)(g_MenuManager + 60); //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
 		ref = new Vector(ref->x + 39, ref->y + 15);

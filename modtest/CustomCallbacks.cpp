@@ -48,7 +48,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 				for (int i = 1; i <= 5; i++) {
 					lua_pushinteger(L, i);
 					lua_gettable(L, -2);
-					result[i - 1] = lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
+					result[i - 1] = (int)lua_tointeger(L, -1); //I only need ints here, otherwise I'd need to check the type
 					lua_pop(L, 1);
 				}
 				super(result[0], result[1], result[2], result[3], result[4]);
@@ -56,7 +56,7 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 			}
 			else if (lua_isinteger(L, -1))
 			{
-				super(lua_tointeger(L, -1), charge, firsttime, slot, vardata);
+				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata);
 				return;
 			}
 		}
@@ -468,14 +468,14 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				int tablesize = lua_rawlen(L, -1);
+				int tablesize = (int)lua_rawlen(L, -1);
 				if (tablesize == 2) {
 					super(lua::callbacks::ToInteger(L, 1), (float) lua::callbacks::ToNumber(L, 2));
 					return;
 				}
 			}
 			else if (lua_isinteger(L, -1)) {
-				super(lua_tointeger(L, -1), volume);
+				super((int)lua_tointeger(L, -1), volume);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
@@ -505,14 +505,14 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				int tablesize = lua_rawlen(L, -1);
+				int tablesize = (int)lua_rawlen(L, -1);
 				if (tablesize == 2) {
 					super(lua::callbacks::ToInteger(L, 1), (float) lua::callbacks::ToNumber(L, 2));
 					return;
 				}
 			}
 			else if (lua_isinteger(L, -1)) {
-				super(lua_tointeger(L, -1), faderate);
+				super((int)lua_tointeger(L, -1), faderate);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
@@ -693,7 +693,7 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				int tablesize = lua_rawlen(L, -1);
+				int tablesize = (int)lua_rawlen(L, -1);
 				if (tablesize == 4) {
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
@@ -770,7 +770,7 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				int tablesize = lua_rawlen(L, -1);
+				int tablesize = (int)lua_rawlen(L, -1);
 				if (tablesize == 6) {
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
@@ -944,7 +944,7 @@ HOOK_METHOD(Entity_Familiar, GetFollowerPriority, () -> int) {
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				return lua_tointeger(L, -1);
+				return (int)lua_tointeger(L, -1);
 			}
 
 		}
@@ -1041,7 +1041,7 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				return lua_tointeger(L, -1);
+				return (int)lua_tointeger(L, -1);
 			}
 		}
 	}
@@ -1064,7 +1064,7 @@ HOOK_METHOD(Entity_Player, GetHealthType, () -> int) {
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				return lua_tointeger(L, -1);
+				return (int)lua_tointeger(L, -1);
 			}
 		}
 	}
@@ -1494,7 +1494,7 @@ HOOK_METHOD(Entity_Player, GetActiveMaxCharge, (int item, int vardata) -> int) {
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				return lua_tointeger(L, -1);
+				return (int)lua_tointeger(L, -1);
 			}
 		}
 	}
@@ -1518,7 +1518,7 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				return lua_tointeger(L, -1);
+				return (int)lua_tointeger(L, -1);
 			}
 		}
 	}
@@ -1587,7 +1587,7 @@ HOOK_METHOD(Entity_Player, GetHealthLimit, (bool keeper) -> int) {
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				return lua_tointeger(L, -1);
+				return (int)lua_tointeger(L, -1);
 			}
 		}
 	}
@@ -1711,7 +1711,7 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 				}
 			}
 			else if (lua_isnumber(L, -1)) {
-				id = lua_tonumber(L, -1);
+				id = (int)lua_tonumber(L, -1);
 			}
 		}
 	}
@@ -1768,7 +1768,7 @@ HOOK_METHOD(ItemOverlay, Show, (int overlayID, int unk, Entity_Player* player) -
 				}
 			}
 			else if (lua_isnumber(L, -1)) {
-				overlayID = lua_tonumber(L, -1);
+				overlayID = (int)lua_tonumber(L, -1);
 			}
 		}
 	}
@@ -1912,7 +1912,7 @@ HOOK_METHOD(Room, GetLightingAlpha, () -> float) {
 			.call(1);
 
 		if (!result) {
-			return lua_tonumber(L, -1);
+			return (float)lua_tonumber(L, -1);
 		}
 	}
 	return originalAlpha;
@@ -1997,7 +1997,7 @@ HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCount
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				modCount = lua_tointeger(L, -1);
+				modCount = (int)lua_tointeger(L, -1);
 			}
 		}
 	}
@@ -2045,7 +2045,7 @@ HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> 
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				super(lua_tointeger(L, -1), unusedInt, unusedBool);
+				super((int)lua_tointeger(L, -1), unusedInt, unusedBool);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
@@ -2365,11 +2365,11 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 		}
 		else {
 			lua_rawgeti(L, -1, 1);
-			int level = lua_tointeger(L, -1);
+			int level = (int)lua_tointeger(L, -1);
 			lua_pop(L, 1);
 
 			lua_rawgeti(L, -1, 2);
-			int type = lua_tointeger(L, -1);
+			int type = (int)lua_tointeger(L, -1);
 			lua_pop(L, 1);
 
 			logViewer.AddLog("[REPENTOGON]", "MC_PRE_SELECT_LEVEL %d %d", level, type);

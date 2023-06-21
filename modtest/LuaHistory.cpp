@@ -16,7 +16,7 @@ static int Lua_PlayerGetHistory(lua_State* L)
 static int Lua_HistoryRemoveHistoryItemByIndex(lua_State* L)
 {
 	History* history = *lua::GetUserdata<History**>(L, 1, lua::metatables::HistoryMT);
-	int index = luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, history->RemoveHistoryItemByIndex(index));
 	return 1;
 }

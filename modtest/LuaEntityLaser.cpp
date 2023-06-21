@@ -15,7 +15,7 @@ static int Lua_EntityLaserGetScale(lua_State* L)
 static int Lua_EntityLaserSetScale(lua_State* L)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetScale() = luaL_checknumber(L, 2);
+	*laser->GetScale() = (float)luaL_checknumber(L, 2);
 	laser->ResetSpriteScale();
 
 	return 0;

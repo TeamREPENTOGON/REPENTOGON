@@ -21,19 +21,19 @@ static int Lua_RoomConfigHolderGetRoomByStageTypeAndVariant(lua_State* L) {
 	}
 
 	RoomConfigHolder* holder = *lua::GetUserdata<RoomConfigHolder**>(L, 1, RoomConfigHolderMT);
-	int stage = luaL_checkinteger(L, 2);
+	int stage = (int)luaL_checkinteger(L, 2);
 
 	if (stage < 0 || stage > 36) {
 		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
 	}
 
-	int type = luaL_checkinteger(L, 3);
+	int type = (int)luaL_checkinteger(L, 3);
 	if (type < 1 || type > 29) {
 		return luaL_error(L, "Type must be between 1 and 29 (both inclusive), got %d\n", type);
 	}
 
-	int variant = luaL_checkinteger(L, 4);
-	int difficulty = luaL_checkinteger(L, 5);
+	int variant = (int)luaL_checkinteger(L, 4);
+	int difficulty = (int)luaL_checkinteger(L, 5);
 	if (difficulty < -2 || difficulty > 1) {
 		difficulty = -1;
 	}

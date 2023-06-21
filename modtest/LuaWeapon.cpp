@@ -11,7 +11,7 @@ Weapon* WeaponData::GetWeaponFromLua(lua_State* L, int idx) {
 
 static int Lua_CreateWeapon(lua_State* L) {
 	WeaponData* ud = new (lua_newuserdata(L, sizeof(WeaponData))) WeaponData;
-	int wepType = luaL_checkinteger(L, 1);
+	int wepType = (int)luaL_checkinteger(L, 1);
 	Entity* ent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	ud->weapon = Isaac::CreateWeapon((WeaponType)wepType, ent);
 	luaL_setmetatable(L, lua::metatables::WeaponMT);
@@ -33,7 +33,7 @@ static int Lua_DestoryWeapon(lua_State* L) {
 
 static int Lua_PlayerGetWeapon(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int index = luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 2);
 	if (index < 0 || index > 4) {
 		return luaL_argerror(L, 2, "Index must be between 0 and 4");
 	}
@@ -84,7 +84,7 @@ static int Lua_WeaponGetFireDelay(lua_State* L) {
 
 static int Lua_WeaponSetFireDelay(lua_State* L) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	float delay = luaL_checknumber(L, 2);
+	float delay = (float)luaL_checknumber(L, 2);
 	*weapon->GetCharge() = delay;
 	return 0;
 }
@@ -103,7 +103,7 @@ static int Lua_WeaponGetCharge(lua_State* L) {
 
 static int Lua_WeaponSetCharge(lua_State* L) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	float charge = luaL_checknumber(L, 2);
+	float charge = (float)luaL_checknumber(L, 2);
 	*weapon->GetCharge() = charge;
 	return 0;
 }
@@ -137,10 +137,10 @@ static int Lua_WeaponGetNumFired(lua_State* L) {
 
 static int Lua_WeaponPlayItemAnim(lua_State* L) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	unsigned int itemID = luaL_checkinteger(L, 2);
-	int anim = luaL_checkinteger(L, 3);
+	unsigned int itemID = (unsigned int)luaL_checkinteger(L, 2);
+	int anim = (int)luaL_checkinteger(L, 3);
 	const Vector* position = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
-	float charge = luaL_checknumber(L, 5);
+	float charge = (float)luaL_checknumber(L, 5);
 	weapon->PlayItemAnim(itemID, anim, *position, charge);
 	return 0;
 }
@@ -153,21 +153,21 @@ static int Lua_WeaponIsAxisAligned(lua_State* L) {
 
 static int Lua_WeaponIsItemAnimFinished(lua_State* L) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	unsigned int item = luaL_checkinteger(L, 2);
+	unsigned int item = (unsigned int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, weapon->IsItemAnimFinished(item));
 	return 1;
 }
 
 static int Lua_WeaponClearItemAnim(lua_State* L) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	unsigned int item = luaL_checkinteger(L, 2);
+	unsigned int item = (unsigned int)luaL_checkinteger(L, 2);
 	weapon->ClearItemAnim(item);
 	return 0;
 }
 
 static int Lua_WeaponSetHeadLockTime(lua_State* L) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	unsigned int time = luaL_checkinteger(L, 2);
+	unsigned int time = (unsigned int)luaL_checkinteger(L, 2);
 	weapon->SetHeadLockTime(time);
 	return 0;
 }

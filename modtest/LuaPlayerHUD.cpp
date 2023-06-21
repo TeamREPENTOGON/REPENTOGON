@@ -7,7 +7,7 @@
 static int Lua_GetPlayerHUD(lua_State* L) {
 	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	PlayerHUD** ud = (PlayerHUD**)lua_newuserdata(L, sizeof(PlayerHUD*));
-	int index = luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 2);
 	*ud = hud->GetPlayerHUD(index);
 	luaL_setmetatable(L, lua::metatables::PlayerHUDMT);
 	return 1;
@@ -27,10 +27,10 @@ static int Lua_PlayerHUDGetPlayer(lua_State* L) {
 
 static int Lua_PlayerHUDRenderActiveItem(lua_State* L) {
 	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
-	unsigned int slot = luaL_checkinteger(L, 2);
+	unsigned int slot = (unsigned int)luaL_checkinteger(L, 2);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	float alpha = luaL_optnumber(L, 4, 1.0);
-	float unk = luaL_optnumber(L, 5, 1.0);
+	float alpha = (float)luaL_optnumber(L, 4, 1.0);
+	float unk = (float)luaL_optnumber(L, 5, 1.0);
 
 	playerHUD->RenderActiveItem(slot, *pos, alpha, unk);
 	return 0;
