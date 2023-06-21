@@ -2,6 +2,7 @@
 #include "ConsoleMega.h"
 #include "CustomImGui.h"
 #include "HookSystem.h"
+#include "HelpMenu.h"
 #include "IsaacRepentance.h"
 #include "LogViewer.h"
 #include "SigScan.h"
@@ -24,6 +25,7 @@ WNDPROC windowProc;
 bool menuShown = false;
 static bool imguiInitialized = false;
 
+HelpMenu helpMenu;
 LogViewer logViewer;
 ConsoleMega console;
 CustomImGui customImGui;
@@ -96,6 +98,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
                 ImGui::EndMenu();
             }
             customImGui.DrawMenu();
+            helpMenu.Draw();
+
             ImGui::EndMainMenuBar();
         }
 
