@@ -62,8 +62,15 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         ImGui::GetStyle().AntiAliasedLines = false;
         ImGui::GetStyle().FrameRounding = 4.0f; // rounded edges (default was 0)
         ImGui::GetStyle().FramePadding.x = 6.0f; // more padding inside of objects to prevent ugly text clipping (default was 4)
-        ImGui::CaptureMouseFromApp();
         ImGui::GetStyle().WindowTitleAlign = ImVec2(0.5f, 0.5f);
+
+        ImGuiIO& io = ImGui::GetIO();
+        // mouse, keyboard and gamepad support
+        io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
+        io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
+        ImGui::CaptureMouseFromApp();
+        ImGui::CaptureKeyboardFromApp();
+
         imguiInitialized = true;
         logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui\n");
         printf("[REPENTOGON] Dear ImGui initialized! Any further logs can be seen in the in-game log viewer.\n");
