@@ -548,21 +548,63 @@ struct ConsoleMega {
                             }
 
                             case CURSE: {
-                                // Not sure if modded curses show up in the vanilla menu, but this is better than nothing in the meantime.
-                                // TODO Would be sick if we did our own bitwise calculation and displayed the result
-                                entries = {
-                                    AutocompleteEntry("0", "None"),
-                                    AutocompleteEntry("1", "Darkness"),
-                                    AutocompleteEntry("2", "Labyrinth"),
-                                    AutocompleteEntry("4", "Lost"),
-                                    AutocompleteEntry("8", "Unknown"),
-                                    AutocompleteEntry("16", "Cursed"),
-                                    AutocompleteEntry("32", "Maze"),
-                                    AutocompleteEntry("64", "Blind"),
-                                    AutocompleteEntry("128", "Giant"),
-                                };
+                                XMLNodes curses = XMLStuff.CurseData->nodes;
+                                for (auto node : curses) {
+                                    int id = node.first;
+                                    std::string name = node.second["name"];
+                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                }
 
-                                break;
+                                // This is a cut-down version of the parsing the other commands do.
+                                // We handle this ourselves to do bitwise calculation later.
+                                for (AutocompleteEntry entry : entries) {
+                                    entry.autocompleteText = cmdlets.front() + " " + entry.autocompleteText;
+                                    std::string lowerDescBuf;
+
+                                    for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
+                                        lowerDescBuf += *it;
+                                        if (it != cmdlets.end() - 1) {
+                                            lowerDescBuf += " ";
+                                        }
+                                    }
+
+                                    std::transform(lowerDescBuf.begin(), lowerDescBuf.end(), lowerDescBuf.begin(),
+                                        [](unsigned char c) { return std::tolower(c); });
+
+
+                                    std::string lowerDesc = entry.autocompleteDesc;
+                                    std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
+                                        [](unsigned char c) { return std::tolower(c); });
+
+                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
+                                        autocompleteBuffer.push_back(entry);
+                                    }
+                                }
+
+                                // If no result, let's calculate ourselves to give a preview of what curses this command will activate
+                                if (autocompleteBuffer.empty() && cmdlets.size() == 2) {
+                                    long mask;
+                                    std::string calcCurses;
+
+                                    try {
+                                        mask = std::stoi(cmdlets[1]);
+                                    }
+                                    catch (std::invalid_argument& err) {
+                                        return 0;
+                                    }
+
+                                    for (auto node : curses) {
+                                        int id = node.first;
+                                        if ((mask & id) != 0) {
+                                            if (!calcCurses.empty())
+                                                calcCurses = calcCurses + " + ";
+                                            calcCurses = calcCurses + node.second["name"];
+                                        }
+                                    }
+                                    autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + std::to_string(mask), calcCurses));
+                                }
+
+                                return 0;
                             }
 
                             case METRO: {
