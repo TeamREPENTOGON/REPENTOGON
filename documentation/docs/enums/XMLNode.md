@@ -25,3 +25,4 @@ tags:
 |17 |LOCUST {: .copyable } |  |
 |18 |LOCUSTCOLOR {: .copyable } |  |
 |19 |BOMBCOSTUME {: .copyable } |  |
+|20 |CRAFTINGRECIPE {: .copyable } |  |

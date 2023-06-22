@@ -167,6 +167,7 @@ public:
 	XMLNodeIdxLookup locusts;
 	XMLNodeIdxLookup locustcolors;
 	XMLNodeIdxLookup curses;
+	XMLNodeIdxLookup recipes;
 
 	void Clear() {
 		nodes.clear();
@@ -195,6 +196,7 @@ public:
 		locusts.clear();
 		locustcolors.clear();
 		curses.clear();
+		recipes.clear();
 		maxid = 0;
 	
 	}
@@ -220,6 +222,10 @@ public:
 	}
 };
 
+
+class XMLRecipe : public XMLDataHolder {
+
+};
 
 class XMLWisp : public XMLDataHolder {
 
@@ -396,6 +402,7 @@ struct XMLData {
 	XMLNullCostume* NullCostumeData = new XMLNullCostume(130);
 	XMLBombCostume* BombCostumeData = new XMLBombCostume(19);
 	XMLCurse* CurseData = new XMLCurse(1);
+	XMLRecipe* RecipeData = new XMLRecipe();
 
 	XMLMod* ModData = new XMLMod();
 

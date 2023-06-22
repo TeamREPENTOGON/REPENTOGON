@@ -676,6 +676,44 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.ModData->challenges[lastmodid] += 1;
 		}
 	}
+	else if ((strcmp(nodename, "recipes") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes recipe;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				recipe[stringlower(attr->name())] = string(attr->value());
+			}
+			//if ((challenge.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+				//id = toint(challenge["id"]);
+			//}
+			//else {
+				//if (challenge.count("id") > 0) { challenge["relativeid"] = challenge["id"]; }
+				XMLStuff.RecipeData->maxid = XMLStuff.RecipeData->maxid + 1;
+				recipe["id"] = to_string(XMLStuff.RecipeData->maxid);
+				id = XMLStuff.RecipeData->maxid;
+			//}
+			if (id > XMLStuff.RecipeData->maxid) {
+				XMLStuff.RecipeData->maxid = id;
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				recipe[stringlower(attr->name())] = attr->value();
+			}
+			if (recipe.count("input") > 0) { recipe["name"] = recipe["input"]; };
+			recipe["sourceid"] = lastmodid;
+			if (recipe.count("relativeid") > 0) { XMLStuff.RecipeData->byrelativeid[lastmodid + recipe["relativeid"]] = id; }
+			XMLStuff.RecipeData->ProcessChilds(auxnode, id);
+			XMLStuff.RecipeData->bynamemod[recipe["name"] + lastmodid] = id;
+			XMLStuff.RecipeData->bymod[lastmodid].push_back(id);
+			XMLStuff.RecipeData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.RecipeData->byname[recipe["name"]] = id;
+			XMLStuff.RecipeData->nodes[id] = recipe;
+			XMLStuff.ModData->recipes[lastmodid] += 1;
+		}
+	}
 	else if ((strcmp(nodename, "wisps") == 0)) {
 		xml_node<char>* daddy = node;
 		int id = 1;
@@ -1467,6 +1505,10 @@ int Lua_GetEntryByNameXML(lua_State* L)
 		Node = XMLStuff.BombCostumeData->GetNodeByName(entityname);
 		Childs = XMLStuff.BombCostumeData->childs[XMLStuff.BombCostumeData->byname[entityname]];
 		break;
+	case 20:
+		Node = XMLStuff.RecipeData->GetNodeByName(entityname);
+		Childs = XMLStuff.BombCostumeData->childs[XMLStuff.RecipeData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -1511,7 +1553,36 @@ int getLineNumber(const char* data, const char* errorOffset) {
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	try {
-		super(xmldata);
+		string a = stringlower((char*)string(xmldata).substr(0, 60).c_str());
+		string xml = string(xmldata);
+		if (a.find("<reci") < 50) {
+			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
+			smatch match;
+			auto words_begin = std::sregex_iterator(xml.begin(), xml.end(), regexPattern);
+			auto words_end = std::sregex_iterator();
+
+			for (std::sregex_iterator it = words_begin; it != words_end; ++it) {
+				string itemname = (*it)[1].str();
+				printf("itemname: %s \n", itemname.c_str());
+				size_t pos = 0;
+				try {
+					int itemid = stoi(itemname);
+				}
+				catch (exception ex) {
+					string itemid = to_string(XMLStuff.ItemData->byname[itemname]);
+					while ((pos = xml.find(itemname, pos)) != std::string::npos) {
+						xml.replace(pos, itemname.length(), itemid);
+						pos += itemname.length();
+					}
+				}
+
+			}
+			char* s = new char[xml.length() + 1];
+			std::strcpy(s, xml.c_str());
+			super(s);
+		}else{
+			super(xmldata);
+		}
 	}
 	catch (rapidxml::parse_error err) {
 		int lineNumber = getLineNumber(xmldata, err.where<char>());
@@ -1561,6 +1632,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (a.find("<wis") < 50) { 
 			a = "<wisps gfxroot=\"gfx/familiar/wisps/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </wisps>";
+		}
+		else if (a.find("<reci") < 50) {
+			a = "<recipes xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </recipes>";
 		}
 		else if (a.find("<whis") < 50) { //typo
 			a = "<wisps gfxroot=\"gfx/familiar/wisps/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </wisps>";
