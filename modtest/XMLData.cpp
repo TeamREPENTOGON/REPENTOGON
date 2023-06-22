@@ -1563,7 +1563,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 
 			for (std::sregex_iterator it = words_begin; it != words_end; ++it) {
 				string itemname = (*it)[1].str();
-				printf("itemname: %s \n", itemname.c_str());
+				//printf("itemname: %s \n", itemname.c_str());
 				size_t pos = 0;
 				try {
 					int itemid = stoi(itemname);
