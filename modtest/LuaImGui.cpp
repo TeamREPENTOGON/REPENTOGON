@@ -668,6 +668,31 @@ static int Lua_GetMousePos(lua_State* L)
     return 1;
 }
 
+static int Lua_AddInputController(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    MiscData data = MiscData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    int stackID = CheckAndSetCallback(L, 5);
+    data.defaultKeyboardKey = (int)luaL_optinteger(L, 6, 0);
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::InputController);
+
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    if (lua_isfunction(L, 5)) {
+        imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+    }
+    return 1;
+}
 extern bool menuShown;
 static int Lua_ImGuiShow(lua_State* L)
 {
@@ -759,6 +784,7 @@ static void RegisterCustomImGui(lua_State* L)
         { "AddInputTextMultiline", Lua_AddInputTextMultiline },
         { "AddTabBar", Lua_AddTabBar },
         { "AddTab", Lua_AddTab },
+        { "AddInputController", Lua_AddInputController },
         { "SetTooltip", Lua_SetTooltip },
         { "SetHelpmarker", Lua_SetHelpmarker },
         { "GetMousePosition", Lua_GetMousePos },

@@ -1,8 +1,8 @@
 #include "ASMPatcher.hpp"
 #include "ConsoleMega.h"
 #include "CustomImGui.h"
-#include "HookSystem.h"
 #include "HelpMenu.h"
+#include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LogViewer.h"
 #include "SigScan.h"
@@ -36,6 +36,45 @@ int handleWindowFlags(int flags)
     if (!menuShown)
         flags = flags | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs;
     return flags;
+}
+
+std::list<ImGuiKey>* GetPressedKeys()
+{
+    std::list<ImGuiKey>* keys = new std::list<ImGuiKey>();
+    for (ImGuiKey key = ImGuiKey_Tab; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) {
+        if (!ImGui::IsKeyDown(key))
+            continue;
+        keys->push_back(key);
+    }
+    return keys;
+}
+
+bool wasChangeButtonPressed = false;
+ImGuiKey AddChangeGamepadButton()
+{
+    if (ImGui::Button("Change")) {
+        wasChangeButtonPressed = true;
+    }
+
+    if (wasChangeButtonPressed && ImGui::BeginTooltip()) {
+        ImGui::SetWindowFocus();
+        ImGui::Text("Press a button on your controller.");
+        ImGui::Text("Press ESC to cancel input");
+
+        std::list<ImGuiKey>* keys = GetPressedKeys();
+        for (auto key = keys->begin(); key != keys->end(); ++key) {
+            if (*key >= static_cast<int>(ImGuiKey_GamepadStart) && *key <= static_cast<int>(ImGuiKey_GamepadRStickDown)) {
+                wasChangeButtonPressed = false;
+                return *key;
+            }
+            if (*key == static_cast<int>(ImGuiKey_Escape)) {
+                wasChangeButtonPressed = false;
+                return ImGuiKey_None;
+            }
+        }
+        ImGui::EndTooltip();
+    }
+    return ImGuiKey_None;
 }
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -137,3 +176,4 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
 }
 
 extern int handleWindowFlags(int flags);
+extern ImGuiKey AddChangeGamepadButton();

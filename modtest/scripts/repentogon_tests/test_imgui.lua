@@ -76,6 +76,8 @@ imgui:AddInputText("catInput", "inputTextwHint", "text input w hint", function(v
 imgui:AddInputTextMultiline("catInput", "inputTextMulti", "Multiline text input", function(val) print(val) end,
     "Some\nCool text with linebreaks\nAnd Stuff", 7)
 
+imgui:AddInputController("catInput", "controllerInput", "Controller Input", function(keyID, keyName) print(keyID, keyName) end, 0)
+
 --------- Tab Testing ---------
 imgui:AddTabBar("testWindow2", "tabBar1")
 imgui:AddTab("tabBar1", "tab1", "Tab 1")
@@ -86,6 +88,7 @@ imgui:AddTab("tabBar1", "tab3", "Tab 3")
 imgui:AddElement("tab3", "", ImGuiElement.Text, "This is tab 3")
 
 imgui:AddElement("testWindow2", "", ImGuiElement.Separator)
+
 --------- Render callback ---------
 imgui:AddElement("testWindow2", "mousePosText", ImGuiElement.Text, "")
 imgui:AddCallback("mousePosText", ImGuiCallback.Render, function(val)

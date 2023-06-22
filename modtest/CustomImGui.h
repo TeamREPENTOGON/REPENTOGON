@@ -8,6 +8,7 @@
 #include "LuaCore.h"
 
 extern int handleWindowFlags(int flags);
+extern ImGuiKey AddChangeGamepadButton();
 
 enum class IMGUI_ELEMENT {
     Window,
@@ -37,7 +38,8 @@ enum class IMGUI_ELEMENT {
     Combobox,
     InputText,
     InputTextWithHint,
-    InputTextMultiline
+    InputTextMultiline,
+    InputController
 };
 
 enum class IMGUI_CALLBACK {
@@ -70,6 +72,7 @@ struct MiscData : Data {
     std::list<std::string>* values = new std::list<std::string>(); // used for RadioButtons and Combobox
     std::string inputText = ""; // Used for Text input
     std::string hintText = ""; // Used for Text input
+    int defaultKeyboardKey = 0;
     float lineCount = 6;
 
     const char* getCurrentValue()
@@ -258,9 +261,56 @@ struct Element {
         case IMGUI_ELEMENT::InputTextMultiline:
             caller->push(miscData.inputText.c_str());
             break;
+        case IMGUI_ELEMENT::InputController:
+            caller->push(ImGuiToIsaacController(static_cast<ImGuiKey>(miscData.defaultKeyboardKey)));
+            caller->push(ImGui::GetKeyName(static_cast<ImGuiKey>(miscData.defaultKeyboardKey)));
+            break;
         default:
             caller->push((float)data.clickCounter);
             break;
+        }
+    }
+    int ImGuiToIsaacController(ImGuiKey key)
+    {
+        switch (key) {
+        case ImGuiKey_GamepadLStickLeft:
+        case ImGuiKey_GamepadDpadLeft:
+            return 0; // ACTION_LEFT
+        case ImGuiKey_GamepadLStickRight:
+        case ImGuiKey_GamepadDpadRight:
+            return 1; // ACTION_RIGHT
+        case ImGuiKey_GamepadLStickUp:
+        case ImGuiKey_GamepadDpadUp:
+            return 2; // ACTION_UP
+        case ImGuiKey_GamepadLStickDown:
+        case ImGuiKey_GamepadDpadDown:
+            return 3; // ACTION_DOWN
+        case ImGuiKey_GamepadRStickLeft:
+        case ImGuiKey_GamepadFaceLeft:
+            return 4; // ACTION_SHOOTLEFT
+        case ImGuiKey_GamepadRStickRight:
+        case ImGuiKey_GamepadFaceRight:
+            return 5; // ACTION_SHOOTRIGHT
+        case ImGuiKey_GamepadRStickUp:
+        case ImGuiKey_GamepadFaceUp:
+            return 6; // ACTION_SHOOTUP
+        case ImGuiKey_GamepadRStickDown:
+        case ImGuiKey_GamepadFaceDown:
+            return 7; // ACTION_SHOOTDOWN
+        case ImGuiKey_GamepadL1:
+            return 8; // ACTION_BOMB
+        case ImGuiKey_GamepadL2:
+            return 9; // ACTION_ITEM
+        case ImGuiKey_GamepadR1:
+            return 10; // ACTION_PILLCARD
+        case ImGuiKey_GamepadR2:
+            return 11; // ACTION_DROP
+        case ImGuiKey_GamepadStart:
+            return 12; // ACTION_PAUSE
+        case ImGuiKey_GamepadBack:
+            return 13; // ACTION_MAP
+        default:
+            return -1;
         }
     }
 
@@ -889,6 +939,28 @@ struct CustomImGui {
                     MiscData* data = element->GetMiscData();
                     StringInputTextMultiline(name, &data->inputText, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * data->lineCount), NULL, NULL, NULL);
                     RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::InputController:
+                if (element->GetMiscData() != nullptr) {
+                    MiscData* data = element->GetMiscData();
+                    if (data->inputText.empty())
+                        data->inputText = std::string(ImGui::GetKeyName(static_cast<ImGuiKey>(data->defaultKeyboardKey)));
+
+                    ImGuiKey newButton = AddChangeGamepadButton();
+                    if (newButton != ImGuiKey_None) {
+                        data->inputText = ImGui::GetKeyName(newButton);
+                        data->defaultKeyboardKey = static_cast<int>(newButton);
+                        // workaround: manually trigger Edited events
+                        for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
+                            if (callback->first == IMGUI_CALLBACK::Edited) {
+                                RunCallback(&(*element), callback->second);
+                            }
+                        }
+                    }
+                    ImGui::SameLine();
+                    ImGui::PushItemWidth(-300);
+                    StringInputText(name, &data->inputText, ImGuiInputTextFlags_ReadOnly, NULL, NULL);
                 }
                 break;
             default:
