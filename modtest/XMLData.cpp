@@ -1655,6 +1655,7 @@ char * BuildModdedBosspoolsXML(char * xml) {
 			xml_document<char> xmldoc;
 			char* zeroTerminatedStr = new char[strlen(xml) + 1];
 			strcpy(zeroTerminatedStr, xml);
+			try {
 			xmldoc.parse<0>(zeroTerminatedStr);
 			
 			xml_node<char>* root = xmldoc.first_node();
@@ -1669,9 +1670,17 @@ char * BuildModdedBosspoolsXML(char * xml) {
 						node[stringlower(attr->name())] = string(attr->value());
 					}
 					xml_node<char>* tocopy = find_child(root, auxnode->name(), "name",node["name"]);
-					for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
-						xml_node<char>* clonedNode = xmldoc.clone_node(auxchild);
-						tocopy->append_node(clonedNode);
+					if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
+						printf("newnode");
+						xml_node<char>* clonedNode = xmldoc.clone_node(auxnode);
+						root->append_node(clonedNode);
+						printf("newnode done");
+					}
+					else {
+						for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+							xml_node<char>* clonedNode = xmldoc.clone_node(auxchild);
+							tocopy->append_node(clonedNode);
+						}
 					}
 				}
 			}
@@ -1681,6 +1690,14 @@ char * BuildModdedBosspoolsXML(char * xml) {
 			string modifiedXml = modifiedXmlStream.str();
 			std::strcpy(xml, modifiedXml.c_str());
 			delete[] zeroTerminatedStr; 
+			}
+			catch (exception ex) {
+				string reason = ex.what();
+				string error = "[XMLError] " + reason + " in " + dir + "\\content\\bosspools.xml ";
+				g_Game->GetConsole()->PrintError(error);
+				KAGE::LogMessage(3, (error + "\n").c_str());
+				printf("%s \n", error.c_str());
+			}
 		}
 	}	
 	//printf(xml);
