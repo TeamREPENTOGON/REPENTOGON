@@ -5,7 +5,7 @@ __thiscall int Entity_Familiar::GetFollowerPriority();
 __thiscall void Entity_Familiar::Render(Vector *offset);
 
 "558bec83e4f081ec48010000a1":
-__thiscall bool Entity_Familiar::handle_collision(Entity *collider, bool low);
+__thiscall bool Entity_Familiar::HandleCollision(Entity* collider, bool low);
 
 struct Entity_Familiar : public Entity {
 {{

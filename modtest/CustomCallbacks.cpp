@@ -268,14 +268,52 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 }
 //SFX_PRE/POST_PLAY callbacks end
 
-// PRE/POST_X_COLLISION callbacks
+// PRE/POST_X_COLLISION callbacks START
+struct CollisionInputs {
+	Entity* entity;
+	Entity* collider;
+	bool low;
+
+	lua::Metatables vanilla_metatable = lua::Metatables::ENTITY;
+	const char* luabridge_metatable = nullptr;
+
+	void SetMetatable(const lua::Metatables metatable) {
+		vanilla_metatable = metatable;
+	}
+	void SetMetatable(const char* metatable) {
+		luabridge_metatable = metatable;
+	}
+};
+
 struct PreCollisionResult {
 	bool skip_internal_code = false;
 	std::optional<bool> override_result = std::nullopt;
 };
 
-// New PRE_X_COLLISION
-PreCollisionResult ProcessPreCollisionCallback(const int callbackid, const lua::Metatables entity_metatable, const int discriminator, Entity* entity, Entity* collider, bool low) {
+// Runs either a PRE_X_COLLISION or POST_X_COLLISION callback (they push the same parameters).
+lua::LuaResults RunCollisionCallback(const CollisionInputs& inputs, const int callbackid, lua_State* L) {
+	int discriminator = *inputs.entity->GetVariant();
+	if (inputs.vanilla_metatable == lua::Metatables::ENTITY_NPC) {
+		discriminator = *inputs.entity->GetType();
+	}
+	else if (inputs.vanilla_metatable == lua::Metatables::ENTITY_KNIFE) {
+		discriminator = *inputs.entity->GetSubType();
+	}
+
+	lua::LuaCaller& lua_caller = lua::LuaCaller(L).push(callbackid).push(discriminator);
+	if (inputs.luabridge_metatable != nullptr) {
+		lua_caller.pushLuabridge(inputs.entity, inputs.luabridge_metatable);
+	}
+	else {
+		lua_caller.push(inputs.entity, inputs.vanilla_metatable);
+	}
+	return lua_caller.push(inputs.collider, lua::Metatables::ENTITY)
+		.push(inputs.low)
+		.call(1);
+}
+
+// New PRE_X_COLLISION code with table return functionality.
+PreCollisionResult ProcessPreCollisionCallback(const CollisionInputs& inputs, const int callbackid) {
 	PreCollisionResult result;
 
 	if (CallbackState.test(callbackid - 1000)) {
@@ -284,12 +322,7 @@ PreCollisionResult ProcessPreCollisionCallback(const int callbackid, const lua::
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackid)
-			.push(discriminator)
-			.push(entity, entity_metatable)
-			.push(collider, lua::Metatables::ENTITY)
-			.push(low)
-			.call(1);
+		lua::LuaResults lua_result = RunCollisionCallback(inputs, callbackid, L);
 
 		if (!lua_result) {
 			if (lua_isboolean(L, -1)) {
@@ -321,41 +354,52 @@ PreCollisionResult ProcessPreCollisionCallback(const int callbackid, const lua::
 }
 
 // POST_X_COLLISION
-void ProcessPostCollisionCallback(const int callbackid, const lua::Metatables entity_metatable, const int discriminator, Entity* entity, Entity* collider, bool low) {
+void ProcessPostCollisionCallback(const CollisionInputs& inputs, const int callbackid) {
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
-
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(callbackid)
-			.push(discriminator)
-			.push(entity, entity_metatable)
-			.push(collider, lua::Metatables::ENTITY)
-			.push(low)
-			.call(1);
+		RunCollisionCallback(inputs, callbackid, L);
 	}
 }
 
-// PRE/POST_FAMILIAR_COLLISION (1140/1141)
-HOOK_METHOD(Entity_Familiar, handle_collision, (Entity* collider, bool low) -> bool) {
-	const lua::Metatables entity_metatable = lua::Metatables::ENTITY_FAMILIAR;
-	const int discriminator = *this->GetVariant();
-
-	const PreCollisionResult pre_collision_result = ProcessPreCollisionCallback(1140, entity_metatable, discriminator, this, collider, low);
+// Handles both PRE_X_COLLISION and POST_X_COLLISION and decides whether or not to collide/execute the internal collision code.
+bool HandleCollisionCallbacks(const CollisionInputs& inputs, const int precallbackid, const int postcallbackid, std::function<bool(Entity*, bool)> super_lambda) {
+	const PreCollisionResult pre_collision_result = ProcessPreCollisionCallback(inputs, precallbackid);
 
 	bool result = false;
 
 	if (!pre_collision_result.skip_internal_code) {
-		result = super(collider, low);
-		ProcessPostCollisionCallback(1141, entity_metatable, discriminator, this, collider, low);
+		// Call the internal collision code.
+		result = super_lambda(inputs.collider, inputs.low);
+		// Only run POST_X_COLLISION if the internal collision code ran.
+		ProcessPostCollisionCallback(inputs, postcallbackid);
 	}
 	if (pre_collision_result.override_result.has_value()) {
 		result = *pre_collision_result.override_result;
 	}
 	return result;
 }
-// PRE/POST_X_COLLISION callbacks end
+
+// "super" is wrapped into a lambda so that I can share the logic for all the collision callbacks without shoving it all into the macro.
+#define _COLLISION_SUPER_LAMBDA() [this](Entity* collider, bool low) { return super(collider, low); }
+#define HOOK_COLLISION_CALLBACKS(_type, _metatable, _precallback, _postcallback) \
+HOOK_METHOD(_type, HandleCollision, (Entity* collider, bool low) -> bool) { \
+	CollisionInputs inputs = {this, collider, low}; \
+	inputs.SetMetatable(_metatable); \
+	return HandleCollisionCallbacks(inputs, _precallback, _postcallback, _COLLISION_SUPER_LAMBDA()); \
+}
+
+HOOK_COLLISION_CALLBACKS(Entity_Player, lua::Metatables::ENTITY_PLAYER, 1230, 1231)
+HOOK_COLLISION_CALLBACKS(Entity_Tear, lua::Metatables::ENTITY_TEAR, 1232, 1233)
+HOOK_COLLISION_CALLBACKS(Entity_Familiar, lua::Metatables::ENTITY_FAMILIAR,	1234, 1235)
+HOOK_COLLISION_CALLBACKS(Entity_Bomb, lua::Metatables::ENTITY_BOMB, 1236, 1237)
+HOOK_COLLISION_CALLBACKS(Entity_Pickup, lua::Metatables::ENTITY_PICKUP, 1238, 1239)
+HOOK_COLLISION_CALLBACKS(Entity_Slot, lua::metatables::EntitySlotMT, 1240, 1241)
+HOOK_COLLISION_CALLBACKS(Entity_Knife, lua::Metatables::ENTITY_KNIFE, 1242, 1243)
+HOOK_COLLISION_CALLBACKS(Entity_Projectile, lua::Metatables::ENTITY_PROJECTILE, 1244, 1245)
+HOOK_COLLISION_CALLBACKS(Entity_NPC, lua::Metatables::ENTITY_NPC, 1246, 1247)
+// PRE/POST_X_COLLISION callbacks END
 
 //PRE/POST_ENTITY_THROW (1040/1041)
 void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {
@@ -1592,31 +1636,6 @@ HOOK_METHOD(Entity_Player, GetHealthLimit, (bool keeper) -> int) {
 		}
 	}
 	return super(keeper);
-}
-
-//PRE_SLOT_COLLIDE (1120)
-HOOK_METHOD(Entity_Slot, HandleCollision, (Entity* collider, bool Low) -> bool) {
-	int callbackid = 1120;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(*this->GetVariant())
-			.pushLuabridge(this, lua::metatables::EntitySlotMT)
-			.push(collider, lua::Metatables::ENTITY)
-			.push(Low)
-			.call(1);
-
-		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				return lua_toboolean(L, -1);
-			}
-		}
-	}
-	return super(collider, Low);
 }
 
 //POST_SLOT_INIT (1121)

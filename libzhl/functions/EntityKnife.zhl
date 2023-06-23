@@ -1,6 +1,9 @@
 "558bec83e4f881ece000000056":
 __thiscall void Entity_Knife::Render(Vector *offset);
 
+"558bec83e4f081ece8000000a1????????33c4898424????????56":
+__thiscall bool Entity_Knife::HandleCollision(Entity* collider, bool low);
+
 struct Entity_Knife : public Entity {
 
 };
