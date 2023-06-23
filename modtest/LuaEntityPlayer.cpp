@@ -532,6 +532,15 @@ static int Lua_PlayerSetWeapon(lua_State* L) {
 	return 0;
 }
 
+static int Lua_PlayerAddLocust(lua_State* L) {
+	Entity_Player* ent = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	int collectibleType = (int)luaL_checkinteger(L, 2);
+	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Isaac::SpawnLocust(ent, collectibleType, pos);
+
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -589,4 +598,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetWildCardItem", Lua_PlayerGetWildCardItem);
 	//lua::RegisterFunction(state, mt, "GetWildCardItemType", Lua_PlayerGetWildCardItemType);
 	lua::RegisterFunction(state, mt, "SetWeapon", Lua_PlayerSetWeapon);
+	lua::RegisterFunction(state, mt, "AddLocust", Lua_PlayerAddLocust);
 }
