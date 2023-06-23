@@ -79,9 +79,18 @@ ImGuiKey AddChangeGamepadButton()
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    // Toggle the overlay using the delete key
-    if (uMsg == WM_KEYDOWN && wParam == VK_DELETE) {
+    // Toggle the overlay using the grave key
+    if (uMsg == WM_KEYDOWN && wParam == VK_OEM_3) {
         menuShown = !menuShown;
+
+        if (menuShown) {
+            // Induce a game pause
+            *g_Game->GetConsole()->GetState() = 2;
+        }
+        else {
+            *g_Game->GetConsole()->GetState() = 0;
+        }
+
         return false;
     }
 
@@ -158,6 +167,11 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     return super(hdc);
+}
+
+HOOK_METHOD(Console, Render, () -> void) {
+    // We set console state to induce a game pause but we don't want the actual console rendering, just suppress.
+    // TODO could we set an option for this? Some people might prefer the original console, I hope they feel better soon
 }
 
 /*
