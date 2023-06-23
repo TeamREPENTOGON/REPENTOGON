@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdexcept>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <cctype>
 
 #include "XMLData.h"
@@ -13,6 +15,7 @@
 #include "HookSystem.h"
 #include "mologie_detours.h"
 #include "rapidxml.hpp"
+#include "rapidxml_print.hpp"
 
 #include "LogViewer.h"
 #include <lua.hpp>
@@ -256,6 +259,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.EntityData->nodes[idx] = entity;
 			XMLStuff.EntityData->byname[entity["name"]] = idx;
 			XMLStuff.EntityData->bytype[entity["id"]] = idx;
+			XMLStuff.EntityData->bybossid[entity["bossid"]] = idx;
 		}
 	}
 	else if ((strcmp(nodename,"player") == 0)) {
@@ -1101,6 +1105,46 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	}
+	else if ((strcmp(nodename, "bosspools") == 0)) {
+		lastmodid = "BaseGame"; //no mods supported yet
+		int id = -1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes bosspool;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				bosspool[stringlower(attr->name())] = string(attr->value());
+			}
+			if ((XMLStuff.BossPoolData->byname[bosspool["name"]] != NULL) && (lastmodid == "BaseGame")) { //its loading both the rep and AB+ files, kill me!
+				XMLStuff.BossPoolData->Clear();
+			}
+			if (XMLStuff.BossPoolData->byname[bosspool["name"]] == NULL) {
+				XMLStuff.BossPoolData->maxid = XMLStuff.BossPoolData->maxid + 1;
+				id = XMLStuff.BossPoolData->maxid;
+			}
+			else {
+				id = XMLStuff.BossPoolData->byname[bosspool["name"]];
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				bosspool[stringlower(attr->name())] = attr->value();
+			}
+
+			bosspool["sourceid"] = lastmodid;
+			XMLStuff.BossPoolData->ProcessChilds(auxnode, id);
+
+			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
+				XMLStuff.BossPoolData->bynamemod[bosspool["name"] + lastmodid] = id;
+				XMLStuff.BossPoolData->bymod[lastmodid].push_back(id);
+				XMLStuff.BossPoolData->byfilepathmulti.tab[currpath].push_back(id);
+				XMLStuff.BossPoolData->byname[bosspool["name"]] = id;
+				XMLStuff.BossPoolData->nodes[id] = bosspool;
+			}
+			//XMLStuff.ModData->bosspools[lastmodid] += 1;
+			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+		}
+	}
 	else if ((strcmp(nodename, "name") == 0) && node->parent() && (strcmp(stringlower(node->parent()->name()).c_str(), "metadata") == 0)) {
 		xml_node<char>* daddy = node->parent();
 		XMLAttributes mod;
@@ -1509,6 +1553,10 @@ int Lua_GetEntryByNameXML(lua_State* L)
 		Node = XMLStuff.RecipeData->GetNodeByName(entityname);
 		Childs = XMLStuff.BombCostumeData->childs[XMLStuff.RecipeData->byname[entityname]];
 		break;
+	case 21:
+		Node = XMLStuff.BossPoolData->GetNodeByName(entityname);
+		Childs = XMLStuff.BossPoolData->childs[XMLStuff.BossPoolData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -1550,12 +1598,103 @@ int getLineNumber(const char* data, const char* errorOffset) {
 	return lineNumber;
 }
 
+char* GetResources(char* xml,string dir, string filename) {
+	vector<string> paths = { dir + "\\resources\\" + filename, dir + "\\resources-dlc3\\" + filename };
+	for (const string & path : paths) {
+		ifstream file(path.c_str());
+		if (file.is_open()) {
+			std::stringstream sbuffer;
+			sbuffer << file.rdbuf();
+			string filedata = sbuffer.str();
+			char* buffer = new char[filedata.length()];
+			strcpy(buffer, filedata.c_str());
+			return buffer;
+		}
+	}
+	return xml;
+}
+
+bool GetContent(string dir, xml_document<char>& xmldoc) {
+	ifstream file(dir.c_str());
+	if (file.is_open()) {
+//		printf("path: %s \n", dir.c_str());
+		std::stringstream sbuffer;
+		sbuffer << file.rdbuf();
+		string filedata = sbuffer.str();
+		char* buffer = new char[filedata.length() + 1];
+		strcpy(buffer, filedata.c_str());
+		xmldoc.parse<0>(buffer);
+		delete[] buffer;
+		return true;
+	}
+	return false;
+}
+
+xml_node<char>* find_child(
+	xml_node<char>* parent,
+	const string& type,
+	const string& attribute,
+	const string& value)
+{
+	xml_node<char>* node = parent->first_node(type.c_str());
+	while (node)
+	{
+		xml_attribute<char>* attr = node->first_attribute(attribute.c_str());
+		if (attr && value == attr->value()) return node;
+		node = node->next_sibling(type.c_str());
+	}
+	return node;
+}
+
+char * BuildModdedBosspoolsXML(char * xml) {
+    for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+		if (mod->IsEnabled()) {
+			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
+			xml = GetResources(xml, dir, "bosspools.xml");
+						
+			xml_document<char> xmldoc;
+			char* zeroTerminatedStr = new char[strlen(xml) + 1];
+			strcpy(zeroTerminatedStr, xml);
+			xmldoc.parse<0>(zeroTerminatedStr);
+			
+			xml_node<char>* root = xmldoc.first_node();
+
+			xml_document<char> resourcesdoc;
+			if (GetContent(dir + "\\content\\bosspools.xml", resourcesdoc)) {
+				xml_node<char>* resourcescroot = resourcesdoc.first_node();
+				for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+					XMLAttributes node;
+					for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+					{
+						node[stringlower(attr->name())] = string(attr->value());
+					}
+					xml_node<char>* tocopy = find_child(root, auxnode->name(), "name",node["name"]);
+					for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+						xml_node<char>* clonedNode = xmldoc.clone_node(auxchild);
+						tocopy->append_node(clonedNode);
+					}
+				}
+			}
+			
+			ostringstream modifiedXmlStream;
+			modifiedXmlStream << xmldoc;
+			string modifiedXml = modifiedXmlStream.str();
+			std::strcpy(xml, modifiedXml.c_str());
+			delete[] zeroTerminatedStr; 
+		}
+	}	
+	//printf(xml);
+	return xml;
+}
+
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	try {
 		string a = stringlower((char*)string(xmldata).substr(0, 60).c_str());
 		string xml = string(xmldata);
-		if (a.find("<reci") < 50) {
+		if (a.find("<bossp") < 50) {
+			super(BuildModdedBosspoolsXML(xmldata));
+		}else if (a.find("<reci") < 50) {
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
 			smatch match;
 			auto words_begin = std::sregex_iterator(xml.begin(), xml.end(), regexPattern);

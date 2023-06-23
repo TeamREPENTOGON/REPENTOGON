@@ -84,6 +84,7 @@ public:
 
 	void Clear() {
 		nodes.clear();
+		childs.clear();
 		byname.clear();
 		bynamemod.clear();
 		bymod.clear();
@@ -251,6 +252,10 @@ class XMLItemPools : public XMLDataHolder {
 
 };
 
+class XMLBossPools : public XMLDataHolder {
+
+};
+
 class XMLNightmare : public XMLDataHolder {
 
 };
@@ -327,11 +332,13 @@ public:
 	unordered_map<string, tuple<int, int, int>> byname;
 	unordered_map<string, tuple<int, int, int>> bynamemod;
 	unordered_map<string, tuple<int, int, int>> bytype;
+	unordered_map<string, tuple<int, int, int>> bybossid;
 	XMLNodeIdxLookup bymod;
 	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
 
 	void Clear() {
 		nodes.clear();
+		childs.clear();
 		byname.clear();
 		bynamemod.clear();
 		bymod.clear();
@@ -387,6 +394,7 @@ struct XMLData {
 	XMLEntity* EntityData = new XMLEntity();
 	XMLItem*   ItemData = new XMLItem();
 	XMLItemPools* PoolData = new XMLItemPools();
+	XMLBossPools* BossPoolData = new XMLBossPools();
 	XMLTrinket* TrinketData = new XMLTrinket();
 	XMLMusic* MusicData = new XMLMusic(118);
 	XMLSound* SoundData = new XMLSound(832);
