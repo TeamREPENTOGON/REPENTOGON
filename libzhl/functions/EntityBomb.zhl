@@ -1,6 +1,9 @@
 "558bec83e4c081ecb400000053":
 __thiscall void Entity_Bomb::Render(Vector *offset);
 
+"558bec83e4f883ec58568b75??57ff75":
+__thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
+
 struct Entity_Bomb : public Entity {
 
 };

@@ -1,6 +1,9 @@
 "558bec83ec2ca1????????5356f30f7e05":
 __thiscall void Entity_Projectile::Render(Vector *offset);
 
+"558bec83e4f881ec94000000a1????????33c4898424????????538b5d":
+__thiscall bool Entity_Projectile::HandleCollision(Entity* collider, bool low);
+
 struct Entity_Projectile : public Entity {
 
 };

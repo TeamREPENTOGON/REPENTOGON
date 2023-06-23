@@ -237,7 +237,39 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_GET_LIGHTING_ALPHA] = {
 		["number"] = true,
 	},
+	[ModCallbacks.MC_PRE_PLAYER_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
+	[ModCallbacks.MC_PRE_TEAR_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
 	[ModCallbacks.MC_PRE_FAMILIAR_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
+	[ModCallbacks.MC_PRE_BOMB_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
+	[ModCallbacks.MC_PRE_PICKUP_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
+	[ModCallbacks.MC_PRE_SLOT_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
+	[ModCallbacks.MC_PRE_KNIFE_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
+	[ModCallbacks.MC_PRE_PROJECTILE_COLLISION] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
+	[ModCallbacks.MC_PRE_NPC_COLLISION] = {
 		["boolean"] = true,
 		["table"] = true,
 	},
@@ -263,13 +295,6 @@ local typecheckWarnFunctions = {
 local boolCallbacks = {
 	ModCallbacks.MC_PRE_USE_ITEM,
 	ModCallbacks.MC_ENTITY_TAKE_DMG,
-	ModCallbacks.MC_PRE_PICKUP_COLLISION,
-	ModCallbacks.MC_PRE_TEAR_COLLISION,
-	ModCallbacks.MC_PRE_PROJECTILE_COLLISION,
-	ModCallbacks.MC_PRE_BOMB_COLLISION,
-	ModCallbacks.MC_PRE_KNIFE_COLLISION,
-	ModCallbacks.MC_PRE_PLAYER_COLLISION,
-	ModCallbacks.MC_PRE_NPC_COLLISION,
 	ModCallbacks.MC_PRE_LASER_COLLISION,
 	ModCallbacks.MC_PRE_NPC_UPDATE,
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
@@ -280,7 +305,6 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR,
 	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY,
 	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY,
-	ModCallbacks.MC_PRE_SLOT_COLLISION,
 	ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS,
 	ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY
 }

@@ -14,6 +14,9 @@ static cleanup bool Entity_NPC::Redirect(int* EntityType<ecx>,int* Variant<edx>)
 "558bec83e4f851538bd9565783bb????????007c":
 __thiscall bool Entity_NPC::TryForceTarget(Entity* Target, int Duration);
 
+"558bec6aff68????????64a1????????5081ec60010000":
+__thiscall bool Entity_NPC::HandleCollision(Entity* collider, bool low);
+
 struct Entity_NPC : public Entity {
 {{
 	inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xBFC); }
