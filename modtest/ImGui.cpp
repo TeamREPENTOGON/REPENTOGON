@@ -80,16 +80,11 @@ ImGuiKey AddChangeGamepadButton()
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     // Toggle the overlay using the grave key
-    if (uMsg == WM_KEYDOWN && wParam == VK_OEM_3) {
+    if (uMsg == WM_KEYDOWN && wParam == VK_OEM_3 && g_Manager->GetDebugConsoleEnabled()) {
         menuShown = !menuShown;
 
-        if (menuShown) {
-            // Induce a game pause
-            *g_Game->GetConsole()->GetState() = 2;
-        }
-        else {
-            *g_Game->GetConsole()->GetState() = 0;
-        }
+        // Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
+        *g_Game->GetConsole()->GetState() = menuShown ? 2 : 0;
 
         return false;
     }
@@ -141,7 +136,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     if (menuShown) {
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("Tools")) {
-                if (ImGui::MenuItem("Console (UNFINISHED)", NULL, &console.enabled)) { }
+                if (ImGui::MenuItem("Debug Console", NULL, &console.enabled)) { }
                 if (ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled)) { }
                 ImGui::EndMenu();
             }
