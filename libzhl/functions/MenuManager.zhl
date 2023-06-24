@@ -10,6 +10,9 @@ __thiscall void MenuManager::Init();
 "558bec83e4f881ece0000000a1????????56":
 __thiscall void MenuManager::Render();
 
+"558bec83ec68a1????????33c58945??56578bf9807f??00":
+__thiscall void MenuManager::RenderButtonLayout();
+
 "558bec83ec08538b1d????????568b75":
 __thiscall void MenuManager::SetState(int estate);
 

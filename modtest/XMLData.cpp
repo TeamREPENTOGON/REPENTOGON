@@ -1598,6 +1598,27 @@ int getLineNumber(const char* data, const char* errorOffset) {
 	return lineNumber;
 }
 
+bool XMLParse(xml_document<char>& xmldoc, char* xml, string dir) {
+	try {
+		if (strlen(xml) == strlen(xml + 1)) {
+			xmldoc.parse<0>(xml);
+		}else{
+			char* zeroTerminatedStr  = new char[strlen(xml) + 1];
+			strcpy(zeroTerminatedStr, xml);
+			xmldoc.parse<0>(zeroTerminatedStr);
+		}
+		return true;
+	}
+	catch (exception ex) {
+		string reason = ex.what();
+		string error = "[XMLError] " + reason + " in " + dir;
+		g_Game->GetConsole()->PrintError(error);
+		KAGE::LogMessage(3, (error + "\n").c_str());
+		printf("%s \n", error.c_str());
+	}
+	return false;
+}
+
 char* GetResources(char* xml,string dir, string filename) {
 	vector<string> paths = { dir + "\\resources\\" + filename, dir + "\\resources-dlc3\\" + filename };
 	for (const string & path : paths) {
@@ -1623,7 +1644,7 @@ bool GetContent(string dir, xml_document<char>& xmldoc) {
 		string filedata = sbuffer.str();
 		char* buffer = new char[filedata.length() + 1];
 		strcpy(buffer, filedata.c_str());
-		xmldoc.parse<0>(buffer);
+		XMLParse(xmldoc, buffer, dir);
 		delete[] buffer;
 		return true;
 	}
@@ -1650,53 +1671,44 @@ char * BuildModdedBosspoolsXML(char * xml) {
     for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
 			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
-			xml = GetResources(xml, dir, "bosspools.xml");
-						
-			xml_document<char> xmldoc;
-			char* zeroTerminatedStr = new char[strlen(xml) + 1];
-			strcpy(zeroTerminatedStr, xml);
-			try {
-			xmldoc.parse<0>(zeroTerminatedStr);
+			string filename = "bosspools.xml";
+			string resourcesdir = dir + "\\resources\\" + filename;
+			string contentsdir = dir + "\\content\\" + filename;
 			
-			xml_node<char>* root = xmldoc.first_node();
+			xml = GetResources(xml, dir, filename);
+			xml_document<char> xmldoc;
+			if (XMLParse(xmldoc, xml, resourcesdir)) {
+				xml_node<char>* root = xmldoc.first_node();
+				xml_document<char> resourcesdoc;
+				if (GetContent(contentsdir, resourcesdoc)) {
 
-			xml_document<char> resourcesdoc;
-			if (GetContent(dir + "\\content\\bosspools.xml", resourcesdoc)) {
-				xml_node<char>* resourcescroot = resourcesdoc.first_node();
-				for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-					XMLAttributes node;
-					for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-					{
-						node[stringlower(attr->name())] = string(attr->value());
-					}
-					xml_node<char>* tocopy = find_child(root, auxnode->name(), "name",node["name"]);
-					if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
-						printf("newnode");
-						xml_node<char>* clonedNode = xmldoc.clone_node(auxnode);
-						root->append_node(clonedNode);
-						printf("newnode done");
-					}
-					else {
-						for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
-							xml_node<char>* clonedNode = xmldoc.clone_node(auxchild);
-							tocopy->append_node(clonedNode);
+					//actual shit
+					xml_node<char>* resourcescroot = resourcesdoc.first_node();
+					for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+						XMLAttributes node;
+						for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+						{
+							node[stringlower(attr->name())] = string(attr->value());
+						}
+						xml_node<char>* tocopy = find_child(root, auxnode->name(), "name",node["name"]);
+						if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
+							xml_node<char>* clonedNode = xmldoc.clone_node(auxnode);
+							root->append_node(clonedNode);
+						}
+						else {
+							for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+								xml_node<char>* clonedNode = xmldoc.clone_node(auxchild);
+								tocopy->append_node(clonedNode);
+							}
 						}
 					}
+					//actual shit
+
 				}
-			}
-			
-			ostringstream modifiedXmlStream;
-			modifiedXmlStream << xmldoc;
-			string modifiedXml = modifiedXmlStream.str();
-			std::strcpy(xml, modifiedXml.c_str());
-			delete[] zeroTerminatedStr; 
-			}
-			catch (exception ex) {
-				string reason = ex.what();
-				string error = "[XMLError] " + reason + " in " + dir + "\\content\\bosspools.xml ";
-				g_Game->GetConsole()->PrintError(error);
-				KAGE::LogMessage(3, (error + "\n").c_str());
-				printf("%s \n", error.c_str());
+				ostringstream modifiedXmlStream;
+				modifiedXmlStream << xmldoc;
+				string modifiedXml = modifiedXmlStream.str();
+				std::strcpy(xml, modifiedXml.c_str());
 			}
 		}
 	}	

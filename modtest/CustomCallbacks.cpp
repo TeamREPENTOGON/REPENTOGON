@@ -187,7 +187,7 @@ HOOK_METHOD(HUD, Render, () -> void) {
 //HUD_POST_RENDER callback end
 
 //Character menu render Callback(id:1023)
-HOOK_METHOD(MenuManager, Render, () -> void) {
+HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	super();
 	int callbackid = 1023;
 	if (CallbackState.test(callbackid - 1000)) {
