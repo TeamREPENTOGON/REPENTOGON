@@ -2220,3 +2220,21 @@ XMLNode = {
 	CRAFTINGRECIPE = 20,	
 	BOSSPOOL = 21,	
 }
+
+AutocompleteType = {
+	NONE = 0,
+	ENTITY = 1,
+	GOTO = 2,
+	STAGE = 3,
+	GRID = 4,
+	DEBUG_FLAG = 5,
+	ITEM = 6,
+	CHALLENGE = 7,
+	COMBO = 8,
+	CUTSCENE = 9,
+	MACRO = 10,
+	SFX = 11,
+	CURSE = 12,
+	METRO = 13,
+	DELIRIOUS = 14,
+}

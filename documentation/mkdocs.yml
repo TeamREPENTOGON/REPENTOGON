@@ -46,6 +46,7 @@ nav:
   - Enums:
     - Achievement: enums/Achievement.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
+    - AutocompleteType: enums/AutocompleteType.md
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
     - BitwiseDebugFlag: enums/BitwiseDebugFlag.md
     - BossType: enums/BossType.md

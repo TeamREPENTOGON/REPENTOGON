@@ -25,6 +25,25 @@ The first mod to cause a Lua error will trigger a message at the top of the scre
 
 Multiple sequential instances of the same error will be flattened in the console (not the logs). Duplicate entries will be denoted with an (x2) (x3) etc. next to the error.
 
-## Open Debug Console on Main Menu screens
+## Dear ImGui
 
-A simplified version of the Debug console output can be displayed from inside the Main Menu by simply pressing the button used to toggle the ingame debug console.
+We have integrated the Dear ImGui user interface library into the game. This can be brought up at any time using the key that previously brought up the vanilla debug console. Mods can add their own user interfaces into the menu with the [ImGui](../ImGui.md) class.
+
+## In-game Log Viewer
+
+A log viewer has been built-in to the Dear ImGui menu.
+
+- Game, Console and REPENTOGON logs can be filtered individually.
+- The log can be searched.
+
+## Completely Overhauled Console
+
+The debug console has been completely rebuilt from the ground up in Dear ImGui.
+
+- The new console has an intelligent autocomplete system, featuring proper tab completion and a more compact autocomplete layout.
+- The `macro` command has been remade from scratch. Mods can now [register macros](../Console.md#registermacro) and these will show up in the new autocomplete system.
+- Mods can [register commands](../Console.md#registercommand). These will show up in the new help menu and in autocomplete.
+  - Autocomplete *presets* can be used by Lua commands. Soon, Lua mods will be able to define their own autocomplete for their registered commands.
+- The new console works on the main menu. Commands marked as "unsafe" on the main menu when registered are disabled.
+- The new console saves command history every time a command is entered. The vanilla one only saved on console or game exit. This prevents history from being lost on a game crash.
+- A `help` command has been added. This lists all registered commands. Mods marked as unsafe on the main menu when registered are disabled.

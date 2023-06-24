@@ -39,3 +39,19 @@ ___
 Prints a warning to the console, warnings display in yellow text.
 
 ___
+### Register·Command () {: aria-label='Functions' }
+#### void RegisterCommand ( string Name, string Desc, string HelpText, boolean ShowOnMenu, [AutocompleteType](console/AutocompleteType.md) Type ) {: .copyable aria-label='Functions' }
+Registers a command in the new console. These will show up in the new console's autocomplete.
+
+* `Desc` will show when typing the `help` command.
+* `HelpText` will show when typing `help (Name)`.
+* `AutocompleteType` will make the command inherit that autocomplete type. Soon, mods will be able to add their own.
+
+___
+### Register·Macro () {: aria-label='Functions' }
+#### void RegisterCommand ( string Name, table Commands ) {: .copyable aria-label='Functions' }
+Registers a macro in the new console. These will show up in the new console's autocomplete for the `macro` command.
+
+* `Commands` is a table of strings containing the commands that should be executed, in order.
+
+___

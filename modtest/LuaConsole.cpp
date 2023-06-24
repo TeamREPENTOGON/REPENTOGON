@@ -87,8 +87,9 @@ int Lua_RegisterCommand(lua_State* L) {
 	const char* desc = luaL_checkstring(L, 3);
 	const char* helpText = luaL_checkstring(L, 4);
 	bool showOnMenu = lua::luaL_optboolean(L, 5, false);
+	ConsoleMega::AutocompleteType autocompleteType = (ConsoleMega::AutocompleteType)luaL_optnumber(L, 6, 0);
 
-	console.RegisterCommand(name, desc, helpText, showOnMenu);
+	console.RegisterCommand(name, desc, helpText, showOnMenu, autocompleteType);
 
 	return 0;
 }
