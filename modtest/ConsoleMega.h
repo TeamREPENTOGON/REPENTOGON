@@ -9,8 +9,8 @@ extern int handleWindowFlags(int flags);
 
 struct ConsoleCommand {
     std::string name = ""; // The name of the command.
-    const char* desc = ""; // A short (usually one sentence) description of the command. Will show up when just typing `help`
-    const char* helpText = ""; // The help text for the command. Will show up when doing `help (command)`
+    std::string desc = ""; // A short (usually one sentence) description of the command. Will show up when just typing `help`
+    std::string helpText = ""; // The help text for the command. Will show up when doing `help (command)`
     bool showOnMenu = false;
     unsigned int autocompleteType = 0;
     std::vector<std::string> aliases;
@@ -26,6 +26,11 @@ struct ConsoleCommand {
     
     ConsoleCommand() {
 
+    }
+
+    bool operator<(const ConsoleCommand& cc) const
+    {
+        return (SI::natural::compare(name, cc.name));
     }
 };
 
@@ -74,7 +79,7 @@ static std::vector<std::string> ParseCommand(std::string command, int size = 0) 
 struct ConsoleMega {
     bool enabled;
     char inputBuf[1024];
-    std::vector<ConsoleCommand> commands;
+    std::set<ConsoleCommand> commands;
     unsigned int historyPos;
     std::vector<ConsoleMacro> macros;
     std::vector<AutocompleteEntry> autocompleteBuffer;
@@ -104,7 +109,7 @@ struct ConsoleMega {
 
 
     void RegisterCommand(const char* name, const char* desc, const char* helpText, bool showOnMenu, AutocompleteType autocomplete = NONE, std::vector<std::string> aliases = {}) {
-        commands.push_back(ConsoleCommand(name, desc, helpText, showOnMenu, autocomplete, aliases));
+        commands.insert(ConsoleCommand(name, desc, helpText, showOnMenu, autocomplete, aliases));
     }
 
     void RegisterMacro(const char* macroName, std::vector<std::string> &macroCommands) {
