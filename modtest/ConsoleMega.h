@@ -1,6 +1,7 @@
 #include "imgui.h"
 #include "XMLData.h"
 #include "natural_sort.hpp"
+#include "LuaCore.h"
 
 #include <sstream>
 #include <cctype>
@@ -41,6 +42,11 @@ struct AutocompleteEntry {
     AutocompleteEntry(std::string text, std::string desc = "") {
         autocompleteText = text;
         autocompleteDesc = desc;
+    }
+
+    AutocompleteEntry() {
+        autocompleteText = "";
+        autocompleteDesc = "";
     }
 
     bool operator<(const AutocompleteEntry& ae) const
@@ -104,7 +110,8 @@ struct ConsoleMega {
         SFX,
         CURSE,
         METRO,
-        DELIRIOUS
+        DELIRIOUS,
+        CUSTOM
     };
 
 
@@ -689,6 +696,66 @@ struct ConsoleMega {
                                     AutocompleteEntry("60", "Sisters Vis"),
                                     AutocompleteEntry("61", "Big Horn")
                                 };
+                                break;
+                            }
+
+                            case CUSTOM: {
+                                // This is a Lua command with the CUSTOM AutocompleteType defined. It wants to add its own autocomplete.
+                                // Register the callback MC_CONSOLE_AUTOCOMPLETE with the command as an optional param.
+
+                                extern std::bitset<500> CallbackState;
+
+                                int callbackId = 1120;
+                                if (CallbackState.test(callbackId - 1000)) {
+                                    lua_State* L = g_LuaEngine->_state;
+                                    lua::LuaStackProtector protector(L);
+                                    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+                                    std::string args;
+
+                                    for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
+                                        args += *it;
+                                        if (it != cmdlets.end() - 1) {
+                                            args += " ";
+                                        }
+                                    }
+
+                                    lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
+                                        .push(cmdlets.front().c_str())
+                                        .push(cmdlets.front().c_str())
+                                        .push(args.c_str())
+                                        .call(1);
+
+                                    if (!results) {
+                                        if (lua_istable(L, -1)) {
+                                            for (unsigned int i = 1; i <= (unsigned int)lua_rawlen(L, -1); ++i) {
+                                                AutocompleteEntry entry;
+                                                lua_pushinteger(L, i);
+                                                lua_gettable(L, -2);
+
+                                                if (lua_istable(L, -1)) {
+                                                    lua_pushinteger(L, 1);
+                                                    lua_gettable(L, -2);
+                                                    entry.autocompleteText = lua_tostring(L, -1);
+                                                    lua_pop(L, 1);
+
+                                                    if (lua_rawlen(L, -1) == (unsigned int)2) {
+                                                        lua_pushinteger(L, 2);
+                                                        lua_gettable(L, -2);
+                                                        entry.autocompleteDesc = lua_tostring(L, -1);
+                                                        lua_pop(L, 1);
+                                                    }
+                                                }
+
+                                                else if (lua_isstring(L, -1)) {
+                                                    entry.autocompleteText = lua_tostring(L, -1);
+                                                }
+
+                                                lua_pop(L, 1);
+                                                entries.insert(entry);
+                                            }
+                                        }
+                                    }
+                                }
                                 break;
                             }
 

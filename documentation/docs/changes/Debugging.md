@@ -43,7 +43,8 @@ The debug console has been completely rebuilt from the ground up in Dear ImGui.
 - The new console has an intelligent autocomplete system, featuring proper tab completion and a more compact autocomplete layout.
 - The `macro` command has been remade from scratch. Mods can now [register macros](../Console.md#registermacro) and these will show up in the new autocomplete system.
 - Mods can [register commands](../Console.md#registercommand). These will show up in the new help menu and in autocomplete.
-  - Autocomplete *presets* can be used by Lua commands. Soon, Lua mods will be able to define their own autocomplete for their registered commands.
+  - Autocomplete presets can be used by Lua commands.
+  - Mods can define their own custom autocomplete with [MC_CONSOLE_AUTOCOMPLETE](../enums/ModCallbacks.md#mc_console_autocomplete) and the `CUSTOM` [AutocompleteType](../enums/AutocompleteType.md).
 - The new console works on the main menu. Commands marked as "unsafe" on the main menu when registered are not shown in autocomplete there, and will intentionally error if attempted.
 - The new console saves command history every time a command is entered. The vanilla one only saved on console or game exit. This prevents history from being lost on a game crash.
 - A `help` command has been added. This lists all registered commands. Commands marked as "unsafe" on the main menu when registered are not shown there.

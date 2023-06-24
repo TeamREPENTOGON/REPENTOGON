@@ -273,6 +273,9 @@ local typecheckFunctions = {
 		["boolean"] = true,
 		["table"] = true,
 	},
+	[ModCallbacks.MC_CONSOLE_AUTOCOMPLETE] = {
+	    ["table"] = true,
+	},
 }
 
 local typecheckWarnFunctions = {

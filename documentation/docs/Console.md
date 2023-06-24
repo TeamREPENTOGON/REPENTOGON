@@ -45,7 +45,7 @@ Registers a command in the new console. These will show up in the new console's 
 
 * `Desc` will show when typing the `help` command.
 * `HelpText` will show when typing `help (Name)`.
-* `AutocompleteType` will make the command inherit that autocomplete type. Soon, mods will be able to add their own.
+* `AutocompleteType` will make the command inherit that autocomplete type. If the command doesn't fit into any of the standard types, use `CUSTOM` combined with [MC_CONSOLE_AUTOCOMPLETE](enums/ModCallbacks.md#mc_console_autocomplete) to create a bespoke one for this command.
 
 ___
 ### Register·Macro () {: aria-label='Functions' }

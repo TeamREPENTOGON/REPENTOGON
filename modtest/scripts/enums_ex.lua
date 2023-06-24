@@ -119,6 +119,7 @@ ModCallbacks.MC_PRE_PROJECTILE_COLLISION = 1244
 ModCallbacks.MC_POST_PROJECTILE_COLLISION = 1245
 ModCallbacks.MC_PRE_NPC_COLLISION = 1246
 ModCallbacks.MC_POST_NPC_COLLISION = 1247
+ModCallbacks.MC_CONSOLE_AUTOCOMPLETE = 1120
 
 EntityPartition.ALL = 0xffffffff
 
@@ -2237,4 +2238,5 @@ AutocompleteType = {
 	CURSE = 12,
 	METRO = 13,
 	DELIRIOUS = 14,
+	CUSTOM = 15,
 }
