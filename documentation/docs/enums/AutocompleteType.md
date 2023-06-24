@@ -2,7 +2,7 @@
 tags:
   - Enum
 ---
-# Enum "AnnouncerVoiceMode"
+# Enum "AutocompleteType"
 |Value|Enumerator|Comment|
 |:--|:--|:--|
 |0 |NONE {: .copyable } |  |
