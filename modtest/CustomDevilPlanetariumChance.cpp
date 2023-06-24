@@ -4,22 +4,14 @@
 #include "HookSystem.h"
 #include "LuaCore.h"
 
+extern std::bitset<500> CallbackState;
+
 bool modsChangingDevilChance(lua_State* L) {
     int callbacks[4] = { 1130, 1131, 1132, 1133 };
-    lua::LuaStackProtector protector(L);
 
     for (int callback : callbacks) {
-
-        lua_getglobal(L, "Isaac");
-        lua_getfield(L, -1, "GetCallbacks");
-        lua_remove(L, lua_absindex(L, -2));
-        lua::LuaResults callbackResult = lua::LuaCaller(L).push(callback)
-            .call(1);
-
-        if (!callbackResult) {
-            if (lua_rawlen(L, -1) > 0) {
-                return true;
-            }
+        if (CallbackState.test(callback - 1000)) {
+            return true;
         }
     }
 
@@ -55,16 +47,18 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         chance += 0.01f;
 
         //MC_PRE_DEVIL_APPLY_ITEMS
-        lua_getglobal(L, "Isaac");
-        lua_getfield(L, -1, "RunAdditiveCallback");
-        lua_remove(L, lua_absindex(L, -2));
+        if (CallbackState.test(1130 - 1000)) {
+            lua_getglobal(L, "Isaac");
+            lua_getfield(L, -1, "RunAdditiveCallback");
+            lua_remove(L, lua_absindex(L, -2));
 
-        lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1130)
-            .push(chance)
-            .call(1);
+            lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1130)
+                .push(chance)
+                .call(1);
 
-        if (!preApplyItemsResult) {
+            if (!preApplyItemsResult) {
                 chance = (float)lua_tonumber(L, -1);
+            }
         }
         //MC_PRE_DEVIL_APPLY_ITEMS
 
@@ -112,15 +106,17 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         bool shouldApplyStagePenalty = true;
 
         //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
-        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+        if (CallbackState.test(1131 - 1000)) {
+            lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-        lua::LuaResults preApplyStagePenaltyResult = lua::LuaCaller(L).push(1131)
-            .push(chance)
-            .call(1);
+            lua::LuaResults preApplyStagePenaltyResult = lua::LuaCaller(L).push(1131)
+                .push(chance)
+                .call(1);
 
-        if (!preApplyStagePenaltyResult) {
-                if(lua_isboolean(L, -1))
+            if (!preApplyStagePenaltyResult) {
+                if (lua_isboolean(L, -1))
                     shouldApplyStagePenalty = lua_toboolean(L, -1);
+            }
         }
         //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
 
@@ -143,16 +139,18 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     }
 
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
-    lua_getglobal(L, "Isaac");
-    lua_getfield(L, -1, "RunAdditiveCallback");
-    lua_remove(L, lua_absindex(L, -2));
+    if (CallbackState.test(1132 - 1000)) {
+        lua_getglobal(L, "Isaac");
+        lua_getfield(L, -1, "RunAdditiveCallback");
+        lua_remove(L, lua_absindex(L, -2));
 
-    lua::LuaResults preApplySpecialItemsResult = lua::LuaCaller(L).push(1132)
-        .push(chance)
-        .call(1);
+        lua::LuaResults preApplySpecialItemsResult = lua::LuaCaller(L).push(1132)
+            .push(chance)
+            .call(1);
 
-    if (!preApplySpecialItemsResult) {
-        chance = (float)lua_tonumber(L, -1);
+        if (!preApplySpecialItemsResult) {
+            chance = (float)lua_tonumber(L, -1);
+        }
     }
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
 
@@ -171,16 +169,18 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         chance = 1;
 
     //MC_POST_DEVIL_CALCULATE
-    lua_getglobal(L, "Isaac");
-    lua_getfield(L, -1, "RunAdditiveCallback");
-    lua_remove(L, lua_absindex(L, -2));
+    if (CallbackState.test(1133 - 1000)) {
+        lua_getglobal(L, "Isaac");
+        lua_getfield(L, -1, "RunAdditiveCallback");
+        lua_remove(L, lua_absindex(L, -2));
 
-    lua::LuaResults postDevilCalculateResult = lua::LuaCaller(L).push(1133)
-        .push(chance)
-        .call(1);
+        lua::LuaResults postDevilCalculateResult = lua::LuaCaller(L).push(1133)
+            .push(chance)
+            .call(1);
 
-    if (!postDevilCalculateResult) {
-        chance = (float)lua_tonumber(L, -1);
+        if (!postDevilCalculateResult) {
+            chance = (float)lua_tonumber(L, -1);
+        }
     }
     //MC_POST_DEVIL_CALCULATE
 
@@ -198,20 +198,10 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
 
 bool modsChangingPlanetariumChance(lua_State *L) {
     int callbacks[6] = { 1110, 1111, 1112, 1113, 1114, 1115 };
-    lua::LuaStackProtector protector(L);
 
     for (int callback : callbacks) {
-
-        lua_getglobal(L, "Isaac");
-        lua_getfield(L, -1, "GetCallbacks");
-        lua_remove(L, lua_absindex(L, -2));
-        lua::LuaResults callbackResult = lua::LuaCaller(L).push(callback)
-            .call(1);
-
-        if (!callbackResult) {
-            if (lua_rawlen(L, -1) > 0) {
-                return true;
-            }
+        if (CallbackState.test(callback - 1000)) {
+            return true;
         }
     }
     return false;
@@ -240,15 +230,17 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     float chance = 0.01f;
 
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
-    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-    lua_remove(L, lua_absindex(L, -2));
+    if (CallbackState.test(1110 - 1000)) {
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+        lua_remove(L, lua_absindex(L, -2));
 
-    lua::LuaResults preApplyStageResult = lua::LuaCaller(L).push(1110)
-        .call(1);
+        lua::LuaResults preApplyStageResult = lua::LuaCaller(L).push(1110)
+            .call(1);
 
-    if (!preApplyStageResult) {
-            if(lua_isboolean(L, -1))
+        if (!preApplyStageResult) {
+            if (lua_isboolean(L, -1))
                 shouldApplyStageRestriction = lua_toboolean(L, -1);
+        }
     }
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
 
@@ -259,15 +251,17 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         return 0.f;
 
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
-    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-    lua_remove(L, lua_absindex(L, -2));
+    if (CallbackState.test(1111 - 1000)) {
+        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+        lua_remove(L, lua_absindex(L, -2));
 
-    lua::LuaResults preApplyPlanetariumResult = lua::LuaCaller(L).push(1111)
-        .call(1);
+        lua::LuaResults preApplyPlanetariumResult = lua::LuaCaller(L).push(1111)
+            .call(1);
 
-    if (!preApplyPlanetariumResult) {
-            if(lua_isboolean(L, -1))
+        if (!preApplyPlanetariumResult) {
+            if (lua_isboolean(L, -1))
                 shouldBypassPlanetariumRestriction = !lua_toboolean(L, -1);
+        }
     }
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
 
@@ -275,21 +269,23 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         bool shouldBypassTreasureRestriction = false;
         int treasureRoomsVisited = g_Game->GetTreasureRoomsVisited();
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
-        lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-        lua_remove(L, lua_absindex(L, -2));
+        if (CallbackState.test(1112 - 1000)) {
+            lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+            lua_remove(L, lua_absindex(L, -2));
 
-        lua::LuaResults preApplyTreasureResult = lua::LuaCaller(L).push(1112)
-            .push(treasureRoomsVisited)
-            .call(1);
+            lua::LuaResults preApplyTreasureResult = lua::LuaCaller(L).push(1112)
+                .push(treasureRoomsVisited)
+                .call(1);
 
-        if (!preApplyTreasureResult) {
-            if (lua_isinteger(L, -1)) {
-                treasureRoomsVisited = (int)lua_tointeger(L, -1);
-            }
-            else if (lua_isboolean(L, -1)) {
-                shouldBypassTreasureRestriction = !lua_toboolean(L, -1);
-                if(shouldBypassTreasureRestriction)
-                    treasureRoomsVisited = 0;
+            if (!preApplyTreasureResult) {
+                if (lua_isinteger(L, -1)) {
+                    treasureRoomsVisited = (int)lua_tointeger(L, -1);
+                }
+                else if (lua_isboolean(L, -1)) {
+                    shouldBypassTreasureRestriction = !lua_toboolean(L, -1);
+                    if (shouldBypassTreasureRestriction)
+                        treasureRoomsVisited = 0;
+                }
             }
         }
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
@@ -304,17 +300,19 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         }
 
         //MC_PRE_PLANETARIUM_APPLY_ITEMS
-        lua_getglobal(L, "Isaac");
-        lua_getfield(L, -1, "RunAdditiveCallback");
-        lua_remove(L, lua_absindex(L, -2));
+        if (CallbackState.test(1113 - 1000)) {
+            lua_getglobal(L, "Isaac");
+            lua_getfield(L, -1, "RunAdditiveCallback");
+            lua_remove(L, lua_absindex(L, -2));
 
-        lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1113)
-            .push(chance)
-            .call(1);
+            lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1113)
+                .push(chance)
+                .call(1);
 
-        if (!preApplyItemsResult) {
-            if(lua_isnumber(L, -1))
-                chance = (float)lua_tonumber(L, -1);
+            if (!preApplyItemsResult) {
+                if (lua_isnumber(L, -1))
+                    chance = (float)lua_tonumber(L, -1);
+            }
         }
         //MC_PRE_PLANETARIUM_APPLY_ITEMS
 
@@ -331,17 +329,19 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
             chance += 0.15f;
     }
     //MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
-    lua_getglobal(L, "Isaac");
-    lua_getfield(L, -1, "RunAdditiveCallback");
-    lua_remove(L, lua_absindex(L, -2));
+    if (CallbackState.test(1114 - 1000)) {
+        lua_getglobal(L, "Isaac");
+        lua_getfield(L, -1, "RunAdditiveCallback");
+        lua_remove(L, lua_absindex(L, -2));
 
-    lua::LuaResults preApplyLensResult = lua::LuaCaller(L).push(1114)
-        .push(chance)
-        .call(1);
+        lua::LuaResults preApplyLensResult = lua::LuaCaller(L).push(1114)
+            .push(chance)
+            .call(1);
 
-    if (!preApplyLensResult) {
-        if(lua_isnumber(L, -1))
-            chance = (float)lua_tonumber(L, -1);
+        if (!preApplyLensResult) {
+            if (lua_isnumber(L, -1))
+                chance = (float)lua_tonumber(L, -1);
+        }
     }
     //MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
 
@@ -349,17 +349,19 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         chance += 0.09f;
 
     //MC_POST_PLANETARIUM_CALCULATE
-    lua_getglobal(L, "Isaac");
-    lua_getfield(L, -1, "RunAdditiveCallback");
-    lua_remove(L, lua_absindex(L, -2));
+    if (CallbackState.test(1115 - 1000)) {
+        lua_getglobal(L, "Isaac");
+        lua_getfield(L, -1, "RunAdditiveCallback");
+        lua_remove(L, lua_absindex(L, -2));
 
-    lua::LuaResults postCalculateResult = lua::LuaCaller(L).push(1115)
-        .push(chance)
-        .call(1);
+        lua::LuaResults postCalculateResult = lua::LuaCaller(L).push(1115)
+            .push(chance)
+            .call(1);
 
-    if (!postCalculateResult) 
-        if(lua_isnumber(L, -1))
-            chance = (float)lua_tonumber(L, -1);
+        if (!postCalculateResult)
+            if (lua_isnumber(L, -1))
+                chance = (float)lua_tonumber(L, -1);
+    }
     //MC_POST_PLANETARIUM_CALCULATE
 
     if (chance > 1.f)
