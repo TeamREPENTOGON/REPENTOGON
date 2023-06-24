@@ -24,6 +24,7 @@ HWND window;
 WNDPROC windowProc;
 bool menuShown = false;
 static bool imguiInitialized = false;
+static bool show_app_style_editor = false;
 
 HelpMenu helpMenu;
 LogViewer logViewer;
@@ -145,8 +146,9 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     if (menuShown) {
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("Tools")) {
-                if (ImGui::MenuItem("Debug Console", NULL, &console.enabled)) { }
-                if (ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled)) { }
+                ImGui::MenuItem("Debug Console", NULL, &console.enabled);
+                ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled);
+                ImGui::MenuItem("Style Editor", NULL, &show_app_style_editor);
                 ImGui::EndMenu();
             }
             customImGui.DrawMenu();
@@ -162,6 +164,10 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     }
     logViewer.Draw(menuShown);
 
+    if (show_app_style_editor) {
+        ImGui::Begin("Dear ImGui Style Editor", &show_app_style_editor);
+        ImGui::ShowStyleEditor();
+        ImGui::End();
     }
 
     ImGui::Render();
