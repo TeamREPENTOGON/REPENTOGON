@@ -39,8 +39,3 @@ ___
 Prints a warning to the console, warnings display in yellow text.
 
 ___
-### Show () {: aria-label='Functions' }
-#### void Show ( ) {: .copyable aria-label='Functions' }
-Show the Console.
-
-___

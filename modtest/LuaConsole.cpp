@@ -23,13 +23,6 @@ int Lua_ConsolePrintError(lua_State* L)
 	return 0;
 }
 
-int Lua_ConsoleShow(lua_State* L)
-{
-	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
-	*console->GetState() = 2;
-	return 0;
-}
-
 int Lua_ConsoleGetHistory(lua_State* L)
 {
 	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
@@ -142,7 +135,6 @@ static void RegisterConsole(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "PrintError", Lua_ConsolePrintError },
-		{ "Show", Lua_ConsoleShow }, // should probably replace this with SetState
 		{ "GetCommandHistory", Lua_ConsoleGetCommandHistory },
 		{ "GetHistory", Lua_ConsoleGetHistory },
 		{ "PopHistory", Lua_ConsolePopHistory },
