@@ -80,6 +80,7 @@ struct ConsoleMega {
     std::vector<AutocompleteEntry> autocompleteBuffer;
     unsigned int autocompletePos;
     bool autocompleteActive = false;
+    bool reclaimFocus = false;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -219,8 +220,6 @@ struct ConsoleMega {
             }
 
             ImGui::Separator();
-
-            bool reclaimFocus = false;
             
            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
            if (autocompleteBuffer.size() > 0) {
@@ -262,8 +261,11 @@ struct ConsoleMega {
             ImGui::PopItemWidth();
 
             ImGui::SetItemDefaultFocus();
-            if (reclaimFocus)
+            if (reclaimFocus) {
                 ImGui::SetKeyboardFocusHere(-1);
+                reclaimFocus = false;
+            }
+                
 
             ImGui::End();
         }

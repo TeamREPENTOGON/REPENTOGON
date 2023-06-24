@@ -84,7 +84,17 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         menuShown = !menuShown;
 
         // Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
-        *g_Game->GetConsole()->GetState() = menuShown ? 2 : 0;
+        if (menuShown) {
+            *g_Game->GetConsole()->GetState() = 2;
+
+            // Console should steal focus by default, if visible. 
+            // Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
+            if (console.enabled) {
+                console.reclaimFocus = true;
+            }
+        }
+        else
+            *g_Game->GetConsole()->GetState() = 0;
 
         return false;
     }
