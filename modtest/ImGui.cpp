@@ -87,13 +87,12 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         if (menuShown) {
             *g_Game->GetConsole()->GetState() = 2;
 
-            // Console should steal focus by default, if visible. 
+            // Console should steal focus by default, if visible.
             // Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
             if (console.enabled) {
                 console.reclaimFocus = true;
             }
-        }
-        else
+        } else
             *g_Game->GetConsole()->GetState() = 0;
 
         return false;
@@ -161,9 +160,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         }
         customImGui.DrawWindows();
     }
-    if (logViewer.enabled || logViewer.pinned) {
-        // Show the log viewer and draw the overlay
-        logViewer.Draw();
+    logViewer.Draw(menuShown);
+
     }
 
     ImGui::Render();
@@ -174,7 +172,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     return super(hdc);
 }
 
-HOOK_METHOD(Console, Render, () -> void) {
+HOOK_METHOD(Console, Render, ()->void)
+{
     // We set console state to induce a game pause but we don't want the actual console rendering, just suppress.
     // TODO could we set an option for this? Some people might prefer the original console, I hope they feel better soon
 }

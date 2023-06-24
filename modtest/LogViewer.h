@@ -59,8 +59,13 @@ struct LogViewer {
                 offsets.push_back(old_size + 1);
     }
 
-    void Draw()
+    void Draw(boolean isImGuiActive)
     {
+      if (!enabled || !isImGuiActive && !pinned)
+      {
+        return;
+      }
+        
         if (ImGui::Begin("Log Viewer", &enabled, handleWindowFlags(0))) {
             filter.Draw("Filter", -110.0f);
             ImGui::SameLine();
