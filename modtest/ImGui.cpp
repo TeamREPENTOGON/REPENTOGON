@@ -50,27 +50,34 @@ std::list<ImGuiKey>* GetPressedKeys()
     return keys;
 }
 
-bool wasChangeButtonPressed = false;
-ImGuiKey AddChangeGamepadButton()
+ImGuiKey AddChangeKeyButton(const char * title, bool isController, bool& wasPressed)
 {
-    if (ImGui::Button("Change")) {
-        wasChangeButtonPressed = true;
+    if (ImGui::Button(title)) {
+        wasPressed = true;
     }
 
-    if (wasChangeButtonPressed && ImGui::BeginTooltip()) {
+    if (wasPressed && ImGui::BeginTooltip()) {
         ImGui::SetWindowFocus();
-        ImGui::Text("Press a button on your controller.");
+        int firstKey = static_cast<int>(ImGuiKey_Tab);
+        int lastKey = static_cast<int>(ImGuiKey_KeypadEqual);
+        if (isController) {
+            firstKey = static_cast<int>(ImGuiKey_GamepadStart);
+            lastKey = static_cast<int>(ImGuiKey_GamepadRStickDown);
+            ImGui::Text("Press a button on your controller.");
+        } else {
+            ImGui::Text("Press a key on your keyboard.");
+        }
         ImGui::Text("Press ESC to cancel input");
 
         std::list<ImGuiKey>* keys = GetPressedKeys();
         for (auto key = keys->begin(); key != keys->end(); ++key) {
-            if (*key >= static_cast<int>(ImGuiKey_GamepadStart) && *key <= static_cast<int>(ImGuiKey_GamepadRStickDown)) {
-                wasChangeButtonPressed = false;
-                return *key;
-            }
             if (*key == static_cast<int>(ImGuiKey_Escape)) {
-                wasChangeButtonPressed = false;
+                wasPressed = false;
                 return ImGuiKey_None;
+            }
+            if (*key >= firstKey && *key <= lastKey) {
+                wasPressed = false;
+                return *key;
             }
         }
         ImGui::EndTooltip();
@@ -200,4 +207,4 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
 }
 
 extern int handleWindowFlags(int flags);
-extern ImGuiKey AddChangeGamepadButton();
+extern ImGuiKey AddChangeKeyButton(const char* title, bool isController, bool& wasPressed);

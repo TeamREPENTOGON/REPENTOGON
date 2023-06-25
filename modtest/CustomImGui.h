@@ -8,7 +8,7 @@
 #include "LuaCore.h"
 
 extern int handleWindowFlags(int flags);
-extern ImGuiKey AddChangeGamepadButton();
+extern ImGuiKey AddChangeKeyButton(const char* title, bool isController, bool& wasPressed);
 
 enum class IMGUI_ELEMENT {
     Window,
@@ -39,7 +39,8 @@ enum class IMGUI_ELEMENT {
     InputText,
     InputTextWithHint,
     InputTextMultiline,
-    InputController
+    InputController,
+    InputKeyboard
 };
 
 enum class IMGUI_CALLBACK {
@@ -57,6 +58,41 @@ enum class IMGUI_CALLBACK {
 };
 
 static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
+static const std::map<ImGuiKey, int> imGuiToIsaacKey {
+    { ImGuiKey_Tab, 258 }, { ImGuiKey_LeftArrow, 263 }, { ImGuiKey_RightArrow, 262 }, { ImGuiKey_UpArrow, 265 }, { ImGuiKey_DownArrow, 264 },
+    { ImGuiKey_PageUp, 266 }, { ImGuiKey_PageDown, 267 }, { ImGuiKey_Home, 268 }, { ImGuiKey_End, 269 }, { ImGuiKey_Insert, 260 },
+    { ImGuiKey_Delete, 261 }, { ImGuiKey_Backspace, 259 }, { ImGuiKey_Space, 32 }, { ImGuiKey_Enter, 257 }, { ImGuiKey_Escape, 256 },
+    { ImGuiKey_LeftCtrl, 341 }, { ImGuiKey_LeftShift, 340 }, { ImGuiKey_LeftAlt, 342 }, { ImGuiKey_LeftSuper, 343 }, { ImGuiKey_RightCtrl, 345 },
+    { ImGuiKey_RightShift, 344 }, { ImGuiKey_RightAlt, 346 }, { ImGuiKey_RightSuper, 347 }, { ImGuiKey_Menu, 348 }, { ImGuiKey_0, 48 },
+    { ImGuiKey_1, 49 }, { ImGuiKey_2, 50 }, { ImGuiKey_3, 51 }, { ImGuiKey_4, 52 }, { ImGuiKey_5, 53 }, { ImGuiKey_6, 54 }, { ImGuiKey_7, 55 },
+    { ImGuiKey_8, 56 }, { ImGuiKey_9, 57 }, { ImGuiKey_A, 65 }, { ImGuiKey_B, 66 }, { ImGuiKey_C, 67 }, { ImGuiKey_D, 68 }, { ImGuiKey_E, 69 }, { ImGuiKey_F, 70 },
+    { ImGuiKey_G, 71 }, { ImGuiKey_H, 72 }, { ImGuiKey_I, 73 }, { ImGuiKey_J, 74 }, { ImGuiKey_K, 75 }, { ImGuiKey_L, 76 }, { ImGuiKey_M, 77 }, { ImGuiKey_N, 78 },
+    { ImGuiKey_O, 79 }, { ImGuiKey_P, 80 }, { ImGuiKey_Q, 81 }, { ImGuiKey_R, 82 }, { ImGuiKey_S, 83 }, { ImGuiKey_T, 84 }, { ImGuiKey_U, 85 }, { ImGuiKey_V, 86 },
+    { ImGuiKey_W, 87 }, { ImGuiKey_X, 88 }, { ImGuiKey_Y, 89 }, { ImGuiKey_Z, 90 }, { ImGuiKey_F1, 290 }, { ImGuiKey_F2, 291 }, { ImGuiKey_F3, 292 }, { ImGuiKey_F4, 293 },
+    { ImGuiKey_F5, 294 }, { ImGuiKey_F6, 295 }, { ImGuiKey_F7, 296 }, { ImGuiKey_F8, 297 }, { ImGuiKey_F9, 298 }, { ImGuiKey_F10, 299 }, { ImGuiKey_F11, 300 },
+    { ImGuiKey_F12, 301 }, { ImGuiKey_Apostrophe, 39 }, { ImGuiKey_Comma, 44 }, { ImGuiKey_Minus, 45 }, { ImGuiKey_Period, 46 }, { ImGuiKey_Slash, 47 },
+    { ImGuiKey_Semicolon, 59 }, { ImGuiKey_Equal, 61 }, { ImGuiKey_LeftBracket, 91 }, { ImGuiKey_Backslash, 92 }, { ImGuiKey_RightBracket, 93 },
+    { ImGuiKey_GraveAccent, 96 }, { ImGuiKey_CapsLock, 280 }, { ImGuiKey_ScrollLock, 281 }, { ImGuiKey_NumLock, 282 }, { ImGuiKey_PrintScreen, 283 },
+    { ImGuiKey_Pause, 284 }, { ImGuiKey_Keypad0, 320 }, { ImGuiKey_Keypad1, 321 }, { ImGuiKey_Keypad2, 322 }, { ImGuiKey_Keypad3, 323 }, { ImGuiKey_Keypad4, 324 },
+    { ImGuiKey_Keypad5, 325 }, { ImGuiKey_Keypad6, 326 }, { ImGuiKey_Keypad7, 327 }, { ImGuiKey_Keypad8, 328 }, { ImGuiKey_Keypad9, 329 },
+    { ImGuiKey_KeypadDecimal, 330 }, { ImGuiKey_KeypadDivide, 331 }, { ImGuiKey_KeypadMultiply, 332 }, { ImGuiKey_KeypadSubtract, 333 }, { ImGuiKey_KeypadAdd, 334 },
+    { ImGuiKey_KeypadEnter, 335 }, { ImGuiKey_KeypadEqual, 336 },
+    // Controller
+    { ImGuiKey_GamepadLStickLeft, 0 }, { ImGuiKey_GamepadDpadLeft, 0 }, // ACTION_LEFT
+    { ImGuiKey_GamepadLStickRight, 1 }, { ImGuiKey_GamepadDpadRight, 1 }, // ACTION_RIGHT
+    { ImGuiKey_GamepadLStickUp, 2 }, { ImGuiKey_GamepadDpadUp, 2 }, // ACTION_UP
+    { ImGuiKey_GamepadLStickDown, 3 }, { ImGuiKey_GamepadDpadDown, 3 }, // ACTION_DOWN
+    { ImGuiKey_GamepadRStickLeft, 4 }, { ImGuiKey_GamepadFaceLeft, 4 }, // ACTION_SHOOTLEFT
+    { ImGuiKey_GamepadRStickRight, 5 }, { ImGuiKey_GamepadFaceRight, 5 }, // ACTION_SHOOTRIGHT
+    { ImGuiKey_GamepadRStickUp, 6 }, { ImGuiKey_GamepadFaceUp, 6 }, // ACTION_SHOOTUP
+    { ImGuiKey_GamepadRStickDown, 7 }, { ImGuiKey_GamepadFaceDown, 7 }, // ACTION_SHOOTDOWN
+    { ImGuiKey_GamepadL1, 8 }, // ACTION_BOMB
+    { ImGuiKey_GamepadL2, 9 }, // ACTION_ITEM
+    { ImGuiKey_GamepadR1, 10 }, // ACTION_PILLCARD
+    { ImGuiKey_GamepadR2, 11 }, // ACTION_DROP
+    { ImGuiKey_GamepadStart, 12 }, // ACTION_PAUSE
+    { ImGuiKey_GamepadBack, 13 }, // ACTION_MAP
+};
 
 struct Data {
     int clickCounter = 0;
@@ -262,55 +298,13 @@ struct Element {
             caller->push(miscData.inputText.c_str());
             break;
         case IMGUI_ELEMENT::InputController:
-            caller->push(ImGuiToIsaacController(static_cast<ImGuiKey>(miscData.defaultKeyboardKey)));
+        case IMGUI_ELEMENT::InputKeyboard:
+            caller->push(imGuiToIsaacKey.at(static_cast<ImGuiKey>(miscData.defaultKeyboardKey)));
             caller->push(ImGui::GetKeyName(static_cast<ImGuiKey>(miscData.defaultKeyboardKey)));
             break;
         default:
             caller->push((float)data.clickCounter);
             break;
-        }
-    }
-    int ImGuiToIsaacController(ImGuiKey key)
-    {
-        switch (key) {
-        case ImGuiKey_GamepadLStickLeft:
-        case ImGuiKey_GamepadDpadLeft:
-            return 0; // ACTION_LEFT
-        case ImGuiKey_GamepadLStickRight:
-        case ImGuiKey_GamepadDpadRight:
-            return 1; // ACTION_RIGHT
-        case ImGuiKey_GamepadLStickUp:
-        case ImGuiKey_GamepadDpadUp:
-            return 2; // ACTION_UP
-        case ImGuiKey_GamepadLStickDown:
-        case ImGuiKey_GamepadDpadDown:
-            return 3; // ACTION_DOWN
-        case ImGuiKey_GamepadRStickLeft:
-        case ImGuiKey_GamepadFaceLeft:
-            return 4; // ACTION_SHOOTLEFT
-        case ImGuiKey_GamepadRStickRight:
-        case ImGuiKey_GamepadFaceRight:
-            return 5; // ACTION_SHOOTRIGHT
-        case ImGuiKey_GamepadRStickUp:
-        case ImGuiKey_GamepadFaceUp:
-            return 6; // ACTION_SHOOTUP
-        case ImGuiKey_GamepadRStickDown:
-        case ImGuiKey_GamepadFaceDown:
-            return 7; // ACTION_SHOOTDOWN
-        case ImGuiKey_GamepadL1:
-            return 8; // ACTION_BOMB
-        case ImGuiKey_GamepadL2:
-            return 9; // ACTION_ITEM
-        case ImGuiKey_GamepadR1:
-            return 10; // ACTION_PILLCARD
-        case ImGuiKey_GamepadR2:
-            return 11; // ACTION_DROP
-        case ImGuiKey_GamepadStart:
-            return 12; // ACTION_PAUSE
-        case ImGuiKey_GamepadBack:
-            return 13; // ACTION_MAP
-        default:
-            return -1;
         }
     }
 
@@ -942,12 +936,13 @@ struct CustomImGui {
                 }
                 break;
             case IMGUI_ELEMENT::InputController:
+            case IMGUI_ELEMENT::InputKeyboard:
                 if (element->GetMiscData() != nullptr) {
                     MiscData* data = element->GetMiscData();
                     if (data->inputText.empty())
                         data->inputText = std::string(ImGui::GetKeyName(static_cast<ImGuiKey>(data->defaultKeyboardKey)));
 
-                    ImGuiKey newButton = AddChangeGamepadButton();
+                    ImGuiKey newButton = AddChangeKeyButton(name, element->type == IMGUI_ELEMENT::InputController, element->isActive);
                     if (newButton != ImGuiKey_None) {
                         data->inputText = ImGui::GetKeyName(newButton);
                         data->defaultKeyboardKey = static_cast<int>(newButton);
@@ -959,8 +954,8 @@ struct CustomImGui {
                         }
                     }
                     ImGui::SameLine();
-                    ImGui::PushItemWidth(-300);
-                    StringInputText(name, &data->inputText, ImGuiInputTextFlags_ReadOnly, NULL, NULL);
+                    ImGui::PushItemWidth(-10);
+                    StringInputText("", &data->inputText, ImGuiInputTextFlags_ReadOnly, NULL, NULL);
                 }
                 break;
             default:

@@ -76,6 +76,7 @@ imgui:AddInputText("catInput", "inputTextwHint", "text input w hint", function(v
 imgui:AddInputTextMultiline("catInput", "inputTextMulti", "Multiline text input", function(val) print(val) end,
     "Some\nCool text with linebreaks\nAnd Stuff", 7)
 
+imgui:AddInputKeyboard("catInput", "keyboardInput", "Keyboard Input", function(keyID, keyName) print(keyID, keyName) end, 0)
 imgui:AddInputController("catInput", "controllerInput", "Controller Input", function(keyID, keyName) print(keyID, keyName) end, 0)
 
 --------- Tab Testing ---------

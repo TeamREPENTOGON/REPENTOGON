@@ -53,7 +53,7 @@ The callback gets passed the r,g,b and a values as seperate parameters.
     ```
 ___
 ### Add·Input·Controller () {: aria-label='Functions' }
-#### void AddInputController ( string parentId, string elementId, string text = "", function changeCallback = nil, float defaultVal = 0 ) {: .copyable aria-label='Functions' }
+#### void AddInputController ( string parentId, string elementId, string buttonText = "", function changeCallback = nil, float defaultVal = 0 ) {: .copyable aria-label='Functions' }
 Adds an input for Gamepad / controller buttons.
 
 The callback gets passed the [ButtonAction ID](https://wofsauge.github.io/IsaacDocs/rep/enums/ButtonAction.html) and the ImGuiKey name of the new button.
@@ -63,6 +63,12 @@ ___
 ___
 ### Add·Input·Integer () {: aria-label='Functions' }
 #### void AddInputInteger ( string parentId, string elementId, string text = "", function changeCallback = nil, int defaultVal = 0, int step = 1, int stepFast = 100  ) {: .copyable aria-label='Functions' }
+___
+### Add·Input·Keyboard () {: aria-label='Functions' }
+#### void AddInputKeyboard ( string parentId, string elementId, string buttonText = "", function changeCallback = nil, float defaultVal = 0 ) {: .copyable aria-label='Functions' }
+Adds an input for keyboard buttons.
+
+The callback gets passed the [Keyboard key ID](https://wofsauge.github.io/IsaacDocs/rep/enums/Keyboard.html) and the ImGuiKey name of the new button.
 ___
 ### Add·Input·Text () {: aria-label='Functions' }
 #### void AddInputText ( string parentId, string elementId, string description = "", function changeCallback = nil, string defaultVal = "", string hintText = "" ) {: .copyable aria-label='Functions' }
