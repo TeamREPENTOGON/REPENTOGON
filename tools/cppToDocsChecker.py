@@ -29,7 +29,7 @@ parentClass = {
                "DebugRenderer":"Game,Entity,Shape",
                "EntityPlayer":"PocketItem",
                "EntitySlot":"Entity",
-               "GridEntity":"Isaac",
+               "GridEntity":"Isaac,GridEntityRock",
                "History":"EntityPlayer",
                "ItemOverlay":"Game",
                "ImGui":"Isaac",

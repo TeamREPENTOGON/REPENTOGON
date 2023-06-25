@@ -35,6 +35,12 @@ ___
 Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
 
 ___
+### Add·Locust () {: aria-label='Functions' }
+#### int AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
+
+Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
+
+___
 ### Drop·Collectible () {: aria-label='Functions' }
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 

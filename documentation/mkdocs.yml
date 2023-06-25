@@ -112,7 +112,9 @@ nav:
     - EntitySlot: EntitySlot.md
   - Font: Font.md
   - Game: Game.md
-  - GridEntity: GridEntity.md
+  - GridEntity:
+    - GridEntity: GridEntity.md
+    - GridEntityRock: GridEntityRock.md
   - History: History.md
   - HUD: HUD.md
   - ImGui: ImGui.md
