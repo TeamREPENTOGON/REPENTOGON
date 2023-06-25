@@ -606,10 +606,10 @@ struct ConsoleMega {
                                     try {
                                         mask = std::stoi(cmdlets[1]);
                                     }
+                                    #pragma warning(suppress: 4101)
                                     catch (std::invalid_argument& err) {
                                         return 0;
                                     }
-
                                     for (auto node : curses) {
                                         int id = node.first;
                                         if ((mask & id) != 0) {

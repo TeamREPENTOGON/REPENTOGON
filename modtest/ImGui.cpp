@@ -154,6 +154,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
+    ImGui::GetIO().FontGlobalScale = g_PointScale;
 
     if (menuShown) {
         if (ImGui::BeginMainMenuBar()) {
