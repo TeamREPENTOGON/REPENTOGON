@@ -228,6 +228,9 @@ struct ConsoleMega {
                     ImGui::TextWrapped(entry->_text.Get());
                     ImGui::PopStyleColor();
                 }
+                if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+                    ImGui::SetScrollHereY(1.0f);
+                }
                 ImGui::EndChild();
             }
 
