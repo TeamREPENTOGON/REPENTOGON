@@ -68,12 +68,21 @@ static int Lua_SpriteGetLayer(lua_State* L)
 	return 1;
 }
 
+/*static int Lua_SpriteGetLayer_Text(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const char* layerName = luaL_checkstring(L, 2);
+	LayerState* toLua = anm2->GetLayer(layerName);
+	if (toLua == nullptr) {
+		lua_pushnil(L);
+		return 1;
 	}
 	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
 	*luaLayer = toLua;
 	luaL_setmetatable(L, LayerStateMT);
 	return 1;
 }
+*/
 
 static int Lua_SpriteGetSpritesheetPath(lua_State* L)
 {
@@ -219,6 +228,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(state);
 	lua::Metatables mt = lua::Metatables::SPRITE;
 	lua::RegisterFunction(state, mt, "GetLayer", Lua_SpriteGetLayer);
+	//lua::RegisterFunction(state, mt, "GetLayer_1", Lua_SpriteGetLayer_Text);
 	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);
 	RegisterLayerState(state);
 }
