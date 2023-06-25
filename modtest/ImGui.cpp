@@ -119,6 +119,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 {
+    static std::map<int, ImFont*> fonts;
 
     if (!imguiInitialized) {
         HWND window = WindowFromDC(hdc);
@@ -142,9 +143,18 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         ImGui::CaptureMouseFromApp();
         ImGui::CaptureKeyboardFromApp();
 
-        // Once we settle on a TTF font, use this cfg when loading and it should have zero AA.
         ImFontConfig cfg;
-        cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_ForceAutoHint | ImGuiFreeTypeBuilderFlags_Monochrome;
+        cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
+        cfg.OversampleH = 1;
+        cfg.OversampleV = 1;
+        cfg.PixelSnapH = 1;
+
+        for (int i = 1; i <= 12; ++i) {
+            // ImGui font scaling will make it blurry, this is a suboptimal but (for better or worse) functional workaround.
+            cfg.SizePixels = 13.0f * i;
+            fonts.insert(std::pair<int, ImFont*>(i, ImGui::GetIO().Fonts->AddFontDefault(&cfg)));
+        }
+
 
         imguiInitialized = true;
         logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui\n");
@@ -154,7 +164,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-    ImGui::GetIO().FontGlobalScale = g_PointScale;
+
+    ImGui::GetIO().FontDefault = fonts.at((int)g_PointScale);
 
     if (menuShown) {
         if (ImGui::BeginMainMenuBar()) {
