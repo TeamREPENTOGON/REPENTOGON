@@ -151,8 +151,8 @@ nav:
 plugins:
 - search:
     separator: "[\\s\\-\\.\\_\\\xB7]+"
-repo_name: IsaacZHL/IsaacZHL
-repo_url: https://github.com/IsaacZHL/IsaacZHL
+repo_name: IsaacZHL/REPENTOGON
+repo_url: https://github.com/IsaacZHL/REPENTOGON
 site_name: 'BoI: REPENTOGON Docs'
 site_url: https://repentogon.com
 theme:
