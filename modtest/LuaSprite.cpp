@@ -56,11 +56,18 @@ int Lua_SpriteReplaceSpritesheet(lua_State* L)
 static int Lua_SpriteGetLayer(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	unsigned int layerName = (unsigned int)luaL_checkinteger(L, 2);
-	LayerState* toLua = anm2->GetLayer(layerName);
+	unsigned int layerID = (unsigned int)luaL_checkinteger(L, 2);
+	LayerState* toLua = anm2->GetLayer(layerID);
 	unsigned int layerCount = anm2->GetLayerCount();
-	if (layerName > layerCount) {
-		return luaL_error(L, "Invalid layer ID %d, max = %d ", layerName, layerCount);
+	if ((layerID < 0) || (layerCount <= layerID)) {
+		return luaL_error(L, "Invalid layer ID %d ", layerID);
+	}
+	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
+	*luaLayer = toLua;
+	luaL_setmetatable(L, LayerStateMT);
+	return 1;
+}
+
 	}
 	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
 	*luaLayer = toLua;
@@ -179,12 +186,6 @@ static int Lua_LayerStateSetCropOffset(lua_State* L)
 
 
 static void RegisterLayerState(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::SPRITE);
-	lua_pushstring(L, "GetLayer");
-	lua_pushcfunction(L, Lua_SpriteGetLayer);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
 	luaL_newmetatable(L, LayerStateMT);
 	lua_pushstring(L, "__index");
 	lua_pushvalue(L, -2);
@@ -217,6 +218,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	lua::Metatables mt = lua::Metatables::SPRITE;
+	lua::RegisterFunction(state, mt, "GetLayer", Lua_SpriteGetLayer);
 	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);
 	RegisterLayerState(state);
 }
