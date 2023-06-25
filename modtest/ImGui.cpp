@@ -51,9 +51,9 @@ std::list<ImGuiKey>* GetPressedKeys()
     return keys;
 }
 
-ImGuiKey AddChangeKeyButton(const char * title, bool isController, bool& wasPressed)
+ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 {
-    if (ImGui::Button(title)) {
+    if (ImGui::Button("Change")) {
         wasPressed = true;
     }
 
@@ -213,4 +213,4 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
 }
 
 extern int handleWindowFlags(int flags);
-extern ImGuiKey AddChangeKeyButton(const char* title, bool isController, bool& wasPressed);
+extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);

@@ -8,7 +8,7 @@
 #include "LuaCore.h"
 
 extern int handleWindowFlags(int flags);
-extern ImGuiKey AddChangeKeyButton(const char* title, bool isController, bool& wasPressed);
+extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
 
 enum class IMGUI_ELEMENT {
     Window,
@@ -306,6 +306,14 @@ struct Element {
             caller->push((float)data.clickCounter);
             break;
         }
+    }
+
+    std::size_t GetHash()
+    {
+        std::size_t h1 = std::hash<std::string> {}(name);
+        std::size_t h2 = std::hash<std::string> {}(id);
+        std::size_t h3 = std::hash<IMGUI_ELEMENT> {}(type);
+        return h1 ^ (h2 << 1) ^ (h3 << 1);
     }
 
     void EvaluateVisible()
@@ -699,6 +707,7 @@ struct CustomImGui {
     void DrawWindows()
     {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
+            ImGui::PushID(window->GetHash());
             ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
             window->EvaluateVisible();
             if (window->evaluatedVisibleState && ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
@@ -706,6 +715,7 @@ struct CustomImGui {
                 ImGui::End();
             }
             ImGui::PopStyleVar();
+            ImGui::PopID();
         }
     }
 
@@ -726,6 +736,7 @@ struct CustomImGui {
         for (auto element = elements->begin(); element != elements->end(); ++element) {
             const char* name = element->name.c_str();
 
+            ImGui::PushID(element->GetHash());
             switch (element->type) {
             case IMGUI_ELEMENT::Menu:
                 if (ImGui::BeginMenu(name)) {
@@ -741,6 +752,7 @@ struct CustomImGui {
             default:
                 break;
             }
+            ImGui::PopID();
         }
     }
 
@@ -750,6 +762,7 @@ struct CustomImGui {
             const char* name = element->name.c_str();
             RunPreRenderCallbacks(&(*element));
 
+            ImGui::PushID(element->GetHash());
             switch (element->type) {
             case IMGUI_ELEMENT::CollapsingHeader:
                 if (ImGui::CollapsingHeader(name)) {
@@ -942,7 +955,7 @@ struct CustomImGui {
                     if (data->inputText.empty())
                         data->inputText = std::string(ImGui::GetKeyName(static_cast<ImGuiKey>(data->defaultKeyboardKey)));
 
-                    ImGuiKey newButton = AddChangeKeyButton(name, element->type == IMGUI_ELEMENT::InputController, element->isActive);
+                    ImGuiKey newButton = AddChangeKeyButton(element->type == IMGUI_ELEMENT::InputController, element->isActive);
                     if (newButton != ImGuiKey_None) {
                         data->inputText = ImGui::GetKeyName(newButton);
                         data->defaultKeyboardKey = static_cast<int>(newButton);
@@ -954,14 +967,14 @@ struct CustomImGui {
                         }
                     }
                     ImGui::SameLine();
-                    ImGui::PushItemWidth(-10);
-                    StringInputText("", &data->inputText, ImGuiInputTextFlags_ReadOnly, NULL, NULL);
+                    StringInputText(name, &data->inputText, ImGuiInputTextFlags_ReadOnly, NULL, NULL);
                 }
                 break;
             default:
                 break;
             }
             HandleElementExtras(&(*element));
+            ImGui::PopID();
         }
     }
 };

@@ -56,6 +56,7 @@ imgui:SetHelpmarker("tooltipButton", "My cool Helpmarker")
 
 --------- CATEGORY INPUTS ---------
 imgui:AddElement("testWindow2", "catInput", ImGuiElement.CollapsingHeader, "Input types")
+imgui:AddButton("catInput", "testButton1","Button", function(clickCount) print("Button clicked "..clickCount.." times") end)
 imgui:AddInputInteger("catInput", "inputInt", "int input", function(val) print(val) end, 10, 5, 500)
 imgui:AddInputFloat("catInput", "inputFloat", "float input", function(val) print(val) end, 2.5, 0.2, 5)
 imgui:AddDragInteger("catInput", "DragInt", "int Drag", function(val) print(val) end, 5, 1, 0, 100)
@@ -77,7 +78,7 @@ imgui:AddInputTextMultiline("catInput", "inputTextMulti", "Multiline text input"
     "Some\nCool text with linebreaks\nAnd Stuff", 7)
 
 imgui:AddInputKeyboard("catInput", "keyboardInput", "Keyboard Input", function(keyID, keyName) print(keyID, keyName) end, 0)
-imgui:AddInputController("catInput", "controllerInput", "Controller Input", function(keyID, keyName) print(keyID, keyName) end, 0)
+imgui:AddInputController("catInput", "controllerInput", "Controller Input", function(keyID, keyName) print(keyID, keyName) end, 0) -- also tests ImGui bugfix for https://github.com/ocornut/imgui/issues/74
 
 --------- Tab Testing ---------
 imgui:AddTabBar("testWindow2", "tabBar1")
