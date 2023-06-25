@@ -3,7 +3,7 @@ edit_uri: edit/main/documentation/docs/
 extra:
   social:
   - icon: fontawesome/brands/github
-    link: https://github.com/IsaacZHL/IsaacZHL
+    link: https://github.com/IsaacZHL/REPENTOGON
     name: REPENTOGON source code and documentation
   version:
     default: rep
