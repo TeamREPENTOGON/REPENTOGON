@@ -52,6 +52,7 @@ jobs:
         mv libzhl.dll artifact
         mv zhlModTest.dll artifact
         mv Lua5.3.3r.dll artifact
+        mv freetype.dll artifact
         
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
