@@ -13,6 +13,7 @@
 #include <sstream>
 
 #include "imgui.h"
+#include "imgui_freetype.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
 
@@ -140,6 +141,10 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
         ImGui::CaptureMouseFromApp();
         ImGui::CaptureKeyboardFromApp();
+
+        // Once we settle on a TTF font, use this cfg when loading and it should have zero AA.
+        ImFontConfig cfg;
+        cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_ForceAutoHint | ImGuiFreeTypeBuilderFlags_Monochrome;
 
         imguiInitialized = true;
         logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui\n");

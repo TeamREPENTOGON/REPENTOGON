@@ -10,3 +10,6 @@
 [submodule "libs/NaturalSort"]
 	path = libs/NaturalSort
 	url = https://github.com/scopeInfinity/NaturalSort
+[submodule "libs/freetype"]
+	path = libs/freetype
+	url = https://gitlab.freedesktop.org/freetype/freetype.git
