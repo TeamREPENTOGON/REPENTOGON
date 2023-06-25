@@ -205,8 +205,8 @@ struct ConsoleMega {
         if (ImGui::Begin("Console", &enabled, handleWindowFlags(0))) {
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
-            // -27 = fill remaining window space minus 27px. fixes issue where the input is outside the window frame
-            if (ImGui::BeginChild("Text View", ImVec2(0, -27), true)) {
+            // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
+            if (ImGui::BeginChild("Text View", ImVec2(0, (-14 - ImGui::GetIO().FontDefault->FontSize)), true)) {
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.
