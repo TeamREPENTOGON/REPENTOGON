@@ -232,7 +232,7 @@ ___
 
 ___
 ### Set·Pony·Charge () {: aria-label='Functions' }
-#### int SetPonyCharge ( ) {: .copyable aria-label='Functions' }
+#### void SetPonyCharge ( int Time ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
