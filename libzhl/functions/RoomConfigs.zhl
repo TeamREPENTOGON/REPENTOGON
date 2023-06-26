@@ -1,18 +1,18 @@
-struct RoomConfigs depends (IsaacString)
+struct RoomConfigs
 {
     uint32_t stageId; // 0x0
-    IsaacString stageName; // 0x4
-    IsaacString playerSpot; // 0x1C
-    IsaacString bossSpot; // 0x34
-    IsaacString suffix; // 0x4C
-    IsaacString xmlFileName; // 0x64
+    std_string stageName; // 0x4
+    std_string playerSpot; // 0x1C
+    std_string bossSpot; // 0x34
+    std_string suffix; // 0x4C
+    std_string xmlFileName; // 0x64
     RoomConfig* configs; // 0x7C
     uint32_t nbRooms; // 0x80 (includes disabled rooms)
     void* unk1; // 0x84
     uint32_t unk2; // 0x88
     uint8_t unk3; // 0x8C, flag for Greed Mode ? Accessed through byte ptr ds:[]
     char unk4[0x3]; // 0x8D, padding ?
-    IsaacString greedModeXmlFileName; // 0x90
+    std_string greedModeXmlFileName; // 0x90
     char unk5[0x8]; // 0xA8
     void* unk6; // 0xB0
     char unk7[0x8]; // 0xB4

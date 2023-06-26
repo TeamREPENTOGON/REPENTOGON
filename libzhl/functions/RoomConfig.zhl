@@ -1,14 +1,17 @@
 "558bec6aff68????????64a1????????5051b884000100e8????????a1????????33c58945??535657508d45??64a3????????8965??898d":
 __thiscall void RoomConfig::LoadCurses(char* xmlpath,bool ismod);
 
-struct RoomConfig depends (IsaacString, StaticArray)
+"558bec8b45??83f8ff75??a1":
+static __fastcall unsigned int RoomConfig::GetStageID(unsigned int LevelStage, unsigned int StageType, unsigned int Mode);
+
+struct RoomConfig depends (StaticArray)
 {
     int32_t StageId; // 0x0
     int32_t Mode; // 0x4
     int32_t Type; // 0x8
-    int32_t Variant; // 0xC
+    uint32_t Variant; // 0xC
     int32_t Subtype; // 0x10
-    IsaacString Name; // 0x14
+    std_string Name; // 0x14
     int32_t Difficulty; // 0x2C
     float InitialWeight; // 0x30
     float Weight; // 0x34

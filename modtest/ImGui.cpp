@@ -11,6 +11,7 @@
 #include <format>
 #include <gl/GL.h>
 #include <sstream>
+#include <algorithm>
 
 #include "imgui.h"
 #include "imgui_freetype.h"
@@ -113,26 +114,46 @@ ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
     return ImGuiKey_None;
 }
 
+static std::vector<WPARAM> pressedKeys;
+
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    // Toggle the overlay using the grave key
-    if (uMsg == WM_KEYDOWN && wParam == VK_OEM_3 && g_Manager->GetDebugConsoleEnabled()) {
-        menuShown = !menuShown;
+    // Enable the overlay using the grave key, disable using ESC
+    if (uMsg == WM_KEYDOWN && g_Manager->GetDebugConsoleEnabled()) {
         ImGui::CloseCurrentPopup();
 
-        // Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
-        if (menuShown) {
-            *g_Game->GetConsole()->GetState() = 2;
+        switch(wParam) {
+            case VK_OEM_3: {
+                menuShown = true;
 
-            // Console should steal focus by default, if visible.
-            // Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
-            if (console.enabled) {
-                console.reclaimFocus = true;
+                // Release keys we've tracked as being pressed. Call the game's wndProc to accomplish this
+                std::vector keys = pressedKeys;
+                for (WPARAM key : keys) {
+                    CallWindowProc(windowProc, hWnd, WM_KEYUP, key, lParam);
+                    // We're working on a copy of the vector, so we don't necessarily care about popping the original one in order
+                    pressedKeys.pop_back();
+
+                }
+
+                // Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
+                //*g_Game->GetConsole()->GetState() = 2;
+
+                // Console should steal focus by default, if visible.
+                // Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
+                if (console.enabled) {
+                    console.reclaimFocus = true;
+                }
+
+                break;
             }
-        } else
-            *g_Game->GetConsole()->GetState() = 0;
 
-        return false;
+            case VK_ESCAPE: {
+                *g_Game->GetConsole()->GetState() = 0;
+                menuShown = false;
+
+                return true;
+            }
+        }
     }
 
     // If the overlay is shown, direct input to the overlay only
@@ -140,8 +161,30 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
         return true;
     }
+    else {
+        // Otherwise call the game's wndProc function
+        // Track what keys are being pressed so we can release them the next time ImGui is brought up
+        switch (uMsg) {
+            case WM_KEYDOWN: {
+                if (!menuShown) {
+                    // When a key is pushed down, it can trigger multiple WM_KEYDOWN events in a row.
+                    // Ensure we're not entering duplicates.
+                    std::vector<WPARAM>::iterator it = find(pressedKeys.begin(), pressedKeys.end(), wParam);
+                    if (it == pressedKeys.end()) {
+                        pressedKeys.push_back(wParam);
+                    }
+                }
 
-    // Otherwise call the game's wndProc function
+                break;
+            }
+            case WM_KEYUP: {
+                pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), wParam), pressedKeys.end());
+
+                break;
+            }
+        }
+    }
+
     return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 }
 

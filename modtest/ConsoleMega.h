@@ -145,7 +145,7 @@ struct ConsoleMega {
         RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false, DELIRIOUS);
         RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
         RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM, {"g"});
-        RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false);
+        RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false, GOTO);
         RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false);
         RegisterCommand("help", "Get info about commands", "Retrieve further info about a command and its syntax.", true);
         RegisterCommand("listcollectibles", "List current items", "Lists the items the player currently has.", false);
@@ -374,8 +374,27 @@ struct ConsoleMega {
 
                                 break;
                             }
+                            case GOTO: {
+                                unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+
+                                // Excuse the mess here. For whatever reason directly iterating on RoomConfig gives us junk results.
+                                // We're doing it manually like some sort of code neanderthal, but it works.
+                                // 0x5C is the length of RoomConfig. NO idea why this doesn't work normally, but whatever.
+                                RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
+                                char* config = (char*)stage.configs;
+
+                                for (unsigned int i = 0; i < stage.nbRooms; ++i) {
+                                    RoomConfig* room = (RoomConfig*)config;
+                                    printf("%s\n", room->Name.c_str());
+                                    config += 0x5C;
+                                }
+                                printf("sanity check: %02X\n", sizeof(RoomConfig) - 0x4);
+
+                                break;
+                            }
+
                             case STAGE: {
-                                // TODO: I'd *love* to add a callback here for StageAPI stages.
+
                                 if (g_Game->GetDifficulty() == 2 || g_Game->GetDifficulty() == 3) { // Greed mode
                                     entries = {
                                         AutocompleteEntry("1", "Basement"),
