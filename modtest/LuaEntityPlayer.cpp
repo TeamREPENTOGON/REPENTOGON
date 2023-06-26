@@ -533,10 +533,24 @@ static int Lua_PlayerSetWeapon(lua_State* L) {
 }
 
 static int Lua_PlayerAddLocust(lua_State* L) {
-	Entity_Player* ent = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity_Player* ent = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int collectibleType = (int)luaL_checkinteger(L, 2);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	Isaac::SpawnLocust(ent, collectibleType, pos);
+
+	return 0;
+}
+
+static int Lua_PlayerGetPonyCharge(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *plr->GetPonyCharge());
+
+	return 1;
+}
+
+static int Lua_PlayerSetPonyCharge(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetPonyCharge() = luaL_checkinteger(L, 2);
 
 	return 0;
 }
@@ -599,4 +613,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	//lua::RegisterFunction(state, mt, "GetWildCardItemType", Lua_PlayerGetWildCardItemType);
 	lua::RegisterFunction(state, mt, "SetWeapon", Lua_PlayerSetWeapon);
 	lua::RegisterFunction(state, mt, "AddLocust", Lua_PlayerAddLocust);
+	lua::RegisterFunction(state, mt, "GetPonyCharge", Lua_PlayerGetPonyCharge);
+	lua::RegisterFunction(state, mt, "SetPonyCharge", Lua_PlayerSetPonyCharge);
 }

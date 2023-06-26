@@ -143,6 +143,10 @@ ___
 #### int GetPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Pony·Charge () {: aria-label='Functions' }
+#### int GetPonyCharge ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
 #### int GetRedStewBonusDuration ( ) {: .copyable aria-label='Functions' }
 
@@ -225,6 +229,10 @@ This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 ___
 ### Set·Mega·Blast·Duration () {: aria-label='Functions' }
 #### void SetMegaBlastDuration ( int Duration ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Pony·Charge () {: aria-label='Functions' }
+#### int SetPonyCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
