@@ -51,6 +51,33 @@ std::list<ImGuiKey>* GetPressedKeys()
     return keys;
 }
 
+void HelpMarker(const char* desc)
+{
+    ImGui::TextDisabled("(?)");
+    if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort) && ImGui::BeginTooltip()) {
+        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+        ImGui::TextUnformatted(desc);
+        ImGui::PopTextWrapPos();
+        ImGui::EndTooltip();
+    }
+}
+
+void AddWindowContextMenu(bool* pinned)
+{
+    if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
+    {
+        ImGui::MenuItem("Pin Window", NULL, pinned);
+        if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) && ImGui::BeginTooltip()) {
+          ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+          ImGui::TextUnformatted("Pinning a window will keep it visible even after closing Dev Tools.");
+          ImGui::PopTextWrapPos();
+          ImGui::EndTooltip();
+        }
+
+        ImGui::EndPopup();
+    }
+}
+
 ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 {
     if (ImGui::Button("Change")) {
@@ -91,6 +118,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
     // Toggle the overlay using the grave key
     if (uMsg == WM_KEYDOWN && wParam == VK_OEM_3 && g_Manager->GetDebugConsoleEnabled()) {
         menuShown = !menuShown;
+        ImGui::CloseCurrentPopup();
 
         // Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
         if (menuShown) {
@@ -155,7 +183,6 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
             fonts.insert(std::pair<int, ImFont*>(i, ImGui::GetIO().Fonts->AddFontDefault(&cfg)));
         }
 
-
         imguiInitialized = true;
         logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui\n");
         printf("[REPENTOGON] Dear ImGui initialized! Any further logs can be seen in the in-game log viewer.\n");
@@ -180,13 +207,12 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
             ImGui::EndMainMenuBar();
         }
-
-        if (console.enabled) {
-            console.Draw();
-        }
-        customImGui.DrawWindows();
     }
+
+    console.Draw(menuShown);
     logViewer.Draw(menuShown);
+
+    customImGui.DrawWindows(menuShown);
 
     if (show_app_style_editor) {
         ImGui::Begin("Dear ImGui Style Editor", &show_app_style_editor);
@@ -225,3 +251,5 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
 
 extern int handleWindowFlags(int flags);
 extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
+extern void AddWindowContextMenu(bool* pinned);
+extern void HelpMarker(const char* desc);

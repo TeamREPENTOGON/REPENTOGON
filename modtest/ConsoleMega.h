@@ -7,6 +7,7 @@
 #include <cctype>
 
 extern int handleWindowFlags(int flags);
+extern void AddWindowContextMenu(bool* pinned);
 
 struct ConsoleCommand {
     std::string name = ""; // The name of the command.
@@ -84,6 +85,7 @@ static std::vector<std::string> ParseCommand(std::string command, int size = 0) 
 
 struct ConsoleMega {
     bool enabled;
+    bool pinned;
     char inputBuf[1024];
     std::set<ConsoleCommand> commands;
     unsigned int historyPos;
@@ -126,6 +128,7 @@ struct ConsoleMega {
     ConsoleMega()
     {
         enabled = true;
+        pinned = false;
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
 
@@ -200,9 +203,14 @@ struct ConsoleMega {
         autocompleteBuffer.clear();
     }
 
-    void Draw() {
+    void Draw(bool isImGuiActive) {
+        if (!enabled || !isImGuiActive && !pinned) {
+            return;
+        }
+
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
         if (ImGui::Begin("Console", &enabled, handleWindowFlags(0))) {
+            AddWindowContextMenu(&pinned);
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame

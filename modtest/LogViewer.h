@@ -4,17 +4,8 @@
 #include <string>
 
 extern int handleWindowFlags(int flags);
-
-static void HelpMarker(const char* desc)
-{
-    ImGui::TextDisabled("(?)");
-    if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort) && ImGui::BeginTooltip()) {
-        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-        ImGui::TextUnformatted(desc);
-        ImGui::PopTextWrapPos();
-        ImGui::EndTooltip();
-    }
-}
+extern void AddWindowContextMenu(bool* pinned);
+extern void HelpMarker(const char* desc);
 
 struct LogViewer {
     bool enabled;
@@ -61,12 +52,12 @@ struct LogViewer {
 
     void Draw(boolean isImGuiActive)
     {
-      if (!enabled || !isImGuiActive && !pinned)
-      {
-        return;
-      }
-        
+        if (!enabled || !isImGuiActive && !pinned) {
+            return;
+        }
+
         if (ImGui::Begin("Log Viewer", &enabled, handleWindowFlags(0))) {
+            AddWindowContextMenu(&pinned);
             filter.Draw("Filter", -110.0f);
             ImGui::SameLine();
             if (ImGui::Button("Options")) {

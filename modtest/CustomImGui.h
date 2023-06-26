@@ -9,6 +9,8 @@
 
 extern int handleWindowFlags(int flags);
 extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
+extern void AddWindowContextMenu(bool* pinned);
+extern void HelpMarker(const char* desc);
 
 enum class IMGUI_ELEMENT {
     Window,
@@ -98,6 +100,7 @@ struct Data {
     int clickCounter = 0;
     std::string tooltipText = "";
     std::string helpmarkerText = "";
+    bool windowPinned = false;
 };
 
 struct MiscData : Data {
@@ -626,17 +629,6 @@ struct CustomImGui {
         return NULL;
     }
 
-    static void HelpMarker(const char* desc)
-    {
-        ImGui::TextDisabled("(?)");
-        if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort) && ImGui::BeginTooltip()) {
-            ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-            ImGui::TextUnformatted(desc);
-            ImGui::PopTextWrapPos();
-            ImGui::EndTooltip();
-        }
-    }
-
     /* From https://github.com/pthom/imgui/blob/DemoCodeDocking/misc/cpp/imgui_stdlib.cpp */
     struct InputTextCallback_UserData {
         std::string* Str;
@@ -704,15 +696,18 @@ struct CustomImGui {
         DrawMenuElements(menuElements);
     }
 
-    void DrawWindows()
+    void DrawWindows(bool isImGuiActive)
     {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             ImGui::PushID(window->GetHash());
             ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
             window->EvaluateVisible();
-            if (window->evaluatedVisibleState && ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
-                DrawElements(window->children);
-                ImGui::End();
+            if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
+                if (ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
+                    AddWindowContextMenu(&window->data.windowPinned);
+                    DrawElements(window->children);
+                    ImGui::End();
+                }
             }
             ImGui::PopStyleVar();
             ImGui::PopID();
