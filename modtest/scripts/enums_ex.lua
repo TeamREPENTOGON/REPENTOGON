@@ -2167,7 +2167,11 @@ ImGuiElement = {
     Combobox = 24,
     InputText = 25,
     InputTextWithHint = 26,
-    InputTextMultiline = 27
+    InputTextMultiline = 27,
+    InputController = 28,
+    InputKeyboard = 29,
+    PlotLines = 30,
+    PlotHistogram = 31,
 }
 
 ImGuiCallback = {

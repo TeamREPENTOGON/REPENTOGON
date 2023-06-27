@@ -190,22 +190,22 @@ static int Lua_UpdateText(lua_State* L)
 
 static int Lua_UpdateData(lua_State* L)
 {
-  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-  // prechecks
-  const char* id = luaL_checkstring(L, 2);
-  luaL_checkinteger(L, 3);
-  Element* createdElement = imGui->GetElementById(id);
-  if (createdElement == nullptr) {
-    return luaL_error(L, "No element with id '%s' found.", id);
-  }
+    // prechecks
+    const char* id = luaL_checkstring(L, 2);
+    luaL_checkinteger(L, 3);
+    Element* createdElement = imGui->GetElementById(id);
+    if (createdElement == nullptr) {
+        return luaL_error(L, "No element with id '%s' found.", id);
+    }
 
-  bool success = imGui->UpdateElementData(createdElement, L);
-  if (!success) {
-    return luaL_error(L, "The given element does not use the provided data type.");
-  }
+    bool success = imGui->UpdateElementData(createdElement, L);
+    if (!success) {
+        return luaL_error(L, "The given element does not use the provided data type.");
+    }
 
-  return 1;
+    return 1;
 }
 
 static int Lua_AddButton(lua_State* L)
@@ -740,6 +740,76 @@ static int Lua_AddInputKeyboard(lua_State* L)
     return 1;
 }
 
+static int Lua_AddPlotLines(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    MiscData data = MiscData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    if (!lua_istable(L, 5)) {
+        return luaL_error(L, "Argument 5 needs to be a table!");
+    }
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    // get table input
+    auto tableLength = lua_rawlen(L, 5);
+    for (auto i = 1; i <= tableLength; ++i) {
+        lua_pushinteger(L, i);
+        lua_gettable(L, 5);
+        if (lua_type(L, -1) == LUA_TNIL)
+            break;
+        data.plotValues->push_back((float)luaL_checknumber(L, -1));
+        lua_pop(L, 1);
+    }
+
+    int type = static_cast<int>(IMGUI_ELEMENT::PlotLines);
+
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    return 1;
+}
+
+static int Lua_AddPlotHistogram(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    MiscData data = MiscData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    if (!lua_istable(L, 5)) {
+        return luaL_error(L, "Argument 5 needs to be a table!");
+    }
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    // get table input
+    auto tableLength = lua_rawlen(L, 5);
+    for (auto i = 1; i <= tableLength; ++i) {
+        lua_pushinteger(L, i);
+        lua_gettable(L, 5);
+        if (lua_type(L, -1) == LUA_TNIL)
+            break;
+        data.plotValues->push_back((float)luaL_checknumber(L, -1));
+        lua_pop(L, 1);
+    }
+
+    int type = static_cast<int>(IMGUI_ELEMENT::PlotHistogram);
+
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    return 1;
+}
+
 extern bool menuShown;
 static int Lua_ImGuiShow(lua_State* L)
 {
@@ -816,7 +886,7 @@ static void RegisterCustomImGui(lua_State* L)
         { "SetVisible", Lua_ImGuiSetVisible },
         { "ElementExists", Lua_ElementExists },
         { "UpdateText", Lua_UpdateText },
-      {"UpdateData",Lua_UpdateData},
+        { "UpdateData", Lua_UpdateData },
         { "AddButton", Lua_AddButton },
         { "AddInputInteger", Lua_AddInputInteger },
         { "AddInputFloat", Lua_AddInputFloat },
@@ -834,6 +904,8 @@ static void RegisterCustomImGui(lua_State* L)
         { "AddTab", Lua_AddTab },
         { "AddInputController", Lua_AddInputController },
         { "AddInputKeyboard", Lua_AddInputKeyboard },
+        { "AddPlotLines", Lua_AddPlotLines },
+        { "AddPlotHistogram", Lua_AddPlotHistogram },
         { "SetTooltip", Lua_SetTooltip },
         { "SetHelpmarker", Lua_SetHelpmarker },
         { "GetMousePosition", Lua_GetMousePos },

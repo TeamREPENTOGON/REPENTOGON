@@ -42,7 +42,9 @@ enum class IMGUI_ELEMENT {
     InputTextWithHint,
     InputTextMultiline,
     InputController,
-    InputKeyboard
+    InputKeyboard,
+    PlotLines,
+    PlotHistogram,
 };
 
 enum class IMGUI_CALLBACK {
@@ -119,6 +121,7 @@ struct MiscData : Data {
     bool sameLine = true; // used for RadioButtons
     bool isSlider = false; // used for switch from Combobox to Enum Slider
     std::list<std::string>* values = new std::list<std::string>(); // used for RadioButtons and Combobox
+    std::list<float>* plotValues = new std::list<float>(); // used for Plots
     std::string inputText = ""; // Used for Text input
     std::string hintText = ""; // Used for Text input
     int defaultKeyboardKey = 0;
@@ -669,13 +672,18 @@ struct CustomImGui {
             if (!lua_istable(L, 4))
                 return luaL_error(L, "Argument 4 needs to be a table!");
 
+            element->miscData.plotValues->clear();
             element->miscData.values->clear();
             for (auto i = 1; i <= lua_rawlen(L, 4); ++i) {
                 lua_pushinteger(L, i);
                 lua_gettable(L, 4);
                 if (lua_type(L, -1) == LUA_TNIL)
                     break;
-                element->miscData.values->push_back(luaL_checkstring(L, -1));
+                if (element->type == IMGUI_ELEMENT::PlotLines || element->type == IMGUI_ELEMENT::PlotHistogram) {
+                    element->miscData.plotValues->push_back((float)luaL_checknumber(L, -1));
+                } else {
+                    element->miscData.values->push_back(luaL_checkstring(L, -1));
+                }
                 lua_pop(L, 1);
             }
             return true;
@@ -1106,6 +1114,22 @@ struct CustomImGui {
                     }
                     ImGui::SameLine();
                     StringInputText(name, &data->inputText, ImGuiInputTextFlags_ReadOnly, NULL, NULL);
+                }
+                break;
+            case IMGUI_ELEMENT::PlotLines:
+                if (element->GetMiscData() != nullptr) {
+                    MiscData* data = element->GetMiscData();
+                    std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
+
+                    ImGui::PlotLines(name, &values[0], data->plotValues->size());
+                }
+                break;
+            case IMGUI_ELEMENT::PlotHistogram:
+                if (element->GetMiscData() != nullptr) {
+                    MiscData* data = element->GetMiscData();
+                    std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
+
+                    ImGui::PlotHistogram(name, &values[0], data->plotValues->size());
                 }
                 break;
             default:
