@@ -378,15 +378,53 @@ struct ConsoleMega {
                                 unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
                                 RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
                                 RoomConfig* config = stage.configs;
-                                std::map<int, std::string> roomTypes = {
-                                    // std::pair<int, std::string>()
+                                std::map<int, std::string> specialRoomTypes = {
+                                    std::pair<int, std::string>(1, "default"),
+                                    std::pair<int, std::string>(2, "shop"),
+                                    std::pair<int, std::string>(3, "error"),
+                                    std::pair<int, std::string>(4, "treasure"),
+                                    std::pair<int, std::string>(5, "boss"),
+                                    std::pair<int, std::string>(6, "miniboss"),
+                                    std::pair<int, std::string>(7, "secret"),
+                                    std::pair<int, std::string>(8, "supersecret"),
+                                    std::pair<int, std::string>(9, "arcade"),
+                                    std::pair<int, std::string>(10, "curse"),
+                                    std::pair<int, std::string>(11, "challenge"),
+                                    std::pair<int, std::string>(12, "library"),
+                                    std::pair<int, std::string>(13, "sacrifice"),
+                                    std::pair<int, std::string>(14, "devil"),
+                                    std::pair<int, std::string>(15, "angel"),
+                                    std::pair<int, std::string>(16, "itemdungeon"),
+                                    std::pair<int, std::string>(17, "bossrush"),
+                                    std::pair<int, std::string>(18, "isaacs"),
+                                    std::pair<int, std::string>(19, "barren"),
+                                    std::pair<int, std::string>(20, "chest"),
+                                    std::pair<int, std::string>(21, "dice"),
+                                    std::pair<int, std::string>(22, "blackmarket"),
+                                    std::pair<int, std::string>(23, "greedexit"),
+                                    std::pair<int, std::string>(24, "planetarium"),
+                                    std::pair<int, std::string>(25, "teleporter"),
+                                    std::pair<int, std::string>(26, "teleporterexit"),
+                                    std::pair<int, std::string>(27, "secret"),
+                                    std::pair<int, std::string>(28, "blue"),
+                                    std::pair<int, std::string>(29, "ultrasecret"),
                                 };
 
-                                for (unsigned int i = 0; i < stage.nbRooms; ++i) {
-                                    
-                                    printf("Room %d\n- type %d, name %s\n", config->Variant, config->Type, config->Name.c_str());  
-                                   
+                                for (unsigned int i = 0; i < stage.nbRooms; ++i) {       
+                                    entries.insert(AutocompleteEntry(std::string("d.") + std::to_string(config->Variant), config->Name));
                                     config++;
+                                }
+
+                                RoomConfigs special = g_Game->GetRoomConfigHolder()->configs[0];
+                                config = special.configs;
+
+                                for (unsigned int i = 0; i < special.nbRooms; ++i) {
+                                    entries.insert(AutocompleteEntry(std::string("s.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
+                                    config++;
+                                }
+
+                                for (std::pair<int, std::string> specialType : specialRoomTypes) {
+                                    entries.insert(AutocompleteEntry(std::string("x.") + specialType.second));
                                 }
 
                                 break;
