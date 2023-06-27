@@ -188,6 +188,26 @@ static int Lua_UpdateText(lua_State* L)
     return 1;
 }
 
+static int Lua_UpdateData(lua_State* L)
+{
+  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+  // prechecks
+  const char* id = luaL_checkstring(L, 2);
+  luaL_checkinteger(L, 3);
+  Element* createdElement = imGui->GetElementById(id);
+  if (createdElement == nullptr) {
+    return luaL_error(L, "No element with id '%s' found.", id);
+  }
+
+  bool success = imGui->UpdateElementData(createdElement, L);
+  if (!success) {
+    return luaL_error(L, "The given element does not use the provided data type.");
+  }
+
+  return 1;
+}
+
 static int Lua_AddButton(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
@@ -796,6 +816,7 @@ static void RegisterCustomImGui(lua_State* L)
         { "SetVisible", Lua_ImGuiSetVisible },
         { "ElementExists", Lua_ElementExists },
         { "UpdateText", Lua_UpdateText },
+      {"UpdateData",Lua_UpdateData},
         { "AddButton", Lua_AddButton },
         { "AddInputInteger", Lua_AddInputInteger },
         { "AddInputFloat", Lua_AddInputFloat },

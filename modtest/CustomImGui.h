@@ -59,6 +59,16 @@ enum class IMGUI_CALLBACK {
     Render
 };
 
+enum class IMGUI_DATA {
+    Label,
+    Value,
+    ListValues,
+    Min,
+    Max,
+    HintText,
+    ColorValues,
+};
+
 static const char* IGNORE_ID = "IGNORE_THIS_ELEMENT";
 static const std::map<ImGuiKey, int> imGuiToIsaacKey {
     { ImGuiKey_Tab, 258 }, { ImGuiKey_LeftArrow, 263 }, { ImGuiKey_RightArrow, 262 }, { ImGuiKey_UpArrow, 265 }, { ImGuiKey_DownArrow, 264 },
@@ -602,6 +612,139 @@ struct CustomImGui {
         caller.call(1);
     }
 
+    bool UpdateElementValue(Element* element, lua_State* L)
+    {
+        switch (element->type) {
+        case IMGUI_ELEMENT::InputText:
+        case IMGUI_ELEMENT::InputTextWithHint:
+        case IMGUI_ELEMENT::InputTextMultiline:
+            element->miscData.inputText = luaL_checkstring(L, 4);
+            return true;
+
+        case IMGUI_ELEMENT::Checkbox:
+            element->miscData.checked = lua_toboolean(L, 4);
+            return true;
+
+        case IMGUI_ELEMENT::RadioButton:
+        case IMGUI_ELEMENT::Combobox:
+            element->miscData.index = (int)luaL_checkinteger(L, 4);
+            return true;
+
+        case IMGUI_ELEMENT::InputInt:
+        case IMGUI_ELEMENT::DragInt:
+        case IMGUI_ELEMENT::SliderInt:
+            element->intData.currentVal = (int)luaL_checkinteger(L, 4);
+            return true;
+
+        case IMGUI_ELEMENT::InputFloat:
+        case IMGUI_ELEMENT::DragFloat:
+        case IMGUI_ELEMENT::SliderFloat:
+            element->floatData.currentVal = (float)luaL_checknumber(L, 4);
+            return true;
+
+        case IMGUI_ELEMENT::InputController:
+        case IMGUI_ELEMENT::InputKeyboard:
+            element->miscData.defaultKeyboardKey = (int)luaL_checkinteger(L, 4);
+            return true;
+
+        default:
+            return false;
+        }
+    }
+
+    bool UpdateElementData(Element* element, lua_State* L)
+    {
+        IMGUI_DATA dataType = static_cast<IMGUI_DATA>(luaL_checkinteger(L, 3));
+        std::list<float>* newColorValues = new std::list<float>();
+
+        switch (dataType) {
+        case IMGUI_DATA::Label:
+            element->name = luaL_checkstring(L, 4);
+            return true;
+
+        case IMGUI_DATA::Value:
+            return UpdateElementValue(element, L);
+
+        case IMGUI_DATA::ListValues:
+            if (!lua_istable(L, 4))
+                return luaL_error(L, "Argument 4 needs to be a table!");
+
+            element->miscData.values->clear();
+            for (auto i = 1; i <= lua_rawlen(L, 4); ++i) {
+                lua_pushinteger(L, i);
+                lua_gettable(L, 4);
+                if (lua_type(L, -1) == LUA_TNIL)
+                    break;
+                element->miscData.values->push_back(luaL_checkstring(L, -1));
+                lua_pop(L, 1);
+            }
+            return true;
+
+        case IMGUI_DATA::Min:
+            switch (element->type) {
+            case IMGUI_ELEMENT::DragInt:
+            case IMGUI_ELEMENT::SliderInt:
+                element->intData.minVal = (int)luaL_checkinteger(L, 4);
+                return true;
+            case IMGUI_ELEMENT::DragFloat:
+            case IMGUI_ELEMENT::SliderFloat:
+                element->floatData.minVal = (float)luaL_checknumber(L, 4);
+                return true;
+            default:
+                return false;
+            }
+
+        case IMGUI_DATA::Max:
+            switch (element->type) {
+            case IMGUI_ELEMENT::DragInt:
+            case IMGUI_ELEMENT::SliderInt:
+                element->intData.maxVal = (int)luaL_checkinteger(L, 4);
+                return true;
+            case IMGUI_ELEMENT::DragFloat:
+            case IMGUI_ELEMENT::SliderFloat:
+                element->floatData.maxVal = (float)luaL_checknumber(L, 4);
+                return true;
+            default:
+                return false;
+            }
+
+        case IMGUI_DATA::HintText:
+            if (element->type != IMGUI_ELEMENT::InputText && element->type != IMGUI_ELEMENT::InputTextWithHint)
+                return false;
+            element->miscData.hintText = luaL_checkstring(L, 4);
+            return true;
+
+        case IMGUI_DATA::ColorValues:
+            if (element->type != IMGUI_ELEMENT::ColorEdit)
+                return false;
+            if (!lua_istable(L, 4))
+                return luaL_error(L, "Argument 4 needs to be a table!");
+
+            // get table input
+            for (auto i = 1; i <= lua_rawlen(L, 4); ++i) {
+                lua_pushinteger(L, i);
+                lua_gettable(L, 4);
+                if (lua_type(L, -1) == LUA_TNIL)
+                    break;
+                newColorValues->push_back((float)luaL_checknumber(L, -1));
+                lua_pop(L, 1);
+            }
+            element->colorData.useAlpha = newColorValues->size() > 3;
+            element->colorData.r = newColorValues->front();
+            newColorValues->pop_front();
+            element->colorData.g = newColorValues->front();
+            newColorValues->pop_front();
+            element->colorData.b = newColorValues->front();
+            newColorValues->pop_front();
+            element->colorData.a = newColorValues->front();
+            element->colorData.init();
+            return true;
+
+        default:
+            return false;
+        }
+    }
+
     Element* GetElementById(const char* elementID) IM_FMTARGS(2)
     {
         Element* element = GetElementByList(elementID, menuElements);
@@ -612,7 +755,7 @@ struct CustomImGui {
         if (element != NULL) {
             return element;
         }
-        return false;
+        return nullptr;
     }
 
     Element* GetElementByList(const char* id, std::list<Element>* list)
