@@ -149,9 +149,13 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
             case VK_ESCAPE: {
                 *g_Game->GetConsole()->GetState() = 0;
-                menuShown = false;
 
-                return true;
+                if (menuShown) {
+                    menuShown = false;
+                    return true;
+                }
+
+                break;
             }
         }
     }

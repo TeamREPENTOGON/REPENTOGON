@@ -376,19 +376,18 @@ struct ConsoleMega {
                             }
                             case GOTO: {
                                 unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
-
-                                // Excuse the mess here. For whatever reason directly iterating on RoomConfig gives us junk results.
-                                // We're doing it manually like some sort of code neanderthal, but it works.
-                                // 0x5C is the length of RoomConfig. NO idea why this doesn't work normally, but whatever.
                                 RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
-                                char* config = (char*)stage.configs;
+                                RoomConfig* config = stage.configs;
+                                std::map<int, std::string> roomTypes = {
+                                    // std::pair<int, std::string>()
+                                };
 
                                 for (unsigned int i = 0; i < stage.nbRooms; ++i) {
-                                    RoomConfig* room = (RoomConfig*)config;
-                                    printf("%s\n", room->Name.c_str());
-                                    config += 0x5C;
+                                    
+                                    printf("Room %d\n- type %d, name %s\n", config->Variant, config->Type, config->Name.c_str());  
+                                   
+                                    config++;
                                 }
-                                printf("sanity check: %02X\n", sizeof(RoomConfig) - 0x4);
 
                                 break;
                             }

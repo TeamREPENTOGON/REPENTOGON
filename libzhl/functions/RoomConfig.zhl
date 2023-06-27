@@ -24,7 +24,8 @@ struct RoomConfig depends (StaticArray)
     int32_t unk9; // 0x4C
     int32_t unk10; // 0x50
     int32_t unk11; // 0x54
-    int32_t unk12; // 0x58
+	// Ugly workaround, sorry
+    //int32_t unk12; // 0x58
 
     {{
     bool LIBZHL_API IsValidGridIndex(lua_Integer index, bool includeWalls = true) const;
