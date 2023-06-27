@@ -191,6 +191,28 @@ string getFileName(const string& filePath) {
 //end of Shameless chatgpt copypaste function
 
 
+//Cutscene XML hijack
+string ogcutscenespath;
+int queuedcutscene = 0;
+HOOK_METHOD(Cutscene, Init, (char* xmlfilepath)-> void) {
+	if (ogcutscenespath.length() == 0) {
+		ogcutscenespath = string(xmlfilepath);
+	}
+	super(xmlfilepath);
+}
+
+HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
+	queuedcutscene = cutsceneid;
+	char* xml = new char[ogcutscenespath.length() + 1];
+	strcpy(xml, ogcutscenespath.c_str());
+	Init(xml);
+	super(1);
+	queuedcutscene = 0;
+}
+
+//Cutscene XML Hijack
+
+
 void ProcessXmlNode(xml_node<char>* node) {
 	if (!node) { return; }
 	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
@@ -680,6 +702,52 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.ModData->challenges[lastmodid] += 1;
 		}
 	}
+	else if ((strcmp(nodename, "cutscenes") == 0)) {
+		if (queuedcutscene > 0 ) { return; }
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes cutscene;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				cutscene[stringlower(attr->name())] = string(attr->value());
+			}
+			//This one is prechecked before even loading so id stuff is already resolved
+			//if ((cutscene.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+				id = toint(cutscene["id"]);
+				if (cutscene.count("realid") > 0) {
+					id = toint(cutscene["realid"]);
+					cutscene["id"] = cutscene["realid"];
+				}
+			//}
+			/*
+			else {
+				if (cutscene.count("id") > 0) { cutscene["relativeid"] = cutscene["id"]; }
+				XMLStuff.ChallengeData->maxid = XMLStuff.ChallengeData->maxid + 1;
+				cutscene["id"] = to_string(XMLStuff.ChallengeData->maxid);
+				id = XMLStuff.ChallengeData->maxid;
+			}
+			if (id > XMLStuff.ChallengeData->maxid) {
+				XMLStuff.ChallengeData->maxid = id;
+			}
+			*/
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				cutscene[stringlower(attr->name())] = attr->value();
+			}
+
+			if (cutscene.count("id") == 0) { cutscene["sourceid"] = "BaseGame"; };
+			if (cutscene.count("relativeid") > 0) { XMLStuff.CutsceneData->byrelativeid[cutscene["sourceid"] + cutscene["relativeid"]] = id; }
+			XMLStuff.CutsceneData->ProcessChilds(auxnode, id);
+			XMLStuff.CutsceneData->bynamemod[cutscene["name"] + cutscene["sourceid"]] = id;
+			XMLStuff.CutsceneData->bymod[cutscene["sourceid"]].push_back(id);
+			XMLStuff.CutsceneData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.CutsceneData->byname[cutscene["name"]] = id;
+			XMLStuff.CutsceneData->nodes[id] = cutscene;
+			XMLStuff.ModData->cutscenes[cutscene["sourceid"]] += 1;
+		}
+	}
 	else if ((strcmp(nodename, "recipes") == 0)) {
 		int id = 1;
 		xml_node<char>* daddy = node;
@@ -979,6 +1047,43 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.ModData->curses[lastmodid] += 1;
 		}
 	}
+	else if ((strcmp(nodename, "bosses") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes boss;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				boss[stringlower(attr->name())] = string(attr->value());
+			}
+			if (boss.count("id") > 0) { id = stoi(boss["id"]); }else {
+				boss["id"] = to_string(XMLStuff.BossPortraitData->maxid);
+				id = XMLStuff.BossPortraitData->maxid;
+				XMLStuff.BossPortraitData->maxid = XMLStuff.BossPortraitData->maxid +1;
+			}
+			if (id > XMLStuff.BossPortraitData->maxid) {
+				XMLStuff.BossPortraitData->maxid = id;
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				boss[stringlower(attr->name())] = attr->value();
+			}
+
+			boss["sourcepath"] = currpath;
+			if (boss.count("sourceid") <= 0) { boss["sourceid"] = "BaseGame"; }
+			//printf("curse: %d - %s \n", id, curse["name"].c_str());
+			XMLStuff.BossPortraitData->ProcessChilds(auxnode, id);
+			XMLStuff.BossPortraitData->bynamemod[boss["name"] + lastmodid] = id;
+			XMLStuff.BossPortraitData->bymod[lastmodid].push_back(id);
+			XMLStuff.BossPortraitData->byfilepathmulti.tab[currpath].push_back(id);
+			if (XMLStuff.BossPortraitData->byname.count(boss["name"]) == 0) { //to prioritize vanilla in case of Curse of the Giant hacky
+				XMLStuff.BossPortraitData->byname[boss["name"]] = id;
+			}
+			XMLStuff.BossPortraitData->nodes[id] = boss;
+			XMLStuff.ModData->bossportraits[lastmodid] += 1;
+		}
+	}
 	else if ((strcmp(nodename, "costumes") == 0)) {
 		int id = 1;
 		int idnull = 1;
@@ -1131,7 +1236,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				bosspool[stringlower(attr->name())] = attr->value();
 			}
 
-			bosspool["sourceid"] = lastmodid;
+			if (bosspool.count("sourceid") <= 0) { bosspool["sourceid"] = "BaseGame"; }
 			XMLStuff.BossPoolData->ProcessChilds(auxnode, id);
 
 			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
@@ -1557,6 +1662,14 @@ int Lua_GetEntryByNameXML(lua_State* L)
 		Node = XMLStuff.BossPoolData->GetNodeByName(entityname);
 		Childs = XMLStuff.BossPoolData->childs[XMLStuff.BossPoolData->byname[entityname]];
 		break;
+	case 22:
+		Node = XMLStuff.BossPortraitData->GetNodeByName(entityname);
+		Childs = XMLStuff.BossPortraitData->childs[XMLStuff.BossPortraitData->byname[entityname]];
+		break;
+	case 23:
+		Node = XMLStuff.CutsceneData->GetNodeByName(entityname);
+		Childs = XMLStuff.CutsceneData->childs[XMLStuff.CutsceneData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -1584,7 +1697,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 }
 
 
-
 //Crash Prevention//
 int getLineNumber(const char* data, const char* errorOffset) {
 	int lineNumber = 1;
@@ -1598,19 +1710,21 @@ int getLineNumber(const char* data, const char* errorOffset) {
 	return lineNumber;
 }
 
-bool XMLParse(xml_document<char>& xmldoc, char* xml, string dir) {
+bool XMLParse(xml_document<char>* xmldoc, char* xml, string dir) {
 	try {
 		if (strlen(xml) == strlen(xml + 1)) {
-			xmldoc.parse<0>(xml);
+			xmldoc->parse<0>(xml);
 		}else{
 			char* zeroTerminatedStr  = new char[strlen(xml) + 1];
 			strcpy(zeroTerminatedStr, xml);
-			xmldoc.parse<0>(zeroTerminatedStr);
+			xmldoc->parse<0>(zeroTerminatedStr);
 		}
 		return true;
 	}
-	catch (exception ex) {
-		string reason = ex.what();
+	catch (rapidxml::parse_error err) {
+		int lineNumber = getLineNumber(xml, err.where<char>());
+		string a = stringlower((char*)string(xml).substr(0, 60).c_str());
+		string reason = err.what() + string(" at line ") + to_string(lineNumber);
 		string error = "[XMLError] " + reason + " in " + dir;
 		g_Game->GetConsole()->PrintError(error);
 		KAGE::LogMessage(3, (error + "\n").c_str());
@@ -1632,10 +1746,10 @@ char* GetResources(char* xml,string dir, string filename) {
 			return buffer;
 		}
 	}
-	return xml;
+	return "";
 }
 
-bool GetContent(string dir, xml_document<char>& xmldoc) {
+bool GetContent(string dir, xml_document<char>* xmldoc) {
 	ifstream file(dir.c_str());
 	if (file.is_open()) {
 //		printf("path: %s \n", dir.c_str());
@@ -1644,9 +1758,10 @@ bool GetContent(string dir, xml_document<char>& xmldoc) {
 		string filedata = sbuffer.str();
 		char* buffer = new char[filedata.length() + 1];
 		strcpy(buffer, filedata.c_str());
-		XMLParse(xmldoc, buffer, dir);
+		if (XMLParse(xmldoc, buffer, dir)) {
 		delete[] buffer;
 		return true;
+		}
 	}
 	return false;
 }
@@ -1667,62 +1782,160 @@ xml_node<char>* find_child(
 	return node;
 }
 
-char * BuildModdedBosspoolsXML(char * xml) {
+char* IntToChar(int number) {
+	std::string numberString = std::to_string(number);
+	char* charPointer = new char[numberString.length() + 1];
+	std::strcpy(charPointer, numberString.c_str());
+	return charPointer;
+}
+
+void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) {
+	if (strcmp(filename, "cutscenes.xml") == 0) {
+		int id = 26;
+		xml_node<char>* root = xmldoc->first_node();
+		for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes node;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				node[stringlower(attr->name())] = string(attr->value());
+			}
+			if (node.count("realid") == 0) {				
+				if (node.count("id") > 0) {
+					int nodeid = stoi(node["id"]);
+					if (nodeid > 26) {
+						xml_attribute<char>* relativeid = new xml_attribute<char>(); relativeid->name("relativeid"); relativeid->value(IntToChar(stoi(node["id"]))); auxnode->append_attribute(relativeid);
+						auxnode->remove_attribute(auxnode->first_attribute("id"));
+						id += 1;
+						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);						
+						node["realid"] = IntToChar(id);//node["id"]; //I dont think ids should be respected here
+					}
+					else {
+						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(stoi(node["id"]))); auxnode->append_attribute(realid);
+						node["realid"] = node["id"];
+					}
+				}
+				else {
+					id += 1;
+					xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);
+					node["realid"] = to_string(id);
+				}
+				if (queuedcutscene > 0) {
+					if ((strcmp(node["realid"].c_str(), IntToChar(queuedcutscene)) == 0)) {
+						if (auxnode->first_attribute("id") != NULL){
+							auxnode->remove_attribute(auxnode->first_attribute("id"));
+						}
+						xml_attribute<char>* xxx = new xml_attribute<char>(); xxx->name("id"); xxx->value("1"); auxnode->append_attribute(xxx); //porn
+						
+					}
+					else if (auxnode->first_attribute("id") != NULL) {
+						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(auxnode->first_attribute("id")->value()); auxnode->append_attribute(realid);
+						auxnode->remove_attribute(auxnode->first_attribute("id"));
+					}
+				}
+			}
+		}
+	}
+}
+
+char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
+	//resources
+	if (needsresourcepatch) {
+		for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
+			string resourcesdir = dir + "\\resources\\" + filename;
+			char* xmlaux = GetResources(xml, dir, filename);
+			if (strlen(xmlaux) > 1) {
+				xml_document<char>* xmldoc = new xml_document<char>();
+				if (XMLParse(xmldoc, xml, resourcesdir)) {
+					xml = xmlaux;
+				}
+			}
+		}
+	}
+	//resources
+	//content
     for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
-			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
-			string filename = "bosspools.xml";
-			string resourcesdir = dir + "\\resources\\" + filename;
-			string contentsdir = dir + "\\content\\" + filename;
-			
-			xml = GetResources(xml, dir, filename);
-			xml_document<char> xmldoc;
-			if (XMLParse(xmldoc, xml, resourcesdir)) {
-				xml_node<char>* root = xmldoc.first_node();
-				xml_document<char> resourcesdoc;
-				if (GetContent(contentsdir, resourcesdoc)) {
+			string lastmodid = string(mod->GetId());
+			if (string(lastmodid).length() == 0) {
+				lastmodid = string(mod->GetDir());
+			}
 
-					//actual shit
-					xml_node<char>* resourcescroot = resourcesdoc.first_node();
-					for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-						XMLAttributes node;
-						for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
-						{
-							node[stringlower(attr->name())] = string(attr->value());
+			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
+			string contentsdir = dir + "\\content\\" + filename;
+
+			xml_document<char>* xmldoc = new xml_document<char>();
+			if (XMLParse(xmldoc, xml, filename)) {
+				xml_node<char>* root = xmldoc->first_node();
+				xml_document<char>* resourcesdoc = new xml_document<char>();
+				if (GetContent(contentsdir, resourcesdoc)) {
+					xml_node<char>* resourcescroot = resourcesdoc->first_node();
+					if (strcmp(filename.c_str(), "bosspools.xml") == 0) {
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							XMLAttributes node;
+							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+							{
+								node[stringlower(attr->name())] = string(attr->value());
+							}
+							xml_node<char>* tocopy = find_child(root, auxnode->name(), "name", node["name"]);
+							if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
+								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+								xml_attribute<char>* sourceid = new xml_attribute<char>();
+								sourceid->name("sourceid");
+								sourceid->value(lastmodid.c_str());
+								clonedNode->append_attribute(sourceid);
+								root->append_node(clonedNode);
+							}
+							else {
+								for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
+									xml_node<char>* clonedNode = xmldoc->clone_node(auxchild);
+									xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+									tocopy->append_node(clonedNode);
+								}
+							}
 						}
-						xml_node<char>* tocopy = find_child(root, auxnode->name(), "name",node["name"]);
-						if ((tocopy == NULL) || (tocopy->first_attribute("name")->value() != node["name"])) {
-							xml_node<char>* clonedNode = xmldoc.clone_node(auxnode);
+					}else if (strcmp(filename.c_str(), "bossportraits.xml") == 0) {
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+							xml_attribute<char>* sourceid = new xml_attribute<char>();sourceid->name("sourceid");sourceid->value(lastmodid.c_str());clonedNode->append_attribute(sourceid);
 							root->append_node(clonedNode);
 						}
-						else {
-							for (xml_node<char>* auxchild = auxnode->first_node(); auxchild; auxchild = auxchild->next_sibling()) {
-								xml_node<char>* clonedNode = xmldoc.clone_node(auxchild);
-								tocopy->append_node(clonedNode);
-							}
+					}
+					else if (strcmp(filename.c_str(), "cutscenes.xml") == 0) {
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+							root->append_node(clonedNode);
 						}
 					}
 					//actual shit
 
 				}
+				CustomXMLCrashPrevention(xmldoc, filename.c_str());
 				ostringstream modifiedXmlStream;
-				modifiedXmlStream << xmldoc;
+				modifiedXmlStream << *xmldoc;
 				string modifiedXml = modifiedXmlStream.str();
+				xml = new char[modifiedXml.length() + 1];
 				std::strcpy(xml, modifiedXml.c_str());
 			}
+			
 		}
 	}	
+	//content
 	//printf(xml);
 	return xml;
 }
-
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	try {
 		string a = stringlower((char*)string(xmldata).substr(0, 60).c_str());
 		string xml = string(xmldata);
 		if (a.find("<bossp") < 50) {
-			super(BuildModdedBosspoolsXML(xmldata));
+			super(BuildModdedXML(xmldata, "bosspools.xml", true));
+		}else if (a.find("<bosse") < 50) {
+			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
+		}else if (a.find("<cuts") < 50) {
+			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
 		}else if (a.find("<reci") < 50) {
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
 			smatch match;
@@ -1761,6 +1974,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (a.find("<mus") < 50) {
 			a = "<music root=\"music/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </music>";
+		}
+		else if (a.find("<cuts") < 50) {
+			a = "<cutscenes root=\"gfx/\cutscenes/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </cutscenes>";
 		}
 		else if (a.find("<pock") < 50) {
 			a = "<pocketitems xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </pocketitems>";

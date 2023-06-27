@@ -378,6 +378,27 @@ static void RegisterGetSubByName(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static int Lua_GetCutsceneByName(lua_State* L) {
+	string text = string(luaL_checkstring(L, 1));
+	if (XMLStuff.CutsceneData->byname.count(text) > 0)
+	{
+		XMLAttributes ent = XMLStuff.CutsceneData->GetNodeByName(text);
+		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
+			lua_pushnumber(L, stoi(ent["id"]));
+			return 1;
+		}
+	};
+	lua_pushnumber(L, 0);
+	return 1;
+}
+static void RegisterGetCutsceneName(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "GetCutsceneIdByName");
+	lua_pushcfunction(L, Lua_GetCutsceneByName);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 static int Lua_IsaacCanStartTrueCoop(lua_State* L) {
 	lua_pushboolean(L, !Isaac::CanStartTrueCoop());
 	return 1;
@@ -409,6 +430,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterClipboardStuff(state);
 	RegisterGetSubByName(state);
 	RegisterIsaacCanStartTrueCoop(state);
+	RegisterGetCutsceneName(state);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

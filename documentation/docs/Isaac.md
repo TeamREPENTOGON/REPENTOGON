@@ -71,7 +71,10 @@ ___
 ### Get·Clipboard () {: aria-label='Functions' }
 #### string GetClipboard ( ) {: .copyable aria-label='Functions' }
 Gets the contents of the clipboard as long as they are in text form, otherwise it will just return nil.
-
+___
+### Get·CutsceneId·By·Name () {: aria-label='Functions' }
+#### table GetCutsceneIdByName (string name ) {: .copyable aria-label='Functions' }
+Gets the Cutscene ID By Name.
 ___
 ### Get·Completion·Mark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype) {: .copyable aria-label='Functions' }

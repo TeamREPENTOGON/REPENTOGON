@@ -26,3 +26,6 @@ tags:
 |18 |LOCUSTCOLOR {: .copyable } |  |
 |19 |BOMBCOSTUME {: .copyable } |  |
 |20 |CRAFTINGRECIPE {: .copyable } |  |
+|21 |BOSSPOOL {: .copyable } |  |
+|22 |BOSSPORTRAIT {: .copyable } |  |
+|23 |CUTSCENE {: .copyable } |  |

@@ -543,34 +543,12 @@ struct ConsoleMega {
                             }
 
                             case CUTSCENE: {
-                                entries = {
-                                    AutocompleteEntry("1", "Intro"),
-                                    AutocompleteEntry("2", "Credits"),
-                                    AutocompleteEntry("3", "Epilogue"),
-                                    AutocompleteEntry("4", "Womb (Eden)"),
-                                    AutocompleteEntry("5", "Womb (Rubber Cement)"),
-                                    AutocompleteEntry("6", "Womb (Noose)"),
-                                    AutocompleteEntry("7", "Womb (Wire Coat Hanger)"),
-                                    AutocompleteEntry("8", "Womb (Everything is Terrible)"),
-                                    AutocompleteEntry("9", "Womb (Ipecac)"),
-                                    AutocompleteEntry("10", "Womb (Experimental Treatment)"),
-                                    AutocompleteEntry("11", "Womb (A Quarter)"),
-                                    AutocompleteEntry("12", "Womb (Dr. Fetus)"),
-                                    AutocompleteEntry("13", "Womb (???)"),
-                                    AutocompleteEntry("14", "Womb (It Lives!)"),
-                                    AutocompleteEntry("15", "Sheol"),
-                                    AutocompleteEntry("16", "Cathedral"),
-                                    AutocompleteEntry("17", "Chest"),
-                                    AutocompleteEntry("18", "Dark Room"),
-                                    AutocompleteEntry("19", "Mega Satan"),
-                                    AutocompleteEntry("20", "Blue Womb"),
-                                    AutocompleteEntry("21", "Greed Mode"),
-                                    AutocompleteEntry("22", "The Void"),
-                                    AutocompleteEntry("23", "Greedier"),
-                                    AutocompleteEntry("24", "Mother"),
-                                    AutocompleteEntry("25", "Dogma"),
-                                    AutocompleteEntry("26", "The Beast")
-                                };
+                                XMLNodes cutscenes = XMLStuff.CutsceneData->nodes;
+                                for (auto node : cutscenes) {
+                                    int id = node.first;
+                                    std::string name = node.second["name"];
+                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                }
                                 break;
                             }
                                   

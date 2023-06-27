@@ -42,7 +42,7 @@ static void Manager::RestartGame();
 "558bec6aff68????????64a1000000005083ec3ca1????????33c58945f0535657508d45f464a3000000008b550c8bca":
 static ReferenceCounter_ImageBase* Manager::LoadImage(ReferenceCounter_ImageBase* result, const char* path, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, bool unk);
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase) { {{
+struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
@@ -53,6 +53,7 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline DailyChallenge* GetDailyChallenge() { return (DailyChallenge*)((char*)this + 0x1ea750); } 
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
 	inline bool GetNetStart() { return *(bool*)((char*)this + 0x1ea804); }
+	inline Cutscene* GetCutscene() { return (Cutscene*)((char*)this + 0x20A00); }
 }} 
     char unk1[0x13];
     PersistentGameData _persistentGameData;

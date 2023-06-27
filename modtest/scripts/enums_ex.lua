@@ -2220,6 +2220,8 @@ XMLNode = {
 	BOMBCOSTUME = 19,	
 	CRAFTINGRECIPE = 20,	
 	BOSSPOOL = 21,	
+	BOSSPORTRAIT = 22,	
+	CUTSCENE = 23,	
 }
 
 AutocompleteType = {
