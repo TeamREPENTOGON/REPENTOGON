@@ -190,7 +190,7 @@ string getFileName(const string& filePath) {
 }
 //end of Shameless chatgpt copypaste function
 
-/*
+
 //Cutscene XML hijack
 string ogcutscenespath;
 int queuedhackyxmlvalue = 0;
@@ -203,12 +203,43 @@ HOOK_METHOD(Cutscene, Init, (char* xmlfilepath)-> void) {
 	super(xmlfilepath);
 }
 
+
+static std::vector<std::string> ParseCommand2(std::string command, int size = 0) {
+	std::vector<std::string> cmdlets;
+
+	std::stringstream sstream(command);
+	std::string cmdlet;
+	char space = ' ';
+	while (std::getline(sstream, cmdlet, space)) {
+		cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
+		cmdlets.push_back(cmdlet);
+		if (size > 0 && cmdlets.size() == size) {
+			break;
+		}
+	}
+	return cmdlets;
+}
+int hijackedcutscene = 0;
+HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
+	if (in.rfind("cutscene", 0) == 0) {
+		std::vector<std::string> cmdlets = ParseCommand2(in, 2);
+		int id = stoi(cmdlets[1]);
+		if (id > 26) {
+			hijackedcutscene = id;
+			super(std::string("cutscene 1"), out, player);
+			return;
+		}
+	}
+	super(in, out, player);
+}
+
 HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
 	queuedhackyxmlvalue = cutsceneid;
 	queuedhackyxmltarget = 1;
 	queuedhackyxmlmaxval = 26;
+	if (hijackedcutscene > 0) { queuedhackyxmlvalue = hijackedcutscene; hijackedcutscene = 0; }
 	char* xml = new char[ogcutscenespath.length() + 1];
-	strcpy(xml, ogcutscenespath.c_str());
+	strcpy(xml, ogcutscenespath.c_str()); //Will change this so it only makes this swap thing when the cutscene is not present on the already loaded xml later, but I'll leave it like this now for testing the method without having people needing to manually play custom cutscenes 
 	Init(xml);
 	super(1);
 	delete[] xml;
@@ -217,7 +248,7 @@ HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
 }
 
 //Cutscene XML Hijack
-
+/*
 //Stages XML Hijack
 string ogstagespath;
 int queuedstage = 0;
@@ -260,7 +291,7 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
 */
 void ProcessXmlNode(xml_node<char>* node) {
 	if (!node) { return; }
-	//if (queuedhackyxmlvalue > 0) { return; }
+	if (queuedhackyxmlvalue > 0) { return; }
 	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
@@ -2031,7 +2062,6 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 							root->append_node(clonedNode);
 						}
 					}
-					/*
 					else if (strcmp(filename.c_str(), "cutscenes.xml") == 0) {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
@@ -2057,13 +2087,12 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
 							root->append_node(clonedNode);
 						}
-					}*/
+					}
 					//actual shit
 
 				}
 				delete resourcesdoc;
-				//CustomXMLCrashPrevention(xmldoc, filename.c_str());
-				/*
+				CustomXMLCrashPrevention(xmldoc, filename.c_str());
 				if (queuedhackyxmlvalue > 0) {
 					if (strcmp(filename.c_str(), "cutscenes.xml") == 0) {
 						xml_node<char>* tocopy = find_child(root, "cutscene", "realid", IntToChar(queuedhackyxmlvalue));
@@ -2085,7 +2114,6 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 						}
 					}
 				}
-				*/
 				ostringstream modifiedXmlStream;
 				modifiedXmlStream << *xmldoc;
 				delete xmldoc; 
@@ -2099,7 +2127,7 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 		}
 	}	
 	//if (queuedhackyxmlvalue > 0) {
-		//printf("s: %s",xml); 
+//		printf("s: %s",xml); 
 	//}
 	//content
 	return xml;
@@ -2113,10 +2141,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			super(BuildModdedXML(xmldata, "bosspools.xml", true));
 		}else if (a.find("<bosse") < 50) {
 			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
-		//}else if (a.find("<cuts") < 50) {
-			//super(BuildModdedXML(xmldata, "cutscenes.xml", false));
-		//}else if (a.find("<stages") < 50) {
-			//super(BuildModdedXML(xmldata, "stages.xml", false));
+		}else if (a.find("<cuts") < 50) {
+			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
+		}else if (a.find("<stages") < 50) {
+			super(BuildModdedXML(xmldata, "stages.xml", false));
 		}else if (a.find("<reci") < 50) {
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
 			smatch match;
