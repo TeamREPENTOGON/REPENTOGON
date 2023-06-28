@@ -190,10 +190,12 @@ string getFileName(const string& filePath) {
 }
 //end of Shameless chatgpt copypaste function
 
-
+/*
 //Cutscene XML hijack
 string ogcutscenespath;
-int queuedcutscene = 0;
+int queuedhackyxmlvalue = 0;
+int queuedhackyxmltarget = 0;
+int queuedhackyxmlmaxval = 0;
 HOOK_METHOD(Cutscene, Init, (char* xmlfilepath)-> void) {
 	if (ogcutscenespath.length() == 0) {
 		ogcutscenespath = string(xmlfilepath);
@@ -202,19 +204,63 @@ HOOK_METHOD(Cutscene, Init, (char* xmlfilepath)-> void) {
 }
 
 HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
-	queuedcutscene = cutsceneid;
+	queuedhackyxmlvalue = cutsceneid;
+	queuedhackyxmltarget = 1;
+	queuedhackyxmlmaxval = 26;
 	char* xml = new char[ogcutscenespath.length() + 1];
 	strcpy(xml, ogcutscenespath.c_str());
 	Init(xml);
 	super(1);
-	queuedcutscene = 0;
+	delete[] xml;
+	queuedhackyxmltarget = 0;
+	queuedhackyxmlvalue = 0;
 }
 
 //Cutscene XML Hijack
 
+//Stages XML Hijack
+string ogstagespath;
+int queuedstage = 0;
+int queuedalt = 0;
+int lastrequest = 0;
+HOOK_STATIC(RoomConfig, GetStageID, (unsigned int LevelStage, unsigned int StageType, unsigned int Mode)-> unsigned int, __cdecl) {
+	unsigned int stageid = super(LevelStage,StageType, Mode);
+	//printf("getstage: %d \n", stageid);
+	return stageid;
+}
 
+HOOK_METHOD(Level, SetStage, (int stageid, int alt)-> void) {
+	char* xml = new char[ogstagespath.length() + 1];
+	strcpy(xml, ogstagespath.c_str());
+	g_Game->GetRoomConfig()->LoadStages(xml);
+	printf("setstageX: %d %d  \n", stageid,alt);
+
+	delete[] xml;
+	if (stageid == 14) {
+		queuedhackyxmlvalue = stageid;
+		queuedhackyxmltarget = 1;
+		queuedhackyxmlmaxval = 36;
+		super(1, 0);
+	}
+	else{
+		super(stageid, alt);
+	}
+	queuedhackyxmlvalue = 0;
+	queuedhackyxmltarget = 0;
+}
+
+HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
+	if (ogstagespath.length() == 0) {
+		ogstagespath = xmlpath;
+	}
+	printf("stagexml: %s \n", xmlpath);
+	super(xmlpath);
+}
+//Stages XML Hijack
+*/
 void ProcessXmlNode(xml_node<char>* node) {
 	if (!node) { return; }
+	//if (queuedhackyxmlvalue > 0) { return; }
 	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
@@ -703,7 +749,6 @@ void ProcessXmlNode(xml_node<char>* node) {
 		}
 	}
 	else if ((strcmp(nodename, "cutscenes") == 0)) {
-		if (queuedcutscene > 0 ) { return; }
 		int id = 1;
 		xml_node<char>* daddy = node;
 		xml_node<char>* babee = node->first_node();
@@ -746,6 +791,38 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.CutsceneData->byname[cutscene["name"]] = id;
 			XMLStuff.CutsceneData->nodes[id] = cutscene;
 			XMLStuff.ModData->cutscenes[cutscene["sourceid"]] += 1;
+		}
+	}
+	else if ((strcmp(nodename, "stages") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes stage;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				stage[stringlower(attr->name())] = string(attr->value());
+			}
+			id = toint(stage["id"]);
+			if (stage.count("realid") > 0) {
+				id = toint(stage["realid"]);
+				stage["id"] = stage["realid"];
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				stage[stringlower(attr->name())] = attr->value();
+			}
+			tuple idx = { toint(stage["stageid"]), toint(stage["stagealt"])};
+			if (stage.count("id") == 0) { stage["sourceid"] = "BaseGame"; };
+			if (stage.count("relativeid") > 0) { XMLStuff.StageData->byrelativeid[stage["sourceid"] + stage["relativeid"]] = id; }
+			XMLStuff.StageData->ProcessChilds(auxnode, id);
+			XMLStuff.StageData->bynamemod[stage["name"] + stage["sourceid"]] = id;
+			XMLStuff.StageData->bymod[stage["sourceid"]].push_back(id);
+			XMLStuff.StageData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.StageData->byname[stage["name"]] = id;
+			XMLStuff.StageData->bystagealt[idx] = id;
+			XMLStuff.StageData->nodes[id] = stage;
+			XMLStuff.ModData->stages[stage["sourceid"]] += 1;
 		}
 	}
 	else if ((strcmp(nodename, "recipes") == 0)) {
@@ -1670,6 +1747,10 @@ int Lua_GetEntryByNameXML(lua_State* L)
 		Node = XMLStuff.CutsceneData->GetNodeByName(entityname);
 		Childs = XMLStuff.CutsceneData->childs[XMLStuff.CutsceneData->byname[entityname]];
 		break;
+	case 24:
+		Node = XMLStuff.StageData->GetNodeByName(entityname);
+		Childs = XMLStuff.StageData->childs[XMLStuff.StageData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -1819,6 +1900,7 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 					xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);
 					node["realid"] = to_string(id);
 				}
+				/*
 				if (queuedcutscene > 0) {
 					if ((strcmp(node["realid"].c_str(), IntToChar(queuedcutscene)) == 0)) {
 						if (auxnode->first_attribute("id") != NULL){
@@ -1831,7 +1913,54 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(auxnode->first_attribute("id")->value()); auxnode->append_attribute(realid);
 						auxnode->remove_attribute(auxnode->first_attribute("id"));
 					}
+				}*/
+			}
+		}
+	}else if (strcmp(filename, "stages.xml") == 0) {
+		int id = 36;
+		xml_node<char>* root = xmldoc->first_node();
+		for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes node;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				node[stringlower(attr->name())] = string(attr->value());
+			}
+			if (node.count("realid") == 0) {
+				if (node.count("id") > 0) {
+					int nodeid = stoi(node["id"]);
+					if (nodeid > 36) {
+						xml_attribute<char>* relativeid = new xml_attribute<char>(); relativeid->name("relativeid"); relativeid->value(IntToChar(stoi(node["id"]))); auxnode->append_attribute(relativeid);
+						auxnode->remove_attribute(auxnode->first_attribute("id"));
+						id += 1;
+						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);
+						node["realid"] = IntToChar(id);//node["id"]; //I dont think ids should be respected here
+					}
+					else {
+						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(stoi(node["id"]))); auxnode->append_attribute(realid);
+						node["realid"] = node["id"];
+					}
 				}
+				else {
+					id += 1;
+					xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);
+					node["realid"] = to_string(id);
+				}
+				/*
+				if ((queuedstage > 0)) {
+					tuple<int, int> idx = { queuedstage,queuedalt };
+
+					if ((strcmp(node["realid"].c_str(), IntToChar(queuedcutscene)) == 0)) {
+						if (auxnode->first_attribute("id") != NULL) {
+							auxnode->remove_attribute(auxnode->first_attribute("id"));
+						}
+						xml_attribute<char>* xxx = new xml_attribute<char>(); xxx->name("id"); xxx->value("1"); auxnode->append_attribute(xxx); //porn
+
+					}
+					else if (auxnode->first_attribute("id") != NULL) {
+						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(auxnode->first_attribute("id")->value()); auxnode->append_attribute(realid);
+						auxnode->remove_attribute(auxnode->first_attribute("id"));
+					}
+				}*/
 			}
 		}
 	}
@@ -1849,6 +1978,7 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 				if (XMLParse(xmldoc, xml, resourcesdir)) {
 					xml = xmlaux;
 				}
+				delete xmldoc;
 			}
 		}
 	}
@@ -1901,6 +2031,7 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 							root->append_node(clonedNode);
 						}
 					}
+					/*
 					else if (strcmp(filename.c_str(), "cutscenes.xml") == 0) {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
@@ -1908,21 +2039,69 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 							root->append_node(clonedNode);
 						}
 					}
+					else if (strcmp(filename.c_str(), "stages.xml") == 0) {
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							XMLAttributes node;
+							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+							{
+								node[stringlower(attr->name())] = string(attr->value());
+							}
+							int id = stoi(node["id"]);
+							int music = stoi(node["music"]);
+							int backdrop = stoi(node["backdrop"]);
+							if ((music == 0) && (node["music"].length() > 0)) {
+								char* track = IntToChar(XMLStuff.MusicData->byname[node["music"]]);
+								auxnode->first_attribute("music")->value(track);
+							}
+							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+							root->append_node(clonedNode);
+						}
+					}*/
 					//actual shit
 
 				}
-				CustomXMLCrashPrevention(xmldoc, filename.c_str());
+				delete resourcesdoc;
+				//CustomXMLCrashPrevention(xmldoc, filename.c_str());
+				/*
+				if (queuedhackyxmlvalue > 0) {
+					if (strcmp(filename.c_str(), "cutscenes.xml") == 0) {
+						xml_node<char>* tocopy = find_child(root, "cutscene", "realid", IntToChar(queuedhackyxmlvalue));
+						if (tocopy != NULL) {
+							if (tocopy->first_attribute("id")) { tocopy->remove_attribute(tocopy->first_attribute("id")); }
+							xml_attribute<char>* attid = new xml_attribute<char>(); attid->name("id"); attid->value(IntToChar(queuedhackyxmltarget)); tocopy->append_attribute(attid);
+						}
+					}
+					if (strcmp(filename.c_str(), "stages.xml") == 0) {
+						xml_node<char>* todel = find_child(root, "stage", "id", IntToChar(queuedhackyxmltarget));
+						if (todel != NULL) {
+							if (todel->first_attribute("id")) { todel->remove_attribute(todel->first_attribute("id")); }
+						}
+
+						xml_node<char>* tocopy = find_child(root, "stage", "consoleid", IntToChar(queuedhackyxmlvalue));
+						if (tocopy != NULL) {
+							if (tocopy->first_attribute("id")) { tocopy->remove_attribute(tocopy->first_attribute("id")); }
+							xml_attribute<char>* attid = new xml_attribute<char>(); attid->name("id"); attid->value(IntToChar(queuedhackyxmltarget)); tocopy->append_attribute(attid);
+						}
+					}
+				}
+				*/
 				ostringstream modifiedXmlStream;
 				modifiedXmlStream << *xmldoc;
+				delete xmldoc; 
 				string modifiedXml = modifiedXmlStream.str();
 				xml = new char[modifiedXml.length() + 1];
 				std::strcpy(xml, modifiedXml.c_str());
 			}
-			
+			else{
+				delete xmldoc; 
+			}
 		}
 	}	
+	//if (queuedhackyxmlvalue > 0) {
+		//printf("s: %s",xml); 
+	//}
 	//content
-	//printf(xml);
 	return xml;
 }
 
@@ -1934,8 +2113,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			super(BuildModdedXML(xmldata, "bosspools.xml", true));
 		}else if (a.find("<bosse") < 50) {
 			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
-		}else if (a.find("<cuts") < 50) {
-			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
+		//}else if (a.find("<cuts") < 50) {
+			//super(BuildModdedXML(xmldata, "cutscenes.xml", false));
+		//}else if (a.find("<stages") < 50) {
+			//super(BuildModdedXML(xmldata, "stages.xml", false));
 		}else if (a.find("<reci") < 50) {
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
 			smatch match;
@@ -2024,6 +2205,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			a = "<wisps gfxroot=\"gfx/familiar/wisps/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </wisps>";
 		}
 		//printf("asdad: %s", a.c_str());
+		
 		xmldata = new char[a.length() + 1];
 		strcpy(xmldata, a.c_str());
 		super(xmldata);
