@@ -150,7 +150,10 @@ ___
 ### Get·String () {: aria-label='Functions' }
 #### string GetString ( string category, string key) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
-
+___
+### Play·Cutscene () {: aria-label='Functions' }
+#### table PlayCutscene ( string cutsceneid ) {: .copyable aria-label='Functions' }
+Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
 ___
 ### Set·Clipboard () {: aria-label='Functions' }
 #### boolean SetClipboard ( string clipboarddata) {: .copyable aria-label='Functions' }

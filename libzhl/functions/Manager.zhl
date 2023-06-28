@@ -39,6 +39,9 @@ __thiscall void Manager::ExecuteStartGame();
 "558bec6aff68????????64a1????????5083ec68a1????????33c58945??535657508d45??64a3????????c745??00000000":
 static void Manager::RestartGame();
 
+"568bf18b46??83e801":
+__thiscall void Manager::cleanup_current_state();
+ 
 "558bec6aff68????????64a1000000005083ec3ca1????????33c58945f0535657508d45f464a3000000008b550c8bca":
 static ReferenceCounter_ImageBase* Manager::LoadImage(ReferenceCounter_ImageBase* result, const char* path, KAGE_Graphics_ImageBase_VertexAttributeDescriptor* descriptor, bool unk);
 
