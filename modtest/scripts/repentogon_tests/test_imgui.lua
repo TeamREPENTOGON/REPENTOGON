@@ -90,6 +90,8 @@ imgui:AddTab("tabBar1", "tab3", "Tab 3")
 imgui:AddElement("tab3", "", ImGuiElement.Text, "This is tab 3")
 
 imgui:AddElement("testWindow2", "", ImGuiElement.Separator)
+imgui:AddPlotLines("testWindow2", "plotLines", "Line Plot", { 0.6, 0.1, 1.0, 0.5, 0.92, 0.1, 0.2 })
+imgui:AddPlotHistogram("testWindow2", "plotHistogram", "Histogram Plot", { 0.6, 0.1, 1.0, 0.5, 0.92, 0.1, 0.2 })
 
 --------- Render callback ---------
 imgui:AddElement("testWindow2", "mousePosText", ImGuiElement.Text, "")

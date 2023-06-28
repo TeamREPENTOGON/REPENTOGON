@@ -174,6 +174,16 @@ ___
 #### void Show ( ) {: .copyable aria-label='Functions' }
 Opens ImGui.
 ___
+### Update·Data () {: aria-label='Functions' }
+#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, int newDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, float newDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, bool newDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, string newDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, table newDataValues ) {: .copyable aria-label='Functions' }
+Update arbitrary data of a given element. See [ImGuiData](enums/ImGuiData.md) for possible data to update.
+
+The dataTypes and the expected newDataValue are evaluated per element. Therefore, if you try to update data of an element where this data is not used, this function will throw an error for you.
+___
 ### Update·Text () {: aria-label='Functions' }
 #### void UpdateText ( string elementId, string text ) {: .copyable aria-label='Functions' }
 

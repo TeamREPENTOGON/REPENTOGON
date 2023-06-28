@@ -109,7 +109,6 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
 		
 	inline RoomConfigHolder* GetRoomConfigHolder() { return (RoomConfigHolder*)((char*)this + 0x1879C); }
-	inline RoomConfigHolder* GetRoomConfigHolder2() { return (RoomConfigHolder*)((char*)this + 0x16D44); }
 	
 	inline RoomConfig* GetRoomConfig() { return (RoomConfig*)((char*)this + 0x1879C); }
 	

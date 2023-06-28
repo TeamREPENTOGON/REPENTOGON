@@ -2167,21 +2167,35 @@ ImGuiElement = {
     Combobox = 24,
     InputText = 25,
     InputTextWithHint = 26,
-    InputTextMultiline = 27
+    InputTextMultiline = 27,
+    InputController = 28,
+    InputKeyboard = 29,
+    PlotLines = 30,
+    PlotHistogram = 31,
 }
 
 ImGuiCallback = {
 	Clicked = 0,
-    Hovered = 1,
-    Active = 2,
-    Focused = 3,
-    Visible = 4,
-    Edited = 5,
-    Activated = 6,
-    Deactivated = 7,
-    DeactivatedAfterEdit = 8,
-    ToggledOpen = 9,
+	Hovered = 1,
+	Active = 2,
+	Focused = 3,
+	Visible = 4,
+	Edited = 5,
+	Activated = 6,
+	Deactivated = 7,
+	DeactivatedAfterEdit = 8,
+	ToggledOpen = 9,
 	Render = 10 -- Gets executed before an object gets rendered
+}
+
+ImGuiData = {
+	Label = 0,   -- descriptive text of an element
+	Value = 1,   -- Used for single value Elements like Text- or Integer-Inputs, Checkboxes, or the currently selected Radiobutton
+	ListValues = 2, -- Used for elements that use a table as their data source like RadioButtons, Comboboxes, Plots, etc.
+	Min = 3,     -- min value of a slider input
+	Max = 4,     -- max value of a slider input
+	HintText = 5, -- hint text of a text input
+	ColorValues = 6,     -- Color input. 3 values = RGB, 4 values = RGBA
 }
 
 PocketItemType = {
@@ -2217,11 +2231,11 @@ XMLNode = {
 	CURSE = 16,
 	LOCUST = 17,
 	LOCUSTCOLOR = 18,
-	BOMBCOSTUME = 19,	
-	CRAFTINGRECIPE = 20,	
-	BOSSPOOL = 21,	
-	BOSSPORTRAIT = 22,	
-	CUTSCENE = 23,	
+	BOMBCOSTUME = 19,
+	CRAFTINGRECIPE = 20,
+	BOSSPOOL = 21,
+	BOSSPORTRAIT = 22,
+	CUTSCENE = 23,
 }
 
 AutocompleteType = {
