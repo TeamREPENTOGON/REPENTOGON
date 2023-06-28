@@ -888,6 +888,7 @@ struct CustomImGui {
                 if (ImGui::TreeNode(name)) {
                     RunCallbacks(&(*element));
                     DrawElements(element->children);
+                    ImGui::TreePop();
                 }
                 break;
             case IMGUI_ELEMENT::Popup:
