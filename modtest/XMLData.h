@@ -29,6 +29,19 @@ struct hash<tuple<int, int, int>> {
 		return seed;
 	}
 };
+
+template<>
+struct hash<tuple<int, int>> {
+	size_t operator()(const tuple<int, int>& key) const {
+		size_t hash1 = hash<int>{}(get<0>(key));
+		size_t hash2 = hash<int>{}(get<1>(key));
+		size_t seed = 0;
+		std::hash<int> hasher;
+		seed ^= hasher(hash1) + 0x9e3779b9 + (seed << 6) + (seed >> 2); //These magic numbers are apparently a thing
+		seed ^= hasher(hash2) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		return seed;
+	}
+};
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
 
 typedef unordered_map<string, string> XMLAttributes;
@@ -171,6 +184,7 @@ public:
 	XMLNodeIdxLookup recipes;
 	XMLNodeIdxLookup bossportraits;
 	XMLNodeIdxLookup cutscenes;
+	XMLNodeIdxLookup stages;
 
 	void Clear() {
 		nodes.clear();
@@ -201,6 +215,7 @@ public:
 		curses.clear();
 		recipes.clear();
 		cutscenes.clear();
+		stages.clear();
 		maxid = 0;
 	
 	}
@@ -334,6 +349,12 @@ public:
 	unordered_map<string, int> bypickup;
 };
 
+class XMLStage : public XMLDataHolder {
+public:
+	unordered_map<tuple<int,int>, int> bystagealt;
+	unordered_map<tuple<int, int>, int> byparentstage;
+};
+
 class XMLPlayer : public XMLDataHolder {
 };
 
@@ -425,6 +446,7 @@ struct XMLData {
 	XMLCurse* CurseData = new XMLCurse(1);
 	XMLRecipe* RecipeData = new XMLRecipe();
 	XMLCutscene* CutsceneData = new XMLCutscene();
+	XMLStage* StageData = new XMLStage();
 
 	XMLMod* ModData = new XMLMod();
 

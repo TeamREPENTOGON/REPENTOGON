@@ -15,6 +15,9 @@ struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG) {
     RNG rng; // 0x4cb0
 };
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b86c030100":
+__thiscall void Backdrop::LoadConfig(char *xmlpath);
+
 "558bec83e4f081eca80000000f1005????????565783ec10":
 void Backdrop::RenderWater(Vector const& offset);
 

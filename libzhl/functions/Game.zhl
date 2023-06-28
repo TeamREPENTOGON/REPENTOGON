@@ -111,6 +111,8 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	inline RoomConfigHolder* GetRoomConfigHolder() { return (RoomConfigHolder*)((char*)this + 0x1879C); }
 	inline RoomConfigHolder* GetRoomConfigHolder2() { return (RoomConfigHolder*)((char*)this + 0x16D44); }
 	
+	inline RoomConfig* GetRoomConfig() { return (RoomConfig*)((char*)this + 0x1879C); }
+	
 	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
 	
 	inline int GetLastDevilRoomStage() { return *(int*)((char*)this + 0x1C3174); }
