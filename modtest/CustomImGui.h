@@ -115,7 +115,7 @@ struct Data {
     bool windowPinned = false;
 };
 
-struct MiscData : Data {
+struct ElementData : Data {
     bool checked = false; // used for Checkbox
     int index = 0; // used for RadioButtons
     bool sameLine = true; // used for RadioButtons
@@ -124,48 +124,37 @@ struct MiscData : Data {
     std::list<float>* plotValues = new std::list<float>(); // used for Plots
     std::string inputText = ""; // Used for Text input
     std::string hintText = ""; // Used for Text input
-    int defaultKeyboardKey = 0;
     float lineCount = 6;
-
-    const char* getCurrentValue()
-    {
-        auto curValue = values->begin();
-        std::advance(curValue, index); // get element at index
-        return (index >= 0 && index < (int)values->size()) ? (*curValue).c_str() : "Unknown";
-    }
-};
-
-struct IntData : Data {
-    int defaultVal = 0;
-    int currentVal = 0;
-    int minVal = INT_MIN;
-    int maxVal = INT_MAX;
-    int step = 1;
-    int stepFast = 100;
-    float speed = 1;
-    const char* formatting = "%d%";
-
-    void setDefaultVal(int val)
-    {
-        defaultVal = val;
-        currentVal = val;
-    }
-};
-
-struct FloatData : Data {
-    float defaultVal = 0;
-    float currentVal = 0;
-    float minVal = (float)INT_MIN;
-    float maxVal = (float)INT_MAX;
+    float minVal = FLT_MIN;
+    float maxVal = FLT_MAX;
+    float defaultFloatVal = 0; // used to store default float input value, and Height of Plots
+    float currentFloatVal = 0; // used by Float Inputs
+    int defaultIntVal = 0;
+    int currentIntVal = 0; // used by Int Inputs and Keyboard/controller inputs
     float step = 1;
     float stepFast = 100;
     float speed = 1;
     const char* formatting = "%.3f";
 
-    void setDefaultVal(float val)
+    const char* DefaultFloatNumberFormatting = "%.3f";
+    const char* DefaultIntNumberFormatting = "%d%";
+
+    void setDefaultIntVal(int val)
     {
-        defaultVal = val;
-        currentVal = val;
+        defaultIntVal = val;
+        currentIntVal = val;
+    }
+    void setDefaultFloatVal(float val)
+    {
+        defaultFloatVal = val;
+        currentFloatVal = val;
+    }
+
+    const char* getCurrentListValue()
+    {
+        auto curValue = values->begin();
+        std::advance(curValue, index); // get element at index
+        return (index >= 0 && index < (int)values->size()) ? (*curValue).c_str() : "Unknown";
     }
 };
 
@@ -198,10 +187,8 @@ struct Element {
     std::map<IMGUI_CALLBACK, int> callbacks; // type, StackID
 
     Data data; // i want to only use this in the future for all data types, but im to stupid to get the cast to work correctly :(
-    IntData intData;
-    FloatData floatData;
     ColorData colorData;
-    MiscData miscData;
+    ElementData elementData;
 
     bool useroverride_isVisible = false;
 
@@ -245,38 +232,22 @@ struct Element {
     {
         data = dataObj;
     }
-    void AddData(IntData dataObj)
-    {
-        intData = dataObj;
-    }
-    void AddData(FloatData dataObj)
-    {
-        floatData = dataObj;
-    }
     void AddData(ColorData dataObj)
     {
         colorData = dataObj;
     }
-    void AddData(MiscData dataObj)
+    void AddData(ElementData dataObj)
     {
-        miscData = dataObj;
+        elementData = dataObj;
     }
 
-    IntData* GetIntData()
-    {
-        return &intData;
-    }
-    FloatData* GetFloatData()
-    {
-        return &floatData;
-    }
     ColorData* GetColorData()
     {
         return &colorData;
     }
-    MiscData* GetMiscData()
+    ElementData* GetElementData()
     {
-        return &miscData;
+        return &elementData;
     }
 
     void PropagateCallbackData(lua::LuaCaller* caller)
@@ -285,12 +256,12 @@ struct Element {
         case IMGUI_ELEMENT::InputInt:
         case IMGUI_ELEMENT::DragInt:
         case IMGUI_ELEMENT::SliderInt:
-            caller->push(intData.currentVal);
+            caller->push(elementData.currentIntVal);
             break;
         case IMGUI_ELEMENT::InputFloat:
         case IMGUI_ELEMENT::DragFloat:
         case IMGUI_ELEMENT::SliderFloat:
-            caller->push(floatData.currentVal);
+            caller->push(elementData.currentFloatVal);
             break;
         case IMGUI_ELEMENT::ColorEdit:
             caller->push(colorData.rgba[0]);
@@ -301,22 +272,22 @@ struct Element {
             }
             break;
         case IMGUI_ELEMENT::Checkbox:
-            caller->push(miscData.checked);
+            caller->push(elementData.checked);
             break;
         case IMGUI_ELEMENT::RadioButton:
         case IMGUI_ELEMENT::Combobox:
-            caller->push(miscData.index);
-            caller->push(miscData.getCurrentValue());
+            caller->push(elementData.index);
+            caller->push(elementData.getCurrentListValue());
             break;
         case IMGUI_ELEMENT::InputText:
         case IMGUI_ELEMENT::InputTextWithHint:
         case IMGUI_ELEMENT::InputTextMultiline:
-            caller->push(miscData.inputText.c_str());
+            caller->push(elementData.inputText.c_str());
             break;
         case IMGUI_ELEMENT::InputController:
         case IMGUI_ELEMENT::InputKeyboard:
-            caller->push(imGuiToIsaacKey.at(static_cast<ImGuiKey>(miscData.defaultKeyboardKey)));
-            caller->push(ImGui::GetKeyName(static_cast<ImGuiKey>(miscData.defaultKeyboardKey)));
+            caller->push(imGuiToIsaacKey.at(static_cast<ImGuiKey>(elementData.currentIntVal)));
+            caller->push(ImGui::GetKeyName(static_cast<ImGuiKey>(elementData.currentIntVal)));
             break;
         default:
             caller->push((float)data.clickCounter);
@@ -621,33 +592,30 @@ struct CustomImGui {
         case IMGUI_ELEMENT::InputText:
         case IMGUI_ELEMENT::InputTextWithHint:
         case IMGUI_ELEMENT::InputTextMultiline:
-            element->miscData.inputText = luaL_checkstring(L, 4);
+            element->elementData.inputText = luaL_checkstring(L, 4);
             return true;
 
         case IMGUI_ELEMENT::Checkbox:
-            element->miscData.checked = lua_toboolean(L, 4);
+            element->elementData.checked = lua_toboolean(L, 4);
             return true;
 
         case IMGUI_ELEMENT::RadioButton:
         case IMGUI_ELEMENT::Combobox:
-            element->miscData.index = (int)luaL_checkinteger(L, 4);
+            element->elementData.index = (int)luaL_checkinteger(L, 4);
             return true;
 
         case IMGUI_ELEMENT::InputInt:
         case IMGUI_ELEMENT::DragInt:
         case IMGUI_ELEMENT::SliderInt:
-            element->intData.currentVal = (int)luaL_checkinteger(L, 4);
+        case IMGUI_ELEMENT::InputController:
+        case IMGUI_ELEMENT::InputKeyboard:
+            element->elementData.currentIntVal = (int)luaL_checkinteger(L, 4);
             return true;
 
         case IMGUI_ELEMENT::InputFloat:
         case IMGUI_ELEMENT::DragFloat:
         case IMGUI_ELEMENT::SliderFloat:
-            element->floatData.currentVal = (float)luaL_checknumber(L, 4);
-            return true;
-
-        case IMGUI_ELEMENT::InputController:
-        case IMGUI_ELEMENT::InputKeyboard:
-            element->miscData.defaultKeyboardKey = (int)luaL_checkinteger(L, 4);
+            element->elementData.currentFloatVal = (float)luaL_checknumber(L, 4);
             return true;
 
         default:
@@ -672,17 +640,17 @@ struct CustomImGui {
             if (!lua_istable(L, 4))
                 return luaL_error(L, "Argument 4 needs to be a table!");
 
-            element->miscData.plotValues->clear();
-            element->miscData.values->clear();
+            element->elementData.plotValues->clear();
+            element->elementData.values->clear();
             for (auto i = 1; i <= lua_rawlen(L, 4); ++i) {
                 lua_pushinteger(L, i);
                 lua_gettable(L, 4);
                 if (lua_type(L, -1) == LUA_TNIL)
                     break;
                 if (element->type == IMGUI_ELEMENT::PlotLines || element->type == IMGUI_ELEMENT::PlotHistogram) {
-                    element->miscData.plotValues->push_back((float)luaL_checknumber(L, -1));
+                    element->elementData.plotValues->push_back((float)luaL_checknumber(L, -1));
                 } else {
-                    element->miscData.values->push_back(luaL_checkstring(L, -1));
+                    element->elementData.values->push_back(luaL_checkstring(L, -1));
                 }
                 lua_pop(L, 1);
             }
@@ -692,11 +660,11 @@ struct CustomImGui {
             switch (element->type) {
             case IMGUI_ELEMENT::DragInt:
             case IMGUI_ELEMENT::SliderInt:
-                element->intData.minVal = (int)luaL_checkinteger(L, 4);
+                element->elementData.minVal = (float)luaL_checkinteger(L, 4);
                 return true;
             case IMGUI_ELEMENT::DragFloat:
             case IMGUI_ELEMENT::SliderFloat:
-                element->floatData.minVal = (float)luaL_checknumber(L, 4);
+                element->elementData.minVal = (float)luaL_checknumber(L, 4);
                 return true;
             default:
                 return false;
@@ -706,11 +674,11 @@ struct CustomImGui {
             switch (element->type) {
             case IMGUI_ELEMENT::DragInt:
             case IMGUI_ELEMENT::SliderInt:
-                element->intData.maxVal = (int)luaL_checkinteger(L, 4);
+                element->elementData.maxVal = (float)luaL_checkinteger(L, 4);
                 return true;
             case IMGUI_ELEMENT::DragFloat:
             case IMGUI_ELEMENT::SliderFloat:
-                element->floatData.maxVal = (float)luaL_checknumber(L, 4);
+                element->elementData.maxVal = (float)luaL_checknumber(L, 4);
                 return true;
             default:
                 return false;
@@ -719,7 +687,7 @@ struct CustomImGui {
         case IMGUI_DATA::HintText:
             if (element->type != IMGUI_ELEMENT::InputText && element->type != IMGUI_ELEMENT::InputTextWithHint)
                 return false;
-            element->miscData.hintText = luaL_checkstring(L, 4);
+            element->elementData.hintText = luaL_checkstring(L, 4);
             return true;
 
         case IMGUI_DATA::ColorValues:
@@ -976,44 +944,44 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::InputInt:
-                if (element->GetIntData() != nullptr) {
-                    IntData* data = element->GetIntData();
-                    ImGui::InputInt(name, &data->currentVal, data->step, data->stepFast);
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
+                    ImGui::InputInt(name, &(int&)data->currentIntVal, (int)data->step, (int)data->stepFast);
                     RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::InputFloat:
-                if (element->GetFloatData() != nullptr) {
-                    FloatData* data = element->GetFloatData();
-                    ImGui::InputFloat(name, &data->currentVal, data->step, data->stepFast);
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
+                    ImGui::InputFloat(name, &data->currentFloatVal, data->step, data->stepFast);
                     RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::DragInt:
-                if (element->GetIntData() != nullptr) {
-                    IntData* data = element->GetIntData();
-                    ImGui::DragInt(name, &data->currentVal, data->speed, data->minVal, data->maxVal, data->formatting);
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
+                    ImGui::DragInt(name, &data->currentIntVal, data->speed, (int)data->minVal, (int)data->maxVal, data->formatting);
                     RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::DragFloat:
-                if (element->GetFloatData() != nullptr) {
-                    FloatData* data = element->GetFloatData();
-                    ImGui::DragFloat(name, &data->currentVal, data->speed, data->minVal, data->maxVal, data->formatting);
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
+                    ImGui::DragFloat(name, &data->currentFloatVal, data->speed, data->minVal, data->maxVal, data->formatting);
                     RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::SliderInt:
-                if (element->GetIntData() != nullptr) {
-                    IntData* data = element->GetIntData();
-                    ImGui::SliderInt(name, &data->currentVal, data->minVal, data->maxVal, data->formatting);
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
+                    ImGui::SliderInt(name, &(int&)data->currentIntVal, (int)data->minVal, (int)data->maxVal, data->formatting);
                     RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::SliderFloat:
-                if (element->GetFloatData() != nullptr) {
-                    FloatData* data = element->GetFloatData();
-                    ImGui::SliderFloat(name, &data->currentVal, data->minVal, data->maxVal, data->formatting);
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
+                    ImGui::SliderFloat(name, &data->currentFloatVal, data->minVal, data->maxVal, data->formatting);
                     RunCallbacks(&(*element));
                 }
                 break;
@@ -1029,15 +997,15 @@ struct CustomImGui {
                 }
                 break;
             case IMGUI_ELEMENT::Checkbox:
-                if (element->GetMiscData() != nullptr) {
-                    MiscData* data = element->GetMiscData();
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
                     ImGui::Checkbox(name, &data->checked);
                     RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::RadioButton:
-                if (element->GetMiscData() != nullptr) {
-                    MiscData* data = element->GetMiscData();
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
                     int counter = 0;
                     for (auto elemName = data->values->begin(); elemName != data->values->end(); ++elemName) {
                         ImGui::RadioButton(elemName->c_str(), &data->index, counter);
@@ -1050,13 +1018,13 @@ struct CustomImGui {
                 }
                 break;
             case IMGUI_ELEMENT::Combobox:
-                if (element->GetMiscData() != nullptr) {
-                    MiscData* data = element->GetMiscData();
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
                     if (data->isSlider) {
-                        ImGui::SliderInt(name, &data->index, 0, data->values->size() - 1, data->getCurrentValue());
+                        ImGui::SliderInt(name, &data->index, 0, data->values->size() - 1, data->getCurrentListValue());
                         RunCallbacks(&(*element));
                     } else {
-                        if (ImGui::BeginCombo(name, data->getCurrentValue())) {
+                        if (ImGui::BeginCombo(name, data->getCurrentListValue())) {
                             int counter = 0;
                             for (auto elemName = data->values->begin(); elemName != data->values->end(); ++elemName) {
                                 const bool is_selected = (data->index == counter);
@@ -1077,8 +1045,8 @@ struct CustomImGui {
                 break;
             case IMGUI_ELEMENT::InputText:
             case IMGUI_ELEMENT::InputTextWithHint:
-                if (element->GetMiscData() != nullptr) {
-                    MiscData* data = element->GetMiscData();
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
                     if (data->hintText.empty()) {
                         StringInputText(name, &data->inputText, NULL, NULL, NULL);
                     } else {
@@ -1088,23 +1056,23 @@ struct CustomImGui {
                 }
                 break;
             case IMGUI_ELEMENT::InputTextMultiline:
-                if (element->GetMiscData() != nullptr) {
-                    MiscData* data = element->GetMiscData();
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
                     StringInputTextMultiline(name, &data->inputText, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * data->lineCount), NULL, NULL, NULL);
                     RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::InputController:
             case IMGUI_ELEMENT::InputKeyboard:
-                if (element->GetMiscData() != nullptr) {
-                    MiscData* data = element->GetMiscData();
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
                     if (data->inputText.empty())
-                        data->inputText = std::string(ImGui::GetKeyName(static_cast<ImGuiKey>(data->defaultKeyboardKey)));
+                        data->inputText = std::string(ImGui::GetKeyName(static_cast<ImGuiKey>(data->currentIntVal)));
 
                     ImGuiKey newButton = AddChangeKeyButton(element->type == IMGUI_ELEMENT::InputController, element->isActive);
                     if (newButton != ImGuiKey_None) {
                         data->inputText = ImGui::GetKeyName(newButton);
-                        data->defaultKeyboardKey = static_cast<int>(newButton);
+                        data->currentIntVal = static_cast<int>(newButton);
                         // workaround: manually trigger Edited events
                         for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
                             if (callback->first == IMGUI_CALLBACK::Edited) {
@@ -1117,19 +1085,19 @@ struct CustomImGui {
                 }
                 break;
             case IMGUI_ELEMENT::PlotLines:
-                if (element->GetMiscData() != nullptr) {
-                    MiscData* data = element->GetMiscData();
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
                     std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
 
-                    ImGui::PlotLines(name, &values[0], data->plotValues->size());
+                    ImGui::PlotLines(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
                 }
                 break;
             case IMGUI_ELEMENT::PlotHistogram:
-                if (element->GetMiscData() != nullptr) {
-                    MiscData* data = element->GetMiscData();
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
                     std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
 
-                    ImGui::PlotHistogram(name, &values[0], data->plotValues->size());
+                    ImGui::PlotHistogram(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
                 }
                 break;
             default:

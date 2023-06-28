@@ -237,14 +237,14 @@ static int Lua_AddInputInteger(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    IntData data = IntData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     int stackID = CheckAndSetCallback(L, 5);
-    data.setDefaultVal((int)luaL_optinteger(L, 6, data.defaultVal));
-    data.step = (int)luaL_optinteger(L, 7, data.step);
-    data.stepFast = (int)luaL_optinteger(L, 8, data.stepFast);
+    data.setDefaultIntVal((int)luaL_optinteger(L, 6, data.defaultIntVal));
+    data.step = (float)luaL_optinteger(L, 7, (int)data.step);
+    data.stepFast = (float)luaL_optinteger(L, 8, (int)data.stepFast);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
@@ -265,12 +265,12 @@ static int Lua_AddInputFloat(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    FloatData data = FloatData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     int stackID = CheckAndSetCallback(L, 5);
-    data.setDefaultVal((float)luaL_optnumber(L, 6, data.defaultVal));
+    data.setDefaultFloatVal((float)luaL_optnumber(L, 6, data.defaultFloatVal));
     data.step = (float)luaL_optnumber(L, 7, data.step);
     data.stepFast = (float)luaL_optnumber(L, 8, data.stepFast);
 
@@ -293,16 +293,16 @@ static int Lua_AddDragInteger(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    IntData data = IntData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     int stackID = CheckAndSetCallback(L, 5);
-    data.setDefaultVal((int)luaL_optinteger(L, 6, data.defaultVal));
+    data.setDefaultIntVal((int)luaL_optinteger(L, 6, data.defaultIntVal));
     data.speed = (float)luaL_optnumber(L, 7, data.speed);
-    data.minVal = (int)luaL_optinteger(L, 8, data.minVal);
-    data.maxVal = (int)luaL_optinteger(L, 9, data.maxVal);
-    data.formatting = luaL_optstring(L, 10, data.formatting);
+    data.minVal = (float)luaL_optinteger(L, 8, (int)data.minVal);
+    data.maxVal = (float)luaL_optinteger(L, 9, (int)data.maxVal);
+    data.formatting = luaL_optstring(L, 10, data.DefaultIntNumberFormatting);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
@@ -323,16 +323,16 @@ static int Lua_AddDragFloat(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    FloatData data = FloatData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     int stackID = CheckAndSetCallback(L, 5);
-    data.setDefaultVal((float)luaL_optnumber(L, 6, data.defaultVal));
+    data.setDefaultFloatVal((float)luaL_optnumber(L, 6, data.defaultFloatVal));
     data.speed = (float)luaL_optnumber(L, 7, data.speed);
     data.minVal = (float)luaL_optnumber(L, 8, data.minVal);
     data.maxVal = (float)luaL_optnumber(L, 9, data.maxVal);
-    data.formatting = luaL_optstring(L, 10, data.formatting);
+    data.formatting = luaL_optstring(L, 10, data.DefaultFloatNumberFormatting);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
@@ -353,15 +353,15 @@ static int Lua_AddSliderInteger(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    IntData data = IntData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     int stackID = CheckAndSetCallback(L, 5);
-    data.setDefaultVal((int)luaL_optinteger(L, 6, data.defaultVal));
-    data.minVal = (int)luaL_optinteger(L, 7, data.minVal);
-    data.maxVal = (int)luaL_optinteger(L, 8, data.maxVal);
-    data.formatting = luaL_optstring(L, 9, data.formatting);
+    data.setDefaultIntVal((int)luaL_optinteger(L, 6, data.defaultIntVal));
+    data.minVal = (float)luaL_optinteger(L, 7, (int)data.minVal);
+    data.maxVal = (float)luaL_optinteger(L, 8, (int)data.maxVal);
+    data.formatting = luaL_optstring(L, 9, data.DefaultIntNumberFormatting);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
@@ -382,15 +382,15 @@ static int Lua_AddSliderFloat(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    FloatData data = FloatData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     int stackID = CheckAndSetCallback(L, 5);
-    data.setDefaultVal((float)luaL_optnumber(L, 6, data.defaultVal));
+    data.setDefaultFloatVal((float)luaL_optnumber(L, 6, data.defaultFloatVal));
     data.minVal = (float)luaL_optnumber(L, 7, data.minVal);
     data.maxVal = (float)luaL_optnumber(L, 8, data.maxVal);
-    data.formatting = luaL_optstring(L, 9, data.formatting);
+    data.formatting = luaL_optstring(L, 9, data.DefaultFloatNumberFormatting);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
@@ -443,7 +443,7 @@ static int Lua_AddCheckbox(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
@@ -470,7 +470,7 @@ static int Lua_AddRadioButtons(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     int stackID = CheckAndSetCallback(L, 4);
@@ -549,7 +549,7 @@ static int Lua_AddCombobox(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
@@ -591,7 +591,7 @@ static int Lua_AddInputText(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
@@ -618,7 +618,7 @@ static int Lua_AddInputTextMultiline(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
@@ -692,12 +692,12 @@ static int Lua_AddInputController(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     int stackID = CheckAndSetCallback(L, 5);
-    data.defaultKeyboardKey = (int)luaL_optinteger(L, 6, 0);
+    data.currentIntVal = (int)luaL_optinteger(L, 6, 0);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
@@ -718,12 +718,12 @@ static int Lua_AddInputKeyboard(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     int stackID = CheckAndSetCallback(L, 5);
-    data.defaultKeyboardKey = (int)luaL_optinteger(L, 6, 0);
+    data.currentIntVal = (int)luaL_optinteger(L, 6, 0);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
@@ -744,13 +744,17 @@ static int Lua_AddPlotLines(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     if (!lua_istable(L, 5)) {
         return luaL_error(L, "Argument 5 needs to be a table!");
     }
+    data.hintText = luaL_optstring(L, 6, "");
+    data.minVal = (float)luaL_optnumber(L, 7, FLT_MIN);
+    data.maxVal = (float)luaL_optnumber(L, 8, FLT_MAX);
+    data.defaultFloatVal = (float)luaL_optnumber(L, 9, 40.0f);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
@@ -779,13 +783,17 @@ static int Lua_AddPlotHistogram(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
-    MiscData data = MiscData();
+    ElementData data = ElementData();
     const char* parentId = luaL_checkstring(L, 2);
     const char* id = luaL_checkstring(L, 3);
     const char* text = luaL_optstring(L, 4, "");
     if (!lua_istable(L, 5)) {
         return luaL_error(L, "Argument 5 needs to be a table!");
     }
+    data.hintText = luaL_optstring(L, 6, "");
+    data.minVal = (float)luaL_optnumber(L, 7, FLT_MIN);
+    data.maxVal = (float)luaL_optnumber(L, 8, FLT_MAX);
+    data.defaultFloatVal = (float)luaL_optnumber(L, 9, 40.0f);
 
     EvalIDAndParent(L, imGui, id, parentId);
 
