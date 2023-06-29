@@ -66,6 +66,7 @@ nav:
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
+    - ImGuiData: enums/ImGuiData.md
     - ImGuiElement: enums/ImGuiElement.md
     - ItemAnim: enums/ItemAnim.md
     - KnifeSubType: enums/KnifeSubType.md
