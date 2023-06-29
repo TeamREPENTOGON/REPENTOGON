@@ -550,7 +550,91 @@ static int Lua_PlayerGetPonyCharge(lua_State* L) {
 
 static int Lua_PlayerSetPonyCharge(lua_State* L) {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*plr->GetPonyCharge() = luaL_checkinteger(L, 2);
+	*plr->GetPonyCharge() = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+static int Lua_PlayerGetEdenSpeed(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *plr->GetEdenSpeed());
+
+	return 1;
+}
+
+static int Lua_PlayerSetEdenSpeed(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetEdenSpeed() = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+static int Lua_PlayerGetEdenFireDelay(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *plr->GetEdenFireDelay());
+
+	return 1;
+}
+
+static int Lua_PlayerSetEdenFireDelay(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetEdenFireDelay() = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+static int Lua_PlayerGetEdenDamage(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *plr->GetEdenDamage());
+
+	return 1;
+}
+
+static int Lua_PlayerSetEdenDamage(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetEdenDamage() = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+static int Lua_PlayerGetEdenRange(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *plr->GetEdenRange());
+
+	return 1;
+}
+
+static int Lua_PlayerSetEdenRange(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetEdenRange() = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+static int Lua_PlayerGetEdenShotSpeed(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *plr->GetEdenShotSpeed());
+
+	return 1;
+}
+
+static int Lua_PlayerSetEdenShotSpeed(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetEdenShotSpeed() = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+static int Lua_PlayerGetEdenLuck(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushnumber(L, *plr->GetEdenLuck());
+
+	return 1;
+}
+
+static int Lua_PlayerSetEdenLuck(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetEdenLuck() = (float)luaL_checknumber(L, 2);
 
 	return 0;
 }
@@ -615,4 +699,16 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "AddLocust", Lua_PlayerAddLocust);
 	lua::RegisterFunction(state, mt, "GetPonyCharge", Lua_PlayerGetPonyCharge);
 	lua::RegisterFunction(state, mt, "SetPonyCharge", Lua_PlayerSetPonyCharge);
+	lua::RegisterFunction(state, mt, "GetEdenSpeed", Lua_PlayerGetEdenSpeed);
+	lua::RegisterFunction(state, mt, "SetEdenSpeed", Lua_PlayerSetEdenSpeed);
+	lua::RegisterFunction(state, mt, "GetEdenFireDelay", Lua_PlayerGetEdenFireDelay);
+	lua::RegisterFunction(state, mt, "SetEdenFireDelay", Lua_PlayerSetEdenFireDelay);
+	lua::RegisterFunction(state, mt, "GetEdenDamage", Lua_PlayerGetEdenDamage);
+	lua::RegisterFunction(state, mt, "SetEdenDamage", Lua_PlayerSetEdenDamage);
+	lua::RegisterFunction(state, mt, "GetEdenRange", Lua_PlayerGetEdenRange);
+	lua::RegisterFunction(state, mt, "SetEdenRange", Lua_PlayerSetEdenRange);
+	lua::RegisterFunction(state, mt, "GetEdenShotSpeed", Lua_PlayerGetEdenShotSpeed);
+	lua::RegisterFunction(state, mt, "SetEdenShotSpeed", Lua_PlayerSetEdenShotSpeed);
+	lua::RegisterFunction(state, mt, "GetEdenLuck", Lua_PlayerGetEdenLuck);
+	lua::RegisterFunction(state, mt, "SetEdenLuck", Lua_PlayerSetEdenLuck);
 }

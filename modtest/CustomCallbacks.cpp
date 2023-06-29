@@ -2462,3 +2462,22 @@ HOOK_METHOD(Backdrop, pre_render_walls, () -> void) {
 			.call(0);
 	}
 }
+
+//PLAYER_INIT_PRE_LEVEL_INIT_STATS (1127)
+HOOK_METHOD(Entity_Player, InitPreLevelInitStats, () -> void) {
+	int callbackid = 1127;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		Entity_Player* ent = (Entity_Player*)this;
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(this->GetPlayerType())
+			.push(ent, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+	}
+	super();
+}

@@ -173,6 +173,10 @@ __thiscall bool Entity_Player::IsLocalPlayer();
 "558bec83e4f881ecc8000000a1????????33c4898424????????5657ff75":
 __thiscall bool Entity_Player::HandleCollision(Entity* collider, bool low);
 
+"558bec6aff68????????64a1????????5083ec38a1????????33c58945??5657508d45??64a3????????8bf98b87":
+__thiscall void Entity_Player::InitPreLevelInitStats();
+
+
 struct Entity_Player : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
@@ -185,6 +189,12 @@ struct Entity_Player : public Entity { {{
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 	inline int* GetFireDelayModifier() { return (int*)((char*)this + 0x146c); }
 	inline int* GetDamageModifier() { return (int*)((char*)this + 0x1470); }
+	inline float* GetEdenSpeed() { return (float*)((char*)this + 0x1490); }
+	inline float* GetEdenFireDelay() { return (float*)((char*)this + 0x1494); }
+	inline float* GetEdenDamage() { return (float*)((char*)this + 0x1498); }
+	inline float* GetEdenRange() { return (float*)((char*)this + 0x149c); }
+	inline float* GetEdenShotSpeed() { return (float*)((char*)this + 0x14a0); }
+	inline float* GetEdenLuck() { return (float*)((char*)this + 0x14a4); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
