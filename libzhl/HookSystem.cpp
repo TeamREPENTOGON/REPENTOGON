@@ -89,8 +89,13 @@ static std::unordered_map<std::string, Definition*> &DefsByName()
 }
 
 static char g_defLastError[1024] = {0};
+static std::vector<std::tuple<bool, const char*>> g_missing;
 
 const char *Definition::GetLastError() {return g_defLastError;}
+
+const std::vector<std::tuple<bool, const char*>>& Definition::GetMissing() {
+	return g_missing;
+}
 
 void FunctionDefinition::SetName(const char *name, const char *type)
 {
@@ -98,15 +103,20 @@ void FunctionDefinition::SetName(const char *name, const char *type)
 	strcpy_s(_shortName, name);
 }
 
-int Definition::Init()
+bool Definition::Init()
 {
+	bool ok = true;
 	SigScan::Init();
 
-	for(auto it = Defs().begin() ; it != Defs().end() ; ++it)
+	for(Definition* definition: Defs())
 	{
-		if(!(*it)->Load()) return 0;
+		if (!definition->Load()) {
+			g_missing.push_back(std::make_tuple(definition->IsFunction(), definition->GetName()));
+			ok = false;
+		}
 	}
-	return 1;
+
+	return ok;
 }
 
 Definition *Definition::Find(const char *name)
@@ -158,6 +168,14 @@ int VariableDefinition::Load()
 	Log("\n");
 
 	return 1;
+}
+
+const char* VariableDefinition::GetName() const {
+	return _name;
+}
+
+bool VariableDefinition::IsFunction() const {
+	return false;
 }
 
 //================================================================================
@@ -213,6 +231,14 @@ int FunctionDefinition::Load()
 	}
 
 	return 1;
+}
+
+const char* FunctionDefinition::GetName() const {
+	return _name;
+}
+
+bool FunctionDefinition::IsFunction() const {
+	return true;
 }
 
 //================================================================================
