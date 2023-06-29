@@ -1,6 +1,8 @@
 #pragma once
 
+#include <tuple>
 #include <variant>
+#include <vector>
 
 #include "HookSystem.h"
 #include "mologie_detours.h"
@@ -63,15 +65,18 @@ namespace HookSystem {
 class LIBZHL_API Definition
 {
 public:
-	static int Init();
+	static bool Init();
 	static const char *GetLastError();
 	static Definition *Find(const char *name);
+	static const std::vector<std::tuple<bool, const char*>>& GetMissing();
 
 protected:
 	static void Add(const char *name, Definition *def);
 
 public:
 	virtual int Load() = 0;
+	virtual const char* GetName() const = 0;
+	virtual bool IsFunction() const = 0;
 };
 
 //=================================================================================================
@@ -98,6 +103,8 @@ public:
 	FunctionDefinition(const char* name, const type_info& type, void* addr, const HookSystem::ArgData* argdata, int nArgs, unsigned int flags, void** outfunc);
 
 	virtual int Load();
+	const char* GetName() const override;
+	bool IsFunction() const override;
 
 	bool IsThiscall() const {return (_flags & HookSystem::THISCALL) != 0;}
 	bool NeedsCallerCleanup() const {return (_flags & HookSystem::CLEANUP) != 0;}
@@ -122,6 +129,8 @@ public:
 	VariableDefinition(const char *name, const char *sig, void *outvar);
 
 	virtual int Load();
+	virtual const char* GetName() const override;
+	bool IsFunction() const override;
 };
 
 //=================================================================================================
