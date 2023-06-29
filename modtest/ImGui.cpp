@@ -159,10 +159,11 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             }
         }
     }
+    // always forward inputs to imgui, to allow mouse movement in ImGui to be read correctly. 
+    ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 
     // If the overlay is shown, direct input to the overlay only
     if (menuShown) {
-        ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
         return true;
     }
     else {
