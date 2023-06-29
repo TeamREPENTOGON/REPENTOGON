@@ -657,6 +657,11 @@ function Isaac.RunCallback(callbackID, ...)
 	return Isaac.RunCallbackWithParam(callbackID, nil, ...)
 end
 
+-- ImGui alias functions
+local ImGui = Isaac.GetImGui()
+rawset(getmetatable(ImGui), "ImGuiToWorld", function (_, position) return Isaac.ScreenToWorld(position) end)
+rawset(getmetatable(ImGui), "WorldToImGui", function (_, position) return Isaac.WorldToScreen(position) end)
+
 if not _LUADEBUG then
 	debug = nil
 	os = {

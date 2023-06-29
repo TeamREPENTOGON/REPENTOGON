@@ -137,6 +137,12 @@ ___
 #### void Hide ( ) {: .copyable aria-label='Functions' }
 Closes ImGui.
 ___
+### Im·Gui·To·World () {: aria-label='Functions' }
+#### void ImGuiToWorld ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
+Converts ImGui coordinates into World coordinates.
+
+This function is the same as `Isaac.ScreenToWorld()`.
+___
 ### Link·Window·To·Element () {: aria-label='Functions' }
 #### void LinkWindowToElement ( string windowId, string elementId ) {: .copyable aria-label='Functions' }
 Connects a Window or Popup element to another element, making said element act as a "toggle" for that window.
@@ -201,4 +207,10 @@ ___
 ### Update·Text () {: aria-label='Functions' }
 #### void UpdateText ( string elementId, string text ) {: .copyable aria-label='Functions' }
 Shortcut function to update an element text or label.
+___
+### World·To·Im·Gui () {: aria-label='Functions' }
+#### void WorldToImGui ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
+Converts world coordinates into ImGui coordinates.
+
+This function is the same as `Isaac.WorldToScreen()`.
 ___
