@@ -78,6 +78,14 @@ ___
 #### void AddInputTextMultiline ( string parentId, string elementId, string description = "", function changeCallback = nil, string defaultVal = "", float displayedLines = 6 ) {: .copyable aria-label='Functions' }
 Adds a text input element that allows to input multiple lines of text. The attribute `displayedLines` can be used to change the height of the element.
 ___
+### Add·Progress·Bar () {: aria-label='Functions' }
+#### void AddProgressBar ( string parentId, string elementId, string label = "", float progress = 0, string overlayText = "__DEFAULT__" ) {: .copyable aria-label='Functions' }
+Adds a progressbar element. The `progress` value defines the fill percentage (0 to 1). 
+
+If the `overlayText` was not defined, the progressbar will display the current fill state in percent inside the progressbar (for example 50% when progress is set to 0.5).
+
+If the `label` is empty, the progressbar will render over the full width of the parent element.
+___
 ### Add·Radio·Buttons () {: aria-label='Functions' }
 #### void AddRadioButtons ( string parentId, string elementId, function changeCallback = nil, table options, int selectedIndex = 0, boolean renderSameLine = true ) {: .copyable aria-label='Functions' }
 

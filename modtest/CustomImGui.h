@@ -46,6 +46,7 @@ enum class IMGUI_ELEMENT {
     InputKeyboard,
     PlotLines,
     PlotHistogram,
+    ProgressBar,
 };
 
 enum class IMGUI_CALLBACK {
@@ -616,6 +617,7 @@ struct CustomImGui {
         case IMGUI_ELEMENT::InputFloat:
         case IMGUI_ELEMENT::DragFloat:
         case IMGUI_ELEMENT::SliderFloat:
+        case IMGUI_ELEMENT::ProgressBar:
             element->elementData.currentFloatVal = (float)luaL_checknumber(L, 4);
             return true;
 
@@ -686,7 +688,11 @@ struct CustomImGui {
             }
 
         case IMGUI_DATA::HintText:
-            if (element->type != IMGUI_ELEMENT::InputText && element->type != IMGUI_ELEMENT::InputTextWithHint)
+            if (element->type != IMGUI_ELEMENT::InputText
+                && element->type != IMGUI_ELEMENT::InputTextWithHint
+                && element->type != IMGUI_ELEMENT::PlotLines
+                && element->type != IMGUI_ELEMENT::PlotHistogram
+                && element->type != IMGUI_ELEMENT::ProgressBar)
                 return false;
             element->elementData.hintText = luaL_checkstring(L, 4);
             return true;
@@ -1096,6 +1102,7 @@ struct CustomImGui {
                     std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
 
                     ImGui::PlotLines(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
+                    RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::PlotHistogram:
@@ -1104,6 +1111,19 @@ struct CustomImGui {
                     std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
 
                     ImGui::PlotHistogram(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
+                    RunCallbacks(&(*element));
+                }
+                break;
+            case IMGUI_ELEMENT::ProgressBar:
+                if (element->GetElementData() != nullptr) {
+                    ElementData* data = element->GetElementData();
+                    const char* overlayText = data->hintText == "__DEFAULT__" ? NULL : data->hintText.c_str();
+                    ImGui::ProgressBar(data->currentFloatVal, ImVec2(0.0f, 0.0f), overlayText);
+                    if (!element->name.empty()) {
+                        ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+                        ImGui::Text(name);
+                    }
+                    RunCallbacks(&(*element));
                 }
                 break;
             default:

@@ -2196,7 +2196,7 @@ ImGuiData = {
 	ListValues = 2, -- Used for elements that use a table as their data source like RadioButtons, Comboboxes, Plots, etc.
 	Min = 3,     -- min value of a slider input
 	Max = 4,     -- max value of a slider input
-	HintText = 5, -- hint text of a text input
+	HintText = 5, -- hint text of a text input, or overlay texts used in plots or progressbars
 	ColorValues = 6,     -- Color input. 3 values = RGB, 4 values = RGBA
 }
 

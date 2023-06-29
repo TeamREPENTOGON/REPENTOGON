@@ -92,6 +92,7 @@ imgui:AddText("tab3", "This is tab 3")
 imgui:AddElement("testWindow2", "", ImGuiElement.Separator)
 imgui:AddPlotLines("testWindow2", "plotLines", "Line Plot", { 0.6, 0.1, 1.0, 0.5, 0.92, 0.1, 0.2 }, "Test")
 imgui:AddPlotHistogram("testWindow2", "plotHistogram", "Histogram Plot", { 0.6, 0.1, 1.0, 0.5, 0.92, 0.1, 0.2 }, nil, nil, nil, 50)
+imgui:AddProgressBar("testWindow2", "progressbar1", "Progressbar", 0.5 )
 
 --------- Render callback ---------
 imgui:AddText("testWindow2", "", true, "mousePosText")

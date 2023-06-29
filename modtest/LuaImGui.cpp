@@ -838,6 +838,29 @@ static int Lua_AddPlotHistogram(lua_State* L)
     return 1;
 }
 
+static int Lua_AddProgressBar(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    ElementData data = ElementData();
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* id = luaL_checkstring(L, 3);
+    const char* text = luaL_optstring(L, 4, "");
+    data.currentFloatVal = (float)luaL_optnumber(L, 5, 0.0f);
+    data.hintText = luaL_optstring(L, 6, "__DEFAULT__"); // special placeholder for default behavior handling
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::ProgressBar);
+
+    imGui->AddElement(parentId, id, text, type);
+    Element* createdElement = imGui->GetElementById(id);
+
+    createdElement->AddData(data);
+
+    return 1;
+}
+
 extern bool menuShown;
 static int Lua_ImGuiShow(lua_State* L)
 {
@@ -935,6 +958,7 @@ static void RegisterCustomImGui(lua_State* L)
         { "AddInputKeyboard", Lua_AddInputKeyboard },
         { "AddPlotLines", Lua_AddPlotLines },
         { "AddPlotHistogram", Lua_AddPlotHistogram },
+        { "AddProgressBar", Lua_AddProgressBar },
         { "SetTooltip", Lua_SetTooltip },
         { "SetHelpmarker", Lua_SetHelpmarker },
         { "GetMousePosition", Lua_GetMousePos },
