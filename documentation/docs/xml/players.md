@@ -10,7 +10,7 @@ tags:
 
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
-|maxhearts|int|The amount of empty heart containers the character should start with. 1 unit = 1/2 a heart|
+|heartcontainers|int|The amount of empty heart containers the character should start with. 1 unit = 1/2 a heart|
 |redhearts|int|The amount of red hearts the character should start with. 1 unit = 1/2 a heart|
 |bonehearts|int|The amount of empty bone hearts the character should start with. 1 unit = 1 bone hearts|
 |soulhearts|int|The amount of soul hearts the character should start with. 1 unit = 1/2 a heart|

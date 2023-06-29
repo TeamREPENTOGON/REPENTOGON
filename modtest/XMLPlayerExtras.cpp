@@ -7,7 +7,7 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 	super(type, variant, subtype, initSeed);
 	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[subtype];
 	std::map<std::string, int*> intValues = {
-		std::pair<std::string, int*> {"maxhearts", this->GetMaxHearts()},
+		std::pair<std::string, int*> {"heartcontainers", this->GetMaxHearts()},
 		std::pair<std::string, int*> {"redhearts", this->GetRedHearts()},
 		std::pair<std::string, int*> {"bonehearts", this->GetBoneHearts()},
 		std::pair<std::string, int*> {"soulhearts", this->GetSoulHearts()},
