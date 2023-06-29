@@ -22,6 +22,7 @@ enum class IMGUI_ELEMENT {
     Separator,
     SeparatorText,
     Text,
+    TextWrapped,
     BulletText,
     SameLine,
     Button,
@@ -918,6 +919,10 @@ struct CustomImGui {
                 break;
             case IMGUI_ELEMENT::Text:
                 ImGui::Text(name);
+                RunCallbacks(&(*element));
+                break;
+            case IMGUI_ELEMENT::TextWrapped:
+                ImGui::TextWrapped(name);
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SeparatorText:

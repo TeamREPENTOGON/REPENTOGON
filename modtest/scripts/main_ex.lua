@@ -466,8 +466,8 @@ local function imGuiError(errortext)
 		imgui:CreateWindow(windowId, "Error Display")
 		imgui:LinkWindowToElement(windowId, "ErrorDisplayMenuEntry")
 	
-		imgui:AddElement(windowId, "", ImGuiElement.Text, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n")
-		imgui:AddElement(windowId, "ErrorDisplayText", ImGuiElement.Text, errortext)
+		imgui:AddText(windowId, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", true)
+		imgui:AddText(windowId, errortext, true, "ErrorDisplayText")
 		imgui:AddElement(windowId, "ErrorDisplayCopyToClipboard", ImGuiElement.Button, "Copy to Clipboard")
 		imgui:AddCallback("ErrorDisplayCopyToClipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
 	else

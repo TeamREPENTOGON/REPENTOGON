@@ -19,7 +19,7 @@ imgui:LinkWindowToElement("testWindow2", "menuElem3")
 
 
 imgui:AddElement("testWindow2", "cat1", ImGuiElement.CollapsingHeader, "Test Category")
-imgui:AddElement("cat1", "", ImGuiElement.Text, "A test text thats pretty long and stuff")
+imgui:AddText("cat1", "A test text thats pretty long and stuff to test out text wrapping", true)
 imgui:AddElement("cat1", "", ImGuiElement.SeparatorText, "Separator text")
 imgui:AddElement("cat1", "tree1", ImGuiElement.TreeNode, "Test SubTree")
 imgui:AddElement("tree1", "", ImGuiElement.BulletText, "Bullet point 1")
@@ -42,7 +42,7 @@ imgui:LinkWindowToElement("testWindow3", "button_window")
 imgui:AddElement("catWindows", "button_popup2", ImGuiElement.Button, "open a popup")
 
 imgui:AddElement("catWindows", "popup", ImGuiElement.Popup, "Test Popup")
-imgui:AddElement("popup", "", ImGuiElement.Text, "Test popup text")
+imgui:AddText("popup", "Test popup text")
 imgui:LinkWindowToElement("popup", "button_popup2")
 
 -- open popup via SetVisible
@@ -83,18 +83,18 @@ imgui:AddInputController("catInput", "controllerInput", "Controller Input", func
 --------- Tab Testing ---------
 imgui:AddTabBar("testWindow2", "tabBar1")
 imgui:AddTab("tabBar1", "tab1", "Tab 1")
-imgui:AddElement("tab1", "", ImGuiElement.Text, "This is tab 1")
+imgui:AddText("tab1", "This is tab 1")
 imgui:AddTab("tabBar1", "tab2", "Tab 2")
-imgui:AddElement("tab2", "", ImGuiElement.Text, "This is tab 2")
+imgui:AddText("tab2", "This is tab 2")
 imgui:AddTab("tabBar1", "tab3", "Tab 3")
-imgui:AddElement("tab3", "", ImGuiElement.Text, "This is tab 3")
+imgui:AddText("tab3", "This is tab 3")
 
 imgui:AddElement("testWindow2", "", ImGuiElement.Separator)
 imgui:AddPlotLines("testWindow2", "plotLines", "Line Plot", { 0.6, 0.1, 1.0, 0.5, 0.92, 0.1, 0.2 }, "Test")
 imgui:AddPlotHistogram("testWindow2", "plotHistogram", "Histogram Plot", { 0.6, 0.1, 1.0, 0.5, 0.92, 0.1, 0.2 }, nil, nil, nil, 50)
 
 --------- Render callback ---------
-imgui:AddElement("testWindow2", "mousePosText", ImGuiElement.Text, "")
+imgui:AddText("testWindow2", "", true, "mousePosText")
 imgui:AddCallback("mousePosText", ImGuiCallback.Render, function(val)
     local mousePos = imgui:GetMousePosition()
     imgui:UpdateText("mousePosText", "MousePos: " .. mousePos.X .. "\t" .. mousePos.Y)

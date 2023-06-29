@@ -233,6 +233,26 @@ static int Lua_AddButton(lua_State* L)
     return 1;
 }
 
+static int Lua_AddText(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+
+    const char* parentId = luaL_checkstring(L, 2);
+    const char* text = luaL_optstring(L, 3, "");
+    bool isWrapped = lua_toboolean(L, 4);
+    const char* id = luaL_optstring(L, 5, "");
+
+    EvalIDAndParent(L, imGui, id, parentId);
+
+    int type = static_cast<int>(IMGUI_ELEMENT::Text);
+    if (isWrapped)
+        type = static_cast<int>(IMGUI_ELEMENT::TextWrapped);
+
+    imGui->AddElement(parentId, id, text, type);
+
+    return 1;
+}
+
 static int Lua_AddInputInteger(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
@@ -896,6 +916,7 @@ static void RegisterCustomImGui(lua_State* L)
         { "UpdateText", Lua_UpdateText },
         { "UpdateData", Lua_UpdateData },
         { "AddButton", Lua_AddButton },
+        { "AddText", Lua_AddText },
         { "AddInputInteger", Lua_AddInputInteger },
         { "AddInputFloat", Lua_AddInputFloat },
         { "AddDragInteger", Lua_AddDragInteger },
