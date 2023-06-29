@@ -147,6 +147,8 @@ nav:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
   - UI: changes/UI.md
+- XML:
+  - players.xml: xml/players.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
 - search:
