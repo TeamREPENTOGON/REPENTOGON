@@ -97,3 +97,16 @@ HOOK_METHOD(LuaEngine, EvaluateItems, (Entity_Player* player, int cacheFlags) ->
 		*player->GetPlayerTypeMutable() = 9;
 	}
 }
+
+
+HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
+	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[this->GetPlayerType()];
+
+	int orig = super(keeper);
+
+	if (!playerXML["healthlimit"].empty()) {
+		return stoi(playerXML["healthlimit"]);
+	}
+
+	return orig;
+}
