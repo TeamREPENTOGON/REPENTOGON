@@ -8,10 +8,17 @@ tags:
 
 **Content-Folder**{: .xmlInfo .green }: Using this file in a content folder will add new characters.
 
+With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by our more advanced variables.
+
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
 |heartcontainers|int|The amount of empty heart containers the character should start with. 1 unit = 1/2 a heart|
 |redhearts|int|The amount of red hearts the character should start with. 1 unit = 1/2 a heart|
-|bonehearts|int|The amount of empty bone hearts the character should start with. 1 unit = 1 bone hearts|
 |soulhearts|int|The amount of soul hearts the character should start with. 1 unit = 1/2 a heart|
+|blackhearts|int|The amount of black hearts the character should start with. These do not replace soul hearts and are applied **after** soul hearts. 1 unit = 1/2 a heart|
+|goldenhearts|int|The amount of golden hearts the character should start with. 1 unit = 1 golden heart|
+|bonehearts|int|The amount of empty bone hearts the character should start with. 1 unit = 1 bone heart|
 |eternalheart|int|If a character should start with an eternal heart. 1 = yes|
+|brokenhearts|int|The amount of broken hearts the character should start with. 1 unit = 1 broken heart|
+|rottenhearts|int|The amount of rotten hearts the character should start with. 1 unit = 1 rotten heart|
+|healthtype|int|The health type the player should start with. The int corresponds to the [HealthType](../enums/HealthType.md) enum.|

@@ -176,6 +176,11 @@ __thiscall bool Entity_Player::HandleCollision(Entity* collider, bool low);
 "558bec6aff68????????64a1????????5083ec38a1????????33c58945??5657508d45??64a3????????8bf98b87":
 __thiscall void Entity_Player::InitPreLevelInitStats();
 
+"558bec83e4f883ec0c5356578bf1":
+__thiscall void Entity_Player::AddBlackHearts(unsigned int amount);
+
+"558bec83e4f851538a5d":
+__thiscall void Entity_Player::AddRottenHearts(unsigned int amount, bool unk);
 
 struct Entity_Player : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
@@ -186,6 +191,7 @@ struct Entity_Player : public Entity { {{
 	inline int* GetMetronomeCollectibleID() { return (int*)((char*)this + 0x12d8); } 
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
 	inline Weapon** GetWeapon(int index) { return (Weapon**)((char*)this + index * 4 + 0x1328); }
+	inline Entity_Effect* GetMarkedTarget() { return *(Entity_Effect**)((char*)this + 0x1354); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 	inline int* GetFireDelayModifier() { return (int*)((char*)this + 0x146c); }
 	inline int* GetDamageModifier() { return (int*)((char*)this + 0x1470); }
@@ -206,10 +212,12 @@ struct Entity_Player : public Entity { {{
 	inline float* GetD8SpeedModifier() { return (float*)((char*)this + 0x1860); }
 	inline float* GetD8RangeModifier() { return (float*)((char*)this + 0x1864); }
 	inline float* GetD8FireDelayModifier() { return (float*)((char*)this + 0x1868); }
+	inline int* GetGoldenHearts() { return (int*)((char*)this + 0x186C); }
 	inline int* GetBoneHearts() {return (int*)((char*)this + 0x1CA8); }
+	inline int* GetBrokenHearts() {return (int*)((char*)this + 0x1CC0); }
+	inline int* GetRottenHearts() {return (int*)((char*)this + 0x1CC4); }
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
-        inline Entity_Effect* GetMarkedTarget() { return *(Entity_Effect**)((char*)this + 0x1354); }
 }} 
     __vtable {
         override
