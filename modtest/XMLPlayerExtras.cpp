@@ -47,3 +47,53 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {
 	}
 	return orig;
 }
+
+bool playerStatOverride = true;
+int playerStatOverrideId;
+
+HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
+	int id = this->GetPlayerType();
+
+	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
+	playerStatOverride = false;
+	std::map<std::string, float*> damageValues = {
+	std::pair<std::string, float*> {"speedmodifier", this->GetEdenSpeed()},
+	std::pair<std::string, float*> {"firedelaymodifier", this->GetEdenFireDelay()},
+	std::pair<std::string, float*> {"damagemodifier", this->GetEdenDamage()},
+	std::pair<std::string, float*> {"rangemodifier", this->GetEdenRange()},
+	std::pair<std::string, float*> {"shotspeedmodifier", this->GetEdenShotSpeed()},
+	std::pair<std::string, float*> {"luckmodifier", this->GetEdenLuck()},
+
+	};
+
+	for (std::pair<std::string, float*> value : damageValues) {
+		if (!playerXML[value.first].empty()) {
+			playerStatOverride = true;
+			playerStatOverrideId = id;
+			*value.second = stof(playerXML[value.first]);
+		}
+			
+	}
+
+	if (playerStatOverride) {
+		*this->GetPlayerTypeMutable() = 9; // EDEN
+	}
+
+	super();
+
+	if (playerStatOverride) {
+		*this->GetPlayerTypeMutable() = id;
+	}
+}
+
+HOOK_METHOD(LuaEngine, EvaluateItems, (Entity_Player* player, int cacheFlags) -> void) {
+	if (playerStatOverride) {
+		*player->GetPlayerTypeMutable() = playerStatOverrideId;
+	}
+
+	super(player, cacheFlags);
+
+	if (playerStatOverride) {
+		*player->GetPlayerTypeMutable() = 9;
+	}
+}

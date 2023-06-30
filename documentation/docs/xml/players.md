@@ -22,3 +22,9 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |brokenhearts|int|The amount of broken hearts the character should start with. 1 unit = 1 broken heart|
 |rottenhearts|int|The amount of rotten hearts the character should start with. 1 unit = 1 rotten heart|
 |healthtype|int|The health type the player should start with. The int corresponds to the [HealthType](../enums/HealthType.md) enum.|
+|speedmodifier|float|An inherent offset to the speed stat the character should start with. Base this offset off of Isaac's stats.|
+|firedelaymodifier|float|An inherent offset to the fire delay stat the character should start with. Base this offset off of Isaac's stats.|
+|damagemodifier|float|An inherent offset to the damage stat the character should start with. Base this offset off of Isaac's stats.|
+|rangemodifier|float|An inherent offset to the range stat the character should start with. Base this offset off of Isaac's stats.|
+|shotspeedmodifier|float|An inherent offset to the shot speed stat the character should start with. Base this offset off of Isaac's stats.|
+|luckmodifier|float|An inherent offset to the luck stat the character should start with. Base this offset off of Isaac's stats.|

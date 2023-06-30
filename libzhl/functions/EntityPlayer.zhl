@@ -190,6 +190,7 @@ struct Entity_Player : public Entity { {{
 	inline int* GetBlackHearts() {return (int*)((char*)this + 0x12A0); }
 	inline int* GetMetronomeCollectibleID() { return (int*)((char*)this + 0x12d8); } 
 	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
+	inline int* GetPlayerTypeMutable() { return (int*)((char*)this + 0x130c); }
 	inline Weapon** GetWeapon(int index) { return (Weapon**)((char*)this + index * 4 + 0x1328); }
 	inline Entity_Effect* GetMarkedTarget() { return *(Entity_Effect**)((char*)this + 0x1354); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
