@@ -6,7 +6,7 @@ on:
     branches:
       - main-msvc
     paths:
-      - modtest/**
+      - repentogon/**
       - libzhl/**
       - libzhlgen/**
 
@@ -25,15 +25,15 @@ jobs:
 
     - name: Generate changelog
       run: |
-        echo "return [[" > ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
-        git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
-        echo "]]" >> ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
+        echo "return [[" > ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
+        git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
+        echo "]]" >> ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
         echo "Resulting lua file:"
-        type ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog_official_text.lua
-        echo "#pragma once" > ${{github.workspace}}/modtest/Version.h
+        type ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
+        echo "#pragma once" > ${{github.workspace}}/repentogon/Version.h
         $sha = git rev-parse --short HEAD
-        echo "#define VERSION `"$sha`"" >> ${{github.workspace}}/modtest/Version.h
-        (gc ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog.lua) -replace 'dev build', $sha | Out-File -encoding ASCII ${{github.workspace}}/modtest/scripts/repentogon_extras/changelog.lua
+        echo "#define VERSION `"$sha`"" >> ${{github.workspace}}/repentogon/Version.h
+        (gc ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog.lua) -replace 'dev build', $sha | Out-File -encoding ASCII ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog.lua
 
     - name: Configure CMake
       run: cmake -G "Visual Studio 17 2022" -A "Win32" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
@@ -50,7 +50,7 @@ jobs:
         mv resources-repentogon artifact
         mv dsound.dll artifact
         mv libzhl.dll artifact
-        mv zhlModTest.dll artifact
+        mv zhlREPENTOGON.dll artifact
         mv Lua5.3.3r.dll artifact
         mv freetype.dll artifact
         

@@ -16,7 +16,7 @@ REPENTOGON makes additions and modifications to the Lua API and adds tons of new
 
 # Uninstalling
 Technically, removing `dsound.dll` and verifying integrity is all that's needed, but here's a "full" uninstall procedure:
-1. Remove `dsound.dll`, `libzhl.dll` and `zhlModTest.dll` from the game folder.
+1. Remove `dsound.dll`, `libzhl.dll`, `freetype.dll`, `resources-repentogon` and `zhlREPENTOGON.dll` from the game folder.
 2. In the `resources\scripts` folder, remove `main_ex.lua` and `enums_ex.lua`.
 3. Verify the game integrity on Steam to replace Lua5.3.3r.dll with the original.
 
@@ -47,7 +47,7 @@ We assume Git Bash for the duration of this tutorial, as well as CMake GUI.
 6. Once configuration is done, hit "Generate". This will create a .sln in the folder you specified before.
 7. Open the generated .sln in Visual Studio.
 8. Build the project. Unless you're a developer, we recommend Release mode for performance.
-9. When the build is finished, copy `resources`, `dsound.dll`, `libzhl.dll`, `zhlModTest.dll`, and `Lua5.3.3r.dll` to the game's folder. Overwrite `Lua5.3.3r.dll` when prompted.
+9. When the build is finished, copy `resources`, `dsound.dll`, `libzhl.dll`, `freetype.dll`, `zhlREPENTOGON.dll`, and `Lua5.3.3r.dll` to the game's folder. Overwrite `Lua5.3.3r.dll` when prompted.
 
 # License
 REPENTOGON is licensed under the GNU General Public License version 2.
@@ -55,3 +55,5 @@ REPENTOGON is licensed under the GNU General Public License version 2.
 LibZHL is licensed under the MIT license. All contents in the `libzhl` and `libzhlgen` folders are therefore licensed under MIT, with the exceptions of the following files and folders, which are components of REPENTOGON:
 * `libzhl/functions` and its contents
 * `libzhl/IsaacRepentance_static.cpp`
+
+Folders in the `libs` folder are *external dependencies* and have their own licensing information. Check those folder (or, in the case of submodules, their respective dependencies) for further information.
