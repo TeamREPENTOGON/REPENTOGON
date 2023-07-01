@@ -104,6 +104,30 @@ ___
 #### int GetEpiphoraCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Eden·Damage () {: aria-label='Functions' }
+#### float GetEdenDamage ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Eden·Fire·Delay () {: aria-label='Functions' }
+#### float GetEdenFireDelay ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Eden·Luck () {: aria-label='Functions' }
+#### float GetEdenLuck ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Eden·Range () {: aria-label='Functions' }
+#### float GetEdenRange ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Eden·Speed () {: aria-label='Functions' }
+#### float GetEdenSpeed ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Eden·Shot·Speed () {: aria-label='Functions' }
+#### float GetEdenShotSpeed ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Fire·Delay·Modifier () {: aria-label='Functions' }
 #### int GetFireDelayModifier ( ) {: .copyable aria-label='Functions' }
 
@@ -216,6 +240,30 @@ Instantaneously disables (or enables) the player's ability to shoot. The base ga
 ___
 ### Set·Damage·Modifier () {: aria-label='Functions' }
 #### void SetDamageModifier ( int Modifier ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Eden·Damage () {: aria-label='Functions' }
+#### void SetEdenDamage ( float Value ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Eden·Fire·Delay () {: aria-label='Functions' }
+#### void SetEdenFireDelay ( float Value ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Eden·Luck () {: aria-label='Functions' }
+#### void SetEdenLuck ( float Value ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Eden·Range () {: aria-label='Functions' }
+#### void SetEdenRange ( float Value ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Eden·Speed () {: aria-label='Functions' }
+#### void SetEdenSpeed ( float Value ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Eden·Shot·Speed () {: aria-label='Functions' }
+#### void SetEdenShotSpeed ( float Value ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Fire·Delay·Modifier () {: aria-label='Functions' }

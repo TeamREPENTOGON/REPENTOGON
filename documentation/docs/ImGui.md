@@ -78,6 +78,14 @@ ___
 #### void AddInputTextMultiline ( string parentId, string elementId, string description = "", function changeCallback = nil, string defaultVal = "", float displayedLines = 6 ) {: .copyable aria-label='Functions' }
 Adds a text input element that allows to input multiple lines of text. The attribute `displayedLines` can be used to change the height of the element.
 ___
+### Add·Plot·Histogram () {: aria-label='Functions' }
+#### void AddPlotHistogram ( string parentId, string elementId, string label = "", table values, string overlayText = "", float minimum = FLT_MIN, float maximum = FLT_MAX, float height = 40 ) {: .copyable aria-label='Functions' }
+Adds a bar-diagram displaying the given data as vertical bars. On default, minimum and maximum are set "dynamicaly", making the diagram fit its content perfectly.
+___
+### Add·Plot·Lines () {: aria-label='Functions' }
+#### void AddPlotLines ( string parentId, string elementId, string label = "", table values, string overlayText = "", float minimum = FLT_MIN, float maximum = FLT_MAX, float height = 40 ) {: .copyable aria-label='Functions' }
+Adds a line-diagram connecting the given values using lines. On default, minimum and maximum are set "dynamicaly", making the diagram fit its content perfectly.
+___
 ### Add·Progress·Bar () {: aria-label='Functions' }
 #### void AddProgressBar ( string parentId, string elementId, string label = "", float progress = 0, string overlayText = "__DEFAULT__" ) {: .copyable aria-label='Functions' }
 Adds a progressbar element. The `progress` value defines the fill percentage (0 to 1). 

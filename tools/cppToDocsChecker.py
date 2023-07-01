@@ -8,12 +8,12 @@ SCRIPT_PATH = os.path.realpath(__file__)
 SOURCE_DIRECTORY = os.path.dirname(SCRIPT_PATH)
 
 DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../documentation/docs/")
-CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../modtest/")
+CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../repentogon/")
 
 if "GITHUB_WORKSPACE" in os.environ:
     SOURCE_DIRECTORY = os.environ["GITHUB_WORKSPACE"]
     DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "documentation/docs/")
-    CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "modtest/")
+    CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "repentogon/")
 
 ignoreFunctionWords = ["Register","_Test","__gc", "Patch", "FixMusicManager", "lua_LGR_gc", "lua_Image_gc", "lua_Transformer_gc"]
 ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp"]
@@ -46,6 +46,7 @@ parentClass = {
                "RoomTransition":"Game",
                "RoomConfigHolder":"Game",
                "StageTransition":"Game",
+               "Sprite":"LayerState",
                "Weapon":"Isaac,EntityPlayer",
                }
 
