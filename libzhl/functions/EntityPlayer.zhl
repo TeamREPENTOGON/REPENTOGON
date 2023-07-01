@@ -182,6 +182,9 @@ __thiscall void Entity_Player::AddBlackHearts(unsigned int amount);
 "558bec83e4f851538a5d":
 __thiscall void Entity_Player::AddRottenHearts(unsigned int amount, bool unk);
 
+"558bec51568bf1c745??000000008d86":
+__thiscall void Entity_Player::AddGigaBombs(int amount);
+
 struct Entity_Player : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
@@ -202,6 +205,7 @@ struct Entity_Player : public Entity { {{
 	inline float* GetEdenRange() { return (float*)((char*)this + 0x149c); }
 	inline float* GetEdenShotSpeed() { return (float*)((char*)this + 0x14a0); }
 	inline float* GetEdenLuck() { return (float*)((char*)this + 0x14a4); }
+	inline int* GetCanFly() { return (int*)((char*)this + 0x14b4); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
@@ -217,6 +221,7 @@ struct Entity_Player : public Entity { {{
 	inline int* GetBoneHearts() {return (int*)((char*)this + 0x1CA8); }
 	inline int* GetBrokenHearts() {return (int*)((char*)this + 0x1CC0); }
 	inline int* GetRottenHearts() {return (int*)((char*)this + 0x1CC4); }
+	inline int* GetGigaBombs() {return (int*)((char*)this + 0x1CF4); }
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
 }} 

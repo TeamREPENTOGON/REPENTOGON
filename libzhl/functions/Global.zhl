@@ -51,6 +51,12 @@ typedef std::deque<std::string> deque_string;
 // struct GlobalConst // comment this line out and uncomment the line below if this block requires specific structures (don't forget to replace the list of dependencies with your own)
 {{	
 
+enum CharacterLockedFlag
+{
+		LOCKED = 65536,
+		UNLOCKED = 65792,
+};
+
 enum WeaponType
 {
         WEAPON_NULL = 0x0,

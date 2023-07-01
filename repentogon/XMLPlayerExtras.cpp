@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "XMLData.h"
+#include "LuaCore.h"
 
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 
@@ -30,6 +31,11 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 	if (!playerXML["rottenhearts"].empty()) {
 		// WHY does HALF A HEART equal HALF A ROTTEN HEART? WHAT?????
 		this->AddRottenHearts(stoi(playerXML["rottenhearts"]) * 2, false);
+	}
+
+	if (!playerXML["gigabombs"].empty()) {
+		this->AddBombs(stoi(playerXML["gigabombs"]));
+		this->AddGigaBombs(stoi(playerXML["gigabombs"]));
 	}
 }
 
@@ -109,4 +115,40 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 	}
 
 	return orig;
+}
+
+extern std::bitset<500> CallbackState;
+
+HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
+	super(CharacterId, RenderPos, DefaultSprite);
+
+	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
+	
+	// This gets run every render frame... which works out for us! Locked flags get reset every render frame. This is certianly efficient, thanks Nicalis!
+	if (playerXML["needsunlock"] == "true") {
+		g_MenuManager->GetMenuCharacter()->lockedflags = CharacterLockedFlag::LOCKED;
+
+		// Run a callback here. Let Lua mods determine if they need to do unlocks. Once this is done, we'll worry about archetypes.
+		int callbackid = 1140;
+		if (!CallbackState.test(callbackid - 1000)) {
+			return;
+		}
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(CharacterId)
+			.push(CharacterId)
+			.call(1);
+
+		if (!result) {
+		    if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					g_MenuManager->GetMenuCharacter()->lockedflags = CharacterLockedFlag::UNLOCKED;
+				}
+			}
+		}
+	}
 }

@@ -29,3 +29,4 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |rangemodifier|float|An inherent offset to the range stat the character should start with. Base this offset off of Isaac's stats.|
 |shotspeedmodifier|float|An inherent offset to the shot speed stat the character should start with. Base this offset off of Isaac's stats.|
 |luckmodifier|float|An inherent offset to the luck stat the character should start with. Base this offset off of Isaac's stats.|
+|gigabombs|int|The amount of giga bombs the character should start with. These do not replace normal bombs.|

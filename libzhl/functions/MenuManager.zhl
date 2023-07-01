@@ -16,7 +16,7 @@ __thiscall void MenuManager::RenderButtonLayout();
 "558bec83ec08538b1d????????568b75":
 __thiscall void MenuManager::SetState(int estate);
 
-struct MenuManager {
+struct MenuManager depends (Menu_Game, Menu_Character) {
 {{
 	MenuManager()
 	{
@@ -24,4 +24,5 @@ struct MenuManager {
 	}
 	
 	inline Menu_Game* GetMenuGame() {return (Menu_Game*)((char*)this + 0x80fac); }
+	inline Menu_Character* GetMenuCharacter() {return (Menu_Character*)((char*)this + 0x101c00); }
 }} };
