@@ -231,6 +231,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         }
 
         imguiInitialized = true;
+        ImGui::GetIO().FontAllowUserScaling = true;
         logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui\n");
         printf("[REPENTOGON] Dear ImGui initialized! Any further logs can be seen in the in-game log viewer.\n");
     }
@@ -239,7 +240,10 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::GetIO().FontDefault = fonts.at((int)g_PointScale);
+    static float oldPointScale = 0;
+    if(g_PointScale != oldPointScale)
+        ImGui::GetIO().FontDefault = fonts.at((int)g_PointScale);
+    oldPointScale = g_PointScale;
 
     if (menuShown) {
         if (ImGui::BeginMainMenuBar()) {
