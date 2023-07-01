@@ -140,9 +140,8 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
                 // Console should steal focus by default, if visible.
                 // Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
-                if (console.enabled) {
-                    console.reclaimFocus = true;
-                }
+                console.enabled = true;
+                console.reclaimFocus = true;
 
                 break;
             }
