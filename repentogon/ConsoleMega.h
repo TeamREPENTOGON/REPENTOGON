@@ -93,6 +93,7 @@ struct ConsoleMega {
     std::vector<AutocompleteEntry> autocompleteBuffer;
     unsigned int autocompletePos;
     bool autocompleteActive = false;
+    bool autocompleteNeedFocusChange = false;
     bool reclaimFocus = false;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
@@ -245,35 +246,48 @@ struct ConsoleMega {
             }
 
             ImGui::Separator();
-            
-           ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-           if (autocompleteBuffer.size() > 0) {
-               ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
-               ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 302)); // 302 is chosen here to have a "pixel perfect" scroll to the bottom
-               if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
-                   for (AutocompleteEntry entry : autocompleteBuffer) {
-                       if (autocompletePos > 0 && entry.autocompleteText == autocompleteBuffer[autocompletePos - 1].autocompleteText) {
-                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
-                           ImGui::SetScrollHereY();
-                       }
-                       else 
-                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
 
-                       ImGui::TextUnformatted(entry.autocompleteText.c_str());
+            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+            if (autocompleteBuffer.size() > 0) {
+                ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
+                ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 302)); // 302 is chosen here to have a "pixel perfect" scroll to the bottom
+                if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
+                    int selected = 0;
+                    if (ImGui::BeginTable("AutocompleteEntriesTable", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_NoBordersInBody)) {
+                        for (size_t i = 0; i < autocompleteBuffer.size(); i++) {
+                            AutocompleteEntry entry = autocompleteBuffer[i];
+                            bool isSelected = autocompletePos == i;
+                            ImGui::TableNextRow();
+                            ImGui::TableNextColumn();
 
-                       if (!entry.autocompleteDesc.empty()) {
-                           ImGui::SameLine();
-                           ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
-                           entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
-                           ImGui::TextUnformatted(entry.autocompleteDesc.c_str());
-                           ImGui::PopStyleColor();
-                       }
+                            if (isSelected) {
+                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+                                if (autocompleteNeedFocusChange) {
+                                    ImGui::SetScrollHereY();
+                                    autocompleteNeedFocusChange = false;
+                                }
+                            } else
+                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
 
-                       ImGui::PopStyleColor();
-                   }
-                   ImGui::EndPopup();
+                            if (ImGui::Selectable(entry.autocompleteText.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns)) {
+                                strcpy(inputBuf, entry.autocompleteText.c_str());
+                                autocompletePos = i;
+                                autocompleteNeedFocusChange = true;
+                            }
+
+                            if (!entry.autocompleteDesc.empty()) {
+                                entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
+                                ImGui::TableNextColumn();
+                                ImGui::TextUnformatted(entry.autocompleteDesc.c_str());
+                            }
+
+                            ImGui::PopStyleColor();
+                        }
+                        ImGui::EndTable();
+                    }
+                    ImGui::EndPopup();
                 }
-               ImGui::OpenPopup("Console Autocomplete");
+                ImGui::OpenPopup("Console Autocomplete");
             }
             ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_EscapeClearsAll | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit;
             if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
@@ -318,6 +332,8 @@ struct ConsoleMega {
                     data->DeleteChars(0, data->BufTextLen);
                     data->InsertChars(0, autocompleteBuffer[autocompletePos - 1].autocompleteText.c_str());
                     autocompleteActive = false;
+
+                    autocompleteNeedFocusChange = true;
                 }
                 break;
             }
