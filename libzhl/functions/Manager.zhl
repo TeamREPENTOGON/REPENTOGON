@@ -52,6 +52,7 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline NightmareScene* GetNightmareScene() { return (NightmareScene*)((char*)this + 0x211BC); }
 	inline bool GetDebugConsoleEnabled() { return *(bool*)((char*)this + 0x29E4C); }
 	inline int GetMaxRenderScale() { return *(int*)((char*)this + 0x29E58); }
+	inline vector_EntityConfigPlayer* GetPlayerConfig() { return (vector_EntityConfigPlayer*)((char*)this + 0x29F90); }
 	inline ModManager* GetModManager() { return (ModManager*)((char*)this + 0x29FD8); }
 	inline DailyChallenge* GetDailyChallenge() { return (DailyChallenge*)((char*)this + 0x1ea750); } 
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }

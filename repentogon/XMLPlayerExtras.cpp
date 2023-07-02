@@ -3,6 +3,8 @@
 #include "XMLData.h"
 #include "LuaCore.h"
 
+std::map<int, bool> characterUnlockData;
+
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 
 	super(type, variant, subtype, initSeed);
@@ -119,6 +121,22 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 
 extern std::bitset<500> CallbackState;
 
+HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
+	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
+
+	if (playerXML["needsunlock"] == "true" && characterUnlockData[id] == false) {
+		ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedPortraitANM2();
+		(*portrait)->Play(playerXML["name"].c_str(), false);
+		(*portrait)->SetLayerFrame(0, 1);
+		(*portrait)->_color = *color;
+		(*portrait)->_scale = *scale;
+		(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
+
+	}
+	else
+		super(id, pos, color, scale);
+}
+
 HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
 	super(CharacterId, RenderPos, DefaultSprite);
 
@@ -126,6 +144,7 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	
 	// This gets run every render frame... which works out for us! Locked flags get reset every render frame. This is certianly efficient, thanks Nicalis!
 	if (playerXML["needsunlock"] == "true") {
+		characterUnlockData[CharacterId] = false;
 		g_MenuManager->GetMenuCharacter()->lockedflags = CharacterLockedFlag::LOCKED;
 
 		// Run a callback here. Let Lua mods determine if they need to do unlocks. Once this is done, we'll worry about archetypes.
@@ -146,6 +165,7 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 		if (!result) {
 		    if (lua_isboolean(L, -1)) {
 				if (lua_toboolean(L, -1)) {
+					characterUnlockData[CharacterId] = true;
 					g_MenuManager->GetMenuCharacter()->lockedflags = CharacterLockedFlag::UNLOCKED;
 				}
 			}

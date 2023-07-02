@@ -1,5 +1,5 @@
-struct LayerState depends (IsaacString) { {{
-	inline IsaacString GetSpritesheetPath() {return *(IsaacString*)((char*)this + 0x8); }
+struct LayerState { {{
+	inline std_string GetSpritesheetPath() {return *(std_string*)((char*)this + 0x8); }
 	inline Vector* GetSize() {return (Vector*)((char*)this + 0x34); }
 	inline float* GetRotation() {return (float*)((char*)this + 0x3c); }
 	inline Vector* GetPos() {return (Vector*)((char*)this + 0x40); }

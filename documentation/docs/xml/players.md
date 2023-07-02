@@ -30,3 +30,4 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |shotspeedmodifier|float|An inherent offset to the shot speed stat the character should start with. Base this offset off of Isaac's stats.|
 |luckmodifier|float|An inherent offset to the luck stat the character should start with. Base this offset off of Isaac's stats.|
 |gigabombs|int|The amount of giga bombs the character should start with. These do not replace normal bombs.|
+|needsunlocked|bool|If the character should be locked by default. Combine with MC_CUSTOM_CHARACTER_UNLOCKED to trigger unlocking the character. Characters with this tag should have a second frame in their `characterportraits(alt).anm2` which should be the "locked" picture for the character.|

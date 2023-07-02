@@ -8,7 +8,7 @@ __thiscall void ANM2::Update();
 __thiscall void ANM2::SetLayerFrame(int layerid,int frame);
 
 "558bec8b45??568bf185c078":
-__thiscall void ANM2::ReplaceSpritesheet(int LayerId, IsaacString &PngFilename);
+__thiscall void ANM2::ReplaceSpritesheet(int LayerId, std_string &PngFilename);
 
 "558bec6aff68????????64a1????????5083ec28535657a1????????33c5508d45??64a3????????8bf933c9":
 __thiscall void ANM2::LoadGraphics(bool unk);
@@ -25,16 +25,47 @@ __thiscall LayerState* ANM2::GetLayer(int layer);
 "558bec5153568bf15780be????????00":
 __thiscall void ANM2::RenderLayer(int param_1,Vector *param_2,Vector *param_3,Vector *param_4);
 
+"558bec8b41??85c074??8079??0074??8b4d??80390074??8378??1072??8b008a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c075??b0015dc2040032c05dc20400??????????????????????":
+__thiscall bool ANM2::IsPlaying(std_string* name);
 
-struct ANM2 depends (AnimationState, IsaacString) { {{
+"558bec518379??0075??83c8ff":
+__thiscall int ANM2::GetFrame();
+
+"558bec83ec08538bc18b4d??565733ff8945??8b58??85db74??8b40??8bf08945??837e??108bc672??8b060f1f40008a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c074??8b4d??4781c63c0100003bfb72??5168????????6a00e8????????83c40c32c05f5e5b8be55dc208008b4d??69c73c01000083c130":
+__thiscall void ANM2::SetAnimation(const char* anim, bool reset);
+
+"558bec807d??0056578bf975??8b77??85f674??837e??108bc672??8b068b4d??8a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c075??3846??74??3847??75??6a01ff75??8bcfe8????????84c074??8d4f??e8????????c647??015f5e5dc20800????????????????????":
+__thiscall void ANM2::Play(const char* anim, bool reset);
+
+"558bec83ec0880b9????????00":
+__thiscall void ANM2::Render_Wrapper(Vector* Position, Vector* topleftclamp, Vector* bottomrightclamp);
+
+struct ANM2 depends (AnimationState, ColorMod, KColor, AnimationState, LayerState, Vector) { {{
 	inline AnimationState* GetAnimationState() {return (AnimationState*)((char*)this + 48); }
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
 	inline unsigned int GetLayerCount() { return *(unsigned int*)((char*)this + 0x80); } 
+	inline ColorMod* GetColor() { return (ColorMod*)((char*)this + 0xA8); } 
 }} 
-    IsaacString _filename;
-    char _pad1[27];
+    std_string _filename;
+    std_string _animDefaultName;
     AnimationState _animState;
     AnimationState _overlayAnimState;
+    bool _overlayRenderFirst;
+    char _pad0[11];
+    LayerState* _layerState;
+    unsigned int _layerCount;
+    char _pad1[16];
+    Vector _offset;
+    Vector _scale;
+    float _rotation;
+    ColorMod _color;
+    KColor _kColor;
+    char _pad2[28];
+    bool _flipX;
+    bool _flipY;
+    char _pad3[2];
+    float _playbackSpeed;
+    char _pad4[12];
 };
 
 

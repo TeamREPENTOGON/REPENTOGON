@@ -1570,7 +1570,7 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 }
 
 //MC_PRE_REPLACE_SPRITESHEET (id: 1100)
-HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString& PngFilename) -> void) {
+HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) -> void) {
 	int callbackid = 1100;
 	lua_State* L = g_LuaEngine->_state;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -1580,23 +1580,16 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString& PngFilename) ->
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(_filename.Get())
+			.push(_filename.c_str())
 			.push(LayerID)
-			.push(PngFilename.Get())
+			.push(PngFilename.c_str())
 			.call(1);
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
 				LayerID = lua::callbacks::ToInteger(L, 1);
 
-				const char* filename = lua::callbacks::ToString(L, 2);
-				if (strlen(filename) < 16) {
-					strcpy(PngFilename.text, filename);
-				}
-				else {
-					*(char**)PngFilename.text = (char*)filename;
-				}
-				PngFilename.unk = PngFilename.size = strlen(filename);
+				PngFilename = lua::callbacks::ToString(L, 2);
 			}
 		}
 	}
@@ -1606,9 +1599,9 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, IsaacString& PngFilename) ->
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
-			.push(_filename.Get())
+			.push(_filename.c_str())
 			.push(LayerID)
-			.push(PngFilename.Get())
+			.push(PngFilename.c_str())
 			.call(1);
 	}
 }

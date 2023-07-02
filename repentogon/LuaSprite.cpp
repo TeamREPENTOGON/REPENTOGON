@@ -17,20 +17,12 @@ int Lua_SpriteReplaceSpritesheet(lua_State* L)
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	int layerId = (int)luaL_checkinteger(L, 2);
 
-	IsaacString str;
-	const char* filename = luaL_checkstring(L, 3);
-	if (strlen(filename) < 16) {
-		strcpy(str.text, filename);
-	}
-	else {
-		*(char**)str.text = (char*)filename;
-	}
-	str.unk = str.size = strlen(filename);
+	std::string filename  = luaL_checkstring(L, 3);
 
 	if (lua_isboolean(L, 4))
 		loadGraphics = lua_toboolean(L, 4);
 
-	anm2->ReplaceSpritesheet(layerId, str);
+	anm2->ReplaceSpritesheet(layerId, filename);
 
 	if (loadGraphics) {
 		anm2->LoadGraphics(false); 
@@ -86,7 +78,7 @@ static int Lua_SpriteGetLayer_Text(lua_State* L)
 static int Lua_SpriteGetSpritesheetPath(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	lua_pushstring(L, layerState->GetSpritesheetPath().Get());
+	lua_pushstring(L, layerState->GetSpritesheetPath().c_str());
 	return 1;
 }
 
