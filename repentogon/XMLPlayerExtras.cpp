@@ -125,7 +125,7 @@ HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, Co
 	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
 
 	if (playerXML["needsunlock"] == "true" && characterUnlockData[id] == false) {
-		ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedPortraitANM2();
+		ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
 		(*portrait)->Play(playerXML["name"].c_str(), false);
 		(*portrait)->SetLayerFrame(0, 1);
 		(*portrait)->_color = *color;
@@ -137,11 +137,49 @@ HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, Co
 		super(id, pos, color, scale);
 }
 
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
-	super(CharacterId, RenderPos, DefaultSprite);
+HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
 
 	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
-	
+	bool disableState;
+	std::vector<const char*> layersToDisable = {
+		"Item Name",
+		"Item Name 2",
+		"Item Name 3",
+		"Item Icon",
+		"Item Icon 2",
+		"Item Icon 3",
+		"Power Stat",
+		"Speed Stat",
+		"Life Stat",
+		"Power Icon",
+		"Speed Icon",
+		"Life Icon"
+	};
+	ANM2** background = g_Manager->GetPlayerConfig()->at(CharacterId).GetModdedMenuBackgroundANM2();
+
+	if (playerXML["needsunlock"] == "true" && characterUnlockData[CharacterId] == false)
+		disableState = false;
+	else
+		disableState = true;
+
+
+	for (const char* layer : layersToDisable) {
+		*(*background)->GetLayer(layer)->IsVisible() = disableState;
+	}
+
+	*(*background)->GetLayer("Unlocked By")->IsVisible() = !disableState;
+
+	super(CharacterId, RenderPos, DefaultSprite);
+
+}
+
+// Unlock checking
+HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
+
+	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
+
+	super(CharacterId, RenderPos, DefaultSprite);
+
 	// This gets run every render frame... which works out for us! Locked flags get reset every render frame. This is certianly efficient, thanks Nicalis!
 	if (playerXML["needsunlock"] == "true") {
 		characterUnlockData[CharacterId] = false;
@@ -171,4 +209,5 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 			}
 		}
 	}
+
 }
