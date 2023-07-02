@@ -33,13 +33,8 @@ struct hash<tuple<int, int, int>> {
 template<>
 struct hash<tuple<int, int>> {
 	size_t operator()(const tuple<int, int>& key) const {
-		size_t hash1 = hash<int>{}(get<0>(key));
-		size_t hash2 = hash<int>{}(get<1>(key));
-		size_t seed = 0;
-		std::hash<int> hasher;
-		seed ^= hasher(hash1) + 0x9e3779b9 + (seed << 6) + (seed >> 2); //These magic numbers are apparently a thing
-		seed ^= hasher(hash2) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-		return seed;
+		const auto& [x, y] = key;
+		return std::hash<int>()(x) ^ std::hash<int>()(y);
 	}
 };
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
@@ -185,6 +180,7 @@ public:
 	XMLNodeIdxLookup bossportraits;
 	XMLNodeIdxLookup cutscenes;
 	XMLNodeIdxLookup stages;
+	XMLNodeIdxLookup backdrops;
 
 	void Clear() {
 		nodes.clear();
@@ -351,11 +347,14 @@ public:
 
 class XMLStage : public XMLDataHolder {
 public:
-	unordered_map<tuple<int,int>, int> bystagealt;
-	unordered_map<tuple<int, int>, int> byparentstage;
+	unordered_map<tuple<int,int>, int> bystagealt;	
+	unordered_map<int, int> bybasestage;
 };
 
 class XMLPlayer : public XMLDataHolder {
+};
+
+class XMLBackdrop : public XMLDataHolder {
 };
 
 class XMLEntity {
@@ -447,6 +446,7 @@ struct XMLData {
 	XMLRecipe* RecipeData = new XMLRecipe();
 	XMLCutscene* CutsceneData = new XMLCutscene();
 	XMLStage* StageData = new XMLStage();
+	XMLBackdrop* BackdropData = new XMLBackdrop();
 
 	XMLMod* ModData = new XMLMod();
 

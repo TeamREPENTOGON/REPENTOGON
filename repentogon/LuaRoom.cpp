@@ -28,7 +28,7 @@ static int Lua_RoomGetShopItemPrice(lua_State* L) {
 static int Lua_RoomSetBackdrop(lua_State* L) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
 	lua_Integer id = luaL_checkinteger(L, 2);
-	if (id < 0 || id >= 0x3D) {
+	if (id < 0 ) {
 		luaL_error(L, "Invalid backdrop id %d (min = 0, max = 61)", id);
 	}
 	lua_Integer changeDecoration = luaL_checkinteger(L, 3);

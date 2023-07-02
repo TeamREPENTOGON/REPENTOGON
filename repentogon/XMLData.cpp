@@ -7,6 +7,7 @@
 #include <fstream>
 #include <sstream>
 #include <cctype>
+#include <memory>
 
 #include "XMLData.h"
 
@@ -29,7 +30,7 @@ using namespace std;
 char* lastmodid = "BaseGame";
 bool iscontent = false;
 bool isitemmetadata = false;
-
+bool no = false;
 vector<string> xmlerrors;
 string currpath;
 
@@ -53,6 +54,32 @@ void ClearXMLData() {
 	XMLStuff.WispData->Clear();
 	XMLStuff.WispColorData->Clear();
 	XMLStuff.ModData->Clear();
+}
+
+//lazy mem clears to prevent leaks
+void mclear(char* x) {
+	if (x != nullptr) {
+		delete[] x;
+	}
+}
+void mclear(XMLAttributes* x) {
+	if (x != nullptr) {
+		x->clear();
+	}
+}
+void mclear(xml_document<char>* x) {
+	if (x != nullptr) {
+		x->clear();
+	}
+}
+//lazy mem clears to prevent leaks
+
+void CharToChar(char* dest, char* source) {
+	size_t sourceSize = strlen(source) + 1;
+	char* destination = new char[sourceSize];
+	strcpy(destination, source);
+	mclear(dest);
+	dest = destination;
 }
 
 IsaacString toIsaacString(string s) {
@@ -121,6 +148,7 @@ ModEntry* GetModEntryById(string Id) {
 			return mod;
 		}
 	}
+	return NULL;
 }
 
 ModEntry* GetModEntryByName(string Name) {
@@ -129,6 +157,7 @@ ModEntry* GetModEntryByName(string Name) {
 			return mod;
 		}
 	}
+	return NULL;
 }
 
 ModEntry* GetModEntryByDir(string Dir) {
@@ -137,6 +166,7 @@ ModEntry* GetModEntryByDir(string Dir) {
 			return mod;
 		}
 	}
+	return NULL;
 }
 
 ModEntry* GetModEntryByContentPath(string path) {
@@ -242,14 +272,72 @@ HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
 	strcpy(xml, ogcutscenespath.c_str()); //Will change this so it only makes this swap thing when the cutscene is not present on the already loaded xml later, but I'll leave it like this now for testing the method without having people needing to manually play custom cutscenes 
 	Init(xml);
 	super(1);
-	delete[] xml;
+	mclear(xml);
 	queuedhackyxmltarget = 0;
 	queuedhackyxmlvalue = 0;
 }
 
 //Cutscene XML Hijack
-/*
+
 //Stages XML Hijack
+unordered_map<int, tuple<int, int> > stageidtotuple;
+void initstagetotuple() {
+	//Vanilla
+	stageidtotuple[1] = { 1,0 };
+	stageidtotuple[2] = { 1,1 };
+	stageidtotuple[3] = { 1,2 };
+	stageidtotuple[4] = { 3,0 };
+	stageidtotuple[5] = { 3,1 };
+	stageidtotuple[6] = { 1,2 };
+	stageidtotuple[7] = { 5,0 };
+	stageidtotuple[8] = { 5,1 };
+	stageidtotuple[9] = { 5,2 };
+	stageidtotuple[10] = { 7,0 };
+	stageidtotuple[11] = { 7,1 };
+	stageidtotuple[12] = { 7,2 };
+	stageidtotuple[13] = { 9,0 };
+	stageidtotuple[14] = { 10,0 };
+	stageidtotuple[15] = { 10,1 };
+	stageidtotuple[16] = { 11,0 };
+	stageidtotuple[17] = { 11,1 };
+	stageidtotuple[26] = { 12,0 };
+	//Vanilla
+	//Greed
+	stageidtotuple[24] = { 6,0 };
+	stageidtotuple[25] = { 7,0 };
+	//Greed
+	//Repentance
+	stageidtotuple[27] = { 1,4 };
+	stageidtotuple[28] = { 1,5 };
+	stageidtotuple[29] = { 3,4 };
+	stageidtotuple[30] = { 3,5 };
+	stageidtotuple[31] = { 5,4 };
+	stageidtotuple[32] = { 5,5 };
+	stageidtotuple[33] = { 7,4 };
+	stageidtotuple[35] = { 13,0 };
+	//Repentance
+}
+
+bool IsOnSecondFloor() {
+	int stageid = g_Game->_stage;
+	return (stageid == 2) || (stageid == 4) || (stageid == 6) || (stageid == 8) || (g_Game->_curses & (1 << 1)); //has curse XL
+}
+
+tuple<int, int> GetSetStage(int stageid,bool secondfloor) {
+	if (stageidtotuple.empty()) {
+		initstagetotuple();
+	}
+	if (stageidtotuple.count(stageid) > 0) {
+		tuple<int, int> ret = stageidtotuple[stageid];
+		if (secondfloor && (get<0>(ret) < 9)) {
+			ret = { get<0>(ret) + 1,get<1>(ret) };
+		}
+		return ret;
+	}
+	else {
+		return { stageid,0 };
+	}
+}
 string ogstagespath;
 int queuedstage = 0;
 int queuedalt = 0;
@@ -259,25 +347,53 @@ HOOK_STATIC(RoomConfig, GetStageID, (unsigned int LevelStage, unsigned int Stage
 	//printf("getstage: %d \n", stageid);
 	return stageid;
 }
+int lastparentstage=0;
+int setstageoverloadid = 0;
+int setstageoverloadalt = 0;
 
-HOOK_METHOD(Level, SetStage, (int stageid, int alt)-> void) {
+HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
+	int stageid = a;
+	int alt = b;
+	if (setstageoverloadid > 0) { stageid = setstageoverloadid; setstageoverloadid = 0; }
+	if (setstageoverloadalt > 0) { alt = setstageoverloadalt; setstageoverloadalt = 0; }
 	char* xml = new char[ogstagespath.length() + 1];
 	strcpy(xml, ogstagespath.c_str());
-	g_Game->GetRoomConfig()->LoadStages(xml);
-	printf("setstageX: %d %d  \n", stageid,alt);
-
-	delete[] xml;
-	if (stageid == 14) {
+	tuple<int,int> idx = { stageid,alt };
+	if (XMLStuff.StageData->bystagealt.count(idx) > 0) {
+		XMLAttributes* targetstage = new XMLAttributes(XMLStuff.StageData->nodes[XMLStuff.StageData->bystagealt[idx]]);
+		int parentstage = toint((*targetstage)["basestage"]);
+		if (parentstage == 0) { parentstage = 1; }
 		queuedhackyxmlvalue = stageid;
-		queuedhackyxmltarget = 1;
+		queuedhackyxmltarget = parentstage;
 		queuedhackyxmlmaxval = 36;
-		super(1, 0);
+		if (lastparentstage != stageid) {
+			for (int i = 0; i <= 36; i++) {
+				g_Game->GetRoomConfig()->UnloadStage(i);
+			}
+			g_Game->GetRoomConfig()->LoadStages(xml);
+		}
+		printf("setstageX: %d %d  \n", stageid, alt);
+		tuple<int, int> setstg = GetSetStage(parentstage, IsOnSecondFloor());
+		super(get<0>(setstg), get<1>(setstg));
+		printf("done");
+		lastparentstage = get<0>(setstg);
+		setstg;
 	}
-	else{
+	else if (lastparentstage == stageid){	
+		no = true;
+		for (int i = 0; i <= 36; i++) {
+			g_Game->GetRoomConfig()->UnloadStage(i);
+		}
+		g_Game->GetRoomConfig()->LoadStages(xml);
+		super(stageid, alt);
+		lastparentstage = 0;
+	}
+	else {
 		super(stageid, alt);
 	}
 	queuedhackyxmlvalue = 0;
 	queuedhackyxmltarget = 0;
+	mclear(xml);
 }
 
 HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
@@ -287,10 +403,49 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
 	printf("stagexml: %s \n", xmlpath);
 	super(xmlpath);
 }
+tuple<int, int> ConsoleStageIdToTuple(string input) {
+	string* numberPart = new string("");
+	int letterValue = 0;
+	for (char c : input) {
+		if (isdigit(c)) {
+			*numberPart += c;
+		}
+		else {
+			if (isalpha(c)) {
+				int x = toint(*numberPart);
+				delete numberPart;
+				return { x ,c - 'a' + 1 };
+			}
+		}
+	}
+	int y = toint(*numberPart);
+	delete numberPart;
+	return { y ,0 };
+}
+
+HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
+	if (in.rfind("stage", 0) == 0) {
+		std::vector<std::string> cmdlets = ParseCommand2(in, 2);
+		tuple<int, int> id = ConsoleStageIdToTuple(cmdlets[1]);
+		if (XMLStuff.StageData->bystagealt.count(id) == 0) { //stage 14 works without intervention, lol
+			super(in, out, player);
+			return;
+		}
+		else {
+			//super(in, out, player); //we still run it just in case I dunno, does nothing anyway
+			setstageoverloadid = get<0>(id);
+			setstageoverloadalt = get<1>(id);
+			g_Game->GetConsole()->RunCommand(string("stage 1"), out, player);
+			return;
+		}
+	}
+	super(in, out, player);
+}
+
 //Stages XML Hijack
-*/
+
 void ProcessXmlNode(xml_node<char>* node) {
-	if (!node) { return; }
+	if (!node || no) { return; }
 	if (queuedhackyxmlvalue > 0) { return; }
 	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
 	Manager* manager = g_Manager;
@@ -302,7 +457,6 @@ void ProcessXmlNode(xml_node<char>* node) {
 	{
 		for (xml_node<char>* auxnode = node; auxnode; auxnode = auxnode->next_sibling()) {
 			XMLAttributes entity;
-			xml_attribute<>* subattr;
 			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 			{
 				entity[stringlower(attr->name())] = attr->value();
@@ -843,15 +997,24 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				stage[stringlower(attr->name())] = attr->value();
 			}
-			tuple idx = { toint(stage["stageid"]), toint(stage["stagealt"])};
-			if (stage.count("id") == 0) { stage["sourceid"] = "BaseGame"; };
+			tuple<int,int> idx = { toint(stage["consoleid"]), toint(stage["stagealt"])};
+			if (stage.count("sourceid") == 0) { stage["sourceid"] = "BaseGame"; };
 			if (stage.count("relativeid") > 0) { XMLStuff.StageData->byrelativeid[stage["sourceid"] + stage["relativeid"]] = id; }
+
+			if (stage["name"].find("#") != string::npos) {
+				stage["untranslatedname"] = stage["name"];
+				stage["name"] = string(stringTable->GetString("Stages", 0, stage["name"].substr(1, stage["name"].length()).c_str(), &unk));
+			}
+			printf("stage: %s (%d)", stage["name"].c_str(), id);
 			XMLStuff.StageData->ProcessChilds(auxnode, id);
 			XMLStuff.StageData->bynamemod[stage["name"] + stage["sourceid"]] = id;
 			XMLStuff.StageData->bymod[stage["sourceid"]].push_back(id);
 			XMLStuff.StageData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.StageData->byname[stage["name"]] = id;
-			XMLStuff.StageData->bystagealt[idx] = id;
+			if (toint(stage["consoleid"]) > 0) {
+				XMLStuff.StageData->bystagealt[idx] = id;
+			}
+			XMLStuff.StageData->bybasestage[toint(stage["basestage"])] = id;
 			XMLStuff.StageData->nodes[id] = stage;
 			XMLStuff.ModData->stages[stage["sourceid"]] += 1;
 		}
@@ -1391,6 +1554,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 		XMLStuff.ModData->bydirectory[mod["directory"]] = idx;
 		XMLStuff.ModData->byname[mod["name"]] = idx;
 	}
+
 }
 
 HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)->xml_node<char>*) {
@@ -1782,6 +1946,10 @@ int Lua_GetEntryByNameXML(lua_State* L)
 		Node = XMLStuff.StageData->GetNodeByName(entityname);
 		Childs = XMLStuff.StageData->childs[XMLStuff.StageData->byname[entityname]];
 		break;
+	case 25:
+		Node = XMLStuff.BackdropData->GetNodeByName(entityname);
+		Childs = XMLStuff.BackdropData->childs[XMLStuff.BackdropData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -1885,13 +2053,20 @@ xml_node<char>* find_child(
 	const string& value)
 {
 	xml_node<char>* node = parent->first_node(type.c_str());
+	printf("node1");
+	try {
 	while (node)
 	{
 		xml_attribute<char>* attr = node->first_attribute(attribute.c_str());
 		if (attr && value == attr->value()) return node;
 		node = node->next_sibling(type.c_str());
 	}
+	printf("node2");
 	return node;
+	}
+	catch(exception ex){
+		return NULL;
+	}
 }
 
 char* IntToChar(int number) {
@@ -1958,7 +2133,7 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 			}
 			if (node.count("realid") == 0) {
 				if (node.count("id") > 0) {
-					int nodeid = stoi(node["id"]);
+					int nodeid = toint(node["id"]);
 					if (nodeid > 36) {
 						xml_attribute<char>* relativeid = new xml_attribute<char>(); relativeid->name("relativeid"); relativeid->value(IntToChar(stoi(node["id"]))); auxnode->append_attribute(relativeid);
 						auxnode->remove_attribute(auxnode->first_attribute("id"));
@@ -1976,28 +2151,17 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 					xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);
 					node["realid"] = to_string(id);
 				}
-				/*
-				if ((queuedstage > 0)) {
-					tuple<int, int> idx = { queuedstage,queuedalt };
-
-					if ((strcmp(node["realid"].c_str(), IntToChar(queuedcutscene)) == 0)) {
-						if (auxnode->first_attribute("id") != NULL) {
-							auxnode->remove_attribute(auxnode->first_attribute("id"));
-						}
-						xml_attribute<char>* xxx = new xml_attribute<char>(); xxx->name("id"); xxx->value("1"); auxnode->append_attribute(xxx); //porn
-
-					}
-					else if (auxnode->first_attribute("id") != NULL) {
-						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(auxnode->first_attribute("id")->value()); auxnode->append_attribute(realid);
-						auxnode->remove_attribute(auxnode->first_attribute("id"));
-					}
-				}*/
+				int music = toint(node["music"]);
+				if ((music == 0) && (XMLStuff.MusicData->byname.count(node["music"]) > 0)) {
+					auxnode->first_attribute("music")->value(IntToChar(XMLStuff.MusicData->byname[node["music"]]));
+				}
 			}
 		}
 	}
 }
 
 char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
+	if (no) {return xml;}
 	//resources
 	if (needsresourcepatch) {
 		for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
@@ -2007,9 +2171,10 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 			if (strlen(xmlaux) > 1) {
 				xml_document<char>* xmldoc = new xml_document<char>();
 				if (XMLParse(xmldoc, xml, resourcesdir)) {
-					xml = xmlaux;
+					//mclear(xml);
+					CharToChar(xml, xmlaux);
 				}
-				delete xmldoc;
+				mclear(xmldoc);
 			}
 		}
 	}
@@ -2070,15 +2235,16 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 						}
 					}
 					else if (strcmp(filename.c_str(), "stages.xml") == 0) {
+						printf("1");
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							XMLAttributes node;
 							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 							{
 								node[stringlower(attr->name())] = string(attr->value());
 							}
-							int id = stoi(node["id"]);
-							int music = stoi(node["music"]);
-							int backdrop = stoi(node["backdrop"]);
+							int id = toint(node["id"]);
+							int music = toint(node["music"]);
+							int backdrop = toint(node["backdrop"]);
 							if ((music == 0) && (node["music"].length() > 0)) {
 								char* track = IntToChar(XMLStuff.MusicData->byname[node["music"]]);
 								auxnode->first_attribute("music")->value(track);
@@ -2086,49 +2252,67 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
 							root->append_node(clonedNode);
+							printf("2");
 						}
 					}
 					//actual shit
 
 				}
-				delete resourcesdoc;
 				CustomXMLCrashPrevention(xmldoc, filename.c_str());
-				if (queuedhackyxmlvalue > 0) {
-					if (strcmp(filename.c_str(), "cutscenes.xml") == 0) {
-						xml_node<char>* tocopy = find_child(root, "cutscene", "realid", IntToChar(queuedhackyxmlvalue));
-						if (tocopy != NULL) {
-							if (tocopy->first_attribute("id")) { tocopy->remove_attribute(tocopy->first_attribute("id")); }
-							xml_attribute<char>* attid = new xml_attribute<char>(); attid->name("id"); attid->value(IntToChar(queuedhackyxmltarget)); tocopy->append_attribute(attid);
-						}
-					}
-					if (strcmp(filename.c_str(), "stages.xml") == 0) {
-						xml_node<char>* todel = find_child(root, "stage", "id", IntToChar(queuedhackyxmltarget));
-						if (todel != NULL) {
-							if (todel->first_attribute("id")) { todel->remove_attribute(todel->first_attribute("id")); }
-						}
-
-						xml_node<char>* tocopy = find_child(root, "stage", "consoleid", IntToChar(queuedhackyxmlvalue));
-						if (tocopy != NULL) {
-							if (tocopy->first_attribute("id")) { tocopy->remove_attribute(tocopy->first_attribute("id")); }
-							xml_attribute<char>* attid = new xml_attribute<char>(); attid->name("id"); attid->value(IntToChar(queuedhackyxmltarget)); tocopy->append_attribute(attid);
-						}
-					}
-				}
+				resourcesdoc->clear();
 				ostringstream modifiedXmlStream;
 				modifiedXmlStream << *xmldoc;
-				delete xmldoc; 
+				mclear(xmldoc);
 				string modifiedXml = modifiedXmlStream.str();
-				xml = new char[modifiedXml.length() + 1];
+				printf("\nasdsasad: (%d)\n", strlen(xml));
+				//mclear(xml);
+				 xml =new char[modifiedXml.length() + 1];
 				std::strcpy(xml, modifiedXml.c_str());
+				modifiedXmlStream.clear();
 			}
 			else{
-				delete xmldoc; 
+				mclear(xmldoc);
 			}
 		}
 	}	
-	//if (queuedhackyxmlvalue > 0) {
-//		printf("s: %s",xml); 
-	//}
+
+	xml_document<char>* xmldoc = new xml_document<char>();
+	if (XMLParse(xmldoc, xml, filename)) {
+		xml_node<char>* root = xmldoc->first_node();
+		if (queuedhackyxmlvalue > 0) {
+			if (strcmp(filename.c_str(), "cutscenes.xml") == 0) {
+				xml_node<char>* tocopy = find_child(root, "cutscene", "realid", IntToChar(queuedhackyxmlvalue));
+				if (tocopy != NULL) {
+					if (tocopy->first_attribute("id")) { tocopy->remove_attribute(tocopy->first_attribute("id")); }
+					xml_attribute<char>* attid = new xml_attribute<char>(); attid->name("id"); attid->value(IntToChar(queuedhackyxmltarget)); tocopy->append_attribute(attid);
+				}
+			}
+			else if (strcmp(filename.c_str(), "stages.xml") == 0) {
+				printf("1");
+				xml_node<char>* tocopy = find_child(root, "stage", "consoleid", IntToChar(queuedhackyxmlvalue));
+				if (tocopy != NULL) {
+					if (tocopy->first_attribute("id")) { tocopy->remove_attribute(tocopy->first_attribute("id")); }
+					xml_attribute<char>* attid = new xml_attribute<char>(); attid->name("id"); attid->value(IntToChar(queuedhackyxmltarget)); tocopy->append_attribute(attid);
+				}
+				printf("2");
+				xml_node<char>* todel = find_child(root, "stage", "id", IntToChar(queuedhackyxmltarget));
+				if (todel != NULL) {
+					if (todel->first_attribute("id")) { todel->remove_node(todel); }
+				}
+				printf("3");
+			}
+		}
+		ostringstream modifiedXmlStream;
+		modifiedXmlStream << *xmldoc;
+		delete xmldoc;
+		string modifiedXml = modifiedXmlStream.str();
+		xml = new char[modifiedXml.length() + 1];
+		std::strcpy(xml, modifiedXml.c_str());
+	}
+	if (queuedhackyxmlvalue > 0) {
+		printf("hackies done");
+		printf("s: %s",xml); 
+	}
 	//content
 	return xml;
 }
