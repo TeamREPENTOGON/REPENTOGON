@@ -25,5 +25,9 @@ struct PersistentGameData { {{
 		bool savedata = *(bool*)((char*)this + collectibleID * 0x1 + 0xa78);
 		return savedata != false; 
 	}
+	inline bool IsChallengeCompleted (int challengeID) {
+		bool savedata = *(bool*)((char*)this + challengeID * 0x1 + 0xdff);
+		return savedata != false; 
+	}
 }} };
 
