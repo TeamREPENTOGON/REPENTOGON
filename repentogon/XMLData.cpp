@@ -368,10 +368,10 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 		setstg;
 	}
 	else if (lastparentstage == stageid){	
-		no = true;
-		for (int i = 0; i <= 36; i++) {
-			g_Game->GetRoomConfig()->UnloadStage(i);
-		}
+		//no = true;
+		//for (int i = 0; i <= 36; i++) {
+			g_Game->GetRoomConfig()->UnloadStage(stageid);
+		//}
 		g_Game->GetRoomConfig()->LoadStages(xml);
 		super(stageid, alt);
 		lastparentstage = 0;
@@ -429,6 +429,8 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	}
 	super(in, out, player);
 }
+//Stages XML Hijack
+
 
 //backdrop hijack
 HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
@@ -439,8 +441,6 @@ void SwapBackdrop(int source, int target) {
 	
 }
 //
-
-//Stages XML Hijack
 
 void ProcessXmlNode(xml_node<char>* node) {
 	if (!node || no) { return; }
