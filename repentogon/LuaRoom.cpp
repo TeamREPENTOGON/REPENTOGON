@@ -33,7 +33,7 @@ static int Lua_RoomSetBackdrop(lua_State* L) {
 	}
 	lua_Integer changeDecoration = luaL_checkinteger(L, 3);
 	Backdrop* backdrop = room->GetBackdrop();
-	backdrop->Init((unsigned int)id, (unsigned int)changeDecoration);
+	backdrop->Init((unsigned int)id, (bool)changeDecoration);
 	return 0;
 }
 

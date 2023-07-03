@@ -430,6 +430,16 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	super(in, out, player);
 }
 
+//backdrop hijack
+HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
+	//printf("back: %d", bcktype);
+	super(bcktype, loadgraphics);
+}
+void SwapBackdrop(int source, int target) {
+	
+}
+//
+
 //Stages XML Hijack
 
 void ProcessXmlNode(xml_node<char>* node) {
@@ -993,7 +1003,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				stage["untranslatedname"] = stage["name"];
 				stage["name"] = string(stringTable->GetString("Stages", 0, stage["name"].substr(1, stage["name"].length()).c_str(), &unk));
 			}
-			printf("stage: %s (%d)", stage["name"].c_str(), id);
+			//printf("stage: %s (%d)", stage["name"].c_str(), id);
 			XMLStuff.StageData->ProcessChilds(auxnode, id);
 			XMLStuff.StageData->bynamemod[stage["name"] + stage["sourceid"]] = id;
 			XMLStuff.StageData->bymod[stage["sourceid"]].push_back(id);
@@ -2041,7 +2051,7 @@ xml_node<char>* find_child(
 	const string& value)
 {
 	xml_node<char>* node = parent->first_node(type.c_str());
-	printf("node1");
+	//printf("node1");
 	try {
 	while (node)
 	{
@@ -2049,7 +2059,7 @@ xml_node<char>* find_child(
 		if (attr && value == attr->value()) return node;
 		node = node->next_sibling(type.c_str());
 	}
-	printf("node2");
+	//printf("node2");
 	return node;
 	}
 	catch(exception ex){
@@ -2223,7 +2233,7 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 						}
 					}
 					else if (strcmp(filename.c_str(), "stages.xml") == 0) {
-						printf("1");
+						//printf("1");
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							XMLAttributes node;
 							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
@@ -2240,7 +2250,7 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
 							root->append_node(clonedNode);
-							printf("2");
+							//printf("2");
 						}
 					}
 					//actual shit
@@ -2252,7 +2262,7 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 				modifiedXmlStream << *xmldoc;
 				mclear(xmldoc);
 				string modifiedXml = modifiedXmlStream.str();
-				printf("\nasdsasad: (%d)\n", strlen(xml));
+				//printf("\nasdsasad: (%d)\n", strlen(xml));
 				//mclear(xml);
 				 xml =new char[modifiedXml.length() + 1];
 				std::strcpy(xml, modifiedXml.c_str());
@@ -2276,18 +2286,18 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 				}
 			}
 			else if (strcmp(filename.c_str(), "stages.xml") == 0) {
-				printf("1");
+				//printf("1");
 				xml_node<char>* tocopy = find_child(root, "stage", "consoleid", IntToChar(queuedhackyxmlvalue));
 				if (tocopy != NULL) {
 					if (tocopy->first_attribute("id")) { tocopy->remove_attribute(tocopy->first_attribute("id")); }
 					xml_attribute<char>* attid = new xml_attribute<char>(); attid->name("id"); attid->value(IntToChar(queuedhackyxmltarget)); tocopy->append_attribute(attid);
 				}
-				printf("2");
+				//printf("2");
 				xml_node<char>* todel = find_child(root, "stage", "id", IntToChar(queuedhackyxmltarget));
 				if (todel != NULL) {
 					if (todel->first_attribute("id")) { todel->remove_node(todel); }
 				}
-				printf("3");
+				//printf("3");
 			}
 		}
 		ostringstream modifiedXmlStream;
@@ -2298,8 +2308,8 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 		std::strcpy(xml, modifiedXml.c_str());
 	}
 	if (queuedhackyxmlvalue > 0) {
-		printf("hackies done");
-		printf("s: %s",xml); 
+		//printf("hackies done");
+		//printf("s: %s",xml); 
 	}
 	//content
 	return xml;

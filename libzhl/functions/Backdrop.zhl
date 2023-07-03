@@ -1,5 +1,5 @@
 "558bec83e4f88b45088bd185c0":
-__thiscall void Backdrop::Init(uint32_t backdropId, uint32_t changeDecoration);
+__thiscall void Backdrop::Init(uint32_t backdropId, bool LoadGraphics);
 
 struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG) {
     ReferenceCounter_ImageBase floorBuffer; // 0x0
