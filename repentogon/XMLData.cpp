@@ -354,12 +354,12 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 		queuedhackyxmlvalue = stageid;
 		queuedhackyxmltarget = parentstage;
 		queuedhackyxmlmaxval = 36;
-		if (lastparentstage != stageid) {
+		//if (lastparentstage != stageid) {
 			for (int i = 0; i <= 36; i++) {
 				g_Game->GetRoomConfig()->UnloadStage(i);
 			}
 			g_Game->GetRoomConfig()->LoadStages(xml);
-		}
+		//}
 		printf("setstageX: %d %d  \n", stageid, alt);
 		tuple<int, int> setstg = GetSetStage(parentstage, IsOnSecondFloor());
 		super(get<0>(setstg), get<1>(setstg));
@@ -367,7 +367,7 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 		lastparentstage = get<0>(setstg);
 		setstg;
 	}
-	else if (lastparentstage == stageid){	
+	else if (lastparentstage == get<0>(GetSetStage(a, IsOnSecondFloor()))){
 		//no = true;
 		//for (int i = 0; i <= 36; i++) {
 			g_Game->GetRoomConfig()->UnloadStage(stageid);
