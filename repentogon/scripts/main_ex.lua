@@ -117,7 +117,6 @@ local typecheckFunctions = {
 		["table"] = checkTableTypeFunction({ "integer", "number", "integer", "boolean", "number", "number" }),
 		["boolean"] = true
 	},
-	[ModCallbacks.MC_EXECUTE_CMD] = {}, -- returning any value causes the game to crash
 	[ModCallbacks.MC_PRE_ENTITY_SPAWN] = {
 		["table"] = checkTableSizeFunction(4)
 	},
@@ -293,6 +292,9 @@ local typecheckWarnFunctions = {
 			end
 		end
 	},
+	[ModCallbacks.MC_EXECUTE_CMD] = { -- returning any value causes the game to crash... but strings seem to work? docs aren't clear
+		["string"] = true
+	},
 }
 
 local boolCallbacks = {
@@ -309,7 +311,8 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY,
 	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY,
 	ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS,
-	ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY
+	ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY,
+	ModCallbacks.MC_CUSTOM_CHARACTER_UNLOCKED
 }
 
 for _, callback in ipairs(boolCallbacks) do
