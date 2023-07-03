@@ -256,7 +256,7 @@ struct ConsoleMega {
                     if (ImGui::BeginTable("AutocompleteEntriesTable", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_NoBordersInBody)) {
                         for (size_t i = 0; i < autocompleteBuffer.size(); i++) {
                             AutocompleteEntry entry = autocompleteBuffer[i];
-                            bool isSelected = autocompletePos == i;
+                            bool isSelected = autocompletePos - 1 == i;
                             ImGui::TableNextRow();
                             ImGui::TableNextColumn();
 
