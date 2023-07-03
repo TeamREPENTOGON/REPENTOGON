@@ -5,6 +5,7 @@
 
 #include <sstream>
 #include <cctype>
+#include <regex>
 
 extern int handleWindowFlags(int flags);
 extern void AddWindowContextMenu(bool* pinned);
@@ -52,7 +53,28 @@ struct AutocompleteEntry {
 
     bool operator<(const AutocompleteEntry& ae) const
     {
-        return (SI::natural::compare(autocompleteText, ae.autocompleteText));
+        // Trailing zeros are messing up sorting- after all, to a human, 5.1 and 5.10 are the same.
+        // Replace periods with dashes to overcome this.
+
+        std::string comp1 = autocompleteText;
+        std::string comp2 = ae.autocompleteText;
+
+        std::string bad = ".";
+        std::string repl = "-";
+
+        size_t found = comp1.find(bad);
+        while (found != std::string::npos) {
+            comp1.replace(found, bad.length(), repl);
+            found = comp1.find(bad);
+        }
+
+        found = comp2.find(bad);
+        while (found != std::string::npos) {
+            comp2.replace(found, bad.length(), repl);
+            found = comp2.find(bad);
+        }
+
+        return (SI::natural::compare(comp1, comp2));
     }
 
 };
