@@ -1,5 +1,5 @@
-struct ChallengeParam depends (IsaacString)
+struct ChallengeParam
 {
-    IsaacString _name; //0x0
+    std_set_int _name; //0x0
     std_set_int _roomset; //0x18
 };

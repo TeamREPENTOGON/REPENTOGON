@@ -32,7 +32,7 @@ int Lua_ConsoleGetHistory(lua_State* L)
 	unsigned int idx = 1;
 	for (const Console_HistoryEntry entry : *history) {
 		lua_pushnumber(L, idx);
-		lua_pushstring(L, entry._text.Get());
+		lua_pushstring(L, entry._text.c_str());
 		lua_settable(L, -3);
 		idx++;
 	}

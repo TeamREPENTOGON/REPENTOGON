@@ -82,18 +82,6 @@ void CharToChar(char* dest, char* source) {
 	dest = destination;
 }
 
-IsaacString toIsaacString(string s) {
-	IsaacString str;
-	const char* err = s.c_str();
-	if (strlen(err) < 16) {
-		strcpy(str.text, err);
-	}
-	else {
-		*(char**)str.text = (char*)err;
-	}
-	return str;
-}
-
 int toint(string str) {
 	try {
 		return stoi(str);
