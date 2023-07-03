@@ -326,19 +326,22 @@ tuple<int, int> GetSetStage(int stageid,bool secondfloor) {
 		return { stageid,0 };
 	}
 }
+
 string ogstagespath;
 int queuedstage = 0;
 int queuedalt = 0;
 int lastrequest = 0;
+/*
 HOOK_STATIC(RoomConfig, GetStageID, (unsigned int LevelStage, unsigned int StageType, unsigned int Mode)-> unsigned int, __cdecl) {
 	unsigned int stageid = super(LevelStage,StageType, Mode);
 	//printf("getstage: %d \n", stageid);
 	return stageid;
 }
+*/
 int lastparentstage=0;
 int setstageoverloadid = 0;
 int setstageoverloadalt = 0;
-
+/*
 HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 	int stageid = a;
 	int alt = b;
@@ -383,7 +386,8 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 	queuedhackyxmltarget = 0;
 	mclear(xml);
 }
-
+*/
+/*
 HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
 	if (ogstagespath.length() == 0) {
 		ogstagespath = xmlpath;
@@ -391,6 +395,7 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
 	printf("stagexml: %s \n", xmlpath);
 	super(xmlpath);
 }
+*/
 tuple<int, int> ConsoleStageIdToTuple(string input) {
 	string* numberPart = new string("");
 	int letterValue = 0;
@@ -433,9 +438,40 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 
 
 //backdrop hijack
+int lasthackybackid = -1;
 HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
-	//printf("back: %d", bcktype);
+	printf("back: %d", bcktype);
+	if ((XMLStuff.BackdropData->nodes.count(bcktype) == 0) && ((bcktype == 1) || (bcktype > 60))) {
+		if (lasthackybackid != bcktype) {
+			XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
+			super(1, true);
+			this->configurations[1].gfx = node["gfx"];
+			this->configurations[1].walls = toint(node["walls"]);
+			this->configurations[1].wallVariants = toint(node["wallvariants"]);
+			this->configurations[1].floors = toint(node["floors"]);
+			this->configurations[1].floorVariants = toint(node["floorvariants"]);
+			this->configurations[1].lFloorGfx = node["lfloorgfx"];
+			this->configurations[1].nFloorGfx = node["nfloorgfx"];
+			this->configurations[1].waterGfx = node["watergfx"];
+			//this->configurations[1].reversewatergfx = node["reversewatergfx"]; //missing
+			this->configurations[1].props = node["props"];
+			this->configurations[1].rocks = node["rocks"];
+			this->configurations[1].pit = node["pit"];
+			this->configurations[1].waterPit = node["waterpit"];
+			this->configurations[1].bridge = node["bridge"];
+			this->configurations[1].door = node["door"];
+			this->configurations[1].holeInWall = node["holeinwall"];
+			this->configurations[1].waterPitsMode = toint(node["waterpitsmode"]);
+			super(1, true);
+			lasthackybackid = bcktype;
+		}
+		else {
+			super(1, loadgraphics);
+		}
+	}
+	else {
 	super(bcktype, loadgraphics);
+	}
 }
 void SwapBackdrop(int source, int target) {
 	
@@ -929,6 +965,43 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.ChallengeData->byname[challenge["name"]] = id;
 			XMLStuff.ChallengeData->nodes[id] = challenge;
 			XMLStuff.ModData->challenges[lastmodid] += 1;
+		}
+	}
+	else if ((strcmp(nodename, "backdrops") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes backdrop;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				backdrop[stringlower(attr->name())] = string(attr->value());
+			}
+			if ((backdrop.count("id") > 0)) {
+				id = toint(backdrop["id"]);
+			}
+			else {
+				if (backdrop.count("id") > 0) { backdrop["relativeid"] = backdrop["id"]; }
+				XMLStuff.BackdropData->maxid = XMLStuff.BackdropData->maxid + 1;
+				backdrop["id"] = to_string(XMLStuff.BackdropData->maxid);
+				id = XMLStuff.BackdropData->maxid;
+			}
+			if (id > XMLStuff.BackdropData->maxid) {
+				XMLStuff.BackdropData->maxid = id;
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				backdrop[stringlower(attr->name())] = attr->value();
+			}
+			backdrop["sourceid"] = lastmodid;
+			if (backdrop.count("relativeid") > 0) { XMLStuff.BackdropData->byrelativeid[lastmodid + backdrop["relativeid"]] = id; }
+			XMLStuff.BackdropData->ProcessChilds(auxnode, id);
+			XMLStuff.BackdropData->bynamemod[backdrop["name"] + lastmodid] = id;
+			XMLStuff.BackdropData->bymod[lastmodid].push_back(id);
+			XMLStuff.BackdropData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.BackdropData->byname[backdrop["name"]] = id;
+			XMLStuff.BackdropData->nodes[id] = backdrop;
+			XMLStuff.ModData->backdrops[lastmodid] += 1;
 		}
 	}
 	else if ((strcmp(nodename, "cutscenes") == 0)) {

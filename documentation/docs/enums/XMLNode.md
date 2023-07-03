@@ -29,3 +29,4 @@ tags:
 |21 |BOSSPOOL {: .copyable } |  |
 |22 |BOSSPORTRAIT {: .copyable } |  |
 |23 |CUTSCENE {: .copyable } |  |
+|24 |STAGE {: .copyable } |  |
