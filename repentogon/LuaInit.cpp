@@ -11,6 +11,8 @@
 #include <string>
 
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
+int preRenderCallbackKey;
+int additiveCallbackKey;
 
 static int LuaDumpRegistry(lua_State* L) {
 	int top = lua_gettop(L);
@@ -172,6 +174,12 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 	lua_getglobal(state, "_RunCallback");
 	g_LuaEngine->runCallbackRegistry->key = luaL_ref(state, LUA_REGISTRYINDEX);
+
+	lua_getglobal(state, "_RunAdditiveCallback");
+	additiveCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
+
+	lua_getglobal(state, "_RunPreRenderCallback");
+	preRenderCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
 }
 
 static int LuaBenchmark(lua_State* L) {

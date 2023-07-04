@@ -20,6 +20,8 @@ HOOK_STATIC(Isaac,SetBuiltInCallbackState, (int callbackid, bool enable)-> void,
 }
 //Callback Tracking for optimizations
 
+extern int additiveCallbackKey;
+extern int preRenderCallbackKey;
 
 //AddCollectible Callback (id: 1004 enum pending)
 HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
@@ -1121,7 +1123,7 @@ HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1150,12 +1152,12 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetType())
 			.push(this, lua::Metatables::ENTITY_NPC)
-			.pushUserdataValue(*offset, lua::Metatables::VECTOR)
+			.pushUserdataValue(*offset, lua::Metatables::VECTOR) 
 			.call(1);
 
 		if (!result) {
@@ -1179,7 +1181,7 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1208,7 +1210,7 @@ HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1237,7 +1239,7 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1266,7 +1268,7 @@ HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1295,7 +1297,7 @@ HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1324,7 +1326,7 @@ HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1353,7 +1355,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1383,7 +1385,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 		
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, preRenderCallbackKey);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())

@@ -652,6 +652,23 @@ function _RunAdditiveCallback(callbackID, value, ...)
 	return value
 end
 
+function _RunPreRenderCallback(callbackID, param, mt, value, ...)
+	local callbacks = Isaac.GetCallbacks(callbackID)
+	for _, callback in ipairs(callbacks) do
+		local ret = callback.Function(callback.Mod, param, mt, value, ...)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
+				value = value + ret
+			end
+		end
+	end
+	return value
+end
+
+rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
+
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
 
 Isaac.RunCallbackWithParam = _RunCallback
