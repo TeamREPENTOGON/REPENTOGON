@@ -217,9 +217,14 @@ struct ConsoleMega {
         std::string printin = std::string(">") + input + "\n";
         std::string out;
 
-        std::string lastCommand = console->GetCommandHistory()->front();
-        if (lastCommand != input)
+        if (!console->GetCommandHistory()->empty()) {
+            std::string lastCommand = console->GetCommandHistory()->front();
+            if (lastCommand != input)
+                console->GetCommandHistory()->push_front(input);
+        }
+        else {
             console->GetCommandHistory()->push_front(input);
+        }
         console->Print(printin, 0xFF808080, 0x96u);
         console->RunCommand(std::string(input), &out, NULL);
         console->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
