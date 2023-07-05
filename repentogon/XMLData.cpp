@@ -440,12 +440,18 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 //backdrop hijack
 int lasthackybackid = -1;
 HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
-	printf("back: %d", bcktype);
-	if ((XMLStuff.BackdropData->nodes.count(bcktype) == 0) && ((bcktype == 1) || (bcktype > 60))) {
+	if ((XMLStuff.BackdropData->nodes.count(bcktype) > 0) && ((bcktype == 1) || (bcktype > 60))) {
 		if (lasthackybackid != bcktype) {
 			XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
 			super(1, true);
+			//for (int i = 1; i <= 60; i++) {
+				//printf("dasfdsaf %s \n", this->configurations[i].gfx.c_str());
+			//}
+			
+			//for (int i = 0; i <= 60; i++) {
+			/*
 			this->configurations[1].gfx = node["gfx"];
+			
 			this->configurations[1].walls = toint(node["walls"]);
 			this->configurations[1].wallVariants = toint(node["wallvariants"]);
 			this->configurations[1].floors = toint(node["floors"]);
@@ -462,7 +468,9 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 			this->configurations[1].door = node["door"];
 			this->configurations[1].holeInWall = node["holeinwall"];
 			this->configurations[1].waterPitsMode = toint(node["waterpitsmode"]);
+			*/
 			super(1, true);
+			//}
 			lasthackybackid = bcktype;
 		}
 		else {
@@ -2501,6 +2509,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 #include <iostream>
 
 void GameRestart() {
+	g_Manager->GetOptions()->Save();
 	char path[1024];
 	STARTUPINFO si = {};
 	PROCESS_INFORMATION pi = {};
