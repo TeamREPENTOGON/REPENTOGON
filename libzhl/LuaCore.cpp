@@ -576,5 +576,6 @@ namespace lua {
 		const char* MinimapMT = "Minimap";
 		const char* NightmareSceneMT = "NightmareScene";
 		const char* CapsuleMT = "Capsule";
+		const char* DailyChallengeMT = "DailyChallenge";
 	}
 }

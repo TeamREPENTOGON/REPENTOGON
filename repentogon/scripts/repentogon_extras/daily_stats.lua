@@ -88,10 +88,11 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 local function RenderDailyStats()
     if ScheduleRefresh and IsGivenMenuEntry(MainMenu.DAILYRUN) then
         local dailyChallenge = Isaac.GetDailyChallenge()
+		local challengeParam = dailyChallenge:GetChallengeParams()
         WinStreak = Isaac.GetPersistentGameData():GetEventCounter(EventCounter.DAILYS_STREAK)
         TotalDailies = Isaac.GetPersistentGameData():GetEventCounter(EventCounter.DAILYS_PLAYED)
-        GetStageGoal = dailyChallenge:GetStageGoal()
-        isAltPath = dailyChallenge:IsAltPath()
+        GetStageGoal = challengeParam:GetEndStage()
+        isAltPath = challengeParam:IsAltPath()
 
         if WinStreak > 0 then
             StreakSheet:SetFrame("Good", 0)
@@ -103,8 +104,8 @@ local function RenderDailyStats()
         TotalStreakText = "Total Runs: " .. TotalDailies
         TextLen = font:GetStringWidthUTF8(TotalStreakText) / 2
         --StageGoalText = "Goal Stage: "..GetStageGoal
-        isHardMode = dailyChallenge:IsHardMode()
-        isMegaSatan = dailyChallenge:IsMegaSatan()
+        isHardMode = challengeParam:GetDifficulty() == 1
+        isMegaSatan = challengeParam:IsMegaSatanRun()
     end
     local pos = Isaac.WorldToMenuPosition(MainMenu.DAILYRUN, StreakPos)
     StreakSheet:Render(pos)

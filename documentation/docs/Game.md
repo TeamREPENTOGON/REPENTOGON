@@ -57,6 +57,10 @@ ___
 #### void DevolveEnemy ( [Entity](Entity.md) ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Challenge·Params () {: aria-label='Functions' }
+#### [ChallengeParam](ChallengeParam.md) GetChallengeParams ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Console () {: aria-label='Functions' }
 #### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
 

@@ -14,19 +14,7 @@
     
 ## Functions
 
-### Get·Stage·Goal () {: aria-label='Functions' }
-#### int GetStageGoal ( ) {: .copyable aria-label='Functions' }
-
-___
-### Is·Alt·Path () {: aria-label='Functions' }
-#### boolean IsAltPath ( ) {: .copyable aria-label='Functions' }
-
-___
-### Is·Hard·Mode () {: aria-label='Functions' }
-#### boolean IsHardMode ( ) {: .copyable aria-label='Functions' }
-
-___
-### Is·Mega·Satan () {: aria-label='Functions' }
-#### boolean IsMegaSatan ( ) {: .copyable aria-label='Functions' }
+### Get·Challenge·Params () {: aria-label='Functions' }
+#### [ChallengeParam](ChallengeParam.md) GetChallengeParams ( ) {: .copyable aria-label='Functions' }
 
 ___

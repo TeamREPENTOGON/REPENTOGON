@@ -101,6 +101,7 @@ nav:
   - Ambush: Ambush.md
   - AnimationState: AnimationState.md
   - Camera: Camera.md
+  - ChallengeParam: ChallengeParam.md
   - Color: Color.md
   - Console: Console.md
   - DailyChallenge: DailyChallenge.md
