@@ -1,5 +1,37 @@
-struct ChallengeParam
-{
+struct ChallengeParam {
     std_string _name; //0x0
     std_set_int _roomset; //0x18
+	std_vector_int _collectibleList;
+	std_vector_int _trinketList;
+	int _startingPill;
+	int _startingCard;
+	int _endStage;
+	int _playerType;
+	std_vector_int _achievementList;
+	int _soulHearts;
+	int _blackHearts;
+	int _hearts;
+	int _maxHearts;
+	int _coins;
+	float _addDamage;
+	bool _canShoot;
+	bool _isAltPath;
+	char _pad0[2];
+	int _difficulty;
+	bool _isMegaSatan;
+	char _pad1[3];
+	float _minFireRate;
+	bool _maxDamage;
+	bool _minShotSpeed;
+	bool _bigRange;
+	char _pad2[1];
+	unsigned int _getCurse;
+	unsigned int _curseFilter;
+	bool _isSecretPath;
+	char _pad3[3];
+	std_vector_int _collectibleTwinList;
+	
+	
+	
+	
 };

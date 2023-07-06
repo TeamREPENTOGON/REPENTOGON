@@ -42,6 +42,7 @@ typedef std::string std_string;
 typedef std::vector<ModEntry*> vector_ModEntryPointer;
 typedef std::deque<std::string> deque_string;
 typedef std::vector<EntityConfig_Player> vector_EntityConfigPlayer;
+typedef std::vector<int> std_vector_int;
 }}
 
 //=================================================================================================================
