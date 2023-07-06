@@ -3,7 +3,7 @@
 ## Functions
 
 ### Can·Shoot () {: aria-label='Functions' }
-#### bool CanShoot ( ) {: .copyable aria-label='Functions' }
+#### boolean CanShoot ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Achievement·List () {: aria-label='Functions' }
@@ -87,26 +87,26 @@ ___
 
 ___
 ### Is·Alt·Path () {: aria-label='Functions' }
-#### bool IsAltPath ( ) {: .copyable aria-label='Functions' }
+#### boolean IsAltPath ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Big·Range·Enabled () {: aria-label='Functions' }
-#### bool IsBigRangeEnabled ( ) {: .copyable aria-label='Functions' }
+#### boolean IsBigRangeEnabled ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Max·Damage·Enabled () {: aria-label='Functions' }
-#### bool IsMaxDamageEnabled ( ) {: .copyable aria-label='Functions' }
+#### boolean IsMaxDamageEnabled ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Mega·Satan·Run () {: aria-label='Functions' }
-#### bool IsMegaSatanRun ( ) {: .copyable aria-label='Functions' }
+#### boolean IsMegaSatanRun ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Min·Shot·Speed·Enabled () {: aria-label='Functions' }
-#### bool IsMinShotSpeedEnabled ( ) {: .copyable aria-label='Functions' }
+#### boolean IsMinShotSpeedEnabled ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Secret·Path () {: aria-label='Functions' }
-#### bool IsSecretPath ( ) {: .copyable aria-label='Functions' }
+#### boolean IsSecretPath ( ) {: .copyable aria-label='Functions' }
 
 ___
