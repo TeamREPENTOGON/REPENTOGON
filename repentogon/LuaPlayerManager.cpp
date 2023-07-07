@@ -100,6 +100,14 @@ int Lua_FirstTrinketOwner(lua_State* L)
 	return 1;
 }
 
+static int Lua_TriggerRoomClear(lua_State* L)
+{
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	playerManager->TriggerRoomClear();
+	
+	return 0;
+}
+
 static void RegisterPlayerManager(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetPlayerManager");
@@ -120,6 +128,7 @@ static void RegisterPlayerManager(lua_State* L) {
 		{ "GetNumCollectibles", Lua_PlayerManagerGetNumCollectibles},
 		{ "GetTotalTrinketMultiplier", Lua_PlayerManagerGetTrinketMultiplier},
 		{ "FirstTrinketOwner", Lua_FirstTrinketOwner },
+		{ "TriggerRoomClear", Lua_TriggerRoomClear },
 		{ NULL, NULL }
 	};
 

@@ -7,6 +7,15 @@ __thiscall void Entity_Familiar::Render(Vector *offset);
 "558bec83e4f081ec48010000a1":
 __thiscall bool Entity_Familiar::HandleCollision(Entity* collider, bool low);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec305657a1????????33c5508d45??64a3????????8bf1":
+__thiscall void Entity_Familiar::Shoot();
+
+"558bec83e4f883ec10568bf157817e??f0000000":
+__thiscall bool Entity_Familiar::TryAimAtMarkedTarget(Vector *AimDirection, int eDirection, Vector *Unk);
+
+"558bec83e4f883ec245356578bf980bf????????00":
+__thiscall void Entity_Familiar::TriggerRoomClear();
+
 struct Entity_Familiar : public Entity {
 {{
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
