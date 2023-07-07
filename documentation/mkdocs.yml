@@ -118,6 +118,7 @@ nav:
     - GridEntity: GridEntity.md
     - GridEntityRock: GridEntityRock.md
   - History: History.md
+  - HistoryItem: HistoryItem.md
   - HUD: HUD.md
   - ImGui: ImGui.md
   - Isaac: Isaac.md

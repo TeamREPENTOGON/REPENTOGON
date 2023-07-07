@@ -73,6 +73,10 @@ ___
 #### int GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
 Gets the current content of the bag in the given Slot ID.
 ___
+### Get·Collectibles·List () {: aria-label='Functions' }
+#### table GetCollectiblesList ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·D8·Damage·Modifier () {: aria-label='Functions' }
 #### int GetD8DamageModifier ( ) {: .copyable aria-label='Functions' }
 
