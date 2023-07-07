@@ -40,7 +40,7 @@ __thiscall void ANM2::Play(const char* anim, bool reset);
 "558bec83ec0880b9????????00":
 __thiscall void ANM2::Render_Wrapper(Vector* Position, Vector* topleftclamp, Vector* bottomrightclamp);
 
-struct ANM2 depends (AnimationState, ColorMod, KColor, AnimationState, LayerState, Vector) { {{
+struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
 	inline AnimationState* GetAnimationState() {return (AnimationState*)((char*)this + 48); }
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
 	inline unsigned int GetLayerCount() { return *(unsigned int*)((char*)this + 0x80); } 

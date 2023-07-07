@@ -42,7 +42,7 @@ static int lua_MusicManager_Crossfade(lua_State* L) {
 
 static int lua_MusicManager_Fadein(lua_State* L) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = (int)luaL_checkinteger(L, 2);
+	unsigned int musicId = (unsigned int)luaL_checkinteger(L, 2);
 	int max;
 
 	if (!ValidateMusicID(music, musicId, max)) {
