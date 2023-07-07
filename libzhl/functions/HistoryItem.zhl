@@ -1,0 +1,9 @@
+struct History_HistoryItem
+{
+    char _pad0[8];
+	int _itemID;
+	int _levelStage;
+	int _stageType;
+	int _roomType;
+	int _itemPoolType;
+};

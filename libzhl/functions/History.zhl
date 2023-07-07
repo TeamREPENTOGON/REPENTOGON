@@ -2,5 +2,6 @@
 __thiscall bool History::RemoveHistoryItemByIndex(int index);
 
 struct History {
-
+	//char _pad[4];
+	std_vector_history_historyitem _historyItems;
 };

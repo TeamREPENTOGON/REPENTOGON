@@ -190,8 +190,8 @@ int Lua_PlayerTryPreventDeath(lua_State* L) {
 
 int lua_PlayerRemoveCollectibleByHistoryIndex(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int index = (int)luaL_checknumber(L, 2);
-	player->RemoveCollectibleByHistoryIndex(index);
+	int index = (int)luaL_checkinteger(L, 2);
+	player->RemoveCollectibleByHistoryIndex(index, true);
 	return 0;
 }
 
@@ -646,6 +646,24 @@ static int Lua_PlayerTriggerRoomClear(lua_State* L) {
 	return 0;
 }
 
+static int Lua_PlayerGetCollectiblesList(lua_State* L)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	std::vector<int> collecitbleInv = (std::vector<int>)plr->GetCollectiblesList();
+
+	lua_newtable(L);
+	int idx = 1;
+	for (int collectible : collecitbleInv) {
+		lua_pushnumber(L, idx);
+		lua_pushinteger(L, collectible);
+		lua_settable(L, -3);
+		idx++;
+	}
+
+	//lua_pushstring(L, challengeParam->_name.c_str());
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -719,4 +737,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetEdenLuck", Lua_PlayerGetEdenLuck);
 	lua::RegisterFunction(state, mt, "SetEdenLuck", Lua_PlayerSetEdenLuck);
 	lua::RegisterFunction(state, mt, "TriggerRoomClear", Lua_PlayerTriggerRoomClear);
+	lua::RegisterFunction(state, mt, "GetCollectiblesList", Lua_PlayerGetCollectiblesList);
 }

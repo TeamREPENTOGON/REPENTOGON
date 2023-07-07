@@ -34,6 +34,7 @@ extern "C" {
 }
 
 struct Console_HistoryEntry;
+struct History_HistoryItem;
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
@@ -43,6 +44,7 @@ typedef std::vector<ModEntry*> vector_ModEntryPointer;
 typedef std::deque<std::string> deque_string;
 typedef std::vector<EntityConfig_Player> vector_EntityConfigPlayer;
 typedef std::vector<int> std_vector_int;
+typedef std::vector<History_HistoryItem> std_vector_history_historyitem;
 }}
 
 //=================================================================================================================

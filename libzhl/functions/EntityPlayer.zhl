@@ -138,7 +138,7 @@ __thiscall void Entity_Player::TriggerNewStage(bool unk);
 __thiscall bool Entity_Player::TryPreventDeath();
 
 "558bec578bf98b4d":
-__thiscall void Entity_Player::RemoveCollectibleByHistoryIndex(int index);
+__thiscall void Entity_Player::RemoveCollectibleByHistoryIndex(int index, bool RemovedBool);
 
 "558bec6aff68????????64a1????????5081ec4c010000":
 __thiscall void Entity_Player::Teleport(Vector *position, bool doEffects, bool teleportTwinPlayers);
@@ -206,6 +206,7 @@ struct Entity_Player : public Entity { {{
 	inline float* GetEdenShotSpeed() { return (float*)((char*)this + 0x14a0); }
 	inline float* GetEdenLuck() { return (float*)((char*)this + 0x14a4); }
 	inline int* GetCanFly() { return (int*)((char*)this + 0x14b4); }
+	inline std_vector_int GetCollectiblesList() { return *(std_vector_int*)((char*)this + 0x15f0); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
