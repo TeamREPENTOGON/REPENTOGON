@@ -13,3 +13,16 @@
 [submodule "libs/freetype"]
 	path = libs/freetype
 	url = https://gitlab.freedesktop.org/freetype/freetype.git
+[submodule "libs/rapidxml"]
+	path = libs/rapidxml
+	url = https://github.com/discord/rapidxml
+[submodule "libs/LuaBridge"]
+	path = libs/LuaBridge
+	url = https://github.com/vinniefalco/LuaBridge
+[submodule "libs/antlr4"]
+	path = libs/antlr4
+	url = https://github.com/IsaacZHL/antlr4
+	branch = stable
+[submodule "libs/rapidjson"]
+	path = libs/rapidjson
+	url = https://github.com/Tencent/rapidjson

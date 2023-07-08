@@ -8,7 +8,7 @@ project(RepExtender)
 
 find_package(OpenGL REQUIRED)
 
-include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/include/LuaBridge" "${CMAKE_SOURCE_DIR}/libs/lua-5.4.5/src" "${CMAKE_SOURCE_DIR}/libs/rapidxml-1.13" "${CMAKE_SOURCE_DIR}/libs/rapidjson" "${CMAKE_SOURCE_DIR}/libs/LuaBridge-2.0/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" "${CMAKE_SOURCE_DIR}/libs/NaturalSort")
+include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua-5.4.6/src" "${CMAKE_SOURCE_DIR}/libs/rapidxml" "${CMAKE_SOURCE_DIR}/libs/rapidjson/include/rapidjson" "${CMAKE_SOURCE_DIR}/libs/LuaBridge/Source/LuaBridge" "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" "${CMAKE_SOURCE_DIR}/libs/NaturalSort")
 
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
@@ -20,8 +20,8 @@ target_compile_options("Zydis" PUBLIC "/MD")
 option(WITH_STATIC_CRT "" OFF)
 option(ANTLR_BUILD_CPP_TESTS "" OFF)
 option(ANTLR_BUILD_STATIC "" OFF)
-add_subdirectory("libs/antlr4")
-include_directories ("libs/antlr4/runtime/src")
+add_subdirectory("libs/antlr4/runtime/Cpp")
+include_directories ("libs/antlr4/runtime/Cpp/runtime/src")
 
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
 add_executable(zhlparser ${PARSER_SRC})
@@ -34,26 +34,13 @@ target_compile_options(antlr4_shared PUBLIC "/wd4100" "/wd4244" "/wd4251" "/wd42
 
 add_custom_command(TARGET zhlparser POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:antlr4_shared>/antlr4-runtime.dll" "$<TARGET_FILE_DIR:zhlparser>")
 
-FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.4.5/src/*.c)
-list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.4.5/src/luac.c")
+FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua-5.4.6/src/*.c)
+list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua-5.4.6/src/luac.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
 add_library(Lua5.3.3r SHARED ${LUA_SRC})
 
-# add_executable(lua "${CMAKE_SOURCE_DIR}/libs/lua-5.4.4/src/lua.c")
-# target_link_libraries (lua Lua5.3.3r)
-
-# FILE(GLOB LUA_LFS_SRC ${CMAKE_SOURCE_DIR}/libs/luafilesystem/src/*.c)
-# add_library(lfs SHARED ${LUA_LFS_SRC})
-# target_link_libraries(lfs Lua5.3.3r)
-
-# FILE (GLOB LUA_LPEG_SRC ${CMAKE_SOURCE_DIR}/libs/lpeg-1.0.2/*.c)
-# add_library(lpeg SHARED ${LUA_LPEG_SRC})
-# target_link_libraries(lpeg Lua5.3.3r)
-
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
-# add_custom_target(ZHL COMMAND lua parsefuncs.lua WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES})
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND zhlparser WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser)
-# add_dependencies(ZHL lpeg lfs)
 
 FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp)
 LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp)
@@ -148,8 +135,6 @@ if(NOT ISAAC_DIRECTORY STREQUAL "")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/scripts" "${ISAAC_DIRECTORY}/resources/scripts")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "${ISAAC_DIRECTORY}/resources-repentogon")
 endif()
-		
-# add_dependencies(libzhl ZHL)
 
 add_dependencies(zhlREPENTOGON libzhl)
 

@@ -10,9 +10,9 @@
 #include <lua.hpp>
 #include "LuaCore.h"
 
-#include "json/document.h"
-#include "json/writer.h"
-#include "json/stringbuffer.h"
+#include "document.h"
+#include "writer.h"
+#include "stringbuffer.h"
 
 #include "XMLData.h"
 #include "CompletionTracker.h"
