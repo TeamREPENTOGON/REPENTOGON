@@ -25,6 +25,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 HWND window;
 WNDPROC windowProc;
 bool menuShown = false;
+bool leftMouseClicked = false;
 static bool imguiInitialized = false;
 static bool show_app_style_editor = false;
 
@@ -126,29 +127,10 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             case VK_OEM_3: {
                 menuShown = true;
 
-                // Release keys we've tracked as being pressed. Call the game's wndProc to accomplish this
-                std::vector keys = pressedKeys;
-                for (WPARAM key : keys) {
-                    CallWindowProc(windowProc, hWnd, WM_KEYUP, key, lParam);
-                    // We're working on a copy of the vector, so we don't necessarily care about popping the original one in order
-                    pressedKeys.pop_back();
-                }
-        
-
-                // Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
-                *g_Game->GetConsole()->GetState() = 2;
-
-                // Console should steal focus by default, if visible.
-                // Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
-                console.enabled = true;
-                console.reclaimFocus = true;
-
                 break;
             }
 
             case VK_ESCAPE: {
-                *g_Game->GetConsole()->GetState() = 0;
-
                 if (menuShown) {
                     menuShown = false;
                     return true;
@@ -158,11 +140,39 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             }
         }
     }
-    // always forward inputs to imgui, to allow mouse movement in ImGui to be read correctly. 
-    ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
+
+    if (menuShown && *g_Game->GetConsole()->GetState() != 2) {
+        // Release keys we've tracked as being pressed. Call the game's wndProc to accomplish this
+        std::vector keys = pressedKeys;
+        for (WPARAM key : keys) {
+            CallWindowProc(windowProc, hWnd, WM_KEYUP, key, lParam);
+            // We're working on a copy of the vector, so we don't necessarily care about popping the original one in order
+            pressedKeys.pop_back();
+        }
+
+        // Pop the left mouse button, too, if it was previously clicked.
+        if (leftMouseClicked) {
+            leftMouseClicked = false;
+            CallWindowProc(windowProc, hWnd, WM_LBUTTONUP, 0, lParam);
+        }
+
+
+        // Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
+        *g_Game->GetConsole()->GetState() = 2;
+
+        // Console should steal focus by default, if visible.
+        // Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
+        console.enabled = true;
+        console.reclaimFocus = true;
+    }
+
+    if (!menuShown && *g_Game->GetConsole()->GetState() != 0) {
+        *g_Game->GetConsole()->GetState() = 0;
+    }
 
     // If the overlay is shown, direct input to the overlay only
     if (menuShown) {
+        ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
         return true;
     }
     else {
@@ -180,6 +190,11 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
                 }
 
                 break;
+            }
+            case WM_LBUTTONDOWN: {
+                leftMouseClicked = true;
+                break;
+
             }
             case WM_KEYUP: {
                 pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), wParam), pressedKeys.end());

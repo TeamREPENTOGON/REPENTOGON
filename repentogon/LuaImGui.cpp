@@ -8,6 +8,7 @@
 extern CustomImGui customImGui;
 
 static constexpr const char* ImGuiMT = "ImGui";
+extern bool menuShown;
 
 static int CheckAndSetCallback(lua_State* L, int slot)
 {
@@ -694,14 +695,22 @@ static int Lua_SetHelpmarker(lua_State* L)
 static int Lua_GetMousePos(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
-
-    ImGuiIO& io = ImGui::GetIO();
+    
     float x = -1;
     float y = -1;
-    if (ImGui::IsMousePosValid()) {
-        x = io.MousePos.x;
-        y = io.MousePos.y;
+
+    if (menuShown) {
+        ImGuiIO& io = ImGui::GetIO();
+        if (ImGui::IsMousePosValid()) {
+            x = io.MousePos.x;
+            y = io.MousePos.y;
+        }
     }
+    else {
+        x = *(double*)((char*)g_KAGEInputController + 0x48);
+        y = *(double*)((char*)g_KAGEInputController + 0x50);
+    }
+
 
     lua::LuaCaller(L).pushUserdataValue(*new Vector(x, y), lua::Metatables::VECTOR);
 
@@ -861,7 +870,6 @@ static int Lua_AddProgressBar(lua_State* L)
     return 1;
 }
 
-extern bool menuShown;
 static int Lua_ImGuiShow(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
