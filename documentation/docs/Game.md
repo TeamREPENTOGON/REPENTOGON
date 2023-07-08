@@ -46,13 +46,6 @@ ___
 Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `BitwiseDebugFlag.ENTITY_POSITIONS | BitwiseDebugFlag.HITSPHERES`)
 
 ___
-### Force·Mega·Satan·Void·Portal() {: aria-label='Functions' }
-#### void ForceMegaSatanVoidPortal ( boolean Force ) {: .copyable aria-label='Functions' }
-Set to `true` to forcefully inhibit the Mega Satan ending without affecting the ability to get Mega Satan completion marks or achievements. Set to `false` to retain vanilla behavior.
-
-(Might be better as a callback, somehow?)
-
-___
 ### Devolve·Enemy () {: aria-label='Functions' }
 #### void DevolveEnemy ( [Entity](Entity.md) ) {: .copyable aria-label='Functions' }
 

@@ -1,7 +1,10 @@
+#include "IsaacRepentance.h"
 #include "SigScan.h"
+#include "LuaCore.h"
 
+
+extern std::bitset<500> CallbackState;
 extern int ambushWaves;
-extern bool overrideMegaSatanEnding;
 extern void __stdcall LogMessageCallback(const char* logMessage);
 
 static DWORD SetPageMemoryRW(void* addr, MEMORY_BASIC_INFORMATION* info) {
@@ -71,12 +74,39 @@ void ASMPatchAmbushWaveCount() {
 
 /* Mega Satan has a seeded 50% chance to end the game forcefully. 
 *  Historically, this means mods that want to skip to the Void 100% of the time have to do so manually. This stops achievements from registering.
+*  Mods can work around that with our completion mark API, but that doesn't help in the case of Steam achievements!
 *  We hook the function responsible for this right when it calls RNG::RandomInt() to determine if the game should end or spawn a Void portal.
 *  The stack is already set up to call RandomInt with the right seed and values and whatnot.
-*  We take a bool pointer, check if it's true or false, force a Void portal if it's true, or call RNG::RandomInt() if it's false to preserve vanilla behavior.
-* 
-*  This will probably end up being reworked into a callback soon, it makes more sense as one.
+*  We use a trampoline to call a Lua callback, check if it's true or false, force a Void portal if it's true, or call RNG::RandomInt() if it's false to preserve vanilla behavior.
 */
+
+bool overrideMegaSatanEnding = false;
+void __stdcall MegaSatanCallbackTrampoline() {
+	overrideMegaSatanEnding = false;
+
+	int callbackid = 1201;
+	if (CallbackState.test(callbackid - 1000)) {
+
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua::LuaCaller caller(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults res = caller.push(callbackid)
+			.pushnil() // i don't think we really need any params here?
+			.call(1);
+
+		if (!res) {
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					overrideMegaSatanEnding = true;
+				}
+			}
+		}
+	}
+}
+
 void ASMPatchMegaSatanEnding() {
 	SigScan scanner("e8????????85c00f85????????3845??0f84????????3845??0f84????????a1");
 	scanner.Scan();
@@ -97,7 +127,10 @@ void ASMPatchMegaSatanEnding() {
 	memcpy(ptrMov + 1, &ptr, sizeof(ptr));
 
 	ASMPatch patch;
-	patch.AddBytes(ptrMov) // mov eax, dword ptr ds:[XXXXXXXX]
+	patch.AddBytes("\x50\x53\x51\x52\x56\x57") // Push EAX, EBX, ECX, EDX, ESI and EDI
+		.AddInternalCall(MegaSatanCallbackTrampoline) // call MegaSatanCallbackTrampoline()
+		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
+		.AddBytes(ptrMov) // mov eax, dword ptr ds:[XXXXXXXX]
 		.AddBytes("\x85\xC0") // test eax, eax
 		.AddBytes("\x75\x0A") // jne (current addr + 0xA)
 		.AddInternalCall(randomIntAddr) // call RNG::RandomInt()

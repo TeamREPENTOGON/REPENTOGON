@@ -959,4 +959,14 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1200 |MC_PRE_NEW_ROOM {: .copyable } | ( [Room](https://wofsauge.github.io/IsaacDocs/rep/Room) Room, [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor) Descriptor )| - | - |
+|1200 |MC_PRE_NEW_ROOM {: .copyable } | ( [Room](https://wofsauge.github.io/IsaacDocs/rep/Room) Room, [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor) Descriptor ) | - | - |
+
+### MC_PRE_MEGA_SATAN_ENDING
+Called right before Mega Satan forcibly ends the game. 
+
+* Accepts `true` to suppress the ending, guaranteeing a portal to the Void while retaining the completion mark for this character. 
+* `false` or `nil` will have no effect. I might look into making `false` guarantee an ending?
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1201 |MC_PRE_NEW_ROOM {: .copyable } | - | - | boolean |

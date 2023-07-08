@@ -312,7 +312,8 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY,
 	ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS,
 	ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY,
-	ModCallbacks.MC_CUSTOM_CHARACTER_UNLOCKED
+	ModCallbacks.MC_CUSTOM_CHARACTER_UNLOCKED,
+	ModCallbacks.MC_PRE_MEGA_SATAN_ENDING
 }
 
 for _, callback in ipairs(boolCallbacks) do
