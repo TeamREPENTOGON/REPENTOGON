@@ -126,12 +126,13 @@ HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, Co
 
 	if (playerXML["needsunlock"] == "true" && characterUnlockData[id] == false) {
 		ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
-		(*portrait)->Play(playerXML["name"].c_str(), false);
-		(*portrait)->SetLayerFrame(0, 1);
-		(*portrait)->_color = *color;
-		(*portrait)->_scale = *scale;
-		(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
-
+		if ((*portrait) != nullptr) {
+			(*portrait)->Play(playerXML["name"].c_str(), false);
+			(*portrait)->SetLayerFrame(0, 1);
+			(*portrait)->_color = *color;
+			(*portrait)->_scale = *scale;
+			(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
+		}
 	}
 	else
 		super(id, pos, color, scale);
@@ -155,19 +156,22 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 		"Speed Icon",
 		"Life Icon"
 	};
+
 	ANM2** background = g_Manager->GetPlayerConfig()->at(CharacterId).GetModdedMenuBackgroundANM2();
 
-	if (playerXML["needsunlock"] == "true" && characterUnlockData[CharacterId] == false)
-		disableState = false;
-	else
-		disableState = true;
+	if (*background != nullptr) {
+		if (playerXML["needsunlock"] == "true" && characterUnlockData[CharacterId] == false)
+			disableState = false;
+		else
+			disableState = true;
 
 
-	for (const char* layer : layersToDisable) {
-		*(*background)->GetLayer(layer)->IsVisible() = disableState;
+		for (const char* layer : layersToDisable) {
+			*(*background)->GetLayer(layer)->IsVisible() = disableState;
+		}
+
+		*(*background)->GetLayer("Unlocked By")->IsVisible() = !disableState;
 	}
-
-	*(*background)->GetLayer("Unlocked By")->IsVisible() = !disableState;
 
 	super(CharacterId, RenderPos, DefaultSprite);
 
