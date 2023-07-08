@@ -471,7 +471,7 @@ struct ConsoleMega {
                                 for (std::pair<int, std::string> specialType : specialRoomTypes) {
                                     entries.insert(AutocompleteEntry(std::string("x.") + specialType.second));
                                 }
-
+                                
                                 break;
                             }
 
