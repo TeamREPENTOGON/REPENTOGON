@@ -2474,3 +2474,22 @@ HOOK_METHOD(Entity_Player, InitPreLevelInitStats, () -> void) {
 	}
 	super();
 }
+
+//PRE_NEW_ROOM (1200)
+HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor* descriptor) -> void) {
+	int callbackid = 1200;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(this, lua::Metatables::ROOM)
+			.push(descriptor, lua::Metatables::ROOM_DESCRIPTOR)
+			.call(1);
+	}
+
+	super(param_1, descriptor);
+}

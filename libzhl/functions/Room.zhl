@@ -52,6 +52,9 @@ __thiscall Entity_Effect* Room::PickupGridEntity(int GridIndex);
 "558bec8b55??568bf185d2":
 __thiscall int Room::GetGridIndexByTile(int GridRow, int GridColumn);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec18080000":
+__thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }

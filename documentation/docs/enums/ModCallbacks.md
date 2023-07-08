@@ -953,3 +953,10 @@ By default, characters with this tag are **locked.** Return `true` in this callb
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1140 |MC_CUSTOM_CHARACTER_UNLOCKED {: .copyable } | ( int PlayerType ) | int PlayerType | bool |
+
+### MC_PRE_NEW_ROOM
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1200 |MC_PRE_NEW_ROOM {: .copyable } | ( [Room](https://wofsauge.github.io/IsaacDocs/rep/Room) Room, [RoomDescriptor](https://wofsauge.github.io/IsaacDocs/rep/RoomDescriptor) Descriptor )| - | - |
