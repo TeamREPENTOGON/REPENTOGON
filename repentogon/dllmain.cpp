@@ -163,12 +163,12 @@ static char titlebar[128];
 // This small function loads all the hooks and must be present in every mod
 MOD_EXPORT int ModInit(int argc, char **argv)
 {
+	PerformASMPatches();
 	Definition::Init();
 	ZHL::Init();
 	printf(":REPENTOGON:\n");
 	sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON %s)", VERSION);
 	SetWindowTextA(GetActiveWindow(), titlebar);
 	FixLuaDump();
-	PerformASMPatches();
 	return 0;
 }
