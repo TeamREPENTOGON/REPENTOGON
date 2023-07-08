@@ -63,6 +63,14 @@ static void RegisterHistory(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static int Lua_HistoryItemGetTime(lua_State* L)
+{
+	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, HistoryItemMT);
+	lua_pushinteger(L, historyItem->_time);
+
+	return 1;
+}
+
 static int Lua_HistoryItemGetItemID(lua_State* L)
 {
 	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, HistoryItemMT);
@@ -112,6 +120,7 @@ static void RegisterHistoryItem(lua_State* L) {
 
 	luaL_Reg funcs[] = {
 
+		{ "GetTime", Lua_HistoryItemGetTime },
 		{ "GetItemID", Lua_HistoryItemGetItemID },
 		{ "GetLevelStage", Lua_HistoryItemGetLevelStage },
 		{ "GetStageType", Lua_HistoryItemGetStageType },

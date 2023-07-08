@@ -22,3 +22,7 @@ ___
 #### [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) GetStageType ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Time () {: aria-label='Functions' }
+#### int GetTime ( ) {: .copyable aria-label='Functions' }
+
+___

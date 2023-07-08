@@ -1,6 +1,7 @@
 struct History_HistoryItem
 {
-    char _pad0[8];
+	int _time;
+    char _pad0[4];
 	int _itemID;
 	int _levelStage;
 	int _stageType;
