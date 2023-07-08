@@ -93,14 +93,13 @@ void ASMPatchMegaSatanEnding() {
 	};
 
 	void* ptr = &overrideMegaSatanEnding;
-	printf("Our pointer is at %p\n", ptr);
 
 	memcpy(ptrMov + 1, &ptr, sizeof(ptr));
 
 	ASMPatch patch;
 	patch.AddBytes(ptrMov) // mov eax, dword ptr ds:[XXXXXXXX]
-		 .AddBytes("\x85\xC0") // test eax, eax
-		 .AddBytes("\x75\x0A") // jne (current addr + 0xA)
+		.AddBytes("\x85\xC0") // test eax, eax
+		.AddBytes("\x75\x0A") // jne (current addr + 0xA)
 		.AddInternalCall(randomIntAddr) // call RNG::RandomInt()
 		.AddRelativeJump((char*)addr + 0x5) // jmp isaac-ng.XXXXXXXX
 		.AddBytes("\x83\xC4\x04")
