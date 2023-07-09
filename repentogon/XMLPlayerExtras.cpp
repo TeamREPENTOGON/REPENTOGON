@@ -167,10 +167,16 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 
 
 		for (const char* layer : layersToDisable) {
-			*(*background)->GetLayer(layer)->IsVisible() = disableState;
+			LayerState* layerState = (*background)->GetLayer(layer);
+			if (layerState != nullptr) { 
+				*layerState->IsVisible() = disableState;
+			}
 		}
 
-		*(*background)->GetLayer("Unlocked By")->IsVisible() = !disableState;
+		LayerState* unlockedByLayer = (*background)->GetLayer("Unlocked By");
+		if (unlockedByLayer != nullptr) {
+			*unlockedByLayer->IsVisible() = !disableState;
+		}
 	}
 
 	super(CharacterId, RenderPos, DefaultSprite);
