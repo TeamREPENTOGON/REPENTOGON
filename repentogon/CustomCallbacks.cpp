@@ -572,6 +572,65 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 }
 //PRE_MUSIC_PLAY Callback (id: 1034 enum pending)
 
+//PRE_MUSIC_LAYER_TOGGLE (1035)
+HOOK_METHOD(Music, EnableLayer, (int id, bool instant) -> void) {
+	int callbackid = 1035;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(id)
+			.push(id)
+			.push(true)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				super((int)lua_tointeger(L, -1), instant);
+				return;
+			}
+			else if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return; // False, meaning "layer should stay disabled"
+				}
+			}
+		}
+	}
+	super(id, instant);
+}
+
+HOOK_METHOD(Music, DisableLayer, (int id) -> void) {
+	int callbackid = 1035;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(id)
+			.push(id)
+			.push(false)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				super((int)lua_tointeger(L, -1));
+				return;
+			}
+			else if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return; // True, meaning "layer should stay enabled"
+				}
+			}
+		}
+	}
+	super(id);
+}
+
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
 HOOK_METHOD(Level, Init, () -> void) {
 	int callbackid = 1060;

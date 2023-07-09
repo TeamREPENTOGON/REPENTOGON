@@ -229,6 +229,16 @@ Alternatively accepts `false` to cancel the track
 |:--|:--|:--|:--|:--|
 |- |MC_PRE_MUSIC_PLAY {: .copyable } | (int ID, float Volume OR float FadeRate, boolean IsFade)| [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) | table or [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) or boolean |
 
+### MC_PRE_MUSIC_LAYER_TOGGLE
+
+Accepts a music layer ID (enum pending) to change the layer, or a bool to change the state of the layer: `true` to keep it running, `false` to stop it.
+
+`CurrentState` returns `true` if the layer is going to be **enabled**, and `false` if it is going to be **disabled.**
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|- |MC_PRE_MUSIC_LAYER_TOGGLE {: .copyable } | (int ID, boolean CurrentState)| int | int or boolean |
+
 ### MC_PRE_RENDER_PLAYER_HEAD
 Accepts an override [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) for RenderPos.
 
