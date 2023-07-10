@@ -42,8 +42,8 @@ Returns `true` if achievements can't be unlocked this run (challenges, seeded, e
 
 ___
 ### Add·Debug·Flags () {: aria-label='Functions' }
-#### void AddDebugFlags ( [BitwiseDebugFlag](enums/BitwiseDebugFlag.md) flag ) {: .copyable aria-label='Functions' }
-Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `BitwiseDebugFlag.ENTITY_POSITIONS | BitwiseDebugFlag.HITSPHERES`)
+#### void AddDebugFlags ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
+Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `DebugFlag.ENTITY_POSITIONS | DebugFlag.HITSPHERES`)
 
 ___
 ### Devolve·Enemy () {: aria-label='Functions' }
@@ -56,11 +56,6 @@ ___
 ___
 ### Get·Console () {: aria-label='Functions' }
 #### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Debug·Flag () {: aria-label='Functions' }
-#### boolean GetDebugFlag ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
-Returns the current state of the debug flag. If a script needs to check multiple debug flags quickly, it's recommended to use GetDebugFlags() instead.
 
 ___
 ### Get·Debug·Flags () {: aria-label='Functions' }
@@ -128,8 +123,3 @@ ___
 #### [Entity](Entity.md) SpawnBombCrater ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
 
 ___
-### Toggle·Debug·Flag () {: aria-label='Functions' }
-#### boolean ToggleDebugFlag ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
-Toggles the given debug flag. Returns the state of the debug flag after toggling (under the hood we just return the value of GetDebugFlag() after running this).
-
-__

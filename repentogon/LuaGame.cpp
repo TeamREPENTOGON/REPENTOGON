@@ -68,30 +68,10 @@ int Lua_GetLastLevelWithoutHalfHpFix(lua_State* L)
 	return 1;
 }
 
-int Lua_GameGetDebugFlag(lua_State* L)
-{
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	unsigned int flag = (unsigned int)luaL_checkinteger(L, 2) - 1;
-	lua_pushboolean(L, game->GetDebugFlag(flag));
-
-	return 1;
-}
-
 int Lua_GameGetDebugFlags(lua_State* L)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, *game->GetDebugFlags());
-
-	return 1;
-}
-
-
-int Lua_GameToggleDebugFlag(lua_State* L)
-{
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	unsigned int flag = (unsigned int)luaL_checkinteger(L, 2) - 1;
-	game->ToggleDebugFlag(flag);
-	lua_pushboolean(L, game->GetDebugFlag(flag));
 
 	return 1;
 }
@@ -150,9 +130,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetLastDevilRoomStage", Lua_GameGetLastDevilRoomStageFix);
 	lua::RegisterFunction(state, mt, "GetLastLevelWithDamage", Lua_GetLastLevelWithDamageFix);
 	lua::RegisterFunction(state, mt, "GetLastLevelWithoutHalfHp", Lua_GetLastLevelWithoutHalfHpFix);
-	lua::RegisterFunction(state, mt, "GetDebugFlag", Lua_GameGetDebugFlag); // this one's on the chopping block
 	lua::RegisterFunction(state, mt, "GetDebugFlags", Lua_GameGetDebugFlags);
-	lua::RegisterFunction(state, mt, "ToggleDebugFlag", Lua_GameToggleDebugFlag); // this too
 	lua::RegisterFunction(state, mt, "AddDebugFlags", Lua_GameAddDebugFlags);
 	//lua::RegisterFunction(state, mt, "SpawnBombCrater", Lua_GameSpawnBombCrater);
 	lua::RegisterFunction(state, mt, "DevolveEnemy", Lua_GameDevolveEnemy);
