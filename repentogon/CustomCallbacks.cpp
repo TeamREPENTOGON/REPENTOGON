@@ -2552,3 +2552,18 @@ HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor* descriptor) -> void) {
 
 	super(param_1, descriptor);
 }
+
+HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
+	super();
+	int callbackid = 1210;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.call(1);
+	}
+}

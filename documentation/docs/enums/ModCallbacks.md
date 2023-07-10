@@ -979,4 +979,13 @@ Called right before Mega Satan forcibly ends the game.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1201 |MC_PRE_NEW_ROOM {: .copyable } | - | - | boolean |
+|1201 |MC_PRE_MEGA_SATAN_ENDING {: .copyable } | - | - | boolean |
+
+### MC_POST_MODS_LOADED
+Called after all Lua scripts have been loaded. Ideal for running code that is expected to run after all mods are initialized, but without the need for load order idiocy!
+
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1210 |MC_POST_MODS_LOADED {: .copyable } | - | - | void |
