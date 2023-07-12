@@ -16,8 +16,10 @@ import time
 import requests
 import json
 import zipfile
+import base64
 
-os.chdir("../..")
+if not os.path.isfile("isaac-ng.exe"):
+	os.chdir("../..")
 
 if not os.path.isfile("isaac-ng.exe"):
 	print("First put this script in the same directory as the game itself! Exiting...")
@@ -31,14 +33,28 @@ if len(sys.argv)>1:
 		token=""
 if len(token)==0:
 	if os.path.isfile(".pysireffer_token"):
+		encoded=""
 		with open('.pysireffer_token', 'r') as file:
 			for line in file:
-				token=line
-				break
+				if line[:3]=="ghp":
+					token=line
+					print("Warning: plain text token! Converting to b64!")
+					encoded=base64.b64encode(bytes(token,"utf-8")).decode("utf-8")
+					break
+				else:
+					line=line.replace(" ","")+"=="
+					try:
+						token=base64.b64decode(bytes(line,"utf-8")).decode("utf-8")
+					except Exception:
+						continue
+					break
 		if token[:3]!="ghp":
 			print("Warning: Invalid token in a text file!")
 			token=""
-
+		if len(encoded)>0:
+			with open('.pysireffer_token', 'w') as file:
+                        	encoded=encoded[:6]+"   "+encoded[6:-2]
+                        	file.write(encoded)
 	if len(token)==0:
 		print("""
 To use this script you'll need to provide a GitHub Personal Access Token (PAT) with \"repo\" scope.
@@ -48,13 +64,15 @@ If you do not have a token yet, please generate it at
 https://github.com/settings/tokens/
 using the account that has access to the repo!
 
-If you do not want your token to be saved as plain text, you may provide it as an argument when launching the script instead.
+If you do not want your token to be saved as encoded text, you may provide it as an argument when launching the script instead.
 """)
 		while token[:3]!="ghp":
 			token=str(input("Enter the token: "))
 		with open('.pysireffer_token', 'w') as file:
-			file.write(token)
-
+			writedata=base64.b64encode(bytes(token,"utf-8")).decode("utf-8")
+			writedata=writedata[:6]+"   "+writedata[6:-2]
+			file.write(writedata)
+token=token.replace("\n","")
 orgname="IsaacZHL"
 reponame="REPENTOGON"
 
