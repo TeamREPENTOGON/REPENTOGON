@@ -40,6 +40,11 @@ ___
 #### void IncreaseEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter, int Num ) {: .copyable aria-label='Functions' }
 
 ___
+### Is·Challenge·Completed () {: aria-label='Functions' }
+#### boolean IsChallengeCompleted ( [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) ChallengeId ) {: .copyable aria-label='Functions' }
+Checks if a challenge is completed.
+
+___
 ### Is·Item·In·Collection () {: aria-label='Functions' }
 #### boolean IsItemInCollection ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleId ) {: .copyable aria-label='Functions' }
 Checks if an item is in the collection. Aka. its at least picked up once in any run.

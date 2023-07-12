@@ -11,7 +11,7 @@ For element types we use the same names as in ImGui itself. You can find an inte
 #### void AddButton ( string parentId, string elementId, string label = "", function clickCallback = nil, boolean isSmall = false ) {: .copyable aria-label='Functions' }
 ___
 ### Add·Callback () {: aria-label='Functions' }
-#### void AddCallback ( string elementId, [ImGuiCallback](enums/ImGuiCallback.md) type , function func ) {: .copyable aria-label='Functions' }
+#### void AddCallback ( string elementId, [ImGuiCallback](enums/ImGuiCallback.md) type, function func ) {: .copyable aria-label='Functions' }
 Add a callback to an ImGui-element. An element can have one callback per type.
 ___
 ### Add·Checkbox () {: aria-label='Functions' }

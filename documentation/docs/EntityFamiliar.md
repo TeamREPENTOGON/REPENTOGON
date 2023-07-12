@@ -12,3 +12,11 @@ ___
 #### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathFinder ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Trigger·Room·Clear () {: aria-label='Functions' }
+#### void TriggerRoomClear ( ) {: .copyable aria-label='Functions' }
+
+___
+### Try·Aim·At·Marked·Target () {: aria-label='Functions' }
+#### boolean TryAimAtMarkedTarget ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) AimDirection, int Direction, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) unkVec = nil ) {: .copyable aria-label='Functions' }
+
+___

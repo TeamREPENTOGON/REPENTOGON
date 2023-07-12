@@ -24,6 +24,7 @@ parentClass = {
                "Backdrop":"Room",
                "Camera": "Room",
                "Capsule": "Entity",
+               "ChallengeParam": "Game",
                "Console":"Game",
                "DailyChallenge":"Isaac",
                "DebugRenderer":"Game,Entity,Shape",

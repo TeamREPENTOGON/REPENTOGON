@@ -295,11 +295,19 @@ ___
 #### void SetWeapon ( [Weapon](Weapon.md) Weapon, int WeaponSlot ) {: .copyable aria-label='Functions' }
 
 ___
+### Shuffle·Costumes () {: aria-label='Functions' }
+#### void ShuffleCostumes ( int Seed ) {: .copyable aria-label='Functions' }
+Randomizes the current costumes.
+___
 ### Teleport () {: aria-label='Functions' }
 #### void Teleport ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, boolean DoEffects = true, boolean TeleportTwinPlayers = false ) {: .copyable aria-label='Functions' }
 Teleports the player to a position within the room. 
 
 `DoEffects` controls whether the teleport animation and sound plays. `TeleportTwinPlayers` controls whether twin players (e.g. Esau, Tainted Lazarus w/ Birthright) are teleported alongside this one.
+
+___
+### Trigger·Room·Clear () {: aria-label='Functions' }
+#### void TriggerRoomClear ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Try·Fake·Death () {: aria-label='Functions' }

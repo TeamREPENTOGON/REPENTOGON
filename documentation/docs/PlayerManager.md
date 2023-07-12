@@ -45,3 +45,7 @@ ___
 #### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) SpawnCoPlayer2 ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 
 ___
+### Trigger·Room·Clear () {: aria-label='Functions' }
+#### void TriggerRoomClear ( ) {: .copyable aria-label='Functions' }
+
+___

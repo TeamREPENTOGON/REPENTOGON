@@ -16,6 +16,10 @@ ___
 #### [LayerState](LayerState.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Layer·By·Name () {: aria-label='Functions' }
+#### [LayerState](LayerState.md) GetLayerByName ( string LayerName ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Null·Frame () {: aria-label='Functions' }
 #### [NullFrame](NullFrame.md) GetNullFrame ( int LayerId ) {: .copyable aria-label='Functions' }
 
