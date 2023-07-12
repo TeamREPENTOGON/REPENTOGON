@@ -76,6 +76,12 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
         }
         history.close();
     }
+    // Change Repentance into Repentogon in the console
+    if (text.rfind("Repentance Console\n", 0) == 0) {
+        super("Repentogon Console\n", color, fadeTime);
+        return;
+    }
+
     super(text, color, fadeTime);
 }
 
