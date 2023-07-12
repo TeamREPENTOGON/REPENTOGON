@@ -219,7 +219,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(state);
 	lua::Metatables mt = lua::Metatables::SPRITE;
 	lua::RegisterFunction(state, mt, "GetLayer", Lua_SpriteGetLayer);
-	lua::RegisterFunction(state, mt, "GetLayerByString", Lua_SpriteGetLayer_Text);
+	lua::RegisterFunction(state, mt, "GetLayerByName", Lua_SpriteGetLayer_Text);
 	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);
 	RegisterLayerState(state);
 }
