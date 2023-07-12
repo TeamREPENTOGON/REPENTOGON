@@ -644,10 +644,12 @@ end
 
 function _RunAdditiveCallback(callbackID, value, ...)
 	local callbacks = Isaac.GetCallbacks(callbackID)
-	for _, callback in ipairs(callbacks) do
-		local ret = callback.Function(callback.Mod, value, ...)
-		if ret ~= nil then
-			value = ret
+	if callbacks then
+		for _, callback in ipairs(callbacks) do
+			local ret = callback.Function(callback.Mod, value, ...)
+			if ret ~= nil then
+				value = ret
+			end
 		end
 	end
 	return value
@@ -655,17 +657,24 @@ end
 
 function _RunPreRenderCallback(callbackID, param, mt, value, ...)
 	local callbacks = Isaac.GetCallbacks(callbackID)
-	for _, callback in ipairs(callbacks) do
-		local ret = callback.Function(callback.Mod, param, mt, value, ...)
-		if ret ~= nil then
-			if type(ret) == "boolean" and ret == false then
-				return false
-			elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
-				value = value + ret
+	
+	if callbacks then
+		local matchFunc = getmetatable(callbacks).__matchParams or defaultCallbackMeta.__matchParams
+
+		for _, callback in ipairs(callbacks) do
+			if matchFunc(param, callback.Param) then
+				local ret = callback.Function(callback.Mod, mt, value, ...)
+				if ret ~= nil then
+					if type(ret) == "boolean" and ret == false then
+						return false
+					elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
+						value = value + ret
+					end
+				end
 			end
 		end
+		return value
 	end
-	return value
 end
 
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
