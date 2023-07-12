@@ -185,6 +185,9 @@ __thiscall void Entity_Player::AddRottenHearts(unsigned int amount, bool unk);
 "558bec51568bf1c745??000000008d86":
 __thiscall void Entity_Player::AddGigaBombs(int amount);
 
+"558bec83ec68a1????????33c58945??a1":
+__thiscall void Entity_Player::ShuffleCostumes(int seed);
+
 struct Entity_Player : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }

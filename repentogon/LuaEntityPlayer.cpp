@@ -644,6 +644,15 @@ static int Lua_PlayerTriggerRoomClear(lua_State* L) {
 	plr->TriggerRoomClear();
 
 	return 0;
+
+}
+
+static int Lua_PlayerShuffleCostumes(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int seed = (int)luaL_checkinteger(L, 2);
+	plr->ShuffleCostumes(seed);
+
+	return 0;
 }
 
 static int Lua_PlayerGetCollectiblesList(lua_State* L)
@@ -738,4 +747,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetEdenLuck", Lua_PlayerSetEdenLuck);
 	lua::RegisterFunction(state, mt, "TriggerRoomClear", Lua_PlayerTriggerRoomClear);
 	lua::RegisterFunction(state, mt, "GetCollectiblesList", Lua_PlayerGetCollectiblesList);
+	lua::RegisterFunction(state, mt, "ShuffleCostumes", Lua_PlayerShuffleCostumes);
 }
