@@ -1,3 +1,6 @@
+"558bec83ec60":
+__thiscall void DailyChallenge::Init(unsigned int dailyDate);
+
 struct DailyChallenge { 
 {{
 	inline ChallengeParam* GetChallengeParams() {return (ChallengeParam*)((char*)this + 0x10); }
