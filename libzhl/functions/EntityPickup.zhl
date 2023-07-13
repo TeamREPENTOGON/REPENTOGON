@@ -22,6 +22,9 @@ __thiscall int Entity_Pickup::SetNewOptionsPickupIndex();
 "558bec6aff68????????64a1????????5081ec84010000":
 __thiscall bool Entity_Pickup::HandleCollision(Entity* collider, bool low);
 
+"558bec83ec1456578bf9837f??64":
+__thiscall bool Entity_Pickup::TryInitOptionCycle(int numCycle);
+
 struct Entity_Pickup : public Entity { {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
 	inline int* GetVarData() { return (int*)((char*)this + 0x4e8); }
