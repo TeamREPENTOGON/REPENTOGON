@@ -1,6 +1,8 @@
 "558bec83e4c081ec34010000":
 __thiscall void OptionsConfig::Save();
 
-struct OptionsConfig {
-	
-};
+
+struct OptionsConfig depends (Game) {
+{{
+	inline bool ModsEnabled() { return *(bool*)((char*)this + 0x49); }
+}} };

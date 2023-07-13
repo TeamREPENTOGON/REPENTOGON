@@ -2244,16 +2244,18 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 	//resources
 	if (needsresourcepatch) {
 		for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
-			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
-			string resourcesdir = dir + "\\resources\\" + filename;
-			char* xmlaux = GetResources(xml, dir, filename);
-			if (strlen(xmlaux) > 1) {
-				xml_document<char>* xmldoc = new xml_document<char>();
-				if (XMLParse(xmldoc, xml, resourcesdir)) {
-					//mclear(xml);
-					CharToChar(xml, xmlaux);
+			if (mod->IsEnabled()) {
+				string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
+				string resourcesdir = dir + "\\resources\\" + filename;
+				char* xmlaux = GetResources(xml, dir, filename);
+				if (strlen(xmlaux) > 1) {
+					xml_document<char>* xmldoc = new xml_document<char>();
+					if (XMLParse(xmldoc, xml, resourcesdir)) {
+						//mclear(xml);
+						CharToChar(xml, xmlaux);
+					}
+					mclear(xmldoc);
 				}
-				mclear(xmldoc);
 			}
 		}
 	}
@@ -2397,6 +2399,7 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 }
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
+	if (g_Manager->GetOptions()->ModsEnabled()) {
 	try {
 		string a = stringlower((char*)string(xmldata).substr(0, 60).c_str());
 		string xml = string(xmldata);
@@ -2499,6 +2502,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		
 		xmldata = new char[a.length() + 1];
 		strcpy(xmldata, a.c_str());
+		super(xmldata);
+	}
+	}
+	else {
 		super(xmldata);
 	}
 }
