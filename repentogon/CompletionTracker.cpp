@@ -861,6 +861,7 @@ HOOK_METHOD_PRIORITY(PersistentGameData, IncreaseEventCounter, 0, (int eEvent, i
 			}
 			else {
 				super(eEvent, val);
+				return;
 			}
 		}
 		if (!PreMarksCallbackTrigger(cplmtype, playertype)) {
@@ -875,6 +876,7 @@ HOOK_METHOD_PRIORITY(PersistentGameData, IncreaseEventCounter, 0, (int eEvent, i
 		if (hardmode && (val == 1)) {
 			lastcmplevent = eEvent;
 		}
+		return;
 	}
 	super(eEvent, val);
 
