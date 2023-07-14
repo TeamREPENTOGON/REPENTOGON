@@ -11,17 +11,22 @@ __thiscall void Menu_Character::Init(Vector* unk);
 //"558bec6aff68????????64a1????????5083ec2ca1????????33c58945??535657508d45??64a3????????8bd9":
 //__thiscall void Menu_Character::ProcessInput();
 
+"558bec83ec2ca1????????33c58945??5356578bf9":
+__thiscall void Menu_Character::SelectRandomChar();
+
 struct Menu_Character {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 1168); } 
+	inline int GetNumCharacters() { return *(int*)((char*)this + 0xB10); }
+	inline int GetSelectedCharacterMenu() { return *(int*)((char*)this + 0xDAC); }
 }} 
     int status; //1 seeds screen //4 transitioning to tainted
     int lockedflags; //I think? 65792 is unlocked 65536 is locked
     int difficulty;
     int unk4;
     int charaslot;
-    float unk5; //dunno if these are floats even just using them as paddiong (they are usually 0)
-    float unk6; //dunno if these are floats even just using them as paddiong (they are usually 0)
+    int _chosenRandomCharacter;
+    float _randomRotationVelocity;
     int unk7;
-    int unk8;
+    int _randomRotationAmount;
 };

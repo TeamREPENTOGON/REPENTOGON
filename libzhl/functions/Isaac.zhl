@@ -33,6 +33,9 @@ static bool Isaac::CanStartTrueCoop();
 "558bec83e4f883ec4ca1????????33c4894424??53568bda":
 static cleanup void Isaac::SpawnLocust(Entity_Player* player<ecx>, int collectibleType<edx>, Vector* pos);
 
+"a1????????3d70020000":
+static __stdcall unsigned int Isaac::genrand_int32();
+
 struct Isaac {
 
 };

@@ -1,7 +1,12 @@
+"558bec83ec0c8379??0053565775??be":
+__thiscall std_string* EntityConfig_Player::GetDisplayName(std_string *buffer);
+
 struct EntityConfig_Player depends (ANM2) {
 	{{
+		inline int* GetAchievement() { return (int*)((char*)this + 0xE8); }
 		inline ANM2** GetModdedMenuBackgroundANM2() { return (ANM2**)((char*)this + 0x134); }
 		inline ANM2** GetModdedMenuPortraitANM2() { return (ANM2**)((char*)this + 0x138); }
 	}}
-	char _pad[0x148];
+	int _id;
+	char _pad[0x144];
 };
