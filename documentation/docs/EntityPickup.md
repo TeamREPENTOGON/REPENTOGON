@@ -34,6 +34,10 @@ ___
 #### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
 
 ___
+### Try·Init·Option·Cycle () {: aria-label='Functions' }
+#### boolean TryInitOptionCycle ( int NumCycle ) {: .copyable aria-label='Functions' }
+
+___
 ### Try·Remove·Collectible () {: aria-label='Functions' }
 #### boolean TryRemoveCollectible ( ) {: .copyable aria-label='Functions' }
 
