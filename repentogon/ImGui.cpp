@@ -172,6 +172,10 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
     // If the overlay is shown, direct input to the overlay only
     if (menuShown) {
+        // Call the game's WndProc on WM_PAINT to avoid apparent hangs when focus lost
+        if (uMsg == WM_PAINT) {
+            CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
+        }
         ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
         return true;
     }
