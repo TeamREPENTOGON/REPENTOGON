@@ -1811,25 +1811,29 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			//.push(this->GetSprite(), lua::Metatables::SPRITE)
+			.push(this->GetOverlayID())
+			.push(this, lua::metatables::ItemOverlayMT)
+			.push(this->GetOverlayID())
+			.push(unk)
 			.call(1);
 	}
 }
 
-//PRE_ITEM_OVERLAY_SHOW (id: 1076)
-HOOK_METHOD(ItemOverlay, Show, (int overlayID, int unk, Entity_Player* player) -> void) {
+//PRE/POST_ITEM_OVERLAY_SHOW (id: 1076, 1134)
+HOOK_METHOD(ItemOverlay, Show, (int overlayID, int delay, Entity_Player* player) -> void) {
+	lua_State* L = g_LuaEngine->_state;
 	int callbackid = 1076;
 	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
+		
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(overlayID)
+			.push(this, lua::metatables::ItemOverlayMT)
 			.push(overlayID)
-			.push(unk)
+			.push(delay)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
@@ -1844,7 +1848,20 @@ HOOK_METHOD(ItemOverlay, Show, (int overlayID, int unk, Entity_Player* player) -
 			}
 		}
 	}
-	super(overlayID, unk, player);
+	super(overlayID, delay, player);
+	callbackid = 1134;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
+			.push(overlayID)
+			.push(this, lua::metatables::ItemOverlayMT)
+			.push(overlayID)
+			.push(delay)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+	}
+
 }
 
 //POST_PLAYER_NEW_ROOM_TEMP_EFFECTS (id: 1077)

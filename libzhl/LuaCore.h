@@ -156,6 +156,7 @@ namespace lua {
         extern LIBZHL_API const char* NightmareSceneMT;
         extern LIBZHL_API const char* CapsuleMT;
         extern LIBZHL_API const char* DailyChallengeMT;
+        extern LIBZHL_API const char* ItemOverlayMT;
     }
 
     LIBZHL_API void UnloadMetatables();
