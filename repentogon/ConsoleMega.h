@@ -406,7 +406,14 @@ struct ConsoleMega {
                         switch (command.autocompleteType) {
                             case ENTITY: {
                                 std::unordered_map<tuple<int, int, int>, XMLAttributes> entities = XMLStuff.EntityData->nodes;
-                                for (auto entity : entities) {
+
+                                std::vector<std::pair<int, XMLNodes>> XMLPairs = {
+                                    std::pair<int, XMLNodes>{100, XMLStuff.ItemData->nodes},
+                                    std::pair<int, XMLNodes>{300, XMLStuff.CardData->nodes},
+                                    std::pair<int, XMLNodes>{350, XMLStuff.TrinketData->nodes},
+                                };
+                                
+                                for (auto &entity : entities) {
                                     int type = get<0>(entity.first);
                                     int variant = get<1>(entity.first);
                                     int subtype = get<2>(entity.first);
@@ -414,7 +421,18 @@ struct ConsoleMega {
                                     std::string name = entity.second["name"];
                                     std::string id = std::to_string(type) + "." + std::to_string(variant) + "." + std::to_string(subtype);
 
+                                    if (type == 5 && variant == 300) { // This is completely invalid
+                                        continue;
+                                    }
+
                                     entries.insert(AutocompleteEntry(id, name));
+                                }
+
+                                for (std::pair<int, XMLNodes> &pair : XMLPairs) {
+                                    for (std::pair<const int, XMLAttributes> &node : pair.second) {
+                                        std::string id = "5." + std::to_string(pair.first) + "." + std::to_string(node.first);
+                                        entries.insert(AutocompleteEntry(id, id == "5.300.0" ? "Tarot Card" : node.second["name"]));
+                                    }
                                 }
 
                                 break;

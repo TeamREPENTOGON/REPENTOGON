@@ -168,12 +168,6 @@ void ASMPatchConsoleRunCommand() {
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 }
 
-extern std::map<int, bool> characterUnlockData;
-bool __stdcall RandomLockedCharactersTrampoline(int id) {
-	// i wanna see what this looks like in asm
-	return characterUnlockData[id];
-}
-
 static void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
