@@ -14,6 +14,11 @@ ___
 Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
 
 ___
+### Fire·Projectiles·Ex() {: aria-label='Functions' }
+#### table FireProjectilesEx ([Vector](https://moddingofisaac.com/docs/rep/Vector.html) position, [Vector](https://moddingofisaac.com/docs/rep/Vector.html) velocity, ProjectilesMode mode, [ProjectileParams](https://moddingofisaac.com/docs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
+Same as [FireProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
+
+___
 ### Get·Controller·Id() {: aria-label='Functions' }
 #### int GetControllerId ( ) {: .copyable aria-label='Functions' }
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return -1 when its not being controlled by any player.
