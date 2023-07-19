@@ -1,8 +1,21 @@
 #include <lua.hpp>
 
+#include <vector>
+#include <stdexcept>
+
+#include "ASMPatcher.hpp"
+#include "SigScan.h"
+#include "LuaEntityNPC.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+
+struct FireProjectilesStorage {
+	std::vector<Entity_Projectile*> projectiles;
+	bool inUse = false;
+};
+
+thread_local FireProjectilesStorage projectilesStorage;
 
 int Lua_NPCUpdateDirtColor(lua_State* L)
 {
@@ -50,6 +63,31 @@ LUA_FUNCTION(Lua_NPCTryForceTarget) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* velocity = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	uint32_t mode = luaL_checkinteger(L, 4);
+	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+
+	std::vector<Entity_Projectile*>& projectiles = projectilesStorage.projectiles;
+	projectiles.clear();
+	projectilesStorage.inUse = true;
+	npc->FireProjectiles(position, velocity, mode, params);
+	
+	lua_newtable(L);
+	for (int i = 0; i < projectiles.size(); ++i) {
+		lua_pushinteger(L, i + 1);
+		lua::luabridge::UserdataPtr::push(L, projectiles[i], lua::GetMetatableKey(lua::Metatables::ENTITY_PROJECTILE));
+		lua_rawset(L, -3);
+	}
+
+	projectilesStorage.projectiles.clear();
+	projectilesStorage.inUse = false;
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -60,4 +98,43 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetControllerId", Lua_NPCGetControllerId);
 	lua::RegisterFunction(state, mt, "SetControllerId", Lua_NPCSetControllerId);
 	lua::RegisterFunction(state, mt, "TryForceTarget", Lua_NPCTryForceTarget);
+	lua::RegisterFunction(state, mt, "FireProjectilesEx", Lua_EntityNPC_FireProjectilesEx);
+}
+
+void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
+	if (!projectilesStorage.inUse) {
+		return;
+	}
+
+	for (Entity_Projectile* projectile : projectiles) {
+		projectilesStorage.projectiles.push_back(projectile);
+	}
+}
+
+void PatchFireProjectiles() {
+	const char* signature = "33c92b55b4c1fa02894ddc8955e4";
+	SigScan scanner(signature);
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	FILE* f = fopen("repentogon.log", "a");
+	fprintf(f, "Patching FireProjectiles at %p\n", addr);
+	fclose(f);
+
+	using Reg = ASMPatch::SavedRegisters::Registers;
+	using GPReg = ASMPatch::Registers;
+
+	ASMPatch patch;
+	ASMPatch::SavedRegisters registers(Reg::EAX | Reg::EBX | Reg::ECX | Reg::EDX | Reg::EDI | Reg::ESI | 
+		Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3 | Reg::XMM4 | Reg::XMM5, true);
+	patch.PreserveRegisters(registers);
+	// patch.MoveFromMemory(GPReg::EBP, -0x4C, GPReg::ESI, true);
+	patch.LoadEffectiveAddress(GPReg::EBP, -0x4C, GPReg::ESI);
+	patch.Push(GPReg::ESI);
+	patch.AddInternalCall(FireProjectilesEx_Internal);
+	patch.RestoreRegisters(registers);
+	patch.AddBytes("\x33\xc9\x2b\x55\xb4");
+	patch.AddRelativeJump((char*)addr + 0x5);
+
+	sASMPatcher.PatchAt(addr, &patch);
 }
