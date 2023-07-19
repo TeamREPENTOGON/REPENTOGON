@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include "HookSystem_private.h"
+#include "ASMPatcher.hpp"
 
 #include <fstream>
 
@@ -32,5 +33,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		}
 	}
 
+	ASMPatch::_Init();
+	ASMPatch::SavedRegisters::_Init();
 	return TRUE;
 }

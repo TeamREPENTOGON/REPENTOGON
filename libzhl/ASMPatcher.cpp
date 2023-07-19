@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include <bitset>
+#include <vector>
 #include <sstream>
 #include <stdexcept>
 
@@ -10,6 +12,10 @@
 
 #include "ASMPatcher.hpp"
 #include "SigScan.h"
+
+#ifdef max
+#undef max
+#endif
 
 ASMPatcher::ASMPatcher() {
 	_patching.store(false, std::memory_order_relaxed);
@@ -312,8 +318,134 @@ std::unique_ptr<char[]> ASMPatcher::EncodeCondJump(CondJumps cond, const void* a
 	return std::unique_ptr<char[]>(buffer);
 }
 
+static inline void EndianSwap(char* src, int a, int b) {
+	char copy = src[a];
+	src[a] = src[b];
+	src[b] = copy;
+}
+
+ASMPatch::ByteBuffer ASMPatch::ToHexString(int8_t x) {
+	ByteBuffer result;
+	char value;
+	memcpy(&value, &x, 1);
+	result.AddAny(&value, 1);
+	return result;
+}
+
+ASMPatch::ByteBuffer ASMPatch::ToHexString(int16_t x, bool endianConvert) {
+	char buffer[2];
+	memcpy(buffer, &x, 2);
+
+	if (endianConvert) {
+		// Flip 0 and 1
+		EndianSwap(buffer, 0, 1);
+	}
+
+	ByteBuffer result;
+	result.AddAny(buffer, 2);
+	return result;
+}
+
+ASMPatch::ByteBuffer ASMPatch::ToHexString(int32_t x, bool endianConvert) {
+	char buffer[4];
+	memcpy(buffer, &x, 4);
+
+	if (endianConvert) {
+		EndianSwap(buffer, 0, 3);
+		EndianSwap(buffer, 1, 2);
+	}
+
+	ByteBuffer result;
+	result.AddAny(buffer, 4);
+	return result;
+}
+
+std::map<ASMPatch::Registers, std::bitset<8>> ASMPatch::_ModRM;
+
 ASMPatch::ASMPatch() {
 
+}
+
+std::map<uint32_t, ASMPatch::ByteBuffer> ASMPatch::SavedRegisters::_RegisterPushMap;
+std::map<uint32_t, ASMPatch::ByteBuffer> ASMPatch::SavedRegisters::_RegisterPopMap;
+std::array<uint32_t, 16> ASMPatch::SavedRegisters::_RegisterOrder;
+
+ASMPatch::SavedRegisters::SavedRegisters(uint32_t mask, bool shouldRestore) {
+	_mask = mask;
+	_shouldRestore = shouldRestore;
+}
+
+ASMPatch::SavedRegisters::~SavedRegisters() {
+	if (!_restored && _shouldRestore) {
+		FILE* f = fopen("repentogon.log", "a");
+		fprintf(f, "Backed up registers were not restored in ASMPatch");
+		fclose(f);
+
+		abort();
+	}
+}
+
+uint32_t ASMPatch::SavedRegisters::GetMask() const {
+	return _mask;
+}
+
+void ASMPatch::SavedRegisters::Restore() {
+	if (_restored) {
+		throw std::runtime_error("Backed up registers restored multiple times in ASMPatch");
+	}
+
+	_restored = true;
+}
+
+void ASMPatch::SavedRegisters::_Init() {
+	using Reg = Registers;
+
+	_RegisterPushMap[Reg::EAX] = std::move(ByteBuffer().AddString("\x50"));
+	_RegisterPushMap[Reg::ECX] = std::move(ByteBuffer().AddString("\x51"));
+	_RegisterPushMap[Reg::EDX] = std::move(ByteBuffer().AddString("\x52"));
+	_RegisterPushMap[Reg::EBX] = std::move(ByteBuffer().AddString("\x53"));
+	_RegisterPushMap[Reg::ESP] = std::move(ByteBuffer().AddString("\x54"));
+	_RegisterPushMap[Reg::EBP] = std::move(ByteBuffer().AddString("\x55"));
+	_RegisterPushMap[Reg::ESI] = std::move(ByteBuffer().AddString("\x56"));
+	_RegisterPushMap[Reg::EDI] = std::move(ByteBuffer().AddString("\x57"));
+	// For XMM registers, first make place on the stack, because
+	// x86 doesn't allow direct push of an XMM value onto the stack.
+	// Room is made first, then the value is moved from the register
+	// to the stack. 
+	// movupd is used because there is no guarantee that the stack will 
+	// be aligned on a 16-byte boundary (as is expected by movapd).
+	_RegisterPushMap[Reg::XMM0] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x04\x24")); // sub esp, 16 (0x10); movupd [esp], xmm0
+	_RegisterPushMap[Reg::XMM1] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x0C\x24")); // sub esp, 16 (0x10); movupd [esp], xmm1
+	_RegisterPushMap[Reg::XMM2] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x14\x24")); // sub esp, 16 (0x10); movupd [esp], xmm2
+	_RegisterPushMap[Reg::XMM3] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x1C\x24")); // sub esp, 16 (0x10); movupd [esp], xmm3
+	_RegisterPushMap[Reg::XMM4] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x24\x24")); // sub esp, 16 (0x10); movupd [esp], xmm4
+	_RegisterPushMap[Reg::XMM5] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x2C\x24")); // sub esp, 16 (0x10); movupd [esp], xmm5
+	_RegisterPushMap[Reg::XMM6] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x34\x24")); // sub esp, 16 (0x10); movupd [esp], xmm6
+	_RegisterPushMap[Reg::XMM7] = std::move(ByteBuffer().AddString("\x83\xEC\x10").AddString("\x66\x0F\x11\x3C\x24")); // sub esp, 16 (0x10); movupd [esp], xmm7
+
+	_RegisterPopMap[Reg::EAX] = std::move(ByteBuffer().AddString("\x58"));
+	_RegisterPopMap[Reg::ECX] = std::move(ByteBuffer().AddString("\x59"));
+	_RegisterPopMap[Reg::EDX] = std::move(ByteBuffer().AddString("\x5a"));
+	_RegisterPopMap[Reg::EBX] = std::move(ByteBuffer().AddString("\x5b"));
+	_RegisterPopMap[Reg::ESP] = std::move(ByteBuffer().AddString("\x5c"));
+	_RegisterPopMap[Reg::EBP] = std::move(ByteBuffer().AddString("\x5d"));
+	_RegisterPopMap[Reg::ESI] = std::move(ByteBuffer().AddString("\x5e"));
+	_RegisterPopMap[Reg::EDI] = std::move(ByteBuffer().AddString("\x5f"));
+	// Similar reasoning as above: we cannot pop from the stack into an 
+	// XMM register, so first we move the value from the stack to the 
+	// register, then we free the space used on the stack.
+	// movupd used because no guarantee of alignment.
+	_RegisterPopMap[Reg::XMM0] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x04\x24\x83\xC4\x10")); // movupd xmm0, [esp]; add esp, 128
+	_RegisterPopMap[Reg::XMM1] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x0C\x24\x83\xC4\x10")); // movupd xmm1, [esp]; add esp, 128
+	_RegisterPopMap[Reg::XMM2] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x14\x24\x83\xC4\x10")); // movupd xmm2, [esp]; add esp, 128
+	_RegisterPopMap[Reg::XMM3] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x1C\x24\x83\xC4\x10")); // movupd xmm3, [esp]; add esp, 128
+	_RegisterPopMap[Reg::XMM4] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x24\x24\x83\xC4\x10")); // movupd xmm4, [esp]; add esp, 128
+	_RegisterPopMap[Reg::XMM5] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x2C\x24\x83\xC4\x10")); // movupd xmm5, [esp]; add esp, 128
+	_RegisterPopMap[Reg::XMM6] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x34\x24\x83\xC4\x10")); // movupd xmm6, [esp]; add esp, 128
+	_RegisterPopMap[Reg::XMM7] = std::move(ByteBuffer().AddString("\x66\x0F\x10\x3C\x24\x83\xC4\x10")); // movupd xmm7, [esp]; add esp, 128
+
+	_RegisterOrder = std::array<uint32_t, 16>({ Reg::EAX, Reg::EBX, Reg::ECX, Reg::EDX, Reg::ESP, Reg::EBP, Reg::ESI, Reg::EDI, 
+		Reg::XMM0, Reg::XMM1, Reg::XMM2, Reg::XMM3, Reg::XMM4, Reg::XMM5, Reg::XMM6, Reg::XMM7 });
 }
 
 void* ASMPatcher::EncodeAndWriteJump(void* at, const void* target) {
@@ -322,8 +454,15 @@ void* ASMPatcher::EncodeAndWriteJump(void* at, const void* target) {
 	return encoded.get() + 5;
 }
 
-ASMPatch& ASMPatch::AddBytes(const char* bytes) {
-	std::unique_ptr<ASMNode> ptr(new ASMBytes(bytes));
+ASMPatch& ASMPatch::AddBytes(std::string const& bytes) {
+	std::unique_ptr<ASMNode> ptr(new ASMBytes(bytes.c_str()));
+	_size += ptr->Length();
+	_nodes.push_back(std::move(ptr));
+	return *this;
+}
+
+ASMPatch& ASMPatch::AddBytes(ASMPatch::ByteBuffer const& bytes) {
+	std::unique_ptr<ASMNode> ptr(new ASMBytesAny(bytes));
 	_size += ptr->Length();
 	_nodes.push_back(std::move(ptr));
 	return *this;
@@ -359,6 +498,239 @@ ASMPatch& ASMPatch::AddZeroes(uint32_t n) {
 	_size += ptr->Length();
 	_nodes.push_back(std::move(ptr));
 	return *this;
+}
+
+ASMPatch& ASMPatch::PreserveRegisters(SavedRegisters& registers) {
+	uint32_t mask = registers.GetMask();
+
+	for (auto iter = SavedRegisters::_RegisterOrder.begin(); iter != SavedRegisters::_RegisterOrder.end(); ++iter) {
+		if (mask & *iter) {
+			AddBytes(SavedRegisters::_RegisterPushMap[*iter]);
+		}
+	}
+
+	return *this;
+}
+
+ASMPatch& ASMPatch::RestoreRegisters(SavedRegisters& registers) {
+	registers.Restore();
+
+	std::ostringstream stream;
+	uint32_t mask = registers.GetMask();
+	using Reg = SavedRegisters::Registers;
+
+	for (auto iter = SavedRegisters::_RegisterOrder.rbegin(); iter != SavedRegisters::_RegisterOrder.rend(); ++iter) {
+		if (mask & *iter) {
+			AddBytes(SavedRegisters::_RegisterPopMap[*iter]);
+		}
+	}
+
+	return *this;
+}
+
+void ASMPatch::_Init() {
+	using Reg = ASMPatch::Registers;
+
+	_ModRM[Reg::EAX] = 0b00000000;
+	_ModRM[Reg::ECX] = 0b00000001;
+	_ModRM[Reg::EDX] = 0b00000010;
+	_ModRM[Reg::EBX] = 0b00000011;
+	_ModRM[Reg::ESP] = 0b00000100;
+	_ModRM[Reg::EBP] = 0b00000101;
+	_ModRM[Reg::ESI] = 0b00000110;
+	_ModRM[Reg::EDI] = 0b00000111;
+}
+
+ASMPatch& ASMPatch::MoveFromMemory(ASMPatch::Registers src, int32_t offset, ASMPatch::Registers dst) {
+	std::ostringstream stream;
+	ByteBuffer offsetHex;
+	// 7-6 : how many bytes of displacement (1 or 4), basically how many bytes after the opcode
+	// 5-4-3 : destination register
+	// 2-1-0 : source register
+	std::bitset<8> modrmBits;
+	// 32 bits opcode
+	if (offset < -127 || offset > 127) {
+		offsetHex = ToHexString(offset, true);
+		modrmBits[7] = true;
+		modrmBits[6] = false;
+	}
+	else {
+		// 8 bits opcode
+		offsetHex = ToHexString((int8_t)offset);
+		modrmBits[7] = false;
+		modrmBits[6] = true;
+	}
+
+	stream << "\x8B";
+	// Mod R/M part, I hate this
+		
+	std::bitset<8> source = _ModRM[src];
+	std::bitset<8> destination = _ModRM[dst] << 3;
+
+	modrmBits |= (source | destination);
+
+	uint8_t modRmVal = (uint8_t)modrmBits.to_ulong();
+	ByteBuffer result;
+	result.AddString("\x8B").AddByteBuffer(ToHexString(modRmVal)).AddByteBuffer(offsetHex);
+	return AddBytes(result);
+}
+
+ASMPatch& ASMPatch::MoveToMemory(ASMPatch::Registers src, int32_t offset, ASMPatch::Registers dst) {
+	std::ostringstream stream;
+	ByteBuffer offsetHex;
+	// 7-6 : how many bytes of displacement (1 or 4), basically how many bytes after the opcode
+	// 5-4-3 : source register
+	// 2-1-0 : destination register
+	std::bitset<8> modrmBits;
+	// 32 bits opcode
+	if (offset < -127 || offset > 127) {
+		offsetHex = ToHexString(offset, true);
+		modrmBits[7] = true;
+		modrmBits[6] = false;
+	}
+	else {
+		// 8 bits opcode
+		offsetHex = ToHexString((int8_t)offset);
+		modrmBits[7] = false;
+		modrmBits[6] = true;
+	}
+
+	stream << "\x8B";
+	// Mod R/M part, I hate this
+
+	std::bitset<8> source = _ModRM[src] << 3;
+	std::bitset<8> destination = _ModRM[dst];
+
+	modrmBits |= (source | destination);
+
+	uint8_t modRmVal = (uint8_t)modrmBits.to_ulong();
+	ByteBuffer result;
+	result.AddString("\x89").AddByteBuffer(ToHexString(modRmVal)).AddByteBuffer(offsetHex);
+	return AddBytes(result);
+}
+
+/* static bool IsRegister(ASMPatch::LeaOperand const& operand) {
+	return std::holds_alternative<ASMPatch::Registers>(operand);
+}
+
+static ASMPatch::LeaParameter const& ValidateLeaParameter(ASMPatch::LeaParameter const& param) {
+	ASMPatch::LeaOps op;
+	ASMPatch::LeaOperand operand;
+
+	std::tie(op, operand) = param;
+	if (op == ASMPatch::LeaOps::MULT) {
+		if (IsRegister(operand)) {
+			throw std::runtime_error("Operand of mult cannot be a register");
+		}
+		else {
+			int32_t value = std::get<int32_t>(operand);
+			if (value != 1 && value != 2 && value != 4 && value != 8) {
+				std::ostringstream stream;
+				stream << "Invalid SCALE value for MULT operand of lea: " << value;
+				throw std::runtime_error(stream.str());
+			}
+		}
+	}
+
+	return param;
+}
+
+ASMPatch& ASMPatch::LoadEffectiveAddress(Registers dst, Registers src, std::optional<LeaParameter> firstParam, std::optional<LeaParameter> secondParam) {
+	if (!firstParam && secondParam) {
+		firstParam = secondParam;
+		secondParam = std::nullopt;
+	}
+
+	LeaOps firstOp, secondOp;
+	LeaOperand firstOperand, secondOperand;
+	bool needSIB = false;
+	ByteBuffer SIB;
+
+	if (firstParam) {
+		std::tie(firstOp, firstOperand) = ValidateLeaParameter(*firstParam);
+	}
+
+	if (secondParam) {
+		std::tie(secondOp, secondOperand) = ValidateLeaParameter(*secondParam);
+	}
+
+	if (firstParam && secondParam) {
+		if (firstOp == secondOp && firstOp == LeaOps::MULT) {
+			throw std::runtime_error("Cannot use multiple multiplications in lea");
+		}
+	}
+} */
+
+ASMPatch& ASMPatch::LoadEffectiveAddress(Registers src, int32_t offset, Registers dst) {
+	ByteBuffer result, hexOffset;
+	result.AddString("\x8D"); // lea opcode
+
+	// 7-6: mod
+	// 5-3: dest
+	// 2-0: src
+	std::bitset<8> modrmBits = 0b00000000;
+	if (offset < -127 || offset > 127) {
+		modrmBits[7] = true;
+		hexOffset = ToHexString(offset);
+	}
+	else {
+		modrmBits[7] = false;
+		hexOffset = ToHexString((int8_t)offset);
+	}
+
+	modrmBits[6] = !modrmBits[7];
+
+	std::bitset<8> destBits = _ModRM[dst] << 3, srcBits = _ModRM[src];
+
+	modrmBits |= (destBits | srcBits);
+	result.AddByteBuffer(ToHexString((int8_t)modrmBits.to_ulong()))
+		.AddByteBuffer(hexOffset);
+
+	return AddBytes(result);
+}
+
+ASMPatch& ASMPatch::Push(ASMPatch::Registers reg) {
+	uint32_t mask = RegisterToBackupRegister(reg);
+	return AddBytes(ASMPatch::SavedRegisters::_RegisterPushMap[mask]);
+}
+
+ASMPatch& ASMPatch::Pop(ASMPatch::Registers reg) {
+	uint32_t mask = RegisterToBackupRegister(reg);
+	return AddBytes(ASMPatch::SavedRegisters::_RegisterPopMap[mask]);
+}
+
+uint32_t ASMPatch::RegisterToBackupRegister(ASMPatch::Registers reg) {
+	using GPReg = ASMPatch::Registers;
+	using Reg = ASMPatch::SavedRegisters::Registers;
+
+	switch (reg) {
+	case GPReg::EAX:
+		return Reg::EAX;
+
+	case GPReg::EBX:
+		return Reg::EBX;
+
+	case GPReg::ECX:
+		return Reg::ECX;
+
+	case GPReg::EDX:
+		return Reg::EDX;
+
+	case GPReg::ESP:
+		return Reg::ESP;
+
+	case GPReg::EBP:
+		return Reg::EBP;
+
+	case GPReg::ESI:
+		return Reg::ESI;
+
+	case GPReg::EDI:
+		return Reg::EDI;
+
+	default:
+		throw std::runtime_error("Invalid register");
+	}
 }
 
 ASMPatch::ASMBytes::ASMBytes(const char* bytes) : _bytes()  {
@@ -433,6 +805,22 @@ size_t ASMPatch::ASMInternalCall::Length() const {
 	return 5;
 }
 
+ASMPatch::ASMBytesAny::ASMBytesAny(ByteBuffer const& bytes) : _bytes(bytes) {
+
+}
+
+std::unique_ptr<char[]> ASMPatch::ASMBytesAny::ToASM(void*) const {
+	char* data = _bytes.GetData();
+	size_t size = _bytes.GetSize();
+	std::unique_ptr<char[]> bytes(new char[size]);
+	memcpy(bytes.get(), data, size);
+	return bytes;
+}
+
+size_t ASMPatch::ASMBytesAny::Length() const {
+	return _bytes.GetSize();
+}
+
 std::unique_ptr<char[]> ASMPatch::ToASM(void* at) const {
 	std::unique_ptr<char[]> result(new char[_size + 1]);
 	size_t pos = 0;
@@ -452,6 +840,111 @@ std::unique_ptr<char[]> ASMPatch::ToASM(void* at) const {
 
 size_t ASMPatch::Length() const {
 	return _size;
+}
+
+ASMPatch::ByteBuffer::ByteBuffer() {
+	_capacity = X86_LONGEST_INSTRUCTION_NBYTES;
+	_data.reset(new char[_capacity]);
+	_size = 0;
+}
+
+ASMPatch::ByteBuffer::ByteBuffer(ASMPatch::ByteBuffer const& other) {
+	*this = other;
+}
+
+ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::operator=(ASMPatch::ByteBuffer const& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	_size = other._size;
+	_capacity = other._capacity;
+	_data.reset(new char[_size]);
+	memcpy(_data.get(), other._data.get(), _size);
+
+	return *this;
+}
+
+ASMPatch::ByteBuffer::ByteBuffer(ASMPatch::ByteBuffer&& other) {
+	*this = std::move(other);
+}
+
+ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::operator=(ASMPatch::ByteBuffer&& other) {
+	if (this == &other) {
+		return *this;
+	}
+
+	_capacity = other._capacity;
+	_size = other._size;
+	_data = std::move(other._data);
+
+	other._capacity = other._size = 0;
+
+	return *this;
+}
+
+ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::AddString(const char* s) {
+	size_t len = strlen(s);
+	CheckAndResize(len);
+	memcpy(_data.get() + _size, s, len);
+	_size += len;
+
+	return *this;
+}
+
+ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::AddZeroes(uint32_t n) {
+	if (n == 0) {
+		throw std::runtime_error("Adding 0 zeroes to ByteBuffer");
+	}
+
+	CheckAndResize(n);
+	memset(_data.get() + _size, 0, n);
+	_size += n;
+
+	return *this;
+}
+
+ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::AddAny(const char* addr, size_t n) {
+	if (n == 0) {
+		throw std::runtime_error("Adding 0 length byte array to ByteBuffer");
+	}
+
+	CheckAndResize(n);
+	memcpy(_data.get() + _size, addr, n);
+	_size += n;
+
+	return *this;
+}
+
+ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::AddByteBuffer(ByteBuffer const& other) {
+	CheckAndResize(other._size);
+	memcpy(_data.get() + _size, other.GetData(), other._size);
+	_size += other._size;
+
+	return *this;
+}
+
+void ASMPatch::ByteBuffer::CheckAndResize(size_t s) {
+	if (_size + s >= _capacity) {
+		size_t newCapacity = std::max(_capacity * 2, _capacity + s);
+		char* content = new char[newCapacity];
+		_capacity *= newCapacity;
+		memcpy(content, _data.get(), _size);
+	}
+}
+
+char* ASMPatch::ByteBuffer::GetData() const {
+	return _data.get();
+}
+
+size_t ASMPatch::ByteBuffer::GetSize() const {
+	return _size;
+}
+
+void ASMPatch::ByteBuffer::Dump(FILE* f) {
+	for (size_t i = 0; i < _size; ++i) {
+		fprintf(f, "%.2hhx", _data.get()[i]);
+	}
 }
 
 /* void ASMPatcher::Error(const char* fmt, ...) {
