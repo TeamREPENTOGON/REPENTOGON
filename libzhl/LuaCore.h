@@ -272,12 +272,14 @@ namespace lua {
 
         operator bool() const;
 
+        int getResultCode() const { return _resultCode; }
+
     private:
-        LuaResults(lua_State* L, int n, int valid);
+        LuaResults(lua_State* L, int n, int resultCode);
 
         lua_State* _L;
         int _n;
-        int _valid;
+        int _resultCode;
     };
 
 

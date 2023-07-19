@@ -536,31 +536,38 @@ namespace lua {
 		return *this;
 	}
 
-	LuaResults::LuaResults(lua_State* L, int n, int valid) : _L(L), _n(n), _valid(valid) {
+	LuaResults::LuaResults(lua_State* L, int n, int resultCode) : _L(L), _n(n), _resultCode(resultCode) {
 
 	}
 
-	LuaResults::LuaResults(LuaResults&& other) : _L(other._L), _n(other._n), _valid(other._valid) {
+	LuaResults::LuaResults(LuaResults&& other) : _L(other._L), _n(other._n), _resultCode(other._resultCode) {
 		other._L = nullptr;
 	}
 
 	LuaResults& LuaResults::operator=(LuaResults&& other) {
 		_L = other._L;
 		_n = other._n;
-		_valid = other._valid;
+		_resultCode = other._resultCode;
 		other._L = nullptr;
 		return *this;
 	}
 
 	LuaResults::~LuaResults() {
 		// For consistency with lua_pcall returning 0 when everything is okay
-		if (_L && !_valid) {
-			lua_pop(_L, _n);
+		if (_L) {
+			if (_resultCode == LUA_OK) {
+				lua_pop(_L, _n);
+			}
+			else {
+				// If an error occured during lua_pcall, there is an error object at the top 
+				// of the stack. Pop it now.
+				lua_pop(_L, 1);
+			}
 		}
 	}
 
 	LuaResults::operator bool() const {
-		return _valid;
+		return _resultCode;
 	}
 
 	namespace metatables
