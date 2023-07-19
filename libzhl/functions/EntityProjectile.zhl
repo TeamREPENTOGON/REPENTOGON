@@ -7,3 +7,6 @@ __thiscall bool Entity_Projectile::HandleCollision(Entity* collider, bool low);
 struct Entity_Projectile : public Entity {
 
 };
+
+"6A0068(????????)68????????6A00506A00578D85D0FEFFFF508D85F0FEFFFF":
+reference void* EntityProjectileRTTI;

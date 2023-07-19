@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "SigScan.h"
 #include "LuaCore.h"
+#include "LuaEntityNPC.h"
 
 
 extern std::bitset<500> CallbackState;
@@ -173,4 +174,5 @@ static void PerformASMPatches() {
 	ASMPatchAmbushWaveCount();
 	ASMPatchMegaSatanEnding();
 	ASMPatchConsoleRunCommand();
+	PatchFireProjectiles();
 }

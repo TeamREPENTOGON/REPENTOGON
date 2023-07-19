@@ -17,6 +17,9 @@ __thiscall bool Entity_NPC::TryForceTarget(Entity* Target, int Duration);
 "558bec6aff68????????64a1????????5081ec60010000":
 __thiscall bool Entity_NPC::HandleCollision(Entity* collider, bool low);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????894d??33f6":
+__thiscall void Entity_NPC::FireProjectiles(Vector* position, Vector* velocity, uint32_t mode, ProjectileParams* params);
+
 struct Entity_NPC : public Entity {
 {{
 	inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xBFC); }
