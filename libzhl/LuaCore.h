@@ -3,6 +3,8 @@
 #include "lua.hpp"
 #include "libzhl.h"
 
+#include <string>
+
 struct lua_State;
 
 namespace lua {

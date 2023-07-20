@@ -138,6 +138,7 @@ nav:
   - PlayerHUD: PlayerHUD.md
   - PlayerManager: PlayerManager.md
   - PocketItem: PocketItem.md
+  - ProjectileParams: ProjectileParams.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
