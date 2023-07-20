@@ -127,6 +127,7 @@ ModCallbacks.MC_PRE_NEW_ROOM = 1200
 ModCallbacks.MC_PRE_MEGA_SATAN_ENDING = 1201
 ModCallbacks.MC_POST_MODS_LOADED = 1210
 ModCallbacks.MC_POST_ITEM_OVERLAY_SHOW = 1134
+ModCallbacks.MC_PRE_RENDER = 1135
 
 EntityPartition.ALL = 0xffffffff
 

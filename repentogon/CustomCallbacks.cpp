@@ -2584,3 +2584,20 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 			.call(1);
 	}
 }
+
+// PRE_RENDER
+HOOK_METHOD(Manager, Render, () -> void) {
+	int callbackid = 1135;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.call(1);
+	}
+
+	super();
+}
