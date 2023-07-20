@@ -1,0 +1,18 @@
+struct ProjectileParams {
+    bool GridCollision; // 0x0
+    char pad0[3]; // 0x1
+    float HeightModifier, FallingSpeedModifier, FallingAccelModifier, VelocityMulti, Scale, CircleAngle, HomingStrength, CurvingStrength, Acceleration, Spread; // 0x4
+    ColorMod Color; // 0x2C
+    uint64_t BulletFlags; // 0x58
+    Vector PositionOffset, TargetPosition, FireDirectionLimit; // 0x60
+    float DotProductLimit; // 0x78
+    int32_t WiggleFrameOffset; // 0x7C
+    uint64_t ChangeFlags; // 0x80
+    float ChangeVelocity; // 0x88
+    uint32_t ChangeTimeout; // 0x8C
+    float DepthOffset; // 0x90
+    uint32_t Variant; // 0x94
+    char unk[4]; // 0x98
+    float Damage; // 0x9C
+    char unk2[8]; // 0xA0
+}; // 0xA8
