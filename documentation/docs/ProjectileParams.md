@@ -12,4 +12,7 @@ search:
 #### float Damage {: .copyable aria-label='Variables'}
 
 Number of half hearts of damage dealt by the projectile. Cannot be set to a negative value.
+
+???+ warning "Warning"
+    Enemies with a [ChampionColorIdx](https://wofsauge.github.io/IsaacDocs/rep/enums/ChampionColor.html) above -1 will cap the damage at 2.0!
 ___
