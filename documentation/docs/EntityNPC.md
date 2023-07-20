@@ -19,6 +19,11 @@ ___
 Same as [FireProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
+### Fire·Boss·Projectiles·Ex() {: aria-label='Functions' }
+#### table FireBossProjectilesEx (int numProjectiles, [Vector](https://moddingofisaac.com/docs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://moddingofisaac.com/docs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
+Same as [FireBossProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
+
+___
 ### Get·Controller·Id() {: aria-label='Functions' }
 #### int GetControllerId ( ) {: .copyable aria-label='Functions' }
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return -1 when its not being controlled by any player.

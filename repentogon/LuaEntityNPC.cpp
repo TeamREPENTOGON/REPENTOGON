@@ -63,18 +63,14 @@ LUA_FUNCTION(Lua_NPCTryForceTarget) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* velocity = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	uint32_t mode = luaL_checkinteger(L, 4);
-	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
-
+static std::vector<Entity_Projectile*>& InitProjectileStorage() {
 	std::vector<Entity_Projectile*>& projectiles = projectilesStorage.projectiles;
 	projectiles.clear();
 	projectilesStorage.inUse = true;
-	npc->FireProjectiles(position, velocity, mode, params);
-	
+	return projectiles;
+}
+
+static void ProjectileStorageToLua(lua_State* L, std::vector<Entity_Projectile*>& projectiles) {
 	lua_newtable(L);
 	for (int i = 0; i < projectiles.size(); ++i) {
 		lua_pushinteger(L, i + 1);
@@ -84,6 +80,42 @@ LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
 
 	projectilesStorage.projectiles.clear();
 	projectilesStorage.inUse = false;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* velocity = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	uint32_t mode = luaL_checkinteger(L, 4);
+
+	if (mode > 9) {
+		return luaL_error(L, "Invalid projectile mode %u\n", mode);
+	}
+
+	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+
+	std::vector<Entity_Projectile*>& projectiles = InitProjectileStorage();
+	npc->FireProjectiles(position, velocity, mode, params);
+	ProjectileStorageToLua(L, projectiles);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	int numProjectiles = luaL_checkinteger(L, 2);
+
+	if (numProjectiles <= 0) {
+		return luaL_error(L, "Invalid amount of projectiles %d\n", numProjectiles);
+	}
+
+	Vector* targetPos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	float trajectoryModifier = luaL_checknumber(L, 4);
+	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
+
+	std::vector<Entity_Projectile*>& projectiles = InitProjectileStorage();
+	npc->FireBossProjectiles(numProjectiles, *targetPos, trajectoryModifier, *params);
+	ProjectileStorageToLua(L, projectiles);
 
 	return 1;
 }
@@ -99,6 +131,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetControllerId", Lua_NPCSetControllerId);
 	lua::RegisterFunction(state, mt, "TryForceTarget", Lua_NPCTryForceTarget);
 	lua::RegisterFunction(state, mt, "FireProjectilesEx", Lua_EntityNPC_FireProjectilesEx);
+	lua::RegisterFunction(state, mt, "FireBossProjectilesEx", Lua_EntityNPC_FireBossProjectilesEx);
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
@@ -111,15 +144,19 @@ void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const&
 	}
 }
 
+void __stdcall FireBossProjectilesEx_Internal(Entity_Projectile* projectile) {
+	if (!projectilesStorage.inUse) {
+		return;
+	}
+
+	projectilesStorage.projectiles.push_back(projectile);
+}
+
 void PatchFireProjectiles() {
 	const char* signature = "33c92b55b4c1fa02894ddc8955e4";
 	SigScan scanner(signature);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-
-	FILE* f = fopen("repentogon.log", "a");
-	fprintf(f, "Patching FireProjectiles at %p\n", addr);
-	fclose(f);
 
 	using Reg = ASMPatch::SavedRegisters::Registers;
 	using GPReg = ASMPatch::Registers;
@@ -135,6 +172,27 @@ void PatchFireProjectiles() {
 	patch.RestoreRegisters(registers);
 	patch.AddBytes("\x33\xc9\x2b\x55\xb4");
 	patch.AddRelativeJump((char*)addr + 0x5);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void PatchFireBossProjectiles() {
+	const char* signature = "f30f104424388bf883c414";
+	SigScan scanner(signature);
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	using Reg = ASMPatch::SavedRegisters::Registers;
+	using GPReg = ASMPatch::Registers;
+
+	ASMPatch patch;
+	ASMPatch::SavedRegisters registers(Reg::GP_REGISTERS_STACKLESS | Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3, true);
+	patch.PreserveRegisters(registers);
+	patch.Push(GPReg::EAX);
+	patch.AddInternalCall(FireBossProjectilesEx_Internal);
+	patch.RestoreRegisters(registers);
+	patch.AddBytes("\xF3\x0f\x10\x44\x24\x38");
+	patch.AddRelativeJump((char*)addr + 0x6);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }

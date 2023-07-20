@@ -175,4 +175,5 @@ static void PerformASMPatches() {
 	ASMPatchMegaSatanEnding();
 	ASMPatchConsoleRunCommand();
 	PatchFireProjectiles();
+	PatchFireBossProjectiles();
 }
