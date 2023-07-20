@@ -20,7 +20,7 @@ Same as [FireProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#fir
 
 ___
 ### Fire·Boss·Projectiles·Ex() {: aria-label='Functions' }
-#### table FireBossProjectilesEx (int numProjectiles, [Vector](https://moddingofisaac.com/docs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://moddingofisaac.com/docs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
+#### table FireBossProjectilesEx ( int numProjectiles, [Vector](https://moddingofisaac.com/docs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://moddingofisaac.com/docs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
 Same as [FireBossProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
