@@ -1,0 +1,6 @@
+struct ItemConfigPill {
+    char unk[0x8]; // 0x0
+    std_string name; // 0x8
+    char unk2[0x2C]; // 0x20
+    uint8_t effectClass, effectSubClass; // 0x4c
+};
