@@ -14,6 +14,10 @@ ___
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Name () {: aria-label='Functions' }
+#### string GetName ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Rotation () {: aria-label='Functions' }
 #### float GetRotation ( ) {: .copyable aria-label='Functions' }
 

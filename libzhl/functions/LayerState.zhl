@@ -1,4 +1,5 @@
 struct LayerState { {{
+	inline std_string GetName() {return *(std_string*)(*(char**)this + 0x8); }
 	inline std_string GetSpritesheetPath() {return *(std_string*)((char*)this + 0x8); }
 	inline Vector* GetSize() {return (Vector*)((char*)this + 0x34); }
 	inline float* GetRotation() {return (float*)((char*)this + 0x3c); }
