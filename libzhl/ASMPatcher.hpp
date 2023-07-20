@@ -185,6 +185,8 @@ public:
 			EDI = 1 << 5,
 			ESP = 1 << 6,
 			EBP = 1 << 7,
+			GP_REGISTERS_STACKLESS = EAX | EBX | ECX | EDX | ESI | EDI,
+			GP_REGISTERS = GP_REGISTERS_STACKLESS | ESP | EBP,
 			XMM0 = 1 << 8,
 			XMM1 = 1 << 9,
 			XMM2 = 1 << 10,
