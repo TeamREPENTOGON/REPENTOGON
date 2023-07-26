@@ -275,7 +275,9 @@ struct ConsoleMega {
                     float blue = (float)((colorMap & 0xFF) + g_colorDouble) / 255.f;
 
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(red, green, blue, 1));
-                    ImGui::TextWrapped(entry->_text.c_str());
+                    ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);
+                    ImGui::TextUnformatted(entry->_text.c_str()); // needs to be TextUnformatted to prevent unintentional formatting
+                    ImGui::PopTextWrapPos();
                     ImGui::PopStyleColor();
                 }
                 if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
