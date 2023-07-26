@@ -3,6 +3,7 @@
 #include "CustomImGui.h"
 #include "HelpMenu.h"
 #include "HookSystem.h"
+#include "PerformanceWindow.h"
 #include "IsaacRepentance.h"
 #include "LogViewer.h"
 #include "SigScan.h"
@@ -31,6 +32,7 @@ static bool show_app_style_editor = false;
 
 HelpMenu helpMenu;
 LogViewer logViewer;
+PerformanceWindow performanceWindow;
 ConsoleMega console;
 CustomImGui customImGui;
 
@@ -269,6 +271,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
             if (ImGui::BeginMenu("Tools")) {
                 ImGui::MenuItem("Debug Console", NULL, &console.enabled);
                 ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled);
+                ImGui::MenuItem("Performance", NULL, &performanceWindow.enabled);
                 ImGui::MenuItem("Style Editor", NULL, &show_app_style_editor);
                 ImGui::EndMenu();
             }
@@ -281,6 +284,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
     console.Draw(menuShown);
     logViewer.Draw(menuShown);
+    performanceWindow.Draw(menuShown);
 
     customImGui.DrawWindows(menuShown);
 
