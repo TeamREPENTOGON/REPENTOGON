@@ -3,7 +3,7 @@
 #include <cstring>
 
 #include "IsaacRepentance.h"
-#include "LogViewer.h"
+#include "ImGuiFeatures/LogViewer.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "LuaWeapon.h"

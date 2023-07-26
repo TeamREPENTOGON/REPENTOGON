@@ -113,7 +113,7 @@ target_include_directories(imgui PUBLIC "${CMAKE_SOURCE_DIR}/libs/freetype/inclu
 target_compile_options(imgui PUBLIC "/MD")
 target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE)
 
-FILE(GLOB REPENTOGON_SRC ${CMAKE_SOURCE_DIR}/repentogon/*.cpp)
+FILE(GLOB_RECURSE REPENTOGON_SRC ${CMAKE_SOURCE_DIR}/repentogon/*.cpp)
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC})
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/wd4251" "/wd4996")
 

@@ -8,7 +8,7 @@
 #include <lua.hpp>
 #include "LuaCore.h"
 
-#include "LogViewer.h"
+#include "ImGuiFeatures/LogViewer.h"
 
 extern LogViewer logViewer;
 
