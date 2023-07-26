@@ -17,7 +17,7 @@ Now returns a proper `MultiShotParams` object.
 
 ___
 ### Get·Multi·Shot·Position·Velocity () {: aria-label='Modified Functions' }
-#### [PosVel](https://wofsauge.github.io/IsaacDocs/rep/PosVel.html) GetMultiShotPositionVelocity ( int LoopIndex, [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotDirection, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotSpeed, [MultiShotParams](MultiShotParams.md) Params ) {: .copyable aria-label='Modified Functions' }
+#### [PosVel](https://wofsauge.github.io/IsaacDocs/rep/PosVel.html) GetMultiShotPositionVelocity ( int LoopIndex, [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotDirection, float ShotSpeed, [MultiShotParams](MultiShotParams.md) Params ) {: .copyable aria-label='Modified Functions' }
 This magically vanished from the API some time after 1.7.8.
 
 Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than [MultiShotParams:GetNumTears()](MultiShotParams.md#getnumtears).
@@ -175,6 +175,15 @@ ___
 #### int GetPonyCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Purity·State () {: aria-label='Functions' }
+#### int GetPurityState ( ) {: .copyable aria-label='Functions' }
+Returns the state in which the "Purity" item effect currently is. 
+
+- 0: Red (Default value if no Purity item owned)
+- 1: Blue
+- 2: Yellow
+- 3: Orange
+___
 ### Get·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
 #### int GetRedStewBonusDuration ( ) {: .copyable aria-label='Functions' }
 
@@ -286,6 +295,15 @@ ___
 ### Set·Pony·Charge () {: aria-label='Functions' }
 #### void SetPonyCharge ( int Time ) {: .copyable aria-label='Functions' }
 
+___
+### Set·Purity·State () {: aria-label='Functions' }
+#### void SetPurityState ( int state ) {: .copyable aria-label='Functions' }
+Set the state in which the "Purity" item effect currently is. 
+
+- 0: Red
+- 1: Blue
+- 2: Yellow
+- 3: Orange
 ___
 ### Set·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
 #### void SetRedStewBonusDuration ( int Duration ) {: .copyable aria-label='Functions' }
