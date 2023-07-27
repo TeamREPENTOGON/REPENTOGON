@@ -34,7 +34,7 @@ __thiscall void Entity::AddIce(const EntityRef& ref, int duration);
 __thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
 
 "558bec83e4f883ec14568bf1837e??00":
-__thiscall Vector* Entity::GetNullOffset(const char* nullLayerName);
+__thiscall Vector Entity::GetNullOffset(const char* nullLayerName);
 
 "558bec83e4f883ec24568bf1837e7000":
 __thiscall Capsule Entity::GetNullCapsule(const char* nullLayerName);
