@@ -46,6 +46,10 @@ ___
 #### [Shape](Shape.md) GetDebugShape ( boolean unknown ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Hit·List·Index () {: aria-label='Functions' }
+#### int GetHitListIndex ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Minecart () {: aria-label='Functions' }
 #### [EntityNPC](EntityNPC.md) GetMinecart ( ) {: .copyable aria-label='Functions' }
 Returns the minecart the entity is riding.
