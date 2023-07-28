@@ -356,6 +356,14 @@ namespace lua {
 
     LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default);
 
+    template<typename T, typename... Args>
+    T* place(lua_State* L, const char* mt, Args&&... args) {
+        void* data = lua_newuserdata(L, sizeof(T));
+        luaL_setmetatable(L, mt);
+        new (data) T(std::forward<Args>(args)...);
+        return (T*)data;
+    }
+
     namespace callbacks {
         LIBZHL_API int ToInteger(lua_State* L, int stackPosition);
         LIBZHL_API double ToNumber(lua_State* L, int stackPosition);

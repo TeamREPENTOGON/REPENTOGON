@@ -694,6 +694,48 @@ ASMPatch& ASMPatch::Push(ASMPatch::Registers reg) {
 	return AddBytes(ASMPatch::SavedRegisters::_RegisterPushMap[mask]);
 }
 
+ASMPatch& ASMPatch::Push(int8_t imm8) {
+	ByteBuffer buffer;
+	buffer.AddString("\x6A");
+	buffer.AddByteBuffer(ASMPatch::ToHexString(imm8));
+	return AddBytes(buffer);
+}
+
+ASMPatch& ASMPatch::Push(int32_t imm32) {
+	ByteBuffer buffer;
+	buffer.AddString("\x68");
+	buffer.AddByteBuffer(ASMPatch::ToHexString(imm32, true));
+	return AddBytes(buffer);
+}
+
+ASMPatch& ASMPatch::Push(ASMPatch::Registers reg, int32_t imm32) {
+	ByteBuffer buffer, immBuffer;
+	buffer.AddString("\xFF");
+	std::bitset<8> modrm;
+
+	// ModRM displacement 
+	if (imm32 < -127 || imm32 > 127) {
+		immBuffer = ASMPatch::ToHexString(imm32, true);
+		modrm[7] = true;
+	}
+	else {
+		immBuffer = ASMPatch::ToHexString((int8_t)imm32);
+		modrm[7] = false;
+	}
+
+	modrm[6] = !modrm[7];
+	
+	// ModRM Push specific identifier
+	modrm[5] = modrm[4] = true;
+	modrm[3] = false;
+
+	// ModRM register
+	modrm |= _ModRM[reg];
+
+	buffer.AddByteBuffer(ToHexString((int8_t)modrm.to_ulong())).AddByteBuffer(immBuffer);
+	return AddBytes(buffer);
+}
+
 ASMPatch& ASMPatch::Pop(ASMPatch::Registers reg) {
 	uint32_t mask = RegisterToBackupRegister(reg);
 	return AddBytes(ASMPatch::SavedRegisters::_RegisterPopMap[mask]);

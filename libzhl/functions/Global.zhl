@@ -1255,6 +1255,30 @@ enum RailType : uint8_t {
     RAIL_NONE = 255
 };
 
+enum ShaderType : uint8_t {
+    SHADER_COLOR_OFFSET,
+    SHADER_PIXELATION,
+    SHADER_BLOOM,
+    SHADER_COLOR_CORRECTION,
+    SHADER_HQ4X,
+    SHADER_SHOCKWAVE,
+    SHADER_OLDTV,
+    SHADER_WATER,
+    SHADER_HALLUCINATION,
+    SHADER_COLOR_MOD,
+    SHADER_COLOR_OFFSET_CHAMPION,
+    SHADER_WATER_V2,
+    SHADER_BACKGROUND,
+    SHADER_WATER_OVERLAY,
+    SHADER_UNK,
+    SHADER_COLOR_OFFSET_DOGMA,
+    SHADER_COLOR_OFFSET_GOLD,
+    SHADER_DIZZY,
+    SHADER_HEAT_WAVE,
+    SHADER_MIRROR,
+    SHADER_MAX
+};
+
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
 	static void* wglSwapBuffersAddr = GetProcAddress(GetModuleHandle("opengl32.dll"), "wglSwapBuffers");
 }}

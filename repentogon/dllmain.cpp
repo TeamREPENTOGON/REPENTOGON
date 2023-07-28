@@ -8,7 +8,10 @@
 #include <stdio.h>
 #include "lua.hpp"
 
+#include <glad/glad.h>
+
 #include "ASMPatches.h"
+#include "LuaRender.h"
 
 /********************************************************************************
 HOOKING
@@ -164,6 +167,7 @@ static char titlebar[128];
 MOD_EXPORT int ModInit(int argc, char **argv)
 {
 	PerformASMPatches();
+	LuaRender::InitShaders();
 	Definition::Init();
 	ZHL::Init();
 	printf(":REPENTOGON:\n");

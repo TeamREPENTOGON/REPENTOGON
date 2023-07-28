@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IsaacRepentance.h"
+
 namespace LuaRender {
 	struct LuaImage {
 		ReferenceCounter_ImageBase image;
@@ -31,4 +33,24 @@ namespace LuaRender {
 	constexpr static const char* SourceQuadMT = "SourceQuad";
 	constexpr static const char* DestinationQuadMT = "DestinationQuad";
 	constexpr static const char* QuadMT = "Quad";
+
+	constexpr static const char* VertexBufferMT = "VertexBuffer";
+	constexpr static const char* ElementsArrayMT = "ElementsArray";
+	constexpr static const char* ShaderMT = "Shader";
+	constexpr static const char* GLFloatMT = "GLFloat";
+	constexpr static const char* GLVec2MT = "GLVec2";
+	constexpr static const char* GLVec3MT = "GLVec3";
+	constexpr static const char* GLVec4MT = "GLVec4";
+	// constexpr static const char* GLVec2PtrMT = "GLVec2Ptr";
+	// constexpr static const char* GLVec3PtrMT = "GLVec3Ptr";
+	// constexpr static const char* GLVec4PtrMT = "GLVec4Ptr";
+	constexpr static const char* GLMat2MT = "GLMat2";
+	constexpr static const char* GLMat3MT = "GLMat3";
+	constexpr static const char* GLMat4MT = "GLMat4";
+	constexpr static const char* VertexDescriptorMT = "VertexDescriptor";
+	constexpr static const char* VertexMT = "Vertex";
+	constexpr static const char* PipelineMT = "Pipeline";
+
+	void PatchglDrawElements();
+	void InitShaders();
 }

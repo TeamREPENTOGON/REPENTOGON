@@ -154,6 +154,7 @@ nav:
 - XML:
   - players.xml: xml/players.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
+- Custom Rendering: CustomRendering.md
 plugins:
 - search:
     separator: "[\\s\\-\\.\\_\\\xB7]+"

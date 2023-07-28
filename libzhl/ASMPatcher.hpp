@@ -258,6 +258,10 @@ public:
 	ASMPatch& PreserveRegisters(SavedRegisters& registers);
 	ASMPatch& RestoreRegisters(SavedRegisters& registers);
 	ASMPatch& Push(Registers reg);
+	ASMPatch& Push(int8_t imm8);
+	ASMPatch& Push(int32_t imm32);
+	// Push [reg - imm32].
+	ASMPatch& Push(Registers ref, int32_t imm32);
 	ASMPatch& Pop(Registers reg);
 	/* Add a call instruction. The jump is relative and uses the 0xE8 opcode for the 
 	 * call instruction. Registers are not preserved: you must take care of that yourself.
@@ -343,6 +347,8 @@ private:
 
 	// friend void* ASMPatcher::PatchAt(void*, const char*);
 
+	std::bitset<8> ModRM(Registers reg, int32_t value);
+	std::bitset<8> ModRM(Registers src, Registers dst);
 	std::vector<std::unique_ptr<ASMNode>> _nodes;
 	static std::map<ASMPatch::Registers, std::bitset<8>> _ModRM;
 	static uint32_t RegisterToBackupRegister(Registers reg);
