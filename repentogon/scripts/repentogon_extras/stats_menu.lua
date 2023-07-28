@@ -13,7 +13,23 @@ local StatsMenu = {
         {
             "GAME STATS", {
             { "deaths",    EventCounter.DEATHS },
-            { "items",     function() return "TODO" end },
+            { "items", function()
+                local gameData = Isaac.GetPersistentGameData()
+                local itemconfig = Isaac.GetItemConfig()
+                local sum = 0
+                local unlocked = 0
+                for id = 1, CollectibleType.NUM_COLLECTIBLES - 1 do
+                    local configEntry = itemconfig:GetCollectible(id)
+                    if configEntry and not configEntry.Hidden then
+                        sum = sum + 1
+                        if gameData:IsItemInCollection(id) then
+                            unlocked = unlocked + 1
+                        end
+                    end
+                end
+
+                return unlocked .. "/" .. sum
+            end },
             { "mom kills", EventCounter.MOM_KILLS },
             { "secrets", function()
                 local gameData = Isaac.GetPersistentGameData()
