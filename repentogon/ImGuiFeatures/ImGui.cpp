@@ -3,6 +3,7 @@
 #include "CustomImGui.h"
 #include "HelpMenu.h"
 #include "HookSystem.h"
+#include "PerformanceWindow.h"
 #include "IsaacRepentance.h"
 #include "LogViewer.h"
 #include "SigScan.h"
@@ -31,6 +32,7 @@ static bool show_app_style_editor = false;
 
 HelpMenu helpMenu;
 LogViewer logViewer;
+PerformanceWindow performanceWindow;
 ConsoleMega console;
 CustomImGui customImGui;
 
@@ -167,10 +169,47 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
     }
 
     if (!menuShown && *g_Game->GetConsole()->GetState() != 0) {
+        std::vector keys = pressedKeys;
+        for (WPARAM key : keys) {
+            ImGui_ImplWin32_WndProcHandler(hWnd, WM_KEYUP, key, lParam);
+            pressedKeys.pop_back();
+        }
+
+        if (leftMouseClicked) {
+            leftMouseClicked = false;
+            ImGui_ImplWin32_WndProcHandler(hWnd, WM_LBUTTONUP, 0, lParam);
+        }
+
         *g_Game->GetConsole()->GetState() = 0;
     }
 
+
+    // Track what keys are being pressed so we can release them the next time ImGui state changes
+    switch (uMsg) {
+        case WM_KEYDOWN: {
+            // When a key is pushed down, it can trigger multiple WM_KEYDOWN events in a row.
+            // Ensure we're not entering duplicates.
+            std::vector<WPARAM>::iterator it = find(pressedKeys.begin(), pressedKeys.end(), wParam);
+            if (it == pressedKeys.end()) {
+                pressedKeys.push_back(wParam);
+            }
+
+            break;
+        }
+        case WM_LBUTTONDOWN: {
+            leftMouseClicked = true;
+            break;
+
+        }
+        case WM_KEYUP: {
+            pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), wParam), pressedKeys.end());
+
+            break;
+        }
+    }
+
     // If the overlay is shown, direct input to the overlay only
+    // Otherwise call the game's WndProc function
     if (menuShown) {
         // Call the game's WndProc on WM_PAINT to avoid apparent hangs when focus lost
         if (uMsg == WM_PAINT) {
@@ -179,35 +218,9 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
         return true;
     }
-    else {
-        // Otherwise call the game's wndProc function
-        // Track what keys are being pressed so we can release them the next time ImGui is brought up
-        switch (uMsg) {
-            case WM_KEYDOWN: {
-                if (!menuShown) {
-                    // When a key is pushed down, it can trigger multiple WM_KEYDOWN events in a row.
-                    // Ensure we're not entering duplicates.
-                    std::vector<WPARAM>::iterator it = find(pressedKeys.begin(), pressedKeys.end(), wParam);
-                    if (it == pressedKeys.end()) {
-                        pressedKeys.push_back(wParam);
-                    }
-                }
 
-                break;
-            }
-            case WM_LBUTTONDOWN: {
-                leftMouseClicked = true;
-                break;
-
-            }
-            case WM_KEYUP: {
-                pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), wParam), pressedKeys.end());
-
-                break;
-            }
-        }
-    }
-
+   
+    
     return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 }
 
@@ -269,6 +282,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
             if (ImGui::BeginMenu("Tools")) {
                 ImGui::MenuItem("Debug Console", NULL, &console.enabled);
                 ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled);
+                ImGui::MenuItem("Performance", NULL, &performanceWindow.enabled);
                 ImGui::MenuItem("Style Editor", NULL, &show_app_style_editor);
                 ImGui::EndMenu();
             }
@@ -281,6 +295,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
     console.Draw(menuShown);
     logViewer.Draw(menuShown);
+    performanceWindow.Draw(menuShown);
 
     customImGui.DrawWindows(menuShown);
 

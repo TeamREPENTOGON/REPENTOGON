@@ -2246,6 +2246,8 @@ XMLNode = {
 	BOSSPOOL = 21,
 	BOSSPORTRAIT = 22,
 	CUTSCENE = 23,
+	STAGE = 24,
+	BACKDROP = 25,
 }
 
 AutocompleteType = {

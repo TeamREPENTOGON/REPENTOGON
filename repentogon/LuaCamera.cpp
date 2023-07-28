@@ -3,7 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "LogViewer.h"
+#include "ImGuiFeatures/LogViewer.h"
 
 static constexpr const char* CameraMT = "Camera";
 

@@ -122,6 +122,7 @@ nav:
   - HUD: HUD.md
   - ImGui: ImGui.md
   - Isaac: Isaac.md
+  - ItemConfig - PillEffect: ItemConfig_PillEffect.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
   - LayerState: LayerState.md

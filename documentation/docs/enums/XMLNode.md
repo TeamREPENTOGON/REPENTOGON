@@ -30,3 +30,4 @@ tags:
 |22 |BOSSPORTRAIT {: .copyable } |  |
 |23 |CUTSCENE {: .copyable } |  |
 |24 |STAGE {: .copyable } |  |
+|25 |BACKDROP {: .copyable } |  |

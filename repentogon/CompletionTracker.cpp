@@ -17,7 +17,7 @@
 #include "XMLData.h"
 #include "CompletionTracker.h"
 
-#include "LogViewer.h"
+#include "ImGuiFeatures/LogViewer.h"
 
 using namespace std;
 

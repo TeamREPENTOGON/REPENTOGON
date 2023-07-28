@@ -29,6 +29,10 @@ ___
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return -1 when its not being controlled by any player.
 
 ___
+### Get·Hit·List() {: aria-label='Functions' }
+#### table GetHitList ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Controller·Id() {: aria-label='Functions' }
 #### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
 Sets the ControllerId for the NPC, which indicates which player will control it. Set it to -1 for no player controls(back to normal behaviour).

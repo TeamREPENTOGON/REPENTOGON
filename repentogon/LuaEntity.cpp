@@ -192,6 +192,12 @@ static int lua_EntityGetMinecart(lua_State* L) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityGetHitListIndex) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, entity->GetHitListIndex());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -217,4 +223,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetInvincible", Lua_EntitySetInvincible);
 	lua::RegisterFunction(state, mt, "GiveMinecart", lua_EntityGiveMinecart);
 	lua::RegisterFunction(state, mt, "GetMinecart", lua_EntityGetMinecart);
+	lua::RegisterFunction(state, mt, "GetHitListIndex", Lua_EntityGetHitListIndex);
 }

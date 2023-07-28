@@ -26,7 +26,7 @@ nav[aria-label='Functions'] {
     border-left-color: var(--function-color) !important;
 }
 
-nav[aria-label='Modified Functions'] {
+nav[aria-label='Modified Functions'], nav[aria-label='Modified Variables'] {
     border-left-color: var(--mod-function-color) !important;
 }
 
@@ -79,7 +79,7 @@ h3[aria-label$='Functions'] {
     background-color: var(--function-color);
 }
 
-h3[aria-label$='Modified Functions'] {
+h3[aria-label$='Modified Functions'], h3[aria-label$='Modified Variables'] {
     background-color: var(--mod-function-color);
 }
 
@@ -101,6 +101,7 @@ h3[aria-label$='Constants'] {
 
 h4[aria-label$='Functions'],
 h4[aria-label$='Modified Functions'],
+h4[aria-label$='Modified Variables'],
 h4[aria-label$='Variables'],
 h4[aria-label$='Operators'],
 h4[aria-label$='Constants'],
@@ -117,7 +118,7 @@ h4[aria-label$='Functions'] {
     background-color: var(--function-color-light);
 }
 
-h4[aria-label$='Modified Functions'] {
+h4[aria-label$='Modified Functions'], h4[aria-label$='Modified Variables'] {
     background-color: var(--mod-function-color-light);
 }
 
@@ -600,7 +601,7 @@ td>.copyButton>span::after {
     background-color: var(--function-overview-bg-color);
 }
 
-.contentTable tr[aria-label$='Modified Functions'] {
+.contentTable tr[aria-label$='Modified Functions'], .contentTable tr[aria-label$='Modified Variables'] {
     background-color: var(--mod-function-overview-bg-color);
 }
 

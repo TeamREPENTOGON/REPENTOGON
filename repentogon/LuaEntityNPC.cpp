@@ -120,6 +120,22 @@ LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_NPCGetHitList) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	std::vector<unsigned int> hitList = npc->GetHitList();
+
+	lua_newtable(L);
+	int idx = 1;
+	for (int index : hitList) {
+		lua_pushnumber(L, idx);
+		lua_pushinteger(L, index);
+		lua_settable(L, -3);
+		idx++;
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -132,6 +148,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "TryForceTarget", Lua_NPCTryForceTarget);
 	lua::RegisterFunction(state, mt, "FireProjectilesEx", Lua_EntityNPC_FireProjectilesEx);
 	lua::RegisterFunction(state, mt, "FireBossProjectilesEx", Lua_EntityNPC_FireBossProjectilesEx);
+	lua::RegisterFunction(state, mt, "GetHitList", Lua_NPCGetHitList);
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {

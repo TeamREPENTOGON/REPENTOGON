@@ -188,6 +188,10 @@ __thiscall void Entity_Player::AddGigaBombs(int amount);
 "558bec83ec68a1????????33c58945??a1":
 __thiscall void Entity_Player::ShuffleCostumes(int seed);
 
+"558bec83ec2ca1????????33c58945??538b5d":
+__thiscall void Entity_Player::RemoveCollectible(unsigned int CollectibleType, bool IgnoreModifiers, unsigned int ActiveSlot, bool RemoveFromPlayerForm);
+
+
 struct Entity_Player : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
@@ -217,6 +221,7 @@ struct Entity_Player : public Entity { {{
 	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
 	inline int* GetPeeBurstCooldown() { return (int*)((char*)this + 0x1818); }
 	inline int* GetMaxPeeBurstCooldown() { return (int*)((char*)this + 0x181c); }
+	inline int* GetPurityState() { return (int*)((char*)this + 0x184c); }
 	inline float* GetD8DamageModifier() { return (float*)((char*)this + 0x185C); }
 	inline float* GetD8SpeedModifier() { return (float*)((char*)this + 0x1860); }
 	inline float* GetD8RangeModifier() { return (float*)((char*)this + 0x1864); }
