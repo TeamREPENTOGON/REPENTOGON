@@ -57,6 +57,15 @@ inline string stringlower(char* str)
 	return s;
 }
 
+inline string stringlower(const char* str)
+{
+	string s = string(str);
+	for (auto& c : s) {
+		c = tolower(c);
+	}
+	return s;
+}
+
 
 class XMLNodeTable {
 public:

@@ -9,6 +9,8 @@
 #include <cctype>
 #include <memory>
 
+#include <cstring>
+
 #include "XMLData.h"
 
 #include "SigScan.h"
@@ -26,6 +28,9 @@
 
 using namespace rapidxml;
 using namespace std;
+
+char* bosspoolsxml; //caching this ffs
+bool xmlsloaded = false;
 
 char* lastmodid = "BaseGame";
 bool iscontent = false;
@@ -74,12 +79,12 @@ void mclear(xml_document<char>* x) {
 }
 //lazy mem clears to prevent leaks
 
-void CharToChar(char* dest, char* source) {
+void CharToChar(char** dest, char* source) {
 	size_t sourceSize = strlen(source) + 1;
 	char* destination = new char[sourceSize];
 	strcpy(destination, source);
-	mclear(dest);
-	dest = destination;
+	mclear(*dest);
+	*dest = destination;
 }
 
 int toint(string str) {
@@ -437,7 +442,8 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 //Stages XML Hijack
 
 
-//backdrop hijack
+//backdrop hijack (commented until we figure out backdropconfig stucture)
+/*
 int lasthackybackid = -1;
 HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 	if ((XMLStuff.BackdropData->nodes.count(bcktype) > 0) && ((bcktype == 1) || (bcktype > 60))) {
@@ -469,6 +475,7 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 			this->configurations[1].holeInWall = node["holeinwall"];
 			this->configurations[1].waterPitsMode = toint(node["waterpitsmode"]);
 			*/
+/*
 			super(1, true);
 			//}
 			lasthackybackid = bcktype;
@@ -484,10 +491,11 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 void SwapBackdrop(int source, int target) {
 	
 }
+*/
 //
 
 void ProcessXmlNode(xml_node<char>* node) {
-	if (!node || no) { return; }
+	if (!node || no || xmlsloaded) { return; }
 	if (queuedhackyxmlvalue > 0) { return; }
 	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
 	Manager* manager = g_Manager;
@@ -549,6 +557,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (entity["name"].find("#") != string::npos) {
 				entity["untranslatedname"] = entity["name"];
 				entity["name"] = string(stringTable->GetString("Entities", 0, entity["name"].substr(1, entity["name"].length()).c_str(), &unk));
+				if (entity["name"].compare("StringTable::InvalidKey") == 0) { entity["name"] = entity["untranslatedname"]; }
 			}
 			XMLStuff.EntityData->ProcessChilds(auxnode, idx);
 			XMLStuff.EntityData->nodes[idx] = entity;
@@ -586,11 +595,13 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (player["name"].find("#") != string::npos) {
 				player["untranslatedname"] = player["name"];
 				player["name"] = string(stringTable->GetString("Players", 0, player["name"].substr(1, player["name"].length()).c_str(), &unk));
+				if (player["name"].compare("StringTable::InvalidKey") == 0) { player["name"] = player["untranslatedname"]; }
 			}
 
 			if (player["birthright"].find("#") != string::npos) {
 				player["untranslatedbirthright"] = player["birthright"];
 				player["birthright"] = string(stringTable->GetString("Players", 0, player["birthright"].substr(1, player["birthright"].length()).c_str(), &unk));
+				if (player["birthright"].compare("StringTable::InvalidKey") == 0) { player["birthright"] = player["untranslatedbirthright"]; }
 			}
 
 			if (player.count("bskinparent") > 0){
@@ -639,11 +650,13 @@ void ProcessXmlNode(xml_node<char>* node) {
 				if (card["name"].find("#") != string::npos) {
 					card["untranslatedname"] = card["name"];
 					card["name"] = string(stringTable->GetString("PocketItems", 0, card["name"].substr(1, card["name"].length()).c_str(), &unk));
+					if (card["name"].compare("StringTable::InvalidKey") == 0) { card["name"] = card["untranslatedname"]; }
 				}
 
 				if (card["description"].find("#") != string::npos) {
 					card["untranslateddescription"] = card["name"];
 					card["description"] = string(stringTable->GetString("PocketItems", 0, card["description"].substr(1, card["description"].length()).c_str(), &unk));
+					if (card["description"].compare("StringTable::InvalidKey") == 0) { card["description"] = card["untranslateddescription"]; }
 				}
 				if (card.count("relativeid") > 0) { XMLStuff.CardData->byrelativeid[lastmodid + card["relativeid"]] = id; }
 				XMLStuff.CardData->ProcessChilds(auxnode, id);
@@ -678,11 +691,13 @@ void ProcessXmlNode(xml_node<char>* node) {
 				if (pill["name"].find("#") != string::npos) {
 					pill["untranslatedname"] = pill["name"];
 					pill["name"] = string(stringTable->GetString("PocketItems", 0, pill["name"].substr(1, pill["name"].length()).c_str(), &unk));
+					if (pill["name"].compare("StringTable::InvalidKey") == 0) { pill["name"] = pill["untranslatedname"]; }
 				}
 
 				if (pill["description"].find("#") != string::npos) {
 					pill["untranslateddescription"] = pill["name"];
 					pill["description"] = string(stringTable->GetString("PocketItems", 0, pill["description"].substr(1, pill["description"].length()).c_str(), &unk));
+					if (pill["description"].compare("StringTable::InvalidKey") == 0) { pill["description"] = pill["untranslateddescription"]; }
 				}
 				if (pill.count("relativeid") > 0) { XMLStuff.PillData->byrelativeid[lastmodid + pill["relativeid"]] = id; }
 				XMLStuff.PillData->ProcessChilds(auxnode, id);
@@ -743,11 +758,13 @@ void ProcessXmlNode(xml_node<char>* node) {
 					if (item["name"].find("#") != string::npos) {
 						item["untranslatedname"] = item["name"];
 						item["name"] = string(stringTable->GetString("Items", 0, item["name"].substr(1, item["name"].length()).c_str(), &unk));
+						if (item["name"].compare("StringTable::InvalidKey") == 0) { item["name"] = item["untranslatedname"]; }
 					}
 
 					if (item["description"].find("#") != string::npos) {
 						item["untranslateddescription"] = item["description"];
 						item["description"] = string(stringTable->GetString("Items", 0, item["description"].substr(1, item["description"].length()).c_str(), &unk));
+						if (item["description"].compare("StringTable::InvalidKey") == 0) { item["description"] = item["untranslateddescription"]; }
 					}
 					if (item.count("relativeid") > 0) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
@@ -801,11 +818,13 @@ void ProcessXmlNode(xml_node<char>* node) {
 					if (trinket["name"].find("#") != string::npos) {
 						trinket["untranslatedname"] = trinket["name"];
 						trinket["name"] = string(stringTable->GetString("Items", 0, trinket["name"].substr(1, trinket["name"].length()).c_str(), &unk));
+						if (trinket["name"].compare("StringTable::InvalidKey") == 0) { trinket["name"] = trinket["untranslatedname"]; }
 					}
 
 					if (trinket["description"].find("#") != string::npos) {
 						trinket["untranslateddescription"] = trinket["description"];
 						trinket["description"] = string(stringTable->GetString("Items", 0, trinket["description"].substr(1, trinket["description"].length()).c_str(), &unk));
+						if (trinket["description"].compare("StringTable::InvalidKey") == 0) { trinket["description"] = trinket["untranslateddescription"]; }
 					}
 					if (trinket.count("relativeid") > 0) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
@@ -1001,6 +1020,15 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				backdrop[stringlower(attr->name())] = attr->value();
 			}
+			if (backdrop.count("name") == 0) { 
+				backdrop["name"] = backdrop["gfx"].substr(0, backdrop["gfx"].length() - 4);
+				int pos = backdrop["name"].find("_");
+				if ((pos < 4) && (pos > 0)) {
+					backdrop["name"] = backdrop["name"].substr(pos+1, backdrop["name"].length());
+				}
+				//printf("%s \n", backdrop["name"].c_str());
+			}
+
 			backdrop["sourceid"] = lastmodid;
 			if (backdrop.count("relativeid") > 0) { XMLStuff.BackdropData->byrelativeid[lastmodid + backdrop["relativeid"]] = id; }
 			XMLStuff.BackdropData->ProcessChilds(auxnode, id);
@@ -1083,6 +1111,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (stage["name"].find("#") != string::npos) {
 				stage["untranslatedname"] = stage["name"];
 				stage["name"] = string(stringTable->GetString("Stages", 0, stage["name"].substr(1, stage["name"].length()).c_str(), &unk));
+				if (stage["name"].compare("StringTable::InvalidKey") == 0) { stage["name"] = stage["untranslatedname"]; }
 			}
 			//printf("stage: %s (%d)", stage["name"].c_str(), id);
 			XMLStuff.StageData->ProcessChilds(auxnode, id);
@@ -1380,6 +1409,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (curse["name"].find("#") != string::npos) {
 				curse["untranslatedname"] = curse["name"];
 				curse["name"] = string(stringTable->GetString("Curses", 0, curse["name"].substr(1, curse["name"].length()).c_str(), &unk));
+				if (curse["name"].compare("StringTable::InvalidKey") == 0) { curse["name"] = curse["untranslatedname"]; }
 			}
 
 			curse["sourcepath"] = currpath;
@@ -1599,6 +1629,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//XMLStuff.ModData->bosspools[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
+		xmlsloaded = true; //this is the last xml to load after the game fucking started! (on game::start)
 	}
 	else if ((strcmp(nodename, "name") == 0) && node->parent() && (strcmp(stringlower(node->parent()->name()).c_str(), "metadata") == 0)) {
 		xml_node<char>* daddy = node->parent();
@@ -1637,8 +1668,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 }
 
 HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)->xml_node<char>*) {
+	if (xmlsloaded) { return  super(name, size, casesensitive); }
 	xml_node<char>* node = super(name, size, casesensitive);
-	if (node != nullptr) {
+	if ((node != nullptr)) {
 		xml_attribute<char>* err =  node->first_attribute("xmlerror");
 		if ((currpath.length() > 0) && (err != nullptr)){
 			string error = "[XMLError] " + xmlerrors[toint(err->value())] + " in " + currpath;
@@ -1692,6 +1724,7 @@ HOOK_METHOD(Manager, LoadConfigs,()->void) {
 }
 
 HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded){ return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1699,6 +1732,7 @@ HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(ItemConfig, Load, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1706,6 +1740,7 @@ HOOK_METHOD(ItemConfig, Load, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(RoomConfig, LoadCurses, (char* xmlpath, bool ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	//printf("curse you %s \n", xmlpath);
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
@@ -1714,6 +1749,7 @@ HOOK_METHOD(RoomConfig, LoadCurses, (char* xmlpath, bool ismod)->void) {
 }
 
 HOOK_METHOD(ItemConfig, LoadWispConfig, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1721,6 +1757,7 @@ HOOK_METHOD(ItemConfig, LoadWispConfig, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(ItemConfig, LoadLocustConfig, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1728,6 +1765,7 @@ HOOK_METHOD(ItemConfig, LoadLocustConfig, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(ItemConfig, LoadBombConfigRules, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1735,6 +1773,7 @@ HOOK_METHOD(ItemConfig, LoadBombConfigRules, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(ItemConfig, LoadCraftingRecipes, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1742,6 +1781,7 @@ HOOK_METHOD(ItemConfig, LoadCraftingRecipes, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(ItemConfig, LoadMetadata, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	isitemmetadata = true;
@@ -1751,6 +1791,7 @@ HOOK_METHOD(ItemConfig, LoadMetadata, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1758,6 +1799,7 @@ HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
 }
 
 HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1765,6 +1807,7 @@ HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
 }
 
 HOOK_METHOD(Manager, LoadChallenges, (char* xmlpath, char ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1772,6 +1815,7 @@ HOOK_METHOD(Manager, LoadChallenges, (char* xmlpath, char ismod)->void) {
 }
 
 HOOK_METHOD(NightmareScene, LoadConfig, (char* xmlpath)->void) {
+	if (xmlsloaded) { return super(xmlpath); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath);
@@ -1779,6 +1823,7 @@ HOOK_METHOD(NightmareScene, LoadConfig, (char* xmlpath)->void) {
 }
 
 HOOK_METHOD(ItemConfig, LoadCostumes, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1786,6 +1831,7 @@ HOOK_METHOD(ItemConfig, LoadCostumes, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
+	if (xmlsloaded) { return super(xmlpath, mod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, mod);
 	super(xmlpath, mod);
@@ -1793,6 +1839,7 @@ HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
 }
 
 HOOK_METHOD(ItemPool, load_pools, (char* xmlpath, char ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -1800,6 +1847,7 @@ HOOK_METHOD(ItemPool, load_pools, (char* xmlpath, char ismod)->void) {
 }
 
 HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, int ismod)->void) {
+	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -2058,6 +2106,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 //Crash Prevention//
 int getLineNumber(const char* data, const char* errorOffset) {
+	if (strlen(errorOffset) <= 0) { return 0; }
 	int lineNumber = 1;
 	const char* current = data;
 	while (current < errorOffset) {
@@ -2088,6 +2137,7 @@ bool XMLParse(xml_document<char>* xmldoc, char* xml, string dir) {
 		g_Game->GetConsole()->PrintError(error);
 		KAGE::LogMessage(3, (error + "\n").c_str());
 		printf("%s \n", error.c_str());
+		//mclear(xmldoc);
 	}
 	return false;
 }
@@ -2239,6 +2289,63 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 	}
 }
 
+
+bool endsWithPools(const char* str) {
+	int lastIndex = strlen(str) - 1;
+
+	// Find the index of the last non-space character
+	while (lastIndex >= 0 && std::isspace(str[lastIndex])) {
+		lastIndex--;
+	}
+
+	// Check if the substring from the last non-space character to the end is "</pools>"
+	const char* target = "</pools>";
+	int targetLength = strlen(target);
+	int startIndex = lastIndex - targetLength + 1;
+
+	if (startIndex >= 0 && strncmp(&str[startIndex], target, targetLength) == 0) {
+		return true;
+	}
+
+	return false;
+}
+
+char* replaceChar(const char* str, const char* search, const char* replace) {
+	int searchLen = strlen(search);
+	int replaceLen = strlen(replace);
+	int strLen = strlen(str);
+	int count = 0;
+
+	const char* pos = str;
+	while ((pos = strstr(pos, search)) != nullptr) {
+		count++;
+		pos += searchLen;
+	}
+
+	int newLen = strLen + count * (replaceLen - searchLen);
+
+	char* result = new char[newLen + 1]; // +1 for the null terminator
+	char* resultPos = result;
+
+	pos = str;
+	while ((pos = strstr(pos, search)) != nullptr) {
+		int prefixLen = pos - str;
+		strncpy(resultPos, str, prefixLen);
+		resultPos += prefixLen;
+
+		strcpy(resultPos, replace);
+		resultPos += replaceLen;
+
+		pos += searchLen;
+		str = pos;
+	}
+
+	strcpy(resultPos, str);
+
+	return result;
+}
+
+int maxnodebackdrop = 60;
 char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 	if (no) {return xml;}
 	//resources
@@ -2250,9 +2357,12 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 				char* xmlaux = GetResources(xml, dir, filename);
 				if (strlen(xmlaux) > 1) {
 					xml_document<char>* xmldoc = new xml_document<char>();
-					if (XMLParse(xmldoc, xml, resourcesdir)) {
+					if ((strcmp(filename.c_str(), "bosspools.xml")==0) && endsWithPools(xml)) {
+						CharToChar(&xml, replaceChar(xml, "</pools>", "</bosspools>"));
+					}
+					if (XMLParse(xmldoc, xmlaux, resourcesdir)) {
 						//mclear(xml);
-						CharToChar(xml, xmlaux);
+						CharToChar(&xml, xmlaux);
 					}
 					mclear(xmldoc);
 				}
@@ -2312,6 +2422,24 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+							root->append_node(clonedNode);
+						}
+					}
+					else if (strcmp(filename.c_str(), "backdrops.xml") == 0) {
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+
+							XMLAttributes node;
+							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+							{
+								node[stringlower(attr->name())] = string(attr->value());
+							}
+							if (node.count("id") == 0) {
+								maxnodebackdrop += 1;
+								xml_attribute<char>* newid = new xml_attribute<char>(); newid->name("id"); newid->value(IntToChar(maxnodebackdrop)); clonedNode->append_attribute(newid);
+							}
+
 							root->append_node(clonedNode);
 						}
 					}
@@ -2398,20 +2526,75 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 	return xml;
 }
 
+
+
+bool charfind(const char* target, const char* lookup, size_t maxOffset) {
+	size_t haystackLen = strlen(target);
+	size_t needleLen = strlen(lookup);
+	if (maxOffset >= haystackLen) {
+		return nullptr; // Offset exceeds the haystack length, no match possible.
+	}
+	if (maxOffset + needleLen > haystackLen) {
+		maxOffset = haystackLen - needleLen; // Adjust the offset to avoid overflows.
+	}
+
+
+	for (size_t i = 0; i <= maxOffset; i++) {
+		// Compare characters one by one in lowercase
+		bool match = true;
+		for (size_t j = 0; j < needleLen; j++) {
+			if (std::tolower(target[i + j]) != std::tolower(lookup[j])) {
+				match = false;
+				return match;
+			}
+		}
+
+		if (match) {
+			return match;
+		}
+	}
+
+	return false;
+}
+
+
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
+	if (xmlsloaded) {
+		if ((bosspoolsxml != NULL) && (charfind(xmldata, "<bosspool", 50))) {
+			return super(bosspoolsxml);
+		}else{
+			return super(xmldata); 
+		}
+	}
 	if (g_Manager->GetOptions()->ModsEnabled()) {
 	try {
-		string a = stringlower((char*)string(xmldata).substr(0, 60).c_str());
-		string xml = string(xmldata);
-		if (a.find("<bossp") < 50) {
-			super(BuildModdedXML(xmldata, "bosspools.xml", true));
-		}else if (a.find("<bosse") < 50) {
+		//string xml = string(xmldata);
+		//string xmlsub = xml.substr(0, 60);
+		//string a = stringlower(xmlsub.c_str());
+		if (charfind(xmldata,"<itempoo", 50)) {
+			//XMLStuff.PoolData->Clear();
+		}
+
+		if (charfind(xmldata, "<bosspool", 50)) {
+			if (bosspoolsxml != NULL) {
+				super(bosspoolsxml);
+			}
+			else {
+				char* x = BuildModdedXML(xmldata, "bosspools.xml", true);
+				super(x);
+				bosspoolsxml =new char[strlen(x)];
+				strcpy(bosspoolsxml,x);
+			}
+		}else if (charfind(xmldata, "<backd", 50)) {
+				super(BuildModdedXML(xmldata, "backdrops.xml", false));
+		}else if (charfind(xmldata, "<bosse", 50)) {
 			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
-		}else if (a.find("<cuts") < 50) {
+		}else if (charfind(xmldata, "<cuts", 50)) {
 			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
-		}else if (a.find("<stages") < 50) {
+		}else if (charfind(xmldata, "<stages", 50)) {
 			super(BuildModdedXML(xmldata, "stages.xml", false));
-		}else if (a.find("<reci") < 50) {
+		}else if (charfind(xmldata, "<reci",  50)) {
+			string xml = string(xmldata);
 			regex regexPattern(R"(\boutput\s*=\s*["']([^"']+)["'])");
 			smatch match;
 			auto words_begin = std::sregex_iterator(xml.begin(), xml.end(), regexPattern);
@@ -2442,7 +2625,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	}
 	catch (rapidxml::parse_error err) {
 		int lineNumber = getLineNumber(xmldata, err.where<char>());
-		string a = stringlower((char *)string(xmldata).substr(0,60).c_str());
+		string xml = string(xmldata);
+		string xmlsub = xml.substr(0, 60);
+		string a = stringlower(xmlsub.c_str());
 		xmlerrors.push_back(err.what() + string(" at line ") + to_string(lineNumber));
 		if (a.find("<ent") < 50) {
 			a = "<entities anm2root=\"gfx/\" version=\"5\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </entities>";
