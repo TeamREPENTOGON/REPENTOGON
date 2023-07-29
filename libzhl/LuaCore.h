@@ -364,6 +364,11 @@ namespace lua {
         return (T*)data;
     }
 
+    LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, int value);
+    LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, float value);
+    LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, lua_CFunction fn);
+    LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, void* ptr);
+
     namespace callbacks {
         LIBZHL_API int ToInteger(lua_State* L, int stackPosition);
         LIBZHL_API double ToNumber(lua_State* L, int stackPosition);

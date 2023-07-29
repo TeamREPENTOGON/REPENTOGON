@@ -29,6 +29,7 @@ bool menuShown = false;
 bool leftMouseClicked = false;
 static bool imguiInitialized = false;
 static bool show_app_style_editor = false;
+static bool shutdownInitiated = false;
 
 HelpMenu helpMenu;
 LogViewer logViewer;
@@ -121,6 +122,9 @@ static std::vector<WPARAM> pressedKeys;
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    if (shutdownInitiated)
+        return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
+
     // Enable the overlay using the grave key, disable using ESC
     if (uMsg == WM_KEYDOWN && g_Manager->GetDebugConsoleEnabled()) {
         ImGui::CloseCurrentPopup();
@@ -332,6 +336,11 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
 {
     logViewer.AddLog("[CONSOLE]", text.c_str());
     super(text, color, unk);
+}
+
+HOOK_STATIC(Isaac, Shutdown, () -> void, __cdecl) {
+    shutdownInitiated = true;
+    super();
 }
 
 extern int handleWindowFlags(int flags);

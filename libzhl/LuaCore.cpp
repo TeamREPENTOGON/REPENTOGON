@@ -586,4 +586,28 @@ namespace lua {
 		const char* DailyChallengeMT = "DailyChallenge";
 		const char* ItemOverlayMT = "ItemOverlay";
 	}
+
+	void TableAssoc(lua_State* L, std::string const& name, int value) {
+		lua_pushstring(L, name.c_str());
+		lua_pushinteger(L, value);
+		lua_rawset(L, -3);
+	}
+
+	void TableAssoc(lua_State* L, std::string const& name, float f) {
+		lua_pushstring(L, name.c_str());
+		lua_pushnumber(L, f);
+		lua_rawset(L, -3);
+	}
+
+	void TableAssoc(lua_State* L, std::string const& name, lua_CFunction fn) {
+		lua_pushstring(L, name.c_str());
+		lua_pushcfunction(L, fn);
+		lua_rawset(L, -3);
+	}
+
+	void TableAssoc(lua_State* L, std::string const& name, void* ptr) {
+		lua_pushstring(L, name.c_str());
+		lua_pushlightuserdata(L, ptr);
+		lua_rawset(L, -3);
+	}
 }

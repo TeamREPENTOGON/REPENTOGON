@@ -461,7 +461,7 @@ namespace GL {
 		}
 
 		static inline void AssertBadIntKey(lua_State* L, int key) {
-			luaL_error(L, "Invalid row index %lld", key);
+			luaL_error(L, "Invalid row index %d", key);
 		}
 
 		template<typename T>
@@ -600,6 +600,10 @@ namespace GL {
 			ptr = &f;
 		}
 
+		GLFloat(float val) : GLFloat() {
+			f = val;
+		}
+
 		GLFloat(float* src) : ptr(src) {
 
 		}
@@ -641,6 +645,11 @@ namespace GL {
 
 		GLVec2() : ptr(data) {
 
+		}
+
+		GLVec2(float x, float y) : GLVec2() {
+			data[0] = x;
+			data[1] = y;
 		}
 
 		GLVec2(float* src) : ptr(src) {
@@ -700,6 +709,12 @@ namespace GL {
 
 		GLVec3() : ptr(data) {
 
+		}
+
+		GLVec3(float x, float y, float z) : GLVec3() {
+			data[0] = x;
+			data[1] = y;
+			data[2] = z;
 		}
 
 		GLVec3(float* src) : ptr(src) {
@@ -765,6 +780,13 @@ namespace GL {
 
 		GLVec4() : ptr(data) {
 
+		}
+
+		GLVec4(float x, float y, float z, float w) : GLVec4() {
+			data[0] = x;
+			data[1] = y;
+			data[2] = z;
+			data[3] = w;
 		}
 
 		GLVec4(float* src) : ptr(src) {
@@ -1005,6 +1027,8 @@ namespace GL {
 		}
 	};
 
+	static GL::GLMat4 ProjectionMatrix;
+
 	class VertexDescriptor {
 	public:
 		VertexDescriptor() {
@@ -1106,7 +1130,7 @@ namespace GL {
 
 		void Set(uint32_t index, uint32_t value) {
 			if (_nativeIndices) {
-				if (index >= _nativeSize) {
+				if (index > _nativeSize) {
 					throw std::out_of_range("Invalid index");
 				}
 
@@ -1176,14 +1200,17 @@ namespace GL {
 			return 0;
 		}
 
+		LUA_FUNCTION(Lua_len) {
+			Elements** ud = lua::GetUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
+			lua_pushinteger(L, (*ud)->Max() + 1);
+			return 1;
+		}
+
 		static void InitMetatable(lua_State* L) {
 			luaL_newmetatable(L, LuaRender::ElementsArrayMT);
-			lua_pushstring(L, "__index");
-			lua_pushcfunction(L, Lua_index);
-			lua_pushstring(L, "__newindex");
-			lua_pushcfunction(L, Lua_newindex);
-			lua_rawset(L, -5);
-			lua_rawset(L, -3);
+			lua::TableAssoc(L, "__index", Lua_index);
+			lua::TableAssoc(L, "__newindex", Lua_newindex);
+			lua::TableAssoc(L, "__len", Lua_len);
 			lua_pop(L, 1);
 		}
 
@@ -1211,14 +1238,37 @@ namespace GL {
 			return iter->second;
 		}
 
+		LUA_FUNCTION(Lua_Dump) {
+			Vertex* vertex = lua::GetUserdata<Vertex*>(L, 1, LuaRender::VertexMT);
+			lua_newtable(L);
+			for (auto const& [name, data] : *vertex->_offsets) {
+				auto const& [offset, type] = data;
+				lua_pushstring(L, name.c_str());
+				lua_newtable(L);
+				lua::TableAssoc(L, "Offset", (int)offset);
+				lua::TableAssoc(L, "Type", (int)type);
+				lua_rawset(L, -3);
+			}
+			return 1;
+		}
+
 		LUA_FUNCTION(Lua_index) {
 			Vertex* vertex = lua::GetUserdata<Vertex*>(L, 1, LuaRender::VertexMT);
 			const char* name = luaL_checkstring(L, 2);
 			auto [offset, type] = vertex->GetAttribute(name);
 			float* data = vertex->_data + offset;
 
-			if (!offset) {
-				return luaL_error(L, "Invalid attribute name %s", name);
+			if (type == GLSL_MAX) {
+				// return luaL_error(L, "Invalid attribute name %s", name);
+				luaL_getmetatable(L, LuaRender::VertexMT);
+				lua_pushstring(L, name);
+				int type = lua_rawget(L, -2);
+				
+				if (type == LUA_TNIL) {
+					luaL_error(L, "No field or method with name %s\n", name);
+				}
+
+				return 1;
 			}
 
 			switch (type) {
@@ -1292,6 +1342,12 @@ namespace GL {
 			lua_pushcfunction(L, Lua_newindex);
 			lua_rawset(L, -5);
 			lua_rawset(L, -3);
+
+			luaL_Reg funcs[] = {
+				{ "Dump", Lua_Dump },
+				{ NULL, NULL }
+			};
+			luaL_setfuncs(L, funcs, 0);
 			lua_pop(L, 1);
 		}
 
@@ -1318,19 +1374,28 @@ namespace GL {
 
 		~VertexBuffer() {
 			if (_needRelease) {
+				// FILE* f = fopen("repentogon.log", "a");
+				// fprintf(f, "Freeing vertex buffer at %p (_data = %p)\n", this, _data);
+				// fclose(f);
 				delete[] _data;
 			}
 		}
 
+		void Bind();
+
 		void SetDescriptor(ShaderType shader);
 
 		void GetVertex(lua_State* L, size_t index) {
-			if (index >= _nVertices) {
+			if (index > _nVertices) {
 				luaL_error(L, "Invalid index %u in vertex buffer (max %u)", index, _nVertices);
 			}
 
 			float* target = _data + index * _descriptor->GetSize();
-			lua::place<Vertex>(L, LuaRender::VertexMT, _data, _descriptor);
+			lua::place<Vertex>(L, LuaRender::VertexMT, target, _descriptor);
+
+			/* FILE* f = fopen("repentogon.log", "a");
+			fprintf(f, "[OpenGL] Getting vertex %d from vertex buffer %p. Base is at %p, vertex is at %p (descriptor size = %d)\n", index, this, _data, target, _descriptor->GetSize());
+			fclose(f); */
 		}
 
 		LUA_FUNCTION(Lua_GetVertex) {
@@ -1349,14 +1414,24 @@ namespace GL {
 
 		LUA_FUNCTION(Lua_gc) {
 			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			/* FILE* f = fopen("repentogon.log", "a");
+			fprintf(f, "Lua GC freeing vertex buffer at %p\n", *buffer);
+			fclose(f); */
 			delete *buffer;
 			return 0;
+		}
+
+		LUA_FUNCTION(Lua_len) {
+			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			lua_pushinteger(L, (*buffer)->_nVertices + 1);
+			return 1;
 		}
 
 		static void InitMetatable(lua_State* L) {
 			luaL_Reg funcs[] = {
 				{ "GetVertex", Lua_GetVertex },
 				{ "GetElements", Lua_GetElements },
+				{ "__len", Lua_len },
 				{ NULL, NULL },
 			};
 
@@ -1675,11 +1750,87 @@ namespace GL {
 
 		_needRelease = false;
 	}
+
+	static float ProjectionWidth = 0, ProjectionHeight = 0;
+
+	// Initialize the constant part of the projection matrix
+	static void EarlyInitProjectionMatrix() {
+		memset(ProjectionMatrix.data, 0, sizeof(float) * 16);
+		ProjectionMatrix.row1.ptr[3] = -1.f;
+		ProjectionMatrix.row2.ptr[3] = -1.f;
+		ProjectionMatrix.row3.ptr[2] = -0.001f;
+		ProjectionMatrix.row3.ptr[3] = -0.f;
+		ProjectionMatrix.row4.ptr[3] = 1.f;
+	}
+
+	// Initialize the projection matrix. If the width and height have not changed since the last 
+	// initialization, this does nothing.
+	static void InitProjectionMatrix() {
+		if (ProjectionWidth == g_OrthographicWidth && ProjectionHeight == g_OrthographicHeight) {
+			return;
+		}
+
+		ProjectionMatrix.row1.ptr[0] = 2 / g_OrthographicWidth;
+		ProjectionMatrix.row2.ptr[1] = 2 / g_OrthographicHeight;
+	}
+
+	void VertexBuffer::Bind() {
+		if (!_descriptor)
+			return;
+
+		int i = 0;
+		float* bufferOffset = _data;
+		for (auto const& [_, data] : _descriptor->GetOffsets()) {
+			GLint size = 0;
+			GLsizei stride = _descriptor->GetSize() * sizeof(float);
+
+			auto const& [offset, type] = data;
+			switch (type) {
+			case GLSL_FLOAT:
+				size = 1;
+				break;
+
+			case GLSL_VEC2:
+				size = 2;
+				break;
+
+			case GLSL_VEC3:
+				size = 3;
+				break;
+
+			case GLSL_VEC4:
+				size = 4;
+				break;
+
+			default:
+				throw std::runtime_error("Argh");
+			}
+
+			glEnableVertexAttribArray(i);
+			glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, stride, bufferOffset);
+			bufferOffset += size;
+			++i;
+		}
+	}
 }
 
 namespace GL {
 	bool GLADInitialized = false;
 	HMODULE OpenGLLibrary;
+
+	void GLAPIENTRY OpenGLErrorCallback(GLenum source,
+		GLenum type,
+		GLuint id,
+		GLenum severity,
+		GLsizei length,
+		const GLchar* message,
+		const void* userParam) {
+		FILE* f = fopen("repentogon.log", "a");
+		fprintf(f, "[OpenGL] Error: GL CALLBACK : % s type = 0x % x, severity = 0x % x, message = % s\n",
+			(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+			type, severity, message);
+		fclose(f);
+	}
 }
 
 void* load_fn(const char* name) {
@@ -1700,18 +1851,44 @@ void __stdcall LuaPreDrawElements(float* vertexBuffer, GLsizei /* stride */, GLe
 			abort();
 		}
 		GL::GLADInitialized = true;
+
+		//glEnable(GL_DEBUG_OUTPUT);
+		//glDebugMessageCallback(GL::OpenGLErrorCallback, 0);
 	}
 
-	int shaderId = 0;
-	for (int i = 0; i < SHADER_MAX; ++i) {
-		if (__ptr_g_AllShaders[i] == g_CurrentShader) {
-			shaderId = i;
-			break;
-		}
+	size_t size = 0;
+	switch (type) {
+	case GL_UNSIGNED_BYTE:
+		size = 1;
+		break;
+
+	case GL_UNSIGNED_SHORT:
+		size = 2;
+		break;
+
+	case GL_UNSIGNED_INT:
+		size = 4;
+		break;
+
+	default:
+		throw std::runtime_error("Bad.");
 	}
+
+	void* copy = malloc(size * count);
+	memcpy(copy, indices, size * count);
 
 	int callbackId = 1136;
-	if (CallbackState.test(callbackId - 1000)) {
+	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
+		GL::InitProjectionMatrix();
+
+		int shaderId = -1;
+		for (int i = 0; i < SHADER_MAX; ++i) {
+			if (__ptr_g_AllShaders[i] == g_CurrentShader) {
+				shaderId = i;
+				break;
+			}
+		}
+
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua::LuaCaller caller(L);
@@ -1727,9 +1904,17 @@ void __stdcall LuaPreDrawElements(float* vertexBuffer, GLsizei /* stride */, GLe
 
 		// If the return value is a pipeline, override the default rendering.
 		lua::LuaResults results = caller.call(1);
+
+		// buffer->Bind();
 	}
 
 	glDrawElements(mode, count, type, indices);
+
+	if (memcmp(indices, copy, size * count)) {
+		throw std::runtime_error("Memory corruption detected");
+	}
+
+	free(copy);
 }
 
 static void RegisterCustomRenderMetatables(lua_State* L) {
@@ -1799,6 +1984,36 @@ LUA_FUNCTION(Lua_Renderer_Pipeline) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Renderer_Vec2) {
+	float x = luaL_optnumber(L, 1, 0);
+	float y = luaL_optnumber(L, 2, 0);
+	lua::place<GL::GLVec2>(L, LuaRender::GLVec2MT, x, y);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Renderer_Vec3) {
+	float x = luaL_optnumber(L, 1, 0);
+	float y = luaL_optnumber(L, 2, 0);
+	float z = luaL_optnumber(L, 3, 0);
+	lua::place<GL::GLVec3>(L, LuaRender::GLVec3MT, x, y, z);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Renderer_Vec4) {
+	float x = luaL_optnumber(L, 1, 0);
+	float y = luaL_optnumber(L, 2, 0);
+	float z = luaL_optnumber(L, 3, 0);
+	float w = luaL_optnumber(L, 4, 0);
+	lua::place<GL::GLVec4>(L, LuaRender::GLVec4MT, x, y, z, w);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Renderer_ProjectionMatrix) {
+	GL::GLMat4* matrix = lua::place<GL::GLMat4>(L, LuaRender::GLMat4MT);
+	memcpy(matrix->data, GL::ProjectionMatrix.data, sizeof(float) * 16);
+	return 1;
+}
+
 // ============================================================================
 // Lua engine
 
@@ -1821,10 +2036,26 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "LoadImage", lua_Renderer_LoadImage },
 		{ "StartTransformation", lua_Renderer_StartTransformation },
 		{ "Shader", Lua_Renderer_Shader },
+		{ "Vec2", Lua_Renderer_Vec2 },
+		{ "Vec3", Lua_Renderer_Vec3 },
+		{ "Vec4", Lua_Renderer_Vec4 },
+		{ "ProjectionMatrix", Lua_Renderer_ProjectionMatrix },
+		{ "Pipeline", Lua_Renderer_Pipeline },
+		{ "VertexDescriptor", Lua_Renderer_VertexDescriptor},
 		{ NULL, NULL }
 	};
 
 	luaL_setfuncs(L, renderFunctions, 0);
+
+	// GLSLType table
+	lua_pushstring(L, "GLSLType");
+	lua_newtable(L);
+	lua::TableAssoc(L, "Float", GL::GLSLType::GLSL_FLOAT);
+	lua::TableAssoc(L, "Vec2", GL::GLSLType::GLSL_VEC2);
+	lua::TableAssoc(L, "Vec3", GL::GLSLType::GLSL_VEC3);
+	lua::TableAssoc(L, "Vec4", GL::GLSLType::GLSL_VEC4);
+	lua_rawset(L, -3);
+
 	lua_setglobal(L, "Renderer");
 }
 
@@ -1987,6 +2218,8 @@ namespace LuaRender {
 		PAD(HeatWaveDescriptor, GLSL_VEC4, "Ratio");
 		PAD(HeatWaveDescriptor, GLSL_FLOAT, "Amount");
 		PAD(HeatWaveDescriptor, GLSL_FLOAT, "PixelationAmount");
+
+		GL::EarlyInitProjectionMatrix();
 	}
 #undef PAD
 }
