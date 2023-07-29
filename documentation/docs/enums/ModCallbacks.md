@@ -19,7 +19,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1065 |MC_PRE_PLAYER_COLLISION {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [PlayerVariant](PlayerVariant.md) | boolean or table |
+|1065 |MC_PRE_PLAYER_COLLISION {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [PlayerVariant](PlayerVariant.md) | boolean or table |
 
 ### MC_PRE_TEAR_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -29,7 +29,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1232 |MC_PRE_TEAR_COLLISION {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | boolean or table |
+|1232 |MC_PRE_TEAR_COLLISION {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | boolean or table |
 
 ### MC_PRE_FAMILIAR_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -41,7 +41,7 @@ For example, you can return `{ Collide=true }` to make a familiar to collide phy
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1234 |MC_PRE_FAMILIAR_COLLISION {: .copyable } | ([EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | boolean or table |
+|1234 |MC_PRE_FAMILIAR_COLLISION {: .copyable } | ([EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | boolean or table |
 
 ### MC_PRE_BOMB_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -51,7 +51,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1236 |MC_PRE_BOMB_COLLISION {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.html) | boolean or table |
+|1236 |MC_PRE_BOMB_COLLISION {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.html) | boolean or table |
 
 ### MC_PRE_PICKUP_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -61,7 +61,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1238 |MC_PRE_PICKUP_COLLISION {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean or table |
+|1238 |MC_PRE_PICKUP_COLLISION {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean or table |
 
 ### MC_PRE_KNIFE_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -71,7 +71,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1242 |MC_PRE_KNIFE_COLLISION {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [KnifeSubType](KnifeSubType.md) | boolean or table |
+|1242 |MC_PRE_KNIFE_COLLISION {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [KnifeSubType](KnifeSubType.md) | boolean or table |
 
 ### MC_PRE_PROJECTILE_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -81,7 +81,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1244 |MC_PRE_PROJECTILE_COLLISION {: .copyable } | ([EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html) Projectile, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | boolean or table |
+|1244 |MC_PRE_PROJECTILE_COLLISION {: .copyable } | ([EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html) Projectile, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | boolean or table |
 
 ### MC_PRE_NPC_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -91,7 +91,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1246 |MC_PRE_NPC_COLLISION {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
+|1246 |MC_PRE_NPC_COLLISION {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
 
 
 ## New Callbacks
@@ -120,6 +120,41 @@ Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/r
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1004 |MC_PRE_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, int Charge, boolean FirstTime, int Slot, int VarData, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | table or [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
+
+### MC_POST_TAKE_DMG {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1006 |MC_POST_TAKE_DMG {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+
+### MC_GRID_ROCK_UPDATE {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1010 |MC_GRID_ROCK_UPDATE {: .copyable } | ([GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, [GridEntityRock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityRock.html) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+
+### MC_POST_GRID_ROCK_DESTROY {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1011 |MC_POST_GRID_ROCK_DESTROY {: .copyable } | ([GridEntityRock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityRock.html) Rock, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, boolean Immediate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+
+### MC_GRID_HURT_DAMAGE {: .copyable }
+Return false if entity or player should ignore damage from it.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1012 |MC_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) GridEntity, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, int DamageAmount, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, float Unknown  boolean Unknown) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+
+### MC_POST_GRID_HURT_DAMAGE {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1013 |MC_POST_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) GridEntity, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, int DamageAmount, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, float Unknown  boolean Unknown) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_HUD_UPDATE {: .copyable }
 Accepts no return parameters.
@@ -860,10 +895,11 @@ Accepts a `float` to modify the chance.
 |1133 |MC_POST_DEVIL_CALCULATE {: .copyable } | (float Chance)| - | float |
 
 ### MC_POST_ITEM_OVERLAY_UPDATE
+Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1075 |MC_POST_ITEM_OVERLAY_UPDATE {: .copyable } | ()| - | - |
+|1075 |MC_POST_ITEM_OVERLAY_UPDATE {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay)| [GiantBook](Giantbook.md) | void |
 
 ### MC_PRE_ITEM_OVERLAY_SHOW
 Accepts an integer to change [GiantBook](Giantbook.md)
@@ -872,7 +908,7 @@ Alternatively accepts ``true`` to cancel item overlay show
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1076 |MC_PRE_ITEM_OVERLAY_SHOW {: .copyable } | ([GiantBook](Giantbook.md) GiantBookID, int Unknown, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [GiantBook](Giantbook.md) | [GiantBook](Giantbook.md) or boolean |
+|1076 |MC_PRE_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [GiantBook](Giantbook.md) | [GiantBook](Giantbook.md) or boolean |
 
 ### MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS
 
@@ -927,13 +963,13 @@ Alternatively accepts `false` to stop the rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | int ModCount, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, boolean OnlyCountTrueItems)| - | int |
+|1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | int ModCount, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems)| - | int |
 
 ### MC_PRE_PLAYER_HAS_COLLECTIBLE
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1093 |MC_PRE_PLAYER_HAS_COLLECTIBLE {: .copyable } | [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, boolean OnlyCountTrueItems)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | bool |
+|1093 |MC_PRE_PLAYER_HAS_COLLECTIBLE {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | bool |
 
 ### MC_PRE_MUSIC_PLAY_JINGLE
 Accepts a [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) to change the track
@@ -943,6 +979,27 @@ Alternatively accepts `false` to cancel the track
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1094 |MC_PRE_MUSIC_PLAY_JINGLE {: .copyable } | ([Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) MusicID)| [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) | [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) or boolean |
+
+### MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+
+### MC_POST_TRIGGER_TRINKET_ADDED {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1096 |MC_POST_TRIGGER_TRINKET_ADDED {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, boolean FirstTimePickingUp) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+
+### MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1097 |MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
 ### MC_CONSOLE_AUTOCOMPLETE
 This is called whenever a function with the CUSTOM [AutocompleteType](AutocompleteType.md) enum is being entered into the console. Called every time the console input changes.
@@ -989,3 +1046,10 @@ Accepts no return parameters.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1210 |MC_POST_MODS_LOADED {: .copyable } | - | - | void |
+
+### MC_POST_ITEM_OVERLAY_SHOW
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1134 |MC_POST_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [GiantBook](Giantbook.md) | void |
