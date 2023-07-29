@@ -1477,6 +1477,51 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	}
 }
 
+//PRE/POST_GRID_INIT (id: 1100/1101)
+HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
+	int callbackid = 1100;
+	lua_State* L = g_LuaEngine->_state;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(this->GetDesc()->_type)
+			.push(this, lua::Metatables::GRID_ENTITY)
+			.push(Seed)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					Room* room = *g_Game->GetCurrentRoom();
+					room->RemoveGridEntityImmediate(*this->GetGridIndex(), 0, false);
+					return;
+				}
+			}
+			else if (lua_isinteger(L, -1)) {
+				Seed = lua_tointeger(L, -1);
+			}
+		}
+	}
+
+	super(Seed);
+
+	callbackid = 1101;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
+			.push(this->GetDesc()->_type)
+			.push(this, lua::Metatables::GRID_ENTITY)
+			.push(Seed)
+			.call(1);
+	}
+};
+
 //RenderHead Callback (id: 1038)
 HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 	int callbackid = 1038;
@@ -1629,9 +1674,9 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 	return super(slot);
 }
 
-//MC_PRE_REPLACE_SPRITESHEET (id: 1100)
+//MC_PRE_REPLACE_SPRITESHEET (id: 1116)
 HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) -> void) {
-	int callbackid = 1100;
+	int callbackid = 1116;
 	lua_State* L = g_LuaEngine->_state;
 	if (CallbackState.test(callbackid - 1000)) {
 		
@@ -1654,7 +1699,7 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) ->
 		}
 	}
 	super(LayerID, PngFilename);
-	callbackid = 1101;
+	callbackid = 1117;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
