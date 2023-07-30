@@ -1,7 +1,5 @@
 # Class "Sprite"
 
-Currently, this class does not have any new additions in REPENTOGON, only reimplemented versions of functions already in the API with added functionality.
-
 ## Modified Functions
 
 ### Replace·Spritesheet () {: aria-label='Modified Functions' }
@@ -12,6 +10,14 @@ ___
 
 ## Functions
 
+### Get·Animation·Data () {: aria-label='Functions' }
+#### [AnimationData](AnimationData.md) GetAnimationData ( string AnimationName ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Current·Animation·Data () {: aria-label='Functions' }
+#### [AnimationData](AnimationData.md) GetCurrentAnimationData () {: .copyable aria-label='Functions' }
+
+___
 ### Get·Layer () {: aria-label='Functions' }
 #### [LayerState](LayerState.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
 
@@ -22,6 +28,22 @@ ___
 ___
 ### Get·Null·Frame () {: aria-label='Functions' }
 #### [NullFrame](NullFrame.md) GetNullFrame ( string LayerName ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Overlay·Animation·Data () {: aria-label='Functions' }
+#### [AnimationData](AnimationData.md) GetOverlayAnimationData () {: .copyable aria-label='Functions' }
+
+___
+### Get·Overlay·Null·Frame () {: aria-label='Functions' }
+#### [NullFrame](NullFrame.md) GetOverlayNullFrame ( string LayerName ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Overlay·Event·Triggered () {: aria-label='Functions' }
+#### boolean IsOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
+
+___
+### Was·Overlay·Event·Triggered () {: aria-label='Functions' }
+#### boolean WasOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 
 ___
 

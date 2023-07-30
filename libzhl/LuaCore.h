@@ -147,6 +147,9 @@ namespace lua {
     namespace metatables
     {
         extern LIBZHL_API const char* AnimationStateMT;
+        extern LIBZHL_API const char* AnimationDataMT;
+        extern LIBZHL_API const char* AnimationLayerMT;
+        extern LIBZHL_API const char* AnimationFrameMT;
         extern LIBZHL_API const char* NullFrameMT;
         extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* HistoryMT;

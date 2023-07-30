@@ -9,6 +9,8 @@
 
 extern int handleWindowFlags(int flags);
 extern void AddWindowContextMenu(bool* pinned);
+extern bool imguiResized;
+extern ImVec2 imguiSizeModifier;
 
 struct ConsoleCommand {
     std::string name = ""; // The name of the command.
@@ -96,7 +98,7 @@ static std::vector<std::string> ParseCommand(std::string command, int size = 0) 
     std::string cmdlet;
     char space = ' ';
     while (std::getline(sstream, cmdlet, space)) {
-        cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
+        cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), isspace), cmdlet.end());
         cmdlets.push_back(cmdlet);
         if (size > 0 && cmdlets.size() == size) {
             break;
@@ -251,7 +253,13 @@ struct ConsoleMega {
         }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
+        
         if (ImGui::Begin("Console", &enabled, handleWindowFlags(0))) {
+            if (imguiResized) {
+                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
+                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
+;            }
+
             AddWindowContextMenu(&pinned);
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
@@ -330,7 +338,7 @@ struct ConsoleMega {
                 }
                 ImGui::OpenPopup("Console Autocomplete");
             }
-            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit;
+            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
             if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
                 Strtrim(s);

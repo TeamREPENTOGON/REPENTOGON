@@ -460,6 +460,54 @@ local function logWarning(callbackID, modName, warn)
 	'" call from "' .. modName .. '": ' .. warn .. "(This warning will not reappear until the next Lua reload.)")
 end
 
+local err_modName = nil
+local mouse = Sprite()
+local mousecontrol_off = nil
+local errdisp = nil
+
+local UnlinkCallbacks -- Forward declaration
+
+local function RenderErrHudCB() 
+	if err_input < ERR_INPUT_TARGET then
+		err_color = math.sin((err_input * 200) / err_decay) / 2 + .5
+		err_input = err_input + 1
+		err_decay = err_decay + 1
+	else
+		err_color = 0
+	end
+
+	if err_hud_opacity > 0.3 then err_hud_opacity = err_hud_opacity - (0.7 / ERR_INPUT_TARGET) end
+	RenderErrText(err_modName, err_hud_opacity)
+
+
+	mouse.Color = Color(1, 1, 1, err_hud_opacity)
+	local mouse_pos = Isaac.WorldToScreen(Input.GetMousePosition(true))
+
+	if mouse_pos.X > err_bounding_x and mouse_pos.X < Isaac.GetScreenWidth() - err_bounding_x and mouse_pos.Y < 18 then
+		mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity)
+		if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
+			Isaac.GetImGui():Show()
+			UnlinkCallbacks()
+		
+		end
+	end
+
+	if mousecontrol_off then
+		mouse:Render(mouse_pos)
+	end
+end
+
+local function RenderErrTextCB()
+	if err_shader_opacity > 0 then err_shader_opacity = err_shader_opacity - (1 / ERR_INPUT_TARGET) end
+	RenderErrText(err_modName, err_shader_opacity)
+end
+
+UnlinkCallbacks = function()
+	errdisp:RemoveCallback(ModCallbacks.MC_HUD_RENDER, RenderErrHudCB)
+	errdisp:RemoveCallback(ModCallbacks.MC_GET_SHADER_PARAMS, RenderErrTextCB)
+end
+
+
 local function imGuiError(errortext)
 	local imgui = Isaac.GetImGui()
 	local windowId = "ErrorDisplayWindow"
@@ -481,6 +529,7 @@ local function imGuiError(errortext)
 end
 
 local err_dupecount = 1
+
 
 local function logError(callbackID, modName, err)
 	--[[ In order to squash multiple instances of an error into one line,
@@ -531,49 +580,20 @@ local function logError(callbackID, modName, err)
 	Isaac.DebugString('Error in "' .. cbName .. '" call from "' .. modName .. '": ' .. err) -- this should be replaced with a proper log function so it can have the [INFO] header
 
 	if not err_shown then
-		local errdisp = RegisterMod("REPENTOGON Error Display", 1)
-
+		errdisp = RegisterMod("REPENTOGON Error Display", 1)
+		err_modName = modName;
 		err_main_font:Load("font/pftempestasevencondensed.fnt")
 		err_min_font:Load("font/luaminioutlined.fnt")
-		local mouse = Sprite()
+
 		mouse:Load("gfx/ui/cursor.anm2", true)
 		mouse:Play("Idle")
-		local mousecontrol_off = not Options.MouseControl --i bet its expensive to straight up call this every frame
+		mousecontrol_off = not Options.MouseControl --i bet its expensive to straight up call this every frame
 
 		imGuiError(consoleLog)
 
-		errdisp:AddPriorityCallback(ModCallbacks.MC_HUD_RENDER, INT_MIN, function()
-			if err_input < ERR_INPUT_TARGET then
-				err_color = math.sin((err_input * 200) / err_decay) / 2 + .5
-				err_input = err_input + 1
-				err_decay = err_decay + 1
-			else
-				err_color = 0
-			end
+		errdisp:AddPriorityCallback(ModCallbacks.MC_HUD_RENDER, INT_MIN, RenderErrHudCB)
 
-			if err_hud_opacity > 0.3 then err_hud_opacity = err_hud_opacity - (0.7 / ERR_INPUT_TARGET) end
-			RenderErrText(modName, err_hud_opacity)
-
-
-			mouse.Color = Color(1, 1, 1, err_hud_opacity)
-			local mouse_pos = Isaac.WorldToScreen(Input.GetMousePosition(true))
-
-			if mouse_pos.X > err_bounding_x and mouse_pos.X < Isaac.GetScreenWidth() - err_bounding_x and mouse_pos.Y < 18 then
-				mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity)
-				if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
-					Isaac.GetImGui():Show()
-				end
-			end
-
-			if mousecontrol_off then
-				mouse:Render(mouse_pos)
-			end
-		end)
-
-		errdisp:AddPriorityCallback(ModCallbacks.MC_GET_SHADER_PARAMS, INT_MIN, function()
-			if err_shader_opacity > 0 then err_shader_opacity = err_shader_opacity - (1 / ERR_INPUT_TARGET) end
-			RenderErrText(modName, err_shader_opacity)
-		end)
+		errdisp:AddPriorityCallback(ModCallbacks.MC_GET_SHADER_PARAMS, INT_MIN, RenderErrTextCB)
 
 		err_shown = true
 	end

@@ -20,4 +20,5 @@ tags:
 |12 |CURSE {: .copyable } |  |
 |13 |METRO {: .copyable } |  |
 |14 |DELIRIOUS {: .copyable } |  |
-|15 |CUSTOM {: .copyable } |  |
+|15 |PLAYER {: .copyable } |  |
+|16 |CUSTOM {: .copyable } |  |

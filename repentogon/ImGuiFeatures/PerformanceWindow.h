@@ -29,6 +29,10 @@ struct PerformanceWindow {
 		}
 
 		if (ImGui::Begin("Performance", &enabled, handleWindowFlags(0))) {
+			if (imguiResized) {
+				ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
+				ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
+			}
 			AddWindowContextMenu(&pinned);
 
 			lua_State* state = g_LuaEngine->_state;

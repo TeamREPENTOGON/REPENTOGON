@@ -11,6 +11,8 @@ extern int handleWindowFlags(int flags);
 extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
 extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
+extern bool imguiResized;
+extern ImVec2 imguiSizeModifier;
 
 enum class IMGUI_ELEMENT {
     Window,
@@ -830,6 +832,10 @@ struct CustomImGui {
             window->EvaluateVisible();
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
                 if (ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
+                    if (imguiResized) {
+                        ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
+                        ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
+                    }
                     AddWindowContextMenu(&window->data.windowPinned);
                     DrawElements(window->children);
                     ImGui::End();
