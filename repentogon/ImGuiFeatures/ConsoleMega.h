@@ -98,7 +98,7 @@ static std::vector<std::string> ParseCommand(std::string command, int size = 0) 
     std::string cmdlet;
     char space = ' ';
     while (std::getline(sstream, cmdlet, space)) {
-        cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
+        cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), isspace), cmdlet.end());
         cmdlets.push_back(cmdlet);
         if (size > 0 && cmdlets.size() == size) {
             break;
