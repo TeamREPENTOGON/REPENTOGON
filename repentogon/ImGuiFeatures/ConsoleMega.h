@@ -9,6 +9,8 @@
 
 extern int handleWindowFlags(int flags);
 extern void AddWindowContextMenu(bool* pinned);
+extern bool imguiResized;
+extern ImVec2 imguiSizeModifier;
 
 struct ConsoleCommand {
     std::string name = ""; // The name of the command.
@@ -251,7 +253,13 @@ struct ConsoleMega {
         }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
+        
         if (ImGui::Begin("Console", &enabled, handleWindowFlags(0))) {
+            if (imguiResized) {
+                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
+                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
+;            }
+
             AddWindowContextMenu(&pinned);
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 

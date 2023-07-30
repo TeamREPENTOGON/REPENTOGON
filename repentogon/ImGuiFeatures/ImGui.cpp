@@ -30,6 +30,8 @@ bool leftMouseClicked = false;
 static bool imguiInitialized = false;
 static bool show_app_style_editor = false;
 static bool shutdownInitiated = false;
+static bool imguiResized;
+static ImVec2 imguiSizeModifier;
 
 HelpMenu helpMenu;
 LogViewer logViewer;
@@ -212,11 +214,12 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         }
     }
 
+    std::vector<UINT> passthroughMsgs = {WM_PAINT, WM_SIZE, WM_SIZING, WM_NCCALCSIZE, WM_WINDOWPOSCHANGING, WM_WINDOWPOSCHANGED};
     // If the overlay is shown, direct input to the overlay only
     // Otherwise call the game's WndProc function
     if (menuShown) {
-        // Call the game's WndProc on WM_PAINT to avoid apparent hangs when focus lost
-        if (uMsg == WM_PAINT) {
+        // Call the game's WndProc on some uMsgs to allow the game to handle window related tasks
+        if (std::find(passthroughMsgs.begin(), passthroughMsgs.end(), uMsg) != passthroughMsgs.end()) {
             CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
         }
         ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
@@ -280,6 +283,15 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
     if(g_PointScale != oldPointScale)
         ImGui::GetIO().FontDefault = fonts.at((int)g_PointScale);
     oldPointScale = g_PointScale;
+
+    imguiResized = false;
+    static ImVec2 oldSize = ImVec2(0, 0);
+    if (oldSize.x != ImGui::GetMainViewport()->Size.x || oldSize.y != ImGui::GetMainViewport()->Size.y) { // no operator?
+        imguiResized = true;
+        imguiSizeModifier = ImVec2(ImGui::GetMainViewport()->Size.x / oldSize.x, ImGui::GetMainViewport()->Size.y / oldSize.y);
+    }
+    oldSize = ImGui::GetMainViewport()->Size;
+    
 
     if (menuShown) {
         if (ImGui::BeginMainMenuBar()) {

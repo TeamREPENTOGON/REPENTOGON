@@ -6,6 +6,8 @@
 extern int handleWindowFlags(int flags);
 extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
+extern bool imguiResized;
+extern ImVec2 imguiSizeModifier;
 
 struct LogViewer {
     bool enabled;
@@ -57,6 +59,10 @@ struct LogViewer {
         }
 
         if (ImGui::Begin("Log Viewer", &enabled, handleWindowFlags(0))) {
+            if (imguiResized) {
+                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
+                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
+            }
             AddWindowContextMenu(&pinned);
             filter.Draw("Filter", -110.0f);
             ImGui::SameLine();
