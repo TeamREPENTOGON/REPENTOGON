@@ -41,31 +41,44 @@ __thiscall void ANM2::Play(const char* anim, bool reset);
 __thiscall void ANM2::Render_Wrapper(Vector* Position, Vector* topleftclamp, Vector* bottomrightclamp);
 
 struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
-	inline AnimationState* GetAnimationState() {return (AnimationState*)((char*)this + 48); }
+    inline AnimationState* GetAnimationState() { return &this->_animState; }
+    inline AnimationState* GetOverlayAnimationState() { return &this->_overlayAnimState; }
+    inline unsigned int GetAnimationCount() { return this->_animCount; }
+    inline AnimationData* GetAnimationData(const int index) {
+        if (this->_animData != nullptr && index >= 0 && index < this->_animCount) {
+			return &this->_animData[index];
+		}
+		return nullptr;
+    }
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
-	inline unsigned int GetLayerCount() { return *(unsigned int*)((char*)this + 0x80); } 
-	inline ColorMod* GetColor() { return (ColorMod*)((char*)this + 0xA8); } 
+	inline unsigned int GetLayerCount() { return this->_layerCount; } 
+	inline ColorMod* GetColor() { return &this->_color; } 
 }} 
     std_string _filename;
     std_string _animDefaultName;
-    AnimationState _animState;
-    AnimationState _overlayAnimState;
+    AnimationState _animState;  // 0x30
+    AnimationState _overlayAnimState;  // 0x50
     bool _overlayRenderFirst;
-    char _pad0[11];
+    char _pad0[3];
+    AnimationData* _animData;
+    int _animCount;
     LayerState* _layerState;
-    unsigned int _layerCount;
-    char _pad1[16];
+    unsigned int _layerCount;  // 0x80
+    std_string* _nullLayerNames;
+    unsigned int _numNullLayers;
+    std_string* _eventNames;
+    unsigned int _numEvents;
     Vector _offset;
     Vector _scale;
     float _rotation;
-    ColorMod _color;
+    ColorMod _color;  // 0xa8
     KColor _kColor;
-    char _pad2[28];
+    char _pad1[28];
     bool _flipX;
     bool _flipY;
-    char _pad3[2];
+    char _pad2[2];
     float _playbackSpeed;
-    char _pad4[12];
+    char _pad3[12];
 };
 
 

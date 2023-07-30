@@ -10,13 +10,16 @@ __thiscall bool AnimationState::IsEventTriggered(const char* eventName);
 "558bec83ec0c568bf15783ec08":
 __thiscall void AnimationState::AdvancePosition(int amount);
 
-struct AnimationState depends (AnimationData, ANM2) {
+struct AnimationState depends (AnimationData, ANM2) { {{
+    inline AnimationData* GetAnimationData() { return this->_animData; }
+}}
     ANM2* _animation;
     AnimationData* _animData;
     void* field2_0x8;
     void* field3_0xc;
-    int _animFrame;
-    float _animSpeed;
+    float _animFrame;
+    bool _isPlaying;
+    char _pad[3];
     char field6_0x18[4];
     char field7_0x1c[4];
 };

@@ -573,6 +573,9 @@ namespace lua {
 	namespace metatables
 	{
 		const char* AnimationStateMT = "AnimationState";
+		const char* AnimationDataMT = "AnimationData";
+		const char* AnimationLayerMT = "AnimationLayer";
+		const char* AnimationFrameMT = "AnimationFrame";
 		const char* NullFrameMT = "NullFrame";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* HistoryMT = "History";

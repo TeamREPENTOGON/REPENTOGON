@@ -1,3 +1,42 @@
-struct AnimationData {
+struct AnimationData depends (AnimationLayer) { {{
+	inline std_string GetName() { return this->_name; };
+	inline int GetLayerCount() { return this->_layerCount; };
+	// Returns the Nth layer, from the bottom to the top.
+	inline AnimationLayer* GetLayerByOrder(const int layer) {
+		if (this->_animLayers != nullptr && layer >= 0 && layer < this->GetLayerCount()) {
+			return &this->_animLayers[layer];
+		}
+		return nullptr;
+	}
+	// Given a layer ID, returns where in the layer order it sits.
+	// IE, the very bottom layer is the 0th layer regardless of its ID.
+	inline int GetLayerOrder(const int layerID) {
+		if (this->_layerMap != nullptr && layerID >= 0 && layerID < this->GetLayerCount()) {
+			return this->_layerMap[layerID];
+		}
+		return -1;
+	}
+	// Returns the layer with the provided ID, regardless of layer ordering.
+	inline AnimationLayer* GetLayerById(const int layerID) {
+		return this->GetLayerByOrder(this->GetLayerOrder(layerID));
+	}
+	inline int GetLength() { return this->_length; };
+	inline bool IsLoopingAnimation() { return this->_loop; };
+}}
 	std_string _name;
+	// Layers in this array are in order from bottom to top, not in order of their IDs.
+	AnimationLayer* _animLayers;
+	int _layerCount;
+	char _nullLayersPtr[4];  // Can examine this more later. We have NullFrame access elsewhere.
+	int _nullLayerCount;
+	char _pad0[8];
+	int _length;
+	bool _loop;
+	char _pad1[3];
+	// Since the ordering of layers can be different than the order of their IDs,
+	// this array maps the layer ID to their ordering, from bottom to top.
+	// So if you want the layer with ID 2, that is the _layerMap[2]'th layer from the bottom.
+	// Therefore its corresponding AnimationLayer is at _animLayers[_layerMap[2]].
+	int _layerMap[64];
+	char _pad2[4];
 };

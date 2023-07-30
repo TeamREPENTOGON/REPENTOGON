@@ -1,0 +1,17 @@
+struct AnimationFrame depends (Vector, ColorMod) {
+    Vector crop;
+    float width;
+    float height;
+    Vector pos;
+    Vector scale;
+    Vector pivot;
+    int duration;
+    bool visible;
+    char _pad0[3];
+    ColorMod color;
+    float rotation;
+    bool interpolated;
+    char _pad1[3];
+    int startFrame;
+    int endFrame;
+};

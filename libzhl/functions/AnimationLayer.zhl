@@ -1,0 +1,20 @@
+struct AnimationLayer depends (AnimationFrame) { {{
+	inline int GetLayerID() { return this->_layerID; }
+	// Number of unique frames. Not the total length of the animation.
+	// Note that interpolated frames have been split into multiple frames.
+	// Should only be used internally, for accessing the array of AnimationFrames.
+	inline int GetFrameCount() { return this->_numFrames; }
+	inline AnimationFrame* GetFrame(const int frame) {
+		if (this->_animFrames != nullptr && frame >= 0 && frame < this->GetFrameCount()) {
+			return &this->_animFrames[frame];
+		}
+		return nullptr;
+	}
+	inline bool IsVisible() { return this->_visible; }
+}}
+    int _layerID;
+    AnimationFrame* _animFrames;
+    int _numFrames;
+	bool _visible;
+	char _padding[3];
+};
