@@ -51,6 +51,7 @@ struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
 		return nullptr;
     }
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
+	inline NullFrame* GetOverlayNullFrame(const char * name) {return this->GetOverlayAnimationState()->GetNullFrame(name); }
 	inline unsigned int GetLayerCount() { return this->_layerCount; } 
 	inline ColorMod* GetColor() { return &this->_color; } 
 }} 

@@ -19,6 +19,21 @@ static int Lua_SpriteGetNullFrame(lua_State* L)
 	return 1;
 }
 
+static int Lua_SpriteGetOverlayNullFrame(lua_State* L)
+{
+	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const char* nullLayerName = luaL_checkstring(L, 2);
+	NullFrame* toLua = sprite->GetOverlayNullFrame(nullLayerName);
+	if (toLua == nullptr) {
+		lua_pushnil(L);
+		return 1;
+	}
+	NullFrame** luaNullFrame = (NullFrame**)lua_newuserdata(L, sizeof(NullFrame*));
+	*luaNullFrame = toLua;
+	luaL_setmetatable(L, lua::metatables::NullFrameMT);
+	return 1;
+}
+
 static int Lua_NullFrameGetScale(lua_State* L)
 {
 	NullFrame* nullFrame = *lua::GetUserdata<NullFrame**>(L, 1, lua::metatables::NullFrameMT);
@@ -64,11 +79,8 @@ static int Lua_NullFrameGetRotation(lua_State* L)
 
 static void RegisterNullFrame(lua_State* L)
 {
-	lua::PushMetatable(L, lua::Metatables::SPRITE);
-	lua_pushstring(L, "GetNullFrame");
-	lua_pushcfunction(L, Lua_SpriteGetNullFrame);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	lua::RegisterFunction(L, lua::Metatables::SPRITE, "GetNullFrame", Lua_SpriteGetNullFrame);
+	lua::RegisterFunction(L, lua::Metatables::SPRITE, "GetOverlayNullFrame", Lua_SpriteGetOverlayNullFrame);
 
 	luaL_newmetatable(L, lua::metatables::NullFrameMT);
 	lua_pushstring(L, "__index");
