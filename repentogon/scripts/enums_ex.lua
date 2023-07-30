@@ -2266,5 +2266,6 @@ AutocompleteType = {
 	CURSE = 12,
 	METRO = 13,
 	DELIRIOUS = 14,
-	CUSTOM = 15,
+	PLAYER = 15,
+	CUSTOM = 16,
 }
