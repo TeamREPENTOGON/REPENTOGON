@@ -4,8 +4,11 @@ __thiscall NullFrame* AnimationState::GetNullFrame(const char* nullLayerName);
 "558bec53568bf1578b4e??85c975??68????????6a03":
 __thiscall NullFrame* AnimationState::GetNullFrame(int nullLayerID);
 
-"558BEC51538BD95657895D??837B??0075??68????????6A03E8????????83C4088B3333FF8B9E????????85DB74??8BB6????????837E??108BC672??8B068B4D??8A103A1175??84D274??8A50??3A51??75??83C00283C10284D275??33C0EB??1BC083C80185C074??4783C6183BFB72??32C05F5E5B8BE55DC2040085FF78??8BCFB801000000D3E08B4D??5F5E5B8541??0F95C08BE55DC204":
+"558BEC51538BD95657895D??837B??0075??68????????6A03E8????????83C4088B3333FF8B9E????????85DB74??8BB6????????837E??108BC672??8B068B4D??8A103A1175??84D274??8A50??3A51??75??83C00283C10284D275??33C0EB??1BC083C80185C074??4783C6183BFB72??32C05F5E5B8BE55DC2040085FF78??8BCFB801000000D3E08B4D??5F5E5B8541180F95C08BE55DC204":
 __thiscall bool AnimationState::IsEventTriggered(const char* eventName);
+
+"558BEC51538BD95657895D??837B??0075??68????????6A03E8????????83C4088B3333FF8B9E????????85DB74??8BB6????????837E??108BC672??8B068B4D??8A103A1175??84D274??8A50??3A51??75??83C00283C10284D275??33C0EB??1BC083C80185C074??4783C6183BFB72??32C05F5E5B8BE55DC2040085FF78??8BCFB801000000D3E08B4D??5F5E5B85411C0F95C08BE55DC204":
+__thiscall bool AnimationState::WasEventTriggered(const char* eventName);
 
 "558bec83ec0c568bf15783ec08":
 __thiscall void AnimationState::AdvancePosition(int amount);
@@ -13,13 +16,18 @@ __thiscall void AnimationState::AdvancePosition(int amount);
 struct AnimationState depends (AnimationData, ANM2) { {{
     inline AnimationData* GetAnimationData() { return this->_animData; }
 }}
-    ANM2* _animation;
-    AnimationData* _animData;
-    void* field2_0x8;
-    void* field3_0xc;
-    float _animFrame;
-    bool _isPlaying;
+    ANM2* _animation;  // 0x00
+    AnimationData* _animData;  // 0x04
+    // Array that identifies which index in the internal AnimationFrame array a given layer is currently on.
+    // Note that this is different than the current frame of animation that the layer is on from the
+    // user perspective, since a frame with a duration >1 still only has one AnimationFrame index.
+    // Sprite:SetLayerFrame() probably calculates the correct frame index to set.
+    int* _layerFrames;  // 0x08
+    // Same as above for null layers.
+    int* _nullLayerFrames;  // 0x0c
+    float _animFrame;  // 0x10
+    bool _isPlaying;  // 0x14
     char _pad[3];
-    char field6_0x18[4];
-    char field7_0x1c[4];
+    int _currentlyTriggeredEvents;  // 0x18
+    int _previouslyTriggeredEvents;  // 0x1c
 };

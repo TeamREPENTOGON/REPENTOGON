@@ -31,6 +31,24 @@ int Lua_SpriteReplaceSpritesheet(lua_State* L)
 	return 0;
 }
 
+int Lua_SpriteIsOverlayEventTriggered(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const char* eventName = luaL_checkstring(L, 2);
+	lua_pushboolean(L, anm2->GetOverlayAnimationState()->IsEventTriggered(eventName));
+
+	return 1;
+}
+
+int Lua_SpriteWasOverlayEventTriggered(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const char* eventName = luaL_checkstring(L, 2);
+	lua_pushboolean(L, anm2->GetOverlayAnimationState()->WasEventTriggered(eventName));
+
+	return 1;
+}
+
 /*int Lua_SpriteGetLayer(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
@@ -229,6 +247,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetLayer", Lua_SpriteGetLayer);
 	lua::RegisterFunction(state, mt, "GetLayerByName", Lua_SpriteGetLayer_Text);
 	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);
+	lua::RegisterFunction(state, mt, "IsOverlayEventTriggered", Lua_SpriteIsOverlayEventTriggered);
+	lua::RegisterFunction(state, mt, "WasOverlayEventTriggered", Lua_SpriteWasOverlayEventTriggered);
 	RegisterLayerState(state);
 }
 
