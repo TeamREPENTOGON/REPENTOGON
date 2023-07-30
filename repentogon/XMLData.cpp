@@ -2562,6 +2562,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	if (xmlsloaded) {
 		if ((bosspoolsxml != NULL) && (charfind(xmldata, "<bosspool", 50))) {
 			return super(bosspoolsxml);
+		}
+		else if (charfind(xmldata, "<cuts", 50)) {
+			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
 		}else{
 			return super(xmldata); 
 		}
