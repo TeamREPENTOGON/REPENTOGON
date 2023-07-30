@@ -7,6 +7,7 @@
 #include "IsaacRepentance.h"
 #include "LogViewer.h"
 #include "SigScan.h"
+#include "IconsFontAwesome6.h"
 
 #include <Windows.h>
 #include <format>
@@ -263,11 +264,16 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         cfg.OversampleV = 1;
         cfg.PixelSnapH = 1;
 
-        for (int i = 1; i <= 12; ++i) {
-            // ImGui font scaling will make it blurry, this is a suboptimal but (for better or worse) functional workaround.
-            cfg.SizePixels = 13.0f * i;
-            fonts.insert(std::pair<int, ImFont*>(i, ImGui::GetIO().Fonts->AddFontDefault(&cfg)));
-        }
+		static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+
+		for (int i = 1; i <= 12; ++i) {
+			// ImGui font scaling will make it blurry, this is a suboptimal but (for better or worse) functional workaround.
+			cfg.MergeMode = false;
+			cfg.SizePixels = 13.0f * i;
+			fonts.insert(std::pair<int, ImFont*>(i, io.Fonts->AddFontDefault(&cfg)));
+			cfg.MergeMode = true;
+			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 16, &cfg, icon_ranges);
+		}
 
         imguiInitialized = true;
         ImGui::GetIO().FontAllowUserScaling = true;
@@ -297,12 +303,12 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
     if (menuShown) {
         if (ImGui::BeginMainMenuBar()) {
-            if (ImGui::BeginMenu("Tools")) {
-                ImGui::MenuItem("Debug Console", NULL, &console.enabled);
-                ImGui::MenuItem("Log Viewer", NULL, &logViewer.enabled);
-                ImGui::MenuItem("Performance", NULL, &performanceWindow.enabled);
-                ImGui::MenuItem("Style Editor", NULL, &show_app_style_editor);
-                ImGui::EndMenu();
+			if (ImGui::BeginMenu(ICON_FA_SCREWDRIVER_WRENCH " Tools")) {
+				ImGui::MenuItem(ICON_FA_TERMINAL" Debug Console", NULL, &console.enabled);
+				ImGui::MenuItem(ICON_FA_NEWSPAPER" Log Viewer", NULL, &logViewer.enabled);
+				ImGui::MenuItem(ICON_FA_GAUGE_HIGH" Performance", NULL, &performanceWindow.enabled);
+				ImGui::MenuItem(ICON_FA_PENCIL" Style Editor", NULL, &show_app_style_editor);
+				ImGui::EndMenu();
             }
             customImGui.DrawMenu();
             helpMenu.Draw();

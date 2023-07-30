@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include "IconsFontAwesome6.h"
 
 extern int handleWindowFlags(int flags);
 
@@ -62,9 +63,11 @@ struct HelpMenu {
 
     void Draw()
     {
-        if (ImGui::BeginMenu("Help")) {
+        if (ImGui::BeginMenu(ICON_FA_CIRCLE_QUESTION" Help")) {
             if (ImGui::BeginMenu("Controls")) {
-                if (ImGui::MenuItem("Mouse")) { }
+                if (ImGui::MenuItem("Mouse")) {
+                  ImGui::Text("Scale Text: Mousewheel + CTRL and hover over the text/window you want to scale");
+                }
                 if (ImGui::MenuItem("Keyboard")) { }
                 if (ImGui::BeginMenu("Controller")) {
                     if (ImGui::BeginMenu("Playstation")) {
