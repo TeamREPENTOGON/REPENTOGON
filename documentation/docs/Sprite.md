@@ -34,6 +34,10 @@ ___
 #### [AnimationData](AnimationData.md) GetOverlayAnimationData () {: .copyable aria-label='Functions' }
 
 ___
+### Get·Overlay·Null·Frame () {: aria-label='Functions' }
+#### [NullFrame](NullFrame.md) GetOverlayNullFrame ( string LayerName ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Overlay·Event·Triggered () {: aria-label='Functions' }
 #### boolean IsOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 
