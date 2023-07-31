@@ -338,6 +338,8 @@ struct ConsoleMega {
                 }
                 ImGui::OpenPopup("Console Autocomplete");
             }
+            ImVec2 drawPos = ImGui::GetCursorPos();
+
             ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
             if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
@@ -353,8 +355,22 @@ struct ConsoleMega {
                 ImGui::SetKeyboardFocusHere(-1);
                 reclaimFocus = false;
             }
-                
 
+            // Handle preview text
+            std::string previewText;
+            if (!autocompleteBuffer.empty())
+            {
+                AutocompleteEntry entry = autocompleteBuffer[autocompletePos];
+                previewText = entry.autocompleteText.substr(min(strlen(inputBuf), entry.autocompleteText.size()));
+            }
+            // render at end of input text
+            ImVec2 textSize = ImGui::CalcTextSize(inputBuf);
+            ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x + textSize.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
+            
+            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
+            ImGui::Text(previewText.c_str());
+            ImGui::PopStyleColor();
+            
             ImGui::End();
         }
         ImGui::PopStyleVar();
