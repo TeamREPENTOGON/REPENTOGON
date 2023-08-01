@@ -1038,27 +1038,31 @@ namespace GL {
 		void AddAttribute(GLSLType type, std::string&& name) {
 			// _attributes.push_back(VertexAttributeDescriptor(type, std::move(name)));
 			_offsets[name] = std::make_tuple(_size, type);
+			size_t size;
 
 			switch (type) {
 			case GLSL_FLOAT:
-				_size += 1;
+				size = 1;
 				break;
 
 			case GLSL_VEC2:
-				_size += 2;
+				size = 2;
 				break;
 
 			case GLSL_VEC3:
-				_size += 3;
+				size = 3;
 				break;
 
 			case GLSL_VEC4:
-				_size += 4;
+				size = 4;
 				break;
 
 			default:
 				throw std::runtime_error("Invalid GLSLType value");
 			}
+
+			_size += size;
+			_attributeSize.push_back(type);
 		}
 
 		uint32_t GetSize() const {
@@ -1089,8 +1093,13 @@ namespace GL {
 			return _offsets;
 		}
 
+		std::vector<GLSLType> const& GetTypes() const {
+			return _attributeSize;
+		}
+
 	private:
 		std::map<std::string, std::tuple<size_t, GLSLType>> _offsets;
+		std::vector<GLSLType> _attributeSize;
 		uint32_t _size;
 	};
 
@@ -1780,11 +1789,10 @@ namespace GL {
 
 		int i = 0;
 		float* bufferOffset = _data;
-		for (auto const& [_, data] : _descriptor->GetOffsets()) {
+		for (GLSLType type: _descriptor->GetTypes()) {
 			GLint size = 0;
 			GLsizei stride = _descriptor->GetSize() * sizeof(float);
 
-			auto const& [offset, type] = data;
 			switch (type) {
 			case GLSL_FLOAT:
 				size = 1;
@@ -1881,11 +1889,16 @@ void __stdcall LuaPreDrawElements(float* vertexBuffer, GLsizei /* stride */, GLe
 	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
 		GL::InitProjectionMatrix();
 
+		int currentShader; 
+		glGetIntegerv(GL_CURRENT_PROGRAM, &currentShader);
+
 		int shaderId = -1;
-		for (int i = 0; i < SHADER_MAX; ++i) {
-			if (__ptr_g_AllShaders[i] == g_CurrentShader) {
-				shaderId = i;
-				break;
+		if (currentShader != 0) {
+			for (int i = 0; i < SHADER_MAX; ++i) {
+				if (__ptr_g_AllShaders[i]->GetShaderId() == currentShader) {
+					shaderId = i;
+					break;
+				}
 			}
 		}
 

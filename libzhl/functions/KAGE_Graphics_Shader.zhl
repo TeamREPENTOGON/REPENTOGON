@@ -5,5 +5,7 @@ reference KAGE_Graphics_Shader* g_CurrentShader;
 reference KAGE_Graphics_Shader* g_AllShaders;
 
 struct KAGE_Graphics_Shader {
-
+    {{
+        inline int GetShaderId() { return *(int*)((char*)this + 0x28); }
+    }}
 };
