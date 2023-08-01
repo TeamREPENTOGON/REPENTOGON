@@ -359,7 +359,7 @@ struct ConsoleMega {
 
             // Handle preview text
             std::string previewText;
-            if (!autocompleteBuffer.empty())
+            if (!autocompleteBuffer.empty() && autocompletePos >= 0 && autocompletePos < autocompleteBuffer.size())
             {
                 AutocompleteEntry entry = autocompleteBuffer[autocompletePos];
                 previewText = entry.autocompleteText.substr(min(strlen(inputBuf), entry.autocompleteText.size()));
