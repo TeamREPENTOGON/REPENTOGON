@@ -141,7 +141,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         return;
     }
 
-    if (in.rfind("fullreset", 0) == 0) {
+    if (in.rfind("fullrestart", 0) == 0) {
         GameRestart();
         return;
     }
