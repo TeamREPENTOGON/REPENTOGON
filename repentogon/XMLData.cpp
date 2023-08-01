@@ -2703,16 +2703,6 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 #include <limits.h>
 #include <iostream>
 
-void GameRestart() {
-	g_Manager->GetOptions()->Save();
-	char path[1024];
-	STARTUPINFO si = {};
-	PROCESS_INFORMATION pi = {};
-	LPSTR commandLine = GetCommandLine();
-	if (CreateProcess(NULL, commandLine, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
-		TerminateProcess(GetCurrentProcess(), 0);
-	}
-}
 HOOK_METHOD(ModManager, Reset, () -> void) {
 	//super();
 	GameRestart();

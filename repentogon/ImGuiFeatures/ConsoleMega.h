@@ -205,6 +205,7 @@ struct ConsoleMega {
         RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false, STAGE);
         RegisterCommand("time", "Print game time", "Prints the total amount of time passed on the run.", false);
         RegisterCommand("testbosspool", "Print list of bosses for current floor", "Prints a list of boss names and percentage chance (100%=10000) for current floor.", false);
+        RegisterCommand("fullreset", "Fully resets the entire game", "Fully resets the entire game, closing it and reopening it", true);
 
 
         // Note: these are *functionally* identical, but not *literally* identical to the vanilla macros.

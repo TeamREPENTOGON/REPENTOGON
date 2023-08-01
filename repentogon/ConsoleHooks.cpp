@@ -3,6 +3,7 @@
 #include "ImGuiFeatures/ConsoleMega.h"
 #include "ImGuiFeatures/LogViewer.h"
 #include "LuaCore.h"
+#include "XMLData.h"
 
 #include <filesystem>
 #include <iostream> 
@@ -137,6 +138,11 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
 
     if (in.rfind("luareset", 0) == 0) {
         LuaReset();
+        return;
+    }
+
+    if (in.rfind("fullreset", 0) == 0) {
+        GameRestart();
         return;
     }
 

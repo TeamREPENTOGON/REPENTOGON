@@ -66,6 +66,17 @@ inline string stringlower(const char* str)
 	return s;
 }
 
+inline void GameRestart() {
+	g_Manager->GetOptions()->Save();
+	char path[1024];
+	STARTUPINFO si = {};
+	PROCESS_INFORMATION pi = {};
+	LPSTR commandLine = GetCommandLine();
+	if (CreateProcess(NULL, commandLine, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+		TerminateProcess(GetCurrentProcess(), 0);
+	}
+}
+
 
 class XMLNodeTable {
 public:
