@@ -2,7 +2,7 @@
 __thiscall void RoomConfig::LoadCurses(char* xmlpath,bool ismod);
 
 "558bec8b45??83f8ff75??a1":
-static __fastcall unsigned int RoomConfig::GetStageID(unsigned int LevelStage, unsigned int StageType, unsigned int Mode);
+static cleanup unsigned int RoomConfig::GetStageID(unsigned int LevelStage<ecx>, unsigned int StageType<edx>, unsigned int Mode);
 
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b894010100":

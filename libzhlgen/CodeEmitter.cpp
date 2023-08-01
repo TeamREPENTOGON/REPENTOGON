@@ -807,6 +807,33 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
         EmitInstruction("push esi");
         EmitInstruction("push edi");
 
+        // Analyze position of arguments
+        std::vector<std::optional<Registers>> placement(fn._params.size());
+        if (fn._convention && *fn._convention == CallingConventions::FASTCALL) {
+            Registers next = Registers::ECX;
+            int i = 0;
+            for (FunctionParam const& param : fn._params) {
+                Type* type = param._type;
+                if (!param._reg && next != Registers::EAX && (type->IsPointer() || (type->IsBasic() && std::get<BasicType>(type->_value).size() <= 4))) {
+                    placement[i] = next;
+
+                    switch (next) {
+                    case Registers::ECX:
+                        next = Registers::EDX;
+                        break;
+
+                    case Registers::EDX:
+                        next = Registers::EAX;
+                        break;
+
+                    default:
+                        break;
+                    }
+                }
+                ++i;
+            }
+        }
+
         // Call function
         // Iterate through arguments in reverse order
         size_t k = stackSize + 8;
@@ -825,8 +852,12 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
 
                 k -= 4;
                 ins << regStr << ", [ebp + " << k << "] // " << param._name;
+
                 EmitInstruction(ins.str());
 
+            }
+            else if (placement[i]) {
+                // Do nothing, value already in register
             }
             else {
                 int count = (int)std::ceil(param._type->size() / 4.f);
@@ -1104,7 +1135,13 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
                     }
 
                     Emit(", 0 } /* " + param._name + " */");
-                    stackSize += 4;
+                    /* Do not actually increase the size of the stack here :
+                     * because the trampoline is generated as a fastcall 
+                     * function, parameters are already placed in registers
+                     * and not on the stack.
+                     */
+                    
+                    // stackSize += 4;
                 }
                 else {
                     int paramSize = (int)std::ceil(param._type->size() / 4.f);
