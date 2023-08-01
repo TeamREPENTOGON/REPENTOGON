@@ -109,6 +109,15 @@ int Lua_PGDGetBestiaryDeathCount(lua_State* L)
 	return 1;
 }
 
+int Lua_PGDGetBestiaryEncounterCount(lua_State* L)
+{
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	int entType = (int)luaL_checkinteger(L, 2);
+	int entVariant = (int)luaL_checkinteger(L, 3);
+	lua_pushinteger(L, pgd->GetBestiaryEncounterCount(entType, entVariant));
+	return 1;
+}
+
 static void RegisterPersistentGameData(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
@@ -131,6 +140,7 @@ static void RegisterPersistentGameData(lua_State* L)
 		{ "IsChallengeCompleted", Lua_PGDIsChallengeCompleted},
 		{ "GetBestiaryKillCount", Lua_PGDGetBestiaryKillCount},
 		{ "GetBestiaryDeathCount", Lua_PGDGetBestiaryDeathCount},
+		{ "GetBestiaryEncounterCount", Lua_PGDGetBestiaryEncounterCount},
 		{ NULL, NULL }
 	};
 

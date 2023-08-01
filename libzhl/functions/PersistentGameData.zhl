@@ -19,6 +19,9 @@ __thiscall int PersistentGameData::GetBestiaryDeathCount(int EntityType, int Ent
 "558bec83ec0c57ff750c8bf98b0d????????ff75088d89889f0200e8????????85c074??80b8e80000000074??568b308d8ffc0e0000":
 __thiscall int PersistentGameData::GetBestiaryKillCount(int EntityType, int EntityVariant);
 
+"558bec56ff75??8bf18b0d????????ff75??8d89????????e8????????85c0":
+__thiscall int PersistentGameData::GetBestiaryEncounterCount(int EntityType, int EntityVariant);
+
 struct PersistentGameData { {{
 	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
 	inline bool IsItemInCollection (int collectibleID) {
