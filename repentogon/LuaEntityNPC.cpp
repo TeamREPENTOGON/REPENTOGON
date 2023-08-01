@@ -136,6 +136,24 @@ LUA_FUNCTION(Lua_NPCGetHitList) {
 	return 1;
 }
 
+int Lua_NPCGetShieldStrength(lua_State* L)
+{
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+
+	lua_pushnumber(L, *npc->GetShieldStrength());
+
+	return 1;
+}
+
+int Lua_NPCSetShieldStrength(lua_State* L)
+{
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+
+	*npc->GetShieldStrength() = luaL_checknumber(L, 2);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -149,6 +167,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "FireProjectilesEx", Lua_EntityNPC_FireProjectilesEx);
 	lua::RegisterFunction(state, mt, "FireBossProjectilesEx", Lua_EntityNPC_FireBossProjectilesEx);
 	lua::RegisterFunction(state, mt, "GetHitList", Lua_NPCGetHitList);
+	lua::RegisterFunction(state, mt, "GetShieldStrength", Lua_NPCGetShieldStrength);
+	lua::RegisterFunction(state, mt, "SetShieldStrength", Lua_NPCSetShieldStrength);
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {

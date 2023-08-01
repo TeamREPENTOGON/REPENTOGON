@@ -33,9 +33,17 @@ ___
 #### table GetHitList ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Shield·Strength() {: aria-label='Functions' }
+#### float GetShieldStrength ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Controller·Id() {: aria-label='Functions' }
 #### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
 Sets the ControllerId for the NPC, which indicates which player will control it. Set it to -1 for no player controls(back to normal behaviour).
+
+___
+### Set·Shield·Strength() {: aria-label='Functions' }
+#### void SetShieldStrength ( float Strength ) {: .copyable aria-label='Functions' }
 
 ___
 ### Try·Force·Target() {: aria-label='Functions' }
