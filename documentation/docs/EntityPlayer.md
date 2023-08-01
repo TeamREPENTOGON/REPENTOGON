@@ -309,6 +309,10 @@ ___
 #### void SetRedStewBonusDuration ( int Duration ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Tear·Poison·Damage () {: aria-label='Functions' }
+#### void SetTearPoisonDamage ( float Damage ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Weapon () {: aria-label='Functions' }
 #### void SetWeapon ( [Weapon](Weapon.md) Weapon, int WeaponSlot ) {: .copyable aria-label='Functions' }
 

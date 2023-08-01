@@ -687,6 +687,13 @@ static int Lua_PlayerSetPurityState(lua_State* L) {
 	return 0;
 }
 
+static int Lua_PlayerSetTearPoisonDamage(lua_State* L) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetTearPoisonDamage() = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -764,4 +771,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "ShuffleCostumes", Lua_PlayerShuffleCostumes);
 	lua::RegisterFunction(state, mt, "GetPurityState", Lua_PlayerGetPurityState);
 	lua::RegisterFunction(state, mt, "SetPurityState", Lua_PlayerSetPurityState);
+	lua::RegisterFunction(state, mt, "SetTearPoisonDamage", Lua_PlayerSetTearPoisonDamage);
 }

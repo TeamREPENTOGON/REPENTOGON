@@ -232,6 +232,7 @@ struct Entity_Player : public Entity { {{
 	inline int* GetRottenHearts() {return (int*)((char*)this + 0x1CC4); }
 	inline int* GetGigaBombs() {return (int*)((char*)this + 0x1CF4); }
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
+	inline float* GetTearPoisonDamage() { return (float*)((char*)this + 0x14c0); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
 }} 
     __vtable {
