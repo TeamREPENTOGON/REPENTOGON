@@ -1905,7 +1905,9 @@ void __stdcall LuaPreDrawElements(float* vertexBuffer, GLsizei /* stride */, GLe
 		// If the return value is a pipeline, override the default rendering.
 		lua::LuaResults results = caller.call(1);
 
-		// buffer->Bind();
+		if (shaderId == 0) {
+			buffer->Bind();
+		}
 	}
 
 	glDrawElements(mode, count, type, indices);
