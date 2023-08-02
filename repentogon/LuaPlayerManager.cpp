@@ -108,6 +108,21 @@ static int Lua_TriggerRoomClear(lua_State* L)
 	return 0;
 }
 
+int Lua_AnyoneHasTrinket(lua_State* L)
+{
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	int trinket = (int)luaL_checkinteger(L, 2);
+	RNG* rng = new RNG();
+	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, true);
+	if (!player) {
+		lua_pushboolean(L, false);
+	}
+	else {
+		lua_pushboolean(L, true);
+	}
+	return 1;
+}
+
 static void RegisterPlayerManager(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetPlayerManager");
@@ -129,6 +144,7 @@ static void RegisterPlayerManager(lua_State* L) {
 		{ "GetTotalTrinketMultiplier", Lua_PlayerManagerGetTrinketMultiplier},
 		{ "FirstTrinketOwner", Lua_FirstTrinketOwner },
 		{ "TriggerRoomClear", Lua_TriggerRoomClear },
+		{ "AnyoneHasTrinket", Lua_AnyoneHasTrinket},
 		{ NULL, NULL }
 	};
 

@@ -14,7 +14,12 @@
 
 ### Anyone·Has·Collectible () {: aria-label='Functions' }
 #### boolean AnyoneHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
-Returns true when any player has the item and false when noone does.
+Returns true when any player has the item and false when no one does.
+
+___
+### Anyone·Has·Trinket () {: aria-label='Functions' }
+#### boolean AnyoneHasCollectible ( [Trinket](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
+Returns true when any player has the trinket and false when no one does.
 
 ___
 ### Get·Num·Collectibles () {: aria-label='Functions' }
