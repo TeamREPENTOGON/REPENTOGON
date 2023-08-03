@@ -99,15 +99,22 @@ nav:
     - WispSubType: enums/WispSubType.md
     - XMLNode: enums/XMLNode.md
   - Ambush: Ambush.md
+  - AnimationData: AnimationData.md
+  - AnimationFrame: AnimationFrame.md
+  - AnimationLayer: AnimationLayer.md
   - AnimationState: AnimationState.md
+  - Backdrop: Backdrop.md
   - Camera: Camera.md
+  - Capsule: Capsule.md
   - ChallengeParam: ChallengeParam.md
   - Color: Color.md
   - Console: Console.md
   - DailyChallenge: DailyChallenge.md
+  - DebugRenderer: DebugRenderer.md
   - Entity:
     - Entity: Entity.md
     - EntityFamiliar: EntityFamiliar.md
+    - EntityLaser: EntityLaser.md
     - EntityNPC: EntityNPC.md
     - EntityPlayer: EntityPlayer.md
     - EntityPickup: EntityPickup.md
@@ -120,6 +127,7 @@ nav:
   - History: History.md
   - HistoryItem: HistoryItem.md
   - HUD: HUD.md
+  - Image: Image.md
   - ImGui: ImGui.md
   - Isaac: Isaac.md
   - ItemConfig - PillEffect: ItemConfig_PillEffect.md
@@ -127,7 +135,9 @@ nav:
   - ItemPool: ItemPool.md
   - LayerState: LayerState.md
   - Level: Level.md
+  - LevelGenerator: LevelGenerator.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
+  - LevelGeneratorRoom: LevelGeneratorRoom.md
   - MainMenu: MainMenu.md
   - Minimap: Minimap.md
   - MultiShotParams: MultiShotParams.md
@@ -144,6 +154,7 @@ nav:
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
   - RoomTransition: RoomTransition.md
+  - Shape: Shape.md
   - Sprite: Sprite.md
   - StageTransition: StageTransition.md
   - Weapon: Weapon.md

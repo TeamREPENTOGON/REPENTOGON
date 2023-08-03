@@ -29,12 +29,12 @@
     link EntityEffect "https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html" "Go to page for 'EntityEffect' class"
     link EntityFamiliar "https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html" "Go to page for 'EntityFamiliar' class"
     link EntityKnife "https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html" "Go to page for 'EntityKnife' class"
-    link EntityLaser "https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html" "Go to page for 'EntityLaser' class"
+    link EntityLaser "EntityLaser.html" "Go to page for 'EntityLaser' class"
     link EntityNPC "EntityNPC.html" "Go to page for 'EntityNPC' class"
     link EntityPickup "EntityPickup.html" "Go to page for 'EntityPickup' class"
     link EntityPlayer "EntityPlayer.html" "Go to page for 'EntityPlayer' class"
     link EntityProjectile "https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html" "Go to page for 'EntityProjectile' class"
-    link EntityProjectile "EntitySlot.html" "Go to page for 'EntitySlot' class"
+    link EntitySlot "EntitySlot.html" "Go to page for 'EntitySlot' class"
     link EntityTear "https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html" "Go to page for 'EntityTear' class"
 ```
 </div>

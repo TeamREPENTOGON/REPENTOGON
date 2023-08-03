@@ -1001,6 +1001,34 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1097 |MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
+### MC_POST_TRIGGER_WEAPON_FIRED {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1098 |MC_POST_TRIGGER_WEAPON_FIRED {: .copyable } | ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) FireDirection, int FireAmount, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Owner) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
+
+### MC_POST_NIGHTMARE_SCENE_RENDER {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1102 |MC_POST_NIGHTMARE_SCENE_RENDER {: .copyable } | ([NightmareScene](../NightmareScene.md) NightmareScene) | - | void |
+
+### MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1103 |MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable } | ([NightmareScene](../NightmareScene.md) NightmareScene, boolean Unknown) | - | void |
+
+### MC_POST_WEAPON_FIRE {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1105 |MC_POST_WEAPON_FIRE {: .copyable } | ([Weapon](../Weapon.md) Weapon, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) FireDirection, boolean IsShooting, boolean IsInterpolated) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
+
 ### MC_CONSOLE_AUTOCOMPLETE
 This is called whenever a function with the CUSTOM [AutocompleteType](AutocompleteType.md) enum is being entered into the console. Called every time the console input changes.
 
@@ -1011,6 +1039,13 @@ REPENTOGON handles only showing options relevant for the given input- simply ret
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1120 |MC_CONSOLE_AUTOCOMPLETE {: .copyable } | (string Command, string Params)| string Command | table |
+
+### MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1127 |MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_CUSTOM_CHARACTER_UNLOCKED
 This is called every frame a custom character with the `needsunlock` tag is currently selected on the menu.
