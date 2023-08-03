@@ -99,6 +99,15 @@ static void RegisterWorldToMenuPos(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+static int Lua_MainMenuGameGetGameMenuSprite(lua_State* L)
+{
+	Menu_Game* menuGame = *lua::GetUserdata<Menu_Game**>(L, 1, MainMenuGameMT);
+	ANM2* anm2 = menuGame->GetGameMenuSprite();
+	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 1;
+}
+
 static int Lua_MainMenuGameGetContinueWidgetSprite(lua_State* L)
 {
 	Menu_Game* menuGame = *lua::GetUserdata<Menu_Game**>(L, 1, MainMenuGameMT);
@@ -137,6 +146,7 @@ static void RegisterMainMenuGame(lua_State* L)
 	lua_settable(L, -3);
 
 	luaL_Reg functions[] = {
+		{ "GetGameMenuSprite", Lua_MainMenuGameGetGameMenuSprite},
 		{ "GetContinueWidgetSprite", Lua_MainMenuGameGetContinueWidgetSprite},
 		{ "GetContinueWidgetAnimationState", Lua_MainMenuGameGetAnimationState},
 		{ NULL, NULL }

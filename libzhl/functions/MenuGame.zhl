@@ -8,6 +8,7 @@ __thiscall void Menu_Game::Render();
 __thiscall void Menu_Game::PreRenderContinueImg();
 
 struct Menu_Game { {{
+	inline ANM2* GetGameMenuSprite() { return (ANM2*)((char*)this + 0x10) ; }
 	inline ANM2* GetContinueWidgetSprite() { return (ANM2*)((char*)this + 0x124) ; }
 	inline AnimationState* GetContinueWidgetAnimationState() { return (AnimationState*)((char*)this + 0x154) ; }
 }} };
