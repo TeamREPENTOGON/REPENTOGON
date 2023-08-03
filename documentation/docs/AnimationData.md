@@ -11,20 +11,20 @@ Can be obtained via [Sprite:GetAnimationData()](Sprite.md#getanimationdata), [Sp
 
 ___
 ### Get·Layer·Count () {: aria-label='Functions' }
-#### int GetLayerCount () {: .copyable aria-label='Functions' }
+#### int GetLayerCount ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Length () {: aria-label='Functions' }
-#### int GetLength () {: .copyable aria-label='Functions' }
+#### int GetLength ( ) {: .copyable aria-label='Functions' }
 Length of this animation in frames.
 
 ___
 ### Get·Name () {: aria-label='Functions' }
-#### string GetName () {: .copyable aria-label='Functions' }
+#### string GetName ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Looping·Animation () {: aria-label='Functions' }
-#### boolean IsLoopingAnimation () {: .copyable aria-label='Functions' }
+#### boolean IsLoopingAnimation ( ) {: .copyable aria-label='Functions' }
 
 ___
 

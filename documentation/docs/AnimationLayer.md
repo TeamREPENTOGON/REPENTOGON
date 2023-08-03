@@ -11,11 +11,11 @@ Obtained via [AnimationData:GetLayer()](AnimationData.md#getlayer).
 
 ___
 ### Get·Layer·ID () {: aria-label='Functions' }
-#### int GetLayerID () {: .copyable aria-label='Functions' }
+#### int GetLayerID ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Visible () {: aria-label='Functions' }
-#### boolean IsVisible () {: .copyable aria-label='Functions' }
+#### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 
 ___
 

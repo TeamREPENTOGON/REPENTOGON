@@ -15,7 +15,7 @@ ___
 
 ___
 ### Get·Current·Animation·Data () {: aria-label='Functions' }
-#### [AnimationData](AnimationData.md) GetCurrentAnimationData () {: .copyable aria-label='Functions' }
+#### [AnimationData](AnimationData.md) GetCurrentAnimationData ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Layer () {: aria-label='Functions' }
@@ -31,7 +31,7 @@ ___
 
 ___
 ### Get·Overlay·Animation·Data () {: aria-label='Functions' }
-#### [AnimationData](AnimationData.md) GetOverlayAnimationData () {: .copyable aria-label='Functions' }
+#### [AnimationData](AnimationData.md) GetOverlayAnimationData ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Overlay·Null·Frame () {: aria-label='Functions' }
