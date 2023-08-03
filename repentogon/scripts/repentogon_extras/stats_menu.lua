@@ -187,6 +187,9 @@ local function RenderExtraStats()
         end
     end
 
+    if Isaac.GetStatsMenu():IsAchievementsScreenVisible() then
+        return
+    end
     -- render stat page over original stat page, to allow for custom content
     local posSheet = Isaac.WorldToMenuPosition(MainMenu.STATS, StatsMenu.StatSheetSpritePos)
     StatsMenu.StatSheetSprite:RenderLayer(1, posSheet)
