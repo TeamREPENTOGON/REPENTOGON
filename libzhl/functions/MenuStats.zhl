@@ -1,0 +1,8 @@
+struct Menu_Stats { {{
+	inline float GetPosX() { return *(float*)((char*)this + 0x14) ; }
+	inline float GetPosY() { return *(float*)((char*)this + 0x18) ; }
+	inline bool IsAchievementsScreenVisible() { return *(bool*)((char*)this + 0x130) ; }
+	inline ANM2* GetStatsMenuSprite() { return (ANM2*)((char*)this + 0x1c) ; }
+	inline ANM2* GetAchievementsSprite() { return (ANM2*)((char*)this + 0xb38) ; }
+	inline ANM2* GetSecretsMenuComponentsSprite() { return (ANM2*)((char*)this + 0xc80); } // weird math in decomp 
+}} };

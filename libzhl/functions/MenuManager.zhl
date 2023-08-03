@@ -25,4 +25,16 @@ struct MenuManager depends (Menu_Game, Menu_Character) {
 	
 	inline Menu_Game* GetMenuGame() {return (Menu_Game*)((char*)this + 0x80fac); }
 	inline Menu_Character* GetMenuCharacter() {return (Menu_Character*)((char*)this + 0x101c00); }
+
+	inline Menu_Challenge* GetMenuChallenge() {return (Menu_Challenge*)((char*)this + 0x102d50); }
+	inline Menu_DailyChallenge* GetMenuDailyChallenge() {return (Menu_DailyChallenge*)((char*)this + 0x8130c); }
+	inline Menu_Collection* GetMenuCollection() {return (Menu_Collection*)((char*)this + 0x102e80); }
+	inline Menu_Bestiary* GetMenuBestiary() {return (Menu_Bestiary*)((char*)this + 0x10da8c); }
+	inline Menu_Stats* GetMenuStats() {return (Menu_Stats*)((char*)this + 0x1030e0); }
+	inline Menu_Options* GetMenuOptions() {return (Menu_Options*)((char*)this + 0x10d4a4); }
+	inline Menu_SpecialSeeds* GetMenuSpecialSeeds() {return (Menu_SpecialSeeds*)((char*)this + 0x102bec); }
+	inline Menu_ControllerSelect* GetMenuControllerSelect() {return (Menu_ControllerSelect*)((char*)this + 0x10d710); }
+	inline Menu_KeyConfig* GetMenuKeyConfig() {return (Menu_KeyConfig*)((char*)this + 0x10d840); }
+	inline Menu_Cutscenes* GetMenuCutscenes() {return (Menu_Cutscenes*)((char*)this + 0x10d968); }
+	inline Menu_CustomChallenge* GetMenuCustomChallenge() {return (Menu_CustomChallenge*)((char*)this + 0x10de04); }
 }} };
