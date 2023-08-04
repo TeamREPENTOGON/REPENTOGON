@@ -17,16 +17,40 @@ __thiscall void Menu_Character::SelectRandomChar();
 struct Menu_Character {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 1168); } 
+	inline ANM2* GetBigCharPageSprite() { return (ANM2*)((char*)this + 0x40) ; }
+	inline ANM2* GetDifficultyOverlaySprite() { return (ANM2*)((char*)this + 0x154) ; }
+	inline ANM2* GetGreedDecoSprite() { return (ANM2*)((char*)this + 0x268) ; }
+	inline ANM2* GetBGSprite() { return (ANM2*)((char*)this + 0x37c) ; }
+	inline ANM2* GetDifficultyPageSprite() { return (ANM2*)((char*)this + 0x5ac) ; }
+	inline ANM2* GetSeedPageSprite() { return (ANM2*)((char*)this + 0x6c0) ; }
+	inline ANM2* GetWinStreakPageSprite() { return (ANM2*)((char*)this + 0x7d4) ; }
+	inline ANM2* GetEastereggPageSprite() { return (ANM2*)((char*)this + 0x8e8) ; }
+	inline ANM2* GetSeedUnlockPageSprite() { return (ANM2*)((char*)this + 0x9fc) ; }
+	inline ANM2* GetCharacterPortraitSprite() { return (ANM2*)((char*)this + 0xb18) ; }
+	inline ANM2* GetSeedEntrySprite() { return (ANM2*)((char*)this + 0xc48) ; }
+	inline ANM2* GetPageSwapWidgetSprite() { return (ANM2*)((char*)this + 0xdb0) ; }
+	inline ANM2* GetTaintedBGDecoSprite() { return (ANM2*)((char*)this + 0xec4) ; }
+
 	inline int GetNumCharacters() { return *(int*)((char*)this + 0xB10); }
 	inline int GetSelectedCharacterMenu() { return *(int*)((char*)this + 0xDAC); }
+	inline void SetSelectedCharacterMenu(int id) { *(int *)((char*)this + 0xDAC) = id; }
 }} 
-    int status; //1 seeds screen //4 transitioning to tainted
-    int lockedflags; //I think? 65792 is unlocked 65536 is locked
-    int difficulty;
-    int unk4;
-    int charaslot;
+    int Status; //1 seeds screen //4 transitioning to tainted
+    bool unkBool4;
+    bool IsCharacterUnlocked;
+    bool IsInputPossible;
+    bool unkBool7;
+    int Difficulty;
+    int CooldownWhenHoldDirection;
+    int SelectedCharacterID;
     int _chosenRandomCharacter;
     float _randomRotationVelocity;
-    int unk7;
+    int unk24;
     int _randomRotationAmount;
+    float unkFloat28;
+    float unkFloat2c;
+    float MenuBlackColorizeIntensity;
+    float MenuYellowColorizeIntensity;
+    int PositionX;
+    int PositionY;
 };

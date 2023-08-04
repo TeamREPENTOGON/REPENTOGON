@@ -194,7 +194,7 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 	// This gets run every render frame... which works out for us! Locked flags get reset every render frame. This is certianly efficient, thanks Nicalis!
 	if (playerXML["needsunlock"] == "true") {
 		characterUnlockData[CharacterId] = false;
-		g_MenuManager->GetMenuCharacter()->lockedflags = CharacterLockedFlag::LOCKED;
+		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
 
 		// Run a callback here. Let Lua mods determine if they need to do unlocks. Once this is done, we'll worry about archetypes.
 		int callbackid = 1140;
@@ -215,7 +215,7 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 		    if (lua_isboolean(L, -1)) {
 				if (lua_toboolean(L, -1)) {
 					characterUnlockData[CharacterId] = true;
-					g_MenuManager->GetMenuCharacter()->lockedflags = CharacterLockedFlag::UNLOCKED;
+					g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = true;
 				}
 			}
 		}

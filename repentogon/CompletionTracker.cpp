@@ -936,7 +936,7 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 HOOK_METHOD(Menu_Character, Render, () -> void) {
 	super();
 	CompletionWidget* cmpl = this->GetCompletionWidget();
-	if (this->charaslot > 17) {
+	if (this->SelectedCharacterID > 17) {
 
 		Vector* ref = (Vector*)(g_MenuManager + 60);
 		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
