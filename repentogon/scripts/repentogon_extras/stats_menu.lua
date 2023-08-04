@@ -187,7 +187,7 @@ local function RenderExtraStats()
         end
     end
 
-    if Isaac.GetStatsMenu():IsAchievementsScreenVisible() then
+    if Isaac.GetMenuManager():GetStatsMenu():IsAchievementsScreenVisible() then
         return
     end
     -- render stat page over original stat page, to allow for custom content

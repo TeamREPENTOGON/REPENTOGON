@@ -4,20 +4,12 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
-static constexpr const char* CharacterMenuGameMT = "CharacterMenuGame";
+static constexpr const char* CharacterMenuMT = "CharacterMenu";
 
-static int Lua_GetCharacterMenuGame(lua_State* L)
-{
-    MenuManager* menuManager = g_MenuManager;
-    Menu_Character** ud = (Menu_Character**)lua_newuserdata(L, sizeof(Menu_Character*));
-    *ud = menuManager->GetMenuCharacter();
-    luaL_setmetatable(L, CharacterMenuGameMT);
-    return 1;
-}
 
 static int lua_CharMenu_GetBigCharPageSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetBigCharPageSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -26,7 +18,7 @@ static int lua_CharMenu_GetBigCharPageSprite(lua_State* L)
 
 static int lua_CharMenu_GetDifficultyOverlaySprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetDifficultyOverlaySprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -35,7 +27,7 @@ static int lua_CharMenu_GetDifficultyOverlaySprite(lua_State* L)
 
 static int lua_CharMenu_GetGreedDecoSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetGreedDecoSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -44,7 +36,7 @@ static int lua_CharMenu_GetGreedDecoSprite(lua_State* L)
 
 static int lua_CharMenu_GetBGSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetBGSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -53,7 +45,7 @@ static int lua_CharMenu_GetBGSprite(lua_State* L)
 
 static int lua_CharMenu_GetDifficultyPageSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetDifficultyPageSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -62,7 +54,7 @@ static int lua_CharMenu_GetDifficultyPageSprite(lua_State* L)
 
 static int lua_CharMenu_GetSeedPageSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetSeedPageSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -71,7 +63,7 @@ static int lua_CharMenu_GetSeedPageSprite(lua_State* L)
 
 static int lua_CharMenu_GetWinStreakPageSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetWinStreakPageSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -80,7 +72,7 @@ static int lua_CharMenu_GetWinStreakPageSprite(lua_State* L)
 
 static int lua_CharMenu_GetEastereggPageSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetEastereggPageSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -89,7 +81,7 @@ static int lua_CharMenu_GetEastereggPageSprite(lua_State* L)
 
 static int lua_CharMenu_GetSeedUnlockPageSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetSeedUnlockPageSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -98,7 +90,7 @@ static int lua_CharMenu_GetSeedUnlockPageSprite(lua_State* L)
 
 static int lua_CharMenu_GetCharacterPortraitSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetCharacterPortraitSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -107,7 +99,7 @@ static int lua_CharMenu_GetCharacterPortraitSprite(lua_State* L)
 
 static int lua_CharMenu_GetSeedEntrySprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetSeedEntrySprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -116,7 +108,7 @@ static int lua_CharMenu_GetSeedEntrySprite(lua_State* L)
 
 static int lua_CharMenu_GetPageSwapWidgetSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetPageSwapWidgetSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -125,7 +117,7 @@ static int lua_CharMenu_GetPageSwapWidgetSprite(lua_State* L)
 
 static int lua_CharMenu_GetTaintedBGDecoSprite(lua_State* L)
 {
-    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+    Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
     ANM2* anm2 = menu->GetTaintedBGDecoSprite();
     lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -134,7 +126,7 @@ static int lua_CharMenu_GetTaintedBGDecoSprite(lua_State* L)
 
 static int lua_CharMenu_GetNumCharacters(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   lua_pushinteger(L, menu->GetNumCharacters());
 
   return 1;
@@ -142,7 +134,7 @@ static int lua_CharMenu_GetNumCharacters(lua_State* L)
 
 static int lua_CharMenu_GetSelectedCharacterMenu(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   lua_pushinteger(L, menu->GetSelectedCharacterMenu());
 
   return 1;
@@ -150,7 +142,7 @@ static int lua_CharMenu_GetSelectedCharacterMenu(lua_State* L)
 
 static int lua_CharMenu_SetSelectedCharacterMenu(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   menu->SetSelectedCharacterMenu((int)luaL_checkinteger(L, 2));
 
   return 0;
@@ -158,7 +150,7 @@ static int lua_CharMenu_SetSelectedCharacterMenu(lua_State* L)
 
 static int lua_CharMenu_GetIsCharacterUnlocked(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   lua_pushboolean(L, menu->IsCharacterUnlocked);
 
   return 1;
@@ -166,7 +158,7 @@ static int lua_CharMenu_GetIsCharacterUnlocked(lua_State* L)
 
 static int lua_CharMenu_SetIsCharacterUnlocked(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   menu->IsCharacterUnlocked = lua_toboolean(L, 2);
 
   return 0;
@@ -174,7 +166,7 @@ static int lua_CharMenu_SetIsCharacterUnlocked(lua_State* L)
 
 static int lua_CharMenu_GetDifficulty(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   lua_pushinteger(L, menu->Difficulty);
 
   return 1;
@@ -182,7 +174,7 @@ static int lua_CharMenu_GetDifficulty(lua_State* L)
 
 static int lua_CharMenu_SetDifficulty(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   menu->Difficulty = (int)luaL_checkinteger(L, 2);
 
   return 0;
@@ -190,7 +182,7 @@ static int lua_CharMenu_SetDifficulty(lua_State* L)
 
 static int lua_CharMenu_GetSelectedCharacterID(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   lua_pushinteger(L, menu->SelectedCharacterID);
 
   return 1;
@@ -198,7 +190,7 @@ static int lua_CharMenu_GetSelectedCharacterID(lua_State* L)
 
 static int lua_CharMenu_SetSelectedCharacterID(lua_State* L)
 {
-  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuGameMT);
+  Menu_Character* menu = *lua::GetUserdata<Menu_Character**>(L, 1, CharacterMenuMT);
   menu->SelectedCharacterID = (int)luaL_checkinteger(L, 2);
 
   return 0;
@@ -206,13 +198,7 @@ static int lua_CharMenu_SetSelectedCharacterID(lua_State* L)
 
 static void RegisterStatsMenuGame(lua_State* L)
 {
-    lua_getglobal(L, "Isaac");
-    lua_pushstring(L, "GetCharacterMenu");
-    lua_pushcfunction(L, Lua_GetCharacterMenuGame);
-    lua_rawset(L, -3);
-    lua_pop(L, 1);
-
-    luaL_newmetatable(L, CharacterMenuGameMT);
+    luaL_newmetatable(L, CharacterMenuMT);
     lua_pushstring(L, "__index");
     lua_pushvalue(L, -2);
     lua_settable(L, -3);

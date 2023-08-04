@@ -4,27 +4,29 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* MainMenuGameMT = "MainMenuGame";
+static constexpr const char* MenuManagerMT = "MenuManager";
+static constexpr const char* StatsMenuMT = "StatsMenu";
+static constexpr const char* MainMenuMT = "MainMenu";
+static constexpr const char* CharacterMenuMT = "CharacterMenu";
 
-static int Lua_GetMainMenuGame(lua_State* L) {
+static int Lua_GetMenuManager(lua_State* L) {
 	MenuManager* menuManager = g_MenuManager;
-	Menu_Game** ud = (Menu_Game**)lua_newuserdata(L, sizeof(Menu_Game*));
-	*ud = menuManager->GetMenuGame();
-	luaL_setmetatable(L, MainMenuGameMT);
+	MenuManager** ud = (MenuManager**)lua_newuserdata(L, sizeof(MenuManager*));
+	*ud = menuManager;
+	luaL_setmetatable(L, MenuManagerMT);
 	return 1;
 }
 
-
 int Lua_WorldToMenuPosition(lua_State* L)
 {
-	if (g_MenuManager != NULL){
+	if (g_MenuManager != NULL) {
 		int n = lua_gettop(L);
 		if (n != 2) {
 			return luaL_error(L, "Expected two parameters(MenuId,WorldPosition) got %d\n", n);
 		}
 		int menuid = (int)luaL_checkinteger(L, 1);
 		Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-		Vector* ref = (Vector *)(g_MenuManager + 60); //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
+		Vector* ref = (Vector*)(g_MenuManager + 60); //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
 		ref = new Vector(ref->x + 39, ref->y + 15);
 		Vector* offset;
 		switch (menuid) {
@@ -99,56 +101,49 @@ static void RegisterWorldToMenuPos(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-static int Lua_MainMenuGameGetGameMenuSprite(lua_State* L)
-{
-	Menu_Game* menuGame = *lua::GetUserdata<Menu_Game**>(L, 1, MainMenuGameMT);
-	ANM2* anm2 = menuGame->GetGameMenuSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
-
+static int Lua_GetStatsMenu(lua_State* L) {
+	MenuManager* menuManager = g_MenuManager;
+	Menu_Stats** ud = (Menu_Stats**)lua_newuserdata(L, sizeof(Menu_Stats*));
+	*ud = menuManager->GetMenuStats();
+	luaL_setmetatable(L, StatsMenuMT);
 	return 1;
 }
 
-static int Lua_MainMenuGameGetContinueWidgetSprite(lua_State* L)
-{
-	Menu_Game* menuGame = *lua::GetUserdata<Menu_Game**>(L, 1, MainMenuGameMT);
-	ANM2* anm2 = menuGame->GetContinueWidgetSprite();
-	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
-
+static int Lua_GetMainMenu(lua_State* L) {
+	MenuManager* menuManager = g_MenuManager;
+	Menu_Game** ud = (Menu_Game**)lua_newuserdata(L, sizeof(Menu_Game*));
+	*ud = menuManager->GetMenuGame();
+	luaL_setmetatable(L, MainMenuMT);
 	return 1;
 }
 
-static int Lua_MainMenuGameGetAnimationState(lua_State* L)
+static int Lua_GetCharacterMenu(lua_State* L)
 {
-	Menu_Game* menuGame = *lua::GetUserdata<Menu_Game**>(L, 1, MainMenuGameMT);
-	AnimationState* toLua = menuGame->GetContinueWidgetAnimationState();
-	if (toLua == nullptr) {
-		printf("ALERT, ANIMSTATE IS NULL");
-		lua_pushnil(L);
-		return 1;
-	}
-	AnimationState** luaAnimationState = (AnimationState**)lua_newuserdata(L, sizeof(AnimationState*));
-	*luaAnimationState = toLua;
-	luaL_setmetatable(L, lua::metatables::AnimationStateMT);
+	MenuManager* menuManager = g_MenuManager;
+	Menu_Character** ud = (Menu_Character**)lua_newuserdata(L, sizeof(Menu_Character*));
+	*ud = menuManager->GetMenuCharacter();
+	luaL_setmetatable(L, CharacterMenuMT);
 	return 1;
 }
 
-static void RegisterMainMenuGame(lua_State* L)
+
+static void RegisterMenuManager(lua_State* L)
 {
 	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetMainMenu");
-	lua_pushcfunction(L, Lua_GetMainMenuGame);
+	lua_pushstring(L, "GetMenuManager");
+	lua_pushcfunction(L, Lua_GetMenuManager);
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 
-	luaL_newmetatable(L, MainMenuGameMT);
+	luaL_newmetatable(L, MenuManagerMT);
 	lua_pushstring(L, "__index");
 	lua_pushvalue(L, -2);
 	lua_settable(L, -3);
 
 	luaL_Reg functions[] = {
-		{ "GetGameMenuSprite", Lua_MainMenuGameGetGameMenuSprite},
-		{ "GetContinueWidgetSprite", Lua_MainMenuGameGetContinueWidgetSprite},
-		{ "GetContinueWidgetAnimationState", Lua_MainMenuGameGetAnimationState},
+		{ "GetStatsMenu", Lua_GetStatsMenu},
+		{ "GetMainMenu", Lua_GetMainMenu},
+		{ "GetCharacterMenu", Lua_GetCharacterMenu},
 		{ NULL, NULL }
 	};
 
@@ -160,6 +155,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
+	RegisterMenuManager(state);
 	RegisterWorldToMenuPos(state);
-	RegisterMainMenuGame(state);
 }
