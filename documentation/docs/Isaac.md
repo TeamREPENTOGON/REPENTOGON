@@ -142,13 +142,17 @@ ___
 #### [NightmareScene](NightmareScene.md) GetNightmareScene ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Menu·Manager () {: aria-label='Functions' }
+#### [MenuManager](MenuManager.md) GetMenuManager ( ) {: .copyable aria-label='Functions' }
+Returns the menu manager object.
+___
 ### Get·Persistent·Game·Data () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
 Should probably be moved to Game for consistency.
 
 ___
 ### Get·String () {: aria-label='Functions' }
-#### string GetString ( string category, string key) {: .copyable aria-label='Functions' }
+#### string GetString ( string category, string key ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
 ___
 ### Play·Cutscene () {: aria-label='Functions' }

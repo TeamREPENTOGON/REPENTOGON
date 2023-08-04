@@ -22,6 +22,10 @@ ___
 #### void GetBestiaryDeathCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Bestiary·Encounter·Count () {: aria-label='Functions' }
+#### void GetBestiaryEncounterCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Bestiary·Kill·Count () {: aria-label='Functions' }
 #### void GetBestiaryKillCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
 

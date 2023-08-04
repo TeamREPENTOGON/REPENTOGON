@@ -138,7 +138,11 @@ nav:
   - LevelGenerator: LevelGenerator.md
   - LevelGeneratorEntry: LevelGeneratorEntry.md
   - LevelGeneratorRoom: LevelGeneratorRoom.md
-  - MainMenu: MainMenu.md
+  - Menus:
+    - MenuManager: MenuManager.md
+    - CharacterMenu: CharacterMenu.md
+    - MainMenu: MainMenu.md
+    - StatsMenu: StatsMenu.md
   - Minimap: Minimap.md
   - MultiShotParams: MultiShotParams.md
   - MusicManager: MusicManager.md

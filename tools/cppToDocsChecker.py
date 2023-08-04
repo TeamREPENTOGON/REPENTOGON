@@ -20,6 +20,7 @@ ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp"]
 
 parentClass = {
                "Ambush":"Game",
+               "AnimationData":"Sprite",
                "AnimationState":"Entity",
                "Backdrop":"Room",
                "Camera": "Room",
@@ -37,10 +38,10 @@ parentClass = {
                "ImGui":"Isaac",
                "LocalizationStuff":"Isaac",
                "LevelGenerator": "LevelGeneratorRoom",
-               "MainMenu":"Game",
+               "MenuManager":"Isaac",
                "Minimap":"Game",
                "NightmareScene":"Isaac",
-               "NullFrame":"AnimationState",
+               "NullFrame":"AnimationState,Sprite",
                "PersistentGameData":"Isaac",
                "PlayerHUD":"HUD",
                "PlayerManager":"Game",
@@ -85,7 +86,7 @@ def searchInDocFile(docFilePath, luaFunctions):
         print("###### No doc file found for file: "+docFilePath)
 
 
-for file in glob.glob(CPP_FOLDER_PATH+"Lua*.cpp", recursive=True):
+for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
     skip = False
     for ignoreFile in ignoreFiles:
         if ignoreFile in file:
