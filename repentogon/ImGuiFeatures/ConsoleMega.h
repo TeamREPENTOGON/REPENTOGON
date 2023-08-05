@@ -507,7 +507,7 @@ struct ConsoleMega {
                                     std::pair<int, std::string>(24, "planetarium"),
                                     std::pair<int, std::string>(25, "teleporter"),
                                     std::pair<int, std::string>(26, "teleporterexit"),
-                                    std::pair<int, std::string>(27, "secret"),
+                                    std::pair<int, std::string>(27, "secretexit"),
                                     std::pair<int, std::string>(28, "blue"),
                                     std::pair<int, std::string>(29, "ultrasecret"),
                                 };
