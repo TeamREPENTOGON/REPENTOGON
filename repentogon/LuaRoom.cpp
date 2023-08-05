@@ -190,6 +190,14 @@ int Lua_RoomGetGridIndexByTile(lua_State* L)
 	return 1;
 }
 
+int Lua_RoomSetPauseTimer(lua_State* L)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
+	room->SetPauseTimer(luaL_checkinteger(L, 2));
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -214,4 +222,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "CanPickupGridEntity", Lua_RoomCanPickupGridEntity);
 	lua::RegisterFunction(state, mt, "PickupGridEntity", Lua_RoomPickupGridEntity);
 	lua::RegisterFunction(state, mt, "GetGridIndexByTile", Lua_RoomGetGridIndexByTile);
+	lua::RegisterFunction(state, mt, "SetPauseTimer", Lua_RoomSetPauseTimer);
 }

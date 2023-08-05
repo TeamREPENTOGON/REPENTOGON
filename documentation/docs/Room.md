@@ -70,6 +70,10 @@ This function will not work if the Unknown integer is passed as `0`.
 The backdrop variant chosen is seeded based on the room, and does not persist when leaving and re-entering. Calling this function again on re-entry will result in the same backdrop variant as before.
 
 ___
+### Set·Pause·Timer () {: aria-label='Functions' }
+#### void SetPauseTimer ( int Duration ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Rail () {: aria-label='Functions' }
 #### void SetRail ( [StbRailVariant](enums/StbRailVariant.md) RailVariant ) {: .copyable aria-label='Functions' }
 

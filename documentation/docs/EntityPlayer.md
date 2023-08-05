@@ -191,7 +191,11 @@ ___
 ### Get·Total·Active·Charge () {: aria-label='Functions' }
 #### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
-_____
+___
+### Get·Voided·Collectibles·List () {: aria-label='Functions' }
+#### table GetVoidedCollectiblesList ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Weapon () {: aria-label='Functions' }
 #### [Weapon](Weapon.md) GetWeapon ( ) {: .copyable aria-label='Functions' }
 
@@ -202,6 +206,10 @@ ___
 ___
 ### Get·Wild·Card·Item () {: aria-label='Functions' }
 #### int GetWildCardItem ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Wild·Card·Item·Type () {: aria-label='Functions' }
+#### [PocketItemType](enums/PocketItemType.md) GetWildCardItemType ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Increment·Player·Form·Counter () {: aria-label='Functions' }

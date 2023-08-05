@@ -214,6 +214,7 @@ struct Entity_Player : public Entity { {{
 	inline float* GetEdenLuck() { return (float*)((char*)this + 0x14a4); }
 	inline int* GetCanFly() { return (int*)((char*)this + 0x14b4); }
 	inline std_vector_int GetCollectiblesList() { return *(std_vector_int*)((char*)this + 0x15f0); }
+	inline std_vector_int GetVoidedCollectiblesList() { return *(std_vector_int*)((char*)this + 0x167c); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
@@ -253,7 +254,7 @@ struct Entity_Player : public Entity { {{
     inline int* GetRedStewBonusDuration() { return (int*)((char*)this + 0x1d8c); }
     inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1e44); }
     inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
-	//inline int* GetWildCardItemType() { return (int*)((char*)this + 0x1f70); }
+	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
     }}
 };

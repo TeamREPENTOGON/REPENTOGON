@@ -55,6 +55,9 @@ __thiscall int Room::GetGridIndexByTile(int GridRow, int GridColumn);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec18080000":
 __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 
+"558bec568bf133c03986":
+__thiscall void Room::SetPauseTimer(int Duration);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
