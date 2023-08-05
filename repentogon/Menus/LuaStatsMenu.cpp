@@ -9,6 +9,7 @@ static constexpr const char* StatsMenuMT = "StatsMenu";
 
 static int Lua_StatsMenu_GetStatsMenuSprite(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = menuStats->GetStatsMenuSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -18,6 +19,7 @@ static int Lua_StatsMenu_GetStatsMenuSprite(lua_State* L)
 
 static int Lua_StatsMenu_GetAchievementsSprite(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = menuStats->GetAchievementsSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -27,6 +29,7 @@ static int Lua_StatsMenu_GetAchievementsSprite(lua_State* L)
 
 static int Lua_StatsMenu_GetSecretsMenuComponentsSprite(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = menuStats->GetSecretsMenuComponentsSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -36,6 +39,7 @@ static int Lua_StatsMenu_GetSecretsMenuComponentsSprite(lua_State* L)
 
 static int Lua_StatsMenu_IsAchievementsScreenVisible(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	lua_pushboolean(L, menuStats->IsAchievementsScreenVisible());
 
@@ -46,18 +50,10 @@ static int Lua_StatsMenu_IsAchievementsScreenVisible(lua_State* L)
 static void RegisterStatsMenuGame(lua_State* L)
 {	
 	lua_newtable(L);
-	lua_pushstring(L, "GetStatsMenuSprite");
-	lua_pushcfunction(L, Lua_StatsMenu_GetStatsMenuSprite);
-	lua_settable(L, -3);
-	lua_pushstring(L, "GetAchievementsSprite");
-	lua_pushcfunction(L, Lua_StatsMenu_GetAchievementsSprite);
-	lua_settable(L, -3);
-	lua_pushstring(L, "GetSecretsMenuComponentsSprite");
-	lua_pushcfunction(L, Lua_StatsMenu_GetSecretsMenuComponentsSprite);
-	lua_settable(L, -3);
-	lua_pushstring(L, "IsAchievementsScreenVisible");
-	lua_pushcfunction(L, Lua_StatsMenu_IsAchievementsScreenVisible);
-	lua_settable(L, -3);
+	lua::TableAssoc(L, "GetStatsMenuSprite", Lua_StatsMenu_GetStatsMenuSprite);
+	lua::TableAssoc(L, "GetAchievementsSprite", Lua_StatsMenu_GetAchievementsSprite);
+	lua::TableAssoc(L, "GetSecretsMenuComponentsSprite", Lua_StatsMenu_GetSecretsMenuComponentsSprite);
+	lua::TableAssoc(L, "IsAchievementsScreenVisible", Lua_StatsMenu_IsAchievementsScreenVisible);
 	lua_setglobal(L, "StatsMenu");
 }
 

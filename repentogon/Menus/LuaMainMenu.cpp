@@ -8,6 +8,7 @@ static constexpr const char* MainMenuMT = "MainMenu";
 
 static int Lua_MainMenuGameGetGameMenuSprite(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	ANM2* anm2 = menuGame->GetGameMenuSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -17,6 +18,7 @@ static int Lua_MainMenuGameGetGameMenuSprite(lua_State* L)
 
 static int Lua_MainMenuGameGetContinueWidgetSprite(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	ANM2* anm2 = menuGame->GetContinueWidgetSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -26,6 +28,7 @@ static int Lua_MainMenuGameGetContinueWidgetSprite(lua_State* L)
 
 static int Lua_MainMenuGameGetAnimationState(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	AnimationState* toLua = menuGame->GetContinueWidgetAnimationState();
 	if (toLua == nullptr) {
@@ -43,15 +46,9 @@ static void RegisterMainMenuGame(lua_State* L)
 {	
 	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
-	lua_pushstring(L, "GetGameMenuSprite");
-	lua_pushcfunction(L, Lua_MainMenuGameGetGameMenuSprite);
-	lua_settable(L, -3);
-	lua_pushstring(L, "GetContinueWidgetSprite");
-	lua_pushcfunction(L, Lua_MainMenuGameGetContinueWidgetSprite);
-	lua_settable(L, -3);
-	lua_pushstring(L, "GetContinueWidgetAnimationState");
-	lua_pushcfunction(L, Lua_MainMenuGameGetAnimationState);
-	lua_settable(L, -3);
+	lua::TableAssoc(L, "GetGameMenuSprite", Lua_MainMenuGameGetGameMenuSprite);
+	lua::TableAssoc(L, "GetContinueWidgetSprite", Lua_MainMenuGameGetContinueWidgetSprite);
+	lua::TableAssoc(L, "GetContinueWidgetAnimationState", Lua_MainMenuGameGetAnimationState);
 	lua_setglobal(L, "MainMenu");
 }
 

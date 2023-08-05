@@ -95,6 +95,7 @@ static void RegisterWorldToMenuPos(lua_State* L) {
 
 static int Lua_GetState(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuMan::GetState can only be used in the main menu"); }
 	MenuManager* menuManager = g_MenuManager;	
 	lua_pushinteger(L, menuManager->GetState());
 	return 1;
@@ -102,6 +103,7 @@ static int Lua_GetState(lua_State* L)
 
 static int Lua_SetState(lua_State* L)
 {
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuMan::SetState can only be used in the main menu"); }
 	MenuManager* menuManager = g_MenuManager;
 	menuManager->SetState((int)luaL_checkinteger(L, 1));
 	return 1;
@@ -111,12 +113,8 @@ static int Lua_SetState(lua_State* L)
 static void RegisterMenuManager(lua_State* L)
 {
 	lua_newtable(L);
-	lua_pushstring(L, "SetActiveMenu");
-	lua_pushcfunction(L, Lua_SetState);
-	lua_settable(L, -3);
-	lua_pushstring(L, "GetActiveMenu");
-	lua_pushcfunction(L, Lua_GetState);
-	lua_settable(L, -3);
+	lua::TableAssoc(L, "SetActiveMenu", Lua_SetState);
+	lua::TableAssoc(L, "GetActiveMenu", Lua_GetState);
 	lua_setglobal(L, "MenuManager");
 }
 
