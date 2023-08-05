@@ -73,7 +73,7 @@ nav:
     - KnifeVariant: enums/KnifeVariant.md
     - Language: enums/Language.md
     - LineCheckMode: enums/LineCheckMode.md
-    - MainMenu: enums/MainMenu.md
+    - MainMenuType: enums/MainMenuType.md
     - ModCallbacks: enums/ModCallbacks.md
     - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
