@@ -33,7 +33,7 @@ ___
 
 ___
 ### Get·Rail () {: aria-label='Functions' }
-#### [StbRailVariant](enums/StbRailVariant.md) GetRail ( ) {: .copyable aria-label='Functions' }
+#### [StbRailVariant](enums/StbRailVariant.md) GetRail ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Shop·Item·Price () {: aria-label='Functions' }
@@ -75,7 +75,7 @@ ___
 
 ___
 ### Set·Rail () {: aria-label='Functions' }
-#### void SetRail ( [StbRailVariant](enums/StbRailVariant.md) RailVariant ) {: .copyable aria-label='Functions' }
+#### void SetRail ( int GridIndex, [StbRailVariant](enums/StbRailVariant.md) RailVariant ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Water·Amount () {: aria-label='Functions' }
