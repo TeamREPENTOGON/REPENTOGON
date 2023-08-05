@@ -59,3 +59,4 @@ jobs:
       with:
         name: REPENTOGON-main
         path: ${{github.workspace}}/build/Release/artifact/
+        retention-days: 30

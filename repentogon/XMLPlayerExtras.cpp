@@ -185,43 +185,50 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 }
 
 // Unlock checking
-HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
+HOOK_METHOD(Menu_Character, Render, () -> void) {
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
+	// This gets run every render frame... which works out for us! Locked status reset every render frame. This is certainly efficient, thanks Nicalis!
+	for (std::pair<int, bool> character : characterUnlockData) {
+		XMLAttributes playerXML = XMLStuff.PlayerData->nodes[character.first];
 
-	super(CharacterId, RenderPos, DefaultSprite);
+		if (playerXML["needsunlock"] == "true") {
+			characterUnlockData[character.first] = false;
 
-	// This gets run every render frame... which works out for us! Locked flags get reset every render frame. This is certianly efficient, thanks Nicalis!
-	if (playerXML["needsunlock"] == "true") {
-		characterUnlockData[CharacterId] = false;
-		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
+			// Run a callback here. Let Lua mods determine if they need to do unlocks. Once this is done, we'll worry about archetypes.
+			int callbackid = 1140;
+			if (CallbackState.test(callbackid - 1000)) {
 
-		// Run a callback here. Let Lua mods determine if they need to do unlocks. Once this is done, we'll worry about archetypes.
-		int callbackid = 1140;
-		if (!CallbackState.test(callbackid - 1000)) {
-			return;
-		}
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+				lua_State* L = g_LuaEngine->_state;
+				lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+				lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(CharacterId)
-			.push(CharacterId)
-			.call(1);
+				lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+					.push(character.first)
+					.push(character.first)
+					.call(1);
 
-		if (!result) {
-		    if (lua_isboolean(L, -1)) {
-				if (lua_toboolean(L, -1)) {
-					characterUnlockData[CharacterId] = true;
-					g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = true;
+				if (!result) {
+					if (lua_isboolean(L, -1)) {
+						if (lua_toboolean(L, -1)) {
+							characterUnlockData[character.first] = true;
+						}
+					}
 				}
 			}
 		}
-
 	}
 
+	super();
+}
+
+HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
+	super(CharacterId, RenderPos, DefaultSprite);
+
+	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
+
+	if (playerXML["needsunlock"] == "true" && characterUnlockData[CharacterId] == false)
+		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
 }
 
 HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
