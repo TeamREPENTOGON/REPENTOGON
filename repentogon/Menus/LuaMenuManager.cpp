@@ -9,14 +9,6 @@ static constexpr const char* StatsMenuMT = "StatsMenu";
 static constexpr const char* MainMenuMT = "MainMenu";
 static constexpr const char* CharacterMenuMT = "CharacterMenu";
 
-static int Lua_GetMenuManager(lua_State* L) {
-	MenuManager* menuManager = g_MenuManager;
-	MenuManager** ud = (MenuManager**)lua_newuserdata(L, sizeof(MenuManager*));
-	*ud = menuManager;
-	luaL_setmetatable(L, MenuManagerMT);
-	return 1;
-}
-
 int Lua_WorldToMenuPosition(lua_State* L)
 {
 	if (g_MenuManager != NULL) {
@@ -101,54 +93,31 @@ static void RegisterWorldToMenuPos(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-static int Lua_GetStatsMenu(lua_State* L) {
-	MenuManager* menuManager = g_MenuManager;
-	Menu_Stats** ud = (Menu_Stats**)lua_newuserdata(L, sizeof(Menu_Stats*));
-	*ud = menuManager->GetMenuStats();
-	luaL_setmetatable(L, StatsMenuMT);
+static int Lua_GetState(lua_State* L)
+{
+	MenuManager* menuManager = g_MenuManager;	
+	lua_pushinteger(L, menuManager->GetState());
 	return 1;
 }
 
-static int Lua_GetMainMenu(lua_State* L) {
-	MenuManager* menuManager = g_MenuManager;
-	Menu_Game** ud = (Menu_Game**)lua_newuserdata(L, sizeof(Menu_Game*));
-	*ud = menuManager->GetMenuGame();
-	luaL_setmetatable(L, MainMenuMT);
-	return 1;
-}
-
-static int Lua_GetCharacterMenu(lua_State* L)
+static int Lua_SetState(lua_State* L)
 {
 	MenuManager* menuManager = g_MenuManager;
-	Menu_Character** ud = (Menu_Character**)lua_newuserdata(L, sizeof(Menu_Character*));
-	*ud = menuManager->GetMenuCharacter();
-	luaL_setmetatable(L, CharacterMenuMT);
+	menuManager->SetState((int)luaL_checkinteger(L, 1));
 	return 1;
 }
 
 
 static void RegisterMenuManager(lua_State* L)
 {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetMenuManager");
-	lua_pushcfunction(L, Lua_GetMenuManager);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	luaL_newmetatable(L, MenuManagerMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
+	lua_newtable(L);
+	lua_pushstring(L, "SetActiveMenu");
+	lua_pushcfunction(L, Lua_SetState);
 	lua_settable(L, -3);
-
-	luaL_Reg functions[] = {
-		{ "GetStatsMenu", Lua_GetStatsMenu},
-		{ "GetMainMenu", Lua_GetMainMenu},
-		{ "GetCharacterMenu", Lua_GetCharacterMenu},
-		{ NULL, NULL }
-	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
+	lua_pushstring(L, "GetActiveMenu");
+	lua_pushcfunction(L, Lua_GetState);
+	lua_settable(L, -3);
+	lua_setglobal(L, "MenuManager");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

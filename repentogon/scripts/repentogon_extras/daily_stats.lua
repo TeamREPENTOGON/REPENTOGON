@@ -22,7 +22,7 @@ local font = Font()
 font:Load("font/teammeatfont10.fnt")
 local fontcolor = KColor(0.20, 0.15, 0.1, 1)
 
-local function IsGivenMenuEntry(id) --takes MainMenu entry, returns bool, should really have a proper function instead of this smh
+local function IsGivenMenuEntry(id) --takes MainMenuType entry, returns bool, should really have a proper function instead of this smh
     local menuiddetect = (Isaac.WorldToMenuPosition(id, Vector(240, 136)) - Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) / 2)
     :LengthSquared()
     return menuiddetect < 1800
@@ -86,7 +86,7 @@ end
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 local function RenderDailyStats()
-    if ScheduleRefresh and IsGivenMenuEntry(MainMenu.DAILYRUN) then
+    if ScheduleRefresh and IsGivenMenuEntry(MainMenuType.DAILYRUN) then
         local dailyChallenge = Isaac.GetDailyChallenge()
 		local challengeParam = dailyChallenge:GetChallengeParams()
         WinStreak = Isaac.GetPersistentGameData():GetEventCounter(EventCounter.DAILYS_STREAK)
@@ -107,10 +107,10 @@ local function RenderDailyStats()
         isHardMode = challengeParam:GetDifficulty() == 1
         isMegaSatan = challengeParam:IsMegaSatanRun()
     end
-    local pos = Isaac.WorldToMenuPosition(MainMenu.DAILYRUN, StreakPos)
+    local pos = Isaac.WorldToMenuPosition(MainMenuType.DAILYRUN, StreakPos)
     StreakSheet:Render(pos)
     font:DrawString(WinStreak, pos.X, pos.Y, fontcolor, 0, false)
-    pos = Isaac.WorldToMenuPosition(MainMenu.DAILYRUN, Vector(286, 90))
+    pos = Isaac.WorldToMenuPosition(MainMenuType.DAILYRUN, Vector(286, 90))
     TotalSheet:RenderLayer(0, pos)
     if isMegaSatan then
         GoalDestinationIcon:SetFrame(6)

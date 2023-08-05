@@ -2,7 +2,7 @@
 tags:
   - Enum
 ---
-# Enum "MainMenu"
+# Enum "MainMenuType"
 |Value|Enumerator|Comment|
 |:--|:--|:--|
 |1 |TITLE {: .copyable } | 0 exists but its unusable |

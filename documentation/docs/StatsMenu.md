@@ -1,13 +1,13 @@
 # Class "StatsMenu"
 
 ???+ info
-    You can get this class by using the following functions:
+    You can get this class either by just using the StatsMenu global table or by using the following shortcut:
 
-    * [MenuManager:GetStatsMenu](MenuManager.md#getstatsmenu)
+    * [MenuManager.StatsMenu](MenuManager.md#getstatsmenu)
 
     ???+ example "Example Code"
         ```lua
-        local menu = Isaac():GetMenuManager():GetStatsMenu()
+        local menu = MenuManager.StatsMenu
         ```
         
 ## Functions

@@ -8,7 +8,7 @@ static constexpr const char* MainMenuMT = "MainMenu";
 
 static int Lua_MainMenuGameGetGameMenuSprite(lua_State* L)
 {
-	Menu_Game* menuGame = *lua::GetUserdata<Menu_Game**>(L, 1, MainMenuMT);
+	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	ANM2* anm2 = menuGame->GetGameMenuSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -17,7 +17,7 @@ static int Lua_MainMenuGameGetGameMenuSprite(lua_State* L)
 
 static int Lua_MainMenuGameGetContinueWidgetSprite(lua_State* L)
 {
-	Menu_Game* menuGame = *lua::GetUserdata<Menu_Game**>(L, 1, MainMenuMT);
+	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	ANM2* anm2 = menuGame->GetContinueWidgetSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
 
@@ -26,7 +26,7 @@ static int Lua_MainMenuGameGetContinueWidgetSprite(lua_State* L)
 
 static int Lua_MainMenuGameGetAnimationState(lua_State* L)
 {
-	Menu_Game* menuGame = *lua::GetUserdata<Menu_Game**>(L, 1, MainMenuMT);
+	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	AnimationState* toLua = menuGame->GetContinueWidgetAnimationState();
 	if (toLua == nullptr) {
 		printf("ALERT, ANIMSTATE IS NULL");
@@ -40,21 +40,19 @@ static int Lua_MainMenuGameGetAnimationState(lua_State* L)
 }
 
 static void RegisterMainMenuGame(lua_State* L)
-{
-	luaL_newmetatable(L, MainMenuMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
+{	
+	lua::LuaStackProtector protector(L);
+	lua_newtable(L);
+	lua_pushstring(L, "GetGameMenuSprite");
+	lua_pushcfunction(L, Lua_MainMenuGameGetGameMenuSprite);
 	lua_settable(L, -3);
-
-	luaL_Reg functions[] = {
-		{ "GetGameMenuSprite", Lua_MainMenuGameGetGameMenuSprite},
-		{ "GetContinueWidgetSprite", Lua_MainMenuGameGetContinueWidgetSprite},
-		{ "GetContinueWidgetAnimationState", Lua_MainMenuGameGetAnimationState},
-		{ NULL, NULL }
-	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
+	lua_pushstring(L, "GetContinueWidgetSprite");
+	lua_pushcfunction(L, Lua_MainMenuGameGetContinueWidgetSprite);
+	lua_settable(L, -3);
+	lua_pushstring(L, "GetContinueWidgetAnimationState");
+	lua_pushcfunction(L, Lua_MainMenuGameGetAnimationState);
+	lua_settable(L, -3);
+	lua_setglobal(L, "MainMenu");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

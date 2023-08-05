@@ -12,15 +12,11 @@
         
 ## Functions
 
-### Get·Stats·Menu () {: aria-label='Functions' }
-#### [StatsMenu](StatsMenu.md) GetStatsMenu ( ) {: .copyable aria-label='Functions' }
+### Get·Active·Menu () {: aria-label='Functions' }
+#### int GetActiveMenu ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Main·Menu () {: aria-label='Functions' }
-#### [MainMenu](MainMenu.md) GetMainMenu ( ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Character·Menu () {: aria-label='Functions' }
-#### [CharacterMenu](CharacterMenu.md) GetCharacterMenu ( ) {: .copyable aria-label='Functions' }
+### Set·Active·Menu () {: aria-label='Functions' }
+#### int SetActiveMenu ( ) {: .copyable aria-label='Functions' }
 
 ___

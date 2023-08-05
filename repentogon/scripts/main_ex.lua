@@ -707,6 +707,11 @@ function Isaac.RunCallback(callbackID, ...)
 	return Isaac.RunCallbackWithParam(callbackID, nil, ...)
 end
 
+--Menuman Hub
+MenuManager.MainMenu = MainMenu
+MenuManager.CharacterMenu = CharacterMenu
+MenuManager.StatsMenu = StatsMenu
+
 -- ImGui alias functions
 local ImGui = Isaac.GetImGui()
 rawset(getmetatable(ImGui), "ImGuiToWorld", function (_, position) return Isaac.ScreenToWorld(position) end)

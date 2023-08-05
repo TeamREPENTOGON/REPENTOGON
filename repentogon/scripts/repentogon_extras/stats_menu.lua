@@ -126,7 +126,7 @@ local function IsActionTriggeredAll(action)
     return false
 end
 
-local function IsGivenMenuEntry(id) --takes MainMenu entry, returns bool, should really have a proper function instead of this smh
+local function IsGivenMenuEntry(id) --takes MainMenuType entry, returns bool, should really have a proper function instead of this smh
     local menuiddetect = (Isaac.WorldToMenuPosition(id, Vector(240, 136)) - Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) / 2)
         :LengthSquared()
     return menuiddetect < 1800
@@ -156,8 +156,8 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 
 local function RenderExtraStats()
-    if IsGivenMenuEntry(MainMenu.SAVES) then StatsMenu.ScheduleRefresh = true end
-    if IsGivenMenuEntry(MainMenu.STATS) then
+    if IsGivenMenuEntry(MainMenuType.SAVES) then StatsMenu.ScheduleRefresh = true end
+    if IsGivenMenuEntry(MainMenuType.STATS) then
         if StatsMenu.ScheduleRefresh then
             local gameData = Isaac.GetPersistentGameData()
             MaxCategoryID = #StatsMenu.Stats + 1
@@ -187,21 +187,21 @@ local function RenderExtraStats()
         end
     end
 
-    if Isaac.GetMenuManager():GetStatsMenu():IsAchievementsScreenVisible() then
+    if MenuManager.StatsMenu:IsAchievementsScreenVisible() then
         return
     end
     -- render stat page over original stat page, to allow for custom content
-    local posSheet = Isaac.WorldToMenuPosition(MainMenu.STATS, StatsMenu.StatSheetSpritePos)
+    local posSheet = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenu.StatSheetSpritePos)
     StatsMenu.StatSheetSprite:RenderLayer(1, posSheet)
-    local posLeftArrow = Isaac.WorldToMenuPosition(MainMenu.STATS, StatsMenu.LeftArrowSpritePos)
+    local posLeftArrow = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenu.LeftArrowSpritePos)
     StatsMenu.ArrowSprite:RenderLayer(6, posLeftArrow)
-    local posRightArrow = Isaac.WorldToMenuPosition(MainMenu.STATS, StatsMenu.RightArrowSpritePos)
+    local posRightArrow = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenu.RightArrowSpritePos)
     StatsMenu.ArrowSprite:RenderLayer(7, posRightArrow)
 
     local nextLineOffsetX = 0
     local nextLineOffsetY = 0
 
-    local pos = Isaac.WorldToMenuPosition(MainMenu.STATS, StatsMenuPos)
+    local pos = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenuPos)
 
     local categoryData = StatsMenu.Stats[StatsMenu.CurrentlyDisplayedCategoryID]
     font:DrawStringUTF8(categoryData[1], pos.X, pos.Y + nextLineOffsetY, fontcolor, 0, false)

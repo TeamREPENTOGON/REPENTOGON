@@ -1279,7 +1279,7 @@ PillCardSlot = {
 	QUATERNARY = 3, -- Offset by Pocket Item and Dice Bag Item and Pillcard (Otherwise unused)
 }
 
-MainMenu = {
+MainMenuType = {
 	TITLE = 1, --0 exists but its unusable
 	SAVES = 2,
 	GAME = 3, --the actual menu where all the menus are

@@ -1,13 +1,13 @@
 # Class "CharacterMenu"
 
 ???+ info
-    You can get this class by using the following functions:
+    You can get this class either by just using the CharacterMenu global table or by using the following shortcut:
 
-    * [MenuManager:GetCharacterMenu](Isaac.md#getcharactermenu)
+    * [MenuManager.CharacterMenu](Isaac.md#getcharactermenu)
 
     ???+ example "Example Code"
         ```lua
-        local menu = Isaac():GetMenuManager():GetCharacterMenu()
+        local menu = MenuManager.CharacterMenu
         ```
         
 ## Functions
