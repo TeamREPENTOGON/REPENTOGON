@@ -175,7 +175,7 @@ function ChangeLog.MenuRender()
             ShouldBeRendered = true
         end
         if ShouldBeRendered then
-            local LogRenderPosition = Isaac.WorldToMenuPosition(MainMenu.TITLE, Cl.PaperOffset)
+            local LogRenderPosition = Isaac.WorldToMenuPosition(MainMenuType.TITLE, Cl.PaperOffset)
             Cl.ChangelogSprite:RenderLayer(3, LogRenderPosition)
             local TextGuideNull = Cl.ChangelogSprite:GetNullFrame("UpdateText")
             if TextGuideNull then
