@@ -2,6 +2,15 @@
 
 ## Class Diagram
 --8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
+## Modified Variables
+___
+### Homing·Type {: aria-label='Modified Variables' }
+[ ](#){: .tooltip .badge }
+#### int HomingType  {: .copyable aria-label='Modified Variables' }
+Same as default, but now returns a proper integer value instead of userdata.
+
+___
+
 ## Functions
 
 ### Get·Scale () {: aria-label='Functions' }

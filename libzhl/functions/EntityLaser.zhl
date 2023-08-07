@@ -2,5 +2,6 @@
 __thiscall void Entity_Laser::ResetSpriteScale();
 
 struct Entity_Laser : public Entity { {{
+	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x420); }
 	inline float* GetScale() { return (float*)((char*)this + 0x430); }
 }} };
