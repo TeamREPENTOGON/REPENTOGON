@@ -180,6 +180,7 @@ site_name: 'BoI: REPENTOGON Docs'
 site_url: https://repentogon.com
 theme:
   favicon: img/favicon.ico
+  custom_dir: overrides
   features:
   - search.suggest
   - search.highlight
