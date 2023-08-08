@@ -22,7 +22,7 @@ jobs:
       uses: AlexHolderDeveloper/CommitsWithinTime@v1.1.11
       id: commitswithintime
       with:
-        days: 1
+        hours: 24
           
     - name: Generate changelog
       if: steps.commitswithintime.outputs.has-new-commits-within-time
