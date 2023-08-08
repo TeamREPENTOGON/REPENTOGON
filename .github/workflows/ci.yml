@@ -2,13 +2,8 @@ name: Build Project and Upload Artifact
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - repentogon/**
-      - libzhl/**
-      - libzhlgen/**
+  schedule:
+  - cron: "0 0 * * *"
 
 env:
   BUILD_TYPE: Release
@@ -23,7 +18,14 @@ jobs:
         submodules: 'true'
         fetch-depth: 0
 
+    - name: Check for recent commits
+      uses: AlexHolderDeveloper/CommitsWithinTime@v1.1.11
+      id: commitswithintime
+      with:
+        days: 1
+          
     - name: Generate changelog
+      if: steps.commitswithintime.outputs.has-new-commits-within-time
       run: |
         echo "return [[" > ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
         git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
@@ -36,12 +38,15 @@ jobs:
         (gc ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog.lua) -replace 'dev build', $sha | Out-File -encoding ASCII ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog.lua
 
     - name: Configure CMake
+      if: steps.commitswithintime.outputs.has-new-commits-within-time
       run: cmake -G "Visual Studio 17 2022" -A "Win32" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
+      if: steps.commitswithintime.outputs.has-new-commits-within-time
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Create Artifact Folder
+      if: steps.commitswithintime.outputs.has-new-commits-within-time
       shell: powershell
       run: |
         cd ${{github.workspace}}/build/Release
@@ -55,6 +60,7 @@ jobs:
         mv freetype.dll artifact
         
     - name: Upload Artifact
+      if: steps.commitswithintime.outputs.has-new-commits-within-time
       uses: actions/upload-artifact@v3
       with:
         name: REPENTOGON-main
