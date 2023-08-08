@@ -253,6 +253,7 @@ struct Entity_Player : public Entity { {{
     {{ 
     inline int* GetRedStewBonusDuration() { return (int*)((char*)this + 0x1d8c); }
     inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1e44); }
+	inline std_set_uint32t GetItemWispsList() { return *(std_set_uint32t*)((char*)this + 0x1e7c); }
     inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
 	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
