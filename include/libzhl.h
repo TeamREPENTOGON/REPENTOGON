@@ -9,6 +9,7 @@
 #define MOD_EXPORT extern "C" __declspec(dllexport)
 
 #include <type_traits>
+#include <variant>
 
 template<typename T>
 struct IsCallerCleanup {
@@ -138,3 +139,24 @@ namespace CallerCleanupCheck {
 	static_assert(!IsCallerCleanup<decltype(&StructCheck::sh)>::value);
 	static_assert(IsCallerCleanup<decltype(&StructCheck::si)>::value);
 }
+
+template<typename T, typename... Args>
+struct IsInPack;
+
+template<typename T, typename U>
+struct IsInPack<T, U> {
+	constexpr static bool value = std::is_same_v<T, U>;
+};
+
+template<typename T, typename H, typename... Tail>
+struct IsInPack<T, H, Tail...> {
+	constexpr static bool value = std::is_same_v<T, H> || IsInPack<T, Tail...>::value;
+};
+
+template<typename T, typename... Types>
+struct IsInPack<T, std::variant<Types...>> {
+	constexpr static bool value = IsInPack<T, Types...>::value;
+};
+
+template<typename T, typename... Types>
+constexpr bool IsInPackV = IsInPack<T, Types...>::value;

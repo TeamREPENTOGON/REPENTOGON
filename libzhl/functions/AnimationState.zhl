@@ -16,6 +16,10 @@ __thiscall void AnimationState::AdvancePosition(int amount);
 struct AnimationState depends (AnimationData, ANM2) { {{
     inline AnimationData* GetAnimationData() { return this->_animData; }
 }}
+    
+    "558bec83e4f8515356578bf98b570485d2743433f639721c":
+    void Render(const Vector& position, const Vector& topLeftClamp, const Vector& bottomRightClamp);
+
     ANM2* _animation;  // 0x00
     AnimationData* _animData;  // 0x04
     // Array that identifies which index in the internal AnimationFrame array a given layer is currently on.

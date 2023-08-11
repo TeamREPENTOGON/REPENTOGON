@@ -12,9 +12,14 @@ struct AnimationLayer depends (AnimationFrame) { {{
 	}
 	inline bool IsVisible() { return this->_visible; }
 }}
+
+
     int _layerID;
     AnimationFrame* _animFrames;
     int _numFrames;
 	bool _visible;
 	char _padding[3];
 };
+
+"538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec90010000a1????????33c58945ec5657508d45f464a30000000080790c00":
+__thiscall void AnimationLayer::RenderFrame(const Vector& position, int unk, const Vector& topLeftClamp, const Vector& BottomRightClamp, ANM2* animation);

@@ -5,6 +5,7 @@
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "Log.h"
 #include "HookSystem.h"
 #include <iostream>
 #include <sstream>
@@ -27,9 +28,7 @@ static int LuaDumpRegistry(lua_State* L) {
 
 	int newtop = lua_gettop(L);
 	if (newtop != top + 1) {
-		FILE* f = fopen("repentogon.log", "a");
-		fprintf(f, "top = %d, newtop = %d\n", top, newtop);
-		fclose(f);
+		ZHL::Log("top = %d, newtop = %d\n", top, newtop);
 		exit(-1);
 	}
 	return 1;
@@ -99,8 +98,8 @@ static void ExtractGameFunctions(lua_State* L, std::vector<std::pair<std::string
 }
 
 static void RegisterMetatables(lua_State* L) {
-	FILE* f = fopen("repentogon.log", "a");
-	fprintf(f, "Dumping Lua registry\n");
+	ZHL::Logger logger;
+	logger.Log("Dumping Lua registry\n");
 
 	lua_pushnil(L);
 	std::map<std::string, void*> metatables;
@@ -147,7 +146,7 @@ static void RegisterMetatables(lua_State* L) {
 					}
 
 					lua::RegisterMetatable(lua::GetMetatableIdxFromName(type), addr);
-					ExtractGameFunctions(L, _functions[type.c_str()], f);
+					ExtractGameFunctions(L, _functions[type.c_str()], logger.GetFile());
 				}
 
 				lua_pop(L, 1);
@@ -157,8 +156,7 @@ static void RegisterMetatables(lua_State* L) {
 		lua_pop(L, 1);
 	}
 
-	fprintf(f, "Done dumping Lua registry\n");
-	fclose(f);
+	logger.Log("Done dumping Lua registry\n");
 }
 
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
@@ -227,15 +225,12 @@ static void DumpTable(lua_State* L, FILE* f) {
 }
 
 HOOK_STATIC(Isaac, GetRoomEntities, (void* holder) -> void*, __cdecl) {
-	FILE* f = fopen("repentogon.log", "a");
-	fprintf(f, "Post GetRoomEntities\n");
 	void* res = super(holder);
 	lua_Integer* key = (lua_Integer*)((char*)holder + 4);
 	lua_State* L = g_LuaEngine->_state;
 	lua_rawgeti(L, LUA_REGISTRYINDEX, *key);
 	lua_pushnil(L);
 	while (lua_next(L, -2) != 0) {
-		fprintf(f, "%s - %s\n", lua_typename(L, lua_type(L, -2)), lua_typename(L, lua_type(L, -1)));
 		lua_pop(L, 1); // Pop value
 		lua_pushvalue(L, -1); // Copy key to keep it on the stack after the set
 		lua_pushnil(L); // t key key nil
@@ -247,19 +242,11 @@ HOOK_STATIC(Isaac, GetRoomEntities, (void* holder) -> void*, __cdecl) {
 	lua_pop(L, 1); 
 	luaL_unref(L, LUA_REGISTRYINDEX, (int)*key);
 	lua_createtable(L, 0, 0);
-	fprintf(f, "createtable\n");
-	DumpTable(L, f);
 	*key = luaL_ref(L, LUA_REGISTRYINDEX);
 	lua_rawgeti(L, LUA_REGISTRYINDEX, *key);
-	fprintf(f, "rawgeti\n");
-	DumpTable(L, f);
 	lua_pushinteger(L, 12);
 	luaL_ref(L, -2);
-	fprintf(f, "ref\n");
-	DumpTable(L, f);
 	lua_settop(L, -2);
-	
-	fclose(f);
 	return res;
 }
 

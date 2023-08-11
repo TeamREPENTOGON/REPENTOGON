@@ -1,0 +1,29 @@
+struct KAGE_Memory_MemoryPoolDescriptor {
+    KAGE_Memory_MemoryPool* container; // 0x0
+    uint32_t offset; // 0x4
+    uint32_t elementSize; // 0x8
+
+    "558bec83e4f851538bd95657837b0800750b33c05f5e5b8be55dc20400":
+    void* Allocate(uint32_t n);
+
+    {{
+    inline void* GetBase() {
+        return (void*)(elementSize * (uintptr_t)*(void**)((offset << 4) + (char*)container + 0xC) + (uintptr_t)*(void**)((offset << 4) + (char*)container));
+    }
+    }}
+}; // 0xC
+
+struct KAGE_Graphics_RenderDescriptor depends (KAGE_Memory_MemoryPoolDescriptor) {
+    char unk[0x10]; // 0x0
+    KAGE_Graphics_Shader* shader; // 0x10
+    char unk2[0xC]; // 0x14;
+    KAGE_Memory_MemoryPoolDescriptor vertices; // 0x20
+    KAGE_Memory_MemoryPoolDescriptor elements; // 0x2C
+}; // 0x38 (checked)
+
+struct KAGE_Memory_MemoryPool {
+    void* data; // 0x0
+    uint32_t size; // 0x4
+    uint32_t capacity; // 0x8
+    uint32_t unk; // 0xC
+}; // 0x10 (checked)

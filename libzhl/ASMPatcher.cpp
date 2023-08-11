@@ -11,6 +11,7 @@
 #include <Zydis/Zydis.h>
 
 #include "ASMPatcher.hpp"
+#include "Log.h"
 #include "SigScan.h"
 
 #ifdef max
@@ -58,8 +59,8 @@ void* ASMPatcher::PatchAt(void* at, const char* with, size_t len) {
 }
 
 void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len) {
-	FILE* f = fopen("repentogon.log", "a");
-	fprintf(f, "Patching at %p\n", at);
+	ZHL::Logger logger;
+	logger.Log("Patching at %p\n", at);
 	bool expected = false;
 	if (!_patching.compare_exchange_strong(expected, true, std::memory_order_acq_rel, std::memory_order_acquire)) {
 		throw std::runtime_error("Parallel patching is not allowed");
@@ -78,16 +79,16 @@ void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len
 
 	// Jump fits in neatly
 	if (instruction.info.length == 5) {
-		fprintf(f, "Nothing to rewrite\n");
+		logger.Log("Nothing to rewrite\n");
 	}
 	// Jump does not override whole instruction, nop extra bytes
 	else if (instruction.info.length > 5) {
-		fprintf(f, "Instruction too long, noping the end\nStart at %p, for %d bytes\n", (char*)at + 5, instruction.info.length - 5);
+		logger.Log("Instruction too long, noping the end\nStart at %p, for %d bytes\n", (char*)at + 5, instruction.info.length - 5);
 		memset((char*)at + 5, 0x90, instruction.info.length - 5);
 	} 
 	// Jump overrides other instructions, nop them properly
 	else {
-		fprintf(f, "Instruction too short, multiple nops required\n");
+		logger.Log("Instruction too short, multiple nops required\n");
 		// From the address at which we write the jump, decode every instruction until we've moved at least five bytes.
 		// At this point, the first instruction after the five bytes mark is the next valid instruction.
 		// Rewrite the first five bytes as the jump, and nop the rest.
@@ -110,7 +111,7 @@ void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len
 		// Assertion: the instruction designated by "start" is out of the 5 bytes range
 		// Count is the number of bytes between "at" and "start"
 		// Nop out all but the first five of these bytes.
-		fprintf(f, "Write %d nops at %p\n", count - 5, (char*)at + 5);
+		logger.Log("Write %d nops at %p\n", count - 5, (char*)at + 5);
 		memset((char*)at + 5, 0x90, count - 5);
 	}
 
@@ -129,7 +130,6 @@ void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len
 		return nullptr;
 	}
 
-	fclose(f);
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 
 	return targetPage;
@@ -377,10 +377,7 @@ ASMPatch::SavedRegisters::SavedRegisters(uint32_t mask, bool shouldRestore) {
 
 ASMPatch::SavedRegisters::~SavedRegisters() {
 	if (!_restored && _shouldRestore) {
-		FILE* f = fopen("repentogon.log", "a");
-		fprintf(f, "Backed up registers were not restored in ASMPatch");
-		fclose(f);
-
+		ZHL::Log("Backed up registers were not restored in ASMPatch");
 		abort();
 	}
 }

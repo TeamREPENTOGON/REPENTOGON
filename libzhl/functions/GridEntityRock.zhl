@@ -25,7 +25,11 @@ static cleanup void GridEntity_Rock::RegisterRockDestroyed(int GridEntityType<ec
 "8bd18b42??83f801":
 __thiscall void GridEntity_Rock::update_collision();
 
-struct GridEntity_Rock : public GridEntity { {{
+struct GridEntity_Rock : public GridEntity { 
+    "558bec83e4f881ecd40000005356578d4424208bd950e8????????8b5508":
+    void Render(const Vector& offset);
+
+{{
 
 }}
 	__vtable {

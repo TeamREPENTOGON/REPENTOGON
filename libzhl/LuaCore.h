@@ -239,6 +239,15 @@ namespace lua {
         }
 
         void* pushUd(size_t size, const char* mt);
+
+        template<typename T, typename... Args>
+        T* pushUd(const char* mt, Args&&... args) {
+            void* result = lua_newuserdata(_L, sizeof(T));
+            luaL_setmetatable(_L, mt);
+            new (result) T(std::forward<Args>(args)...);
+            ++_n;
+            return (T*)result;
+        }
         LuaResults call(int nresults);
 
     private:
@@ -353,7 +362,8 @@ namespace lua {
 
         public:
             static void push(lua_State* L, void* const p, void const* const key);
-            static void push(lua_State* L, void* const p, const char* key);
+            static void push(lua_State* L, void* const p, const char* meta);
+            static void push(lua_State* L, void* const p, lua::Metatables mt);
         };
     }
 

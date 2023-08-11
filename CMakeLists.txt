@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.13.0)
 set ("CMAKE_CXX_STANDARD" 17)
 set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
 set (CMAKE_BUILD_TYPE "Debug")
+set (ZHL_LOG_FILE "" CACHE PATH "Path to the file in which logs will be written")
 
 project(RepExtender)
 
@@ -140,6 +141,10 @@ if(NOT ISAAC_DIRECTORY STREQUAL "")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlREPENTOGON>/zhlREPENTOGON.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/scripts" "${ISAAC_DIRECTORY}/resources/scripts")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "${ISAAC_DIRECTORY}/resources-repentogon")
+endif()
+
+if (NOT ZHL_LOG_FILE STREQUAL "")
+    add_compile_definitions(ZHL_LOG_FILE="${ZHL_LOG_FILE}")
 endif()
 
 add_dependencies(zhlREPENTOGON libzhl)

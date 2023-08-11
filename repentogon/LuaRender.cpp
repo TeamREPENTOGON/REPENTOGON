@@ -9,6 +9,7 @@
 #include "ASMPatcher.hpp"
 #include "ASMPatches.h"
 #include "HookSystem.h"
+#include "Log.h"
 #include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -17,6 +18,10 @@
 using LuaRender::LuaImage;
 using LuaRender::LuaTransformer;
 using LuaRender::Transformation;
+
+LuaRender::ContextQueue LuaRender::RenderContextQueue;
+LuaRender::RenderContext LuaRender::ElementsRenderContext;
+LuaRender::RenderContext LuaRender::VerticesRenderContext;
 
 // ============================================================================
 // Image
@@ -1390,6 +1395,8 @@ namespace GL {
 			}
 		}
 
+		VertexBuffer* Slice(int start, int end, int nElements, VertexDescriptor const* descriptor);
+
 		void Bind();
 
 		void SetDescriptor(ShaderType shader);
@@ -1456,9 +1463,6 @@ namespace GL {
 			VertexDescriptor* descriptor) : _descriptor(*descriptor) {
 			char buffer[4096];
 			GetCurrentDirectory(4096, buffer);
-			FILE* f = fopen("repentogon.log", "a");
-			fprintf(f, "Current directory is %s\n", buffer);
-			fclose(f);
 
 			int vertexShader = InitShader(vertexShaderPath, true);
 			int fragmentShader = InitShader(fragmentShaderPath, false);
@@ -1660,6 +1664,207 @@ namespace GL {
 		std::vector<Transformation> _sequence;
 	};
 
+	class ContextLuaVisitor {
+	public:
+		ContextLuaVisitor(lua_State* _L) : L(_L) {
+
+		}
+
+		void operator()(Entity_Bomb* b) {
+			Expose(b, LuaRender::RENDER_CTX_ENTITY_BOMB, lua::Metatables::ENTITY_BOMB);
+		}
+
+		void operator()(Entity_Effect* e) {
+			Expose(e, LuaRender::RENDER_CTX_ENTITY_EFFECT, lua::Metatables::ENTITY_EFFECT);
+		}
+
+		void operator()(Entity_Familiar* f) {
+			Expose(f, LuaRender::RENDER_CTX_ENTITY_FAMILIAR, lua::Metatables::ENTITY_FAMILIAR);
+		}
+
+		void operator()(Entity_Knife* k) {
+			Expose(k, LuaRender::RENDER_CTX_ENTITY_KNIFE, lua::Metatables::ENTITY_KNIFE);
+		}
+
+		void operator()(Entity_Laser* l) {
+			Expose(l, LuaRender::RENDER_CTX_ENTITY_LASER, lua::Metatables::ENTITY_LASER);
+		}
+
+		void operator()(Entity_NPC* n) {
+			Expose(n, LuaRender::RENDER_CTX_ENTITY_NPC, lua::Metatables::ENTITY_NPC);
+		}
+
+		void operator()(Entity_Pickup* p) {
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PICKUP, lua::Metatables::ENTITY_PICKUP);
+		}
+
+		void operator()(Entity_Player* p) {
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PLAYER, lua::Metatables::ENTITY_PLAYER);
+		}
+
+		void operator()(Entity_Projectile* p) {
+			Expose(p, LuaRender::RENDER_CTX_ENTITY_PROJECTILE, lua::Metatables::ENTITY_PROJECTILE);
+		}
+
+		void operator()(Entity_Slot* s) {
+			OpenTable();
+			PushType(LuaRender::RENDER_CTX_ENTITY_SLOT);
+			lua_pushstring(L, "Data");
+			lua::luabridge::UserdataPtr::push(L, s, lua::metatables::EntitySlotMT);
+			lua_rawset(L, -3);
+			CloseTable();
+		}
+
+		void operator()(Entity_Tear* t) {
+			Expose(t, LuaRender::RENDER_CTX_ENTITY_TEAR, lua::Metatables::ENTITY_TEAR);
+		}
+
+		void operator()(GridEntity_Rock* r) {
+			Expose(r, LuaRender::RENDER_CTX_GRIDENTITY_ROCK, lua::Metatables::GRID_ENTITY_ROCK);
+		}
+
+		void operator()(AnimationState* s) {
+			Expose(s->_animation, LuaRender::RENDER_CTX_ANIMATION_STATE, lua::Metatables::SPRITE);
+		}
+
+		void operator()(AnimationLayer* l) {
+			OpenTable();
+			PushType(LuaRender::RENDER_CTX_ANIMATION_LAYER);
+			lua_pushstring(L, "Data");
+			lua_pushinteger(L, l->GetLayerID());
+			lua_rawset(L, -3);
+			CloseTable();
+		}
+	private:
+		void OpenTable() {
+			lua_pushinteger(L, i);
+			lua_newtable(L);
+			++i;
+		}
+
+		void CloseTable() {
+			lua_rawset(L, -3);
+		}
+
+		void PushType(LuaRender::ContextType ctx) {
+			lua::TableAssoc(L, "Type", ctx);
+		}
+
+		void Expose(void* p, LuaRender::ContextType ctx, lua::Metatables mt) {
+			OpenTable();
+			lua::TableAssoc(L, "Type", ctx);
+			lua_pushstring(L, "Data");
+			lua::luabridge::UserdataPtr::push(L, p, mt);
+			lua_rawset(L, -3);
+			CloseTable();
+		}
+
+		lua_State* L; // Table at the top
+		int i = 1; // Index
+	};
+
+	class RenderOperationContext {
+	public:
+		RenderOperationContext(LuaRender::ContextArray* context) : _context(context) {
+
+		}
+
+		void Push(lua_State* L, int index) {
+			if (index >= _context->size()) {
+				lua_pushnil(L);
+				lua_pushnil(L);
+				return;
+			}
+
+			LuaRender::ContextQueue const& queue = (*_context)[index];
+			lua_pushinteger(L, index);
+			lua_newtable(L);
+
+			ContextLuaVisitor visitor(L);
+			for (LuaRender::Context const& ctx : queue) {
+				std::visit(visitor, ctx);
+			}
+		}
+
+		LUA_FUNCTION(Lua__pairs_iterator) {
+			RenderOperationContext* context = (RenderOperationContext*)lua_topointer(L, 1);
+			if (lua_isnil(L, 2)) {
+				context->Push(L, 0);
+			}
+			else {
+				int index = luaL_checkinteger(L, 2);
+				context->Push(L, index + 1);
+			}
+			return 2;
+		}
+
+		LUA_FUNCTION(Lua__pairs) {
+			/* for vars in exprlist do body end
+			 * explist is evaluated to produce four values
+			 *	- iterator function (pairs -> next)
+			 *  - state (pairs -> t)
+			 *	- initial value for control variable (first variable in vars; pairs -> nil)
+			 *	- closing value (pairs -> none)
+			 * 
+			 * During each iteration, Lua calls the iterator function with (state, control variable)
+			 * The call to the iterator function produces the values assigned to vars
+			 * Looping stops when control variable becomes nil
+			 */
+			RenderOperationContext* context = lua::GetUserdata<RenderOperationContext*>(L, 1, LuaRender::ContextMT);
+			lua_pushcfunction(L, Lua__pairs_iterator);
+			lua_pushlightuserdata(L, context);
+			lua_pushnil(L);
+			return 3;
+		}
+
+		static void InitMetatable(lua_State* L) {
+			luaL_Reg functions[] = {
+				{ "__pairs", Lua__pairs },
+				{ NULL, NULL }
+			};
+
+			lua::RegisterNewClass(L, LuaRender::ContextMT, LuaRender::ContextMT, functions);
+		}
+	private:
+		LuaRender::ContextArray* _context;
+	};
+
+	class RenderSet {
+	public:
+		LUA_FUNCTION(Lua_SliceSingle) {
+			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			Shader** shader = lua::GetUserdata<Shader**>(L, 2, LuaRender::ShaderMT);
+			int nElements = luaL_checkinteger(L, 3);
+
+			int first = luaL_checkinteger(L, 4);
+			int second = luaL_optinteger(L, 5, -1);
+
+			if (second != -1 && second < first) {
+				return luaL_error(L, "Invalid slice range %d:%d", first, second);
+			}
+
+			VertexBuffer* slice = (*buffer)->Slice(first, second, nElements, &(*shader)->GetDescriptor());
+			return 0;
+		}
+
+		LUA_FUNCTION(Lua_SlicePipeline) {
+			return 0;
+		}
+
+		static void InitMetatable(lua_State* L) {
+			luaL_Reg funcs[] = {
+				{ "SliceSingle", Lua_SliceSingle },
+				{ "SlicePipeline", Lua_SlicePipeline },
+				{ NULL, NULL }
+			};
+
+			lua::RegisterNewClass(L, LuaRender::RenderSetMT, LuaRender::RenderSetMT, funcs);
+		}
+
+	private:
+		std::vector<std::variant<Pipeline, Transformation>> _operations;
+	};
+
 	VertexDescriptor ColorOffsetDescriptor, ColorOffsetChampionDescriptor, PixelationDescriptor, BloomDescriptor,
 		ColorCorrectionDescriptor, HQ4XDescriptor, ShockwaveDescriptor, OldTVDescriptor, WaterDescriptor,
 		HallucinationDescriptor, ColorModDescriptor, WaterV2Descriptor, BackgroundDescriptor,
@@ -1820,50 +2025,101 @@ namespace GL {
 			++i;
 		}
 	}
+
+	VertexBuffer* VertexBuffer::Slice(int first, int last, int nElements, VertexDescriptor const* descriptor) {
+		if (first < last && last != -1) {
+			std::ostringstream err;
+			err << "Invalid slice range " << first << ":" << last << std::endl;
+			throw std::runtime_error(err.str());
+		}
+
+		VertexBuffer* buffer = new VertexBuffer(last - first + 1, nElements, *descriptor);
+		return buffer;
+	}
 }
 
 namespace GL {
 	bool GLADInitialized = false;
 	HMODULE OpenGLLibrary;
-
-	void GLAPIENTRY OpenGLErrorCallback(GLenum source,
-		GLenum type,
-		GLuint id,
-		GLenum severity,
-		GLsizei length,
-		const GLchar* message,
-		const void* userParam) {
-		FILE* f = fopen("repentogon.log", "a");
-		fprintf(f, "[OpenGL] Error: GL CALLBACK : % s type = 0x % x, severity = 0x % x, message = % s\n",
-			(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-			type, severity, message);
-		fclose(f);
-	}
 }
 
 void* load_fn(const char* name) {
-	FILE* f = fopen("repentogon.log", "a");
 	void* addr = wglGetProcAddress(name);
 	if (!addr) {
 		addr = GetProcAddress(GL::OpenGLLibrary, name);
 	}
-	fprintf(f, "[OpenGL] %s -> %p\n", name, addr);
-	fclose(f);
+	ZHL::Log("[OpenGL] %s -> %p\n", name, addr);
 	return addr;
 }
 
-void __stdcall LuaPreDrawElements(float* vertexBuffer, GLsizei /* stride */, GLenum mode, GLsizei count, GLenum type, const void* indices) {
-	if (!GL::GLADInitialized) {
-		GL::OpenGLLibrary = LoadLibrary("opengl32.dll");
-		if (!GL::OpenGLLibrary || !gladLoadGLLoader(load_fn)) {
-			abort();
-		}
-		GL::GLADInitialized = true;
-
-		//glEnable(GL_DEBUG_OUTPUT);
-		//glDebugMessageCallback(GL::OpenGLErrorCallback, 0);
+struct ContextDataVisitor {
+	std::string operator()(Entity_Bomb* p) {
+		return Base("EntityBomb", p);
 	}
 
+	std::string operator()(Entity_Effect* p) {
+		return Base("EntityEffect", p);
+	}
+
+	std::string operator()(Entity_Familiar* p) {
+		return Base("EntityFamiliar", p);
+	}
+
+	std::string operator()(Entity_Knife* p) {
+		return Base("EntityKnife", p);
+	}
+
+	std::string operator()(Entity_Laser* p) {
+		return Base("EntityLaser", p);
+	}
+
+	std::string operator()(Entity_NPC* p) {
+		return Base("EntityNPC", p);
+	}
+
+	std::string operator()(Entity_Pickup* p) {
+		return Base("EntityPickup", p);
+	}
+
+	std::string operator()(Entity_Player* p) {
+		return Base("EntityPlayer", p);
+	}
+
+	std::string operator()(Entity_Projectile* p) {
+		return Base("EntityProjectile", p);
+	}
+
+	std::string operator()(Entity_Slot* p) {
+		return Base("EntitySlot", p);
+	}
+
+	std::string operator()(Entity_Tear* p) {
+		return Base("EntityTear", p);
+	}
+
+	std::string operator()(GridEntity_Rock* p) {
+		return Base("GridEntityRock", p);
+	}
+
+	std::string operator()(AnimationState* p) {
+		return Base("AnimationState", p);
+	}
+
+	std::string operator()(AnimationLayer* layer) {
+		std::ostringstream str;
+		str << "AnimationLayer (" << layer << ", id = " << layer->GetLayerID() << ")" << std::endl;
+		return str.str();
+	}
+
+	std::string Base(const char* name, void* p) {
+		std::ostringstream str;
+		str << name << " (" << p << ")" << std::endl;
+		return str.str();
+	}
+};
+
+void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GLenum mode, GLsizei count, GLenum type, const void* indices) {
+	float* vertexBuffer = (float*)descriptor->vertices.GetBase();
 	size_t size = 0;
 	switch (type) {
 	case GL_UNSIGNED_BYTE:
@@ -1881,9 +2137,6 @@ void __stdcall LuaPreDrawElements(float* vertexBuffer, GLsizei /* stride */, GLe
 	default:
 		throw std::runtime_error("Bad.");
 	}
-
-	void* copy = malloc(size * count);
-	memcpy(copy, indices, size * count);
 
 	int callbackId = 1136;
 	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
@@ -1912,29 +2165,101 @@ void __stdcall LuaPreDrawElements(float* vertexBuffer, GLsizei /* stride */, GLe
 		GL::VertexBuffer* buffer = new GL::VertexBuffer(vertexBuffer, (ShaderType)shaderId, GL::GetNumberOfVertices(type, indices, count), indices, count, type);
 		GL::VertexBuffer** bufferUd = (GL::VertexBuffer**)caller.pushUd(sizeof(buffer), LuaRender::VertexBufferMT);
 		*bufferUd = buffer;
-		luaL_setmetatable(L, LuaRender::VertexBufferMT);
 		caller.push(shaderId);
+
+		auto vertexBufferDescriptor = &descriptor->vertices;
+		auto it = LuaRender::VerticesRenderContext.find(vertexBufferDescriptor);
+		if (it != LuaRender::VerticesRenderContext.end()) {
+			// ZHL::Log("Found %d contexts for vertex buffer %p (from descriptor %p)\n", it->second.size(), vertexBufferDescriptor, descriptor);
+			caller.pushUd<GL::RenderOperationContext>(LuaRender::ContextMT, &it->second);
+		}
+		else {
+			// ZHL::Log("No context found for vertex buffer %p (from descriptor %p\n", vertexBufferDescriptor, descriptor);
+			caller.pushnil();
+		}
 
 		// If the return value is a pipeline, override the default rendering.
 		lua::LuaResults results = caller.call(1);
+		if (!results) {
+			switch (lua_type(L, -1)) {
+			case LUA_TNUMBER:
+			{
+				int retShaderId = lua_tointeger(L, -1);
+				if (retShaderId < 0 || retShaderId >= ShaderType::SHADER_MAX) {
+					if (retShaderId == -1)
+						break;
 
-		if (shaderId == 0) {
-			buffer->Bind();
+					bool ok = false;
+					for (std::unique_ptr<GL::Shader> const& shader : GL::Shader::_shaders) {
+						if (retShaderId == shader->GetProgram()) {
+							shader->Use();
+							buffer->Bind();
+							ok = true;
+							break;
+						}
+					}
+
+					if (!ok) {
+						ZHL::Log("[FATAL] Invalid shader ID %d (neither a native shader, nor a registered shader)\n", retShaderId);
+					}
+				}
+				else {
+					glUseProgram(__ptr_g_AllShaders[retShaderId]->GetShaderId());
+					buffer->Bind();
+				}
+				break;
+			}
+
+			case LUA_TUSERDATA:
+				lua_getmetatable(L, -1);
+				luaL_getmetatable(L, LuaRender::ShaderMT);
+				if (lua_rawequal(L, -1, -2)) {
+					lua_pop(L, 2);
+					GL::Shader* shader = *lua::GetUserdata<GL::Shader**>(L, -1, LuaRender::ShaderMT);
+					shader->Use();
+					auto loc = glGetUniformLocation(shader->GetProgram(), "Transform");
+					glUniformMatrix4fv(loc, 1, GL_TRUE, GL::ProjectionMatrix.data);
+					buffer->Bind();
+				}
+				else {
+					lua_pop(L, 1);
+					luaL_getmetatable(L, LuaRender::PipelineMT);
+					if (lua_rawequal(L, -1, -2)) {
+						lua_pop(L, 2);
+						GL::Pipeline* pipeline = lua::GetUserdata<GL::Pipeline*>(L, -1, LuaRender::PipelineMT);
+						pipeline->Render();
+					}
+					else {
+						lua_pop(L, 2);
+						ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
+					}
+				}
+				break;
+
+			case LUA_TNIL:
+			case LUA_TNONE:
+				break;
+
+			default:
+			{
+				ZHL::Log("[ERROR] Invalid return value for MC_PRE_OPENGL_RENDER\n");
+				break;
+			}
+			}
 		}
 	}
 
 	glDrawElements(mode, count, type, indices);
 
-	if (memcmp(indices, copy, size * count)) {
-		throw std::runtime_error("Memory corruption detected");
-	}
-
-	free(copy);
+	LuaRender::ElementsRenderContext[&descriptor->elements].clear();
+	LuaRender::VerticesRenderContext[&descriptor->vertices].clear();
 }
 
 static void RegisterCustomRenderMetatables(lua_State* L) {
 	lua::LuaStackProtector protector(L);
 
+	GL::RenderSet::InitMetatable(L);
+	GL::RenderOperationContext::InitMetatable(L);
 	GL::Shader::InitMetatable(L);
 	GL::GLSLValue::InitMetatables(L);
 	GL::VertexDescriptor::InitMetatable(L);
@@ -1979,13 +2304,21 @@ LUA_FUNCTION(Lua_Renderer_Shader) {
 	std::string fragmentShader(luaL_checkstring(L, 2));
 	GL::VertexDescriptor* descriptor = lua::GetUserdata<GL::VertexDescriptor*>(L, 3, LuaRender::VertexDescriptorMT);
 
-	GL::Shader* shader = new GL::Shader(vertexShader, fragmentShader, descriptor);
-	std::unique_ptr<GL::Shader> ptr(shader);
-	GL::Shader** ud = (GL::Shader**)lua_newuserdata(L, sizeof(shader));
-	luaL_setmetatable(L, LuaRender::ShaderMT);
-	*ud = shader;
-
-	GL::Shader::_shaders.push_back(std::move(ptr));
+	GL::Shader* shader;
+	try {
+		shader = new GL::Shader(vertexShader, fragmentShader, descriptor);
+		std::unique_ptr<GL::Shader> ptr(shader);
+		GL::Shader** ud = (GL::Shader**)lua_newuserdata(L, sizeof(shader));
+		luaL_setmetatable(L, LuaRender::ShaderMT);
+		*ud = shader;
+		GL::Shader::_shaders.push_back(std::move(ptr));
+	}
+	catch (std::runtime_error& err) {
+		const char* error = err.what();
+		ZHL::Log("%s\n", error);
+		luaL_error(L, "Error while creating shader: %s", error);
+	}
+	
 	return 1;
 }
 
@@ -2029,11 +2362,81 @@ LUA_FUNCTION(Lua_Renderer_ProjectionMatrix) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Renderer_RenderSet) {
+	lua::place<GL::RenderSet>(L, LuaRender::RenderSetMT);
+	return 1;
+}
+
 // ============================================================================
-// Lua engine
+// Hooks
+
+HOOK_METHOD(KAGE_Memory_MemoryPoolDescriptor, Allocate, (uint32_t n) -> void*) {
+	void* result = super(n);
+	// ZHL::Log("Allocating memory in descriptor %p. Amount is %u, base is located at %p, result is at %p\n", this, n, GetBase(), result);
+
+	ptrdiff_t diff = (ptrdiff_t)result - (ptrdiff_t)GetBase();
+	if (diff < 0) {
+		std::ostringstream err;
+		err << "[FATAL] Difference between buffer new data and buffer base cannot be negative" << std::endl;
+		ZHL::Log(err.str().c_str());
+		throw std::runtime_error(err.str());
+	}
+
+	uint32_t offset = diff / elementSize;
+
+	if (n == LuaRender::ELEMENT_BUFFER) {
+		LuaRender::ElementsRenderContext[this].push_back(LuaRender::RenderContextQueue);
+	}
+	else if (n == LuaRender::VERTEX_BUFFER) {
+		LuaRender::VerticesRenderContext[this].push_back(LuaRender::RenderContextQueue);
+	}
+	else {
+		std::ostringstream err;
+		err << "[FATAL] Unknown memory pool allocation size " << n << std::endl;
+		ZHL::Log(err.str().c_str());
+		throw std::runtime_error(err.str());
+	}
+	return result;
+}
+
+HOOK_METHOD(GridEntity_Rock, Render, (Vector const& offset) -> void) {
+	LuaRender::ScopedContext<GridEntity_Rock*> context(this);
+	super(offset);
+}
+
+HOOK_METHOD(AnimationState, Render, (Vector const& position, Vector const& topLeftClamp, Vector const& bottomRightClamp) -> void) {
+	LuaRender::ScopedContext<AnimationState*> context(this);
+	super(position, topLeftClamp, bottomRightClamp);
+}
+
+HOOK_METHOD(AnimationLayer, RenderFrame, (Vector const& position, int unk, Vector const& topLeftClamp, Vector const& bottomRightClamp, ANM2* animation) -> void) {
+	LuaRender::ScopedContext<AnimationLayer*> context(this);
+	super(position, unk, topLeftClamp, bottomRightClamp, animation);
+}
+
+HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
+	LuaRender::ScopedContext<Entity_NPC*> context(this);
+	super(offset);
+}
+
+HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
+	LuaRender::ScopedContext<Entity_Player*> context(this);
+	super(offset);
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
+
+	if (!GL::GLADInitialized) {
+		GL::OpenGLLibrary = LoadLibrary("opengl32.dll");
+		if (!GL::OpenGLLibrary || !gladLoadGLLoader(load_fn)) {
+			abort();
+		}
+		GL::GLADInitialized = true;
+
+		//glEnable(GL_DEBUG_OUTPUT);
+		//glDebugMessageCallback(GL::OpenGLErrorCallback, 0);
+	}
 
 	lua_State* L = _state;
 	lua::LuaStackProtector protector(L);
@@ -2057,6 +2460,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "ProjectionMatrix", Lua_Renderer_ProjectionMatrix },
 		{ "Pipeline", Lua_Renderer_Pipeline },
 		{ "VertexDescriptor", Lua_Renderer_VertexDescriptor},
+		{ "RenderSet", Lua_Renderer_RenderSet },
 		{ NULL, NULL }
 	};
 
@@ -2069,6 +2473,30 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::TableAssoc(L, "Vec2", GL::GLSLType::GLSL_VEC2);
 	lua::TableAssoc(L, "Vec3", GL::GLSLType::GLSL_VEC3);
 	lua::TableAssoc(L, "Vec4", GL::GLSLType::GLSL_VEC4);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "ShaderType");
+	lua_newtable(L);
+	lua::TableAssoc(L, "SHADER_COLOR_OFFSET", SHADER_COLOR_OFFSET);
+	lua::TableAssoc(L, "SHADER_PIXELATION", SHADER_PIXELATION);
+	lua::TableAssoc(L, "SHADER_BLOOM", SHADER_BLOOM);
+	lua::TableAssoc(L, "SHADER_COLOR_CORRECTION", SHADER_COLOR_CORRECTION);
+	lua::TableAssoc(L, "SHADER_HQ4X", SHADER_HQ4X);
+	lua::TableAssoc(L, "SHADER_SHOCKWAVE", SHADER_SHOCKWAVE);
+	lua::TableAssoc(L, "SHADER_OLDTV", SHADER_OLDTV);
+	lua::TableAssoc(L, "SHADER_WATER", SHADER_WATER);
+	lua::TableAssoc(L, "SHADER_HALLUCINATION", SHADER_HALLUCINATION);
+	lua::TableAssoc(L, "SHADER_COLOR_MOD", SHADER_COLOR_MOD);
+	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_CHAMPION", SHADER_COLOR_OFFSET_CHAMPION);
+	lua::TableAssoc(L, "SHADER_WATER_V2", SHADER_WATER_V2);
+	lua::TableAssoc(L, "SHADER_BACKGROUND", SHADER_BACKGROUND);
+	lua::TableAssoc(L, "SHADER_WATER_OVERLAY", SHADER_WATER_OVERLAY);
+	lua::TableAssoc(L, "SHADER_UNK", SHADER_UNK);
+	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_DOGMA", SHADER_COLOR_OFFSET_DOGMA);
+	lua::TableAssoc(L, "SHADER_COLOR_OFFSET_GOLD", SHADER_COLOR_OFFSET_GOLD);
+	lua::TableAssoc(L, "SHADER_DIZZY", SHADER_DIZZY);
+	lua::TableAssoc(L, "SHADER_HEAT_WAVE", SHADER_HEAT_WAVE);
+	lua::TableAssoc(L, "SHADER_MIRROR", SHADER_MIRROR);
 	lua_rawset(L, -3);
 
 	lua_setglobal(L, "Renderer");
@@ -2091,22 +2519,16 @@ namespace LuaRender {
 		void* applyImage = applyImageScan.GetAddress();
 
 		ASMPatch secondLoopPatch, applyImagePatch;
-		secondLoopPatch.Push(ASMPatch::Registers::EBP, -0x8); // stride
-		secondLoopPatch.Push(ASMPatch::Registers::EDI); // vertex buffer
+		secondLoopPatch.Push(ASMPatch::Registers::ESI, 0); // render descriptor
 		secondLoopPatch.AddInternalCall(LuaPreDrawElements);
 		secondLoopPatch.AddRelativeJump((char*)secondLoop + 0x6);
 
-		applyImagePatch.Push(ASMPatch::Registers::ESI, 0x28); // stride
-		applyImagePatch.Push(ASMPatch::Registers::EDI); // vertex buffer
+		applyImagePatch.Push(ASMPatch::Registers::ESI); // render descriptor
 		applyImagePatch.AddInternalCall(LuaPreDrawElements);
 		applyImagePatch.AddRelativeJump((char*)applyImage + 0x6);
 
 		sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
 		sASMPatcher.PatchAt(applyImage, &applyImagePatch);
-
-		FILE* f = fopen("repentogon.log", "a");
-		fprintf(f, "currentShader = %p, allShaders = %p\n", __ptr_g_CurrentShader, __ptr_g_AllShaders);
-		fclose(f);
 	}
 
 #define PAD(D, T, N) D.AddAttribute(T, N)

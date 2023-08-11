@@ -5,6 +5,7 @@
 #include <lua.hpp>
 
 #include "LuaCore.h"
+#include "Log.h"
 #include "HookSystem_private.h"
 #include "SigScan.h"
 
@@ -350,6 +351,11 @@ namespace lua {
 			}
 		}
 
+		void UserdataPtr::push(lua_State* L, void* const p, lua::Metatables mt) {
+			void* key = lua::GetMetatableKey(mt);
+			push(L, p, key);
+		}
+
 		void* identityKey;
 		static VariableDefinition identityKeyDef("luabridge::IdentityKey", "5357FF15????????68(????????)", &identityKey);
 
@@ -518,9 +524,7 @@ namespace lua {
 			if (n != _orig + _n) {
 				std::ostringstream err;
 				err << "Inconsistent Lua stack. Expected " << _orig + _n << " elements, got " << n << std::endl;
-				FILE* f = fopen("repentogon.log", "a");
-				fprintf(f, err.str().c_str());
-				fclose(f);
+				ZHL::Log(err.str().c_str());
 				abort();
 			}
 		}

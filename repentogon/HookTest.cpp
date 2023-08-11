@@ -7,6 +7,7 @@
 
 #include <lua.hpp>
 #include "LuaCore.h"
+#include "Log.h"
 
 #include "ImGuiFeatures/LogViewer.h"
 
@@ -260,12 +261,12 @@ bool netStartInitialized = false; // temp
 HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neighbors, uint32_t generationIndex, bool unk) -> void) {
 	super(neighbors, generationIndex, unk);
 	LevelGenerator_Room& room = (*GetAllRooms())[generationIndex];
-	FILE* f = fopen("repentogon.log", "a");
-	fprintf(f, "Computing neighbors for room at position %d (assumed to be at (%d, %d))\n", generationIndex, room._gridColIdx, room._gridLineIdx);
+	// FILE* f = fopen("repentogon.log", "a");
+	ZHL::Logger logger;
+	logger.Log("Computing neighbors for room at position %d (assumed to be at (%d, %d))\n", generationIndex, room._gridColIdx, room._gridLineIdx);
 	for (size_t i = 0; i < neighbors->size(); ++i) {
-		fprintf(f, "\t(%d, %d, %d)\n", (*neighbors)[i]._gridColIdx, (*neighbors)[i]._gridLineIdx, (*neighbors)[i]._shape);
+		logger.Log("\t(%d, %d, %d)\n", (*neighbors)[i]._gridColIdx, (*neighbors)[i]._gridLineIdx, (*neighbors)[i]._shape);
 	}
-	fclose(f);
 }
 
 /*HOOK_METHOD(Entity, GetCollisionCapsule, (Capsule* capsule, const Vector& vec)-> Capsule*) {
