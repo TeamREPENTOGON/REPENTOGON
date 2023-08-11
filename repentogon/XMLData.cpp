@@ -30,6 +30,7 @@ using namespace rapidxml;
 using namespace std;
 
 char* bosspoolsxml; //caching this ffs
+bool itempoolerror = false;
 bool xmlsloaded = false;
 
 char* lastmodid = "BaseGame";
@@ -1676,7 +1677,7 @@ HOOK_METHOD(xmlnode_rep, first_node, (char* name, int size, bool casesensitive)-
 			string error = "[XMLError] " + xmlerrors[toint(err->value())] + " in " + currpath;
 			g_Game->GetConsole()->PrintError(error);
 			KAGE::LogMessage(3,(error + "\n").c_str());
-			printf("%s \n", error.c_str());
+			//printf("%s \n", error.c_str());
 		}
 		ProcessXmlNode(node);
 	}
@@ -1732,7 +1733,7 @@ HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, int ismod)->void) {
 }
 
 HOOK_METHOD(ItemConfig, Load, (char* xmlpath, int ismod)->void) {
-	if (xmlsloaded) { return super(xmlpath, ismod); }
+	//if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
@@ -2136,7 +2137,7 @@ bool XMLParse(xml_document<char>* xmldoc, char* xml, string dir) {
 		string error = "[XMLError] " + reason + " in " + dir;
 		g_Game->GetConsole()->PrintError(error);
 		KAGE::LogMessage(3, (error + "\n").c_str());
-		printf("%s \n", error.c_str());
+		//printf("%s \n", error.c_str());
 		//mclear(xmldoc);
 	}
 	return false;
@@ -2298,8 +2299,8 @@ bool endsWithPools(const char* str) {
 		lastIndex--;
 	}
 
-	// Check if the substring from the last non-space character to the end is "</pools>"
-	const char* target = "</pools>";
+	// Check if the substring from the last non-space character to the end is "</pool>"
+	const char* target = "</pool>";
 	int targetLength = strlen(target);
 	int startIndex = lastIndex - targetLength + 1;
 
@@ -2345,6 +2346,49 @@ char* replaceChar(const char* str, const char* search, const char* replace) {
 	return result;
 }
 
+
+char* replaceLastChar(const char* str, const char* search, const char* replace) {
+	int searchLen = strlen(search);
+	int replaceLen = strlen(replace);
+	int strLen = strlen(str);
+	int count = 0;
+
+	const char* pos = str;
+	while ((pos = strstr(pos, search)) != nullptr) {
+		count++;
+		pos += searchLen;
+	}
+
+	if (count == 0) {
+		char* result = new char[strLen + 1];
+		strcpy(result, str);
+		return result;
+	}
+
+	int newLen = strLen + (count - 1) * (replaceLen - searchLen);
+
+	char* result = new char[newLen + 1]; 
+	char* resultPos = result;
+
+	pos = str;
+	const char* lastPos = nullptr;
+	while ((pos = strstr(pos, search)) != nullptr) {
+		lastPos = pos;
+		pos += searchLen;
+	}
+
+	int prefixLen = lastPos - str;
+	strncpy(resultPos, str, prefixLen);
+	resultPos += prefixLen;
+
+	strcpy(resultPos, replace);
+	resultPos += replaceLen;
+
+	strcpy(resultPos, lastPos + searchLen);
+
+	return result;
+}
+
 int maxnodebackdrop = 60;
 char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 	if (no) {return xml;}
@@ -2358,7 +2402,7 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 				if (strlen(xmlaux) > 1) {
 					xml_document<char>* xmldoc = new xml_document<char>();
 					if ((strcmp(filename.c_str(), "bosspools.xml")==0) && endsWithPools(xml)) {
-						CharToChar(&xml, replaceChar(xml, "</pools>", "</bosspools>"));
+						CharToChar(&xml, replaceLastChar(xml, "</pool>", "</bosspools>"));
 					}
 					if (XMLParse(xmldoc, xmlaux, resourcesdir)) {
 						//mclear(xml);
@@ -2560,12 +2604,18 @@ bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	if (xmlsloaded) {
+		//printf("XML: %s", xmldata);
 		if ((bosspoolsxml != NULL) && (charfind(xmldata, "<bosspool", 50))) {
 			return super(bosspoolsxml);
 		}
 		else if (charfind(xmldata, "<cuts", 50)) {
 			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
-		}else{
+		}
+		else if (charfind(xmldata, "<itempoo", 50)) {
+			//XMLStuff.PoolData->Clear();
+			return super(xmldata);
+		}
+		else{
 			return super(xmldata); 
 		}
 	}
@@ -2645,6 +2695,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			a = "<pocketitems xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </pocketitems>";
 		}
 		else if (a.find("<itempo") < 50) {
+			itempoolerror = true;
 			a = "<ItemPools xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </ItemPools>";
 		}
 		else if (a.find("<item") < 50) {
@@ -2686,7 +2737,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		else if (a.find("<whis") < 50) { //typo
 			a = "<wisps gfxroot=\"gfx/familiar/wisps/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </wisps>";
 		}
-		//printf("asdad: %s", a.c_str());
+		printf("ERROR: %s", a.c_str());
 		
 		xmldata = new char[a.length() + 1];
 		strcpy(xmldata, a.c_str());
