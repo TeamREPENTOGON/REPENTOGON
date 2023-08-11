@@ -212,6 +212,10 @@ ___
 #### [PocketItemType](enums/PocketItemType.md) GetWildCardItemType ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Wisp·Collectibles·List () {: aria-label='Functions' }
+#### table GetWispCollecitblesList ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Increment·Player·Form·Counter () {: aria-label='Functions' }
 #### void IncrementPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Form, int Num ) {: .copyable aria-label='Functions' }
 

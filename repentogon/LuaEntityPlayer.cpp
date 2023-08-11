@@ -709,6 +709,33 @@ static int Lua_PlayerGetVoidedCollectiblesList(lua_State* L)
 	return 1;
 }
 
+/*static int Lua_PlayerAddInnateCollectible(lua_State* L)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	std::set<int> itemWispList = plr->GetItemWispsList();
+	itemWispList.insert(luaL_checkinteger(L,2));
+	plr->EvaluateItems();
+
+	return 0;
+}
+*/
+
+static int Lua_PlayerGetWispCollecitblesList(lua_State* L)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	std::set<uint32_t> collectibles = plr->GetItemWispsList();
+
+	lua_newtable(L);
+	int idx = 1;
+	for (int collectible : collectibles) {
+		lua_pushnumber(L, idx);
+		lua_pushinteger(L, collectible);
+		lua_settable(L, -3);
+		idx++;
+	}
+
+	return 1;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -788,4 +815,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetPurityState", Lua_PlayerSetPurityState);
 	lua::RegisterFunction(state, mt, "SetTearPoisonDamage", Lua_PlayerSetTearPoisonDamage);
 	lua::RegisterFunction(state, mt, "GetVoidedCollectiblesList", Lua_PlayerGetVoidedCollectiblesList);
+	//lua::RegisterFunction(state, mt, "AddInnateCollectible", Lua_PlayerAddInnateCollectible);
+	lua::RegisterFunction(state, mt, "GetWispCollecitblesList", Lua_PlayerGetWispCollecitblesList);
 }
