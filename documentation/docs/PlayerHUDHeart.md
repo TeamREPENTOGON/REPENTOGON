@@ -2,23 +2,23 @@
 
 ## Functions
 
-### GetFlashType () {: aria-label='Functions' }
+### Get·Flash·Type () {: aria-label='Functions' }
 #### int GetFlashType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetHeartAnim () {: aria-label='Functions' }
+### Get·Heart·Anim () {: aria-label='Functions' }
 #### string GetHeartAnim ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetHeartOverlayAnim () {: aria-label='Functions' }
+### Get·Heart·Overlay·Anim () {: aria-label='Functions' }
 #### string GetHeartOverlayAnim ( ) {: .copyable aria-label='Functions' }
 
 ___
-### IsGoldenHeartOverlayVisible () {: aria-label='Functions' }
+### Is·Golden·Heart·Overlay·Visible () {: aria-label='Functions' }
 #### boolean IsGoldenHeartOverlayVisible ( ) {: .copyable aria-label='Functions' }
 
 ___
-### IsVisible () {: aria-label='Functions' }
+### Is·Visible () {: aria-label='Functions' }
 #### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 
 ___
