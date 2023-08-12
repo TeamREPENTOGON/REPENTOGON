@@ -25,6 +25,12 @@ static int Lua_PlayerHUDGetPlayer(lua_State* L) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerHUDGetHUD) {
+	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	lua::luabridge::UserdataPtr::push(L, playerHUD->_HUD, lua::Metatables::HUD);
+	return 1;
+}
+
 static int Lua_PlayerHUDRenderActiveItem(lua_State* L) {
 	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	unsigned int slot = (unsigned int)luaL_checkinteger(L, 2);
@@ -37,12 +43,32 @@ static int Lua_PlayerHUDRenderActiveItem(lua_State* L) {
 
 }
 
-static int Lua_PlayerHUDGetBatteryBarSprite(lua_State* L)
-{
+LUA_FUNCTION(Lua_PlayerHUDGetHearts) {
 	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
-	ANM2* sprite = playerHUD->GetBatteryBarSprite();
-	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	PlayerHUDHeart* hearts = playerHUD->_heart;
 
+	lua_newtable(L);
+	int idx = 1;
+	for (int i = 0; i < 24; i++) {
+		PlayerHUDHeart* ud = (PlayerHUDHeart*)lua_newuserdata(L, sizeof(PlayerHUDHeart));
+		*ud = hearts[i];
+		luaL_setmetatable(L, lua::metatables::PlayerHUDHeartMT);
+		lua_rawseti(L, -2, idx);
+		idx++;
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerHUDGetHeartByIndex) {
+	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
+	int index = luaL_checkinteger(L, 2); 
+	if (index < 0 || index > 23) { 
+		return luaL_error(L, "Invalid index: %d", index);
+	} 
+	PlayerHUDHeart* hearts = playerHUD->_heart;
+	PlayerHUDHeart* ud = (PlayerHUDHeart*)lua_newuserdata(L, sizeof(PlayerHUDHeart)); 
+	*ud = hearts[index]; 
+	luaL_setmetatable(L, lua::metatables::PlayerHUDHeartMT);
 	return 1;
 }
 
@@ -60,8 +86,10 @@ static void RegisterPlayerHUD(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "GetPlayer", Lua_PlayerHUDGetPlayer },
+		{ "GetHUD", Lua_PlayerHUDGetHUD },
 		{ "RenderActiveItem", Lua_PlayerHUDRenderActiveItem },
-		{ "GetBatteryBarSprite", Lua_PlayerHUDGetBatteryBarSprite},
+		{ "GetHearts", Lua_PlayerHUDGetHearts},
+		{ "GetHeartByIndex", Lua_PlayerHUDGetHeartByIndex},
 		{ NULL, NULL }
 	};
 

@@ -16,6 +16,7 @@ __thiscall void HUD::FlashRedHearts(Entity_Player *player);
 struct HUD depends (PlayerHUD, ANM2) { {{
 	//inline PlayerHUD GetPlayerHUD(int index) { return _playerHUD[index]; } 
 	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }
+	inline ANM2* GetChargeBarSprite() { return (ANM2*)((char*)this + 0xc36e8); }
 	inline ANM2* GetPickupsHUDSprite() { return (ANM2*)((char*)this + 0xc3910); }
 }} 
     PlayerHUD _playerHUD[8];

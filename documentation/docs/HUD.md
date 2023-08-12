@@ -2,6 +2,10 @@
 
 ## Functions
 
+### Get·Charge·Bar·Sprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetChargeBarSprite ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Pickups·HUD·Sprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetPickupsHUDSprite ( ) {: .copyable aria-label='Functions' }
 

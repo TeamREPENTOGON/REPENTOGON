@@ -162,6 +162,7 @@ namespace lua {
         extern LIBZHL_API const char* CapsuleMT;
         extern LIBZHL_API const char* DailyChallengeMT;
         extern LIBZHL_API const char* ItemOverlayMT;
+        extern LIBZHL_API const char* PlayerHUDHeartMT;
     }
 
     LIBZHL_API void UnloadMetatables();

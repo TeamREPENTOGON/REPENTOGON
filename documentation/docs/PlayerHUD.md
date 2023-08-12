@@ -2,12 +2,22 @@
 
 ## Functions
 
-### Get·Player () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) GetPlayer ( ) {: .copyable aria-label='Functions' }
+### Get·Hearts () {: aria-label='Functions' }
+#### table GetHearts ( ) {: .copyable aria-label='Functions' }
+Returns table of [hearts](PlayerHUDHeart.md)
 
 ___
-### Get·Battery·Bar·Sprite () {: aria-label='Functions' }
-#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetBatteryBarSprite ( ) {: .copyable aria-label='Functions' }
+### Get·Heart·By·Index () {: aria-label='Functions' }
+#### [PlayerHUDHeart](PlayerHUDHeart.md) GetHeartByIndex ( int Index ) {: .copyable aria-label='Functions' }
+
+___
+### Get·HUD () {: aria-label='Functions' }
+#### [HUD](HUD.md) GetHUD ( ) {: .copyable aria-label='Functions' }
+
+___
+
+### Get·Player () {: aria-label='Functions' }
+#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) GetPlayer ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Render·Active·Item () {: aria-label='Functions' }

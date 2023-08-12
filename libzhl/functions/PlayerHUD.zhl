@@ -7,9 +7,18 @@ __thiscall void PlayerHUD::RenderActiveItem(unsigned int slot, const Vector& pos
 "558bec83e4f881ec24020000":
 __thiscall void PlayerHUD::RenderHearts(Vector *unk1, ANM2 *sprite, const Vector& unk2, float unk3);
 
-struct PlayerHUD { {{
+"558bec83ec388b45":
+__thiscall void PlayerHUD::UpdateHearts(PlayerHUDHeart* heart, int unkInt, Entity_Player* player); 
+
+"558bec83e4f081ecc80000008b11":
+__thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos);
+
+struct PlayerHUD depends (PlayerHUDHeart) { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
-        inline ANM2* GetBatteryBarSprite() { return (ANM2*)((char*)this + 0xc36e8); }
 }} 
     Entity_Player* _player;
+	HUD* _HUD;
+	char _pad0[7];
+	PlayerHUDHeart _heart[24];
+	
 };

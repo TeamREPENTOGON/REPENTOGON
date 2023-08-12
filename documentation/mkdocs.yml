@@ -151,6 +151,7 @@ nav:
   - PersistentGameData: PersistentGameData.md
   - ProceduralItemManager: ProceduralItemManager.md
   - PlayerHUD: PlayerHUD.md
+  - PlayerHUDHeart: PlayerHUDHeart.md
   - PlayerManager: PlayerManager.md
   - PocketItem: PocketItem.md
   - ProjectileParams: ProjectileParams.md
