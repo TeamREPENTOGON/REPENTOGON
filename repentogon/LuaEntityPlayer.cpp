@@ -737,6 +737,50 @@ static int Lua_PlayerGetWispCollecitblesList(lua_State* L)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetImmaculateConceptionState)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *plr->GetImmaculateConceptionState());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetImmaculateConceptionState)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetImmaculateConceptionState() = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetCambionConceptionState)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *plr->GetCambionConceptionState());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetCambionConceptionState)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetCambionConceptionState() = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerUpdateIsaacPregnancy)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	bool cambion = lua_toboolean(L, 2);
+	plr->UpdateIsaacPregnancy(cambion);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetCambionPregnancyLevel)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, plr->GetCambionPregnancyLevel());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -817,4 +861,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetVoidedCollectiblesList", Lua_PlayerGetVoidedCollectiblesList);
 	//lua::RegisterFunction(state, mt, "AddInnateCollectible", Lua_PlayerAddInnateCollectible);
 	lua::RegisterFunction(state, mt, "GetWispCollecitblesList", Lua_PlayerGetWispCollecitblesList);
+	lua::RegisterFunction(state, mt, "GetImmaculateConceptionState", Lua_PlayerGetImmaculateConceptionState);
+	lua::RegisterFunction(state, mt, "SetImmaculateConceptionState", Lua_PlayerSetImmaculateConceptionState);
+	lua::RegisterFunction(state, mt, "GetCambionConceptionState", Lua_PlayerGetCambionConceptionState);
+	lua::RegisterFunction(state, mt, "SetCambionConceptionState", Lua_PlayerSetCambionConceptionState);
+	lua::RegisterFunction(state, mt, "UpdateIsaacPregnancy", Lua_PlayerUpdateIsaacPregnancy);
+	lua::RegisterFunction(state, mt, "GetCambionPregnancyLevel", Lua_PlayerGetCambionPregnancyLevel);
 }

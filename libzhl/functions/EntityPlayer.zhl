@@ -191,6 +191,12 @@ __thiscall void Entity_Player::ShuffleCostumes(int seed);
 "558bec83ec2ca1????????33c58945??538b5d":
 __thiscall void Entity_Player::RemoveCollectible(unsigned int CollectibleType, bool IgnoreModifiers, unsigned int ActiveSlot, bool RemoveFromPlayerForm);
 
+"558bec6aff68????????64a1????????5083ec6ca1????????33c58945??5657508d45??64a3????????8bf1":
+__thiscall void Entity_Player::UpdateIsaacPregnancy(bool Cambion);
+
+"8b89????????83f90f7c":
+__thiscall int Entity_Player::GetCambionPregnancyLevel();
+
 
 struct Entity_Player : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
@@ -223,6 +229,8 @@ struct Entity_Player : public Entity { {{
 	inline int* GetPeeBurstCooldown() { return (int*)((char*)this + 0x1818); }
 	inline int* GetMaxPeeBurstCooldown() { return (int*)((char*)this + 0x181c); }
 	inline int* GetPurityState() { return (int*)((char*)this + 0x184c); }
+	inline int* GetImmaculateConceptionState() { return (int*)((char*)this + 0x1850); }
+	inline int* GetCambionConceptionState() { return (int*)((char*)this + 0x1854); }
 	inline float* GetD8DamageModifier() { return (float*)((char*)this + 0x185C); }
 	inline float* GetD8SpeedModifier() { return (float*)((char*)this + 0x1860); }
 	inline float* GetD8RangeModifier() { return (float*)((char*)this + 0x1864); }

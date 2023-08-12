@@ -73,6 +73,14 @@ ___
 #### int GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
 Gets the current content of the bag in the given Slot ID.
 ___
+### Get·Cambion·Conception·State () {: aria-label='Functions' }
+#### int GetCambionConceptionState ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Cambion·Pregnancy·Level () {: aria-label='Functions' }
+#### int GetCambionPregnancyLevel ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Collectibles·List () {: aria-label='Functions' }
 #### table GetCollectiblesList ( ) {: .copyable aria-label='Functions' }
 
@@ -142,6 +150,10 @@ ___
 ___
 ### Get·History () {: aria-label='Functions' }
 #### [History](History.md) GetHistory ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Immaculate·Conception·State () {: aria-label='Functions' }
+#### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Marked·Target () {: aria-label='Functions' }
@@ -259,6 +271,10 @@ ___
 #### void SetBagOfCraftingSlot ( int SlotID, int PickupID ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Cambion·Conception·State () {: aria-label='Functions' }
+#### void SetCambionConceptionState ( int State ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Can·Shoot () {: aria-label='Functions' }
 #### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
@@ -293,6 +309,10 @@ ___
 ___
 ### Set·Fire·Delay·Modifier () {: aria-label='Functions' }
 #### void SetFireDelayModifier ( int Modifier ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Immaculate·Conception·State () {: aria-label='Functions' }
+#### void SetImmaculateConceptionState ( int State ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Item·State () {: aria-label='Functions' }
@@ -354,4 +374,8 @@ Adds a heart container to a character if there are none left, depending on its [
 
 Returns `true` on success, if not then `false`.
 
+___
+### Update·Isaac·Pregnancy () {: aria-label='Functions' }
+#### void UpdateIsaacPregnancy ( boolean Cambion ) {: .copyable aria-label='Functions' }
+Set ``true`` if you want to update Cambion Conception costume, otherwise Immaculate Conception.
 ___
