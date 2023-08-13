@@ -861,6 +861,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetVoidedCollectiblesList", Lua_PlayerGetVoidedCollectiblesList);
 	//lua::RegisterFunction(state, mt, "AddInnateCollectible", Lua_PlayerAddInnateCollectible);
 	lua::RegisterFunction(state, mt, "GetWispCollecitblesList", Lua_PlayerGetWispCollecitblesList);
+	lua::RegisterFunction(state, mt, "GetWispCollectiblesList", Lua_PlayerGetWispCollecitblesList);
 	lua::RegisterFunction(state, mt, "GetImmaculateConceptionState", Lua_PlayerGetImmaculateConceptionState);
 	lua::RegisterFunction(state, mt, "SetImmaculateConceptionState", Lua_PlayerSetImmaculateConceptionState);
 	lua::RegisterFunction(state, mt, "GetCambionConceptionState", Lua_PlayerGetCambionConceptionState);
