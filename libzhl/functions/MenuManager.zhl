@@ -27,6 +27,8 @@ struct MenuManager depends (Menu_Game, Menu_Character) {
 	inline Menu_Game* GetMenuGame() {return (Menu_Game*)((char*)this + 0x80fac); }
 	inline Menu_Character* GetMenuCharacter() {return (Menu_Character*)((char*)this + 0x101c00); }
 
+	inline Menu_Title* GetMenuTitle() {return (Menu_Title*)((char*)this + 0x512); }
+	inline Menu_Save* GetMenuSave() {return (Menu_Save*)((char*)this + 0x634); }
 	inline Menu_Challenge* GetMenuChallenge() {return (Menu_Challenge*)((char*)this + 0x102d50); }
 	inline Menu_DailyChallenge* GetMenuDailyChallenge() {return (Menu_DailyChallenge*)((char*)this + 0x8130c); }
 	inline Menu_Collection* GetMenuCollection() {return (Menu_Collection*)((char*)this + 0x102e80); }

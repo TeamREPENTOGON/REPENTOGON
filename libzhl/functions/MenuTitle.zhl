@@ -5,5 +5,9 @@ __thiscall void Menu_Title::Update();
 __thiscall void Menu_Title::Render();
 
 struct Menu_Title {
-
+{{
+	inline ANM2* GetTitleScreenSprite() { return (ANM2*)((char*)this + 0x8); }
+}}
+    int PositionX;
+    int PositionY;
 };
