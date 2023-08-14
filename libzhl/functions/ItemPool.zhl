@@ -4,6 +4,9 @@ static __stdcall int ItemPool::GetCardEx(int Seed, int SpecialChance, int RuneCh
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b8e4000100":
 __thiscall void ItemPool::load_pools(char *xmlpath,char ismod);
 
+"558bec83e4f883ec1c64a1":
+__thiscall int ItemPool::GetCollectibleFromList(const int* list, unsigned int length, unsigned int seed, unsigned int defaultItem, bool addToBlacklist, bool excludeLockedItems);
+
 struct ItemPool {
 
 };
