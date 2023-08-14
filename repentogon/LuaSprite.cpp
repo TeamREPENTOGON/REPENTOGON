@@ -49,19 +49,23 @@ int Lua_SpriteWasOverlayEventTriggered(lua_State* L)
 	return 1;
 }
 
-/*int Lua_SpriteGetLayer(lua_State* L)
+static int Lua_SpriteGetAnimationState(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	const char* layerName = luaL_checkstring(L, 2);
-	LayerState* toLua = (LayerState*)lua_newuserdata(L, sizeof(LayerState));
-	toLua = anm2->GetLayer(layerName);
-	if (toLua == nullptr) {
-		printf("ABORT THIS");
-	}
-	luaL_setmetatable(L, LayerStateMT);
+	AnimationState** toLua = (AnimationState**)lua_newuserdata(L, sizeof(AnimationState*));
+	*toLua = anm2->GetAnimationState();
+	luaL_setmetatable(L, lua::metatables::AnimationStateMT);
 	return 1;
 }
-*/
+
+static int Lua_SpriteGetOverlayAnimationState(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	AnimationState** toLua = (AnimationState**)lua_newuserdata(L, sizeof(AnimationState*));
+	*toLua = anm2->GetOverlayAnimationState();
+	luaL_setmetatable(L, lua::metatables::AnimationStateMT);
+	return 1;
+}
 
 static int Lua_SpriteGetLayer(lua_State* L)
 {
@@ -244,6 +248,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	lua::Metatables mt = lua::Metatables::SPRITE;
+	lua::RegisterFunction(state, mt, "GetAnimationState", Lua_SpriteGetAnimationState);
+	lua::RegisterFunction(state, mt, "GetOverlayAnimationState", Lua_SpriteGetOverlayAnimationState);
 	lua::RegisterFunction(state, mt, "GetLayer", Lua_SpriteGetLayer);
 	lua::RegisterFunction(state, mt, "GetLayerByName", Lua_SpriteGetLayer_Text);
 	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);
