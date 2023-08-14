@@ -1,11 +1,11 @@
-struct Menu_Save { 
+struct Menu_Save depends (ANM2) { 
 {{
-	inline ANM2* GetSaveSelectMenuSprite() { return (ANM2*)((char*)this + 0x18); }
-	inline ANM2* GetDeleteButtonSprite() { return (ANM2*)((char*)this + 0x46c); }
-	inline ANM2* GetDeletePopupSprite() { return (ANM2*)((char*)this + 0x580); }
-	inline ANM2* GetSave1DrawingSprite() { return (ANM2*)((char*)this + 0x12c); }
-	inline ANM2* GetSave2DrawingSprite() { return (ANM2*)((char*)this + 0x240); }
-	inline ANM2* GetSave3DrawingSprite() { return (ANM2*)((char*)this + 0x354); }
+	inline ANM2* GetSaveSelectMenuSprite() { return &this->SaveSelectMenuSprite; }
+	inline ANM2* GetDeleteButtonSprite() { return &this->DeleteButtonSprite; }
+	inline ANM2* GetDeletePopupSprite() { return &this->DeletePopupSprite; }
+	inline ANM2* GetSave1DrawingSprite() { return &this->Save1DrawingSprite; }
+	inline ANM2* GetSave2DrawingSprite() { return &this->Save2DrawingSprite; }
+	inline ANM2* GetSave3DrawingSprite() { return &this->Save3DrawingSprite; }
 }}
     int State;
     int SelectedSave;
@@ -13,4 +13,12 @@ struct Menu_Save {
     int PositionY;
     int unk1;
     int unk2;
+    ANM2 SaveSelectMenuSprite;
+    ANM2 Save1DrawingSprite;
+    ANM2 Save2DrawingSprite;
+    ANM2 Save3DrawingSprite;
+    int unk468;
+    ANM2 DeleteButtonSprite;
+    ANM2 DeletePopupSprite;
+
 };

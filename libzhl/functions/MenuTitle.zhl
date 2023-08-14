@@ -4,10 +4,11 @@ __thiscall void Menu_Title::Update();
 "558bec81eca4000000": //challengesmenu-->"558bec83ec3453568bf157":
 __thiscall void Menu_Title::Render();
 
-struct Menu_Title {
+struct Menu_Title depends (ANM2) {
 {{
-	inline ANM2* GetTitleScreenSprite() { return (ANM2*)((char*)this + 0x8); }
+	inline ANM2* GetTitleScreenSprite() { return &this->TitleScreenSprite; }
 }}
     int PositionX;
     int PositionY;
+    ANM2 TitleScreenSprite;
 };

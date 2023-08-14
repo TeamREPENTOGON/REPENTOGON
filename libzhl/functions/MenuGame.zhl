@@ -7,8 +7,15 @@ __thiscall void Menu_Game::Render();
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec80020000":
 __thiscall void Menu_Game::PreRenderContinueImg();
 
-struct Menu_Game { {{
-	inline ANM2* GetGameMenuSprite() { return (ANM2*)((char*)this + 0x10) ; }
-	inline ANM2* GetContinueWidgetSprite() { return (ANM2*)((char*)this + 0x124) ; }
-	inline AnimationState* GetContinueWidgetAnimationState() { return (AnimationState*)((char*)this + 0x154) ; }
-}} };
+struct Menu_Game depends (ANM2) { {{
+	inline ANM2* GetGameMenuSprite() { return &this->GameMenuSprite; }
+	inline ANM2* GetContinueWidgetSprite() { return &this->ContinueWidgetSprite; }
+}}
+	int KeyDownTimer;
+	int SelectedElement;
+	int PositionX;
+	int PositionY;
+	ANM2 GameMenuSprite;
+	ANM2 ContinueWidgetSprite;
+	//...
+};

@@ -1,4 +1,4 @@
-struct ProjectileParams {
+struct ProjectileParams depends (ColorMod, Vector) {
     bool GridCollision; // 0x0
     char pad0[3]; // 0x1
     float HeightModifier, FallingSpeedModifier, FallingAccelModifier, VelocityMulti, Scale, CircleAngle, HomingStrength, CurvingStrength, Acceleration, Spread; // 0x4
