@@ -1,3 +1,11 @@
-struct Menu_Challenge { {{
-	
-}} };
+struct Menu_Challenge depends (ANM2) { 
+{{
+	inline ANM2* GetChallengeMenuSprite() { return &this->ChallengeMenuSprite; }
+}}
+	int unk1;
+	int SelectedChallengeID;
+	int HoldInputTimer;
+	float PositionX;
+	float PositionY;
+	ANM2 ChallengeMenuSprite;
+};
