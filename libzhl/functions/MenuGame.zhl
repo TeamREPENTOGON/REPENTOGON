@@ -13,8 +13,8 @@ struct Menu_Game depends (ANM2) { {{
 }}
 	int KeyDownTimer;
 	int SelectedElement;
-	int PositionX;
-	int PositionY;
+	float PositionX;
+	float PositionY;
 	ANM2 GameMenuSprite;
 	ANM2 ContinueWidgetSprite;
 	//...

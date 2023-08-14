@@ -1,3 +1,15 @@
-struct Menu_Bestiary { {{
-	
-}} };
+struct Menu_Bestiary depends (ANM2) { 
+{{
+	inline ANM2* GetBestiaryMenuSprite() { return &this->BestiaryMenuSprite; }
+	inline ANM2* GetDeathScreenSprite() { return &this->DeathScreenSprite; }
+	inline ANM2* GetEnemySprite() { return &this->EnemySprite; }
+}}
+    float PositionX;
+    float PositionY;
+    ANM2 BestiaryMenuSprite;
+    ANM2 DeathScreenSprite;
+    ANM2 EnemySprite;
+    int CurrentPage;
+    int SelectedElement;
+    int LastEnemyPageID;
+};

@@ -9,8 +9,8 @@ struct Menu_Save depends (ANM2) {
 }}
     int State;
     int SelectedSave;
-    int PositionX;
-    int PositionY;
+    float PositionX;
+    float PositionY;
     int unk1;
     int unk2;
     ANM2 SaveSelectMenuSprite;

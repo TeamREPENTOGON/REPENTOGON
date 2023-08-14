@@ -8,7 +8,7 @@ struct Menu_Title depends (ANM2) {
 {{
 	inline ANM2* GetTitleScreenSprite() { return &this->TitleScreenSprite; }
 }}
-    int PositionX;
-    int PositionY;
+    float PositionX;
+    float PositionY;
     ANM2 TitleScreenSprite;
 };
