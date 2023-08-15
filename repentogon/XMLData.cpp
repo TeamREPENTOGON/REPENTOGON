@@ -221,6 +221,7 @@ int queuedhackyxmlvalue = 0;
 int queuedhackyxmltarget = 0;
 int queuedhackyxmlmaxval = 0;
 HOOK_METHOD(Cutscene, Init, (char* xmlfilepath)-> void) {
+	if (!g_Manager->GetOptions()->ModsEnabled()) {return super(xmlfilepath);}
 	if (ogcutscenespath.length() == 0) {
 		ogcutscenespath = string(xmlfilepath);
 	}
@@ -258,6 +259,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 }
 
 HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
+	if (!g_Manager->GetOptions()->ModsEnabled()) { return super(cutsceneid); }
 	queuedhackyxmlvalue = cutsceneid;
 	queuedhackyxmltarget = 1;
 	queuedhackyxmlmaxval = 26;
