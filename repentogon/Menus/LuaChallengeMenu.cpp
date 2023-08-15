@@ -26,7 +26,7 @@ static int Lua_ChallengeMenu_GetSelectedChallengeID(lua_State* L)
 }
 
 static void RegisterChallengeMenuGame(lua_State* L)
-{	
+{
 	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetChallengeMenuSprite", Lua_ChallengeMenu_GetChallengeMenuSprite);

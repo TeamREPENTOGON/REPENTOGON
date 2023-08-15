@@ -48,13 +48,13 @@ static int Lua_MainMenu_SetSelectedElement(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
-	menuGame->SelectedElement = luaL_checkinteger(L, 2);
+	menuGame->SelectedElement = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
 static void RegisterMainMenuGame(lua_State* L)
-{	
+{
 	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetGameMenuSprite", Lua_MainMenu_GetGameMenuSprite);

@@ -1,4 +1,4 @@
-struct Menu_Stats { {{
+struct Menu_Stats depends (ANM2) { {{
 	inline float GetPosX() { return *(float*)((char*)this + 0x14) ; }
 	inline float GetPosY() { return *(float*)((char*)this + 0x18) ; }
 	inline bool IsAchievementsScreenVisible() { return *(bool*)((char*)this + 0x130) ; }
