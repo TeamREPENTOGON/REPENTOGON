@@ -371,9 +371,9 @@ struct ConsoleMega {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
             ImGui::Text(previewText.c_str());
             ImGui::PopStyleColor();
-            
-            ImGui::End();
         }
+
+        ImGui::End(); // close window element
         ImGui::PopStyleVar();
     }
 

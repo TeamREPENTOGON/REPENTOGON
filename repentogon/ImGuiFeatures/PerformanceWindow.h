@@ -55,6 +55,7 @@ struct PerformanceWindow {
 
 			ImGui::PlotLines("Mem Usage", &values[0], memUsages->size(), NULL, hintText, minMemUsage - 1, maxMemUsage + 2, ImVec2(0, 100));
 		}
+		ImGui::End(); // close window element
 
 	}
 };
