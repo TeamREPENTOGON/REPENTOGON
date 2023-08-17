@@ -71,7 +71,7 @@ static int Lua_SaveMenu_GetSelectedSave(lua_State* L)
 	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	lua_pushinteger(L, menu->SelectedSave);
-	
+
 	return 1;
 }
 
@@ -85,7 +85,7 @@ static int Lua_SaveMenu_IsDeleteActive(lua_State* L)
 }
 
 static void RegisterSaveMenuGame(lua_State* L)
-{	
+{
 	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetSaveSelectMenuSprite", Lua_SaveMenu_SaveSelectMenuSprite);

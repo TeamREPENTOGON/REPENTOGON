@@ -14,7 +14,7 @@ __thiscall void Menu_Character::Init(Vector* unk);
 "558bec83ec2ca1????????33c58945??5356578bf9":
 __thiscall void Menu_Character::SelectRandomChar();
 
-struct Menu_Character {
+struct Menu_Character depends (ANM2) {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 1168); } 
 	inline ANM2* GetBigCharPageSprite() { return (ANM2*)((char*)this + 0x40) ; }

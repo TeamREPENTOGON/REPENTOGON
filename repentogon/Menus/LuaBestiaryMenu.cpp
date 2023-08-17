@@ -50,7 +50,7 @@ static int Lua_MainMenu_SetCurrentPage(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	menu->CurrentPage = luaL_checkinteger(L, 2);
+	menu->CurrentPage = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
@@ -68,7 +68,7 @@ static int Lua_MainMenu_SetSelectedElement(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
-	menu->SelectedElement = luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }

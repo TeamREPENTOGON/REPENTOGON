@@ -1,3 +1,11 @@
-struct Menu_KeyConfig { {{
-	
-}} };
+struct Menu_KeyConfig depends (ANM2) {
+{{
+	inline ANM2* GetKeyConfigSprite() { return &this->KeyConfigSprite; }
+}}
+	int State;
+	int SelectedElement;
+	int SelectedColumn;
+	float PositionX;
+	float PositionY;
+	ANM2 KeyConfigSprite;
+};

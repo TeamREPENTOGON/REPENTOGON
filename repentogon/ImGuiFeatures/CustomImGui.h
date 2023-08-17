@@ -838,8 +838,8 @@ struct CustomImGui {
                     }
                     AddWindowContextMenu(&window->data.windowPinned);
                     DrawElements(window->children);
-                    ImGui::End();
                 }
+                ImGui::End(); // close window element
             }
             ImGui::PopStyleVar();
             ImGui::PopID();

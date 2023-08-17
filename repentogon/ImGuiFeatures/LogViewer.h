@@ -139,9 +139,8 @@ struct LogViewer {
                 ImGui::PopStyleVar();
                 ImGui::EndChild();
             }
-
-            ImGui::End();
         }
+        ImGui::End(); // close window element
     }
 };
 
