@@ -994,7 +994,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (achievement["name"].length() == 0) {
 				achievement["name"] = achievement["steam_name"];
 			}
-			printf("achievement: %s (%d) \n", achievement["name"].c_str(),id);
+			//printf("achievement: %s (%d) \n", achievement["name"].c_str(),id);
 			if (achievement.count("relativeid") > 0) { XMLStuff.AchievementData->byrelativeid[lastmodid + achievement["relativeid"]] = id; }
 			XMLStuff.AchievementData->bynamemod[achievement["name"] + lastmodid] = id;
 			XMLStuff.AchievementData->bymod[lastmodid].push_back(id);
