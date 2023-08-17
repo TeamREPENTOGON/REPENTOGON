@@ -201,6 +201,7 @@ public:
 	XMLNodeIdxLookup cutscenes;
 	XMLNodeIdxLookup stages;
 	XMLNodeIdxLookup backdrops;
+	XMLNodeIdxLookup achievements;
 
 	void Clear() {
 		nodes.clear();
@@ -232,6 +233,8 @@ public:
 		recipes.clear();
 		cutscenes.clear();
 		stages.clear();
+		backdrops.clear();
+		achievements.clear();
 		maxid = 0;
 	
 	}
@@ -257,6 +260,9 @@ public:
 	}
 };
 
+
+class XMLAchievement : public XMLDataHolder {
+};
 
 class XMLRecipe : public XMLDataHolder {
 
@@ -467,6 +473,7 @@ struct XMLData {
 	XMLCutscene* CutsceneData = new XMLCutscene();
 	XMLStage* StageData = new XMLStage();
 	XMLBackdrop* BackdropData = new XMLBackdrop();
+	XMLAchievement* AchievementData = new XMLAchievement();
 
 	XMLMod* ModData = new XMLMod();
 

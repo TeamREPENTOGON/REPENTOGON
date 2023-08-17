@@ -2248,6 +2248,7 @@ XMLNode = {
 	CUTSCENE = 23,
 	STAGE = 24,
 	BACKDROP = 25,
+	ACHIEVEMENT = 26,
 }
 
 AutocompleteType = {

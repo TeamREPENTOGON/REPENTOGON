@@ -960,6 +960,51 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	}
+	else if ((strcmp(nodename, "achievements") == 0)) {
+		int id = 1;
+		xml_node<char>* daddy = node;
+		xml_node<char>* babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes achievement;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				achievement[stringlower(attr->name())] = string(attr->value());
+			}
+			if ((achievement.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+				id = toint(achievement["id"]);
+			}
+			else {
+				if (achievement.count("id") > 0) { achievement["relativeid"] = achievement["id"]; }
+				XMLStuff.AchievementData->maxid = XMLStuff.AchievementData->maxid + 1;
+				achievement["id"] = to_string(XMLStuff.AchievementData->maxid);
+				id = XMLStuff.AchievementData->maxid;
+			}
+			if (id > XMLStuff.AchievementData->maxid) {
+				XMLStuff.AchievementData->maxid = id;
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				achievement[stringlower(attr->name())] = attr->value();
+			}
+			achievement["sourceid"] = lastmodid;
+			XMLStuff.AchievementData->ProcessChilds(auxnode, id);
+			if (achievement.count("name") == 0){
+				achievement["name"] = achievement["text"];
+			}
+			if (achievement["name"].length() == 0) {
+				achievement["name"] = achievement["steam_name"];
+			}
+			printf("achievement: %s (%d) \n", achievement["name"].c_str(),id);
+			if (achievement.count("relativeid") > 0) { XMLStuff.AchievementData->byrelativeid[lastmodid + achievement["relativeid"]] = id; }
+			XMLStuff.AchievementData->bynamemod[achievement["name"] + lastmodid] = id;
+			XMLStuff.AchievementData->bymod[lastmodid].push_back(id);
+			XMLStuff.AchievementData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.AchievementData->byname[achievement["name"]] = id;
+			XMLStuff.AchievementData->nodes[id] = achievement;
+			XMLStuff.ModData->sounds[lastmodid] += 1;
+			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+		}
+	}
 	else if ((strcmp(nodename, "challenges") == 0)) {
 		int id = 1;
 		xml_node<char>* daddy = node;
@@ -2080,6 +2125,10 @@ int Lua_GetEntryByNameXML(lua_State* L)
 		Node = XMLStuff.BackdropData->GetNodeByName(entityname);
 		Childs = XMLStuff.BackdropData->childs[XMLStuff.BackdropData->byname[entityname]];
 		break;
+	case 26:
+		Node = XMLStuff.AchievementData->GetNodeByName(entityname);
+		Childs = XMLStuff.AchievementData->childs[XMLStuff.AchievementData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -2471,6 +2520,13 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 							root->append_node(clonedNode);
 						}
 					}
+					else if (strcmp(filename.c_str(), "achievements.xml") == 0) {
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+							root->append_node(clonedNode);
+						}
+					}
 					else if (strcmp(filename.c_str(), "backdrops.xml") == 0) {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
@@ -2644,6 +2700,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 				super(BuildModdedXML(xmldata, "backdrops.xml", false));
 		}else if (charfind(xmldata, "<bosse", 50)) {
 			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
+		}
+		else if (charfind(xmldata, "<ach", 50)) {
+			XMLStuff.AchievementData->Clear();
+			super(BuildModdedXML(xmldata, "achievements.xml", false));
 		}else if (charfind(xmldata, "<cuts", 50)) {
 			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
 		}else if (charfind(xmldata, "<stages", 50)) {
@@ -2739,6 +2799,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		else if (a.find("<whis") < 50) { //typo
 			a = "<wisps gfxroot=\"gfx/familiar/wisps/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </wisps>";
 		}
+		else if (a.find("<achi") < 50) { 
+			a = "<achievements gfxroot=\"gfx/ui/achievement/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </achievements>";
+		}
 		printf("ERROR: %s", a.c_str());
 		
 		xmldata = new char[a.length() + 1];
@@ -2758,7 +2821,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 
 HOOK_METHOD(ModManager, Reset, () -> void) {
 	//super();
-	GameRestart();
+	GameRestart(); //if we ever walk back from this, for whateevr reason, we will need to recheck some stuff regarding a few xml reloads on xmldata
 }
 
 //Sneaky modreloader code
