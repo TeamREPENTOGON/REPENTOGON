@@ -1,3 +1,10 @@
-struct Menu_CustomChallenge depends (ANM2) { {{
-	
-}} };
+struct Menu_CustomChallenge depends (ANM2) {
+{{
+	inline ANM2* GetCustomChallengeSprite() { return &this->CustomChallengeSprite; }
+}}
+	int SelectedElement;
+	int HoldInputTimer;
+	float PositionX;
+	float PositionY;
+	ANM2 CustomChallengeSprite;
+};

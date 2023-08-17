@@ -18,7 +18,7 @@ static int Lua_ChallengeMenu_GetChallengeMenuSprite(lua_State* L)
 
 static int Lua_ChallengeMenu_GetSelectedChallengeID(lua_State* L)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	if (g_MenuManager == NULL) { return luaL_error(L, "ChallengeMenu functions can only be used in the main menu"); }
 	Menu_Challenge* menu = g_MenuManager->GetMenuChallenge();
 	lua_pushinteger(L, menu->SelectedChallengeID);
 
