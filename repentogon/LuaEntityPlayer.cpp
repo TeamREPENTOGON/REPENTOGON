@@ -781,6 +781,62 @@ LUA_FUNCTION(Lua_PlayerGetCambionPregnancyLevel)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetBladderCharge)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *plr->GetBladderCharge());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetBladderCharge)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetBladderCharge() = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetMaxBladderCharge)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *plr->GetMaxBladderCharge());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetMaxBladderCharge)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetMaxBladderCharge() = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerIsUrethraBlocked)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushboolean(L, *plr->IsUrethraBlocked());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetUrethraBlock)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->IsUrethraBlocked() = lua_toboolean(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetNextUrethraBlockFrame)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, *plr->GetNextUrethraBlockFrame());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetNextUrethraBlockFrame)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	*plr->GetNextUrethraBlockFrame() = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -868,4 +924,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetCambionConceptionState", Lua_PlayerSetCambionConceptionState);
 	lua::RegisterFunction(state, mt, "UpdateIsaacPregnancy", Lua_PlayerUpdateIsaacPregnancy);
 	lua::RegisterFunction(state, mt, "GetCambionPregnancyLevel", Lua_PlayerGetCambionPregnancyLevel);
+	lua::RegisterFunction(state, mt, "GetBladderCharge", Lua_PlayerGetBladderCharge);
+	lua::RegisterFunction(state, mt, "SetBladderCharge", Lua_PlayerSetBladderCharge);
+	lua::RegisterFunction(state, mt, "GetMaxBladderCharge", Lua_PlayerGetMaxBladderCharge);
+	lua::RegisterFunction(state, mt, "SetMaxBladderCharge", Lua_PlayerSetMaxBladderCharge);
+	lua::RegisterFunction(state, mt, "IsUrethraBlocked", Lua_PlayerIsUrethraBlocked);
+	lua::RegisterFunction(state, mt, "SetUrethraBlock", Lua_PlayerSetUrethraBlock);
+	lua::RegisterFunction(state, mt, "GetNextUrethraBlockFrame", Lua_PlayerGetNextUrethraBlockFrame);
+	lua::RegisterFunction(state, mt, "SetNextUrethraBlockFrame", Lua_PlayerSetNextUrethraBlockFrame);
 }

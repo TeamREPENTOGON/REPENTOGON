@@ -73,6 +73,10 @@ ___
 #### int GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
 Gets the current content of the bag in the given Slot ID.
 ___
+### Get·Bladder·Charge () {: aria-label='Functions' }
+#### int GetBladderCharge ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Cambion·Conception·State () {: aria-label='Functions' }
 #### int GetCambionConceptionState ( ) {: .copyable aria-label='Functions' }
 
@@ -163,6 +167,10 @@ Returns the entity effect representing the target of the [Marked](https://bindin
 If the target is not displayed on the ground, this function returns nil.
 
 ___
+### Get·Max·Bladder·Charge () {: aria-label='Functions' }
+#### int GetMaxBladderCharge ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Max·Pee·Burst·Cooldown () {: aria-label='Functions' }
 #### int GetMaxPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
 
@@ -173,6 +181,10 @@ ___
 ___
 ### Get·Mega·Blast·Duration () {: aria-label='Functions' }
 #### int GetMegaBlastDuration ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Next·Urethra·Block·Frame () {: aria-label='Functions' }
+#### int GetNextUrethraBlockFrame ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Num·Tears () {: aria-label='Functions' }
@@ -251,6 +263,10 @@ ___
 #### boolean IsLocalPlayer ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Is·Urethra·Blocked () {: aria-label='Functions' }
+#### boolean IsUrethraBlocked ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Remove·Collectible·By·History·Index () {: aria-label='Functions' }
 #### void RemoveCollectibleByHistoryIndex ( int Index ) {: .copyable aria-label='Functions' }
 
@@ -269,6 +285,10 @@ ___
 ___
 ### Set·Bag·Of·Crafting·Slot () {: aria-label='Functions' }
 #### void SetBagOfCraftingSlot ( int SlotID, int PickupID ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Bladder·Charge () {: aria-label='Functions' }
+#### void SetBladderCharge ( int Charge ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Cambion·Conception·State () {: aria-label='Functions' }
@@ -320,8 +340,16 @@ ___
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
 ___
+### Set·Max·Bladder·Charge () {: aria-label='Functions' }
+#### void SetMaxBladderCharge ( int Charge ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Mega·Blast·Duration () {: aria-label='Functions' }
 #### void SetMegaBlastDuration ( int Duration ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Next·Urethra·Block·Frame () {: aria-label='Functions' }
+#### void SetUrethraBlockFrame ( int Frame ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Pony·Charge () {: aria-label='Functions' }
@@ -343,6 +371,10 @@ ___
 ___
 ### Set·Tear·Poison·Damage () {: aria-label='Functions' }
 #### void SetTearPoisonDamage ( float Damage ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Urethra·Block () {: aria-label='Functions' }
+#### void SetUrethraBlock ( boolean Block ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Weapon () {: aria-label='Functions' }

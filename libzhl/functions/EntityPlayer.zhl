@@ -228,6 +228,10 @@ struct Entity_Player : public Entity { {{
 	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
 	inline int* GetPeeBurstCooldown() { return (int*)((char*)this + 0x1818); }
 	inline int* GetMaxPeeBurstCooldown() { return (int*)((char*)this + 0x181c); }
+	inline int* GetBladderCharge() { return (int*)((char*)this + 0x1820); }
+	inline int* GetMaxBladderCharge() { return (int*)((char*)this + 0x1824); }
+	inline bool* IsUrethraBlocked() { return (bool*)((char*)this + 0x1828); }
+	inline int* GetNextUrethraBlockFrame() { return (int*)((char*)this + 0x182c); }
 	inline int* GetPurityState() { return (int*)((char*)this + 0x184c); }
 	inline int* GetImmaculateConceptionState() { return (int*)((char*)this + 0x1850); }
 	inline int* GetCambionConceptionState() { return (int*)((char*)this + 0x1854); }
