@@ -6,8 +6,8 @@ Can be obtained via [Sprite:GetAnimationData()](Sprite.md#getanimationdata), [Sp
 
 ## Functions
 
-### Get·AllLayers () {: aria-label='Functions' }
-#### table GetAllLayers () {: .copyable aria-label='Functions' }
+### Get·All·Layers () {: aria-label='Functions' }
+#### table GetAllLayers ( ) {: .copyable aria-label='Functions' }
 Returns a table of AnimationLayers, in order from bottom to top (NOT ordered by layer ID).
 
 ___
