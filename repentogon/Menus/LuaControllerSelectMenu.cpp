@@ -25,12 +25,22 @@ static int Lua_ControllerSelectMenu_GetSelectedElement(lua_State* L)
 	return 1;
 }
 
+static int Lua_ControllerSelectMenu_SetSelectedElement(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "ControllerSelectMenu functions can only be used in the main menu"); }
+	Menu_ControllerSelect* menu = g_MenuManager->GetMenuControllerSelect();
+	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 static void RegisterControllerSelectMenuGame(lua_State* L)
 {
 	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
-	lua::TableAssoc(L, "GetControllerSelectMenuSprite", Lua_ControllerSelectMenu_GetControllerSelectSprite);
+	lua::TableAssoc(L, "GetSprite", Lua_ControllerSelectMenu_GetControllerSelectSprite);
 	lua::TableAssoc(L, "GetSelectedElement", Lua_ControllerSelectMenu_GetSelectedElement);
+	lua::TableAssoc(L, "SetSelectedElement", Lua_ControllerSelectMenu_SetSelectedElement);
 	lua_setglobal(L, "ControllerSelectMenu");
 }
 

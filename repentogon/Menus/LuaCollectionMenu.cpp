@@ -35,6 +35,15 @@ static int Lua_CollectionMenu_GetSelectedElement(lua_State* L)
 	return 1;
 }
 
+static int Lua_CollectionMenu_SetSelectedElement(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
+	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
+	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 static int Lua_CollectionMenu_GetSelectedPage(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
@@ -44,6 +53,15 @@ static int Lua_CollectionMenu_GetSelectedPage(lua_State* L)
 	return 1;
 }
 
+static int Lua_CollectionMenu_SetSelectedPage(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
+	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
+	menu->SelectedPage = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 static void RegisterCollectionMenuGame(lua_State* L)
 {
 	lua::LuaStackProtector protector(L);
@@ -51,7 +69,9 @@ static void RegisterCollectionMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetCollectionMenuSprite", Lua_CollectionMenu_GetCollectionMenuSprite);
 	lua::TableAssoc(L, "GetDeathScreenSprite", Lua_CollectionMenu_GetDeathScreenSprite);
 	lua::TableAssoc(L, "GetSelectedElement", Lua_CollectionMenu_GetSelectedElement);
+	lua::TableAssoc(L, "SetSelectedElement", Lua_CollectionMenu_SetSelectedElement);
 	lua::TableAssoc(L, "GetSelectedPage", Lua_CollectionMenu_GetSelectedPage);
+	lua::TableAssoc(L, "SetSelectedPage", Lua_CollectionMenu_SetSelectedPage);
 	lua_setglobal(L, "CollectionMenu");
 }
 

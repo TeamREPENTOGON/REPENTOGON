@@ -75,6 +75,15 @@ static int Lua_SaveMenu_GetSelectedSave(lua_State* L)
 	return 1;
 }
 
+static int Lua_SaveMenu_SetSelectedSave(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	Menu_Save* menu = g_MenuManager->GetMenuSave();
+	menu->SelectedSave = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 static int Lua_SaveMenu_IsDeleteActive(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
@@ -94,7 +103,8 @@ static void RegisterSaveMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetSave1DrawingSprite", Lua_SaveMenu_Save1DrawingSprite);
 	lua::TableAssoc(L, "GetSave2DrawingSprite", Lua_SaveMenu_Save2DrawingSprite);
 	lua::TableAssoc(L, "GetSave3DrawingSprite", Lua_SaveMenu_Save3DrawingSprite);
-	lua::TableAssoc(L, "GetSelectedSave", Lua_SaveMenu_GetSelectedSave);
+	lua::TableAssoc(L, "GetSelectedElement", Lua_SaveMenu_GetSelectedSave);
+	lua::TableAssoc(L, "SetSelectedElement", Lua_SaveMenu_SetSelectedSave);
 	lua::TableAssoc(L, "IsDeleteActive", Lua_SaveMenu_IsDeleteActive);
 	lua_setglobal(L, "SaveMenu");
 }

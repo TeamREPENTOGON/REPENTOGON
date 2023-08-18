@@ -26,15 +26,6 @@ static int Lua_MainMenu_GetContinueWidgetSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_MainMenu_GetKeyDownTimer(lua_State* L)
-{
-	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
-	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
-	lua_pushinteger(L, menuGame->KeyDownTimer);
-
-	return 1;
-}
-
 static int Lua_MainMenu_GetSelectedElement(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
@@ -59,7 +50,6 @@ static void RegisterMainMenuGame(lua_State* L)
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetGameMenuSprite", Lua_MainMenu_GetGameMenuSprite);
 	lua::TableAssoc(L, "GetContinueWidgetSprite", Lua_MainMenu_GetContinueWidgetSprite);
-	lua::TableAssoc(L, "GetKeyDownTimer", Lua_MainMenu_GetKeyDownTimer);
 	lua::TableAssoc(L, "GetSelectedElement", Lua_MainMenu_GetSelectedElement);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_MainMenu_SetSelectedElement);
 	lua_setglobal(L, "MainMenu");

@@ -19,7 +19,7 @@ static void RegisterTitleMenuGame(lua_State* L)
 {	
 	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
-	lua::TableAssoc(L, "GetTitleScreenSprite", Lua_TitleMenuTitleScreenSprite);
+	lua::TableAssoc(L, "GetSprite", Lua_TitleMenuTitleScreenSprite);
 	lua_setglobal(L, "TitleMenu");
 }
 

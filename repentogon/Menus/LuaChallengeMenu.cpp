@@ -25,12 +25,22 @@ static int Lua_ChallengeMenu_GetSelectedChallengeID(lua_State* L)
 	return 1;
 }
 
+static int Lua_ChallengeMenu_SetSelectedChallengeID(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "ChallengeMenu functions can only be used in the main menu"); }
+	Menu_Challenge* menu = g_MenuManager->GetMenuChallenge();
+	menu->SelectedChallengeID = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 static void RegisterChallengeMenuGame(lua_State* L)
 {
 	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
-	lua::TableAssoc(L, "GetChallengeMenuSprite", Lua_ChallengeMenu_GetChallengeMenuSprite);
+	lua::TableAssoc(L, "GetSprite", Lua_ChallengeMenu_GetChallengeMenuSprite);
 	lua::TableAssoc(L, "GetSelectedChallengeID", Lua_ChallengeMenu_GetSelectedChallengeID);
+	lua::TableAssoc(L, "SetSelectedChallengeID", Lua_ChallengeMenu_SetSelectedChallengeID);
 	lua_setglobal(L, "ChallengeMenu");
 }
 
