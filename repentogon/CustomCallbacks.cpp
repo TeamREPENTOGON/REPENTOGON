@@ -403,6 +403,25 @@ HOOK_COLLISION_CALLBACKS(Entity_Projectile, lua::Metatables::ENTITY_PROJECTILE, 
 HOOK_COLLISION_CALLBACKS(Entity_NPC, lua::Metatables::ENTITY_NPC, 1246, 1247)
 // PRE/POST_X_COLLISION callbacks END
 
+// POST_LASER_COLLISION (1249) (PRE_LASER_COLLISION lives in ASMPatches land)
+HOOK_METHOD(Entity_Laser, DoDamage, (Entity* entity, float damage) -> void) {
+	super(entity, damage);
+
+	int callbackid = 1249;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(*this->GetVariant())
+			.push(this, lua::Metatables::ENTITY_LASER)
+			.push(entity, lua::Metatables::ENTITY)
+			.call(1);
+	}
+}
+
 //PRE/POST_ENTITY_THROW (1040/1041)
 void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {
 	int callbackid = 1041;

@@ -854,6 +854,21 @@ Runs after the on-collision code of this entity, assuming it wasn't skipped.
 |:--|:--|:--|:--|:--|
 |1247 |MC_POST_NPC_COLLISION {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
+### MC_PRE_LASER_COLLISION
+Runs right before a laser hits an entity. Return true to ignore the collision.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1248 |MC_PRE_LASER_COLLISION {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider) | [LaserVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/LaserVariant.html) | boolean |
+
+### MC_POST_LASER_COLLISION
+Runs after a laser hits an entity.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1249 |MC_POST_LASER_COLLISION {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider) | [LaserVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/LaserVariant.html) | void |
+
+
 ### MC_PRE_DEVIL_APPLY_ITEMS
 This callback is run when the game starts to tally up traditional items for devil deal calculation. This is called before the stage penalty.
 

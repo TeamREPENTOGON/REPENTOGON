@@ -1,6 +1,9 @@
 "558bec83e4f883ec2ca1????????33c4894424??5356578bf9837f??02":
 __thiscall void Entity_Laser::ResetSpriteScale();
 
+"558bec83ec58a1????????33c58945??538bd9":
+__thiscall void Entity_Laser::DoDamage(Entity* entity, float damage<xmm2>);
+
 struct Entity_Laser : public Entity { {{
 	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x420); }
 	inline float* GetScale() { return (float*)((char*)this + 0x430); }

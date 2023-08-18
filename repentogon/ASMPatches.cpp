@@ -168,6 +168,79 @@ void ASMPatchConsoleRunCommand() {
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 }
 
+bool __stdcall PreLaserCollisionCallback(Entity_Laser* laser, Entity* entity) {
+	const int callbackid = 1248;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*laser->GetVariant())
+			.push(laser, lua::Metatables::ENTITY_LASER)
+			.push(entity, lua::Metatables::ENTITY)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return lua_toboolean(L, -1);
+			}
+		}
+	}
+	return false;
+}
+
+// There is no function you can hook that would allow you to skip a laser "collision".
+// This patch injects the PRE_LASER_COLLISION callback for lasers with sample points.
+void PatchPreSampleLaserCollision() {
+	SigScan scanner("8b4d??8b41??83f809");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch patch;
+	patch.AddBytes("\x50\x53\x51\x52\x56\x57") // Push EAX, EBX, ECX, EDX, ESI and EDI
+		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX)
+		.AddBytes("\x8B\x45\x8C")  // mov eax,dword ptr ss:[ebp-74] (Put the laser in EAX)
+		.AddBytes("\x51\x50") // Push ECX, EAX for function inputs
+		.AddInternalCall(PreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.AddBytes("\x75\x11") // JNZ
+		// Allow Collision
+		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
+		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX) (Restored overridden command)
+		.AddBytes("\x8B\x41\x28")  // mov eax,dword ptr ds:[ecx+28] (Put the entity's type in EAX) (Restored overridden command)
+		.AddRelativeJump((char*)addr + 0x06)
+		// Skip collision
+		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
+		.AddRelativeJump((char*)addr - 0x4B);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// There is no function you can hook that would allow you to skip a laser "collision".
+// This patch injects the PRE_LASER_COLLISION callback for lasers without sample points.
+void PatchPreLaserCollision() {
+	SigScan scanner("f30f1095????????8bcf56");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch patch;
+	patch.AddBytes("\x50\x53\x51\x52\x56\x57") // Push EAX, EBX, ECX, EDX, ESI and EDI
+		.AddBytes("\x56\x57") // Push EDI (entity) and ESI (laser) again for function inputs
+		.AddInternalCall(PreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.AddBytes("\x75\x13") // JNZ
+		// Allow Collision
+		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
+		.AddBytes("\xF3\x0F\x10\x95\x34\xFF\xFF\xFF")  // movss xmm2,dword ptr ss:[EBP-0xCC] (Restored overridden command)
+		.AddRelativeJump((char*)addr + 0x08) // Jump to where we would have been normally
+		// Stop collision
+		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
+		.AddBytes("\xF3\x0F\x10\x95\x34\xFF\xFF\xFF")  // movss xmm2,dword ptr ss:[EBP-0xCC] (Restored overridden command)
+		.AddRelativeJump((char*)addr + 0x49A); // Jump to where we would have been if the collision was skipped
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
@@ -176,4 +249,6 @@ void PerformASMPatches() {
 	PatchFireProjectiles();
 	PatchFireBossProjectiles();
 	LuaRender::PatchglDrawElements();
+	PatchPreSampleLaserCollision();
+	PatchPreLaserCollision();
 }
