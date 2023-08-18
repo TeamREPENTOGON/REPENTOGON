@@ -6,12 +6,14 @@ Can be obtained via [Sprite:GetAnimationData()](Sprite.md#getanimationdata), [Sp
 
 ## Functions
 
-### Get·Layer () {: aria-label='Functions' }
-#### [AnimationLayer](AnimationLayer.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
+### Get·AllLayers () {: aria-label='Functions' }
+#### table GetAllLayers () {: .copyable aria-label='Functions' }
+Returns a table of AnimationLayers, in order from bottom to top (NOT ordered by layer ID).
 
 ___
-### Get·Layer·Count () {: aria-label='Functions' }
-#### int GetLayerCount ( ) {: .copyable aria-label='Functions' }
+### Get·Layer () {: aria-label='Functions' }
+#### [AnimationLayer](AnimationLayer.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
+Gets an AnimationLayer by that layer's ID number.
 
 ___
 ### Get·Length () {: aria-label='Functions' }

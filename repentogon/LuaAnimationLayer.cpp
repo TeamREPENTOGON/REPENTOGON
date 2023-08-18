@@ -56,7 +56,7 @@ static int Lua_AnimationLayerGetFrame(lua_State* L)
 static int Lua_AnimationLayerGetLayerId(lua_State* L)
 {
 	AnimationLayer* animationLayer = *lua::GetUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
-	lua_pushnumber(L, animationLayer->GetLayerID());
+	lua_pushinteger(L, animationLayer->GetLayerID());
 	return 1;
 }
 

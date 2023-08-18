@@ -10,6 +10,11 @@ ___
 
 ## Functions
 
+### Get·All·Animation·Data () {: aria-label='Functions' }
+#### table GetAnimationData ( ) {: .copyable aria-label='Functions' }
+Returns a table of AnimationData representing all animations in this anm2 file.
+
+___
 ### Get·Animation·Data () {: aria-label='Functions' }
 #### [AnimationData](AnimationData.md) GetAnimationData ( string AnimationName ) {: .copyable aria-label='Functions' }
 

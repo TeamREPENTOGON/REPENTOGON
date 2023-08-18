@@ -11,7 +11,7 @@ struct AnimationData depends (AnimationLayer) { {{
 	// Given a layer ID, returns where in the layer order it sits.
 	// IE, the very bottom layer is the 0th layer regardless of its ID.
 	inline int GetLayerOrder(const int layerID) {
-		if (this->_layerMap != nullptr && layerID >= 0 && layerID < this->GetLayerCount()) {
+		if (this->_layerMap != nullptr && layerID >= 0 && layerID < 64) {
 			return this->_layerMap[layerID];
 		}
 		return -1;
@@ -26,6 +26,7 @@ struct AnimationData depends (AnimationLayer) { {{
 	std_string _name;
 	// Layers in this array are in order from bottom to top, not in order of their IDs.
 	AnimationLayer* _animLayers;
+	// Note that this is the raw number of layers in this animation, not necessarily the max layer id +1.
 	int _layerCount;
 	char _nullLayersPtr[4];  // Can examine this more later. We have NullFrame access elsewhere.
 	int _nullLayerCount;
