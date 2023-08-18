@@ -21,7 +21,6 @@ ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp"]
 parentClass = {
                "Ambush":"Game",
                "AnimationData":"Sprite",
-               "AnimationState":"Entity",
                "Backdrop":"Room",
                "Camera": "Room",
                "Capsule": "Entity",
@@ -41,7 +40,7 @@ parentClass = {
                "MenuManager":"Isaac",
                "Minimap":"Game",
                "NightmareScene":"Isaac",
-               "NullFrame":"AnimationState,Sprite",
+               "NullFrame":"Sprite",
                "PersistentGameData":"Isaac",
                "PlayerHUD":"HUD",
                "PlayerManager":"Game",

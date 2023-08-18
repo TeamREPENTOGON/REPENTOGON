@@ -32,10 +32,6 @@ ___
     At the moment, the duration setting gives no effect, so you need to call this function repeatedly.
 
 ___
-### Get·Animation·State () {: aria-label='Functions' }
-#### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Boss·Status·Effect·Cooldown () {: aria-label='Functions' }
 #### int GetBossStatusEffectCooldown ( ) {: .copyable aria-label='Functions' }
 

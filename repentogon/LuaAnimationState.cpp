@@ -92,9 +92,11 @@ static void RegisterAnimationState(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+// In the vanilla API, AnimationState stuff has already been exposed directly on the Sprite class.
+// Probably best to just continue that pattern, so no need to expose AnimationState itself I think.
+/*HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	RegisterAnimationState(state);
-}
+}*/

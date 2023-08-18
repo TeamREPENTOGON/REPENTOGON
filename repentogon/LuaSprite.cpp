@@ -248,8 +248,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	lua::Metatables mt = lua::Metatables::SPRITE;
-	lua::RegisterFunction(state, mt, "GetAnimationState", Lua_SpriteGetAnimationState);
-	lua::RegisterFunction(state, mt, "GetOverlayAnimationState", Lua_SpriteGetOverlayAnimationState);
+	// lua::RegisterFunction(state, mt, "GetAnimationState", Lua_SpriteGetAnimationState);
+	// lua::RegisterFunction(state, mt, "GetOverlayAnimationState", Lua_SpriteGetOverlayAnimationState);
 	lua::RegisterFunction(state, mt, "GetLayer", Lua_SpriteGetLayer);
 	lua::RegisterFunction(state, mt, "GetLayerByName", Lua_SpriteGetLayer_Text);
 	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);

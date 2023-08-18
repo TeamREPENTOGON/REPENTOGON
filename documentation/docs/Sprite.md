@@ -19,10 +19,6 @@ ___
 #### [AnimationData](AnimationData.md) GetAnimationData ( string AnimationName ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Animation·State () {: aria-label='Functions' }
-#### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Current·Animation·Data () {: aria-label='Functions' }
 #### [AnimationData](AnimationData.md) GetCurrentAnimationData ( ) {: .copyable aria-label='Functions' }
 
@@ -41,10 +37,6 @@ ___
 ___
 ### Get·Overlay·Animation·Data () {: aria-label='Functions' }
 #### [AnimationData](AnimationData.md) GetOverlayAnimationData ( ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Overlay·Animation·State () {: aria-label='Functions' }
-#### [AnimationState](AnimationState.md) GetOverlayAnimationState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Overlay·Null·Frame () {: aria-label='Functions' }

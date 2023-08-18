@@ -20,7 +20,3 @@ ___
 #### [Sprite](Sprite.md) GetGameMenuSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Continue·Widget·Animation·State () {: aria-label='Functions' }
-#### [AnimationState](AnimationState.md) GetContinueWidgetAnimationState ( ) {: .copyable aria-label='Functions' }
-
-___
