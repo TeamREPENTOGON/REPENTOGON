@@ -198,22 +198,19 @@ void PatchPreSampleLaserCollision() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes("\x50\x53\x51\x52\x56\x57") // Push EAX, EBX, ECX, EDX, ESI and EDI
+	patch.PreserveRegisters(reg)
 		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX)
 		.AddBytes("\x8B\x45\x8C")  // mov eax,dword ptr ss:[ebp-74] (Put the laser in EAX)
 		.AddBytes("\x51\x50") // Push ECX, EAX for function inputs
 		.AddInternalCall(PreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
-		.AddBytes("\x75\x11") // JNZ
-		// Allow Collision
-		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
+		.RestoreRegisters(reg)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x4B)  // Ignore collision
 		.AddBytes("\x8B\x4D\x90")  // mov ecx,dword ptr ss:[ebp-70] (Put the entity in ECX) (Restored overridden command)
 		.AddBytes("\x8B\x41\x28")  // mov eax,dword ptr ds:[ecx+28] (Put the entity's type in EAX) (Restored overridden command)
-		.AddRelativeJump((char*)addr + 0x06)
-		// Skip collision
-		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
-		.AddRelativeJump((char*)addr - 0x4B);
+		.AddRelativeJump((char*)addr + 0x6);  // Allow collision
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -224,20 +221,16 @@ void PatchPreLaserCollision() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes("\x50\x53\x51\x52\x56\x57") // Push EAX, EBX, ECX, EDX, ESI and EDI
-		.AddBytes("\x56\x57") // Push EDI (entity) and ESI (laser) again for function inputs
+	patch.PreserveRegisters(reg)
+		.AddBytes("\x56\x57") // Push EDI (entity) and ESI (laser) for function input
 		.AddInternalCall(PreLaserCollisionCallback) // Run PRE_LASER_COLLISION callback
 		.AddBytes("\x84\xC0") // TEST AL, AL
-		.AddBytes("\x75\x13") // JNZ
-		// Allow Collision
-		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
+		.RestoreRegisters(reg)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x49A) // Ignore collision
 		.AddBytes("\xF3\x0F\x10\x95\x34\xFF\xFF\xFF")  // movss xmm2,dword ptr ss:[EBP-0xCC] (Restored overridden command)
-		.AddRelativeJump((char*)addr + 0x08) // Jump to where we would have been normally
-		// Stop collision
-		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
-		.AddBytes("\xF3\x0F\x10\x95\x34\xFF\xFF\xFF")  // movss xmm2,dword ptr ss:[EBP-0xCC] (Restored overridden command)
-		.AddRelativeJump((char*)addr + 0x49A); // Jump to where we would have been if the collision was skipped
+		.AddRelativeJump((char*)addr + 0x8); // Allow collision
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
