@@ -1,3 +1,11 @@
-struct Menu_SpecialSeeds depends (ANM2) { {{
-	
-}} };
+struct Menu_SpecialSeeds depends (ANM2) {
+{{
+	inline ANM2* GetSpecialSeedsSprite() { return &this->SpecialSeedsSprite; }
+}}
+	int State;
+	int SelectedElement;
+	int HoldInputTimer;
+	float PositionX;
+	float PositionY;
+	ANM2 SpecialSeedsSprite;
+};

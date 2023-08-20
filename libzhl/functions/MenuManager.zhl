@@ -40,4 +40,5 @@ struct MenuManager depends (Menu_Game, Menu_Character) {
 	inline Menu_KeyConfig* GetMenuKeyConfig() {return (Menu_KeyConfig*)((char*)this + 0x10d840); }
 	inline Menu_Cutscenes* GetMenuCutscenes() {return (Menu_Cutscenes*)((char*)this + 0x10d968); }
 	inline Menu_CustomChallenge* GetMenuCustomChallenge() {return (Menu_CustomChallenge*)((char*)this + 0x10de04); }
+	inline Menu_Mods* GetMenuMods() {return (Menu_Mods*)((char*)this + 0x10df28); }
 }} };

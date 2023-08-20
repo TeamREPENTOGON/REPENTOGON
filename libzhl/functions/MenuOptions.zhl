@@ -1,3 +1,20 @@
-struct Menu_Options depends (ANM2) { {{
-	
-}} };
+struct Menu_Options depends (ANM2) {
+{{
+	inline ANM2* GetOptionsSprite() { return &this->OptionsSprite; }
+	inline ANM2* GetGammaMenuSprite() { return &this->GammaMenuSprite; }
+}}
+	int unk0;
+	int SelectedElement;
+	float PositionX;
+	float PositionY;
+	float PositionX_duplicate;
+	float PositionY_duplicate;
+	int unk18;
+	int unk1c;
+	ANM2 OptionsSprite;
+	ANM2 GammaMenuSprite;
+	int HoldLeftCounter;
+	int HoldRightCounter;
+	int HoldUpDownCounter;
+    //...
+};

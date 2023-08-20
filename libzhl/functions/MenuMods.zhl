@@ -1,0 +1,11 @@
+struct Menu_Mods depends (ANM2) {
+{{
+	inline ANM2* GetModsMenuSprite() { return &this->ModsMenuSprite; }
+}}
+	int SelectedElement;
+	int HoldInputTimer;
+	float PositionX;
+	float PositionY;
+	ANM2 ModsMenuSprite;
+	int State;
+};
