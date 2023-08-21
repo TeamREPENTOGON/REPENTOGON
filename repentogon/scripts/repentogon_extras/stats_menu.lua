@@ -1,4 +1,4 @@
-local StatsMenu = {
+local StatsMenuRep = {
     StatPageAngleOffsetX = -2,
     StatPageNumberOffsetX = 120,
     StatSheetSprite = Sprite(),
@@ -126,28 +126,22 @@ local function IsActionTriggeredAll(action)
     return false
 end
 
-local function IsGivenMenuEntry(id) --takes MainMenuType entry, returns bool, should really have a proper function instead of this smh
-    local menuiddetect = (Isaac.WorldToMenuPosition(id, Vector(240, 136)) - Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) / 2)
-        :LengthSquared()
-    return menuiddetect < 1800
-end
-
 local function RefreshExtraStats()
-    StatsMenu.ScheduleRefresh = true
+    StatsMenuRep.ScheduleRefresh = true
 end
 
 local function LoadAssets()
-    if #StatsMenu.StatSheetSprite:GetDefaultAnimation() <= 0 then
-        StatsMenu.StatSheetSprite:Load("gfx/ui/main menu/statsmenu.anm2", true)
-        StatsMenu.StatSheetSprite:SetFrame("Idle", 0)
+    if #StatsMenuRep.StatSheetSprite:GetDefaultAnimation() <= 0 then
+        StatsMenuRep.StatSheetSprite:Load("gfx/ui/main menu/statsmenu.anm2", true)
+        StatsMenuRep.StatSheetSprite:SetFrame("Idle", 0)
 
-        StatsMenu.ArrowSprite:Load("gfx/ui/leaderboardmenu.anm2", true)
-        StatsMenu.ArrowSprite:SetFrame("Idle", 0)
+        StatsMenuRep.ArrowSprite:Load("gfx/ui/leaderboardmenu.anm2", true)
+        StatsMenuRep.ArrowSprite:SetFrame("Idle", 0)
     end
     if not font:IsLoaded() then
         font:Load("font/teammeatfont10.fnt")
     end
-    if font:IsLoaded() and #(StatsMenu.StatSheetSprite:GetDefaultAnimation()) > 0 then
+    if font:IsLoaded() and #(StatsMenuRep.StatSheetSprite:GetDefaultAnimation()) > 0 then
         Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
     end
 end
@@ -156,54 +150,56 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 
 local function RenderExtraStats()
-    if IsGivenMenuEntry(MainMenuType.SAVES) then StatsMenu.ScheduleRefresh = true end
-    if IsGivenMenuEntry(MainMenuType.STATS) then
-        if StatsMenu.ScheduleRefresh then
+    if StatsMenu:IsAchievementsScreenVisible() then
+        StatsMenu:GetStatsMenuSprite():GetLayerByName("Paper1"):SetVisible(true)
+        return
+    end
+    if MenuManager:GetActiveMenu() == MainMenuType.SAVES then StatsMenuRep.ScheduleRefresh = true end
+    if MenuManager:GetActiveMenu() == MainMenuType.STATS then
+        if StatsMenuRep.ScheduleRefresh then
             local gameData = Isaac.GetPersistentGameData()
-            MaxCategoryID = #StatsMenu.Stats + 1
-            for i, categoryData in ipairs(StatsMenu.Stats) do
+            MaxCategoryID = #StatsMenuRep.Stats + 1
+            for i, categoryData in ipairs(StatsMenuRep.Stats) do
                 for j, stat in ipairs(categoryData[2]) do
                     if type(stat[2]) == "function" then
-                        StatsMenu.Stats[i][2][j][3] = stat[2]()
+                        StatsMenuRep.Stats[i][2][j][3] = stat[2]()
                     else
-                        StatsMenu.Stats[i][2][j][3] = gameData:GetEventCounter(stat[2])
+                        StatsMenuRep.Stats[i][2][j][3] = gameData:GetEventCounter(stat[2])
                     end
-                    StatsMenu.Stats[i][2][j][4] = font:GetStringWidthUTF8(tostring(StatsMenu.Stats[i][2][j][3])) / 2
+                    StatsMenuRep.Stats[i][2][j][4] = font:GetStringWidthUTF8(tostring(StatsMenuRep.Stats[i][2][j][3])) / 2
                 end
             end
-            StatsMenu.ScheduleRefresh = false
+            StatsMenuRep.ScheduleRefresh = false
         end
 
         if IsActionTriggeredAll(ButtonAction.ACTION_MENULEFT) then
             SFXManager():Play(SoundEffect.SOUND_PAPER_IN)
-            StatsMenu.CurrentlyDisplayedCategoryID = (StatsMenu.CurrentlyDisplayedCategoryID - 1) % MaxCategoryID
-            if StatsMenu.CurrentlyDisplayedCategoryID == 0 then
-                StatsMenu.CurrentlyDisplayedCategoryID = MaxCategoryID - 1
+            StatsMenuRep.CurrentlyDisplayedCategoryID = (StatsMenuRep.CurrentlyDisplayedCategoryID - 1) % MaxCategoryID
+            if StatsMenuRep.CurrentlyDisplayedCategoryID == 0 then
+                StatsMenuRep.CurrentlyDisplayedCategoryID = MaxCategoryID - 1
             end
         elseif IsActionTriggeredAll(ButtonAction.ACTION_MENURIGHT) then
             SFXManager():Play(SoundEffect.SOUND_PAPER_IN)
-            StatsMenu.CurrentlyDisplayedCategoryID = math.max(
-                (StatsMenu.CurrentlyDisplayedCategoryID + 1) % MaxCategoryID, 1)
+            StatsMenuRep.CurrentlyDisplayedCategoryID = math.max(
+                (StatsMenuRep.CurrentlyDisplayedCategoryID + 1) % MaxCategoryID, 1)
         end
     end
+    StatsMenu:GetStatsMenuSprite():GetLayerByName("Paper1"):SetVisible(false)
 
-    if MenuManager.StatsMenu:IsAchievementsScreenVisible() then
-        return
-    end
     -- render stat page over original stat page, to allow for custom content
-    local posSheet = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenu.StatSheetSpritePos)
-    StatsMenu.StatSheetSprite:RenderLayer(1, posSheet)
-    local posLeftArrow = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenu.LeftArrowSpritePos)
-    StatsMenu.ArrowSprite:RenderLayer(6, posLeftArrow)
-    local posRightArrow = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenu.RightArrowSpritePos)
-    StatsMenu.ArrowSprite:RenderLayer(7, posRightArrow)
+    local posSheet = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenuRep.StatSheetSpritePos)
+    StatsMenuRep.StatSheetSprite:RenderLayer(1, posSheet)
+    local posLeftArrow = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenuRep.LeftArrowSpritePos)
+    StatsMenuRep.ArrowSprite:RenderLayer(6, posLeftArrow)
+    local posRightArrow = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenuRep.RightArrowSpritePos)
+    StatsMenuRep.ArrowSprite:RenderLayer(7, posRightArrow)
 
     local nextLineOffsetX = 0
     local nextLineOffsetY = 0
 
     local pos = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenuPos)
 
-    local categoryData = StatsMenu.Stats[StatsMenu.CurrentlyDisplayedCategoryID]
+    local categoryData = StatsMenuRep.Stats[StatsMenuRep.CurrentlyDisplayedCategoryID]
     font:DrawStringUTF8(categoryData[1], pos.X, pos.Y + nextLineOffsetY, fontcolor, 0, false)
     nextLineOffsetY = nextLineOffsetY + 12
     for _, stat in ipairs(categoryData[2]) do
@@ -216,27 +212,27 @@ local function RenderExtraStats()
                 font:DrawStringUTF8(text, pos.X + nextLineOffsetX, pos.Y + nextLineOffsetY, fontcolor, 0, false)
                 if i ~= #stat[1] then
                     nextLineOffsetY = nextLineOffsetY + 12
-                    nextLineOffsetX = nextLineOffsetX + StatsMenu.StatPageAngleOffsetX
+                    nextLineOffsetX = nextLineOffsetX + StatsMenuRep.StatPageAngleOffsetX
                 end
             end
             -- value
-            font:DrawStringUTF8(statValue, pos.X + nextLineOffsetX + StatsMenu.StatPageNumberOffsetX - statValueWidth,
+            font:DrawStringUTF8(statValue, pos.X + nextLineOffsetX + StatsMenuRep.StatPageNumberOffsetX - statValueWidth,
                 pos.Y + nextLineOffsetY - 5, fontcolor, 0, false)
 
             nextLineOffsetY = nextLineOffsetY + 2 -- some padding below
         else
             font:DrawStringUTF8(stat[1], pos.X + nextLineOffsetX, pos.Y + nextLineOffsetY, fontcolor, 0, false)
             -- value
-            font:DrawStringUTF8(statValue, pos.X + nextLineOffsetX + StatsMenu.StatPageNumberOffsetX - statValueWidth,
+            font:DrawStringUTF8(statValue, pos.X + nextLineOffsetX + StatsMenuRep.StatPageNumberOffsetX - statValueWidth,
                 pos.Y + nextLineOffsetY + 2, fontcolor, 0, false)
         end
 
         nextLineOffsetY = nextLineOffsetY + 12
-        nextLineOffsetX = nextLineOffsetX + StatsMenu.StatPageAngleOffsetX
+        nextLineOffsetX = nextLineOffsetX + StatsMenuRep.StatPageAngleOffsetX
     end
 end
 
-REPENTOGON.Extras.StatsMenu = StatsMenu
+REPENTOGON.Extras.StatsMenu = StatsMenuRep
 
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_PRE_GAME_EXIT, RefreshExtraStats)
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, RenderExtraStats)

@@ -145,12 +145,6 @@ local function IsActionPressedAll(action)
     return false
 end
 
-local function IsGivenMenuEntry(id) --takes MainMenuType entry, returns bool, should really have a proper function instead of this smh
-    local menuiddetect = (Isaac.WorldToMenuPosition(id, Vector(240, 136)) - Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) / 2)
-    :LengthSquared()
-    return menuiddetect < 1800
-end
-
 function ChangeLog.MenuRender()
     if not Cl.AssetsLoaded then
         return
@@ -161,7 +155,7 @@ function ChangeLog.MenuRender()
         KColor(0, 0, 0, 0.3), 200, true)
     Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X, versionPosition.Y,
         KColor(67 / 255, 5 / 255, 5 / 255, 1), 200, true)
-    if IsGivenMenuEntry(MainMenuType.TITLE) then
+    if MenuManager:GetActiveMenu() == MainMenuType.TITLE then
         if IsActionTriggeredAll(ButtonAction.ACTION_MAP) then
             Cl.CurrentState = not Cl.CurrentState
 

@@ -22,12 +22,6 @@ local font = Font()
 font:Load("font/teammeatfont10.fnt")
 local fontcolor = KColor(0.20, 0.15, 0.1, 1)
 
-local function IsGivenMenuEntry(id) --takes MainMenuType entry, returns bool, should really have a proper function instead of this smh
-    local menuiddetect = (Isaac.WorldToMenuPosition(id, Vector(240, 136)) - Vector(Isaac.GetScreenWidth(), Isaac.GetScreenHeight()) / 2)
-    :LengthSquared()
-    return menuiddetect < 1800
-end
-
 local function RefreshDailyStats()
     ScheduleRefresh = true
 end
@@ -86,7 +80,7 @@ end
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 local function RenderDailyStats()
-    if ScheduleRefresh and IsGivenMenuEntry(MainMenuType.DAILYRUN) then
+    if ScheduleRefresh and MenuManager:GetActiveMenu() == MainMenuType.DAILYRUN then
         local dailyChallenge = Isaac.GetDailyChallenge()
 		local challengeParam = dailyChallenge:GetChallengeParams()
         WinStreak = Isaac.GetPersistentGameData():GetEventCounter(EventCounter.DAILYS_STREAK)
