@@ -66,7 +66,10 @@ ___
 ### Fill·Completion·Marks () {: aria-label='Functions' }
 #### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
 Completes all completion marks for a given character. Supports both modded and vanilla characters. 
-
+___
+### Get·Achievement·Id·By·Name () {: aria-label='Functions' }
+#### table GetAchievementIdByName ( string name ) {: .copyable aria-label='Functions' }
+Gets the Achievement ID By Name.
 ___
 ### Get·Clipboard () {: aria-label='Functions' }
 #### string GetClipboard ( ) {: .copyable aria-label='Functions' }

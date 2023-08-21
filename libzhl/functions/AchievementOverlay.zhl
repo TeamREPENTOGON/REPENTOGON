@@ -1,0 +1,12 @@
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec28a1????????33c58945??5657508d45??64a3????????8bf98b4f":
+__thiscall void AchievementOverlay::Update();
+
+
+struct AchievementOverlay depends (ANM2) { {{
+	inline ANM2* GetANM2() {return (ANM2*)((char*)this + 0x20); }
+}}
+	char unk1[0x12];
+	uint32_t displayedachievement; //achievement id of the current pop
+	uint32_t frame; //update frames elapsed while the pop up is still
+	uint32_t status; //1: sliding-in 2:still 3:sliding-out 0:done
+ };

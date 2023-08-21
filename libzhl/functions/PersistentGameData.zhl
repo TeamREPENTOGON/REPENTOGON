@@ -22,6 +22,9 @@ __thiscall int PersistentGameData::GetBestiaryKillCount(int EntityType, int Enti
 "558bec56ff75??8bf18b0d????????ff75??8d89????????e8????????85c0":
 __thiscall int PersistentGameData::GetBestiaryEncounterCount(int EntityType, int EntityVariant);
 
+"558bec83ec14a1????????33c58945??ff75":
+__thiscall void PersistentGameData::UnlockSteamAchievement(int achievementID);
+
 struct PersistentGameData { {{
 	inline int GetEventCounter(int eventCounter) {return *(int*)((char*)this + eventCounter * 4 + 0x2b8); }
 	inline bool IsItemInCollection (int collectibleID) {
@@ -32,5 +35,9 @@ struct PersistentGameData { {{
 		bool savedata = *(bool*)((char*)this + challengeID * 0x1 + 0xdff);
 		return savedata != false; 
 	}
-}} };
+}}
+	char unk1[0x38];
+	bool achievements[638];
+
+ };
 

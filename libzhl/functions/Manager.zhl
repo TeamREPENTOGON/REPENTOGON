@@ -48,7 +48,7 @@ static ReferenceCounter_ImageBase* Manager::LoadImage(ReferenceCounter_ImageBase
 "558bec83e4f881ec80000000568b35????????57f68664a2040001":
 __thiscall void Manager::Render();
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig) { {{
+struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
@@ -62,6 +62,7 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline bool GetNetStart() { return *(bool*)((char*)this + 0x1ea804); }
 	inline Cutscene* GetCutscene() { return (Cutscene*)((char*)this + 0x20A00); }
 	inline OptionsConfig* GetOptions() { return (OptionsConfig*)((char*)this + 0x29DF8); }
+	inline AchievementOverlay* GetAchievementOverlay() { return (AchievementOverlay*)((char*)this + 0x217a8); }
 }} 
     char unk1[0x13];
     PersistentGameData _persistentGameData;
