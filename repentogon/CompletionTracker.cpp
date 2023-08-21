@@ -938,7 +938,7 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 	CompletionWidget* cmpl = this->GetCompletionWidget();
 	if (this->SelectedCharacterID > 17) {
 
-		Vector* ref = (Vector*)(g_MenuManager + 60);
+		Vector* ref = &g_MenuManager->_ViewPosition;
 		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
 		ANM2* anm = cmpl->GetANM2();
 
