@@ -8,4 +8,12 @@ struct Menu_SpecialSeeds depends (ANM2) {
 	float PositionX;
 	float PositionY;
 	ANM2 SpecialSeedsSprite;
+    char _seedUnlockedString[24];
+    char _seedEnabledString[24];
+    int field8_0x158;
+    int field9_0x15c;
+    char field10_0x160;
+    char field11_0x161;
+    char field12_0x162;
+    char field13_0x163;
 };

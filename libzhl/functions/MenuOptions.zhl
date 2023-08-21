@@ -5,10 +5,10 @@ struct Menu_Options depends (ANM2) {
 }}
 	int unk0;
 	int SelectedElement;
-	float PositionX;
-	float PositionY;
 	float PositionX_duplicate;
 	float PositionY_duplicate;
+	float PositionX;
+	float PositionY;
 	int unk18;
 	int unk1c;
 	ANM2 OptionsSprite;
@@ -16,5 +16,16 @@ struct Menu_Options depends (ANM2) {
 	int HoldLeftCounter;
 	int HoldRightCounter;
 	int HoldUpDownCounter;
-    //...
+    char field16_0x254;
+    char field17_0x255;
+    char field18_0x256;
+    char field19_0x257;
+    int _someState; /* if == 3 then save options */
+    uint32_t _somethingLanguageRelated;
+    int field22_0x260;
+    int field23_0x264;
+    char field24_0x268;
+    char field25_0x269;
+    char field26_0x26a;
+    char field27_0x26b;
 };

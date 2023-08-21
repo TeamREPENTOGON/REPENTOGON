@@ -1,3 +1,50 @@
 struct Menu_DailyChallenge depends (ANM2) { {{
 	
-}} };
+}} 
+    int _state;
+    int _leaderboardVisible;
+    int _dailyRunDisabled;
+    float _positionX;
+    float _positionY;
+    ANM2 _DailyRunSprite;
+    char field6_0x128;
+    char field7_0x129;
+    char field8_0x12a;
+    char field9_0x12b;
+    char field10_0x12c;
+    char field11_0x12d;
+    char field12_0x12e;
+    char field13_0x12f;
+    char field14_0x130;
+    char field15_0x131;
+    char field16_0x132;
+    char field17_0x133;
+    char field18_0x134;
+    char field19_0x135;
+    char field20_0x136;
+    char field21_0x137;
+    char field22_0x138;
+    char field23_0x139;
+    char field24_0x13a;
+    char field25_0x13b;
+    char field26_0x13c;
+    char field27_0x13d;
+    char field28_0x13e;
+    char field29_0x13f;
+    char field30_0x140;
+    char field31_0x141;
+    char field32_0x142;
+    char field33_0x143;
+    char _leaderboard[1116];
+    int _timeDaysLeftUNUSED;
+    int _timeHoursLeft;
+    int _timeMinutesLeft;
+    int _timeSecondsLeft;
+    char field39_0x5b0;
+    char field40_0x5b1;
+    char field41_0x5b2;
+    char field42_0x5b3;
+    char GenericPopup_genericPopup[288];
+    char GenericPrompt_genericPrompt[524824];
+
+};

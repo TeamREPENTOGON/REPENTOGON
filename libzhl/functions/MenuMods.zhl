@@ -7,5 +7,14 @@ struct Menu_Mods depends (ANM2) {
 	float PositionX;
 	float PositionY;
 	ANM2 ModsMenuSprite;
-	int State;
+	int State; /* 1 = was changed */
+	char _pointerToSelectedMod[4];
+    char field7_0x12c[128];
+    float _scrollPositionX;
+    float _scrollPositionY;
+    char field10_0x1b4[76];
+    float _scrollInterpolationX;
+    float _scrollInterpolationY;
+    char field13_0x208[8];
+    ANM2 _FlySprite;
 };

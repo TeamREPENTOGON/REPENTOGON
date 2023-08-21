@@ -17,5 +17,5 @@ struct Menu_Game depends (ANM2) { {{
 	float PositionY;
 	ANM2 GameMenuSprite;
 	ANM2 ContinueWidgetSprite;
-	//...
+	char _unkBytes[296];
 };

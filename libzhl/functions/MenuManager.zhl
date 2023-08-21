@@ -16,29 +16,73 @@ __thiscall void MenuManager::RenderButtonLayout();
 "558bec83ec08538b1d????????568b75":
 __thiscall void MenuManager::SetState(int estate);
 
-struct MenuManager depends (Menu_Game, Menu_Character) {
+struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods) {
 {{
 	MenuManager()
 	{
 		this->constructor();
 	}
 	
-	inline int GetState() {return *(int*)((char*)this + 0x38); }
-	inline Menu_Game* GetMenuGame() {return (Menu_Game*)((char*)this + 0x80fac); }
-	inline Menu_Character* GetMenuCharacter() {return (Menu_Character*)((char*)this + 0x101c00); }
+	inline Menu_Game* GetMenuGame() {return &this->_menuGame; }
+	inline Menu_Character* GetMenuCharacter() {return &this->_menuCharacter; }
 
-	inline Menu_Title* GetMenuTitle() {return (Menu_Title*)((char*)this + 0x512); }
-	inline Menu_Save* GetMenuSave() {return (Menu_Save*)((char*)this + 0x634); }
-	inline Menu_Challenge* GetMenuChallenge() {return (Menu_Challenge*)((char*)this + 0x102d50); }
-	inline Menu_DailyChallenge* GetMenuDailyChallenge() {return (Menu_DailyChallenge*)((char*)this + 0x8130c); }
-	inline Menu_Collection* GetMenuCollection() {return (Menu_Collection*)((char*)this + 0x102e80); }
-	inline Menu_Bestiary* GetMenuBestiary() {return (Menu_Bestiary*)((char*)this + 0x10da8c); }
-	inline Menu_Stats* GetMenuStats() {return (Menu_Stats*)((char*)this + 0x1030e0); }
-	inline Menu_Options* GetMenuOptions() {return (Menu_Options*)((char*)this + 0x10d4a4); }
-	inline Menu_SpecialSeeds* GetMenuSpecialSeeds() {return (Menu_SpecialSeeds*)((char*)this + 0x102bec); }
-	inline Menu_ControllerSelect* GetMenuControllerSelect() {return (Menu_ControllerSelect*)((char*)this + 0x10d710); }
-	inline Menu_KeyConfig* GetMenuKeyConfig() {return (Menu_KeyConfig*)((char*)this + 0x10d840); }
-	inline Menu_Cutscenes* GetMenuCutscenes() {return (Menu_Cutscenes*)((char*)this + 0x10d968); }
-	inline Menu_CustomChallenge* GetMenuCustomChallenge() {return (Menu_CustomChallenge*)((char*)this + 0x10de04); }
-	inline Menu_Mods* GetMenuMods() {return (Menu_Mods*)((char*)this + 0x10df28); }
-}} };
+	inline Menu_Title* GetMenuTitle() {return &this->_menuTitle; }
+	inline Menu_Save* GetMenuSave() {return &this->_menuSave; }
+	inline Menu_Challenge* GetMenuChallenge() {return &this->_menuChallenge; }
+	inline Menu_DailyChallenge* GetMenuDailyChallenge() {return &this->_menuDailyChallenge; }
+	inline Menu_Collection* GetMenuCollection() {return &this->_menuCollection; }
+	inline Menu_Bestiary* GetMenuBestiary() {return &this->_menuBestiary; }
+	inline Menu_Stats* GetMenuStats() {return &this->_menuStats; }
+	inline Menu_Options* GetMenuOptions() {return &this->_menuOptions; }
+	inline Menu_SpecialSeeds* GetMenuSpecialSeeds() {return &this->_menuSpecialSeeds; }
+	inline Menu_ControllerSelect* GetMenuControllerSelect() {return &this->_menuControllerSelect; }
+	inline Menu_KeyConfig* GetMenuKeyConfig() {return &this->_menuKeyConfig; }
+	inline Menu_Cutscenes* GetMenuCutscenes() {return &this->_menuCutscenes; }
+	inline Menu_CustomChallenge* GetMenuCustomChallenge() {return &this->_menuCustomChallenge; }
+	inline Menu_Mods* GetMenuMods() {return &this->_menuMods; }
+}} 
+    int _state;
+    float _fadeOutProgress;
+    int _fadeInActive;
+    float _fadeInProgress;
+    KAGE_Graphics_Color _fadeInColor;
+    int _returnState; /* ??? 256 when opening main menu from a run */
+    int _unrecognizedControllerPopupVisible; // ???
+    float _vingnetteIntensity;
+    float _backWidgetPositionOffsetY;
+    float _selectWidgetPositionOffsetY;
+    int _controllerIndex; /* controller currently controlling the menu navigation */
+    int _selectedMenuID;
+    Vector _ViewPosition;
+    ANM2 _MenuShadowSprite;
+    ANM2 _BackWidgetSprite;
+    ANM2 _SelectWidgetSprite;
+    char GenericPopup_unrecognizedControllerPopup[288];
+    char ImageBase_EmptyScreenImage[8];
+    char ImageBase_MenuOverlayImage[8];
+    char ImageBase_UNUSED4b0[8];
+    Seeds _seedsObject;  // ???
+    Menu_Title _menuTitle;
+    Menu_Save _menuSave;
+    char GenericPopup_genericPrompt[524824];
+    char _UNUSED80ee0[204];
+    Menu_Game _menuGame;
+    Menu_DailyChallenge _menuDailyChallenge;
+    char _UNUSED101bf8[8];
+	Menu_Character _menuCharacter;
+    Menu_SpecialSeeds _menuSpecialSeeds;
+    Menu_Challenge _menuChallenge;
+    Menu_Collection _menuCollection;
+    Menu_Stats _menuStats;
+    char _UNUSED10d4a0[4];
+    Menu_Options _menuOptions;
+    Menu_ControllerSelect _menuControllerSelect;
+    Menu_KeyConfig _menuKeyConfig;
+    Menu_Cutscenes _menuCutscenes;
+    Menu_Bestiary _menuBestiary;
+    Menu_CustomChallenge _menuCustomChallenge;
+    Menu_Mods _menuMods;
+    char _UNUSED10e24c[1520];
+    int _UnknownUseInMenuCollection;
+    char _UNUSED10e840[16];
+};

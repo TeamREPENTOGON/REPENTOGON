@@ -8,4 +8,5 @@ struct Menu_Challenge depends (ANM2) {
 	float PositionX;
 	float PositionY;
 	ANM2 ChallengeMenuSprite;
+	char _unkImageBase[8];
 };

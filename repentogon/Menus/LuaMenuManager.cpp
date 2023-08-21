@@ -18,7 +18,7 @@ int Lua_WorldToMenuPosition(lua_State* L)
 		}
 		int menuid = (int)luaL_checkinteger(L, 1);
 		Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-		Vector* ref = (Vector*)(g_MenuManager + 60); //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
+		Vector* ref = &g_MenuManager->_ViewPosition; //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
 		ref = new Vector(ref->x + 39, ref->y + 15);
 		Vector* offset;
 		switch (menuid) {
@@ -93,28 +93,60 @@ static void RegisterWorldToMenuPos(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-static int Lua_GetState(lua_State* L)
+static int Lua_MenuManager_GetShadowSprite(lua_State* L)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuMan::GetState can only be used in the main menu"); }
-	MenuManager* menuManager = g_MenuManager;	
-	lua_pushinteger(L, menuManager->GetState());
-	return 1;
-}
-
-static int Lua_SetState(lua_State* L)
-{
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuMan::SetState can only be used in the main menu"); }
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
 	MenuManager* menuManager = g_MenuManager;
-	menuManager->SetState((int)luaL_checkinteger(L, 1));
+	ANM2* anm2 = &menuManager->_MenuShadowSprite;
+	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
 	return 1;
 }
 
+static int Lua_MenuManager_GetBackWidgetSprite(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	MenuManager* menuManager = g_MenuManager;
+	ANM2* anm2 = &menuManager->_BackWidgetSprite;
+	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 1;
+}
+
+static int Lua_MenuManager_GetSelectWidgetSprite(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	MenuManager* menuManager = g_MenuManager;
+	ANM2* anm2 = &menuManager->_SelectWidgetSprite;
+	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 1;
+}
+
+static int Lua_GetSelectedMenuID(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	MenuManager* menuManager = g_MenuManager;
+	lua_pushinteger(L, menuManager->_selectedMenuID);
+	return 1;
+}
+
+static int Lua_SetSelectedMenuID(lua_State* L)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	MenuManager* menuManager = g_MenuManager;
+	menuManager->_selectedMenuID = (int)luaL_checkinteger(L, 1);
+	return 1;
+}
 
 static void RegisterMenuManager(lua_State* L)
 {
 	lua_newtable(L);
-	lua::TableAssoc(L, "SetActiveMenu", Lua_SetState);
-	lua::TableAssoc(L, "GetActiveMenu", Lua_GetState);
+	lua::TableAssoc(L, "GetShadowSprite", Lua_MenuManager_GetShadowSprite);
+	lua::TableAssoc(L, "GetBackWidgetSprite", Lua_MenuManager_GetBackWidgetSprite);
+	lua::TableAssoc(L, "GetSelectWidgetSprite", Lua_MenuManager_GetSelectWidgetSprite);
+	lua::TableAssoc(L, "SetActiveMenu", Lua_SetSelectedMenuID);
+	lua::TableAssoc(L, "GetActiveMenu", Lua_GetSelectedMenuID);
 	lua_setglobal(L, "MenuManager");
 }
 

@@ -11,4 +11,5 @@ struct Menu_Title depends (ANM2) {
     float PositionX;
     float PositionY;
     ANM2 TitleScreenSprite;
+    int unusedVariable;
 };
