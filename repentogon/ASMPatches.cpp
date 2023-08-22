@@ -493,12 +493,57 @@ void ASMPatchBlueWombCurse() {
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 }
 
+// Render mod names with a smaller font
+void PatchModMenu_Font_ModsDisabled() {
+	SigScan scanner("8d89????????f30f1140");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	MEMORY_BASIC_INFORMATION info;
+	DWORD old_protect = SetPageMemoryRW(addr, &info);
+	DWORD _dummy;
+
+	char override_base[] = {
+		0x8d, 0x89, 0x14, 0xa5, 0x10, 0x00
+	};
+	memcpy(addr, override_base, 6);
+
+	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
+	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+}
+
+void PatchModMenu_Font_ModsEnabled() {
+	SigScan scanner("8d89????????f30f1100");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	MEMORY_BASIC_INFORMATION info;
+	DWORD old_protect = SetPageMemoryRW(addr, &info);
+	DWORD _dummy;
+
+	char override_base[] = {
+		0x8d, 0x89, 0x14, 0xa5, 0x10, 0x00
+	};
+	memcpy(addr, override_base, 6);
+
+	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
+	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+}
+
+void ASMPatchModsMenu() {
+	printf("[REPENTOGON] Patching Menu_Mods::Render() \n");
+
+	PatchModMenu_Font_ModsDisabled();
+	PatchModMenu_Font_ModsEnabled();
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
 	ASMPatchMegaSatanEnding();
 	ASMPatchConsoleRunCommand();
 	ASMPatchBlueWombCurse();
+	ASMPatchModsMenu();
 	PatchFireProjectiles();
 	PatchFireBossProjectiles();
 	LuaRender::PatchglDrawElements();
