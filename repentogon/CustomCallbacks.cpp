@@ -69,45 +69,6 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 
 //1005 RESERVED - POST_ADD_COLLECTIBLE
 
-//POST_TAKE_DMG callback (id: 1006 enum pending)
-void ProcessPostDamageCallback(Entity* ent, float damage, unsigned __int64 damageFlags, EntityRef* source, int damageCountdown) {
-	int callbackid = 1006;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L)
-			.push(callbackid)
-			.push(*ent->GetType())
-			.push(ent, lua::Metatables::ENTITY)
-			.push(damage)
-			.push(damageFlags)
-			.push(source, lua::Metatables::ENTITY_REF)
-			.push(damageCountdown)
-			.call(1); // Sylmir, note: the original code asked for a single return value but never used it
-	}
-};
-
-HOOK_METHOD(Entity, TakeDamage, (float damage, unsigned __int64 damageFlags, EntityRef* source, int damageCountdown) -> bool) {
-	bool result = super(damage, damageFlags, source, damageCountdown);
-	Entity* ent = (Entity*)this;
-
-	if (result) ProcessPostDamageCallback(ent, damage, damageFlags, source, damageCountdown);
-	return result;
-}
-
-HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned __int64 damageFlags, EntityRef* source, int damageCountdown) -> bool) {
-	bool result = super(damage, damageFlags, source, damageCountdown);
-	Entity* ent = (Entity*)this;
-
-	if (result) ProcessPostDamageCallback(ent, damage, damageFlags, source, damageCountdown);
-	return result;
-}
-//POST_TAKE_DMG callback end
-
 //GRID_ROCK_UPDATE (id: 1010)
 
 void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int type) {

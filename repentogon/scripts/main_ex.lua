@@ -272,6 +272,10 @@ local typecheckFunctions = {
 		["boolean"] = true,
 		["table"] = true,
 	},
+	[ModCallbacks.MC_ENTITY_TAKE_DMG] = {
+		["boolean"] = true,
+		["table"] = true,
+	},
 	[ModCallbacks.MC_CONSOLE_AUTOCOMPLETE] = {
 	    ["table"] = true,
 	},
@@ -299,7 +303,6 @@ local typecheckWarnFunctions = {
 
 local boolCallbacks = {
 	ModCallbacks.MC_PRE_USE_ITEM,
-	ModCallbacks.MC_ENTITY_TAKE_DMG,
 	ModCallbacks.MC_PRE_LASER_COLLISION,
 	ModCallbacks.MC_PRE_NPC_UPDATE,
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,

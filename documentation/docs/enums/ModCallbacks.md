@@ -93,6 +93,17 @@ Now optionally accepts returning a table, with any combination of the following 
 |:--|:--|:--|:--|:--|
 |1246 |MC_PRE_NPC_COLLISION {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
 
+### MC_ENTITY_TAKE_DMG
+Now optionally accepts returning a table, with any combination of the following fields, to override the corresponding argument:
+
+* Damage
+* DamageFlags
+* DamageCountdown
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1007 |MC_ENTITY_TAKE_DMG {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
+
 
 ## New Callbacks
 ### MC_PRE_ADD_COLLECTIBLE
@@ -121,12 +132,12 @@ Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/r
 |:--|:--|:--|:--|:--|
 |1004 |MC_PRE_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, int Charge, boolean FirstTime, int Slot, int VarData, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | table or [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
 
-### MC_POST_TAKE_DMG {: .copyable }
+### MC_POST_ENTITY_TAKE_DMG {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1006 |MC_POST_TAKE_DMG {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+|1006 |MC_POST_ENTITY_TAKE_DMG {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_GRID_ROCK_UPDATE {: .copyable }
 Accepts no return parameters.
