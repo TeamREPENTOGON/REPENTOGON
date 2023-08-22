@@ -26,3 +26,7 @@ The Dailies menu now displays extended stats, including:
 - Total runs
 - Current Streak
 - Target Difficulty
+
+## Mods menu
+
+The Mods menu now uses a slightly smaller font to render mod names, making it less common for text to render outside the backdrop boundaries.
