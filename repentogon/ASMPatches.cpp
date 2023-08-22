@@ -470,11 +470,35 @@ void PatchPostEntityTakeDamageCallbacks() {
 
 // End of POST_ENTITY_TAKE_DMG patches
 
+// Prevents Curse of the Lost in Blue Womb in addition to Curse of Darkness (Vanilla)
+// changes evaluated bitmask from 0xfe to 0xfa
+void ASMPatchBlueWombCurse() {
+	SigScan scanner("8367??fe6a00");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Level::Init() Curse evaluation for Blue Womb %p\n", addr);
+
+	MEMORY_BASIC_INFORMATION info;
+	DWORD old_protect = SetPageMemoryRW(addr, &info);
+	DWORD _dummy;
+
+	char override_base[] = {
+		0x83, 0x67, 0x0c, 0xfa      // assembly before: dword ptr [EDI + 0xc],0xfffffffe
+	};
+	memcpy(addr, override_base, 4);
+
+	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
+
+	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
 	ASMPatchMegaSatanEnding();
 	ASMPatchConsoleRunCommand();
+	ASMPatchBlueWombCurse();
 	PatchFireProjectiles();
 	PatchFireBossProjectiles();
 	LuaRender::PatchglDrawElements();
