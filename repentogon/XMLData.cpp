@@ -2692,9 +2692,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			}
 			else {
 				char* x = BuildModdedXML(xmldata, "bosspools.xml", true);
+				bosspoolsxml = new char[strlen(x)];
+				strcpy(bosspoolsxml, x);
 				super(x);
-				bosspoolsxml =new char[strlen(x)];
-				strcpy(bosspoolsxml,x);
 			}
 		}else if (charfind(xmldata, "<backd", 50)) {
 				super(BuildModdedXML(xmldata, "backdrops.xml", false));

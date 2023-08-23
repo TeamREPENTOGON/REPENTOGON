@@ -15,9 +15,10 @@
 #include "stringbuffer.h"
 
 #include "XMLData.h"
-#include "CompletionTracker.h"
+#include "AchievementsStuff.h"
 
 #include "ImGuiFeatures/LogViewer.h"
+
 
 using namespace std;
 
@@ -42,7 +43,7 @@ void InitMarkRenderTypes() {
 	CompletionTypeRender[11] = BEAST;
 }
 
-extern unordered_map<string, int> reversemarksenum;
+unordered_map<string, int> reversemarksenum;
 void initreversenum() {
 	reversemarksenum["MOMS_HEART"] = 0;
 	reversemarksenum["ISAAC"] = 1;
@@ -82,9 +83,9 @@ void initreversenum() {
 
 
 
-extern unordered_map<int, unordered_map<int, int>> MarksToEvents;
-extern unordered_map<int, int> EventsToPlayerType;
-extern unordered_map<int, int> EventsToCompletionType;
+unordered_map<int, unordered_map<int, int>> MarksToEvents;
+unordered_map<int, int> EventsToPlayerType;
+unordered_map<int, int> EventsToCompletionType;
 
 void initEventsToPlayerType() {
 	for (int i = 0; i <= 40; i++) {
@@ -626,7 +627,7 @@ void initmarkstoevents() {
 
 
 
-extern unordered_map<string, std::array<int, 15> > CompletionMarks;
+unordered_map<string, std::array<int, 15> > CompletionMarks;
 string jsonpath;
 
 void SaveCompletionMarksToJson() {
@@ -872,7 +873,7 @@ HOOK_METHOD_PRIORITY(PersistentGameData, IncreaseEventCounter, 0, (int eEvent, i
 			return;
 		}
 		super(eEvent, val);
-		if (val > 0) { PostMarksCallbackTrigger(cplmtype, playertype); }
+		if (val > 0) { RunTrackersForMark(cplmtype, playertype); PostMarksCallbackTrigger(cplmtype, playertype); }
 		if (hardmode && (val == 1)) {
 			lastcmplevent = eEvent;
 		}
@@ -900,6 +901,7 @@ HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion, 100, (int eEvent) -> void,
 			if (CompletionMarks[idx][eEvent] != marktype) {
 				if (PreMarksCallbackTrigger(eEvent, playertype)) {
 					CompletionMarks[idx][eEvent] = marktype;
+					RunTrackersForMark(eEvent, playertype);
 					PostMarksCallbackTrigger(eEvent, playertype);
 				}
 			}
@@ -1001,6 +1003,7 @@ int Lua_IsaacSetCharacterMarks(lua_State* L)
 		for (int i = 0; i < 15; i++) {
 			if (marks[i] > 0) {
 				if (PreMarksCallbackTrigger(i, playertype)) {
+					RunTrackersForMark(i, playertype);
 					PostMarksCallbackTrigger(i, playertype);
 				}
 				else {
@@ -1070,6 +1073,7 @@ int Lua_IsaacFillCompletionMarks(lua_State* L)
 		for (int i = 0; i < 15; i++) {
 			if (PreMarksCallbackTrigger(i, playertype)) {
 				CompletionMarks[idx][i] = 2;
+				RunTrackersForMark(i, playertype);
 				PostMarksCallbackTrigger(i, playertype);
 			}
 		}
@@ -1172,6 +1176,7 @@ int Lua_IsaacSetCharacterMark(lua_State* L)
 			CompletionMarks[idx] = marks;
 			SaveCompletionMarksToJson();
 			if (value > 0) {
+				RunTrackersForMark(completiontype, playertype);
 				PostMarksCallbackTrigger(completiontype, playertype);
 			}
 		}
@@ -1182,6 +1187,7 @@ int Lua_IsaacSetCharacterMark(lua_State* L)
 			PData->IncreaseEventCounter(MarksToEvents[playertype][completiontype], -PData->GetEventCounter(MarksToEvents[playertype][completiontype]));
 			PData->IncreaseEventCounter(MarksToEvents[playertype][completiontype], value);
 			if (value > 0) {
+				RunTrackersForMark(completiontype, playertype);
 				PostMarksCallbackTrigger(completiontype, playertype);
 			}
 		}
