@@ -14,6 +14,10 @@ ___
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Layer·ID () {: aria-label='Functions' }
+#### int GetLayerID ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Name () {: aria-label='Functions' }
 #### string GetName ( ) {: .copyable aria-label='Functions' }
 
@@ -28,6 +32,10 @@ ___
 ___
 ### Get·Spritesheet·Path () {: aria-label='Functions' }
 #### string GetSpritesheetPath ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Default·Spritesheet·Path () {: aria-label='Functions' }
+#### string GetDefaultSpritesheetPath ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Visible () {: aria-label='Functions' }

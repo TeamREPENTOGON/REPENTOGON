@@ -97,6 +97,13 @@ static int Lua_SpriteGetLayer_Text(lua_State* L)
 	return 1;
 }
 
+static int Lua_LayerStateGetLayerID(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	lua_pushinteger(L, layerState->GetLayerID());
+	return 1;
+}
+
 static int Lua_LayerStateGetName(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
@@ -108,6 +115,13 @@ static int Lua_SpriteGetSpritesheetPath(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
 	lua_pushstring(L, layerState->GetSpritesheetPath().c_str());
+	return 1;
+}
+
+static int Lua_SpriteGetDefaultSpritesheetPath(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	lua_pushstring(L, layerState->GetDefaultSpritesheetPath().c_str());
 	return 1;
 }
 
@@ -221,8 +235,10 @@ static void RegisterLayerState(lua_State* L) {
 	lua_settable(L, -3);
 
 	luaL_Reg funcs[] = {
+		{ "GetLayerID", Lua_LayerStateGetLayerID },
 		{ "GetName", Lua_LayerStateGetName },
 		{ "GetSpritesheetPath", Lua_SpriteGetSpritesheetPath },
+		{ "GetDefaultSpritesheetPath", Lua_SpriteGetDefaultSpritesheetPath },
 		{ "IsVisible", Lua_LayerStateIsVisible },
 		{ "SetVisible", Lua_LayerStateSetVisible},
 		{ "GetSize", Lua_LayerStateGetSize},
