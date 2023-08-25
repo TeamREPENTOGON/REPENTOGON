@@ -2664,7 +2664,11 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	if (xmlsloaded) {
 		//printf("XML: %s", xmldata);
 		if ((bosspoolsxml != NULL) && (charfind(xmldata, "<bosspool", 50))) {
-			return super(bosspoolsxml);
+			char* x = new char[strlen(bosspoolsxml)];
+			strcpy(x, bosspoolsxml);
+			super(x);
+			mclear(x);
+			return;
 		}
 		else if (charfind(xmldata, "<cuts", 50)) {
 			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
@@ -2692,9 +2696,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			}
 			else {
 				char* x = BuildModdedXML(xmldata, "bosspools.xml", true);
+				bosspoolsxml = new char[strlen(x)];
+				strcpy(bosspoolsxml, x);
 				super(x);
-				bosspoolsxml =new char[strlen(x)];
-				strcpy(bosspoolsxml,x);
 			}
 		}else if (charfind(xmldata, "<backd", 50)) {
 				super(BuildModdedXML(xmldata, "backdrops.xml", false));

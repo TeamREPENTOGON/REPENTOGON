@@ -1,3 +1,5 @@
+#ifndef COMPLETIONTRACKER_H
+#define COMPLETIONTRACKER_H
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
@@ -447,8 +449,10 @@ typedef enum MEventCounter {
 	PROGRESSION_KILL_BEAST_WITH_T_JACOB_AND_ESAU = 490, //(0 for not done. 1 for normal difficulty, 2 for hard)
 };
 
-unordered_map<string, int> reversemarksenum;
-unordered_map<int, unordered_map<int, int>> MarksToEvents;
-unordered_map<int, int> EventsToPlayerType;
-unordered_map<int, int> EventsToCompletionType;
-unordered_map<string, std::array<int, 15> > CompletionMarks;
+extern unordered_map<string, int> reversemarksenum;
+extern unordered_map<int, unordered_map<int, int>> MarksToEvents;
+extern unordered_map<int, int> EventsToPlayerType;
+extern unordered_map<int, int> EventsToCompletionType;
+extern unordered_map<string, std::array<int, 15> > CompletionMarks;
+
+#endif

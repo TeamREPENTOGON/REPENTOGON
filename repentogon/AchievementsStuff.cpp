@@ -33,7 +33,10 @@ using namespace rapidxml;
 using namespace std;
 
 
-extern unordered_map<string, bool > Achievements;
+unordered_map<string, int > Achievements;
+unordered_map<int, unordered_map<int, vector<int>> > CompletionMarkListeners;
+unordered_map<int, unordered_map<int, vector<int>> > EventCounterListeners;
+unordered_map<tuple<int, int, int>, vector<int>> BossDeathListeners;
 string achivjsonpath;
 
 
@@ -64,6 +67,7 @@ void SaveAchieveemntsToJson() {
 }
 
 void LoadAchievementsFromJson() {
+	InitAchievs();
 	Achievements.clear();
 	ifstream ifs(achivjsonpath);
 	if (!ifs.good()) {
@@ -83,7 +87,12 @@ void LoadAchievementsFromJson() {
 		string key = it->name.GetString();
 		auto& value = it->value;
 		if (Achievements.find(key) == Achievements.end()) {
-			Achievements[key] = value.GetBool();
+			if (value.IsInt()) {
+				Achievements[key] = value.GetInt();
+			}
+			else if (value.IsBool()) {
+				Achievements[key] = value.GetBool();
+			}
 		}
 	}
 	logViewer.AddLog("[REPENTOGON]", "Achievements loaded from: %s \n", achivjsonpath.c_str());
@@ -95,7 +104,7 @@ HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
 
 	LoadAchievementsFromJson();
 	super(saveslot);
-}
+}	
 
 
 #include <queue>
@@ -115,26 +124,27 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 	if (!Achievements[achievid]) {
 		Achievements[achievid] = true;
 		SaveAchieveemntsToJson();
-		pendingachievs.push(achieveemntid);
-
-
-		if (dummyachiev < 0) {
-			dummyachiev = 2;
-			for (int x = 2; x < 638; x++) {
-				if (this->achievements[x]) {
-					dummyachiev = x;
-					break;
+		if (g_Manager->GetOptions()->PopUpsEnabled()) { //it is prevented even without this check, but theres no point in doing the hackies if thats the case.
+			pendingachievs.push(achieveemntid);
+			if (dummyachiev < 0) {
+				dummyachiev = 2;
+				for (int x = 2; x < 638; x++) {
+					if (this->achievements[x]) {
+						dummyachiev = x;
+						break;
+					}
 				}
 			}
+			printf("[Achiev] Using %d for fake achievement %d \n", dummyachiev, achieveemntid);
+			int had = this->achievements[dummyachiev];
+			int dum = dummyachiev;
+			this->achievements[dummyachiev] = 0;
+			blocksteam = true;
+			super(dummyachiev);
+			blocksteam = false;
+			this->achievements[dum] = had;
 		}
-		printf("[Achiev] Using %d for fake achievement %d \n", dummyachiev, achieveemntid);
-		int had = this->achievements[dummyachiev];
-		int dum = dummyachiev;
-		this->achievements[dummyachiev] = 0;
-		blocksteam = true;
-		super(dummyachiev);
-		blocksteam = false;
-		this->achievements[dum] = had;
+		else { printf("[Achiev] Modded popup prevented due to pops disabled \n"); }
 		return true;
 	}
 	return false;

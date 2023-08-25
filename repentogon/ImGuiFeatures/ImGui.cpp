@@ -287,7 +287,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
     static float oldPointScale = 0;
     if(g_PointScale != oldPointScale)
-        if (g_PointScale >= 0 && g_PointScale < fonts.size())
+        if (g_PointScale >= 0 && g_PointScale < fonts.size() && (fonts.find((int)g_PointScale) != fonts.end()))
             ImGui::GetIO().FontDefault = fonts.at((int)g_PointScale);
 
     oldPointScale = g_PointScale;
