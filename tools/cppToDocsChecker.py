@@ -17,6 +17,7 @@ if "GITHUB_WORKSPACE" in os.environ:
 
 ignoreFunctionWords = ["Register","_Test","__gc", "Patch", "FixMusicManager", "lua_LGR_gc", "lua_Image_gc", "lua_Transformer_gc"]
 ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp"]
+subFolders = [["Menu","menus"]]
 
 parentClass = {
                "Ambush":"Game",
@@ -154,8 +155,14 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
     if className == "":
         className = os.path.basename(file).split("Lua")[1].split(".")[0]
     
+    subFolder = ""
+    for entry in subFolders:
+        if entry[0] in className:
+            subFolder = entry[1] + "/"
+            break
+    
     # search in own documentation and the parent documentation
-    searchInDocFile(DOCS_FOLDER_PATH + className + ".md", luaFunctions)
+    searchInDocFile(DOCS_FOLDER_PATH + subFolder+ className + ".md", luaFunctions)
     if className in parentClass:
         for parent in parentClass[className].split(","):
             searchInDocFile(DOCS_FOLDER_PATH + parent + ".md", luaFunctions)

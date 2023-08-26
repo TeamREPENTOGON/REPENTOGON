@@ -37,7 +37,7 @@ static int Lua_BestiaryMenu_GetEnemySprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_MainMenu_GetCurrentPage(lua_State* L)
+static int Lua_MainMenu_GetSelectedPage(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
@@ -46,7 +46,7 @@ static int Lua_MainMenu_GetCurrentPage(lua_State* L)
 	return 1;
 }
 
-static int Lua_MainMenu_SetCurrentPage(lua_State* L)
+static int Lua_MainMenu_SetSelectedPage(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
@@ -89,8 +89,8 @@ static void RegisterBestiaryMenu(lua_State* L)
 	lua::TableAssoc(L, "GetBestiaryMenuSprite", Lua_BestiaryMenu_GetBestiaryMenuSprite);
 	lua::TableAssoc(L, "GetDeathScreenSprite", Lua_BestiaryMenu_GetDeathScreenSprite);
 	lua::TableAssoc(L, "GetEnemySprite", Lua_BestiaryMenu_GetEnemySprite);
-	lua::TableAssoc(L, "GetCurrentPage", Lua_MainMenu_GetCurrentPage);
-	lua::TableAssoc(L, "SetCurrentPage", Lua_MainMenu_SetCurrentPage);
+	lua::TableAssoc(L, "GetSelectedPage", Lua_MainMenu_GetSelectedPage);
+	lua::TableAssoc(L, "SetSelectedPage", Lua_MainMenu_SetSelectedPage);
 	lua::TableAssoc(L, "GetSelectedElement", Lua_MainMenu_GetSelectedElement);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_MainMenu_SetSelectedElement);
 	lua::TableAssoc(L, "GetLastEnemyPageID", Lua_MainMenu_GetLastEnemyPageID);
