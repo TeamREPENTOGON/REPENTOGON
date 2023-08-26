@@ -695,7 +695,7 @@ static int Lua_SetHelpmarker(lua_State* L)
 static int Lua_GetMousePos(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
-    
+
     float x = -1;
     float y = -1;
 
@@ -705,12 +705,10 @@ static int Lua_GetMousePos(lua_State* L)
             x = io.MousePos.x;
             y = io.MousePos.y;
         }
+    } else {
+        x = (float)*(double*)((char*)g_KAGEInputController + 0x48);
+        y = (float)*(double*)((char*)g_KAGEInputController + 0x50);
     }
-    else {
-        x = *(double*)((char*)g_KAGEInputController + 0x48);
-        y = *(double*)((char*)g_KAGEInputController + 0x50);
-    }
-
 
     lua::LuaCaller(L).pushUserdataValue(*new Vector(x, y), lua::Metatables::VECTOR);
 
@@ -919,6 +917,67 @@ static int Lua_ImGuiSetVisible(lua_State* L)
     return 0;
 }
 
+static int Lua_GetWindowPinned(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+
+    Element* element = imGui->GetElementById(elementId);
+    if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+        lua_pushboolean(L, element->data.windowPinned);
+        return 1;
+    } else {
+        return luaL_error(L, "Window Element with id '%s' not found", elementId);
+    }
+}
+
+static int Lua_SetWindowPinned(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    bool newState = lua_toboolean(L, 3);
+
+    bool success = imGui->SetPinned(elementId, newState);
+
+    if (!success) {
+        return luaL_error(L, "Window Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_SetWindowPosition(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    float x = (float)luaL_checknumber(L, 3);
+    float y = (float)luaL_checknumber(L, 4);
+
+    bool success = imGui->SetWindowPosition(elementId, x, y);
+
+    if (!success) {
+        return luaL_error(L, "Window Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_SetWindowSize(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    float sizeX = (float)luaL_checknumber(L, 3);
+    float sizeY = (float)luaL_checknumber(L, 4);
+
+    bool success = imGui->SetWindowSize(elementId, sizeX, sizeY);
+
+    if (!success) {
+        return luaL_error(L, "Window Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
 static void RegisterCustomImGui(lua_State* L)
 {
     lua_getglobal(L, "Isaac");
@@ -967,9 +1026,13 @@ static void RegisterCustomImGui(lua_State* L)
         { "AddPlotLines", Lua_AddPlotLines },
         { "AddPlotHistogram", Lua_AddPlotHistogram },
         { "AddProgressBar", Lua_AddProgressBar },
-        { "SetTooltip", Lua_SetTooltip },
         { "SetHelpmarker", Lua_SetHelpmarker },
+        { "SetWindowPinned", Lua_SetWindowPinned },
+        { "SetWindowPosition", Lua_SetWindowPosition },
+        { "SetWindowSize", Lua_SetWindowSize },
+        { "SetTooltip", Lua_SetTooltip },
         { "GetMousePosition", Lua_GetMousePos },
+        { "GetWindowPinned", Lua_GetWindowPinned },
         { "Reset", Lua_ImGuiReset },
         { "Show", Lua_ImGuiShow },
         { "Hide", Lua_ImGuiHide },

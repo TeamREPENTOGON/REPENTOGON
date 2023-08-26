@@ -117,6 +117,10 @@ struct Data {
     std::string tooltipText = "";
     std::string helpmarkerText = "";
     bool windowPinned = false;
+    bool newPositionRequested = false;
+    ImVec2 newPosition = ImVec2(0,0);
+    bool newSizeRequested = false;
+    ImVec2 newSize = ImVec2(100, 100);
 };
 
 struct ElementData : Data {
@@ -190,7 +194,7 @@ struct Element {
     Element* triggerPopup = NULL; // popup that gets triggered when clicking this element
     std::map<IMGUI_CALLBACK, int> callbacks; // type, StackID
 
-    Data data; // i want to only use this in the future for all data types, but im to stupid to get the cast to work correctly :(
+    Data data{}; // i want to only use this in the future for all data types, but im to stupid to get the cast to work correctly :(
     ColorData colorData;
     ElementData elementData;
 
@@ -489,6 +493,38 @@ struct CustomImGui {
         Element* element = GetElementById(elementId);
         if (element != NULL) {
             element->SetVisible(newState);
+            return true;
+        }
+        return false;
+    }
+
+    bool SetPinned(const char* elementId, bool newState) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+            element->data.windowPinned = newState;
+            return true;
+        }
+        return false;
+    }
+
+    bool SetWindowPosition(const char* elementId, float x, float y) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+            element->data.newPosition = ImVec2(x, y);
+            element->data.newPositionRequested = true;
+            return true;
+        }
+        return false;
+    }
+
+    bool SetWindowSize(const char* elementId, float sizeX, float sizeY) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+            element->data.newSize = ImVec2(sizeX, sizeY);
+            element->data.newSizeRequested = true;
             return true;
         }
         return false;
@@ -828,10 +864,18 @@ struct CustomImGui {
     {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             ImGui::PushID(window->GetHash());
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300 , 100));
             window->EvaluateVisible();
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
                 if (ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
+                    if (window->data.newPositionRequested) {
+                      ImGui::SetWindowPos(window->data.newPosition);
+                      window->data.newPositionRequested = false;
+                    }
+                    if (window->data.newSizeRequested) {
+                      ImGui::SetWindowSize(window->data.newSize);
+                      window->data.newSizeRequested = false;
+                    }
                     if (imguiResized) {
                         ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
                         ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
