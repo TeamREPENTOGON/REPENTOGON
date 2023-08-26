@@ -2274,3 +2274,12 @@ AutocompleteType = {
 	PLAYER = 15,
 	CUSTOM = 16,
 }
+
+AnimRenderFlags = {
+	GLITCH = 1<<1,
+	STATIC = 1<<5,
+	IGNORE_GAME_TIME = 1<<6,
+	GOLDEN = 1<<7,
+	ENABLE_LAYER_LIGHTING = 1<<10,
+	ENABLE_NULL_LAYER_LIGHTING = 1<<11
+}

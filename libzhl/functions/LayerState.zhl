@@ -8,6 +8,7 @@ struct LayerState depends (LayerData, ANM2, Vector, ColorMod) { {{
 	inline Vector* GetPos() { return &this->_pos; }
 	inline ColorMod* GetColor() { return &this->_color; }
 	inline bool* IsVisible() { return &this->_visible; }
+    inline unsigned int* GetBitFlags() { return &this->_bitflags; }
 	inline Vector* GetCropOffset() { return &this->_cropOffset; } 
 }} 
     LayerData* _layerData;  // 0x00
@@ -25,7 +26,7 @@ struct LayerState depends (LayerData, ANM2, Vector, ColorMod) { {{
     bool _visible;  // 0x74
     char _boolPadding[3];
     char _blendMode[16];  // 0x78
-    unsigned int _bitFlags;  // 0x88
+    unsigned int _bitflags;  // 0x88
     Vector _cropOffset;  // 0x8c
     char _imageBasePtr[4];  // 0x94
     char _unkPtr[4];  // 0x98

@@ -97,6 +97,22 @@ static int Lua_SpriteGetLayer_Text(lua_State* L)
 	return 1;
 }
 
+static int Lua_SpriteGetBitFlags(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	lua_pushnumber(L, *anm2->GetBitFlags());
+	return 1;
+}
+static int Lua_SpriteSetBitFlags(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	*anm2->GetBitFlags() = luaL_checknumber(L, 2);
+
+	return 0;
+}
+
+// LayerState from here on out
+
 static int Lua_LayerStateGetLayerID(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
@@ -210,6 +226,20 @@ static int Lua_LayerStateSetColor(lua_State* L)
 	return 0;
 }
 
+static int Lua_LayerStateGetBitFlags(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	lua_pushnumber(L, *layerState->GetBitFlags());
+	return 1;
+}
+static int Lua_LayerStateSetBitFlags(lua_State* L)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
+	*layerState->GetBitFlags() = luaL_checknumber(L, 2);
+
+	return 0;
+}
+
 static int Lua_LayerStateGetCropOffset(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
@@ -251,6 +281,8 @@ static void RegisterLayerState(lua_State* L) {
 		{ "SetColor", Lua_LayerStateSetColor},
 		{ "GetCropOffset", Lua_LayerStateGetCropOffset},
 		{ "SetCropOffset", Lua_LayerStateSetCropOffset},
+		{ "GetBitFlags", Lua_LayerStateGetBitFlags},
+		{ "SetBitFlags", Lua_LayerStateSetBitFlags},
 		{ NULL, NULL }
 	};
 
@@ -271,6 +303,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);
 	lua::RegisterFunction(state, mt, "IsOverlayEventTriggered", Lua_SpriteIsOverlayEventTriggered);
 	lua::RegisterFunction(state, mt, "WasOverlayEventTriggered", Lua_SpriteWasOverlayEventTriggered);
+	lua::RegisterFunction(state, mt, "GetBitFlags", Lua_SpriteGetBitFlags);
+	lua::RegisterFunction(state, mt, "SetBitFlags", Lua_SpriteSetBitFlags);
 	RegisterLayerState(state);
 }
 
