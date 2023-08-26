@@ -112,13 +112,24 @@ static const std::map<ImGuiKey, int> imGuiToIsaacKey {
     { ImGuiKey_GamepadBack, 13 }, // ACTION_MAP
 };
 
+struct ColorHandler {
+    ImGuiCol_ type;
+    ImVec4 color;
+
+    ColorHandler(ImGuiCol_ t, ImVec4 c)
+    {
+        type = t;
+        color = c;
+    }
+};
+
 struct Data {
     int clickCounter = 0;
     std::string tooltipText = "";
     std::string helpmarkerText = "";
     bool windowPinned = false;
     bool newPositionRequested = false;
-    ImVec2 newPosition = ImVec2(0,0);
+    ImVec2 newPosition = ImVec2(0, 0);
     bool newSizeRequested = false;
     ImVec2 newSize = ImVec2(100, 100);
 };
@@ -143,6 +154,7 @@ struct ElementData : Data {
     float stepFast = 100;
     float speed = 1;
     const char* formatting = "%.3f";
+    std::list<ColorHandler>* colors = new std::list<ColorHandler>();
 
     const char* DefaultFloatNumberFormatting = "%.3f";
     const char* DefaultIntNumberFormatting = "%d%";
@@ -194,9 +206,9 @@ struct Element {
     Element* triggerPopup = NULL; // popup that gets triggered when clicking this element
     std::map<IMGUI_CALLBACK, int> callbacks; // type, StackID
 
-    Data data{}; // i want to only use this in the future for all data types, but im to stupid to get the cast to work correctly :(
+    Data data {}; // i want to only use this in the future for all data types, but im to stupid to get the cast to work correctly :(
     ColorData colorData;
-    ElementData elementData;
+    ElementData elementData {};
 
     bool useroverride_isVisible = false;
 
@@ -525,6 +537,31 @@ struct CustomImGui {
         if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
             element->data.newSize = ImVec2(sizeX, sizeY);
             element->data.newSizeRequested = true;
+            return true;
+        }
+        return false;
+    }
+
+    bool SetColor(const char* elementId, ImGuiCol_ type, ImVec4 newColor) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL) {
+            RemoveColor(elementId, type);
+            element->elementData.colors->push_back(ColorHandler(type, newColor));
+            return true;
+        }
+        return false;
+    }
+
+    bool RemoveColor(const char* elementId, ImGuiCol_ type) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL) {
+            for (auto color = element->elementData.colors->begin(); color != element->elementData.colors->end(); ++color) {
+                if (color->type == type) {
+                    element->elementData.colors->erase(color);
+                }
+            }
             return true;
         }
         return false;
@@ -864,17 +901,18 @@ struct CustomImGui {
     {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             ImGui::PushID(window->GetHash());
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300 , 100));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
+            HandleElementColors(window->GetElementData(), true);
             window->EvaluateVisible();
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
                 if (ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
                     if (window->data.newPositionRequested) {
-                      ImGui::SetWindowPos(window->data.newPosition);
-                      window->data.newPositionRequested = false;
+                        ImGui::SetWindowPos(window->data.newPosition);
+                        window->data.newPositionRequested = false;
                     }
                     if (window->data.newSizeRequested) {
-                      ImGui::SetWindowSize(window->data.newSize);
-                      window->data.newSizeRequested = false;
+                        ImGui::SetWindowSize(window->data.newSize);
+                        window->data.newSizeRequested = false;
                     }
                     if (imguiResized) {
                         ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
@@ -885,6 +923,7 @@ struct CustomImGui {
                 }
                 ImGui::End(); // close window element
             }
+            HandleElementColors(window->GetElementData(), false);
             ImGui::PopStyleVar();
             ImGui::PopID();
         }
@@ -902,12 +941,22 @@ struct CustomImGui {
         }
     }
 
+    void HandleElementColors(ElementData* data, bool isPush)
+    {
+        if (isPush)
+            for (auto color = data->colors->begin(); color != data->colors->end(); ++color)
+                ImGui::PushStyleColor(color->type, color->color);
+        else
+            ImGui::PopStyleColor(data->colors->size());
+    }
+
     void DrawMenuElements(std::list<Element>* elements)
     {
         for (auto element = elements->begin(); element != elements->end(); ++element) {
             const char* name = element->name.c_str();
 
             ImGui::PushID(element->GetHash());
+            HandleElementColors(element->GetElementData(), true);
             switch (element->type) {
             case IMGUI_ELEMENT::Menu:
                 if (ImGui::BeginMenu(name)) {
@@ -923,6 +972,7 @@ struct CustomImGui {
             default:
                 break;
             }
+            HandleElementColors(element->GetElementData(), false);
             ImGui::PopID();
         }
     }
@@ -934,6 +984,9 @@ struct CustomImGui {
             RunPreRenderCallbacks(&(*element));
 
             ImGui::PushID(element->GetHash());
+            ElementData* data = element->GetElementData();
+            HandleElementColors(data, true);
+
             switch (element->type) {
             case IMGUI_ELEMENT::CollapsingHeader:
                 if (ImGui::CollapsingHeader(name)) {
@@ -1006,179 +1059,135 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::InputInt:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    ImGui::InputInt(name, &(int&)data->currentIntVal, (int)data->step, (int)data->stepFast);
-                    RunCallbacks(&(*element));
-                }
+                ImGui::InputInt(name, &(int&)data->currentIntVal, (int)data->step, (int)data->stepFast);
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::InputFloat:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    ImGui::InputFloat(name, &data->currentFloatVal, data->step, data->stepFast);
-                    RunCallbacks(&(*element));
-                }
+                ImGui::InputFloat(name, &data->currentFloatVal, data->step, data->stepFast);
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::DragInt:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    ImGui::DragInt(name, &data->currentIntVal, data->speed, (int)data->minVal, (int)data->maxVal, data->formatting);
-                    RunCallbacks(&(*element));
-                }
+                ImGui::DragInt(name, &data->currentIntVal, data->speed, (int)data->minVal, (int)data->maxVal, data->formatting);
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::DragFloat:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    ImGui::DragFloat(name, &data->currentFloatVal, data->speed, data->minVal, data->maxVal, data->formatting);
-                    RunCallbacks(&(*element));
-                }
+                ImGui::DragFloat(name, &data->currentFloatVal, data->speed, data->minVal, data->maxVal, data->formatting);
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SliderInt:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    ImGui::SliderInt(name, &(int&)data->currentIntVal, (int)data->minVal, (int)data->maxVal, data->formatting);
-                    RunCallbacks(&(*element));
-                }
+                ImGui::SliderInt(name, &(int&)data->currentIntVal, (int)data->minVal, (int)data->maxVal, data->formatting);
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SliderFloat:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    ImGui::SliderFloat(name, &data->currentFloatVal, data->minVal, data->maxVal, data->formatting);
-                    RunCallbacks(&(*element));
-                }
+                ImGui::SliderFloat(name, &data->currentFloatVal, data->minVal, data->maxVal, data->formatting);
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::ColorEdit:
                 if (element->GetColorData() != nullptr) {
-                    ColorData* data = element->GetColorData();
-                    if (data->useAlpha) {
-                        ImGui::ColorEdit4(name, data->rgba);
+                    ColorData* colorData = element->GetColorData();
+                    if (colorData->useAlpha) {
+                        ImGui::ColorEdit4(name, colorData->rgba);
                     } else {
-                        ImGui::ColorEdit3(name, data->rgba);
+                        ImGui::ColorEdit3(name, colorData->rgba);
                     }
                     RunCallbacks(&(*element));
                 }
                 break;
             case IMGUI_ELEMENT::Checkbox:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    ImGui::Checkbox(name, &data->checked);
+                ImGui::Checkbox(name, &data->checked);
+                RunCallbacks(&(*element));
+                break;
+            case IMGUI_ELEMENT::RadioButton: {
+                int counter = 0;
+                for (auto elemName = data->values->begin(); elemName != data->values->end(); ++elemName) {
+                    ImGui::RadioButton(elemName->c_str(), &data->index, counter);
                     RunCallbacks(&(*element));
-                }
-                break;
-            case IMGUI_ELEMENT::RadioButton:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    int counter = 0;
-                    for (auto elemName = data->values->begin(); elemName != data->values->end(); ++elemName) {
-                        ImGui::RadioButton(elemName->c_str(), &data->index, counter);
-                        RunCallbacks(&(*element));
-                        if (data->sameLine && counter < (int)data->values->size() - 1) {
-                            ImGui::SameLine();
-                        }
-                        ++counter;
+                    if (data->sameLine && counter < (int)data->values->size() - 1) {
+                        ImGui::SameLine();
                     }
+                    ++counter;
                 }
-                break;
-            case IMGUI_ELEMENT::Combobox:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    if (data->isSlider) {
-                        ImGui::SliderInt(name, &data->index, 0, data->values->size() - 1, data->getCurrentListValue());
-                        RunCallbacks(&(*element));
-                    } else {
-                        if (ImGui::BeginCombo(name, data->getCurrentListValue())) {
-                            int counter = 0;
-                            for (auto elemName = data->values->begin(); elemName != data->values->end(); ++elemName) {
-                                const bool is_selected = (data->index == counter);
-                                if (ImGui::Selectable(elemName->c_str(), is_selected)) {
-                                    data->index = counter;
-                                    RunCallbacks(&(*element));
-                                }
-                                if (is_selected) {
-                                    // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-                                    ImGui::SetItemDefaultFocus();
-                                }
-                                ++counter;
+            } break;
+            case IMGUI_ELEMENT::Combobox: {
+                if (data->isSlider) {
+                    ImGui::SliderInt(name, &data->index, 0, data->values->size() - 1, data->getCurrentListValue());
+                    RunCallbacks(&(*element));
+                } else {
+                    if (ImGui::BeginCombo(name, data->getCurrentListValue())) {
+                        int counter = 0;
+                        for (auto elemName = data->values->begin(); elemName != data->values->end(); ++elemName) {
+                            const bool is_selected = (data->index == counter);
+                            if (ImGui::Selectable(elemName->c_str(), is_selected)) {
+                                data->index = counter;
+                                RunCallbacks(&(*element));
                             }
-                            ImGui::EndCombo();
+                            if (is_selected) {
+                                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                                ImGui::SetItemDefaultFocus();
+                            }
+                            ++counter;
                         }
+                        ImGui::EndCombo();
                     }
                 }
-                break;
+            } break;
             case IMGUI_ELEMENT::InputText:
             case IMGUI_ELEMENT::InputTextWithHint:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    if (data->hintText.empty()) {
-                        StringInputText(name, &data->inputText, NULL, NULL, NULL);
-                    } else {
-                        StringInputTextWithHint(name, data->hintText.c_str(), &data->inputText, NULL, NULL, NULL);
-                    }
-                    RunCallbacks(&(*element));
+                if (data->hintText.empty()) {
+                    StringInputText(name, &data->inputText, NULL, NULL, NULL);
+                } else {
+                    StringInputTextWithHint(name, data->hintText.c_str(), &data->inputText, NULL, NULL, NULL);
                 }
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::InputTextMultiline:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    StringInputTextMultiline(name, &data->inputText, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * data->lineCount), NULL, NULL, NULL);
-                    RunCallbacks(&(*element));
-                }
+                StringInputTextMultiline(name, &data->inputText, ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * data->lineCount), NULL, NULL, NULL);
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::InputController:
-            case IMGUI_ELEMENT::InputKeyboard:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    if (data->inputText.empty())
-                        data->inputText = std::string(ImGui::GetKeyName(static_cast<ImGuiKey>(data->currentIntVal)));
+            case IMGUI_ELEMENT::InputKeyboard: {
+                if (data->inputText.empty())
+                    data->inputText = std::string(ImGui::GetKeyName(static_cast<ImGuiKey>(data->currentIntVal)));
 
-                    ImGuiKey newButton = AddChangeKeyButton(element->type == IMGUI_ELEMENT::InputController, element->isActive);
-                    if (newButton != ImGuiKey_None) {
-                        data->inputText = ImGui::GetKeyName(newButton);
-                        data->currentIntVal = static_cast<int>(newButton);
-                        // workaround: manually trigger Edited events
-                        for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
-                            if (callback->first == IMGUI_CALLBACK::Edited) {
-                                RunCallback(&(*element), callback->second);
-                            }
+                ImGuiKey newButton = AddChangeKeyButton(element->type == IMGUI_ELEMENT::InputController, element->isActive);
+                if (newButton != ImGuiKey_None) {
+                    data->inputText = ImGui::GetKeyName(newButton);
+                    data->currentIntVal = static_cast<int>(newButton);
+                    // workaround: manually trigger Edited events
+                    for (auto callback = element->callbacks.begin(); callback != element->callbacks.end(); ++callback) {
+                        if (callback->first == IMGUI_CALLBACK::Edited) {
+                            RunCallback(&(*element), callback->second);
                         }
                     }
-                    ImGui::SameLine();
-                    StringInputText(name, &data->inputText, ImGuiInputTextFlags_ReadOnly, NULL, NULL);
                 }
-                break;
-            case IMGUI_ELEMENT::PlotLines:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
+                ImGui::SameLine();
+                StringInputText(name, &data->inputText, ImGuiInputTextFlags_ReadOnly, NULL, NULL);
+            } break;
+            case IMGUI_ELEMENT::PlotLines: {
+                std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
+                ImGui::PlotLines(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
+                RunCallbacks(&(*element));
+            } break;
+            case IMGUI_ELEMENT::PlotHistogram: {
+                std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
 
-                    ImGui::PlotLines(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
-                    RunCallbacks(&(*element));
+                ImGui::PlotHistogram(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
+                RunCallbacks(&(*element));
+            } break;
+            case IMGUI_ELEMENT::ProgressBar: {
+                const char* overlayText = data->hintText == "__DEFAULT__" ? NULL : data->hintText.c_str();
+                ImGui::ProgressBar(data->currentFloatVal, ImVec2(0.0f, 0.0f), overlayText);
+                if (!element->name.empty()) {
+                    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+                    ImGui::Text(name);
                 }
-                break;
-            case IMGUI_ELEMENT::PlotHistogram:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    std::vector<float> values(data->plotValues->begin(), data->plotValues->end());
-
-                    ImGui::PlotHistogram(name, &values[0], data->plotValues->size(), NULL, data->hintText.c_str(), data->minVal, data->maxVal, ImVec2(0, data->defaultFloatVal));
-                    RunCallbacks(&(*element));
-                }
-                break;
-            case IMGUI_ELEMENT::ProgressBar:
-                if (element->GetElementData() != nullptr) {
-                    ElementData* data = element->GetElementData();
-                    const char* overlayText = data->hintText == "__DEFAULT__" ? NULL : data->hintText.c_str();
-                    ImGui::ProgressBar(data->currentFloatVal, ImVec2(0.0f, 0.0f), overlayText);
-                    if (!element->name.empty()) {
-                        ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-                        ImGui::Text(name);
-                    }
-                    RunCallbacks(&(*element));
-                }
-                break;
+                RunCallbacks(&(*element));
+            } break;
             default:
                 break;
             }
+
+            HandleElementColors(data, false);
             HandleElementExtras(&(*element));
             ImGui::PopID();
         }

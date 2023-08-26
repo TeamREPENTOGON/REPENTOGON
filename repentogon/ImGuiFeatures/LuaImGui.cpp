@@ -917,6 +917,58 @@ static int Lua_ImGui_SetVisible(lua_State* L)
     return 0;
 }
 
+static int Lua_ImGui_SetColor(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    int type = (int)luaL_checkinteger(L, 3);
+    float r = (float)luaL_checknumber(L, 4);
+    float g = (float)luaL_checknumber(L, 5);
+    float b = (float)luaL_checknumber(L, 6);
+    float a = (float)luaL_optnumber(L, 7, 1.0f);
+
+    bool success = imGui->SetColor(elementId, static_cast<ImGuiCol_>(type), ImVec4(r, g, b, a));
+
+    if (!success) {
+        return luaL_error(L, "Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_ImGui_RemoveColor(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    int type = (int)luaL_checkinteger(L, 3);
+
+    bool success = imGui->RemoveColor(elementId, static_cast<ImGuiCol_>(type));
+
+    if (!success) {
+        return luaL_error(L, "Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_ImGui_SetTextColor(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    float r = (float)luaL_checknumber(L, 3);
+    float g = (float)luaL_checknumber(L, 4);
+    float b = (float)luaL_checknumber(L, 5);
+    float a = (float)luaL_optnumber(L, 6, 1.0f);
+
+    bool success = imGui->SetColor(elementId, ImGuiCol_Text, ImVec4(r, g, b, a));
+
+    if (!success) {
+        return luaL_error(L, "Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
 static int Lua_ImGui_GetWindowPinned(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
@@ -1027,10 +1079,13 @@ static void RegisterCustomImGui(lua_State* L)
         { "AddPlotHistogram", Lua_ImGui_AddPlotHistogram },
         { "AddProgressBar", Lua_ImGui_AddProgressBar },
         { "SetHelpmarker", Lua_ImGui_SetHelpmarker },
+        { "SetColor", Lua_ImGui_SetColor },
+        { "SetTextColor", Lua_ImGui_SetTextColor },
         { "SetWindowPinned", Lua_ImGui_SetWindowPinned },
         { "SetWindowPosition", Lua_ImGui_SetWindowPosition },
         { "SetWindowSize", Lua_ImGui_SetWindowSize },
         { "SetTooltip", Lua_ImGui_SetTooltip },
+        { "RemoveColor", Lua_ImGui_RemoveColor },
         { "GetMousePosition", Lua_ImGui_GetMousePos },
         { "GetWindowPinned", Lua_ImGui_GetWindowPinned },
         { "Reset", Lua_ImGui_Reset },

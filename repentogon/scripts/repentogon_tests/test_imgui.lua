@@ -7,9 +7,11 @@ imgui:AddElement("testMenu", "menuElem1", ImGuiElement.MenuItem, "Minimal Window
 
 imgui:CreateWindow("testWindow", "Minimal Window test")
 imgui:LinkWindowToElement("testWindow", "menuElem1")
+imgui:SetColor("testWindow", ImGuiColor.WindowBg, 0, 0.25, 0.75, 1)
 -- Menu item callback
 imgui:AddElement("testMenu", "menuElem2", ImGuiElement.MenuItem, "Menu Item Callback test")
 imgui:AddCallback("menuElem2", ImGuiCallback.Clicked, function(i) print("Clicked Counter " .. i) end)
+imgui:SetColor("menuElem2", ImGuiColor.Text, 0.75, 0.75, 0.75, 1)
 
 -- Add big testing window
 imgui:AddElement("testMenu", "menuElem3", ImGuiElement.MenuItem, "Awesome Test Menu")
@@ -22,14 +24,18 @@ imgui:AddElement("testWindow2", "cat1", ImGuiElement.CollapsingHeader, "Test Cat
 imgui:AddText("cat1", "A test text thats pretty long and stuff to test out text wrapping", true)
 imgui:AddElement("cat1", "", ImGuiElement.SeparatorText, "Separator text")
 imgui:AddElement("cat1", "tree1", ImGuiElement.TreeNode, "Test SubTree")
+imgui:SetTextColor("tree1", 0.75, 0.75, 0)
 imgui:AddElement("tree1", "", ImGuiElement.BulletText, "Bullet point 1")
-imgui:AddElement("tree1", "", ImGuiElement.BulletText, "Bullet point 2")
+imgui:AddElement("tree1", "testbullet2", ImGuiElement.BulletText, "Bullet point 2")
+imgui:SetColor("testbullet2", ImGuiColor.Text, 0, 0.5, 1, 1)
 imgui:AddElement("tree1", "", ImGuiElement.BulletText, "Bullet point 3")
 imgui:AddElement("cat1", "", ImGuiElement.Separator)
 imgui:AddElement("cat1", "button1", ImGuiElement.Button, "A funky button")
 imgui:AddCallback("button1", ImGuiCallback.Hovered, function(i) print("Hover") end)
 imgui:AddElement("cat1", "", ImGuiElement.SameLine)
 imgui:AddElement("cat1", "button2", ImGuiElement.Button, "A button in the same line")
+imgui:SetTextColor("button2", 1, 0, 0, 0.75)
+imgui:SetColor("button2", ImGuiColor.Button, 1, 1, 0, 1)
 
 --------- CATEGORY WINDOWS ---------
 imgui:AddElement("testWindow2", "catWindows", ImGuiElement.CollapsingHeader, "Windows / Popups")
