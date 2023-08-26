@@ -45,6 +45,7 @@ nav:
   - Home: index.md
   - Enums:
     - Achievement: enums/Achievement.md
+    - AnimRenderFlags: enums/AnimRenderFlags.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - AutocompleteType: enums/AutocompleteType.md
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
@@ -66,6 +67,7 @@ nav:
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
+    - ImGuiColor: enums/ImGuiColor.md
     - ImGuiData: enums/ImGuiData.md
     - ImGuiElement: enums/ImGuiElement.md
     - ItemAnim: enums/ItemAnim.md
@@ -179,8 +181,8 @@ repo_url: https://github.com/IsaacZHL/REPENTOGON
 site_name: 'BoI: REPENTOGON Docs'
 site_url: https://repentogon.com
 theme:
-  favicon: img/favicon.ico
   custom_dir: overrides
+  favicon: img/favicon.ico
   features:
   - search.suggest
   - search.highlight
