@@ -238,11 +238,13 @@ static void RegisterStatsMenuGame(lua_State* L)
     lua::TableAssoc(L, "GetTaintedBGDecoSprite", lua_CharMenu_GetTaintedBGDecoSprite);
     lua::TableAssoc(L, "GetNumCharacters", lua_CharMenu_GetNumCharacters);
     lua::TableAssoc(L, "GetSelectedCharacterMenu", lua_CharMenu_GetSelectedCharacterMenu);
+    lua::TableAssoc(L, "SetSelectedCharacterMenu", lua_CharMenu_SetSelectedCharacterMenu);
     lua::TableAssoc(L, "GetIsCharacterUnlocked", lua_CharMenu_GetIsCharacterUnlocked);
     lua::TableAssoc(L, "SetIsCharacterUnlocked", lua_CharMenu_SetIsCharacterUnlocked);
     lua::TableAssoc(L, "GetDifficulty", lua_CharMenu_GetDifficulty);
     lua::TableAssoc(L, "SetDifficulty", lua_CharMenu_SetDifficulty);
     lua::TableAssoc(L, "GetSelectedCharacterID", lua_CharMenu_GetSelectedCharacterID);
+    lua::TableAssoc(L, "SetSelectedCharacterID", lua_CharMenu_SetSelectedCharacterID);
     lua_setglobal(L, "CharacterMenu");
 }
 

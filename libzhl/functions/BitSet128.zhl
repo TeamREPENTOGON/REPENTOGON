@@ -1,0 +1,8 @@
+struct BitSet128 { {{
+	BitSet128() : l(0), h(0) {}
+	BitSet128(uint64_t _l, uint64_t _h) : l(_l), h(_h) {}
+
+
+}} 
+    uint64_t l, h;
+};
