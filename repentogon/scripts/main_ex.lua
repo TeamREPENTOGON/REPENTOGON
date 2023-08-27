@@ -717,8 +717,8 @@ MenuManager.StatsMenu = StatsMenu
 
 -- ImGui alias functions
 local ImGui = Isaac.GetImGui()
-rawset(getmetatable(ImGui), "ImGuiToWorld", function (_, position) return Isaac.ScreenToWorld(position / 2) end)
-rawset(getmetatable(ImGui), "WorldToImGui", function (_, position) return Isaac.WorldToScreen(position) * 2 end)
+rawset(getmetatable(ImGui), "ImGuiToWorld", function (_, position) return Isaac.ScreenToWorld(position) end)
+rawset(getmetatable(ImGui), "WorldToImGui", function (_, position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end)
 
 if not _LUADEBUG then
 	debug = nil

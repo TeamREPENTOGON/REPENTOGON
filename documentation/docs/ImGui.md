@@ -172,7 +172,8 @@ ___
 #### void ImGuiToWorld ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
 Converts ImGui coordinates into World coordinates.
 
-This function is the same as `Isaac.ScreenToWorld() / 2`.
+???+ bug "Bug"
+    This function does not work correctly when MaxRenderScale is smaller than 3.
 ___
 ### Link·Window·To·Element () {: aria-label='Functions' }
 #### void LinkWindowToElement ( string windowId, string elementId ) {: .copyable aria-label='Functions' }
@@ -267,5 +268,6 @@ ___
 #### void WorldToImGui ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
 Converts world coordinates into ImGui coordinates.
 
-This function is the same as `Isaac.WorldToScreen() * 2`.
+???+ bug "Bug"
+    This function does not work correctly when MaxRenderScale is smaller than 3.
 ___
