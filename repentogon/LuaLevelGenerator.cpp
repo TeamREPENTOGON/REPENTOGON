@@ -8,6 +8,8 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "Exception.h"
+#include "Log.h"
 
 #ifdef max
 #undef max
@@ -52,7 +54,10 @@ static std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& sou
 LUA_FUNCTION(lua_LGR_gc) {
 	LuaLevelGeneratorRoom* data = GetLGR(L);
 	if (data->cleanup) {
+		data->cleanup = false;
+		ZHL::Log("About to cleanup %p\n", data->room);
 		delete data->room;
+		ZHL::Log("Done cleaning up %p\n", data->room);
 	}
 	return 0;
 }
@@ -240,16 +245,16 @@ std::tuple<bool, std::pair<int, int>> Connects(LevelGenerator_Room const& source
 
 LinkDirection ComputeLinkDirection(int source, int target) {
 	if (target == source - 13) {
-		return LINK_DIRECTION_DOWN;
-	}
-	else if (target == source + 13) {
 		return LINK_DIRECTION_UP;
 	}
+	else if (target == source + 13) {
+		return LINK_DIRECTION_DOWN;
+	}
 	else if (target == source - 1) {
-		return LINK_DIRECTION_RIGHT;
+		return LINK_DIRECTION_LEFT;
 	}
 	else if (target == source + 1) {
-		return LINK_DIRECTION_LEFT;
+		return LINK_DIRECTION_RIGHT;
 	}
 	else {
 		return LINK_DIRECTION_INVALID;
@@ -263,16 +268,16 @@ bool RequiresAdjustment(eRoomShape shape) {
 LinkDirection ComputeAdjustedLinkDirection(LevelGenerator_Room const& source, int index) {
 	int sourceIndex = ComposeGridIndex(source._gridColIdx, source._gridLineIdx);
 	if (index == sourceIndex - 12) {
-		return LINK_DIRECTION_ADJ_RIGHT;
-	}
-	else if (index == sourceIndex + 14 || index == sourceIndex + 15) { // 14 : 1x2 or LBR, 15 : 2x2 or other Ls
 		return LINK_DIRECTION_ADJ_LEFT;
 	}
+	else if (index == sourceIndex + 14 || index == sourceIndex + 15) { // 14 : 1x2 or LBR, 15 : 2x2 or other Ls
+		return LINK_DIRECTION_ADJ_RIGHT;
+	}
 	else if (index == sourceIndex - 12) {
-		return LINK_DIRECTION_ADJ_DOWN;
+		return LINK_DIRECTION_ADJ_UP;
 	}
 	else if (index == sourceIndex + 27) {
-		return LINK_DIRECTION_ADJ_UP;
+		return LINK_DIRECTION_ADJ_DOWN;
 	}
 	else {
 		return LINK_DIRECTION_INVALID;
@@ -292,8 +297,8 @@ std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, Le
 		switch (target._originNeighborConnectDir) {
 		case LINK_DIRECTION_RIGHT: // Not used for IIV
 		case LINK_DIRECTION_LEFT: // Not used for IIV
-			// -> T | S || S |    T
-			//    T | ? || ? | -> T
+			// -> T | S || S | -> T
+			//    T | ? || ? |    T
 			if (source._gridLineIdx <= target._gridLineIdx) {
 				return std::make_tuple(target._gridColIdx, target._gridLineIdx);
 			}
@@ -315,6 +320,10 @@ std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, Le
 			//    S
 		case LINK_DIRECTION_DOWN:
 			return std::make_tuple(target._gridColIdx, target._gridLineIdx + 1);
+
+		default:
+			ZHL::Throw<std::runtime_error>("LevelGenerator::ComputeSafeConnection shape %d link %d\n", target._shape, target._originNeighborConnectDir);
+			return std::make_tuple(-1, -1);
 		}
 
 	case ROOMSHAPE_2x1:
@@ -340,6 +349,10 @@ std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, Le
 			else {
 				return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx);
 			}
+
+		default:
+			ZHL::Throw<std::runtime_error>("LevelGenerator::ComputeSafeConnection shape %d link %d\n", target._shape, target._originNeighborConnectDir);
+			return std::make_tuple(-1, -1);
 		}
 
 	default:
@@ -411,6 +424,9 @@ std::tuple<int, int> ComputeSafeConnection(LevelGenerator_Room const& source, Le
 					return std::make_tuple(target._gridColIdx + 1, target._gridLineIdx + 1);
 				}
 			}
+		default:
+			ZHL::Throw<std::runtime_error>("LevelGenerator::ComputeSafeConnection shape %d link %d\n", target._shape, target._originNeighborConnectDir);
+			return std::make_tuple(-1, -1);
 		}
 	}
 }
@@ -466,19 +482,19 @@ LUA_FUNCTION(lua_LG_PlaceRoom) {
 
 	int column = (int)luaL_checkinteger(L, 2);
 	if (column < 0 || column > 12) {
-		return luaL_error(L, "Invalid column %lld, value must be between 0 and 12 (inclusive)", column);
+		return luaL_error(L, "Invalid column %d, value must be between 0 and 12 (inclusive)", column);
 	}
 
 	int line = (int)luaL_checkinteger(L, 3);
 	if (line < 0 || line > 12) {
-		return luaL_error(L, "Invalid line %lld, value must be between 0 and 12 (inclusive)", line);
+		return luaL_error(L, "Invalid line %d, value must be between 0 and 12 (inclusive)", line);
 	}
 
 	int shape = (int)luaL_checkinteger(L, 4);
 	if (shape < 0 || shape >= eRoomShape::MAX_ROOMSHAPES) {
-		return luaL_error(L, "Invalid room shape %lld, value must be between 0 and %d (inclusive)", shape, eRoomShape::MAX_ROOMSHAPES);
+		return luaL_error(L, "Invalid room shape %d, value must be between 0 and %d (inclusive)", shape, eRoomShape::MAX_ROOMSHAPES);
 	}
-
+	
 	eRoomShape eShape = (eRoomShape)shape;
 
 	auto [ok, errors] = ValidateRoomPlacement(generator, column, line, eShape);
@@ -487,14 +503,15 @@ LUA_FUNCTION(lua_LG_PlaceRoom) {
 		err << "Invalid room data (shape = " << shape << ", coordinates (" << line << ", " << column << ")), this would collide with room";
 		std::vector<int> const& conflicts = *errors;
 		if (conflicts.size() > 1) {
-			err << "s:";
+			err << "s";
 		}
 
-		err << " ";
+		err << ": ";
 		for (int conflict : conflicts) {
 			LevelGenerator_Room const& room = generator->GetAllRooms()->at(conflict);
 			err << conflict << " at (" << room._gridLineIdx << ", " << room._gridColIdx << "); ";
 		}
+
 
 		return luaL_error(L, err.str().c_str());
 	}
@@ -521,6 +538,7 @@ LUA_FUNCTION(lua_LG_PlaceRoom) {
 	if (dir == LINK_DIRECTION_INVALID) {
 		return luaL_error(L, "Unable to compute the basic link direction with the neighbor");
 	}
+	room._originNeighborConnectDir = dir;
 
 	if (RequiresAdjustment(eShape)) {
 		dir = ComputeAdjustedLinkDirection(room, targetIndex);
@@ -529,24 +547,198 @@ LUA_FUNCTION(lua_LG_PlaceRoom) {
 		}
 	}
 
-	room._originNeighborConnectDir = dir;
 	room._originNeighborConnectDirAdjust = dir;
 
-	std::tie(room._linkColIdx, room._linkLineIdx) = ComputeSafeConnection(*neighborData->room, room);
-
-	if (!generator->is_placement_valid(&room._gridColIdx, eShape)) {
-		return luaL_error(L, "Error while adding room: placement is invalid");
+	try {
+		std::tie(room._linkColIdx, room._linkLineIdx) = ComputeSafeConnection(*neighborData->room, room);
+	}
+	catch (std::runtime_error& e) {
+		return luaL_error(L, "[ERROR] Unable to compute safe connection between room at (%d, %d) and tentative room at (%d, %d): %s\n",
+			neighborData->room->_gridColIdx, neighborData->room->_gridLineIdx,
+			room._gridColIdx, room._gridLineIdx, e.what());
 	}
 
+	if (!generator->is_placement_valid(&room._gridColIdx, eShape)) {
+		return luaL_error(L, "Error while adding room: placement is invalid (%d, %d) from (%d, %d)", room._gridColIdx, room._gridLineIdx, neighborData->room->_gridColIdx, neighborData->room->_gridLineIdx);
+	}
+
+	void* rooms = generator->GetAllRooms();
+	auto get_ptr = [rooms]() -> void* {
+		char* first = *(char**)rooms;
+		char* last = *(char**)((char*)rooms + 8);
+
+		if (last - first > 0x1000) {
+			return *(char**)((char*)first - 4);
+		}
+		else {
+			return first;
+		}
+	};
+	//void* unk = ((char*)*(void**)rooms - 4);
+	//ZHL::Log("pre place_room unk = %p\n", *(void**)unk);
+	HANDLE heap = GetProcessHeap();
+	// ZHL::Log("room ptr: %p, heap ptr: %p\n", get_ptr(), heap);
+
+	auto check_stack = [heap, get_ptr](const char* text) {
+		bool ok_array = HeapValidate(heap, 0, get_ptr());
+		bool ok_all = HeapValidate(heap, 0, 0);
+
+		ZHL::Log("%s: array = %hhd (%p), all = %hhd\n", text, ok_array, get_ptr(), ok_all);
+
+		return std::make_tuple(ok_array, ok_all);
+	};
+
+	auto heap_iterate = [heap](const char* s) {
+		PROCESS_HEAP_ENTRY entry;
+		entry.lpData = NULL;
+
+		ZHL::Log("Validating heap because a corruption has been detected (%s)\n", s);
+		HeapLock(heap);
+		while (HeapWalk(heap, &entry)) {
+			if (entry.wFlags & PROCESS_HEAP_ENTRY_BUSY) {
+				BOOL ok = HeapValidate(heap, 0, entry.lpData);
+				if (!ok) {
+					ZHL::Log("Invalid heap block at %p\n", entry.lpData);
+				}
+				else {
+					ZHL::Log("Valid heap block at %p\n", entry.lpData);
+				}
+			}
+		}
+
+		DWORD err = GetLastError();
+		if (GetLastError() != ERROR_NO_MORE_ITEMS) {
+			ZHL::Log("Error while validating heap: %d\n", err);
+		}
+
+		HeapUnlock(heap);
+	};
+
+	auto dump_layout = [generator](const char* s) {
+		ZHL::Logger logger;
+		logger.Log(s);
+
+		signed char rooms[13][13] = { -1 } ;
+		for (LevelGenerator_Room const& room : *generator->GetAllRooms()) {
+			int col = room._gridColIdx;
+			int line = room._gridLineIdx;
+			int idx = room._generationIndex;
+			switch (room._shape) {
+			case 1:
+			case 2:
+			case 3:
+				rooms[line][col] = idx;
+				break;
+
+			case 4:
+			case 5:
+				rooms[line][col] = idx;
+				rooms[line + 1][col] = idx;
+				break;
+
+			case 6:
+			case 7:
+				rooms[line][col] = idx;
+				rooms[line][col + 1] = idx;
+				break;
+
+			case 8:
+				rooms[line][col] = idx;
+				rooms[line + 1][col] = idx;
+				rooms[line][col + 1] = idx;
+				rooms[line + 1][col + 1] = idx;
+				break;
+
+			case 9:
+				rooms[line + 1][col] = idx;
+				rooms[line][col + 1] = idx;
+				rooms[line + 1][col + 1] = idx;
+				break;
+
+			case 10:
+				rooms[line][col] = idx;
+				rooms[line + 1][col] = idx;
+				rooms[line + 1][col + 1] = idx;
+				break;
+
+			case 11:
+				rooms[line][col] = idx;
+				rooms[line][col + 1] = idx;
+				rooms[line + 1][col + 1] = idx;
+				break;
+
+			case 12:
+				rooms[line][col] = idx;
+				rooms[line + 1][col] = idx;
+				rooms[line][col + 1] = idx;
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		for (int i = 0; i < 13; ++i) {
+			for (int j = 0; j < 13; ++j) {
+				char c = rooms[i][j];
+				if (c >= 10) {
+					logger.Log("%hhd ", c);
+				}
+				else {
+					logger.Log("%hhd  ", c);
+				}
+			}
+			logger.Log("\n");
+		}
+
+		logger.Log("\n");
+	};
+
+	// bool ok_array_pre_place, ok_all_pre_place, ok_array_post_place, ok_all_post_place, ok_array_post_calculate, ok_all_post_calculate, ok_array_post_mark, ok_all_post_mark; 
+	// std::tie(ok_array_pre_place, ok_all_pre_place) = check_stack("pre place_room");
+	// dump_layout("pre place_room\n");
 	bool result = generator->place_room(&room);
+	// dump_layout("post place_room\n");
+	// std::tie(ok_array_post_place, ok_all_post_place) = check_stack("post place_room");
+
+	// generator->mark_dead_ends();
+	// std::tie(ok_array_post_mark, ok_all_post_mark) = check_stack("post mark_dead_ends");
+
+	/* if (ok_array_post_place && ok_array_post_mark != ok_array_post_place) {
+		ZHL::Log("Local heap block corruption during mark_dead_ends");
+		abort();
+	} */
+
+	/* if (ok_all_post_place && ok_all_post_mark != ok_all_post_place) {
+		ZHL::Log("Global heap corruption during mark_dead_ends");
+		abort();
+	} */
 
 	if (result) {
+		// unk = ((char*)*(void**)rooms - 4);
+		// ZHL::Log("pre calc_required_doors unk = %p\n", *(void**)unk);
 		generator->calc_required_doors();
+		// dump_layout("post calc_required_doors\n");
+		// std::tie(ok_array_post_calculate, ok_all_post_calculate) = check_stack("post calc_required_doors");
+
+		/* if (ok_array_post_mark && ok_array_post_calculate != ok_array_post_mark) {
+			// heap_iterate("array invalidated during calc_required_doors\n");
+			abort();
+		} */
+
+		/* if (ok_all_post_mark && ok_all_post_calculate != ok_all_post_mark) {
+			// heap_iterate("heap invalidated during calc_required_doors\n");
+			abort();
+		} */
+		// unk2 = ((char*)*(void**)rooms - 4);
+		// ZHL::Log("post calc_required_doors unk = %p\n", *(void**)unk2);
 		lua_pushinteger(L, generator->GetAllRooms()->back()._generationIndex);
 	}
 	else {
 		lua_pushnil(L);
 	}
+
+	ZHL::Log("Leaving PlaceRoom\n");
 	return 1;
 }
 
