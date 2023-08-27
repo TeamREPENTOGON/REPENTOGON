@@ -1,4 +1,4 @@
-struct LayerState depends (LayerData, ANM2, Vector, ColorMod) { {{
+struct LayerState depends (LayerData, ANM2, Vector, ColorMod, BitSet128) { {{
     inline int GetLayerID() { return this->_layerData->ID; }
     inline std_string GetName() { return this->_layerData->name; }
 	inline std_string GetSpritesheetPath() { return this->_spriteSheetPath; }
@@ -8,7 +8,8 @@ struct LayerState depends (LayerData, ANM2, Vector, ColorMod) { {{
 	inline Vector* GetPos() { return &this->_pos; }
 	inline ColorMod* GetColor() { return &this->_color; }
 	inline bool* IsVisible() { return &this->_visible; }
-    inline unsigned int* GetBitFlags() { return &this->_bitflags; }
+	inline BitSet128* GetBlendMode() { return &this->_blendMode; }
+	inline unsigned int* GetBitFlags() { return &this->_bitflags; }
 	inline Vector* GetCropOffset() { return &this->_cropOffset; } 
 }} 
     LayerData* _layerData;  // 0x00
@@ -25,7 +26,7 @@ struct LayerState depends (LayerData, ANM2, Vector, ColorMod) { {{
     ColorMod _color;  // 0x48
     bool _visible;  // 0x74
     char _boolPadding[3];
-    char _blendMode[16];  // 0x78
+    BitSet128 _blendMode;  // 0x78
     unsigned int _bitflags;  // 0x88
     Vector _cropOffset;  // 0x8c
     char _imageBasePtr[4];  // 0x94
