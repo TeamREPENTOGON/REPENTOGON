@@ -904,6 +904,8 @@ struct CustomImGui {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
             HandleElementColors(window->GetElementData(), true);
             window->EvaluateVisible();
+            RunPreRenderCallbacks(&(*window));
+
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
                 if (ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
                     if (window->data.newPositionRequested) {
@@ -954,6 +956,7 @@ struct CustomImGui {
     {
         for (auto element = elements->begin(); element != elements->end(); ++element) {
             const char* name = element->name.c_str();
+            RunPreRenderCallbacks(&(*element));
 
             ImGui::PushID(element->GetHash());
             HandleElementColors(element->GetElementData(), true);
