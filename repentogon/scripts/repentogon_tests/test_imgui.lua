@@ -43,6 +43,13 @@ imgui:AddElement("testWindow2", "catWindows", ImGuiElement.CollapsingHeader, "Wi
 imgui:AddElement("catWindows", "button_window", ImGuiElement.Button, "open a window")
 imgui:CreateWindow("testWindow3", "button Window")
 imgui:LinkWindowToElement("testWindow3", "button_window")
+--------- Render callback ---------
+imgui:AddText("testWindow3", "", true, "mousePosText")
+imgui:AddCallback("mousePosText", ImGuiCallback.Render, function(val)
+    local mousePos = imgui:GetMousePosition() -- this is already in imgui coordinates
+    imgui:UpdateText("mousePosText", "ImGui MousePos:\t" .. mousePos.X .. "\t" .. mousePos.Y)
+    imgui:SetWindowPosition("testWindow3", inputMousepos.X,inputMousepos.Y)
+end)
 
 -- open popup via button
 imgui:AddElement("catWindows", "button_popup2", ImGuiElement.Button, "open a popup")
@@ -100,10 +107,17 @@ imgui:AddPlotLines("testWindow2", "plotLines", "Line Plot", { 0.6, 0.1, 1.0, 0.5
 imgui:AddPlotHistogram("testWindow2", "plotHistogram", "Histogram Plot", { 0.6, 0.1, 1.0, 0.5, 0.92, 0.1, 0.2 }, nil, nil, nil, 50)
 imgui:AddProgressBar("testWindow2", "progressbar1", "Progressbar", 0.5 )
 
+--------- Window following the player ---------
+-- open window via button
+imgui:AddElement("testWindow2", "button_windowFollowPlayer", ImGuiElement.Button, "open window following the player")
+imgui:CreateWindow("testWindowFollowPlayer", "Player")
+imgui:LinkWindowToElement("testWindowFollowPlayer", "button_windowFollowPlayer")
+imgui:SetWindowPinned("testWindowFollowPlayer", true)
 --------- Render callback ---------
-imgui:AddText("testWindow2", "", true, "mousePosText")
-imgui:AddCallback("mousePosText", ImGuiCallback.Render, function(val)
-    local mousePos = imgui:ImGuiToWorld(imgui:GetMousePosition())
-    local inputMousepos = Input.GetMousePosition(true)
-    imgui:UpdateText("mousePosText", "ImGui MousePos:\t" .. mousePos.X .. "\t" .. mousePos.Y .."\nGame MousePos:\t" .. inputMousepos.X .. "\t" .. inputMousepos.Y)
+imgui:AddText("testWindowFollowPlayer", "<-- Player")
+imgui:AddCallback("testWindowFollowPlayer", ImGuiCallback.Render, function(val)
+    if Isaac.GetPlayer() ~= nil then
+        local playerPos = imgui:WorldToImGui(Isaac.GetPlayer().Position)
+        imgui:SetWindowPosition("testWindowFollowPlayer", playerPos.X, playerPos.Y)
+    end
 end)
