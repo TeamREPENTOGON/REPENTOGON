@@ -27,5 +27,7 @@ __thiscall bool Entity_Pickup::TryInitOptionCycle(int numCycle);
 
 struct Entity_Pickup : public Entity { {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
+	inline int* GetDropDelay() { return (int*)((char*)this + 0x4a0); }
 	inline int* GetVarData() { return (int*)((char*)this + 0x4e8); }
+	
 }} };

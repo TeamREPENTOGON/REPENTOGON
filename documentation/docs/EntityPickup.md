@@ -8,6 +8,10 @@
 #### int GetVarData ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Drop·Delay () {: aria-label='Functions' }
+#### int GetDropDelay ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Blind () {: aria-label='Functions' }
 #### boolean IsBlind ( ) {: .copyable aria-label='Functions' }
 
@@ -18,6 +22,10 @@ ___
 #### void SetAlternatePedestal ( int PedestalType ) {: .copyable aria-label='Functions' }
 
 Sets the graphics of the item pedestal. Does nothing for non-collectible EntityPickups.
+
+___
+### Set·Drop·Delay () {: aria-label='Functions' }
+#### void SetDropDelay ( int Delay ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Force·Blind () {: aria-label='Functions' }
