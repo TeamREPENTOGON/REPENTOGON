@@ -902,6 +902,20 @@ static int Lua_ImGui_ElementExists(lua_State* L)
     return 1;
 }
 
+static int Lua_ImGui_GetVisible(lua_State* L)
+{
+  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+  const char* elementId = luaL_checkstring(L, 2);
+
+  if (!imGui->ElementExists(elementId)) {
+    return luaL_error(L, "Element with id '%s' not found", elementId);
+  }
+
+  lua_pushboolean(L, imGui->GetVisible(elementId));
+  return 1;
+}
+
+
 static int Lua_ImGui_SetVisible(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
@@ -1053,7 +1067,6 @@ static void RegisterCustomImGui(lua_State* L)
         { "CreateWindow", Lua_ImGui_CreateWindow },
         { "RemoveWindow", Lua_ImGui_RemoveWindow },
         { "LinkWindowToElement", Lua_ImGui_LinkWindowToElement },
-        { "SetVisible", Lua_ImGui_SetVisible },
         { "ElementExists", Lua_ImGui_ElementExists },
         { "UpdateText", Lua_ImGui_UpdateText },
         { "UpdateData", Lua_ImGui_UpdateData },
@@ -1081,12 +1094,14 @@ static void RegisterCustomImGui(lua_State* L)
         { "SetHelpmarker", Lua_ImGui_SetHelpmarker },
         { "SetColor", Lua_ImGui_SetColor },
         { "SetTextColor", Lua_ImGui_SetTextColor },
+        { "SetVisible", Lua_ImGui_SetVisible },
         { "SetWindowPinned", Lua_ImGui_SetWindowPinned },
         { "SetWindowPosition", Lua_ImGui_SetWindowPosition },
         { "SetWindowSize", Lua_ImGui_SetWindowSize },
         { "SetTooltip", Lua_ImGui_SetTooltip },
         { "RemoveColor", Lua_ImGui_RemoveColor },
         { "GetMousePosition", Lua_ImGui_GetMousePos },
+        { "GetVisible", Lua_ImGui_GetVisible },
         { "GetWindowPinned", Lua_ImGui_GetWindowPinned },
         { "Reset", Lua_ImGui_Reset },
         { "Show", Lua_ImGui_Show },

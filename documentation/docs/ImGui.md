@@ -153,10 +153,16 @@ ___
 ### Get·Mouse·Position () {: aria-label='Functions' }
 #### void GetMousePosition ( ) {: .copyable aria-label='Functions' }
 Returns the mouse position in Screen coordinates.
+
+Use this instead of `Input.GetMousePosition()` when working with imgui!
 ___
 ### Get·Window·Pinned () {: aria-label='Functions' }
 #### boolean GetWindowPinned ( string windowId ) {: .copyable aria-label='Functions' }
 Get the pinned state of a window.
+___
+### Get·Visible () {: aria-label='Functions' }
+#### boolean GetVisible ( string elementId ) {: .copyable aria-label='Functions' }
+Get if a window element is visible or not.
 ___
 ### Hide () {: aria-label='Functions' }
 #### void Hide ( ) {: .copyable aria-label='Functions' }
@@ -166,7 +172,7 @@ ___
 #### void ImGuiToWorld ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
 Converts ImGui coordinates into World coordinates.
 
-This function is the same as `Isaac.ScreenToWorld()`.
+This function is the same as `Isaac.ScreenToWorld() / 2`.
 ___
 ### Link·Window·To·Element () {: aria-label='Functions' }
 #### void LinkWindowToElement ( string windowId, string elementId ) {: .copyable aria-label='Functions' }
@@ -261,5 +267,5 @@ ___
 #### void WorldToImGui ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
 Converts world coordinates into ImGui coordinates.
 
-This function is the same as `Isaac.WorldToScreen()`.
+This function is the same as `Isaac.WorldToScreen() * 2`.
 ___

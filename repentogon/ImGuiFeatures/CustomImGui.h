@@ -11,6 +11,7 @@ extern int handleWindowFlags(int flags);
 extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
 extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
+extern bool menuShown;
 extern bool imguiResized;
 extern ImVec2 imguiSizeModifier;
 
@@ -506,6 +507,15 @@ struct CustomImGui {
         if (element != NULL) {
             element->SetVisible(newState);
             return true;
+        }
+        return false;
+    }
+
+    bool GetVisible(const char* elementId) IM_FMTARGS(2)
+    {
+        Element* element = GetElementById(elementId);
+        if (element != NULL) {
+            return (menuShown || !menuShown && element->data.windowPinned) && element->evaluatedVisibleState;
         }
         return false;
     }
