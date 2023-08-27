@@ -173,7 +173,7 @@ ___
 Converts ImGui coordinates into World coordinates.
 
 ???+ bug "Bug"
-    This function does not work correctly when MaxRenderScale is smaller than 3.
+    This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___
 ### Link·Window·To·Element () {: aria-label='Functions' }
 #### void LinkWindowToElement ( string windowId, string elementId ) {: .copyable aria-label='Functions' }
@@ -269,5 +269,5 @@ ___
 Converts world coordinates into ImGui coordinates.
 
 ???+ bug "Bug"
-    This function does not work correctly when MaxRenderScale is smaller than 3.
+    This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___
