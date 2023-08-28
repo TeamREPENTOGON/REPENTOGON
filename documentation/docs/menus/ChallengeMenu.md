@@ -1,14 +1,7 @@
 # Class "ChallengeMenu"
 
 ???+ info
-    You can get this class either by just using the MainMenu global table or by using the following shortcut:
-
-    * [MenuManager.ChallengeMenu](MenuManager.md#getchallengemenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.ChallengeMenu
-        ```
+    You can get this class by using the `ChallengeMenu` global table.
         
 ## Functions
 

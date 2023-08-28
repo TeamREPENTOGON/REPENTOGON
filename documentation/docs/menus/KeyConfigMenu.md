@@ -1,14 +1,7 @@
 # Class "KeyConfigMenu"
 
 ???+ info
-    You can get this class either by just using the MainMenu global table or by using the following shortcut:
-
-    * [MenuManager.KeyConfigMenu](MenuManager.md#getkeyconfigmenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.KeyConfigMenu
-        ```
+    You can get this class by using the `KeyConfigMenu` global table.
         
 ## Functions
 

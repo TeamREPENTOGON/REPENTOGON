@@ -135,6 +135,8 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	
 	inline unsigned int GetChallenge() { return *(unsigned int*)((char*)this + 0x1C319C); }
 	
+	inline int GetDebug() { return *(int*)((char*)this + 0x1c31a1); }
+	
 	inline unsigned int* GetDebugFlags() { return (unsigned int*)((char*)this + 0X1C3164); }
 	
 	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }

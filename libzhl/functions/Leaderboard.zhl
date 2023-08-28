@@ -1,0 +1,27 @@
+struct Leaderboard depends (ANM2) {
+	{{
+	}}
+	int _selectedDate;
+    int _currentDate;
+    char _dailyChallenge[0xb4];
+    char _scoreSheet[0x14c];
+    char field4_0x208;
+    char field4_0x209;
+    char field5_0x20a;
+    char field6_0x20b;
+    int _pageEntryStartID;
+    int _isLeaderboardClosing;
+    int _unk_field_0x214;
+    int _displayState;
+    int _scoreOrTimeRankingListState; // Ranking by Score or by Time
+    int _listTypeSelection; // Global, Friends, ...
+    std_string* field25_0x224;
+    std_string* field26_0x228;
+    int _numDisplayedEntries;
+    char field28_0x230;
+    char field29_0x231;
+    char field30_0x232;
+    char field31_0x233;
+    ANM2 _scoreMenuSprite;
+    ANM2 _leaderboardMenuSprite;
+};

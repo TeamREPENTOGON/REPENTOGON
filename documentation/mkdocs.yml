@@ -148,6 +148,7 @@ nav:
     - ControllerSelectMenu: menus/ControllerSelectMenu.md
     - CustomChallengeMenu: menus/CustomChallengeMenu.md
     - CutscenesMenu: menus/CutscenesMenu.md
+    - DailyChallengeMenu: menus/DailyChallengeMenu.md
     - KeyConfigMenu: menus/KeyConfigMenu.md
     - MainMenu: menus/MainMenu.md
     - ModsMenu: menus/ModsMenu.md

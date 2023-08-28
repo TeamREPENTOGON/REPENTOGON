@@ -27,3 +27,5 @@ struct KAGE_Memory_MemoryPool {
     uint32_t capacity; // 0x8
     uint32_t unk; // 0xC
 }; // 0x10 (checked)
+
+struct KAGE_Graphics_VertexAttributeDescriptor {};

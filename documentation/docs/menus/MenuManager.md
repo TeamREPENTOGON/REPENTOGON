@@ -1,7 +1,7 @@
 # Class "MenuManager"
 
 ???+ info
-    You can get this class by just accesing the MenuManager global table.
+    You can get this class by just accesing the `MenuManager` global table.
         
 ## Functions
 

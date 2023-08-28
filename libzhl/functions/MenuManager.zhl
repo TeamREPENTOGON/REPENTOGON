@@ -16,7 +16,7 @@ __thiscall void MenuManager::RenderButtonLayout();
 "558bec83ec08538b1d????????568b75":
 __thiscall void MenuManager::SetState(int estate);
 
-struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods) {
+struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Vector, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods) {
 {{
 	MenuManager()
 	{
@@ -68,13 +68,11 @@ struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Menu_Game, Menu_Ch
     char _UNUSED80ee0[204];
     Menu_Game _menuGame;
     Menu_DailyChallenge _menuDailyChallenge;
-    char _UNUSED101bf8[8];
 	Menu_Character _menuCharacter;
     Menu_SpecialSeeds _menuSpecialSeeds;
     Menu_Challenge _menuChallenge;
     Menu_Collection _menuCollection;
     Menu_Stats _menuStats;
-    char _UNUSED10d4a0[4];
     Menu_Options _menuOptions;
     Menu_ControllerSelect _menuControllerSelect;
     Menu_KeyConfig _menuKeyConfig;

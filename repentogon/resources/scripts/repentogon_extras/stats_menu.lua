@@ -150,7 +150,7 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 
 local function RenderExtraStats()
-    if StatsMenu:IsAchievementsScreenVisible() then
+    if StatsMenu:IsSecretsMenuVisible() then
         StatsMenu:GetStatsMenuSprite():GetLayerByName("Paper1"):SetVisible(true)
         return
     end

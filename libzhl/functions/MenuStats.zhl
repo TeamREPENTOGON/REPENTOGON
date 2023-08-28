@@ -1,10 +1,4 @@
 struct Menu_Stats depends (ANM2) { {{
-	inline float GetPosX() { return *(float*)((char*)this + 0x14) ; }
-	inline float GetPosY() { return *(float*)((char*)this + 0x18) ; }
-	inline bool IsAchievementsScreenVisible() { return *(bool*)((char*)this + 0x130) ; }
-	inline ANM2* GetStatsMenuSprite() { return (ANM2*)((char*)this + 0x1c) ; }
-	inline ANM2* GetAchievementsSprite() { return (ANM2*)((char*)this + 0xb38) ; }
-	inline ANM2* GetSecretsMenuComponentsSprite() { return (ANM2*)((char*)this + 0xc80); } // weird math in decomp 
 }} 
     int _countTotalAchievements;
     int _countItemsInCollection;
@@ -20,7 +14,7 @@ struct Menu_Stats depends (ANM2) { {{
     int _selectedAchievmentId;
     int _IconIDtoUseForAchievementID[638];
     ANM2 _achievementsSprite;
-    ANM2 _achievementMiniSprite;
+    ANM2 _achievementMiniSprite1;
     ANM2 _achievementMiniSprite2;
     ANM2 _achievementMiniSprite3;
     ANM2 _achievementMiniSprite4;
@@ -31,5 +25,8 @@ struct Menu_Stats depends (ANM2) { {{
     ANM2 _achievementMiniSprite9;
     ANM2 _cursorLeftSprite;
     ANM2 _cursorRightSprite;
-	char _unkown0x1828[35736];
+    char _achievementOverlayEntries[0x8198];
+    int _achievementIDList[0x9f8];
+    int _holdInputTimer;
+    float _scrollSpeed;
 };

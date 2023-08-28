@@ -101,6 +101,9 @@ local function RenderDailyStats()
         isHardMode = challengeParam:GetDifficulty() == 1
         isMegaSatan = challengeParam:IsMegaSatanRun()
     end
+    if DailyChallengeMenu:IsLeaderboardVisible() then
+        return
+    end
     local pos = Isaac.WorldToMenuPosition(MainMenuType.DAILYRUN, StreakPos)
     StreakSheet:Render(pos)
     font:DrawString(WinStreak, pos.X, pos.Y, fontcolor, 0, false)

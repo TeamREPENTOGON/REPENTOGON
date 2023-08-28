@@ -1,14 +1,7 @@
 # Class "BestiaryMenu"
 
 ???+ info
-    You can get this class either by just using the MainMenu global table or by using the following shortcut:
-
-    * [MenuManager.BestiaryMenu](MenuManager.md#getbestiarymenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.BestiaryMenu
-        ```
+    You can get this class by using the `BestiaryMenu` global table.
         
 ## Functions
 
