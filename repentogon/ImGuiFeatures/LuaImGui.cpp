@@ -39,7 +39,7 @@ static int Lua_CustomImGui(lua_State* L)
     return 1;
 }
 
-static int Lua_AddElement(lua_State* L)
+static int Lua_ImGui_AddElement(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -55,7 +55,7 @@ static int Lua_AddElement(lua_State* L)
     return 1;
 }
 
-static int Lua_RemoveElement(lua_State* L)
+static int Lua_ImGui_RemoveElement(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     const char* elementId = luaL_checkstring(L, 2);
@@ -65,7 +65,7 @@ static int Lua_RemoveElement(lua_State* L)
     return 0;
 }
 
-static int Lua_LinkWindowToElement(lua_State* L)
+static int Lua_ImGui_LinkWindowToElement(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -84,7 +84,7 @@ static int Lua_LinkWindowToElement(lua_State* L)
     return 1;
 }
 
-static int Lua_CreateMenu(lua_State* L)
+static int Lua_ImGui_CreateMenu(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -103,7 +103,7 @@ static int Lua_CreateMenu(lua_State* L)
     return 1;
 }
 
-static int Lua_RemoveMenu(lua_State* L)
+static int Lua_ImGui_RemoveMenu(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     const char* menuId = luaL_checkstring(L, 2);
@@ -113,7 +113,7 @@ static int Lua_RemoveMenu(lua_State* L)
     return 0;
 }
 
-static int Lua_CreateWindow(lua_State* L)
+static int Lua_ImGui_CreateWindow(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -132,7 +132,7 @@ static int Lua_CreateWindow(lua_State* L)
     return 1;
 }
 
-static int Lua_RemoveWindow(lua_State* L)
+static int Lua_ImGui_RemoveWindow(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     const char* windowId = luaL_checkstring(L, 2);
@@ -142,7 +142,7 @@ static int Lua_RemoveWindow(lua_State* L)
     return 0;
 }
 
-static int Lua_AddCallback(lua_State* L)
+static int Lua_ImGui_AddCallback(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     const char* parentId = luaL_checkstring(L, 2);
@@ -160,7 +160,7 @@ static int Lua_AddCallback(lua_State* L)
     return 1;
 }
 
-static int Lua_RemoveCallback(lua_State* L)
+static int Lua_ImGui_RemoveCallback(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     const char* parentId = luaL_checkstring(L, 2);
@@ -174,7 +174,7 @@ static int Lua_RemoveCallback(lua_State* L)
     return 1;
 }
 
-static int Lua_UpdateText(lua_State* L)
+static int Lua_ImGui_UpdateText(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -189,7 +189,7 @@ static int Lua_UpdateText(lua_State* L)
     return 1;
 }
 
-static int Lua_UpdateData(lua_State* L)
+static int Lua_ImGui_UpdateData(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -209,7 +209,7 @@ static int Lua_UpdateData(lua_State* L)
     return 1;
 }
 
-static int Lua_AddButton(lua_State* L)
+static int Lua_ImGui_AddButton(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -234,7 +234,7 @@ static int Lua_AddButton(lua_State* L)
     return 1;
 }
 
-static int Lua_AddText(lua_State* L)
+static int Lua_ImGui_AddText(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -254,7 +254,7 @@ static int Lua_AddText(lua_State* L)
     return 1;
 }
 
-static int Lua_AddInputInteger(lua_State* L)
+static int Lua_ImGui_AddInputInteger(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -282,7 +282,7 @@ static int Lua_AddInputInteger(lua_State* L)
     return 1;
 }
 
-static int Lua_AddInputFloat(lua_State* L)
+static int Lua_ImGui_AddInputFloat(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -310,7 +310,7 @@ static int Lua_AddInputFloat(lua_State* L)
     return 1;
 }
 
-static int Lua_AddDragInteger(lua_State* L)
+static int Lua_ImGui_AddDragInteger(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -340,7 +340,7 @@ static int Lua_AddDragInteger(lua_State* L)
     return 1;
 }
 
-static int Lua_AddDragFloat(lua_State* L)
+static int Lua_ImGui_AddDragFloat(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -370,7 +370,7 @@ static int Lua_AddDragFloat(lua_State* L)
     return 1;
 }
 
-static int Lua_AddSliderInteger(lua_State* L)
+static int Lua_ImGui_AddSliderInteger(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -399,7 +399,7 @@ static int Lua_AddSliderInteger(lua_State* L)
     return 1;
 }
 
-static int Lua_AddSliderFloat(lua_State* L)
+static int Lua_ImGui_AddSliderFloat(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -428,7 +428,7 @@ static int Lua_AddSliderFloat(lua_State* L)
     return 1;
 }
 
-static int Lua_AddInputColor(lua_State* L)
+static int Lua_ImGui_AddInputColor(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -460,7 +460,7 @@ static int Lua_AddInputColor(lua_State* L)
     return 1;
 }
 
-static int Lua_AddCheckbox(lua_State* L)
+static int Lua_ImGui_AddCheckbox(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -487,7 +487,7 @@ static int Lua_AddCheckbox(lua_State* L)
     return 1;
 }
 
-static int Lua_AddRadioButtons(lua_State* L)
+static int Lua_ImGui_AddRadioButtons(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -530,7 +530,7 @@ static int Lua_AddRadioButtons(lua_State* L)
     return 1;
 }
 
-static int Lua_AddTabBar(lua_State* L)
+static int Lua_ImGui_AddTabBar(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -546,7 +546,7 @@ static int Lua_AddTabBar(lua_State* L)
     return 1;
 }
 
-static int Lua_AddTab(lua_State* L)
+static int Lua_ImGui_AddTab(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -566,7 +566,7 @@ static int Lua_AddTab(lua_State* L)
     return 1;
 }
 
-static int Lua_AddCombobox(lua_State* L)
+static int Lua_ImGui_AddCombobox(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -608,7 +608,7 @@ static int Lua_AddCombobox(lua_State* L)
     return 1;
 }
 
-static int Lua_AddInputText(lua_State* L)
+static int Lua_ImGui_AddInputText(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -635,7 +635,7 @@ static int Lua_AddInputText(lua_State* L)
     return 1;
 }
 
-static int Lua_AddInputTextMultiline(lua_State* L)
+static int Lua_ImGui_AddInputTextMultiline(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -662,7 +662,7 @@ static int Lua_AddInputTextMultiline(lua_State* L)
     return 1;
 }
 
-static int Lua_SetTooltip(lua_State* L)
+static int Lua_ImGui_SetTooltip(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -677,7 +677,7 @@ static int Lua_SetTooltip(lua_State* L)
     return 1;
 }
 
-static int Lua_SetHelpmarker(lua_State* L)
+static int Lua_ImGui_SetHelpmarker(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -692,10 +692,10 @@ static int Lua_SetHelpmarker(lua_State* L)
     return 1;
 }
 
-static int Lua_GetMousePos(lua_State* L)
+static int Lua_ImGui_GetMousePos(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
-    
+
     float x = -1;
     float y = -1;
 
@@ -705,19 +705,17 @@ static int Lua_GetMousePos(lua_State* L)
             x = io.MousePos.x;
             y = io.MousePos.y;
         }
+    } else {
+        x = (float)*(double*)((char*)g_KAGEInputController + 0x48);
+        y = (float)*(double*)((char*)g_KAGEInputController + 0x50);
     }
-    else {
-        x = *(double*)((char*)g_KAGEInputController + 0x48);
-        y = *(double*)((char*)g_KAGEInputController + 0x50);
-    }
-
 
     lua::LuaCaller(L).pushUserdataValue(*new Vector(x, y), lua::Metatables::VECTOR);
 
     return 1;
 }
 
-static int Lua_AddInputController(lua_State* L)
+static int Lua_ImGui_AddInputController(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -743,7 +741,7 @@ static int Lua_AddInputController(lua_State* L)
     return 1;
 }
 
-static int Lua_AddInputKeyboard(lua_State* L)
+static int Lua_ImGui_AddInputKeyboard(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -769,7 +767,7 @@ static int Lua_AddInputKeyboard(lua_State* L)
     return 1;
 }
 
-static int Lua_AddPlotLines(lua_State* L)
+static int Lua_ImGui_AddPlotLines(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -808,7 +806,7 @@ static int Lua_AddPlotLines(lua_State* L)
     return 1;
 }
 
-static int Lua_AddPlotHistogram(lua_State* L)
+static int Lua_ImGui_AddPlotHistogram(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -847,7 +845,7 @@ static int Lua_AddPlotHistogram(lua_State* L)
     return 1;
 }
 
-static int Lua_AddProgressBar(lua_State* L)
+static int Lua_ImGui_AddProgressBar(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
 
@@ -870,7 +868,7 @@ static int Lua_AddProgressBar(lua_State* L)
     return 1;
 }
 
-static int Lua_ImGuiShow(lua_State* L)
+static int Lua_ImGui_Show(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     menuShown = true;
@@ -878,7 +876,7 @@ static int Lua_ImGuiShow(lua_State* L)
     return 0;
 }
 
-static int Lua_ImGuiHide(lua_State* L)
+static int Lua_ImGui_Hide(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     menuShown = false;
@@ -886,7 +884,7 @@ static int Lua_ImGuiHide(lua_State* L)
     return 0;
 }
 
-static int Lua_ImGuiReset(lua_State* L)
+static int Lua_ImGui_Reset(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     imGui->Reset();
@@ -894,7 +892,7 @@ static int Lua_ImGuiReset(lua_State* L)
     return 0;
 }
 
-static int Lua_ElementExists(lua_State* L)
+static int Lua_ImGui_ElementExists(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     const char* id = luaL_checkstring(L, 2);
@@ -904,7 +902,21 @@ static int Lua_ElementExists(lua_State* L)
     return 1;
 }
 
-static int Lua_ImGuiSetVisible(lua_State* L)
+static int Lua_ImGui_GetVisible(lua_State* L)
+{
+  CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+  const char* elementId = luaL_checkstring(L, 2);
+
+  if (!imGui->ElementExists(elementId)) {
+    return luaL_error(L, "Element with id '%s' not found", elementId);
+  }
+
+  lua_pushboolean(L, imGui->GetVisible(elementId));
+  return 1;
+}
+
+
+static int Lua_ImGui_SetVisible(lua_State* L)
 {
     CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
     const char* elementId = luaL_checkstring(L, 2);
@@ -914,6 +926,119 @@ static int Lua_ImGuiSetVisible(lua_State* L)
 
     if (!success) {
         return luaL_error(L, "Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_ImGui_SetColor(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    int type = (int)luaL_checkinteger(L, 3);
+    float r = (float)luaL_checknumber(L, 4);
+    float g = (float)luaL_checknumber(L, 5);
+    float b = (float)luaL_checknumber(L, 6);
+    float a = (float)luaL_optnumber(L, 7, 1.0f);
+
+    bool success = imGui->SetColor(elementId, static_cast<ImGuiCol_>(type), ImVec4(r, g, b, a));
+
+    if (!success) {
+        return luaL_error(L, "Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_ImGui_RemoveColor(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    int type = (int)luaL_checkinteger(L, 3);
+
+    bool success = imGui->RemoveColor(elementId, static_cast<ImGuiCol_>(type));
+
+    if (!success) {
+        return luaL_error(L, "Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_ImGui_SetTextColor(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    float r = (float)luaL_checknumber(L, 3);
+    float g = (float)luaL_checknumber(L, 4);
+    float b = (float)luaL_checknumber(L, 5);
+    float a = (float)luaL_optnumber(L, 6, 1.0f);
+
+    bool success = imGui->SetColor(elementId, ImGuiCol_Text, ImVec4(r, g, b, a));
+
+    if (!success) {
+        return luaL_error(L, "Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_ImGui_GetWindowPinned(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+
+    Element* element = imGui->GetElementById(elementId);
+    if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
+        lua_pushboolean(L, element->data.windowPinned);
+        return 1;
+    } else {
+        return luaL_error(L, "Window Element with id '%s' not found", elementId);
+    }
+}
+
+static int Lua_ImGui_SetWindowPinned(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    bool newState = lua_toboolean(L, 3);
+
+    bool success = imGui->SetPinned(elementId, newState);
+
+    if (!success) {
+        return luaL_error(L, "Window Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_ImGui_SetWindowPosition(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    float x = (float)luaL_checknumber(L, 3);
+    float y = (float)luaL_checknumber(L, 4);
+
+    bool success = imGui->SetWindowPosition(elementId, x, y);
+
+    if (!success) {
+        return luaL_error(L, "Window Element with id '%s' not found", elementId);
+    }
+
+    return 0;
+}
+
+static int Lua_ImGui_SetWindowSize(lua_State* L)
+{
+    CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, ImGuiMT);
+    const char* elementId = luaL_checkstring(L, 2);
+    float sizeX = (float)luaL_checknumber(L, 3);
+    float sizeY = (float)luaL_checknumber(L, 4);
+
+    bool success = imGui->SetWindowSize(elementId, sizeX, sizeY);
+
+    if (!success) {
+        return luaL_error(L, "Window Element with id '%s' not found", elementId);
     }
 
     return 0;
@@ -933,46 +1058,54 @@ static void RegisterCustomImGui(lua_State* L)
     lua_settable(L, -3);
 
     luaL_Reg functions[] = {
-        { "AddCallback", Lua_AddCallback },
-        { "RemoveCallback", Lua_RemoveCallback },
-        { "AddElement", Lua_AddElement },
-        { "RemoveElement", Lua_RemoveElement },
-        { "CreateMenu", Lua_CreateMenu },
-        { "RemoveMenu", Lua_RemoveMenu },
-        { "CreateWindow", Lua_CreateWindow },
-        { "RemoveWindow", Lua_RemoveWindow },
-        { "LinkWindowToElement", Lua_LinkWindowToElement },
-        { "SetVisible", Lua_ImGuiSetVisible },
-        { "ElementExists", Lua_ElementExists },
-        { "UpdateText", Lua_UpdateText },
-        { "UpdateData", Lua_UpdateData },
-        { "AddButton", Lua_AddButton },
-        { "AddText", Lua_AddText },
-        { "AddInputInteger", Lua_AddInputInteger },
-        { "AddInputFloat", Lua_AddInputFloat },
-        { "AddDragInteger", Lua_AddDragInteger },
-        { "AddDragFloat", Lua_AddDragFloat },
-        { "AddSliderInteger", Lua_AddSliderInteger },
-        { "AddSliderFloat", Lua_AddSliderFloat },
-        { "AddInputColor", Lua_AddInputColor },
-        { "AddCheckbox", Lua_AddCheckbox },
-        { "AddRadioButtons", Lua_AddRadioButtons },
-        { "AddCombobox", Lua_AddCombobox },
-        { "AddInputText", Lua_AddInputText },
-        { "AddInputTextMultiline", Lua_AddInputTextMultiline },
-        { "AddTabBar", Lua_AddTabBar },
-        { "AddTab", Lua_AddTab },
-        { "AddInputController", Lua_AddInputController },
-        { "AddInputKeyboard", Lua_AddInputKeyboard },
-        { "AddPlotLines", Lua_AddPlotLines },
-        { "AddPlotHistogram", Lua_AddPlotHistogram },
-        { "AddProgressBar", Lua_AddProgressBar },
-        { "SetTooltip", Lua_SetTooltip },
-        { "SetHelpmarker", Lua_SetHelpmarker },
-        { "GetMousePosition", Lua_GetMousePos },
-        { "Reset", Lua_ImGuiReset },
-        { "Show", Lua_ImGuiShow },
-        { "Hide", Lua_ImGuiHide },
+        { "AddCallback", Lua_ImGui_AddCallback },
+        { "RemoveCallback", Lua_ImGui_RemoveCallback },
+        { "AddElement", Lua_ImGui_AddElement },
+        { "RemoveElement", Lua_ImGui_RemoveElement },
+        { "CreateMenu", Lua_ImGui_CreateMenu },
+        { "RemoveMenu", Lua_ImGui_RemoveMenu },
+        { "CreateWindow", Lua_ImGui_CreateWindow },
+        { "RemoveWindow", Lua_ImGui_RemoveWindow },
+        { "LinkWindowToElement", Lua_ImGui_LinkWindowToElement },
+        { "ElementExists", Lua_ImGui_ElementExists },
+        { "UpdateText", Lua_ImGui_UpdateText },
+        { "UpdateData", Lua_ImGui_UpdateData },
+        { "AddButton", Lua_ImGui_AddButton },
+        { "AddText", Lua_ImGui_AddText },
+        { "AddInputInteger", Lua_ImGui_AddInputInteger },
+        { "AddInputFloat", Lua_ImGui_AddInputFloat },
+        { "AddDragInteger", Lua_ImGui_AddDragInteger },
+        { "AddDragFloat", Lua_ImGui_AddDragFloat },
+        { "AddSliderInteger", Lua_ImGui_AddSliderInteger },
+        { "AddSliderFloat", Lua_ImGui_AddSliderFloat },
+        { "AddInputColor", Lua_ImGui_AddInputColor },
+        { "AddCheckbox", Lua_ImGui_AddCheckbox },
+        { "AddRadioButtons", Lua_ImGui_AddRadioButtons },
+        { "AddCombobox", Lua_ImGui_AddCombobox },
+        { "AddInputText", Lua_ImGui_AddInputText },
+        { "AddInputTextMultiline", Lua_ImGui_AddInputTextMultiline },
+        { "AddTabBar", Lua_ImGui_AddTabBar },
+        { "AddTab", Lua_ImGui_AddTab },
+        { "AddInputController", Lua_ImGui_AddInputController },
+        { "AddInputKeyboard", Lua_ImGui_AddInputKeyboard },
+        { "AddPlotLines", Lua_ImGui_AddPlotLines },
+        { "AddPlotHistogram", Lua_ImGui_AddPlotHistogram },
+        { "AddProgressBar", Lua_ImGui_AddProgressBar },
+        { "SetHelpmarker", Lua_ImGui_SetHelpmarker },
+        { "SetColor", Lua_ImGui_SetColor },
+        { "SetTextColor", Lua_ImGui_SetTextColor },
+        { "SetVisible", Lua_ImGui_SetVisible },
+        { "SetWindowPinned", Lua_ImGui_SetWindowPinned },
+        { "SetWindowPosition", Lua_ImGui_SetWindowPosition },
+        { "SetWindowSize", Lua_ImGui_SetWindowSize },
+        { "SetTooltip", Lua_ImGui_SetTooltip },
+        { "RemoveColor", Lua_ImGui_RemoveColor },
+        { "GetMousePosition", Lua_ImGui_GetMousePos },
+        { "GetVisible", Lua_ImGui_GetVisible },
+        { "GetWindowPinned", Lua_ImGui_GetWindowPinned },
+        { "Reset", Lua_ImGui_Reset },
+        { "Show", Lua_ImGui_Show },
+        { "Hide", Lua_ImGui_Hide },
         { NULL, NULL }
     };
 

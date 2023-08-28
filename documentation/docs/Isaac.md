@@ -146,7 +146,7 @@ ___
 
 ___
 ### Get·Menu·Manager () {: aria-label='Functions' }
-#### [MenuManager](MenuManager.md) GetMenuManager ( ) {: .copyable aria-label='Functions' }
+#### [MenuManager](menus/MenuManager.md) GetMenuManager ( ) {: .copyable aria-label='Functions' }
 Returns the menu manager object.
 ___
 ### Get·Persistent·Game·Data () {: aria-label='Functions' }

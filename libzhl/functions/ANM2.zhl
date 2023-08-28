@@ -59,6 +59,7 @@ struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
 	inline NullFrame* GetNullFrame(const char * name) {return this->GetAnimationState()->GetNullFrame(name); }
 	inline NullFrame* GetOverlayNullFrame(const char * name) {return this->GetOverlayAnimationState()->GetNullFrame(name); }
 	inline unsigned int GetLayerCount() { return this->_layerCount; } 
+    inline unsigned int* GetBitFlags() { return &this->_bitflags; } 
 	inline ColorMod* GetColor() { return &this->_color; } 
 }} 
     std_string _filename;
@@ -85,7 +86,8 @@ struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
     bool _flipY;
     char _pad2[2];
     float _playbackSpeed;
-    char _pad3[12];
+    char _pad3[8];
+    unsigned int _bitflags; // 0x110 
 };
 
 

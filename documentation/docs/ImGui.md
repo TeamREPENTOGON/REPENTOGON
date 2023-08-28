@@ -153,6 +153,16 @@ ___
 ### Get·Mouse·Position () {: aria-label='Functions' }
 #### void GetMousePosition ( ) {: .copyable aria-label='Functions' }
 Returns the mouse position in Screen coordinates.
+
+Use this instead of `Input.GetMousePosition()` when working with imgui!
+___
+### Get·Window·Pinned () {: aria-label='Functions' }
+#### boolean GetWindowPinned ( string windowId ) {: .copyable aria-label='Functions' }
+Get the pinned state of a window.
+___
+### Get·Visible () {: aria-label='Functions' }
+#### boolean GetVisible ( string elementId ) {: .copyable aria-label='Functions' }
+Get if a window element is visible or not.
 ___
 ### Hide () {: aria-label='Functions' }
 #### void Hide ( ) {: .copyable aria-label='Functions' }
@@ -162,7 +172,8 @@ ___
 #### void ImGuiToWorld ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
 Converts ImGui coordinates into World coordinates.
 
-This function is the same as `Isaac.ScreenToWorld()`.
+???+ bug "Bug"
+    This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___
 ### Link·Window·To·Element () {: aria-label='Functions' }
 #### void LinkWindowToElement ( string windowId, string elementId ) {: .copyable aria-label='Functions' }
@@ -183,6 +194,10 @@ ___
 #### void RemoveCallback ( string elementId, [ImGuiCallback](enums/ImGuiCallback.md) type ) {: .copyable aria-label='Functions' }
 Remove the callback of the given type from the element.
 ___
+### Remove·Color () {: aria-label='Functions' }
+#### void RemoveColor ( string elementId, [ImGuiColor](enums/ImGuiColor.md) colorType ) {: .copyable aria-label='Functions' }
+Remove a color modifier of the given type from the element.
+___
 ### Remove·Element () {: aria-label='Functions' }
 #### void RemoveElement ( string elementId ) {: .copyable aria-label='Functions' }
 General function to remove any kind of element.
@@ -199,6 +214,14 @@ ___
 #### void Reset ( ) {: .copyable aria-label='Functions' }
 Removes all custom defined Imgui elements and resets imgui back to its original state.
 ___
+### Set·Color () {: aria-label='Functions' }
+#### void SetColor ( string elementId, [ImGuiColor](enums/ImGuiColor.md) colorType, float red, float green, float blue, float alpha = 1.0 ) {: .copyable aria-label='Functions' }
+Adds a color modifier to a given element.
+___
+### Set·Text·Color () {: aria-label='Functions' }
+#### void SetTextColor ( string elementId, float red, float green, float blue, float alpha = 1.0 ) {: .copyable aria-label='Functions' }
+Shortcut function to add a color modifier to text of a given element.
+___
 ### Set·Helpmarker () {: aria-label='Functions' }
 #### void SetHelpmarker ( string elementId, string text ) {: .copyable aria-label='Functions' }
 Adds a helpmarker to a given element. A Helpmarker is a `(?)` element rendered on the right of an element, which when hovered displays a tooltip.
@@ -210,6 +233,18 @@ ___
 ### Set·Visible () {: aria-label='Functions' }
 #### void SetVisible ( string elementId, boolean visible ) {: .copyable aria-label='Functions' }
 
+___
+### Set·Window·Pinned () {: aria-label='Functions' }
+#### void SetWindowPinned ( string windowId, boolean pinned ) {: .copyable aria-label='Functions' }
+Set the pinned state of a window, making it visible when the ImGui interface is not active.
+___
+### Set·Window·Position () {: aria-label='Functions' }
+#### void SetWindowPosition ( string windowId, float x, float y ) {: .copyable aria-label='Functions' }
+Set the position of a window in screen coordinates.
+___
+### Set·Window·Size () {: aria-label='Functions' }
+#### void SetWindowSize ( string windowId, float width, float height ) {: .copyable aria-label='Functions' }
+Set the width and height of a window, in pixels.
 ___
 ### Show () {: aria-label='Functions' }
 #### void Show ( ) {: .copyable aria-label='Functions' }
@@ -233,5 +268,6 @@ ___
 #### void WorldToImGui ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
 Converts world coordinates into ImGui coordinates.
 
-This function is the same as `Isaac.WorldToScreen()`.
+???+ bug "Bug"
+    This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___

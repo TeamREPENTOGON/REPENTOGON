@@ -12,7 +12,7 @@
 	url = https://github.com/scopeInfinity/NaturalSort
 [submodule "libs/freetype"]
 	path = libs/freetype
-	url = https://gitlab.freedesktop.org/freetype/freetype.git
+	url = https://github.com/freetype/freetype.git
 [submodule "libs/rapidxml"]
 	path = libs/rapidxml
 	url = https://github.com/discord/rapidxml

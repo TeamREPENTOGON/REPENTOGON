@@ -23,6 +23,9 @@ __thiscall void LevelGenerator::calc_required_doors();
 "558bec83e4f883ec2453568b750c33db578b7d08894c240c":
 __thiscall bool LevelGenerator::is_placement_valid(uint32_t* position, uint32_t shape);
 
+"558bec515356578bf9b8398ee33833db8b8f680300008bd18bb764030000":
+__thiscall void LevelGenerator::mark_dead_ends();
+
 struct LevelGenerator depends (LevelGenerator_Room) {
 {{
     inline int* GetNumBossRooms() { return (int*)((char*)this + 0x38C); }

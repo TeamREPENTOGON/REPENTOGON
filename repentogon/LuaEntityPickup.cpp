@@ -66,6 +66,22 @@ int Lua_PickupTryInitOptionCycle(lua_State* L) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PickupGetDropDelay)
+{
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushinteger(L, *pickup->GetDropDelay());
+	
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupSetDropDelay)
+{
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	*pickup->GetDropDelay() = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -79,4 +95,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetVarData", Lua_PickupSetVarData);
 	lua::RegisterFunction(state, mt, "SetNewOptionsPickupIndex", Lua_PickupSetNewOptionsPickupIndex);
 	lua::RegisterFunction(state, mt, "TryInitOptionCycle", Lua_PickupTryInitOptionCycle);
+	lua::RegisterFunction(state, mt, "GetDropDelay", Lua_PickupGetDropDelay);
+	lua::RegisterFunction(state, mt, "SetDropDelay", Lua_PickupSetDropDelay);
 }

@@ -45,6 +45,7 @@ nav:
   - Home: index.md
   - Enums:
     - Achievement: enums/Achievement.md
+    - AnimRenderFlags: enums/AnimRenderFlags.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - AutocompleteType: enums/AutocompleteType.md
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
@@ -66,6 +67,7 @@ nav:
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
+    - ImGuiColor: enums/ImGuiColor.md
     - ImGuiData: enums/ImGuiData.md
     - ImGuiElement: enums/ImGuiElement.md
     - ItemAnim: enums/ItemAnim.md
@@ -138,10 +140,22 @@ nav:
   - LevelGeneratorEntry: LevelGeneratorEntry.md
   - LevelGeneratorRoom: LevelGeneratorRoom.md
   - Menus:
-    - MenuManager: MenuManager.md
-    - CharacterMenu: CharacterMenu.md
-    - MainMenu: MainMenu.md
-    - StatsMenu: StatsMenu.md
+    - MenuManager: menus/MenuManager.md
+    - BestiaryMenu: menus/BestiaryMenu.md
+    - ChallengeMenu: menus/ChallengeMenu.md
+    - CharacterMenu: menus/CharacterMenu.md
+    - CollectionMenu: menus/CollectionMenu.md
+    - ControllerSelectMenu: menus/ControllerSelectMenu.md
+    - CustomChallengeMenu: menus/CustomChallengeMenu.md
+    - CutscenesMenu: menus/CutscenesMenu.md
+    - KeyConfigMenu: menus/KeyConfigMenu.md
+    - MainMenu: menus/MainMenu.md
+    - ModsMenu: menus/ModsMenu.md
+    - OptionsMenu: menus/OptionsMenu.md
+    - SaveMenu: menus/SaveMenu.md
+    - SpecialSeedsMenu: menus/SpecialSeedsMenu.md
+    - StatsMenu: menus/StatsMenu.md
+    - TitleMenu: menus/TitleMenu.md
   - Minimap: Minimap.md
   - MultiShotParams: MultiShotParams.md
   - MusicManager: MusicManager.md
@@ -179,8 +193,8 @@ repo_url: https://github.com/IsaacZHL/REPENTOGON
 site_name: 'BoI: REPENTOGON Docs'
 site_url: https://repentogon.com
 theme:
-  favicon: img/favicon.ico
   custom_dir: overrides
+  favicon: img/favicon.ico
   features:
   - search.suggest
   - search.highlight
