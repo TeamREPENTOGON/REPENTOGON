@@ -16,6 +16,7 @@
 
 #include "XMLData.h"
 #include "AchievementsStuff.h"
+#include "JsonSavedata.h"
 
 #include "ImGuiFeatures/LogViewer.h"
 
@@ -642,14 +643,8 @@ void SaveCompletionMarksToJson() {
 	rapidjson::Document doc;
 	doc.SetObject();
 
-	for (auto& kv : CompletionMarks) {
-		rapidjson::Value array(rapidjson::kArrayType);
-		for (int i = 0; i < 15; ++i) {
-			array.PushBack(kv.second[i], doc.GetAllocator());
-		}
-		doc.AddMember(rapidjson::Value(kv.first.c_str(), kv.first.size(), doc.GetAllocator()),
-			array, doc.GetAllocator());
-	}
+	//SavingMarks
+	ArrayOfArrayToJson(&doc, "CompletionMarks", CompletionMarks);
 
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -662,38 +657,13 @@ void SaveCompletionMarksToJson() {
 
 void LoadCompletionMarksFromJson() {
 	CompletionMarks.clear();
-	ifstream ifs(jsonpath);
-	if (!ifs.good()) {
-		logViewer.AddLog("[REPENTOGON]", "No marks for saveslot in: %s \n", jsonpath.c_str());
-		return;
-	}
-
-	string content((istreambuf_iterator<char>(ifs)),
-		(istreambuf_iterator<char>()));
-
-	rapidjson::Document doc;
-	doc.Parse(content.c_str());
-	if (!doc.IsObject()) {
-		return;
-	}
-	for (auto it = doc.MemberBegin(); it != doc.MemberEnd(); ++it) {
-		string key = it->name.GetString();
-		if (CompletionMarks.find(key) == CompletionMarks.end()) {
-			CompletionMarks[key] = array<int, 15>{};
+		rapidjson::Document doc = GetJsonDoc(&jsonpath);
+		if (!doc.IsObject()) {
+			logViewer.AddLog("[REPENTOGON]", "No Completion Marks for saveslot in: %s \n", jsonpath.c_str());
+			return;
 		}
+		JsonToArrayOfArray(doc["CompletionMarks"], CompletionMarks);
 
-		auto& value = it->value;
-		if (!value.IsArray() || value.Size() != 15) {
-			continue;
-		}
-
-		for (int i = 0; i < 15; ++i) {
-			if (!value[i].IsInt()) {
-				continue;
-			}
-			CompletionMarks[key][i] = value[i].GetInt();
-		}
-	}
 	logViewer.AddLog("[REPENTOGON]", "Completion Marks loaded from: %s \n", jsonpath.c_str());
 }
 
@@ -835,7 +805,7 @@ array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
 
 
 HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
-	jsonpath = string((char*)&g_SaveDataPath) + "Repentogon/moddedcompletionmarks" + to_string(saveslot) + ".json";
+	jsonpath = string((char*)&g_SaveDataPath) + "Repentogon/completionmarks" + to_string(saveslot) + ".json";
 
 	LoadCompletionMarksFromJson();
 	if (!initializedrendercmpl) {

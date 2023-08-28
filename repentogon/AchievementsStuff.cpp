@@ -26,18 +26,30 @@
 #include "ImGuiFeatures/LogViewer.h"
 #include <lua.hpp>
 #include "LuaCore.h"
+#include "JsonSavedata.h"
 #include <filesystem>
 #include <regex>
 
 using namespace rapidxml;
+using namespace rapidjson;
 using namespace std;
 
 
 unordered_map<string, int > Achievements;
 unordered_map<int, unordered_map<int, vector<int>> > CompletionMarkListeners;
 unordered_map<int, unordered_map<int, vector<int>> > EventCounterListeners;
-unordered_map<tuple<int, int, int>, vector<int>> BossDeathListeners;
+unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathListeners;
+unordered_map<string, int> simplifiedeventsenum;
 string achivjsonpath;
+
+
+
+#include <queue>
+int dummyachiev = -1;
+bool achievdone = false;
+bool blocksteam = true;
+int lastdummyachievframe = 10;
+queue<int> pendingachievs;
 
 
 void SaveAchieveemntsToJson() {
@@ -52,10 +64,8 @@ void SaveAchieveemntsToJson() {
 	rapidjson::Document doc;
 	doc.SetObject();
 
-	for (auto& kv : Achievements) {
-		doc.AddMember(rapidjson::Value(kv.first.c_str(), kv.first.size(), doc.GetAllocator()),
-			rapidjson::Value(kv.second), doc.GetAllocator());
-	}
+	//SavingAchievements
+	ArrayToJson(&doc, "Achievements", Achievements);
 
 	rapidjson::StringBuffer buffer;
 	rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -68,51 +78,15 @@ void SaveAchieveemntsToJson() {
 
 void LoadAchievementsFromJson() {
 	InitAchievs();
-	Achievements.clear();
-	ifstream ifs(achivjsonpath);
-	if (!ifs.good()) {
+	rapidjson::Document doc = GetJsonDoc(&achivjsonpath);
+	if (!doc.IsObject()) {
 		logViewer.AddLog("[REPENTOGON]", "No achievements for saveslot in: %s \n", achivjsonpath.c_str());
 		return;
 	}
+	JsonToArray(doc["Achievements"],Achievements);
 
-	string content((istreambuf_iterator<char>(ifs)),
-		(istreambuf_iterator<char>()));
-
-	rapidjson::Document doc;
-	doc.Parse(content.c_str());
-	if (!doc.IsObject()) {
-		return;
-	}
-	for (auto it = doc.MemberBegin(); it != doc.MemberEnd(); ++it) {
-		string key = it->name.GetString();
-		auto& value = it->value;
-		if (Achievements.find(key) == Achievements.end()) {
-			if (value.IsInt()) {
-				Achievements[key] = value.GetInt();
-			}
-			else if (value.IsBool()) {
-				Achievements[key] = value.GetBool();
-			}
-		}
-	}
 	logViewer.AddLog("[REPENTOGON]", "Achievements loaded from: %s \n", achivjsonpath.c_str());
 }
-
-
-HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
-	achivjsonpath = string((char*)&g_SaveDataPath) + "Repentogon/moddedachievements" + to_string(saveslot) + ".json";
-
-	LoadAchievementsFromJson();
-	super(saveslot);
-}	
-
-
-#include <queue>
-int dummyachiev = -1;
-bool achievdone = false;
-bool blocksteam = true;
-int lastdummyachievframe = 10;
-queue<int> pendingachievs;
 
 HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 	if (achieveemntid <= 638) {
@@ -121,8 +95,8 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 	ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
 	XMLAttributes modachiev = XMLStuff.AchievementData->nodes[achieveemntid];
 	string achievid = modachiev["name"] + modachiev["sourceid"];
-	if (!Achievements[achievid]) {
-		Achievements[achievid] = true;
+	if (Achievements[achievid] <= 1) {
+		Achievements[achievid] = 2; //2 is for notified, 1 is accomplished, <1 is in progress
 		SaveAchieveemntsToJson();
 		if (g_Manager->GetOptions()->PopUpsEnabled()) { //it is prevented even without this check, but theres no point in doing the hackies if thats the case.
 			pendingachievs.push(achieveemntid);
@@ -184,6 +158,23 @@ HOOK_METHOD(PersistentGameData, Unlocked, (int achieveemntid) -> bool) {
 	XMLAttributes modachiev = XMLStuff.AchievementData->nodes[achieveemntid];
 	string achievid = modachiev["name"] + modachiev["sourceid"];
 	return Achievements[achievid];
+}
+
+HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int val) -> void) {
+	int numplayers = g_Game->GetNumPlayers();
+	for (int i = 0; i < numplayers; i++) {
+		int playertype = g_Game->GetPlayer(i)->GetPlayerType();
+		RunTrackersForEventCounter(eEvent, playertype);
+	}
+	return super(eEvent,val);
+}
+
+
+HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
+	achivjsonpath = string((char*)&g_SaveDataPath) + "Repentogon/achievements" + to_string(saveslot) + ".json";
+
+	LoadAchievementsFromJson();
+	super(saveslot);
 }
 
 static int Lua_GetAchievementByName(lua_State* L) {
