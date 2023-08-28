@@ -1,14 +1,7 @@
 # Class "SpecialSeedsMenu"
 
 ???+ info
-    You can get this class either by just using the MainMenu global table or by using the following shortcut:
-
-    * [MenuManager.SpecialSeedsMenu](MenuManager.md#getspecialseedsmenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.SpecialSeedsMenu
-        ```
+    You can get this class by using the `SpecialSeedsMenu` global table.
         
 ## Functions
 

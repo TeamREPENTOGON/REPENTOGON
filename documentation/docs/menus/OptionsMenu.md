@@ -1,14 +1,7 @@
 # Class "OptionsMenu"
 
 ???+ info
-    You can get this class either by just using the MainMenu global table or by using the following shortcut:
-
-    * [MenuManager.OptionsMenu](MenuManager.md#getoptionsmenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.MoOptionsMenudsMenu
-        ```
+    You can get this class by using the `OptionsMenu` global table.
         
 ## Functions
 

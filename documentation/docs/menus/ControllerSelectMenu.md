@@ -1,14 +1,7 @@
 # Class "ControllerSelectMenu"
 
 ???+ info
-    You can get this class either by just using the MainMenu global table or by using the following shortcut:
-
-    * [MenuManager.ControllerSelectMenu](MenuManager.md#getcontrollerselectmenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.ControllerSelectMenu
-        ```
+    You can get this class by using the `ControllerSelectMenu` global table.
         
 ## Functions
 

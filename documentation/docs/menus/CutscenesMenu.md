@@ -1,14 +1,7 @@
 # Class "CutscenesMenu"
 
 ???+ info
-    You can get this class either by just using the MainMenu global table or by using the following shortcut:
-
-    * [MenuManager.CutscenesMenu](MenuManager.md#getcutscenesmenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.CutscenesMenu
-        ```
+    You can get this class by using the `CutscenesMenu` global table.
         
 ## Functions
 

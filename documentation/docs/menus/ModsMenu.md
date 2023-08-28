@@ -1,14 +1,7 @@
 # Class "ModsMenu"
 
 ???+ info
-    You can get this class either by just using the MainMenu global table or by using the following shortcut:
-
-    * [MenuManager.ModsMenu](MenuManager.md#getmodsmenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.ModsMenu
-        ```
+    You can get this class by using the `ModsMenu` global table.
         
 ## Functions
 

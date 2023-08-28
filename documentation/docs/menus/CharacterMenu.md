@@ -1,14 +1,7 @@
 # Class "CharacterMenu"
 
 ???+ info
-    You can get this class either by just using the CharacterMenu global table or by using the following shortcut:
-
-    * [MenuManager.CharacterMenu](MenuManager.md#getcharactermenu)
-
-    ???+ example "Example Code"
-        ```lua
-        local menu = MenuManager.CharacterMenu
-        ```
+    You can get this class by using the `CharacterMenu` global table.
         
 ## Functions
 
