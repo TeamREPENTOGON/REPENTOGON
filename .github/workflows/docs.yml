@@ -6,7 +6,7 @@ on:
         branches:
             - main
         paths:
-            - repentogon/scripts/enums_ex.lua
+            - repentogon/resources/scripts/enums_ex.lua
             - documentation/**
 
 jobs:
