@@ -27,15 +27,15 @@ jobs:
     - name: Generate changelog
       if: steps.commitswithintime.outputs.has-new-commits-within-time
       run: |
-        echo "return [[" > ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
-        git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
-        echo "]]" >> ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
+        echo "return [[" > ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
+        git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
+        echo "]]" >> ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
         echo "Resulting lua file:"
-        type ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog_official_text.lua
+        type ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
         echo "#pragma once" > ${{github.workspace}}/repentogon/Version.h
         $sha = git rev-parse --short HEAD
         echo "#define VERSION `"$sha`"" >> ${{github.workspace}}/repentogon/Version.h
-        (gc ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog.lua) -replace 'dev build', $sha | Out-File -encoding ASCII ${{github.workspace}}/repentogon/scripts/repentogon_extras/changelog.lua
+        (gc ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog.lua) -replace 'dev build', $sha | Out-File -encoding ASCII ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog.lua
 
     - name: Configure CMake
       if: steps.commitswithintime.outputs.has-new-commits-within-time
