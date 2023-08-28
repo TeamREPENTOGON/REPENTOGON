@@ -1,0 +1,4 @@
+struct KAGE_Graphics_Manager_GL depends (KAGE_Graphics_VertexAttributeDescriptor, KAGE_Graphics_Shader) {};
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec80000000a1????????33c58945??5657508d45??64a3????????8995":
+static cleanup void* KAGE_Graphics_Manager_GL::LoadShader(KAGE_Graphics_Shader *shader<ecx>, KAGE_Graphics_VertexAttributeDescriptor *descriptor<edx>, const char* shaderPath);
