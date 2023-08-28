@@ -574,6 +574,42 @@ void ASMPatchModsMenu() {
 	PatchModMenu_Font_ModsEnabled();
 }
 
+/*
+* It's Over.
+* Hush's AI freaks out since Repentance due to an internal restructure of the code.
+* The values Hush uses to track HP percentage internally was reduced by 100, but HP checks weren't.
+* This makes Hush enter "panic" state at 50% HP and not 0.5%. Oops!
+*/
+float zeroPointFive = 0.005f; // set this to 1 for fun results!
+void PerformHushPatch(void* addr) { 
+	MEMORY_BASIC_INFORMATION info;
+	DWORD old_protect = SetPageMemoryRW(addr, &info);
+	DWORD _dummy;
+
+	char ptrMov[] = {
+	0xF3, 0x0F, 0x10, 0x05, 0, 0, 0, 0 // movss xmm0, dword ptr ds:[0xXXXXXXXX]
+	};
+
+	void* ptr = &zeroPointFive;
+	memcpy(ptrMov + 4, &ptr, sizeof(ptr));
+
+	memcpy(addr, ptrMov, 8);
+
+	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
+	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+}
+
+void ASMPatchHushBug() {
+	SigScan scanner1("f30f1005????????0f2f85????????0f86????????33c9");
+	SigScan scanner2("f30f1005????????0f2f85????????0f86????????837f??00");
+	scanner1.Scan();
+	scanner2.Scan();
+	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
+	printf("[REPENTOGON] Patching the Hush panic state bug at %p, %p\n", addrs[0], addrs[1]);
+	PerformHushPatch(addrs[0]);
+	PerformHushPatch(addrs[1]);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
@@ -589,4 +625,5 @@ void PerformASMPatches() {
 	PatchPreEntityTakeDamageCallbacks();
 	PatchPostEntityTakeDamageCallbacks();
 	PatchFamiliarCanBeDamagedByLaser();
+	ASMPatchHushBug();
 }
