@@ -65,3 +65,7 @@ TypeInfo vector_LevelGenRoom {
 TypeInfo CRITICAL_SECTION {
     Size 0x18;
 };
+
+TypeInfo RoomConfigPtrVector {
+    Size 12;
+};

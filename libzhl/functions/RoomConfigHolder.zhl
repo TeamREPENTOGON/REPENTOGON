@@ -2,7 +2,14 @@
 __thiscall RoomConfig* RoomConfigHolder::GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int32_t difficulty);
 
 "558bec6aff68????????64a1????????5083ec74a1????????33c58945??535657508d45??64a3????????894d":
-__thiscall RoomConfig* RoomConfigHolder::GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int unk1, unsigned int unk2, int minDifficulty, int maxDifficulty, const unsigned int &requiredDoors, unsigned int roomSubtype, int unk3);
+__thiscall RoomConfig* RoomConfigHolder::GetRandomRoom(unsigned int seed, int unk, int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int unk3);
+
+struct Dummy {
+    RoomConfigPtrVector ptr;
+};
+
+"558bec6aff68????????64a1000000005083ec18535657a1????????33c5508d45f464a3000000008b7d0c8b553069f7c4000000":
+RoomConfigPtrVector RoomConfigHolder::GetRooms(int stage, int type, int shape, int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode);
 
 struct RoomConfigHolder depends (RoomConfigs)
 {

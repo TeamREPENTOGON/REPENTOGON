@@ -7,6 +7,7 @@
 
 #include "ASMPatches.h"
 #include "ASMPatcher.hpp"
+#include "Log.h"
 
 static DWORD SetPageMemoryRW(void* addr, MEMORY_BASIC_INFORMATION* info) {
 	VirtualQuery(addr, info, sizeof(*info));
@@ -574,6 +575,58 @@ void ASMPatchModsMenu() {
 	PatchModMenu_Font_ModsEnabled();
 }
 
+// The void now draws from all floors
+void __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomConfig*>* rooms, int type, int shape, int minVariant, 
+	int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) {
+	for (int i = 1; i < 37; ++i) {
+		if ((i > 17 && i < 27) || i == 34 || i == 35)
+			continue;
+
+		// Configure the subtype here because backwards uses a 
+		// specific set of subtypes. I'll need the RNG object to 
+		// make this seed dependant.
+		/* if (i == 36) {
+
+		} */
+		std::vector<RoomConfig*> stageRooms = _this->GetRooms(i, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
+		rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
+	}
+}
+
+void ASMPatchVoidGeneration() {
+	SigScan scanner("83f82374758b5dd4be010000008b7dd0");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ZHL::Log("Patching void generation at %p\n", addr);
+
+	ASMPatch patch;
+	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::XMM0 | ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	patch.PreserveRegisters(registers);
+	patch.Push(ASMPatch::Registers::EBP, -0x38);
+	patch.Push(ASMPatch::Registers::EBP, -0x68);
+	patch.Push(ASMPatch::Registers::EBP, -0x40);
+	patch.Push(0x14);
+	patch.Push(ASMPatch::Registers::EBP, -0x70);
+	patch.Push(ASMPatch::Registers::EBP, -0x74);
+	patch.Push(ASMPatch::Registers::EBP, -0x78);
+	patch.Push(ASMPatch::Registers::EBP, -0x7C);
+	patch.Push(ASMPatch::Registers::EBP, -0x80);
+	// patch.Push(ASMPatch::Registers::EBP, -0x64);
+	patch.LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x64, ASMPatch::Registers::EBX);
+	patch.Push(ASMPatch::Registers::EBX);
+	patch.Push(ASMPatch::Registers::EBP, -0x30);
+	patch.AddInternalCall(VoidGenerationOverride);
+	patch.RestoreRegisters(registers);
+	// ASMPatch::ByteBuffer mov;
+	// mov.AddString("c7459414").AddZeroes(3);
+	patch.AddBytes("\xc7\x45\x94\x14").AddZeroes(3);
+	// patch.AddBytes(mov);
+	patch.AddRelativeJump((char*)addr + 108);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
@@ -589,4 +642,5 @@ void PerformASMPatches() {
 	PatchPreEntityTakeDamageCallbacks();
 	PatchPostEntityTakeDamageCallbacks();
 	PatchFamiliarCanBeDamagedByLaser();
+	ASMPatchVoidGeneration();
 }

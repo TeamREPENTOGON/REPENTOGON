@@ -10,16 +10,11 @@
 #include "LuaCore.h"
 #include "Exception.h"
 #include "Log.h"
+#include "LuaLevelGenerator.h"
 
 #ifdef max
 #undef max
 #endif
-
-struct LuaLevelGeneratorRoom {
-	LevelGenerator* context = nullptr;
-	LevelGenerator_Room* room = nullptr;
-	bool cleanup = false;
-};
 
 enum LinkDirection {
 	LINK_DIRECTION_INVALID = -1,

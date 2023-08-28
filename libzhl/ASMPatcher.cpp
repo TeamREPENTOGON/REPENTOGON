@@ -712,7 +712,7 @@ ASMPatch& ASMPatch::Push(ASMPatch::Registers reg, int32_t imm32) {
 
 	// ModRM displacement 
 	if (imm32 < -127 || imm32 > 127) {
-		immBuffer = ASMPatch::ToHexString(imm32, true);
+		immBuffer = ASMPatch::ToHexString(imm32, false);
 		modrm[7] = true;
 	}
 	else {

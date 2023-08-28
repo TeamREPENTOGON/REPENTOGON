@@ -4,6 +4,7 @@
 #include "libzhl.h"
 
 #include <string>
+#include <optional>
 
 struct lua_State;
 
@@ -182,6 +183,16 @@ namespace lua {
     T GetUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
         void* p = CheckUserdata(L, idx, mt, name);
         return *(T*)((char*)p + 0x4);
+    }
+
+    template<typename T>
+    std::optional<T> TestUserdata(lua_State* L, int idx, lua::Metatables mt) {
+        void* p = TestUserdata(L, idx, mt);
+        if (p) {
+            return std::make_optional(*(T*)((char*)p + 0x4));
+        }
+
+        return std::nullopt;
     }
 
     template<typename T>
