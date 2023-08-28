@@ -31,3 +31,15 @@ bool RoomConfig::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
 		return true;
 	}
 }
+
+void KAGE::_LogMessage(int flag, const char* fmt, ...) {
+	char buffer[4096];
+	va_list va;
+	va_start(va, fmt);
+	int n = vsnprintf(buffer, 4095, fmt, va);
+	va_end(va);
+
+	if (n >= 0) {
+		LogMessage(flag, buffer);
+	}
+}

@@ -7,4 +7,7 @@ bool KAGE_File::OpenFileRB(const char* name);
 static cleanup void KAGE::LogMessage(int flag, const char* string);
 
 struct KAGE  {
+    {{
+    LIBZHL_API static void _LogMessage(int flag, const char* fmt, ...);
+    }}
 };
