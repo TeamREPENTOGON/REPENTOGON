@@ -3,7 +3,7 @@
 ???+ info
     You can get this class by using the following functions:
 
-    * [Game:GetPlayerManager](Game.md#getplayermanager)
+    * [Game:GetRoomTransition](Game.md#getroomtransition)
 
     ???+ example "Example Code"
         ```lua
