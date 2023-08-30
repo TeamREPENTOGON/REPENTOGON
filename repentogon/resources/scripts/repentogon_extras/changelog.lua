@@ -93,31 +93,6 @@ function ChangeLog.EvaluateText()
     end
 end
 
-function ChangeLog.LoadAssets()
-    if #Cl.ChangelogSprite:GetDefaultAnimation() <= 0 then
-        Cl.ChangelogSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog.anm2", true)
-        Cl.ChangelogSprite:Play("SwapOut")
-        Cl.ChangelogSprite.PlaybackSpeed = 0.5 --correct speed for doing Update() inside of xxx_RENDER callback
-
-        Cl.NoteSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog_tab_paper.anm2", true)
-        Cl.NoteSprite:Play("Idle")
-    end
-    if not Cl.Font:IsLoaded() then
-        Cl.Font:Load("font/teammeatfont10.fnt")
-    end
-
-    if not Cl.VersionFont:IsLoaded() then
-        Cl.VersionFont:Load("font/luamini.fnt")
-    end
-
-    if Cl.Font:IsLoaded() and Cl.VersionFont:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation()) > 0 then
-        Cl.AssetsLoaded = true
-        Cl.EvaluateText()
-        Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
-    end
-end
-
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
 
 local ShouldBeRendered = false --render of the changelog isn't attempted
 local ScrollVelocity = 0
@@ -151,9 +126,9 @@ function ChangeLog.MenuRender()
     end
     Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(MainMenuType.TITLE, Cl.NoteOffset))
     local versionPosition = Isaac.WorldToMenuPosition(MainMenuType.TITLE, Cl.VersionOffset)
-    Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X + 1, versionPosition.Y + 1,
+    Cl.VersionFont:DrawStringUTF8("REPENTOGON 7a767a2", versionPosition.X + 1, versionPosition.Y + 1,
         KColor(0, 0, 0, 0.3), 200, true)
-    Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X, versionPosition.Y,
+    Cl.VersionFont:DrawStringUTF8("REPENTOGON 7a767a2", versionPosition.X, versionPosition.Y,
         KColor(67 / 255, 5 / 255, 5 / 255, 1), 200, true)
     if MenuManager:GetActiveMenu() == MainMenuType.TITLE then
         if IsActionTriggeredAll(ButtonAction.ACTION_MAP) then
@@ -242,5 +217,39 @@ function ChangeLog.MenuRender()
 end
 
 REPENTOGON.Extras.ChangeLog = ChangeLog
+
+local curattempt=0
+function ChangeLog.LoadAssets()
+    if #Cl.ChangelogSprite:GetDefaultAnimation() <= 0 then
+        Cl.ChangelogSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog.anm2", true)
+        Cl.ChangelogSprite:Play("SwapOut")
+        Cl.ChangelogSprite.PlaybackSpeed = 0.5 --correct speed for doing Update() inside of xxx_RENDER callback
+
+        Cl.NoteSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog_tab_paper.anm2", true)
+        Cl.NoteSprite:Play("Idle")
+        curattempt=curattempt+1
+        if curattempt>200 then
+		Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
+		Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, Cl.MenuRender)
+        	error("[NON-CRITICAL] Changelog graphics were not found!")
+        end
+    end
+    if not Cl.Font:IsLoaded() then
+        Cl.Font:Load("font/teammeatfont10.fnt")
+    end
+
+    if not Cl.VersionFont:IsLoaded() then
+        Cl.VersionFont:Load("font/luamini.fnt")
+    end
+
+    if Cl.Font:IsLoaded() and Cl.VersionFont:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation()) > 0 then
+        Cl.AssetsLoaded = true
+        Cl.EvaluateText()
+        Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
+    end
+end
+
+Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
+
 
 Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, Cl.MenuRender)
