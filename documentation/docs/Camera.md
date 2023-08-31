@@ -19,8 +19,6 @@ The camera will attempt to focus on the specified position. Currently, this must
 ___
 ### Snap·To·Position () {: aria-label='Functions' }
 #### void SnapToPosition ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos ) {: .copyable aria-label='Functions' }
-Seems to only work with active cam OFF (although this doesn't seem right, I'm looking into this.)
-
-Must be called every frame.
+Immediately moves the camera to the specified position. As of now, this function seems to be either bugged or not made to work with Active Cam as this mode will snap back to its intended position on the next camera update.
 
 ___
