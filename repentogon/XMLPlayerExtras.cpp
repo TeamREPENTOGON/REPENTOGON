@@ -251,8 +251,7 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 
 	for (unsigned int i = 0; i < g_Manager->GetPlayerConfig()->size(); ++i) {
 		EntityConfig_Player player = g_Manager->GetPlayerConfig()->at(i);
-		std::string name;
-		name = *player.GetDisplayName(&name);
+		std::string name = player.GetDisplayName(nullptr);
 
 
 		if (player._id < 41) { // Vanilla character handling
@@ -325,8 +324,7 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 
 	int randomId = (Isaac::genrand_int32() % allowedCharacters.size());
 	std::pair<int, EntityConfig_Player> chosenCharacter = allowedCharacters[randomId];
-	std::string name;
-	name = *chosenCharacter.second.GetDisplayName(&name);
+	std::string name = chosenCharacter.second.GetDisplayName(nullptr);
 	logViewer.AddLog("[REPENTOGON]", "I have chosen: %d (%s, slot %d on the menu)\n", chosenCharacter.second._id, name.c_str(), chosenCharacter.first);
 	this->_chosenRandomCharacter = chosenCharacter.second._id;
 	this->_randomRotationAmount = chosenCharacter.first + this->GetNumCharacters() * 2 + this->GetNumCharacters();

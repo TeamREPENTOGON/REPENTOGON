@@ -1,5 +1,5 @@
 "558bec83ec0c8379??0053565775??be":
-__thiscall std_string* EntityConfig_Player::GetDisplayName(std_string *buffer);
+__thiscall std_string EntityConfig_Player::GetDisplayName(void* ptr);
 
 struct EntityConfig_Player depends (ANM2) {
 	{{
