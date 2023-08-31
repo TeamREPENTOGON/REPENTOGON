@@ -52,27 +52,29 @@ static int Lua_RoomConfigHolderGetRoomByStageTypeAndVariant(lua_State* L) {
 LUA_FUNCTION(Lua_RoomConfigHolder_GetRandomRoom) {
 	RoomConfigHolder* holder = *lua::GetUserdata<RoomConfigHolder**>(L, 1, RoomConfigHolderMT);
 	int seed = luaL_checkinteger(L, 2);
-	int stage = luaL_checkinteger(L, 3);
+	bool reduceWeight = lua_toboolean(L, 3);
+
+	int stage = luaL_checkinteger(L, 4);
 	if (stage < 0 || (stage > 17 && stage < 27) || stage > 36) {
 		return luaL_error(L, "Invalid stage %d\n", stage);
 	}
 
-	int type = luaL_checkinteger(L, 4);
+	int type = luaL_checkinteger(L, 5);
 	if (type < 1 || type > 29) {
 		return luaL_error(L, "Invalid type %d\n", type);
 	}
 
-	int shape = luaL_checkinteger(L, 5);
+	int shape = luaL_optinteger(L, 6, 13); //NUM_ROOMSHAPES
 	if (shape < 1 || shape > 13) {
 		return luaL_error(L, "Invalid shape %d\n", shape);
 	}
 
-	int minVariant = luaL_checkinteger(L, 6);
+	int minVariant = luaL_optinteger(L, 7, 0);
 	if (minVariant < 0) {
 		minVariant = 0;
 	}
 
-	int maxVariant = luaL_checkinteger(L, 7);
+	int maxVariant = luaL_optinteger(L, 8, -1);
 	if (maxVariant < minVariant && maxVariant >= 0) {
 		return luaL_error(L, "maxVariant is lower than minVariant (min = %d, max = %d)\n", minVariant, maxVariant);
 	}
@@ -80,27 +82,32 @@ LUA_FUNCTION(Lua_RoomConfigHolder_GetRandomRoom) {
 		maxVariant = -1;
 	}
 
-	int minDifficulty = luaL_checkinteger(L, 8);
-	if (minDifficulty < 1) {
-		minDifficulty = 1;
+	int minDifficulty = luaL_optinteger(L, 9, 0);
+	if (minDifficulty < 0) {
+		minDifficulty = 0;
 	}
 
-	int maxDifficulty = luaL_checkinteger(L, 9);
+	int maxDifficulty = luaL_optinteger(L, 10, 10);
 	if (maxDifficulty < minDifficulty) {
 		return luaL_error(L, "maxDifficulty is lower than minDifficulty (min = %d, max = %d)\n", minDifficulty, maxDifficulty);
 	}
 
-	int doors = luaL_checkinteger(L, 10);
+	int doors = luaL_optinteger(L, 11, 0);
 	if (doors < 0) {
 		return luaL_error(L, "Invalid door mask %d\n", doors);
 	}
 
-	int subtype = luaL_checkinteger(L, 11);
-	if (subtype < 0) {
+	int subtype = luaL_optinteger(L, 12, -1);
+	if (subtype < -1) {
 		return luaL_error(L, "Invalid subtype %d\n", subtype);
 	}
+	int mode = luaL_optinteger(L, 13, -1);
+	if (mode < -1 || mode > 1) {
+		return luaL_error(L, "Invalid mode %d\n", mode);
+	}
+	
 
-	RoomConfig* config = holder->GetRandomRoom(seed, 0, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*) & doors, subtype, -1);
+	RoomConfig* config = holder->GetRandomRoom(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*) & doors, subtype, mode);
 	lua::luabridge::UserdataPtr::push(L, config, lua::Metatables::CONST_ROOM_CONFIG_ROOM);
 	return 1;
 }

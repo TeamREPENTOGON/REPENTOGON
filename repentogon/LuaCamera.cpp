@@ -21,7 +21,7 @@ int Lua_CameraSetFocusPosition(lua_State* L)
 	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	camera->SetFocusPosition(vector);
-	*camera->ShouldOverride() = true;
+	//*camera->ShouldOverride() = true;
 	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	return 0;
 }
