@@ -172,6 +172,7 @@ nav:
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfigHolder: RoomConfigHolder.md
+  - RoomConfigRoom: RoomConfigRoom.md
   - RoomTransition: RoomTransition.md
   - Shape: Shape.md
   - Sprite: Sprite.md
