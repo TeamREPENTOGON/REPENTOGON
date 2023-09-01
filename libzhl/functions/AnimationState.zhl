@@ -10,11 +10,28 @@ __thiscall bool AnimationState::IsEventTriggered(const char* eventName);
 "558BEC51538BD95657895D??837B??0075??68????????6A03E8????????83C4088B3333FF8B9E????????85DB74??8BB6????????837E??108BC672??8B068B4D??8A103A1175??84D274??8A50??3A51??75??83C00283C10284D275??33C0EB??1BC083C80185C074??4783C6183BFB72??32C05F5E5B8BE55DC2040085FF78??8BCFB801000000D3E08B4D??5F5E5B85411C0F95C08BE55DC204":
 __thiscall bool AnimationState::WasEventTriggered(const char* eventName);
 
+"558bec83ec0c53568bf1578975??837e??00":
+__thiscall int AnimationState::NextEventTrigger(const char* eventName);
+
 "558bec83ec0c568bf15783ec08":
 __thiscall void AnimationState::AdvancePosition(int amount);
 
+"568bf1c746??00000000c746??00000000":
+__thiscall void AnimationState::Rewind();
+
 struct AnimationState depends (AnimationData, ANM2) { {{
     inline AnimationData* GetAnimationData() { return this->_animData; }
+    inline void SetFrame(const float frame) { this->_animFrame = frame; }
+    inline bool IsPlaying() { return this->_isPlaying; }
+    inline void Play() {
+        if (this->_animData != nullptr) {
+            if (this->_animFrame < 0) {
+                this->Rewind();
+            }
+            this->_isPlaying = true;
+        }
+    }
+    inline void Stop() { if (this->_animData != nullptr) this->_isPlaying = false; }
 }}
     
     "558bec83e4f8515356578bf98b570485d2743433f639721c":

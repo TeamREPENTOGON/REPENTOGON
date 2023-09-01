@@ -70,29 +70,24 @@ static int Lua_SpriteGetOverlayAnimationState(lua_State* L)
 static int Lua_SpriteGetLayer(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	unsigned int layerID = (unsigned int)luaL_checkinteger(L, 2);
-	LayerState* toLua = anm2->GetLayer(layerID);
-	unsigned int layerCount = anm2->GetLayerCount();
-	if ((layerID < 0) || (layerCount <= layerID)) {
-		return luaL_error(L, "Invalid layer ID %d ", layerID);
+	LayerState* layerState = nullptr;
+	if (lua_type(L, 2) == LUA_TSTRING) {
+		const char* layerName = luaL_checkstring(L, 2);
+		layerState = anm2->GetLayer(layerName);
 	}
-	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
-	*luaLayer = toLua;
-	luaL_setmetatable(L, LayerStateMT);
-	return 1;
-}
-
-static int Lua_SpriteGetLayer_Text(lua_State* L)
-{
-	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	const char* layerName = luaL_checkstring(L, 2);
-	LayerState* toLua = anm2->GetLayer(layerName);
-	if (toLua == nullptr) {
+	else {
+		const int layerID = luaL_checkinteger(L, 2);
+		const unsigned int layerCount = anm2->GetLayerCount();
+		if (layerID >= 0 && layerID < layerCount) {
+			layerState = anm2->GetLayer(layerID);
+		}
+	}
+	if (layerState == nullptr) {
 		lua_pushnil(L);
 		return 1;
 	}
 	LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
-	*luaLayer = toLua;
+	*luaLayer = layerState;
 	luaL_setmetatable(L, LayerStateMT);
 	return 1;
 }
@@ -108,6 +103,61 @@ static int Lua_SpriteSetBitFlags(lua_State* L)
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	*anm2->GetBitFlags() = luaL_checknumber(L, 2);
 
+	return 0;
+}
+
+static int Lua_SpriteSetOverlayFrame(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	if (lua_type(L, 2) == LUA_TSTRING) {
+		const char* animName = luaL_checkstring(L, 2);
+		anm2->SetOverlayFrame(animName, luaL_checkinteger(L, 3));
+	}
+	else {
+		anm2->SetOverlayFrame(luaL_checkinteger(L, 2));
+	}
+	return 0;
+}
+
+static int Lua_SpriteStop(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	bool stopOverlay = true;
+	if (lua_isboolean(L, 2)) {
+		stopOverlay = lua_toboolean(L, 2);
+	}
+	anm2->GetAnimationState()->Stop();
+	if (stopOverlay) {
+		anm2->GetOverlayAnimationState()->Stop();
+	}
+	return 0;
+}
+
+static int Lua_SpriteStopOverlay(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	anm2->GetOverlayAnimationState()->Stop();
+	return 0;
+}
+
+static int Lua_SpriteContinue(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	bool continueOverlay = true;
+	if (lua_isboolean(L, 2)) {
+		continueOverlay = lua_toboolean(L, 2);
+	}
+	anm2->GetAnimationState()->Play();
+	if (continueOverlay) {
+		anm2->GetOverlayAnimationState()->Play();
+	}
+	return 0;
+}
+
+static int Lua_SpriteContinueOverlay(lua_State* L)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	anm2->GetOverlayAnimationState()->Play();
 	return 0;
 }
 
@@ -127,14 +177,14 @@ static int Lua_LayerStateGetName(lua_State* L)
 	return 1;
 }
 
-static int Lua_SpriteGetSpritesheetPath(lua_State* L)
+static int Lua_LayerStateGetSpritesheetPath(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
 	lua_pushstring(L, layerState->GetSpritesheetPath().c_str());
 	return 1;
 }
 
-static int Lua_SpriteGetDefaultSpritesheetPath(lua_State* L)
+static int Lua_LayerStateGetDefaultSpritesheetPath(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
 	lua_pushstring(L, layerState->GetDefaultSpritesheetPath().c_str());
@@ -284,8 +334,8 @@ static void RegisterLayerState(lua_State* L) {
 	luaL_Reg funcs[] = {
 		{ "GetLayerID", Lua_LayerStateGetLayerID },
 		{ "GetName", Lua_LayerStateGetName },
-		{ "GetSpritesheetPath", Lua_SpriteGetSpritesheetPath },
-		{ "GetDefaultSpritesheetPath", Lua_SpriteGetDefaultSpritesheetPath },
+		{ "GetSpritesheetPath", Lua_LayerStateGetSpritesheetPath },
+		{ "GetDefaultSpritesheetPath", Lua_LayerStateGetDefaultSpritesheetPath },
 		{ "IsVisible", Lua_LayerStateIsVisible },
 		{ "SetVisible", Lua_LayerStateSetVisible},
 		{ "GetSize", Lua_LayerStateGetSize},
@@ -318,10 +368,15 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// lua::RegisterFunction(state, mt, "GetAnimationState", Lua_SpriteGetAnimationState);
 	// lua::RegisterFunction(state, mt, "GetOverlayAnimationState", Lua_SpriteGetOverlayAnimationState);
 	lua::RegisterFunction(state, mt, "GetLayer", Lua_SpriteGetLayer);
-	lua::RegisterFunction(state, mt, "GetLayerByName", Lua_SpriteGetLayer_Text);
+	lua::RegisterFunction(state, mt, "GetLayerByName", Lua_SpriteGetLayer);  // Probably deprecated since GetLayer also accepts the name now.
 	lua::RegisterFunction(state, mt, "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet);
 	lua::RegisterFunction(state, mt, "IsOverlayEventTriggered", Lua_SpriteIsOverlayEventTriggered);
 	lua::RegisterFunction(state, mt, "WasOverlayEventTriggered", Lua_SpriteWasOverlayEventTriggered);
+	lua::RegisterFunction(state, mt, "SetOverlayFrame", Lua_SpriteSetOverlayFrame);
+	lua::RegisterFunction(state, mt, "Stop", Lua_SpriteStop);
+	lua::RegisterFunction(state, mt, "StopOverlay", Lua_SpriteStopOverlay);
+	lua::RegisterFunction(state, mt, "Continue", Lua_SpriteContinue);
+	lua::RegisterFunction(state, mt, "ContinueOverlay", Lua_SpriteContinueOverlay);
 	lua::RegisterFunction(state, mt, "GetBitFlags", Lua_SpriteGetBitFlags);
 	lua::RegisterFunction(state, mt, "SetBitFlags", Lua_SpriteSetBitFlags);
 	RegisterLayerState(state);

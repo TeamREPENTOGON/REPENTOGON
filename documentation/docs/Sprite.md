@@ -7,11 +7,21 @@
 Now accepts an optional `bool` to determine if Sprite:LoadGraphics should be called after replacing the spritesheet. In most cases, you'll want to do this.
 
 ___
+### Set·Overlay·Frame () {: aria-label='Functions' }
+#### void SetOverlayFrame ( int FrameNum ) {: .copyable aria-label='Functions' }
+New overload for `SetOverlayFrame()` that sets the frame for the current animation without stopping it, akin to the one for `SetFrame()`.
+
+___
+### Stop () {: aria-label='Functions' }
+#### void Stop ( bool StopOverlay = true ) {: .copyable aria-label='Functions' }
+Now accepts an optional `bool` for whether to also stop the overlay animation. Defaults to true.
+
+___
 
 ## Functions
 
 ### Get·All·Animation·Data () {: aria-label='Functions' }
-#### table GetAnimationData ( ) {: .copyable aria-label='Functions' }
+#### table GetAllAnimationData ( ) {: .copyable aria-label='Functions' }
 Returns a table of AnimationData representing all animations in this anm2 file.
 
 ___
@@ -27,8 +37,8 @@ ___
 #### [LayerState](LayerState.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Layer·By·Name () {: aria-label='Functions' }
-#### [LayerState](LayerState.md) GetLayerByName ( string LayerName ) {: .copyable aria-label='Functions' }
+### Get·Layer () {: aria-label='Functions' }
+#### [LayerState](LayerState.md) GetLayer ( string LayerName ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Null·Frame () {: aria-label='Functions' }
@@ -41,6 +51,20 @@ ___
 ___
 ### Get·Overlay·Null·Frame () {: aria-label='Functions' }
 #### [NullFrame](NullFrame.md) GetOverlayNullFrame ( string LayerName ) {: .copyable aria-label='Functions' }
+
+___
+### Continue () {: aria-label='Functions' }
+#### void Continue ( bool ContinueOverlay = true ) {: .copyable aria-label='Functions' }
+If the animation is currently stopped, makes it start playing again from the current frame. Will not restart a finished, non-looping animation.
+
+___
+### Continue·Overlay () {: aria-label='Functions' }
+#### void ContinueOverlay ( ) {: .copyable aria-label='Functions' }
+Same as above, but only for the overlay animation.
+
+___
+### Stop·Overlay () {: aria-label='Functions' }
+#### void StopOverlay ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Overlay·Event·Triggered () {: aria-label='Functions' }
