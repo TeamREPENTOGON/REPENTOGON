@@ -3,7 +3,7 @@
 ## Modified Functions
 
 ### Replace·Spritesheet () {: aria-label='Modified Functions' }
-#### void ReplaceSpritesheet ( int LayerId, string PngFilename, bool︎ LoadGraphics = false ) {: .copyable aria-label='Modified Functions' }
+#### void ReplaceSpritesheet ( int LayerId, string PngFilename, boolean LoadGraphics = false ) {: .copyable aria-label='Modified Functions' }
 Now accepts an optional `bool` to determine if Sprite:LoadGraphics should be called after replacing the spritesheet. In most cases, you'll want to do this.
 
 ___
@@ -13,7 +13,7 @@ New overload for `SetOverlayFrame()` that sets the frame for the current animati
 
 ___
 ### Stop () {: aria-label='Functions' }
-#### void Stop ( bool StopOverlay = true ) {: .copyable aria-label='Functions' }
+#### void Stop ( boolean StopOverlay = true ) {: .copyable aria-label='Functions' }
 Now accepts an optional `bool` for whether to also stop the overlay animation. Defaults to true.
 
 ___
@@ -54,7 +54,7 @@ ___
 
 ___
 ### Continue () {: aria-label='Functions' }
-#### void Continue ( bool ContinueOverlay = true ) {: .copyable aria-label='Functions' }
+#### void Continue ( boolean ContinueOverlay = true ) {: .copyable aria-label='Functions' }
 If the animation is currently stopped, makes it start playing again from the current frame. Will not restart a finished, non-looping animation.
 
 ___
