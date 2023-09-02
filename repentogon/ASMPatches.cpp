@@ -308,11 +308,11 @@ void ASMPatchFamiliarGetMultiplier() {
 	patch.AddBytes("\x83\xC4\x08") // add esp, 4
 		.PreserveRegisters(reg)
 		.AddBytes("\x57") // push edi
-		.AddInternalCall(FamiliarGetMultiplierTrampoline)
-		.AddBytes("\x84\xC0")
+		.AddInternalCall(FamiliarGetMultiplierTrampoline) // call FamiliarGetMultiplierTrampoline()
+		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x16)
-		.AddRelativeJump((char*)addr + 0x9);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x16) // jump for false
+		.AddRelativeJump((char*)addr + 0x9); // jump for true
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -515,7 +515,7 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 		// The EntityPlayer::TakeDamage patch needs to ask Al if the damage occured.
 		// The Entity::TakeDamage patch doesn't need to do this since it is at a location that only runs after damage.
 		patch.AddBytes("\x84\xC0") // Test Al (Al?)
-			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + numOverriddenBytes);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + numOverriddenBytes);
 	}
 	patch.PreserveRegisters(savedRegisters)
 		.AddBytes("\x31\xC0");  // xor eax,eax
@@ -613,7 +613,7 @@ void ASMPatchModsMenu() {
 }
 
 // The void now draws from all floors
-void __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomConfig*>* rooms, int type, int shape, int minVariant,
+void __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomConfig*>* rooms, int type, int shape, int minVariant, 
 	int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) {
 	for (int i = 1; i < 37; ++i) {
 		if ((i > 17 && i < 27) || i == 34 || i == 35)
@@ -671,7 +671,7 @@ void ASMPatchVoidGeneration() {
 * This makes Hush enter "panic" state at 50% HP and not 0.5%. Oops!
 */
 float zeroPointFive = 0.005f; // set this to 1 for fun results!
-void PerformHushPatch(void* addr) {
+void PerformHushPatch(void* addr) { 
 	MEMORY_BASIC_INFORMATION info;
 	DWORD old_protect = SetPageMemoryRW(addr, &info);
 	DWORD _dummy;
