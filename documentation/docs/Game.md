@@ -105,6 +105,14 @@ ___
 #### [StageTransition](StageTransition.md) GetStageTransition ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Is·Greed·Boss () {: aria-label='Functions' }
+#### boolean IsGreedBoss ( ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Greed·Final·Boss () {: aria-label='Functions' }
+#### boolean IsGreedFinalBoss ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Hard·Mode () {: aria-label='Functions' }
 #### boolean IsHardMode ( ) {: .copyable aria-label='Functions' }
 Returns `true` if hard mode or greedier

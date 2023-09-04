@@ -117,6 +117,22 @@ LUA_FUNCTION(lua_GameStartStageTransition) {
 	return 0;
 }
 
+int Lua_GameIsGreedBoss(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushboolean(L, game->IsGreedBoss());
+
+	return 1;
+}
+
+int Lua_GameIsGreedFinalBoss(lua_State* L)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushboolean(L, game->IsGreedFinalBoss());
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -134,6 +150,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "AddDebugFlags", Lua_GameAddDebugFlags);
 	//lua::RegisterFunction(state, mt, "SpawnBombCrater", Lua_GameSpawnBombCrater);
 	lua::RegisterFunction(state, mt, "DevolveEnemy", Lua_GameDevolveEnemy);
+	lua::RegisterFunction(state, mt, "IsGreedBoss", Lua_GameIsGreedBoss);
+	lua::RegisterFunction(state, mt, "IsGreedFinalBoss", Lua_GameIsGreedFinalBoss);
 
 	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
 	lua::RegisterFunction(state, mt, "StartStageTransition", lua_GameStartStageTransition);
