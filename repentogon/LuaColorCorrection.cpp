@@ -112,8 +112,12 @@ static void RegisterColorCorrection(lua_State* L) {
 
 	luaL_newmetatable(L, lua::metatables::ColorCorrectionMT);
 	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua_pushcfunction(L, lua::luabridge::indexMetaMethod);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__newindex");
+	lua_pushcfunction(L, lua::luabridge::newIndexMetaMethod);
+	lua_rawset(L, -3);
 
 	/*
 		from http://lua-users.org/wiki/SimpleLuaApiExample, to a future nami
