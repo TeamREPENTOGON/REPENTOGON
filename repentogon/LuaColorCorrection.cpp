@@ -160,7 +160,6 @@ static void RegisterColorCorrection(lua_State* L) {
 	lua_rawset(L, -3);
 
 	lua_rawset(L, -3);
-	lua_rawset(L, -3);
 
 	// and repeat!
 	lua_pushstring(L, "__propset");
@@ -190,7 +189,6 @@ static void RegisterColorCorrection(lua_State* L) {
 	lua_pushcfunction(L, Lua_SetContrast);
 	lua_rawset(L, -3);
 
-	lua_rawset(L, -3);
 	lua_rawset(L, -3);
 
 	lua_pop(L, 1);
