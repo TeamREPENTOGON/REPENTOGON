@@ -59,7 +59,7 @@ __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 __thiscall void Room::SetPauseTimer(int Duration);
 
 "558bec568b75??578bf98b87":
-__thiscall ColorModState* Room::ComputeColorModifier(ColorModState* color);
+__thiscall ColorModState Room::ComputeColorModifier();
 
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{

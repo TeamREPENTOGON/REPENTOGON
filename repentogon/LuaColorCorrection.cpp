@@ -125,10 +125,11 @@ int Lua_ColorCorrectionUpdate(lua_State* L)
 
 	logger.Log("process is %s, lerp is %s, rate is %f\n", process ? "TRUE" : "FALSE", lerp ? "TRUE" : "FALSE", rate);
 
+	ColorModState current;
 	if (process) {
 		logger.Log("trying Room():ComputeColorModifier(color)");
 		Room* room = *g_Game->GetCurrentRoom();
-		color = room->ComputeColorModifier(color);
+		current = room->ComputeColorModifier();
 	}
 	logger.Log("trying Game():SeteColorModifier(color, %s, %f)", lerp ? "true" : "false", rate);
 	g_Game->SetColorModifier(color, lerp, rate);
