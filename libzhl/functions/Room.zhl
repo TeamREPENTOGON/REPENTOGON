@@ -58,6 +58,9 @@ __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 "558bec568bf133c03986":
 __thiscall void Room::SetPauseTimer(int Duration);
 
+"558bec568b75??578bf98b87":
+__thiscall ColorModState* Room::ComputeColorModifier(ColorModState* color);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }

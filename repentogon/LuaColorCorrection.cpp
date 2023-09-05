@@ -4,6 +4,8 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+#include "Log.h"
+
 static int Lua_FXParamsGetColorCorrection(lua_State* L) {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	ColorModState** ud = (ColorModState**)lua_newuserdata(L, sizeof(ColorModState*));
@@ -108,6 +110,31 @@ int Lua_SetContrast(lua_State* L)
 	return 0;
 }
 
+int Lua_ColorCorrectionUpdate(lua_State* L)
+{
+	ZHL::Logger logger;
+	logger.Log("doing ColorCorrection():Update");
+	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
+	bool process = true;
+	if lua_isboolean(L, 2)
+		process = lua_toboolean(L, 2);
+	bool lerp = false;
+	if lua_isboolean(L, 3)
+		lerp = lua_toboolean(L, 3);
+	float rate = (float)luaL_optnumber(L, 4, 0.015);
+
+	logger.Log("process is %s, lerp is %s, rate is %f\n", process ? "TRUE" : "FALSE", lerp ? "TRUE" : "FALSE", rate);
+
+	if (process) {
+		logger.Log("trying Room():ComputeColorModifier(color)");
+		Room* room = *g_Game->GetCurrentRoom();
+		color = room->ComputeColorModifier(color);
+	}
+	logger.Log("trying Game():SeteColorModifier(color, %s, %f)", lerp ? "true" : "false", rate);
+	g_Game->SetColorModifier(color, lerp, rate);
+	return 0;
+}
+
 static void RegisterColorCorrection(lua_State* L) {
 
 	luaL_newmetatable(L, lua::metatables::ColorCorrectionMT);
@@ -194,6 +221,13 @@ static void RegisterColorCorrection(lua_State* L) {
 	lua_rawset(L, -3);
 
 	lua_rawset(L, -3);
+
+	luaL_Reg functions[] = {
+	{ "Update", Lua_ColorCorrectionUpdate },
+	{ NULL, NULL }
+	};
+
+	luaL_setfuncs(L, functions, 0);
 
 	lua_pop(L, 1);
 }
