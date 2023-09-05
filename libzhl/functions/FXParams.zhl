@@ -1,0 +1,21 @@
+"c7010000803f8bc1c741??0000803fc741??0000803fc741??00000000e":
+__thiscall FXParams* FXParams::Init();
+
+struct FXParams depends (KColor, ColorMod, ColorModState) { {{
+	inline ColorModState* GetColorCorrection() { return &this->ColorCorrection; }
+	inline bool* GetUnknownBool() { return &this->unkBool; }
+	inline KColor* GetUnknownKColor1() { return &this->unkColor1; }
+	inline KColor* GetUnknownKColor2() { return &this->unkColor2; }
+	inline float* GetRoomLightingAlpha() { return &this->RoomLightingAlpha; }
+	inline KColor* GetRoomLightingKColor() { return &this->RoomLightingOverlay; }
+	inline KColor* GetFXLightingKColor() { return &this->FXLighting; }
+	inline ColorMod* GetUnknownColor() { return &this->unkColorMod; }
+}}
+	ColorModState ColorCorrection; //0x0
+	bool unkBool; //0x18
+	char pad0[3];
+	KColor unkColor1, unkColor2; //0x1c
+	float RoomLightingAlpha; //0x3c,
+	KColor RoomLightingOverlay, FXLighting; //0x40,
+	ColorMod unkColorMod; //0x60
+}; //0x8c

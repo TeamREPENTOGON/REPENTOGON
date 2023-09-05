@@ -1,0 +1,10 @@
+struct ColorModState { {{
+	inline float* GetR() { return &this->R; }
+	inline float* GetG() { return &this->G; }
+	inline float* GetB() { return &this->B; }
+	inline float* GetA() { return &this->A; }
+	inline float* GetBrightness() { return &this->Brightness; }
+	inline float* GetContrast() { return &this->Contrast; }
+}}
+    float R, G, B, A, Brightness, Contrast;
+}; // 0x18

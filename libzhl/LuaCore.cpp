@@ -593,6 +593,8 @@ namespace lua {
 		const char* DailyChallengeMT = "DailyChallenge";
 		const char* ItemOverlayMT = "ItemOverlay";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
+		const char* FXParamsMT = "FXParams";
+		const char* ColorCorrectionMT = "ColorCorrection";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {
