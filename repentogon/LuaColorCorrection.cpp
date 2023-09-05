@@ -112,8 +112,8 @@ int Lua_SetContrast(lua_State* L)
 
 int Lua_ColorCorrectionUpdate(lua_State* L)
 {
-	ZHL::Logger logger;
-	logger.Log("doing ColorCorrection():Update");
+	//ZHL::Logger logger;
+	//logger.Log("doing ColorCorrection():Update");
 	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
 	bool process = true;
 	if lua_isboolean(L, 2)
@@ -123,15 +123,16 @@ int Lua_ColorCorrectionUpdate(lua_State* L)
 		lerp = lua_toboolean(L, 3);
 	float rate = (float)luaL_optnumber(L, 4, 0.015);
 
-	logger.Log("process is %s, lerp is %s, rate is %f\n", process ? "TRUE" : "FALSE", lerp ? "TRUE" : "FALSE", rate);
+	//logger.Log("process is %s, lerp is %s, rate is %f\n", process ? "TRUE" : "FALSE", lerp ? "TRUE" : "FALSE", rate);
 
 	ColorModState current;
 	if (process) {
-		logger.Log("trying Room():ComputeColorModifier(color)");
+		//logger.Log("trying Room():ComputeColorModifier()");
 		Room* room = *g_Game->GetCurrentRoom();
 		current = room->ComputeColorModifier();
+		color = &current;
 	}
-	logger.Log("trying Game():SeteColorModifier(color, %s, %f)", lerp ? "true" : "false", rate);
+	//logger.Log("trying Game():SeteColorModifier(color, %s, %f)", lerp ? "true" : "false", rate);
 	g_Game->SetColorModifier(color, lerp, rate);
 	return 0;
 }
