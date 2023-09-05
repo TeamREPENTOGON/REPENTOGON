@@ -7,7 +7,7 @@ namespace ZHL {
 
 	class LIBZHL_API Logger {
 	public:
-		Logger();
+		Logger(bool forceFlush = false);
 		~Logger();
 
 		void Log(const char* fmt, ...);
@@ -15,5 +15,6 @@ namespace ZHL {
 
 	private:
 		FILE* _f;
+		bool _forceFlush;
 	};
 }

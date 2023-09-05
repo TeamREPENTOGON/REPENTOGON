@@ -19,8 +19,9 @@ void ZHL::Log(const char* fmt, ...) {
 }
 
 namespace ZHL {
-	Logger::Logger() {
+	Logger::Logger(bool forceFlush) {
 		_f = fopen(ZHL_LOG_FILE, "a");
+		_forceFlush = forceFlush;
 	}
 
 	Logger::~Logger() {
@@ -37,5 +38,8 @@ namespace ZHL {
 		va_start(va, fmt);
 		vfprintf(_f, fmt, va);
 		va_end(va);
+
+		if (_forceFlush)
+			fflush(_f);
 	}
 }
