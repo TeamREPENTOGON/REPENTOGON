@@ -36,8 +36,5 @@ struct PersistentGameData { {{
 		return savedata != false; 
 	}
 }}
-	char unk1[0x38];
-	bool achievements[638];
-
- };
-
+	bool achievements[638] : 0x38;
+} : 0xf20;

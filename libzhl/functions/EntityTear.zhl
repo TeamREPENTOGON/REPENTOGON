@@ -6,4 +6,4 @@ __thiscall bool Entity_Tear::HandleCollision(Entity* collider, bool low);
 
 struct Entity_Tear : public Entity {
 
-};
+} : 0x778;

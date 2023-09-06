@@ -5,7 +5,6 @@ struct Capsule depends (Vector) { {{
 	inline Vector* GetVec1() { return &_vec1; }
 	inline Vector* GetVec2() { return &_vec2; }
 }} 
-	Vector _vec1;
-	Vector _vec2;
-	char _pad1[24];
-};
+	Vector _vec1 : 0x0;
+	Vector _vec2 : 0x8;
+} : 0x28;

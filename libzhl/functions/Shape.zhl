@@ -5,4 +5,4 @@ struct Shape { {{
 	inline int* GetTimeout() { return (int*)((char*)this + 0x4); }
 }} 
 	
-};
+} : 0x8;

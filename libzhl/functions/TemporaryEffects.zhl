@@ -1,8 +1,6 @@
 struct TemporaryEffects
 {
-    int _unk;
-    vector_TemporaryEffect _effects;
-    int _unk2;
-    int _disabled;
-    Entity_Player* _player;
-};
+    vector_TemporaryEffect _effects : 0x4;
+    int _disabled: 0x14; // Should be bool though...
+    Entity_Player* _player : 0x18;
+} : 0x1c;

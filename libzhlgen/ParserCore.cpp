@@ -506,6 +506,13 @@ std::any Parser::visitClass(ZHLParser::ClassContext* ctx) {
 
     visit(ctx->classBody());
 
+    if (auto number = ctx->Number()) {
+        size_t size;
+        std::string sizeStr(ctx->Number()->getText());
+        size = std::strtoull(sizeStr.c_str(), NULL, 0);
+        st->_size = size;
+    }
+
     return 0;
 }
 
@@ -650,8 +657,8 @@ std::any Parser::visitClassField(ZHLParser::ClassFieldContext* ctx) {
     Type* base = std::any_cast<Type*>(visit(ctx->type()));
     for (auto fieldCtx : ctx->innerField()) {
         Type* copy = base;
-        auto [decls, name] =
-            std::any_cast<std::tuple<std::vector<PointerDecl>, FullNameV>>(visit(fieldCtx));
+        auto [decls, name, offset] =
+            std::any_cast<std::tuple<std::vector<PointerDecl>, FullNameV, size_t>>(visit(fieldCtx));
 
         Variable variable;
         if (std::holds_alternative<Array>(name)) {
@@ -669,6 +676,7 @@ std::any Parser::visitClassField(ZHLParser::ClassFieldContext* ctx) {
 
 
         variable._type = copy;
+        variable._offset = offset;
         _currentStruct->_namespace._fields.push_back(variable);
     }
 
@@ -682,8 +690,11 @@ std::any Parser::visitInnerField(ZHLParser::InnerFieldContext* ctx) {
     }
 
     FullNameV name = std::any_cast<FullNameV>(visit(ctx->fullName()));
+    std::string offsetStr(ctx->Number()->getText());
+    
+    size_t offset = std::strtoull(offsetStr.c_str(), NULL, 0);
 
-    return std::make_tuple(ptrs, name);
+    return std::make_tuple(ptrs, name, offset);
 }
 
 std::any Parser::visitInnerFieldPtr(ZHLParser::InnerFieldPtrContext* context) {
@@ -915,6 +926,7 @@ std::any Parser::visitTypeInfo(ZHLParser::TypeInfoContext* ctx) {
     struct {
         std::optional<Type*> _type;
         size_t _size = 0;
+        size_t _align = 0;
     } typeInfo;
 
     std::string name(ctx->Name()->getText());
@@ -929,11 +941,22 @@ std::any Parser::visitTypeInfo(ZHLParser::TypeInfoContext* ctx) {
             }
         }
         else {
-            if (typeInfo._size != 0) {
-                _errors << ErrorLogger::error << "Multiple sizes specified for type " << name << ErrorLogger::endl << ErrorLogger::_end;
+            TypeInfoData data = std::get<TypeInfoData>(info);
+            if (data._tag == TypeInfoTag::SIZE) {
+                if (typeInfo._size != 0) {
+                    _errors << ErrorLogger::error << "Multiple sizes specified for type " << name << ErrorLogger::endl << ErrorLogger::_end;
+                }
+                else {
+                    typeInfo._size = data._data;
+                }
             }
             else {
-                typeInfo._size = std::get<size_t>(info);
+                if (typeInfo._align != 0) {
+                    _errors << ErrorLogger::error << "Multiple alignments specified for type " << name << ErrorLogger::endl << ErrorLogger::_end;
+                }
+                else {
+                    typeInfo._align = data._data;
+                }
             }
         }
     }
@@ -941,10 +964,15 @@ std::any Parser::visitTypeInfo(ZHLParser::TypeInfoContext* ctx) {
     Type* type = GetOrCreateTypeByName(name);
     if (typeInfo._type) {
         type->_synonym = *typeInfo._type;
+        type->_value = name;
     }
 
     if (typeInfo._size != 0) {
         type->_size = typeInfo._size;
+    }
+
+    if (typeInfo._align != 0) {
+        type->_alignment = typeInfo._align;
     }
 
     return 0;
@@ -953,14 +981,21 @@ std::any Parser::visitTypeInfo(ZHLParser::TypeInfoContext* ctx) {
 std::any Parser::visitTypeInfoDef(ZHLParser::TypeInfoDefContext* ctx) {
     TypeInfoV result;
     if (ctx->Size()) {
-        std::stringstream s;
-        s << ctx->Number()->getText();
-        size_t size;
-        s >> size;
-        result = size;
+        std::string sizeStr(ctx->Number()->getText());
+        TypeInfoData data;
+        data._tag = TypeInfoTag::SIZE;
+        data._data = std::strtoull(sizeStr.c_str(), NULL, 0);
+        result = data;
+    }
+    else if (ctx->Synonym()) {
+        result = std::any_cast<Type*>(visit(ctx->type()));
     }
     else {
-        result = std::any_cast<Type*>(visit(ctx->type()));
+        TypeInfoData data;
+        data._tag = TypeInfoTag::ALIGN;
+        std::string alignStr(ctx->Number()->getText());
+        data._data = std::strtoull(alignStr.c_str(), NULL, 0);
+        result = data;
     }
 
     return result;
@@ -1140,4 +1175,22 @@ Type* Parser::ConstQualify(Type const* source) {
 
 std::string Parser::ReadSignature(const std::string& signature) {
     return signature.substr(1, signature.length() - 3);
+}
+
+std::vector<std::string> ErrorsHolder::_errors;
+
+void ErrorsHolder::ThrowOrLog(std::ostringstream const& str) {
+#ifdef ZHL_PARSER_THROW
+    throw std::runtime_error(str);
+#else
+    _errors.push_back(str.str());
+#endif
+}
+
+bool ErrorsHolder::HasErrors() {
+    return _errors.size() != 0;
+}
+
+std::vector<std::string> const& ErrorsHolder::GetErrors() {
+    return _errors;
 }

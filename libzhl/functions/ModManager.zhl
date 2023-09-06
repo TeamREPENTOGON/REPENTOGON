@@ -15,5 +15,5 @@ __thiscall void ModManager::LoadConfigs();
 __thiscall void ModManager::Reset();
 
 struct ModManager depends (ModEntry) {
-	vector_ModEntryPointer _mods;
-};
+	vector_ModEntryPointer _mods : 0x0;
+} : 0x2025c;

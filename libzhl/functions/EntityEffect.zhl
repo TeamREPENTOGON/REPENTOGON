@@ -6,4 +6,4 @@ static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t
 
 struct Entity_Effect : public Entity {
 
-};
+} : 0x3e0;

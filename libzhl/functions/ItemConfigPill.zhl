@@ -1,6 +1,4 @@
 struct ItemConfigPill {
-    char unk[0x8]; // 0x0
-    std_string name; // 0x8
-    char unk2[0x2C]; // 0x20
-    uint8_t effectClass, effectSubClass; // 0x4c
-};
+    std_string name : 0x8; // 0x8
+    uint8_t effectClass : 0x4C, effectSubClass : 0x4D; // 0x4c
+} : 0x50;

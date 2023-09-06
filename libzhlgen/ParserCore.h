@@ -45,6 +45,17 @@ private:
     std::optional<std::string> _filename;
 };
 
+class ErrorsHolder {
+public:
+    static void ThrowOrLog(std::ostringstream const& str);
+    static bool HasErrors();
+    static std::vector<std::string> const& GetErrors();
+
+private:
+    static std::vector<std::string> _errors;
+};
+
+
 class Parser : public ZHLParserBaseVisitor {
 public:
     Parser(Namespace* global, std::map<std::string, Type>* types, std::string const& filename);

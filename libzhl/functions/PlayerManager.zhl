@@ -31,5 +31,5 @@ __thiscall void PlayerManager::TriggerRoomClear();
 
 struct PlayerManager depends (RNG)
 {
-    RNG _rng; //0x0
-};
+    RNG _rng : 0x0; //0x0
+} : 0x18;

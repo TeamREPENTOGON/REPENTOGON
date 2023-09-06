@@ -255,7 +255,7 @@ Type::~Type() {
 }
 
 bool Type::IsPointer() const {
-    return !_pointerDecl.empty();
+    return !_pointerDecl.empty() || IsFunctionPointer();
 }
 
 bool Type::IsEmpty() const {
@@ -358,6 +358,9 @@ std::string Type::ToString(bool full) const {
         }
         else {
             if (_synonym) {
+                if (!std::holds_alternative<std::string>(_value)) {
+                    std::cerr << "Type " << GetFullName() << " is a synonym that doesn't hold a name, somehow" << std::endl;
+                }
                 res << std::get<std::string>(_value) << " => " << _synonym->ToString(false);
             }
             else {
@@ -449,6 +452,67 @@ size_t Type::size() const {
     }
 }
 
+size_t Type::alignment() const {
+    if (_alignment)
+        return *_alignment;
+
+    Type* type = const_cast<Type*>(this)->GetTrueType();
+    if (type->_alignment)
+        return *type->_alignment;
+
+    if (type->IsPointer()) {
+        return 4;
+    }
+    else if (type->IsBasic()) {
+        return type->size();
+    }
+    else if (type->IsStruct()) {
+        // The alignment of a structure is recursively defined as the highest 
+        // alignment constraint of its attributes. 
+        //
+        // Basic types (including pointers) have clearly defined alignment
+        // constraints (see above).
+        // When processing a structure, explode its internal structures as 
+        // a collection of basic types.
+
+        // Start by iterating over the fields of the struct itself
+        size_t maxAlign = 0;
+        for (Variable const& var : type->GetStruct()._namespace._fields) {
+            // This cannot trigger an infinite recursion. If I start computing the 
+            // alignment of the current type again, then it means there exists 
+            // a dependency path in the code that leads back here, therefore 
+            // the structure has an infinite size and the program is ill-formed.
+            size_t align = var._type->alignment();
+            if (align > maxAlign) {
+                maxAlign = align;
+            }
+
+            // Under MSVC x86, the maximum alignment constraint is 8 (long long and 
+            // long double)
+            if (maxAlign == 8)
+                return maxAlign;
+        }
+
+        for (std::tuple<Type*, Visibility> const& dep : type->GetStruct()._parents) {
+            size_t align = std::get<Type*>(dep)->alignment();
+            if (align > maxAlign) {
+                maxAlign = align;
+            }
+
+            if (maxAlign == 8)
+                return maxAlign;
+        }
+
+        return maxAlign;
+    }
+    else if (_array) {
+        return _base->alignment();
+    } else {
+        throw std::runtime_error("Unable to compute alignment constraint");
+        return 0;
+    }
+}
+
 std::string Struct::ToString(bool full) const {
     std::ostringstream str;
     if (full) {
@@ -459,7 +523,7 @@ std::string Struct::ToString(bool full) const {
         }
         str << "\tFields: " << std::endl;
         for (Variable const& variable : _namespace._fields) {
-            str << variable._type->ToString(false) << " " << variable._name << std::endl;
+            str << variable._type->ToString(false) << " " << variable._name << " " << *variable._offset << std::endl;
         }
     }
     else {
@@ -469,6 +533,9 @@ std::string Struct::ToString(bool full) const {
 }
 
 size_t Struct::size() const {
+    if (_size)
+        return *_size;
+
     size_t s = 0;
     std::for_each(_namespace._fields.begin(), _namespace._fields.end(), [&s](Variable const& var) -> void { s += var._type->size();  });
     return s;
@@ -910,4 +977,15 @@ bool Signature::operator==(Signature const& other) const {
         return true;
 
     return _sig == other._sig;
+}
+
+bool Variable::operator<(Variable const& rhs) const {
+    int64_t l = -1, r = -1;
+    if (_offset)
+        l = *_offset;
+
+    if (rhs._offset)
+        r = *rhs._offset;
+
+    return l < r;
 }

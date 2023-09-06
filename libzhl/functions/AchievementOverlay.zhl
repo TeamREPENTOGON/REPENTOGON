@@ -3,10 +3,14 @@ __thiscall void AchievementOverlay::Update();
 
 
 struct AchievementOverlay depends (ANM2) { {{
-	inline ANM2* GetANM2() {return (ANM2*)((char*)this + 0x20); }
+	inline ANM2* GetANM2() { return &anm2; }
 }}
-	char unk1[0x12];
-	uint32_t displayedachievement; //achievement id of the current pop
-	uint32_t frame; //update frames elapsed while the pop up is still
-	uint32_t status; //1: sliding-in 2:still 3:sliding-out 0:done
- };
+	uint32_t displayedachievement : 0x14; //achievement id of the current pop
+	uint32_t frame : 0x18; //update frames elapsed while the pop up is still
+	uint32_t status : 0x1c; //1: sliding-in 2:still 3:sliding-out 0:done
+        ANM2 anm2 : 0x20;
+} : 0x82d0;
+
+struct AchievementOverlay_Entry {
+
+} : 0x34;

@@ -3,4 +3,4 @@ __thiscall int BossPool::GetBossId(int leveltype, int levelvariant, RNG* rng);
 
 struct BossPool {
 
-};
+} : 0x8ac;

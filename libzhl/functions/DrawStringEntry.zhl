@@ -1,9 +1,9 @@
 struct DrawStringEntry depends (KColor)
 {
-    const char* _text; // 0x0
-    float _x; // 0x4
-    float _y; // 0x8
-    KColor _color; // 0xC
-    int _boxWidth; // 0x1C
-    bool _center; // 0x20
-}; // 0x24 (not confirmed)
+    const char* _text : 0x0; // 0x0
+    float _x : 0x4; // 0x4
+    float _y : 0x8; // 0x8
+    KColor _color : 0xC; // 0xC
+    int _boxWidth : 0x1c; // 0x1C
+    bool _center : 0x20; // 0x20
+} : 0x24; // 0x24 (not confirmed)

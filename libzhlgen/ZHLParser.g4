@@ -15,7 +15,8 @@ typeInfo:
 
 typeInfoDef:
     Size Number Semi |
-    Synonym type Semi;
+    Synonym type Semi |
+    Align Number Semi;
     
 function:
     Qualifier* CallingConvention? type nestedName LeftParen funArgs? RightParen Semi;
@@ -75,7 +76,7 @@ genericCode:
     GenericCode; // LeftBracket LeftBracket Any* RightBracket RightBracket;
     
 class: 
-    (Class | Struct) Name depends? (Colon inheritance)? LeftBracket classBody RightBracket Semi;
+    (Class | Struct) Name depends? (Colon inheritance)? LeftBracket classBody RightBracket (Colon Number)? Semi;
     
 inheritance:
     inheritanceDecl (Comma inheritanceDecl)*;
@@ -111,7 +112,7 @@ classField:
     type innerField (Comma innerField)* Semi;
     
 innerField:
-    innerFieldPtr* fullName;
+    innerFieldPtr* fullName Colon Number;
 
 innerFieldPtr:
     Star Const?;

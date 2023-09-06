@@ -1,23 +1,20 @@
 struct LevelGenerator_Room
 {
-    bool _unk1; // 0x0
-    char pad0[0x3]; // 0x1
-    uint32_t _generationIndex; // 0x4
-    uint32_t _gridColIdx; // 0x8
-    uint32_t _gridLineIdx; // 0xC
-    uint32_t _horizontalSize; // 0x10
-    uint32_t _verticalSize; // 0x14
-    uint32_t _shape; // 0x18
-    uint32_t _doors; // 0x1C
-    int32_t _originNeighborConnectDir; // 0x20
-    int32_t _originNeighborConnectDirAdjust; // 0x24
-    int32_t _linkColIdx; // 0x28
-    int32_t _linkLineIdx; // 0x2C
-    std_set_int _neighbors; // 0x30
-    uint32_t _setExtraField; // 0x38
-    bool _deadEnd; // 0x3C
-    char pad2[0x3]; // 0x3D
-    uint32_t _distanceFromStart; // 0x40
-    bool _unk8; // 0x44
-    char pad3[0x3]; // 0x45
-}; // 0x48
+    bool _unk1 : 0x0; // 0x0
+    uint32_t _generationIndex : 0x4; // 0x4
+    uint32_t _gridColIdx : 0x8; // 0x8
+    uint32_t _gridLineIdx : 0xc; // 0xC
+    uint32_t _horizontalSize : 0x10; // 0x10
+    uint32_t _verticalSize : 0x14; // 0x14
+    uint32_t _shape : 0x18; // 0x18
+    uint32_t _doors : 0x1c; // 0x1C
+    int32_t _originNeighborConnectDir : 0x20; // 0x20
+    int32_t _originNeighborConnectDirAdjust : 0x24; // 0x24
+    int32_t _linkColIdx : 0x28; // 0x28
+    int32_t _linkLineIdx : 0x2c; // 0x2C
+    std_set_int _neighbors : 0x30; // 0x30
+    uint32_t _setExtraField : 0x38; // 0x38
+    bool _deadEnd : 0x3C; // 0x3C
+    uint32_t _distanceFromStart : 0x40; // 0x40
+    bool _unk8 : 0x44; // 0x44
+} : 0x48; // 0x48

@@ -2,9 +2,9 @@ struct Menu_Cutscenes depends (ANM2) {
 {{
 	inline ANM2* GetCutscenesMenuSprite() { return &this->CutscenesMenuSprite; }
 }}
-	int HoldInputTimer;
-	int SelectedElement;
-	float PositionX;
-	float PositionY;
-	ANM2 CutscenesMenuSprite;
-};
+	int HoldInputTimer : 0x0;
+	int SelectedElement : 0x4;
+	float PositionX : 0x8;
+	float PositionY : 0xC;
+	ANM2 CutscenesMenuSprite : 0x10;
+} : 0x124;

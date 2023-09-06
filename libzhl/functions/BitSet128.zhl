@@ -4,5 +4,5 @@ struct BitSet128 { {{
 
 
 }} 
-    uint64_t l, h;
-};
+    uint64_t l : 0x0, h : 0x8;
+} : 0x10;

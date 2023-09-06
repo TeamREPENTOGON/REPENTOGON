@@ -38,7 +38,7 @@ struct Entity_NPC : public Entity {
 	inline std_vector_uint GetHitList() { return *(std_vector_uint*)((char*)this + 0xE5C); }
 	inline int32_t * GetControllerId() { return (int32_t *)((char*)this + 0xE6C); }
 	inline void SetControllerId(int32_t  x) { *(int32_t *)((char*)this + 0xE6C) = x; }
-}} };
+}} } : 0xeb0;
 
 
 

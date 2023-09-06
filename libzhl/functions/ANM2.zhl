@@ -71,33 +71,29 @@ struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
     inline unsigned int* GetBitFlags() { return &this->_bitflags; } 
 	inline ColorMod* GetColor() { return &this->_color; } 
 }} 
-    std_string _filename;
-    std_string _animDefaultName;
-    AnimationState _animState;  // 0x30
-    AnimationState _overlayAnimState;  // 0x50
-    bool _overlayRenderFirst;
-    char _pad0[3];
-    AnimationData* _animData;
-    int _animCount;
-    LayerState* _layerState;
-    unsigned int _layerCount;  // 0x80
-    std_string* _nullLayerNames;
-    unsigned int _numNullLayers;
-    std_string* _eventNames;
-    unsigned int _numEvents;
-    Vector _offset;
-    Vector _scale;
-    float _rotation;
-    ColorMod _color;  // 0xa8
-    KColor _kColor;
-    char _pad1[28];
-    bool _flipX;
-    bool _flipY;
-    char _pad2[2];
-    float _playbackSpeed;
-    char _pad3[8];
-    unsigned int _bitflags; // 0x110 
-};
+    std_string _filename : 0x0;
+    std_string _animDefaultName : 0x18;
+    AnimationState _animState : 0x30;
+    AnimationState _overlayAnimState : 0x50;
+    bool _overlayRenderFirst : 0x70;
+    AnimationData* _animData : 0x74;
+    int _animCount : 0x78;
+    LayerState* _layerState : 0x7C;
+    unsigned int _layerCount : 0x80;
+    std_string* _nullLayerNames : 0x84;
+    unsigned int _numNullLayers : 0x88;
+    std_string* _eventNames : 0x8c;
+    unsigned int _numEvents : 0x90;
+    Vector _offset : 0x94;
+    Vector _scale : 0x9c;
+    float _rotation : 0xa4;
+    ColorMod _color : 0xa8;
+    KColor _kColor : 0xd4;
+    bool _flipX : 0x100;
+    bool _flipY : 0x101;
+    float _playbackSpeed : 0x104;
+    unsigned int _bitflags : 0x110;
+} : 0x114;
 
 
 "f30f100d(????????)f30f1005????????f30f590d????????8b07":

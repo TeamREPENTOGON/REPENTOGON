@@ -12,23 +12,21 @@ struct LayerState depends (LayerData, ANM2, Vector, ColorMod, BitSet128) { {{
 	inline unsigned int* GetBitFlags() { return &this->_bitflags; }
 	inline Vector* GetCropOffset() { return &this->_cropOffset; } 
 }} 
-    LayerData* _layerData;  // 0x00
-    ANM2* _animation;  // 0x04
-    std_string _spriteSheetPath;  // 0x08
-    unsigned int _minFilterMode;  // 0x20
-    unsigned int _magFilterMode;  // 0x24
-    unsigned int _wrapSMode;  // 0x28
-    unsigned int _wrapTMode;  // 0x2C
-    char _unk[4];  // 0x30
-    Vector _size;  // 0x34
-    float _rotation;  // 0x3c
-    Vector _pos;  // 0x40
-    ColorMod _color;  // 0x48
-    bool _visible;  // 0x74
-    char _boolPadding[3];
-    BitSet128 _blendMode;  // 0x78
-    unsigned int _bitflags;  // 0x88
-    Vector _cropOffset;  // 0x8c
-    char _imageBasePtr[4];  // 0x94
-    char _unkPtr[4];  // 0x98
-};
+    LayerData* _layerData : 0x0;  // 0x00
+    ANM2* _animation : 0x4;  // 0x04
+    std_string _spriteSheetPath : 0x8;  // 0x08
+    unsigned int _minFilterMode : 0x20;  // 0x20
+    unsigned int _magFilterMode : 0x24;  // 0x24
+    unsigned int _wrapSMode : 0x28;  // 0x28
+    unsigned int _wrapTMode : 0x2c;  // 0x2C
+    Vector _size : 0x34; // 0x34
+    float _rotation : 0x3c;  // 0x3c
+    Vector _pos : 0x40;  // 0x40
+    ColorMod _color : 0x48;  // 0x48
+    bool _visible : 0x74;  // 0x74
+    BitSet128 _blendMode : 0x78;  // 0x78
+    unsigned int _bitflags : 0x88;  // 0x88
+    Vector _cropOffset : 0x8c;  // 0x8c
+    KAGE_Graphics_ImageBase* _imageBasePtr : 0x94;  // 0x94
+    void* _unkPtr : 0x98;
+} : 0x9C;

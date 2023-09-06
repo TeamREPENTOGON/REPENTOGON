@@ -13,6 +13,7 @@ struct EntityList depends (Entity, EntityList_EL) {
     inline EntityList_EL* GetUpdateEL() { return (EntityList_EL*)((char*)this + 0x40); }
     inline EntityList_EL* GetTempEL() { return (EntityList_EL*)((char*)this + 0x70); }
 	inline EntityList_EL* GetWispEL() { return (EntityList_EL*)((char*)this + 0x90); }
+    inline EntityList_EL* GetPersistentEL() { return (EntityList_EL*)((char*)this + 0x30); }
 
 	// This exists in the original source code as evidenced in the Switch decomp, but was inlined on PC.
 	int CountWisps(unsigned int WispSubtype) {
@@ -35,4 +36,6 @@ struct EntityList depends (Entity, EntityList_EL) {
 		
 		return wispCount;
 	}
-}} };
+}} 
+
+} : 0x580;

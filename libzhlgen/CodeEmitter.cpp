@@ -51,8 +51,14 @@ void CodeEmitter::ProcessFile(fs::path const& file) {
     antlr4::tree::ParseTree* tree = parser.zhl();
 
     if (lexer.getNumberOfSyntaxErrors() != 0 || parser.getNumberOfSyntaxErrors() != 0) {
-        std::cerr << "Error while parsing " << file << std::endl;
-        throw std::runtime_error("Parse error");
+        // std::cerr << "Error while parsing " << file << std::endl;
+        // throw std::runtime_error("Parse error");
+
+        std::ostringstream str;
+        str << "Error while parsing " << file << std::endl;
+        std::cerr << str.str() << std::endl;
+        ErrorsHolder::ThrowOrLog(str);
+        return;
     }
     Parser p2(&_global, &_types, file.string());
     p2.visit(tree);
@@ -154,9 +160,11 @@ void CodeEmitter::Emit(Struct const& s) {
     EmitNL();
     IncrDepth();
 
-    for (Variable const& var : s._namespace._fields) {
+    /* for (Variable const& var : s._namespace._fields) {
         Emit(var);
-    }
+    } */
+
+    Emit(s._namespace._fields);
 
     for (Signature const& sig : s._namespace._signatures) {
         Emit(sig, false);
@@ -177,6 +185,11 @@ void CodeEmitter::Emit(Struct const& s) {
 
     DecrDepth();
     Emit("};");
+    if (s._size) {
+        std::ostringstream size;
+        size << " // 0x" << std::hex << *s._size;
+        Emit(size.str());
+    }
     EmitNL();
     EmitNL();
 
@@ -184,6 +197,103 @@ void CodeEmitter::Emit(Struct const& s) {
     _emittedStructures.insert(s._name);
 
     _currentStructure = nullptr;
+}
+
+void CodeEmitter::Emit(std::vector<Variable> const& vars) {
+    // Build a set containing the Variables ordered by offset
+    std::set<Variable> attributes;
+    auto iter = std::inserter(attributes, attributes.begin());
+    std::copy(vars.begin(), vars.end(), iter);
+
+    int pad = 0;
+    size_t offset = 0;
+
+    // The starting offset of the structure is located after all parent
+    // structures in memory.
+    for (auto const& [parent, vis] : _currentStructure->_parents) {
+        Struct const& st = parent->GetStruct();
+        if (!st._size) {
+            std::ostringstream err;
+            err << "[FATAL] Class " << _currentStructure->_name << " derives from " << st._name <<
+                " that does not specify a size. Impossible to place fields in the structure." << std::endl;
+            ErrorsHolder::ThrowOrLog(err);
+            continue;
+        }
+
+        offset += *st._size;
+    }
+
+    for (Variable const& var : attributes) {
+        // Mandatory for class attributes
+        size_t varOffset = *var._offset;
+        if (varOffset != offset) {
+            if (varOffset < offset) {
+                std::ostringstream err;
+                err << "[FATAL] Impossible memory layout for structure " << _currentStructure->_name <<
+                    ". Field " << var._name << " at offset 0x" << std::hex << varOffset << " overlaps with a previous field" << std::endl;
+                ErrorsHolder::ThrowOrLog(err);
+                continue;
+            }
+            else {
+                // Not necessarily fatal sanity check
+                if (_currentStructure->_size) {
+                    if (varOffset >= *_currentStructure->_size) {
+                        std::ostringstream err;
+                        err << "[FATAL] Impossible memory layout for structure " << _currentStructure->_name <<
+                            ". Field " << var._name << " at offset 0x" << std::hex << varOffset << " is outside the structure " << std::endl;
+                        ErrorsHolder::ThrowOrLog(err);
+                        continue;
+                    }
+                }
+                
+                // Emit padding
+                std::ostringstream offsetStr;
+                offsetStr << "char pad" << pad << "[0x" << std::hex << varOffset - offset << "]; // 0x" << offset;
+                EmitTab();
+                Emit(offsetStr.str());
+                EmitNL();
+
+                ++pad;
+                offset = varOffset;
+            }
+        }
+
+        size_t align = var._type->alignment();
+        if (align) {
+            if (varOffset % align != 0) {
+                std::ostringstream err;
+                err << "[FATAL] Impossible memory layout for structure " << _currentStructure->_name <<
+                    ". Field " << var._name << " with alignment constraint " << align << " positioned at offset 0x" <<
+                    std::hex << varOffset << " is misaligned" << std::endl;
+                ErrorsHolder::ThrowOrLog(err);
+                continue;
+            }
+        }
+        else {
+            std::cerr << "[WARN] Unable to compute alignment of class " << var._type->_name << std::endl;
+        }
+        Emit(var);
+        offset += var._type->size();
+    }
+
+    if (_currentStructure->_size) {
+        if (offset < *_currentStructure->_size) {
+            std::ostringstream offsetStr;
+            offsetStr << "char pad" << pad << "[0x" << std::hex << *_currentStructure->_size - offset << "]; // 0x" << std::hex << offset;
+            EmitTab();
+            Emit(offsetStr.str());
+            EmitNL();
+        }
+        else {
+            if (offset > *_currentStructure->_size) {
+                std::ostringstream err;
+                err << "[FATAL] Impossible memory layout for structure " << _currentStructure->_name <<
+                    ". Last field causes the size of the struct to exceed manually indicated size" << std::endl;
+                ErrorsHolder::ThrowOrLog(err);
+                return;
+            }
+        }
+    }
 }
 
 void CodeEmitter::Dump() {
@@ -563,6 +673,11 @@ void CodeEmitter::Emit(Variable const& var) {
     }
 
     Emit(";");
+    if (var._offset) {
+        std::ostringstream offsetStream;
+        offsetStream << " // 0x" << std::hex << *var._offset;
+        Emit(offsetStream.str());
+    }
     EmitNL();
 
     _variableContext = nullptr;

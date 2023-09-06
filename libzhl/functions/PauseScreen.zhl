@@ -8,5 +8,5 @@ struct PauseScreen {
 	//inline ANM2* GetANM22() { return (ANM2*)((char*)this + 92); } // ?? another sprite, it can be rendered but I suspect its the same one loaded at a different offset?
 	inline ANM2* GetStatsANM2() { return (ANM2*)((char*)this + 368); }	
 }} 
-    int status;
-};
+    int status : 0x0;
+} : 0x80a38;

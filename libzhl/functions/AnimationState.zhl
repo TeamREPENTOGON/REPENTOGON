@@ -37,18 +37,17 @@ struct AnimationState depends (AnimationData, ANM2) { {{
     "558bec83e4f8515356578bf98b570485d2743433f639721c":
     void Render(const Vector& position, const Vector& topLeftClamp, const Vector& bottomRightClamp);
 
-    ANM2* _animation;  // 0x00
-    AnimationData* _animData;  // 0x04
+    ANM2* _animation : 0x0;  // 0x00
+    AnimationData* _animData : 0x4;  // 0x04
     // Array that identifies which index in the internal AnimationFrame array a given layer is currently on.
     // Note that this is different than the current frame of animation that the layer is on from the
     // user perspective, since a frame with a duration >1 still only has one AnimationFrame index.
     // Sprite:SetLayerFrame() probably calculates the correct frame index to set.
-    int* _layerFrames;  // 0x08
+    int* _layerFrames : 0x8;  // 0x08
     // Same as above for null layers.
-    int* _nullLayerFrames;  // 0x0c
-    float _animFrame;  // 0x10
-    bool _isPlaying;  // 0x14
-    char _pad[3];
-    int _currentlyTriggeredEvents;  // 0x18
-    int _previouslyTriggeredEvents;  // 0x1c
-};
+    int* _nullLayerFrames : 0xC;  // 0x0c
+    float _animFrame : 0x10;  // 0x10
+    bool _isPlaying : 0x14;  // 0x14
+    int _currentlyTriggeredEvents : 0x18;  // 0x18
+    int _previouslyTriggeredEvents : 0x1C;  // 0x1c
+} : 0x20;

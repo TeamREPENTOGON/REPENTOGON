@@ -1,8 +1,7 @@
 struct KColor
 {
-    float _red;
-    float _green;
-    float _blue;
-    float _alpha;
-};
-
+    float _red : 0x0;
+    float _green : 0x4;
+    float _blue : 0x8;
+    float _alpha : 0xC;
+} : 0x10;

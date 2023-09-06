@@ -7,6 +7,5 @@ struct EntityConfig_Player depends (ANM2) {
 		inline ANM2** GetModdedMenuBackgroundANM2() { return (ANM2**)((char*)this + 0x134); }
 		inline ANM2** GetModdedMenuPortraitANM2() { return (ANM2**)((char*)this + 0x138); }
 	}}
-	int _id;
-	char _pad[0x144];
-};
+	int _id : 0x0;
+} : 0x148;

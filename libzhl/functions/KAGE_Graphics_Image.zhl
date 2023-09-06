@@ -1,7 +1,7 @@
 struct KAGE_Graphics_ImageBase_VertexAttributeDescriptor {
-    char const* const* name;
-    uint32_t param;
-};
+    char const* const* name : 0x0;
+    uint32_t param : 0x4;
+} : 0x8;
 
 struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphics_Color) {
     __vtable {
@@ -13,9 +13,9 @@ struct KAGE_Graphics_ImageBase depends (SourceQuad, DestinationQuad, KAGE_Graphi
         "558bec83ec248b4508568bf10f1000":
         void Render(SourceQuad& source, DestinationQuad& dest, KAGE_Graphics_Color& col1, KAGE_Graphics_Color& col2, KAGE_Graphics_Color& col3, KAGE_Graphics_Color& col4);
     };
-};
+} : 0;
 
-struct Kage_Graphics_ImagePNG : public KAGE_Graphics_ImageBase {
+struct KAGE_Graphics_ImagePNG : public KAGE_Graphics_ImageBase {
 
 };
 

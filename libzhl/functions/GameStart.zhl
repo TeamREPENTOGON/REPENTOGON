@@ -1,3 +1,2 @@
 struct UnknownGameStartStruct {
-    char pad0[0x5c];
-};
+} : 0x5c;

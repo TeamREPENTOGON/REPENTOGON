@@ -32,4 +32,4 @@ struct Camera depends (Room) {
 		this->constructor(room);
 	}
 
-}} };
+}} } : 0x94;

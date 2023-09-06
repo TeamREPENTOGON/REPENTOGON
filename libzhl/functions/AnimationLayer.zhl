@@ -14,12 +14,11 @@ struct AnimationLayer depends (AnimationFrame) { {{
 }}
 
 
-    int _layerID;
-    AnimationFrame* _animFrames;
-    int _numFrames;
-	bool _visible;
-	char _padding[3];
-};
+    int _layerID : 0x0;
+    AnimationFrame* _animFrames : 0x4;
+    int _numFrames : 0x8;
+    bool _visible : 0xC;
+} : 0x10;
 
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec90010000a1????????33c58945ec5657508d45f464a30000000080790c00":
 __thiscall void AnimationLayer::RenderFrame(const Vector& position, int unk, const Vector& topLeftClamp, const Vector& BottomRightClamp, ANM2* animation);

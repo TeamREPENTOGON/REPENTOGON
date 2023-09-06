@@ -9,4 +9,4 @@ __thiscall Vector* Minimap::GetDisplayedSize(Vector &buffer);
 
 struct Minimap {
 
-};
+} : 0x628;

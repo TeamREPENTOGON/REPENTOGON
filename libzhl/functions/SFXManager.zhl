@@ -7,4 +7,4 @@ __thiscall void SFXManager::LoadConfig(char *xmlpath,bool ismod);
 
 struct SFXManager {
 
-};
+} : 0;

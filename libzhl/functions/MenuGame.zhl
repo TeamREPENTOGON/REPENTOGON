@@ -11,11 +11,10 @@ struct Menu_Game depends (ANM2) { {{
 	inline ANM2* GetGameMenuSprite() { return &this->GameMenuSprite; }
 	inline ANM2* GetContinueWidgetSprite() { return &this->ContinueWidgetSprite; }
 }}
-	int KeyDownTimer;
-	int SelectedElement;
-	float PositionX;
-	float PositionY;
-	ANM2 GameMenuSprite;
-	ANM2 ContinueWidgetSprite;
-	char _unkBytes[296];
-};
+	int KeyDownTimer : 0x0;
+	int SelectedElement : 0x4;
+	float PositionX : 0x8;
+	float PositionY : 0xc;
+	ANM2 GameMenuSprite : 0x10;
+	ANM2 ContinueWidgetSprite : 0x124;
+} : 0x360;

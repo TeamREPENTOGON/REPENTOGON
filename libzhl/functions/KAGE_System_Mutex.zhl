@@ -1,10 +1,10 @@
 struct KAGE_System_CriticalSection {
-    CRITICAL_SECTION criticalSection; // 0x0
-    bool locked; // 0x18
-}; // 0x1C
+    CRITICAL_SECTION criticalSection : 0x0; // 0x0
+    bool locked : 0x18; // 0x18
+} : 0x1C; // 0x1C
 
 struct KAGE_System_Mutex {
-    void* vtable; // 0x0
-    bool initialized; // 0x4
-    KAGE_System_CriticalSection* cs; // 0x8
-}; // 0xC
+    void* vtable : 0x0; // 0x0
+    bool initialized : 0x4; // 0x4
+    KAGE_System_CriticalSection* cs : 0x8; // 0x8
+} : 0xC; // 0xC

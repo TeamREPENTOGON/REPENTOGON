@@ -1,37 +1,29 @@
 struct ChallengeParam {
-    std_string _name; //0x0
-    std_set_int _roomset; //0x18
-	std_vector_int _collectibleList;
-	std_vector_int _trinketList;
-	int _startingPill;
-	int _startingCard;
-	int _endStage;
-	int _playerType;
-	std_vector_int _achievementList;
-	int _soulHearts;
-	int _blackHearts;
-	int _hearts;
-	int _maxHearts;
-	int _coins;
-	float _addDamage;
-	bool _canShoot;
-	bool _isAltPath;
-	char _pad0[2];
-	int _difficulty;
-	bool _isMegaSatan;
-	char _pad1[3];
-	float _minFireRate;
-	bool _maxDamage;
-	bool _minShotSpeed;
-	bool _bigRange;
-	char _pad2[1];
-	unsigned int _getCurse;
-	unsigned int _curseFilter;
-	bool _isSecretPath;
-	char _pad3[3];
-	std_vector_int _collectibleTwinList;
-	
-	
-	
-	
-};
+    std_string _name : 0x0; //0x0
+    std_set_int _roomset : 0x18; //0x18
+    std_vector_int _collectibleList : 0x20;
+    std_vector_int _trinketList : 0x2C;
+    int _startingPill : 0x38;
+    int _startingCard : 0x3C;
+    int _endStage : 0x40;
+    int _playerType : 0x44;
+    std_vector_int _achievementList : 0x48;
+    int _soulHearts : 0x54;
+    int _blackHearts : 0x58;
+    int _hearts : 0x5C;
+    int _maxHearts : 0x60;
+    int _coins : 0x64;
+    float _addDamage : 0x68;
+    bool _canShoot : 0x6C;
+    bool _isAltPath : 0x6D;
+    int _difficulty : 0x70;
+    bool _isMegaSatan : 0x74;
+    float _minFireRate : 0x78;
+    bool _maxDamage : 0x7C;
+    bool _minShotSpeed : 0x7d;
+    bool _bigRange : 0x7e;
+    unsigned int _getCurse : 0x80;
+    unsigned int _curseFilter : 0x84;
+    bool _isSecretPath : 0x88;
+    std_vector_int _collectibleTwinList : 0x8c;
+} : 0xa4;

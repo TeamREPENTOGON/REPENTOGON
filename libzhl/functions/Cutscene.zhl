@@ -5,4 +5,4 @@ __thiscall void Cutscene::Init(char *xmlresourcespath);
 __thiscall void Cutscene::Show(int cutsceneid);
 
 struct Cutscene depends (Vector) {
-};
+} : 0x7b0;

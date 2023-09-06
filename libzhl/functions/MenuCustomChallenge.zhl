@@ -2,9 +2,9 @@ struct Menu_CustomChallenge depends (ANM2) {
 {{
 	inline ANM2* GetCustomChallengeSprite() { return &this->CustomChallengeSprite; }
 }}
-	int SelectedElement;
-	int HoldInputTimer;
-	float PositionX;
-	float PositionY;
-	ANM2 CustomChallengeSprite;
-};
+	int SelectedElement : 0x0;
+	int HoldInputTimer : 0x4;
+	float PositionX : 0x8;
+	float PositionY : 0xC;
+	ANM2 CustomChallengeSprite : 0x10;
+} : 0x124;

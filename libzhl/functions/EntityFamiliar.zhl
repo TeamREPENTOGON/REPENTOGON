@@ -21,7 +21,7 @@ struct Entity_Familiar : public Entity {
 	inline Entity_Player** GetPlayer() { return (Entity_Player**)((char*)this + 0x360); }
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
 	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); } 
-}} };
+}} } : 0xe70;
 
 "6a0068(????????)68????????6a0050e8????????8b8d0cffffff83c4148985fcfeffff":
 reference void* EntityFamiliarRTTI;

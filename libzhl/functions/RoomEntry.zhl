@@ -1,7 +1,7 @@
 struct RoomEntry
 {
-    uint32_t type; // 0x0
-    uint16_t variant; // 0x4
-    uint16_t subtype; // 0x6
-    float weight; // 0x8
-}; // 0xC
+    uint32_t type : 0x0; // 0x0
+    uint16_t variant : 0x4; // 0x4
+    uint16_t subtype : 0x6; // 0x6
+    float weight : 0x8; // 0x8
+} : 0xc; // 0xC

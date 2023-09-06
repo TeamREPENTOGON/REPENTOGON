@@ -24,5 +24,5 @@ struct PosVel depends (Vector) {
 	}
 
 }} 
-    Vector pos, vel;
-};
+    Vector pos : 0x0, vel : 0x8;
+} : 0x10;

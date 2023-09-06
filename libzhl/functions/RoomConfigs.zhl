@@ -1,21 +1,18 @@
 struct RoomConfigs
 {
-    uint32_t stageId; // 0x0
-    std_string stageName; // 0x4
-    std_string playerSpot; // 0x1C
-    std_string bossSpot; // 0x34
-    std_string suffix; // 0x4C
-    std_string xmlFileName; // 0x64
-    RoomConfig* configs; // 0x7C
-    uint32_t nbRooms; // 0x80 (includes disabled rooms)
-    void* unk1; // 0x84
-    uint32_t unk2; // 0x88
-    uint8_t unk3; // 0x8C, flag for Greed Mode ? Accessed through byte ptr ds:[]
-    char unk4[0x3]; // 0x8D, padding ?
-    std_string greedModeXmlFileName; // 0x90
-    char unk5[0x8]; // 0xA8
-    void* unk6; // 0xB0
-    char unk7[0x8]; // 0xB4
-    uint32_t music; // 0xBC
-    uint32_t backdrop; // 0xC0
+    uint32_t stageId : 0x0; // 0x0
+    std_string stageName : 0x4; // 0x4
+    std_string playerSpot : 0x1c; // 0x1C
+    std_string bossSpot : 0x34; // 0x34
+    std_string suffix : 0x4c; // 0x4C
+    std_string xmlFileName : 0x64; // 0x64
+    RoomConfig* configs : 0x7c; // 0x7C
+    uint32_t nbRooms : 0x80; // 0x80 (includes disabled rooms)
+    void* unk1 : 0x84; // 0x84
+    uint32_t unk2 : 0x88; // 0x88
+    uint8_t unk3 : 0x8c; // 0x8C, flag for Greed Mode ? Accessed through byte ptr ds:[]
+    std_string greedModeXmlFileName : 0x90; // 0x90
+    void* unk6 : 0xb0; // 0xB0
+    uint32_t music : 0xbc; // 0xBC
+    uint32_t backdrop : 0xc0; // 0xC0
 }; // 0xC4

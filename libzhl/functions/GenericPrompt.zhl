@@ -1,0 +1,3 @@
+struct GenericPrompt {
+
+} : 0x80218;

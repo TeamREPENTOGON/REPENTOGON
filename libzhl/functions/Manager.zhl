@@ -64,10 +64,10 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline OptionsConfig* GetOptions() { return (OptionsConfig*)((char*)this + 0x29DF8); }
 	inline AchievementOverlay* GetAchievementOverlay() { return (AchievementOverlay*)((char*)this + 0x217a8); }
 }} 
-    char unk1[0x13];
-    PersistentGameData _persistentGameData;
-    StringTable _stringTable;
-};
+
+    PersistentGameData _persistentGameData : 0x14;
+    StringTable _stringTable : 0x4a234;
+} : 0x20a9d8;
 
 "e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":
 reference Manager *g_Manager;

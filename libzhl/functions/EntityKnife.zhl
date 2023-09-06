@@ -6,4 +6,4 @@ __thiscall bool Entity_Knife::HandleCollision(Entity* collider, bool low);
 
 struct Entity_Knife : public Entity {
 
-};
+} : 0xe70;

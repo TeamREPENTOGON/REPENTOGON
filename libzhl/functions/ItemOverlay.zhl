@@ -10,4 +10,4 @@ struct ItemOverlay {
 	inline ANM2* GetSprite() { return (ANM2*)((char*)this + 0x8); } 
 	inline int* GetDelay() { return (int*)((char*)this + 0x1144); } 
 	inline Entity_Player* GetPlayer() { return (Entity_Player*)((char*)this + 0x1148); }
-}} };
+}} } : 0x1260;

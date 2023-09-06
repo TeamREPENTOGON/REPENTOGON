@@ -19,4 +19,4 @@ __thiscall int Font::GetStringWidthUTF8(const char* str);
 struct Font {
 
 
-};
+} : 0x2003c;

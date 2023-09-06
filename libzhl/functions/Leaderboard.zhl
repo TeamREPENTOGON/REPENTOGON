@@ -1,27 +1,16 @@
-struct Leaderboard depends (ANM2) {
+struct Leaderboard depends (ANM2, DailyChallenge) {
 	{{
 	}}
-	int _selectedDate;
-    int _currentDate;
-    char _dailyChallenge[0xb4];
-    char _scoreSheet[0x14c];
-    char field4_0x208;
-    char field4_0x209;
-    char field5_0x20a;
-    char field6_0x20b;
-    int _pageEntryStartID;
-    int _isLeaderboardClosing;
-    int _unk_field_0x214;
-    int _displayState;
-    int _scoreOrTimeRankingListState; // Ranking by Score or by Time
-    int _listTypeSelection; // Global, Friends, ...
-    std_string* field25_0x224;
-    std_string* field26_0x228;
-    int _numDisplayedEntries;
-    char field28_0x230;
-    char field29_0x231;
-    char field30_0x232;
-    char field31_0x233;
-    ANM2 _scoreMenuSprite;
-    ANM2 _leaderboardMenuSprite;
-};
+    int _selectedDate : 0x0;
+    int _currentDate : 0x4;
+    DailyChallenge _dailyChallenge : 0x8;
+    char _scoreSheet[0x14c] : 0xbc;
+    int _pageEntryStartID: 0x20c;
+    int _isLeaderboardClosing : 0x210;
+    int _displayState : 0x218;
+    int _scoreOrTimeRankingListState : 0x21C; // Ranking by Score or by Time
+    int _listTypeSelection : 0x220; // Global, Friends, ...
+    int _numDisplayedEntries : 0x22c;
+    ANM2 _scoreMenuSprite: 0x234;
+    ANM2 _leaderboardMenuSprite : 0x348;
+} : 0x45c;

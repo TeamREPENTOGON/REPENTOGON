@@ -10,4 +10,4 @@ __thiscall bool Entity_Laser::CanDamageEntity(Entity* entity);
 struct Entity_Laser : public Entity { {{
 	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x420); }
 	inline float* GetScale() { return (float*)((char*)this + 0x430); }
-}} };
+}} } : 0x4b8;

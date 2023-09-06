@@ -1,5 +1,5 @@
 struct KAGE_Graphics_Color {
-    float r, g, b, a;
+    float r: 0x0, g : 0x4, b : 0x8, a : 0xC;
 
     {{
     KAGE_Graphics_Color() {
@@ -21,4 +21,4 @@ struct KAGE_Graphics_Color {
         return *this;
     }
     }}
-};
+} : 0x10;

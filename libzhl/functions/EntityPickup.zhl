@@ -30,4 +30,4 @@ struct Entity_Pickup : public Entity { {{
 	inline int* GetDropDelay() { return (int*)((char*)this + 0x4a0); }
 	inline int* GetVarData() { return (int*)((char*)this + 0x4e8); }
 	
-}} };
+}} } : 0x638;

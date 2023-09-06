@@ -1,3 +1,3 @@
 struct DestinationQuad depends (Vector) {
-    Vector _topLeft, _topRight, _bottomLeft, _bottomRight;
-};
+    Vector _topLeft : 0x0, _topRight : 0x8, _bottomLeft : 0x10, _bottomRight : 0x18;
+} : 0x20;

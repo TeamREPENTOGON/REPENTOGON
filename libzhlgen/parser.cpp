@@ -15,12 +15,18 @@ int main(int argc, char** argv) {
         extraTypesPath = "../../libzhl/functions/ExtraTypes";
     }
 
-    CodeEmitter emitter(test);
-    emitter.ProcessZHLFiles(zhlPath);
-    // emitter.ProcessFile("D:/Dev/Isaac/IsaacZHL/libzhlgen/IsaacRepentanceStripped.h");
-    emitter.ProcessFile(extraTypesPath);
-    emitter.Dump();
-    emitter.Emit();
+        CodeEmitter emitter(test);
+        emitter.ProcessZHLFiles(zhlPath);
+        // emitter.ProcessFile("D:/Dev/Isaac/IsaacZHL/libzhlgen/IsaacRepentanceStripped.h");
+        emitter.ProcessFile(extraTypesPath);
+        emitter.Dump();
+        emitter.Emit();
+
+        if (ErrorsHolder::HasErrors()) {
+            for (std::string const& err : ErrorsHolder::GetErrors()) {
+                std::cerr << err << std::endl;
+            }
+        }
 
 	return 0;
 }

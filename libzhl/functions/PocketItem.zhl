@@ -1,5 +1,5 @@
 struct PocketItem
 {
-	int _slot;
-	int _type;
-};
+    int _slot : 0x0;
+    int _type : 0x4;
+} : 0x8;

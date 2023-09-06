@@ -31,4 +31,4 @@ struct Console depends (Console_HistoryEntry) {
 	
 	enum Color: unsigned int {WHITE = 0xFFD3D3D3};
 }} 
-};
+} : 0x88;

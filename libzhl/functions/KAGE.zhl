@@ -10,4 +10,4 @@ struct KAGE  {
     {{
     LIBZHL_API static void _LogMessage(int flag, const char* fmt, ...);
     }}
-};
+} : 0;
