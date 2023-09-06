@@ -160,7 +160,7 @@ int Lua_NPCPlaySound(lua_State* L)
 	int id = luaL_checknumber(L, 2);
 	float volume = (float)luaL_optnumber(L, 3, 1.0);
 	int framedelay = luaL_optinteger(L, 4, 2);
-	int loop = 0;
+	bool loop = false;
 	if lua_isboolean(L, 5)
 		loop = lua_toboolean(L, 5);
 	float pitch = (float)luaL_optnumber(L, 6, 1.0);
