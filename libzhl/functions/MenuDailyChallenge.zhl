@@ -1,22 +1,20 @@
-struct Menu_DailyChallenge depends (ANM2, AnimationState, Leaderboard) { {{
+struct Menu_DailyChallenge depends (ANM2, AnimationState, Leaderboard, GenericPopup, GenericPrompt) { {{
 	
 }} 
-    int State;
-    int _holdInputTimer;
-    int SelectedElement;
-    float _positionX;
-    float _positionY;
-    ANM2 _DailyRunSprite;
-    std_string _steamUsername;
-    int lastRunScore;
-    Leaderboard _leaderboard;
-    int _timeDaysLeftUNUSED;
-    int _timeHoursLeft;
-    int _timeMinutesLeft;
-    int _timeSecondsLeft;
-    AnimationState* _leaderboardAnmState;
-    char GenericPopup_genericPopup[288];
-    char GenericPrompt_genericPrompt[524824];
-    char unk0x808ec[8];
-
-};
+    int State : 0x0;
+    int _holdInputTimer : 0x4;
+    int SelectedElement : 0x8;
+    float _positionX : 0xC;
+    float _positionY : 0x10;
+    ANM2 _DailyRunSprite : 0x14;
+    std_string _steamUsername : 0x128;
+    int lastRunScore : 0x140;
+    Leaderboard _leaderboard : 0x144;
+    int _timeDaysLeftUNUSED : 0x5a0;
+    int _timeHoursLeft : 0x5a4;
+    int _timeMinutesLeft : 0x5a8;
+    int _timeSecondsLeft : 0x5ac;
+    AnimationState* _leaderboardAnmState : 0x5b0;
+    GenericPopup GenericPopup_genericPopup : 0x5b4;
+    GenericPrompt GenericPrompt_genericPrompt : 0x6d4;
+} : 0x808f4;

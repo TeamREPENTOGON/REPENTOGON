@@ -6,5 +6,5 @@ struct Console_HistoryEntry
 	{{
 		inline int GetColorMap() {return *(int*)((char*)this + 0x1C); }
 	}}
-    std_string _text;
-};
+    std_string _text : 0x0;
+} : 0x28;

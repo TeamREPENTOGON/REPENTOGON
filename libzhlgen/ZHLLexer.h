@@ -19,15 +19,15 @@ public:
     Depends = 23, Typedef = 24, Const = 25, CppRef = 26, Unsigned = 27, 
     Signed = 28, Long = 29, Int = 30, Short = 31, Char = 32, Bool = 33, 
     Float = 34, Double = 35, Void = 36, Type = 37, Size = 38, Synonym = 39, 
-    Vtable = 40, Skip = 41, Pure = 42, Override = 43, Visibility = 44, Public = 45, 
-    Private = 46, Protected = 47, Register = 48, GeneralPurposeRegister = 49, 
-    Eax = 50, Ebx = 51, Ecx = 52, Edx = 53, Esi = 54, Edi = 55, Esp = 56, 
-    Ebp = 57, SSERegister = 58, Xmm0 = 59, Xmm1 = 60, Xmm2 = 61, Xmm3 = 62, 
-    Xmm4 = 63, Xmm5 = 64, Xmm6 = 65, Xmm7 = 66, CallingConvention = 67, 
-    Stdcall = 68, Cdecl = 69, Fastcall = 70, Thiscall = 71, Signature = 72, 
-    ReferenceSignature = 73, Operator = 74, OpSymbol = 75, Name = 76, Number = 77, 
-    HexNumber = 78, DecNumber = 79, GenericCode = 80, Whitespace = 81, Newline = 82, 
-    BlockComment = 83, LineComment = 84, Any = 85
+    Align = 40, Vtable = 41, Skip = 42, Pure = 43, Override = 44, Visibility = 45, 
+    Public = 46, Private = 47, Protected = 48, Register = 49, GeneralPurposeRegister = 50, 
+    Eax = 51, Ebx = 52, Ecx = 53, Edx = 54, Esi = 55, Edi = 56, Esp = 57, 
+    Ebp = 58, SSERegister = 59, Xmm0 = 60, Xmm1 = 61, Xmm2 = 62, Xmm3 = 63, 
+    Xmm4 = 64, Xmm5 = 65, Xmm6 = 66, Xmm7 = 67, CallingConvention = 68, 
+    Stdcall = 69, Cdecl = 70, Fastcall = 71, Thiscall = 72, Signature = 73, 
+    ReferenceSignature = 74, Operator = 75, OpSymbol = 76, Name = 77, Number = 78, 
+    HexNumber = 79, DecNumber = 80, GenericCode = 81, Whitespace = 82, Newline = 83, 
+    BlockComment = 84, LineComment = 85, Any = 86
   };
 
   explicit ZHLLexer(antlr4::CharStream *input);

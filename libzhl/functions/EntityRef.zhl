@@ -1,11 +1,11 @@
 struct EntityRef depends (Vector)
 {
-  int  _type; //TODO: EntityType enum
-  int _variant;
-  int _spawnerType; //TODO: ditto
-  unsigned int _spawnerVariant;
-  Vector _position;
-  Vector _velocity;
-  unsigned int _flags;
-  Entity *_entity;
-};
+  int  _type : 0x0; //TODO: EntityType enum
+  int _variant : 0x4;
+  int _spawnerType : 0x8; //TODO: ditto
+  unsigned int _spawnerVariant : 0xc;
+  Vector _position : 0x10;
+  Vector _velocity : 0x18;
+  unsigned int _flags : 0x20;
+  Entity *_entity : 0x24;
+} : 0x28;

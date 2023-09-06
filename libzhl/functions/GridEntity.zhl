@@ -31,4 +31,4 @@ struct GridEntity depends (GridEntityDesc) {
 		"8b016a048b40":
 		bool Destroy(bool Immediate);
     };
-};
+} : 0x154;

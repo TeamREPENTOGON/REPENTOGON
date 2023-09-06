@@ -2,5 +2,5 @@
 __thiscall char* StringTable::GetString(const char* category, int language, const char* key, void* unk);
 
 struct StringTable {
-    uint32_t language;
-};
+    uint32_t language : 0x0;
+} : 0x18;

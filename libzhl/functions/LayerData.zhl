@@ -1,6 +1,6 @@
 struct LayerData {
-	unsigned int ID;
-	unsigned int spritesheetID;
-	std_string name;
-	std_string defaultSpriteSheetPath;
-};
+	unsigned int ID : 0x0;
+	unsigned int spritesheetID : 0x4;
+	std_string name : 0x8;
+	std_string defaultSpriteSheetPath : 0x20;
+} : 0x38;

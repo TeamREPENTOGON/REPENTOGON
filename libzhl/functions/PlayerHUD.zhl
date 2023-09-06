@@ -16,9 +16,7 @@ __thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos);
 struct PlayerHUD depends (PlayerHUDHeart) { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
 }} 
-    Entity_Player* _player;
-	HUD* _HUD;
-	char _pad0[7];
-	PlayerHUDHeart _heart[24];
-	
-};
+    Entity_Player* _player : 0x0;
+    HUD* _HUD : 0x4;
+    PlayerHUDHeart _heart[24] : 0x10;
+} : 0x6b0;

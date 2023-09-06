@@ -139,6 +139,7 @@ struct ConsoleMega {
         METRO,
         DELIRIOUS,
         PLAYER,
+		ACHIEVEMENT,
         CUSTOM
     };
 
@@ -157,7 +158,8 @@ struct ConsoleMega {
         pinned = false;
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
-
+		
+		RegisterCommand("achievement", "UnLocks achievements", "UnLocks achievements", true,ACHIEVEMENT);
         RegisterCommand("addplayer", "Spawns a new player", "Spawns a new player entity. On default, it spawns Isaac with controller ID 0.\nPlayer ID -1 lets you take control of a random enemy in the room.\nExample:\n(addplayer 7 1) Spawns Azazel and can be controlled with the second input device (controller 1 in most cases)", false, PLAYER);
         RegisterCommand("challenge", "Start a challenge run", "Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n", false, CHALLENGE);
         RegisterCommand("clear", "Clear the debug console", "Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.", true);
@@ -172,12 +174,14 @@ struct ConsoleMega {
         RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false, DELIRIOUS);
         RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
         RegisterCommand("forceroom", "Force a room to be used in level generator", "Allows to set any room as \"forced room\". Said room gets weight of 1000, making it more likely to appear on floor with reseed command.", false, GOTO);
+		RegisterCommand("fullrestart", "Closes and reopens the game", "Closes and reopens the game", true);
         RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM, {"g"});
         RegisterCommand("giveitem2", "Give player 2 items, trinkets, cards, and pills", "Gives the second player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem2 c1) will give the player The Sad Onion.\n(giveitem2 t1) will give the player Gulp!\n(giveitem2 p1) will give the player a Bad Trip pill.\n(giveitem2 k1) will give the player 0 - The Fool.", false, ITEM, { "g2" });
         RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false, GOTO);
         RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false);
         RegisterCommand("help", "Get info about commands", "Retrieve further info about a command and its syntax.", true);
         RegisterCommand("listcollectibles", "List current items", "Lists the items the player currently has.", false);
+		RegisterCommand("lockachievement", "Locks achievements", "Locks achievements", true,ACHIEVEMENT);
         RegisterCommand("lua", "Run Lua code", "Runs the given Lua code immediately. Anything which would work in a standard file will work here.\nThis command also has shorthand which is just (l).", true);
         RegisterCommand("luamem", "Display lua memory usage", "Displays the currently used RAM of LUA.", true);
         RegisterCommand("luamod", "Reload a Lua mod", "Reloads Lua code for the given mod folder.\nExample:\n(luamod testmod) will reload Lua code for the mod in the folder \"testmod\".", true);
@@ -205,7 +209,8 @@ struct ConsoleMega {
         RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false, STAGE);
         RegisterCommand("time", "Print game time", "Prints the total amount of time passed on the run.", false);
         RegisterCommand("testbosspool", "Print list of bosses for current floor", "Prints a list of boss names and percentage chance (100%=10000) for current floor.", false);
-        RegisterCommand("fullrestart", "Closes and reopens the game", "Closes and reopens the game", true);
+		
+        
 
 
         // Note: these are *functionally* identical, but not *literally* identical to the vanilla macros.
@@ -653,6 +658,18 @@ struct ConsoleMega {
                                         name = "DELETE THIS"; // Internally the challenge has no name, this is the somewhat canon one.
                                     else
                                         name = node.second["name"];
+
+                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                }
+                                break;
+                            }
+							
+							case ACHIEVEMENT: {
+                                XMLNodes achievs = XMLStuff.AchievementData->nodes;
+                                for (auto node : achievs) {
+                                    int id = node.first;
+                                    std::string name;
+                                    name = node.second["name"];
 
                                     entries.insert(AutocompleteEntry(std::to_string(id), name));
                                 }

@@ -19,5 +19,5 @@ struct HUD depends (PlayerHUD, ANM2) { {{
 	inline ANM2* GetChargeBarSprite() { return (ANM2*)((char*)this + 0xc36e8); }
 	inline ANM2* GetPickupsHUDSprite() { return (ANM2*)((char*)this + 0xc3910); }
 }} 
-    PlayerHUD _playerHUD[8];
-};
+    PlayerHUD _playerHUD[8] : 0x0;
+} : 0xc45f0;

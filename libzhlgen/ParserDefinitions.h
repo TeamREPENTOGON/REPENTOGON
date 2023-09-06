@@ -95,6 +95,7 @@ struct Struct {
     std::vector<std::tuple<Type*, Visibility>> _parents;
     std::vector<std::variant<Signature, Skip, Function /* Pure virtual */>> _virtualFunctions;
     std::vector<Signature> _overridenVirtualFunctions;
+    std::optional<size_t> _size;
 
     std::string ToString(bool full) const;
     size_t size() const;
@@ -141,6 +142,9 @@ struct Type {
     // If set, this overrides computation of the size (but not pointer size)
     std::optional<size_t> _size;
 
+    // If set, this overrides computation of the alignment
+    std::optional<size_t> _alignment;
+
     // If set to true, indicates that this is the base for a template. 
     // Such a type is never resolved to anything other than a string, and is
     // used as a base key to get an instanciation of a template type.
@@ -160,6 +164,7 @@ struct Type {
 
     std::string ToString(bool full) const;
     size_t size() const;
+    size_t alignment() const;
 
     Type* GetTrueType();
     std::string GetPrefix() const;
@@ -270,6 +275,9 @@ struct ExternalFunction {
 struct Variable {
     Type* _type;
     std::string _name;
+    std::optional<size_t> _offset;
+
+    bool operator<(Variable const& rhs) const;
 };
 
 struct Signature {
@@ -296,5 +304,15 @@ struct Array {
     size_t _size = 0;
 };
 
-typedef std::variant<Type*, size_t> TypeInfoV;
+enum class TypeInfoTag {
+    SIZE,
+    ALIGN
+};
+
+struct TypeInfoData {
+    TypeInfoTag _tag;
+    size_t _data;
+};
+
+typedef std::variant<Type*, TypeInfoData> TypeInfoV;
 typedef std::variant<std::string, Array> FullNameV;

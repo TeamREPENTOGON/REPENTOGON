@@ -1,32 +1,33 @@
-struct Menu_Stats depends (ANM2) { {{
+struct Menu_Stats depends (ANM2, AchievementOverlay_Entry) { {{
 }} 
-    int _countTotalAchievements;
-    int _countItemsInCollection;
-    int _countDeaths;
-    int _countMomKills;
-    int _statsMenuCurrentSelection;
-    float _PositionX;
-    float _PositionY;
-    ANM2 _StatsMenuSprite;
-    int _isAchievementScreenVisible; /* 1= yes */
-    float _achievementScrollInPosition;
-    float _achievementScrollThruListPosition;
-    int _selectedAchievmentId;
-    int _IconIDtoUseForAchievementID[638];
-    ANM2 _achievementsSprite;
-    ANM2 _achievementMiniSprite1;
-    ANM2 _achievementMiniSprite2;
-    ANM2 _achievementMiniSprite3;
-    ANM2 _achievementMiniSprite4;
-    ANM2 _achievementMiniSprite5;
-    ANM2 _achievementMiniSprite6;
-    ANM2 _achievementMiniSprite7;
-    ANM2 _achievementMiniSprite8;
-    ANM2 _achievementMiniSprite9;
-    ANM2 _cursorLeftSprite;
-    ANM2 _cursorRightSprite;
-    char _achievementOverlayEntries[0x8198];
-    int _achievementIDList[0x9f8];
-    int _holdInputTimer;
-    float _scrollSpeed;
-};
+    int _countTotalAchievements : 0x0;
+    int _countItemsInCollection : 0x4;
+    int _countDeaths : 0x8;
+    int _countMomKills : 0xc;
+    int _statsMenuCurrentSelection : 0x10;
+    float _PositionX : 0x14;
+    float _PositionY : 0x18;
+    ANM2 _StatsMenuSprite : 0x1c;
+    int _isAchievementScreenVisible : 0x130; /* 1= yes */
+    float _achievementScrollInPosition : 0x134;
+    float _achievementScrollThruListPosition : 0x138;
+    int _selectedAchievmentId : 0x13c;
+    int _IconIDtoUseForAchievementID[638] : 0x140;
+    ANM2 _achievementsSprite : 0xb38;
+    ANM2 _achievementMiniSprite1 : 0xc4c;
+    ANM2 _achievementMiniSprite2 : 0xd60;
+    ANM2 _achievementMiniSprite3 : 0xe74;
+    ANM2 _achievementMiniSprite4 : 0xf88;
+    ANM2 _achievementMiniSprite5 : 0x109c;
+    ANM2 _achievementMiniSprite6 : 0x11b0;
+    ANM2 _achievementMiniSprite7 : 0x12c4;
+    ANM2 _achievementMiniSprite8 : 0x13d8;
+    ANM2 _achievementMiniSprite9 : 0x14ec;
+    ANM2 _cursorLeftSprite : 0x1600;
+    ANM2 _cursorRightSprite : 0x1714;
+    AchievementOverlay_Entry _achievementOverlayEntries[638] : 0x1828;
+    int _achievementIDList[638] : 0x99c0;
+    int _maxAchievementID : 0xa3b8;
+    int _holdInputTimer : 0xa3bc;
+    float _scrollSpeed : 0xa3c0;
+} : 0xa3c4;

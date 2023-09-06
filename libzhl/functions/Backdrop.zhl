@@ -2,17 +2,14 @@
 __thiscall void Backdrop::Init(uint32_t backdropId, bool LoadGraphics);
 
 struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG) {
-    ReferenceCounter_ImageBase floorBuffer; // 0x0
-    ReferenceCounter_ImageBase wallsBuffer; // 0x8 
-    char unk1[0x1C];
-    ReferenceCounter_ImageBase gfx; // 0x24
-    ReferenceCounter_ImageBase waterGfx; // 0x2C
-    ReferenceCounter_ImageBase nlfloorGfx; // 0x34
-    char unk2[0x118];
-    uint32_t backdropId; // 0x150
-    BackdropConfig configurations[61]; // 0x154
-    char unk3[0x10];
-    RNG rng; // 0x4cb0
+    ReferenceCounter_ImageBase floorBuffer : 0x0; // 0x0
+    ReferenceCounter_ImageBase wallsBuffer : 0x8; // 0x8 
+    ReferenceCounter_ImageBase gfx : 0x24; // 0x24
+    ReferenceCounter_ImageBase waterGfx : 0x2C; // 0x2C
+    ReferenceCounter_ImageBase nlfloorGfx : 0x34; // 0x34
+    uint32_t backdropId : 0x150; // 0x150
+    BackdropConfig configurations[61] : 0x154; // 0x154
+    RNG rng : 0x4cb0; // 0x4cb0
 };
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b86c030100":

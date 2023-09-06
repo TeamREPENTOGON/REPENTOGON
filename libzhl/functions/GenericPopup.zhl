@@ -1,0 +1,3 @@
+struct GenericPopup {
+
+} : 0x120;

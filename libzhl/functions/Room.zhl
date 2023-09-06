@@ -58,12 +58,16 @@ __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 "558bec568bf133c03986":
 __thiscall void Room::SetPauseTimer(int Duration);
 
+"558bec568b75??578bf98b87":
+__thiscall ColorModState Room::ComputeColorModifier();
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
-	inline bool GetRedHeartDamage() {return *(bool*)((char*)this + 0x120C); }
-	inline EntityList* GetEntityList() {return (EntityList*)((char*)this + 0x1218); }
-	inline float* GetWaterAmount() {return (float*)((char*)this + 0x7134); }
+	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }
+	inline EntityList* GetEntityList() { return (EntityList*)((char*)this + 0x1218); }
+	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1c90); } // doing this the lazy way while FXLayers isn't exposed
+	inline float* GetWaterAmount() { return (float*)((char*)this + 0x7134); }
 	inline KColor* GetWaterColor() { return (KColor*)((char*)this + 0x7158 ); }
 	inline KColor* GetWaterColorMultiplier() { return (KColor*)((char*)this + 0x7168 ); }
 	
@@ -84,15 +88,18 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
         return _descriptor->Data->IsValidGridIndex(index, includeWalls);
     }
 }} 
-    char pad0[0x4];
-    RoomDescriptor* _descriptor; //0x04
-    char pad1[0x1C];    
-    GridEntity* _gridEntities[0x1BF]; // 0x24
-    char pad2[0x4]; // 0x720
-    GridEntity* _doors[8]; // 0x724
-    uint32_t _doorGridPositions[8]; // 0x744
-    Camera *_Camera; //0x11F8
-    bool _redHeartDamage; //0x120C
-    EntityList _entityList; //0x1218
-    TemporaryEffects _temporaryEffects; //0x71F4
-};
+    RoomDescriptor* _descriptor : 0x4; //0x04
+    GridEntity* _gridEntities[0x1BF] : 0x24; // 0x24
+    GridEntity* _doors[8] : 0x724; // 0x724
+    uint32_t _doorGridPositions[8] : 0x744; // 0x744
+    Camera *_Camera : 0x11f8; //0x11F8
+    bool _redHeartDamage : 0x120c; //0x120C
+    EntityList _entityList : 0x1218; //0x1218
+    TemporaryEffects _temporaryEffects : 0x71f4; //0x71F4
+
+    "558bec6aff68????????64a1000000005083ec305657a1????????33c550":
+    bool save_entity(Entity* entity, EntitySaveState* data, bool unk);
+
+    "558bec83e4f883ec1c5356578b7d088bf1":
+    void restore_entity(Entity* entity, EntitySaveState* data);
+} : 0x777c;

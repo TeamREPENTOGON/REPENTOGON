@@ -174,9 +174,104 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+struct Lua_EntitySaveState {
+	std::vector<EntitySaveState>* vec;
+	int index;
+
+	static luaL_Reg methods[];
+};
+
+luaL_Reg Lua_EntitySaveState::methods[] = {
+	{ NULL, NULL }
+};
+
+struct RoomDescriptor_SavedEntities {
+	std::vector<EntitySaveState>* data;
+
+	static RoomDescriptor_SavedEntities* GetData(lua_State* L, int idx) {
+		return lua::GetUserdata<RoomDescriptor_SavedEntities*>(L, idx, lua::metatables::EntitiesSaveStateVectorMT);
+	}
+
+	LUA_FUNCTION(Lua_Get) {
+		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
+		int index = luaL_checkinteger(L, 2);
+
+		if (index < 0 || index >= ud->data->size()) {
+			return luaL_error(L, "Invalid index for Get(): %d\n", index);
+		}
+
+		Lua_EntitySaveState* result = lua::place<Lua_EntitySaveState>(L, lua::metatables::EntitySaveStateMT);
+		result->vec = ud->data;
+		result->index = index;
+		return 1;
+	}
+
+	LUA_FUNCTION(Lua_GetByType) {
+		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
+		int type = luaL_checkinteger(L, 2);
+		int variant = luaL_optinteger(L, 3, 0);
+		int subtype = luaL_optinteger(L, 4, 0);
+
+		lua_newtable(L);
+
+		int j = 1;
+		for (int i = 0; i < ud->data->size(); ++i) {
+			EntitySaveState const& st = (*ud->data)[i];
+			if (st.type == type && st.variant == variant && st.subtype == subtype) {
+				lua_pushinteger(L, j);
+				Lua_EntitySaveState* result = lua::place<Lua_EntitySaveState>(L, lua::metatables::EntitySaveStateMT);
+				result->vec = ud->data;
+				result->index = j;
+				lua_rawset(L, -3);
+
+				++j;
+			}
+		}
+
+		return 1;
+	}
+
+	LUA_FUNCTION(Lua_MetaLen) {
+		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
+		lua_pushinteger(L, ud->data->size());
+		return 1;
+	}
+
+	static luaL_Reg methods[];
+};
+
+luaL_Reg RoomDescriptor_SavedEntities::methods[] = {
+	{ "Get", RoomDescriptor_SavedEntities::Lua_Get },
+	{ "GetByType", RoomDescriptor_SavedEntities::Lua_GetByType },
+	{ "__len", RoomDescriptor_SavedEntities::Lua_MetaLen },
+	{ NULL, NULL }
+};
+
+LUA_FUNCTION(Lua_GetEntitiesSaveState) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor_SavedEntities* ud = lua::place<RoomDescriptor_SavedEntities>(L, lua::metatables::EntitiesSaveStateVectorMT);
+	ud->data = &(descriptor->SavedEntities);
+	return 1;
+}
+
+static void RegisterRoomDescriptorMethods(lua_State* L) {
+	luaL_Reg functions[] = {
+		{ "GetEntitiesSaveState", Lua_GetEntitiesSaveState },
+		{ NULL, NULL }
+	};
+	lua::RegisterFunctions(L, lua::Metatables::ROOM_DESCRIPTOR, functions);
+}
+
+static void RegisterEntitiesSaveStateMetatables(lua_State* L) {
+	lua::RegisterNewClass(L, "EntitiesSaveStateVector", lua::metatables::EntitiesSaveStateVectorMT, RoomDescriptor_SavedEntities::methods);
+	lua::RegisterNewClass(L, "EntitySaveState", lua::metatables::EntitiesSaveStateVectorMT, Lua_EntitySaveState::methods);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	FixRoomDescriptorProperties(state);
+	RegisterRoomDescriptorMethods(state);
+	RegisterEntitiesSaveStateMetatables(state);
 }

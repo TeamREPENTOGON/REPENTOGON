@@ -164,6 +164,10 @@ namespace lua {
         extern LIBZHL_API const char* DailyChallengeMT;
         extern LIBZHL_API const char* ItemOverlayMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;
+        extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
+        extern LIBZHL_API const char* EntitySaveStateMT;
+        extern LIBZHL_API const char* FXParamsMT;
+        extern LIBZHL_API const char* ColorCorrectionMT;
     }
 
     LIBZHL_API void UnloadMetatables();
@@ -176,6 +180,7 @@ namespace lua {
     LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
 
     LIBZHL_API void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func);
+    LIBZHL_API void RegisterFunctions(lua_State* L, lua::Metatables mt, luaL_Reg* functions);
 
     LIBZHL_API void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc = nullptr);
 	

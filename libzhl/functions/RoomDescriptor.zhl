@@ -1,44 +1,27 @@
 struct RoomDescriptor depends (RoomConfig)
 {
-    int32_t GridIndex; // 0x0
-    int32_t SafeGridIndex; // 0x4
-    int32_t ListIndex; // 0x8
-    int32_t unk0; // 0xC
-    RoomConfig* Data; // 0x10
-    RoomConfig* OverrideData; // 0x14
-    int32_t AllowedDoors; // 0x18
-    int32_t Doors[8]; // 0x1C
-    int32_t DisplayFlags; // 0x3C
-    int32_t VisitedCount; // 0x40
-    int32_t Flags; // 0x44
-    int16_t unk9; // 0x48
-    int16_t ClearCount; // 0x4A
-    int32_t unk10; // 0x4C
-    int32_t PoopCount; // 0x50
-    int32_t PitsCount; // 0x54
-    int32_t DecorationSeed; // 0x58
-    int32_t SpawnSeed; // 0x5C
-    int32_t AwardSeed; // 0x60
-    int32_t unk11; // 0x64
-    int32_t unk12; // 0x68
-    int32_t unk13; // 0x6C
-    int32_t unk14; 
-    int32_t unk15; 
-    int32_t unk16; 
-    int32_t unk17; // 0x70 -> 0x80
-    int32_t unk18; 
-    int32_t unk19; 
-    int32_t unk20; 
-    int32_t unk21; // 0x80 -> 0x90
-    int32_t unk22; 
-    int32_t unk23; 
-    int32_t unk24; 
-    int32_t unk25; // 0x90 -> 0xA0
-    int32_t unk26; // 0xA0
-    int32_t unk27; // 0xA4
-    int32_t unk28; // 0xA8
-    int16_t ShopItemIdx; // 0xAC
-    int16_t ShopItemDiscountIdx; // 0xAE
-    int32_t DeliriumDistance; // 0xB0
-    int32_t unk29; // 0xB4
-}; // 0xB8 (Checked in assembly)
+    int32_t GridIndex : 0x0; // 0x0
+    int32_t SafeGridIndex : 0x4; // 0x4
+    int32_t ListIndex : 0x8; // 0x8
+    int32_t unk0 : 0xc; // 0xC
+    RoomConfig* Data : 0x10; // 0x10
+    RoomConfig* OverrideData : 0x14; // 0x14
+    int32_t AllowedDoors : 0x18; // 0x18
+    int32_t Doors[8] : 0x1c; // 0x1C
+    int32_t DisplayFlags : 0x3c; // 0x3C
+    int32_t VisitedCount : 0x40; // 0x40
+    int32_t Flags : 0x44; // 0x44
+    int16_t unk9 : 0x48; // 0x48
+    int16_t ClearCount : 0x4a; // 0x4A
+    int32_t unk10 : 0x4c; // 0x4C
+    int32_t PoopCount : 0x50; // 0x50
+    int32_t PitsCount : 0x54; // 0x54
+    int32_t DecorationSeed : 0x58; // 0x58
+    int32_t SpawnSeed : 0x5c; // 0x5C
+    int32_t AwardSeed : 0x60; // 0x60
+    vector_EntitySaveState SavedEntities : 0x74; // 0x74
+    int16_t ShopItemIdx: 0xac; // 0xAC
+    int16_t ShopItemDiscountIdx : 0xae; // 0xAE
+    int32_t DeliriumDistance : 0xb0; // 0xB0
+    int32_t unk29 : 0xb4; // 0xB4
+} : 0xb8; // 0xB8 (Checked in assembly)

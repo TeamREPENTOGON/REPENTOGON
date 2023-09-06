@@ -24,4 +24,4 @@ __thiscall void ItemConfig::Load(char *xmlpath,int ismod); //no clue what ismod 
 
 struct ItemConfig
 {
-};
+} : 0x3C;

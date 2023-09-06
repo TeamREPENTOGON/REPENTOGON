@@ -6,4 +6,4 @@ __thiscall void EntityConfig::LoadPlayers(char *xmlpath,int ismod);
 
 struct EntityConfig {
 
-};
+} : 0x188;

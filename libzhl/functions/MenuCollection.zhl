@@ -3,20 +3,14 @@ struct Menu_Collection depends (ANM2) {
 	inline ANM2* GetCollectionMenuSprite() { return &this->CollectionMenuSprite; }
 	inline ANM2* GetDeathScreenSprite() { return &this->DeathScreenSprite; }
 }}
-	int HoldInputTimer;
-	int SelectedPage;
-	float PositionX;
-	float PositionY;
-	int SelectedElement;
-	ANM2 CollectionMenuSprite;
-	ANM2 DeathScreenSprite;
-	int unk1;
-	int unk2;
-	int unk3;
-	float MoveXAxisDirection;
-	float MoveYAxisDirection;
-	int unk4;
-	int unk5;
-	int unk6;
-	int NumItems;
-};
+	int HoldInputTimer : 0x0;
+	int SelectedPage : 0x4;
+	float PositionX : 0x8;
+	float PositionY : 0xc;
+	int SelectedElement : 0x10;
+	ANM2 CollectionMenuSprite : 0x14;
+	ANM2 DeathScreenSprite : 0x128;
+	float MoveXAxisDirection : 0x248;
+	float MoveYAxisDirection : 0x24c;
+	int NumItems : 0x25c;
+} : 0x260;

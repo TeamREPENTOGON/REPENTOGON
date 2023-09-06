@@ -53,6 +53,7 @@ private:
 	void Emit(VariableSignature const& sig);
 	void EmitNamespace(std::string const& name);
 	void Emit(ExternalFunction const& fn);
+	void Emit(std::vector<Variable> const& vars);
 
 	void EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure);
 	void EmitAssembly(VariableSignature const& sig);

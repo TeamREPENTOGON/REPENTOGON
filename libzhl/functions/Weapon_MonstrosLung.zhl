@@ -8,4 +8,4 @@ struct Weapon_MonstrosLung : public Weapon { {{
         "558bec83e4f883ec585657ff75":
         void Fire(const Vector& shootPos, bool IsShooting, bool IsInterpolated);
     };
-};
+} : 0x40;

@@ -96,14 +96,14 @@ struct Entity depends (AnimationState) {
 		this->constructor();
 	}
 }} 
-    char pad0[28];
-    unsigned int _index; //0x20
-    unsigned int _collisionIndex; //0x24
-    unsigned int _type; //0x28
-    unsigned int _variant; //0x2c
-    unsigned int _subtype; //0x30
-    unsigned int _shadowSize; //0x150   
-    bool _visible; // 0x169 
+    unsigned int _index : 0x20; //0x20
+    unsigned int _collisionIndex : 0x24; //0x24
+    unsigned int _type : 0x28; //0x28
+    unsigned int _variant : 0x2c; //0x2c
+    unsigned int _subtype : 0x30; //0x30
+    unsigned int _shadowSize : 0x150; //0x150   
+    bool _dead : 0x168; 
+    bool _visible : 0x169; // 0x169 
 
     __vtable {
         "558bec83ec308b45??f30f7e05":
@@ -115,7 +115,7 @@ struct Entity depends (AnimationState) {
         "558bec83e4f883ec3c5356578bf9837f??01":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
     };
-};
+} : 0x360;
 
 "568bf18b861403000085c074306a0068????????68(????????)":
 reference void* EntityRTTI;

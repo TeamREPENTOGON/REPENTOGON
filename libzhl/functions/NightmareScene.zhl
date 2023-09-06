@@ -13,4 +13,4 @@ struct NightmareScene depends (ANM2) { {{
 	inline ANM2* GetProgressBarSprite() { return (ANM2*)((char*)this + 0x248); }
 	inline int* GetProgressBarMap() { return (int*)((char*)this + 0x36c); }
 	inline bool* IsDogmaNightmare() { return (bool*)((char*)this + 0x5e8); }
-}} };
+}} } : 0x5ec;

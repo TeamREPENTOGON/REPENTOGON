@@ -40,4 +40,4 @@ struct GridEntity_Rock : public GridEntity {
         "558bec83ec40a1????????33c58945??538b1d":
 		bool Destroy(bool Immediate); 
     };
-};
+} : 0x198;

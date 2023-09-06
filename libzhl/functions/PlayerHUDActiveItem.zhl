@@ -2,5 +2,5 @@
 void PlayerHUDActiveItem::RenderGfx(SourceQuad* sourceQuad, DestinationQuad* destQuad, const ColorMod& color);
 
 struct PlayerHUDActiveItem {
-
-};
+    int id : 0x0;
+} : 0x4;

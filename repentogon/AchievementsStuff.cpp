@@ -203,3 +203,55 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_pop(state, 1);
 
 }
+
+bool LockAchievement(int achievementid) {
+	PersistentGameData* ps = g_Manager->GetPersistentGameData();
+	bool had = ps->achievements[achievementid];
+	ps->achievements[achievementid] = 0;
+	ps->TryUnlock(0);
+	return had != ps->achievements[achievementid];
+}
+
+
+
+static std::vector<std::string> ParseCommandA(std::string command, int size = 0) {
+	std::vector<std::string> cmdlets;
+
+	std::stringstream sstream(command);
+	std::string cmdlet;
+	char space = ' ';
+	while (std::getline(sstream, cmdlet, space)) {
+		cmdlet.erase(std::remove_if(cmdlet.begin(), cmdlet.end(), ispunct), cmdlet.end());
+		cmdlets.push_back(cmdlet);
+		if (size > 0 && cmdlets.size() == size) {
+			break;
+		}
+	}
+	return cmdlets;
+}
+
+
+HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
+	if (in.rfind("lockachievement", 0) == 0) {
+		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
+		int id = toint(cmdlets[1]);
+		if (LockAchievement(id)) {
+			g_Game->GetConsole()->PrintError("Achievement Locked!");
+		}
+		else {
+			g_Game->GetConsole()->PrintError("No Achievement Locked (was already locked!)");
+		}
+	}
+	if (in.rfind("achievement", 0) == 0) {
+		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
+		int id = toint(cmdlets[1]);
+		PersistentGameData* ps = g_Manager->GetPersistentGameData();
+		if (ps->TryUnlock(id)) {
+			g_Game->GetConsole()->PrintError("Achievement UnLocked!");
+		}
+		else {
+			g_Game->GetConsole()->PrintError("No Achievement UnLocked (was already unlocked!)");
+		}
+	}
+	super(in, out, player);
+}

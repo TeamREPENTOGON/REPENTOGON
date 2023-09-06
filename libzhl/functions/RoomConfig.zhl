@@ -14,30 +14,30 @@ __thiscall void RoomConfig::DannyDeleto();
 "558bec6aff68????????64a1????????5083ec14535657a1????????33c5508d45??64a3????????8d91":
 __thiscall void RoomConfig::UnloadStage(int stageid);
 
-struct RoomConfig depends (StaticArray)
+struct RoomConfig
 {
-    int32_t StageId; // 0x0
-    int32_t Mode; // 0x4
-    int32_t Type; // 0x8
-    uint32_t Variant; // 0xC
-    int32_t Subtype; // 0x10
-    std_string Name; // 0x14
-    int32_t Difficulty; // 0x2C
-    float InitialWeight; // 0x30
-    float Weight; // 0x34
-    int32_t Doors; // 0x38
-    int32_t unk7; // 0x3C
-    StaticArray Spawns; // 0x40
-    int8_t Width; // 0x46
-    int8_t Height; // 0x47
-    int32_t Shape; // 0x48
-    int32_t unk9; // 0x4C
-    int32_t unk10; // 0x50
-    int32_t unk11; // 0x54
-	// Ugly workaround, sorry
-    //int32_t unk12; // 0x58
+    int32_t StageId : 0x0; // 0x0
+    int32_t Mode : 0x4; // 0x4
+    int32_t Type : 0x8; // 0x8
+    uint32_t Variant : 0xc; // 0xC
+    int32_t Subtype : 0x10; // 0x10
+    std_string Name : 0x14; // 0x14
+    int32_t Difficulty : 0x2c; // 0x2C
+    float InitialWeight : 0x30; // 0x30
+    float Weight : 0x34; // 0x34
+    int32_t Doors : 0x38; // 0x38
+    int32_t unk7 : 0x3c; // 0x3C
+    RoomSpawn* Spawns : 0x40; // 0x40
+    uint16_t SpawnCount : 0x44; // 0x44
+    int8_t Width : 0x46; // 0x46
+    int8_t Height : 0x47; // 0x47
+    int32_t Shape : 0x48; // 0x48
+    int32_t unk9 : 0x4c; // 0x4C
+    int32_t unk10 : 0x50; // 0x50
+    int32_t unk11 : 0x54; // 0x54
+    int32_t unk12 : 0x58; // 0x58
 
     {{
     bool LIBZHL_API IsValidGridIndex(lua_Integer index, bool includeWalls = true) const;
     }}
-}; // 0x5C
+} : 0x5C; // 0x5C 

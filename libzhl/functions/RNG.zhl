@@ -9,6 +9,5 @@ __thiscall void RNG::RandomInt(unsigned int param_1);
 
 struct RNG
 {
-  unsigned int _seed; //0x0
-  char pad0[0xC]; // probably ShiftIdx?
-}; //0x10
+  unsigned int _seed : 0x0; //0x0
+} : 0x10; //0x10

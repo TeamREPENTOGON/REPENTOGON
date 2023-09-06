@@ -6,4 +6,4 @@ __thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
 
 struct Entity_Bomb : public Entity {
 
-};
+} : 0x928;

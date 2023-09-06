@@ -1,3 +1,7 @@
+TypeInfo uint64_t {
+    Synonym unsigned long long;
+};
+
 TypeInfo uint32_t {
     Synonym unsigned int;
 };
@@ -8,6 +12,10 @@ TypeInfo uint16_t {
 
 TypeInfo uint8_t {
     Synonym unsigned char;
+};
+
+TypeInfo int64_t {
+    Synonym long long;
 };
 
 TypeInfo int32_t {
@@ -44,14 +52,22 @@ TypeInfo WeaponType {
 
 TypeInfo vector_TemporaryEffect {
     Size 12;
+    Align 4;
+};
+
+TypeInfo std_vector_int {
+    Size 12;
+    Align 4;
 };
 
 TypeInfo std_set_int {
     Size 8;
+    Align 4;
 };
 
 TypeInfo std_string {
     Size 24;
+    Align 4;
 };
 
 TypeInfo HDC {
@@ -60,12 +76,30 @@ TypeInfo HDC {
 
 TypeInfo vector_LevelGenRoom {
     Size 12;
+    Align 4;
 };
 
 TypeInfo CRITICAL_SECTION {
     Size 0x18;
+    Align 4;
 };
 
 TypeInfo RoomConfigPtrVector {
     Size 12;
+    Align 4;
+};
+
+TypeInfo vector_EntitySaveState {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo std_vector_history_historyitem {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo vector_ModEntryPointer {
+    Size 12;
+    Align 4;
 };

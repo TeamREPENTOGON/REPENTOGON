@@ -14,7 +14,7 @@ __thiscall void Menu_Character::Init(Vector* unk);
 "558bec83ec2ca1????????33c58945??5356578bf9":
 __thiscall void Menu_Character::SelectRandomChar();
 
-struct Menu_Character depends (ANM2) {
+struct Menu_Character depends (ANM2, CompletionWidget) {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 1168); } 
 	inline ANM2* GetBigCharPageSprite() { return (ANM2*)((char*)this + 0x40) ; }
@@ -35,93 +35,35 @@ struct Menu_Character depends (ANM2) {
 	inline int GetSelectedCharacterMenu() { return *(int*)((char*)this + 0xDAC); }
 	inline void SetSelectedCharacterMenu(int id) { *(int *)((char*)this + 0xDAC) = id; }
 }} 
-    int Status; //1 seeds screen //4 transitioning to tainted
-    bool unkBool4;
-    bool IsCharacterUnlocked;
-    bool IsInputPossible;
-    bool unkBool7;
-    int Difficulty;
-    int CooldownWhenHoldDirection;
-    int SelectedCharacterID;
-    int _chosenRandomCharacter;
-    float _randomRotationVelocity;
-    int unk1c;
-    int _randomRotationAmount;
-    int unk24;
-    float unkFloat28;
-    float unkFloat2c;
-    float MenuBlackColorizeIntensity;
-    float MenuYellowColorizeIntensity;
-    float _PositionX;
-    float _PositionY;
-    ANM2 _BigCharPageSprite;
-    ANM2 _DifficultyOverlaySprite;
-    ANM2 _GreedDecoOverlaySprite;
-    ANM2 _CharacterMenuBGSprite;
-    char _completionWidget[284];
-    ANM2 _DifficultyPageSprite;
-    ANM2 _SeedPageSprite;
-    ANM2 _WinStreakPageSprite;
-    ANM2 _EastereggPageSprite;
-    ANM2 _SeedUnlockPageSprite;
-    int _numCharacters;
-    int _numCharacters_MINUS_SelectedEntry;
-    ANM2 _CharacterPortraitsSprite;
-    char field38_0xc2c;
-    char field39_0xc2d;
-    char field40_0xc2e;
-    char field41_0xc2f;
-    char field42_0xc30;
-    char field43_0xc31;
-    char field44_0xc32;
-    char field45_0xc33;
-    char field46_0xc34;
-    char field47_0xc35;
-    char field48_0xc36;
-    char field49_0xc37;
-    char field50_0xc38;
-    char field51_0xc39;
-    char field52_0xc3a;
-    char field53_0xc3b;
-    char field54_0xc3c;
-    char field55_0xc3d;
-    char field56_0xc3e;
-    char field57_0xc3f;
-    char field58_0xc40;
-    char field59_0xc41;
-    char field60_0xc42;
-    char field61_0xc43;
-    char field62_0xc44;
-    char field63_0xc45;
-    char field64_0xc46;
-    char field65_0xc47;
-    ANM2 _SeedEntrySprite;
-    std_string field67_0xd5c;
-    int field68_0xd74;
-    char field69_0xd78;
-    char field70_0xd79;
-    char field71_0xd7a;
-    char field72_0xd7b;
-    std_string field73_0xd7c;
-    std_string field74_0xd94;
-    int _characterMenuShown; /* 0 Normal 1 Tained */
-    ANM2 _PageSwapWidgetSprite;
-    ANM2 _TaintedMenuBGDecoSprite;
-    char field78_0xfd8;
-    char field79_0xfd9;
-    char field80_0xfda;
-    char field81_0xfdb;
-    char field82_0xfdc;
-    char field83_0xfdd;
-    char field84_0xfde;
-    char field85_0xfdf;
-    int _somethingCustomCharSelection;
-    char field87_0xfe4;
-    char field88_0xfe5;
-    char field89_0xfe6;
-    char field90_0xfe7;
-    char field91_0xfe8;
-    char field92_0xfe9;
-    char field93_0xfea;
-    char field94_0xfeb;
-};
+    int Status : 0x0; //1 seeds screen //4 transitioning to tainted
+    bool IsCharacterUnlocked : 0x5;
+    bool IsInputPossible : 0x6;
+    int Difficulty : 0x8;
+    int CooldownWhenHoldDirection : 0xC;
+    int SelectedCharacterID : 0x10;
+    int _chosenRandomCharacter : 0x14;
+    float _randomRotationVelocity : 0x18;
+    int _randomRotationAmount : 0x20;
+    float MenuBlackColorizeIntensity : 0x30;
+    float MenuYellowColorizeIntensity : 0x34;
+    float _PositionX : 0x38;
+    float _PositionY : 0x3c;
+    ANM2 _BigCharPageSprite : 0x40;
+    ANM2 _DifficultyOverlaySprite : 0x154;
+    ANM2 _GreedDecoOverlaySprite : 0x268;
+    ANM2 _CharacterMenuBGSprite : 0x37c;
+    CompletionWidget _completionWidget : 0x490;
+    ANM2 _DifficultyPageSprite : 0x5ac;
+    ANM2 _SeedPageSprite : 0x6c0;
+    ANM2 _WinStreakPageSprite : 0x7d4;
+    ANM2 _EastereggPageSprite : 0x8e8;
+    ANM2 _SeedUnlockPageSprite : 0x9fc;
+    int _numCharacters : 0xb10;
+    int _numCharacters_MINUS_SelectedEntry : 0xb14;
+    ANM2 _CharacterPortraitsSprite : 0xb18;
+    ANM2 _SeedEntrySprite : 0xc48;
+    int _characterMenuShown : 0xdac; /* 0 Normal 1 Tained */
+    ANM2 _PageSwapWidgetSprite : 0xdb0;
+    ANM2 _TaintedMenuBGDecoSprite : 0xec4;
+    int _somethingCustomCharSelection : 0xfe0;
+} : 0xfec;

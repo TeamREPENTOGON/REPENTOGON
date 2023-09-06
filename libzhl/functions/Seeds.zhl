@@ -1,28 +1,9 @@
 // sorry for the mess, this is a direct ghidra export :(
 struct Seeds {
-    bool _isCustomRun;
-    unsigned char field1_0x1;
-    unsigned char field2_0x2;
-    unsigned char field3_0x3;
-    unsigned int _gameStartSeed;
-    unsigned int _unkSeed;
-    unsigned char field6_0xc;
-    unsigned char field7_0xd;
-    unsigned char field8_0xe;
-    unsigned char field9_0xf;
-    unsigned char field10_0x10;
-    unsigned char field11_0x11;
-    unsigned char field12_0x12;
-    unsigned char field13_0x13;
-    unsigned char field14_0x14;
-    unsigned char field15_0x15;
-    unsigned char field16_0x16;
-    unsigned char field17_0x17;
-    int _stageSeeds[14];
-    unsigned int _playerInitSeed; /* Created by retype action */
-    unsigned char field20_0x54;
-    unsigned char field21_0x55;
-    unsigned char field22_0x56;
-    unsigned char field23_0x57;
-    int _seedEffectsCount;
-};
+    bool _isCustomRun : 0x0;
+    unsigned int _gameStartSeed : 0x4;
+    unsigned int _unkSeed : 0x8;
+    int _stageSeeds[14] : 0x18;
+    unsigned int _playerInitSeed : 0x50;
+    int _seedEffectsCount : 0x58;
+} : 0x5c;

@@ -25,4 +25,4 @@ struct Music {
 		*(int*)((char*)this + 0x348) = 0;
 		*(int*)((char*)this + 0x364) = -99;
 	};
-}} };
+}} } : 0x368;

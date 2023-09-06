@@ -270,7 +270,7 @@ struct Entity_Player : public Entity { {{
 	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
     }}
-};
+} : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":
 reference void* EntityPlayerRTTI;

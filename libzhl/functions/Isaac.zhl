@@ -41,4 +41,4 @@ static __cdecl void Isaac::Shutdown();
 
 struct Isaac {
 
-};
+} : 0;

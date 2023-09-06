@@ -3,4 +3,4 @@ __thiscall int ProceduralItemManager::CreateProceduralItem(unsigned int seed, un
 
 struct ProceduralItemManager {
 
-};
+} : 0x10;

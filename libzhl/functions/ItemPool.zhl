@@ -9,4 +9,4 @@ __thiscall int ItemPool::GetCollectibleFromList(const int* list, unsigned int le
 
 struct ItemPool {
 
-};
+} : 0x654;

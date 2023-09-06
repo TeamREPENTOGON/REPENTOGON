@@ -16,7 +16,7 @@ __thiscall void MenuManager::RenderButtonLayout();
 "558bec83ec08538b1d????????568b75":
 __thiscall void MenuManager::SetState(int estate);
 
-struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Vector, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods) {
+struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Vector, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods, GenericPopup, GenericPrompt) {
 {{
 	MenuManager()
 	{
@@ -41,46 +41,43 @@ struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Vector, Menu_Game,
 	inline Menu_CustomChallenge* GetMenuCustomChallenge() {return &this->_menuCustomChallenge; }
 	inline Menu_Mods* GetMenuMods() {return &this->_menuMods; }
 }} 
-    int _state;
-    float _fadeOutProgress;
-    int _fadeInActive;
-    float _fadeInProgress;
-    KAGE_Graphics_Color _fadeInColor;
-    int _returnState; /* ??? 256 when opening main menu from a run */
-    int _unrecognizedControllerPopupVisible; // ???
-    float _vingnetteIntensity;
-    float _backWidgetPositionOffsetY;
-    float _selectWidgetPositionOffsetY;
-    int _controllerIndex; /* controller currently controlling the menu navigation */
-    int _selectedMenuID;
-    Vector _ViewPosition;
-    ANM2 _MenuShadowSprite;
-    ANM2 _BackWidgetSprite;
-    ANM2 _SelectWidgetSprite;
-    char GenericPopup_unrecognizedControllerPopup[288];
-    char ImageBase_EmptyScreenImage[8];
-    char ImageBase_MenuOverlayImage[8];
-    char ImageBase_UNUSED4b0[8];
-    Seeds _seedsObject;  // ???
-    Menu_Title _menuTitle;
-    Menu_Save _menuSave;
-    char GenericPopup_genericPrompt[524824];
-    char _UNUSED80ee0[204];
-    Menu_Game _menuGame;
-    Menu_DailyChallenge _menuDailyChallenge;
-	Menu_Character _menuCharacter;
-    Menu_SpecialSeeds _menuSpecialSeeds;
-    Menu_Challenge _menuChallenge;
-    Menu_Collection _menuCollection;
-    Menu_Stats _menuStats;
-    Menu_Options _menuOptions;
-    Menu_ControllerSelect _menuControllerSelect;
-    Menu_KeyConfig _menuKeyConfig;
-    Menu_Cutscenes _menuCutscenes;
-    Menu_Bestiary _menuBestiary;
-    Menu_CustomChallenge _menuCustomChallenge;
-    Menu_Mods _menuMods;
-    char _UNUSED10e24c[1520];
-    int _UnknownUseInMenuCollection;
-    char _UNUSED10e840[16];
-};
+    int _state : 0x0;
+    float _fadeOutProgress : 0x4;
+    int _fadeInActive : 0x8;
+    float _fadeInProgress : 0xc;
+    KAGE_Graphics_Color _fadeInColor : 0x10;
+    int _returnState : 0x20; /* ??? 256 when opening main menu from a run */
+    int _unrecognizedControllerPopupVisible : 0x24; // ???
+    float _vingnetteIntensity : 0x28;
+    float _backWidgetPositionOffsetY : 0x2c;
+    float _selectWidgetPositionOffsetY : 0x30;
+    int _controllerIndex : 0x34; /* controller currently controlling the menu navigation */
+    int _selectedMenuID : 0x38;
+    Vector _ViewPosition : 0x3c;
+    ANM2 _MenuShadowSprite : 0x44;
+    ANM2 _BackWidgetSprite : 0x158;
+    ANM2 _SelectWidgetSprite : 0x26c;
+    GenericPopup GenericPopup_unrecognizedControllerPopup: 0x380;
+    char ImageBase_EmptyScreenImage[8] : 0x4a0;
+    char ImageBase_MenuOverlayImage[8] : 0x4a8;
+    char ImageBase_UNUSED4b0[8] : 0x4b0;
+    Seeds _seedsObject : 0x4b8;  // ???
+    Menu_Title _menuTitle : 0x514;
+    Menu_Save _menuSave : 0x634;
+    GenericPrompt GenericPopup_genericPrompt : 0xcc8;
+    char _UNUSED80ee0[204] : 0x80ee0;
+    Menu_Game _menuGame : 0x80fac;
+    Menu_DailyChallenge _menuDailyChallenge : 0x8130c;
+    Menu_Character _menuCharacter : 0x101c00;
+    Menu_SpecialSeeds _menuSpecialSeeds : 0x102bec;
+    Menu_Challenge _menuChallenge : 0x102d50;
+    Menu_Collection _menuCollection : 0x102e80;
+    Menu_Stats _menuStats : 0x1030e0;
+    Menu_Options _menuOptions : 0x10d4a4;
+    Menu_ControllerSelect _menuControllerSelect : 0x10d710;
+    Menu_KeyConfig _menuKeyConfig : 0x10d840;
+    Menu_Cutscenes _menuCutscenes : 0x10d968;
+    Menu_Bestiary _menuBestiary : 0x10da8c;
+    Menu_CustomChallenge _menuCustomChallenge : 0x10de04;
+    Menu_Mods _menuMods : 0x10df28;
+} : 0x10e24c;

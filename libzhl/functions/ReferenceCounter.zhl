@@ -1,6 +1,6 @@
 struct ReferenceCounter_ImageBase {
-    KAGE_Graphics_ImageBase* image;
-    KAGE_SmartPointer_ImageBase* counter;
+    KAGE_Graphics_ImageBase* image : 0x0;
+    KAGE_SmartPointer_ImageBase* counter : 0x4;
 
     {{
     ReferenceCounter_ImageBase() {
@@ -8,7 +8,7 @@ struct ReferenceCounter_ImageBase {
         counter = nullptr;
     }
     }}
-};
+} : 0x8;
 
 "558bec6aff68????????64a1000000005083ec0c5657a1????????33c5508d45f464a3000000008bf9ff75088d4de8e86c010000":
 ReferenceCounter_ImageBase& ReferenceCounter_ImageBase::operator=(ReferenceCounter_ImageBase const& other);

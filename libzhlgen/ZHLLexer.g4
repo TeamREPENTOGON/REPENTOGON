@@ -42,6 +42,7 @@ Void: 'void';
 Type: 'TypeInfo';
 Size: 'Size';
 Synonym: 'Synonym';
+Align: 'Align';
 Vtable: '__vtable';
 Skip: 'skip';
 Pure: 'pure';

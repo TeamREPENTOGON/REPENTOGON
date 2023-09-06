@@ -2,12 +2,9 @@ struct Menu_ControllerSelect depends (ANM2) {
 {{
 	inline ANM2* GetControllerSelectSprite() { return &this->ControllerSelectSprite; }
 }}
-	int HoldInputTimer;
-	int SelectedElement;
-	float PositionX;
-	float PositionY;
-	ANM2 ControllerSelectSprite;
-	int unk3;
-	int unk4;
-	int unk5;
-};
+	int HoldInputTimer : 0x0;
+	int SelectedElement : 0x4;
+	float PositionX : 0x8;
+	float PositionY : 0xc;
+	ANM2 ControllerSelectSprite : 0x10;
+} : 0x130;

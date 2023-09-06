@@ -8,7 +8,8 @@ __thiscall void CompletionWidget::Update();
 
 struct CompletionWidget {
 {{
-	inline ANM2* GetANM2() { return (ANM2*)((char*)this + 4); } 
+	inline ANM2* GetANM2() { return &anm2; } 
 }} 
-    int CharacterId;
-};
+    int CharacterId : 0x0;
+    ANM2 anm2 : 0x4;
+} : 0x11c;

@@ -33,4 +33,4 @@ struct Weapon { {{
         "558bec83e4f883ec60a1????????33c4894424??8b45":
         void Fire(const Vector& pos, bool IsShooting, bool IsInterpolated);
     };
-};
+} : 0x40;

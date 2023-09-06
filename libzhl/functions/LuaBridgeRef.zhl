@@ -1,9 +1,9 @@
 struct LuaBridgeRef {
-	lua_State* _state;
-	int _ref;
+	lua_State* _state : 0x0;
+	int _ref : 0x4;
 	{{
 		LuaBridgeRef() {
 
 		}
 	}}
-};
+} : 0x8;

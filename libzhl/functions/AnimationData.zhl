@@ -23,21 +23,18 @@ struct AnimationData depends (AnimationLayer) { {{
 	inline int GetLength() { return this->_length; };
 	inline bool IsLoopingAnimation() { return this->_loop; };
 }}
-	std_string _name;
+	std_string _name : 0x0;
 	// Layers in this array are in order from bottom to top, not in order of their IDs.
-	AnimationLayer* _animLayers;
+	AnimationLayer* _animLayers : 0x18;
 	// Note that this is the raw number of layers in this animation, not necessarily the max layer id +1.
-	int _layerCount;
-	char _nullLayersPtr[4];  // Can examine this more later. We have NullFrame access elsewhere.
-	int _nullLayerCount;
-	char _pad0[8];
-	int _length;
-	bool _loop;
-	char _pad1[3];
+	int _layerCount : 0x1C;
+	char _nullLayersPtr[4] : 0x20;  // Can examine this more later. We have NullFrame access elsewhere.
+	int _nullLayerCount : 0x28;
+	int _length : 0x30;
+	bool _loop : 0x34;
 	// Since the ordering of layers can be different than the order of their IDs,
 	// this array maps the layer ID to their ordering, from bottom to top.
 	// So if you want the layer with ID 2, that is the _layerMap[2]'th layer from the bottom.
 	// Therefore its corresponding AnimationLayer is at _animLayers[_layerMap[2]].
-	int _layerMap[64];
-	char _pad2[4];
-};
+	int _layerMap[64] : 0x38;
+} : 0x13C;
