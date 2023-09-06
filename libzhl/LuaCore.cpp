@@ -325,6 +325,19 @@ namespace lua {
 		lua_pop(L, 1);
 	}
 
+	void RegisterFunctions(lua_State* L, lua::Metatables mt, luaL_Reg* functions) {
+		luaL_Reg* ptr = functions;
+		lua::PushMetatable(L, mt);
+		while (const char* name = ptr->name) {
+			lua_pushstring(L, name);
+			lua_pushcfunction(L, ptr->func);
+			lua_rawset(L, -3);
+
+			++ptr;
+		}
+		lua_pop(L, 1);
+	}
+
 	namespace luabridge {
 		UserdataPtr::UserdataPtr(void* const p) {
 			m_p = p;
@@ -593,6 +606,8 @@ namespace lua {
 		const char* DailyChallengeMT = "DailyChallenge";
 		const char* ItemOverlayMT = "ItemOverlay";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
+		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
+		const char* EntitySaveStateMT = "EntitySaveState";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {
