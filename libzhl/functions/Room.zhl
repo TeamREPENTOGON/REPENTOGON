@@ -58,12 +58,16 @@ __thiscall void Room::Init(int param_1, RoomDescriptor* descriptor);
 "558bec568bf133c03986":
 __thiscall void Room::SetPauseTimer(int Duration);
 
+"558bec568b75??578bf98b87":
+__thiscall ColorModState Room::ComputeColorModifier();
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
-	inline bool GetRedHeartDamage() {return *(bool*)((char*)this + 0x120C); }
-	inline EntityList* GetEntityList() {return (EntityList*)((char*)this + 0x1218); }
-	inline float* GetWaterAmount() {return (float*)((char*)this + 0x7134); }
+	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }
+	inline EntityList* GetEntityList() { return (EntityList*)((char*)this + 0x1218); }
+	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1c90); } // doing this the lazy way while FXLayers isn't exposed
+	inline float* GetWaterAmount() { return (float*)((char*)this + 0x7134); }
 	inline KColor* GetWaterColor() { return (KColor*)((char*)this + 0x7158 ); }
 	inline KColor* GetWaterColorMultiplier() { return (KColor*)((char*)this + 0x7168 ); }
 	

@@ -608,6 +608,8 @@ namespace lua {
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
 		const char* EntitySaveStateMT = "EntitySaveState";
+		const char* FXParamsMT = "FXParams";
+		const char* ColorCorrectionMT = "ColorCorrection";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {

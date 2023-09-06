@@ -2329,7 +2329,8 @@ AutocompleteType = {
 	METRO = 13,
 	DELIRIOUS = 14,
 	PLAYER = 15,
-	CUSTOM = 16,
+	ACHIEVEMENT = 16,
+	CUSTOM = 17,
 }
 
 AnimRenderFlags = {
