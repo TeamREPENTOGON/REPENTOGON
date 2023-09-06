@@ -154,11 +154,28 @@ int Lua_NPCSetShieldStrength(lua_State* L)
 	return 1;
 }
 
+int Lua_NPCPlaySound(lua_State* L)
+{
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	int id = luaL_checknumber(L, 2);
+	float volume = (float)luaL_optnumber(L, 3, 1.0);
+	int framedelay = luaL_optinteger(L, 4, 2);
+	int loop = 0;
+	if lua_isboolean(L, 5)
+		loop = lua_toboolean(L, 5);
+	float pitch = (float)luaL_optnumber(L, 6, 1.0);
+
+	npc->PlaySound(id, volume, framedelay, loop, pitch);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	lua::Metatables mt = lua::Metatables::ENTITY_NPC;
+	lua::RegisterFunction(state, mt, "PlaySound", Lua_NPCPlaySound);
 	lua::RegisterFunction(state, mt, "UpdateDirtColor", Lua_NPCUpdateDirtColor);
 	lua::RegisterFunction(state, mt, "GetDirtColor", Lua_NPCGetDirtColor);
 	lua::RegisterFunction(state, mt, "GetControllerId", Lua_NPCGetControllerId);
