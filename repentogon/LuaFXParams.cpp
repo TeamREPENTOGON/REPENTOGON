@@ -32,7 +32,7 @@ int Lua_SetColorCorrection(lua_State* L)
 	return 0;
 }
 
-int Lua_GetUseWaterV2(lua_State* L)
+int Lua_GetWaterV2(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	lua_pushboolean(L, *params->GetWaterV2());
@@ -64,19 +64,19 @@ int Lua_SetWaterColor(lua_State* L)
 	return 0;
 }
 
-int Lua_GetWaterColorMultipler(lua_State* L)
+int Lua_GetWaterColorMultiplier(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = *params->GetWaterColorMultipler();
+	*toLua = *params->GetWaterColorMultiplier();
 
 	return 1;
 }
 
-int Lua_SetWaterColorMultipler(lua_State* L)
+int Lua_SetWaterColorMultiplier(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetWaterColorMultipler() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetWaterColorMultiplier() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
 }
@@ -163,8 +163,8 @@ static void RegisterFXParams(lua_State* L) {
 		{ "SetWaterV2", Lua_SetWaterV2 },
 		{ "GetWaterColor", Lua_GetWaterColor },
 		{ "SetWaterColor", Lua_SetWaterColor },
-		{ "GetWaterColorMultipler", Lua_GetWaterColorMultipler },
-		{ "SetWaterColorMultipler", Lua_SetWaterColorMultipler },
+		{ "GetWaterColorMultiplier", Lua_GetWaterColorMultiplier },
+		{ "SetWaterColorMultiplier", Lua_SetWaterColorMultiplier },
 		{ "GetShadowAlpha", Lua_GetShadowAlpha },
 		{ "SetShadowAlpha", Lua_SetShadowAlpha },
 		{ "GetShadowColor", Lua_GetShadowColor },
