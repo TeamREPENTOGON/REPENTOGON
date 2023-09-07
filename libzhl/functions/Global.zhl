@@ -50,6 +50,7 @@ typedef std::vector<History_HistoryItem> std_vector_history_historyitem;
 typedef std::vector<unsigned int> std_vector_uint;
 typedef std::set<uint32_t> std_set_uint32t;
 typedef std::vector<EntitySaveState> vector_EntitySaveState;
+typedef std::map<int, int> std_map_int_int;
 
 struct RoomConfig;
 typedef std::vector<RoomConfig*> RoomConfigPtrVector;
