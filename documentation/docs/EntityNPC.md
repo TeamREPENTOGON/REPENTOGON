@@ -17,13 +17,13 @@ If `Immediate` is set, the dirt color will be set to exactly what is beneath the
 
 ___
 ### Fire·Projectiles·Ex() {: aria-label='Functions' }
-#### table FireProjectilesEx ([Vector](https://moddingofisaac.com/docs/rep/Vector.html) position, [Vector](https://moddingofisaac.com/docs/rep/Vector.html) velocity, ProjectilesMode mode, [ProjectileParams](https://moddingofisaac.com/docs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
-Same as [FireProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
+#### table FireProjectilesEx ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity, ProjectilesMode mode, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
+Same as [FireProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
 ### Fire·Boss·Projectiles·Ex() {: aria-label='Functions' }
-#### table FireBossProjectilesEx ( int numProjectiles, [Vector](https://moddingofisaac.com/docs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://moddingofisaac.com/docs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
-Same as [FireBossProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
+#### table FireBossProjectilesEx ( int numProjectiles, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
+Same as [FireBossProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
 ### Get·Controller·Id() {: aria-label='Functions' }
