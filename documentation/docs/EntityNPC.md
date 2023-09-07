@@ -10,18 +10,20 @@ Returns the dynamic dirt color of the entity. This lets entities like Nightcrawl
 
 ___
 ### Update·Dirt·Color() {: aria-label='Functions' }
-#### void UpdateDirtColor ( boolean unk ) {: .copyable aria-label='Functions' }
+#### void UpdateDirtColor ( boolean Immediate ) {: .copyable aria-label='Functions' }
 Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
+
+If `Immediate` is set, the dirt color will be set to exactly what is beneath the entity. Otherwise, it will be updated smoothly over the course of multiple frames.
 
 ___
 ### Fire·Projectiles·Ex() {: aria-label='Functions' }
-#### table FireProjectilesEx ([Vector](https://moddingofisaac.com/docs/rep/Vector.html) position, [Vector](https://moddingofisaac.com/docs/rep/Vector.html) velocity, ProjectilesMode mode, [ProjectileParams](https://moddingofisaac.com/docs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
-Same as [FireProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
+#### table FireProjectilesEx ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity, ProjectilesMode mode, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
+Same as [FireProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
 ### Fire·Boss·Projectiles·Ex() {: aria-label='Functions' }
-#### table FireBossProjectilesEx ( int numProjectiles, [Vector](https://moddingofisaac.com/docs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://moddingofisaac.com/docs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
-Same as [FireBossProjectiles](https://moddingofisaac.com/docs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
+#### table FireBossProjectilesEx ( int numProjectiles, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
+Same as [FireBossProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
 ### Get·Controller·Id() {: aria-label='Functions' }

@@ -23,6 +23,9 @@ __thiscall void Entity_NPC::FireProjectiles(Vector* position, Vector* velocity, 
 "558bec83e4f883ec2cf30f1005????????33c0538bd9":
 __thiscall Entity_Projectile* Entity_NPC::FireBossProjectiles(int32_t numProjectiles, Vector const& targetPos, float trajectoryModifier, ProjectileParams const& params);
 
+"558bec8b81????????f30f1045":
+__thiscall void Entity_NPC::PlaySound(int id, float volume, int framedelay, bool loop, float pitch);
+
 struct Entity_NPC : public Entity {
 {{
 	inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xBFC); }
