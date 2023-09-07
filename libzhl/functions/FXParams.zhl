@@ -3,18 +3,18 @@ __thiscall FXParams* FXParams::Init();
 
 struct FXParams depends (KColor, ColorMod, ColorModState) { {{
 	inline ColorModState* GetColorCorrection() { return &this->ColorCorrection; }
-	inline bool* GetUnknownBool() { return &this->unkBool; }
-	inline KColor* GetUnknownKColor1() { return &this->unkColor1; }
-	inline KColor* GetUnknownKColor2() { return &this->unkColor2; }
-	inline float* GetRoomLightingAlpha() { return &this->RoomLightingAlpha; }
-	inline KColor* GetRoomLightingKColor() { return &this->RoomLightingOverlay; }
-	inline KColor* GetFXLightingKColor() { return &this->FXLighting; }
-	inline ColorMod* GetUnknownColor() { return &this->unkColorMod; }
+	inline bool* GetUseWaterV2() { return &this->useWaterV2; }
+	inline KColor* GetWaterColor() { return &this->waterColor; }
+	inline KColor* GeWaterColorMultipler() { return &this->waterColorMultipler; }
+	inline float* GeShadowAlpha() { return &this->shadowAlpha; }
+	inline KColor* GetShadowColor() { return &this->shadowColor; }
+	inline KColor* GetLightColor() { return &this->lightColor; }
+	inline ColorMod* GetWaterEffectColor() { return &this->waterEffectColor; }
 }}
 	ColorModState ColorCorrection : 0x0; //0x0
-	bool unkBool : 0x18; //0x18
-	KColor unkColor1 : 0x1C, unkColor2 : 0x2c; //0x1c
-	float RoomLightingAlpha : 0x3c; //0x3c,
-	KColor RoomLightingOverlay : 0x40, FXLighting : 0x50;
-	ColorMod unkColorMod : 0x60; //0x60
+	bool useWaterV2 : 0x18; //0x18
+	KColor waterColor : 0x1C, waterColorMultiplier : 0x2c; //0x1c
+	float shadowAlpha : 0x3c; //0x3c,
+	KColor shadowColor : 0x40, lightColor : 0x50;
+	ColorMod waterEffectColor : 0x60; //0x60
 } : 0x8c; //0x8c

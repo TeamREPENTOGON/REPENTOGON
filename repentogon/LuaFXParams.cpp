@@ -32,124 +32,118 @@ int Lua_SetColorCorrection(lua_State* L)
 	return 0;
 }
 
-// Unknown bool
-int Lua_GetUnkBool(lua_State* L)
+int Lua_GetUseWaterV2(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	lua_pushboolean(L, *params->GetUnknownBool());
+	lua_pushboolean(L, *params->GetWaterV2());
 
 	return 1;
 }
 
-int Lua_SetUnkBool(lua_State* L)
+int Lua_SetWaterV2(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetUnknownBool() = lua_toboolean(L, 2);
+	*params->GetWaterV2() = lua_toboolean(L, 2);
 	return 0;
 }
 
-// Unknown KColor 1
-int Lua_GetUnknownKColor1(lua_State* L)
+int Lua_GetWaterColor(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = *params->GetUnknownKColor1();
+	*toLua = *params->GetWaterColor();
 
 	return 1;
 }
 
-int Lua_SetUnknownKColor1(lua_State* L)
+int Lua_SetWaterColor(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetUnknownKColor1() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetWaterColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
 }
 
-// Unknown KColor 2
-int Lua_GetUnknownKColor2(lua_State* L)
+int Lua_GetWaterColorMultipler(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = *params->GetUnknownKColor2();
+	*toLua = *params->GetWaterColorMultipler();
 
 	return 1;
 }
 
-int Lua_SetUnknownKColor2(lua_State* L)
+int Lua_SetWaterColorMultipler(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetUnknownKColor2() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetWaterColorMultipler() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
 }
 
-// Room lighting alpha
-int Lua_GetRoomLightingAlpha(lua_State* L)
+int Lua_GetShadowAlpha(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	lua_pushnumber(L, *params->GetRoomLightingAlpha());
+	lua_pushnumber(L, *params->GetShadowAlpha());
 
 	return 1;
 }
 
-int Lua_SetRoomLightingAlpha(lua_State* L)
+int Lua_SetShadowAlpha(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetRoomLightingAlpha() = lua_tonumber(L, 2);
+	*params->GetShadowAlpha() = lua_tonumber(L, 2);
 	return 0;
 }
 
-// Room lighting KColor
-int Lua_GetRoomLightingKColor(lua_State* L)
+int Lua_GetShadowColor(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = *params->GetRoomLightingKColor();
+	*toLua = *params->GetShadowColor();
 
 	return 1;
 }
 
-int Lua_SetRoomLightingKColor(lua_State* L)
+int Lua_SetShadowColor(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetRoomLightingKColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetShadowColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
 }
 
-// FX lighting KColor
-int Lua_GetFXLightingKColor(lua_State* L)
+int Lua_GetLightColor(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = *params->GetFXLightingKColor();
+	*toLua = *params->GetLightColor();
 
 	return 1;
 }
 
-int Lua_SetFXLightingKColor(lua_State* L)
+int Lua_SetLightColor(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetFXLightingKColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	*params->GetLightColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 
 	return 0;
 }
 
-// Unknown Color
-int Lua_GetUnknownColor(lua_State* L)
+
+int Lua_GetWaterEffectColor(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
-	*toLua = *params->GetUnknownColor();
+	*toLua = *params->GetWaterEffectColor();
 
 	return 1;
 }
 
-int Lua_SetUnknownColor(lua_State* L)
+int Lua_SetWaterEffectColor(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetUnknownColor() = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	*params->GetWaterEffectColor() = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	return 0;
 }
@@ -165,20 +159,20 @@ static void RegisterFXParams(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetColorCorrection", Lua_GetColorCorrection },
 		{ "SetColorCorrection", Lua_SetColorCorrection },
-		{ "GetUnknownBool", Lua_GetUnkBool },
-		{ "SetUnknownBool", Lua_SetUnkBool },
-		{ "GetUnknownKColor1", Lua_GetUnknownKColor1 },
-		{ "SetUnknownKColor1", Lua_SetUnknownKColor1 },
-		{ "GetUnknownKColor2", Lua_GetUnknownKColor2 },
-		{ "SetUnknownKColor2", Lua_SetUnknownKColor2 },
-		{ "GetRoomLightingAlpha", Lua_GetRoomLightingAlpha },
-		{ "SetRoomLightingAlpha", Lua_SetRoomLightingAlpha },
-		{ "GetRoomLightingKColor", Lua_GetRoomLightingKColor },
-		{ "SetRoomLightingKColor", Lua_SetRoomLightingKColor },
-		{ "GetFXLightingKColor", Lua_GetFXLightingKColor },
-		{ "SetFXLightingKColor", Lua_SetFXLightingKColor },
-		{ "GetUnknownColor", Lua_GetUnknownColor },
-		{ "SetUnknownColor", Lua_SetUnknownColor },
+		{ "GetWaterV2", Lua_GetWaterV2 },
+		{ "SetWaterV2", Lua_SetWaterV2 },
+		{ "GetWaterColor", Lua_GetWaterColor },
+		{ "SetWaterColor", Lua_SetWaterColor },
+		{ "GetWaterColorMultipler", Lua_GetWaterColorMultipler },
+		{ "SetWaterColorMultipler", Lua_SetWaterColorMultipler },
+		{ "GetShadowAlpha", Lua_GetShadowAlpha },
+		{ "SetShadowAlpha", Lua_SetShadowAlpha },
+		{ "GetShadowColor", Lua_GetShadowColor },
+		{ "SetShadowColor", Lua_SetShadowColor },
+		{ "GetLightColor", Lua_GetLightColor },
+		{ "SetLightColor", Lua_SetLightColor },
+		{ "GetWaterEffectColor", Lua_GetWaterEffectColor },
+		{ "SetWaterEffectColor", Lua_SetWaterEffectColor },
 		{ NULL, NULL }
 	};
 
