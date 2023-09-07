@@ -10,8 +10,10 @@ Returns the dynamic dirt color of the entity. This lets entities like Nightcrawl
 
 ___
 ### Update·Dirt·Color() {: aria-label='Functions' }
-#### void UpdateDirtColor ( boolean unk ) {: .copyable aria-label='Functions' }
+#### void UpdateDirtColor ( boolean Immediate ) {: .copyable aria-label='Functions' }
 Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
+
+If `Immediate` is set, the dirt color will be set to exactly what is beneath the entity. Otherwise, it will be updated smoothly over the course of multiple frames.
 
 ___
 ### Fire·Projectiles·Ex() {: aria-label='Functions' }
