@@ -21,7 +21,7 @@ ___
 
 ### Use·Water·V2 {: aria-label='Variables' }
 [ ](#){: .tooltip .badge }
-#### bool UseWaterV2 {: .copyable aria-label='Variables'}
+#### boolean UseWaterV2 {: .copyable aria-label='Variables'}
 If set, water will use the reflective shader featured in Downpour and Dross.
 
 ___
