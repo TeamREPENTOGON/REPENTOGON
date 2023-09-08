@@ -19,7 +19,7 @@ ___
 ## Variables
 ### Color {: aria-label='Variables' }
 [ ](#){: .tooltip .badge }
-#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) Brightness {: .copyable aria-label='Variables'}
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) Color {: .copyable aria-label='Variables'}
 
 ???+ warning "Warning"
     `Alpha` acts as a multiplier and must be non-zero in order for this to have any effect!

@@ -153,30 +153,87 @@ static void RegisterFXParams(lua_State* L) {
 
 	luaL_newmetatable(L, lua::metatables::FXParamsMT);
 	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua_pushcfunction(L, lua::luabridge::indexMetaMethod);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__newindex");
+	lua_pushcfunction(L, lua::luabridge::newIndexMetaMethod);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__propget");
+	lua_newtable(L);
+
+	lua_pushstring(L, "UseWaterV2");
+	lua_pushcfunction(L, Lua_GetWaterV2);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "WaterColor");
+	lua_pushcfunction(L, Lua_GetWaterColor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "WaterColorMultiplier");
+	lua_pushcfunction(L, Lua_GetWaterColorMultiplier);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "ShadowAlpha");
+	lua_pushcfunction(L, Lua_GetShadowAlpha);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "ShadowColor");
+	lua_pushcfunction(L, Lua_GetShadowColor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "LightColor");
+	lua_pushcfunction(L, Lua_GetLightColor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "WaterEffectColor");
+	lua_pushcfunction(L, Lua_GetWaterEffectColor);
+	lua_rawset(L, -3);
+
+	lua_rawset(L, -3);
+
+	// and repeat!
+	lua_pushstring(L, "__propset");
+	lua_newtable(L);
+
+	lua_pushstring(L, "UseWaterV2");
+	lua_pushcfunction(L, Lua_SetWaterV2);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "WaterColor");
+	lua_pushcfunction(L, Lua_SetWaterColor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "WaterColorMultiplier");
+	lua_pushcfunction(L, Lua_SetWaterColorMultiplier);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "ShadowAlpha");
+	lua_pushcfunction(L, Lua_SetShadowAlpha);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "ShadowColor");
+	lua_pushcfunction(L, Lua_SetShadowColor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "LightColor");
+	lua_pushcfunction(L, Lua_SetLightColor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "WaterEffectColor");
+	lua_pushcfunction(L, Lua_SetWaterEffectColor);
+	lua_rawset(L, -3);
+
+	lua_rawset(L, -3);
 
 	luaL_Reg functions[] = {
-		{ "GetColorCorrection", Lua_GetColorCorrection },
-		{ "SetColorCorrection", Lua_SetColorCorrection },
-		{ "GetWaterV2", Lua_GetWaterV2 },
-		{ "SetWaterV2", Lua_SetWaterV2 },
-		{ "GetWaterColor", Lua_GetWaterColor },
-		{ "SetWaterColor", Lua_SetWaterColor },
-		{ "GetWaterColorMultiplier", Lua_GetWaterColorMultiplier },
-		{ "SetWaterColorMultiplier", Lua_SetWaterColorMultiplier },
-		{ "GetShadowAlpha", Lua_GetShadowAlpha },
-		{ "SetShadowAlpha", Lua_SetShadowAlpha },
-		{ "GetShadowColor", Lua_GetShadowColor },
-		{ "SetShadowColor", Lua_SetShadowColor },
-		{ "GetLightColor", Lua_GetLightColor },
-		{ "SetLightColor", Lua_SetLightColor },
-		{ "GetWaterEffectColor", Lua_GetWaterEffectColor },
-		{ "SetWaterEffectColor", Lua_SetWaterEffectColor },
-		{ NULL, NULL }
+	{ "GetColorCorrection", Lua_GetColorCorrection },
+	{ NULL, NULL }
 	};
 
 	luaL_setfuncs(L, functions, 0);
+
 	lua_pop(L, 1);
 
 }

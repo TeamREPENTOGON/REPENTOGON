@@ -17,49 +17,39 @@
 Gets a modifiable copy of the color correction introduced in Repentance.
 
 ___
-### Get·Water·Color () {: aria-label='Functions' }
-#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetWaterColor ( ) {: .copyable aria-label='Functions' }
+## Variables
+
+### Use·Water·V2 {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### bool UseWaterV2 {: .copyable aria-label='Variables'}
+If set, water will use the reflective shader featured in Downpour and Dross.
 
 ___
-### Set·Water·Color () {: aria-label='Functions' }
-#### void SetWaterColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) Color ) {: .copyable aria-label='Functions' }
+### Water·Color {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) WaterColor {: .copyable aria-label='Variables'}
 
 ___
-### Get·Water·Color·Multiplier () {: aria-label='Functions' }
-#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetWaterColorMultiplier ( ) {: .copyable aria-label='Functions' }
+### Water·Color·Multiplier {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) WaterColorMultiplier {: .copyable aria-label='Variables'}
 
 ___
-### Set·Water·Color·Multiplier () {: aria-label='Functions' }
-#### void SetWaterColorMultiplier ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) Color ) {: .copyable aria-label='Functions' }
+### Shadow·Alpha {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### float ShadowAlpha {: .copyable aria-label='Variables'}
 
 ___
-### Get·Shadow·Alpha () {: aria-label='Functions' }
-#### float GetShadowAlpha ( ) {: .copyable aria-label='Functions' }
+### Shadow·Color {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) ShadowColor {: .copyable aria-label='Variables'}
 
 ___
-### Set·Shadow·Alpha () {: aria-label='Functions' }
-#### void SetShadowAlpha ( float Alpha ) {: .copyable aria-label='Functions' }
+### Light·Color {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) LightColor {: .copyable aria-label='Variables'}
 
 ___
-### Get·Shadow·Color () {: aria-label='Functions' }
-#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetShadowColor ( ) {: .copyable aria-label='Functions' }
-
-___
-### Set·Shadow·Color () {: aria-label='Functions' }
-#### void SetShadowColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) Color ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Light·Color () {: aria-label='Functions' }
-#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetLightColor ( ) {: .copyable aria-label='Functions' }
-
-___
-### Set·Light·Color () {: aria-label='Functions' }
-#### void SetLightColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) Color ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Water·Effect·Color () {: aria-label='Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetWaterEffectColor ( ) {: .copyable aria-label='Functions' }
-
-___
-### Set·Water·Effect·Color () {: aria-label='Functions' }
-#### void SetWaterEffectColor ( [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) Color ) {: .copyable aria-label='Functions' }
+### Water·Effect·Color {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterEffectColor {: .copyable aria-label='Variables'}
