@@ -1,0 +1,20 @@
+"558bec83ec7ca1????????33c58945??0f2805":
+__thiscall void ScoreSheet::Calculate();
+
+struct ScoreSheet
+{
+    int _stageBonus : 0x0;
+	int _schwagBonus : 0x4;
+	int _blueBabyBonus : 0x8;
+	int _lambBonus : 0xc;
+	int _megaSatanBonus : 0x10;
+	int _rushBonus : 0x14;
+	int _explorationBonus : 0x18;
+	int _damagePenalty : 0x1c;
+	int _timePenalty : 0x20;
+	int _itemPenalty : 0x24;
+	int _totalScore : 0x28;
+	int _runTimeLevel: 0x2c;
+	
+    
+} : 0x14c;

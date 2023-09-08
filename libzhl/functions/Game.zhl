@@ -91,7 +91,7 @@ static bool Game::IsGreedFinalBoss();
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer) { {{
+struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet) { {{
 	Game()
 	{
 		this->constructor();
@@ -148,6 +148,8 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	
 	inline unsigned int* GetDebugFlags() { return (unsigned int*)((char*)this + 0X1C3164); }
 	
+	inline ScoreSheet* GetScoreSheet() { return (ScoreSheet*)((char*)this + 0x1c32b8); }
+	
 	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return (ProceduralItemManager*)((char*) this + 0x283c20); }
@@ -195,6 +197,7 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
     int _treasureRoomsVisited : 0x1c3178; // 0x1C3178
     int _planetariumsVisited : 0x1c317c; // 0x1C317C
     Ambush _ambush : 0x1c31b8; // 0x1c31b8
+	ScoreSheet _scoreSheet : 0x1c32b8; //
     uint32_t _difficulty : 0x243624; // 0x243624
     ProceduralItemManager _proceduralItemManager : 0x283c20; // 0x283c20 
 } : 0x285238;
