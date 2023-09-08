@@ -32,4 +32,4 @@ ___
 ___
 ### Contrast {: aria-label='Variables' }
 [ ](#){: .tooltip .badge }
-#### float Damage {: .copyable aria-label='Variables'}
+#### float Contrast {: .copyable aria-label='Variables'}
