@@ -109,6 +109,7 @@ nav:
   - Capsule: Capsule.md
   - ChallengeParam: ChallengeParam.md
   - Color: Color.md
+  - ColorCorrection: ColorCorrection.md
   - Console: Console.md
   - DailyChallenge: DailyChallenge.md
   - DebugRenderer: DebugRenderer.md
@@ -121,6 +122,7 @@ nav:
     - EntityPickup: EntityPickup.md
     - EntitySlot: EntitySlot.md
   - Font: Font.md
+  - FXParams: FXParams.md
   - Game: Game.md
   - GridEntity:
     - GridEntity: GridEntity.md
