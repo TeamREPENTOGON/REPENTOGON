@@ -28,6 +28,10 @@ ___
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetFloorColor ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·FXParams () {: aria-label='Functions' }
+#### [FXParams](FXParams.md) GetFXParams ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Grid·Index·By·Tile () {: aria-label='Functions' }
 #### int GetGridIndexByTile ( int gridRow, int gridColumn ) {: .copyable aria-label='Functions' }
 

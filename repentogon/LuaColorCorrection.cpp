@@ -15,66 +15,19 @@ static int Lua_FXParamsGetColorCorrection(lua_State* L) {
 }
 
 // R
-int Lua_GetR(lua_State* L)
+int Lua_GetColor(lua_State* L)
 {
 	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	lua_pushnumber(L, *color->GetR());
+	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
+	*toLua = *color->GetColor();
 
 	return 1;
 }
 
-int Lua_SetR(lua_State* L)
+int Lua_SetColor(lua_State* L)
 {
 	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	*color->GetR() = lua_tonumber(L, 2);
-	return 0;
-}
-
-// G
-int Lua_GetG(lua_State* L)
-{
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	lua_pushnumber(L, *color->GetG());
-
-	return 1;
-}
-
-int Lua_SetG(lua_State* L)
-{
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	*color->GetG() = lua_tonumber(L, 2);
-	return 0;
-}
-
-// B
-int Lua_GetB(lua_State* L)
-{
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	lua_pushnumber(L, *color->GetB());
-
-	return 1;
-}
-
-int Lua_SetB(lua_State* L)
-{
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	*color->GetB() = lua_tonumber(L, 2);
-	return 0;
-}
-
-// A
-int Lua_GetA(lua_State* L)
-{
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	lua_pushnumber(L, *color->GetA());
-
-	return 1;
-}
-
-int Lua_SetA(lua_State* L)
-{
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	*color->GetA() = lua_tonumber(L, 2);
+	*color->GetColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 	return 0;
 }
 
@@ -168,20 +121,8 @@ static void RegisterColorCorrection(lua_State* L) {
 	lua_pushstring(L, "__propget");
 	lua_newtable(L);
 
-	lua_pushstring(L, "R");
-	lua_pushcfunction(L, Lua_GetR);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "G");
-	lua_pushcfunction(L, Lua_GetG);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "B");
-	lua_pushcfunction(L, Lua_GetB);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "A");
-	lua_pushcfunction(L, Lua_GetA);
+	lua_pushstring(L, "Color");
+	lua_pushcfunction(L, Lua_GetColor);
 	lua_rawset(L, -3);
 
 	lua_pushstring(L, "Brightness");
@@ -198,20 +139,8 @@ static void RegisterColorCorrection(lua_State* L) {
 	lua_pushstring(L, "__propset");
 	lua_newtable(L);
 
-	lua_pushstring(L, "R");
-	lua_pushcfunction(L, Lua_SetR);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "G");
-	lua_pushcfunction(L, Lua_SetG);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "B");
-	lua_pushcfunction(L, Lua_SetB);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "A");
-	lua_pushcfunction(L, Lua_SetA);
+	lua_pushstring(L, "Color");
+	lua_pushcfunction(L, Lua_SetColor);
 	lua_rawset(L, -3);
 
 	lua_pushstring(L, "Brightness");
