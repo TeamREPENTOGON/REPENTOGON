@@ -13,10 +13,10 @@ print("PySireffer - the REPENTOGON downloader/updater")
 import os
 import sys
 import time
-import requests
 import json
 import zipfile
 import base64
+import urllib.request
 
 if not os.path.isfile("isaac-ng.exe"):
 	os.chdir("../..")
@@ -76,7 +76,7 @@ token=token.replace("\n","")
 orgname="IsaacZHL"
 reponame="REPENTOGON"
 
-url=f"https://api.github.com/repos/{orgname}/{reponame}/actions/artifacts"
+url=f"https://api.github.com/repos/{orgname}/{reponame}/actions/artifacts?per_page=1"
 data={
 	"per_page": 1
 }
@@ -85,8 +85,10 @@ headers={
 	"Authorization": "token "+token,
 	"X-GitHub-Api-Version": "2022-11-28"
 }
-response=requests.get(url,params=data,headers=headers)
-out=json.loads(response.text)
+req=urllib.request.Request(url,None,headers)
+with urllib.request.urlopen(req) as resp:
+	out=resp.read()
+	out=json.loads(out)
 sha=""
 try:
 	sha=out['artifacts'][0]['workflow_run']["head_sha"][:7]
@@ -105,8 +107,9 @@ if os.path.isfile("repentogon_commit"):
 
 print("Downloading commit {0} from {1}...".format(sha,out['artifacts'][0]["created_at"]))
 downloadurl=out['artifacts'][0]["archive_download_url"]
-download=requests.get(downloadurl,headers=headers)
-open("repentogon.zip",'wb').write(download.content)
+req=urllib.request.Request(downloadurl,None,headers)
+with urllib.request.urlopen(req) as resp:
+	open("repentogon.zip",'wb').write(resp.read())
 print("Download finished! Extracting...")
 zipfile.ZipFile('repentogon.zip', 'r').extractall()
 print("Deleting the archive...")
