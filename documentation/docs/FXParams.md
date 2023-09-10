@@ -13,7 +13,7 @@
 ## Functions
 
 ### Get·Color·Correction () {: aria-label='Functions' }
-#### [ColorCorrection](https://repentogon.com/ColorCorrection.html) GetColorCorrection ( ) {: .copyable aria-label='Functions' }
+#### [ColorCorrection](ColorCorrection.md) GetColorCorrection ( ) {: .copyable aria-label='Functions' }
 Gets a modifiable copy of the color correction introduced in Repentance.
 
 ___

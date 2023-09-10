@@ -118,6 +118,38 @@ LUA_FUNCTION(Lua_ScoreSheetGetRunTimeLevel)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ScoreSheetGetRunTimeLevelType)
+{
+	ScoreSheet* scoreSheet = *lua::GetUserdata<ScoreSheet**>(L, 1, ScoreSheetMT);
+	lua_pushinteger(L, scoreSheet->_runTimeLevelType);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ScoreSheetGetRunTime)
+{
+	ScoreSheet* scoreSheet = *lua::GetUserdata<ScoreSheet**>(L, 1, ScoreSheetMT);
+	lua_pushinteger(L, scoreSheet->_runTime);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ScoreSheetGetRunEnding)
+{
+	ScoreSheet* scoreSheet = *lua::GetUserdata<ScoreSheet**>(L, 1, ScoreSheetMT);
+	lua_pushinteger(L, scoreSheet->_runEnding);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ScoreSheetSetRunEnding)
+{
+	ScoreSheet* scoreSheet = *lua::GetUserdata<ScoreSheet**>(L, 1, ScoreSheetMT);
+	scoreSheet->_runEnding = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 static void RegisterScoreSheet(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetScoreSheet");
@@ -144,6 +176,10 @@ static void RegisterScoreSheet(lua_State* L) {
 		{ "GetItemPenalty", Lua_ScoreSheetGetItemPenalty },
 		{ "GetTotalScore", Lua_ScoreSheetGetTotalScore },
 		{ "GetRunTimeLevel", Lua_ScoreSheetGetRunTimeLevel },
+		{ "GetRunTimeLevelType", Lua_ScoreSheetGetRunTimeLevelType },
+		{ "GetRunTime", Lua_ScoreSheetGetRunTime },
+		{ "GetRunEnding", Lua_ScoreSheetGetRunEnding },
+		{ "SetRunEnding", Lua_ScoreSheetSetRunEnding },
 		{ NULL, NULL }
 	};
 

@@ -40,8 +40,20 @@ ___
 #### int GetMegaSatanBonus ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Run·Ending () {: aria-label='Functions' }
+#### [Ending](enums/Ending.md) GetRunEnding ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Run·Time () {: aria-label='Functions' }
+#### int GetRunTime ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Run·Time·Level () {: aria-label='Functions' }
-#### int GetRunTimeLevel ( ) {: .copyable aria-label='Functions' }
+#### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetRunTimeLevel ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Run·Time·Level·Type () {: aria-label='Functions' }
+#### [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) GetRunTimeLevelType ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Rush·Bonus () {: aria-label='Functions' }
@@ -62,5 +74,9 @@ ___
 ___
 ### Get·Total·Score () {: aria-label='Functions' }
 #### int GetTotalScore ( ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Run·Ending () {: aria-label='Functions' }
+#### void SetRunEnding ( [Ending](enums/Ending.md) EndingID ) {: .copyable aria-label='Functions' }
 
 ___

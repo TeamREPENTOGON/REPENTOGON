@@ -101,7 +101,7 @@ ___
 #### [RoomTransition](RoomTransition.md) GetRoomTransition ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Score·Sheet( ) {: aria-label='Functions' }
+### Get·Score·Sheet () {: aria-label='Functions' }
 #### [ScoreSheet](ScoreSheet.md) GetScoreSheet( ) {: .copyable aria-label='Functions' }
 
 ___

@@ -22,7 +22,7 @@ Checks if a given character has completed all marks and returns the highest diff
 
 ___
 ### All·Tainted·Completion () {: aria-label='Functions' }
-#### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [TaintedMarksGroup](https://repentogon.com/enums/TaintedMarksGroup.html) complgroup) {: .copyable aria-label='Functions' }
+#### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [TaintedMarksGroup](enums/TaintedMarksGroup.md) complgroup) {: .copyable aria-label='Functions' }
 Checks if a given character has completed all the tainted unlock-related marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
 
 ___
@@ -80,7 +80,7 @@ ___
 Gets the Cutscene ID By Name.
 ___
 ### Get·Completion·Mark () {: aria-label='Functions' }
-#### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype) {: .copyable aria-label='Functions' }
+#### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](enums/CompletionType.md) marktype) {: .copyable aria-label='Functions' }
 Gets a completion mark value for a specific character. Supports both modded and vanilla characters. 
 
 ___
@@ -168,7 +168,7 @@ Sets the contents of the clipboard to the provided string.
 
 ___
 ### Set·Completion·Mark () {: aria-label='Functions' }
-#### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](https://repentogon.com/enums/CompletionType.html) marktype, int value) {: .copyable aria-label='Functions' }
+#### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](enums/CompletionType.md) marktype, int value) {: .copyable aria-label='Functions' }
 Sets a completion mark of a character to match a specific value from 0 to 2. Supports both modded and vanilla characters. 
 
 
