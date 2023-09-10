@@ -176,6 +176,7 @@ nav:
   - RoomConfigHolder: RoomConfigHolder.md
   - RoomConfigRoom: RoomConfigRoom.md
   - RoomTransition: RoomTransition.md
+  - ScoreSheet: ScoreSheet.md
   - Shape: Shape.md
   - Sprite: Sprite.md
   - StageTransition: StageTransition.md
