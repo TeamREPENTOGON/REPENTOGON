@@ -288,7 +288,7 @@ bool __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* fam) {
 
 	Entity_Player* plr = *fam->GetPlayer();
 
-	if (ignoreBFFSTag != "true" && plr->HasCollectible(0xF7, false)) {
+	if (ignoreBFFSTag != "true" && plr && plr->HasCollectible(0xF7, false)) {
 	 	return true;
 	}
 
