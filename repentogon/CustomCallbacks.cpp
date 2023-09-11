@@ -9,6 +9,7 @@
 #include "LuaWeapon.h"
 #include "LuaLevelGenerator.h"
 #include "Log.h"
+//#include "XMLData.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState; //I dont think we will add 500 callbacks but lets set it there for now
@@ -2675,4 +2676,48 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig* config, u
 		}
 	}
 	return super(slot, config, seed, unk);
+}
+
+const int coinValues[8] = { 1, 1, 5, 10, 2, 1, 5, 1 };
+
+int FixedGetCoinValue(int subtype) {
+	if (subtype > 7)
+		return 1;
+	else
+		return coinValues[subtype];
+}
+
+HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
+	if (*this->GetVariant() == 20) {
+		int callbackid = 1250;
+		if (CallbackState.test(callbackid - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+				.push(*this->GetSubType())
+				.push(this, lua::Metatables::ENTITY_PICKUP)
+				.call(1);
+
+			if (!result) {
+				if (lua_isinteger(L, -1)) {
+					return (lua_tointeger(L, -1));
+				}
+			}
+		}
+	/*	const unsigned int subtype = *this->GetSubType();
+		XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(5, 20, subtype, true);
+		const std::string coinValue = xmlData["coinValue"];
+		KAGE::_LogMessage(0, "MC_PICKUP_GET_COIN_VALUE: coinValue = %d\n", stoi(coinValue));
+		if (isdigit(coinValue[0])) {
+			return stoi(coinValue);
+		}
+		return FixedGetCoinValue(subtype);*/
+
+		return FixedGetCoinValue(*this->GetSubType());
+	}
+	// My compromise, even though this bolts on a neglible couple extra instructions vs just returning 0 like the function would
+	return super();
 }
