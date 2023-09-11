@@ -1323,6 +1323,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
             EmitNL();
 
             stackSize += 4; // Pointer
+            fnStackSize += 4;
         }
 
         DecrDepth();
