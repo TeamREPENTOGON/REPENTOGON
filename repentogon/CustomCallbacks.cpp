@@ -2707,7 +2707,7 @@ HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
 				}
 			}
 		}
-	const unsigned int subtype = *this->GetSubType();
+		const unsigned int subtype = *this->GetSubType();
 		XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(5, 20, subtype, true);
 		const std::string coinValue = xmlData["coinvalue"];
 		
