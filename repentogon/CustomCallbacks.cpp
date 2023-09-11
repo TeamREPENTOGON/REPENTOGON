@@ -9,7 +9,7 @@
 #include "LuaWeapon.h"
 #include "LuaLevelGenerator.h"
 #include "Log.h"
-//#include "XMLData.h"
+#include "XMLData.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState; //I dont think we will add 500 callbacks but lets set it there for now
@@ -2707,16 +2707,14 @@ HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
 				}
 			}
 		}
-	/*	const unsigned int subtype = *this->GetSubType();
+	const unsigned int subtype = *this->GetSubType();
 		XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(5, 20, subtype, true);
-		const std::string coinValue = xmlData["coinValue"];
-		KAGE::_LogMessage(0, "MC_PICKUP_GET_COIN_VALUE: coinValue = %d\n", stoi(coinValue));
+		const std::string coinValue = xmlData["coinvalue"];
+		
 		if (isdigit(coinValue[0])) {
 			return stoi(coinValue);
 		}
-		return FixedGetCoinValue(subtype);*/
-
-		return FixedGetCoinValue(*this->GetSubType());
+		return FixedGetCoinValue(subtype);
 	}
 	// My compromise, even though this bolts on a neglible couple extra instructions vs just returning 0 like the function would
 	return super();
