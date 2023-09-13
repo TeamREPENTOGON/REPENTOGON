@@ -307,7 +307,7 @@ void ASMPatchFamiliarGetMultiplier() {
 	ASMPatch patch;
 	patch.AddBytes("\x83\xC4\x08") // add esp, 4
 		.PreserveRegisters(reg)
-		.AddBytes("\x57") // push edi
+		.Push(ASMPatch::Registers::ESI)
 		.AddInternalCall(FamiliarGetMultiplierTrampoline) // call FamiliarGetMultiplierTrampoline()
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(reg)
