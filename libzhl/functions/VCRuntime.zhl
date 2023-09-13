@@ -1,0 +1,2 @@
+external(vcruntime140, _CxxThrowException) __stdcall void VCRuntime::_CxxThrowException(void* except, ThrowInfo* info);
+external(vcruntime140d, _CxxThrowException) __stdcall void VCRuntime::_CxxThrowExceptionD(void* except, ThrowInfo* info);

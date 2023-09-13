@@ -1,5 +1,6 @@
 #include <lua.hpp>
 
+#include "Log.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"

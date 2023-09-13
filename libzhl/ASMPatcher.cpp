@@ -967,8 +967,9 @@ void ASMPatch::ByteBuffer::CheckAndResize(size_t s) {
 	if (_size + s >= _capacity) {
 		size_t newCapacity = std::max(_capacity * 2, _capacity + s);
 		char* content = new char[newCapacity];
-		_capacity *= newCapacity;
+		_capacity = newCapacity;
 		memcpy(content, _data.get(), _size);
+		_data.reset(content);
 	}
 }
 

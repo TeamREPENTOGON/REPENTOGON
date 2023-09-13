@@ -23,12 +23,14 @@ option(ZYDIS_BUILD_DOXYGEN "" OFF)
 add_subdirectory("libs/zydis")
 target_compile_options("Zydis" PUBLIC "/MD")
 
+# ANTLR
 option(WITH_STATIC_CRT "" OFF)
 option(ANTLR_BUILD_CPP_TESTS "" OFF)
 option(ANTLR_BUILD_STATIC "" OFF)
 add_subdirectory("libs/antlr4/runtime/Cpp")
 include_directories ("libs/antlr4/runtime/Cpp/runtime/src")
 
+# Parser
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
 add_executable(zhlparser ${PARSER_SRC})
 target_link_libraries(zhlparser antlr4_shared)
@@ -40,14 +42,17 @@ target_compile_options(antlr4_shared PUBLIC "/wd4100" "/wd4244" "/wd4251" "/wd42
 
 add_custom_command(TARGET zhlparser POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:antlr4_shared>/antlr4-runtime.dll" "$<TARGET_FILE_DIR:zhlparser>")
 
+# Lua
 FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua/*.c)
 list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua/onelua.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
 add_library(Lua5.3.3r SHARED ${LUA_SRC})
 
+# IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND zhlparser WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser)
 
+# ZHL
 FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp)
 LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
@@ -56,10 +61,12 @@ target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
 # wd4996 ignores warning C4996: using a depricated function
 
+# Injected DLL
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
 target_compile_options(dsound PUBLIC "/MD" "/wd4996")
 
+# ImGUI
 enable_language(RC)
 set(FREETYPE_SRC
   ${CMAKE_SOURCE_DIR}/libs/freetype/src/autofit/autofit.c
@@ -120,10 +127,12 @@ target_include_directories(imgui PUBLIC "${CMAKE_SOURCE_DIR}/libs/freetype/inclu
 target_compile_options(imgui PUBLIC "/MD")
 target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE)
 
+# Repentogon
 FILE(GLOB_RECURSE REPENTOGON_SRC ${CMAKE_SOURCE_DIR}/repentogon/*.cpp)
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC})
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/wd4251" "/wd4996")
 
+# Delirium
 FILE(GLOB DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.cpp)
 add_library(zhlDelirium SHARED ${DELIRIUM_SRC})
 target_link_libraries(zhlDelirium libzhl)
@@ -149,8 +158,9 @@ endif()
 
 add_dependencies(zhlREPENTOGON libzhl)
 
+# STB parser
 add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
 target_link_libraries(zhlREPENTOGON Lua5.3.3r libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
-target_link_libraries(libzhl Lua5.3.3r "Zydis")
+target_link_libraries(libzhl Lua5.3.3r "Zydis" dbghelp)
