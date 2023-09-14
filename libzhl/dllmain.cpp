@@ -517,9 +517,9 @@ HOOK_GLOBAL(VCRuntime::_CxxThrowException, (void* except, ThrowInfo* info) -> vo
 	CxxThrowException_Hook(except, info, super);
 }
 
-HOOK_GLOBAL(VCRuntime::_CxxThrowExceptionD, (void* except, ThrowInfo* info) -> void, __stdcall) {
+/* HOOK_GLOBAL(VCRuntime::_CxxThrowExceptionD, (void* except, ThrowInfo* info) -> void, __stdcall) {
 	CxxThrowException_Hook(except, info, super);
-}
+} */
 
 static void TerminateSymbolHandler() {
 	if (!SymbolHandlerLoaded) {
