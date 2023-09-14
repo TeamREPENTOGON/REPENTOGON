@@ -229,7 +229,8 @@ enum FunctionQualifiers {
     STATIC = 1 << 0,
     VIRTUAL = 1 << 1,
     CLEANUP = 1 << 2,
-    PURE = 1 << 3
+    PURE = 1 << 3,
+    DEBUG = 1 << 4
 };
 
 std::string CallingConventionToString(CallingConventions convention);
@@ -258,6 +259,7 @@ struct Function {
     bool IsCleanup() const;
     bool IsStatic() const;
     bool IsPure() const;
+    bool IsDebug() const;
     std::string ToString() const;
 
     bool operator==(const Function& other) const;

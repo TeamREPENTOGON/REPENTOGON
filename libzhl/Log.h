@@ -1,7 +1,7 @@
 #pragma once
 
 #include "libzhl.h"
-#include "ASMPatcher.hpp"
+#include "ByteBuffer.h"
 
 namespace ZHL {
 	LIBZHL_API void Log(const char* fmt, ...);
@@ -12,7 +12,7 @@ namespace ZHL {
 		~Logger();
 
 		void Log(const char* fmt, ...);
-		void LogByteBuffer(ASMPatch::ByteBuffer const& buffer);
+		void LogByteBuffer(ByteBuffer const& buffer);
 		FILE* GetFile();
 
 	private:

@@ -11,6 +11,7 @@
 #include <Zydis/Zydis.h>
 
 #include "ASMPatcher.hpp"
+#include "ByteBuffer.h"
 #include "Log.h"
 #include "SigScan.h"
 
@@ -318,56 +319,14 @@ std::unique_ptr<char[]> ASMPatcher::EncodeCondJump(CondJumps cond, const void* a
 	return std::unique_ptr<char[]>(buffer);
 }
 
-static inline void EndianSwap(char* src, int a, int b) {
-	char copy = src[a];
-	src[a] = src[b];
-	src[b] = copy;
-}
-
-ASMPatch::ByteBuffer ASMPatch::ToHexString(int8_t x) {
-	ByteBuffer result;
-	char value;
-	memcpy(&value, &x, 1);
-	result.AddAny(&value, 1);
-	return result;
-}
-
-ASMPatch::ByteBuffer ASMPatch::ToHexString(int16_t x, bool endianConvert) {
-	char buffer[2];
-	memcpy(buffer, &x, 2);
-
-	if (endianConvert) {
-		// Flip 0 and 1
-		EndianSwap(buffer, 0, 1);
-	}
-
-	ByteBuffer result;
-	result.AddAny(buffer, 2);
-	return result;
-}
-
-ASMPatch::ByteBuffer ASMPatch::ToHexString(int32_t x, bool endianConvert) {
-	char buffer[4];
-	memcpy(buffer, &x, 4);
-
-	if (endianConvert) {
-		EndianSwap(buffer, 0, 3);
-		EndianSwap(buffer, 1, 2);
-	}
-
-	ByteBuffer result;
-	result.AddAny(buffer, 4);
-	return result;
-}
-
 std::map<ASMPatch::Registers, std::bitset<8>> ASMPatch::_ModRM;
 
 ASMPatch::ASMPatch() {
 
 }
 
-std::map<uint32_t, ASMPatch::ByteBuffer> ASMPatch::SavedRegisters::_RegisterPushMap;
-std::map<uint32_t, ASMPatch::ByteBuffer> ASMPatch::SavedRegisters::_RegisterPopMap;
+std::map<uint32_t, ByteBuffer> ASMPatch::SavedRegisters::_RegisterPushMap;
+std::map<uint32_t, ByteBuffer> ASMPatch::SavedRegisters::_RegisterPopMap;
 std::array<uint32_t, 16> ASMPatch::SavedRegisters::_RegisterOrder;
 
 ASMPatch::SavedRegisters::SavedRegisters(uint32_t mask, bool shouldRestore) {
@@ -458,7 +417,7 @@ ASMPatch& ASMPatch::AddBytes(std::string const& bytes) {
 	return *this;
 }
 
-ASMPatch& ASMPatch::AddBytes(ASMPatch::ByteBuffer const& bytes) {
+ASMPatch& ASMPatch::AddBytes(ByteBuffer const& bytes) {
 	std::unique_ptr<ASMNode> ptr(new ASMBytesAny(bytes));
 	_size += ptr->Length();
 	_nodes.push_back(std::move(ptr));
@@ -881,110 +840,40 @@ size_t ASMPatch::Length() const {
 	return _size;
 }
 
-ASMPatch::ByteBuffer::ByteBuffer() {
-	_capacity = X86_LONGEST_INSTRUCTION_NBYTES;
-	_data.reset(new char[_capacity]);
-	_size = 0;
+ByteBuffer ASMPatch::ToHexString(int8_t x) {
+	ByteBuffer result;
+	char value;
+	memcpy(&value, &x, 1);
+	result.AddAny(&value, 1);
+	return result;
 }
 
-ASMPatch::ByteBuffer::ByteBuffer(ASMPatch::ByteBuffer const& other) {
-	*this = other;
-}
+ByteBuffer ASMPatch::ToHexString(int16_t x, bool endianConvert) {
+	char buffer[2];
+	memcpy(buffer, &x, 2);
 
-ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::operator=(ASMPatch::ByteBuffer const& other) {
-	if (this == &other) {
-		return *this;
+	if (endianConvert) {
+		// Flip 0 and 1
+		EndianSwap(buffer, 0, 1);
 	}
 
-	_size = other._size;
-	_capacity = other._capacity;
-	_data.reset(new char[_size]);
-	memcpy(_data.get(), other._data.get(), _size);
-
-	return *this;
+	ByteBuffer result;
+	result.AddAny(buffer, 2);
+	return result;
 }
 
-ASMPatch::ByteBuffer::ByteBuffer(ASMPatch::ByteBuffer&& other) {
-	*this = std::move(other);
-}
+ByteBuffer ASMPatch::ToHexString(int32_t x, bool endianConvert) {
+	char buffer[4];
+	memcpy(buffer, &x, 4);
 
-ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::operator=(ASMPatch::ByteBuffer&& other) {
-	if (this == &other) {
-		return *this;
+	if (endianConvert) {
+		EndianSwap(buffer, 0, 3);
+		EndianSwap(buffer, 1, 2);
 	}
 
-	_capacity = other._capacity;
-	_size = other._size;
-	_data = std::move(other._data);
-
-	other._capacity = other._size = 0;
-
-	return *this;
-}
-
-ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::AddString(const char* s) {
-	size_t len = strlen(s);
-	CheckAndResize(len);
-	memcpy(_data.get() + _size, s, len);
-	_size += len;
-
-	return *this;
-}
-
-ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::AddZeroes(uint32_t n) {
-	if (n == 0) {
-		throw std::runtime_error("Adding 0 zeroes to ByteBuffer");
-	}
-
-	CheckAndResize(n);
-	memset(_data.get() + _size, 0, n);
-	_size += n;
-
-	return *this;
-}
-
-ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::AddAny(const char* addr, size_t n) {
-	if (n == 0) {
-		throw std::runtime_error("Adding 0 length byte array to ByteBuffer");
-	}
-
-	CheckAndResize(n);
-	memcpy(_data.get() + _size, addr, n);
-	_size += n;
-
-	return *this;
-}
-
-ASMPatch::ByteBuffer& ASMPatch::ByteBuffer::AddByteBuffer(ByteBuffer const& other) {
-	CheckAndResize(other._size);
-	memcpy(_data.get() + _size, other.GetData(), other._size);
-	_size += other._size;
-
-	return *this;
-}
-
-void ASMPatch::ByteBuffer::CheckAndResize(size_t s) {
-	if (_size + s >= _capacity) {
-		size_t newCapacity = std::max(_capacity * 2, _capacity + s);
-		char* content = new char[newCapacity];
-		_capacity = newCapacity;
-		memcpy(content, _data.get(), _size);
-		_data.reset(content);
-	}
-}
-
-char* ASMPatch::ByteBuffer::GetData() const {
-	return _data.get();
-}
-
-size_t ASMPatch::ByteBuffer::GetSize() const {
-	return _size;
-}
-
-void ASMPatch::ByteBuffer::Dump(FILE* f) {
-	for (size_t i = 0; i < _size; ++i) {
-		fprintf(f, "%.2hhx", _data.get()[i]);
-	}
+	ByteBuffer result;
+	result.AddAny(buffer, 4);
+	return result;
 }
 
 /* void ASMPatcher::Error(const char* fmt, ...) {

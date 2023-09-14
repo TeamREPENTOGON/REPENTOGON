@@ -759,6 +759,10 @@ bool Function::IsPure() const {
     return _qualifiers & PURE;
 }
 
+bool Function::IsDebug() const {
+    return _qualifiers & DEBUG;
+}
+
 std::string Function::ToString() const {
     std::ostringstream str;
     str << "Function " << _name << std::endl;
@@ -767,6 +771,10 @@ std::string Function::ToString() const {
         str << "none";
     }
     else {
+        if (IsDebug()) {
+            str << "debug ";
+        }
+
         if (IsVirtual()) {
             str << "virtual ";
         }

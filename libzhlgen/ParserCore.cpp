@@ -1123,6 +1123,14 @@ void Parser::ReadQualifiers(std::vector<antlr4::tree::TerminalNode*> const& qual
                 fn._qualifiers |= FunctionQualifiers::CLEANUP;
             }
         }
+        else if (text == "debug") {
+            if (fn.IsDebug()) {
+                WarnRepeatedFunctionQualifier(fn._name, text);
+            }
+            else {
+                fn._qualifiers |= FunctionQualifiers::DEBUG;
+            }
+        }
     }
 }
 

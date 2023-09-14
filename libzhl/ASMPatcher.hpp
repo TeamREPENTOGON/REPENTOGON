@@ -15,9 +15,8 @@
 
 #include <Zydis/Zydis.h>
 
+#include "ByteBuffer.h"
 #include "libzhl.h"
-
-#define X86_LONGEST_INSTRUCTION_NBYTES 15
 
 class LIBZHL_API ASMPatcher
 {
@@ -131,35 +130,6 @@ private:
 class LIBZHL_API ASMPatch
 {
 public:
-	class LIBZHL_API ByteBuffer {
-	public:
-		ByteBuffer();
-
-		// Deep copy. Costly but allows multiple independant copies.
-		ByteBuffer(ByteBuffer const& other);
-		ByteBuffer& operator=(const ByteBuffer& other);
-
-		// Transfer ownership. Faster, but the source object is reset
-		ByteBuffer(ByteBuffer&& other);
-		ByteBuffer& operator=(ByteBuffer&& other);
-
-		ByteBuffer& AddString(const char* s);
-		ByteBuffer& AddZeroes(uint32_t n);
-		ByteBuffer& AddAny(const char* addr, size_t n);
-		ByteBuffer& AddByteBuffer(ByteBuffer const& other);
-
-		size_t GetSize() const;
-		char* GetData() const;
-
-		void Dump(FILE* f);
-
-	private:
-		void CheckAndResize(size_t s);
-
-		std::unique_ptr<char[]> _data;
-		size_t _capacity, _size;
-	};
-
 	/* Convert an integer to its hex representation as a string, performing
 	 * a zero extension. 
 	 * 
@@ -212,8 +182,8 @@ public:
 		uint32_t _mask;
 
 		static void _Init();
-		static std::map<uint32_t, ASMPatch::ByteBuffer> _RegisterPushMap;
-		static std::map<uint32_t, ASMPatch::ByteBuffer> _RegisterPopMap;
+		static std::map<uint32_t, ByteBuffer> _RegisterPushMap;
+		static std::map<uint32_t, ByteBuffer> _RegisterPopMap;
 		static std::array<uint32_t, 16> _RegisterOrder;
 	};
 

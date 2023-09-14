@@ -59,10 +59,10 @@ __thiscall void Game::StartStageTransition(bool SameStage,int param_2,Entity_Pla
 __thiscall void Game::Render();
 
 "558bec8b0d????????8b5508":
-__thiscall void Game::ToggleDebugFlag(unsigned int debug);
+__thiscall void Game::ToggleDebugFlag(unsigned int flag);
 
 "558bec8b5508b801000000568bf18bca83e11fc1ea05d3e085849664":
-__thiscall bool Game::GetDebugFlag(unsigned int debug);
+__thiscall bool Game::GetDebugFlag(unsigned int flag);
 
 "558bec6aff68????????64a1????????5083ec78535657a1????????33c5508d45??64a3????????f30f1155":
 __thiscall Entity* Game::SpawnBombCrater(Vector* Pos);

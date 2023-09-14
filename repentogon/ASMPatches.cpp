@@ -510,7 +510,7 @@ void InjectPostDamageCallback(void* addr, bool isPlayer) {
 	const int numOverriddenBytes = (isPlayer ? 10 : 5);
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes(ASMPatch::ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 	if (isPlayer) {
 		// The EntityPlayer::TakeDamage patch needs to ask Al if the damage occured.
 		// The Entity::TakeDamage patch doesn't need to do this since it is at a location that only runs after damage.

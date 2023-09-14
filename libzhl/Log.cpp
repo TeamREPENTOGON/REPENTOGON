@@ -43,7 +43,7 @@ namespace ZHL {
 			fflush(_f);
 	}
 
-	void Logger::LogByteBuffer(const ASMPatch::ByteBuffer& buffer) {
+	void Logger::LogByteBuffer(const ByteBuffer& buffer) {
 		const unsigned char* data = (const unsigned char*)buffer.GetData();
 		size_t size = buffer.GetSize();
 

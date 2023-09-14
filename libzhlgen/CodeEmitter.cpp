@@ -684,14 +684,24 @@ void CodeEmitter::Emit(Variable const& var) {
 }
 
 void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
-    EmitTab();
     Function const& fun = var._function;
+
+    if (fun.IsDebug()) {
+        Emit("#ifdef DEBUG");
+        EmitNL();
+    }
+    EmitTab();
     Emit("LIBZHL_API ");
     /* if (isVirtual) {
         Emit("virtual ");
     } */
     EmitFunction(fun);
     EmitNL();
+
+    if (fun.IsDebug()) {
+        Emit("#endif");
+        EmitNL();
+    }
 
     EmitAssembly(var, isVirtual, false);
 
@@ -1168,10 +1178,18 @@ void CodeEmitter::EmitNamespace(std::string const& name) {
     EmitNL();
     IncrDepth();
     for (const ExternalFunction* fn : funcs) {
+        if (fn->_fn.IsDebug()) {
+            Emit("#ifdef DEBUG");
+            EmitNL();
+        }
         EmitTab();
         EmitFunction(fn->_fn);
         Emit(*fn);
         EmitNL();
+        if (fn->_fn.IsDebug()) {
+            Emit("#endif");
+            EmitNL();
+        }
     }
     DecrDepth();
     Emit("}");
@@ -1181,6 +1199,10 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
     uint32_t depth = _emitDepth;
     _emitDepth = 0;
     EmitImpl();
+    if (fn._fn.IsDebug()) {
+        Emit("#ifdef DEBUG");
+        EmitNL();
+    }
     Emit("namespace _extFun");
     Emit(std::to_string(_nEmittedExternal));
     Emit(" {");
@@ -1214,6 +1236,10 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
     DecrDepth();
     Emit("}");
     EmitNL();
+    if (fn._fn.IsDebug()) {
+        Emit("#endif");
+        EmitNL();
+    }
     EmitNL();
     ++_nEmittedExternal;
     EmitDecl();

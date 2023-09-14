@@ -19,15 +19,16 @@ public:
     Depends = 23, Typedef = 24, Const = 25, CppRef = 26, Unsigned = 27, 
     Signed = 28, Long = 29, Int = 30, Short = 31, Char = 32, Bool = 33, 
     Float = 34, Double = 35, Void = 36, Type = 37, Size = 38, Synonym = 39, 
-    Align = 40, Vtable = 41, Skip = 42, Pure = 43, Override = 44, Visibility = 45, 
-    Public = 46, Private = 47, Protected = 48, Register = 49, GeneralPurposeRegister = 50, 
-    Eax = 51, Ebx = 52, Ecx = 53, Edx = 54, Esi = 55, Edi = 56, Esp = 57, 
-    Ebp = 58, SSERegister = 59, Xmm0 = 60, Xmm1 = 61, Xmm2 = 62, Xmm3 = 63, 
-    Xmm4 = 64, Xmm5 = 65, Xmm6 = 66, Xmm7 = 67, CallingConvention = 68, 
-    Stdcall = 69, Cdecl = 70, Fastcall = 71, Thiscall = 72, Signature = 73, 
-    ReferenceSignature = 74, Operator = 75, OpSymbol = 76, Name = 77, Number = 78, 
-    HexNumber = 79, DecNumber = 80, GenericCode = 81, Whitespace = 82, Newline = 83, 
-    BlockComment = 84, LineComment = 85, Any = 86
+    Align = 40, Vtable = 41, Skip = 42, Pure = 43, Override = 44, Debug = 45, 
+    Visibility = 46, Public = 47, Private = 48, Protected = 49, Register = 50, 
+    GeneralPurposeRegister = 51, Eax = 52, Ebx = 53, Ecx = 54, Edx = 55, 
+    Esi = 56, Edi = 57, Esp = 58, Ebp = 59, SSERegister = 60, Xmm0 = 61, 
+    Xmm1 = 62, Xmm2 = 63, Xmm3 = 64, Xmm4 = 65, Xmm5 = 66, Xmm6 = 67, Xmm7 = 68, 
+    CallingConvention = 69, Stdcall = 70, Cdecl = 71, Fastcall = 72, Thiscall = 73, 
+    Signature = 74, ReferenceSignature = 75, Operator = 76, OpSymbol = 77, 
+    Name = 78, Number = 79, HexNumber = 80, DecNumber = 81, GenericCode = 82, 
+    Whitespace = 83, Newline = 84, BlockComment = 85, LineComment = 86, 
+    Any = 87
   };
 
   enum {
