@@ -39,6 +39,17 @@ namespace delirium {
 		sASMPatcher.FlatPatch(addr, &patch);
 	}
 
+	void PatchCompanion() {
+		SigScan scanner("e8f3140000");
+		scanner.Scan();
+		void* addr = scanner.GetAddress();
+
+		char buffer[5];
+		memset(buffer, '\x90', 5);
+		ASMPatch patch(ByteBuffer().AddAny(buffer, 5));
+		sASMPatcher.FlatPatch(addr, &patch);
+	}
+
 	void AddPreTransformationCallback() {
 		SigScan scanner("c683230b000010b010");
 		scanner.Scan();
