@@ -8,8 +8,6 @@ void EndianSwap(char* src, int a, int b) {
 	src[b] = copy;
 }
 
-
-
 ByteBuffer::ByteBuffer() {
 	_capacity = X86_LONGEST_INSTRUCTION_NBYTES;
 	_data.reset(new char[_capacity]);
@@ -49,6 +47,10 @@ ByteBuffer& ByteBuffer::operator=(ByteBuffer&& other) {
 	other._capacity = other._size = 0;
 
 	return *this;
+}
+
+ByteBuffer& ByteBuffer::AddByte(char byte) {
+	return AddAny(&byte, 1);
 }
 
 ByteBuffer& ByteBuffer::AddString(const char* s) {
@@ -114,4 +116,13 @@ void ByteBuffer::Dump(FILE* f) {
 	for (size_t i = 0; i < _size; ++i) {
 		fprintf(f, "%.2hhx", _data.get()[i]);
 	}
+}
+
+std::string ByteBuffer::ToString() const {
+	std::unique_ptr<char[]> buffer(new char[_size * 2 + 1]);
+	for (size_t i = 0; i < _size; ++i) {
+		sprintf(buffer.get() + i * 2, "%.2hhx", _data.get()[i]);
+	}
+	buffer[_size * 2] = '\0';
+	return std::string(buffer.get());
 }

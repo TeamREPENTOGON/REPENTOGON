@@ -59,6 +59,57 @@ void* ASMPatcher::PatchAt(void* at, const char* with, size_t len) {
 	return Patch(at, targetPage, with, len);
 }
 
+void ASMPatcher::FlatPatch(void* at, ASMPatch* with) {
+	std::unique_ptr<char[]> text = with->ToASM(at);
+	FlatPatch(at, text.get(), with->Length());
+}
+
+void ASMPatcher::FlatPatch(void* at, const char* with, size_t len) {
+	ZHL::Logger logger(true);
+	logger.Log("Flat patching at %p\n", at);
+
+	bool expected = false;
+	if (!_patching.compare_exchange_strong(expected, true, std::memory_order_acq_rel, std::memory_order_acquire)) {
+		logger.Log("[FATAL] Parallel patching is not allowed\n");
+		throw std::runtime_error("Parallel patching is not allowed");
+	}
+
+	ProtectionGuard guard(at, PAGE_EXECUTE_READWRITE);
+
+	int32_t remaining = len;
+	ZyanU64 base = (ZyanU64)at;
+	unsigned char* basePtr = (unsigned char*)at;
+	while (remaining > 0) {
+		ZydisDisassembledInstruction instruction;
+		ZyanStatus status = ZydisDisassembleIntel(ZYDIS_MACHINE_MODE_LEGACY_32, (ZyanU64)base, basePtr, X86_LONGEST_INSTRUCTION_NBYTES, &instruction);
+		if (!ZYAN_SUCCESS(status)) {
+			std::ostringstream err;
+			err << "Unable to properly decode instruction at " << std::hex << at << "(Zyan status = " << status << "), base = " << base << ", basePtr = " << basePtr << ")" << std::endl;
+			logger.Log("[FATAL] %s\n", err.str().c_str());
+			throw std::runtime_error(err.str());
+		}
+
+		ZyanU8 length = instruction.info.length;
+		remaining -= length;
+		basePtr += length;
+		base += length;
+	}
+
+	memcpy(at, with, len);
+	// The patch breaks the last instruction: nop its remaining bytes
+	if (remaining < 0) {
+		memset(basePtr + remaining, 0x90, -remaining);
+	}
+
+	expected = true;
+	if (!_patching.compare_exchange_strong(expected, false, std::memory_order_acq_rel, std::memory_order_acquire)) {
+		logger.Log("[FATAL] Parallel patching is not allowed\n");
+		throw std::runtime_error("Parallel patching is not allowed");
+	}
+
+	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+}
+
 void* ASMPatcher::Patch(void* at, void* targetPage, const char* with, size_t len) {
 	ZHL::Logger logger;
 	logger.Log("Patching at %p\n", at);
@@ -325,6 +376,10 @@ ASMPatch::ASMPatch() {
 
 }
 
+ASMPatch::ASMPatch(const ByteBuffer& buffer) {
+	AddBytes(buffer);
+}
+
 std::map<uint32_t, ByteBuffer> ASMPatch::SavedRegisters::_RegisterPushMap;
 std::map<uint32_t, ByteBuffer> ASMPatch::SavedRegisters::_RegisterPopMap;
 std::array<uint32_t, 16> ASMPatch::SavedRegisters::_RegisterOrder;
@@ -563,6 +618,25 @@ ASMPatch& ASMPatch::MoveToMemory(ASMPatch::Registers src, int32_t offset, ASMPat
 	ByteBuffer result;
 	result.AddString("\x89").AddByteBuffer(ToHexString(modRmVal)).AddByteBuffer(offsetHex);
 	return AddBytes(result);
+}
+
+ASMPatch& ASMPatch::MoveImmediate(ASMPatch::Registers dst, int32_t immediate) {
+	char opcode = '\xB8';
+	ByteBuffer offset;
+	if (immediate >= -127 && immediate <= 127) {
+		opcode = '\xB0';
+		offset = ToHexString((int8_t)immediate);
+	}
+	else {
+		offset = ToHexString(immediate, true);
+	}
+
+	opcode += RegisterTox86(dst);
+	ByteBuffer instruction;
+	instruction.AddByte(opcode);
+	instruction.AddByteBuffer(offset);
+
+	return AddBytes(instruction);
 }
 
 /* static bool IsRegister(ASMPatch::LeaOperand const& operand) {
@@ -886,3 +960,35 @@ ByteBuffer ASMPatch::ToHexString(int32_t x, bool endianConvert) {
 
 	throw std::runtime_error(buffer);
 } */
+
+uint8_t ASMPatch::RegisterTox86(ASMPatch::Registers reg) {
+	switch (reg) {
+	case Registers::EAX:
+		return 0b000;
+
+	case Registers::EBX:
+		return 0b011;
+
+	case Registers::ECX:
+		return 0b001;
+
+	case Registers::EDX:
+		return 0b010;
+
+	case Registers::ESP:
+		return 0b100;
+
+	case Registers::EBP:
+		return 0b101;
+
+	case Registers::ESI:
+		return 0b110;
+
+	case Registers::EDI:
+		return 0b111;
+
+	default:
+		throw std::runtime_error("Invalid register");
+		return -1;
+	}
+}

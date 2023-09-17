@@ -70,6 +70,9 @@ public:
 	void* PatchAt(void* at, ASMPatch* with);
 	void* Patch(void* at, void* page, const char* with, size_t len);
 
+	void FlatPatch(void* at, ASMPatch* with);
+	void FlatPatch(void* at, const char* with, size_t len = 0);
+
 	static ptrdiff_t JumpOffset(const void* next, const void* target);
 	static std::unique_ptr<char[]> EncodeJump(const void* at, const void* target);
 	static void* EncodeAndWriteJump(void* at, const void* target);
@@ -141,6 +144,7 @@ public:
 	static ByteBuffer ToHexString(int32_t x, bool endianConvert);
 
 	ASMPatch();
+	ASMPatch(ByteBuffer const& buffer);
 	ASMPatch(const ASMPatch& other) = delete;
 	ASMPatch& operator=(const ASMPatch& other) = delete;
 
@@ -220,6 +224,9 @@ public:
 	 * a register. This allows moves of the form "mov dst, [src + offset]".
 	 */
 	ASMPatch& MoveToMemory(Registers src, int32_t offset, Registers dst);
+
+	/* Move an immediate into a register */
+	ASMPatch& MoveImmediate(Registers dst, int32_t immediate);
 	
 	/* typedef std::variant<Registers, int32_t> LeaOperand;
 	typedef std::tuple<LeaOps, LeaOperand> LeaParameter;
@@ -314,6 +321,8 @@ private:
 
 	friend BOOL APIENTRY DllMain(HMODULE, DWORD, LPVOID);
 	static void _Init();
+
+	uint8_t RegisterTox86(Registers reg);
 
 	// friend void* ASMPatcher::PatchAt(void*, const char*);
 

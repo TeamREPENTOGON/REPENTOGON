@@ -1,6 +1,7 @@
 #pragma once
 
 #include <optional>
+#include <string>
 #include <Zydis/Zydis.h>
 
 #include "libzhl.h"
@@ -10,18 +11,19 @@
 
 class LIBZHL_API Signature {
 public:
-	Signature(void* addr, const char* moduleName, ZHL::Logger* logger);
-
-	std::optional<ByteBuffer> Make();
-	ByteBuffer const& GetBytes() const;
-
-private:
 	enum class SignatureCheckStatus {
 		SIG_CHECK_UNIQUE,
 		SIG_CHECK_MULTIPLE,
 		SIG_CHECK_NONE,
 	};
 
+	Signature(void* addr, const char* moduleName, ZHL::Logger* logger);
+
+	std::optional<ByteBuffer> Make();
+	ByteBuffer const& GetBytes() const;
+	SignatureCheckStatus GetStatus() const;
+
+private:
 	void ReadRaw(unsigned char** raw, size_t n);
 	void WildcardRaw(unsigned char** raw, size_t n);
 	bool Signature::AddInstructionHeaderToSignature(
@@ -39,4 +41,5 @@ private:
 	void* _moduleAddr;
 	ZHL::Logger* _logger;
 	void* _addr;
+	SignatureCheckStatus _status;
 };

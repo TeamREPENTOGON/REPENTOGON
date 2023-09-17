@@ -330,9 +330,11 @@ std::optional<ByteBuffer> Signature::Make() {
 		SignatureCheckStatus sigStatus = CheckSignature((unsigned char*)_moduleTextAddr, (unsigned char*)_moduleTextAddr + _moduleTextSize, matches, signatureSize);
 		if (sigStatus == SignatureCheckStatus::SIG_CHECK_NONE) {
 			_logger->Log("[ERROR] Invalid signature: search found no matches\n");
+			_status = sigStatus;
 			return std::nullopt;
 		}
 		else if (sigStatus == SignatureCheckStatus::SIG_CHECK_UNIQUE) {
+			_status = sigStatus;
 			return _bytes;
 		}
 
@@ -345,6 +347,7 @@ std::optional<ByteBuffer> Signature::Make() {
 			// Hard boundary on rets
 			if (zyanAddr >= farthestAddr) {
 				_logger->Log("[WARN] Multiple matches for signature, but end of function reached\n");
+				_status = SignatureCheckStatus::SIG_CHECK_MULTIPLE;
 				stop = true;
 			}
 		}
@@ -372,4 +375,12 @@ Signature::Signature(void* addr, const char* moduleName, ZHL::Logger* logger) : 
 	_moduleTextAddr = (void*)((const unsigned char*)module + nt->OptionalHeader.BaseOfCode);
 	_moduleTextSize = nt->OptionalHeader.SizeOfCode;
 	_moduleAddr = module;
+}
+
+ByteBuffer const& Signature::GetBytes() const {
+	return _bytes;
+}
+
+Signature::SignatureCheckStatus Signature::GetStatus() const {
+	return _status;
 }

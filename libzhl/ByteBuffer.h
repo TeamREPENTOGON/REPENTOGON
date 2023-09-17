@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include "libzhl.h"
 
@@ -20,6 +21,7 @@ public:
 	ByteBuffer(ByteBuffer&& other);
 	ByteBuffer& operator=(ByteBuffer&& other);
 
+	ByteBuffer& AddByte(char byte);
 	ByteBuffer& AddString(const char* s);
 	ByteBuffer& AddZeroes(uint32_t n);
 	ByteBuffer& AddAny(const char* addr, size_t n);
@@ -27,6 +29,7 @@ public:
 
 	size_t GetSize() const;
 	char* GetData() const;
+	std::string ToString() const;
 
 	void Dump(FILE* f);
 
