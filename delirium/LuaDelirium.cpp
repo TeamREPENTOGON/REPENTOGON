@@ -345,7 +345,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
-	RegisterMemoryFunctions(L);
+	// RegisterMemoryFunctions(L);
 	RegisterDeliriumFunctions(L);
 }
 

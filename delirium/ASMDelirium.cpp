@@ -24,7 +24,19 @@ namespace delirium {
 	const char* DeliriumMetatable = "DeliriumMT";
 
 	void PatchSkipFrames() {
+		SigScan scanner("e85e5b5500");
+		scanner.Scan();
+		void* addr = scanner.GetAddress();
 
+		/* Override the call to the function that computes how many frames 
+		 * must be skipped. Instead, set eax to 0 so no frames are skipped, 
+		 * ever.
+		 */
+		ByteBuffer buffer;
+		buffer.AddString("\x33\xC0"); // xor eax, eax
+		ASMPatch patch(buffer);
+
+		sASMPatcher.FlatPatch(addr, &patch);
 	}
 
 	void AddPreTransformationCallback() {
