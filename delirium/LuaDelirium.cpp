@@ -246,5 +246,6 @@ extern "C" __declspec(dllexport) int ModInit(int argc, char** argv) {
 	delirium::PatchCompanion();
 	// delirium::AddPreTransformationCallback();
 	delirium::AddTransformationCallback();
+	delirium::PatchVadeRetro();
 	return 0;
 }

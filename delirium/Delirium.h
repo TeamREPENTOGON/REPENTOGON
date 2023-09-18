@@ -13,6 +13,7 @@ namespace delirium {
 
 	void PatchCompanion();
 	void PatchSkipFrames();
+	void PatchVadeRetro();
 	void AddPreTransformationCallback();
 	void AddTransformationCallback();
 }

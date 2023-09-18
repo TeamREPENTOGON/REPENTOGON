@@ -136,6 +136,21 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 	}
 }
 
+static int32_t __stdcall VadeRetroCheck(Box<Entity_NPC*> bnpc, Box<EntityConfig*> bconfig) {
+	Entity_NPC* npc = bnpc.Get();
+	EntityConfig* config = bconfig.Get();
+
+	if (config->flags & 0x8) { // "ghost" 
+		if ((*npc->GetDeliriumBossType() == npc->_type && *npc->GetDeliriumBossVariant() == npc->_variant) || npc->_type == 412 /* Delirium */) {
+			return 0;
+		}
+
+		return 1;
+	}
+
+	return 0;
+}
+
 namespace delirium {
 	const char* DeliriumMetatable = "DeliriumMT";
 
@@ -255,6 +270,30 @@ namespace delirium {
 			.RestoreRegisters(registers)
 			.MoveToMemory(ASMPatch::Registers::ECX, 0xB18, ASMPatch::Registers::EBX)
 			.MoveToMemory(ASMPatch::Registers::EDI, 0xB1C, ASMPatch::Registers::EBX)
+			.AddRelativeJump((char*)addr + 12);
+
+		sASMPatcher.PatchAt(addr, &patch);
+	}
+
+	void PatchVadeRetro() {
+		SigScan scanner("8b80d800000083e008");
+		scanner.Scan();
+		void* addr = scanner.GetAddress();
+
+		using Reg = ASMPatch::Registers;
+		using Save = ASMPatch::SavedRegisters;
+
+		Save registers(Save::EBX | Save::ECX | Save::EDX | Save::ESI | Save::EDI, true);
+		ASMPatch patch;
+		ByteBuffer orBytes;
+		orBytes.AddAny("\x83\xC8\x00", 3);
+
+		patch.PreserveRegisters(registers)
+			.Push(Reg::EAX)
+			.Push(Reg::ECX)
+			.AddInternalCall(VadeRetroCheck)
+			.AddBytes(orBytes)
+			.RestoreRegisters(registers)
 			.AddRelativeJump((char*)addr + 12);
 
 		sASMPatcher.PatchAt(addr, &patch);
