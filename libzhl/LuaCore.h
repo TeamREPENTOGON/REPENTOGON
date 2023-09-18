@@ -240,6 +240,7 @@ namespace lua {
         LuaCaller& push(const char* fmt, va_list va);
         LuaCaller& push(void* ptr, Metatables meta);
         LuaCaller& pushLuabridge(void* ptr, const char* meta); 
+        LuaCaller& pushCallbackID(const char* name, const char* ns = nullptr);
         template<typename T>
         std::enable_if_t<std::is_pointer_v<T>, LuaCaller&> push(T ptr, const char* meta) {
             void** result = (void**)lua_newuserdata(_L, sizeof(void*));
@@ -301,6 +302,11 @@ namespace lua {
         LuaResults(LuaResults&&);
         LuaResults& operator=(LuaResults&&);
 
+        /* Return true if the call triggered an error, false if everything went 
+         * well. This is for backward compatibility with the C API where LUA_OK is 
+         * defined as 0. Therefore, a call to lua_(x)(p)call is a success if it returns
+         * 0, checked as `if (!lua_call(...))`.
+         */
         operator bool() const;
 
         int getResultCode() const { return _resultCode; }
@@ -405,6 +411,9 @@ namespace lua {
         LIBZHL_API bool ToBoolean(lua_State* L, int stackPosition);
         LIBZHL_API const char* ToString(lua_State* L, int stackPosition);
     }
+
+    void LIBZHL_API PushCallbackID(lua_State* L, const char* name, const char* ns = nullptr);
+    void LIBZHL_API PushCallbackRegistryKey(lua_State* L = nullptr);
 }
 
 #define LUA_FUNCTION(name) static int name(lua_State* L)

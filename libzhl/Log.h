@@ -1,5 +1,7 @@
 #pragma once
 
+#include <lua.hpp>
+
 #include "libzhl.h"
 #include "ByteBuffer.h"
 
@@ -14,6 +16,8 @@ namespace ZHL {
 		void Log(const char* fmt, ...);
 		void LogByteBuffer(ByteBuffer const& buffer);
 		FILE* GetFile();
+		void DumpLuaStack(lua_State* L);
+		void DumpLuaStack(lua_State* L, int pos);
 
 	private:
 		FILE* _f;

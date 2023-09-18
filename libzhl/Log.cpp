@@ -60,4 +60,50 @@ namespace ZHL {
 			fprintf(_f, "%.2hhx ", data[i]);
 		}
 	}
+
+	void Logger::DumpLuaStack(lua_State* L) {
+		int n = lua_gettop(L);
+		Log("Dumping Lua stack of %d elements\n", n);
+		for (int i = n; i > 0; --i) {
+			DumpLuaStack(L, i);
+		}
+	}
+
+	void Logger::DumpLuaStack(lua_State* L, int pos) {
+		Log("Lua stack at index %d: ", pos);
+		switch (lua_type(L, pos)) {
+		case LUA_TNIL:
+			Log("nil\n");
+			break;
+
+		case LUA_TBOOLEAN:
+			Log("bool: %c\n", lua_toboolean(L, pos));
+			break;
+
+		case LUA_TLIGHTUSERDATA:
+		case LUA_TUSERDATA:
+			Log("userdata: %p\n", lua_touserdata(L, pos));
+			break;
+
+		case LUA_TNUMBER:
+			Log("number: %lld\n", lua_tonumber(L, pos));
+			break;
+
+		case LUA_TSTRING:
+			Log("string: %s\n", lua_tostring(L, pos));
+			break;
+
+		case LUA_TTABLE:
+			Log("table\n");
+			break;
+
+		case LUA_TFUNCTION:
+			Log("thread\n");
+			break;
+
+		default:
+			Log("unknown\n");
+			break;
+		}
+	}
 }

@@ -4,6 +4,7 @@
 
 #include <lua.hpp>
 
+#include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "Log.h"
 #include "HookSystem_private.h"
@@ -512,6 +513,12 @@ namespace lua {
 		return *this;
 	}
 
+	LuaCaller& LuaCaller::pushCallbackID(const char* name, const char* ns) {
+		PushCallbackID(_L, name, ns);
+		++_n;
+		return *this;
+	}
+
 	void* LuaCaller::pushUd(size_t s, const char* mt) {
 		void* result = lua_newuserdata(_L, s);
 		luaL_setmetatable(_L, mt);
@@ -532,12 +539,12 @@ namespace lua {
 	}
 
 	LuaStackProtector::~LuaStackProtector() {
+		ZHL::Logger logger(true);
 		if (_L) {
 			int n = lua_gettop(_L);
 			if (n != _orig + _n) {
-				std::ostringstream err;
-				err << "Inconsistent Lua stack. Expected " << _orig + _n << " elements, got " << n << std::endl;
-				ZHL::Log(err.str().c_str());
+				logger.Log("Inconsistent Lua stack, expected %d elements, got %d\n", _orig + _n, n);
+				logger.DumpLuaStack(_L);
 				abort();
 			}
 		}
@@ -634,5 +641,43 @@ namespace lua {
 		lua_pushstring(L, name.c_str());
 		lua_pushlightuserdata(L, ptr);
 		lua_rawset(L, -3);
+	}
+
+	void PushCallbackID(lua_State* L, const char* name, const char* ns) {
+		if (ns && strcmp(ns, "")) {
+			int type = lua_getglobal(L, ns);
+			if (type == LUA_TNIL) {
+				std::ostringstream err;
+				err << "Request for callback named " << name << " in non existent namespace " << ns << std::endl;
+				throw std::runtime_error(err.str());
+			}
+			else if (type != LUA_TTABLE) {
+				std::ostringstream err;
+				err << "Request for callback named " << name << " in namespace " << ns << " that is not a table" << std::endl;
+				throw std::runtime_error(err.str());
+			}
+		}
+		else {
+			lua_getglobal(L, "ModCallbacks");
+		}
+
+		lua_pushstring(L, name);
+		int type = lua_rawget(L, -2);
+
+		if (type == LUA_TNIL) {
+			std::ostringstream err;
+			err << "Request for non existent callback named " << name << " in namespace " << ns << std::endl;
+			throw std::runtime_error(err.str());
+		}
+
+		lua_remove(L, -2); // Pop the table from the stack (rawget only pops the key)
+	}
+
+	void PushCallbackRegistryKey(lua_State* L) {
+		if (!L) {
+			L = g_LuaEngine->_state;
+		}
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 	}
 }

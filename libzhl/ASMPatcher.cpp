@@ -561,7 +561,7 @@ ASMPatch& ASMPatch::MoveFromMemory(ASMPatch::Registers src, int32_t offset, ASMP
 	std::bitset<8> modrmBits;
 	// 32 bits opcode
 	if (offset < -127 || offset > 127) {
-		offsetHex = ToHexString(offset, true);
+		offsetHex = ToHexString(offset, false);
 		modrmBits[7] = true;
 		modrmBits[6] = false;
 	}
@@ -587,7 +587,6 @@ ASMPatch& ASMPatch::MoveFromMemory(ASMPatch::Registers src, int32_t offset, ASMP
 }
 
 ASMPatch& ASMPatch::MoveToMemory(ASMPatch::Registers src, int32_t offset, ASMPatch::Registers dst) {
-	std::ostringstream stream;
 	ByteBuffer offsetHex;
 	// 7-6 : how many bytes of displacement (1 or 4), basically how many bytes after the opcode
 	// 5-4-3 : source register
@@ -595,7 +594,7 @@ ASMPatch& ASMPatch::MoveToMemory(ASMPatch::Registers src, int32_t offset, ASMPat
 	std::bitset<8> modrmBits;
 	// 32 bits opcode
 	if (offset < -127 || offset > 127) {
-		offsetHex = ToHexString(offset, true);
+		offsetHex = ToHexString(offset, false);
 		modrmBits[7] = true;
 		modrmBits[6] = false;
 	}
@@ -606,7 +605,6 @@ ASMPatch& ASMPatch::MoveToMemory(ASMPatch::Registers src, int32_t offset, ASMPat
 		modrmBits[6] = true;
 	}
 
-	stream << "\x8B";
 	// Mod R/M part, I hate this
 
 	std::bitset<8> source = _ModRM[src] << 3;
@@ -628,7 +626,7 @@ ASMPatch& ASMPatch::MoveImmediate(ASMPatch::Registers dst, int32_t immediate) {
 		offset = ToHexString((int8_t)immediate);
 	}
 	else {
-		offset = ToHexString(immediate, true);
+		offset = ToHexString(immediate, false);
 	}
 
 	opcode += RegisterTox86(dst);
@@ -701,7 +699,7 @@ ASMPatch& ASMPatch::LoadEffectiveAddress(Registers src, int32_t offset, Register
 	std::bitset<8> modrmBits = 0b00000000;
 	if (offset < -127 || offset > 127) {
 		modrmBits[7] = true;
-		hexOffset = ToHexString(offset);
+		hexOffset = ToHexString(offset, false);
 	}
 	else {
 		modrmBits[7] = false;
@@ -734,7 +732,7 @@ ASMPatch& ASMPatch::Push(int8_t imm8) {
 ASMPatch& ASMPatch::Push(int32_t imm32) {
 	ByteBuffer buffer;
 	buffer.AddString("\x68");
-	buffer.AddByteBuffer(ASMPatch::ToHexString(imm32, true));
+	buffer.AddByteBuffer(ASMPatch::ToHexString(imm32, false));
 	return AddBytes(buffer);
 }
 

@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -132,6 +133,45 @@ private:
 
 class LIBZHL_API ASMPatch
 {
+private:
+	class CModRM {
+	public:
+		char Value() const {
+			char res = 0;
+			for (int i = 0; i < 8; ++i) {
+				res |= (_bits[i] << i);
+			}
+			return res;
+		}
+
+		char Mod() const {
+			return (_bits >> 6).to_ulong();
+		}
+
+		char Reg() const {
+			return ((_bits >> 3) & std::bitset<8>(0x7)).to_ulong();
+		}
+
+		char RM() const {
+			return (_bits & std::bitset<8>(0x7)).to_ulong();
+		}
+
+		void Mod(char value) {
+			_bits |= std::bitset<8>((value & 0x3) << 6);
+		}
+
+		void Reg(char value) {
+			_bits |= std::bitset<8>((value & 0x7) << 3);
+		}
+
+		void RM(char value) {
+			_bits |= std::bitset<8>(value & 0x7);
+		}
+
+	private:
+		std::bitset<8> _bits;
+	};
+
 public:
 	/* Convert an integer to its hex representation as a string, performing
 	 * a zero extension. 
@@ -207,6 +247,45 @@ public:
 		MULT
 	};
 
+	class LIBZHL_API StackSpace {
+	public:
+		template<typename T>
+		static StackSpace Make(bool shouldFree = true) {
+			return StackSpace(sizeof(T), shouldFree);
+		}
+
+	private:
+		template<typename T>
+		friend static StackSpace Make(bool);
+
+		StackSpace(size_t s, bool shouldFree = true) : _size(s) {
+
+		}
+
+	public:
+		~StackSpace() {
+			if (_shouldFree && !_freed) {
+				// throw std::runtime_error("Stack space not freed");
+				abort();
+			}
+		}
+
+		size_t Size() const { return _size;  }
+
+		void Free() { 
+			if (_freed) {
+				throw std::runtime_error("Stack space deallocated multiple times");
+			}
+
+			_freed = true;  
+		}
+
+	private:
+		size_t _size;
+		bool _shouldFree;
+		bool _freed = false;
+	};
+
 	/* Add arbitrary bytes to the patch. These bytes cannot contain a null character
 	 * as it will cause the copy of the bytes into the patch to stop early.
 	 */
@@ -218,19 +297,51 @@ public:
 	ASMPatch& AddConditionalRelativeJump(ASMPatcher::CondJumps cond, void* target);
 	/* Move a value from memory into a register. Memory access is performed through 
 	 * a register. This allows moves of the form "mov dst, [src + offset]".
+	 * 
+	 * Do not use with a src register of ESP or EBP as they use the SIB byte which is not
+	 * supported yet.
 	 */
 	ASMPatch& MoveFromMemory(Registers src, int32_t offset, Registers dst);
 	/* Move a value from a register into memory. Memory access is performed through 
 	 * a register. This allows moves of the form "mov dst, [src + offset]".
+	 * 
+	 * Do not use with a src register of ESP or EBP as they use the SIB byte which is not
+	 * supported yet.
 	 */
 	ASMPatch& MoveToMemory(Registers src, int32_t offset, Registers dst);
 
 	/* Move an immediate into a register */
 	ASMPatch& MoveImmediate(Registers dst, int32_t immediate);
+
+	/* Allocate space on the stack for the return value of a function that returns 
+	 * a complex type. */
+	ASMPatch& AllocateReturn(StackSpace& space) {
+		size_t s = space.Size();
+		ByteBuffer bytes;
+		char opcode = '\x81';
+		char modrm = 0b11101100; // Mod = 11, Reg = 101 (/5), RM = 100 (ESP)
+		bytes.AddByte(opcode).AddByte(modrm).AddByteBuffer(ToHexString((int32_t)s, false));
+		return AddBytes(bytes);
+	}
+
+	/* Free space on the stack for the return value of a function that returns 
+	 * a complex type. */
+	ASMPatch& FreeReturn(StackSpace& space) {
+		size_t s = space.Size();
+		ByteBuffer bytes;
+		char opcode = '\x81';
+		char modrm = 0b11000100; // Mod = 11, Reg = 000 (/0), RM = 100 (ESP)
+		bytes.AddByte(opcode).AddByte(modrm).AddByteBuffer(ToHexString((int32_t)s, false));
+		space.Free();
+		return AddBytes(bytes);
+	}
 	
 	/* typedef std::variant<Registers, int32_t> LeaOperand;
 	typedef std::tuple<LeaOps, LeaOperand> LeaParameter;
 	ASMPatch& LoadEffectiveAddress(Registers dst, Registers src, std::optional<LeaParameter> firstParam, std::optional<LeaParameter> secondParam); */
+
+	// Do not use this function with ESP or EBP as the source register as they use the 
+	// SIB byte which is not supported for now.
 	ASMPatch& LoadEffectiveAddress(Registers src, int32_t offset, Registers dst);
 	ASMPatch& PreserveRegisters(SavedRegisters& registers);
 	ASMPatch& RestoreRegisters(SavedRegisters& registers);
