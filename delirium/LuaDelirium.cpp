@@ -3,136 +3,6 @@
 #include "LuaCore.h"
 #include "Delirium.h"
 
-static void* ud_to_data(void* udata) {
-	return *(void**)((char*)udata + 4);
-}
-
-template<typename T>
-int lua_ReadAt(lua_State* L);
-
-template<typename T>
-int lua_ReadAt<std::enable_if_t<std::is_integral_v<T>, T>>(lua_State* L) {
-	if (int n = lua_gettop(L); n != 1) {
-		return luaL_error(L, "lua_ReadAt: expected 1 parameter, got %d\n", n);
-	}
-
-	lua_Integer addr = luaL_checkinteger(L, 1);
-	void* ptr = (void*)addr;
-
-	lua_pushinteger(L, *(T*)ptr);
-	return 1;
-}
-
-template<>
-int lua_ReadAt<float>(lua_State* L) {
-	if (int n = lua_gettop(L); n != 1) {
-		return luaL_error(L, "lua_ReadAt: expected 1 parameter, got %d\n", n);
-	}
-
-	lua_Integer addr = luaL_checkinteger(L, 1);
-	void* ptr = (void*)addr;
-
-	lua_pushnumber(L, *(float*)ptr);
-	return 1;
-}
-
-template<>
-int lua_ReadAt<void*>(lua_State* L) {
-	if (int n = lua_gettop(L); n != 1) {
-		return luaL_error(L, "lua_ReadAt: expected 1 parameter, got %d\n", n);
-	}
-
-	lua_Integer addr = luaL_checkinteger(L, 1);
-	void* ptr = (void*)addr;
-
-	lua_pushnumber(L, (uintptr_t) * (void**)ptr);
-	return 1;
-}
-
-template<typename T>
-int lua_ReadFromUDataAt(lua_State* L);
-
-template<typename T>
-int lua_ReadFromUDataAt<std::enable_if_t<std::is_integral_v<T>, T>>(lua_State* L) {
-	if (int n = lua_gettop(L); n != 2) {
-		return luaL_error(L, "lua_ReadFromUDataAt: expected 2 parameters, got %d\n", n);
-	}
-
-	void* udata = lua_touserdata(L, 1);
-	lua_Integer offset = luaL_checkinteger(L, 2);
-
-	void* ptr = ud_to_data(udata);
-	lua_pushinteger(L, *(T*)((char*)ptr + offset));
-	return 1;
-}
-
-template<>
-int lua_ReadFromUDataAt<float>(lua_State* L) {
-	if (int n = lua_gettop(L); n != 2) {
-		return luaL_error(L, "lua_ReadFromUDataAt: expected 2 parameters, got %d\n", n);
-	}
-
-	void* udata = lua_touserdata(L, 1);
-	lua_Integer offset = luaL_checkinteger(L, 2);
-
-	void* ptr = ud_to_data(udata);
-	lua_pushinteger(L, *(float*)((char*)ptr + offset));
-	return 1;
-}
-
-template<>
-int lua_ReadFromUDataAt<void*>(lua_State* L) {
-	if (int n = lua_gettop(L); n != 2) {
-		return luaL_error(L, "lua_ReadFromUDataAt: expected 2 parameters, got %d\n", n);
-	}
-
-	void* udata = lua_touserdata(L, 1);
-	lua_Integer offset = luaL_checkinteger(L, 2);
-
-	void* ptr = ud_to_data(udata);
-	lua_pushinteger(L, (uintptr_t) * (void**)((char*)ptr + offset));
-	return 1;
-}
-
-static int lua_IntRepr(lua_State* L) {
-	if (int n = lua_gettop(L); n != 1) {
-		return luaL_error(L, "Expected one argument, got %d\n", n);
-	}
-
-	lua_Number number = luaL_checknumber(L, 1);
-	float asFloat = (float)number;
-
-	lua_pushinteger(L, *(int*)&asFloat);
-	return 1;
-}
-
-static void RegisterMemoryFunctions(lua_State* L) {
-	lua_newtable(L);
-	luaL_Reg functions[] = {
-		{ "ReadInt8", lua_ReadAt<int8_t> },
-		{ "ReadInt16", lua_ReadAt<int16_t> },
-		{ "ReadInt32", lua_ReadAt<int32_t> },
-		{ "ReadUInt8", lua_ReadAt<uint8_t> },
-		{ "ReadUInt16", lua_ReadAt<uint16_t> },
-		{ "ReadUInt32", lua_ReadAt<uint32_t> },
-		{ "ReadFloat", lua_ReadAt<float> },
-		{ "ReadAddr", lua_ReadAt<void*> },
-		{ "ReadUDInt8", lua_ReadFromUDataAt<int8_t> },
-		{ "ReadUDInt16", lua_ReadFromUDataAt<int16_t> },
-		{ "ReadUDInt32", lua_ReadFromUDataAt<int32_t> },
-		{ "ReadUDUInt8", lua_ReadFromUDataAt<uint8_t> },
-		{ "ReadUDUInt16", lua_ReadFromUDataAt<uint16_t> },
-		{ "ReadUDUInt32", lua_ReadFromUDataAt<uint32_t> },
-		{ "ReadUDFloat", lua_ReadFromUDataAt<float> },
-		{ "ReadUDAddr", lua_ReadFromUDataAt<void*> },
-		{ "IntRepr", lua_IntRepr },
-		{ NULL, NULL }
-	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_setglobal(L, "Memory");
-}
-
 static int lua_EntityToDelirium(lua_State* L) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "EntityNPC");
 	if (entity->_type == delirium::ENTITY_DELIRIUM) {
@@ -293,6 +163,22 @@ static void CreateDeliriumSetters(lua_State* L) {
 	lua_rawset(L, -3);
 }
 
+namespace delirium {
+	LUA_FUNCTION(Lua_Delirium_Transform) {
+		Entity_NPC* delirium = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityDelirium");;
+		int type = luaL_checkinteger(L, 2);
+		if (type < 10) { // ENTITY_GAPER
+			return luaL_error(L, "Invalid EntityType %d for Delirium\n", type);
+		}
+		int variant = luaL_optinteger(L, 3, 0);
+		bool callback = lua::luaL_optboolean(L, 4, false);
+
+		delirium::ForcedTransformations[delirium] = std::make_tuple(type, variant, callback);
+		*delirium->GetDeliriumTransformationTimer() = 1;
+		return 0;
+	}
+}
+
 static void RegisterDeliriumFunctions(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ENTITY);
 	lua_pushstring(L, "ToDelirium");
@@ -333,6 +219,7 @@ static void RegisterDeliriumFunctions(lua_State* L) {
 	lua_rawset(L, -3);
 
 	luaL_Reg functions[] = {
+		{ "Transform", delirium::Lua_Delirium_Transform },
 		{ NULL, NULL }
 	};
 
@@ -349,10 +236,15 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterDeliriumFunctions(L);
 }
 
+HOOK_METHOD_PRIORITY(LuaEngine, Init, 100,  (bool debug) -> void) {
+	super(debug);
+	this->RunBundledScript("resources-delirium/scripts/enums.lua");
+}
+
 extern "C" __declspec(dllexport) int ModInit(int argc, char** argv) {
 	delirium::PatchSkipFrames();
 	delirium::PatchCompanion();
-	delirium::AddPreTransformationCallback();
+	// delirium::AddPreTransformationCallback();
 	delirium::AddTransformationCallback();
 	return 0;
 }
