@@ -152,6 +152,11 @@ ___
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Held·Sprite () {: aria-label='Functions' }
+#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetHeldSprite ( ) {: .copyable aria-label='Functions' }
+Gets the Sprite object used for when the player is doing an animation that involves holding a sprite over their head, such as active item usage.
+
+___
 ### Get·History () {: aria-label='Functions' }
 #### [History](History.md) GetHistory ( ) {: .copyable aria-label='Functions' }
 

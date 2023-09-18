@@ -839,6 +839,13 @@ LUA_FUNCTION(Lua_PlayerSetNextUrethraBlockFrame)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetHeldSprite)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua::luabridge::UserdataPtr::push(L, plr->GetHeldSprite(), lua::GetMetatableKey(lua::Metatables::SPRITE));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -933,4 +940,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetUrethraBlock", Lua_PlayerSetUrethraBlock);
 	lua::RegisterFunction(state, mt, "GetNextUrethraBlockFrame", Lua_PlayerGetNextUrethraBlockFrame);
 	lua::RegisterFunction(state, mt, "SetNextUrethraBlockFrame", Lua_PlayerSetNextUrethraBlockFrame);
+	lua::RegisterFunction(state, mt, "GetHeldSprite", Lua_PlayerGetHeldSprite);
 }

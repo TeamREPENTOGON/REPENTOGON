@@ -247,6 +247,7 @@ struct Entity_Player : public Entity { {{
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 	inline float* GetTearPoisonDamage() { return (float*)((char*)this + 0x14c0); }
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
+	inline ANM2* GetHeldSprite() { return &this->_heldSprite; }
 }} 
     __vtable {
         override
@@ -270,6 +271,8 @@ struct Entity_Player : public Entity { {{
 	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
     }}
+
+	ANM2 _heldSprite : 0xf48;
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":
