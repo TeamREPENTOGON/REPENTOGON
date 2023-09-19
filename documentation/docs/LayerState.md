@@ -70,11 +70,11 @@ ___
 #### [BlendMode](BlendMode.md) GetBlendMode ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bit·Flags() {: aria-label='Functions' }
-#### [AnimRenderFlags](enums/AnimRenderFlags.md) GetBitFlags ( ) {: .copyable aria-label='Functions' }
+### Get·Render·Flags() {: aria-label='Functions' }
+#### [AnimRenderFlags](enums/AnimRenderFlags.md) GetRenderFlags ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Bit·Flags () {: aria-label='Functions' }
-#### void SetBitFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
+### Set·Render·Flags () {: aria-label='Functions' }
+#### void SetRenderFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
 
 ___

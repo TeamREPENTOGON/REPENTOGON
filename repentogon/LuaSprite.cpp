@@ -92,16 +92,16 @@ static int Lua_SpriteGetLayer(lua_State* L)
 	return 1;
 }
 
-static int Lua_SpriteGetBitFlags(lua_State* L)
+static int Lua_SpriteGetRenderFlags(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	lua_pushnumber(L, *anm2->GetBitFlags());
+	lua_pushnumber(L, *anm2->GetRenderFlags());
 	return 1;
 }
-static int Lua_SpriteSetBitFlags(lua_State* L)
+static int Lua_SpriteSetRenderFlags(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	*anm2->GetBitFlags() = luaL_checknumber(L, 2);
+	*anm2->GetRenderFlags() = luaL_checknumber(L, 2);
 
 	return 0;
 }
@@ -276,16 +276,16 @@ static int Lua_LayerStateSetColor(lua_State* L)
 	return 0;
 }
 
-static int Lua_LayerStateGetBitFlags(lua_State* L)
+static int Lua_LayerStateGetRenderFlags(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	lua_pushnumber(L, *layerState->GetBitFlags());
+	lua_pushnumber(L, *layerState->GetRenderFlags());
 	return 1;
 }
-static int Lua_LayerStateSetBitFlags(lua_State* L)
+static int Lua_LayerStateSetRenderFlags(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	*layerState->GetBitFlags() = luaL_checknumber(L, 2);
+	*layerState->GetRenderFlags() = luaL_checknumber(L, 2);
 
 	return 0;
 }
@@ -338,8 +338,8 @@ static void RegisterLayerState(lua_State* L) {
 		{ "SetColor", Lua_LayerStateSetColor},
 		{ "GetCropOffset", Lua_LayerStateGetCropOffset},
 		{ "SetCropOffset", Lua_LayerStateSetCropOffset},
-		{ "GetBitFlags", Lua_LayerStateGetBitFlags},
-		{ "SetBitFlags", Lua_LayerStateSetBitFlags},
+		{ "GetRenderFlags", Lua_LayerStateGetRenderFlags},
+		{ "SetRenderFlags", Lua_LayerStateSetRenderFlags},
 		{ "GetBlendMode", Lua_LayerStateGetBlendMode},
 		{ NULL, NULL }
 	};
@@ -366,8 +366,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "StopOverlay", Lua_SpriteStopOverlay);
 	lua::RegisterFunction(state, mt, "Continue", Lua_SpriteContinue);
 	lua::RegisterFunction(state, mt, "ContinueOverlay", Lua_SpriteContinueOverlay);
-	lua::RegisterFunction(state, mt, "GetBitFlags", Lua_SpriteGetBitFlags);
-	lua::RegisterFunction(state, mt, "SetBitFlags", Lua_SpriteSetBitFlags);
+	lua::RegisterFunction(state, mt, "GetRenderFlags", Lua_SpriteGetRenderFlags);
+	lua::RegisterFunction(state, mt, "SetRenderFlags", Lua_SpriteSetRenderFlags);
 	RegisterLayerState(state);
 }
 
