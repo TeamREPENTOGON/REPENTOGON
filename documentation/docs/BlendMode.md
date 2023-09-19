@@ -3,7 +3,7 @@
 ???+ info
     You can get this class by using the following functions:
 
-    * [LayerState:GetColorCorrection()](FXParams.md#getcolorcorrection)
+    * [LayerState:GetBlendMode()](LayerState.md#getblendmode)
 
     ???+ example "Example Code"
         ```lua
@@ -15,7 +15,7 @@
 
 ## Functions
 
-### Update () {: aria-label='Functions' }
+### Set·Mode () {: aria-label='Functions' }
 #### void SetMode ( int mode ) {: .copyable aria-label='Functions' } 
 Ranges from 0-2. Invalid modes are ignored. The game generally uses `1`, but uses `2` for multiplicative blending.
 ???+ info
