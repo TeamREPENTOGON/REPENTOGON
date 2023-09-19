@@ -3,7 +3,7 @@
 ???+ info
     You can get this class by using the following functions:
 
-    * [LayerState:GetColorCorrection()](FXParams.md#getcolorcorrection)
+    * [LayerState:GetBlendMode()](LayerState.md#getblendmode)
 
     ???+ example "Example Code"
         ```lua
