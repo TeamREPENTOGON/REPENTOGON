@@ -11,7 +11,7 @@ This does not advance the internal state of the RNG object.
 ___
 
 ### Phantom·Float () {: aria-label='Functions' }
-#### float PhantomFloat () {: .copyable aria-label='Functions' }
+#### float PhantomFloat ( ) {: .copyable aria-label='Functions' }
 Generates a random float between 0 (inclusive) and 1 (exclusive).
 
 This does not adcance the internal state of the RNG object
