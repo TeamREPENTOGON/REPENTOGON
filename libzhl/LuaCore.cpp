@@ -617,6 +617,7 @@ namespace lua {
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* FXParamsMT = "FXParams";
 		const char* ColorCorrectionMT = "ColorCorrection";
+		const char* BlendModeMT = "BlendMode";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {

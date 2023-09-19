@@ -4,15 +4,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-#include "Log.h"
-
-static int Lua_FXParamsGetColorCorrection(lua_State* L) {
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	ColorModState** ud = (ColorModState**)lua_newuserdata(L, sizeof(ColorModState*));
-	*ud = params->GetColorCorrection();
-	luaL_setmetatable(L, lua::metatables::ColorCorrectionMT);
-	return 1;
-}
+//#include "Log.h"
 
 // R
 int Lua_GetColor(lua_State* L)

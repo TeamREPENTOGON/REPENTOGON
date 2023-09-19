@@ -1,0 +1,11 @@
+"558bec83e4f88b45??83e800":
+__thiscall void BlendMode::SetMode(unsigned int mode);
+
+struct BlendMode { {{
+	inline unsigned int* GetFlag1() { return &this->flag1; }
+	inline unsigned int* GetFlag2() { return &this->flag2; }
+	inline unsigned int* GetFlag3() { return &this->flag3; }
+	inline unsigned int* GetFlag4() { return &this->flag4; }
+}}
+    unsigned int flag1 : 0x0, flag2 : 0x4, flag3 : 0x8, flag4 : 0xc;
+} : 0x10;

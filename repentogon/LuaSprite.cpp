@@ -307,23 +307,13 @@ static int Lua_LayerStateSetCropOffset(lua_State* L)
 	return 0;
 }
 
-static int Lua_LayerStateGetBlendMode(lua_State* L)
-{
+static int Lua_LayerStateGetBlendMode(lua_State* L) {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	BitSet128* toLua = lua::luabridge::UserdataValue<BitSet128>::place(L, lua::GetMetatableKey(lua::Metatables::BITSET_128));
-	*toLua = *layerState->GetBlendMode();
-
+	BlendMode** ud = (BlendMode**)lua_newuserdata(L, sizeof(BlendMode*));
+	*ud = layerState->GetBlendMode();
+	luaL_setmetatable(L, lua::metatables::BlendModeMT);
 	return 1;
 }
-
-static int Lua_LayerStateSetBlendMode(lua_State* L)
-{
-	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	*layerState->GetBlendMode() = *lua::GetUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
-
-	return 0;
-}
-
 
 static void RegisterLayerState(lua_State* L) {
 	luaL_newmetatable(L, LayerStateMT);
@@ -351,7 +341,6 @@ static void RegisterLayerState(lua_State* L) {
 		{ "GetBitFlags", Lua_LayerStateGetBitFlags},
 		{ "SetBitFlags", Lua_LayerStateSetBitFlags},
 		{ "GetBlendMode", Lua_LayerStateGetBlendMode},
-		{ "SetBlendMode", Lua_LayerStateSetBlendMode},
 		{ NULL, NULL }
 	};
 
