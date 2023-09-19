@@ -15,7 +15,7 @@
 
 ## Functions
 
-### SetMode () {: aria-label='Functions' }
+### Set·Mode () {: aria-label='Functions' }
 #### void SetMode ( int mode ) {: .copyable aria-label='Functions' } 
 Ranges from 0-2. Invalid modes are ignored. The game generally uses `1`, but uses `2` for multiplicative blending.
 ???+ info
