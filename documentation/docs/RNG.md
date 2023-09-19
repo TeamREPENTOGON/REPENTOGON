@@ -1,5 +1,22 @@
 # Class "RNG"
 
+## Functions 
+
+### Phantom·Int () {: aria-label='Functions' }
+#### int PhantomInt ( int Max ) {: .copyable aria-label='Functions' }
+Generates a random integer between 0 (inclusive) and `Max` (exclusive). 
+
+This does not advance the internal state of the RNG object.
+
+___
+
+### Phantom·Float () {: aria-label='Functions' }
+#### float PhantomFloat () {: .copyable aria-label='Functions' }
+Generates a random float between 0 (inclusive) and 1 (exclusive).
+
+This does not adcance the internal state of the RNG object
+
+___
 
 ## Modified Functions
 
