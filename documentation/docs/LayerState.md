@@ -66,6 +66,10 @@ ___
 #### void SetVisible ( boolean Visible ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Blend·Mode() {: aria-label='Functions' }
+#### [BlendMode](BlendMode.md) GetBlendMode ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Bit·Flags() {: aria-label='Functions' }
 #### [AnimRenderFlags](enums/AnimRenderFlags.md) GetBitFlags ( ) {: .copyable aria-label='Functions' }
 

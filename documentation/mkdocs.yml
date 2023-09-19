@@ -105,6 +105,7 @@ nav:
   - AnimationFrame: AnimationFrame.md
   - AnimationLayer: AnimationLayer.md
   - Backdrop: Backdrop.md
+  - BlendMode: BlendMode.md
   - Camera: Camera.md
   - Capsule: Capsule.md
   - ChallengeParam: ChallengeParam.md
