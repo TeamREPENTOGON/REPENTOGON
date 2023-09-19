@@ -1,0 +1,11 @@
+struct ItemConfig_Costume
+{
+    unsigned int id : 0x00;
+    std_string anm2Path : 0x04;
+    unsigned int priority : 0x1C;
+    bool hasOverlay : 0x20;
+    bool isFlying : 0x21;
+    bool hasSkinAlt : 0x22;
+    unsigned int skinColor : 0x24;
+    unsigned int overwriteColor : 0x28;
+} : 0x2C;

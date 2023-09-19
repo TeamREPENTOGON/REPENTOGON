@@ -158,8 +158,8 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
      
     if (!this->GetTemporaryEffects()->_disabled) {
         for (TemporaryEffect effect : this->GetTemporaryEffects()->_effects) {
-            int type = effect._item->_type;
-            if ((type == 1 || type == 3 || type == 4) && effect._item->_id == COLLECTIBLE_GOAT_HEAD) // Passive, active and familiar types. TODO Need to add enums
+            int type = effect._item->type;
+            if ((type == 1 || type == 3 || type == 4) && effect._item->id == COLLECTIBLE_GOAT_HEAD) // Passive, active and familiar types. TODO Need to add enums
                 chance = 66.6f;
         }
     }

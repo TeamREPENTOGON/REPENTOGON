@@ -1,0 +1,14 @@
+struct ItemConfig_Card
+{
+    int id : 0x00;
+    int achievementId : 0x04;
+    std_string name : 0x08;
+    std_string desc : 0x20;
+    std_string hudAnim : 0x38;
+    bool greedModeAllowed : 0x50;
+    unsigned int pickupSubtype : 0x54;
+    unsigned int cardType : 0x58;
+    unsigned int announcerVoice : 0x5C;
+    unsigned int announcerDelay : 0x60;
+    unsigned int mimicCharge : 0x64;
+} : 0x68;
