@@ -5,9 +5,15 @@ unsigned int Random();
 __thiscall void RNG::SetSeed(unsigned int Seed, unsigned int ShiftIdx);
 
 "558bec568bf18b16":
-__thiscall void RNG::RandomInt(unsigned int param_1);
+__thiscall unsigned int RNG::RandomInt(unsigned int max);
+
+"558bec51568bf18b1685d2":
+__thiscall float RNG::RandomFloat();
 
 struct RNG
 {
-  unsigned int _seed : 0x0; //0x0
+    unsigned int _seed : 0x0; //0x0
+    unsigned int _shift1 : 0x4;
+    unsigned int _shift2 : 0x8;
+    unsigned int _shift3 : 0xC;
 } : 0x10; //0x10

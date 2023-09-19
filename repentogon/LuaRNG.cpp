@@ -25,9 +25,36 @@ int Lua_RNGSetSeed(lua_State* L) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RNG_PhantomInt) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	int max = luaL_checkinteger(L, 2);
+	if (max < 0) {
+		return luaL_error(L, "Invalid max parameter for PhantomInt: %d\n", max);
+	}
+
+	RNG copy;
+	memcpy(&copy, rng, sizeof(RNG));
+	unsigned int result = copy.RandomInt(max);
+
+	lua_pushinteger(L, result);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RNG_PhantomFloat) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	RNG copy;
+	memcpy(&copy, rng, sizeof(RNG));
+
+	float result = copy.RandomFloat();
+	lua_pushnumber(L, result);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "SetSeed", Lua_RNGSetSeed);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomInt", Lua_RNG_PhantomInt);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomFloat", Lua_RNG_PhantomFloat);
 }
