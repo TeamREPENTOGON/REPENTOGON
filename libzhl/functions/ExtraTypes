@@ -103,3 +103,8 @@ TypeInfo vector_ModEntryPointer {
     Size 12;
     Align 4;
 };
+
+TypeInfo vector_ErasedEntities {
+    Size 12;
+    Align 4;
+};

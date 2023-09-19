@@ -43,3 +43,25 @@ void KAGE::_LogMessage(int flag, const char* fmt, ...) {
 		LogMessage(flag, buffer);
 	}
 }
+
+bool Game::IsErased(int type, int variant, int subtype) {
+	for (EntityId const& entity : _erasedEntities) {
+		if (entity.type == type) {
+			if (variant == -1) {
+				return true;
+			}
+			else {
+				if (entity.variant == variant) {
+					if (subtype == -1) {
+						return true;
+					}
+					else {
+						return entity.subtype == subtype;
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}

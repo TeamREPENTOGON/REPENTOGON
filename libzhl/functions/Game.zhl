@@ -168,6 +168,8 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
     { 
         return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 
     }
+
+    bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
     uint32_t _stage : 0x0; // 0x0
     uint32_t _stageType : 0x4; // 0x4
@@ -200,4 +202,5 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	ScoreSheet _scoreSheet : 0x1c32b8; //
     uint32_t _difficulty : 0x243624; // 0x243624
     ProceduralItemManager _proceduralItemManager : 0x283c20; // 0x283c20 
+    vector_ErasedEntities _erasedEntities : 0x283c14; 
 } : 0x285238;

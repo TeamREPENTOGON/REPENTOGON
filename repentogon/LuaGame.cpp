@@ -133,6 +133,34 @@ int Lua_GameIsGreedFinalBoss(lua_State* L)
 	return 1;
 }
 
+LUA_FUNCTION(lua_GameIsErased) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		Entity* entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+
+		if (game->IsErased(entity->_type, entity->_variant, entity->_subtype)) {
+			lua_pushinteger(L, 1);
+		}
+		else {
+			lua_pushinteger(L, 0);
+		}
+	}
+	else {
+		int type = luaL_checkinteger(L, 2);
+		int variant = luaL_optinteger(L, 3, -1);
+		int subtype = luaL_optinteger(L, 4, -1);
+
+		if (game->IsErased(type, variant, subtype)) {
+			lua_pushinteger(L, 1);
+		}
+		else {
+			lua_pushinteger(L, 0);
+		}
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -155,5 +183,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
 	lua::RegisterFunction(state, mt, "StartStageTransition", lua_GameStartStageTransition);
+	lua::RegisterFunction(state, mt, "IsErased", lua_GameIsErased);
 
 }

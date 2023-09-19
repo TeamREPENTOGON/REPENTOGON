@@ -37,6 +37,12 @@ struct Console_HistoryEntry;
 struct History_HistoryItem;
 struct EntitySaveState;
 
+struct EntityId {
+    int type;
+    int variant;
+    int subtype;
+};
+
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
@@ -51,6 +57,7 @@ typedef std::vector<unsigned int> std_vector_uint;
 typedef std::set<uint32_t> std_set_uint32t;
 typedef std::vector<EntitySaveState> vector_EntitySaveState;
 typedef std::map<int, int> std_map_int_int;
+typedef std::vector<EntityId> vector_ErasedEntities;
 
 struct RoomConfig;
 typedef std::vector<RoomConfig*> RoomConfigPtrVector;
