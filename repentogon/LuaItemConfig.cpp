@@ -5,13 +5,13 @@
 #include "LuaCore.h"
 
 LUA_FUNCTION(Lua_ItemConfigPill_EffectClass_propget) {
-	ItemConfigPill* config = lua::GetUserdata<ItemConfigPill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
+	ItemConfig_Pill* config = lua::GetUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
 	lua_pushinteger(L, config->effectClass);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemConfigPill_EffectSubClass_propget) {
-	ItemConfigPill* config = lua::GetUserdata<ItemConfigPill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
+	ItemConfig_Pill* config = lua::GetUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
 	lua_pushinteger(L, config->effectSubClass);
 	return 1;
 }

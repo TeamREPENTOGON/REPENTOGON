@@ -1,5 +1,30 @@
-struct ItemConfig_Item
+struct ItemConfig_Item depends (ItemConfig_Costume)
 {
-    int _type : 0x0; //0x0
-    int _id : 0x4; //0x4
-} : 0xcc;
+    int type : 0x00;
+    int id : 0x04;
+    std_string name : 0x08;
+    std_string desc : 0x20;
+    std_string gfxFilename : 0x38;
+    int achievementId : 0x50;
+    int cacheFlags : 0x54;
+    int addMaxhearts : 0x58;
+    int addHearts : 0x5C;
+    int addSoulHearts : 0x60;
+    int addBlackHearts : 0x64;
+    int addBombs : 0x68;
+    int addKeys : 0x6C;
+    int addCoins : 0x70;
+    unsigned int maxCharges : 0x74;
+    unsigned int maxCooldown : 0x78;
+    short devilprice : 0x7C;
+    short shopPrice : 0x7E;
+    ItemConfig_Costume costume : 0x80;
+    unsigned int chargeType : 0xAC;
+    bool special : 0xB0;
+    bool passiveCache : 0xB1;
+    bool addCostumeOnPickup : 0xB2;
+    bool hidden : 0xB3;
+    bool persistentEffect : 0xB4;
+    bool clearEffectsOnRemove : 0xB5;
+    // tags : 0xB8
+} : 0xCC;

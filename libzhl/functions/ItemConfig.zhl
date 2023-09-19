@@ -22,6 +22,13 @@ __thiscall void ItemConfig::LoadPocketItems(char *xmlpath,int ismod); //no clue 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b814010100e8????????a1????????33c58945??5657508d45??64a3????????8965??8bf9":
 __thiscall void ItemConfig::Load(char *xmlpath,int ismod); //no clue what ismod is on this case, but if its highrt than 0 then its a mod
 
-struct ItemConfig
+struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill)
 {
+	{{
+		inline std::vector<ItemConfig_Item*>* GetCollectibles() { return (std::vector<ItemConfig_Item*>*)((char*)this + 0x00); }
+		inline std::vector<ItemConfig_Item*>* GetTrinkets() { return (std::vector<ItemConfig_Item*>*)((char*)this + 0x0C); }
+		inline std::vector<ItemConfig_Item*>* GetNullItems() { return (std::vector<ItemConfig_Item*>*)((char*)this + 0x18); }
+		inline std::vector<ItemConfig_Card*>* GetCards() { return (std::vector<ItemConfig_Card*>*)((char*)this + 0x24); }
+		inline std::vector<ItemConfig_Pill*>* GetPillEffects() { return (std::vector<ItemConfig_Pill*>*)((char*)this + 0x30); }
+	}}
 } : 0x3C;

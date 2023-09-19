@@ -1,4 +1,13 @@
-struct ItemConfigPill {
-    std_string name : 0x8; // 0x8
-    uint8_t effectClass : 0x4C, effectSubClass : 0x4D; // 0x4c
+struct ItemConfig_Pill
+{
+    int id : 0x00;
+    int achievementId : 0x04;
+    std_string name : 0x08;
+    std_string desc : 0x20;
+    bool greedModeAllowed : 0x38;
+    unsigned int announcerVoice : 0x3C;
+    unsigned int announcerVoiceSuper : 0x40;
+    unsigned int announcerVoiceDelay : 0x44;
+    unsigned int mimicCharge : 0x48;
+    uint8_t effectClass : 0x4C, effectSubClass : 0x4D;
 } : 0x50;
