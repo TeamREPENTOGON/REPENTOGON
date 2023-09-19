@@ -13,7 +13,7 @@
 ## Functions
 
 ### Update () {: aria-label='Functions' }
-#### void Update ( boolean Process, boolean Lerp, float Rate ) {: .copyable aria-label='Functions' }
+#### void Update ( boolean Process = true, boolean Lerp = true, float Rate = 0.015) {: .copyable aria-label='Functions' }
 `Process` will run the color correction through a series of modifications made by [Room](Room.md) for handling the Abandoned Mineshaft sequence, pitch black rooms, and tinting based on lava intensity. 
 
 ___
