@@ -75,4 +75,11 @@ ___
 #### boolean WasOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Bit·Flags() {: aria-label='Functions' }
+#### [AnimRenderFlags](enums/AnimRenderFlags.md) GetBitFlags ( ) {: .copyable aria-label='Functions' }
 
+___
+### Set·Bit·Flags () {: aria-label='Functions' }
+#### void SetBitFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
+
+___
