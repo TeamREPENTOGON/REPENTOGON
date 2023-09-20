@@ -61,6 +61,10 @@ ___
 #### int GetActiveMinUsableCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Active·Weapon·Num·Fired () {: aria-label='Functions' }
+#### int GetActiveWeaponNumFired ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Bag·Of·Crafting·Content () {: aria-label='Functions' }
 #### table GetBagOfCraftingContent ( ) {: .copyable aria-label='Functions' }
 
