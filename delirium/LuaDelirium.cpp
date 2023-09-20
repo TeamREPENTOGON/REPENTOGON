@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include "Log.h"
 #include "LuaCore.h"
 #include "Delirium.h"
 
@@ -238,7 +239,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 HOOK_METHOD_PRIORITY(LuaEngine, Init, 100,  (bool debug) -> void) {
 	super(debug);
-	this->RunBundledScript("resources-delirium/scripts/enums.lua");
+	bool result = this->RunBundledScript("resources-delirium/scripts/enums.lua");
+	ZHL::Log("Loading Delirium scripts: %d\n", result);
 }
 
 extern "C" __declspec(dllexport) int ModInit(int argc, char** argv) {
@@ -247,5 +249,6 @@ extern "C" __declspec(dllexport) int ModInit(int argc, char** argv) {
 	// delirium::AddPreTransformationCallback();
 	delirium::AddTransformationCallback();
 	delirium::PatchVadeRetro();
+	delirium::AddPostTransformationCallback();
 	return 0;
 }

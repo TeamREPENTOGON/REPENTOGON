@@ -16,4 +16,5 @@ namespace delirium {
 	void PatchVadeRetro();
 	void AddPreTransformationCallback();
 	void AddTransformationCallback();
+	void AddPostTransformationCallback();
 }

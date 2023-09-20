@@ -136,6 +136,19 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 	}
 }
 
+static void __stdcall PostTransformationCallback(Box<Entity_NPC*> bdelirium) {
+	Entity_NPC* delirium = *bdelirium;
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua::PushCallbackRegistryKey(L);
+	lua::LuaCaller caller(L);
+	caller.pushCallbackID("POST_TRANSFORMATION", "DeliriumCallbacks")
+		.pushnil()
+		.pushLuabridge(delirium, delirium::DeliriumMetatable)
+		.call(0);
+}
+
 static int32_t __stdcall VadeRetroCheck(Box<Entity_NPC*> bnpc, Box<EntityConfig*> bconfig) {
 	Entity_NPC* npc = bnpc.Get();
 	EntityConfig* config = bconfig.Get();
@@ -295,6 +308,33 @@ namespace delirium {
 			.AddBytes(orBytes)
 			.RestoreRegisters(registers)
 			.AddRelativeJump((char*)addr + 12);
+
+		sASMPatcher.PatchAt(addr, &patch);
+	}
+
+	void AddPostTransformationCallback() {
+		SigScan scanner("e9180e00003c08");
+		scanner.Scan();
+		void* addr = scanner.GetAddress();
+
+		ZyanU64 target;
+		ZydisDisassembledInstruction instruction;
+		ZydisDisassembleIntel(ZydisMachineMode::ZYDIS_MACHINE_MODE_LEGACY_32, (ZyanU64)addr, addr, 15, &instruction);
+		ZydisCalcAbsoluteAddress(&instruction.info, instruction.operands, (ZyanU64)addr, &target);
+
+		ZyanU64 distance = target - (ZyanU64)addr;
+
+		using Reg = ASMPatch::Registers;
+		using Save = ASMPatch::SavedRegisters;
+
+		Save registers(Save::EAX | Save::EBX | Save::ECX | Save::EDX | Save::EDI | Save::ESI, true);
+
+		ASMPatch patch;
+		patch.PreserveRegisters(registers)
+			.Push(Reg::EDI)
+			.AddInternalCall(PostTransformationCallback)
+			.RestoreRegisters(registers)
+			.AddRelativeJump((char*)addr + distance);
 
 		sASMPatcher.PatchAt(addr, &patch);
 	}

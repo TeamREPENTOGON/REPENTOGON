@@ -1,4 +1,5 @@
 DeliriumCallbacks = {
     PRE_TRANSFORMATION = "DeliriumPreTransformation",
-    TRANSFORMATION = "DeliriumTransformation"
+    TRANSFORMATION = "DeliriumTransformation",
+    POST_TRANSFORMATION = "DeliriumPostTransformation"
 }
