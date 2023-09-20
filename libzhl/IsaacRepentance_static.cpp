@@ -65,3 +65,44 @@ bool Game::IsErased(int type, int variant, int subtype) {
 
 	return false;
 }
+
+float Room::GetChampionBossChance() const {
+	PersistentGameData* data = g_Manager->GetPersistentGameData();
+	float chance = 0.f;
+	bool subcond = g_Manager->GetState() == 2 && (g_Game->GetDailyChallenge()._id != 0 || g_Game->GetDebug() != 0);
+
+	if (data->achievements[0x3] || subcond) { /* Womb unlock */
+		chance = 0.1f;
+
+		if (data->achievements[0x21] || subcond) { /* ??? unlock */
+			chance = 0.3f;
+		}
+
+		if (g_Game->_difficulty == 3) { /* Greedier */
+			chance = 0.6f;
+		}
+
+		Entity_Player* player = g_Game->GetPlayerManager()->FirstTrinketOwner(TRINKET_PURPLE_HEART, NULL, true);
+		if (player) {
+			int mult = g_Game->GetPlayerManager()->GetTrinketMultiplier(TRINKET_PURPLE_HEART);
+			chance *= (mult * 2);
+		}
+
+		if (g_Game->GetChallenge() == 0x22) { /* Ultra Hard */
+			chance = 1.f;
+		}
+	}
+
+	return chance;
+}
+
+bool Room::IsChampionBossSeed() const {
+	RNG rng;
+	rng._seed = _descriptor->SpawnSeed;
+	rng._shift1 = 0x1;
+	rng._shift2 = 0xb;
+	rng._shift3 = 0x10;
+
+	float random = rng.RandomFloat();
+	return random <= GetChampionBossChance();
+}

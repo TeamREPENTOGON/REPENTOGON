@@ -198,6 +198,18 @@ int Lua_RoomSetPauseTimer(lua_State* L)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Room_GetBossChampionChance) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
+	lua_pushnumber(L, room->GetChampionBossChance());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Room_IsChampionBossSeed) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
+	lua_pushboolean(L, room->IsChampionBossSeed());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -223,4 +235,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "PickupGridEntity", Lua_RoomPickupGridEntity);
 	lua::RegisterFunction(state, mt, "GetGridIndexByTile", Lua_RoomGetGridIndexByTile);
 	lua::RegisterFunction(state, mt, "SetPauseTimer", Lua_RoomSetPauseTimer);
+	lua::RegisterFunction(state, mt, "GetChampionBossChance", Lua_Room_GetBossChampionChance);
+	lua::RegisterFunction(state, mt, "IsChampionBossSeed", Lua_Room_IsChampionBossSeed);
 }
