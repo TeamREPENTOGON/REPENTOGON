@@ -458,6 +458,14 @@ struct Box {
 	T const& Get() const {
 		return _t;
 	}
+
+	T& operator*() {
+		return _t;
+	}
+
+	T const& operator*() const {
+		return _t;
+	}
 };
 
 #define sASMPatcher ASMPatcher::instance()
