@@ -846,6 +846,20 @@ LUA_FUNCTION(Lua_PlayerGetHeldSprite)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetActiveWeaponNumFired)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Weapon* wep = NULL;
+
+	wep = *plr->GetWeapon(0);
+	if ((wep == nullptr) && ((wep = *plr->GetWeapon(1)) == nullptr)) {
+		lua_pushnil(L);
+	}
+	lua_pushinteger(L, wep->GetNumFired());
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -941,4 +955,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetNextUrethraBlockFrame", Lua_PlayerGetNextUrethraBlockFrame);
 	lua::RegisterFunction(state, mt, "SetNextUrethraBlockFrame", Lua_PlayerSetNextUrethraBlockFrame);
 	lua::RegisterFunction(state, mt, "GetHeldSprite", Lua_PlayerGetHeldSprite);
+	lua::RegisterFunction(state, mt, "GetActiveWeaponNumFired", Lua_PlayerGetActiveWeaponNumFired);
 }
