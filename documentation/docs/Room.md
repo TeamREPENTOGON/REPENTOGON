@@ -20,6 +20,11 @@ ___
 Returns a [Camera](Camera.md) object.
 
 ___
+### Get·Champion·Boss·Chance () {: aria-label='Functions' }
+#### float GetChampionBossChance ( ) {: .copyable aria-label='Functions' }
+Return the probability that boss spawns in this room will be champions.
+
+___
 ### Get·Effects () {: aria-label='Functions' }
 #### [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) GetEffects ( ) {: .copyable aria-label='Functions' }
 
@@ -56,6 +61,11 @@ ___
 ___
 ### Get·Water·Color·Multiplier () {: aria-label='Functions' }
 #### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetWaterColorMultiplier ( ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Champion·Boss·Seed () {: aria-label='Functions' }
+#### boolean IsChampionBossSeed ( ) {: .copyable aria-label='Functions' }
+Return whether boss spawns in this room will be champions.
 
 ___
 ### Pickup·Grid·Entity () {: aria-label='Functions' }
