@@ -1,4 +1,4 @@
-# Class "ItemOverlay"
+# Class "ItemPool"
 
 ## Functions
 
