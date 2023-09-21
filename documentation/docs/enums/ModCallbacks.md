@@ -656,6 +656,19 @@ Accepts an integer to change the minimum charge to use the active item.
 |:--|:--|:--|:--|:--|
 |1073 |MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE {: .copyable } | ([ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | int |
 
+### MC_PRE_PLAYER_USE_BOMB
+Return false to stop the player from using a bomb.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1020 |MC_PRE_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
+
+### MC_POST_PLAYER_USE_BOMB
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1021 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
+
 ### MC_PRE_REPLACE_SPRITESHEET
 Accepts a table of parameters: `{int LayerID, string PNGFilename}`
 

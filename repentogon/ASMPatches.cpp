@@ -700,6 +700,76 @@ void ASMPatchHushBug() {
 	PerformHushPatch(addrs[1]);
 }
 
+// MC_PRE_PLAYER_USE_BOMB
+bool __stdcall ProcessPrePlayerUseBombCallback(Entity_Player* player) {
+	int callbackid = 1220;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackid)
+			.push(*player->GetVariant())
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!lua_result && lua_isboolean(L, -1)) {
+			return lua_toboolean(L, -1);
+		}
+	}
+	return true;
+}
+
+void ASMPatchPrePlayerUseBomb() {
+	SigScan scanner("6a0068050200008bcf");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI)  // Push the player
+		.AddInternalCall(ProcessPrePlayerUseBombCallback)  // Run MC_PRE_PLAYER_USE_BOMB
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x7C5) // Jump for false (negate the bomb placement)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))  // Restore the 7 bytes we overwrote
+		.AddRelativeJump((char*)addr + 0x7);  // Jump for true (allow the bomb placement)
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// MC_POST_PLAYER_USE_BOMB
+void __stdcall ProcessPostPlayerUseBombCallback(Entity_Player* player, Entity_Bomb* bomb) {
+	int callbackid = 1221;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(*player->GetVariant())
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.push(bomb, lua::Metatables::ENTITY_BOMB)
+			.call(0);
+	}
+}
+
+void ASMPatchPostPlayerUseBomb() {
+	SigScan scanner("8b7424??46897424??3b7424??0f8c");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)  // Push the BOMB
+		.Push(ASMPatch::Registers::EDI)  // Push the PLAYER
+		.AddInternalCall(ProcessPostPlayerUseBombCallback)  // Run MC_POST_PLAYER_USE_BOMB
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the 5 bytes we overwrote
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
@@ -718,4 +788,6 @@ void PerformASMPatches() {
 	ASMPatchVoidGeneration();
 	ASMPatchHushBug();
 	ASMPatchFamiliarGetMultiplier();
+	ASMPatchPrePlayerUseBomb();
+	ASMPatchPostPlayerUseBomb();
 }
