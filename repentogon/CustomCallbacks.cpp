@@ -2716,6 +2716,6 @@ HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
 		}
 		return FixedGetCoinValue(subtype);
 	}
-	// My compromise, even though this bolts on a neglible couple extra instructions vs just returning 0 like the function would
-	return super();
+	// Apparently trying to hook a func with a jump in its first 5 bytes is hellish. Just return what the normal func already would have
+	return 0;
 }
