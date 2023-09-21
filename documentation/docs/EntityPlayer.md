@@ -280,6 +280,11 @@ ___
 #### void RemoveCollectibleByHistoryIndex ( int Index ) {: .copyable aria-label='Functions' }
 
 ___
+### Remove·Poop·Spell () {: aria-label='Functions' }
+#### void RemovePoopSpell ( int Position = 0 ) {: .copyable aria-label='Functions' }
+Removes the poop spell from the specified queue position and shifts all spells after it forward to fill the space. A new spell is randomly picked to fill the last position.
+
+___
 ### Set·Active·Var·Data () {: aria-label='Functions' }
 #### void SetActiveVarData ( int VarData, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
@@ -363,6 +368,10 @@ ___
 ___
 ### Set·Pony·Charge () {: aria-label='Functions' }
 #### void SetPonyCharge ( int Time ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Poop·Spell () {: aria-label='Functions' }
+#### void SetPoopSpell ( int Position, [PoopSpellType](https://wofsauge.github.io/IsaacDocs/rep/enums/PoopSpellType.html) PoopSpellType ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Purity·State () {: aria-label='Functions' }

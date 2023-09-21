@@ -197,6 +197,9 @@ __thiscall void Entity_Player::UpdateIsaacPregnancy(bool Cambion);
 "8b89????????83f90f7c":
 __thiscall int Entity_Player::GetCambionPregnancyLevel();
 
+"558bec6aff68????????64a1????????5081ecfc000000535657a1????????33c5508d45??64a3????????8bf1":
+__thiscall void Entity_Player::CheckPoopSpellQueue();
+
 
 struct Entity_Player : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
@@ -273,6 +276,7 @@ struct Entity_Player : public Entity { {{
     }}
 
 	ANM2 _heldSprite : 0xf48;
+	char _poopSpellQueue[6] : 0x1e54;
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":

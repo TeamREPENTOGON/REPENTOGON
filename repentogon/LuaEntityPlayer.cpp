@@ -860,6 +860,43 @@ LUA_FUNCTION(Lua_PlayerGetActiveWeaponNumFired)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerSetPoopSpell)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const int pos = luaL_checkinteger(L, 2);
+	const int spell = luaL_checkinteger(L, 3);
+
+	if (pos < 0 || pos > 5) {
+		return luaL_argerror(L, 2, "Invalid Poop Spell queue position");
+	}
+	if (spell < 1 || spell > 11) {
+		// At least until we decide to add custom PoopSpellType support :^)
+		return luaL_argerror(L, 3, "Invalid PoopSpellType");
+	}
+
+	plr->_poopSpellQueue[pos] = spell;
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerRemovePoopSpell)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const int pos = luaL_optinteger(L, 2, 0);
+
+	if (pos < 0 || pos > 5) {
+		return luaL_argerror(L, 2, "Invalid Poop Spell queue position");
+	}
+
+	for (int i = pos; i < 5; i++) {
+		plr->_poopSpellQueue[i] = plr->_poopSpellQueue[i+1];
+	}
+	plr->_poopSpellQueue[5] = 0;
+	plr->CheckPoopSpellQueue();
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -956,4 +993,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetNextUrethraBlockFrame", Lua_PlayerSetNextUrethraBlockFrame);
 	lua::RegisterFunction(state, mt, "GetHeldSprite", Lua_PlayerGetHeldSprite);
 	lua::RegisterFunction(state, mt, "GetActiveWeaponNumFired", Lua_PlayerGetActiveWeaponNumFired);
+	lua::RegisterFunction(state, mt, "SetPoopSpell", Lua_PlayerSetPoopSpell);
+	lua::RegisterFunction(state, mt, "RemovePoopSpell", Lua_PlayerRemovePoopSpell);
 }
