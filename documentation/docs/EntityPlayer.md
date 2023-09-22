@@ -156,6 +156,11 @@ ___
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Held·Entity () {: aria-label='Functions' }
+#### [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) GetHeldEntity ( ) {: .copyable aria-label='Functions' }
+Returns the Entity that the player is holding over their head, such as with throwable red bombs or Suplex! Returns nil if no entity is currently being held.
+
+___
 ### Get·Held·Sprite () {: aria-label='Functions' }
 #### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetHeldSprite ( ) {: .copyable aria-label='Functions' }
 Gets the Sprite object used for when the player is doing an animation that involves holding a sprite over their head, such as active item usage.
