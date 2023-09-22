@@ -438,6 +438,14 @@ Runs after the morph already happened.
 |:--|:--|:--|:--|:--|
 |1215 |MC_POST_PICKUP_MORPH {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, int PreviousType, int PreviousVariant, int SubType, boolean KeptPrice, boolean KeptSeed, boolean IgnoredModifiers)| - | void |
 
+### MC_NPC_PICK_TARGET
+Called whenever an EntityNPC selects its target, such as when EntityNPC:GetPlayerTarget() is called.
+
+Return an entity to make the NPC target that entity instead.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1222 |MC_NPC_PICK_TARGET {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) CurrentTarget)| EntityType | Entity |
 
 ### MC_PRE_NPC_MORPH
 Accepts a table of parameters: `{EntityType, Variant, SubType, Championid}` or just `{EntityType, Variant, SubType}`. 

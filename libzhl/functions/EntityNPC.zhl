@@ -26,6 +26,9 @@ __thiscall Entity_Projectile* Entity_NPC::FireBossProjectiles(int32_t numProject
 "558bec8b81????????f30f1045":
 __thiscall void Entity_NPC::PlaySound(int id, float volume, int framedelay, bool loop, float pitch);
 
+"558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf1837e??35":
+__thiscall Entity* Entity_NPC::GetPlayerTarget();
+
 struct Entity_NPC : public Entity {
 {{
 	inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xBFC); }

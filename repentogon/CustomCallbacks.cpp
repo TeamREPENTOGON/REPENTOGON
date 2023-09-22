@@ -386,6 +386,30 @@ HOOK_METHOD(Entity_Laser, DoDamage, (Entity* entity, float damage) -> void) {
 	}
 }
 
+// NPC_PICK_TARGET
+HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
+	Entity* unmodifiedTarget = super();
+
+	int callbackid = 1222;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackid)
+			.push(*this->GetType())
+			.push(this, lua::Metatables::ENTITY_NPC)
+			.push(unmodifiedTarget, lua::Metatables::ENTITY)
+			.call(1);
+
+		if (!lua_result && lua_isuserdata(L, -1)) {
+			return lua::GetUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
+		}
+	}
+
+	return unmodifiedTarget;
+}
+
 //PRE/POST_ENTITY_THROW (1040/1041)
 void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {
 	int callbackid = 1041;
