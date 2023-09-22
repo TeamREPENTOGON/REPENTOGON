@@ -889,12 +889,26 @@ LUA_FUNCTION(Lua_PlayerRemovePoopSpell)
 	}
 
 	for (int i = pos; i < 5; i++) {
-		plr->_poopSpellQueue[i] = plr->_poopSpellQueue[i+1];
+		plr->_poopSpellQueue[i] = plr->_poopSpellQueue[i + 1];
 	}
 	plr->_poopSpellQueue[5] = 0;
 	plr->CheckPoopSpellQueue();
 
 	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBackupPlayer) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* backupPlayer = plr->GetBackupPlayer();
+
+	if (!backupPlayer) {
+		lua_pushnil(L);
+	}
+	else {
+		lua::luabridge::UserdataPtr::push(L, backupPlayer, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	}
+
+	return 1;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -995,4 +1009,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetActiveWeaponNumFired", Lua_PlayerGetActiveWeaponNumFired);
 	lua::RegisterFunction(state, mt, "SetPoopSpell", Lua_PlayerSetPoopSpell);
 	lua::RegisterFunction(state, mt, "RemovePoopSpell", Lua_PlayerRemovePoopSpell);
+	//lua::RegisterFunction(state, mt, "GetBackupPlayer", Lua_PlayerGetBackupPlayer);
 }

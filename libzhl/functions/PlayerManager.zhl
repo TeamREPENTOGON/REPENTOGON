@@ -32,4 +32,5 @@ __thiscall void PlayerManager::TriggerRoomClear();
 struct PlayerManager depends (RNG)
 {
     RNG _rng : 0x0; //0x0
-} : 0x18;
+	vector_EntityPlayerPtr _playerList : 0x10;
+} : 0x1c;

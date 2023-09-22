@@ -58,6 +58,7 @@ typedef std::set<uint32_t> std_set_uint32t;
 typedef std::vector<EntitySaveState> vector_EntitySaveState;
 typedef std::map<int, int> std_map_int_int;
 typedef std::vector<EntityId> vector_ErasedEntities;
+typedef std::vector<Entity_Player**> vector_EntityPlayerPtr;
 
 struct RoomConfig;
 typedef std::vector<RoomConfig*> RoomConfigPtrVector;
