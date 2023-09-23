@@ -6,27 +6,84 @@
 
 //#include "Log.h"
 
+LUA_FUNCTION(Lua_CreateColorCorrection) {
+	ColorModState color;
+	color.R = color.G = color.B = color.Contrast = 1.0f;
+	color.A = color.Brightness = 0.0f;
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorCorrectionMT);
+	memcpy(toLua, &color, sizeof(ColorModState));
+	return 1;
+}
+
 // R
-int Lua_GetColor(lua_State* L)
+int Lua_GetR(lua_State* L)
 {
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
-	*toLua = *color->GetColor();
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
+	lua_pushnumber(L, *color->GetR());
 
 	return 1;
 }
 
-int Lua_SetColor(lua_State* L)
+int Lua_SetR(lua_State* L)
 {
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	*color->GetColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
+	*color->GetR() = lua_tonumber(L, 2);
+	return 0;
+}
+
+// G
+int Lua_GetG(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
+	lua_pushnumber(L, *color->GetG());
+
+	return 1;
+}
+
+int Lua_SetG(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
+	*color->GetG() = lua_tonumber(L, 2);
+	return 0;
+}
+
+// B
+int Lua_GetB(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
+	lua_pushnumber(L, *color->GetB());
+
+	return 1;
+}
+
+int Lua_SetB(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
+	*color->GetB() = lua_tonumber(L, 2);
+	return 0;
+}
+
+// A
+int Lua_GetA(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
+	lua_pushnumber(L, *color->GetA());
+
+	return 1;
+}
+
+int Lua_SetA(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
+	*color->GetA() = lua_tonumber(L, 2);
 	return 0;
 }
 
 // Brightness
 int Lua_GetBrightness(lua_State* L)
 {
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
 	lua_pushnumber(L, *color->GetBrightness());
 
 	return 1;
@@ -34,7 +91,7 @@ int Lua_GetBrightness(lua_State* L)
 
 int Lua_SetBrightness(lua_State* L)
 {
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
 	*color->GetBrightness() = lua_tonumber(L, 2);
 	return 0;
 }
@@ -42,7 +99,7 @@ int Lua_SetBrightness(lua_State* L)
 // Contrast
 int Lua_GetContrast(lua_State* L)
 {
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
 	lua_pushnumber(L, *color->GetContrast());
 
 	return 1;
@@ -50,35 +107,8 @@ int Lua_GetContrast(lua_State* L)
 
 int Lua_SetContrast(lua_State* L)
 {
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorCorrectionMT);
 	*color->GetContrast() = lua_tonumber(L, 2);
-	return 0;
-}
-
-int Lua_ColorCorrectionUpdate(lua_State* L)
-{
-	//ZHL::Logger logger;
-	//logger.Log("doing ColorCorrection():Update");
-	ColorModState* color = *lua::GetUserdata<ColorModState**>(L, 1, lua::metatables::ColorCorrectionMT);
-	bool process = true;
-	if lua_isboolean(L, 2)
-		process = lua_toboolean(L, 2);
-	bool lerp = false;
-	if lua_isboolean(L, 3)
-		lerp = lua_toboolean(L, 3);
-	float rate = (float)luaL_optnumber(L, 4, 0.015);
-
-	//logger.Log("process is %s, lerp is %s, rate is %f\n", process ? "TRUE" : "FALSE", lerp ? "TRUE" : "FALSE", rate);
-
-	ColorModState current;
-	if (process) {
-		//logger.Log("trying Room():ComputeColorModifier()");
-		Room* room = *g_Game->GetCurrentRoom();
-		current = room->ComputeColorModifier();
-		color = &current;
-	}
-	//logger.Log("trying Game():SeteColorModifier(color, %s, %f)", lerp ? "true" : "false", rate);
-	g_Game->SetColorModifier(color, lerp, rate);
 	return 0;
 }
 
@@ -113,8 +143,20 @@ static void RegisterColorCorrection(lua_State* L) {
 	lua_pushstring(L, "__propget");
 	lua_newtable(L);
 
-	lua_pushstring(L, "Color");
-	lua_pushcfunction(L, Lua_GetColor);
+	lua_pushstring(L, "R");
+	lua_pushcfunction(L, Lua_GetR);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "G");
+	lua_pushcfunction(L, Lua_GetG);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "B");
+	lua_pushcfunction(L, Lua_GetB);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "A");
+	lua_pushcfunction(L, Lua_GetA);
 	lua_rawset(L, -3);
 
 	lua_pushstring(L, "Brightness");
@@ -131,8 +173,20 @@ static void RegisterColorCorrection(lua_State* L) {
 	lua_pushstring(L, "__propset");
 	lua_newtable(L);
 
-	lua_pushstring(L, "Color");
-	lua_pushcfunction(L, Lua_SetColor);
+	lua_pushstring(L, "R");
+	lua_pushcfunction(L, Lua_SetR);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "G");
+	lua_pushcfunction(L, Lua_SetG);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "B");
+	lua_pushcfunction(L, Lua_SetB);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "A");
+	lua_pushcfunction(L, Lua_SetA);
 	lua_rawset(L, -3);
 
 	lua_pushstring(L, "Brightness");
@@ -145,13 +199,16 @@ static void RegisterColorCorrection(lua_State* L) {
 
 	lua_rawset(L, -3);
 
+	lua_register(L, "ColorCorrection", Lua_CreateColorCorrection);
+
+	/*
 	luaL_Reg functions[] = {
 	{ "Update", Lua_ColorCorrectionUpdate },
 	{ NULL, NULL }
 	};
 
 	luaL_setfuncs(L, functions, 0);
-
+	*/
 	lua_pop(L, 1);
 }
 

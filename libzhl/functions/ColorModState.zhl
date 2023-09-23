@@ -1,8 +1,10 @@
-struct ColorModState depends (KColor) { {{
-	inline KColor* GetColor() { return &this->color; } 
+struct ColorModState { {{
+	inline float* GetR() { return &this->R; }
+	inline float* GetG() { return &this->G; }
+	inline float* GetB() { return &this->B; }
+	inline float* GetA() { return &this->A; }
 	inline float* GetBrightness() { return &this->Brightness; }
 	inline float* GetContrast() { return &this->Contrast; }
 }}
-    KColor color : 0x0;
-    float Brightness : 0x10, Contrast : 0x14;
-} : 0x18; // 0x18
+    float R : 0x0, G : 0x4, B : 0x8, A : 0xc, Brightness : 0x10, Contrast : 0x14;
+}; // 0x18
