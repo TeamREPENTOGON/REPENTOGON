@@ -179,6 +179,7 @@ namespace lua {
 
     LIBZHL_API void* TestUserdata(lua_State* L, int ud, lua::Metatables mt);
     LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
+    LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, lua::Metatables constMt, std::string const& name);
 
     LIBZHL_API void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func);
     LIBZHL_API void RegisterFunctions(lua_State* L, lua::Metatables mt, luaL_Reg* functions);
@@ -188,6 +189,14 @@ namespace lua {
     template<typename T>
     T GetUserdata(lua_State* L, int idx, lua::Metatables mt, std::string const& name) {
         void* p = CheckUserdata(L, idx, mt, name);
+        return *(T*)((char*)p + 0x4);
+    }
+
+    // Use this version if you need your userdata to be either the const or non const version
+    // of something. Most of the time you won't need it.
+    template<typename T>
+    T GetUserdata(lua_State* L, int idx, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
+        void* p = CheckUserdata(L, idx, mt, constMt, name);
         return *(T*)((char*)p + 0x4);
     }
 

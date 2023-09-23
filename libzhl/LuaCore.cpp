@@ -318,6 +318,21 @@ namespace lua {
 		return p;
 	}
 
+	void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, lua::Metatables constMt, std::string const& name) {
+		void* p = TestUserdata(L, ud, mt);
+		if (!p) {
+			p = TestUserdata(L, ud, constMt);
+			if (!p) {
+				lua_getmetatable(L, ud);
+				lua::PushMetatable(L, mt);
+				std::string type = lua_typename(L, lua_type(L, ud));
+				std::string err = name + " expected, got " + type;
+				luaL_argerror(L, ud, err.c_str());
+			}
+		}
+		return p;
+	}
+
 	void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func) {
 		lua::PushMetatable(L, mt);
 		lua_pushstring(L, name);
