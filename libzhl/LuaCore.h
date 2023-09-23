@@ -142,7 +142,8 @@ namespace lua {
         CONST_ENTITY_LASER,
         CONST_SFX_MANAGER,
         CONST_CARD_CONFIG_LIST,
-        CONST_VECTOR
+        CONST_VECTOR,
+        METATABLES_MAX
     };
 
     namespace metatables

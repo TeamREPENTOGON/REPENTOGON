@@ -159,6 +159,15 @@ static void RegisterMetatables(lua_State* L) {
 	logger.Log("Done dumping Lua registry\n");
 }
 
+void NukeConstMetatables(lua_State* L) {
+	int diff = (int)lua::Metatables::BEGIN_CONST + 1 - ((int)lua::Metatables::BEGIN_NORMAL + 1);
+	for (int i = (int)lua::Metatables::BEGIN_CONST + 1; i < (int)lua::Metatables::METATABLES_MAX; ++i) {
+		void* key = lua::GetMetatableKey((lua::Metatables)i);
+		lua::PushMetatable(L, (lua::Metatables)(i - diff));
+		lua_rawsetp(L, LUA_REGISTRYINDEX, key);
+	}
+}
+
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	super(Debug);
 	luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
@@ -178,6 +187,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 
 	lua_getglobal(state, "_RunPreRenderCallback");
 	preRenderCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
+
+	NukeConstMetatables(_state);
 }
 
 static int LuaBenchmark(lua_State* L) {
