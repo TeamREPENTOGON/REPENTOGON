@@ -130,6 +130,7 @@ HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 		lua_rawset(L, -3);
 		lua_pushstring(L, "__div");
 		lua_pushcfunction(L, Lua_VectorUD_metadiv);
+		lua_rawset(L, -3);
 		lua_pop(L, 1);
 	}
 }
