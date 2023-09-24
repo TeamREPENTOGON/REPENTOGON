@@ -602,6 +602,50 @@ local function logError(callbackID, modName, err)
 	end
 end
 
+local function typeCheckCallback(callbackID, ret, ...)
+    local err
+	local typeCheck = typecheckFunctions[callbackID]
+	if typeCheck then
+		local typ = type(ret)
+		if typ == "userdata" then typ = GetMetatableType(ret) end
+		if not err then
+			if typeCheck[typ] == true then
+			elseif typeCheck[typ] then
+				err = typeCheck[typ](ret, typ, ...)
+			else
+				err = "bad return type (" ..
+				typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
+			end
+		end
+
+		if err then
+			local info = debug_getinfo(callback.Function, "S")
+			logError(callbackID, callback.Mod.Name,
+				info.short_src .. ": " .. info.linedefined .. ": " .. err)
+		end
+	end
+
+	local typeCheckWarn = typecheckWarnFunctions[callbackID]
+	if typeCheckWarn then
+		local typ = type(ret)
+		if typeCheckWarn[typ] == true then
+		elseif typeCheckWarn[typ] then
+			warn = typeCheckWarn[typ](ret, typ, ...)
+		else
+			warn = "bad return type (" ..
+			typeCheckWarn.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
+		end
+
+		if warn then
+			local info = debug_getinfo(callback.Function, "S")
+			logWarning(callbackID, callback.Mod.Name,
+				info.short_src .. ": " .. info.linedefined .. ": " .. warn)
+		end
+	end
+	
+	return err
+end
+
 function _RunCallback(callbackID, Param, ...)
 	local callbacks = Isaac.GetCallbacks(callbackID)
 	if callbacks then
@@ -613,47 +657,7 @@ function _RunCallback(callbackID, Param, ...)
 				end, callback.Mod, ...)
 				if status then
 					if ret ~= nil then
-						local err
-						local typeCheck = typecheckFunctions[callbackID]
-						if typeCheck then
-							local typ = type(ret)
-							if typ == "userdata" then typ = GetMetatableType(ret) end
-							if not err then
-								if typeCheck[typ] == true then
-								elseif typeCheck[typ] then
-									err = typeCheck[typ](ret, typ, ...)
-								else
-									err = "bad return type (" ..
-									typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
-								end
-							end
-
-							if err then
-								local info = debug_getinfo(callback.Function, "S")
-								logError(callbackID, callback.Mod.Name,
-									info.short_src .. ": " .. info.linedefined .. ": " .. err)
-							end
-						end
-
-						local typeCheckWarn = typecheckWarnFunctions[callbackID]
-						if typeCheckWarn then
-							local typ = type(ret)
-							if typeCheckWarn[typ] == true then
-							elseif typeCheckWarn[typ] then
-								warn = typeCheckWarn[typ](ret, typ, ...)
-							else
-								warn = "bad return type (" ..
-								typeCheckWarn.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
-							end
-
-							if warn then
-								local info = debug_getinfo(callback.Function, "S")
-								logWarning(callbackID, callback.Mod.Name,
-									info.short_src .. ": " .. info.linedefined .. ": " .. warn)
-							end
-						end
-
-						if not err then
+						if not typeCheckCallback(callbackID, ret, ...) then
 							return ret
 						end
 					end
@@ -669,9 +673,17 @@ function _RunAdditiveCallback(callbackID, value, ...)
 	local callbacks = Isaac.GetCallbacks(callbackID)
 	if callbacks then
 		for _, callback in ipairs(callbacks) do
-			local ret = callback.Function(callback.Mod, value, ...)
-			if ret ~= nil then
-				value = ret
+			local status, ret = xpcall(callback.Function, function(msg)
+				return msg .. "\n" .. cleanTraceback(2)
+			end, callback.Mod, value, ...)
+			if status then
+				if ret ~= nil then
+					if not typeCheckCallback(callbackID, ret, ...) then
+						value = ret
+					end
+				end
+			else
+				logError(callbackID, callback.Mod.Name, ret)
 			end
 		end
 	end
@@ -686,13 +698,21 @@ function _RunPreRenderCallback(callbackID, param, mt, value, ...)
 
 		for _, callback in ipairs(callbacks) do
 			if matchFunc(param, callback.Param) then
-				local ret = callback.Function(callback.Mod, mt, value, ...)
-				if ret ~= nil then
-					if type(ret) == "boolean" and ret == false then
-						return false
-					elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
-						value = value + ret
+				local status, ret = xpcall(callback.Function, function(msg)
+					return msg .. "\n" .. cleanTraceback(2)
+				end, callback.Mod, mt, value, ...)
+				if status then
+					if ret ~= nil then
+						if not typeCheckCallback(callbackID, ret, ...) then
+							if type(ret) == "boolean" and ret == false then
+								return false
+							elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
+								value = value + ret
+							end
+						end
 					end
+				else
+					logError(callbackID, callback.Mod.Name, ret)
 				end
 			end
 		end

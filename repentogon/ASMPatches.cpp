@@ -670,7 +670,7 @@ void ASMPatchVoidGeneration() {
 * The values Hush uses to track HP percentage internally was reduced by 100, but HP checks weren't.
 * This makes Hush enter "panic" state at 50% HP and not 0.5%. Oops!
 */
-float zeroPointFive = 0.005f; // set this to 1 for fun results!
+float panicValue = 0.005f; // set this to 1 for fun results!
 void PerformHushPatch(void* addr) { 
 	MEMORY_BASIC_INFORMATION info;
 	DWORD old_protect = SetPageMemoryRW(addr, &info);
@@ -680,7 +680,7 @@ void PerformHushPatch(void* addr) {
 	0xF3, 0x0F, 0x10, 0x05, 0, 0, 0, 0 // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 	};
 
-	void* ptr = &zeroPointFive;
+	void* ptr = &panicValue;
 	memcpy(ptrMov + 4, &ptr, sizeof(ptr));
 
 	memcpy(addr, ptrMov, 8);
