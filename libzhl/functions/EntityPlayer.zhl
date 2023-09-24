@@ -200,6 +200,9 @@ __thiscall int Entity_Player::GetCambionPregnancyLevel();
 "558bec6aff68????????64a1????????5081ecfc000000535657a1????????33c5508d45??64a3????????8bf1":
 __thiscall void Entity_Player::CheckPoopSpellQueue();
 
+"558bec6aff68????????64a1????????5081ec78010000":
+__thiscall void Entity_Player::AddCostume(ItemConfig_Item* collectibleID, bool itemStateOnly);
+
 
 struct Entity_Player : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
@@ -269,7 +272,7 @@ struct Entity_Player : public Entity { {{
     {{ 
     inline int* GetRedStewBonusDuration() { return (int*)((char*)this + 0x1d8c); }
     inline BagOfCraftingPickup* GetBagOfCraftingContent() { return (BagOfCraftingPickup*)((char*)this + 0x1e44); }
-	inline std_map_int_int GetItemWispsList() { return *(std_map_int_int*)((char*)this + 0x1e7c); }
+	inline std_map_int_int* GetItemWispsList() { return &this->_itemWispsList; }
     inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
 	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
@@ -277,7 +280,9 @@ struct Entity_Player : public Entity { {{
     }}
 
 	ANM2 _heldSprite : 0xf48;
+	uint32_t _cacheFlags : 0x14b8;
 	char _poopSpellQueue[6] : 0x1e54;
+	std_map_int_int _itemWispsList : 0x1e7c;
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":

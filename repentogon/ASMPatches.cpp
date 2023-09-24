@@ -670,7 +670,7 @@ void ASMPatchVoidGeneration() {
 * The values Hush uses to track HP percentage internally was reduced by 100, but HP checks weren't.
 * This makes Hush enter "panic" state at 50% HP and not 0.5%. Oops!
 */
-float zeroPointFive = 0.005f; // set this to 1 for fun results!
+float panicValue = 0.005f; // set this to 1 for fun results!
 void PerformHushPatch(void* addr) { 
 	MEMORY_BASIC_INFORMATION info;
 	DWORD old_protect = SetPageMemoryRW(addr, &info);
@@ -680,7 +680,7 @@ void PerformHushPatch(void* addr) {
 	0xF3, 0x0F, 0x10, 0x05, 0, 0, 0, 0 // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 	};
 
-	void* ptr = &zeroPointFive;
+	void* ptr = &panicValue;
 	memcpy(ptrMov + 4, &ptr, sizeof(ptr));
 
 	memcpy(addr, ptrMov, 8);
@@ -699,6 +699,61 @@ void ASMPatchHushBug() {
 	PerformHushPatch(addrs[0]);
 	PerformHushPatch(addrs[1]);
 }
+
+/*
+* Patch that fixes Null Items loaded from modded item.xmls
+* 
+* The game currently does not handle nullitems from modded xmls any differently than
+* vanilla ones. That means it will just attempt to write the item's ItemConfig entry
+* directly into the ItemConfig's nullitems std::vector, at the index of the ID specified
+* in the xml (or 0, if not specified). This means that the game will either overwrite
+* a vanilla nullitem at best, or write into memory outside of the bounds of the std::vector
+* at worst, because the vector is only pre-sized to 132 to fit the vanilla nullitems.
+* 
+* This patch makes it so that any nullitem loaded from a mod is assigned the next available
+* id and properly pushed to the std::vector.
+*/
+bool lastItemsXmlWasMod = false;
+
+// Couldn't identify a clear way to identify if a mod is currently being loaded from within
+// my patch, so I just track whether the last items.xml opened by the game is one from a mod.
+HOOK_METHOD(ItemConfig, Load, (char* xmlpath, ModEntry* modentry)->void) {
+	lastItemsXmlWasMod = (modentry != nullptr);
+	super(xmlpath, modentry);
+}
+
+bool __stdcall FixLoadingNullItemFromXml(ItemConfig_Item* newNullItem) {
+	if (lastItemsXmlWasMod) {
+		// We are loading a Null Item from a mod's items.xml. The game will not
+		// handle it properly, so assign it the next available ID ourselves, and
+		// push it to the ItemConfig's nullitems std::vector properly.
+		ItemConfig* itemConfig = g_Manager->GetItemConfig();
+		newNullItem->id = itemConfig->GetNullItems()->size();
+		itemConfig->GetNullItems()->push_back(newNullItem);
+		return true;
+	}
+	return false;
+}
+
+void ASMPatchFixLoadingNullItemsFromXml() {
+	// This is the spot in "parse_items_xml()" where a Null Item is going to be written into EntityConfig's Null Items vector.
+	SigScan scanner("8b34??85f60f84????????8bbe????????85ff74??8d8f????????e8????????8d8f????????e8????????689801000057e8????????83c408c786????????000000008d8e????????e8????????8d4e??e8????????8d4e??e8????????8d4e??e8????????68e000000056e8????????8bbd");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))  // Restore the commands we overwrote
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI)  // Push the newly created ItemConfig_Item
+		.AddInternalCall(FixLoadingNullItemFromXml)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x5) // Jump for false (no new entry was added, continue as normal)
+		.AddRelativeJump((char*)addr + 0x89);  // Jump for true (new entry was added, skip some internal code)
+	sASMPatcher.PatchAt(addr, &patch);
+}
+// End of modded Null Items patch.
 
 // MC_PRE_PLAYER_USE_BOMB
 bool __stdcall ProcessPrePlayerUseBombCallback(Entity_Player* player) {
@@ -788,6 +843,7 @@ void PerformASMPatches() {
 	ASMPatchVoidGeneration();
 	ASMPatchHushBug();
 	ASMPatchFamiliarGetMultiplier();
+	ASMPatchFixLoadingNullItemsFromXml();
 	ASMPatchPrePlayerUseBomb();
 	ASMPatchPostPlayerUseBomb();
 }

@@ -9,7 +9,7 @@
 static constexpr const char* MultiShotParamsMT = "MultiShotParams";
 static constexpr const char* PocketItemMT = "PocketItem";
 
-std::vector<int> fakeItems;
+std::map<int, int> fakeItems;
 
 int Lua_GetMultiShotPositionVelocity(lua_State* L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
@@ -716,6 +716,25 @@ static int Lua_PlayerAddInnateCollectible(lua_State* L)
 	itemWispList.insert(luaL_checkinteger(L,2));
 	*/
 
+	const int collectibleID = luaL_checkinteger(L, 2);
+	const int amount = luaL_optinteger(L, 3, 1);
+
+	ItemConfig itemConfig = g_Manager->_itemConfig;
+	ItemConfig_Item* item = itemConfig.GetCollectibles()[0][collectibleID];
+
+	//ItemConfig_Item* item_ptr = item;
+	if (item == nullptr) {
+		return luaL_error(L, "Invalid item");
+	}
+
+	std::map<int, int>& wispMap = *plr->GetItemWispsList();
+	wispMap[collectibleID] += amount;
+
+	if (amount > 0 && item->addCostumeOnPickup) {
+		plr->AddCostume(item, false);
+	}
+
+	plr->AddCacheFlags(item->cacheFlags);
 	plr->EvaluateItems();
 
 	return 0;
@@ -735,6 +754,16 @@ static int Lua_PlayerGetWispCollecitblesList(lua_State* L)
 		idx++;
 	}
 	*/
+
+	std::map<int, int> wispMap = plr->_itemWispsList;
+
+	lua_newtable(L);
+
+	for (auto& item : wispMap) {
+		lua_pushinteger(L, item.first); // push the collectible
+		lua_pushinteger(L, item.second); // push the amount
+		lua_settable(L, -3); // set the table entry
+	}
 
 	return 1;
 }
@@ -1003,7 +1032,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetTearPoisonDamage", Lua_PlayerSetTearPoisonDamage);
 	lua::RegisterFunction(state, mt, "GetVoidedCollectiblesList", Lua_PlayerGetVoidedCollectiblesList);
 	lua::RegisterFunction(state, mt, "AddInnateCollectible", Lua_PlayerAddInnateCollectible);
-	//lua::RegisterFunction(state, mt, "GetWispCollectiblesList", Lua_PlayerGetWispCollecitblesList);
+	lua::RegisterFunction(state, mt, "GetWispCollectiblesList", Lua_PlayerGetWispCollecitblesList);
 	lua::RegisterFunction(state, mt, "GetImmaculateConceptionState", Lua_PlayerGetImmaculateConceptionState);
 	lua::RegisterFunction(state, mt, "SetImmaculateConceptionState", Lua_PlayerSetImmaculateConceptionState);
 	lua::RegisterFunction(state, mt, "GetCambionConceptionState", Lua_PlayerGetCambionConceptionState);
