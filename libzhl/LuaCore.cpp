@@ -616,7 +616,7 @@ namespace lua {
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* FXParamsMT = "FXParams";
-		const char* ColorCorrectionMT = "ColorCorrection";
+		const char* ColorModifierMT = "ColorModifier";
 		const char* BlendModeMT = "BlendMode";
 	}
 

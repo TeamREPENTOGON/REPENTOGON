@@ -2,7 +2,7 @@
 __thiscall FXParams* FXParams::Init();
 
 struct FXParams depends (KColor, ColorMod, ColorModState) { {{
-	inline ColorModState* GetColorCorrection() { return &this->ColorCorrection; }
+	inline ColorModState* GetColorModifier() { return &this->ColorModifier; }
 	inline bool* GetWaterV2() { return &this->useWaterV2; }
 	inline KColor* GetWaterColor() { return &this->waterColor; }
 	inline KColor* GetWaterColorMultiplier() { return &this->waterColorMultiplier; }
@@ -11,7 +11,7 @@ struct FXParams depends (KColor, ColorMod, ColorModState) { {{
 	inline KColor* GetLightColor() { return &this->lightColor; }
 	inline ColorMod* GetWaterEffectColor() { return &this->waterEffectColor; }
 }}
-	ColorModState ColorCorrection : 0x0; //0x0
+	ColorModState ColorModifier : 0x0; //0x0
 	bool useWaterV2 : 0x18; //0x18
 	KColor waterColor : 0x1C, waterColorMultiplier : 0x2c; //0x1c
 	float shadowAlpha : 0x3c; //0x3c,

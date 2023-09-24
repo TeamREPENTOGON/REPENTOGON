@@ -12,51 +12,21 @@ static int Lua_GetFXParams(lua_State* L) {
 	return 1;
 }
 
-int Lua_ColorCorrectionUpdate(lua_State* L)
-{
-	//ZHL::Logger logger;
-	//logger.Log("doing ColorCorrection():Update");
-	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	ColorModState* color = params->GetColorCorrection();
-	bool process = true;
-	if lua_isboolean(L, 2)
-		process = lua_toboolean(L, 2);
-	bool lerp = true;
-	if lua_isboolean(L, 3)
-		lerp = lua_toboolean(L, 3);
-	float rate = (float)luaL_optnumber(L, 4, 0.015);
-
-	//logger.Log("process is %s, lerp is %s, rate is %f\n", process ? "TRUE" : "FALSE", lerp ? "TRUE" : "FALSE", rate);
-
-	ColorModState current;
-	if (process) {
-		//logger.Log("trying Room():ComputeColorModifier()");
-		Room* room = *g_Game->GetCurrentRoom();
-		if (room != nullptr)
-		current = room->ComputeColorModifier();
-		color = &current;
-	}
-	//logger.Log("trying Game():SeteColorModifier(color, %s, %f)", lerp ? "true" : "false", rate);
-	g_Game->SetColorModifier(color, lerp, rate);
-	return 0;
-}
-
-// Color correction
-int Lua_GetColorCorrection(lua_State* L)
+int Lua_GetColorModifier(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	ColorModState* color = params->GetColorCorrection();
+	ColorModState* color = params->GetColorModifier();
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
-	luaL_setmetatable(L, lua::metatables::ColorCorrectionMT);
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
 	memcpy(toLua, color, sizeof(ColorModState));
 
 	return 1;
 }
 
-int Lua_SetColorCorrection(lua_State* L)
+int Lua_SetColorModifier(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetColorCorrection() = *lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorCorrectionMT);
+	*params->GetColorModifier() = *lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 
 	return 0;
 }
@@ -192,8 +162,8 @@ static void RegisterFXParams(lua_State* L) {
 	lua_pushstring(L, "__propget");
 	lua_newtable(L);
 
-	lua_pushstring(L, "ColorCorrection");
-	lua_pushcfunction(L, Lua_GetColorCorrection);
+	lua_pushstring(L, "ColorModifier");
+	lua_pushcfunction(L, Lua_GetColorModifier);
 	lua_rawset(L, -3);
 
 	lua_pushstring(L, "UseWaterV2");
@@ -230,8 +200,8 @@ static void RegisterFXParams(lua_State* L) {
 	lua_pushstring(L, "__propset");
 	lua_newtable(L);
 
-	lua_pushstring(L, "ColorCorrection");
-	lua_pushcfunction(L, Lua_SetColorCorrection);
+	lua_pushstring(L, "ColorModifier");
+	lua_pushcfunction(L, Lua_SetColorModifier);
 	lua_rawset(L, -3);
 
 	lua_pushstring(L, "UseWaterV2");
@@ -264,14 +234,6 @@ static void RegisterFXParams(lua_State* L) {
 
 	lua_rawset(L, -3);
 
-	
-	luaL_Reg functions[] = {
-	{ "UpdateColorCorrection", Lua_ColorCorrectionUpdate },
-	{ NULL, NULL }
-	};
-
-	luaL_setfuncs(L, functions, 0);
-	
 	lua_pop(L, 1);
 
 }

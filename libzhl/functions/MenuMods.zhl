@@ -11,7 +11,4 @@ struct Menu_Mods depends (ANM2) {
     void* _pointerToSelectedMod : 0x128;
     float _scrollPositionX : 0x1ac;
     float _scrollPositionY : 0x1b0;
-    float _scrollInterpolationX : 0x200;
-    float _scrollInterpolationY : 0x204;
-    ANM2 _FlySprite : 0x210;
-} : 0x324;
+} : 0x1b4;

@@ -91,7 +91,7 @@ static bool Game::IsGreedFinalBoss();
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet) { {{
+struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState) { {{
 	Game()
 	{
 		this->constructor();
@@ -164,6 +164,10 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	
 	inline DebugRenderer* GetDebugRenderer() { return (DebugRenderer*)((char*)this + 0x283bf8); }
 	
+	inline ColorModState* GetCurrentColorModifier() { return &this->_currentColorModState; }
+	inline ColorModState* GetTargetColorModifier() { return &this->_targetColorModState; }
+	inline ColorModState* GetLerpColorModifier() { return &this->_lerpColorModState; }
+	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 
         return (RoomDescriptor*)((char*)this + 0x14 + dimension * sizeof(RoomDescriptor) * 169); 
@@ -201,6 +205,10 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
     Ambush _ambush : 0x1c31b8; // 0x1c31b8
 	ScoreSheet _scoreSheet : 0x1c32b8; //
     uint32_t _difficulty : 0x243624; // 0x243624
+	bool _shouldLerpColorModState : 0x283b80; // 0x283b80
+	ColorModState _currentColorModState : 0x283b84; // 0x283b84
+	ColorModState _targetColorModState : 0x283b9c; // 0x283b89c
+	ColorModState _lerpColorModState : 0x283bb4; // 0x283bb4
     ProceduralItemManager _proceduralItemManager : 0x283c20; // 0x283c20 
     vector_ErasedEntities _erasedEntities : 0x283c14; 
 } : 0x285238;
