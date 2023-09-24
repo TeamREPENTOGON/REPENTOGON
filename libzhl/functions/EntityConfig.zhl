@@ -2,7 +2,7 @@
 __thiscall void EntityConfig::Load(char *xmlpath,ModEntry *param_2);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b834020100":
-__thiscall void EntityConfig::LoadPlayers(char *xmlpath,int ismod);
+__thiscall void EntityConfig::LoadPlayers(char *xmlpath, ModEntry* modentry);
 
 struct EntityConfig {
     int flags: 0xD8;

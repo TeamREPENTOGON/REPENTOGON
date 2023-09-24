@@ -1771,19 +1771,19 @@ HOOK_METHOD(Manager, LoadConfigs,()->void) {
 	UpdateOddXMLSourceData(); //these get loaded in limbo so I need to do this to get the proper mod source
 }
 
-HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, int ismod)->void) {
-	if (xmlsloaded){ return super(xmlpath, ismod); }
+HOOK_METHOD(ItemConfig, LoadPocketItems, (char* xmlpath, ModEntry* modentry)->void) {
+	if (xmlsloaded){ return super(xmlpath, modentry); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
-	super(xmlpath, ismod);
+	super(xmlpath, modentry);
 	currpath = "";
 }
 
-HOOK_METHOD(ItemConfig, Load, (char* xmlpath, int ismod)->void) {
-	//if (xmlsloaded) { return super(xmlpath, ismod); }
+HOOK_METHOD(ItemConfig, Load, (char* xmlpath, ModEntry* modentry)->void) {
+	//if (xmlsloaded) { return super(xmlpath, modentry); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
-	super(xmlpath, ismod);
+	super(xmlpath, modentry);
 	currpath = "";
 }
 
@@ -1796,7 +1796,23 @@ HOOK_METHOD(RoomConfig, LoadCurses, (char* xmlpath, bool ismod)->void) {
 	currpath = "";
 }
 
-HOOK_METHOD(ItemConfig, LoadWispConfig, (char* xmlpath, int ismod)->void) {
+HOOK_METHOD(ItemConfig, LoadWispConfig, (char* xmlpath, ModEntry* modentry)->void) {
+	if (xmlsloaded) { return super(xmlpath, modentry); }
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, modentry);
+	currpath = "";
+}
+
+HOOK_METHOD(ItemConfig, LoadLocustConfig, (char* xmlpath, ModEntry* modentry)->void) {
+	if (xmlsloaded) { return super(xmlpath, modentry); }
+	currpath = string(xmlpath);
+	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
+	super(xmlpath, modentry);
+	currpath = "";
+}
+
+HOOK_METHOD(ItemConfig, LoadBombConfigRules, (char* xmlpath, bool ismod)->void) {
 	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
@@ -1804,36 +1820,20 @@ HOOK_METHOD(ItemConfig, LoadWispConfig, (char* xmlpath, int ismod)->void) {
 	currpath = "";
 }
 
-HOOK_METHOD(ItemConfig, LoadLocustConfig, (char* xmlpath, int ismod)->void) {
-	if (xmlsloaded) { return super(xmlpath, ismod); }
+HOOK_METHOD(ItemConfig, LoadCraftingRecipes, (char* xmlpath, ModEntry* modentry)->void) {
+	if (xmlsloaded) { return super(xmlpath, modentry); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
-	super(xmlpath, ismod);
+	super(xmlpath, modentry);
 	currpath = "";
 }
 
-HOOK_METHOD(ItemConfig, LoadBombConfigRules, (char* xmlpath, int ismod)->void) {
-	if (xmlsloaded) { return super(xmlpath, ismod); }
-	currpath = string(xmlpath);
-	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
-	super(xmlpath, ismod);
-	currpath = "";
-}
-
-HOOK_METHOD(ItemConfig, LoadCraftingRecipes, (char* xmlpath, int ismod)->void) {
-	if (xmlsloaded) { return super(xmlpath, ismod); }
-	currpath = string(xmlpath);
-	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
-	super(xmlpath, ismod);
-	currpath = "";
-}
-
-HOOK_METHOD(ItemConfig, LoadMetadata, (char* xmlpath, int ismod)->void) {
-	if (xmlsloaded) { return super(xmlpath, ismod); }
+HOOK_METHOD(ItemConfig, LoadMetadata, (char* xmlpath, ModEntry* modentry)->void) {
+	if (xmlsloaded) { return super(xmlpath, modentry); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	isitemmetadata = true;
-	super(xmlpath, ismod);
+	super(xmlpath, modentry);
 	isitemmetadata = false;
 	currpath = "";
 }
@@ -1854,7 +1854,7 @@ HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	currpath = "";
 }
 
-HOOK_METHOD(Manager, LoadChallenges, (char* xmlpath, char ismod)->void) {
+HOOK_METHOD(Manager, LoadChallenges, (char* xmlpath, bool ismod)->void) {
 	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
@@ -1870,11 +1870,11 @@ HOOK_METHOD(NightmareScene, LoadConfig, (char* xmlpath)->void) {
 	currpath = "";
 }
 
-HOOK_METHOD(ItemConfig, LoadCostumes, (char* xmlpath, int ismod)->void) {
-	if (xmlsloaded) { return super(xmlpath, ismod); }
+HOOK_METHOD(ItemConfig, LoadCostumes, (char* xmlpath, ModEntry* modentry)->void) {
+	if (xmlsloaded) { return super(xmlpath, modentry); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
-	super(xmlpath, ismod);
+	super(xmlpath, modentry);
 	currpath = "";
 }
 
@@ -1886,7 +1886,7 @@ HOOK_METHOD(EntityConfig, Load, (char* xmlpath, ModEntry* mod)->void) {
 	currpath = "";
 }
 
-HOOK_METHOD(ItemPool, load_pools, (char* xmlpath, char ismod)->void) {
+HOOK_METHOD(ItemPool, load_pools, (char* xmlpath, bool ismod)->void) {
 	if (xmlsloaded) { return super(xmlpath, ismod); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
@@ -1894,11 +1894,11 @@ HOOK_METHOD(ItemPool, load_pools, (char* xmlpath, char ismod)->void) {
 	currpath = "";
 }
 
-HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, int ismod)->void) {
-	if (xmlsloaded) { return super(xmlpath, ismod); }
+HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void) {
+	if (xmlsloaded) { return super(xmlpath, modentry); }
 	currpath = string(xmlpath);
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
-	super(xmlpath, ismod);
+	super(xmlpath, modentry);
 	currpath = "";
 }
 
