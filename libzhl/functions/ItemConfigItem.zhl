@@ -26,5 +26,5 @@ struct ItemConfig_Item depends (ItemConfig_Costume)
     bool hidden : 0xB3;
     bool persistentEffect : 0xB4;
     bool clearEffectsOnRemove : 0xB5;
-    // tags : 0xB8
+    uint64_t tags : 0xB8;
 } : 0xCC;

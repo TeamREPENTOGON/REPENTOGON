@@ -204,7 +204,7 @@ __thiscall void Entity_Player::CheckPoopSpellQueue();
 __thiscall void Entity_Player::AddCostume(ItemConfig_Item* collectibleID, bool itemStateOnly);
 
 
-struct Entity_Player : public Entity { {{
+struct Entity_Player depends (ANM2) : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
 	inline int* GetEternalHearts() {return (int*)((char*)this + 0x1298); }

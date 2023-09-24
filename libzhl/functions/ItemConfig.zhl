@@ -22,7 +22,7 @@ __thiscall void ItemConfig::LoadPocketItems(char *xmlpath, ModEntry* modentry);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b814010100e8????????a1????????33c58945??5657508d45??64a3????????8965??8bf9":
 __thiscall void ItemConfig::Load(char *xmlpath, ModEntry* modentry);
 
-struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill)
+struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill, ItemConfig_PlayerForm)
 {
 	{{
 		inline std::vector<ItemConfig_Item*>* GetCollectibles() { return (std::vector<ItemConfig_Item*>*)((char*)this + 0x00); }
@@ -30,5 +30,8 @@ struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill)
 		inline std::vector<ItemConfig_Item*>* GetNullItems() { return (std::vector<ItemConfig_Item*>*)((char*)this + 0x18); }
 		inline std::vector<ItemConfig_Card*>* GetCards() { return (std::vector<ItemConfig_Card*>*)((char*)this + 0x24); }
 		inline std::vector<ItemConfig_Pill*>* GetPillEffects() { return (std::vector<ItemConfig_Pill*>*)((char*)this + 0x30); }
+		inline std::vector<ItemConfig_PlayerForm*>* GetPlayerForms() { return (std::vector<ItemConfig_PlayerForm*>*)((char*)this + 0x44); }
 	}}
-} : 0x3C;
+	// 0x3C : Unknown, seems to be a pointer to something referenced in GetItemIdByName
+	// 0x40 : Unknown - Looks like a number, count of something or length of the prior, perhaps?
+} : 0x50;
