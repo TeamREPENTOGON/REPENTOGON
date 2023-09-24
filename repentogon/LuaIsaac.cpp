@@ -426,6 +426,28 @@ static void RegisterIsaacCanStartTrueCoop(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+LUA_FUNCTION(Lua_IsaacGetNullItemIdByName) {
+	const string name = string(luaL_checkstring(L, 1));
+
+	for (ItemConfig_Item* nullitem : *g_Manager->GetItemConfig()->GetNullItems()) {
+		if (nullitem != nullptr && nullitem->name == name) {
+			lua_pushinteger(L, nullitem->id);
+			return 1;
+		}
+	}
+
+	lua_pushinteger(L, -1);
+	return 1;
+}
+
+static void RegisterIsaacGetNullItemIdByName(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "GetNullItemIdByName");
+	lua_pushcfunction(L, Lua_IsaacGetNullItemIdByName);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -446,6 +468,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterIsaacCanStartTrueCoop(state);
 	RegisterGetCutsceneName(state);
 	RegisterPlayCutscene(state);
+	RegisterIsaacGetNullItemIdByName(state);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

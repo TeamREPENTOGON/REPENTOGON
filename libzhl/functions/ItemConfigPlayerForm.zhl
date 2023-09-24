@@ -1,8 +1,8 @@
 struct ItemConfig_PlayerForm
 {
-    uint32_t id : 0x00;
+    int id : 0x00;
     uint64_t tags : 0x08;
     std_string name : 0x10;
-    uint32_t costume : 0x28;  // This is 0xFFFFFFFF when unspecified.
+    int costume : 0x28;
     uint32_t cache : 0x2C;
 } : 0x30;
