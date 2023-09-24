@@ -1,10 +1,24 @@
-#include <lua.hpp>
+﻿#include <lua.hpp>
 #include <algorithm>
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "LuaWeapon.h"
+
+/*
+
+     .___.
+   / /\ /\ \
+  ||●  `\ ●||
+   \   ⌓   /
+    /  ᴥ  \
+   ||  _  ||
+    |_| |_|
+
+	 "code"
+ (copycat of kilburn's ascii art of Isaac)
+*/
 
 static constexpr const char* MultiShotParamsMT = "MultiShotParams";
 static constexpr const char* PocketItemMT = "PocketItem";
