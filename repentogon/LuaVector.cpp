@@ -75,20 +75,24 @@ LUA_FUNCTION(Lua_VectorUD_metadiv) {
 	int t2 = lua_type(L, 2);
 
 	if (t1 == LUA_TNUMBER) {
-		float mult = lua_tonumber(L, 1);
-		Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
-		Vector result(mult / vector->x, mult / vector->y);
-		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
+		return luaL_error(L, "Cannot left multiply a Vector with a number");
 	}
 	else if (t2 == LUA_TNUMBER) {
-		float mult = lua_tonumber(L, 2);
+		float div = lua_tonumber(L, 2);
+		if (div == 0) {
+			return luaL_error(L, "Divide by zero");
+		}
 		Vector* vector = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
-		Vector result(mult / vector->x, mult / vector->y);
+		Vector result(vector->x / div, vector->y / div);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
 	else if (t1 == t2 && t1 == LUA_TUSERDATA) {
 		Vector* a = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector* b = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+
+		if (b->x == 0 || b->y == 0) {
+			return luaL_error(L, "Divide by zero");
+		}
 		Vector result(a->x / b->x, a->y / b->y);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
