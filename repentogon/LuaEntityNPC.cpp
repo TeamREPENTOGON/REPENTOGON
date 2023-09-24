@@ -170,6 +170,32 @@ int Lua_NPCPlaySound(lua_State* L)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_GetV1) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	lua::luabridge::UserdataPtr::push(L, &npc->_v1, lua::Metatables::VECTOR);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_GetV2) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	lua::luabridge::UserdataPtr::push(L, &npc->_v2, lua::Metatables::VECTOR);
+	return 1;
+}
+
+/* Fix V1 and V2 not being pointers. */
+static void FixAttributes(lua_State* L) {
+	lua::PushMetatable(L, lua::Metatables::ENTITY_NPC);
+	lua_pushstring(L, "__propget");
+	lua_rawget(L, -2);
+	lua_pushstring(L, "V1");
+	lua_pushcfunction(L, Lua_EntityNPC_GetV1);
+	lua_rawset(L, -3);
+	lua_pushstring(L, "V2");
+	lua_pushcfunction(L, Lua_EntityNPC_GetV2);
+	lua_rawset(L, -3);
+	lua_pop(L, 2);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -186,6 +212,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetHitList", Lua_NPCGetHitList);
 	lua::RegisterFunction(state, mt, "GetShieldStrength", Lua_NPCGetShieldStrength);
 	lua::RegisterFunction(state, mt, "SetShieldStrength", Lua_NPCSetShieldStrength);
+
+	FixAttributes(state);
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
