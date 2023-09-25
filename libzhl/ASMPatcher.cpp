@@ -75,7 +75,6 @@ void ASMPatcher::FlatPatch(void* at, const char* with, size_t len, bool nopRest)
 	}
 
 	ProtectionGuard guard(at, PAGE_EXECUTE_READWRITE);
-	memcpy(at, with, len);
 
 	if (nopRest) {
 		int32_t remaining = len;
@@ -102,6 +101,8 @@ void ASMPatcher::FlatPatch(void* at, const char* with, size_t len, bool nopRest)
 			memset(basePtr + remaining, 0x90, -remaining);
 		}
 	}
+
+	memcpy(at, with, len);
 
 	expected = true;
 	if (!_patching.compare_exchange_strong(expected, false, std::memory_order_acq_rel, std::memory_order_acquire)) {
