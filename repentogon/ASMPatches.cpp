@@ -324,6 +324,7 @@ void ASMPatchFamiliarGetMultiplier() {
 * TakeDamage function parameters in memory and can modify them directly.
 * We need to patch into both Entity::TakeDamage AND EntityPlayer::TakeDamage.
 */
+extern int entityTakeDmgCallbackKey;
 
 bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
 	int callbackid = 1007;
@@ -338,7 +339,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, entityTakeDmgCallbackKey);
 
 		unsigned int entityType = *entity->GetType();
 

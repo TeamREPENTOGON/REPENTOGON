@@ -14,6 +14,7 @@
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
 int preRenderCallbackKey;
 int additiveCallbackKey;
+int entityTakeDmgCallbackKey;
 
 static int LuaDumpRegistry(lua_State* L) {
 	int top = lua_gettop(L);
@@ -187,6 +188,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 
 	lua_getglobal(state, "_RunPreRenderCallback");
 	preRenderCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
+
+	lua_getglobal(state, "_RunEntityTakeDmgCallback");
+	entityTakeDmgCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
 
 	NukeConstMetatables(_state);
 }

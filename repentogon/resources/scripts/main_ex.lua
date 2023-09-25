@@ -74,11 +74,16 @@ local function checkTableTypeFunction(typestrings)
 	return function(tbl)
 		local tablesize = 0
 		for i, tabletype in pairs(tbl) do
-			tablesize = i
+			tablesize = tablesize + 1
 		end
 
-		if tablesize > #typestrings then
-			return "bad return table length (" .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
+		local numtypestrings = 0
+		for i, typestr in pairs(typestrings) do
+			numtypestrings = numtypestrings + 1
+		end
+
+		if tablesize > numtypestrings then
+			return "bad return table length (up to " .. tostring(numtypestrings) .. " expected, got " .. tostring(tablesize) .. ")"
 		end
 
 		for i, param in pairs(tbl) do
@@ -92,9 +97,13 @@ local function checkTableTypeFunction(typestrings)
 				paramType = GetMetatableType(param)
 			end
 
-			if paramType ~= typestrings[i] then
-				return "bad return type for table value #" ..
-				tostring(i) .. " (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+			if not typestrings[i] then
+				return "return table has unexpected key `" .. tostring(i) .. "` with value type " .. paramType
+			end
+
+			if paramType ~= typestrings[i] and not (paramType == "integer" and typestrings[i] == "number") then
+				return "bad return type for table value with key `" ..
+				tostring(i) .. "` (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
 			end
 		end
 	end
@@ -238,43 +247,43 @@ local typecheckFunctions = {
 	},
 	[ModCallbacks.MC_PRE_PLAYER_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_TEAR_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_FAMILIAR_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_BOMB_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_PICKUP_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_SLOT_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_KNIFE_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_PROJECTILE_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_NPC_COLLISION] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = {
 		["boolean"] = true,
-		["table"] = true,
+		["table"] = checkTableTypeFunction({ Damage="number", DamageFlags="integer", DamageCountdown="number" }),
 	},
 	[ModCallbacks.MC_CONSOLE_AUTOCOMPLETE] = {
 	    ["table"] = true,
@@ -602,7 +611,7 @@ local function logError(callbackID, modName, err)
 	end
 end
 
-local function typeCheckCallback(callbackID, ret, ...)
+local function typeCheckCallback(callback, callbackID, ret, ...)
     local err
 	local typeCheck = typecheckFunctions[callbackID]
 	if typeCheck then
@@ -657,7 +666,7 @@ function _RunCallback(callbackID, Param, ...)
 				end, callback.Mod, ...)
 				if status then
 					if ret ~= nil then
-						if not typeCheckCallback(callbackID, ret, ...) then
+						if not typeCheckCallback(callback, callbackID, ret, ...) then
 							return ret
 						end
 					end
@@ -678,7 +687,7 @@ function _RunAdditiveCallback(callbackID, value, ...)
 			end, callback.Mod, value, ...)
 			if status then
 				if ret ~= nil then
-					if not typeCheckCallback(callbackID, ret, ...) then
+					if not typeCheckCallback(callback, callbackID, ret, ...) then
 						value = ret
 					end
 				end
@@ -703,7 +712,7 @@ function _RunPreRenderCallback(callbackID, param, mt, value, ...)
 				end, callback.Mod, mt, value, ...)
 				if status then
 					if ret ~= nil then
-						if not typeCheckCallback(callbackID, ret, ...) then
+						if not typeCheckCallback(callback, callbackID, ret, ...) then
 							if type(ret) == "boolean" and ret == false then
 								return false
 							elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
@@ -720,9 +729,63 @@ function _RunPreRenderCallback(callbackID, param, mt, value, ...)
 	end
 end
 
+-- Custom handling for the MC_ENTITY_TAKE_DMG rewrite, so if a mod changes the damage amount etc that doesn't terminate the callback
+-- and the updated values are shown to later callbacks. The callback also now ONLY terminates early if FALSE is returned.
+function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlags, source, damageCountdown)
+	local callbacks = Isaac.GetCallbacks(callbackID)
+
+	if callbacks then
+		local combinedRet
+
+		for _, callback in ipairs(callbacks) do
+			local matchFunc = getmetatable(callbacks).__matchParams or defaultCallbackMeta.__matchParams
+			if matchFunc(param, callback.Param) then
+				local status, ret = xpcall(callback.Function, function(msg)
+					return msg .. "\n" .. cleanTraceback(2)
+				end, callback.Mod, entity, damage, damageFlags, source, damageCountdown)
+				if status then
+					if ret ~= nil then
+						if not typeCheckCallback(callback, callbackID, ret, entity, damage, damageFlags, source, damageCountdown) then
+							if type(ret) == "boolean" and ret == false then
+								-- Only terminate the callback early if someone returns FALSE.
+								-- RIP to returning true stopping the callback.
+								return false
+							elseif type(ret) == "table" then
+								-- Set / update overrides to damage etc so that they are visible to later callbacks.
+								if ret.Damage and type(ret.Damage) == "number" then
+									damage = ret.Damage
+								end
+								if ret.DamageFlags and type(ret.DamageFlags) == "number" and ret.DamageFlags == math.floor(ret.DamageFlags) then
+									damageFlags = ret.DamageFlags
+								end
+								if ret.DamageCountdown and type(ret.DamageCountdown) == "number" then
+									damageCountdown = ret.DamageCountdown
+								end
+								if combinedRet then
+									for k, v in pairs(ret) do
+										combinedRet[k] = v
+									end
+								else
+									combinedRet = ret
+								end
+							end
+						end
+					end
+				else
+					logError(callbackID, callback.Mod.Name, ret)
+				end
+			end
+		end
+
+		return combinedRet
+	end
+end
+
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
+
+rawset(Isaac, "RunEntityTakeDmgCallback", _RunEntityTakeDmgCallback)
 
 Isaac.RunCallbackWithParam = _RunCallback
 

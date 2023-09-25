@@ -100,6 +100,8 @@ Now optionally accepts returning a table, with any combination of the following 
 * DamageFlags
 * DamageCountdown
 
+Modified values are passed along to the remaining callbacks. Returning false to cancel the damage still skips the remaining callbacks.
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1007 |MC_ENTITY_TAKE_DMG {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
