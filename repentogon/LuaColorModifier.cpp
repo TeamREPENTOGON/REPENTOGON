@@ -6,12 +6,12 @@
 
 LUA_FUNCTION(Lua_CreateColorModifier) {
 	ColorModState color;
-	color.R = (float)luaL_optnumber(L, 1, 1.0f);
-	color.G = (float)luaL_optnumber(L, 2, 1.0f); 
-	color.B = (float)luaL_optnumber(L, 3, 1.0f);
-	color.A = (float)luaL_optnumber(L, 4, 0.0f);
-	color.Brightness = (float)luaL_optnumber(L, 5, 0.0f);
-	color.Contrast = (float)luaL_optnumber(L, 6, 1.0f);
+	color.r = (float)luaL_optnumber(L, 1, 1.0f);
+	color.g = (float)luaL_optnumber(L, 2, 1.0f); 
+	color.b = (float)luaL_optnumber(L, 3, 1.0f);
+	color.a = (float)luaL_optnumber(L, 4, 0.0f);
+	color.brightness = (float)luaL_optnumber(L, 5, 0.0f);
+	color.contrast = (float)luaL_optnumber(L, 6, 1.0f);
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
 	memcpy(toLua, &color, sizeof(ColorModState));

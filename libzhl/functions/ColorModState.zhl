@@ -1,10 +1,65 @@
-struct ColorModState { {{
-	inline float* GetR() { return &this->R; }
-	inline float* GetG() { return &this->G; }
-	inline float* GetB() { return &this->B; }
-	inline float* GetA() { return &this->A; }
-	inline float* GetBrightness() { return &this->Brightness; }
-	inline float* GetContrast() { return &this->Contrast; }
-}}
-    float R : 0x0, G : 0x4, B : 0x8, A : 0xc, Brightness : 0x10, Contrast : 0x14;
+struct ColorModState {
+    float r : 0x0, g : 0x4, b : 0x8, a : 0xc, brightness : 0x10, contrast : 0x14;
+	
+	{{
+	ColorModState() : r(1.0f), g(1.0f), b(1.0f), a(0.0f), brightness(0.0f), contrast(1.0f) {}
+	ColorModState(float _r, float _g, float _b, float _a, float _brightness, float _contrast ) : r(_r), g(_g), b(_b), a(_a), brightness(_brightness), contrast(_contrast) {}
+
+	ColorModState& operator=(ColorModState const& other) {
+		r = other.r;
+		g = other.g;
+		b = other.b;
+		a = other.a;
+		brightness = other.brightness;
+		contrast = other.contrast;
+		return *this;
+	}
+	
+	ColorModState& operator=(ColorModState* other) {
+		r = other->r;
+		g = other->g;
+		b = other->b;
+		a = other->a;
+		brightness = other->brightness;
+		contrast = other->contrast;
+		return *this;
+	}
+
+	ColorModState& operator-(ColorModState const& other) {
+		r -= other.r;
+		g -= other.g;
+		b -= other.b;
+		a -= other.a;
+		brightness -= other.brightness;
+		contrast -= other.contrast;
+		return *this;
+	}
+
+	ColorModState& operator-(ColorModState* other) {
+		r -= other->r;
+		g -= other->g;
+		b -= other->b;
+		a -= other->a;
+		brightness -= other->brightness;
+		contrast -= other->contrast;
+		return *this;
+	}
+
+	ColorModState& operator*=(float amount) {
+		r *= amount;
+		g *= amount;
+		b *= amount;
+		a *= amount;
+		brightness *= amount;
+		contrast *= amount;
+		return *this;
+	}
+
+	inline float* GetR() { return &this->r; }
+	inline float* GetG() { return &this->g; }
+	inline float* GetB() { return &this->b; }
+	inline float* GetA() { return &this->a; }
+	inline float* GetBrightness() { return &this->brightness; }
+	inline float* GetContrast() { return &this->contrast; }
+	}}
 }; // 0x18
