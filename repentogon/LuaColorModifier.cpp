@@ -4,12 +4,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-//#include "Log.h"
-
 LUA_FUNCTION(Lua_CreateColorModifier) {
 	ColorModState color;
-	color.R = color.G = color.B = color.Contrast = 1.0f;
-	color.A = color.Brightness = 0.0f;
+	color.R = (float)luaL_optnumber(L, 1, 1.0f);
+	color.G = (float)luaL_optnumber(L, 2, 1.0f); 
+	color.B = (float)luaL_optnumber(L, 3, 1.0f);
+	color.A = (float)luaL_optnumber(L, 4, 0.0f);
+	color.Brightness = (float)luaL_optnumber(L, 5, 0.0f);
+	color.Contrast = (float)luaL_optnumber(L, 6, 1.0f);
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
 	memcpy(toLua, &color, sizeof(ColorModState));

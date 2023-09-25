@@ -164,9 +164,11 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	
 	inline DebugRenderer* GetDebugRenderer() { return (DebugRenderer*)((char*)this + 0x283bf8); }
 	
-	inline ColorModState* GetCurrentColorModifier() { return &this->_currentColorModState; }
-	inline ColorModState* GetTargetColorModifier() { return &this->_targetColorModState; }
-	inline ColorModState* GetLerpColorModifier() { return &this->_lerpColorModState; }
+	
+	// Wack
+	inline ColorModState* GetCurrentColorModifier() { return (ColorModState*)((char*)this + 0x283b84); }
+	inline ColorModState* GetTargetColorModifier() { return (ColorModState*)((char*)this + 0x283b9c); }
+	inline ColorModState* GetLerpColorModifier() { return (ColorModState*)((char*)this + 0x283bb4); }
 	
     RoomDescriptor* GetRoomDescriptorsForDimension(uint32_t dimension) 
     { 
@@ -206,9 +208,6 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	ScoreSheet _scoreSheet : 0x1c32b8; //
     uint32_t _difficulty : 0x243624; // 0x243624
 	bool _shouldLerpColorModState : 0x283b80; // 0x283b80
-	ColorModState _currentColorModState : 0x283b84; // 0x283b84
-	ColorModState _targetColorModState : 0x283b9c; // 0x283b89c
-	ColorModState _lerpColorModState : 0x283bb4; // 0x283bb4
     ProceduralItemManager _proceduralItemManager : 0x283c20; // 0x283c20 
     vector_ErasedEntities _erasedEntities : 0x283c14; 
 } : 0x285238;
