@@ -679,6 +679,15 @@ Return false to stop the player from using a bomb.
 |:--|:--|:--|:--|:--|
 |1021 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
 
+### MC_PRE_PLAYER_TAKE_DMG
+Runs earlier than MC_ENTITY_TAKE_DMG, and even if the player is considered invincible or has Holy Mantles.
+
+Only accepts returning false to cancel the damage. Good for giving the player invincibility that takes precedence over other damage negation effects, such as Holy Mantle.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1008 |MC_PRE_PLAYER_TAKE_DMG {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [PlayerVariant](PlayerVariant.md) | boolean |
+
 ### MC_PRE_REPLACE_SPRITESHEET
 Accepts a table of parameters: `{int LayerID, string PNGFilename}`
 

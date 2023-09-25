@@ -410,6 +410,32 @@ HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 	return unmodifiedTarget;
 }
 
+// PRE_PLAYER_TAKE_DMG
+// (Runs before holy mantle, etc)
+HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned long long damageFlags, EntityRef* source, int damageCountdown) -> bool) {
+	int callbackid = 1008;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackid)
+			.push(*this->GetVariant())
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(damage)
+			.push(damageFlags)
+			.push(source, lua::Metatables::ENTITY_REF)
+			.push(damageCountdown)
+			.call(1);
+
+		if (!lua_result && lua_isboolean(L, -1) && lua_toboolean(L, -1) == false) {
+			return false;
+		}
+	}
+
+	return super(damage, damageFlags, source, damageCountdown);
+}
+
 //PRE/POST_ENTITY_THROW (1040/1041)
 void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {
 	int callbackid = 1041;
