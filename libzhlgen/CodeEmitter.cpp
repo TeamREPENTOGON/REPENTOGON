@@ -299,7 +299,15 @@ void CodeEmitter::Emit(std::vector<Variable> const& vars) {
 void CodeEmitter::Dump() {
     std::set<std::string> pending;
     for (auto const& [name, type] : _types) {
-        std::cout << name << " => " << type.ToString(true) << std::endl;
+        std::cout << name << " => " << type.ToString(true) << " (size = ";
+        try {
+            std::cout << type.size();
+        }
+        catch (std::exception& e) {
+            std::cout << " ERROR";
+        }
+
+        std::cout << ")" << std::endl;
 
         if (!type.IsResolved()) {
             if (type.IsEmpty()) {
