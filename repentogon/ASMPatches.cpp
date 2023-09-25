@@ -155,7 +155,10 @@ void ASMPatchConsoleRunCommand() {
 
 	printf("[REPENTOGON] Patching Console::RunCommand Player requirement at %p\n", addr);
 
-	MEMORY_BASIC_INFORMATION info;
+	ASMPatch patch;
+	patch.AddBytes("\xeb");
+	sASMPatcher.FlatPatch(addr, &patch);
+	/* MEMORY_BASIC_INFORMATION info;
 	DWORD old_protect = SetPageMemoryRW(addr, &info);
 	DWORD _dummy;
 
@@ -167,7 +170,7 @@ void ASMPatchConsoleRunCommand() {
 
 	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
 
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0); */
 }
 
 /* * MC_PRE_LASER_COLLISION * *

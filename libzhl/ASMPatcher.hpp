@@ -71,8 +71,8 @@ public:
 	void* PatchAt(void* at, ASMPatch* with);
 	void* Patch(void* at, void* page, const char* with, size_t len);
 
-	void FlatPatch(void* at, ASMPatch* with);
-	void FlatPatch(void* at, const char* with, size_t len = 0);
+	void FlatPatch(void* at, ASMPatch* with, bool nopRest = false);
+	void FlatPatch(void* at, const char* with, size_t len = 0, bool nopRest = false);
 
 	static ptrdiff_t JumpOffset(const void* next, const void* target);
 	static std::unique_ptr<char[]> EncodeJump(const void* at, const void* target);

@@ -59,12 +59,12 @@ void* ASMPatcher::PatchAt(void* at, const char* with, size_t len) {
 	return Patch(at, targetPage, with, len);
 }
 
-void ASMPatcher::FlatPatch(void* at, ASMPatch* with) {
+void ASMPatcher::FlatPatch(void* at, ASMPatch* with, bool nopRest) {
 	std::unique_ptr<char[]> text = with->ToASM(at);
-	FlatPatch(at, text.get(), with->Length());
+	FlatPatch(at, text.get(), with->Length(), nopRest);
 }
 
-void ASMPatcher::FlatPatch(void* at, const char* with, size_t len) {
+void ASMPatcher::FlatPatch(void* at, const char* with, size_t len, bool nopRest) {
 	ZHL::Logger logger(true);
 	logger.Log("Flat patching at %p\n", at);
 
@@ -75,30 +75,32 @@ void ASMPatcher::FlatPatch(void* at, const char* with, size_t len) {
 	}
 
 	ProtectionGuard guard(at, PAGE_EXECUTE_READWRITE);
+	memcpy(at, with, len);
 
-	int32_t remaining = len;
-	ZyanU64 base = (ZyanU64)at;
-	unsigned char* basePtr = (unsigned char*)at;
-	while (remaining > 0) {
-		ZydisDisassembledInstruction instruction;
-		ZyanStatus status = ZydisDisassembleIntel(ZYDIS_MACHINE_MODE_LEGACY_32, (ZyanU64)base, basePtr, X86_LONGEST_INSTRUCTION_NBYTES, &instruction);
-		if (!ZYAN_SUCCESS(status)) {
-			std::ostringstream err;
-			err << "Unable to properly decode instruction at " << std::hex << at << "(Zyan status = " << status << "), base = " << base << ", basePtr = " << basePtr << ")" << std::endl;
-			logger.Log("[FATAL] %s\n", err.str().c_str());
-			throw std::runtime_error(err.str());
+	if (nopRest) {
+		int32_t remaining = len;
+		ZyanU64 base = (ZyanU64)at;
+		unsigned char* basePtr = (unsigned char*)at;
+		while (remaining > 0) {
+			ZydisDisassembledInstruction instruction;
+			ZyanStatus status = ZydisDisassembleIntel(ZYDIS_MACHINE_MODE_LEGACY_32, (ZyanU64)base, basePtr, X86_LONGEST_INSTRUCTION_NBYTES, &instruction);
+			if (!ZYAN_SUCCESS(status)) {
+				std::ostringstream err;
+				err << "Unable to properly decode instruction at " << std::hex << at << "(Zyan status = " << status << "), base = " << base << ", basePtr = " << basePtr << ")" << std::endl;
+				logger.Log("[FATAL] %s\n", err.str().c_str());
+				throw std::runtime_error(err.str());
+			}
+
+			ZyanU8 length = instruction.info.length;
+			remaining -= length;
+			basePtr += length;
+			base += length;
 		}
 
-		ZyanU8 length = instruction.info.length;
-		remaining -= length;
-		basePtr += length;
-		base += length;
-	}
-
-	memcpy(at, with, len);
-	// The patch breaks the last instruction: nop its remaining bytes
-	if (remaining < 0) {
-		memset(basePtr + remaining, 0x90, -remaining);
+		// The patch breaks the last instruction: nop its remaining bytes
+		if (remaining < 0) {
+			memset(basePtr + remaining, 0x90, -remaining);
+		}
 	}
 
 	expected = true;

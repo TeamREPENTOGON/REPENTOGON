@@ -180,7 +180,7 @@ namespace delirium {
 		buffer.AddString("\x33\xC0"); // xor eax, eax
 		ASMPatch patch(buffer);
 
-		sASMPatcher.FlatPatch(addr, &patch);
+		sASMPatcher.FlatPatch(addr, &patch, true);
 	}
 
 	void PatchCompanion() {
