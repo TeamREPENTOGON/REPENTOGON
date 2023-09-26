@@ -140,7 +140,7 @@ static void CreateDeliriumGetters(lua_State* L) {
 		{ "RemainingAttacks", lua_DeliriumGetRemainingAttacks },
 		{ "AttackID", lua_DeliriumGetAttackID },
 		{ "Cycle", lua_DeliriumGetCycle },
-		{ "State", lua_DeliriumGetState },
+		{ "StateD", lua_DeliriumGetState },
 		{ "Angle", lua_DeliriumGetAngle },
 		{ NULL, NULL }
 	};
@@ -156,7 +156,7 @@ static void CreateDeliriumSetters(lua_State* L) {
 		{ "RemainingAttacks", lua_DeliriumSetRemainingAttacks },
 		{ "AttackID", lua_DeliriumSetAttackID },
 		{ "Cycle", lua_DeliriumSetCycle },
-		{ "State", lua_DeliriumSetState },
+		{ "StateD", lua_DeliriumSetState },
 		{ "Angle", lua_DeliriumSetAngle },
 		{ NULL, NULL }
 	};
