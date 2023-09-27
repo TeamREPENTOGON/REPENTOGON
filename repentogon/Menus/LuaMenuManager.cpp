@@ -4,8 +4,6 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-#include "Log.h"
-
 static constexpr const char* MenuManagerMT = "MenuManager";
 static constexpr const char* StatsMenuMT = "StatsMenu";
 static constexpr const char* MainMenuMT = "MainMenu";
@@ -176,15 +174,11 @@ LUA_FUNCTION(Lua_MenuGetLerpColorModifier)
 	return 1;
 }
 
-
 static void MenuSetColorModifier(MenuManager* menu, ColorModState* newMod, bool lerp, float rate)
 {
-	ZHL::Logger logger;
-	logger.Log("newMod: %f %f %f %f %f %f\n", newMod->r, newMod->g, newMod->b, newMod->a, newMod->brightness, newMod->contrast);
-	menu->_targetColorModState = newMod;
+	menu->_targetColorModState = *newMod;
 	if (lerp) {
 		ColorModState lerp = (*newMod - menu->_currentColorModState);
-		ColorModState* oldMod = &menu->_currentColorModState;
 		lerp *= (rate / 2);
 		lerp.r = abs(lerp.r);
 		lerp.g = abs(lerp.g);
@@ -192,14 +186,12 @@ static void MenuSetColorModifier(MenuManager* menu, ColorModState* newMod, bool 
 		lerp.a = abs(lerp.a);
 		lerp.brightness = abs(lerp.brightness);
 		lerp.contrast = abs(lerp.contrast);
-		logger.Log("oldMod: %f %f %f %f %f %f\n", oldMod->r, oldMod->g, oldMod->b, oldMod->a, oldMod->brightness, oldMod->contrast);
+
 		menu->_lerpColorModState = lerp;
-		logger.Log("lerpColorModState: %f %f %f %f %f %f\n", menu->_lerpColorModState.r, menu->_lerpColorModState.g, menu->_lerpColorModState.b, menu->_lerpColorModState.a, menu->_lerpColorModState.brightness, menu->_lerpColorModState.contrast);
 		menu->_shouldLerpColorModState = true;
 	}
 	else {
-		menu->_currentColorModState = newMod;
-		logger.Log("currentColorModState: %f %f %f %f %f %f\n", menu->_currentColorModState.r, menu->_currentColorModState.g, menu->_currentColorModState.b, menu->_currentColorModState.a, menu->_currentColorModState.brightness, menu->_currentColorModState.contrast);
+		menu->_currentColorModState = *newMod;
 		menu->_shouldLerpColorModState = false;
 	}
 }

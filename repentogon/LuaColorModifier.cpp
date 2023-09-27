@@ -114,6 +114,63 @@ int Lua_SetContrast(lua_State* L)
 	return 0;
 }
 
+int Lua_ColorModState__eq(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* other = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+
+	lua_pushboolean(L, (*color == *other));
+	return 1;
+}
+
+int Lua_ColorModState__add(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* other = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	ColorModState result = *color + *other;
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, &result, sizeof(ColorModState));
+	return 1;
+}
+
+int Lua_ColorModState__sub(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState* other = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	ColorModState result = *color - *other;
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, &result, sizeof(ColorModState));
+	return 1;
+}
+
+
+int Lua_ColorModState__mul(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	ColorModState result = *color * (float)lua_tonumber(L, 2);
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, &result, sizeof(ColorModState));
+	return 1;
+}
+
+int Lua_ColorModState__div(lua_State* L)
+{
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	float amount = luaL_checknumber(L, 2);
+	if (amount == 0.0) {
+		return luaL_argerror(L, 2, "divide by zero");
+	}
+
+	ColorModState result = *color / amount;
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, &result, sizeof(ColorModState));
+	return 1;
+}
+
 static void RegisterColorModifier(lua_State* L) {
 
 	luaL_newmetatable(L, lua::metatables::ColorModifierMT);
@@ -199,6 +256,26 @@ static void RegisterColorModifier(lua_State* L) {
 	lua_pushcfunction(L, Lua_SetContrast);
 	lua_rawset(L, -3);
 
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__eq");
+	lua_pushcfunction(L, Lua_ColorModState__eq);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__add");
+	lua_pushcfunction(L, Lua_ColorModState__mul);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__sub");
+	lua_pushcfunction(L, Lua_ColorModState__mul);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__mul");
+	lua_pushcfunction(L, Lua_ColorModState__mul);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__div");
+	lua_pushcfunction(L, Lua_ColorModState__div);
 	lua_rawset(L, -3);
 
 	lua_register(L, "ColorModifier", Lua_CreateColorModifier);

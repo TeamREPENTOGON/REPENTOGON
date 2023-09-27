@@ -15,34 +15,16 @@ struct ColorModState {
 		return *this;
 	}
 	
-	ColorModState& operator=(ColorModState* other) {
-		r = other->r;
-		g = other->g;
-		b = other->b;
-		a = other->a;
-		brightness = other->brightness;
-		contrast = other->contrast;
-		return *this;
+	bool operator ==(ColorModState const& other) {
+		return r == other.r && g == other.g && b == other.b && a == other.a && brightness == other.brightness && contrast == other.contrast;
+	}	
+
+	ColorModState operator+(ColorModState const& other) {
+		return ColorModState(r + other.r, g + other.g, b + other.b, a + other.a, brightness + other.brightness, contrast + other.contrast);
 	}
 
-	ColorModState& operator-(ColorModState const& other) {
-		r -= other.r;
-		g -= other.g;
-		b -= other.b;
-		a -= other.a;
-		brightness -= other.brightness;
-		contrast -= other.contrast;
-		return *this;
-	}
-
-	ColorModState& operator-(ColorModState* other) {
-		r -= other->r;
-		g -= other->g;
-		b -= other->b;
-		a -= other->a;
-		brightness -= other->brightness;
-		contrast -= other->contrast;
-		return *this;
+	ColorModState operator-(ColorModState const& other) {
+		return ColorModState(r - other.r, g - other.g, b - other.b, a - other.a, brightness - other.brightness, contrast - other.contrast);
 	}
 
 	ColorModState& operator*=(float amount) {
@@ -54,6 +36,24 @@ struct ColorModState {
 		contrast *= amount;
 		return *this;
 	}
+	
+	ColorModState operator*(float amount) {
+		return ColorModState(r * amount, g * amount, b * amount, a * amount, brightness * amount, contrast * amount);
+	}	
+	
+	ColorModState& operator/=(float amount) {
+		r /= amount;
+		g /= amount;
+		b /= amount;
+		a /= amount;
+		brightness /= amount;
+		contrast /= amount;
+		return *this;
+	}
+
+	ColorModState operator/(float amount) {
+		return ColorModState(r / amount, g / amount, b / amount, a / amount, brightness / amount, contrast / amount);
+	}	
 
 	inline float* GetR() { return &this->r; }
 	inline float* GetG() { return &this->g; }
