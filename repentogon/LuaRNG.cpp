@@ -25,7 +25,7 @@ int Lua_RNGSetSeed(lua_State* L) {
 	return 0;
 }
 
-static int DoRandomInt(lua_State* L, RNG* rng) {
+static void DoRandomInt(lua_State* L, RNG* rng, int &result, bool &negative) {
 	int res = 0;
 	int arg1 = luaL_checkinteger(L, 2);
 
@@ -38,21 +38,29 @@ static int DoRandomInt(lua_State* L, RNG* rng) {
 		else
 		{
 			unsigned int interval = arg2 - arg1;
-			res = rng->RandomInt(interval + 1); // +1 make it inclusive like math.random
+			res = rng->RandomInt(interval + 1); // +1 to make it inclusive like math.random
 			res += arg1;
 		}
 	}
 	else {
 		res = rng->RandomInt(arg1);
+		negative = false;
 	}
 
-	return res;
+	result = res;
 }
 
 LUA_FUNCTION(Lua_RNG_RandomInt) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
-
-	lua_pushinteger(L, DoRandomInt(L, rng));
+	bool negative = true;
+	int result = 0;
+	DoRandomInt(L, rng, result, negative);
+	if (!negative) {
+		lua_pushinteger(L, (unsigned int)result);
+	}
+	else {
+		lua_pushinteger(L, result);
+	}
 	return 1;
 }
 
@@ -60,8 +68,15 @@ LUA_FUNCTION(Lua_RNG_PhantomInt) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
 	RNG copy;
 	memcpy(&copy, rng, sizeof(RNG));
-
-	lua_pushinteger(L, DoRandomInt(L, &copy));
+	bool negative = true;
+	int result = 0;
+	DoRandomInt(L, &copy, result, negative);
+	if (!negative) {
+		lua_pushinteger(L, (unsigned int)result);
+	}
+	else {
+		lua_pushinteger(L, result);
+	}
 	return 1;
 }
 
