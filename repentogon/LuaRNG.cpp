@@ -95,18 +95,15 @@ LUA_FUNCTION(Lua_RNG_RandomVector) {
 	Vector* result = Isaac::RandomUnitVector(result, rng->_seed);
 	rng->Next(); // we do it after calling bc the func increments the seed before use
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	memcpy(toLua, result, sizeof(Vector));
+	*toLua = *result;
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomVector) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
-	RNG copy;
-	memcpy(&copy, rng, sizeof(RNG));
-
-	Vector* result = Isaac::RandomUnitVector(result, copy._seed);
+	Vector* result = Isaac::RandomUnitVector(result, rng->_seed);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	memcpy(toLua, result, sizeof(Vector));
+	*toLua = *result;
 	return 1;
 }
 
