@@ -25,18 +25,43 @@ int Lua_RNGSetSeed(lua_State* L) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_RNG_PhantomInt) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
-	int max = luaL_checkinteger(L, 2);
-	if (max < 0) {
-		return luaL_error(L, "Invalid max parameter for PhantomInt: %d\n", max);
+static int DoRandomInt(lua_State* L, RNG* rng) {
+	int res = 0;
+	int arg1 = luaL_checkinteger(L, 2);
+
+	if (lua_gettop(L) == 3) {
+		int arg2 = luaL_checkinteger(L, 3);
+
+		if (arg1 > arg2) {
+			luaL_argerror(L, 1, "interval is empty");
+		}
+		else
+		{
+			unsigned int interval = arg2 - arg1;
+			res = rng->RandomInt(interval + 1); // +1 make it inclusive like math.random
+			res += arg1;
+		}
+	}
+	else {
+		res = rng->RandomInt(arg1);
 	}
 
+	return res;
+}
+
+LUA_FUNCTION(Lua_RNG_RandomInt) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+
+	lua_pushinteger(L, DoRandomInt(L, rng));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RNG_PhantomInt) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
 	RNG copy;
 	memcpy(&copy, rng, sizeof(RNG));
-	unsigned int result = copy.RandomInt(max);
 
-	lua_pushinteger(L, result);
+	lua_pushinteger(L, DoRandomInt(L, &copy));
 	return 1;
 }
 
@@ -55,6 +80,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "SetSeed", Lua_RNGSetSeed);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "RandomInt", Lua_RNG_RandomInt);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomInt", Lua_RNG_PhantomInt);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomFloat", Lua_RNG_PhantomFloat);
 }
