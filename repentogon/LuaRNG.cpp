@@ -90,6 +90,27 @@ LUA_FUNCTION(Lua_RNG_PhantomFloat) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RNG_RandomVector) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	Vector* result = Isaac::RandomUnitVector(result, rng->_seed);
+	rng->Next(); // we do it after calling bc the func increments the seed before use
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	memcpy(toLua, result, sizeof(Vector));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RNG_PhantomVector) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	RNG copy;
+	memcpy(&copy, rng, sizeof(RNG));
+
+	Vector* result = Isaac::RandomUnitVector(result, copy._seed);
+	copy.Next(); // we do it after calling bc the func increments the seed before use
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	memcpy(toLua, result, sizeof(Vector));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -98,4 +119,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, lua::Metatables::RNG, "RandomInt", Lua_RNG_RandomInt);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomInt", Lua_RNG_PhantomInt);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomFloat", Lua_RNG_PhantomFloat);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "RandomVector", Lua_RNG_RandomVector);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomVector", Lua_RNG_PhantomVector);
 }

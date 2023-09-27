@@ -19,6 +19,12 @@ ShiftIdx is now optional, with the default value set to 35.
 ___
 ## Functions 
 
+### Random·Vector () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RandomVector ( ) {: .copyable aria-label='Functions' }
+Returns a random vector with length `1`. Multiply this vector by a number for larger random vectors.
+
+___
+
 ### Phantom·Int () {: aria-label='Functions' }
 #### int PhantomInt ( int Max ) {: .copyable aria-label='Functions' }
 Behaves identically to RandomInt without advancing the internal state of the RNG object.
@@ -28,6 +34,14 @@ ___
 ### Phantom·Float () {: aria-label='Functions' }
 #### float PhantomFloat ( ) {: .copyable aria-label='Functions' }
 Generates a random float between 0 (inclusive) and 1 (exclusive).
+
+This does not adcance the internal state of the RNG object.
+
+___
+
+### Phantom·Vector () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RandomVector ( ) {: .copyable aria-label='Functions' }
+Returns a random vector with length `1`. Multiply this vector by a number for larger random vectors.
 
 This does not adcance the internal state of the RNG object.
 
