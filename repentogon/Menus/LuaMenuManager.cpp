@@ -139,6 +139,80 @@ static int Lua_SetSelectedMenuID(lua_State* L)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_MenuGetCurrentColorModifier)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	MenuManager* menuManager = g_MenuManager;
+	ColorModState* color = menuManager->GetCurrentColorModifier();
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, color, sizeof(ColorModState));
+
+	return 1;
+}
+LUA_FUNCTION(Lua_MenuGetTargetColorModifier)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	MenuManager* menuManager = g_MenuManager;
+	ColorModState* color = menuManager->GetTargetColorModifier();
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, color, sizeof(ColorModState));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_MenuGetLerpColorModifier)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	MenuManager* menuManager = g_MenuManager;
+	ColorModState* color = menuManager->GetLerpColorModifier();
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, color, sizeof(ColorModState));
+
+	return 1;
+}
+
+static void MenuSetColorModifier(MenuManager* menu, ColorModState* newMod, bool lerp, float rate)
+{
+	menu->_targetColorModState = *newMod;
+	if (lerp) {
+		ColorModState lerp = (*newMod - menu->_currentColorModState);
+		lerp *= (rate / 2);
+		lerp.r = abs(lerp.r);
+		lerp.g = abs(lerp.g);
+		lerp.b = abs(lerp.b);
+		lerp.a = abs(lerp.a);
+		lerp.brightness = abs(lerp.brightness);
+		lerp.contrast = abs(lerp.contrast);
+
+		menu->_lerpColorModState = lerp;
+		menu->_shouldLerpColorModState = true;
+	}
+	else {
+		menu->_currentColorModState = *newMod;
+		menu->_shouldLerpColorModState = false;
+	}
+}
+
+LUA_FUNCTION(Lua_MenuSetColorModifier)
+{
+	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	MenuManager* menuManager = g_MenuManager;
+	ColorModState* pColor = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	bool lerp = true;
+	if lua_isboolean(L, 3)
+		lerp = lua_toboolean(L, 3);
+	float rate = (float)luaL_optnumber(L, 4, 0.015);
+
+	// game func is inlined, gotta do it ourselves
+	MenuSetColorModifier(menuManager, pColor, lerp, rate);
+
+	return 0;
+}
+
+
 static void RegisterMenuManager(lua_State* L)
 {
 	lua_newtable(L);
@@ -147,6 +221,12 @@ static void RegisterMenuManager(lua_State* L)
 	lua::TableAssoc(L, "GetSelectWidgetSprite", Lua_MenuManager_GetSelectWidgetSprite);
 	lua::TableAssoc(L, "SetActiveMenu", Lua_SetSelectedMenuID);
 	lua::TableAssoc(L, "GetActiveMenu", Lua_GetSelectedMenuID);
+	
+	lua::TableAssoc(L, "GetCurrentColorModifier", Lua_MenuGetCurrentColorModifier);
+	lua::TableAssoc(L, "GetTargetColorModifier", Lua_MenuGetTargetColorModifier);
+	lua::TableAssoc(L, "GetColorModifierLerpAmount", Lua_MenuGetLerpColorModifier);
+	lua::TableAssoc(L, "SetColorModifier", Lua_MenuSetColorModifier);
+	
 	lua_setglobal(L, "MenuManager");
 }
 

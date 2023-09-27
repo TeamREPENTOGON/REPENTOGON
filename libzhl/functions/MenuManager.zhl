@@ -16,7 +16,7 @@ __thiscall void MenuManager::RenderButtonLayout();
 "558bec83ec08538b1d????????568b75":
 __thiscall void MenuManager::SetState(int estate);
 
-struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Vector, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods, GenericPopup, GenericPrompt) {
+struct MenuManager depends (KAGE_Graphics_Color, ColorModState, ANM2, Seeds, Vector, Menu_Game, Menu_Character, Menu_Title, Menu_Save, Menu_Challenge, Menu_DailyChallenge, Menu_Collection, Menu_Bestiary, Menu_Stats, Menu_Options, Menu_SpecialSeeds, Menu_ControllerSelect, Menu_KeyConfig, Menu_Cutscenes, Menu_CustomChallenge, Menu_Mods, GenericPopup, GenericPrompt) {
 {{
 	MenuManager()
 	{
@@ -40,6 +40,9 @@ struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Vector, Menu_Game,
 	inline Menu_Cutscenes* GetMenuCutscenes() {return &this->_menuCutscenes; }
 	inline Menu_CustomChallenge* GetMenuCustomChallenge() {return &this->_menuCustomChallenge; }
 	inline Menu_Mods* GetMenuMods() {return &this->_menuMods; }
+	inline ColorModState* GetCurrentColorModifier() { return &this->_currentColorModState; }
+	inline ColorModState* GetTargetColorModifier() { return &this->_targetColorModState; }
+	inline ColorModState* GetLerpColorModifier() { return &this->_lerpColorModState; }
 }} 
     int _state : 0x0;
     float _fadeOutProgress : 0x4;
@@ -61,7 +64,7 @@ struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Vector, Menu_Game,
     char ImageBase_EmptyScreenImage[8] : 0x4a0;
     char ImageBase_MenuOverlayImage[8] : 0x4a8;
     char ImageBase_UNUSED4b0[8] : 0x4b0;
-    Seeds _seedsObject : 0x4b8;  // ???
+    Seeds _seedsObject : 0x4b8;
     Menu_Title _menuTitle : 0x514;
     Menu_Save _menuSave : 0x634;
     GenericPrompt GenericPopup_genericPrompt : 0xcc8;
@@ -80,4 +83,9 @@ struct MenuManager depends (KAGE_Graphics_Color, ANM2, Seeds, Vector, Menu_Game,
     Menu_Bestiary _menuBestiary : 0x10da8c;
     Menu_CustomChallenge _menuCustomChallenge : 0x10de04;
     Menu_Mods _menuMods : 0x10df28;
+	bool _shouldLerpColorModState : 0x10e0dc; // 0x10e0dc
+	ColorModState _currentColorModState : 0x10e0e0; // 0x10e0e0
+	ColorModState _targetColorModState : 0x10e0f8; // 0x10e0f8
+	ColorModState _lerpColorModState : 0x10e110; // 0x10e110
+	ANM2 _flySprite : 0x10e138; //0x10e138
 } : 0x10e24c;

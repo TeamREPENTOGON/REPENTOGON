@@ -25,18 +25,58 @@ int Lua_RNGSetSeed(lua_State* L) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_RNG_PhantomInt) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
-	int max = luaL_checkinteger(L, 2);
-	if (max < 0) {
-		return luaL_error(L, "Invalid max parameter for PhantomInt: %d\n", max);
+static void DoRandomInt(lua_State* L, RNG* rng, int &result, bool &negative) {
+	int res = 0;
+	int arg1 = luaL_checkinteger(L, 2);
+
+	if (lua_gettop(L) == 3) {
+		int arg2 = luaL_checkinteger(L, 3);
+
+		if (arg1 > arg2) {
+			luaL_argerror(L, 1, "interval is empty");
+		}
+		else
+		{
+			unsigned int interval = arg2 - arg1;
+			res = rng->RandomInt(interval + 1); // +1 to make it inclusive like math.random
+			res += arg1;
+		}
+	}
+	else {
+		res = rng->RandomInt(arg1);
+		negative = false;
 	}
 
+	result = res;
+}
+
+LUA_FUNCTION(Lua_RNG_RandomInt) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	bool negative = true;
+	int result = 0;
+	DoRandomInt(L, rng, result, negative);
+	if (!negative) {
+		lua_pushinteger(L, (unsigned int)result);
+	}
+	else {
+		lua_pushinteger(L, result);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RNG_PhantomInt) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
 	RNG copy;
 	memcpy(&copy, rng, sizeof(RNG));
-	unsigned int result = copy.RandomInt(max);
-
-	lua_pushinteger(L, result);
+	bool negative = true;
+	int result = 0;
+	DoRandomInt(L, &copy, result, negative);
+	if (!negative) {
+		lua_pushinteger(L, (unsigned int)result);
+	}
+	else {
+		lua_pushinteger(L, result);
+	}
 	return 1;
 }
 
@@ -50,11 +90,31 @@ LUA_FUNCTION(Lua_RNG_PhantomFloat) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RNG_RandomVector) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	Vector* result = Isaac::RandomUnitVector(result, rng->_seed);
+	rng->Next(); // we do it after calling bc the func increments the seed before use
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *result;
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RNG_PhantomVector) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	Vector* result = Isaac::RandomUnitVector(result, rng->_seed);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *result;
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "SetSeed", Lua_RNGSetSeed);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "RandomInt", Lua_RNG_RandomInt);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomInt", Lua_RNG_PhantomInt);
 	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomFloat", Lua_RNG_PhantomFloat);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "RandomVector", Lua_RNG_RandomVector);
+	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomVector", Lua_RNG_PhantomVector);
 }

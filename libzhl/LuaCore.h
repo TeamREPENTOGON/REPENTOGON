@@ -168,7 +168,7 @@ namespace lua {
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* EntitySaveStateMT;
         extern LIBZHL_API const char* FXParamsMT;
-        extern LIBZHL_API const char* ColorCorrectionMT;
+        extern LIBZHL_API const char* ColorModifierMT;
         extern LIBZHL_API const char* BlendModeMT;
     }
 
