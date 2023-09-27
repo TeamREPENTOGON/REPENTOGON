@@ -110,9 +110,13 @@ HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 
 	lua_State* L = _state;
 	lua::LuaStackProtector protector(L);
-	lua_newtable(L);
+	lua_newtable(L); // Vector
 	// Metatable
-	lua_newtable(L);
+	lua_newtable(L); // Vector's metatable
+	// Restore the class field of the global Vector table's metatable
+	lua_pushstring(L, "__class");
+	lua::PushMetatable(L, lua::Metatables::VECTOR);
+	lua_rawset(L, -3);
 	luaL_Reg funcs[] = {
 		{ "__call", Lua_VectorT_Constructor },
 		{ "__index", Lua_VectorT_Globals },
