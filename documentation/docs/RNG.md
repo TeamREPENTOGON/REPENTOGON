@@ -1,12 +1,16 @@
 # Class "RNG"
 
+## Modified Functions
+
+### Random·Int () {: aria-label='Modified Functions' }
+#### int RandomInt ( int min, int max ) {: .copyable aria-label='Modified Functions' }
+Can now emulate `math.random` by accepting a second argument to generate a number between the first argument and it, inclusive. Negative values are usable in this mode and will properly generate a number between `min` and `max` regardless of sign.
+
 ## Functions 
 
 ### Phantom·Int () {: aria-label='Functions' }
 #### int PhantomInt ( int Max ) {: .copyable aria-label='Functions' }
-Generates a random integer between 0 (inclusive) and `Max` (exclusive). 
-
-This does not advance the internal state of the RNG object.
+Behaves identically to RandomInt without advancing the internal state of the RNG object.
 
 ___
 
