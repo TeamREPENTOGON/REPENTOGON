@@ -105,7 +105,6 @@ LUA_FUNCTION(Lua_RNG_PhantomVector) {
 	memcpy(&copy, rng, sizeof(RNG));
 
 	Vector* result = Isaac::RandomUnitVector(result, copy._seed);
-	copy.Next(); // we do it after calling bc the func increments the seed before use
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	memcpy(toLua, result, sizeof(Vector));
 	return 1;
