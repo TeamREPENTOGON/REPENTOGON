@@ -6,6 +6,17 @@
 #### int RandomInt ( int min, int max ) {: .copyable aria-label='Modified Functions' }
 Can now emulate `math.random` by accepting a second argument to generate a number between the first argument and it, inclusive. Negative values are usable in this mode and will properly generate a number between `min` and `max` regardless of sign.
 
+__
+
+### Set·Seed () {: aria-label='Modified Functions' }
+#### void SetSeed ( int Seed, int ShiftIdx = 35 ) {: .copyable aria-label='Modified Functions' }
+An error is now thrown if Seed is below 0.
+
+An error is now thrown if ShiftIdx is not between 0 and 80, inclusive.
+
+ShiftIdx is now optional, with the default value set to 35.
+
+___
 ## Functions 
 
 ### Phantom·Int () {: aria-label='Functions' }
@@ -18,18 +29,6 @@ ___
 #### float PhantomFloat ( ) {: .copyable aria-label='Functions' }
 Generates a random float between 0 (inclusive) and 1 (exclusive).
 
-This does not adcance the internal state of the RNG object
-
-___
-
-## Modified Functions
-
-### Set·Seed () {: aria-label='Modified Functions' }
-#### void SetSeed ( int Seed, int ShiftIdx = 35 ) {: .copyable aria-label='Modified Functions' }
-An error is now thrown if Seed is below 0.
-
-An error is now thrown if ShiftIdx is not between 0 and 80, inclusive.
-
-ShiftIdx is now optional, with the default value set to 35.
+This does not adcance the internal state of the RNG object.
 
 ___
