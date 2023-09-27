@@ -35,7 +35,7 @@ ___
 #### float PhantomFloat ( ) {: .copyable aria-label='Functions' }
 Generates a random float between 0 (inclusive) and 1 (exclusive).
 
-This does not adcance the internal state of the RNG object.
+This does not advance the internal state of the RNG object.
 
 ___
 
@@ -43,6 +43,6 @@ ___
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RandomVector ( ) {: .copyable aria-label='Functions' }
 Returns a random vector with length `1`. Multiply this vector by a number for larger random vectors.
 
-This does not adcance the internal state of the RNG object.
+This does not advance the internal state of the RNG object.
 
 ___
