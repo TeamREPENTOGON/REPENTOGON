@@ -104,6 +104,7 @@ struct Entity depends (AnimationState) {
     unsigned int _shadowSize : 0x150; //0x150   
     bool _dead : 0x168; 
     bool _visible : 0x169; // 0x169 
+    float _speedMultiplier : 0x2F4;
 
     __vtable {
         "558bec83ec308b45??f30f7e05":

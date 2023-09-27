@@ -210,6 +210,18 @@ LUA_FUNCTION(Lua_EntitySetPauseTime) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Entity_GetSpeedMultiplier) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushnumber(L, entity->_speedMultiplier);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Entity_SetSpeedMultiplier) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	entity->_speedMultiplier = luaL_checknumber(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -238,4 +250,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetHitListIndex", Lua_EntityGetHitListIndex);
 	lua::RegisterFunction(state, mt, "GetPauseTime", Lua_EntityGetPauseTime);
 	lua::RegisterFunction(state, mt, "SetPauseTime", Lua_EntitySetPauseTime);
+	lua::RegisterFunction(state, mt, "GetSpeedMultiplier", Lua_Entity_GetSpeedMultiplier);
+	lua::RegisterFunction(state, mt, "SetSpeedMultiplier", Lua_Entity_SetSpeedMultiplier);
 }

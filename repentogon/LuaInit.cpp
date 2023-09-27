@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "HookSystem.h"
 #include <iostream>
+#include <random>
 #include <sstream>
 #include <string>
 
@@ -265,6 +266,27 @@ HOOK_STATIC(Isaac, GetRoomEntities, (void* holder) -> void*, __cdecl) {
 	return res;
 }
 
+static std::uniform_real_distribution<float> _distrib(-1, 1);
+static std::random_device rd;
+static std::mt19937 gen(rd());
+
+LUA_FUNCTION(Lua_RandomFloat) {
+	lua_pushnumber(L, _distrib(gen));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ToRadians) {
+	float angle = luaL_checknumber(L, 1);
+	lua_pushnumber(L, angle * M_PI / 180.f);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ToDegrees) {
+	float angle = luaL_checknumber(L, 1);
+	lua_pushnumber(L, angle * 180.f / M_PI);
+	return 1;
+}
+
 HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	super();
 	printf("[REPENTOGON] Registering Lua functions and metatables\n");
@@ -276,4 +298,7 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	RegisterMetatables(state);
 	lua_register(state, "ExtractFunctions", LuaExtractFunctions);
 	lua_register(state, "Benchmark", LuaBenchmark);
+	lua_register(state, "RandomFloat", Lua_RandomFloat);
+	lua_register(state, "ToRadians", Lua_ToRadians);
+	lua_register(state, "ToDegrees", Lua_ToDegrees);
 }
