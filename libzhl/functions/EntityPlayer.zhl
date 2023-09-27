@@ -276,11 +276,12 @@ struct Entity_Player depends (ANM2) : public Entity { {{
     inline int* GetBagOfCraftingOutput() { return (int*)((char*)this + 0x1e4c); }
 	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
-	inline Entity_Player* GetBackupPlayer() { return *(Entity_Player**)((char*)this + 0x2574); }
+	inline Entity_Player* GetBackupPlayer() { return *(Entity_Player**)((char*)this + 0x1d84); }
     }}
 
 	ANM2 _heldSprite : 0xf48;
 	uint32_t _cacheFlags : 0x14b8;
+	Entity_Player* _backupPlayer : 0x1d84;
 	char _poopSpellQueue[6] : 0x1e54;
 	std_map_int_int _itemWispsList : 0x1e7c;
 } : 0x2580;
