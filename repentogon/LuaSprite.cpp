@@ -98,6 +98,7 @@ static int Lua_SpriteGetRenderFlags(lua_State* L)
 	lua_pushnumber(L, *anm2->GetRenderFlags());
 	return 1;
 }
+
 static int Lua_SpriteSetRenderFlags(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");

@@ -210,6 +210,28 @@ LUA_FUNCTION(Lua_Room_IsChampionBossSeed) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomColorModifierUpdate)
+{
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
+	bool process = true;
+	if lua_isboolean(L, 2)
+		process = lua_toboolean(L, 2);
+	bool lerp = true;
+	if lua_isboolean(L, 3)
+		lerp = lua_toboolean(L, 3);
+	float rate = (float)luaL_optnumber(L, 4, 0.015);
+
+	ColorModState* pColor;
+	if (process) {
+		pColor = &room->ComputeColorModifier();
+	} else {
+		pColor = room->GetFXParams()->GetColorModifier();
+	}
+
+	g_Game->SetColorModifier(pColor, lerp, rate);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -237,4 +259,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetPauseTimer", Lua_RoomSetPauseTimer);
 	lua::RegisterFunction(state, mt, "GetChampionBossChance", Lua_Room_GetBossChampionChance);
 	lua::RegisterFunction(state, mt, "IsChampionBossSeed", Lua_Room_IsChampionBossSeed);
+	lua::RegisterFunction(state, mt, "UpdateColorModifier", Lua_RoomColorModifierUpdate);
 }

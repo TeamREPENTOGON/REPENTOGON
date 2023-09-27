@@ -12,22 +12,21 @@ static int Lua_GetFXParams(lua_State* L) {
 	return 1;
 }
 
-// Color correction
-int Lua_GetColorCorrection(lua_State* L)
-{	
+int Lua_GetColorModifier(lua_State* L)
+{
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	ColorModState* color = params->GetColorCorrection();
-	ColorModState** toLua = (ColorModState**)lua_newuserdata(L, sizeof(ColorModState*));
-	*toLua = color;
-	luaL_setmetatable(L, lua::metatables::ColorCorrectionMT);
+	ColorModState* color = params->GetColorModifier();
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, color, sizeof(ColorModState));
 
 	return 1;
 }
 
-int Lua_SetColorCorrection(lua_State* L)
+int Lua_SetColorModifier(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetColorCorrection() = *lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorCorrectionMT);
+	*params->GetColorModifier() = *lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 
 	return 0;
 }
@@ -163,6 +162,10 @@ static void RegisterFXParams(lua_State* L) {
 	lua_pushstring(L, "__propget");
 	lua_newtable(L);
 
+	lua_pushstring(L, "ColorModifier");
+	lua_pushcfunction(L, Lua_GetColorModifier);
+	lua_rawset(L, -3);
+
 	lua_pushstring(L, "UseWaterV2");
 	lua_pushcfunction(L, Lua_GetWaterV2);
 	lua_rawset(L, -3);
@@ -197,6 +200,10 @@ static void RegisterFXParams(lua_State* L) {
 	lua_pushstring(L, "__propset");
 	lua_newtable(L);
 
+	lua_pushstring(L, "ColorModifier");
+	lua_pushcfunction(L, Lua_SetColorModifier);
+	lua_rawset(L, -3);
+
 	lua_pushstring(L, "UseWaterV2");
 	lua_pushcfunction(L, Lua_SetWaterV2);
 	lua_rawset(L, -3);
@@ -226,13 +233,6 @@ static void RegisterFXParams(lua_State* L) {
 	lua_rawset(L, -3);
 
 	lua_rawset(L, -3);
-
-	luaL_Reg functions[] = {
-	{ "GetColorCorrection", Lua_GetColorCorrection },
-	{ NULL, NULL }
-	};
-
-	luaL_setfuncs(L, functions, 0);
 
 	lua_pop(L, 1);
 

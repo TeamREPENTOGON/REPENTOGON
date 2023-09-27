@@ -161,6 +161,53 @@ LUA_FUNCTION(lua_GameIsErased) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GameGetCurrentColorModifier)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	ColorModState* color = game->GetCurrentColorModifier();
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, color, sizeof(ColorModState));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GameGetTargetColorModifier)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	ColorModState* color = game->GetTargetColorModifier();
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, color, sizeof(ColorModState));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GameGetLerpColorModifier)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	ColorModState* color = game->GetLerpColorModifier();
+	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+	memcpy(toLua, color, sizeof(ColorModState));
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GameSetColorModifier)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	ColorModState* pColor = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
+	bool lerp = true;
+	if lua_isboolean(L, 3)
+		lerp = lua_toboolean(L, 3);
+	float rate = (float)luaL_optnumber(L, 4, 0.015);
+
+	game->SetColorModifier(pColor, lerp, rate);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -184,5 +231,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
 	lua::RegisterFunction(state, mt, "StartStageTransition", lua_GameStartStageTransition);
 	lua::RegisterFunction(state, mt, "IsErased", lua_GameIsErased);
+	lua::RegisterFunction(state, mt, "GetCurrentColorModifier", Lua_GameGetCurrentColorModifier);
+	lua::RegisterFunction(state, mt, "GetTargetColorModifier", Lua_GameGetTargetColorModifier);
+	lua::RegisterFunction(state, mt, "GetColorModifierLerpAmount", Lua_GameGetLerpColorModifier);
+	lua::RegisterFunction(state, mt, "SetColorModifier", Lua_GameSetColorModifier);
 
 }

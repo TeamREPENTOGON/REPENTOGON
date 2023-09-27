@@ -78,7 +78,7 @@ int Lua_SetMode(lua_State* L)
 	return 0;
 }
 
-static void RegisterColorCorrection(lua_State* L) {
+static void RegisterBlendMode(lua_State* L) {
 	luaL_newmetatable(L, lua::metatables::BlendModeMT);
 	lua_pushstring(L, "__index");
 	lua_pushcfunction(L, lua::luabridge::indexMetaMethod);
@@ -146,5 +146,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	RegisterColorCorrection(state);
+	RegisterBlendMode(state);
 }

@@ -110,7 +110,7 @@ nav:
   - Capsule: Capsule.md
   - ChallengeParam: ChallengeParam.md
   - Color: Color.md
-  - ColorCorrection: ColorCorrection.md
+  - ColorModifier: ColorModifier.md
   - Console: Console.md
   - DailyChallenge: DailyChallenge.md
   - DebugRenderer: DebugRenderer.md
