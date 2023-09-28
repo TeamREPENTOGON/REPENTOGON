@@ -69,7 +69,7 @@ void ASMPatchAmbushWaveCount() {
 		.AddBytes("\x75\x07") // jne (current addr + 0x7)
 		.AddBytes("\xBB\x02").AddZeroes(3) // mov ebx, 2
 		.AddBytes("\xEB\x06") // jmp (current addr + 0x6);
-		.AddBytes(ptrMov) // mov ebx, dword ptr ds:[0xXXXXXXXX]
+		.AddBytes(ByteBuffer().AddAny(ptrMov, 6)) // mov ebx, dword ptr ds:[0xXXXXXXXX]
 		.AddRelativeJump((char*)addr + 0xB);
 	sASMPatcher.PatchAt(addr, &patch);
 }
