@@ -955,7 +955,7 @@ LUA_FUNCTION(Lua_PlayerRemovePoopSpell)
 
 LUA_FUNCTION(Lua_PlayerGetBackupPlayer) {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Entity_Player* backupPlayer = plr->GetBackupPlayer();
+	Entity_Player* backupPlayer = plr->_backupPlayer;
 
 	if (!backupPlayer) {
 		lua_pushnil(L);
@@ -1066,5 +1066,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetActiveWeaponNumFired", Lua_PlayerGetActiveWeaponNumFired);
 	lua::RegisterFunction(state, mt, "SetPoopSpell", Lua_PlayerSetPoopSpell);
 	lua::RegisterFunction(state, mt, "RemovePoopSpell", Lua_PlayerRemovePoopSpell);
-	//lua::RegisterFunction(state, mt, "GetBackupPlayer", Lua_PlayerGetBackupPlayer);
+	lua::RegisterFunction(state, mt, "GetFlippedForm", Lua_PlayerGetBackupPlayer);
 }

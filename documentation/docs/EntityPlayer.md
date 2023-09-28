@@ -152,6 +152,12 @@ ___
 #### int GetFireDelayModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Flipped·Form () {: aria-label='Functions' }
+#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) GetFlippedForm ( ) {: .copyable aria-label='Functions' }
+Returns flipped form of the current character (only used for Tainted Lazarus)
+
+Otherwise, returns nil
+___
 ### Get·Health·Type () {: aria-label='Functions' }
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
 
