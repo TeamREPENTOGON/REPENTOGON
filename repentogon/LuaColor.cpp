@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -91,6 +93,48 @@ static int Lua_ConstColorGetOffset(lua_State* L) {
 	return 1;
 }
 
+static void Lua_Color_ToString(lua_State* L, ColorMod* color) {
+	std::ostringstream s;
+	s << "[Color " << color->_tint[0] << " " << color->_tint[1] << " " << color->_tint[2] << " " << color->_tint[3] <<
+		" | Colorize " << color->_colorize[0] << " " << color->_colorize[1] << " " << color->_colorize[2] << " " << color->_colorize[3] <<
+		" | Offset " << color->_offset[0] << " " << color->_offset[1] << " " << color->_offset[2] << "]";
+	lua_pushstring(L, s.str().c_str());
+}
+
+LUA_FUNCTION(Lua_Color_ToString) {
+	ColorMod* mod = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::COLOR, "Color");
+	Lua_Color_ToString(L, mod);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ConstColor_ToString) {
+	ColorMod* mod = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
+	Lua_Color_ToString(L, mod);
+	return 1;
+}
+
+static void Lua_Color_Print(lua_State* L, ColorMod* color) {
+	std::ostringstream s;
+	s << "Color: " << color->_tint[0] << " " << color->_tint[1] << " " << color->_tint[2] << " " << color->_tint[3] << std::endl << 
+		"Colorize: " << color->_colorize[0] << " " << color->_colorize[1] << " " << color->_colorize[2] << " " << color->_colorize[3] << std::endl <<
+		"Offset: " << color->_offset[0] << " " << color->_offset[1] << " " << color->_offset[2];
+	lua_getglobal(L, "print");
+	lua_pushstring(L, s.str().c_str());
+	lua_pcall(L, 1, 0, NULL);
+}
+
+LUA_FUNCTION(Lua_Color_Print) {
+	ColorMod* mod = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::COLOR, "Color");
+	Lua_Color_Print(L, mod);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ConstColor_Print) {
+	ColorMod* mod = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
+	Lua_Color_Print(L, mod);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -101,8 +145,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetTint", Lua_ColorGetTint);
 	lua::RegisterFunction(state, mt, "GetColorize", Lua_ColorGetColorize);
 	lua::RegisterFunction(state, mt, "GetOffset", Lua_ColorGetOffset);
+	lua::RegisterFunction(state, mt, "__tostring", Lua_Color_ToString);
+	lua::RegisterFunction(state, mt, "Print", Lua_Color_Print);
 
 	lua::RegisterFunction(state, const_mt, "GetTint", Lua_ConstColorGetTint);
 	lua::RegisterFunction(state, const_mt, "GetColorize", Lua_ConstColorGetColorize);
 	lua::RegisterFunction(state, const_mt, "GetOffset", Lua_ConstColorGetOffset);
+	lua::RegisterFunction(state, const_mt, "__tostring", Lua_ConstColor_ToString);
+	lua::RegisterFunction(state, const_mt, "Print", Lua_ConstColor_Print);
 }
