@@ -19,13 +19,57 @@ struct ColorModState {
 		return r == other.r && g == other.g && b == other.b && a == other.a && brightness == other.brightness && contrast == other.contrast;
 	}	
 
+	ColorModState& operator+=(ColorModState const& other) {
+		r += other.r;
+		g += other.g;
+		b += other.b;
+		a += other.a;
+		brightness += other.brightness;
+		contrast += other.contrast;
+		return *this;
+	}
+	
+	ColorModState& operator+=(KColor const& other) {
+		r += other._red;
+		g += other._green;
+		b += other._blue;
+		a += other._alpha;
+		return *this;
+	}	
+
 	ColorModState operator+(ColorModState const& other) {
 		return ColorModState(r + other.r, g + other.g, b + other.b, a + other.a, brightness + other.brightness, contrast + other.contrast);
 	}
+	
+	ColorModState operator+(KColor const& other) {
+		return ColorModState(r + other._red, g + other._green, b + other._blue, a + other._alpha, brightness, contrast);
+	}	
+
+	ColorModState& operator-=(ColorModState const& other) {
+		r -= other.r;
+		g -= other.g;
+		b -= other.b;
+		a -= other.a;
+		brightness -= other.brightness;
+		contrast -= other.contrast;
+		return *this;
+	}
+	
+	ColorModState& operator-=(KColor const& other) {
+		r += other._red;
+		g += other._green;
+		b += other._blue;
+		a += other._alpha;
+		return *this;
+	}	
 
 	ColorModState operator-(ColorModState const& other) {
 		return ColorModState(r - other.r, g - other.g, b - other.b, a - other.a, brightness - other.brightness, contrast - other.contrast);
 	}
+
+	ColorModState operator-(KColor const& other) {
+		return ColorModState(r - other._red, g - other._green, b - other._blue, a - other._alpha, brightness, contrast);
+	}	
 
 	ColorModState& operator*=(float amount) {
 		r *= amount;
@@ -37,9 +81,23 @@ struct ColorModState {
 		return *this;
 	}
 	
+	ColorModState& operator*=(ColorModState const& other) {
+		r *= other.r;
+		g *= other.g;
+		b *= other.b;
+		a *= other.a;
+		brightness *= other.brightness;
+		contrast *= other.contrast;
+		return *this;
+	}	
+	
 	ColorModState operator*(float amount) {
 		return ColorModState(r * amount, g * amount, b * amount, a * amount, brightness * amount, contrast * amount);
-	}	
+	}
+	
+	ColorModState operator*(ColorModState const& other) {
+		return ColorModState(r * other.r, g * other.g, b * other.b, a * other.a, brightness * other.brightness, contrast * other.contrast);
+	}
 	
 	ColorModState& operator/=(float amount) {
 		r /= amount;

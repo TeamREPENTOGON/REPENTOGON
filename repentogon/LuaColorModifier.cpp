@@ -120,6 +120,7 @@ int Lua_ColorModState__eq(lua_State* L)
 	ColorModState* other = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
 
 	lua_pushboolean(L, (*color == *other));
+
 	return 1;
 }
 
@@ -131,6 +132,7 @@ int Lua_ColorModState__add(lua_State* L)
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
 	memcpy(toLua, &result, sizeof(ColorModState));
+
 	return 1;
 }
 
@@ -142,32 +144,47 @@ int Lua_ColorModState__sub(lua_State* L)
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
 	memcpy(toLua, &result, sizeof(ColorModState));
+
 	return 1;
 }
 
+int Lua_ColorModState__mul(lua_State* L) {
+	int t1 = lua_type(L, 1);
+	int t2 = lua_type(L, 2);
 
-int Lua_ColorModState__mul(lua_State* L)
-{
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	ColorModState result = *color * (float)lua_tonumber(L, 2);
-	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
-	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
-	memcpy(toLua, &result, sizeof(ColorModState));
-	return 1;
-}
-
-int Lua_ColorModState__div(lua_State* L)
-{
-	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	float amount = luaL_checknumber(L, 2);
-	if (amount == 0.0) {
-		return luaL_argerror(L, 2, "divide by zero");
+	if (t1 == LUA_TNUMBER) {
+		return luaL_error(L, "Cannot left multiply a ColorModifier with a number");
+	}
+	else if (t2 == LUA_TNUMBER) {
+		ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+		ColorModState result = *color * lua_tonumber(L, 2);
+		ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+		luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+		memcpy(toLua, &result, sizeof(ColorModState));
 	}
 
-	ColorModState result = *color / amount;
-	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
-	luaL_setmetatable(L, lua::metatables::ColorModifierMT);
-	memcpy(toLua, &result, sizeof(ColorModState));
+	return 1;
+}
+
+int Lua_ColorModState__div(lua_State* L) {
+	int t1 = lua_type(L, 1);
+	int t2 = lua_type(L, 2);
+
+	if (t1 == LUA_TNUMBER) {
+		return luaL_error(L, "Cannot left divide a ColorModifier with a number");
+	}
+	else if (t2 == LUA_TNUMBER) {
+		float div = lua_tonumber(L, 2);
+		if (div == 0) {
+			return luaL_error(L, "Divide by zero");
+		}
+		ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+		ColorModState result = *color / div;
+		ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
+		luaL_setmetatable(L, lua::metatables::ColorModifierMT);
+		memcpy(toLua, &result, sizeof(ColorModState));
+	}
+
 	return 1;
 }
 
@@ -258,36 +275,19 @@ static void RegisterColorModifier(lua_State* L) {
 
 	lua_rawset(L, -3);
 
-	lua_pushstring(L, "__eq");
-	lua_pushcfunction(L, Lua_ColorModState__eq);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "__add");
-	lua_pushcfunction(L, Lua_ColorModState__mul);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "__sub");
-	lua_pushcfunction(L, Lua_ColorModState__mul);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "__mul");
-	lua_pushcfunction(L, Lua_ColorModState__mul);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "__div");
-	lua_pushcfunction(L, Lua_ColorModState__div);
-	lua_rawset(L, -3);
-
 	lua_register(L, "ColorModifier", Lua_CreateColorModifier);
 
-	/*
 	luaL_Reg functions[] = {
-	{ "Update", Lua_ColorModifierUpdate },
+	{ "__eq",  Lua_ColorModState__eq },
+	{ "__add", Lua_ColorModState__add },
+	{ "__sub", Lua_ColorModState__sub },
+	{ "__mul", Lua_ColorModState__mul },
+	{ "__div", Lua_ColorModState__div },
 	{ NULL, NULL }
 	};
 
 	luaL_setfuncs(L, functions, 0);
-	*/
+	
 	lua_pop(L, 1);
 }
 
