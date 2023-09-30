@@ -154,13 +154,15 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 	
 	inline ProceduralItemManager* GetProceduralItemManager() {return (ProceduralItemManager*)((char*) this + 0x283c20); }
     
-	inline HUD* GetPlayerHUD(uint32_t playerId) { return (HUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
+	inline HUD* GetHUD() { return (HUD*)((char*)this + 0x3DA4C); }
+
+	inline PlayerHUD* GetPlayerHUD(uint32_t playerId) { return (PlayerHUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
 	
 	inline Minimap* GetMinimap() { return (Minimap*)((char*)this + 0x1a2ab0); }
 	
 	inline RoomTransition* GetRoomTransition() { return (RoomTransition*)((char*)this + 0x1b6c0); }
 
-        inline StageTransition* GetStageTransition() { return (StageTransition*)((char*)this + 0x1ba0c); }
+    inline StageTransition* GetStageTransition() { return (StageTransition*)((char*)this + 0x1ba0c); }
 	
 	inline DebugRenderer* GetDebugRenderer() { return (DebugRenderer*)((char*)this + 0x283bf8); }
 	
