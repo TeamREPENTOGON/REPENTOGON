@@ -13,12 +13,12 @@ ___
 #### [Sprite](../Sprite.md) GetBackWidgetSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Current·Color·Modifier () {: aria-label='Functions' }
-#### [ColorModifier](../ColorModifier.md) GetCurrentColorModifier ( ) {: .copyable aria-label='Functions' }
+### Get·Color·Modifier·Lerp·Amount () {: aria-label='Functions' }
+#### [ColorModifier](../ColorModifier.md) GetColorModifierLerpAmount ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Current·Color·Modifier·Lerp·Amount () {: aria-label='Functions' }
-#### [ColorModifier](../ColorModifier.md) GetCurrentColorModifierLerpAmount ( ) {: .copyable aria-label='Functions' }
+### Get·Current·Color·Modifier () {: aria-label='Functions' }
+#### [ColorModifier](../ColorModifier.md) GetCurrentColorModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Select·Widget·Sprite () {: aria-label='Functions' }

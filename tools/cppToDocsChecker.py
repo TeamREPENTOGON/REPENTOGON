@@ -20,9 +20,10 @@ ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp"]
 subFolders = [["Menu","menus"]]
 
 parentClass = {
-               "Ambush":"Game",
-               "AnimationData":"Sprite",
-               "Backdrop":"Room",
+               "Ambush": "Game",
+               "AnimationData": "Sprite",
+               "AnimationState": "Entity",
+               "Backdrop": "Room",
                "Camera": "Room",
                "Capsule": "Entity",
                "ChallengeParam": "Game",
@@ -62,8 +63,8 @@ def searchInDocFile(docFilePath, luaFunctions):
         docFile = open(docFilePath, 'r')
         for line in docFile:
             if "####" in line: # function header
-                filterLinks = re.sub("\]\([a-zA-z0-9\.\/:]*html\)", "", line)
-                filterMdLinks = re.sub("\]\(.*md\)", "", filterLinks).replace("[","")
+                filterLinks = re.sub("\]\([a-zA-Z0-9\.\/:]*html\)", "", line)
+                filterMdLinks = re.sub("\]\(.*md\)", "", filterLinks).replace("[const ","[").replace("[","")
                 filteredLine = filterMdLinks.split("####")[1].split("{:")[0].replace(")","").strip()
                 lineSplit = filteredLine.split(" (")
 

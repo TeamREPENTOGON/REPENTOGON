@@ -2,6 +2,13 @@
  
 ## Functions
 
+### __tostring () {: aria-label='Functions' }
+#### string __tostring ( ) {: .copyable aria-label='Functions' }
+Creates a string representation of the color object.
+
+This enables direct printing of the object by doing `print(myColorObj)`
+
+___
 ### Get·Colorize () {: aria-label='Functions' }
 #### table GetColorize ( ) {: .copyable aria-label='Functions' }
 Returns a table corresponding to the color's current Colorize values: `{R, G, B, A}`
@@ -17,6 +24,11 @@ ___
 ### Get·Tint () {: aria-label='Functions' }
 #### table GetTint ( ) {: .copyable aria-label='Functions' }
 Returns a table corresponding to the color's current Tint values: `{R, G, B, A}`
+
+___
+### Print () {: aria-label='Functions' }
+#### string Print ( ) {: .copyable aria-label='Functions' }
+Returns a string representation of the color object.
 
 ___
 

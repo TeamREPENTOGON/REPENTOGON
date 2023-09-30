@@ -219,7 +219,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
 	RegisterWeapon(state);
-	lua::Metatables mt = lua::Metatables::ENTITY_PLAYER;
-	lua::RegisterFunction(state, mt, "GetWeapon", Lua_PlayerGetWeapon);
+	lua::RegisterFunction(state, lua::Metatables::ENTITY_PLAYER, "GetWeapon", Lua_PlayerGetWeapon);
 	lua::RegisterFunction(state, lua::Metatables::ENTITY_FAMILIAR, "GetWeapon", Lua_FanGetWeapon);
 }
