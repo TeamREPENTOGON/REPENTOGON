@@ -373,12 +373,12 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 					if (lua_isstring(L, -2)) {
 						const std::string key = lua_tostring(L, -2);
 						if (key == "Damage" && lua_isnumber(L, -1)) {
-							float newDamage = lua_tonumber(L, -1);
+							float newDamage = (float) lua_tonumber(L, -1);
 							if (newDamage < 0) {
 								newDamage = 0;
 							}
 							if (isPlayer) {
-								*damageHearts = newDamage;
+								*damageHearts = (int) newDamage;
 							}
 							*damage = newDamage;
 						}
@@ -394,7 +394,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 							}
 						}*/
 						else if (key == "DamageCountdown" && lua_isnumber(L, -1)) {
-							*damageCountdown = lua_tonumber(L, -1);
+							*damageCountdown = (int) lua_tonumber(L, -1);
 						}
 					}
 					lua_pop(L, 1);

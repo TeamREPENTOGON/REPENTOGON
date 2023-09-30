@@ -1,4 +1,4 @@
-﻿#include <lua.hpp>
+#include <lua.hpp>
 #include <algorithm>
 
 #include "IsaacRepentance.h"
@@ -730,8 +730,8 @@ static int Lua_PlayerAddInnateCollectible(lua_State* L)
 	itemWispList.insert(luaL_checkinteger(L,2));
 	*/
 
-	const int collectibleID = luaL_checkinteger(L, 2);
-	const int amount = luaL_optinteger(L, 3, 1);
+	const int collectibleID = (int) luaL_checkinteger(L, 2);
+	const int amount = (int) luaL_optinteger(L, 3, 1);
 
 	ItemConfig itemConfig = g_Manager->_itemConfig;
 	ItemConfig_Item* item = itemConfig.GetCollectibles()[0][collectibleID];
@@ -919,8 +919,8 @@ LUA_FUNCTION(Lua_PlayerGetActiveWeaponNumFired)
 LUA_FUNCTION(Lua_PlayerSetPoopSpell)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	const int pos = luaL_checkinteger(L, 2);
-	const int spell = luaL_checkinteger(L, 3);
+	const int pos = (int) luaL_checkinteger(L, 2);
+	const int spell = (int) luaL_checkinteger(L, 3);
 
 	if (pos < 0 || pos > 5) {
 		return luaL_argerror(L, 2, "Invalid Poop Spell queue position");
@@ -938,7 +938,7 @@ LUA_FUNCTION(Lua_PlayerSetPoopSpell)
 LUA_FUNCTION(Lua_PlayerRemovePoopSpell)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	const int pos = luaL_optinteger(L, 2, 0);
+	const int pos = (int) luaL_optinteger(L, 2, 0);
 
 	if (pos < 0 || pos > 5) {
 		return luaL_argerror(L, 2, "Invalid Poop Spell queue position");

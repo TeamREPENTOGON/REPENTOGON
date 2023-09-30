@@ -27,10 +27,10 @@ int Lua_RNGSetSeed(lua_State* L) {
 
 static void DoRandomInt(lua_State* L, RNG* rng, int &result, bool &negative) {
 	int res = 0;
-	int arg1 = luaL_checkinteger(L, 2);
+	int arg1 = (int) luaL_checkinteger(L, 2);
 
 	if (lua_gettop(L) == 3) {
-		int arg2 = luaL_checkinteger(L, 3);
+		int arg2 = (int) luaL_checkinteger(L, 3);
 
 		if (arg1 > arg2) {
 			luaL_argerror(L, 1, "interval is empty");

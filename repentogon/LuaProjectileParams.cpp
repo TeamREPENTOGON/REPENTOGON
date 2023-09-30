@@ -10,7 +10,7 @@ LUA_FUNCTION(lua_ProjectileParams_GetDamage) {
 
 LUA_FUNCTION(lua_ProjectileParams_SetDamage) {
 	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 1, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
-	float damage = luaL_checknumber(L, 2);
+	float damage = (float) luaL_checknumber(L, 2);
 
 	if (damage < 0) {
 		return luaL_error(L, "Invalid damage value %f\n", damage);

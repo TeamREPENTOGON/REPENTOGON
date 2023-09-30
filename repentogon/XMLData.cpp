@@ -2755,7 +2755,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			a = "<music root=\"music/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </music>";
 		}
 		else if (a.find("<cuts") < 50) {
-			a = "<cutscenes root=\"gfx/\cutscenes/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </cutscenes>";
+			a = "<cutscenes root=\"gfx/cutscenes/\" xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </cutscenes>";
 		}
 		else if (a.find("<pock") < 50) {
 			a = "<pocketitems xmlerror=\"" + to_string(xmlerrors.size() - 1) + "\"> </pocketitems>";

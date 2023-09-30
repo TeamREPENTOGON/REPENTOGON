@@ -379,7 +379,7 @@ static void RegisterGetSubByName(lua_State* L) {
 }
 
 static int Lua_PlayCutscene(lua_State* L) {
-	int text = luaL_checknumber(L, 1);
+	int text = (int) luaL_checknumber(L, 1);
 	string out;
 	g_Game->GetConsole()->RunCommand("cutscene " + to_string(text),&out,NULL);
 	return 1;

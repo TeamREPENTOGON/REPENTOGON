@@ -60,7 +60,7 @@ int Lua_PickupSetNewOptionsPickupIndex(lua_State* L) {
 
 int Lua_PickupTryInitOptionCycle(lua_State* L) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	int numCycle = luaL_checkinteger(L, 2);
+	int numCycle = (int) luaL_checkinteger(L, 2);
 	lua_pushboolean(L, pickup->TryInitOptionCycle(numCycle));
 
 	return 1;

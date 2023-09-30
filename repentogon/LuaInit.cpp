@@ -276,13 +276,13 @@ LUA_FUNCTION(Lua_RandomFloat) {
 }
 
 LUA_FUNCTION(Lua_ToRadians) {
-	float angle = luaL_checknumber(L, 1);
+	float angle = (float) luaL_checknumber(L, 1);
 	lua_pushnumber(L, angle * M_PI / 180.f);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ToDegrees) {
-	float angle = luaL_checknumber(L, 1);
+	float angle = (float) luaL_checknumber(L, 1);
 	lua_pushnumber(L, angle * 180.f / M_PI);
 	return 1;
 }

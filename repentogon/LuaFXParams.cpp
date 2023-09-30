@@ -91,7 +91,7 @@ int Lua_GetShadowAlpha(lua_State* L)
 int Lua_SetShadowAlpha(lua_State* L)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetShadowAlpha() = lua_tonumber(L, 2);
+	*params->GetShadowAlpha() = (float) lua_tonumber(L, 2);
 	return 0;
 }
 

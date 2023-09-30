@@ -206,7 +206,7 @@ LUA_FUNCTION(Lua_EntityGetPauseTime) {
 
 LUA_FUNCTION(Lua_EntitySetPauseTime) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	*entity->GetPauseTime() = luaL_checkinteger(L, 2);
+	*entity->GetPauseTime() = (int) luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -218,7 +218,7 @@ LUA_FUNCTION(Lua_Entity_GetSpeedMultiplier) {
 
 LUA_FUNCTION(Lua_Entity_SetSpeedMultiplier) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	entity->_speedMultiplier = luaL_checknumber(L, 2);
+	entity->_speedMultiplier = (float) luaL_checknumber(L, 2);
 	return 0;
 }
 

@@ -72,7 +72,7 @@ static std::vector<Entity_Projectile*>& InitProjectileStorage() {
 
 static void ProjectileStorageToLua(lua_State* L, std::vector<Entity_Projectile*>& projectiles) {
 	lua_newtable(L);
-	for (int i = 0; i < projectiles.size(); ++i) {
+	for (size_t i = 0; i < projectiles.size(); ++i) {
 		lua_pushinteger(L, i + 1);
 		lua::luabridge::UserdataPtr::push(L, projectiles[i], lua::GetMetatableKey(lua::Metatables::ENTITY_PROJECTILE));
 		lua_rawset(L, -3);
@@ -86,7 +86,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Vector* velocity = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	uint32_t mode = luaL_checkinteger(L, 4);
+	uint32_t mode = (uint32_t) luaL_checkinteger(L, 4);
 
 	if (mode > 9) {
 		return luaL_error(L, "Invalid projectile mode %u\n", mode);
@@ -103,14 +103,14 @@ LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
 
 LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	int numProjectiles = luaL_checkinteger(L, 2);
+	int numProjectiles = (int) luaL_checkinteger(L, 2);
 
 	if (numProjectiles <= 0) {
 		return luaL_error(L, "Invalid amount of projectiles %d\n", numProjectiles);
 	}
 
 	Vector* targetPos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	float trajectoryModifier = luaL_checknumber(L, 4);
+	float trajectoryModifier = (float) luaL_checknumber(L, 4);
 	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
 
 	std::vector<Entity_Projectile*>& projectiles = InitProjectileStorage();
@@ -149,7 +149,7 @@ int Lua_NPCSetShieldStrength(lua_State* L)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
-	*npc->GetShieldStrength() = luaL_checknumber(L, 2);
+	*npc->GetShieldStrength() = (float) luaL_checknumber(L, 2);
 
 	return 1;
 }

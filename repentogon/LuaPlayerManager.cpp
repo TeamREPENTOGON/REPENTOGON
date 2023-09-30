@@ -130,7 +130,7 @@ LUA_FUNCTION(Lua_GetPlayers) {
 
 	lua_newtable(L);
 
-	for (int i = 0; i < players.size(); i++) {
+	for (size_t i = 0; i < players.size(); i++) {
 		lua_pushinteger(L, i + 1);
 		lua::luabridge::UserdataPtr::push(L, players[i], lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 		lua_rawset(L, -3);

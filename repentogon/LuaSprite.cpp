@@ -76,9 +76,9 @@ static int Lua_SpriteGetLayer(lua_State* L)
 		layerState = anm2->GetLayer(layerName);
 	}
 	else {
-		const int layerID = luaL_checkinteger(L, 2);
+		const int layerID = (const int) luaL_checkinteger(L, 2);
 		const unsigned int layerCount = anm2->GetLayerCount();
-		if (layerID >= 0 && layerID < layerCount) {
+		if (layerID >= 0 && (const unsigned int) layerID < layerCount) {
 			layerState = anm2->GetLayer(layerID);
 		}
 	}
@@ -102,7 +102,7 @@ static int Lua_SpriteGetRenderFlags(lua_State* L)
 static int Lua_SpriteSetRenderFlags(lua_State* L)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	*anm2->GetRenderFlags() = luaL_checknumber(L, 2);
+	*anm2->GetRenderFlags() = (unsigned int) luaL_checkinteger(L, 2);
 
 	return 0;
 }
@@ -112,10 +112,10 @@ static int Lua_SpriteSetOverlayFrame(lua_State* L)
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	if (lua_type(L, 2) == LUA_TSTRING) {
 		const char* animName = luaL_checkstring(L, 2);
-		anm2->SetOverlayFrame(animName, luaL_checkinteger(L, 3));
+		anm2->SetOverlayFrame(animName, (int) luaL_checkinteger(L, 3));
 	}
 	else {
-		anm2->SetOverlayFrame(luaL_checkinteger(L, 2));
+		anm2->SetOverlayFrame((int)luaL_checkinteger(L, 2));
 	}
 	return 0;
 }
@@ -286,7 +286,7 @@ static int Lua_LayerStateGetRenderFlags(lua_State* L)
 static int Lua_LayerStateSetRenderFlags(lua_State* L)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, LayerStateMT);
-	*layerState->GetRenderFlags() = luaL_checknumber(L, 2);
+	*layerState->GetRenderFlags() = (unsigned int) luaL_checkinteger(L, 2);
 
 	return 0;
 }

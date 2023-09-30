@@ -459,7 +459,7 @@ namespace GL {
 
 		static inline int CheckIntKey(lua_State* L) {
 			if (lua_isinteger(L, 2)) {
-				return lua_tointegerx(L, 2, NULL);
+				return (int) lua_tointegerx(L, 2, NULL);
 			}
 
 			return luaL_error(L, "Invalid type for row access");
@@ -560,7 +560,7 @@ namespace GL {
 				luaL_error(L, "Invalid type of assignment");
 			}
 
-			return lua_tonumber(L, 3);
+			return (float) lua_tonumber(L, 3);
 		}
 
 		static constexpr const char* ValueKey = "value";
@@ -1076,7 +1076,7 @@ namespace GL {
 
 		static int Lua_AddAttribute(lua_State* L) {
 			VertexDescriptor* descriptor = lua::GetUserdata<VertexDescriptor*>(L, 1, LuaRender::VertexDescriptorMT);
-			int type = luaL_checkinteger(L, 2);
+			int type = (int) luaL_checkinteger(L, 2);
 			if (type < 0 || type >= GLSLType::GLSL_MAX) {
 				return luaL_error(L, "Invalid attribute type %d", type);
 			}
@@ -1183,7 +1183,7 @@ namespace GL {
 		LUA_FUNCTION(Lua_index) {
 			Elements** ud = lua::GetUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
 			Elements* elements = *ud;
-			uint32_t index = luaL_checkinteger(L, 2);
+			uint32_t index = (uint32_t) luaL_checkinteger(L, 2);
 
 			try {
 				lua_pushinteger(L, elements->Get(index));
@@ -1198,8 +1198,8 @@ namespace GL {
 		LUA_FUNCTION(Lua_newindex) {
 			Elements** ud = lua::GetUserdata<Elements**>(L, 1, LuaRender::ElementsArrayMT);
 			Elements* elements = *ud;
-			uint32_t index = luaL_checkinteger(L, 2);
-			uint32_t value = luaL_checkinteger(L, 3);
+			uint32_t index = (uint32_t) luaL_checkinteger(L, 2);
+			uint32_t value = (uint32_t) luaL_checkinteger(L, 3);
 
 			try {
 				elements->Set(index, value);
@@ -1416,7 +1416,7 @@ namespace GL {
 
 		LUA_FUNCTION(Lua_GetVertex) {
 			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
-			(*buffer)->GetVertex(L, luaL_checkinteger(L, 2));
+			(*buffer)->GetVertex(L, (size_t) luaL_checkinteger(L, 2));
 			return 1;
 		}
 
@@ -1640,9 +1640,9 @@ namespace GL {
 
 		LUA_FUNCTION(Lua_NewPass) {
 			Pipeline* pipeline = lua::GetUserdata<Pipeline*>(L, 1, LuaRender::PipelineMT);
-			size_t nbVertices = luaL_checkinteger(L, 2);
+			size_t nbVertices = (size_t) luaL_checkinteger(L, 2);
 			Shader** shader = lua::GetUserdata<Shader**>(L, 3, LuaRender::ShaderMT);
-			size_t nbElements = luaL_checkinteger(L, 4);
+			size_t nbElements = (size_t) luaL_checkinteger(L, 4);
 
 			VertexBuffer* buffer = pipeline->NewPass(nbVertices, *shader, nbElements);
 			VertexBuffer** ud = (VertexBuffer**)lua_newuserdata(L, sizeof(buffer));
@@ -1770,7 +1770,7 @@ namespace GL {
 		}
 
 		void Push(lua_State* L, int index) {
-			if (index >= _context->size()) {
+			if ((size_t) index >= _context->size()) {
 				lua_pushnil(L);
 				lua_pushnil(L);
 				return;
@@ -1792,7 +1792,7 @@ namespace GL {
 				context->Push(L, 0);
 			}
 			else {
-				int index = luaL_checkinteger(L, 2);
+				int index = (int) luaL_checkinteger(L, 2);
 				context->Push(L, index + 1);
 			}
 			return 2;
@@ -1834,10 +1834,10 @@ namespace GL {
 		LUA_FUNCTION(Lua_SliceSingle) {
 			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
 			Shader** shader = lua::GetUserdata<Shader**>(L, 2, LuaRender::ShaderMT);
-			int nElements = luaL_checkinteger(L, 3);
+			int nElements = (int) luaL_checkinteger(L, 3);
 
-			int first = luaL_checkinteger(L, 4);
-			int second = luaL_optinteger(L, 5, -1);
+			int first = (int) luaL_checkinteger(L, 4);
+			int second = (int) luaL_optinteger(L, 5, -1);
 
 			if (second != -1 && second < first) {
 				return luaL_error(L, "Invalid slice range %d:%d", first, second);
@@ -2184,7 +2184,7 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 			switch (lua_type(L, -1)) {
 			case LUA_TNUMBER:
 			{
-				int retShaderId = lua_tointeger(L, -1);
+				int retShaderId = (int) lua_tointeger(L, -1);
 				if (retShaderId < 0 || retShaderId >= ShaderType::SHADER_MAX) {
 					if (retShaderId == -1)
 						break;
@@ -2333,25 +2333,25 @@ LUA_FUNCTION(Lua_Renderer_Pipeline) {
 }
 
 LUA_FUNCTION(Lua_Renderer_Vec2) {
-	float x = luaL_optnumber(L, 1, 0);
-	float y = luaL_optnumber(L, 2, 0);
+	float x = (float) luaL_optnumber(L, 1, 0);
+	float y = (float) luaL_optnumber(L, 2, 0);
 	lua::place<GL::GLVec2>(L, LuaRender::GLVec2MT, x, y);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_Renderer_Vec3) {
-	float x = luaL_optnumber(L, 1, 0);
-	float y = luaL_optnumber(L, 2, 0);
-	float z = luaL_optnumber(L, 3, 0);
+	float x = (float) luaL_optnumber(L, 1, 0);
+	float y = (float) luaL_optnumber(L, 2, 0);
+	float z = (float) luaL_optnumber(L, 3, 0);
 	lua::place<GL::GLVec3>(L, LuaRender::GLVec3MT, x, y, z);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_Renderer_Vec4) {
-	float x = luaL_optnumber(L, 1, 0);
-	float y = luaL_optnumber(L, 2, 0);
-	float z = luaL_optnumber(L, 3, 0);
-	float w = luaL_optnumber(L, 4, 0);
+	float x = (float) luaL_optnumber(L, 1, 0);
+	float y = (float) luaL_optnumber(L, 2, 0);
+	float z = (float) luaL_optnumber(L, 3, 0);
+	float w = (float) luaL_optnumber(L, 4, 0);
 	lua::place<GL::GLVec4>(L, LuaRender::GLVec4MT, x, y, z, w);
 	return 1;
 }

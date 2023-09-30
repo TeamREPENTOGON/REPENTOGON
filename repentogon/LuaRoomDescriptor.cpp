@@ -194,7 +194,7 @@ struct RoomDescriptor_SavedEntities {
 
 	LUA_FUNCTION(Lua_Get) {
 		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
-		int index = luaL_checkinteger(L, 2);
+		size_t index = (size_t) luaL_checkinteger(L, 2);
 
 		if (index < 0 || index >= ud->data->size()) {
 			return luaL_error(L, "Invalid index for Get(): %d\n", index);
@@ -208,14 +208,14 @@ struct RoomDescriptor_SavedEntities {
 
 	LUA_FUNCTION(Lua_GetByType) {
 		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
-		int type = luaL_checkinteger(L, 2);
-		int variant = luaL_optinteger(L, 3, 0);
-		int subtype = luaL_optinteger(L, 4, 0);
+		int type = (int) luaL_checkinteger(L, 2);
+		int variant = (int) luaL_optinteger(L, 3, 0);
+		int subtype = (int) luaL_optinteger(L, 4, 0);
 
 		lua_newtable(L);
 
 		int j = 1;
-		for (int i = 0; i < ud->data->size(); ++i) {
+		for (size_t i = 0; i < ud->data->size(); ++i) {
 			EntitySaveState const& st = (*ud->data)[i];
 			if (st.type == type && st.variant == variant && st.subtype == subtype) {
 				lua_pushinteger(L, j);

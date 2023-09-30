@@ -68,7 +68,6 @@ inline string stringlower(const char* str)
 
 inline void GameRestart() {
 	g_Manager->GetOptions()->Save();
-	char path[1024];
 	STARTUPINFO si = {};
 	PROCESS_INFORMATION pi = {};
 	LPSTR commandLine = GetCommandLine();

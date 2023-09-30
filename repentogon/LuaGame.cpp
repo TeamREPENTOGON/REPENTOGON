@@ -146,9 +146,9 @@ LUA_FUNCTION(lua_GameIsErased) {
 		}
 	}
 	else {
-		int type = luaL_checkinteger(L, 2);
-		int variant = luaL_optinteger(L, 3, -1);
-		int subtype = luaL_optinteger(L, 4, -1);
+		int type = (int) luaL_checkinteger(L, 2);
+		int variant = (int) luaL_optinteger(L, 3, -1);
+		int subtype = (int) luaL_optinteger(L, 4, -1);
 
 		if (game->IsErased(type, variant, subtype)) {
 			lua_pushinteger(L, 1);

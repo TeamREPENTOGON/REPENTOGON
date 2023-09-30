@@ -30,7 +30,7 @@ int Lua_GetR(lua_State* L)
 int Lua_SetR(lua_State* L)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetR() = lua_tonumber(L, 2);
+	*color->GetR() = (float) lua_tonumber(L, 2);
 	return 0;
 }
 
@@ -46,7 +46,7 @@ int Lua_GetG(lua_State* L)
 int Lua_SetG(lua_State* L)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetG() = lua_tonumber(L, 2);
+	*color->GetG() = (float) lua_tonumber(L, 2);
 	return 0;
 }
 
@@ -62,7 +62,7 @@ int Lua_GetB(lua_State* L)
 int Lua_SetB(lua_State* L)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetB() = lua_tonumber(L, 2);
+	*color->GetB() = (float) lua_tonumber(L, 2);
 	return 0;
 }
 
@@ -78,7 +78,7 @@ int Lua_GetA(lua_State* L)
 int Lua_SetA(lua_State* L)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetA() = lua_tonumber(L, 2);
+	*color->GetA() = (float) lua_tonumber(L, 2);
 	return 0;
 }
 
@@ -94,7 +94,7 @@ int Lua_GetBrightness(lua_State* L)
 int Lua_SetBrightness(lua_State* L)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetBrightness() = lua_tonumber(L, 2);
+	*color->GetBrightness() = (float) lua_tonumber(L, 2);
 	return 0;
 }
 
@@ -110,7 +110,7 @@ int Lua_GetContrast(lua_State* L)
 int Lua_SetContrast(lua_State* L)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetContrast() = lua_tonumber(L, 2);
+	*color->GetContrast() = (float) lua_tonumber(L, 2);
 	return 0;
 }
 
@@ -174,7 +174,7 @@ int Lua_ColorModState__div(lua_State* L) {
 		return luaL_error(L, "Cannot left divide a ColorModifier with a number");
 	}
 	else if (t2 == LUA_TNUMBER) {
-		float div = lua_tonumber(L, 2);
+		float div = (float) lua_tonumber(L, 2);
 		if (div == 0) {
 			return luaL_error(L, "Divide by zero");
 		}

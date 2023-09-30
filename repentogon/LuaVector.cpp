@@ -5,8 +5,8 @@
 static void* VectorKey = nullptr;
 
 LUA_FUNCTION(Lua_VectorT_Constructor) {
-	float x = luaL_checknumber(L, 2);
-	float y = luaL_checknumber(L, 3);
+	float x = (float) luaL_checknumber(L, 2);
+	float y = (float) luaL_checknumber(L, 3);
 
 	Vector vec(x, y);
 	lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, vec);
@@ -16,7 +16,7 @@ LUA_FUNCTION(Lua_VectorT_Constructor) {
 static Vector Zero(0, 0), One(1, 1);
 
 LUA_FUNCTION(Lua_VectorT_FromAngle) {
-	float angle = luaL_checknumber(L, 1) * M_PI / 180;
+	float angle = (float) (luaL_checknumber(L, 1) * M_PI / 180);
 	Vector vec(cos(angle), sin(angle));
 	lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, vec);
 	return 1;
@@ -46,13 +46,13 @@ LUA_FUNCTION(Lua_VectorUD_metamul) {
 	int t2 = lua_type(L, 2);
 
 	if (t1 == LUA_TNUMBER) {
-		float mult = lua_tonumber(L, 1);
+		float mult = (float) lua_tonumber(L, 1);
 		Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector result(mult * vector->x, mult * vector->y);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
 	else if (t2 == LUA_TNUMBER) {
-		float mult = lua_tonumber(L, 2);
+		float mult = (float) lua_tonumber(L, 2);
 		Vector* vector = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector result(mult * vector->x, mult * vector->y);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
@@ -78,7 +78,7 @@ LUA_FUNCTION(Lua_VectorUD_metadiv) {
 		return luaL_error(L, "Cannot left multiply a Vector with a number");
 	}
 	else if (t2 == LUA_TNUMBER) {
-		float div = lua_tonumber(L, 2);
+		float div = (float) lua_tonumber(L, 2);
 		if (div == 0) {
 			return luaL_error(L, "Divide by zero");
 		}

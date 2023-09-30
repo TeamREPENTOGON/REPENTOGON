@@ -1536,7 +1536,7 @@ HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
 				}
 			}
 			else if (lua_isinteger(L, -1)) {
-				Seed = lua_tointeger(L, -1);
+				Seed = (unsigned int)lua_tointeger(L, -1);
 			}
 		}
 	}
@@ -2753,7 +2753,7 @@ HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
 
 			if (!result) {
 				if (lua_isinteger(L, -1)) {
-					return (lua_tointeger(L, -1));
+					return ((int)lua_tointeger(L, -1));
 				}
 			}
 		}

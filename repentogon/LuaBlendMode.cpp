@@ -16,7 +16,7 @@ int Lua_GetFlag1(lua_State* L)
 int Lua_SetFlag1(lua_State* L)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	*mode->GetFlag1() = lua_tointeger(L, 2);
+	*mode->GetFlag1() = (unsigned int) lua_tointeger(L, 2);
 	return 0;
 }
 
@@ -32,7 +32,7 @@ int Lua_GetFlag2(lua_State* L)
 int Lua_SetFlag2(lua_State* L)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	*mode->GetFlag2() = lua_tointeger(L, 2);
+	*mode->GetFlag2() = (unsigned int) lua_tointeger(L, 2);
 	return 0;
 }
 
@@ -48,7 +48,7 @@ int Lua_GetFlag3(lua_State* L)
 int Lua_SetFlag3(lua_State* L)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	*mode->GetFlag3() = lua_tointeger(L, 2);
+	*mode->GetFlag3() = (unsigned int) lua_tointeger(L, 2);
 	return 0;
 }
 
@@ -64,14 +64,14 @@ int Lua_GetFlag4(lua_State* L)
 int Lua_SetFlag4(lua_State* L)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	*mode->GetFlag4() = lua_tointeger(L, 2);
+	*mode->GetFlag4() = (unsigned int) lua_tointeger(L, 2);
 	return 0;
 }
 
 int Lua_SetMode(lua_State* L)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	unsigned int newMode = (unsigned int)lua_tonumber(L, 2);
+	unsigned int newMode = (unsigned int) lua_tonumber(L, 2);
 
 	//invalid modes are simply ignored
 	mode->SetMode(newMode);

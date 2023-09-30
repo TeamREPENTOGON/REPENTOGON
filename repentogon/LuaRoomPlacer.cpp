@@ -10,7 +10,7 @@ static int Lua_LevelPlaceRoom(lua_State* L) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Game");
 	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 2, RoomPlacerMT);
 	RoomConfig* config = lua::GetUserdata<RoomConfig*>(L, 3, lua::Metatables::CONST_ROOM_CONFIG_ROOM, "RoomConfig");
-	uint32_t seed = luaL_checkinteger(L, 4);
+	uint32_t seed = (uint32_t) luaL_checkinteger(L, 4);
 
 	bool result = game->PlaceRoom(room, config, seed, 0);
 	lua_pushboolean(L, result);
@@ -31,19 +31,19 @@ static int Lua_LevelPlaceRoom(lua_State* L) {
 
 static int Lua_RoomPlacerSetColIdx(lua_State* L) {
 	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 1, RoomPlacerMT);
-	room->_gridColIdx = luaL_checkinteger(L, 2);
+	room->_gridColIdx = (unsigned int) luaL_checkinteger(L, 2);
 	return 0;
 }
 
 static int Lua_RoomPlacerSetLineIdx(lua_State* L) {
 	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 1, RoomPlacerMT);
-	room->_gridLineIdx = luaL_checkinteger(L, 2);
+	room->_gridLineIdx = (unsigned int) luaL_checkinteger(L, 2);
 	return 0;
 }
 
 static int Lua_RoomPlacerSetAllowedDoors(lua_State* L) {
 	LevelGenerator_Room* room = lua::GetUserdata<LevelGenerator_Room*>(L, 1, RoomPlacerMT);
-	room->_doors = luaL_checkinteger(L, 2);
+	room->_doors = (unsigned int) luaL_checkinteger(L, 2);
 	return 0;
 }
 

@@ -61,7 +61,7 @@ LUA_FUNCTION(Lua_PlayerHUDGetHearts) {
 
 LUA_FUNCTION(Lua_PlayerHUDGetHeartByIndex) {
 	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
-	int index = luaL_checkinteger(L, 2); 
+	int index = (int) luaL_checkinteger(L, 2); 
 	if (index < 0 || index > 23) { 
 		return luaL_error(L, "Invalid index: %d", index);
 	} 

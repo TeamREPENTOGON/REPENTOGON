@@ -139,7 +139,7 @@ static int lua_RoomGetRail(lua_State* L) {
 		return luaL_error(L, "Invalid grind index %lld\n", index);
 	}
 
-	lua_pushinteger(L, room->GetRailType(index));
+	lua_pushinteger(L, room->GetRailType((uint8_t) index));
 
 	return 1;
 }
@@ -157,7 +157,7 @@ static int lua_RoomSetRail(lua_State* L) {
 		return luaL_error(L, "Invalid rail type %lld\n", index);
 	}
 
-	room->SetRailType(index, (RailType)rail);
+	room->SetRailType((uint8_t) index, (RailType)rail);
 
 	return 0;
 }
@@ -193,7 +193,7 @@ int Lua_RoomGetGridIndexByTile(lua_State* L)
 int Lua_RoomSetPauseTimer(lua_State* L)
 {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, RoomMT);
-	room->SetPauseTimer(luaL_checkinteger(L, 2));
+	room->SetPauseTimer((int) luaL_checkinteger(L, 2));
 
 	return 0;
 }

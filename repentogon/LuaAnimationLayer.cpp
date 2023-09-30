@@ -32,7 +32,7 @@ static int Lua_AnimationLayerGetFrame(lua_State* L)
 		return 1;
 	}
 
-	int frame = luaL_checkinteger(L, 2);
+	int frame = (int) luaL_checkinteger(L, 2);
 
 	if (frame < 0) {
 		frame = 0;
