@@ -30,7 +30,7 @@ parentClass = {
                "Console":"Game",
                "DailyChallenge":"Isaac",
                "DebugRenderer":"Game,Entity,Shape",
-               "EntityPlayer":"PocketItem",
+               "EntityPlayer":"PocketItem,MultiShotParams",
                "EntitySlot":"Entity",
                "FXParams": "Room",
                "GridEntity":"Isaac,GridEntityRock",
@@ -97,7 +97,7 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
         continue
 
     print(os.path.abspath(file))
-    cppFile = open(os.path.abspath(file), 'r')
+    cppFile = open(os.path.abspath(file), 'r', encoding="utf-8")
 
     className = ""
     luaFunctions = []

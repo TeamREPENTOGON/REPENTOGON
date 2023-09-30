@@ -2770,7 +2770,7 @@ HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
 	return 0;
 }
 
-//PLAYER_POST_GET_MULTI_SHOT_PARAMS (1251)
+//MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)
 HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, int weaponType) -> Weapon_MultiShotParams*) {
 	params = super(params, weaponType);
 	int callbackid = 1251;

@@ -237,7 +237,7 @@ static void RegisterMultiShotParams(lua_State* L) {
 	lua::TableAssoc(L, "GetSpreadAngleLaser", Lua_MultiShotParamsGetSpreadAngleLaser);
 	lua::TableAssoc(L, "GetSpreadAngleTechX", Lua_MultiShotParamsGetSpreadAngleTechX);
 	lua::TableAssoc(L, "GetSpreadAngleKnife", Lua_MultiShotParamsGetSpreadAngleKnife);
-	lua::TableAssoc(L, "GetNumEyes", Lua_MultiShotParamsGetNumEyesActive);
+	lua::TableAssoc(L, "GetNumEyesActive", Lua_MultiShotParamsGetNumEyesActive);
 	lua::TableAssoc(L, "GetMultiEyeAngle", Lua_MultiShotParamsGetMultiEyeAngle);
 	lua::TableAssoc(L, "IsCrossEyed", Lua_MultiShotParamsGetIsCrossEyed);
 	lua::TableAssoc(L, "IsShootingBackwards", Lua_MultiShotParamsGetIsShootingBackwards);
