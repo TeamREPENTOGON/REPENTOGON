@@ -42,7 +42,7 @@ __thiscall void Entity_Player::AddCoins(int amount);
 static cleanup PosVel Entity_Player::GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
 
 "558bec83e4f883ec148b45??53568bf133c9":
-Weapon_MultiShotParams Entity_Player::GetMultiShotParams(WeaponType weaponType);
+Weapon_MultiShotParams* Entity_Player::GetMultiShotParams(Weapon_MultiShotParams* params, int weaponType);
 
 "558bec83e4f883ec0c53568bf18b0d":
 __thiscall Entity_Player* Entity_Player::InitTwin(int playerType); //replace with ePlayerType later

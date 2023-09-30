@@ -1,4 +1,4 @@
-#include <lua.hpp>
+﻿#include <lua.hpp>
 #include <algorithm>
 
 #include "IsaacRepentance.h"
@@ -20,7 +20,6 @@
  (copycat of kilburn's ascii art of Isaac)
 */
 
-static constexpr const char* MultiShotParamsMT = "MultiShotParams";
 static constexpr const char* PocketItemMT = "PocketItem";
 
 std::map<int, int> fakeItems;
@@ -33,7 +32,7 @@ int Lua_GetMultiShotPositionVelocity(lua_State* L) // This *should* be in the AP
 	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::ENTITY, "Vector");
 	float shotSpeed = (float)luaL_checknumber(L, 5);
 
-	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, MultiShotParamsMT);
+	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, lua::metatables::MultiShotParamsMT);
 	if (multiShotParams->numTears < loopIndex) {
 		luaL_argerror(L, 2, "LoopIndex cannot be higher than MultiShotParams.NumTears");
 	};
@@ -47,18 +46,178 @@ static int Lua_GetMultiShotParams(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int weaponType = (int)luaL_checkinteger(L, 2);
 	Weapon_MultiShotParams* ud = (Weapon_MultiShotParams*)lua_newuserdata(L, sizeof(Weapon_MultiShotParams));
-	*ud = player->GetMultiShotParams((WeaponType)weaponType);
-	luaL_setmetatable(L, MultiShotParamsMT);
+	ud = player->GetMultiShotParams(ud, (WeaponType)weaponType);
+	luaL_setmetatable(L, lua::metatables::MultiShotParamsMT);
 	return 1;
 }
 
 static int Lua_MultiShotParamsGetNumTears(lua_State* L) {
-	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, MultiShotParamsMT);
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
 
 	lua_pushinteger(L, params->numTears);
-
 	return 1;
-};
+}
+
+static int Lua_MultiShotParamsSetNumTears(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->numTears = (int) luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetNumLanesPerEye(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushinteger(L, params->numLanesPerEye);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetNumLanesPerEye(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->numLanesPerEye = (unsigned int) luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetSpreadAngleTears(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushnumber(L, params->spreadAngleTears);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetSpreadAngleTears(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->spreadAngleTears = (float) luaL_checknumber(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetSpreadAngleLaser(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushnumber(L, params->spreadAngleLaser);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetSpreadAngleLaser(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->spreadAngleLaser = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetSpreadAngleTechX(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushnumber(L, params->speadAngleTechX);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetSpreadAngleTechX(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->speadAngleTechX = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetSpreadAngleKnife(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushnumber(L, params->spreadAngleKnife);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetSpreadAngleKnife(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->spreadAngleKnife = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetNumEyesActive(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushinteger(L, params->numEyesActive);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetNumEyesActive(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->numEyesActive = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetMultiEyeAngle(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushnumber(L, params->multiEyeAngle);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetMultiEyeAngle(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->multiEyeAngle = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetIsCrossEyed(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushboolean(L, params->isCrossEyed);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetIsCrossEyed(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->isCrossEyed = lua_toboolean(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetIsShootingBackwards(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushboolean(L, params->isShootingBackwards);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetIsShootingBackwards(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->isShootingBackwards = lua_toboolean(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetIsShootingSideways(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushboolean(L, params->isShootingSideways);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetIsShootingSideways(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->isShootingSideways = lua_toboolean(L, 2);
+	return 0;
+}
+
+static int Lua_MultiShotParamsGetNumRandomDirTears(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	lua_pushinteger(L, params->numRandomDirTears);
+	return 1;
+}
+
+static int Lua_MultiShotParamsSetNumRandomDirTears(lua_State* L) {
+	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+
+	params->numRandomDirTears = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
 
 static void RegisterMultiShotParams(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
@@ -67,14 +226,36 @@ static void RegisterMultiShotParams(lua_State* L) {
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 
-	luaL_newmetatable(L, MultiShotParamsMT);
+	luaL_newmetatable(L, lua::metatables::MultiShotParamsMT);
 	lua_pushstring(L, "__index");
 	lua_pushvalue(L, -2);
 	lua_settable(L, -3);
 
-	lua_pushstring(L, "GetNumTears");
-	lua_pushcfunction(L, Lua_MultiShotParamsGetNumTears);
-	lua_rawset(L, -3);
+	lua::TableAssoc(L, "GetNumTears", Lua_MultiShotParamsGetNumTears);
+	lua::TableAssoc(L, "GetNumLanesPerEye", Lua_MultiShotParamsGetNumLanesPerEye);
+	lua::TableAssoc(L, "GetSpreadAngleTears", Lua_MultiShotParamsGetSpreadAngleTears);
+	lua::TableAssoc(L, "GetSpreadAngleLaser", Lua_MultiShotParamsGetSpreadAngleLaser);
+	lua::TableAssoc(L, "GetSpreadAngleTechX", Lua_MultiShotParamsGetSpreadAngleTechX);
+	lua::TableAssoc(L, "GetSpreadAngleKnife", Lua_MultiShotParamsGetSpreadAngleKnife);
+	lua::TableAssoc(L, "GetNumEyes", Lua_MultiShotParamsGetNumEyesActive);
+	lua::TableAssoc(L, "GetMultiEyeAngle", Lua_MultiShotParamsGetMultiEyeAngle);
+	lua::TableAssoc(L, "IsCrossEyed", Lua_MultiShotParamsGetIsCrossEyed);
+	lua::TableAssoc(L, "IsShootingBackwards", Lua_MultiShotParamsGetIsShootingBackwards);
+	lua::TableAssoc(L, "IsShootingSideways", Lua_MultiShotParamsGetIsShootingSideways);
+	lua::TableAssoc(L, "GetNumRandomDirTears", Lua_MultiShotParamsGetNumRandomDirTears);
+
+	lua::TableAssoc(L, "SetNumTears", Lua_MultiShotParamsSetNumTears);
+	lua::TableAssoc(L, "SetNumLanesPerEye", Lua_MultiShotParamsSetNumLanesPerEye);
+	lua::TableAssoc(L, "SetSpreadAngleTears", Lua_MultiShotParamsSetSpreadAngleTears);
+	lua::TableAssoc(L, "SetSpreadAngleLaser", Lua_MultiShotParamsSetSpreadAngleLaser);
+	lua::TableAssoc(L, "SetSpreadAngleTechX", Lua_MultiShotParamsSetSpreadAngleTechX);
+	lua::TableAssoc(L, "SetSpreadAngleKnife", Lua_MultiShotParamsSetSpreadAngleKnife);
+	lua::TableAssoc(L, "SetNumEyesActive", Lua_MultiShotParamsSetNumEyesActive);
+	lua::TableAssoc(L, "SetMultiEyeAngle", Lua_MultiShotParamsSetMultiEyeAngle);
+	lua::TableAssoc(L, "SetIsCrossEyed", Lua_MultiShotParamsSetIsCrossEyed);
+	lua::TableAssoc(L, "SetIsShootingBackwards", Lua_MultiShotParamsSetIsShootingBackwards);
+	lua::TableAssoc(L, "SetIsShootingSideways", Lua_MultiShotParamsSetIsShootingSideways);
+	lua::TableAssoc(L, "SetNumRandomDirTears", Lua_MultiShotParamsSetNumRandomDirTears);
 
 	lua_pop(L, 1);
 }

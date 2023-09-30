@@ -2769,3 +2769,35 @@ HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
 	// Apparently trying to hook a func with a jump in its first 5 bytes is hellish. Just return what the normal func already would have
 	return 0;
 }
+
+//PLAYER_POST_GET_MULTI_SHOT_PARAMS (1251)
+HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, int weaponType) -> Weapon_MultiShotParams*) {
+	params = super(params, weaponType);
+	int callbackid = 1251;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		Entity_Player* ent = (Entity_Player*)this;
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.push(this->GetPlayerType())
+			.push(ent, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (lua_isuserdata(L, -1)) {
+			auto opt = lua::GetUserdata<Weapon_MultiShotParams*>(L, -1, lua::metatables::MultiShotParamsMT);
+
+			if (!opt) {
+				KAGE::LogMessage(2, "Invalid userdata returned in MC_POST_GET_MULTI_SHOT_PARAMS");
+			}
+			else {
+				*params = *opt;
+			}
+		}
+	}
+	return params;
+}
