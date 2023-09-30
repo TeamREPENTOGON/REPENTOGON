@@ -82,6 +82,10 @@ ___
 #### float GetShadowSize ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Speed·Multiplier () {: aria-label='Functions' }
+#### float GetSpeedMultiplier ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Type () {: aria-label='Functions' }
 #### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
 
@@ -112,6 +116,10 @@ ___
 ___
 ### Set·Shadow·Size () {: aria-label='Functions' }
 #### float SetShadowSize ( float Size ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Speed·Multiplier () {: aria-label='Functions' }
+#### void SetSpeedMultiplier ( float amount ) {: .copyable aria-label='Functions' }
 
 ___
 ### To·Slot () {: aria-label='Functions' }

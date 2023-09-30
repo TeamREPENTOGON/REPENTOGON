@@ -50,6 +50,7 @@ parentClass = {
                "ProceduralItemManager":"Game",
                "RoomTransition":"Game",
                "RoomConfigHolder":"Game",
+               "ScoreSheet":"Game",
                "StageTransition":"Game",
                "Sprite":"LayerState",
                "Weapon":"Isaac,EntityPlayer",
