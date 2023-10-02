@@ -17,23 +17,22 @@ __thiscall void Menu_Character::SelectRandomChar();
 struct Menu_Character depends (ANM2, CompletionWidget) {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 1168); } 
-	inline ANM2* GetBigCharPageSprite() { return (ANM2*)((char*)this + 0x40) ; }
-	inline ANM2* GetDifficultyOverlaySprite() { return (ANM2*)((char*)this + 0x154) ; }
-	inline ANM2* GetGreedDecoSprite() { return (ANM2*)((char*)this + 0x268) ; }
-	inline ANM2* GetBGSprite() { return (ANM2*)((char*)this + 0x37c) ; }
-	inline ANM2* GetDifficultyPageSprite() { return (ANM2*)((char*)this + 0x5ac) ; }
-	inline ANM2* GetSeedPageSprite() { return (ANM2*)((char*)this + 0x6c0) ; }
-	inline ANM2* GetWinStreakPageSprite() { return (ANM2*)((char*)this + 0x7d4) ; }
-	inline ANM2* GetEastereggPageSprite() { return (ANM2*)((char*)this + 0x8e8) ; }
-	inline ANM2* GetSeedUnlockPageSprite() { return (ANM2*)((char*)this + 0x9fc) ; }
-	inline ANM2* GetCharacterPortraitSprite() { return (ANM2*)((char*)this + 0xb18) ; }
-	inline ANM2* GetSeedEntrySprite() { return (ANM2*)((char*)this + 0xc48) ; }
-	inline ANM2* GetPageSwapWidgetSprite() { return (ANM2*)((char*)this + 0xdb0) ; }
-	inline ANM2* GetTaintedBGDecoSprite() { return (ANM2*)((char*)this + 0xec4) ; }
-
-	inline int GetNumCharacters() { return *(int*)((char*)this + 0xB10); }
-	inline int GetSelectedCharacterMenu() { return *(int*)((char*)this + 0xDAC); }
-	inline void SetSelectedCharacterMenu(int id) { *(int *)((char*)this + 0xDAC) = id; }
+	inline ANM2* GetBigCharPageSprite() { return &this->_BigCharPageSprite; }
+	inline ANM2* GetDifficultyOverlaySprite() { return &this->_DifficultyOverlaySprite; }
+	inline ANM2* GetGreedDecoSprite() { return &this->_GreedDecoOverlaySprite; }
+	inline ANM2* GetBGSprite() { return &this->_CharacterMenuBGSprite; }
+	inline ANM2* GetDifficultyPageSprite() { return &this->_DifficultyPageSprite; }
+	inline ANM2* GetSeedPageSprite() { return &this->_SeedPageSprite; }
+	inline ANM2* GetWinStreakPageSprite() { return &this->_WinStreakPageSprite; }
+	inline ANM2* GetEastereggPageSprite() { return &this->_EastereggPageSprite; }
+	inline ANM2* GetSeedUnlockPageSprite() { return &this->_SeedUnlockPageSprite; }
+	inline ANM2* GetCharacterPortraitSprite() { return &this->_CharacterPortraitsSprite; }
+	inline ANM2* GetSeedEntrySprite() { return &this->_SeedEntrySprite; }
+	inline ANM2* GetPageSwapWidgetSprite() { return &this->_PageSwapWidgetSprite; }
+	inline ANM2* GetTaintedBGDecoSprite() { return &this->_TaintedMenuBGDecoSprite; }
+    
+    inline int GetNumCharacters() { return this->_numCharacters; }
+	inline int GetSelectedCharacterMenu() { return this->_characterMenuShown; }
 }} 
     int Status : 0x0; //1 seeds screen //4 transitioning to tainted
     bool IsCharacterUnlocked : 0x5;
@@ -44,6 +43,9 @@ struct Menu_Character depends (ANM2, CompletionWidget) {
     int _chosenRandomCharacter : 0x14;
     float _randomRotationVelocity : 0x18;
     int _randomRotationAmount : 0x20;
+    float _characterWheelDepth : 0x24;
+    float _scrollSpeed : 0x28;
+    float _characterWheelWidth : 0x2c;
     float MenuBlackColorizeIntensity : 0x30;
     float MenuYellowColorizeIntensity : 0x34;
     float _PositionX : 0x38;
@@ -65,5 +67,4 @@ struct Menu_Character depends (ANM2, CompletionWidget) {
     int _characterMenuShown : 0xdac; /* 0 Normal 1 Tained */
     ANM2 _PageSwapWidgetSprite : 0xdb0;
     ANM2 _TaintedMenuBGDecoSprite : 0xec4;
-    int _somethingCustomCharSelection : 0xfe0;
 } : 0xfec;
