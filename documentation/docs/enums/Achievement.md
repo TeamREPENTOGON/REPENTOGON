@@ -377,7 +377,7 @@ tags:
 |277 |CHALLENGE_31_BACKASSWARDS {: .copyable } |  |
 |277 |BACKASSWARDS {: .copyable } |  |
 |278 |CHALLENGE_32_APRILS_FOOL {: .copyable } |  |
-|278 |APRILS_FOOD {: .copyable } |  |
+|278 |APRILS_FOOL {: .copyable } |  |
 |279 |CHALLENGE_33_POKEY_MANS {: .copyable } |  |
 |279 |POKEY_MANS {: .copyable } |  |
 |280 |CHALLENGE_34_ULTRA_HARD {: .copyable } |  |
