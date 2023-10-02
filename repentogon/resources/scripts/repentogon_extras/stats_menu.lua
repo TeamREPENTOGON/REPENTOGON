@@ -151,7 +151,7 @@ Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 local function RenderExtraStats()
     if StatsMenu:IsSecretsMenuVisible() then
-        StatsMenu:GetStatsMenuSprite():GetLayerByName("Paper1"):SetVisible(true)
+        StatsMenu:GetStatsMenuSprite():GetLayer("Paper1"):SetVisible(true)
         return
     end
     if MenuManager:GetActiveMenu() == MainMenuType.SAVES then StatsMenuRep.ScheduleRefresh = true end
@@ -184,7 +184,7 @@ local function RenderExtraStats()
                 (StatsMenuRep.CurrentlyDisplayedCategoryID + 1) % MaxCategoryID, 1)
         end
     end
-    StatsMenu:GetStatsMenuSprite():GetLayerByName("Paper1"):SetVisible(false)
+    StatsMenu:GetStatsMenuSprite():GetLayer("Paper1"):SetVisible(false)
 
     -- render stat page over original stat page, to allow for custom content
     local posSheet = Isaac.WorldToMenuPosition(MainMenuType.STATS, StatsMenuRep.StatSheetSpritePos)
