@@ -28,23 +28,11 @@ struct ColorModState {
 		contrast += other.contrast;
 		return *this;
 	}
-	
-	ColorModState& operator+=(KColor const& other) {
-		r += other._red;
-		g += other._green;
-		b += other._blue;
-		a += other._alpha;
-		return *this;
-	}	
 
 	ColorModState operator+(ColorModState const& other) {
 		return ColorModState(r + other.r, g + other.g, b + other.b, a + other.a, brightness + other.brightness, contrast + other.contrast);
 	}
 	
-	ColorModState operator+(KColor const& other) {
-		return ColorModState(r + other._red, g + other._green, b + other._blue, a + other._alpha, brightness, contrast);
-	}	
-
 	ColorModState& operator-=(ColorModState const& other) {
 		r -= other.r;
 		g -= other.g;
@@ -54,22 +42,10 @@ struct ColorModState {
 		contrast -= other.contrast;
 		return *this;
 	}
-	
-	ColorModState& operator-=(KColor const& other) {
-		r += other._red;
-		g += other._green;
-		b += other._blue;
-		a += other._alpha;
-		return *this;
-	}	
 
 	ColorModState operator-(ColorModState const& other) {
 		return ColorModState(r - other.r, g - other.g, b - other.b, a - other.a, brightness - other.brightness, contrast - other.contrast);
 	}
-
-	ColorModState operator-(KColor const& other) {
-		return ColorModState(r - other._red, g - other._green, b - other._blue, a - other._alpha, brightness, contrast);
-	}	
 
 	ColorModState& operator*=(float amount) {
 		r *= amount;

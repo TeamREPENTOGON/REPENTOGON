@@ -7,8 +7,7 @@ static void Entity::PlaySound(int ID, float Volume, int FrameDelay, bool Loop, f
 */
 
 "558bec83e4f8515356578bd9e8????????84c0":
-__thiscall void Entity::CopyStatusEffects(Entity *target);
-
+__thiscall void Entity::CopyStatusEffects();
 "558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
 __thiscall void Entity::AddBleeding(const EntityRef& ref, int duration);
 

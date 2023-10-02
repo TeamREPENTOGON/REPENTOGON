@@ -203,6 +203,11 @@ __thiscall void Entity_Player::CheckPoopSpellQueue();
 "558bec6aff68????????64a1????????5081ec78010000":
 __thiscall void Entity_Player::AddCostume(ItemConfig_Item* collectibleID, bool itemStateOnly);
 
+"53568bf15783be????????0074":
+__thiscall void Entity_Player::ClearDeadEyeCharge();
+
+"558bec83e4c081ecb4000000a1????????33c4898424????????5356578bf9897c24":
+__thiscall void Entity_Player::SwapForgottenForm(bool unk1, bool unk2);
 
 struct Entity_Player depends (ANM2) : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
@@ -229,6 +234,7 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 	inline std_vector_int GetVoidedCollectiblesList() { return *(std_vector_int*)((char*)this + 0x167c); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
+	inline int GetDeadEyeMisses() { return *(int*)((char*)this + 0x17D0); }
 	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
 	inline int* GetEpiphoraCharge() { return (int*)((char*)this + 0x17c4); }
 	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
@@ -281,6 +287,8 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 
 	ANM2 _heldSprite : 0xf48;
 	uint32_t _cacheFlags : 0x14b8;
+	uint32_t _deadEyeCharges : 0x17d0;
+	uint32_t _deadEyeMisses : 0x17d4;
 	Entity_Player* _backupPlayer : 0x1d84;
 	char _poopSpellQueue[6] : 0x1e54;
 	std_map_int_int _itemWispsList : 0x1e7c;

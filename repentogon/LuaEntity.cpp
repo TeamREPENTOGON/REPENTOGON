@@ -85,16 +85,15 @@ static int Lua_EntitySetShadowSize(lua_State* L)
 	return 0;
 }
 
-/*int Lua_EntityCopyStatusEffects(lua_State* L)
+static int Lua_EntityCopyStatusEffects(lua_State* L)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Entity* copyEnt lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 
-	ent->CopyStatusEffects(copyEnt); bruh code
+	ent->CopyStatusEffects();
 
-	return 1;
+	return 0;
 }
-*/
+
 
 static int Lua_EntityGetNullOffset(lua_State* L)
 {
@@ -237,6 +236,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetShadowSize", Lua_EntityGetShadowSize);
 	lua::RegisterFunction(state, mt, "SetShadowSize", Lua_EntitySetShadowSize);
 	lua::RegisterFunction(state, mt, "AddKnockback", Lua_EntityAddKnockback);
+	lua::RegisterFunction(state, mt, "CopyStatusEffects", Lua_EntityCopyStatusEffects);
 	lua::RegisterFunction(state, mt, "GetNullOffset", Lua_EntityGetNullOffset);
 	lua::RegisterFunction(state, mt, "GetType", lua_Entity_GetType);
 	lua::RegisterFunction(state, mt, "GetPosVel", lua_Entity_GetPosVel);

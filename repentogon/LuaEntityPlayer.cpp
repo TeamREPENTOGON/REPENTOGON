@@ -1148,6 +1148,28 @@ LUA_FUNCTION(Lua_PlayerGetBackupPlayer) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ClearDeadEyeCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	if (lua_toboolean(L, 2)) {
+		player->_deadEyeCharges = 0;
+		player->_deadEyeMisses = 0;
+		player->_cacheFlags |= 1;
+		player->EvaluateItems();
+	}
+	else {
+		player->ClearDeadEyeCharge();
+	}
+	
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SwapForgottenForm) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	player->SwapForgottenForm(lua_toboolean(L, 2), lua_toboolean(L, 3));
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -1238,6 +1260,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetBladderCharge", Lua_PlayerSetBladderCharge);
 	lua::RegisterFunction(state, mt, "GetMaxBladderCharge", Lua_PlayerGetMaxBladderCharge);
 	lua::RegisterFunction(state, mt, "SetMaxBladderCharge", Lua_PlayerSetMaxBladderCharge);
+	lua::RegisterFunction(state, mt, "ClearDeadEyeCharge", Lua_ClearDeadEyeCharge);
 	lua::RegisterFunction(state, mt, "IsUrethraBlocked", Lua_PlayerIsUrethraBlocked);
 	lua::RegisterFunction(state, mt, "SetUrethraBlock", Lua_PlayerSetUrethraBlock);
 	lua::RegisterFunction(state, mt, "GetNextUrethraBlockFrame", Lua_PlayerGetNextUrethraBlockFrame);
@@ -1248,4 +1271,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetPoopSpell", Lua_PlayerSetPoopSpell);
 	lua::RegisterFunction(state, mt, "RemovePoopSpell", Lua_PlayerRemovePoopSpell);
 	lua::RegisterFunction(state, mt, "GetFlippedForm", Lua_PlayerGetBackupPlayer);
+	lua::RegisterFunction(state, mt, "SwapForgottenForm", Lua_SwapForgottenForm);
 }
