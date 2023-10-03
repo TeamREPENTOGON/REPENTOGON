@@ -289,6 +289,7 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 	uint32_t _cacheFlags : 0x14b8;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
+	//std_vector_int _wispStorage : 0x1cfc;
 	Entity_Player* _backupPlayer : 0x1d84;
 	char _poopSpellQueue[6] : 0x1e54;
 	std_map_int_int _itemWispsList : 0x1e7c;
