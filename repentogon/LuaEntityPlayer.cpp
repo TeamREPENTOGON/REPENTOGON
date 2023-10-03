@@ -1,5 +1,7 @@
 ﻿#include <lua.hpp>
 #include <algorithm>
+#include <random>
+
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -22,7 +24,13 @@
 
 static constexpr const char* PocketItemMT = "PocketItem";
 
+// todo: this is from LuaInit, make that a global instead
+static std::uniform_real_distribution<float> _distrib(0, 1);
+static std::random_device rd;
+static std::mt19937 gen(rd());
+
 std::map<int, int> fakeItems;
+
 
 int Lua_GetMultiShotPositionVelocity(lua_State* L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
@@ -1180,9 +1188,9 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 	creep->_varData = params->_flags;
 
 	Entity* castEffect = (Entity*)creep;
-	castEffect->_sprite->_scale *= (Isaac::RandomFloat() * 0.5f) + 0.2f;
-	castEffect->_collisionDamage = unkDamage;
-	castEffect->SetColor(params->_tearColor, unkDuration, -1, true, false);
+	castEffect->_sprite._scale *= (_distrib(gen) * 0.5f) + 0.2f;
+	castEffect->_collisionDamage = params->_tearDamage;
+	castEffect->SetColor(&params->_tearColor, 300, -1, true, false);
 	creep->Update();
 
 	lua::luabridge::UserdataPtr::push(L, creep, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));

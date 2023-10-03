@@ -22,7 +22,13 @@ struct Vector { {{
 	{		
 		return Vector(x * amount, y * amount);
 	}
-
+	
+	Vector& operator*=(float amount)
+	{
+		x *= amount;
+		y *= amount;
+		return *this;
+	}
 }} 
     float x : 0x0, y : 0x4;
 } : 0x8;
