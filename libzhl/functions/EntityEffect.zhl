@@ -1,12 +1,14 @@
 "558bec81ecc0010000":
 __thiscall void Entity_Effect::Render(Vector *offset);
 
-"558bec6aff68????????64a1????????5081ec8c010000":
-__thiscall void Entity_Effect::Update();
-
 "558bec83e4f856578bfa":
 static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);
 
 struct Entity_Effect depends (BitSet128) : public Entity {
-	BitSet128 _varData : 0x370;
+    __vtable {
+        override
+        "558bec6aff68????????64a1????????50b850500000":
+        void Update();
+    };
+	BitSet128 _varData : 0x370; // this can be any data type, the game uses it arbitrarily based on effect variant
 } : 0x3e0;

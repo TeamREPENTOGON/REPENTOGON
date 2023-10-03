@@ -50,9 +50,6 @@ __thiscall Capsule Entity::GetCollisionCapsule(Vector* vec);
 "8b51??8d42??3ddd0300000f87????????8bc2":
 __thiscall uint32_t Entity::GetHitListIndex();
 
-"558bec83e4f883ec4c538b5d??56":
-__thiscall void Entity::SetColor(ColorMod * color, int Duration, int Priority, bool Fadeout, bool Shared);
-
 struct Entity depends (AnimationState, ANM2) {
 {{
 	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
@@ -119,6 +116,9 @@ struct Entity depends (AnimationState, ANM2) {
 
         "558bec83e4f883ec3c5356578bf9837f??01":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
+		
+		"558bec83e4f883ec4c538b5d??56":
+		void SetColor(ColorMod *color, int Duration, int Priority, bool Fadeout, bool Shared);
     };
 } : 0x360;
 

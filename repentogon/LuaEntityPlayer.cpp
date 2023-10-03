@@ -1182,15 +1182,16 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Entity* castPlayer = (Entity*)player;
 
-	TearParams* params = player->GetTearHitParams(params, 1, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)Isaac::Random(2) != 0) & 2, 0x0);
+	TearParams params;
+	player->GetTearHitParams(&params, 1, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)Isaac::Random(2) != 0) & 2, 0x0);
 
 	Entity_Effect* creep = (Entity_Effect*)g_Game->Spawn(1000, 54, *castPlayer->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
-	creep->_varData = params->_flags;
+	creep->_varData = params._flags;
 
 	Entity* castEffect = (Entity*)creep;
 	castEffect->_sprite._scale *= (_distrib(gen) * 0.5f) + 0.2f;
-	castEffect->_collisionDamage = params->_tearDamage;
-	castEffect->SetColor(&params->_tearColor, 300, -1, true, false);
+	castEffect->_collisionDamage = params._tearDamage;
+	castEffect->SetColor(&params._tearColor, 300, -1, true, false);
 	creep->Update();
 
 	lua::luabridge::UserdataPtr::push(L, creep, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
