@@ -1,0 +1,7 @@
+struct TearParams depends (BitSet128, ColorMod) {
+	unsigned int _tearVariant : 0x0, _bombVariant : 0x4;
+	ColorMod _tearColor : 0x8;
+	BitSet128 _flags : 0x38;
+	float _tearDamage : 0x48, _tearScale : 0x4c, _tearHeight : 0x50;
+	
+} : 0x68;

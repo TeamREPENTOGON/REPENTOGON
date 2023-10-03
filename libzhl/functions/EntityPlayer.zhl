@@ -209,6 +209,9 @@ __thiscall void Entity_Player::ClearDeadEyeCharge();
 "558bec83e4c081ecb4000000a1????????33c4898424????????5356578bf9897c24":
 __thiscall void Entity_Player::SwapForgottenForm(bool unk1, bool unk2);
 
+"558bec83e4f081ec480100008b55":
+__thiscall TearParams* Entity_Player::GetTearHitParams(TearParams * res, int WeaponType, float DamageScale, int TearDisplacement, Entity* Source);
+
 struct Entity_Player depends (ANM2) : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
@@ -286,6 +289,7 @@ struct Entity_Player depends (ANM2) : public Entity { {{
     }}
 
 	ANM2 _heldSprite : 0xf48;
+	float _damage : 0x13b8;
 	uint32_t _cacheFlags : 0x14b8;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
