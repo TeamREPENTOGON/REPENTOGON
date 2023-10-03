@@ -128,11 +128,12 @@ void ASMPatchMegaSatanEnding() {
 
 	memcpy(ptrMov + 1, &ptr, sizeof(ptr));
 
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes("\x50\x53\x51\x52\x56\x57") // Push EAX, EBX, ECX, EDX, ESI and EDI
+	patch.PreserveRegisters(reg)
 		.AddInternalCall(MegaSatanCallbackTrampoline) // call MegaSatanCallbackTrampoline()
-		.AddBytes("\x5F\x5E\x5A\x59\x5B\x58") // Pop EDI, ESI, EDX, ECX, EBX and EAX
-		.AddBytes(ptrMov) // mov eax, dword ptr ds:[XXXXXXXX]
+		.RestoreRegisters(reg)
+		.AddBytes(ByteBuffer().AddAny(ptrMov, 5)) // mov eax, dword ptr ds:[XXXXXXXX]
 		.AddBytes("\x85\xC0") // test eax, eax
 		.AddBytes("\x75\x0A") // jne (current addr + 0xA)
 		.AddInternalCall(randomIntAddr) // call RNG::RandomInt()
@@ -156,21 +157,8 @@ void ASMPatchConsoleRunCommand() {
 	printf("[REPENTOGON] Patching Console::RunCommand Player requirement at %p\n", addr);
 
 	ASMPatch patch;
-	patch.AddBytes("\xeb");
+	patch.AddBytes("\xEB");
 	sASMPatcher.FlatPatch(addr, &patch);
-	/* MEMORY_BASIC_INFORMATION info;
-	DWORD old_protect = SetPageMemoryRW(addr, &info);
-	DWORD _dummy;
-
-	char override_base[] = {
-		0xEB
-	};
-	memcpy(addr, override_base, 1);
-
-
-	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
-
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0); */
 }
 
 /* * MC_PRE_LASER_COLLISION * *
@@ -556,64 +544,29 @@ void ASMPatchBlueWombCurse() {
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching Level::Init() Curse evaluation for Blue Womb %p\n", addr);
+	printf("[REPENTOGON] Patching Level::Init() Curse evaluation for Blue Womb at %p\n", addr);
 
-	MEMORY_BASIC_INFORMATION info;
-	DWORD old_protect = SetPageMemoryRW(addr, &info);
-	DWORD _dummy;
-
-	char override_base[] = {
-		0x83, 0x67, 0x0c, 0xfa      // assembly before: dword ptr [EDI + 0xc],0xfffffffe
-	};
-	memcpy(addr, override_base, 4);
-
-	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
-
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+	ASMPatch patch;
+	patch.AddBytes("\x83\x67\x0C\xFA");
+	sASMPatcher.FlatPatch(addr, &patch);
 }
 
 // Render mod names with a smaller font
-void PatchModMenu_Font_ModsDisabled() {
-	SigScan scanner("8d89????????f30f1140");
+void PatchModMenu_Font(const char* sig) {
+	SigScan scanner(sig);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
-	MEMORY_BASIC_INFORMATION info;
-	DWORD old_protect = SetPageMemoryRW(addr, &info);
-	DWORD _dummy;
-
-	char override_base[] = {
-		0x8d, 0x89, 0x14, 0xa5, 0x10, 0x00
-	};
-	memcpy(addr, override_base, 6);
-
-	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
-}
-
-void PatchModMenu_Font_ModsEnabled() {
-	SigScan scanner("8d89????????f30f1100");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	MEMORY_BASIC_INFORMATION info;
-	DWORD old_protect = SetPageMemoryRW(addr, &info);
-	DWORD _dummy;
-
-	char override_base[] = {
-		0x8d, 0x89, 0x14, 0xa5, 0x10, 0x00
-	};
-	memcpy(addr, override_base, 6);
-
-	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+	ASMPatch patch;
+	patch.AddBytes("\x8D\x89\x14\xA5\x10").AddZeroes(1);
+	sASMPatcher.FlatPatch(addr, &patch);
 }
 
 void ASMPatchModsMenu() {
 	printf("[REPENTOGON] Patching Menu_Mods::Render() \n");
 
-	PatchModMenu_Font_ModsDisabled();
-	PatchModMenu_Font_ModsEnabled();
+	PatchModMenu_Font("8d89????????f30f1140");
+	PatchModMenu_Font("8d89????????f30f1100");
 }
 
 // The void now draws from all floors
@@ -676,10 +629,6 @@ void ASMPatchVoidGeneration() {
 */
 float panicValue = 0.005f; // set this to 1 for fun results!
 void PerformHushPatch(void* addr) { 
-	MEMORY_BASIC_INFORMATION info;
-	DWORD old_protect = SetPageMemoryRW(addr, &info);
-	DWORD _dummy;
-
 	char ptrMov[] = {
 	0xF3, 0x0F, 0x10, 0x05, 0, 0, 0, 0 // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 	};
@@ -687,10 +636,9 @@ void PerformHushPatch(void* addr) {
 	void* ptr = &panicValue;
 	memcpy(ptrMov + 4, &ptr, sizeof(ptr));
 
-	memcpy(addr, ptrMov, 8);
-
-	VirtualProtect(info.BaseAddress, info.RegionSize, old_protect, &_dummy);
-	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny(ptrMov, 8));
+	sASMPatcher.FlatPatch(addr, &patch);
 }
 
 void ASMPatchHushBug() {
