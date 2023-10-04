@@ -108,17 +108,43 @@ struct Entity depends (AnimationState, ANM2) {
     float _speedMultiplier : 0x2F4;
 
     __vtable {
+		skip; // Free
+		
         "558bec83ec308b45??f30f7e05":
         void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
-
+		
+		skip; // PreUpdate
+		
         "558bec83e4f081ecd8010000":
         void Update();
-
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		
         "558bec83e4f883ec3c5356578bf9837f??01":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 		
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+
 		"558bec83e4f883ec4c538b5d??56":
 		void SetColor(ColorMod *color, int Duration, int Priority, bool Fadeout, bool Shared);
+		
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
     };
 } : 0x360;
 
@@ -127,3 +153,31 @@ reference void* EntityRTTI;
 
 "558bec51535657894dfce8914d03008b75088b0d????????506a006a0068????????566a0068c5030000e8013ed9ff":
 __thiscall Entity_NPC* Entity::GiveMinecart(Vector* position, Vector* velocity);
+
+/* For convenience's sake:
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		skip; // Update
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+*/

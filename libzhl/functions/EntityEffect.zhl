@@ -6,9 +6,36 @@ static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t
 
 struct Entity_Effect depends (BitSet128) : public Entity {
     __vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		
         override
         "558bec6aff68????????64a1????????50b850500000":
         void Update();
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+
     };
 	BitSet128 _varData : 0x370; // this can be any data type, the game uses it arbitrarily based on effect variant
 } : 0x3e0;

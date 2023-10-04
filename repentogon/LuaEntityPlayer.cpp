@@ -1189,7 +1189,7 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 	creep->_varData = params._flags;
 
 	Entity* castEffect = (Entity*)creep;
-	castEffect->_sprite._scale *= (_distrib(gen) * 0.5f) + 0.2f;
+	castEffect->_sprite._scale *= ((_distrib(gen) * 0.5f) + 0.2f);
 	castEffect->_collisionDamage = params._tearDamage;
 	castEffect->SetColor(&params._tearColor, 300, -1, true, false);
 	creep->Update();

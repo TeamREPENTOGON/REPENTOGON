@@ -17,15 +17,41 @@ struct Entity_Slot : public Entity { {{
 	inline unsigned short* GetTouch() { return (unsigned short*)((char*)this + 0x376); }
 }}
     __vtable {
+		skip; // Free
+		
         override
         "558beca1????????81":
         void Init(unsigned int Type, unsigned int Variant, unsigned int SubType, unsigned int Seed);
-
-        "558bec83e4f883ec3c83":
-        bool HandleCollision(Entity *Collider, bool Low);
-
+		
+		skip; // PreUpdate
+		
         override
         "558bec6aff68????????64a1000000005081ecc0000000a1????????33c58945f053":
+		
         void Update();
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		
+        "558bec83e4f883ec3c83":
+        bool HandleCollision(Entity *Collider, bool Low);
+		
+		skip; // ResetColor
+		skip; // LoadEntityConfig
     };
 } : 0x490;
