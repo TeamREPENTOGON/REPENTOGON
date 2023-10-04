@@ -4,8 +4,27 @@ struct Weapon_MonstrosLung : public Weapon { {{
 
 }}
     __vtable {
+		skip; // Free
+		skip; // Init
+		skip; // Update
+		
         override
         "558bec83e4f883ec585657ff75":
         void Fire(const Vector& shootPos, bool IsShooting, bool IsInterpolated);
+		
+		skip; // Reset
+		skip; // ClearReferences
+		skip; // GetMaxCharge
+		skip; // GetChargeBarAmount
+		skip; // GetChargeBarAmount?
+		skip; // GetFocusEntity
+		skip; // GetMainEntity
+		skip; // TriggerNewRoom
+		skip; // GetMarkedTargetVariant
+		skip; // SupportsTractorBeam
+		skip; // CanTriggerCursedEyeTeleport
+		skip; // CanTriggerKidneyStone
+		skip; // CanOverrideForgottenThrow
+
     };
 } : 0x40;
