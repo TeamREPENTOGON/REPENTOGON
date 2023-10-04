@@ -42,18 +42,6 @@ struct GridEntity depends (GridEntityDesc) {
 		skip; // BeginBatches
 		skip; // EndBatches
 		skip; // InitSubclass
-		skip; // CanOverwrite
-		skip; // SetColor
-		skip; // SetCollisionDamage
-		skip; // ClearReferences
-		skip; // CanShutDoors
-		skip; // IsBoss
-		skip; // IsValidTarget
-		skip; // TryThrow
-		skip; // GetForwardVector
-		skip; // HandleCollision
-		skip; // ResetColor
-		skip; // LoadEntityConfig
     };
 } : 0x154;
 
@@ -69,16 +57,4 @@ struct GridEntity depends (GridEntityDesc) {
 		skip; // BeginBatches
 		skip; // EndBatches
 		skip; // InitSubclass
-		skip; // CanOverwrite
-		skip; // SetColor
-		skip; // SetCollisionDamage
-		skip; // ClearReferences
-		skip; // CanShutDoors
-		skip; // IsBoss
-		skip; // IsValidTarget
-		skip; // TryThrow
-		skip; // GetForwardVector
-		skip; // HandleCollision
-		skip; // ResetColor
-		skip; // LoadEntityConfig
 */
