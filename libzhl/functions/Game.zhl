@@ -91,7 +91,7 @@ static bool Game::IsGreedFinalBoss();
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState) { {{
 	Game()
 	{
 		this->constructor();
@@ -179,6 +179,7 @@ struct Game depends (RoomDescriptor, RoomConfigHolder, PlayerManager, Console, I
 
     bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
+	//Level _level : 0x0;
     uint32_t _stage : 0x0; // 0x0
     uint32_t _stageType : 0x4; // 0x4
     bool _bossChallenge : 0x8; //0x8

@@ -33,7 +33,11 @@ struct Entity_Slot : public Entity { {{
 		skip; // Render
 		skip; // RenderShadowLayer
 		skip; // PostRender
-		skip; // TakeDamage
+		
+		override
+		"558bec83e4f883ec7453":
+		bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
+		
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
