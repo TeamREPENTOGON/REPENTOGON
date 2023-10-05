@@ -4,7 +4,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "ImGuiFeatures/ConsoleMega.h"
+#include "../ImGuiFeatures/ConsoleMega.h"
 
 static constexpr const char* ConsoleMT = "Console";
 

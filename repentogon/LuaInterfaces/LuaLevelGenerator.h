@@ -8,5 +8,3 @@ struct LuaLevelGeneratorRoom {
 	LevelGenerator_Room* room = nullptr;
 	bool cleanup = false;
 };
-
-static constexpr const char* LuaLevelGeneratorRoomMT = "";

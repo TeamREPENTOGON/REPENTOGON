@@ -3,13 +3,13 @@
 #include <cstring>
 
 #include "IsaacRepentance.h"
-#include "ImGuiFeatures/LogViewer.h"
+#include "../ImGuiFeatures/LogViewer.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "LuaWeapon.h"
 #include "LuaLevelGenerator.h"
 #include "Log.h"
-#include "XMLData.h"
+#include "../Patches/XMLData.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState; //I dont think we will add 500 callbacks but lets set it there for now

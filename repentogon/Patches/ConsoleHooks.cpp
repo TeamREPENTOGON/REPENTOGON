@@ -1,7 +1,7 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
-#include "ImGuiFeatures/ConsoleMega.h"
-#include "ImGuiFeatures/LogViewer.h"
+#include "../ImGuiFeatures/ConsoleMega.h"
+#include "../ImGuiFeatures/LogViewer.h"
 #include "LuaCore.h"
 #include "XMLData.h"
 

@@ -2,7 +2,7 @@
 #include "HookSystem.h"
 #include "XMLData.h"
 #include "LuaCore.h"
-#include "ImGuiFeatures/LogViewer.h"
+#include "../ImGuiFeatures/LogViewer.h"
 
 std::map<int, bool> characterUnlockData;
 

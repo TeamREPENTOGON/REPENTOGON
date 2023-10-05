@@ -20,7 +20,7 @@
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"
 
-#include "ImGuiFeatures/LogViewer.h"
+#include "../ImGuiFeatures/LogViewer.h"
 #include <lua.hpp>
 #include "LuaCore.h"
 #include <filesystem>

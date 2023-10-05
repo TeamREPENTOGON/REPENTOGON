@@ -18,7 +18,7 @@
 #include "AchievementsStuff.h"
 #include "JsonSavedata.h"
 
-#include "ImGuiFeatures/LogViewer.h"
+#include "../ImGuiFeatures/LogViewer.h"
 
 
 using namespace std;

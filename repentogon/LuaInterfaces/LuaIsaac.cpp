@@ -4,6 +4,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../Patches/XMLData.h"
 
 #include "Windows.h"
 #include <string>
@@ -356,7 +357,6 @@ static void RegisterClipboardStuff(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-#include "XMLData.h"
 static int Lua_GetSubTypwByName(lua_State* L) {
 	string text = string(luaL_checkstring(L, 1));
 	if (XMLStuff.EntityData->byname.count(text) > 0)

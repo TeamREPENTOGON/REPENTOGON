@@ -7,7 +7,7 @@
 #include <glad/glad.h>
 
 #include "ASMPatcher.hpp"
-#include "ASMPatches.h"
+#include "../Patches/ASMPatches.h"
 #include "HookSystem.h"
 #include "Log.h"
 #include "SigScan.h"

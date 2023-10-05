@@ -23,7 +23,7 @@
 #include "writer.h"
 #include "stringbuffer.h"
 
-#include "ImGuiFeatures/LogViewer.h"
+#include "../ImGuiFeatures/LogViewer.h"
 #include <lua.hpp>
 #include "LuaCore.h"
 #include "JsonSavedata.h"

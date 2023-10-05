@@ -6,7 +6,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "LuaWeapon.h"
+#include "../LuaWeapon.h"
 
 /*
 

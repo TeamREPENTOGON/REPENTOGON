@@ -5,10 +5,10 @@
 
 #include "ASMPatcher.hpp"
 #include "SigScan.h"
-#include "LuaEntityNPC.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+
 
 struct FireProjectilesStorage {
 	std::vector<Entity_Projectile*> projectiles;
@@ -16,6 +16,13 @@ struct FireProjectilesStorage {
 };
 
 thread_local FireProjectilesStorage projectilesStorage;
+
+static std::vector<Entity_Projectile*>& InitProjectileStorage() {
+	std::vector<Entity_Projectile*>& projectiles = projectilesStorage.projectiles;
+	projectiles.clear();
+	projectilesStorage.inUse = true;
+	return projectiles;
+}
 
 int Lua_NPCUpdateDirtColor(lua_State* L)
 {
@@ -61,13 +68,6 @@ LUA_FUNCTION(Lua_NPCTryForceTarget) {
 
 	lua_pushboolean(L, npc->TryForceTarget(target, duration));
 	return 1;
-}
-
-static std::vector<Entity_Projectile*>& InitProjectileStorage() {
-	std::vector<Entity_Projectile*>& projectiles = projectilesStorage.projectiles;
-	projectiles.clear();
-	projectilesStorage.inUse = true;
-	return projectiles;
 }
 
 static void ProjectileStorageToLua(lua_State* L, std::vector<Entity_Projectile*>& projectiles) {
@@ -244,7 +244,7 @@ void PatchFireProjectiles() {
 	using GPReg = ASMPatch::Registers;
 
 	ASMPatch patch;
-	ASMPatch::SavedRegisters registers(Reg::EAX | Reg::EBX | Reg::ECX | Reg::EDX | Reg::EDI | Reg::ESI | 
+	ASMPatch::SavedRegisters registers(Reg::EAX | Reg::EBX | Reg::ECX | Reg::EDX | Reg::EDI | Reg::ESI |
 		Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3 | Reg::XMM4 | Reg::XMM5, true);
 	patch.PreserveRegisters(registers);
 	// patch.MoveFromMemory(GPReg::EBP, -0x4C, GPReg::ESI, true);
