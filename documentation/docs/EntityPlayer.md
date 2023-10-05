@@ -419,15 +419,8 @@ ___
 #### void ShuffleCostumes ( int Seed ) {: .copyable aria-label='Functions' }
 Randomizes the current costumes.
 ___
-### Teleport () {: aria-label='Functions' }
-#### void Teleport ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, boolean DoEffects = true, boolean TeleportTwinPlayers = false ) {: .copyable aria-label='Functions' }
-Teleports the player to a position within the room. 
-
-`DoEffects` controls whether the teleport animation and sound plays. `TeleportTwinPlayers` controls whether twin players (e.g. Esau, Tainted Lazarus w/ Birthright) are teleported alongside this one.
-
-___
 ### Spawn·Aquarius·Creep () {: aria-label='Functions' }
-#### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) InitTwin ( [TearParams](https://wofsauge.github.io/IsaacDocs/rep/TearParams.html) TearParams = nil) {: .copyable aria-label='Functions' }
+#### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) SpawnAquariusCreep ( [TearParams](https://wofsauge.github.io/IsaacDocs/rep/TearParams.html) TearParams = nil) {: .copyable aria-label='Functions' }
 Spawns a creep effect that acts like the ones created by Aquarius, including inhereting the player's `TearParams`. Supports passing a custom `TearParams` instead.
 
 
@@ -435,6 +428,13 @@ Spawns a creep effect that acts like the ones created by Aquarius, including inh
     For reference, this is how the game calculates the `TearParams` for this normally:
 	
 	``player->GetTearHitParams(&params, WeaponType.WEAPON_TEARS, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, -(int)(-Isaac::Random(2) != 0) & 2 - 1, nil)``
+
+___
+### Teleport () {: aria-label='Functions' }
+#### void Teleport ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, boolean DoEffects = true, boolean TeleportTwinPlayers = false ) {: .copyable aria-label='Functions' }
+Teleports the player to a position within the room. 
+
+`DoEffects` controls whether the teleport animation and sound plays. `TeleportTwinPlayers` controls whether twin players (e.g. Esau, Tainted Lazarus w/ Birthright) are teleported alongside this one.
 
 ___
 ### Trigger·Room·Clear () {: aria-label='Functions' }
