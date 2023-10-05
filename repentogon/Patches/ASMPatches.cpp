@@ -1,7 +1,7 @@
 #include "IsaacRepentance.h"
 #include "SigScan.h"
 #include "LuaCore.h"
-#include "../LuaInterfaces/Entities/LuaEntityNPC.cpp"
+#include "../LuaInterfaces/Entities/EntityNPC.h"
 #include "../LuaInterfaces/LuaRender.h"
 #include "XMLData.h"
 
