@@ -140,7 +140,10 @@ struct Entity depends (AnimationState, ANM2) {
 		skip; // CanShutDoors
 		skip; // IsBoss
 		skip; // IsValidTarget
-		skip; // TryThrow
+		
+		"32c0c20c00":
+		bool TryThrow(const EntityRef& Source, Vector* dir, float force);
+		
 		skip; // GetForwardVector
 		skip; // HandleCollision
 		skip; // ResetColor

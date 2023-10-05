@@ -297,7 +297,11 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 		skip; // CanShutDoors
 		skip; // IsBoss
 		skip; // IsValidTarget
-		skip; // TryThrow
+		
+		override
+		"558bec80b9????????000f57c9":
+		bool TryThrow(const EntityRef& Source, Vector* pos, float unk);
+		
 		skip; // GetForwardVector
 		skip; // HandleCollision
 		skip; // ResetColor

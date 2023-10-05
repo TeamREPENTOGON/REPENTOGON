@@ -221,6 +221,15 @@ LUA_FUNCTION(Lua_Entity_SetSpeedMultiplier) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityTryThrow) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	Vector* dir = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	const float force = luaL_checknumber(L, 4);
+	lua_pushboolean(L, entity->TryThrow(*ref, dir, force));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -252,4 +261,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "SetPauseTime", Lua_EntitySetPauseTime);
 	lua::RegisterFunction(state, mt, "GetSpeedMultiplier", Lua_Entity_GetSpeedMultiplier);
 	lua::RegisterFunction(state, mt, "SetSpeedMultiplier", Lua_Entity_SetSpeedMultiplier);
+	lua::RegisterFunction(state, mt, "TryThrow", Lua_EntityTryThrow);
 }

@@ -134,3 +134,7 @@ Used to cast an [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) o
     If the conversion is not successful, this function returns `nil`.
 
 ___
+### Try·Throw () {: aria-label='Functions' }
+#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ThrowDirection, float Force ) {: .copyable aria-label='Functions' }
+
+___
