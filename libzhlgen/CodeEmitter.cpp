@@ -764,9 +764,11 @@ void CodeEmitter::EmitFunction(Function const& fun) {
 
 void CodeEmitter::Emit(std::variant<Signature, Skip, Function> const& sig) {
     if (std::holds_alternative<Skip>(sig)) {
-        Emit("virtual void unk");
+        EmitTab();
+        Emit("void virtual_unk");
         Emit(std::to_string(_virtualFnUnk));
         Emit("() { }");
+        EmitNL();
         ++_virtualFnUnk;
     }
     else if (std::holds_alternative<Signature>(sig)) {
