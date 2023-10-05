@@ -8,6 +8,8 @@
 #include "HookSystem.h"
 #include "LuaWeapon.h"
 
+#include "Log.h"
+
 /*
 
      .___.
@@ -1182,16 +1184,26 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Entity* castPlayer = (Entity*)player;
 
+	/*
+	* for some reason, tear flags are being written one dword ahead of where they're supposed to. i've adjusted the offset in the effect zhl to compensate but this needs investigating
+	*/
 	TearParams params;
-	player->GetTearHitParams(&params, 1, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)Isaac::Random(2) != 0) & 2, 0x0);
 
-	Entity_Effect* creep = (Entity_Effect*)g_Game->Spawn(1000, 54, *castPlayer->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
+	if (lua_gettop(L) >= 2) {
+		params = *lua::GetUserdata<TearParams*>(L, 2, lua::Metatables::TEAR_PARAMS, "TearParams");
+	}
+	else {
+		player->GetTearHitParams(&params, 1, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)(Isaac::Random(2) != 0) & 2) - 1, 0);
+	}
+
+	Entity* ent = g_Game->Spawn(1000, 54, *castPlayer->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
+	
+	ent->_sprite._scale *= ((_distrib(gen) * 0.5f) + 0.2f);
+	ent->_collisionDamage = params._tearDamage;
+	ent->SetColor(&params._tearColor, 0, -1, true, false);
+
+	Entity_Effect* creep = (Entity_Effect*)ent;
 	creep->_varData = params._flags;
-
-	Entity* castEffect = (Entity*)creep;
-	castEffect->_sprite._scale *= ((_distrib(gen) * 0.5f) + 0.2f);
-	castEffect->_collisionDamage = params._tearDamage;
-	castEffect->SetColor(&params._tearColor, 300, -1, true, false);
 	creep->Update();
 
 	lua::luabridge::UserdataPtr::push(L, creep, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));

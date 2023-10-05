@@ -37,5 +37,5 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 		skip; // LoadEntityConfig
 
     };
-	BitSet128 _varData : 0x370; // this can be any data type, the game uses it arbitrarily based on effect variant
+	BitSet128 _varData : 0x36c; // in theory this should be 0x370, but the wrong values are getting written in EntityPlayer():SpawnAquariusCreep() with that offset...
 } : 0x3e0;

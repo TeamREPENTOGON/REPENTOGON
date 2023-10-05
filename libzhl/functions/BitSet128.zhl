@@ -1,8 +1,8 @@
 struct BitSet128 { {{
-	BitSet128() : l(0), h(0) {}
-	BitSet128(uint64_t _l, uint64_t _h) : l(_l), h(_h) {}
+	BitSet128() : ll(0), lh(0), hl(0), hh(0) {}
+	BitSet128(unsigned int _ll, unsigned int _lh, unsigned int _hl, unsigned int _hh) : ll(_ll), lh(_lh), hl(_hl), hh(_hh) {}
 
 
 }} 
-    uint64_t l : 0x0, h : 0x8;
+    unsigned int ll : 0x0, lh : 0x4, hl : 0x8, hh : 0xc;
 } : 0x10;
