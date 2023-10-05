@@ -103,6 +103,24 @@ LUA_FUNCTION(Lua_VectorUD_metadiv) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_VectorUD_metaadd) {
+	Vector* v1 = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+	Vector* v2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+
+	Vector result(v1->x + v2->x, v1->y + v2->y);
+	lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_VectorUD_metasub) {
+	Vector* v1 = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+	Vector* v2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
+
+	Vector result(v1->x - v2->x, v1->y - v2->y);
+	lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 	super(debug);
 
@@ -138,6 +156,12 @@ HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 		lua_rawset(L, -3);
 		lua_pushstring(L, "__div");
 		lua_pushcfunction(L, Lua_VectorUD_metadiv);
+		lua_rawset(L, -3);
+		lua_pushstring(L, "__add");
+		lua_pushcfunction(L, Lua_VectorUD_metaadd);
+		lua_rawset(L, -3);
+		lua_pushstring(L, "__sub");
+		lua_pushcfunction(L, Lua_VectorUD_metasub);
 		lua_rawset(L, -3);
 		lua_pop(L, 1);
 	}
