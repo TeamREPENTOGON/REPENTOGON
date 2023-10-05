@@ -8,8 +8,6 @@
 #include "HookSystem.h"
 #include "LuaWeapon.h"
 
-#include "Log.h"
-
 /*
 
      .___.
@@ -26,7 +24,7 @@
 
 static constexpr const char* PocketItemMT = "PocketItem";
 
-// todo: this is from LuaInit, make that a global instead
+// this is from LuaInit but with a range of 0, 1 instead of -1, 1
 static std::uniform_real_distribution<float> _distrib(0, 1);
 static std::random_device rd;
 static std::mt19937 gen(rd());
