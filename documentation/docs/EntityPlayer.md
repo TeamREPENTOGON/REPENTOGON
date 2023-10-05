@@ -11,6 +11,11 @@ This class contains both new functions and modified reimplementations of existin
 Now accepts an optional `bool` to determine if [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ___
+### Clear·Dead·Eye·Charge () {: aria-label='Modified Functions' }
+#### void ClearDeadEyeCharge ( boolean Force = false ) {: .copyable aria-label='Modified Functions' }
+Now accepts a `Force` argument to forcefully reset the charge instead of only rolling for a change to reset.
+
+___
 ### Get·Multi·Shot·Params () {: aria-label='Modified Functions' }
 #### [MultiShotParams](MultiShotParams.md) GetMultiShotParams ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType ) {: .copyable aria-label='Modified Functions' }
 Now returns a proper `MultiShotParams` object.
@@ -419,6 +424,17 @@ ___
 Teleports the player to a position within the room. 
 
 `DoEffects` controls whether the teleport animation and sound plays. `TeleportTwinPlayers` controls whether twin players (e.g. Esau, Tainted Lazarus w/ Birthright) are teleported alongside this one.
+
+___
+### Spawn·Aquarius·Creep () {: aria-label='Functions' }
+#### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) InitTwin ( [TearParams](https://wofsauge.github.io/IsaacDocs/rep/TearParams.html) TearParams = nil) {: .copyable aria-label='Functions' }
+Spawns a creep effect that acts like the ones created by Aquarius, including inhereting the player's `TearParams`. Supports passing a custom `TearParams` instead.
+
+
+???+ info "Info"
+    For reference, this is how the game calculates the `TearParams` for this normally:
+	
+	``player->GetTearHitParams(&params, WeaponType.WEAPON_TEARS, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, -(int)(-Isaac::Random(2) != 0) & 2 - 1, nil)``
 
 ___
 ### Trigger·Room·Clear () {: aria-label='Functions' }
