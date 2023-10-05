@@ -1,3 +1,8 @@
+-- save copy of original enums, to make it harder for mods to mess with the repentogon features
+local _EventCounter = EventCounter
+local _ModCallbacks = ModCallbacks
+local _MainMenuType = MainMenuType
+
 local WinStreak = 0
 local TotalDailies = 0
 local GetStageGoal = 0
@@ -73,18 +78,18 @@ local function LoadAssets()
     end
     if font:IsLoaded() and #(StreakSheet:GetDefaultAnimation()) > 0 then
         TextLen = font:GetStringWidthUTF8(TotalStreakText) / 2
-        Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
+        Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
     end
 end
 
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
+Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 local function RenderDailyStats()
-    if ScheduleRefresh and MenuManager:GetActiveMenu() == MainMenuType.DAILYRUN then
+    if ScheduleRefresh and MenuManager:GetActiveMenu() == _MainMenuType.DAILYRUN then
         local dailyChallenge = Isaac.GetDailyChallenge()
 		local challengeParam = dailyChallenge:GetChallengeParams()
-        WinStreak = Isaac.GetPersistentGameData():GetEventCounter(EventCounter.DAILYS_STREAK)
-        TotalDailies = Isaac.GetPersistentGameData():GetEventCounter(EventCounter.DAILYS_PLAYED)
+        WinStreak = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_STREAK)
+        TotalDailies = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_PLAYED)
         GetStageGoal = challengeParam:GetEndStage()
         isAltPath = challengeParam:IsAltPath()
 
@@ -104,10 +109,10 @@ local function RenderDailyStats()
     if DailyChallengeMenu:IsLeaderboardVisible() then
         return
     end
-    local pos = Isaac.WorldToMenuPosition(MainMenuType.DAILYRUN, StreakPos)
+    local pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, StreakPos)
     StreakSheet:Render(pos)
     font:DrawString(WinStreak, pos.X, pos.Y, fontcolor, 0, false)
-    pos = Isaac.WorldToMenuPosition(MainMenuType.DAILYRUN, Vector(286, 90))
+    pos = Isaac.WorldToMenuPosition(_MainMenuType.DAILYRUN, Vector(286, 90))
     TotalSheet:RenderLayer(0, pos)
     if isMegaSatan then
         GoalDestinationIcon:SetFrame(6)
@@ -121,5 +126,5 @@ local function RenderDailyStats()
     font:DrawStringUTF8(TotalStreakText, pos.X - TextLen, pos.Y - 9, fontcolor, 0, false)
 end
 
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_PRE_GAME_EXIT, RefreshDailyStats)
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, RenderDailyStats)
+Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_PRE_GAME_EXIT, RefreshDailyStats)
+Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, RenderDailyStats)

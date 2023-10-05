@@ -10,8 +10,8 @@
 
 #include <glad/glad.h>
 
-#include "ASMPatches.h"
-#include "LuaRender.h"
+#include "Patches/ASMPatches.h"
+#include "LuaInterfaces/LuaRender.h"
 
 /********************************************************************************
 HOOKING

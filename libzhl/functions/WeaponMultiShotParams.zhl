@@ -1,4 +1,15 @@
 struct Weapon_MultiShotParams
 {
     int16_t numTears : 0x0;
+    int16_t numLanesPerEye : 0x2;
+    float spreadAngleTears : 0x4;
+    float spreadAngleLaser : 0x8;
+    float speadAngleTechX : 0xc;
+    float spreadAngleKnife : 0x10;
+    int numEyesActive : 0x14;
+    float multiEyeAngle : 0x18;
+    bool isCrossEyed : 0x1c;
+    bool isShootingBackwards : 0x1d;
+    bool isShootingSideways : 0x1e;
+    int16_t numRandomDirTears : 0x20;
 } : 0x24;

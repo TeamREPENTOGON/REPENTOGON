@@ -303,7 +303,7 @@ void CodeEmitter::Dump() {
         try {
             std::cout << type.size();
         }
-        catch (std::exception& e) {
+        catch (std::exception&) {
             std::cout << " ERROR";
         }
 

@@ -17,6 +17,14 @@ ___
 #### [Sprite](../Sprite.md) GetCharacterPortraitSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Character·Wheel·Depth () {: aria-label='Functions' }
+#### float GetCharacterWheelDepth ( ) {: .copyable aria-label='Functions' }
+Returns the depth of the character selection wheel object.
+___
+### Get·Character·Wheel·Width () {: aria-label='Functions' }
+#### float GetCharacterWheelWidth ( ) {: .copyable aria-label='Functions' }
+Returns the width of the character selection wheel object.
+___
 ### Get·Difficulty () {: aria-label='Functions' }
 #### int GetDifficulty ( ) {: .copyable aria-label='Functions' }
 
@@ -49,6 +57,10 @@ ___
 #### [Sprite](../Sprite.md) GetPageSwapWidgetSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Scroll·Speed () {: aria-label='Functions' }
+#### float GetScrollSpeed ( ) {: .copyable aria-label='Functions' }
+Returns the speed of the animation playing when rotating the character selection wheel.
+___
 ### Get·Seed·Entry·Sprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSeedEntrySprite ( ) {: .copyable aria-label='Functions' }
 
@@ -77,6 +89,14 @@ ___
 #### [Sprite](../Sprite.md) GetWinStreakPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Character·Wheel·Depth () {: aria-label='Functions' }
+#### void SetCharacterWheelDepth ( float value ) {: .copyable aria-label='Functions' }
+Set the depth of the character selection wheel object.
+___
+### Set·Character·Wheel·Width () {: aria-label='Functions' }
+#### void SetCharacterWheelWidth ( float value ) {: .copyable aria-label='Functions' }
+Set the width of the character selection wheel object.
+___
 ### Set·Difficulty () {: aria-label='Functions' }
 #### void SetDifficulty ( int Difficulty ) {: .copyable aria-label='Functions' }
 
@@ -84,6 +104,10 @@ ___
 ### Set·Is·Character·Unlocked () {: aria-label='Functions' }
 #### void SetIsCharacterUnlocked ( boolean IsUnlocked ) {: .copyable aria-label='Functions' }
 
+___
+### Set·Scroll·Speed () {: aria-label='Functions' }
+#### void SetScrollSpeed ( float speed ) {: .copyable aria-label='Functions' }
+Set the speed of the animation playing when rotating the character selection wheel.
 ___
 ### Set·Selected·Character·Menu () {: aria-label='Functions' }
 #### void SetSelectedCharacterMenu ( int menu ) {: .copyable aria-label='Functions' }

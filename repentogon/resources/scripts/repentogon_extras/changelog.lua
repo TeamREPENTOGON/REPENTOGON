@@ -1,3 +1,9 @@
+-- save copy of original enums, to make it harder for mods to mess with the repentogon features
+local _ModCallbacks = ModCallbacks
+local _MainMenuType = MainMenuType
+local _ButtonAction = ButtonAction
+local _SoundEffect = SoundEffect 
+
 local ChangeLog = {
     ["AssetsLoaded"] = false,
     ["NoteOffset"] = Vector(275, 190),
@@ -74,10 +80,9 @@ function ChangeLog.EvaluateText()
         for _, v in pairs(temparray) do
             local splitbywords = string.gmatch(v, "%w+")
             local wordcount = 0
-            for word in splitbywords do
+            for _ in splitbywords do
                 wordcount = wordcount + 1
             end
-            Isaac.DebugString(tostring(wordcount))
             local limitedarray = {}
             if wordcount > 0 then
                 limitedarray = SplitStringByLength(v, 29)
@@ -124,27 +129,27 @@ function ChangeLog.MenuRender()
     if not Cl.AssetsLoaded then
         return
     end
-    Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(MainMenuType.TITLE, Cl.NoteOffset))
-    local versionPosition = Isaac.WorldToMenuPosition(MainMenuType.TITLE, Cl.VersionOffset)
+    Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.NoteOffset))
+    local versionPosition = Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.VersionOffset)
     Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X + 1, versionPosition.Y + 1,
         KColor(0, 0, 0, 0.3), 200, true)
     Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X, versionPosition.Y,
         KColor(67 / 255, 5 / 255, 5 / 255, 1), 200, true)
-    if MenuManager:GetActiveMenu() == MainMenuType.TITLE then
-        if IsActionTriggeredAll(ButtonAction.ACTION_MAP) then
+    if MenuManager:GetActiveMenu() == _MainMenuType.TITLE then
+        if IsActionTriggeredAll(_ButtonAction.ACTION_MAP) then
             Cl.CurrentState = not Cl.CurrentState
 
             if Cl.CurrentState == true then
-                SFXManager():Play(SoundEffect.SOUND_PAPER_IN)
+                SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
                 Cl.ChangelogSprite:Play("SwapIn")
             else
-                SFXManager():Play(SoundEffect.SOUND_PAPER_OUT)
+                SFXManager():Play(_SoundEffect.SOUND_PAPER_OUT)
                 Cl.ChangelogSprite:Play("SwapOut")
             end
             ShouldBeRendered = true
         end
         if ShouldBeRendered then
-            local LogRenderPosition = Isaac.WorldToMenuPosition(MainMenuType.TITLE, Cl.PaperOffset)
+            local LogRenderPosition = Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.PaperOffset)
             Cl.ChangelogSprite:RenderLayer(3, LogRenderPosition)
             local TextGuideNull = Cl.ChangelogSprite:GetNullFrame("UpdateText")
             if TextGuideNull then
@@ -187,10 +192,10 @@ function ChangeLog.MenuRender()
                 end
             end
 
-            if IsActionPressedAll(ButtonAction.ACTION_MENUUP) then
+            if IsActionPressedAll(_ButtonAction.ACTION_MENUUP) then
                 ScrollVelocity = ScrollVelocity + Cl.ScrollSpeed
             end
-            if IsActionPressedAll(ButtonAction.ACTION_MENUDOWN) then
+            if IsActionPressedAll(_ButtonAction.ACTION_MENUDOWN) then
                 ScrollVelocity = ScrollVelocity - Cl.ScrollSpeed
             end
             if Cl.ChangelogSprite:IsFinished("SwapOut") then
@@ -229,8 +234,8 @@ function ChangeLog.LoadAssets()
         Cl.NoteSprite:Play("Idle")
         curattempt=curattempt+1
         if curattempt>200 then
-		Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
-		Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, Cl.MenuRender)
+		Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
+		Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, Cl.MenuRender)
         	error("[NON-CRITICAL] Changelog graphics were not found!")
         end
     end
@@ -245,11 +250,11 @@ function ChangeLog.LoadAssets()
     if Cl.Font:IsLoaded() and Cl.VersionFont:IsLoaded() and #(Cl.ChangelogSprite:GetDefaultAnimation()) > 0 then
         Cl.AssetsLoaded = true
         Cl.EvaluateText()
-        Isaac.RemoveCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
+        Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
     end
 end
 
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
+Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
 
 
-Isaac.AddCallback(REPENTOGON, ModCallbacks.MC_MAIN_MENU_RENDER, Cl.MenuRender)
+Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, Cl.MenuRender)

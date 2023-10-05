@@ -4,6 +4,38 @@ __thiscall void Entity_Effect::Render(Vector *offset);
 "558bec83e4f856578bfa":
 static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);
 
-struct Entity_Effect : public Entity {
+struct Entity_Effect depends (BitSet128) : public Entity {
+    __vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		
+        override
+        "558bec6aff68????????64a1????????50b850500000":
+        void Update();
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
 
+    };
+	BitSet128 _varData : 0x36c; // in theory this should be 0x370, but the wrong values are getting written in EntityPlayer():SpawnAquariusCreep() with that offset...
 } : 0x3e0;

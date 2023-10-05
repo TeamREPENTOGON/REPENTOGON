@@ -1,3 +1,10 @@
+-- save copy of original enums, to make it harder for mods to mess with the repentogon features
+local _ImGuiElement = _ImGuiElement
+local _ImGuiCallback = ImGuiCallback
+local _ModCallbacks = ModCallbacks
+local _RoomTransitionAnim = RoomTransitionAnim
+local _Direction = Direction
+
 REPENTOGON.Extras.OnlineRNG=RNG()
 local rng=REPENTOGON.Extras.OnlineRNG
 local stubvec=Vector(-1,-1)
@@ -9,7 +16,7 @@ if REPENTOGON.NoOnlineStub then
     return
 end
 
-function REPENTOGON.Extras.UnlinkCB() local cnt=0 for _,_ in pairs(ModCallbacks) do cnt=cnt+1 end for i=0,cnt do local cb=Isaac.GetCallbacks(i,false) print(cb) while #(cb)~=0 do table.remove(cb,1) Isaac.SetBuiltInCallbackState(i, false) end end for _,ent in pairs(Isaac.GetRoomEntities()) do for entry,_ in pairs(ent:GetData()) do ent:GetData()[entry]=nil end end end      --temporary, used to bypass mod unload callbacks since actions done there are just way too nasty for us!
+function REPENTOGON.Extras.UnlinkCB() local cnt=0 for _,_ in pairs(_ModCallbacks) do cnt=cnt+1 end for i=0,cnt do local cb=Isaac.GetCallbacks(i,false) print(cb) while #(cb)~=0 do table.remove(cb,1) Isaac.SetBuiltInCallbackState(i, false) end end for _,ent in pairs(Isaac.GetRoomEntities()) do for entry,_ in pairs(ent:GetData()) do ent:GetData()[entry]=nil end end end      --temporary, used to bypass mod unload callbacks since actions done there are just way too nasty for us!
 
 
 local function CheckOnlineCoop()
@@ -195,15 +202,16 @@ end
 
 local function ScheduleLuaReset()
     if Game():GetFrameCount()>30 then
-        Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,ScheduleLuaReset)
+        Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_POST_UPDATE,ScheduleLuaReset)
         print('Please, run the "luareset" debug command :)')
         if not REPENTOGON.Extras.NoImGui then
-            Isaac.GetImGui():CreateWindow("luareset-warning","A rather important message!")
-            Isaac.GetImGui():AddElement("luareset-warning","luareset-text",ImGuiElement.Text,'Hey, folks, can you please have one person run the "luareset" command for me?')
-            Isaac.GetImGui():AddElement("luareset-warning","luareset-okay",ImGuiElement.Button,"Okay, I will!")
-            Isaac.GetImGui():AddCallback("luareset-okay",ImGuiCallback.Clicked,function() Isaac.GetImGui():RemoveWindow("luareset-warning") Isaac.GetImGui():Hide() end)
-            Isaac.GetImGui():SetVisible("luareset-warning",true)
-            Isaac.GetImGui():Show()
+            local imgui = Isaac.GetImGui()
+            imgui:CreateWindow("luareset-warning","A rather important message!")
+            imgui:AddElement("luareset-warning","luareset-text",_ImGuiElement.Text,'Hey, folks, can you please have one person run the "luareset" command for me?')
+            imgui:AddElement("luareset-warning","luareset-okay",_ImGuiElement.Button,"Okay, I will!")
+            imgui:AddCallback("luareset-okay", _ImGuiCallback.Clicked, function() imgui:RemoveWindow("luareset-warning") imgui:Hide() end)
+            imgui:SetVisible("luareset-warning",true)
+            imgui:Show()
         end
 --        Isaac.ExecuteCommand("luareset")
     end
@@ -212,8 +220,8 @@ end
 local function ScheduleRestart()
     if Game():GetFrameCount()>1 then
         Isaac.ExecuteCommand("seed "..Game():GetSeeds():GetStartSeedString())
-        Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,ScheduleRestart)
-        Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,ScheduleLuaReset)
+        Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_POST_UPDATE,ScheduleRestart)
+        Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_POST_UPDATE,ScheduleLuaReset)
     end
 end
 
@@ -227,7 +235,7 @@ local function SetOnlineRNG()
     rng:SetSeed(Game():GetSeeds():GetStartSeed(),35)
     if isonline then
         REPENTOGON.Extras.UnlinkCB()
-        Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,ScheduleRestart)
+        Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_POST_UPDATE,ScheduleRestart)
     end
 end
 
@@ -249,20 +257,20 @@ end
 
 local function TeleportToBeast()
     Isaac.ExecuteCommand("goto x.itemdungeon.666")
-    Game():StartRoomTransition(-3,Direction.NO_DIRECTION,RoomTransitionAnim.FADE,nil,-1)
-    Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,TeleportToBeast)
+    Game():StartRoomTransition(-3, _Direction.NO_DIRECTION, _RoomTransitionAnim.FADE,nil,-1)
+    Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_POST_UPDATE,TeleportToBeast)
 end
 
 local function DelayDogmaTeleport(_,npc)
     if npc:GetSprite():GetFrame()>=110 then
-        Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,TeleportToBeast)
-        Isaac.RemoveCallback(REPENTOGON,ModCallbacks.MC_POST_NPC_RENDER,DelayDogmaTeleport)
+        Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_POST_UPDATE,TeleportToBeast)
+        Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_POST_NPC_RENDER,DelayDogmaTeleport)
     end
 end
 
 local function DogmaStub(_,npc)
     if isonline and npc.Variant==2 and Game():GetLevel():GetStage()==13 and Game():GetLevel():GetStageType()>0 and Game():GetLevel():GetCurrentRoomIndex()==109 then
-        Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_NPC_RENDER,DelayDogmaTeleport)
+        Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_POST_NPC_RENDER,DelayDogmaTeleport)
     end
 end
 
@@ -270,17 +278,18 @@ local function DesyncDetect()
     if isonline and not REPENTOGON.Extras.NoImGui then
         if not con then con=Game():GetConsole() end
         local conhist=con:GetHistory()
+        local imgui = Isaac.GetImGui()
         for i=1,5 do
             if string.match(conhist[i],"Checksum mismatch") then
                 print("\n\n\n\n\n")
-                Isaac.GetImGui():CreateWindow("desync-warning","Fuck.")
-                Isaac.GetImGui():AddElement("desync-warning","desync-text",ImGuiElement.Text,'Shit just happened, want to try a "rewind"? Maybe a "restart"?')
-                Isaac.GetImGui():AddElement("desync-warning","desync-rewind",ImGuiElement.Button,"Please rewind!")
-                Isaac.GetImGui():AddElement("desync-warning","desync-restart",ImGuiElement.Button,"I choose a restart")
-                Isaac.GetImGui():AddCallback("desync-rewind",ImGuiCallback.Clicked,function() Isaac.GetImGui():RemoveWindow("desync-warning") Isaac.GetImGui():Hide() Isaac.ExecuteCommand("rewind") end)
-                Isaac.GetImGui():AddCallback("desync-restart",ImGuiCallback.Clicked,function() Isaac.GetImGui():RemoveWindow("desync-warning") Isaac.GetImGui():Hide() Isaac.ExecuteCommand("restart") end)
-                Isaac.GetImGui():SetVisible("desync-warning",true)
-                Isaac.GetImGui():Show()
+                imgui:CreateWindow("desync-warning","Fuck.")
+                imgui:AddElement("desync-warning","desync-text", _ImGuiElement.Text,'Shit just happened, want to try a "rewind"? Maybe a "restart"?')
+                imgui:AddElement("desync-warning","desync-rewind", _ImGuiElement.Button,"Please rewind!")
+                imgui:AddElement("desync-warning","desync-restart", _ImGuiElement.Button,"I choose a restart")
+                imgui:AddCallback("desync-rewind", _ImGuiCallback.Clicked,function() imgui:RemoveWindow("desync-warning") imgui:Hide() Isaac.ExecuteCommand("rewind") end)
+                imgui:AddCallback("desync-restart", _ImGuiCallback.Clicked,function() imgui:RemoveWindow("desync-warning") imgui:Hide() Isaac.ExecuteCommand("restart") end)
+                imgui:SetVisible("desync-warning",true)
+                imgui:Show()
                 break
             end
         end
@@ -288,10 +297,10 @@ local function DesyncDetect()
 end
 
 function REPENTOGON.Extras.StubCallbacks()
-    Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_UPDATE,DesyncDetect)
-    Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_ENTITY_KILL,DogmaStub,950)
-    Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_RENDER,render)
-    Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_PRE_GAME_EXIT,ResetStubData)
-    Isaac.AddCallback(REPENTOGON,ModCallbacks.MC_POST_NEW_ROOM,SetOnlineRNG) --because new room triggers before anything else :skull:
+    Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_POST_UPDATE, DesyncDetect)
+    Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_POST_ENTITY_KILL, DogmaStub,950)
+    Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_POST_RENDER, render)
+    Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_PRE_GAME_EXIT, ResetStubData)
+    Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_POST_NEW_ROOM, SetOnlineRNG) --because new room triggers before anything else :skull:
 end
 REPENTOGON.Extras.StubCallbacks()

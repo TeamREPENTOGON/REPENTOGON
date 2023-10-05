@@ -633,6 +633,7 @@ namespace lua {
 		const char* FXParamsMT = "FXParams";
 		const char* ColorModifierMT = "ColorModifier";
 		const char* BlendModeMT = "BlendMode";
+		const char* MultiShotParamsMT = "MultiShotParams";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {

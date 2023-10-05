@@ -32,6 +32,10 @@ ___
     At the moment, the duration setting gives no effect, so you need to call this function repeatedly.
 
 ___
+### Get·Animation·State () {: aria-label='Functions' }
+#### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Boss·Status·Effect·Cooldown () {: aria-label='Functions' }
 #### int GetBossStatusEffectCooldown ( ) {: .copyable aria-label='Functions' }
 
@@ -82,6 +86,10 @@ ___
 #### float GetShadowSize ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Speed·Multiplier () {: aria-label='Functions' }
+#### float GetSpeedMultiplier ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Type () {: aria-label='Functions' }
 #### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
 
@@ -114,11 +122,19 @@ ___
 #### float SetShadowSize ( float Size ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Speed·Multiplier () {: aria-label='Functions' }
+#### void SetSpeedMultiplier ( float amount ) {: .copyable aria-label='Functions' }
+
+___
 ### To·Slot () {: aria-label='Functions' }
 #### [EntitySlot](EntitySlot.md) ToSlot ( ) {: .copyable aria-label='Functions' }
 Used to cast an [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) object to an [EntitySlot](EntitySlot.md) object.
 
 ???+ note "Return behavior"
     If the conversion is not successful, this function returns `nil`.
+
+___
+### Try·Throw () {: aria-label='Functions' }
+#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ThrowDirection, float Force ) {: .copyable aria-label='Functions' }
 
 ___

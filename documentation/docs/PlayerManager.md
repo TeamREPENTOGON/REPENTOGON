@@ -27,6 +27,11 @@ ___
 Returns the number of collectibles held by all players.
 
 ___
+### Get·Players () {: aria-label='Functions' }
+#### table GetPlayers ( ) {: .copyable aria-label='Functions' }
+Returns a table containing all players.
+
+___
 ### Get·Total·Trinket·Multiplier () {: aria-label='Functions' }
 #### int GetTotalTrinketMultiplier ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
 

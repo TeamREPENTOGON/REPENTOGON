@@ -145,15 +145,15 @@ private:
 		}
 
 		char Mod() const {
-			return (_bits >> 6).to_ulong();
+			return (char) (_bits >> 6).to_ulong();
 		}
 
 		char Reg() const {
-			return ((_bits >> 3) & std::bitset<8>(0x7)).to_ulong();
+			return (char) ((_bits >> 3) & std::bitset<8>(0x7)).to_ulong();
 		}
 
 		char RM() const {
-			return (_bits & std::bitset<8>(0x7)).to_ulong();
+			return (char) (_bits & std::bitset<8>(0x7)).to_ulong();
 		}
 
 		void Mod(char value) {
@@ -319,7 +319,7 @@ public:
 		size_t s = space.Size();
 		ByteBuffer bytes;
 		char opcode = '\x81';
-		char modrm = 0b11101100; // Mod = 11, Reg = 101 (/5), RM = 100 (ESP)
+		unsigned char modrm = 0b11101100; // Mod = 11, Reg = 101 (/5), RM = 100 (ESP)
 		bytes.AddByte(opcode).AddByte(modrm).AddByteBuffer(ToHexString((int32_t)s, false));
 		return AddBytes(bytes);
 	}
@@ -330,7 +330,7 @@ public:
 		size_t s = space.Size();
 		ByteBuffer bytes;
 		char opcode = '\x81';
-		char modrm = 0b11000100; // Mod = 11, Reg = 000 (/0), RM = 100 (ESP)
+		unsigned char modrm = 0b11000100; // Mod = 11, Reg = 000 (/0), RM = 100 (ESP)
 		bytes.AddByte(opcode).AddByte(modrm).AddByteBuffer(ToHexString((int32_t)s, false));
 		space.Free();
 		return AddBytes(bytes);

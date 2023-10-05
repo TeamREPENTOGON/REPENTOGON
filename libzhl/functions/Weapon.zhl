@@ -30,7 +30,45 @@ struct Weapon { {{
 	inline int GetNumFired() { return *(int*)((char*)this + 0x34); }
 }}
     __vtable {
+		skip; // Free
+		skip; // Init
+		skip; // Update
+		
         "558bec83e4f883ec60a1????????33c4894424??8b45":
         void Fire(const Vector& pos, bool IsShooting, bool IsInterpolated);
+		
+		skip; // Reset
+		skip; // ClearReferences
+		skip; // GetMaxCharge
+		skip; // GetChargeBarAmount
+		skip; // GetChargeBarAmount?
+		skip; // GetFocusEntity
+		skip; // GetMainEntity
+		skip; // TriggerNewRoom
+		skip; // GetMarkedTargetVariant
+		skip; // SupportsTractorBeam
+		skip; // CanTriggerCursedEyeTeleport
+		skip; // CanTriggerKidneyStone
+		skip; // CanOverrideForgottenThrow
     };
 } : 0x40;
+
+/* For convenience's sake:
+		skip; // Free
+		skip; // Init
+		skip; // Update
+		skip; // Fire
+		skip; // Reset
+		skip; // ClearReferences
+		skip; // GetMaxCharge
+		skip; // GetChargeBarAmount
+		skip; // GetChargeBarAmount?
+		skip; // GetFocusEntity
+		skip; // GetMainEntity
+		skip; // TriggerNewRoom
+		skip; // GetMarkedTargetVariant
+		skip; // SupportsTractorBeam
+		skip; // CanTriggerCursedEyeTeleport
+		skip; // CanTriggerKidneyStone
+		skip; // CanOverrideForgottenThrow
+*/

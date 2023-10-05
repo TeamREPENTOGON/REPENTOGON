@@ -33,11 +33,23 @@ struct GridEntity_Rock : public GridEntity {
 
 }}
 	__vtable {
+		skip; // Free
+		skip; // PostInit
+		
 		"558bec6aff68????????64a1????????5081ec88000000a1????????33c58945??5657508d45??64a3????????8bf9897d??8b57":
 		void Update();
+		
+		skip; // Render
+		skip; // Hurt
 		
 		override
         "558bec83ec40a1????????33c58945??538b1d":
 		bool Destroy(bool Immediate); 
+		
+		skip; // GetWaterClipInfo
+		skip; // CanTakeDamageFromTearEffects
+		skip; // BeginBatches
+		skip; // EndBatches
+		skip; // InitSubclass
     };
 } : 0x198;

@@ -40,7 +40,7 @@ This does not advance the internal state of the RNG object.
 ___
 
 ### Phantom·Vector () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RandomVector ( ) {: .copyable aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) PhantomVector ( ) {: .copyable aria-label='Functions' }
 Returns a random vector with length `1`. Multiply this vector by a number for larger random vectors.
 
 This does not advance the internal state of the RNG object.

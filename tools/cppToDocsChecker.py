@@ -20,9 +20,10 @@ ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp"]
 subFolders = [["Menu","menus"]]
 
 parentClass = {
-               "Ambush":"Game",
-               "AnimationData":"Sprite",
-               "Backdrop":"Room",
+               "Ambush": "Game",
+               "AnimationData": "Sprite",
+               "AnimationState": "Entity",
+               "Backdrop": "Room",
                "Camera": "Room",
                "Capsule": "Entity",
                "ChallengeParam": "Game",
@@ -30,7 +31,7 @@ parentClass = {
                "Console":"Game",
                "DailyChallenge":"Isaac",
                "DebugRenderer":"Game,Entity,Shape",
-               "EntityPlayer":"PocketItem",
+               "EntityPlayer":"PocketItem,MultiShotParams",
                "EntitySlot":"Entity",
                "FXParams": "Room",
                "GridEntity":"Isaac,GridEntityRock",
@@ -50,6 +51,7 @@ parentClass = {
                "ProceduralItemManager":"Game",
                "RoomTransition":"Game",
                "RoomConfigHolder":"Game",
+               "ScoreSheet":"Game",
                "StageTransition":"Game",
                "Sprite":"LayerState",
                "Weapon":"Isaac,EntityPlayer",
@@ -61,8 +63,8 @@ def searchInDocFile(docFilePath, luaFunctions):
         docFile = open(docFilePath, 'r')
         for line in docFile:
             if "####" in line: # function header
-                filterLinks = re.sub("\]\([a-zA-z0-9\.\/:]*html\)", "", line)
-                filterMdLinks = re.sub("\]\(.*md\)", "", filterLinks).replace("[","")
+                filterLinks = re.sub("\]\([a-zA-Z0-9\.\/:]*html\)", "", line)
+                filterMdLinks = re.sub("\]\(.*md\)", "", filterLinks).replace("[const ","[").replace("[","")
                 filteredLine = filterMdLinks.split("####")[1].split("{:")[0].replace(")","").strip()
                 lineSplit = filteredLine.split(" (")
 
@@ -97,7 +99,7 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
         continue
 
     print(os.path.abspath(file))
-    cppFile = open(os.path.abspath(file), 'r')
+    cppFile = open(os.path.abspath(file), 'r', encoding="utf-8")
 
     className = ""
     luaFunctions = []

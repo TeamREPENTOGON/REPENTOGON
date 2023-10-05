@@ -2,8 +2,26 @@ struct Weapon_Brimstone : public Weapon { {{
 
 }}
     __vtable {
+		skip; // Free
+		skip; // Init
+		skip; // Update
+		
         override
         "558bec6aff68????????64a1????????5081ecc8000000a1????????33c58945??5657508d45??64a3????????8bf1":
         void Fire(const Vector& shootPos, bool IsShooting, bool IsInterpolated);
+		
+		skip; // Reset
+		skip; // ClearReferences
+		skip; // GetMaxCharge
+		skip; // GetChargeBarAmount
+		skip; // GetChargeBarAmount?
+		skip; // GetFocusEntity
+		skip; // GetMainEntity
+		skip; // TriggerNewRoom
+		skip; // GetMarkedTargetVariant
+		skip; // SupportsTractorBeam
+		skip; // CanTriggerCursedEyeTeleport
+		skip; // CanTriggerKidneyStone
+		skip; // CanOverrideForgottenThrow
     };
 } : 0x48;
