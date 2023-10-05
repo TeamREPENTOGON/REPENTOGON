@@ -128,8 +128,16 @@ target_compile_options(imgui PUBLIC "/MD")
 target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE)
 
 # Repentogon
-FILE(GLOB_RECURSE REPENTOGON_SRC ${CMAKE_SOURCE_DIR}/repentogon/*.cpp)
-add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC})
+# Display folder structure inside of VS solution - https://stackoverflow.com/a/54531576
+file(GLOB_RECURSE REPENTOGON_SRC ${CMAKE_SOURCE_DIR}/repentogon/*.*)
+foreach(_source IN ITEMS ${REPENTOGON_SRC})
+    get_filename_component(_source_path "${_source}" PATH)
+    string(REPLACE "${CMAKE_SOURCE_DIR}" "" _group_path "${_source_path}")
+    string(REPLACE "/" "\\" _group_path "${_group_path}")
+    source_group("${_group_path}" FILES "${_source}")
+endforeach()
+
+add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/wd4251" "/wd4996")
 
 # Delirium
@@ -166,3 +174,9 @@ add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
 target_link_libraries(zhlREPENTOGON Lua5.3.3r libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
 target_link_libraries(libzhl Lua5.3.3r "Zydis" dbghelp)
+
+# Put libraries into folders
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+set_target_properties(freetype antlr4_shared imgui Lua5.3.3r stb stbc Zydis Zycore PROPERTIES FOLDER "External Libs")
+set_target_properties(libzhl zhlparser PROPERTIES FOLDER "libzhl")
+set_target_properties(dsound zhlDelirium zhlREPENTOGON PROPERTIES FOLDER "Repentogon")
