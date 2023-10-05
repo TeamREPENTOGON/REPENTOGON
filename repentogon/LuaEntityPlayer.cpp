@@ -1,10 +1,14 @@
 ﻿#include <lua.hpp>
 #include <algorithm>
+#include <random>
+
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "LuaWeapon.h"
+
+#include "Log.h"
 
 /*
 
@@ -22,7 +26,13 @@
 
 static constexpr const char* PocketItemMT = "PocketItem";
 
+// todo: this is from LuaInit, make that a global instead
+static std::uniform_real_distribution<float> _distrib(0, 1);
+static std::random_device rd;
+static std::mt19937 gen(rd());
+
 std::map<int, int> fakeItems;
+
 
 int Lua_GetMultiShotPositionVelocity(lua_State* L) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
@@ -1170,6 +1180,37 @@ LUA_FUNCTION(Lua_SwapForgottenForm) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SpawnAquariusCreep) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity* castPlayer = (Entity*)player;
+
+	/*
+	* for some reason, tear flags are being written one dword ahead of where they're supposed to. i've adjusted the offset in the effect zhl to compensate but this needs investigating
+	*/
+	TearParams params;
+
+	if (lua_gettop(L) >= 2) {
+		params = *lua::GetUserdata<TearParams*>(L, 2, lua::Metatables::TEAR_PARAMS, "TearParams");
+	}
+	else {
+		player->GetTearHitParams(&params, 1, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)(Isaac::Random(2) != 0) & 2) - 1, 0);
+	}
+
+	Entity* ent = g_Game->Spawn(1000, 54, *castPlayer->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
+	
+	ent->_sprite._scale *= ((_distrib(gen) * 0.5f) + 0.2f);
+	ent->_collisionDamage = params._tearDamage;
+	ent->SetColor(&params._tearColor, 0, -1, true, false);
+
+	Entity_Effect* creep = (Entity_Effect*)ent;
+	creep->_varData = params._flags;
+	creep->Update();
+
+	lua::luabridge::UserdataPtr::push(L, creep, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -1272,4 +1313,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "RemovePoopSpell", Lua_PlayerRemovePoopSpell);
 	lua::RegisterFunction(state, mt, "GetFlippedForm", Lua_PlayerGetBackupPlayer);
 	lua::RegisterFunction(state, mt, "SwapForgottenForm", Lua_SwapForgottenForm);
+	lua::RegisterFunction(state, mt, "SpawnAquariusCreep", Lua_SpawnAquariusCreep);
 }

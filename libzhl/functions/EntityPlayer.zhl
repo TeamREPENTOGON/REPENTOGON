@@ -209,6 +209,9 @@ __thiscall void Entity_Player::ClearDeadEyeCharge();
 "558bec83e4c081ecb4000000a1????????33c4898424????????5356578bf9897c24":
 __thiscall void Entity_Player::SwapForgottenForm(bool unk1, bool unk2);
 
+"558bec83e4f081ec480100008b55":
+__thiscall TearParams* Entity_Player::GetTearHitParams(TearParams * res, int WeaponType, float DamageScale, int TearDisplacement, Entity* Source);
+
 struct Entity_Player depends (ANM2) : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
@@ -262,17 +265,43 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 	inline ANM2* GetHeldSprite() { return &this->_heldSprite; }
 }} 
     __vtable {
+		skip; // Free
+		
         override
         "558bec6aff68????????64a1????????5081eca0010000a1????????33c58945??5657508d45??64a3????????8bf989bd????????f30f7e05":
         void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
-
+		
+		skip; // PreUpdate
+		
         override
         "558bec6aff68????????64a1????????5081ec8c010000":
         void Update();
-
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		
         override
         "558bec6aff68????????64a1????????5081ec3c010000a1":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
+		
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
     };
     
     {{ 
@@ -286,6 +315,7 @@ struct Entity_Player depends (ANM2) : public Entity { {{
     }}
 
 	ANM2 _heldSprite : 0xf48;
+	float _damage : 0x13b8;
 	uint32_t _cacheFlags : 0x14b8;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;

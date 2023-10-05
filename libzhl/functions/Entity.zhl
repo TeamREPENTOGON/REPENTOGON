@@ -50,7 +50,7 @@ __thiscall Capsule Entity::GetCollisionCapsule(Vector* vec);
 "8b51??8d42??3ddd0300000f87????????8bc2":
 __thiscall uint32_t Entity::GetHitListIndex();
 
-struct Entity depends (AnimationState) {
+struct Entity depends (AnimationState, ANM2) {
 {{
 	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
@@ -100,20 +100,51 @@ struct Entity depends (AnimationState) {
     unsigned int _type : 0x28; //0x28
     unsigned int _variant : 0x2c; //0x2c
     unsigned int _subtype : 0x30; //0x30
+	ANM2 _sprite : 0x3c;
     unsigned int _shadowSize : 0x150; //0x150   
     bool _dead : 0x168; 
     bool _visible : 0x169; // 0x169 
+	float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
 
     __vtable {
+		skip; // Free
+		
         "558bec83ec308b45??f30f7e05":
         void Init(unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed);
-
+		
+		skip; // PreUpdate
+		
         "558bec83e4f081ecd8010000":
         void Update();
-
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		
         "558bec83e4f883ec3c5356578bf9837f??01":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
+		
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+
+		"558bec83e4f883ec4c538b5d??56":
+		void SetColor(ColorMod *color, int Duration, int Priority, bool Fadeout, bool Shared);
+		
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
     };
 } : 0x360;
 
@@ -122,3 +153,31 @@ reference void* EntityRTTI;
 
 "558bec51535657894dfce8914d03008b75088b0d????????506a006a0068????????566a0068c5030000e8013ed9ff":
 __thiscall Entity_NPC* Entity::GiveMinecart(Vector* position, Vector* velocity);
+
+/* For convenience's sake:
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		skip; // Update
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+*/

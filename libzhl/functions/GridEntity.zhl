@@ -25,10 +25,36 @@ struct GridEntity depends (GridEntityDesc) {
 }} 
 	
 	__vtable {
+		skip; // Free
+		skip; // PostInit
+		skip; // Update
+		
         "558bec83e4f8a1????????8d5424??83ec3c8b80????????53568bf10f1080????????8b88????????0f1088????????57f30f7e90????????8d86????????3bc274??660fd650??0f11008948??0f1148??8d4424":
         void Render(const Vector& Offset);
 		
+		skip; // Hurt
+		
 		"8b016a048b40":
 		bool Destroy(bool Immediate);
+		
+		skip; // GetWaterClipInfo
+		skip; // CanTakeDamageFromTearEffects
+		skip; // BeginBatches
+		skip; // EndBatches
+		skip; // InitSubclass
     };
 } : 0x154;
+
+/* For convenience's sake:
+		skip; // Free
+		skip; // PostInit
+		skip; // Update
+		skip; // Render
+		skip; // Hurt
+		skip; // Destroy
+		skip; // GetWaterClipInfo
+		skip; // CanTakeDamageFromTearEffects
+		skip; // BeginBatches
+		skip; // EndBatches
+		skip; // InitSubclass
+*/
