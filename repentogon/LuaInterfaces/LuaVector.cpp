@@ -151,6 +151,9 @@ HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 	lua::Metatables metas[2] = { lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR };
 	for (lua::Metatables meta : metas) {
 		lua::PushMetatable(L, meta);
+		lua_pushstring(L, "__name");
+		lua_pushstring(L, "Vector");
+		lua_rawset(L, -3);
 		lua_pushstring(L, "__mul");
 		lua_pushcfunction(L, Lua_VectorUD_metamul);
 		lua_rawset(L, -3);

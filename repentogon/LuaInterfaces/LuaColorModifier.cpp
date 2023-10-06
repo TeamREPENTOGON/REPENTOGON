@@ -199,6 +199,10 @@ static void RegisterColorModifier(lua_State* L) {
 	lua_pushcfunction(L, lua::luabridge::newIndexMetaMethod);
 	lua_rawset(L, -3);
 
+	lua_pushstring(L, "__name");
+	lua_pushstring(L, "ColorModifier");
+	lua_rawset(L, -3);
+
 	/*
 		from http://lua-users.org/wiki/SimpleLuaApiExample, to a future nami
 

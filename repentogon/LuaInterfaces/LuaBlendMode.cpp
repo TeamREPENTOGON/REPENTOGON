@@ -88,6 +88,10 @@ static void RegisterBlendMode(lua_State* L) {
 	lua_pushcfunction(L, lua::luabridge::newIndexMetaMethod);
 	lua_rawset(L, -3);
 
+	lua_pushstring(L, "__name");
+	lua_pushstring(L, "BlendMode");
+	lua_rawset(L, -3);
+
 	lua_pushstring(L, "__propget");
 	lua_newtable(L);
 
