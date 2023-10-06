@@ -1182,9 +1182,6 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Entity* castPlayer = (Entity*)player;
 
-	/*
-	* for some reason, tear flags are being written one dword ahead of where they're supposed to. i've adjusted the offset in the effect zhl to compensate but this needs investigating
-	*/
 	TearParams params;
 
 	if (lua_gettop(L) >= 2) {
