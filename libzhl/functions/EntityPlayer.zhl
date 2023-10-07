@@ -212,6 +212,9 @@ __thiscall void Entity_Player::SwapForgottenForm(bool unk1, bool unk2);
 "558bec83e4f081ec480100008b55":
 __thiscall TearParams* Entity_Player::GetTearHitParams(TearParams * res, int WeaponType, float DamageScale, int TearDisplacement, Entity* Source);
 
+"558bec83ec10538bd90f28ca":
+__thiscall void Entity_Player::PlayDelayedSFX(unsigned int soundEffectID, int soundDelay, int frameDelay, float volume<xmm2>);
+
 struct Entity_Player depends (ANM2) : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }

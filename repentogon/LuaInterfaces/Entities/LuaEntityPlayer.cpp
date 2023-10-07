@@ -1255,6 +1255,18 @@ LUA_FUNCTION(Lua_PlayerSetMaggySwingCooldown) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerPlayDelayedSFX) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	unsigned int soundEffectID = (unsigned int)luaL_checkinteger(L, 2);
+	int soundDelay = (int)luaL_optinteger(L, 3, 0);
+	int frameDelay = (int)luaL_optinteger(L, 4, 2);
+	float volume = (float)luaL_optnumber(L, 5, 1.0f);
+	player->PlayDelayedSFX(soundEffectID, soundDelay, frameDelay, volume);
+
+	return 0;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -1361,5 +1373,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterBabySkinFix(state);
 	lua::RegisterFunction(state, mt, "GetMaggySwingCooldown", Lua_PlayerGetMaggySwingCooldown);
 	lua::RegisterFunction(state, mt, "SetMaggySwingCooldown", Lua_PlayerSetMaggySwingCooldown);
+	lua::RegisterFunction(state, mt, "PlayDelayedSFX", Lua_PlayerPlayDelayedSFX);
 
 }

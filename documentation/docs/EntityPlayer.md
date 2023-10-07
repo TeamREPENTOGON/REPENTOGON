@@ -306,6 +306,10 @@ ___
 #### boolean IsUrethraBlocked ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Play·Delayed·SFX () {: aria-label='Functions' }
+#### void PlayDelayedSFX ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) ID, int SoundDelay = 0, int FrameDelay = 2, float Volume = 1 ) {: .copyable aria-label='Functions' }
+
+___
 ### Remove·Collectible·By·History·Index () {: aria-label='Functions' }
 #### void RemoveCollectibleByHistoryIndex ( int Index ) {: .copyable aria-label='Functions' }
 
