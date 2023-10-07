@@ -1206,6 +1206,55 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetBabySkin) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_babySkin);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetBabySkin) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_babySkin = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+static void RegisterBabySkinFix(lua_State* L) {
+	lua::LuaStackProtector protector(L);
+
+	lua::PushMetatable(L, lua::Metatables::ENTITY_PLAYER);
+	lua_pushstring(L, "__propget");
+	lua_rawget(L, -2);
+
+	lua_pushstring(L, "BabySkin");
+	lua_pushcfunction(L, Lua_PlayerGetBabySkin);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+
+	lua_pushstring(L, "__propset");
+	lua_rawget(L, -2);
+
+	lua_pushstring(L, "BabySkin");
+	lua_pushcfunction(L, Lua_PlayerSetBabySkin);
+	lua_rawset(L, -3);
+	lua_pop(L, 2);
+}
+
+LUA_FUNCTION(Lua_PlayerGetMaggySwingCooldown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_maggySwingCooldown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetMaggySwingCooldown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_maggySwingCooldown = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -1309,4 +1358,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetFlippedForm", Lua_PlayerGetBackupPlayer);
 	lua::RegisterFunction(state, mt, "SwapForgottenForm", Lua_SwapForgottenForm);
 	lua::RegisterFunction(state, mt, "SpawnAquariusCreep", Lua_SpawnAquariusCreep);
+	RegisterBabySkinFix(state);
+	lua::RegisterFunction(state, mt, "GetMaggySwingCooldown", Lua_PlayerGetMaggySwingCooldown);
+	lua::RegisterFunction(state, mt, "SetMaggySwingCooldown", Lua_PlayerSetMaggySwingCooldown);
+
 }

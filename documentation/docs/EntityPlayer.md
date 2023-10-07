@@ -32,6 +32,15 @@ Now returns a proper `PocketItem` object.
 
 ___
 
+## Modified Variables
+___
+### Baby·Skin {: aria-label='Modified Variables' }
+[ ](#){: .tooltip .badge }
+#### [BabySubType](https://wofsauge.github.io/IsaacDocs/rep/enums/BabySubType.html) BabySkin  {: .copyable aria-label='Modified Variables' }
+Same as default, but now returns a proper integer value instead of userdata.
+
+___
+
 ## Functions
 
 ### Add·Active·Charge () {: aria-label='Functions' }
@@ -183,6 +192,11 @@ ___
 ___
 ### Get·Immaculate·Conception·State () {: aria-label='Functions' }
 #### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Maggy·Swing·Cooldown () {: aria-label='Functions' }
+#### int GetMaggySwingCooldown ( ) {: .copyable aria-label='Functions' }
+Used for Tainted Magdalene's hugging attack.
 
 ___
 ### Get·Marked·Target () {: aria-label='Functions' }
@@ -368,6 +382,10 @@ ___
 ### Set·Item·State () {: aria-label='Functions' }
 #### void SetItemState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType ) {: .copyable aria-label='Functions' }
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
+
+___
+### Set·Maggy·Swing·Cooldown () {: aria-label='Functions' }
+#### void SetMaggySwingCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Max·Bladder·Charge () {: aria-label='Functions' }
