@@ -1106,7 +1106,7 @@ Accepts no return parameters.
 |1127 |MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_CUSTOM_CHARACTER_UNLOCKED
-This is called every frame a custom character with the `needsunlock` tag is currently selected on the menu.
+This is called on the main menu every frame for every custom character with the `needsunlock` tag.
 
 By default, characters with this tag are **locked.** Return `true` in this callback to unlock the character, `false` or `nil` to keep it locked.
 
