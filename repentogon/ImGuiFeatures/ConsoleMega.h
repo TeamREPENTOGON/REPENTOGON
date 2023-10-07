@@ -159,7 +159,7 @@ struct ConsoleMega {
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
 		
-		RegisterCommand("achievement", "UnLocks achievements", "UnLocks achievements", true,ACHIEVEMENT);
+		RegisterCommand("achievement", "UnLocks achievements", "UnLocks achievements", true, ACHIEVEMENT);
         RegisterCommand("addplayer", "Spawns a new player", "Spawns a new player entity. On default, it spawns Isaac with controller ID 0.\nPlayer ID -1 lets you take control of a random enemy in the room.\nExample:\n(addplayer 7 1) Spawns Azazel and can be controlled with the second input device (controller 1 in most cases)", false, PLAYER);
         RegisterCommand("challenge", "Start a challenge run", "Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n", false, CHALLENGE);
         RegisterCommand("clear", "Clear the debug console", "Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.", true);
@@ -178,7 +178,7 @@ struct ConsoleMega {
         RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM, {"g"});
         RegisterCommand("giveitem2", "Give player 2 items, trinkets, cards, and pills", "Gives the second player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem2 c1) will give the player The Sad Onion.\n(giveitem2 t1) will give the player Gulp!\n(giveitem2 p1) will give the player a Bad Trip pill.\n(giveitem2 k1) will give the player 0 - The Fool.", false, ITEM, { "g2" });
         RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false, GOTO);
-        RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false);
+        RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false, GRID);
         RegisterCommand("help", "Get info about commands", "Retrieve further info about a command and its syntax.", true);
         RegisterCommand("listcollectibles", "List current items", "Lists the items the player currently has.", false);
 		RegisterCommand("lockachievement", "Locks achievements", "Locks achievements", true,ACHIEVEMENT);
@@ -481,6 +481,7 @@ struct ConsoleMega {
 
                                 break;
                             }
+
                             case GOTO: {
                                 unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
                                 RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
@@ -611,6 +612,114 @@ struct ConsoleMega {
                                 break;
                             }
 
+                            case GRID: {
+                                entries = {
+                                    AutocompleteEntry("0", "Decoration"),
+                                    AutocompleteEntry("1000", "Rock"),
+                                    AutocompleteEntry("1001", "Bomb Rock"),
+                                    AutocompleteEntry("1002", "Alt Rock"),
+                                    AutocompleteEntry("1003", "Tinted Rock"),
+                                    AutocompleteEntry("1008", "Marked Skull"),
+                                    AutocompleteEntry("1009", "Event Rock"),
+                                    AutocompleteEntry("1010", "Spiked Rock"),
+                                    AutocompleteEntry("1011", "Fool's Gold Rock"),
+                                    AutocompleteEntry("1300", "TNT"),
+                                    AutocompleteEntry("1490", "Red Poop"),
+                                    AutocompleteEntry("1494", "Rainbow Poop"),
+                                    AutocompleteEntry("1495", "Corny Poop"),
+                                    AutocompleteEntry("1496", "Golden Poop"),
+                                    AutocompleteEntry("1497", "Black Poop"),
+                                    AutocompleteEntry("1498", "White Poop"),
+                                    AutocompleteEntry("1499", "Giant Poop"),
+                                    AutocompleteEntry("1500", "Poop"),
+                                    AutocompleteEntry("1501", "Charming Poop"),
+                                    AutocompleteEntry("1900", "Block"),
+                                    AutocompleteEntry("1901", "Pillar"),
+                                    AutocompleteEntry("1930", "Spikes"),
+                                    AutocompleteEntry("1931", "Retracting Spikes"),
+                                    AutocompleteEntry("1931.1", "Retracting Spikes (Down 1/5)"),
+                                    AutocompleteEntry("1931.2", "Retracting Spikes (Down 2/5)"),
+                                    AutocompleteEntry("1931.3", "Retracting Spikes (Down 3/5)"),
+                                    AutocompleteEntry("1931.4", "Retracting Spikes (Down 4/5)"),
+                                    AutocompleteEntry("1931.5", "Retracting Spikes (Down 5/5)"),
+                                    AutocompleteEntry("1931.6", "Retracting Spikes (Up 1/5)"),
+                                    AutocompleteEntry("1931.7", "Retracting Spikes (Up 2/5)"),
+                                    AutocompleteEntry("1931.8", "Retracting Spikes (Up 3/5)"),
+                                    AutocompleteEntry("1931.9", "Retracting Spikes (Up 4/5)"),
+                                    AutocompleteEntry("1931.10", "Retracting Spikes (Up 5/5)"),
+                                    AutocompleteEntry("1940", "Cobweb"),
+                                    AutocompleteEntry("1999", "Invisible Block"),
+                                    AutocompleteEntry("3000", "Pit"),
+                                    AutocompleteEntry("3001", "Fissure Spawner"),
+                                    AutocompleteEntry("3002", "Event Rail"),
+                                    AutocompleteEntry("3009", "Event Pit"),
+                                    AutocompleteEntry("4000", "Key Block"),
+                                    AutocompleteEntry("4500", "Pressure Plate"),
+                                    AutocompleteEntry("4500.1", "Reward Plate"),
+                                    AutocompleteEntry("4500.2", "Greed Plate"),
+                                    AutocompleteEntry("4500.3", "Rail Plate"),
+                                    AutocompleteEntry("4500.9", "Kill Plate"),
+                                    AutocompleteEntry("4500.10", "Event Plate (group 0)"),
+                                    AutocompleteEntry("4500.11", "Event Plate (group 1)"),
+                                    AutocompleteEntry("4500.12", "Event Plate (group 2)"),
+                                    AutocompleteEntry("4500.13", "Event Plate (group 3)"),
+                                    AutocompleteEntry("5000", "Devil Statue"),
+                                    AutocompleteEntry("5001", "Angel Statue"),
+                                    AutocompleteEntry("6000", "Rail (horizontal)"),
+                                    AutocompleteEntry("6000.1", "Rail (vertical)"),
+                                    AutocompleteEntry("6000.2", "Rail (down-to-right)"),
+                                    AutocompleteEntry("6000.3", "Rail (down-to-left)"),
+                                    AutocompleteEntry("6000.4", "Rail (up-to-right)"),
+                                    AutocompleteEntry("6000.5", "Rail (up-to-left)"),
+                                    AutocompleteEntry("6000.6", "Rail (crossroad)"),
+                                    AutocompleteEntry("6000.7", "Rail (end-left)"),
+                                    AutocompleteEntry("6000.8", "Rail (end-right)"),
+                                    AutocompleteEntry("6000.9", "Rail (end-up)"),
+                                    AutocompleteEntry("6000.10", "Rail (end-down)"),
+                                    AutocompleteEntry("6000.16", "Rail (cart-left)"),
+                                    AutocompleteEntry("6000.17", "Rail (cart-up)"),
+                                    AutocompleteEntry("6000.32", "Rail (cart-right)"),
+                                    AutocompleteEntry("6000.33", "Rail (cart-down)"),
+                                    AutocompleteEntry("6000.80", "Mineshaft Rail (horizontal 1)"),
+                                    AutocompleteEntry("6000.81", "Mineshaft Rail (vertical 1)"),
+                                    AutocompleteEntry("6000.82", "Mineshaft Rail (down-to-right 1)"),
+                                    AutocompleteEntry("6000.83", "Mineshaft Rail (down-to-left 1)"),
+                                    AutocompleteEntry("6000.84", "Mineshaft Rail (up-to-right 1)"),
+                                    AutocompleteEntry("6000.85", "Mineshaft Rail (up-to-left 1)"),
+                                    AutocompleteEntry("6000.96", "Mineshaft Rail (horizontal 2)"),
+                                    AutocompleteEntry("6000.97", "Mineshaft Rail (vertical 2)"),
+                                    AutocompleteEntry("6000.98", "Mineshaft Rail (down-to-right 2)"),
+                                    AutocompleteEntry("6000.99", "Mineshaft Rail (down-to-left 2)"),
+                                    AutocompleteEntry("6000.100", "Mineshaft Rail (up-to-right 2)"),
+                                    AutocompleteEntry("6000.101", "Mineshaft Rail (up-to-left 2)"),
+                                    AutocompleteEntry("6000.112", "Mineshaft Rail (horizontal 3)"),
+                                    AutocompleteEntry("6000.113", "Mineshaft Rail (vertical 3)"),
+                                    AutocompleteEntry("6001", "Rail Pit (horizontal)"),
+                                    AutocompleteEntry("6001.1", "Rail Pit (vertical)"),
+                                    AutocompleteEntry("6001.2", "Rail Pit (down-to-right)"),
+                                    AutocompleteEntry("6001.3", "Rail Pit (down-to-left)"),
+                                    AutocompleteEntry("6001.4", "Rail Pit (up-to-right)"),
+                                    AutocompleteEntry("6001.5", "Rail Pit (up-to-left)"),
+                                    AutocompleteEntry("6001.6", "Rail Pit (crossroad)"),
+                                    AutocompleteEntry("6001.16", "Rail Pit (cart-left)"),
+                                    AutocompleteEntry("6001.17", "Rail Pit (cart-up)"),
+                                    AutocompleteEntry("6001.32", "Rail Pit (cart-right)"),
+                                    AutocompleteEntry("6001.33", "Rail Pit (cart-down)"),
+                                    AutocompleteEntry("6100", "Teleporter (square)"),
+                                    AutocompleteEntry("6100.1", "Teleporter (moon)"),
+                                    AutocompleteEntry("6100.2", "Teleporter (rhombus)"),
+                                    AutocompleteEntry("6100.3", "Teleporter (M)"),
+                                    AutocompleteEntry("6100.4", "Teleporter (pentagram)"),
+                                    AutocompleteEntry("6100.5", "Teleporter (cross)"),
+                                    AutocompleteEntry("6100.6", "Teleporter (triangle)"),
+                                    AutocompleteEntry("9000", "Trap Door"),
+                                    AutocompleteEntry("9000.1", "Void Portal"),
+                                    AutocompleteEntry("9100", "Crawlspace"),
+                                    AutocompleteEntry("10000", "Gravity"),
+                                };
+                                break;
+                            }
+
                             case DEBUG_FLAG: {
                                 entries = {
                                     AutocompleteEntry("1", "Entity Positions"),
@@ -658,18 +767,6 @@ struct ConsoleMega {
                                         name = "DELETE THIS"; // Internally the challenge has no name, this is the somewhat canon one.
                                     else
                                         name = node.second["name"];
-
-                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
-                                }
-                                break;
-                            }
-							
-							case ACHIEVEMENT: {
-                                XMLNodes achievs = XMLStuff.AchievementData->nodes;
-                                for (auto node : achievs) {
-                                    int id = node.first;
-                                    std::string name;
-                                    name = node.second["name"];
 
                                     entries.insert(AutocompleteEntry(std::to_string(id), name));
                                 }
@@ -862,6 +959,7 @@ struct ConsoleMega {
                                 };
                                 break;
                             }
+
                             case PLAYER: {
                               entries = {
                                   AutocompleteEntry("-1", "Enemy"),
@@ -873,6 +971,18 @@ struct ConsoleMega {
                                 entries.insert(AutocompleteEntry(std::to_string(id), name));
                               }
                               break;
+                            }
+
+                            case ACHIEVEMENT: {
+                                XMLNodes achievs = XMLStuff.AchievementData->nodes;
+                                for (auto node : achievs) {
+                                    int id = node.first;
+                                    std::string name;
+                                    name = node.second["name"];
+
+                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                }
+                                break;
                             }
 
                             case CUSTOM: {
