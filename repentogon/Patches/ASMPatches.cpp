@@ -617,9 +617,6 @@ void __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomC
 	int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) {
 	for (int i = 1; i < 37; ++i) {
 
-		// if better generation OFF: ban all stages above 17
-		// if better generation ON: ban all stages above 17 and below 27, ban stages 34 and 25, ban floor if not unlocked with !IsFloorUnlocked(i)
-
 		if (!repentogonOptions.betterVoidGeneration && i > 17 && i != 13)
 			continue;
 		else if (repentogonOptions.betterVoidGeneration && ((i > 17 && i < 27) || i == 34 || i == 35 || !IsFloorUnlocked(i)))
