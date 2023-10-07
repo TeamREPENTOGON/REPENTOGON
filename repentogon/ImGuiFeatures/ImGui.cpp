@@ -215,12 +215,16 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         }
     }
 
-    std::vector<UINT> passthroughMsgs = {WM_PAINT, WM_SIZE, WM_SIZING, WM_NCCALCSIZE, WM_WINDOWPOSCHANGING, WM_WINDOWPOSCHANGED};
+    std::vector<UINT> blockedMsgs = {WM_KEYUP, WM_KEYDOWN, WM_KEYFIRST, WM_KEYLAST, WM_MOUSEMOVE, 
+        WM_LBUTTONUP, WM_LBUTTONDOWN, WM_LBUTTONDBLCLK, 
+        WM_MBUTTONDOWN, WM_MBUTTONUP, WM_MBUTTONDBLCLK, 
+        WM_RBUTTONDOWN, WM_RBUTTONUP, WM_RBUTTONDBLCLK};
+
     // If the overlay is shown, direct input to the overlay only
     // Otherwise call the game's WndProc function
     if (menuShown) {
-        // Call the game's WndProc on some uMsgs to allow the game to handle window related tasks
-        if (std::find(passthroughMsgs.begin(), passthroughMsgs.end(), uMsg) != passthroughMsgs.end()) {
+        // Block the game's WndProc on input related uMsgs but allow any others through
+        if (std::find(blockedMsgs.begin(), blockedMsgs.end(), uMsg) == blockedMsgs.end()) {
             CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
         }
         ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
