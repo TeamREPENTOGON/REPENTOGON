@@ -8,6 +8,7 @@
 #include "ASMPatches.h"
 #include "ASMPatcher.hpp"
 #include "Log.h"
+#include "REPENTOGONOptions.h"
 
 static DWORD SetPageMemoryRW(void* addr, MEMORY_BASIC_INFORMATION* info) {
 	VirtualQuery(addr, info, sizeof(*info));
@@ -120,21 +121,15 @@ void ASMPatchMegaSatanEnding() {
 
 	printf("[REPENTOGON] Patching hardcoded Mega Satan game ending at %p\n", addr);
 
-	char ptrMov[] = {
-		0xA1, 0, 0, 0, 0, 0
-	};
-
 	void* ptr = &overrideMegaSatanEnding;
-
-	memcpy(ptrMov + 1, &ptr, sizeof(ptr));
 
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
 		.AddInternalCall(MegaSatanCallbackTrampoline) // call MegaSatanCallbackTrampoline()
 		.RestoreRegisters(reg)
-		.AddBytes(ByteBuffer().AddAny(ptrMov, 5)) // mov eax, dword ptr ds:[XXXXXXXX]
-		.AddBytes("\x85\xC0") // test eax, eax
+		.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
+		.AddBytes("\x84\xC0") // test al, al
 		.AddBytes("\x75\x0A") // jne (current addr + 0xA)
 		.AddInternalCall(randomIntAddr) // call RNG::RandomInt()
 		.AddRelativeJump((char*)addr + 0x5) // jmp isaac-ng.XXXXXXXX
@@ -621,7 +616,13 @@ bool IsFloorUnlocked(unsigned int stageId) {
 void __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomConfig*>* rooms, int type, int shape, int minVariant, 
 	int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) {
 	for (int i = 1; i < 37; ++i) {
-		if ((i > 17 && i < 27) || i == 34 || i == 35 || !IsFloorUnlocked(i))
+
+		// if better generation OFF: ban all stages above 17
+		// if better generation ON: ban all stages above 17 and below 27, ban stages 34 and 25, ban floor if not unlocked with !IsFloorUnlocked(i)
+
+		if (!repentogonOptions.betterVoidGeneration && i > 17 && i != 13)
+			continue;
+		else if (repentogonOptions.betterVoidGeneration && ((i > 17 && i < 27) || i == 34 || i == 35 || !IsFloorUnlocked(i)))
 			continue;
 
 		// Configure the subtype here because backwards uses a 
@@ -675,18 +676,23 @@ void ASMPatchVoidGeneration() {
 * The values Hush uses to track HP percentage internally was reduced by 100, but HP checks weren't.
 * This makes Hush enter "panic" state at 50% HP and not 0.5%. Oops!
 */
-float panicValue = 0.005f; // set this to 1 for fun results!
+float hushPanicLevel = 0.005f;
+void __stdcall SetHushPanicLevel() {
+	// This goes out to the masochists that want to deliberately play bugged Hush (hereby dubbed VINH MODE)
+	hushPanicLevel = repentogonOptions.hushPanicStateFix ? 0.005f : 0.5f;
+}
+
 void PerformHushPatch(void* addr) { 
-	char ptrMov[] = {
-	0xF3, 0x0F, 0x10, 0x05, 0, 0, 0, 0 // movss xmm0, dword ptr ds:[0xXXXXXXXX]
-	};
 
-	void* ptr = &panicValue;
-	memcpy(ptrMov + 4, &ptr, sizeof(ptr));
-
+	void* panicPtr = &hushPanicLevel;
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny(ptrMov, 8));
-	sASMPatcher.FlatPatch(addr, &patch);
+	patch.PreserveRegisters(reg)
+		.AddInternalCall(SetHushPanicLevel) // call SetHushPanicLevel()
+		.RestoreRegisters(reg)
+		.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&panicPtr, 4))  // movss xmm0, dword ptr ds:[0xXXXXXXXX]
+		.AddRelativeJump((char*)addr + 0x8); // jmp isaac-ng.XXXXXXXX
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 void ASMPatchHushBug() {

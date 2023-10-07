@@ -11,6 +11,7 @@
 #include <glad/glad.h>
 
 #include "Patches/ASMPatches.h"
+#include "Patches/REPENTOGONOptions.h"
 #include "LuaInterfaces/LuaRender.h"
 
 /********************************************************************************
@@ -166,6 +167,7 @@ static char titlebar[128];
 // This small function loads all the hooks and must be present in every mod
 MOD_EXPORT int ModInit(int argc, char **argv)
 {
+	repentogonOptions.Init();
 	PerformASMPatches();
 	LuaRender::InitShaders();
 	Definition::Init();

@@ -29,3 +29,6 @@
 [submodule "libs/lua"]
 	path = libs/lua
 	url = https://github.com/IsaacZHL/lua
+[submodule "libs/mINI"]
+	path = libs/mINI
+	url = https://github.com/pulzed/mINI
