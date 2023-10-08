@@ -48,14 +48,13 @@ static ReferenceCounter_ImageBase* Manager::LoadImage(ReferenceCounter_ImageBase
 "558bec83e4f881ec80000000568b35????????57f68664a2040001":
 __thiscall void Manager::Render();
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, ItemConfig) { {{
+struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, ItemConfig, EntityConfig) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
 	inline NightmareScene* GetNightmareScene() { return (NightmareScene*)((char*)this + 0x211BC); }
 	inline bool GetDebugConsoleEnabled() { return *(bool*)((char*)this + 0x29E4C); }
 	inline int GetMaxRenderScale() { return *(int*)((char*)this + 0x29E58); }
-	inline vector_EntityConfigPlayer* GetPlayerConfig() { return (vector_EntityConfigPlayer*)((char*)this + 0x29F90); }
 	inline ModManager* GetModManager() { return (ModManager*)((char*)this + 0x29FD8); }
 	inline DailyChallenge* GetDailyChallenge() { return (DailyChallenge*)((char*)this + 0x1ea750); } 
 	inline StringTable* GetStringTable() { return (StringTable*)((char*)this + 0x4a234); }
@@ -64,11 +63,14 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline OptionsConfig* GetOptions() { return (OptionsConfig*)((char*)this + 0x29DF8); }
 	inline AchievementOverlay* GetAchievementOverlay() { return (AchievementOverlay*)((char*)this + 0x217a8); }
 	inline ItemConfig* GetItemConfig() { return &this->_itemConfig; }
+	inline EntityConfig* GetEntityConfig() { return &this->_entityConfig; }
+	inline std::vector<EntityConfig_Player>* GetPlayerConfig() { return this->GetEntityConfig()->GetPlayers(); }
 }} 
 
     PersistentGameData _persistentGameData : 0x14;
     StringTable _stringTable : 0x4a234;
 	ItemConfig _itemConfig : 0x29e84;
+	EntityConfig _entityConfig : 0x29f88;
 } : 0x20a9d8;
 
 "e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":

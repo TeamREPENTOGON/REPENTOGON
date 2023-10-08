@@ -8,4 +8,5 @@ struct EntityConfig_Player depends (ANM2) {
 		inline ANM2** GetModdedMenuPortraitANM2() { return (ANM2**)((char*)this + 0x138); }
 	}}
 	int _id : 0x0;
+	std_string _name : 0x4;
 } : 0x148;

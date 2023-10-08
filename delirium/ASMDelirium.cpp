@@ -149,11 +149,11 @@ static void __stdcall PostTransformationCallback(Box<Entity_NPC*> bdelirium) {
 		.call(0);
 }
 
-static int32_t __stdcall VadeRetroCheck(Box<Entity_NPC*> bnpc, Box<EntityConfig*> bconfig) {
+static int32_t __stdcall VadeRetroCheck(Box<Entity_NPC*> bnpc, Box<EntityConfig_Entity*> bconfig) {
 	Entity_NPC* npc = bnpc.Get();
-	EntityConfig* config = bconfig.Get();
+	EntityConfig_Entity* config = bconfig.Get();
 
-	if (config->flags & 0x8) { // "ghost" 
+	if (config->tags & 0x8) { // "ghost" 
 		if ((*npc->GetDeliriumBossType() == npc->_type && *npc->GetDeliriumBossVariant() == npc->_variant) || npc->_type == 412 /* Delirium */) {
 			return 0;
 		}

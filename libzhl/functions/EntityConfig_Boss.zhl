@@ -1,0 +1,4 @@
+struct EntityConfig_Boss {
+	int bossID : 0x0;
+	std_string name : 0x4;
+} : 0x64;

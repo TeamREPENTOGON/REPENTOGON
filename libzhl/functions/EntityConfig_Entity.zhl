@@ -1,0 +1,21 @@
+struct EntityConfig_Entity depends (Vector, ModEntry) {
+	int id : 0x0;
+	int variant : 0x4;
+	int subtype : 0x8;
+	std_string name : 0xC;
+	// It looks like shadowSize here is a float that is the shadowSize from the XML divided by 100?
+	float shadowSize : 0x24;
+	float collisionDamage : 0x28;
+	int bossID : 0x30;
+	float size : 0x38;
+	Vector sizeMulti : 0x3C;
+	float mass : 0x44;
+	int gridCollisionPoints : 0x48;
+	float friction : 0x4C;
+	float baseHP : 0x50;
+	float stageHP : 0x54;
+	unsigned int gibsBitset : 0x60;
+	std_string anm2Path : 0x74;
+	unsigned int tags: 0xD8;
+	ModEntry* modEntry : 0x160;
+} : 0x198;

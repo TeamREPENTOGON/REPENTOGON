@@ -4,6 +4,13 @@ __thiscall void EntityConfig::Load(char *xmlpath,ModEntry *param_2);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b834020100":
 __thiscall void EntityConfig::LoadPlayers(char *xmlpath, ModEntry* modentry);
 
+"558bec83ec108b45??538b5d??56c1e00c":
+__thiscall EntityConfig_Entity* EntityConfig::GetEntity(int id, int variant, int subtype);
+
 struct EntityConfig {
-    int flags: 0xD8;
-} : 0x188;
+    // The EntityConfig_Entity's might be stored in some kind of tree structure?
+    {{
+        inline std::vector<EntityConfig_Player>* GetPlayers() { return (std::vector<EntityConfig_Player>*)((char*)this + 0x8); }
+        inline std::vector<EntityConfig_Boss>* GetBosses() { return (std::vector<EntityConfig_Boss>*)((char*)this + 0x20); }
+    }}
+} : 0x2C;  // Full size unconfirmed.
