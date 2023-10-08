@@ -22,6 +22,10 @@ ___
 Returns true when any player has the trinket and false when no one does.
 
 ___
+### Get·Esau·Jr·State () {: aria-label='Functions' }
+#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) GetEsauJrState ( int Index = 0 ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Num·Collectibles () {: aria-label='Functions' }
 #### int GetNumCollectibles ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Returns the number of collectibles held by all players.

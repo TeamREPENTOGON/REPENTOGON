@@ -139,6 +139,25 @@ LUA_FUNCTION(Lua_GetPlayers) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetEsauJrState) {
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	const int index = luaL_optinteger(L, 2, 0);
+
+	if (index < 0 || index > 3) {
+		return luaL_error(L, "Invalid index %d", index);
+	}
+
+	Entity_Player* player = playerManager->_esauJrState[index];
+	if (!player) {
+		lua_pushnil(L);
+	}
+	else {
+		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+	}
+
+	return 1;
+}
+
 static void RegisterPlayerManager(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::GAME);
 	lua_pushstring(L, "GetPlayerManager");
@@ -162,6 +181,7 @@ static void RegisterPlayerManager(lua_State* L) {
 		{ "TriggerRoomClear", Lua_TriggerRoomClear },
 		{ "AnyoneHasTrinket", Lua_AnyoneHasTrinket},
 		{ "GetPlayers", Lua_GetPlayers},
+		{ "GetEsauJrState", Lua_GetEsauJrState},
 		{ NULL, NULL }
 	};
 

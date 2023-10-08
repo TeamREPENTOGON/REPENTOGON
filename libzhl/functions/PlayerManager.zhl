@@ -33,4 +33,5 @@ struct PlayerManager depends (RNG)
 {
     RNG _rng : 0x0; //0x0
 	vector_EntityPlayerPtr _playerList : 0x10;
-} : 0x1c;
+	Entity_Player* _esauJrState[4] : 0x9c;
+} : 0xac;
