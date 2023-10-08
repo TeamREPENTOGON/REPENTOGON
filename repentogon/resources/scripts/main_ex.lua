@@ -295,8 +295,8 @@ local typecheckWarnFunctions = {
 		["number"] = function(ret, retType, entity, hook)
 			if hook ~= InputHook.GET_ACTION_VALUE then
 				return "bad return type for hook " .. backEnum(InputHook, hook) .. " (boolean expected, got number)"
-			elseif ret < 0 or ret > 1 then
-				return "bad return value for hook GET_ACTION_VALUE (number must be within range 0-1)"
+			elseif ret < -1 or ret > 1 then
+				return "bad return value for hook GET_ACTION_VALUE (number must be within range -1 to 1)"
 			end
 		end,
 		["boolean"] = function(ret, retType, entity, hook)
