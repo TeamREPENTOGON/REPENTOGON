@@ -91,7 +91,7 @@ static bool Game::IsGreedFinalBoss();
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool) { {{
 	Game()
 	{
 		this->constructor();
@@ -204,6 +204,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     unsigned int _stateFlags : 0x1822c; // 0x1822C
     uint32_t _greedModeTreasureRoomIdx : 0x18200; // 0x18200
     RoomConfigHolder _roomConfigs : 0x1879c; // 0x1879C
+	ItemPool _itemPool : 0x1A5CC;
     PlayerManager _playerManager : 0x1ab40; // 0x1AB40 
     Console _console : 0x1bb60; // 0x1BB60
     ItemOverlay _itemOverlay : 0x1bcc0; // 0x1BCC0
