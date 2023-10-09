@@ -8,7 +8,7 @@
 #include "ASMPatches.h"
 #include "ASMPatcher.hpp"
 #include "Log.h"
-#include "REPENTOGONOptions.h"
+#include "../REPENTOGONOptions.h"
 
 static DWORD SetPageMemoryRW(void* addr, MEMORY_BASIC_INFORMATION* info) {
 	VirtualQuery(addr, info, sizeof(*info));

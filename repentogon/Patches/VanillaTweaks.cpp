@@ -1,6 +1,6 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
-#include "REPENTOGONOptions.h"
+#include "../REPENTOGONOptions.h"
 
 HOOK_METHOD(Entity_Slot, TakeDamage, (float Damage, unsigned long long DamageFlags, EntityRef* Source, int DamageCountdown) -> bool) {
 	bool result = super(Damage, DamageFlags, Source, DamageCountdown);
