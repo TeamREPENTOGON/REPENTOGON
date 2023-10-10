@@ -10,8 +10,8 @@
 
 #include <glad/glad.h>
 
+#include "REPENTOGONOptions.h"
 #include "Patches/ASMPatches.h"
-#include "Patches/REPENTOGONOptions.h"
 #include "LuaInterfaces/LuaRender.h"
 
 /********************************************************************************
