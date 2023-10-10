@@ -186,7 +186,7 @@ void UpdateXMLModEntryData() {
 		mod["realdirectory"] = entry->GetDir();
 		mod["fulldirectory"] = std::filesystem::current_path().string() + "/mods/" + entry->GetDir();
 		
-		if (entry->IsEnabled()) { mod["enabled"] = "true"; }
+		if (entry->IsEnabled()) { mod["enabled"] = "true";}
 		else { mod["enabled"] = "false"; }
 		XMLStuff.ModData->nodes[idx] = mod;
 		XMLStuff.ModData->modentries[idx] = entry;
@@ -220,8 +220,18 @@ string ogcutscenespath;
 int queuedhackyxmlvalue = 0;
 int queuedhackyxmltarget = 0;
 int queuedhackyxmlmaxval = 0;
+
+bool HasOneModOn() {
+	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
+		if (mod->IsEnabled()) {
+			return true;
+		}
+	}
+	return false;
+}
+
 HOOK_METHOD(Cutscene, Init, (char* xmlfilepath)-> void) {
-	if (!g_Manager->GetOptions()->ModsEnabled()) {return super(xmlfilepath);}
+	if ((!g_Manager->GetOptions()->ModsEnabled()) || !HasOneModOn()) { return super(xmlfilepath); }
 	if (ogcutscenespath.length() == 0) {
 		ogcutscenespath = string(xmlfilepath);
 	}
@@ -259,7 +269,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 }
 
 HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
-	if (!g_Manager->GetOptions()->ModsEnabled()) { return super(cutsceneid); }
+	if ((!g_Manager->GetOptions()->ModsEnabled()) || !HasOneModOn()) { return super(cutsceneid); }
 	queuedhackyxmlvalue = cutsceneid;
 	queuedhackyxmltarget = 1;
 	queuedhackyxmlmaxval = 26;
