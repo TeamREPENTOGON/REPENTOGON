@@ -2347,3 +2347,37 @@ AnimRenderFlags = {
 	ENABLE_LAYER_LIGHTING = 1<<10,
 	ENABLE_NULL_LAYER_LIGHTING = 1<<11
 }
+
+DialogButtons = {
+	OK = 0,
+	OK_CANCEL = 1,
+	ABORT_RETRY_IGNORE = 2,
+	YES_NO_CANCEL = 3,
+	YES_NO = 4,
+	RETRY_CANCEL = 5,
+	CANCEL_TRY_CONTINUE = 6,
+	HELP = 0x4000
+}
+
+DialogIcons = {
+	ERROR = 0x10,
+	HAND = 0x10,
+	STOP = 0x10,
+	QUESTION = 0x20,
+	EXCLAMATION = 0x30,
+	WARNING = 0x30,
+	ASTERISK = 0x40,
+	INFORMATION = 0x40
+}
+
+DialogReturn = {
+	OK = 1,
+	CANCEL = 2,
+	ABORT = 3,
+	RETRY = 4,
+	IGNORE = 5,
+	YES = 6,
+	NO = 7,
+	TRY_AGAIN = 10,
+	CONTINUE = 11
+}
