@@ -36,7 +36,7 @@ Returns a table that describes the action argument. The returned table will cont
 | toType | int | CONVERT_ENTITY | target type |
 | toVariant | int | CONVERT_ENTITY | target variant |
 | radius | float | AREA_DAMAGE | |
-| value | float | AREA_DAMAGE | |
+| damage | float | AREA_DAMAGE | |
 | flags1 | uint64 | AREA_DAMAGE | |
 | flags2 | uint64 | AREA_DAMAGE | |
 | scale | float | FART | |

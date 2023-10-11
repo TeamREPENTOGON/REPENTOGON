@@ -21,7 +21,7 @@ struct ProceduralEffect_ActionData_ConvertEntities{
 } : 0x8;
 struct ProceduralEffect_ActionData_AreaDamage {
     float radius : 0x8;
-    float value : 0xc;
+    float damage : 0xc;
     long long flags1 : 0x10;
     long long flags2 : 0x18;
 } : 0x20;

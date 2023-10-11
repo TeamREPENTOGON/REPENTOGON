@@ -64,8 +64,8 @@ int Lua_PEGetActionProperty(lua_State* L) {
 	case ProceduralEffect::ACTION_AREA_DAMAGE:
 		lua_pushnumber(L, pi->GetActionData()->areaDamage.radius);
 		lua_setfield(L, -2, "radius");
-		lua_pushnumber(L, pi->GetActionData()->areaDamage.value);
-		lua_setfield(L, -2, "value");
+		lua_pushnumber(L, pi->GetActionData()->areaDamage.damage);
+		lua_setfield(L, -2, "damage");
 		lua_pushinteger(L, pi->GetActionData()->areaDamage.flags1);
 		lua_setfield(L, -2, "flags1");
 		lua_pushinteger(L, pi->GetActionData()->areaDamage.flags2);
