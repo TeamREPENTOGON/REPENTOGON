@@ -27,7 +27,7 @@ ___
 #### float GetDamage ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·FireDelay () {: aria-label='Functions' }
+### Get·Fire·Delay () {: aria-label='Functions' }
 #### float GetFireDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
@@ -39,7 +39,7 @@ ___
 #### float GetRange ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·ShotSpeed () {: aria-label='Functions' }
+### Get·Shot·Speed () {: aria-label='Functions' }
 #### float GetShotSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
