@@ -14,7 +14,12 @@ int Lua_PIGetItem(lua_State* L){
 
 int Lua_PIGetTargetItem(lua_State* L){
     ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, ProceduralItemMT);
-    lua::luabridge::UserdataPtr::push(L, pi->targetItem, lua::Metatables::CONST_ITEM);
+    if (pi->targetItem) {
+        lua::luabridge::UserdataPtr::push(L, pi->targetItem, lua::Metatables::CONST_ITEM);
+    }
+    else {
+        lua_pushnil(L);
+    }
     return 1;
 }
 
