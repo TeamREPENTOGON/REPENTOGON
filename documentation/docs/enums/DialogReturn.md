@@ -2,7 +2,7 @@
 tags:
   - Enum
 ---
-# Enum "DialogIcons"
+# Enum "DialogReturn"
 |Value|Enumerator|Comment|
 |:--|:--|:--|
 |1 |OK {: .copyable } |  |
