@@ -2381,3 +2381,24 @@ DialogReturn = {
 	TRY_AGAIN = 10,
 	CONTINUE = 11
 }
+
+ProceduralEffectConditionType = {
+	ACTIVE = 0,
+	TEAR_FIRE = 1,
+	ENEMY_HIT = 2,
+	ENEMY_KILL = 3,
+	DAMAGE_TAKEN = 4,
+	ROOM_CLEAR = 5,
+	ENTITY_SPAWN = 6,
+	PICKUP_COLLECTED = 7,
+	CHAIN = 8,
+}
+
+ProceduralEffectActionType = {
+	USE_ACTIVE_ITEM = 0,
+	ADD_TEMPRORY_EFFECT = 1,
+	CONVERT_ENTITIES = 2,
+	AREA_DAMAGE = 3,
+	SPAWN_ENTITY = 4,
+	FART = 5,
+}

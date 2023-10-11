@@ -1,0 +1,87 @@
+struct ProceduralEffect_ConditionData_EntitySpawn{
+    short variant : 0x4;
+    short type : 0x6;
+} : 0x8;
+
+struct ProceduralEffect_ActionData_UseActiveItem{
+    int collectibleId : 0x0;
+} : 0x4;
+struct ProceduralEffect_ActionData_AddTemproryEffect{
+    int collectibleId : 0x0;
+} : 0x4;
+struct ProceduralEffect_ActionData_SpawnEntity{
+    short variant : 0x0;
+    short type : 0x2;
+} : 0x4;
+struct ProceduralEffect_ActionData_ConvertEntities{
+    short fromVariant : 0x0;
+    short fromType : 0x2;
+    short toVariant : 0x4;
+    short toType : 0x6;
+} : 0x8;
+struct ProceduralEffect_ActionData_AreaDamage {
+    float radius : 0x8;
+    float value : 0xc;
+    long long flags1 : 0x10;
+    long long flags2 : 0x18;
+} : 0x20;
+struct ProceduralEffect_ActionData_Fart{
+    float fartScale : 0x0;
+    float radius : 0xc;
+} : 0x10;
+
+struct ProceduralEffect depends (
+    ProceduralEffect_ConditionData_EntitySpawn,
+    ProceduralEffect_ActionData_UseActiveItem, ProceduralEffect_ActionData_AddTemproryEffect, ProceduralEffect_ActionData_SpawnEntity, 
+    ProceduralEffect_ActionData_ConvertEntities, ProceduralEffect_ActionData_AreaDamage, ProceduralEffect_ActionData_Fart){
+{{
+    enum ConditionType{
+        CONDITION_ACTIVE,
+        CONDITION_TEAR_FIRE,
+        CONDITION_ENEMY_HIT,
+        CONDITION_ENEMY_KILL,
+        CONDITION_DAMAGE_TAKEN,
+        CONDITION_ROOM_CLEAR,
+        CONDITION_ENTITY_SPAWN,
+        CONDITION_PICKUP_COLLECTED,
+        CONDITION_CHAIN,
+    };
+
+    enum ActionType{
+        ACTION_USE_ACTIVE_ITEM,
+        ACTION_ADD_TEMPRORY_EFFECT,
+        ACTION_CONVERT_ENTITIES,
+        ACTION_AREA_DAMAGE,
+        ACTION_SPAWN_ENTITY,
+        ACTION_FART,
+    };
+
+    union ConditionData{
+        struct ProceduralEffect_ConditionData_EntitySpawn entitySpawn;
+    };
+
+    union ActionData{
+        struct ProceduralEffect_ActionData_UseActiveItem useActiveItem;
+        struct ProceduralEffect_ActionData_AddTemproryEffect addTempraryEffect;
+        struct ProceduralEffect_ActionData_SpawnEntity spawnEntity;
+        struct ProceduralEffect_ActionData_ConvertEntities convertEntities;
+        struct ProceduralEffect_ActionData_AreaDamage areaDamage;
+        struct ProceduralEffect_ActionData_Fart fart;
+    };
+
+    inline union ConditionData * GetConditionData(){
+        return (union ConditionData*)((char*)this + 0x8);
+    }
+    inline union ActionData * GetActionData(){
+        return (union ActionData*)((char*)this + 0x10);
+    }
+    
+    // FIXME: ColorMod class
+    // inline ColorMod* GetColor(){
+    //     return (ColorMod*)((char *)this + 0x34);
+    // }
+}}
+    int effectConditionType : 0x0;
+    int effectActionType : 0x4;
+    float triggerRate : 0x30;
+} : 0x60;

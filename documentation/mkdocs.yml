@@ -88,6 +88,8 @@ nav:
     - PlayerVariant: enums/PlayerVariant.md
     - PocketItemType: enums/PocketItemType.md
     - PressurePlateVariant: enums/PressurePlateVariant.md
+    - ProceduralEffectActionType: enums/ProceduralEffectActionType.md
+    - ProceduralEffectConditionType: enums/ProceduralEffectConditionType.md
     - ProjectileMode: enums/ProjectileMode.md
     - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
     - RoomSubType: enums/RoomSubType.md
@@ -170,6 +172,8 @@ nav:
   - NullFrame: NullFrame.md
   - Options: Options.md
   - PersistentGameData: PersistentGameData.md
+  - ProceduralEffect: ProceduralEffect.md
+  - ProceduralItem: ProceduralItem.md
   - ProceduralItemManager: ProceduralItemManager.md
   - PlayerHUD: PlayerHUD.md
   - PlayerHUDHeart: PlayerHUDHeart.md

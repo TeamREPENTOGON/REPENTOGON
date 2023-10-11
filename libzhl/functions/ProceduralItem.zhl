@@ -1,0 +1,17 @@
+struct ProceduralItem depends (ItemConfig_Item, ProceduralEffect){
+{{
+    inline std::vector<ProceduralEffect*>* GetEffects() { return (std::vector<ProceduralEffect*>*)((char*)this + 0x2c); }
+}}
+
+    ItemConfig_Item* item : 0x0;
+    int _id : 0x4;
+    //int bits : 0x8;
+    //int sfx : 0xc;
+    ItemConfig_Item* targetItem : 0x10;
+    float damage : 0x14;
+    float firedelay : 0x18;
+    float speed : 0x1c;
+    float range : 0x20;
+    float shotspeed : 0x24;
+    float luck : 0x28;
+} : 0x38;
