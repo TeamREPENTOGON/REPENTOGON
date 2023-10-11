@@ -168,6 +168,7 @@ nav:
   - MusicManager: MusicManager.md
   - NightmareScene: NightmareScene.md
   - NullFrame: NullFrame.md
+  - Options: Options.md
   - PersistentGameData: PersistentGameData.md
   - ProceduralItemManager: ProceduralItemManager.md
   - PlayerHUD: PlayerHUD.md

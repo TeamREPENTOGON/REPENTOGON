@@ -1,5 +1,5 @@
 struct ItemPool_Item {
-	std_vector_int _list : 0x4 ;
+	vector_PoolItem _poolList : 0x4 ;
 	RNG _rng1 : 0x10 ;
 	RNG _rng2 : 0x20 ;
 	int _bibleUpgrade : 0x30 ;

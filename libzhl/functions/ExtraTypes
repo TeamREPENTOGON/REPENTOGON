@@ -118,3 +118,8 @@ TypeInfo std_map_int_int {
     Size 16;
     Align 4;
 };
+
+TypeInfo vector_PoolItem {
+    Size 12;
+    Align 4;
+};
