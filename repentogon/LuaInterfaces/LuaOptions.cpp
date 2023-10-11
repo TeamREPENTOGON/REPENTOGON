@@ -42,15 +42,8 @@ LUA_FUNCTION(Lua_Options_SetKeyMasterDealChance) {
 
 LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
 	float value = lua_tonumber(L, 1);
-	bool increment = true;
-	if (lua_isboolean(L, 2)) {
-		increment = lua_toboolean(L, 2);
-	}
-	value = (min(max(0.0f, value), 1.0f));
-	if (increment) {
-		value *= 10; 
-		value = std::round(value) / 10;
-	}
+	value = (min(max(0.0f, value), 1.0f)) * 10; // clamp, then multiply in preparation for rounding
+	value = std::round(value) / 10; // round, then divide back down to first decimal
 	g_Manager->GetOptions()->_sfxVolume = value;
 	g_Manager->_sfxManager.ClearVolumeModifier();
 	return 0;
