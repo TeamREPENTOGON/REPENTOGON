@@ -55,6 +55,9 @@ nav:
     - CompletionType: enums/CompletionType.md
     - ConsoleFont: enums/ConsoleFont.md
     - DebugFlag: enums/DebugFlag.md
+    - DialogButtons: enums/DialogButtons.md
+    - DialogIcons: enums/DialogIcons.md
+    - DialogReturn: enums/DialogReturn.md
     - Dimension: enums/Dimension.md
     - DipSubType: enums/DipSubType.md
     - Ending: enums/Ending.md
