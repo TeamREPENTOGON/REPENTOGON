@@ -40,6 +40,22 @@ LUA_FUNCTION(Lua_Options_SetKeyMasterDealChance) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
+	float value = lua_tonumber(L, 1);
+	bool increment = true;
+	if (lua_isboolean(L, 2)) {
+		increment = lua_toboolean(L, 2);
+	}
+	value = (min(max(0.0f, value), 1.0f));
+	if (increment) {
+		value *= 10; 
+		value = std::round(value) / 10;
+	}
+	g_Manager->GetOptions()->_sfxVolume = value;
+	g_Manager->_sfxManager.ClearVolumeModifier();
+	return 0;
+}
+
 static void RegisterLuaOptions(lua_State* L) {
 	lua::LuaStackProtector protector(L);
 
@@ -74,6 +90,10 @@ static void RegisterLuaOptions(lua_State* L) {
 
 	lua_pushstring(L, "KeyMasterDealChance");
 	lua_pushcfunction(L, Lua_Options_SetKeyMasterDealChance);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "SFXVolume");
+	lua_pushcfunction(L, Lua_Options_Fix_SetSFXVolume);
 	lua_rawset(L, -3);
 
 	lua_pop(L, 2);

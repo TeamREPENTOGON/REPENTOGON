@@ -1,0 +1,5 @@
+"558bec83ec0c8bc133c9":
+__thiscall void SoundEffects::ClearVolumeModifier();
+
+struct SoundEffects {
+} : 0x18;
