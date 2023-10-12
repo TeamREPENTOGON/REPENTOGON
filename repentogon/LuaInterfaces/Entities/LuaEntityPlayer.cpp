@@ -1173,8 +1173,16 @@ LUA_FUNCTION(Lua_ClearDeadEyeCharge) {
 
 LUA_FUNCTION(Lua_SwapForgottenForm) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	bool IgnoreHealth = false;
+	bool NoEffects = false;
+	if (lua_isboolean(L, 2)) {
+		IgnoreHealth = lua_toboolean(L, 2);
+	}
 
-	player->SwapForgottenForm(lua_toboolean(L, 2), lua_toboolean(L, 3));
+	if (lua_isboolean(L, 3)) {
+		NoEffects = lua_toboolean(L, 3);
+	}
+	player->SwapForgottenForm(IgnoreHealth, NoEffects);
 	return 0;
 }
 
