@@ -484,6 +484,7 @@ int Lua_PlayerSetBoCContent(lua_State* L) {
 		return 0;
 	}
 
+	BagOfCraftingPickup list[8]{};
 	size_t length = (size_t)lua_rawlen(L, 2);
 	if (length > 0)
 	{
@@ -491,7 +492,6 @@ int Lua_PlayerSetBoCContent(lua_State* L) {
 			luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Table cannot be larger than 8 pickups");
 		}
 
-		BagOfCraftingPickup list[8]{};
 		size_t index;
 		int badPickup = -1;
 		for (index = 0; index < length; index++)
@@ -500,18 +500,12 @@ int Lua_PlayerSetBoCContent(lua_State* L) {
 			BagOfCraftingPickup pickup = (BagOfCraftingPickup)luaL_checkinteger(L, -1);
 			lua_pop(L, 1);
 			if (pickup < 0 || pickup > 29) {
-				badPickup = pickup;
-				break;
+				luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Invalid pickup %d at index %d", badPickup, index + 1);
 			}
 			list[index] = pickup;
 		}
-		if (badPickup == -1) {
-			memcpy(&player->_bagOfCraftingContent, list, sizeof(list));
-		}
-		else {
-			luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Invalid pickup %d at index %d", badPickup, index + 1);
-		}
 	}
+	memcpy(&player->_bagOfCraftingContent, list, sizeof(list));
 
 	return 0;
 }
