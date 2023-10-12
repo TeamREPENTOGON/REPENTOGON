@@ -135,7 +135,7 @@ static int Lua_SetSelectedMenuID(lua_State* L)
 {
 	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
 	MenuManager* menuManager = g_MenuManager;
-	menuManager->_selectedMenuID = (int)luaL_checkinteger(L, 1);
+	menuManager->_selectedMenuID = (int)luaL_checkinteger(L, 2);
 	return 1;
 }
 
