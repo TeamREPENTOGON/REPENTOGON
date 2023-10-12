@@ -493,14 +493,13 @@ int Lua_PlayerSetBoCContent(lua_State* L) {
 		}
 
 		size_t index;
-		int badPickup = -1;
 		for (index = 0; index < length; index++)
 		{
 			lua_rawgeti(L, 2, index + 1);
 			BagOfCraftingPickup pickup = (BagOfCraftingPickup)luaL_checkinteger(L, -1);
 			lua_pop(L, 1);
 			if (pickup < 0 || pickup > 29) {
-				luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Invalid pickup %d at index %d", badPickup, index + 1);
+				luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Invalid pickup %d at index %d", pickup, index + 1);
 			}
 			list[index] = pickup;
 		}
