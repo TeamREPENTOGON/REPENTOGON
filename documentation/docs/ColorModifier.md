@@ -43,10 +43,9 @@ ___
 Defines the addition of two [ColorModifier](ColorModifier.md) objects using the `+` operator.
 ___
 ### __div () {: aria-label='Operators' }
-[ ](#){: .abrep .tooltip .badge }
 #### [ColorModifier](ColorModifier.md) __div ( [ColorModifier](ColorModifier.md) right ) {: .copyable aria-label='Operators' }
 
-Defines the division of two [ColorModifier](ColorModifier.md) objects using the `/` operator.
+Defines the division of a [ColorModifier](ColorModifier.md) object and a `float` using the `/` operator. The `ColorModifier` must be on the left side.
 ___
 ### __eq () {: aria-label='Operators' }
 #### [ColorModifier](ColorModifier.md) __eq ( [ColorModifier](ColorModifier.md) right ) {: .copyable aria-label='Operators' }
@@ -54,13 +53,11 @@ ___
 Defines equal of two [ColorModifier](ColorModifier.md) objects using the `==` operator.
 ___
 ### __mul () {: aria-label='Operators' }
-[ ](#){: .abrep .tooltip .badge }
 #### [ColorModifier](ColorModifier.md) __mul ( [ColorModifier](ColorModifier.md) right ) {: .copyable aria-label='Operators' }
 
-Defines the multiplication of two [ColorModifier](ColorModifier.md) objects using the `*` operator.
+Defines the multiplication of a [ColorModifier](ColorModifier.md) object and a `float` using the `*` operator. The `ColorModifier` must be on the left side.
 ___
 ### __sub () {: aria-label='Operators' }
-[ ](#){: .abrep .tooltip .badge }
 #### [ColorModifier](ColorModifier.md) __sub ( [ColorModifier](ColorModifier.md) right ) {: .copyable aria-label='Operators' }
 
 Defines the subtraction of two [ColorModifier](ColorModifier.md) objects using the `-` operator.
