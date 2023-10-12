@@ -453,8 +453,8 @@ Spawns a creep effect that acts like the ones created by Aquarius, including inh
 
 ___
 ### Swap·Forgotten·Form () {: aria-label='Functions' }
-#### void SwapForgottenForm ( boolean IgnoreHealth = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
-If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#getsubplayer), swaps between them. `IgnoreHealth` will swap even if the subplayer doesn't have any health. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
+#### void SwapForgottenForm ( boolean Force = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
+If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#getsubplayer), swaps between them. `Force` will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
 
 
 ???+ warning "Warning"
