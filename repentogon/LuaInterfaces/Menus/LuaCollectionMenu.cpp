@@ -4,11 +4,9 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* CollectionMenuMT = "CollectionMenu";
-
-static int Lua_CollectionMenu_GetCollectionMenuSprite(lua_State* L)
+LUA_FUNCTION(Lua_CollectionMenu_GetCollectionMenuSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
 	ANM2* anm2 = menu->GetCollectionMenuSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -16,9 +14,9 @@ static int Lua_CollectionMenu_GetCollectionMenuSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_CollectionMenu_GetDeathScreenSprite(lua_State* L)
+LUA_FUNCTION(Lua_CollectionMenu_GetDeathScreenSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
 	ANM2* anm2 = menu->GetDeathScreenSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -26,36 +24,36 @@ static int Lua_CollectionMenu_GetDeathScreenSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_CollectionMenu_GetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_CollectionMenu_GetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
 	lua_pushinteger(L, menu->SelectedElement);
 
 	return 1;
 }
 
-static int Lua_CollectionMenu_SetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_CollectionMenu_SetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
 	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int Lua_CollectionMenu_GetSelectedPage(lua_State* L)
+LUA_FUNCTION(Lua_CollectionMenu_GetSelectedPage)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
 	lua_pushinteger(L, menu->SelectedPage);
 
 	return 1;
 }
 
-static int Lua_CollectionMenu_SetSelectedPage(lua_State* L)
+LUA_FUNCTION(Lua_CollectionMenu_SetSelectedPage)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CollectionMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CollectionMenuMT);
 	Menu_Collection* menu = g_MenuManager->GetMenuCollection();
 	menu->SelectedPage = (int)luaL_checkinteger(L, 2);
 
@@ -64,7 +62,6 @@ static int Lua_CollectionMenu_SetSelectedPage(lua_State* L)
 
 static void RegisterCollectionMenuGame(lua_State* L)
 {
-	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetCollectionMenuSprite", Lua_CollectionMenu_GetCollectionMenuSprite);
 	lua::TableAssoc(L, "GetDeathScreenSprite", Lua_CollectionMenu_GetDeathScreenSprite);
@@ -72,7 +69,7 @@ static void RegisterCollectionMenuGame(lua_State* L)
 	lua::TableAssoc(L, "SetSelectedElement", Lua_CollectionMenu_SetSelectedElement);
 	lua::TableAssoc(L, "GetSelectedPage", Lua_CollectionMenu_GetSelectedPage);
 	lua::TableAssoc(L, "SetSelectedPage", Lua_CollectionMenu_SetSelectedPage);
-	lua_setglobal(L, "CollectionMenu");
+	lua_setglobal(L, lua::metatables::CollectionMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

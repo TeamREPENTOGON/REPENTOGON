@@ -4,12 +4,10 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* BestiaryMenuMT = "BestiaryMenu";
 
-
-static int Lua_BestiaryMenu_GetBestiaryMenuSprite(lua_State* L)
+LUA_FUNCTION(Lua_BestiaryMenu_GetBestiaryMenuSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	ANM2* anm2 = menu->GetBestiaryMenuSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -17,9 +15,9 @@ static int Lua_BestiaryMenu_GetBestiaryMenuSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_BestiaryMenu_GetDeathScreenSprite(lua_State* L)
+LUA_FUNCTION(Lua_BestiaryMenu_GetDeathScreenSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	ANM2* anm2 = menu->GetDeathScreenSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -27,9 +25,9 @@ static int Lua_BestiaryMenu_GetDeathScreenSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_BestiaryMenu_GetEnemySprite(lua_State* L)
+LUA_FUNCTION(Lua_BestiaryMenu_GetEnemySprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	ANM2* anm2 = menu->GetEnemySprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -37,45 +35,45 @@ static int Lua_BestiaryMenu_GetEnemySprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_MainMenu_GetSelectedPage(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_GetSelectedPage)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	lua_pushinteger(L, menu->CurrentPage);
 
 	return 1;
 }
 
-static int Lua_MainMenu_SetSelectedPage(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_SetSelectedPage)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	menu->CurrentPage = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int Lua_MainMenu_GetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_GetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	lua_pushinteger(L, menu->SelectedElement);
 
 	return 1;
 }
 
-static int Lua_MainMenu_SetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_SetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int Lua_MainMenu_GetLastEnemyPageID(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_GetLastEnemyPageID)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "BestiaryMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::BestiaryMenuMT);
 	Menu_Bestiary* menu = g_MenuManager->GetMenuBestiary();
 	lua_pushinteger(L, menu->LastEnemyPageID);
 
@@ -84,7 +82,6 @@ static int Lua_MainMenu_GetLastEnemyPageID(lua_State* L)
 
 static void RegisterBestiaryMenu(lua_State* L)
 {
-	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetBestiaryMenuSprite", Lua_BestiaryMenu_GetBestiaryMenuSprite);
 	lua::TableAssoc(L, "GetDeathScreenSprite", Lua_BestiaryMenu_GetDeathScreenSprite);
@@ -94,7 +91,7 @@ static void RegisterBestiaryMenu(lua_State* L)
 	lua::TableAssoc(L, "GetSelectedElement", Lua_MainMenu_GetSelectedElement);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_MainMenu_SetSelectedElement);
 	lua::TableAssoc(L, "GetLastEnemyPageID", Lua_MainMenu_GetLastEnemyPageID);
-	lua_setglobal(L, "BestiaryMenu");
+	lua_setglobal(L, lua::metatables::BestiaryMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

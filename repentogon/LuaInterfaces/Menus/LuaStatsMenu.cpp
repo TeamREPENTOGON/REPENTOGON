@@ -4,12 +4,9 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* StatsMenuMT = "StatsMenu";
-
-
-static int Lua_StatsMenu_GetStatsMenuSprite(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetStatsMenuSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_StatsMenuSprite;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -17,9 +14,9 @@ static int Lua_StatsMenu_GetStatsMenuSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuSprite(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementsSprite;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -27,9 +24,9 @@ static int Lua_StatsMenu_GetSecretsMenuSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite1(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite1)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite1;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -37,9 +34,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite1(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite2(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite2)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite2;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -47,9 +44,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite2(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite3(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite3)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite3;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -57,9 +54,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite3(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite4(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite4)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite4;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -67,9 +64,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite4(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite5(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite5)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite5;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -77,9 +74,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite5(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite6(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite6)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite6;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -87,9 +84,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite6(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite7(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite7)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite7;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -97,9 +94,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite7(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite8(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite8)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite8;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -107,9 +104,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite8(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuMiniSprite9(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuMiniSprite9)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_achievementMiniSprite9;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -117,9 +114,9 @@ static int Lua_StatsMenu_GetSecretsMenuMiniSprite9(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuCursorLeftSprite(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuCursorLeftSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_cursorLeftSprite;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -127,9 +124,9 @@ static int Lua_StatsMenu_GetSecretsMenuCursorLeftSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_GetSecretsMenuCursorRightSprite(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_GetSecretsMenuCursorRightSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	ANM2* anm2 = &menuStats->_cursorRightSprite;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -137,9 +134,9 @@ static int Lua_StatsMenu_GetSecretsMenuCursorRightSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_StatsMenu_IsSecretsMenuVisible(lua_State* L)
+LUA_FUNCTION(Lua_StatsMenu_IsSecretsMenuVisible)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "StatsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::StatsMenuMT);
 	Menu_Stats* menuStats = g_MenuManager->GetMenuStats();
 	lua_pushboolean(L, menuStats->_isAchievementScreenVisible == 1);
 
@@ -147,7 +144,7 @@ static int Lua_StatsMenu_IsSecretsMenuVisible(lua_State* L)
 }
 
 static void RegisterStatsMenuGame(lua_State* L)
-{	
+{
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetStatsMenuSprite", Lua_StatsMenu_GetStatsMenuSprite);
 	lua::TableAssoc(L, "GetSecretsMenuSprite", Lua_StatsMenu_GetSecretsMenuSprite);
@@ -163,7 +160,7 @@ static void RegisterStatsMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetSecretsMenuCursorLeftSprite", Lua_StatsMenu_GetSecretsMenuCursorLeftSprite);
 	lua::TableAssoc(L, "GetSecretsMenuCursorRightSprite", Lua_StatsMenu_GetSecretsMenuCursorRightSprite);
 	lua::TableAssoc(L, "IsSecretsMenuVisible", Lua_StatsMenu_IsSecretsMenuVisible);
-	lua_setglobal(L, "StatsMenu");
+	lua_setglobal(L, lua::metatables::StatsMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

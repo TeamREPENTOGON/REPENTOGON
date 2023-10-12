@@ -4,11 +4,9 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* MainMenuMT = "MainMenu";
-
-static int Lua_MainMenu_GetGameMenuSprite(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_GetGameMenuSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	ANM2* anm2 = menuGame->GetGameMenuSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -16,9 +14,9 @@ static int Lua_MainMenu_GetGameMenuSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_MainMenu_GetContinueWidgetSprite(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_GetContinueWidgetSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	ANM2* anm2 = menuGame->GetContinueWidgetSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -26,18 +24,18 @@ static int Lua_MainMenu_GetContinueWidgetSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_MainMenu_GetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_GetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	lua_pushinteger(L, menuGame->SelectedElement);
 
 	return 1;
 }
 
-static int Lua_MainMenu_SetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_MainMenu_SetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MainMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
 	menuGame->SelectedElement = (int)luaL_checkinteger(L, 2);
 
@@ -46,13 +44,12 @@ static int Lua_MainMenu_SetSelectedElement(lua_State* L)
 
 static void RegisterMainMenuGame(lua_State* L)
 {
-	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetGameMenuSprite", Lua_MainMenu_GetGameMenuSprite);
 	lua::TableAssoc(L, "GetContinueWidgetSprite", Lua_MainMenu_GetContinueWidgetSprite);
 	lua::TableAssoc(L, "GetSelectedElement", Lua_MainMenu_GetSelectedElement);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_MainMenu_SetSelectedElement);
-	lua_setglobal(L, "MainMenu");
+	lua_setglobal(L, lua::metatables::MainMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

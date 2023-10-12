@@ -4,11 +4,9 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* SaveMenuMT = "SaveMenu";
-
-static int Lua_SaveMenu_SaveSelectMenuSprite(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_SaveSelectMenuSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetSaveSelectMenuSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -16,9 +14,9 @@ static int Lua_SaveMenu_SaveSelectMenuSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_SaveMenu_DeleteButtonSprite(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_DeleteButtonSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetDeleteButtonSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -26,9 +24,9 @@ static int Lua_SaveMenu_DeleteButtonSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_SaveMenu_DeletePopupSprite(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_DeletePopupSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetDeletePopupSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -36,9 +34,9 @@ static int Lua_SaveMenu_DeletePopupSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_SaveMenu_Save1DrawingSprite(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_Save1DrawingSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetSave1DrawingSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -46,9 +44,9 @@ static int Lua_SaveMenu_Save1DrawingSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_SaveMenu_Save2DrawingSprite(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_Save2DrawingSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetSave2DrawingSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -56,9 +54,9 @@ static int Lua_SaveMenu_Save2DrawingSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_SaveMenu_Save3DrawingSprite(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_Save3DrawingSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	ANM2* anm2 = menu->GetSave3DrawingSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -66,27 +64,27 @@ static int Lua_SaveMenu_Save3DrawingSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_SaveMenu_GetSelectedSave(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_GetSelectedSave)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	lua_pushinteger(L, menu->SelectedSave);
 
 	return 1;
 }
 
-static int Lua_SaveMenu_SetSelectedSave(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_SetSelectedSave)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	menu->SelectedSave = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int Lua_SaveMenu_IsDeleteActive(lua_State* L)
+LUA_FUNCTION(Lua_SaveMenu_IsDeleteActive)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SaveMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
 	lua_pushboolean(L, menu->State == 1);
 
@@ -95,7 +93,6 @@ static int Lua_SaveMenu_IsDeleteActive(lua_State* L)
 
 static void RegisterSaveMenuGame(lua_State* L)
 {
-	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetSaveSelectMenuSprite", Lua_SaveMenu_SaveSelectMenuSprite);
 	lua::TableAssoc(L, "GetDeleteButtonSprite", Lua_SaveMenu_DeleteButtonSprite);
@@ -106,7 +103,7 @@ static void RegisterSaveMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetSelectedElement", Lua_SaveMenu_GetSelectedSave);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_SaveMenu_SetSelectedSave);
 	lua::TableAssoc(L, "IsDeleteActive", Lua_SaveMenu_IsDeleteActive);
-	lua_setglobal(L, "SaveMenu");
+	lua_setglobal(L, lua::metatables::SaveMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
