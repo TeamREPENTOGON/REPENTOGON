@@ -452,6 +452,15 @@ Spawns a creep effect that acts like the ones created by Aquarius, including inh
 	``player->GetTearHitParams(&params, WeaponType.WEAPON_TEARS, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, -(int)(-Isaac::Random(2) != 0) & 2 - 1, nil)``
 
 ___
+### Swap·Forgotten·Form () {: aria-label='Functions' }
+#### void SwapForgottenForm ( boolean IgnoreHealth = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
+If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#getsubplayer), swaps between them. `IgnoreHealth` will swap even if the subplayer doesn't have any health. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
+
+
+???+ warning "Warning"
+    This function currently only has an effect for The Forgotten and The Soul.
+
+___
 ### Teleport () {: aria-label='Functions' }
 #### void Teleport ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, boolean DoEffects = true, boolean TeleportTwinPlayers = false ) {: .copyable aria-label='Functions' }
 Teleports the player to a position within the room. 
