@@ -330,6 +330,7 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 	//std_vector_int _wispStorage : 0x1cfc;
 	Entity_Player* _backupPlayer : 0x1d84;
 	int _maggySwingCooldown : 0x1df8;
+	char _bagOfCraftingContent[8]: 0x1e44;
 	char _poopSpellQueue[6] : 0x1e54;
 	std_map_int_int _itemWispsList : 0x1e7c;
 } : 0x2580;

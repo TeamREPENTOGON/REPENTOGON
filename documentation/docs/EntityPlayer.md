@@ -88,7 +88,7 @@ ___
 
 ___
 ### Get·Bag·Of·Crafting·Slot () {: aria-label='Functions' }
-#### int GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
+#### [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
 Gets the current content of the bag in the given Slot ID.
 ___
 ### Get·Bladder·Charge () {: aria-label='Functions' }
@@ -325,7 +325,7 @@ ___
 ___
 ### Set·Bag·Of·Crafting·Content () {: aria-label='Functions' }
 #### void SetBagOfCraftingContent ( table ContentTable ) {: .copyable aria-label='Functions' }
-**NOT IMPLEMENTED**
+Sets the content of the bag to the content of the table. Table must use valid [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) ids. Table can be shorter than 8, in which case the remaining indexes are set to empty.
 ___
 ### Set·Bag·Of·Crafting·Output () {: aria-label='Functions' }
 #### void SetBagOfCraftingOutput ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleID ) {: .copyable aria-label='Functions' }
