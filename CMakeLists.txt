@@ -16,6 +16,17 @@ include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua"
     "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 
     "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini")
 
+
+macro(GET_FILES_WITH_FOLDER_STRUCTURE GLOB_LIST)
+    # Display folder structure inside of VS solution - https://stackoverflow.com/a/54531576
+    foreach(_source IN ITEMS ${GLOB_LIST})
+        get_filename_component(_source_path "${_source}" PATH)
+        string(REPLACE "${CMAKE_SOURCE_DIR}" "" _group_path "${_source_path}")
+        string(REPLACE "/" "\\" _group_path "${_group_path}")
+        source_group("${_group_path}" FILES "${_source}")
+    endforeach()
+endmacro()
+
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
 option(ZYDIS_BUILD_EXAMPLES "" OFF)
@@ -128,20 +139,14 @@ target_compile_options(imgui PUBLIC "/MD")
 target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE)
 
 # Repentogon
-# Display folder structure inside of VS solution - https://stackoverflow.com/a/54531576
 file(GLOB_RECURSE REPENTOGON_SRC ${CMAKE_SOURCE_DIR}/repentogon/*.*)
-foreach(_source IN ITEMS ${REPENTOGON_SRC})
-    get_filename_component(_source_path "${_source}" PATH)
-    string(REPLACE "${CMAKE_SOURCE_DIR}" "" _group_path "${_source_path}")
-    string(REPLACE "/" "\\" _group_path "${_group_path}")
-    source_group("${_group_path}" FILES "${_source}")
-endforeach()
-
+GET_FILES_WITH_FOLDER_STRUCTURE(REPENTOGON_SRC)
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/wd4251" "/wd4996")
 
 # Delirium
-FILE(GLOB DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.cpp)
+FILE(GLOB_RECURSE DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.*)
+GET_FILES_WITH_FOLDER_STRUCTURE(DELIRIUM_SRC)
 add_library(zhlDelirium SHARED ${DELIRIUM_SRC})
 target_link_libraries(zhlDelirium libzhl)
 target_compile_options(zhlDelirium PUBLIC "/MD")
