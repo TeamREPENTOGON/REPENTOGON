@@ -79,6 +79,10 @@ ___
 #### table GetCutsceneIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Cutscene ID By Name.
 ___
+### Get·Cursor·Sprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetCursorSprite ( ) {: .copyable aria-label='Functions' }
+Returns the cursor sprite that is rendered when ``Options.MouseControl`` is set to true. 
+___
 ### Get·Completion·Mark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](enums/CompletionType.md) marktype) {: .copyable aria-label='Functions' }
 Gets a completion mark value for a specific character. Supports both modded and vanilla characters. 
