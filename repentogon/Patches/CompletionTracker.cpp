@@ -823,8 +823,7 @@ HOOK_METHOD_PRIORITY(PersistentGameData, IncreaseEventCounter, 0, (int eEvent, i
 	if ((val > 0) && (EventsToPlayerType.count(eEvent) > 0)) {
 		int playertype = EventsToPlayerType[eEvent];
 		int cplmtype = EventsToCompletionType[eEvent];
-		int difficulty = g_Game->GetDifficulty();
-		bool hardmode = ((difficulty == 1) || (difficulty == 3));
+		bool hardmode = (g_Game->IsHardMode());
 		if (hardmode && (lastcmplevent == eEvent) && (val == 1)) {
 			if (evntreturnedfalse) {
 				evntreturnedfalse = false;
@@ -863,9 +862,8 @@ HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion, 100, (int eEvent) -> void,
 			if (CompletionMarks.count(idx) == 0) {
 				CompletionMarks[idx] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 			}
-			int difficulty = g_Game->GetDifficulty();
 			int marktype = 1;
-			if ((difficulty == 1) || (difficulty == 3)) { //1:hard 3:greedier
+			if (g_Game->IsHardMode()) {
 				marktype = 2;
 			}
 			if (CompletionMarks[idx][eEvent] != marktype) {

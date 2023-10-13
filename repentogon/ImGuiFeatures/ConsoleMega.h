@@ -540,7 +540,7 @@ struct ConsoleMega {
 
                             case STAGE: {
 
-                                if (g_Game->GetDifficulty() == 2 || g_Game->GetDifficulty() == 3) { // Greed mode
+                                if (g_Game->IsGreedMode()) {
                                     entries = {
                                         AutocompleteEntry("1", "Basement"),
                                         AutocompleteEntry("1a", "Cellar"),

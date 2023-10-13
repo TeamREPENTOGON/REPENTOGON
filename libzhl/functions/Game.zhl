@@ -18,7 +18,6 @@ static bool Game::IsHardMode();
 "558bec83e4f883ec6c8b45":
 __thiscall Entity* Game::Spawn(unsigned int type, unsigned int variant, const Vector& position, const Vector& velocity, Entity* spawner, unsigned int subtype, unsigned int seed, unsigned int unk);
 
-
 "558beca1????????538b5d":
 __thiscall void Game::ShakeScreen(int timeout);
 
@@ -87,6 +86,9 @@ static bool Game::IsGreedBoss();
 
 "a1????????33c98b90????????83fa038b80????????0f94c14083c10b":
 static bool Game::IsGreedFinalBoss();
+
+"8b81????????83f80274??83f80374??32c0c3":
+static bool Game::IsGreedMode();
 
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;

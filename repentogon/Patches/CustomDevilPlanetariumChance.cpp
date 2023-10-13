@@ -182,10 +182,8 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     }
     //MC_POST_DEVIL_CALCULATE
 
-    int difficulty = g_Game->GetDifficulty();
-
-    if (difficulty == 2 || difficulty == 3) { // Greed and Greedier mode. TODO enums
-        if (g_Game->GetGreedModeWave() < (int)(difficulty == 3) + 11) // 11 waves pass for devil chance in Greed, 12 in Greedier
+    if (g_Game->IsGreedMode()) {
+        if (g_Game->GetGreedModeWave() < (int)(g_Game->GetDifficulty() == 3) + 11) // 11 waves pass for devil chance in Greed, 12 in Greedier
             chance = 0;
         else
             chance = 1;
