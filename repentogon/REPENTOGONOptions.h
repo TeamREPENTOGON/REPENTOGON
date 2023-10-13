@@ -25,6 +25,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["BetterVoidGeneration"] = "1";
 			ini["VanillaTweaks"]["HushPanicStateFix"] = "1";
 			ini["VanillaTweaks"]["KeyMasterDealChance"] = "1";
+			ini["internal"]["didmodreset"] = "0";
 
 			iniFile.generate(ini, true);
 		}
@@ -38,9 +39,9 @@ struct REPENTOGONOptions {
 		printf("Loaded REPENTOGON INI\n");
 	}
 
-	std::string* Read(char* category, char* field) {
+	bool GetBool(char* category, char* field) {
 		mINI::INIFile iniFile(optionsPath);
-		return &ini[category][field];
+		return ini[category][field] == "1" ? true : false;
 	}
 
 	bool Write(char* category, char* field, char* value) {

@@ -20,7 +20,7 @@
 #include "rapidxml.hpp"
 #include "rapidxml_print.hpp"
 
-#include "../ImGuiFeatures/LogViewer.h"
+#include "../REPENTOGONOptions.h"
 #include <lua.hpp>
 #include "LuaCore.h"
 #include <filesystem>
@@ -2834,8 +2834,16 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 #include <iostream>
 
 HOOK_METHOD(ModManager, Reset, () -> void) {
-	//super();
-	GameRestart(); //if we ever walk back from this, for whateevr reason, we will need to recheck some stuff regarding a few xml reloads on xmldata
+	bool res = repentogonOptions.GetBool("internal", "didmodreset");
+	printf("didmodreset: %s\n", res == true ? "TRUE" : "FALSE");
+	if (!res) {
+		repentogonOptions.Write("internal", "didmodreset", "1");
+		GameRestart(); //if we ever walk back from this, for whateevr reason, we will need to recheck some stuff regarding a few xml reloads on xmldata
+	}
+	else {
+		super();
+	}
+	repentogonOptions.Write("internal", "didmodreset", "0");
 }
 
 //Sneaky modreloader code
