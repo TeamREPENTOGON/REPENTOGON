@@ -6,4 +6,6 @@ struct OptionsConfig depends (Game) {
 {{
 	inline bool ModsEnabled() { return *(bool*)((char*)this + 0x49); }
 	inline bool PopUpsEnabled() { return *(bool*)((char*)this + 0x39); }
-}} } : 0x8C;
+}} 
+	float _sfxVolume : 0x1c;
+} : 0x8C;

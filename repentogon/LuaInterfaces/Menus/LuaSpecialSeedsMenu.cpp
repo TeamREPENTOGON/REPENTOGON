@@ -4,11 +4,9 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* SpecialSeedsMenuMT = "SpecialSeedsMenu";
-
-static int Lua_SpecialSeedsMenu_GetSpecialSeedsMenuSprite(lua_State* L)
+LUA_FUNCTION(Lua_SpecialSeedsMenu_GetSpecialSeedsMenuSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SpecialSeedsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SpecialSeedsMenuMT);
 	Menu_SpecialSeeds* menu = g_MenuManager->GetMenuSpecialSeeds();
 	ANM2* anm2 = menu->GetSpecialSeedsSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -16,18 +14,18 @@ static int Lua_SpecialSeedsMenu_GetSpecialSeedsMenuSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_SpecialSeedsMenu_GetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_SpecialSeedsMenu_GetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SpecialSeedsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SpecialSeedsMenuMT);
 	Menu_SpecialSeeds* menu = g_MenuManager->GetMenuSpecialSeeds();
 	lua_pushinteger(L, menu->SelectedElement);
 
 	return 1;
 }
 
-static int Lua_SpecialSeedsMenu_SetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_SpecialSeedsMenu_SetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "SpecialSeedsMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::SpecialSeedsMenuMT);
 	Menu_SpecialSeeds* menu = g_MenuManager->GetMenuSpecialSeeds();
 	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
 
@@ -36,12 +34,11 @@ static int Lua_SpecialSeedsMenu_SetSelectedElement(lua_State* L)
 
 static void RegisterSpecialSeedsMenu(lua_State* L)
 {
-	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetSprite", Lua_SpecialSeedsMenu_GetSpecialSeedsMenuSprite);
 	lua::TableAssoc(L, "GetSelectedElement", Lua_SpecialSeedsMenu_GetSelectedElement);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_SpecialSeedsMenu_SetSelectedElement);
-	lua_setglobal(L, "SpecialSeedsMenu");
+	lua_setglobal(L, lua::metatables::SpecialSeedsMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

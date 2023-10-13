@@ -448,6 +448,39 @@ static void RegisterIsaacGetNullItemIdByName(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+LUA_FUNCTION(Lua_IsaacShowErrorDialog) {
+	const char* title = luaL_checkstring(L, 1);
+	const char* text = luaL_checkstring(L, 2);
+	int icon = (int)luaL_optinteger(L, 3, MB_ICONERROR);
+	int buttons = (int)luaL_optinteger(L, 4, MB_OK);
+
+	int mbreturn = MessageBoxA(NULL, text, title, icon | buttons);
+	lua_pushinteger(L, mbreturn);
+
+	return 1;
+}
+
+static void RegisterIsaacShowErrorDialog(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "ShowErrorDialog");
+	lua_pushcfunction(L, Lua_IsaacShowErrorDialog);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
+LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
+	lua::luabridge::UserdataPtr::push(L, &g_Manager->_cursorSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	return 1;
+}
+
+static void RegisterIsaacGetCursorSprite(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "GetCursorSprite");
+	lua_pushcfunction(L, Lua_IsaacGetCursorSprite);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -469,6 +502,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterGetCutsceneName(state);
 	RegisterPlayCutscene(state);
 	RegisterIsaacGetNullItemIdByName(state);
+	RegisterIsaacShowErrorDialog(state);
+	RegisterIsaacGetCursorSprite(state);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

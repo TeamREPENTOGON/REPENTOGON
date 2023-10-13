@@ -611,29 +611,46 @@ namespace lua {
 
 	namespace metatables
 	{
-		const char* AnimationStateMT = "AnimationState";
 		const char* AnimationDataMT = "AnimationData";
+		const char* AnimationStateMT = "AnimationState";
 		const char* AnimationLayerMT = "AnimationLayer";
 		const char* AnimationFrameMT = "AnimationFrame";
-		const char* NullFrameMT = "NullFrame";
-		const char* EntitySlotMT = "EntitySlot";
-		const char* HistoryMT = "History";
-		const char* PlayerHUDMT = "PlayerHUD";
-		const char* WeaponMT = "Weapon";
-		const char* LevelGeneratorMT = "LevelGenerator";
-		const char* LevelGeneratorRoomMT = "LevelGeneratorMT";
-		const char* MinimapMT = "Minimap";
-		const char* NightmareSceneMT = "NightmareScene";
+		const char* BestiaryMenuMT = "BestiaryMenu";
+		const char* BlendModeMT = "BlendMode";
 		const char* CapsuleMT = "Capsule";
+		const char* ChallengeMenuMT = "ChallengeMenu";
+		const char* CharacterMenuMT = "CharacterMenu";
+		const char* CollectionMenuMT = "CollectionMenu";
+		const char* ControllerSelectMenuMT = "ControllerSelectMenu";
+		const char* ColorModifierMT = "ColorModifier";
+		const char* CustomChallengeMenuMT = "CustomChallengeMenu";
+		const char* CutscenesMenuMT = "CutscenesMenu";
 		const char* DailyChallengeMT = "DailyChallenge";
-		const char* ItemOverlayMT = "ItemOverlay";
-		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
+		const char* DailyChallengeMenuMT = "DailyChallengeMenu";
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
 		const char* EntitySaveStateMT = "EntitySaveState";
+		const char* EntitySlotMT = "EntitySlot";
 		const char* FXParamsMT = "FXParams";
-		const char* ColorModifierMT = "ColorModifier";
-		const char* BlendModeMT = "BlendMode";
+		const char* HistoryMT = "History";
+		const char* ItemOverlayMT = "ItemOverlay";
+		const char* KeyConfigMenuMT = "KeyConfigMenu";
+		const char* LevelGeneratorMT = "LevelGenerator";
+		const char* LevelGeneratorRoomMT = "LevelGeneratorMT";
+		const char* MainMenuMT = "MainMenu";
+		const char* MenuManagerMT = "MenuManager";
+		const char* MinimapMT = "Minimap";
+		const char* ModsMenuMT = "ModsMenu";
 		const char* MultiShotParamsMT = "MultiShotParams";
+		const char* NightmareSceneMT = "NightmareScene";
+		const char* NullFrameMT = "NullFrame";
+		const char* OptionsMenuMT = "OptionsMenu";
+		const char* PlayerHUDMT = "PlayerHUD";
+		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
+		const char* SaveMenuMT = "SaveMenu";
+		const char* SpecialSeedsMenuMT = "SpecialSeedsMenu";
+		const char* StatsMenuMT = "StatsMenu";
+		const char* TitleMenuMT = "TitleMenu";
+		const char* WeaponMT = "Weapon";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {
@@ -696,5 +713,10 @@ namespace lua {
 		}
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	}
+
+	int LuaCheckMainMenuExists(lua_State* L, const char* className) {
+		if (g_MenuManager == NULL) { return luaL_error(L, "%s functions can only be used in the main menu", className); }
+		return 0;
 	}
 }

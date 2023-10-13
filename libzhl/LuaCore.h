@@ -146,32 +146,49 @@ namespace lua {
         METATABLES_MAX
     };
 
-    namespace metatables
-    {
-        extern LIBZHL_API const char* AnimationStateMT;
-        extern LIBZHL_API const char* AnimationDataMT;
-        extern LIBZHL_API const char* AnimationLayerMT;
-        extern LIBZHL_API const char* AnimationFrameMT;
-        extern LIBZHL_API const char* NullFrameMT;
-        extern LIBZHL_API const char* EntitySlotMT;
-        extern LIBZHL_API const char* HistoryMT;
-        extern LIBZHL_API const char* PlayerHUDMT;
-        extern LIBZHL_API const char* WeaponMT;
-        extern LIBZHL_API const char* LevelGeneratorMT;
-        extern LIBZHL_API const char* LevelGeneratorRoomMT;
-        extern LIBZHL_API const char* MinimapMT;
-		extern LIBZHL_API const char* MultiShotParamsMT;
-        extern LIBZHL_API const char* NightmareSceneMT;
-        extern LIBZHL_API const char* CapsuleMT;
-        extern LIBZHL_API const char* DailyChallengeMT;
-        extern LIBZHL_API const char* ItemOverlayMT;
-        extern LIBZHL_API const char* PlayerHUDHeartMT;
-        extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
-        extern LIBZHL_API const char* EntitySaveStateMT;
-        extern LIBZHL_API const char* FXParamsMT;
-        extern LIBZHL_API const char* ColorModifierMT;
-        extern LIBZHL_API const char* BlendModeMT;
-    }
+		namespace metatables
+		{
+			extern LIBZHL_API const char* AnimationDataMT;
+			extern LIBZHL_API const char* AnimationFrameMT;
+			extern LIBZHL_API const char* AnimationLayerMT;
+			extern LIBZHL_API const char* AnimationStateMT;
+			extern LIBZHL_API const char* BestiaryMenuMT;
+			extern LIBZHL_API const char* BlendModeMT;
+			extern LIBZHL_API const char* CapsuleMT;
+			extern LIBZHL_API const char* ChallengeMenuMT;
+			extern LIBZHL_API const char* CharacterMenuMT;
+			extern LIBZHL_API const char* CollectionMenuMT;
+			extern LIBZHL_API const char* ControllerSelectMenuMT;
+			extern LIBZHL_API const char* ColorModifierMT;
+			extern LIBZHL_API const char* CustomChallengeMenuMT;
+			extern LIBZHL_API const char* CutscenesMenuMT;
+			extern LIBZHL_API const char* DailyChallengeMT;
+			extern LIBZHL_API const char* DailyChallengeMenuMT;
+			extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
+			extern LIBZHL_API const char* EntitySaveStateMT;
+			extern LIBZHL_API const char* EntitySlotMT;
+			extern LIBZHL_API const char* FXParamsMT;
+			extern LIBZHL_API const char* HistoryMT;
+			extern LIBZHL_API const char* ItemOverlayMT;
+			extern LIBZHL_API const char* KeyConfigMenuMT;
+			extern LIBZHL_API const char* LevelGeneratorMT;
+			extern LIBZHL_API const char* LevelGeneratorRoomMT;
+			extern LIBZHL_API const char* MainMenuMT;
+			extern LIBZHL_API const char* MenuManagerMT;
+			extern LIBZHL_API const char* MinimapMT;
+			extern LIBZHL_API const char* ModsMenuMT;
+			extern LIBZHL_API const char* MultiShotParamsMT;
+			extern LIBZHL_API const char* NightmareSceneMT;
+			extern LIBZHL_API const char* NullFrameMT;
+			extern LIBZHL_API const char* OptionsMenuMT;
+			extern LIBZHL_API const char* PlayerHUDMT;
+			extern LIBZHL_API const char* PlayerHUDHeartMT;
+			extern LIBZHL_API const char* SaveMenuMT;
+			extern LIBZHL_API const char* SpecialSeedsMenuMT;
+			extern LIBZHL_API const char* StatsMenuMT;
+			extern LIBZHL_API const char* TitleMenuMT;
+			extern LIBZHL_API const char* WeaponMT;
+		}
 
     LIBZHL_API void UnloadMetatables();
     LIBZHL_API void RegisterMetatable(Metatables metatable, void* key);
@@ -426,6 +443,7 @@ namespace lua {
 
     void LIBZHL_API PushCallbackID(lua_State* L, const char* name, const char* ns = nullptr);
     void LIBZHL_API PushCallbackRegistryKey(lua_State* L = nullptr);
+    int LIBZHL_API LuaCheckMainMenuExists(lua_State* L, const char* className);
 }
 
 #define LUA_FUNCTION(name) static int name(lua_State* L)

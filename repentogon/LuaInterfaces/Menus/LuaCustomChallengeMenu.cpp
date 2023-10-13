@@ -4,11 +4,9 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* CustomChallengeMenuMT = "CustomChallengeMenu";
-
-static int Lua_CustomChallengeMenu_GetCustomChallengeMenuSprite(lua_State* L)
+LUA_FUNCTION(Lua_CustomChallengeMenu_GetCustomChallengeMenuSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CustomChallengeMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CustomChallengeMenuMT);
 	Menu_CustomChallenge* menu = g_MenuManager->GetMenuCustomChallenge();
 	ANM2* anm2 = menu->GetCustomChallengeSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -16,18 +14,18 @@ static int Lua_CustomChallengeMenu_GetCustomChallengeMenuSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_CustomChallengeMenu_GetSelectedChallengeID(lua_State* L)
+LUA_FUNCTION(Lua_CustomChallengeMenu_GetSelectedChallengeID)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CustomChallengeMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CustomChallengeMenuMT);
 	Menu_CustomChallenge* menu = g_MenuManager->GetMenuCustomChallenge();
 	lua_pushinteger(L, menu->SelectedElement);
 
 	return 1;
 }
 
-static int Lua_CustomChallengeMenu_SetSelectedChallengeID(lua_State* L)
+LUA_FUNCTION(Lua_CustomChallengeMenu_SetSelectedChallengeID)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "CustomChallengeMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CustomChallengeMenuMT);
 	Menu_CustomChallenge* menu = g_MenuManager->GetMenuCustomChallenge();
 	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
 
@@ -36,12 +34,11 @@ static int Lua_CustomChallengeMenu_SetSelectedChallengeID(lua_State* L)
 
 static void RegisterCustomChallengeMenuGame(lua_State* L)
 {
-	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetSprite", Lua_CustomChallengeMenu_GetCustomChallengeMenuSprite);
 	lua::TableAssoc(L, "GetSelectedChallengeID", Lua_CustomChallengeMenu_GetSelectedChallengeID);
 	lua::TableAssoc(L, "SetSelectedChallengeID", Lua_CustomChallengeMenu_SetSelectedChallengeID);
-	lua_setglobal(L, "CustomChallengeMenu");
+	lua_setglobal(L, lua::metatables::CustomChallengeMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

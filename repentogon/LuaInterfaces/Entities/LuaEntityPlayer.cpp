@@ -478,7 +478,34 @@ int Lua_PlayerGetBoCContent(lua_State* L) {
 
 int Lua_PlayerSetBoCContent(lua_State* L) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	// TODO: Implement this
+	if (!lua_istable(L, 2))
+	{
+		luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Expected a table as second argument");
+		return 0;
+	}
+
+	BagOfCraftingPickup list[8]{};
+	size_t length = (size_t)lua_rawlen(L, 2);
+	if (length > 0)
+	{
+		if (length > 8) {
+			luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Table cannot be larger than 8 pickups");
+		}
+
+		size_t index;
+		for (index = 0; index < length; index++)
+		{
+			lua_rawgeti(L, 2, index + 1);
+			BagOfCraftingPickup pickup = (BagOfCraftingPickup)luaL_checkinteger(L, -1);
+			lua_pop(L, 1);
+			if (pickup < 0 || pickup > 29) {
+				luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Invalid pickup %d at index %d", pickup, index + 1);
+			}
+			list[index] = pickup;
+		}
+	}
+	memcpy(&player->_bagOfCraftingContent, list, sizeof(list));
+
 	return 0;
 }
 
@@ -1173,8 +1200,16 @@ LUA_FUNCTION(Lua_ClearDeadEyeCharge) {
 
 LUA_FUNCTION(Lua_SwapForgottenForm) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	bool IgnoreHealth = false;
+	bool NoEffects = false;
+	if (lua_isboolean(L, 2)) {
+		IgnoreHealth = lua_toboolean(L, 2);
+	}
 
-	player->SwapForgottenForm(lua_toboolean(L, 2), lua_toboolean(L, 3));
+	if (lua_isboolean(L, 3)) {
+		NoEffects = lua_toboolean(L, 3);
+	}
+	player->SwapForgottenForm(IgnoreHealth, NoEffects);
 	return 0;
 }
 
@@ -1297,7 +1332,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetActiveItemDesc", Lua_PlayerGetActiveItemDesc);
 	lua::RegisterFunction(state, mt, "TryFakeDeath", Lua_PlayerTryFakeDeath);
 	lua::RegisterFunction(state, mt, "GetBagOfCraftingContent", Lua_PlayerGetBoCContent);
-	// lua::RegisterFunction(state, mt, "SetBagOfCraftingContent", Lua_PlayerSetBoCContent);
+	lua::RegisterFunction(state, mt, "SetBagOfCraftingContent", Lua_PlayerSetBoCContent);
 	lua::RegisterFunction(state, mt, "SetBagOfCraftingSlot", Lua_PlayerSetBoCSlot);
 	lua::RegisterFunction(state, mt, "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot);
 	lua::RegisterFunction(state, mt, "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput);

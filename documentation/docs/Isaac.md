@@ -79,6 +79,10 @@ ___
 #### table GetCutsceneIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Cutscene ID By Name.
 ___
+### Get·Cursor·Sprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetCursorSprite ( ) {: .copyable aria-label='Functions' }
+Returns the cursor sprite that is rendered when ``Options.MouseControl`` is set to true. 
+___
 ### Get·Completion·Mark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](enums/CompletionType.md) marktype) {: .copyable aria-label='Functions' }
 Gets a completion mark value for a specific character. Supports both modded and vanilla characters. 
@@ -200,6 +204,10 @@ Sets the completion marks of a character to match an input table. Supports both 
 			marks.BlueBaby = 0 --Removes the BlueBaby Mark if its present
 			Isaac.SetCompletionMarks(marks) --Impacts the changes on the player
 			```
+___
+### Show·Error·Dialog () {: aria-label='Functions' }
+#### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string title, string text, [DialogIcons](enums/DialogIcons.md) icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
+Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
 ___
 ### World·To·Menu·Position () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }

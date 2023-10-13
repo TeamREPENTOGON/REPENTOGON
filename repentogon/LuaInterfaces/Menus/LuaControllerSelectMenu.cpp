@@ -6,9 +6,9 @@
 
 static constexpr const char* ControllerSelectMenuMT = "ControllerSelectMenu";
 
-static int Lua_ControllerSelectMenu_GetControllerSelectSprite(lua_State* L)
+LUA_FUNCTION(Lua_ControllerSelectMenu_GetControllerSelectSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "ControllerSelectMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::ControllerSelectMenuMT);
 	Menu_ControllerSelect* menu = g_MenuManager->GetMenuControllerSelect();
 	ANM2* anm2 = menu->GetControllerSelectSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -16,18 +16,18 @@ static int Lua_ControllerSelectMenu_GetControllerSelectSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_ControllerSelectMenu_GetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_ControllerSelectMenu_GetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "ControllerSelectMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::ControllerSelectMenuMT);
 	Menu_ControllerSelect* menu = g_MenuManager->GetMenuControllerSelect();
 	lua_pushinteger(L, menu->SelectedElement);
 
 	return 1;
 }
 
-static int Lua_ControllerSelectMenu_SetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_ControllerSelectMenu_SetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "ControllerSelectMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::ControllerSelectMenuMT);
 	Menu_ControllerSelect* menu = g_MenuManager->GetMenuControllerSelect();
 	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
 
@@ -36,12 +36,11 @@ static int Lua_ControllerSelectMenu_SetSelectedElement(lua_State* L)
 
 static void RegisterControllerSelectMenuGame(lua_State* L)
 {
-	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetSprite", Lua_ControllerSelectMenu_GetControllerSelectSprite);
 	lua::TableAssoc(L, "GetSelectedElement", Lua_ControllerSelectMenu_GetSelectedElement);
 	lua::TableAssoc(L, "SetSelectedElement", Lua_ControllerSelectMenu_SetSelectedElement);
-	lua_setglobal(L, "ControllerSelectMenu");
+	lua_setglobal(L, lua::metatables::ControllerSelectMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

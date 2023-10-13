@@ -4,11 +4,6 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* MenuManagerMT = "MenuManager";
-static constexpr const char* StatsMenuMT = "StatsMenu";
-static constexpr const char* MainMenuMT = "MainMenu";
-static constexpr const char* CharacterMenuMT = "CharacterMenu";
-
 int Lua_WorldToMenuPosition(lua_State* L)
 {
 	if (g_MenuManager != NULL) {
@@ -93,9 +88,9 @@ static void RegisterWorldToMenuPos(lua_State* L) {
 	lua_pop(L, 1);
 }
 
-static int Lua_MenuManager_GetShadowSprite(lua_State* L)
+LUA_FUNCTION(Lua_MenuManager_GetShadowSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ANM2* anm2 = &menuManager->_MenuShadowSprite;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -103,9 +98,9 @@ static int Lua_MenuManager_GetShadowSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_MenuManager_GetBackWidgetSprite(lua_State* L)
+LUA_FUNCTION(Lua_MenuManager_GetBackWidgetSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ANM2* anm2 = &menuManager->_BackWidgetSprite;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -113,9 +108,9 @@ static int Lua_MenuManager_GetBackWidgetSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_MenuManager_GetSelectWidgetSprite(lua_State* L)
+LUA_FUNCTION(Lua_MenuManager_GetSelectWidgetSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ANM2* anm2 = &menuManager->_SelectWidgetSprite;
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -123,25 +118,25 @@ static int Lua_MenuManager_GetSelectWidgetSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_GetSelectedMenuID(lua_State* L)
+LUA_FUNCTION(Lua_GetSelectedMenuID)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	lua_pushinteger(L, menuManager->_selectedMenuID);
 	return 1;
 }
 
-static int Lua_SetSelectedMenuID(lua_State* L)
+LUA_FUNCTION(Lua_SetSelectedMenuID)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
-	menuManager->_selectedMenuID = (int)luaL_checkinteger(L, 1);
+	menuManager->_selectedMenuID = (int)luaL_checkinteger(L, 2);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_MenuGetCurrentColorModifier)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ColorModState* color = menuManager->GetCurrentColorModifier();
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
@@ -152,7 +147,7 @@ LUA_FUNCTION(Lua_MenuGetCurrentColorModifier)
 }
 LUA_FUNCTION(Lua_MenuGetTargetColorModifier)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ColorModState* color = menuManager->GetTargetColorModifier();
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
@@ -164,7 +159,7 @@ LUA_FUNCTION(Lua_MenuGetTargetColorModifier)
 
 LUA_FUNCTION(Lua_MenuGetLerpColorModifier)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
 	ColorModState* color = menuManager->GetLerpColorModifier();
 	ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
@@ -221,13 +216,13 @@ static void RegisterMenuManager(lua_State* L)
 	lua::TableAssoc(L, "GetSelectWidgetSprite", Lua_MenuManager_GetSelectWidgetSprite);
 	lua::TableAssoc(L, "SetActiveMenu", Lua_SetSelectedMenuID);
 	lua::TableAssoc(L, "GetActiveMenu", Lua_GetSelectedMenuID);
-	
+
 	lua::TableAssoc(L, "GetCurrentColorModifier", Lua_MenuGetCurrentColorModifier);
 	lua::TableAssoc(L, "GetTargetColorModifier", Lua_MenuGetTargetColorModifier);
 	lua::TableAssoc(L, "GetColorModifierLerpAmount", Lua_MenuGetLerpColorModifier);
 	lua::TableAssoc(L, "SetColorModifier", Lua_MenuSetColorModifier);
-	
-	lua_setglobal(L, "MenuManager");
+
+	lua_setglobal(L, lua::metatables::MenuManagerMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

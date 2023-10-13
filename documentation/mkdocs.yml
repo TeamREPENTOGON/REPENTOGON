@@ -55,6 +55,9 @@ nav:
     - CompletionType: enums/CompletionType.md
     - ConsoleFont: enums/ConsoleFont.md
     - DebugFlag: enums/DebugFlag.md
+    - DialogButtons: enums/DialogButtons.md
+    - DialogIcons: enums/DialogIcons.md
+    - DialogReturn: enums/DialogReturn.md
     - Dimension: enums/Dimension.md
     - DipSubType: enums/DipSubType.md
     - Ending: enums/Ending.md
@@ -85,6 +88,8 @@ nav:
     - PlayerVariant: enums/PlayerVariant.md
     - PocketItemType: enums/PocketItemType.md
     - PressurePlateVariant: enums/PressurePlateVariant.md
+    - ProceduralEffectActionType: enums/ProceduralEffectActionType.md
+    - ProceduralEffectConditionType: enums/ProceduralEffectConditionType.md
     - ProjectileMode: enums/ProjectileMode.md
     - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
     - RoomSubType: enums/RoomSubType.md
@@ -165,7 +170,10 @@ nav:
   - MusicManager: MusicManager.md
   - NightmareScene: NightmareScene.md
   - NullFrame: NullFrame.md
+  - Options: Options.md
   - PersistentGameData: PersistentGameData.md
+  - ProceduralEffect: ProceduralEffect.md
+  - ProceduralItem: ProceduralItem.md
   - ProceduralItemManager: ProceduralItemManager.md
   - PlayerHUD: PlayerHUD.md
   - PlayerHUDHeart: PlayerHUDHeart.md

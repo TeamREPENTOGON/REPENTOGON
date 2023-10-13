@@ -6,9 +6,9 @@
 
 static constexpr const char* KeyConfigMenuMT = "KeyConfigMenu";
 
-static int Lua_KeyConfigMenu_KeyConfigSprite(lua_State* L)
+LUA_FUNCTION(Lua_KeyConfigMenu_KeyConfigSprite)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "KeyConfigMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
 	ANM2* anm2 = menu->GetKeyConfigSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -16,45 +16,45 @@ static int Lua_KeyConfigMenu_KeyConfigSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_KeyConfigMenu_GetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_KeyConfigMenu_GetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "KeyConfigMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
 	lua_pushinteger(L, menu->SelectedElement);
-	
+
 	return 1;
 }
 
-static int Lua_KeyConfigMenu_SetSelectedElement(lua_State* L)
+LUA_FUNCTION(Lua_KeyConfigMenu_SetSelectedElement)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "KeyConfigMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
 	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int Lua_KeyConfigMenu_GetSelectedColumn(lua_State* L)
+LUA_FUNCTION(Lua_KeyConfigMenu_GetSelectedColumn)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "KeyConfigMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
 	lua_pushinteger(L, menu->SelectedColumn);
-	
+
 	return 1;
 }
 
-static int Lua_KeyConfigMenu_SetSelectedColumn(lua_State* L)
+LUA_FUNCTION(Lua_KeyConfigMenu_SetSelectedColumn)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "KeyConfigMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
 	menu->SelectedColumn = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int Lua_KeyConfigMenu_IsEditActive(lua_State* L)
+LUA_FUNCTION(Lua_KeyConfigMenu_IsEditActive)
 {
-	if (g_MenuManager == NULL) { return luaL_error(L, "KeyConfigMenu functions can only be used in the main menu"); }
+	lua::LuaCheckMainMenuExists(L, lua::metatables::KeyConfigMenuMT);
 	Menu_KeyConfig* menu = g_MenuManager->GetMenuKeyConfig();
 	lua_pushboolean(L, menu->State == 1);
 
@@ -62,8 +62,7 @@ static int Lua_KeyConfigMenu_IsEditActive(lua_State* L)
 }
 
 static void RegisterKeyConfigMenuGame(lua_State* L)
-{	
-	lua::LuaStackProtector protector(L);
+{
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetSprite", Lua_KeyConfigMenu_KeyConfigSprite);
 	lua::TableAssoc(L, "GetSelectedElement", Lua_KeyConfigMenu_GetSelectedElement);
@@ -71,7 +70,7 @@ static void RegisterKeyConfigMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetSelectedColumn", Lua_KeyConfigMenu_GetSelectedColumn);
 	lua::TableAssoc(L, "SetSelectedColumn", Lua_KeyConfigMenu_SetSelectedColumn);
 	lua::TableAssoc(L, "IsEditActive", Lua_KeyConfigMenu_IsEditActive);
-	lua_setglobal(L, "KeyConfigMenu");
+	lua_setglobal(L, lua::metatables::KeyConfigMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

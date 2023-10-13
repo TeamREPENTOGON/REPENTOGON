@@ -4,13 +4,9 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
-static constexpr const char* CharacterMenuMT = "CharacterMenu";
-
-static int lua_CharMenu_GetBigCharPageSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetBigCharPageSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetBigCharPageSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -18,11 +14,9 @@ static int lua_CharMenu_GetBigCharPageSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetDifficultyOverlaySprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetDifficultyOverlaySprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetDifficultyOverlaySprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -30,11 +24,9 @@ static int lua_CharMenu_GetDifficultyOverlaySprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetGreedDecoSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetGreedDecoSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetGreedDecoSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -42,11 +34,9 @@ static int lua_CharMenu_GetGreedDecoSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetBGSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetBGSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetBGSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -54,11 +44,9 @@ static int lua_CharMenu_GetBGSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetDifficultyPageSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetDifficultyPageSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetDifficultyPageSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -66,11 +54,9 @@ static int lua_CharMenu_GetDifficultyPageSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetSeedPageSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetSeedPageSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetSeedPageSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -78,11 +64,9 @@ static int lua_CharMenu_GetSeedPageSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetWinStreakPageSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetWinStreakPageSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetWinStreakPageSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -90,11 +74,9 @@ static int lua_CharMenu_GetWinStreakPageSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetEastereggPageSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetEastereggPageSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetEastereggPageSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -102,11 +84,9 @@ static int lua_CharMenu_GetEastereggPageSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetSeedUnlockPageSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetSeedUnlockPageSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetSeedUnlockPageSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -114,11 +94,9 @@ static int lua_CharMenu_GetSeedUnlockPageSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetCharacterPortraitSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetCharacterPortraitSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetCharacterPortraitSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -126,11 +104,9 @@ static int lua_CharMenu_GetCharacterPortraitSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetSeedEntrySprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetSeedEntrySprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetSeedEntrySprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -138,11 +114,9 @@ static int lua_CharMenu_GetSeedEntrySprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetPageSwapWidgetSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetPageSwapWidgetSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetPageSwapWidgetSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -150,11 +124,9 @@ static int lua_CharMenu_GetPageSwapWidgetSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetTaintedBGDecoSprite(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetTaintedBGDecoSprite)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	ANM2* anm2 = menu->GetTaintedBGDecoSprite();
 	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -162,165 +134,135 @@ static int lua_CharMenu_GetTaintedBGDecoSprite(lua_State* L)
 	return 1;
 }
 
-static int lua_CharMenu_GetNumCharacters(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetNumCharacters)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	lua_pushinteger(L, menu->_numCharacters);
 
 	return 1;
 }
 
-static int lua_CharMenu_GetSelectedCharacterMenu(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetSelectedCharacterMenu)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	lua_pushinteger(L, menu->_characterMenuShown);
 
 	return 1;
 }
 
-static int lua_CharMenu_SetSelectedCharacterMenu(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_SetSelectedCharacterMenu)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	menu->_characterMenuShown = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int lua_CharMenu_GetIsCharacterUnlocked(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetIsCharacterUnlocked)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	lua_pushboolean(L, menu->IsCharacterUnlocked);
 
 	return 1;
 }
 
-static int lua_CharMenu_SetIsCharacterUnlocked(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_SetIsCharacterUnlocked)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	menu->IsCharacterUnlocked = lua_toboolean(L, 2);
 
 	return 0;
 }
 
-static int lua_CharMenu_GetDifficulty(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetDifficulty)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	lua_pushinteger(L, menu->Difficulty);
 
 	return 1;
 }
 
-static int lua_CharMenu_SetDifficulty(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_SetDifficulty)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	menu->Difficulty = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int lua_CharMenu_GetSelectedCharacterID(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetSelectedCharacterID)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	lua_pushinteger(L, menu->SelectedCharacterID);
 
 	return 1;
 }
 
-static int lua_CharMenu_SetSelectedCharacterID(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_SetSelectedCharacterID)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	menu->SelectedCharacterID = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
 
-static int lua_CharMenu_GetCharacterWheelDepth(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetCharacterWheelDepth)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	lua_pushnumber(L, menu->_characterWheelDepth);
 
 	return 1;
 }
 
-static int lua_CharMenu_SetCharacterWheelDepth(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_SetCharacterWheelDepth)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	menu->_characterWheelDepth = (float)luaL_checknumber(L, 2);
 
 	return 0;
 }
 
-static int lua_CharMenu_GetScrollSpeed(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetScrollSpeed)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	lua_pushnumber(L, menu->_scrollSpeed);
 
 	return 1;
 }
 
-static int lua_CharMenu_SetScrollSpeed(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_SetScrollSpeed)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	menu->_scrollSpeed = (float)luaL_checknumber(L, 2);
 
 	return 0;
 }
 
-static int lua_CharMenu_GetCharacterWheelWidth(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_GetCharacterWheelWidth)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	lua_pushnumber(L, menu->_characterWheelWidth);
 
 	return 1;
 }
 
-static int lua_CharMenu_SetCharacterWheelWidth(lua_State* L)
+LUA_FUNCTION(lua_CharMenu_SetCharacterWheelWidth)
 {
-	if (g_MenuManager == NULL) {
-		return luaL_error(L, "CharacterMenu functions can only be used in the main menu");
-	}
+	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
 	menu->_characterWheelWidth = (float)luaL_checknumber(L, 2);
 
@@ -329,7 +271,6 @@ static int lua_CharMenu_SetCharacterWheelWidth(lua_State* L)
 
 static void RegisterStatsMenuGame(lua_State* L)
 {
-	lua::LuaStackProtector protector(L);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetBigCharPageSprite", lua_CharMenu_GetBigCharPageSprite);
 	lua::TableAssoc(L, "GetDifficultyOverlaySprite", lua_CharMenu_GetDifficultyOverlaySprite);
@@ -360,7 +301,7 @@ static void RegisterStatsMenuGame(lua_State* L)
 	lua::TableAssoc(L, "SetScrollSpeed", lua_CharMenu_SetScrollSpeed);
 	lua::TableAssoc(L, "GetCharacterWheelWidth", lua_CharMenu_GetCharacterWheelWidth);
 	lua::TableAssoc(L, "SetCharacterWheelWidth", lua_CharMenu_SetCharacterWheelWidth);
-	lua_setglobal(L, "CharacterMenu");
+	lua_setglobal(L, lua::metatables::CharacterMenuMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, ()->void)

@@ -88,7 +88,7 @@ ___
 
 ___
 ### Get·Bag·Of·Crafting·Slot () {: aria-label='Functions' }
-#### int GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
+#### [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) GetBagOfCraftingSlot ( int SlotID ) {: .copyable aria-label='Functions' }
 Gets the current content of the bag in the given Slot ID.
 ___
 ### Get·Bladder·Charge () {: aria-label='Functions' }
@@ -325,7 +325,7 @@ ___
 ___
 ### Set·Bag·Of·Crafting·Content () {: aria-label='Functions' }
 #### void SetBagOfCraftingContent ( table ContentTable ) {: .copyable aria-label='Functions' }
-**NOT IMPLEMENTED**
+Sets the content of the bag to the content of the table. Table must use valid [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) ids. Table can be shorter than 8, in which case the remaining indexes are set to empty.
 ___
 ### Set·Bag·Of·Crafting·Output () {: aria-label='Functions' }
 #### void SetBagOfCraftingOutput ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleID ) {: .copyable aria-label='Functions' }
@@ -450,6 +450,15 @@ Spawns a creep effect that acts like the ones created by Aquarius, including inh
     For reference, this is how the game calculates the `TearParams` for this normally:
 	
 	``player->GetTearHitParams(&params, WeaponType.WEAPON_TEARS, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, -(int)(-Isaac::Random(2) != 0) & 2 - 1, nil)``
+
+___
+### Swap·Forgotten·Form () {: aria-label='Functions' }
+#### void SwapForgottenForm ( boolean Force = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
+If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#getsubplayer), swaps between them. `Force` will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
+
+
+???+ warning "Warning"
+    This function currently only has an effect for The Forgotten and The Soul.
 
 ___
 ### Teleport () {: aria-label='Functions' }
