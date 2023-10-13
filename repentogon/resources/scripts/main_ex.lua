@@ -815,6 +815,17 @@ if not _LUADEBUG then
 	}
 end
 
+--Object Cache stuff
+local gaymeinstance
+local oldgayme = Game
+function Game()
+	if not gaymeinstance then
+		gaymeinstance = oldgayme()
+	end
+	return gaymeinstance
+end
+
+
 local oldregmod = RegisterMod
 
 function RegisterMod(name, ver)
