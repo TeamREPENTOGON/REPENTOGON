@@ -123,3 +123,8 @@ TypeInfo vector_PoolItem {
     Size 12;
     Align 4;
 };
+
+TypeInfo vector_bool {
+	Size 12;
+	Align 4;
+};

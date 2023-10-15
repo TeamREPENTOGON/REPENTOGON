@@ -55,6 +55,57 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleFromList) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	int collectibleID = (int)luaL_checkinteger(L, 2);
+
+	std::vector<bool> removedCollectibles = itemPool->_removedCollectibles;
+	lua_pushboolean(L, !removedCollectibles[collectibleID]);
+	/*const int itemPoolType = luaL_optinteger(L, 3, -1);
+
+	if (itemPoolType < POOL_NULL || itemPoolType > POOL_ROTTEN_BEGGAR) {
+		luaL_error(L, "Invalid ItemPoolType");
+	}
+
+	bool result = false;
+	if (itemPoolType == -1) { 
+		for (int i = 0; i < 33; i++) { 
+			std::vector<PoolItem> poolList = itemPool->_pools[i]._poolList;
+			for (auto& item : poolList) {
+				result = item._itemID == collectibleID && item._weight > .0f ? true : result;
+				if (result) break;
+			}
+			if (result) break;
+		}
+	}
+	else {
+		std::vector<PoolItem> poolList = itemPool->_pools[itemPoolType]._poolList;
+		for (auto& item : poolList) {
+			result = item._itemID == collectibleID && item._weight > .0f ? true : result;
+			if (result) break;
+		}
+	}
+	lua_pushboolean(L, result);
+	*/
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemPoolGetRemovedCollectibles) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	std::vector<bool> removedCollectibles = itemPool->_removedCollectibles;
+
+	lua_newtable(L);
+	int idx = 1;
+	for (auto collectible : removedCollectibles) {
+		lua_pushnumber(L, idx);
+		lua_pushboolean(L, collectible);
+		lua_settable(L, -3);
+		idx++;
+	}
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -62,4 +113,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::Metatables mt = lua::Metatables::ITEM_POOL;
 	lua::RegisterFunction(state, mt, "GetCardEx", Lua_ItemPoolGetCardEx);
 	lua::RegisterFunction(state, mt, "GetCollectibleFromList", Lua_ItemPoolGetCollectibleFromList);
+	lua::RegisterFunction(state, mt, "HasCollectible", Lua_ItemPoolHasCollectible);
+	lua::RegisterFunction(state, mt, "GetRemovedCollectibles", Lua_ItemPoolGetRemovedCollectibles);
 }

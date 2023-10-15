@@ -44,10 +44,12 @@ struct EntityId {
 };
 
 struct PoolItem {
-	uint32_t itemID;
-	float weight;
-	float decreaseBy;
-	float removeOn;
+	uint32_t _itemID;
+	float _initialWeight;
+	float _weight;
+	float _decreaseBy;
+	float _removeOn;
+	char _pad[4];
 };
 
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
@@ -66,6 +68,7 @@ typedef std::map<int, int> std_map_int_int;
 typedef std::vector<EntityId> vector_ErasedEntities;
 typedef std::vector<Entity_Player**> vector_EntityPlayerPtr;
 typedef std::vector<PoolItem> vector_PoolItem;
+typedef std::vector<bool> vector_bool;
 
 struct RoomConfig;
 typedef std::vector<RoomConfig*> RoomConfigPtrVector;
@@ -1302,6 +1305,43 @@ enum ShaderType : uint8_t {
     SHADER_MIRROR,
     SHADER_MAX
 };
+
+enum eItemPoolType {
+    POOL_NULL = -1,
+    POOL_TREASURE = 0,
+    POOL_SHOP = 1,
+    POOL_BOSS = 2,
+    POOL_DEVIL = 3,
+    POOL_ANGEL = 4,
+    POOL_SECRET = 5,
+    POOL_LIBRARY = 6,
+    POOL_SHELL_GAME = 7, // unused (for now)
+    POOL_GOLDEN_CHEST = 8,
+    POOL_RED_CHEST = 9,
+    POOL_BEGGAR = 10,
+    POOL_DEMON_BEGGAR = 11,
+    POOL_CURSE = 12,
+    POOL_KEY_MASTER = 13,
+    POOL_BATTERY_BUM = 14,
+    POOL_MOMS_CHEST = 15,
+    POOL_GREED_TREASURE = 16,
+    POOL_GREED_BOSS = 17,
+    POOL_GREED_SHOP = 18,
+    POOL_GREED_DEVIL = 19,
+    POOL_GREED_ANGEL = 20,
+    POOL_GREED_CURSE = 21,
+    POOL_GREED_SECRET = 22,
+    POOL_CRANE_GAME = 23,
+    POOL_ULTRA_SECRET = 24,
+    POOL_BOMB_BUM = 25,
+    POOL_PLANETARIUM = 26,
+    POOL_OLD_CHEST = 27,
+    POOL_BABY_SHOP = 28,
+    POOL_WOODEN_CHEST = 29,
+    POOL_ROTTEN_BEGGAR = 30,
+    NUM_ITEMPOOLS = 31
+};
+
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
 	static void* wglSwapBuffersAddr = GetProcAddress(GetModuleHandle("opengl32.dll"), "wglSwapBuffers");

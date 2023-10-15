@@ -10,3 +10,12 @@ ___
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectibleType ( table ItemList, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_BREAKFAST, boolean AddToBlacklist = true, boolean ExcludeLockedItems = false ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Removed·Collectibles () {: aria-label='Functions' }
+#### table GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
+Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) removed from all pools.
+___
+
+### Has·Collectible () {: aria-label='Functions' }
+#### boolean HasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Returns ``true`` if collectible is available in item pools, ``false`` otherwise.
+___

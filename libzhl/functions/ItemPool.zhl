@@ -9,4 +9,5 @@ __thiscall int ItemPool::GetCollectibleFromList(const int* list, unsigned int le
 
 struct ItemPool depends (ItemPool_Item) {
 	ItemPool_Item _pools[31] : 0x4;
-} : 0x654;
+	vector_bool _removedCollectibles : 0x67c;
+} : 0x828;
