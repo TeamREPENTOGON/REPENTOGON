@@ -110,35 +110,36 @@ LUA_FUNCTION(Lua_ItemPoolGetItemsFromPool) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int itemPoolType = (int)luaL_checkinteger(L, 2);
 
-	if (itemPoolType < 0 || itemPoolType > 30) {
-		luaL_error(L, "Invalid ItemPoolType");
-	}
+	if (itemPoolType >= 0 && itemPoolType <= 30) {
+		std::vector<PoolItem> poolItem = itemPool->_pools[itemPoolType]._poolList;
 
-	std::vector<PoolItem> poolItem = itemPool->_pools[itemPoolType]._poolList;
-
-	lua_newtable(L);
-	int idx = 1;
-	for (const auto& item : poolItem) {
-		lua_pushinteger(L, idx);
 		lua_newtable(L);
-
-		
-		lua_pushstring(L, "itemID");
-		lua_pushinteger(L, item._itemID);
-		lua_settable(L, -3);
-
-		lua_pushstring(L, "weight");
-		lua_pushnumber(L, item._weight);
-		lua_settable(L, -3);
-
-		lua_pushstring(L, "removeOn");
-		lua_pushnumber(L, item._removeOn);
-		lua_settable(L, -3);
+		int idx = 1;
+		for (const auto& item : poolItem) {
+			lua_pushinteger(L, idx);
+			lua_newtable(L);
 
 
-		lua_settable(L, -3);
+			lua_pushstring(L, "itemID");
+			lua_pushinteger(L, item._itemID);
+			lua_settable(L, -3);
 
-		idx++;
+			lua_pushstring(L, "weight");
+			lua_pushnumber(L, item._weight);
+			lua_settable(L, -3);
+
+			lua_pushstring(L, "removeOn");
+			lua_pushnumber(L, item._removeOn);
+			lua_settable(L, -3);
+
+
+			lua_settable(L, -3);
+
+			idx++;
+		}
+	}
+	else {
+		luaL_error(L, "Invalid ItemPoolType");
 	}
 
 	return 1;
@@ -153,5 +154,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "GetCollectibleFromList", Lua_ItemPoolGetCollectibleFromList);
 	lua::RegisterFunction(state, mt, "HasCollectible", Lua_ItemPoolHasCollectible);
 	lua::RegisterFunction(state, mt, "GetRemovedCollectibles", Lua_ItemPoolGetRemovedCollectibles);
-	//lua::RegisterFunction(state, mt, "GetItemsFromPool", Lua_ItemPoolGetItemsFromPool);
+	lua::RegisterFunction(state, mt, "GetItemsFromPool", Lua_ItemPoolGetItemsFromPool);
 }
