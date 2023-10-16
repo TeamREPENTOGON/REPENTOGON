@@ -207,7 +207,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     uint32_t _greedModeTreasureRoomIdx : 0x18200; // 0x18200
     RoomConfigHolder _roomConfigs : 0x1879c; // 0x1879C
 	ItemPool _itemPool : 0x1A5CC;
-    PlayerManager _playerManager : 0x1ab40; // 0x1AB40 
+    PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
     Console _console : 0x1bb60; // 0x1BB60
     ItemOverlay _itemOverlay : 0x1bcc0; // 0x1BCC0
     int _treasureRoomsVisited : 0x1c3178; // 0x1C3178

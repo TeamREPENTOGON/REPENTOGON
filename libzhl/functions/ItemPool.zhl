@@ -7,6 +7,9 @@ __thiscall void ItemPool::load_pools(char *xmlpath, bool ismod);
 "558bec83e4f883ec1c64a1":
 __thiscall int ItemPool::GetCollectibleFromList(const int* list, unsigned int length, unsigned int seed, unsigned int defaultItem, bool addToBlacklist, bool excludeLockedItems);
 
+"558bec6b45??34":
+__thiscall ItemPool_Item* ItemPool::GetPool(int itemPoolType);
+
 struct ItemPool depends (ItemPool_Item) {
 	ItemPool_Item _pools[31] : 0x4;
 	vector_bool _removedCollectibles : 0x67c;

@@ -43,15 +43,6 @@ struct EntityId {
     int subtype;
 };
 
-struct PoolItem {
-	uint32_t _itemID;
-	float _initialWeight;
-	float _weight;
-	float _decreaseBy;
-	float _removeOn;
-	char _pad[4];
-};
-
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
@@ -67,11 +58,23 @@ typedef std::vector<EntitySaveState> vector_EntitySaveState;
 typedef std::map<int, int> std_map_int_int;
 typedef std::vector<EntityId> vector_ErasedEntities;
 typedef std::vector<Entity_Player**> vector_EntityPlayerPtr;
+
+struct PoolItem {
+	uint32_t _itemID;
+	float _initialWeight;
+	float _weight;
+	float _decreaseBy;
+	float _removeOn;
+	
+	//std_string _itemName;
+};
+
 typedef std::vector<PoolItem> vector_PoolItem;
 typedef std::vector<bool> vector_bool;
 
 struct RoomConfig;
 typedef std::vector<RoomConfig*> RoomConfigPtrVector;
+
 }}
 
 //=================================================================================================================
