@@ -6,6 +6,15 @@
 
 #include <filesystem>
 
+inline int defstoi(const std::string& str, int default) {
+	try {
+		return std::stoi(str);
+	}
+	catch (...) {
+	}
+	return default;
+}
+
 struct REPENTOGONOptions {
 	void Init() {
 		optionsPath = std::string((char*)&g_SaveDataPath) + "Repentogon/options.ini";
@@ -25,16 +34,18 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["BetterVoidGeneration"] = "1";
 			ini["VanillaTweaks"]["HushPanicStateFix"] = "1";
 			ini["VanillaTweaks"]["KeyMasterDealChance"] = "1";
-			ini["internal"]["didmodreset"] = "0";
+			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
+			ini["internal"]["DidModReset"] = "0";
 
 			iniFile.generate(ini, true);
 		}
 
 		iniFile.read(ini);
 
-		betterVoidGeneration = stoi(ini["VanillaTweaks"]["BetterVoidGeneration"]);
-		hushPanicStateFix = stoi(ini["VanillaTweaks"]["HushPanicStateFix"]);
-		keyMasterDealChance = stoi(ini["VanillaTweaks"]["KeyMasterDealChance"]);
+		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],1);
+		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],1);
+		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],1);
+		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"],0);
 
 		printf("Loaded REPENTOGON INI\n");
 	}
@@ -54,6 +65,7 @@ struct REPENTOGONOptions {
 	bool betterVoidGeneration;
 	bool hushPanicStateFix;
 	bool keyMasterDealChance;
+	bool preventModUpdates;
 	std::string optionsPath;
 };
 
