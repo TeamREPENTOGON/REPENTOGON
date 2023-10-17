@@ -3,7 +3,7 @@
 #include "../ImGuiFeatures/ConsoleMega.h"
 #include "../ImGuiFeatures/LogViewer.h"
 #include "LuaCore.h"
-#include "XMLData.h"
+#include "../Patches/ModReloading.h"
 
 #include <filesystem>
 #include <iostream> 
