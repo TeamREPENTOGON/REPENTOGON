@@ -40,6 +40,18 @@ LUA_FUNCTION(Lua_Options_SetKeyMasterDealChance) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Options_GetPreventModUpdates) {
+	lua_pushboolean(L, repentogonOptions.preventModUpdates);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetPreventModUpdates) {
+	bool value = lua_toboolean(L, 1);
+	repentogonOptions.preventModUpdates = value;
+	repentogonOptions.Write("VanillaTweaks", "PreventModUpdates", value == true ? "1" : "0");
+	return 0;
+}
+
 LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
 	float value = lua_tonumber(L, 1);
 	value = (min(max(0.0f, value), 1.0f)) * 10; // clamp, then multiply in preparation for rounding
@@ -68,6 +80,10 @@ static void RegisterLuaOptions(lua_State* L) {
 	lua_pushcfunction(L, Lua_Options_GetKeyMasterDealChance);
 	lua_rawset(L, -3);
 
+	lua_pushstring(L, "PreventModUpdates");
+	lua_pushcfunction(L, Lua_Options_GetKeyMasterDealChance);
+	lua_rawset(L, -3);
+
 	lua_pop(L, 1);
 
 	lua_pushstring(L, "__propset");
@@ -83,6 +99,10 @@ static void RegisterLuaOptions(lua_State* L) {
 
 	lua_pushstring(L, "KeyMasterDealChance");
 	lua_pushcfunction(L, Lua_Options_SetKeyMasterDealChance);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "PreventModUpdates");
+	lua_pushcfunction(L, Lua_Options_GetKeyMasterDealChance);
 	lua_rawset(L, -3);
 
 	lua_pushstring(L, "SFXVolume");
