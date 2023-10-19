@@ -17,6 +17,9 @@ void ZHL::Log(const char* fmt, ...) {
 
 	va_end(va);
 }
+void ZHL::ClearLogFile() {
+	fclose(fopen(ZHL_LOG_FILE, "w"));
+}
 
 namespace ZHL {
 	Logger::Logger(bool forceFlush) {

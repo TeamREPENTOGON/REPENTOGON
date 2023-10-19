@@ -167,6 +167,7 @@ static char titlebar[128];
 // This small function loads all the hooks and must be present in every mod
 MOD_EXPORT int ModInit(int argc, char **argv)
 {
+	ZHL::ClearLogFile();
 	repentogonOptions.Init();
 	PerformASMPatches();
 	LuaRender::InitShaders();

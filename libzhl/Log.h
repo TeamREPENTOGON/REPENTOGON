@@ -7,6 +7,7 @@
 
 namespace ZHL {
 	LIBZHL_API void Log(const char* fmt, ...);
+	LIBZHL_API void ClearLogFile();
 
 	class LIBZHL_API Logger {
 	public:
