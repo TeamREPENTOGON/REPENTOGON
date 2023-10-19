@@ -16,17 +16,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua"
     "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 
     "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini")
 
-
-macro(GET_FILES_WITH_FOLDER_STRUCTURE GLOB_LIST)
-    # Display folder structure inside of VS solution - https://stackoverflow.com/a/54531576
-    foreach(_source IN ITEMS ${GLOB_LIST})
-        get_filename_component(_source_path "${_source}" PATH)
-        string(REPLACE "${CMAKE_SOURCE_DIR}" "" _group_path "${_source_path}")
-        string(REPLACE "/" "\\" _group_path "${_group_path}")
-        source_group("${_group_path}" FILES "${_source}")
-    endforeach()
-endmacro()
-
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
 option(ZYDIS_BUILD_EXAMPLES "" OFF)
@@ -64,7 +53,7 @@ FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND zhlparser WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser)
 
 # ZHL
-FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp)
+FILE(GLOB ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/*.cpp ${CMAKE_SOURCE_DIR}/libzhl/*.h)
 LIST(APPEND ZHL_SRC ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp ${CMAKE_SOURCE_DIR}/libs/glad/src/glad.c)
 add_compile_definitions(GLAD_GLAPI_EXPORT GLAD_GLAPI_EXPORT_BUILD)
 add_library(libzhl SHARED ${ZHL_SRC})
@@ -140,13 +129,24 @@ target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE)
 
 # Repentogon
 file(GLOB_RECURSE REPENTOGON_SRC ${CMAKE_SOURCE_DIR}/repentogon/*.*)
-GET_FILES_WITH_FOLDER_STRUCTURE(REPENTOGON_SRC)
+# Display folder structure inside of VS solution - https://stackoverflow.com/a/54531576
+foreach(_source IN ITEMS ${REPENTOGON_SRC})
+    get_filename_component(_source_path "${_source}" PATH)
+    string(REPLACE "${CMAKE_SOURCE_DIR}" "" _group_path "${_source_path}")
+    string(REPLACE "/" "\\" _group_path "${_group_path}")
+    source_group("${_group_path}" FILES "${_source}")
+endforeach()
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/wd4251" "/wd4996")
 
 # Delirium
 FILE(GLOB_RECURSE DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.*)
-GET_FILES_WITH_FOLDER_STRUCTURE(DELIRIUM_SRC)
+foreach(_source IN ITEMS ${DELIRIUM_SRC})
+    get_filename_component(_source_path "${_source}" PATH)
+    string(REPLACE "${CMAKE_SOURCE_DIR}" "" _group_path "${_source_path}")
+    string(REPLACE "/" "\\" _group_path "${_group_path}")
+    source_group("${_group_path}" FILES "${_source}")
+endforeach()
 add_library(zhlDelirium SHARED ${DELIRIUM_SRC})
 target_link_libraries(zhlDelirium libzhl)
 target_compile_options(zhlDelirium PUBLIC "/MD")
