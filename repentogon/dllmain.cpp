@@ -2,12 +2,11 @@
 #include "libzhl.h"
 #include "HookSystem.h"
 #include "HookSystem_private.h"
+#include "MiscFunctions.h"
 #include "SigScan.h"
-#include "Version.h"
-#include <Windows.h>
-#include <stdio.h>
 #include "lua.hpp"
 
+#include <stdio.h>
 #include <glad/glad.h>
 
 #include "REPENTOGONOptions.h"
@@ -163,19 +162,23 @@ static void FixLuaDump()
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 }
 
-static char titlebar[128];
 // This small function loads all the hooks and must be present in every mod
-MOD_EXPORT int ModInit(int argc, char **argv)
+MOD_EXPORT int ModInit(int argc, char** argv)
 {
 	ZHL::ClearLogFile();
+
 	repentogonOptions.Init();
+
+	REPENTOGON::UpdateProgressDisplay("Perform ASMPatches");
 	PerformASMPatches();
+
+	REPENTOGON::UpdateProgressDisplay("Initialize Shaders");
 	LuaRender::InitShaders();
+
 	Definition::Init();
 	ZHL::Init();
 	printf(":REPENTOGON:\n");
-	sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON %s)", VERSION);
-	SetWindowTextA(GetActiveWindow(), titlebar);
 	FixLuaDump();
+	REPENTOGON::UpdateProgressDisplay("ModInit done");
 	return 0;
 }

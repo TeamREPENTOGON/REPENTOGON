@@ -7,6 +7,7 @@
 #include "LuaCore.h"
 #include "Log.h"
 #include "HookSystem.h"
+#include "MiscFunctions.h"
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -194,6 +195,7 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	entityTakeDmgCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
 
 	NukeConstMetatables(_state);
+	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");
 }
 
 static int LuaBenchmark(lua_State* L) {
@@ -301,4 +303,34 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	lua_register(state, "RandomFloat", Lua_RandomFloat);
 	lua_register(state, "ToRadians", Lua_ToRadians);
 	lua_register(state, "ToDegrees", Lua_ToDegrees);
+}
+
+HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 9999, () -> void) {
+	REPENTOGON::UpdateProgressDisplay("Do LuaEngine::RegisterClasses");
+	super();
+}
+
+HOOK_METHOD(ModManager, ListMods, () -> void) {
+	REPENTOGON::UpdateProgressDisplay("Do ModManager::ListMods");
+	super();
+}
+
+HOOK_METHOD_PRIORITY(Manager, LoadConfigs, 9999, () -> void) {
+	REPENTOGON::UpdateProgressDisplay("Do Manager::LoadConfigs");
+	super();
+}
+
+HOOK_METHOD_PRIORITY(ModManager, UpdateWorkshopMods, 9999, () -> void) {
+	REPENTOGON::UpdateProgressDisplay("Do ModManager::UpdateWorkshopMods");
+	super();
+}
+
+HOOK_METHOD_PRIORITY(ModManager, UpdateWorkshopMods, -9999, () -> void) {
+	super();
+	REPENTOGON::FinishProgressDisplay(); // UpdateWorkshopMods is pretty much the last big function called in IsaacRepentance::IsaacStartup()
+}
+
+HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath) -> void) {
+	REPENTOGON::UpdateProgressDisplay("Do RoomConfig::LoadStages");
+	super(xmlpath);
 }
