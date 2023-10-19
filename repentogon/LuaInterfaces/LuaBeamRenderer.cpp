@@ -8,11 +8,11 @@ static constexpr const char* BeamRendererMT = "BeamRenderer";
 
 LUA_FUNCTION(Lua_BeamRendererBegin) {
 	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	unsigned int segments = lua_tointeger(L, 2);
+	int layer = lua_tointeger(L, 2);
 	bool unk1 = lua_toboolean(L, 3);
 	bool unk2 = lua_toboolean(L, 4);
 
-	g_BeamRenderer->Begin(sprite, segments, unk1, unk2);
+	g_BeamRenderer->Begin(sprite, layer, unk1, unk2);
 	
 	return 0;
 }
@@ -28,7 +28,7 @@ LUA_FUNCTION(Lua_BeamRendererAdd) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_BeamRendererAdd) {
+LUA_FUNCTION(Lua_BeamRendererEnd) {
 	g_BeamRenderer->End();
 
 	return 0;
@@ -38,8 +38,8 @@ static void RegisterBeamRenderer(lua_State* L) {
 	lua_newtable(L);
 	lua::TableAssoc(L, "Begin", Lua_BeamRendererBegin);
 	lua::TableAssoc(L, "Add", Lua_BeamRendererAdd);
-	lua::TableAssoc(L, "End", Lua_ChallengeMenu_BeamRendererEnd);
-	lua_setglobal(L, lua::metatables::BeamRendererMT);
+	lua::TableAssoc(L, "End", Lua_BeamRendererEnd);
+	lua_setglobal(L, BeamRendererMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

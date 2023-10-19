@@ -11,5 +11,4 @@ static void BeamRenderer::Add(Vector *point, float unk1, float unk2, ColorMod * 
 static void BeamRenderer::End();
 
 struct BeamRenderer {
-{{
-}} };
+} : 0x18;
