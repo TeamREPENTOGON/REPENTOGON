@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "HookSystem.h"
 #include "MiscFunctions.h"
+#include "CrashHandler.h"
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -316,8 +317,10 @@ HOOK_METHOD(ModManager, ListMods, () -> void) {
 }
 
 HOOK_METHOD_PRIORITY(Manager, LoadConfigs, 9999, () -> void) {
+	ZHL::SetExceptionHandlerEnabled(false);
 	REPENTOGON::UpdateProgressDisplay("Do Manager::LoadConfigs");
 	super();
+	ZHL::SetExceptionHandlerEnabled(true);
 }
 
 HOOK_METHOD_PRIORITY(ModManager, UpdateWorkshopMods, 9999, () -> void) {
@@ -331,6 +334,8 @@ HOOK_METHOD_PRIORITY(ModManager, UpdateWorkshopMods, -9999, () -> void) {
 }
 
 HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath) -> void) {
+	ZHL::SetExceptionHandlerEnabled(false);
 	REPENTOGON::UpdateProgressDisplay("Do RoomConfig::LoadStages");
 	super(xmlpath);
+	ZHL::SetExceptionHandlerEnabled(true);
 }
