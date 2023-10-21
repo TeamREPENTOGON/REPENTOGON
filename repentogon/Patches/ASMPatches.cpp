@@ -828,6 +828,58 @@ void ASMPatchPostPlayerUseBomb() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// MC_PRE_M_MORPH_ACTIVE
+int __stdcall RunMMorphActiveCallback(Entity_Player* player, int collectibleId) {
+	int callbackId = 1190;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.push(collectibleId)
+			.call(1);
+		
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return 0;
+				}
+			} else if (lua_isinteger(L, -1)) {
+				return (int)lua_tointeger(L, -1);
+			}
+		}
+	}
+
+	return collectibleId;
+}
+
+// MC_PRE_M_ACTIVE_MORPH
+// This callback triggers when an active gets rerolled by 'M (trinket id 138) and allows for overriding its behavior.
+void ASMPatchPreMMorphActiveCallback() {
+	SigScan scanner("85f674??6a016a00");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::TriggerActiveItemUsed at %p\n", addr);
+
+	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::ESI, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(registers)
+		.Push(ASMPatch::Registers::ESI) // push the item id
+		.Push(ASMPatch::Registers::EDI) // push the player
+		.AddInternalCall(RunMMorphActiveCallback) // run MC_PRE_M_MORPH_ACTIVE
+		.AddBytes("\x89\xC6") // mov esi, eax
+		.AddBytes("\x85\xF6") // test esi, esi
+		.RestoreRegisters(registers)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x27) // jump for 0 (don't reroll the active)
+		.AddBytes(ByteBuffer().AddAny((char*)addr + 4, 0x2)) // restore the instruction we overwrote
+		.AddRelativeJump((char*)addr + 0x6); // jump for everything else (reroll the active)
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
@@ -849,4 +901,5 @@ void PerformASMPatches() {
 	ASMPatchFixLoadingNullItemsFromXml();
 	ASMPatchPrePlayerUseBomb();
 	ASMPatchPostPlayerUseBomb();
+	ASMPatchPreMMorphActiveCallback();
 }

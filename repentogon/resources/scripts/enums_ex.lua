@@ -139,6 +139,7 @@ ModCallbacks.MC_POST_ITEM_OVERLAY_SHOW = 1134
 ModCallbacks.MC_PRE_RENDER = 1135
 ModCallbacks.MC_PRE_OPENGL_RENDER = 1136
 ModCallbacks.MC_PRE_LEVEL_PLACE_ROOM = 1137
+ModCallbacks.MC_PRE_M_MORPH_ACTIVE = 1190
 ModCallbacks.MC_PICKUP_GET_COIN_VALUE = 1250
 
 EntityPartition.ALL = 0xffffffff
