@@ -14,6 +14,9 @@ bool ExceptionHandlerEnabled = true;
 
 void ZHL::SetExceptionHandlerEnabled(bool value) {
 	ExceptionHandlerEnabled = value;
+
+	ZHL::Logger logger(true);
+	logger.Log("[INFO] Stack tracing has been %s\n", value ? "enabled; exceptions will be logged." : "disabled; exceptions will not be logged.");
 	return;
 }
 
@@ -43,10 +46,10 @@ void TerminateSymbolHandler() {
 
 
 void __declspec(noreturn) CxxThrowException_Hook(void* except, ThrowInfo* info, void(__stdcall* super)(void*, ThrowInfo*)) {
-	ZHL::Logger logger(true);
-	logger.Log("Exception thrown. Exception object at %p, exception data at %p\n", except, info);
-
 	if (ExceptionHandlerEnabled) {
+		ZHL::Logger logger(true);
+		logger.Log("Exception thrown. Exception object at %p, exception data at %p\n", except, info);
+
 		if (!SymbolHandlerInitialized) {
 			InitializeSymbolHandler();
 			SymbolHandlerInitialized = true;
@@ -135,10 +138,7 @@ void __declspec(noreturn) CxxThrowException_Hook(void* except, ThrowInfo* info, 
 		logger.Log("### END STACK TRACE ###\n");
 
 	}
-	else
-	{
-		logger.Log("Exception handler currently disabled, skipping.\n");
-	}
+
 	super(except, info);
 }
 
