@@ -1159,3 +1159,12 @@ Return a [MultiShotParams](../MultiShotParams.md) object to change the propertie
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1251 |MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [MultiShotParams](../MultiShotParams.md) |
+
+### MC_PRE_M_MORPH_ACTIVE
+This callback triggers when an active gets rerolled by 'M (trinket id 138) and allows for overriding its behavior.
+
+* Accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) to override the rerolled item id or `false` to prevent the active from rerolling entirely.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1190 |MC_PRE_M_MORPH_ACTIVE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible)| [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
