@@ -829,7 +829,7 @@ void ASMPatchPostPlayerUseBomb() {
 }
 
 // MC_PRE_M_MORPH_ACTIVE
-int __stdcall RunMMorphActiveCallback(Entity_Player* player, int collectibleId) {
+int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleId) {
 	int callbackId = 1190;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -855,7 +855,7 @@ int __stdcall RunMMorphActiveCallback(Entity_Player* player, int collectibleId) 
 	return collectibleId;
 }
 
-// MC_PRE_M_ACTIVE_MORPH
+// MC_PRE_M_MORPH_ACTIVE
 // This callback triggers when an active gets rerolled by 'M (trinket id 138) and allows for overriding its behavior.
 void ASMPatchPreMMorphActiveCallback() {
 	SigScan scanner("85f674??6a016a00");
@@ -869,7 +869,7 @@ void ASMPatchPreMMorphActiveCallback() {
 	patch.PreserveRegisters(registers)
 		.Push(ASMPatch::Registers::ESI) // push the item id
 		.Push(ASMPatch::Registers::EDI) // push the player
-		.AddInternalCall(RunMMorphActiveCallback) // run MC_PRE_M_MORPH_ACTIVE
+		.AddInternalCall(RunPreMMorphActiveCallback) // run MC_PRE_M_MORPH_ACTIVE
 		.AddBytes("\x89\xC6") // mov esi, eax
 		.AddBytes("\x85\xF6") // test esi, esi
 		.RestoreRegisters(registers)
