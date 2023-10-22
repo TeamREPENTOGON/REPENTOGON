@@ -10,6 +10,19 @@ ___
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectibleType ( table ItemList, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_BREAKFAST, boolean AddToBlacklist = true, boolean ExcludeLockedItems = false ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Collectibles·From·Pool () {: aria-label='Functions' }
+#### table GetCollectiblesFromPool ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType ) {: .copyable aria-label='Functions' }
+Returns a table of collectibles registered in the specified pool. The table contains the following fields
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| decreaseBy | float | |
+| initialWeight | float | |
+| itemID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | |
+| removeOn | float | |
+| weight | float | |
+
+___
 ### Get·Removed·Collectibles () {: aria-label='Functions' }
 #### table GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
 Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) removed from all pools.

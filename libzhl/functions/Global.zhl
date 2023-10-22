@@ -65,6 +65,7 @@ struct PoolItem {
 	float _weight;
 	float _decreaseBy;
 	float _removeOn;
+	char _pad[4];
 	
 	//std_string _itemName;
 };

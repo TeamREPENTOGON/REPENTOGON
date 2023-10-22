@@ -109,6 +109,7 @@ nav:
   - AnimationData: AnimationData.md
   - AnimationFrame: AnimationFrame.md
   - AnimationLayer: AnimationLayer.md
+  - AnimationState: AnimationState.md
   - Backdrop: Backdrop.md
   - BlendMode: BlendMode.md
   - Camera: Camera.md
