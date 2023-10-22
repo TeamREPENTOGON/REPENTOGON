@@ -467,6 +467,36 @@ struct XMLData {
 
 	
 };
+
+
+extern unordered_map<string, int> xmlnodeenum;
+inline void initxmlnodeenum() {
+	xmlnodeenum["entity"] = 1;
+	xmlnodeenum["player"] = 2;
+	xmlnodeenum["pocketitems"] = 3;
+	xmlnodeenum["items"] = 4;
+	xmlnodeenum["bombcostumes"] = 5;
+	xmlnodeenum["music"] = 6;
+	xmlnodeenum["sounds"] = 7;
+	xmlnodeenum["achievements"] = 8;
+	xmlnodeenum["challenges"] = 9;
+	xmlnodeenum["backdrops"] = 10;
+	xmlnodeenum["cutscenes"] = 11;
+	xmlnodeenum["stages"] = 12;
+	xmlnodeenum["recipes"] = 13;
+	xmlnodeenum["wisps"] = 14;
+	xmlnodeenum["locusts"] = 15;
+	xmlnodeenum["nightmares"] = 16;
+	xmlnodeenum["curses"] = 17;
+	xmlnodeenum["bosses"] = 18;
+	xmlnodeenum["costumes"] = 19;
+	xmlnodeenum["itempools"] = 20;
+	xmlnodeenum["bosspools"] = 21;
+	xmlnodeenum["name"] = 99; //for mod metadata
+}
+
+
+
 extern XMLData XMLStuff;
 
 #endif
