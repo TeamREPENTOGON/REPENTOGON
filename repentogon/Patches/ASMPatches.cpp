@@ -591,7 +591,8 @@ const int const stageidToAchievement[36] = {
 	-1,
 	-1, // The Shop (floor)
 	-1, // Ultra Greed (floor)
-	320, // The Void
+	//320, // The Void
+	-1, // The Void - changed to always be unlocked so Void rooms always show up
 	407, // Downpour (this is A Secret Exit)
 	412, // Dross
 	407, // Mines
@@ -617,9 +618,9 @@ void __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomC
 	int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) {
 	for (int i = 1; i < 37; ++i) {
 
-		if (!repentogonOptions.betterVoidGeneration && i > 17 && i != 13)
+		if (!repentogonOptions.betterVoidGeneration && (i > 17 && i != 26) && i != 13)
 			continue;
-		else if (repentogonOptions.betterVoidGeneration && ((i > 17 && i < 27) || i == 34 || i == 35 || !IsFloorUnlocked(i)))
+		else if (repentogonOptions.betterVoidGeneration && ((i > 17 && i < 26) || i == 34 || i == 35 || !IsFloorUnlocked(i)))
 			continue;
 
 		// Configure the subtype here because backwards uses a 
