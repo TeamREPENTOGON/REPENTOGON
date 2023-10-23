@@ -2,6 +2,7 @@
 #include "HookSystem.h"
 #include "../REPENTOGONOptions.h"
 
+// Key Master affects Devil Deal chance
 HOOK_METHOD(Entity_Slot, TakeDamage, (float Damage, unsigned long long DamageFlags, EntityRef* Source, int DamageCountdown) -> bool) {
 	bool result = super(Damage, DamageFlags, Source, DamageCountdown);
 
@@ -11,4 +12,13 @@ HOOK_METHOD(Entity_Slot, TakeDamage, (float Damage, unsigned long long DamageFla
 			g_Game->_stateFlags |= 1;
 	}
 	return result;
+}
+
+// Allow Void to have its own rooms. 
+// By default, the void path is "rooms/01.Basement.xml" which is not ideal!
+// Redirect to "rooms/26.The Void_ex.xml" since the game already has a "rooms/26.The Void.xml" that hasn't been tested.
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
+	if (Stage == 26 && g_Game->GetRoomConfigHolder()->configs[26].xmlFileName == "rooms/01.Basement.xml")
+		g_Game->GetRoomConfigHolder()->configs[26].xmlFileName = "rooms/26.The Void_ex.xml";
+	super(Stage, Mode);
 }
