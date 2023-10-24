@@ -1,5 +1,3 @@
-#include <array>
-
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -17,32 +15,15 @@ LUA_FUNCTION(Lua_ItemConfigPill_EffectSubClass_propget) {
 }
 
 static void FixItemConfigPillEffects(lua_State* L) {
-	lua::LuaStackProtector protector(L);
-
-	std::array<lua::Metatables, 2> metatables = {
-		lua::Metatables::PILL_EFFECT,
-		lua::Metatables::CONST_PILL_EFFECT
-	};
-
-	for (lua::Metatables metatable : metatables) {
-		lua::PushMetatable(L, metatable);
-		lua_pushstring(L, "__propget");
-		lua_rawget(L, -2);
-
-		lua_pushstring(L, "EffectClass");
-		lua_pushcfunction(L, Lua_ItemConfigPill_EffectClass_propget);
-		lua_rawset(L, -3);
-
-		lua_pushstring(L, "EffectSubClass");
-		lua_pushcfunction(L, Lua_ItemConfigPill_EffectSubClass_propget);
-		lua_rawset(L, -3);
-
-		lua_pop(L, 2);
-	}
+	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectClass", Lua_ItemConfigPill_EffectClass_propget);
+	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectSubClass", Lua_ItemConfigPill_EffectSubClass_propget);
+	lua::RegisterVariableGetter(L, lua::Metatables::CONST_PILL_EFFECT, "EffectClass", Lua_ItemConfigPill_EffectClass_propget);
+	lua::RegisterVariableGetter(L, lua::Metatables::CONST_PILL_EFFECT, "EffectSubClass", Lua_ItemConfigPill_EffectSubClass_propget);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
+	lua::LuaStackProtector protector(_state);
 	FixItemConfigPillEffects(_state);
 }

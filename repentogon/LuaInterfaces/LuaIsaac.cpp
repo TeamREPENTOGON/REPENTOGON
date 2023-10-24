@@ -1,5 +1,3 @@
-#include <lua.hpp>
-
 #include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -12,7 +10,7 @@
 static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
 
-int Lua_IsaacFindByTypeFix(lua_State* L)
+LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 {
 	Room* room = *g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
@@ -52,7 +50,7 @@ int Lua_IsaacFindByTypeFix(lua_State* L)
 }
 
 
-int Lua_IsaacGetRoomEntitiesFix(lua_State* L)
+LUA_FUNCTION(Lua_IsaacGetRoomEntitiesFix)
 {
 	Room* room = *g_Game->GetCurrentRoom();
 	EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
@@ -82,7 +80,7 @@ static void DummyQueryRadius(EntityList_EL* el, void* pos, int partition) {
 	el->_capacity = 0;
 }
 
-int Lua_IsaacFindInRadiusFix(lua_State* L)
+LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 {
 	Room* room = *g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
@@ -132,40 +130,13 @@ int Lua_IsaacFindInRadiusFix(lua_State* L)
 	return 1;
 }
 
-static void RegisterFindByTypeFix(lua_State* L)
-{
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "FindByType");
-	lua_pushcfunction(L, Lua_IsaacFindByTypeFix);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterGetRoomEntitiesFix(lua_State* L)
-{
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetRoomEntities");
-	lua_pushcfunction(L, Lua_IsaacGetRoomEntitiesFix);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterFindInRadiusFix(lua_State* L)
-{
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "FindInRadius");
-	lua_pushcfunction(L, Lua_IsaacFindInRadiusFix);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static int Lua_GetLoadedModules(lua_State* L) {
+LUA_FUNCTION(Lua_GetLoadedModules) {
 	lua_pushstring(L, "_LOADED");
 	int t = lua_rawget(L, LUA_REGISTRYINDEX);
 	if (t != LUA_TNIL) {
 		return 1;
 	}
-	 
+
 	return 0;
 }
 
@@ -180,7 +151,7 @@ static void __cdecl TimerFunction(Entity_Effect* effect) {
 	lua_pop(L, 1); // restored
 }
 
-static int Lua_CreateTimer(lua_State* L) {
+LUA_FUNCTION(Lua_CreateTimer) {
 	if (!lua_isfunction(L, 1)) {
 		return luaL_error(L, "Expected function, got %s", lua_typename(L, lua_type(L, 1)));
 	}
@@ -191,7 +162,7 @@ static int Lua_CreateTimer(lua_State* L) {
 	}
 
 	int times = (int)luaL_optinteger(L, 3, 0);
-	if(times < 0)
+	if (times < 0)
 		times = 1;
 
 	bool persistent = true;
@@ -211,7 +182,7 @@ static int Lua_CreateTimer(lua_State* L) {
 	return 1;
 }
 
-static int Lua_DrawLine(lua_State* L) {
+LUA_FUNCTION(Lua_DrawLine) {
 	Vector* pos1 = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* pos2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	KColor* col1 = lua::GetUserdata<KColor*>(L, 3, lua::Metatables::KCOLOR, "KColor");
@@ -223,7 +194,7 @@ static int Lua_DrawLine(lua_State* L) {
 	return 0;
 }
 
-static int Lua_DrawQuad(lua_State* L) {
+LUA_FUNCTION(Lua_DrawQuad) {
 	Vector* postl = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* postr = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Vector* posbl = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
@@ -243,40 +214,7 @@ static int Lua_DrawQuad(lua_State* L) {
 
 }
 
-static void RegisterGetLoadedModules(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetLoadedModules");
-	lua_pushcfunction(L, Lua_GetLoadedModules);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterCreateTimer(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "CreateTimer");
-	lua_pushcfunction(L, Lua_CreateTimer);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterDrawLine(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "DrawLine");
-	lua_pushcfunction(L, Lua_DrawLine);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static void RegisterDrawQuad(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "DrawQuad");
-	lua_pushcfunction(L, Lua_DrawQuad);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-
-int Lua_SetClipboard(lua_State* L) {
+LUA_FUNCTION(Lua_SetClipboard) {
 	const char* text = luaL_checkstring(L, 1);
 
 	if (!OpenClipboard(NULL)) {
@@ -313,7 +251,7 @@ int Lua_SetClipboard(lua_State* L) {
 	return 1;
 }
 
-int Lua_GetClipboard(lua_State* L) {	
+LUA_FUNCTION(Lua_GetClipboard) {
 	if (!OpenClipboard(NULL)) {
 		lua_pushnil(L);
 		return 1;
@@ -343,21 +281,7 @@ int Lua_GetClipboard(lua_State* L) {
 	return 1;
 }
 
-static void RegisterClipboardStuff(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "SetClipboard");
-	lua_pushcfunction(L, Lua_SetClipboard);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetClipboard");
-	lua_pushcfunction(L, Lua_GetClipboard);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
-static int Lua_GetSubTypwByName(lua_State* L) {
+LUA_FUNCTION(Lua_GetSubTypwByName) {
 	string text = string(luaL_checkstring(L, 1));
 	if (XMLStuff.EntityData->byname.count(text) > 0)
 	{
@@ -370,29 +294,15 @@ static int Lua_GetSubTypwByName(lua_State* L) {
 	lua_pushnumber(L, 0);
 	return 1;
 }
-static void RegisterGetSubByName(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetEntitySubTypeByName");
-	lua_pushcfunction(L, Lua_GetSubTypwByName);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
 
-static int Lua_PlayCutscene(lua_State* L) {
-	int text = (int) luaL_checknumber(L, 1);
+LUA_FUNCTION(Lua_PlayCutscene) {
+	int text = (int)luaL_checknumber(L, 1);
 	string out;
-	g_Game->GetConsole()->RunCommand("cutscene " + to_string(text),&out,NULL);
+	g_Game->GetConsole()->RunCommand("cutscene " + to_string(text), &out, NULL);
 	return 1;
 }
-static void RegisterPlayCutscene(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "PlayCutscene");
-	lua_pushcfunction(L, Lua_PlayCutscene);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
 
-static int Lua_GetCutsceneByName(lua_State* L) {
+LUA_FUNCTION(Lua_GetCutsceneByName) {
 	string text = string(luaL_checkstring(L, 1));
 	if (XMLStuff.CutsceneData->byname.count(text) > 0)
 	{
@@ -405,25 +315,10 @@ static int Lua_GetCutsceneByName(lua_State* L) {
 	lua_pushnumber(L, 0);
 	return 1;
 }
-static void RegisterGetCutsceneName(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetCutsceneIdByName");
-	lua_pushcfunction(L, Lua_GetCutsceneByName);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
 
-static int Lua_IsaacCanStartTrueCoop(lua_State* L) {
+LUA_FUNCTION(Lua_IsaacCanStartTrueCoop) {
 	lua_pushboolean(L, !Isaac::CanStartTrueCoop());
 	return 1;
-}
-
-static void RegisterIsaacCanStartTrueCoop(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "CanStartTrueCoop");
-	lua_pushcfunction(L, Lua_IsaacCanStartTrueCoop);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 LUA_FUNCTION(Lua_IsaacGetNullItemIdByName) {
@@ -440,14 +335,6 @@ LUA_FUNCTION(Lua_IsaacGetNullItemIdByName) {
 	return 1;
 }
 
-static void RegisterIsaacGetNullItemIdByName(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetNullItemIdByName");
-	lua_pushcfunction(L, Lua_IsaacGetNullItemIdByName);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 LUA_FUNCTION(Lua_IsaacShowErrorDialog) {
 	const char* title = luaL_checkstring(L, 1);
 	const char* text = luaL_checkstring(L, 2);
@@ -460,25 +347,9 @@ LUA_FUNCTION(Lua_IsaacShowErrorDialog) {
 	return 1;
 }
 
-static void RegisterIsaacShowErrorDialog(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "ShowErrorDialog");
-	lua_pushcfunction(L, Lua_IsaacShowErrorDialog);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
 	lua::luabridge::UserdataPtr::push(L, &g_Manager->_cursorSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
-}
-
-static void RegisterIsaacGetCursorSprite(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetCursorSprite");
-	lua_pushcfunction(L, Lua_IsaacGetCursorSprite);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 // this is a rewrite of the function, the ingame one returns the result in a wacky way that i can't get to not crash
@@ -510,46 +381,42 @@ LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
 	return 1;
 }
 
-static void RegisterIsaacGetRenderPosition(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetRenderPosition");
-	lua_pushcfunction(L, Lua_IsaacGetRenderPosition);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
 
-	lua_newtable(state);
-	timerFnTable = luaL_ref(state, LUA_REGISTRYINDEX);
+	lua::LuaStackProtector protector(_state);
 
-	RegisterFindByTypeFix(state);
-	RegisterGetRoomEntitiesFix(state);
-	RegisterFindInRadiusFix(state);
-	RegisterGetLoadedModules(state);
-	RegisterCreateTimer(state);
-	RegisterDrawLine(state);
-	RegisterDrawQuad(state);
-	RegisterClipboardStuff(state);
-	RegisterGetSubByName(state);
-	RegisterIsaacCanStartTrueCoop(state);
-	RegisterGetCutsceneName(state);
-	RegisterPlayCutscene(state);
-	RegisterIsaacGetNullItemIdByName(state);
-	RegisterIsaacShowErrorDialog(state);
-	RegisterIsaacGetCursorSprite(state);
-	RegisterIsaacGetRenderPosition(state);
+	lua_newtable(_state);
+	timerFnTable = luaL_ref(_state, LUA_REGISTRYINDEX);
+
+	// Fix existing functions
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRoomEntities", Lua_IsaacGetRoomEntitiesFix);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindByType", Lua_IsaacFindByTypeFix);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindInRadius", Lua_IsaacFindInRadiusFix);
+
+	// new functions
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CanStartTrueCoop", Lua_IsaacCanStartTrueCoop);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CreateTimer", Lua_CreateTimer);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawQuad", Lua_DrawQuad);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "DrawLine", Lua_DrawLine);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetClipboard", Lua_GetClipboard);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetClipboard", Lua_SetClipboard);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCursorSprite", Lua_IsaacGetCursorSprite);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetLoadedModules", Lua_GetLoadedModules);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypwByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCutsceneIdByName", Lua_GetCutsceneByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNullItemIdByName", Lua_IsaacGetNullItemIdByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRenderPosition", Lua_IsaacGetRenderPosition);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "PlayCutscene", Lua_PlayCutscene);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ShowErrorDialog", Lua_IsaacShowErrorDialog);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
 	if (!result) {
-		lua_pushlightuserdata(state, &DummyQueryRadius);
+		lua_pushlightuserdata(_state, &DummyQueryRadius);
 	}
 	else {
-		lua_pushlightuserdata(state, scanner.GetAddress());
+		lua_pushlightuserdata(_state, scanner.GetAddress());
 	}
-	QueryRadiusRef = luaL_ref(state, LUA_REGISTRYINDEX);
+	QueryRadiusRef = luaL_ref(_state, LUA_REGISTRYINDEX);
 }

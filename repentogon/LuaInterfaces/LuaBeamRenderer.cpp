@@ -1,10 +1,6 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-
-static constexpr const char* BeamRendererMT = "BeamRenderer";
 
 LUA_FUNCTION(Lua_BeamRendererBegin) {
 	int top = lua_gettop(L);
@@ -23,7 +19,7 @@ LUA_FUNCTION(Lua_BeamRendererBegin) {
 	bool unk2 = lua_toboolean(L, 4);
 
 	g_BeamRenderer->Begin(sprite, layerID, unk1, unk2);
-	
+
 	return 0;
 }
 
@@ -50,13 +46,13 @@ static void RegisterBeamRenderer(lua_State* L) {
 	lua::TableAssoc(L, "Begin", Lua_BeamRendererBegin);
 	lua::TableAssoc(L, "Add", Lua_BeamRendererAdd);
 	lua::TableAssoc(L, "End", Lua_BeamRendererEnd);
-	lua_setglobal(L, BeamRendererMT);
+	lua_setglobal(L, lua::metatables::BeamRendererMT);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterBeamRenderer(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterBeamRenderer(_state);
 }
 

@@ -1,25 +1,22 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* ProceduralEffectMT = "ProceduralEffect";
 
-int Lua_PEGetConditionType(lua_State* L){
-    ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, ProceduralEffectMT);
-    lua_pushinteger(L, pi->effectConditionType);
-    return 1;
+LUA_FUNCTION(Lua_PEGetConditionType) {
+	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	lua_pushinteger(L, pi->effectConditionType);
+	return 1;
 }
 
-int Lua_PEGetActionType(lua_State* L){
-    ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, ProceduralEffectMT);
-    lua_pushinteger(L, pi->effectActionType);
-    return 1;
+LUA_FUNCTION(Lua_PEGetActionType) {
+	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
+	lua_pushinteger(L, pi->effectActionType);
+	return 1;
 }
 
-int Lua_PEGetConditionProperty(lua_State* L) {
-	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, ProceduralEffectMT);
+LUA_FUNCTION(Lua_PEGetConditionProperty) {
+	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
 	lua_newtable(L);
 	switch (pi->effectConditionType) {
 	case ProceduralEffect::CONDITION_ENTITY_SPAWN:
@@ -32,8 +29,8 @@ int Lua_PEGetConditionProperty(lua_State* L) {
 	return 1;
 }
 
-int Lua_PEGetActionProperty(lua_State* L) {
-	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, ProceduralEffectMT);
+LUA_FUNCTION(Lua_PEGetActionProperty) {
+	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
 	lua_newtable(L);
 	switch (pi->effectActionType)
 	{
@@ -82,8 +79,8 @@ int Lua_PEGetActionProperty(lua_State* L) {
 }
 
 
-int Lua_PEGetTriggerRate(lua_State* L) {
-	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, ProceduralEffectMT);
+LUA_FUNCTION(Lua_PEGetTriggerRate) {
+	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
 	float rate = pi->triggerRate;
 	//manually fix the rate from 0 ~ 1 to the actual rate.
 	switch (pi->effectConditionType)
@@ -104,28 +101,20 @@ int Lua_PEGetTriggerRate(lua_State* L) {
 }
 
 static void RegisterProceduralItem(lua_State* L) {
-	luaL_newmetatable(L, ProceduralEffectMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
-
 	luaL_Reg functions[] = {
-        {"GetConditionType", Lua_PEGetConditionType}, 
-        {"GetActionType", Lua_PEGetActionType}, 
+		{"GetConditionType", Lua_PEGetConditionType},
+		{"GetActionType", Lua_PEGetActionType},
 		{"GetConditionProperty", Lua_PEGetConditionProperty},
 		{"GetActionProperty", Lua_PEGetActionProperty},
 		{"GetTriggerRate", Lua_PEGetTriggerRate},
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
-
+	lua::RegisterNewClass(L, lua::metatables::ProceduralEffectMT, lua::metatables::ProceduralEffectMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterProceduralItem(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterProceduralItem(_state);
 }

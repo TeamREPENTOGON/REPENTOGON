@@ -1,28 +1,24 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* RoomTransitionMT = "RoomTransition";
-
-static int Lua_GetRoomTransition(lua_State* L) {
+LUA_FUNCTION(Lua_GetRoomTransition) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	RoomTransition** ud = (RoomTransition**)lua_newuserdata(L, sizeof(RoomTransition*));
 	*ud = game->GetRoomTransition();
-	luaL_setmetatable(L, RoomTransitionMT);
+	luaL_setmetatable(L, lua::metatables::RoomTransitionMT);
 	return 1;
 }
 
-static int Lua_RoomTransitionGetVersusScreenSprite(lua_State* L) {
-	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, RoomTransitionMT);
+LUA_FUNCTION(Lua_RoomTransitionGetVersusScreenSprite) {
+	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, lua::metatables::RoomTransitionMT);
 	ANM2* sprite = roomTransition->GetVersusScreenSprite();
 	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
 }
 
-static int Lua_RoomTransitionStartBossIntro(lua_State* L) {
-	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, RoomTransitionMT);
+LUA_FUNCTION(Lua_RoomTransitionStartBossIntro) {
+	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, lua::metatables::RoomTransitionMT);
 	int bossID1 = (int)luaL_checkinteger(L, 2);
 	int bossID2 = (int)luaL_optinteger(L, 3, 0);
 
@@ -30,29 +26,20 @@ static int Lua_RoomTransitionStartBossIntro(lua_State* L) {
 	return 0;
 }
 
-static int Lua_RoomTransitionGetTransitionMode(lua_State* L) {
-	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, RoomTransitionMT);
+LUA_FUNCTION(Lua_RoomTransitionGetTransitionMode) {
+	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, lua::metatables::RoomTransitionMT);
 	lua_pushinteger(L, roomTransition->GetTransitionMode());
 	return 1;
 }
 
-static int Lua_RoomTransitionIsRenderingBossIntro(lua_State* L) {
-	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, RoomTransitionMT);
+LUA_FUNCTION(Lua_RoomTransitionIsRenderingBossIntro) {
+	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, lua::metatables::RoomTransitionMT);
 	lua_pushboolean(L, roomTransition->IsRenderingBossIntro());
 	return 1;
 }
 
 static void RegistertRoomTransition(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetRoomTransition");
-	lua_pushcfunction(L, Lua_GetRoomTransition);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	luaL_newmetatable(L, RoomTransitionMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomTransition", Lua_GetRoomTransition);
 
 	luaL_Reg functions[] = {
 		{ "GetVersusScreenSprite", Lua_RoomTransitionGetVersusScreenSprite },
@@ -61,10 +48,7 @@ static void RegistertRoomTransition(lua_State* L) {
 		{ "IsRenderingBossIntro", Lua_RoomTransitionIsRenderingBossIntro },
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
-
+	lua::RegisterNewClass(L, lua::metatables::RoomTransitionMT, lua::metatables::RoomTransitionMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

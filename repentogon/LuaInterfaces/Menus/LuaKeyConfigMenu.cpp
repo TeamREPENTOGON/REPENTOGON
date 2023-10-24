@@ -1,10 +1,6 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-
-static constexpr const char* KeyConfigMenuMT = "KeyConfigMenu";
 
 LUA_FUNCTION(Lua_KeyConfigMenu_KeyConfigSprite)
 {

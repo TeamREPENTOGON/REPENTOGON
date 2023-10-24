@@ -1,10 +1,8 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static int Lua_SpriteGetCurrentAnimationData(lua_State* L)
+LUA_FUNCTION(Lua_SpriteGetCurrentAnimationData)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
@@ -22,7 +20,7 @@ static int Lua_SpriteGetCurrentAnimationData(lua_State* L)
 	return 1;
 }
 
-static int Lua_SpriteGetOverlayAnimationData(lua_State* L)
+LUA_FUNCTION(Lua_SpriteGetOverlayAnimationData)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
@@ -50,7 +48,7 @@ static AnimationData* GetAnimationDataByName(ANM2* anm2, const std_string layerN
 	return nullptr;
 }
 
-static int Lua_SpriteGetAnimationData(lua_State* L)
+LUA_FUNCTION(Lua_SpriteGetAnimationData)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	std_string layerName = luaL_checkstring(L, 2);
@@ -68,7 +66,7 @@ static int Lua_SpriteGetAnimationData(lua_State* L)
 	return 1;
 }
 
-static int Lua_SpriteGetAllAnimationData(lua_State* L)
+LUA_FUNCTION(Lua_SpriteGetAllAnimationData)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
@@ -84,21 +82,21 @@ static int Lua_SpriteGetAllAnimationData(lua_State* L)
 	return 1;
 }
 
-static int Lua_AnimationDataGetName(lua_State* L)
+LUA_FUNCTION(Lua_AnimationDataGetName)
 {
 	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 	lua_pushstring(L, animationData->GetName().c_str());
 	return 1;
 }
 
-static int Lua_AnimationDataGetLength(lua_State* L)
+LUA_FUNCTION(Lua_AnimationDataGetLength)
 {
 	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 	lua_pushinteger(L, animationData->GetLength());
 	return 1;
 }
 
-static int Lua_AnimationDataGetLayerById(lua_State* L)
+LUA_FUNCTION(Lua_AnimationDataGetLayerById)
 {
 	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 	int layerID = (int)luaL_checkinteger(L, 2);
@@ -123,10 +121,10 @@ static int Lua_AnimationDataGetLayerById(lua_State* L)
 	return 1;
 }
 
-static int Lua_AnimationDataGetAllLayers(lua_State* L)
+LUA_FUNCTION(Lua_AnimationDataGetAllLayers)
 {
 	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
-	
+
 	lua_newtable(L);
 	for (int i = 0; i < animationData->GetLayerCount(); ++i) {
 		lua_pushinteger(L, i + 1);
@@ -139,7 +137,7 @@ static int Lua_AnimationDataGetAllLayers(lua_State* L)
 	return 1;
 }
 
-static int Lua_AnimationDataIsLoopingAnimation(lua_State* L)
+LUA_FUNCTION(Lua_AnimationDataIsLoopingAnimation)
 {
 	AnimationData* animationData = *lua::GetUserdata<AnimationData**>(L, 1, lua::metatables::AnimationDataMT);
 	lua_pushinteger(L, animationData->IsLoopingAnimation());
@@ -147,17 +145,16 @@ static int Lua_AnimationDataIsLoopingAnimation(lua_State* L)
 }
 
 static void RegisterAnimationData(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::SPRITE, "GetCurrentAnimationData", Lua_SpriteGetCurrentAnimationData);
-	lua::RegisterFunction(L, lua::Metatables::SPRITE, "GetOverlayAnimationData", Lua_SpriteGetOverlayAnimationData);
-	lua::RegisterFunction(L, lua::Metatables::SPRITE, "GetAnimationData", Lua_SpriteGetAnimationData);
-	lua::RegisterFunction(L, lua::Metatables::SPRITE, "GetAllAnimationData", Lua_SpriteGetAllAnimationData);
+	luaL_Reg spriteFunctions[] = {
+		{ "GetCurrentAnimationData", Lua_SpriteGetCurrentAnimationData },
+		{ "GetOverlayAnimationData", Lua_SpriteGetOverlayAnimationData },
+		{ "GetAnimationData", Lua_SpriteGetAnimationData },
+		{ "GetAllAnimationData", Lua_SpriteGetAllAnimationData },
+		{ NULL, NULL }
+	};
+	lua::RegisterFunctions(L, lua::Metatables::SPRITE, spriteFunctions);
 
-	luaL_newmetatable(L, lua::metatables::AnimationDataMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
-
-	luaL_Reg funcs[] = {
+	luaL_Reg functions[] = {
 		{ "GetAllLayers", Lua_AnimationDataGetAllLayers },
 		{ "GetLayer", Lua_AnimationDataGetLayerById },
 		{ "GetName", Lua_AnimationDataGetName },
@@ -165,15 +162,12 @@ static void RegisterAnimationData(lua_State* L) {
 		{ "IsLoopingAnimation", Lua_AnimationDataIsLoopingAnimation },
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, funcs, 0);
-
-	lua_pop(L, 1);
+	lua::RegisterNewClass(L, lua::metatables::AnimationDataMT, lua::metatables::AnimationDataMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterAnimationData(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterAnimationData(_state);
 }

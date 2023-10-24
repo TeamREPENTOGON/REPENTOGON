@@ -2,8 +2,6 @@
 
 #include <regex>
 
-#include <lua.hpp>
-
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -87,13 +85,9 @@ namespace Debug {
 
 static void RegisterDebugMethods(lua_State* L) {
 	lua_newtable(L);
-	luaL_Reg functions[] = {
-		{ "GetSignature", Debug::GetSignature },
-		{ "ListLoadedFiles", Debug::ListLoadedFiles },
-		{ "ForceUnload", Debug::ForceUnload },
-		{ NULL, NULL }
-	};
-	luaL_setfuncs(L, functions, 0);
+	lua::TableAssoc(L, "GetSignature", Debug::GetSignature);
+	lua::TableAssoc(L, "ListLoadedFiles", Debug::ListLoadedFiles);
+	lua::TableAssoc(L, "ForceUnload", Debug::ForceUnload);
 	lua_setglobal(L, "Debug");
 }
 

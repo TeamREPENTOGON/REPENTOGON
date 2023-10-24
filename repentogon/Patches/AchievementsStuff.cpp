@@ -177,33 +177,6 @@ HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
 	super(saveslot);
 }
 
-static int Lua_GetAchievementByName(lua_State* L) {
-	string text = string(luaL_checkstring(L, 1));
-	if (XMLStuff.AchievementData->byname.count(text) > 0)
-	{
-		XMLAttributes ent = XMLStuff.AchievementData->GetNodeByName(text);
-		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
-			lua_pushnumber(L, stoi(ent["id"]));
-			return 1;
-		}
-	};
-	lua_pushnumber(L, 0);
-	return 1;
-}
-
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "GetAchievementIdByName");
-	lua_pushcfunction(state, Lua_GetAchievementByName);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
-
-}
-
 bool LockAchievement(int achievementid) {
 	PersistentGameData* ps = g_Manager->GetPersistentGameData();
 	bool had = ps->achievements[achievementid];
@@ -211,8 +184,6 @@ bool LockAchievement(int achievementid) {
 	ps->TryUnlock(0);
 	return had != ps->achievements[achievementid];
 }
-
-
 
 static std::vector<std::string> ParseCommandA(std::string command, int size = 0) {
 	std::vector<std::string> cmdlets;
@@ -230,6 +201,28 @@ static std::vector<std::string> ParseCommandA(std::string command, int size = 0)
 	return cmdlets;
 }
 
+
+LUA_FUNCTION(Lua_GetAchievementByName) {
+	string text = string(luaL_checkstring(L, 1));
+	if (XMLStuff.AchievementData->byname.count(text) > 0)
+	{
+		XMLAttributes ent = XMLStuff.AchievementData->GetNodeByName(text);
+		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
+			lua_pushnumber(L, stoi(ent["id"]));
+			return 1;
+		}
+	};
+	lua_pushnumber(L, 0);
+	return 1;
+}
+
+HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+	super();
+
+	lua::LuaStackProtector protector(_state);
+
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAchievementIdByName", Lua_GetAchievementByName);
+}
 
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
 	if (in.rfind("lockachievement", 0) == 0) {

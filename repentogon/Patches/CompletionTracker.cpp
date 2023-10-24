@@ -657,12 +657,12 @@ void SaveCompletionMarksToJson() {
 
 void LoadCompletionMarksFromJson() {
 	CompletionMarks.clear();
-		rapidjson::Document doc = GetJsonDoc(&jsonpath);
-		if (!doc.IsObject()) {
-			logViewer.AddLog("[REPENTOGON]", "No Completion Marks for saveslot in: %s \n", jsonpath.c_str());
-			return;
-		}
-		JsonToArrayOfArray(doc["CompletionMarks"], CompletionMarks);
+	rapidjson::Document doc = GetJsonDoc(&jsonpath);
+	if (!doc.IsObject()) {
+		logViewer.AddLog("[REPENTOGON]", "No Completion Marks for saveslot in: %s \n", jsonpath.c_str());
+		return;
+	}
+	JsonToArrayOfArray(doc["CompletionMarks"], CompletionMarks);
 
 	logViewer.AddLog("[REPENTOGON]", "Completion Marks loaded from: %s \n", jsonpath.c_str());
 }
@@ -925,7 +925,7 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 
 
 array<int, 12> actualmarks = { CompletionType::MOMS_HEART,CompletionType::SATAN,CompletionType::MEGA_SATAN,CompletionType::HUSH,CompletionType::ISAAC,CompletionType::BLUE_BABY,CompletionType::MOTHER,CompletionType::DELIRIUM,CompletionType::BEAST,CompletionType::ULTRA_GREED,CompletionType::BOSS_RUSH,CompletionType::LAMB };
-int Lua_IsaacSetCharacterMarks(lua_State* L)
+LUA_FUNCTION(Lua_IsaacSetCharacterMarks)
 {
 	int playertype = 0;
 	int length = 0;
@@ -997,7 +997,7 @@ int Lua_IsaacSetCharacterMarks(lua_State* L)
 	return 1;
 }
 
-int Lua_IsaacGetCharacterMark(lua_State* L)
+LUA_FUNCTION(Lua_IsaacGetCharacterMark)
 {
 	int completiontype = (int)luaL_checkinteger(L, 2);
 	int playertype = (int)luaL_checkinteger(L, 1);
@@ -1012,7 +1012,7 @@ int Lua_IsaacGetCharacterMark(lua_State* L)
 	return 1;
 }
 
-int Lua_IsaacClearCompletionMarks(lua_State* L)
+LUA_FUNCTION(Lua_IsaacClearCompletionMarks)
 {
 	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
@@ -1032,7 +1032,7 @@ int Lua_IsaacClearCompletionMarks(lua_State* L)
 }
 
 
-int Lua_IsaacFillCompletionMarks(lua_State* L)
+LUA_FUNCTION(Lua_IsaacFillCompletionMarks)
 {
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
@@ -1067,7 +1067,7 @@ int Lua_IsaacFillCompletionMarks(lua_State* L)
 array<int, 6> tduet = { CompletionType::HUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH,CompletionType::BOSS_RUSH };
 array<int, 6> tquartet = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::BLUE_BABY,CompletionType::BLUE_BABY };
 array<int, 6> tboth = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::HUSH,CompletionType::BOSS_RUSH };
-int Lua_IsaacGetTaintedFullCompletion(lua_State* L)
+LUA_FUNCTION(Lua_IsaacGetTaintedFullCompletion)
 {
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int group = (int)luaL_checkinteger(L, 2);
@@ -1100,7 +1100,7 @@ int Lua_IsaacGetTaintedFullCompletion(lua_State* L)
 }
 
 
-int Lua_IsaacGetFullCompletion(lua_State* L)
+LUA_FUNCTION(Lua_IsaacGetFullCompletion)
 {
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
@@ -1128,7 +1128,7 @@ int Lua_IsaacGetFullCompletion(lua_State* L)
 	return 1;
 }
 
-int Lua_IsaacSetCharacterMark(lua_State* L)
+LUA_FUNCTION(Lua_IsaacSetCharacterMark)
 {
 	int completiontype = (int)luaL_checkinteger(L, 2);
 	int playertype = (int)luaL_checkinteger(L, 1);
@@ -1164,7 +1164,7 @@ int Lua_IsaacSetCharacterMark(lua_State* L)
 }
 
 
-int Lua_IsaacGetCharacterMarks(lua_State* L)
+LUA_FUNCTION(Lua_IsaacGetCharacterMarks)
 {
 	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
@@ -1267,56 +1267,15 @@ int Lua_IsaacGetCharacterMarks(lua_State* L)
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
 
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "GetCompletionMarks");
-	lua_pushcfunction(state, Lua_IsaacGetCharacterMarks);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
+	lua::LuaStackProtector protector(_state);
 
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "GetCompletionMark");
-	lua_pushcfunction(state, Lua_IsaacGetCharacterMark);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
-
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "SetCompletionMarks");
-	lua_pushcfunction(state, Lua_IsaacSetCharacterMarks);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
-
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "SetCompletionMark");
-	lua_pushcfunction(state, Lua_IsaacSetCharacterMark);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
-
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "AllMarksFilled");
-	lua_pushcfunction(state, Lua_IsaacGetFullCompletion);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
-
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "AllTaintedCompletion");
-	lua_pushcfunction(state, Lua_IsaacGetTaintedFullCompletion);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
-
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "FillCompletionMarks");
-	lua_pushcfunction(state, Lua_IsaacFillCompletionMarks);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
-
-	lua_getglobal(state, "Isaac");
-	lua_pushstring(state, "ClearCompletionMarks");
-	lua_pushcfunction(state, Lua_IsaacClearCompletionMarks);
-	lua_rawset(state, -3);
-	lua_pop(state, 1);
-
-
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCompletionMarks", Lua_IsaacGetCharacterMarks);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCompletionMark", Lua_IsaacGetCharacterMark);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCompletionMarks", Lua_IsaacSetCharacterMarks);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCompletionMark", Lua_IsaacSetCharacterMark);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "AllMarksFilled", Lua_IsaacGetFullCompletion);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "AllTaintedCompletion", Lua_IsaacGetTaintedFullCompletion);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FillCompletionMarks", Lua_IsaacFillCompletionMarks);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearCompletionMarks", Lua_IsaacClearCompletionMarks);
 }

@@ -1,22 +1,18 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* PlayerManagerMT = "PlayerManager";
-
-static int Lua_GetPlayerManager(lua_State* L) {
+LUA_FUNCTION(Lua_GetPlayerManager) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
 	*ud = game->GetPlayerManager();
-	luaL_setmetatable(L, PlayerManagerMT);
+	luaL_setmetatable(L, lua::metatables::PlayerManagerMT);
 	return 1;
 }
 
-int Lua_FirstCollectibleOwner(lua_State* L)
+LUA_FUNCTION(Lua_FirstCollectibleOwner)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int collectible = (int)luaL_checkinteger(L, 2);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 	bool unk = lua_toboolean(L, 4);
@@ -31,14 +27,14 @@ int Lua_FirstCollectibleOwner(lua_State* L)
 }
 
 
-int Lua_AnyoneHasCollectible(lua_State* L)
+LUA_FUNCTION(Lua_AnyoneHasCollectible)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int collectible = (int)luaL_checkinteger(L, 2);
-	RNG* rng = new RNG(); 
+	RNG* rng = new RNG();
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, true);
 	if (!player) {
-		lua_pushboolean(L,false);
+		lua_pushboolean(L, false);
 	}
 	else {
 		lua_pushboolean(L, true);
@@ -46,9 +42,9 @@ int Lua_AnyoneHasCollectible(lua_State* L)
 	return 1;
 }
 
-int Lua_SpawnCoPlayer2(lua_State* L)
+LUA_FUNCTION(Lua_SpawnCoPlayer2)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int playerType = (int)luaL_checkinteger(L, 2);
 
 	Entity_Player* player = playerManager->SpawnCoPlayer2(playerType);
@@ -57,36 +53,36 @@ int Lua_SpawnCoPlayer2(lua_State* L)
 	return 1;
 }
 
-int Lua_PlayerManagerIsCoopPlay(lua_State* L)
+LUA_FUNCTION(Lua_PlayerManagerIsCoopPlay)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 
 	bool result = playerManager->IsCoopPlay();
 	lua_pushboolean(L, result);
 	return 1;
 }
 
-int Lua_PlayerManagerGetNumCollectibles(lua_State* L)
+LUA_FUNCTION(Lua_PlayerManagerGetNumCollectibles)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int collectibleID = (int)luaL_checkinteger(L, 2);
 	lua_pushinteger(L, playerManager->GetNumCollectibles((CollectibleType)collectibleID));
 
 	return 1;
 }
 
-int Lua_PlayerManagerGetTrinketMultiplier(lua_State* L)
+LUA_FUNCTION(Lua_PlayerManagerGetTrinketMultiplier)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int trinketID = (int)luaL_checkinteger(L, 2);
 	lua_pushinteger(L, playerManager->GetTrinketMultiplier((TrinketType)trinketID));
 
 	return 1;
 }
 
-int Lua_FirstTrinketOwner(lua_State* L)
+LUA_FUNCTION(Lua_FirstTrinketOwner)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int trinket = (int)luaL_checkinteger(L, 2);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
 	bool unk = lua_toboolean(L, 4);
@@ -100,17 +96,17 @@ int Lua_FirstTrinketOwner(lua_State* L)
 	return 1;
 }
 
-static int Lua_TriggerRoomClear(lua_State* L)
+LUA_FUNCTION(Lua_TriggerRoomClear)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	playerManager->TriggerRoomClear();
-	
+
 	return 0;
 }
 
-int Lua_AnyoneHasTrinket(lua_State* L)
+LUA_FUNCTION(Lua_AnyoneHasTrinket)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int trinket = (int)luaL_checkinteger(L, 2);
 	RNG* rng = new RNG();
 	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, true);
@@ -124,7 +120,7 @@ int Lua_AnyoneHasTrinket(lua_State* L)
 }
 
 LUA_FUNCTION(Lua_GetPlayers) {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 
 	std::vector<Entity_Player**> players = playerManager->_playerList;
 
@@ -140,7 +136,7 @@ LUA_FUNCTION(Lua_GetPlayers) {
 }
 
 LUA_FUNCTION(Lua_GetEsauJrState) {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, PlayerManagerMT);
+	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	const int index = luaL_optinteger(L, 2, 0);
 
 	if (index < 0 || index > 3) {
@@ -159,16 +155,7 @@ LUA_FUNCTION(Lua_GetEsauJrState) {
 }
 
 static void RegisterPlayerManager(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetPlayerManager");
-	lua_pushcfunction(L, Lua_GetPlayerManager);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	luaL_newmetatable(L, PlayerManagerMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua::RegisterFunction(L, lua::Metatables::GAME, "GetPlayerManager", Lua_GetPlayerManager);
 
 	luaL_Reg functions[] = {
 		{ "FirstCollectibleOwner", Lua_FirstCollectibleOwner },
@@ -185,14 +172,12 @@ static void RegisterPlayerManager(lua_State* L) {
 		{ NULL, NULL }
 	};
 
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
-
+	lua::RegisterNewClass(L, lua::metatables::PlayerManagerMT, lua::metatables::PlayerManagerMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterPlayerManager(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterPlayerManager(_state);
 }

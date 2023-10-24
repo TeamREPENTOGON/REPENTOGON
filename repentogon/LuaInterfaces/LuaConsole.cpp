@@ -1,33 +1,29 @@
-#include <lua.hpp>
-
 #include "Log.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../ImGuiFeatures/ConsoleMega.h"
 
-static constexpr const char* ConsoleMT = "Console";
-
-static int Lua_GetConsole(lua_State* L) {
+LUA_FUNCTION(Lua_GetConsole) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Console** ud = (Console**)lua_newuserdata(L, sizeof(Console*));
 	*ud = game->GetConsole();
-	luaL_setmetatable(L, ConsoleMT);
+	luaL_setmetatable(L, lua::metatables::ConsoleMT);
 	return 1;
 }
 
-int Lua_ConsolePrintError(lua_State* L)
+LUA_FUNCTION(Lua_ConsolePrintError)
 {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
 	const char* err = luaL_checkstring(L, 2);
 	console->PrintError(err);
 	return 0;
 }
 
-int Lua_ConsoleGetHistory(lua_State* L)
+LUA_FUNCTION(Lua_ConsoleGetHistory)
 {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
-	std::deque<Console_HistoryEntry> *history = console->GetHistory();
+	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
+	std::deque<Console_HistoryEntry>* history = console->GetHistory();
 
 	lua_newtable(L);
 	unsigned int idx = 1;
@@ -41,9 +37,9 @@ int Lua_ConsoleGetHistory(lua_State* L)
 	return 1;
 }
 
-int Lua_ConsoleGetCommandHistory(lua_State* L)
+LUA_FUNCTION(Lua_ConsoleGetCommandHistory)
 {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
 	std::deque<std::string> commandHistory = *console->GetCommandHistory();
 
 	lua_newtable(L);
@@ -56,34 +52,34 @@ int Lua_ConsoleGetCommandHistory(lua_State* L)
 		lua_pushstring(L, entry.c_str());
 		lua_settable(L, -3);
 		idx++;
-		
+
 	}
 	return 1;
 }
 
-int Lua_ConsolePrintWarning(lua_State* L)
+LUA_FUNCTION(Lua_ConsolePrintWarning)
 {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
 	std::string err = luaL_checkstring(L, 2) + std::string("\n");
 
 	console->Print(err, 0xFFFCCA03, 0x96u);
 	return 0;
 }
 
-int Lua_ConsolePopHistory(lua_State* L) {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, ConsoleMT);
+LUA_FUNCTION(Lua_ConsolePopHistory) {
+	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
 	int amount = (int)luaL_optinteger(L, 2, 1);
 	std::deque<Console_HistoryEntry>* history = console->GetHistory();
 	amount++;
 
 	for (int i = 0; i < amount; ++i) {
-		if(history->size() > 0)
+		if (history->size() > 0)
 			history->pop_front();
 	}
 	return 0;
 }
 
-int Lua_RegisterCommand(lua_State* L) {
+LUA_FUNCTION(Lua_RegisterCommand) {
 	const char* name = luaL_checkstring(L, 2);
 	const char* desc = luaL_checkstring(L, 3);
 	const char* helpText = luaL_checkstring(L, 4);
@@ -95,7 +91,7 @@ int Lua_RegisterCommand(lua_State* L) {
 	return 0;
 }
 
-int Lua_RegisterMacro(lua_State* L) {
+LUA_FUNCTION(Lua_RegisterMacro) {
 	lua::LuaStackProtector protector(L);
 	const char* name = luaL_checkstring(L, 2);
 	if (!lua_istable(L, 3)) {
@@ -124,16 +120,7 @@ int Lua_RegisterMacro(lua_State* L) {
 }
 
 static void RegisterConsole(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetConsole");
-	lua_pushcfunction(L, Lua_GetConsole);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	luaL_newmetatable(L, ConsoleMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua::RegisterFunction(L, lua::Metatables::GAME, "GetConsole", Lua_GetConsole);
 
 	luaL_Reg functions[] = {
 		{ "PrintError", Lua_ConsolePrintError },
@@ -145,15 +132,13 @@ static void RegisterConsole(lua_State* L) {
 		{ "RegisterMacro", Lua_RegisterMacro },
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
+	lua::RegisterNewClass(L, lua::metatables::ConsoleMT, lua::metatables::ConsoleMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterConsole(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterConsole(_state);
 }
 

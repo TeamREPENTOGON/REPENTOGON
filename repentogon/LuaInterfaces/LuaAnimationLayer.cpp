@@ -1,5 +1,3 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -23,7 +21,7 @@ static AnimationFrame* FindAnimationFrame(AnimationLayer* animationLayer, const 
 	return animationLayer->GetFrame(animationLayer->GetFrameCount() - 1);
 }
 
-static int Lua_AnimationLayerGetFrame(lua_State* L)
+LUA_FUNCTION(Lua_AnimationLayerGetFrame)
 {
 	AnimationLayer* animationLayer = *lua::GetUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
 
@@ -32,7 +30,7 @@ static int Lua_AnimationLayerGetFrame(lua_State* L)
 		return 1;
 	}
 
-	int frame = (int) luaL_checkinteger(L, 2);
+	int frame = (int)luaL_checkinteger(L, 2);
 
 	if (frame < 0) {
 		frame = 0;
@@ -53,14 +51,14 @@ static int Lua_AnimationLayerGetFrame(lua_State* L)
 	return 1;
 }
 
-static int Lua_AnimationLayerGetLayerId(lua_State* L)
+LUA_FUNCTION(Lua_AnimationLayerGetLayerId)
 {
 	AnimationLayer* animationLayer = *lua::GetUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
 	lua_pushinteger(L, animationLayer->GetLayerID());
 	return 1;
 }
 
-static int Lua_AnimationLayerIsVisible(lua_State* L)
+LUA_FUNCTION(Lua_AnimationLayerIsVisible)
 {
 	AnimationLayer* animationLayer = *lua::GetUserdata<AnimationLayer**>(L, 1, lua::metatables::AnimationLayerMT);
 	lua_pushboolean(L, animationLayer->IsVisible());
@@ -68,26 +66,18 @@ static int Lua_AnimationLayerIsVisible(lua_State* L)
 }
 
 static void RegisterAnimationLayer(lua_State* L) {
-	luaL_newmetatable(L, lua::metatables::AnimationLayerMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
-
-	luaL_Reg funcs[] = {
+	luaL_Reg functions[] = {
 		{ "GetFrame", Lua_AnimationLayerGetFrame },
 		{ "GetLayerID", Lua_AnimationLayerGetLayerId },
 		{ "IsVisible", Lua_AnimationLayerIsVisible },
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, funcs, 0);
-
-	lua_pop(L, 1);
+	lua::RegisterNewClass(L, lua::metatables::AnimationLayerMT, lua::metatables::AnimationLayerMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterAnimationLayer(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterAnimationLayer(_state);
 }

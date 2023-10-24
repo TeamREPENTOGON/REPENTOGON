@@ -791,7 +791,7 @@ static void RegisterLevelGenerator(lua_State* L) {
 		{ NULL, NULL }
 	};
 	
-	lua::RegisterNewClass(L, "LevelGenerator", lua::metatables::LevelGeneratorMT, functions);
+	lua::RegisterNewClass(L, lua::metatables::LevelGeneratorMT, lua::metatables::LevelGeneratorMT, functions);
 }
 
 static void RegisterLevelGeneratorRoom(lua_State* L) {
@@ -805,11 +805,11 @@ static void RegisterLevelGeneratorRoom(lua_State* L) {
 		{ NULL, NULL }
 	};
 
-	lua::RegisterNewClass(L, "LevelGeneratorRoom", lua::metatables::LevelGeneratorRoomMT, functions);
+	lua::RegisterNewClass(L, lua::metatables::LevelGeneratorRoomMT, lua::metatables::LevelGeneratorRoomMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	RegisterLevelGenerator(this->_state);
-	RegisterLevelGeneratorRoom(this->_state);
+	RegisterLevelGenerator(_state);
+	RegisterLevelGeneratorRoom(_state);
 }

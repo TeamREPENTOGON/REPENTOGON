@@ -1,11 +1,9 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
 //1
-int Lua_GetFlag1(lua_State* L)
+LUA_FUNCTION(Lua_GetFlag1)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	lua_pushinteger(L, *mode->GetFlag1());
@@ -13,15 +11,15 @@ int Lua_GetFlag1(lua_State* L)
 	return 1;
 }
 
-int Lua_SetFlag1(lua_State* L)
+LUA_FUNCTION(Lua_SetFlag1)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	*mode->GetFlag1() = (unsigned int) lua_tointeger(L, 2);
+	*mode->GetFlag1() = (unsigned int)lua_tointeger(L, 2);
 	return 0;
 }
 
 //2
-int Lua_GetFlag2(lua_State* L)
+LUA_FUNCTION(Lua_GetFlag2)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	lua_pushinteger(L, *mode->GetFlag2());
@@ -29,15 +27,15 @@ int Lua_GetFlag2(lua_State* L)
 	return 1;
 }
 
-int Lua_SetFlag2(lua_State* L)
+LUA_FUNCTION(Lua_SetFlag2)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	*mode->GetFlag2() = (unsigned int) lua_tointeger(L, 2);
+	*mode->GetFlag2() = (unsigned int)lua_tointeger(L, 2);
 	return 0;
 }
 
 //3
-int Lua_GetFlag3(lua_State* L)
+LUA_FUNCTION(Lua_GetFlag3)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	lua_pushinteger(L, *mode->GetFlag3());
@@ -45,15 +43,15 @@ int Lua_GetFlag3(lua_State* L)
 	return 1;
 }
 
-int Lua_SetFlag3(lua_State* L)
+LUA_FUNCTION(Lua_SetFlag3)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	*mode->GetFlag3() = (unsigned int) lua_tointeger(L, 2);
+	*mode->GetFlag3() = (unsigned int)lua_tointeger(L, 2);
 	return 0;
 }
 
 //4
-int Lua_GetFlag4(lua_State* L)
+LUA_FUNCTION(Lua_GetFlag4)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	lua_pushinteger(L, *mode->GetFlag4());
@@ -61,17 +59,17 @@ int Lua_GetFlag4(lua_State* L)
 	return 1;
 }
 
-int Lua_SetFlag4(lua_State* L)
+LUA_FUNCTION(Lua_SetFlag4)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	*mode->GetFlag4() = (unsigned int) lua_tointeger(L, 2);
+	*mode->GetFlag4() = (unsigned int)lua_tointeger(L, 2);
 	return 0;
 }
 
-int Lua_SetMode(lua_State* L)
+LUA_FUNCTION(Lua_SetMode)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
-	unsigned int newMode = (unsigned int) lua_tonumber(L, 2);
+	unsigned int newMode = (unsigned int)lua_tonumber(L, 2);
 
 	//invalid modes are simply ignored
 	mode->SetMode(newMode);
@@ -79,6 +77,8 @@ int Lua_SetMode(lua_State* L)
 }
 
 static void RegisterBlendMode(lua_State* L) {
+
+	// manual creation of BlendMode class to ensure __newindex definition and variable additions work correctly
 	luaL_newmetatable(L, lua::metatables::BlendModeMT);
 	lua_pushstring(L, "__index");
 	lua_pushcfunction(L, lua::luabridge::indexMetaMethod);
@@ -148,7 +148,6 @@ static void RegisterBlendMode(lua_State* L) {
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterBlendMode(state);
+	lua::LuaStackProtector protector(_state);
+	RegisterBlendMode(_state);
 }

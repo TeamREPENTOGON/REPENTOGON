@@ -1,26 +1,22 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-
-static constexpr const char* PersistentGameDataMT = "PersistentGameData";
 
 static const unsigned int PGD_COUNTER_MAX = 495;
 static const unsigned int COLLECTIBLE_MAX = 732;
 static const unsigned int CHALLENGE_MAX = 45;
 
-static int Lua_GetPersistentGameData(lua_State* L) {
+LUA_FUNCTION(Lua_GetPersistentGameData) {
 	Manager* manager = g_Manager;
 	PersistentGameData** ud = (PersistentGameData**)lua_newuserdata(L, sizeof(PersistentGameData*));
 	*ud = manager->GetPersistentGameData();
-	luaL_setmetatable(L, PersistentGameDataMT);
+	luaL_setmetatable(L, lua::metatables::PersistentGameDataMT);
 	return 1;
 }
 
-int Lua_PGDTryUnlock(lua_State* L)
+LUA_FUNCTION(Lua_PGDTryUnlock)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int unlock = (int)luaL_checkinteger(L, 2);
 
 	bool success = pgd->TryUnlock(unlock);
@@ -28,9 +24,9 @@ int Lua_PGDTryUnlock(lua_State* L)
 	return 1;
 }
 
-int Lua_PGDUnlocked(lua_State* L)
+LUA_FUNCTION(Lua_PGDUnlocked)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int unlock = (int)luaL_checkinteger(L, 2);
 
 	bool unlocked = pgd->Unlocked(unlock);
@@ -38,9 +34,9 @@ int Lua_PGDUnlocked(lua_State* L)
 	return 1;
 }
 
-int Lua_PGDIncreaseEventCounter(lua_State* L)
+LUA_FUNCTION(Lua_PGDIncreaseEventCounter)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int eventCounter = (int)luaL_checkinteger(L, 2);
 
 	if (eventCounter > PGD_COUNTER_MAX)
@@ -53,9 +49,9 @@ int Lua_PGDIncreaseEventCounter(lua_State* L)
 	return 0;
 }
 
-int Lua_PGDGetEventCounter(lua_State* L)
+LUA_FUNCTION(Lua_PGDGetEventCounter)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int eventCounter = (int)luaL_checkinteger(L, 2);
 
 	if (eventCounter > PGD_COUNTER_MAX)
@@ -67,8 +63,8 @@ int Lua_PGDGetEventCounter(lua_State* L)
 	return 1;
 }
 
-int Lua_PGDIsItemInCollection(lua_State* L) {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+LUA_FUNCTION(Lua_PGDIsItemInCollection) {
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int collectID = (int)luaL_checkinteger(L, 2);
 
 	if (collectID > COLLECTIBLE_MAX)
@@ -79,8 +75,8 @@ int Lua_PGDIsItemInCollection(lua_State* L) {
 	return 1;
 }
 
-int Lua_PGDIsChallengeCompleted(lua_State* L) {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+LUA_FUNCTION(Lua_PGDIsChallengeCompleted) {
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int challengeID = (int)luaL_checkinteger(L, 2);
 
 	if (challengeID > CHALLENGE_MAX)
@@ -91,27 +87,27 @@ int Lua_PGDIsChallengeCompleted(lua_State* L) {
 	return 1;
 }
 
-int Lua_PGDGetBestiaryKillCount(lua_State* L)
+LUA_FUNCTION(Lua_PGDGetBestiaryKillCount)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int entType = (int)luaL_checkinteger(L, 2);
 	int entVariant = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pgd->GetBestiaryKillCount(entType, entVariant));
 	return 1;
 }
 
-int Lua_PGDGetBestiaryDeathCount(lua_State* L)
+LUA_FUNCTION(Lua_PGDGetBestiaryDeathCount)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int entType = (int)luaL_checkinteger(L, 2);
 	int entVariant = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pgd->GetBestiaryDeathCount(entType, entVariant));
 	return 1;
 }
 
-int Lua_PGDGetBestiaryEncounterCount(lua_State* L)
+LUA_FUNCTION(Lua_PGDGetBestiaryEncounterCount)
 {
-	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, PersistentGameDataMT);
+	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int entType = (int)luaL_checkinteger(L, 2);
 	int entVariant = (int)luaL_checkinteger(L, 3);
 	lua_pushinteger(L, pgd->GetBestiaryEncounterCount(entType, entVariant));
@@ -120,16 +116,7 @@ int Lua_PGDGetBestiaryEncounterCount(lua_State* L)
 
 static void RegisterPersistentGameData(lua_State* L)
 {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetPersistentGameData");
-	lua_pushcfunction(L, Lua_GetPersistentGameData);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	luaL_newmetatable(L, PersistentGameDataMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetPersistentGameData", Lua_GetPersistentGameData);
 
 	luaL_Reg functions[] = {
 		{ "TryUnlock", Lua_PGDTryUnlock },
@@ -143,15 +130,13 @@ static void RegisterPersistentGameData(lua_State* L)
 		{ "GetBestiaryEncounterCount", Lua_PGDGetBestiaryEncounterCount},
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
+	lua::RegisterNewClass(L, lua::metatables::PersistentGameDataMT, lua::metatables::PersistentGameDataMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterPersistentGameData(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterPersistentGameData(_state);
 }
 

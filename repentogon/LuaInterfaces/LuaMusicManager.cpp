@@ -12,7 +12,7 @@ static bool ValidateMusicID(Music* music, int id, int& max) {
 	return id >= 0 && id < max;
 }
 
-static int lua_MusicManager_Play(lua_State* L) {
+LUA_FUNCTION(Lua_MusicManager_Play) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
 	int max;
@@ -26,7 +26,7 @@ static int lua_MusicManager_Play(lua_State* L) {
 	return 0;
 }
 
-static int lua_MusicManager_Crossfade(lua_State* L) {
+LUA_FUNCTION(Lua_MusicManager_Crossfade) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
 	int max;
@@ -40,7 +40,7 @@ static int lua_MusicManager_Crossfade(lua_State* L) {
 	return 0;
 }
 
-static int lua_MusicManager_Fadein(lua_State* L) {
+LUA_FUNCTION(Lua_MusicManager_Fadein) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	unsigned int musicId = (unsigned int)luaL_checkinteger(L, 2);
 	int max;
@@ -55,7 +55,7 @@ static int lua_MusicManager_Fadein(lua_State* L) {
 	return 0;
 }
 
-static int Lua_MusicManager_PlayJingle(lua_State* L) {
+LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	int musicId = (int)luaL_checkinteger(L, 2);
 	music->PlayJingle(musicId, 140, false);
@@ -63,33 +63,23 @@ static int Lua_MusicManager_PlayJingle(lua_State* L) {
 	return 0;
 }
 
-static int Lua_MusicManager_StopJingle(lua_State* L) {
+LUA_FUNCTION(Lua_MusicManager_StopJingle) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
 	music->StopJingle();
 
 	return 0;
 }
 
-static void FixMusicManagerFunctions(lua_State* L) {
-	lua::LuaStackProtector protector(L);
-	lua::PushMetatable(L, lua::Metatables::MUSIC_MANAGER);
-	lua_pushstring(L, "Play");
-	lua_pushcfunction(L, lua_MusicManager_Play);
-	lua_rawset(L, -3);
-	lua_pushstring(L, "Crossfade");
-	lua_pushcfunction(L, lua_MusicManager_Crossfade);
-	lua_rawset(L, -3);
-	lua_pushstring(L, "Fadein");
-	lua_pushcfunction(L, lua_MusicManager_Fadein);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-}
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::Metatables mt = lua::Metatables::MUSIC_MANAGER;
-	FixMusicManagerFunctions(g_LuaEngine->_state);
-	lua::RegisterFunction(state, mt, "PlayJingle", Lua_MusicManager_PlayJingle);
-	lua::RegisterFunction(state, mt, "StopJingle", Lua_MusicManager_StopJingle);
+	lua::LuaStackProtector protector(_state);
+
+	// Fix existing functions
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Play", Lua_MusicManager_Play);
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Crossfade", Lua_MusicManager_Crossfade);
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Fadein", Lua_MusicManager_Fadein);
+
+	// New Functions
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "PlayJingle", Lua_MusicManager_PlayJingle);
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "StopJingle", Lua_MusicManager_StopJingle);
 }
