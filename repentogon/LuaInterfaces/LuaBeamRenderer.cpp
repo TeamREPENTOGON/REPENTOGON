@@ -15,7 +15,7 @@ LUA_FUNCTION(Lua_BeamRendererBegin) {
 
 	const int layerID = (const int)luaL_checkinteger(L, 2);
 	const unsigned int layerCount = sprite->GetLayerCount();
-	if (layerID < 0 || (const unsigned int)layerID > layerCount) {
+	if (layerID < 0 || (const unsigned int)layerID+1 > layerCount) {
 		luaL_argerror(L, 2, "Invalid layer id");
 	}
 
