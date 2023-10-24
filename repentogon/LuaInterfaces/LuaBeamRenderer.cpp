@@ -29,11 +29,12 @@ LUA_FUNCTION(Lua_BeamRendererBegin) {
 
 LUA_FUNCTION(Lua_BeamRendererAdd) {
 	Vector* point = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	float unk1 = luaL_checknumber(L, 2);
-	float unk2 = luaL_checknumber(L, 3);
+	float unk1 = (float)luaL_checknumber(L, 2);
+	float unk2 = (float)luaL_checknumber(L, 3);
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
 
-	g_BeamRenderer->Add(point, unk1, unk2, color);
+	// args are shuffled around for ease of xmm register accomodation
+	g_BeamRenderer->Add(point, color, unk1, unk2);
 
 	return 0;
 }
