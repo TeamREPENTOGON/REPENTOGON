@@ -59,8 +59,10 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int collectibleID = (int)luaL_checkinteger(L, 2);
 
-	std::vector<bool> removedCollectibles = itemPool->_removedCollectibles;
-	lua_pushboolean(L, !removedCollectibles[collectibleID]);
+	std::vector<bool>& removedCollectibles = itemPool->_removedCollectibles;
+	std::vector<ItemConfig_Item*>& collectList = *g_Manager->GetItemConfig()->GetCollectibles();
+
+	lua_pushboolean(L, (collectibleID < collectList.size()) && (!removedCollectibles[collectibleID]));
 	/*const int itemPoolType = luaL_optinteger(L, 3, -1);
 
 	if (itemPoolType < POOL_NULL || itemPoolType > POOL_ROTTEN_BEGGAR) {
@@ -93,7 +95,7 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 
 LUA_FUNCTION(Lua_ItemPoolGetRemovedCollectibles) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	std::vector<bool> removedCollectibles = itemPool->_removedCollectibles;
+	std::vector<bool>& removedCollectibles = itemPool->_removedCollectibles;
 
 	lua_newtable(L);
 	int idx = 1;
@@ -152,6 +154,39 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	const unsigned int trinketID = (int)luaL_checkinteger(L, 2);
+
+	std::vector<ItemConfig_Item*>& trinketList = *g_Manager->GetItemConfig()->GetTrinkets();
+	std::vector<TrinketPoolItem>& poolTrinketItems = itemPool->_trinketPoolItems;
+
+	lua_pushinteger(L, poolTrinketItems[trinketID]._ID);
+
+	/*bool found = false;
+	for (const auto& trinketItem : poolTrinketItems) {
+		if (trinketItem._ID == trinketID) {
+			found = true;
+			lua_pushboolean(L, (trinketItem._inPool));
+			break;
+		}
+	}
+
+	if (!found || trinketID >= trinketList.size()) {
+		lua_pushboolean(L, false);
+	}
+	*/
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemPoolGetNumAvailableTrinkets) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	lua_pushinteger(L, itemPool->_numAvailableTrinkets);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -162,4 +197,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, mt, "HasCollectible", Lua_ItemPoolHasCollectible);
 	lua::RegisterFunction(state, mt, "GetRemovedCollectibles", Lua_ItemPoolGetRemovedCollectibles);
 	lua::RegisterFunction(state, mt, "GetCollectiblesFromPool", Lua_ItemPoolGetCollectiblesFromPool);
+	//lua::RegisterFunction(state, mt, "HasTrinket", Lua_ItemPoolHasTrinket);
+	lua::RegisterFunction(state, mt, "GetNumAvailableTrinkets", Lua_ItemPoolGetNumAvailableTrinkets);
 }

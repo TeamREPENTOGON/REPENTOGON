@@ -23,12 +23,19 @@ Returns a table of collectibles registered in the specified pool. The table cont
 | weight | float | |
 
 ___
+### Get·Num·Available·Trinkets () {: aria-label='Functions' }
+#### int GetNumAvailableTrinkets ( ) {: .copyable aria-label='Functions' }
+Returns the amount of trinkets available in the item pool.
+
+___
 ### Get·Removed·Collectibles () {: aria-label='Functions' }
 #### table GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
 Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) removed from all pools.
+
 ___
 
 ### Has·Collectible () {: aria-label='Functions' }
 #### boolean HasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Returns ``true`` if collectible is available in item pools, ``false`` otherwise.
+
 ___

@@ -13,4 +13,6 @@ __thiscall ItemPool_Item* ItemPool::GetPool(int itemPoolType);
 struct ItemPool depends (ItemPool_Item) {
 	ItemPool_Item _pools[31] : 0x4;
 	vector_bool _removedCollectibles : 0x67c;
+	vector_TrinketPoolItem _trinketPoolItems : 0x78c;
+	int _numAvailableTrinkets : 0x798;
 } : 0x828;

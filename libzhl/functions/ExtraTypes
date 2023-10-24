@@ -128,3 +128,8 @@ TypeInfo vector_bool {
 	Size 12;
 	Align 4;
 };
+
+TypeInfo vector_TrinketPoolItem {
+	Size 12;
+	Align 4;
+};
