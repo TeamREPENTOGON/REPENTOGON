@@ -481,6 +481,28 @@ static void RegisterIsaacGetCursorSprite(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
+	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	bool scale = true;
+	if (lua_isboolean(L, 2)) {
+		scale = lua_toboolean(L, 2);
+	}
+
+	Vector* result = Isaac::GetRenderPosition(result, pos, scale);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *result;
+
+	return 1;
+}
+
+static void RegisterIsaacGetRenderPosition(lua_State* L) {
+	lua_getglobal(L, "Isaac");
+	lua_pushstring(L, "GetRenderPosition");
+	lua_pushcfunction(L, Lua_IsaacGetRenderPosition);
+	lua_rawset(L, -3);
+	lua_pop(L, 1);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -504,6 +526,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterIsaacGetNullItemIdByName(state);
 	RegisterIsaacShowErrorDialog(state);
 	RegisterIsaacGetCursorSprite(state);
+	RegisterIsaacGetRenderPosition(state);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

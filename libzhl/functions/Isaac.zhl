@@ -42,6 +42,9 @@ static __fastcall Vector* Isaac::RandomUnitVector(Vector* buffer, unsigned int s
 "558bec6aff68????????64a100000000505657a1????????33c5508d45f464a30000000068????????6a00e8????????8b0d????????83c408":
 static __cdecl void Isaac::Shutdown();
 
+"558bec83ec08807d??00f30f1002":
+static __fastcall Vector* Isaac::GetRenderPosition(Vector* buffer, Vector* worldPos, bool scale);
+
 struct Isaac {
 
 } : 0;
