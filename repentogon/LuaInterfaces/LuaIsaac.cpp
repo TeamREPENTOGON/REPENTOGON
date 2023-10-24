@@ -481,16 +481,43 @@ static void RegisterIsaacGetCursorSprite(lua_State* L) {
 	lua_pop(L, 1);
 }
 
+// this is a mostly straight rip from ghidra, the real function returns the result in a wacky way that i can't get to not crash
+Vector GetRenderPosition(Vector *worldPos, bool scale) {
+	Vector result;
+	float fVar1;
+	float fVar2;
+	float fVar3;
+	float fVar4;
+	double dVar5;
+
+	fVar1 = 0.5f;
+	fVar3 = (g_WIDTH - 338.0f) * 0.5f + (worldPos->x - 60.0f) * 0.65f;
+	fVar4 = (g_HEIGHT - 182.0f) * 0.5f;
+	fVar2 = worldPos->y - 140.0f;
+	result.x = fVar3;
+	fVar4 = fVar4 + fVar2 * 0.65f;
+	result.y = fVar4;
+	if (scale) {
+		fVar2 = g_DisplayPixelsPerPoint * g_PointScale;
+		dVar5 = floor((double)(fVar3 * fVar2 + fVar1));
+		result.x = (float)dVar5 / fVar2;
+		dVar5 = floor((double)(fVar4 * fVar2 + 0.5f));
+		result.y = (float)dVar5 / fVar2;
+	}
+	return result;
+}
+
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
+	//__debugbreak();
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	bool scale = true;
 	if (lua_isboolean(L, 2)) {
 		scale = lua_toboolean(L, 2);
 	}
 
-	Vector* result = Isaac::GetRenderPosition(result, pos, scale);
+	Vector result = GetRenderPosition(pos, scale);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	*toLua = *result;
+	*toLua = result;
 
 	return 1;
 }
