@@ -7,20 +7,30 @@
 static constexpr const char* BeamRendererMT = "BeamRenderer";
 
 LUA_FUNCTION(Lua_BeamRendererBegin) {
+	int top = lua_gettop(L);
+	if (top < 4) {
+		luaL_error(L, "Expected 4 arguments, got %d", top);
+	}
 	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	int layer = lua_tointeger(L, 2);
+
+	const int layerID = (const int)luaL_checkinteger(L, 2);
+	const unsigned int layerCount = sprite->GetLayerCount();
+	if (layerID < 0 || (const unsigned int)layerID > layerCount) {
+		luaL_argerror(L, 2, "Invalid layer id");
+	}
+
 	bool unk1 = lua_toboolean(L, 3);
 	bool unk2 = lua_toboolean(L, 4);
 
-	g_BeamRenderer->Begin(sprite, layer, unk1, unk2);
+	g_BeamRenderer->Begin(sprite, layerID, unk1, unk2);
 	
 	return 0;
 }
 
 LUA_FUNCTION(Lua_BeamRendererAdd) {
 	Vector* point = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	float unk1 = lua_tonumber(L, 2);
-	float unk2 = lua_tonumber(L, 3);
+	float unk1 = luaL_checknumber(L, 2);
+	float unk2 = luaL_checknumber(L, 3);
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
 
 	g_BeamRenderer->Add(point, unk1, unk2, color);

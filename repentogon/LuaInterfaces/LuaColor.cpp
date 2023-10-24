@@ -135,6 +135,30 @@ LUA_FUNCTION(Lua_ConstColor_Print) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_CreateColor) {
+	float array[11] = {
+		// colorize
+		(float)luaL_optnumber(L, 1, 1.0f), 
+		(float)luaL_optnumber(L, 2, 1.0f),
+		(float)luaL_optnumber(L, 3, 1.0f),
+		(float)luaL_optnumber(L, 4, 1.0f),
+
+		//offset
+		(float)luaL_optnumber(L, 5, 0.0f),
+		(float)luaL_optnumber(L, 6, 0.0f),
+		(float)luaL_optnumber(L, 7, 0.0f),
+
+		//tint
+		(float)luaL_optnumber(L, 8, 1.0f),
+		(float)luaL_optnumber(L, 9, 1.0f),
+		(float)luaL_optnumber(L, 10, 1.0f),
+		(float)luaL_optnumber(L, 11, 1.0f),
+	};
+	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	memcpy(toLua, &array, sizeof(ColorMod));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
@@ -153,4 +177,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, const_mt, "GetOffset", Lua_ConstColorGetOffset);
 	lua::RegisterFunction(state, const_mt, "__tostring", Lua_ConstColor_ToString);
 	lua::RegisterFunction(state, const_mt, "Print", Lua_ConstColor_Print);
+
+	lua_register(state, "Color", Lua_CreateColor);
 }
