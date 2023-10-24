@@ -178,5 +178,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunction(state, const_mt, "__tostring", Lua_ConstColor_ToString);
 	lua::RegisterFunction(state, const_mt, "Print", Lua_ConstColor_Print);
 
-	lua_register(state, "Color", Lua_CreateColor);
+	//lua_register(state, "Color", Lua_CreateColor); //this fucks up Game (memory corruption?)
 }
