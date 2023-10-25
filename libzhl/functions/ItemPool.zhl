@@ -11,8 +11,11 @@ __thiscall int ItemPool::GetCollectibleFromList(const int* list, unsigned int le
 __thiscall ItemPool_Item* ItemPool::GetPool(int itemPoolType);
 
 struct ItemPool depends (ItemPool_Item) {
+	{{
+		inline std::vector<bool>* GetRemovedCollectibles() { return (std::vector<bool>*)((char*)this + 0x67c); }
+	}}
 	ItemPool_Item _pools[31] : 0x4;
-	vector_bool _removedCollectibles : 0x67c;
+	// vector_bool _removedCollectibles : 0x67c;  // Something goofy seemed to be happening with std::vector<bool> in zhl
 	vector_TrinketPoolItem _trinketPoolItems : 0x78c;
 	int _numAvailableTrinkets : 0x798;
 } : 0x828;

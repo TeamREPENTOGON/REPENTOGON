@@ -57,7 +57,7 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int collectibleID = (int)luaL_checkinteger(L, 2);
 
-	std::vector<bool>& removedCollectibles = itemPool->_removedCollectibles;
+	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 	std::vector<ItemConfig_Item*>& collectList = *g_Manager->GetItemConfig()->GetCollectibles();
 
 	lua_pushboolean(L, (collectibleID < collectList.size()) && (!removedCollectibles[collectibleID]));
@@ -93,7 +93,7 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 
 LUA_FUNCTION(Lua_ItemPoolGetRemovedCollectibles) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	std::vector<bool>& removedCollectibles = itemPool->_removedCollectibles;
+	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 
 	lua_newtable(L);
 	int idx = 1;

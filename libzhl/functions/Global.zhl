@@ -72,7 +72,8 @@ struct PoolItem {
 };
 
 typedef std::vector<PoolItem> vector_PoolItem;
-typedef std::vector<bool> vector_bool;
+// Something goofy seemed to be happening with std::vector<bool> in zhl
+// typedef std::vector<bool> vector_bool;
 
 struct RoomConfig;
 typedef std::vector<RoomConfig*> RoomConfigPtrVector;
