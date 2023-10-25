@@ -25,12 +25,12 @@ int Lua_RNGSetSeed(lua_State* L) {
 	return 0;
 }
 
-static void DoRandomInt(lua_State* L, RNG* rng, int &result, bool &negative) {
+static void DoRandomInt(lua_State* L, RNG* rng, int& result, bool& negative) {
 	int res = 0;
-	int arg1 = (int) luaL_checkinteger(L, 2);
+	int arg1 = (int)luaL_checkinteger(L, 2);
 
 	if (lua_gettop(L) == 3) {
-		int arg2 = (int) luaL_checkinteger(L, 3);
+		int arg2 = (int)luaL_checkinteger(L, 3);
 
 		if (arg1 > arg2) {
 			luaL_argerror(L, 1, "interval is empty");
@@ -109,12 +109,18 @@ LUA_FUNCTION(Lua_RNG_PhantomVector) {
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	lua::RegisterFunction(state, lua::Metatables::RNG, "SetSeed", Lua_RNGSetSeed);
-	lua::RegisterFunction(state, lua::Metatables::RNG, "RandomInt", Lua_RNG_RandomInt);
-	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomInt", Lua_RNG_PhantomInt);
-	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomFloat", Lua_RNG_PhantomFloat);
-	lua::RegisterFunction(state, lua::Metatables::RNG, "RandomVector", Lua_RNG_RandomVector);
-	lua::RegisterFunction(state, lua::Metatables::RNG, "PhantomVector", Lua_RNG_PhantomVector);
+
+	lua::LuaStackProtector protector(_state);
+
+	luaL_Reg functions[] = {
+		{ "SetSeed", Lua_RNGSetSeed },
+		{ "RandomInt", Lua_RNG_RandomInt },
+		{ "PhantomInt", Lua_RNG_PhantomInt },
+		{ "PhantomFloat", Lua_RNG_PhantomFloat },
+		{ "RandomVector", Lua_RNG_RandomVector },
+		{ "PhantomVector", Lua_RNG_PhantomVector },
+		{ NULL, NULL }
+	};
+
+	lua::RegisterFunctions(_state, lua::Metatables::RNG, functions);
 }

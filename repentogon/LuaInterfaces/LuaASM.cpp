@@ -1,7 +1,5 @@
 #include <cstdio>
 
-#include <lua.hpp>
-
 #include "ASMPatcher.hpp"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"

@@ -1,10 +1,8 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-int Lua_GameAchievementUnlocksDisallowed(lua_State* L)
+LUA_FUNCTION(Lua_GameAchievementUnlocksDisallowed)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->AchievementUnlocksDisallowed());
@@ -12,7 +10,7 @@ int Lua_GameAchievementUnlocksDisallowed(lua_State* L)
 	return 1;
 }
 
-int Lua_GameIsPauseMenuOpen(lua_State* L)
+LUA_FUNCTION(Lua_GameIsPauseMenuOpen)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->IsPauseMenuOpen());
@@ -20,7 +18,7 @@ int Lua_GameIsPauseMenuOpen(lua_State* L)
 	return 1;
 }
 
-int Lua_GameGetPauseMenuState(lua_State* L)
+LUA_FUNCTION(Lua_GameGetPauseMenuState)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetPauseMenu()->status);
@@ -28,7 +26,7 @@ int Lua_GameGetPauseMenuState(lua_State* L)
 	return 1;
 }
 
-int Lua_GameGetPlanetariumsVisited(lua_State* L)
+LUA_FUNCTION(Lua_GameGetPlanetariumsVisited)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetPlanetariumsVisited());
@@ -36,7 +34,7 @@ int Lua_GameGetPlanetariumsVisited(lua_State* L)
 	return 1;
 }
 
-int Lua_GameIsHardMode(lua_State* L)
+LUA_FUNCTION(Lua_GameIsHardMode)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->IsHardMode());
@@ -44,7 +42,7 @@ int Lua_GameIsHardMode(lua_State* L)
 	return 1;
 }
 
-int Lua_GameGetLastDevilRoomStageFix(lua_State* L) 
+LUA_FUNCTION(Lua_GameGetLastDevilRoomStageFix)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetLastDevilRoomStage());
@@ -52,7 +50,7 @@ int Lua_GameGetLastDevilRoomStageFix(lua_State* L)
 	return 1;
 }
 
-int Lua_GetLastLevelWithDamageFix(lua_State* L)
+LUA_FUNCTION(Lua_GetLastLevelWithDamageFix)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetLastLevelWithDamage());
@@ -60,7 +58,7 @@ int Lua_GetLastLevelWithDamageFix(lua_State* L)
 	return 1;
 }
 
-int Lua_GetLastLevelWithoutHalfHpFix(lua_State* L)
+LUA_FUNCTION(Lua_GetLastLevelWithoutHalfHpFix)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, game->GetLastLevelWithoutHalfHp());
@@ -68,7 +66,7 @@ int Lua_GetLastLevelWithoutHalfHpFix(lua_State* L)
 	return 1;
 }
 
-int Lua_GameGetDebugFlags(lua_State* L)
+LUA_FUNCTION(Lua_GameGetDebugFlags)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushinteger(L, *game->GetDebugFlags());
@@ -76,7 +74,7 @@ int Lua_GameGetDebugFlags(lua_State* L)
 	return 1;
 }
 
-int Lua_GameAddDebugFlags(lua_State* L)
+LUA_FUNCTION(Lua_GameAddDebugFlags)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	unsigned int flags = (unsigned int)luaL_checkinteger(L, 2);
@@ -84,13 +82,7 @@ int Lua_GameAddDebugFlags(lua_State* L)
 	return 0;
 }
 
-int Lua_GetDimension(lua_State* L){
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
-	lua_pushinteger(L, game->GetDimension());
-	return 1;
-}
-
-int Lua_GameSpawnBombCrater(lua_State* L) {
+LUA_FUNCTION(Lua_GameSpawnBombCrater) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Entity* crater = game->SpawnBombCrater(pos);
@@ -99,7 +91,7 @@ int Lua_GameSpawnBombCrater(lua_State* L) {
 	return 1;
 }
 
-int Lua_GameDevolveEnemy(lua_State* L) {
+LUA_FUNCTION(Lua_GameDevolveEnemy) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Entity* ent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	game->DevolveEnemy(ent);
@@ -117,7 +109,7 @@ LUA_FUNCTION(lua_GameStartStageTransition) {
 	return 0;
 }
 
-int Lua_GameIsGreedBoss(lua_State* L)
+LUA_FUNCTION(Lua_GameIsGreedBoss)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->IsGreedBoss());
@@ -125,7 +117,7 @@ int Lua_GameIsGreedBoss(lua_State* L)
 	return 1;
 }
 
-int Lua_GameIsGreedFinalBoss(lua_State* L)
+LUA_FUNCTION(Lua_GameIsGreedFinalBoss)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	lua_pushboolean(L, game->IsGreedFinalBoss());
@@ -146,9 +138,9 @@ LUA_FUNCTION(lua_GameIsErased) {
 		}
 	}
 	else {
-		int type = (int) luaL_checkinteger(L, 2);
-		int variant = (int) luaL_optinteger(L, 3, -1);
-		int subtype = (int) luaL_optinteger(L, 4, -1);
+		int type = (int)luaL_checkinteger(L, 2);
+		int variant = (int)luaL_optinteger(L, 3, -1);
+		int subtype = (int)luaL_optinteger(L, 4, -1);
 
 		if (game->IsErased(type, variant, subtype)) {
 			lua_pushinteger(L, 1);
@@ -210,30 +202,32 @@ LUA_FUNCTION(Lua_GameSetColorModifier)
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	lua::Metatables mt = lua::Metatables::GAME;
-	lua::RegisterFunction(state, mt, "AchievementUnlocksDisallowed", Lua_GameAchievementUnlocksDisallowed);
-	lua::RegisterFunction(state, mt, "IsPauseMenuOpen", Lua_GameIsPauseMenuOpen);
-	lua::RegisterFunction(state, mt, "GetPauseMenuState", Lua_GameGetPauseMenuState);
-	lua::RegisterFunction(state, mt, "GetPlanetariumsVisited", Lua_GameGetPlanetariumsVisited);
-	lua::RegisterFunction(state, mt, "IsHardMode", Lua_GameIsHardMode);
-	lua::RegisterFunction(state, mt, "GetLastDevilRoomStage", Lua_GameGetLastDevilRoomStageFix);
-	lua::RegisterFunction(state, mt, "GetLastLevelWithDamage", Lua_GetLastLevelWithDamageFix);
-	lua::RegisterFunction(state, mt, "GetLastLevelWithoutHalfHp", Lua_GetLastLevelWithoutHalfHpFix);
-	lua::RegisterFunction(state, mt, "GetDebugFlags", Lua_GameGetDebugFlags);
-	lua::RegisterFunction(state, mt, "AddDebugFlags", Lua_GameAddDebugFlags);
-	//lua::RegisterFunction(state, mt, "SpawnBombCrater", Lua_GameSpawnBombCrater);
-	lua::RegisterFunction(state, mt, "DevolveEnemy", Lua_GameDevolveEnemy);
-	lua::RegisterFunction(state, mt, "IsGreedBoss", Lua_GameIsGreedBoss);
-	lua::RegisterFunction(state, mt, "IsGreedFinalBoss", Lua_GameIsGreedFinalBoss);
 
-	lua::RegisterFunction(state, lua::Metatables::LEVEL, "GetDimension", Lua_GetDimension);
-	lua::RegisterFunction(state, mt, "StartStageTransition", lua_GameStartStageTransition);
-	lua::RegisterFunction(state, mt, "IsErased", lua_GameIsErased);
-	lua::RegisterFunction(state, mt, "GetCurrentColorModifier", Lua_GameGetCurrentColorModifier);
-	lua::RegisterFunction(state, mt, "GetTargetColorModifier", Lua_GameGetTargetColorModifier);
-	lua::RegisterFunction(state, mt, "GetColorModifierLerpAmount", Lua_GameGetLerpColorModifier);
-	lua::RegisterFunction(state, mt, "SetColorModifier", Lua_GameSetColorModifier);
+	lua::LuaStackProtector protector(_state);
+
+	luaL_Reg functions[] = {
+		{ "AchievementUnlocksDisallowed", Lua_GameAchievementUnlocksDisallowed},
+		{ "IsPauseMenuOpen", Lua_GameIsPauseMenuOpen},
+		{ "GetPauseMenuState", Lua_GameGetPauseMenuState},
+		{ "GetPlanetariumsVisited", Lua_GameGetPlanetariumsVisited},
+		{ "IsHardMode", Lua_GameIsHardMode},
+		{ "GetLastDevilRoomStage", Lua_GameGetLastDevilRoomStageFix},
+		{ "GetLastLevelWithDamage", Lua_GetLastLevelWithDamageFix},
+		{ "GetLastLevelWithoutHalfHp", Lua_GetLastLevelWithoutHalfHpFix},
+		{ "GetDebugFlags", Lua_GameGetDebugFlags},
+		{ "AddDebugFlags", Lua_GameAddDebugFlags},
+		//{ "SpawnBombCrater", Lua_GameSpawnBombCrater},
+		{ "DevolveEnemy", Lua_GameDevolveEnemy},
+		{ "IsGreedBoss", Lua_GameIsGreedBoss},
+		{ "IsGreedFinalBoss", Lua_GameIsGreedFinalBoss},
+		{ "StartStageTransition", lua_GameStartStageTransition},
+		{ "IsErased", lua_GameIsErased},
+		{ "GetCurrentColorModifier", Lua_GameGetCurrentColorModifier},
+		{ "GetTargetColorModifier", Lua_GameGetTargetColorModifier},
+		{ "GetColorModifierLerpAmount", Lua_GameGetLerpColorModifier},
+		{ "SetColorModifier", Lua_GameSetColorModifier},
+		{ NULL, NULL }
+	};
+	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);
 
 }

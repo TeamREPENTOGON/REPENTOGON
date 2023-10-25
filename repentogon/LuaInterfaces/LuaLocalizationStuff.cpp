@@ -1,15 +1,8 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	lua_State* state = g_LuaEngine->_state;
-}
-
-int Lua_IsaacGetString(lua_State* L)
+LUA_FUNCTION(Lua_IsaacGetString)
 {
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
@@ -27,7 +20,7 @@ int Lua_IsaacGetString(lua_State* L)
 	return 1;
 }
 
-int Lua_IsaacGetLocalizedString(lua_State* L) {
+LUA_FUNCTION(Lua_IsaacGetLocalizedString) {
 	Manager* manager = g_Manager;
 	StringTable* stringTable = manager->GetStringTable();
 
@@ -46,19 +39,13 @@ int Lua_IsaacGetLocalizedString(lua_State* L) {
 }
 
 static void RegisterIsaacGetString(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "GetString");
-	lua_pushcfunction(L, Lua_IsaacGetString);
-	lua_rawset(L, -3);
-	lua_pushstring(L, "GetLocalizedString");
-	lua_pushcfunction(L, Lua_IsaacGetLocalizedString);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetString", Lua_IsaacGetString);
+	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetLocalizedString", Lua_IsaacGetLocalizedString);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterIsaacGetString(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterIsaacGetString(_state);
 }

@@ -1,23 +1,19 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../ImGuiFeatures/LogViewer.h"
 
-static constexpr const char* CameraMT = "Camera";
-
-static int Lua_GetCamera(lua_State* L) {
+LUA_FUNCTION(Lua_GetCamera) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	Camera** ud = (Camera**)lua_newuserdata(L, sizeof(Camera*));
 	*ud = room->GetCamera();
-	luaL_setmetatable(L, CameraMT);
+	luaL_setmetatable(L, lua::metatables::CameraMT);
 	return 1;
 }
 
-int Lua_CameraSetFocusPosition(lua_State* L)
+LUA_FUNCTION(Lua_CameraSetFocusPosition)
 {
-	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, CameraMT);
+	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
 	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	camera->SetFocusPosition(vector);
@@ -26,10 +22,9 @@ int Lua_CameraSetFocusPosition(lua_State* L)
 	return 0;
 }
 
-int Lua_SnapToPosition(lua_State* L)
+LUA_FUNCTION(Lua_SnapToPosition)
 {
-	
-	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, CameraMT);
+	Camera* camera = *lua::GetUserdata<Camera**>(L, 1, lua::metatables::CameraMT);
 	Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	logViewer.AddLog("[REPENTOGON]", "camera override is %s\n", *camera->ShouldOverride() ? "TRUE" : "FALSE");
 	camera->SnapToPosition(*vector);
@@ -39,31 +34,19 @@ int Lua_SnapToPosition(lua_State* L)
 }
 
 static void RegisterCamera(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ROOM);
-	lua_pushstring(L, "GetCamera");
-	lua_pushcfunction(L, Lua_GetCamera);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	luaL_newmetatable(L, CameraMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua::RegisterFunction(L, lua::Metatables::ROOM, "GetCamera", Lua_GetCamera);
 
 	luaL_Reg functions[] = {
 		{ "SetFocusPosition", Lua_CameraSetFocusPosition },
 		{ "SnapToPosition", Lua_SnapToPosition },
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
-
+	lua::RegisterNewClass(L, lua::metatables::CameraMT, lua::metatables::CameraMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterCamera(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterCamera(_state);
 }

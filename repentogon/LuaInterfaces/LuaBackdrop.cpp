@@ -3,8 +3,6 @@
 #include "LuaCore.h"
 #include "LuaRender.h"
 
-constexpr const char* BackdropMT = "Backdrop";
-
 static Backdrop* GetBackdrop(lua_State* L, int idx = 1);
 
 // ============================================================================
@@ -14,7 +12,7 @@ LUA_FUNCTION(lua_Room_GetBackdrop) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	Backdrop** ud = (Backdrop**)lua_newuserdata(L, sizeof(Backdrop*));
 	*ud = room->GetBackdrop();
-	luaL_setmetatable(L, BackdropMT);
+	luaL_setmetatable(L, lua::metatables::BackdropMT);
 	return 1;
 }
 
@@ -22,7 +20,7 @@ LUA_FUNCTION(lua_Room_GetBackdrop) {
 // Backdrop
 
 Backdrop* GetBackdrop(lua_State* L, int idx) {
-	return *(Backdrop**)luaL_checkudata(L, idx, BackdropMT);
+	return *(Backdrop**)luaL_checkudata(L, idx, lua::metatables::BackdropMT);
 }
 
 LUA_FUNCTION(lua_Backdrop_GetWallImage) {
@@ -42,13 +40,15 @@ LUA_FUNCTION(lua_Backdrop_GetFloorImage) {
 }
 
 static void RegisterBackdropClass(lua_State* L) {
+	lua::RegisterFunction(L, lua::Metatables::ROOM, "GetBackdrop", lua_Room_GetBackdrop);
+
 	luaL_Reg functions[] = {
 		{ "GetWallImage", lua_Backdrop_GetWallImage },
 		{ "GetFloorImage", lua_Backdrop_GetFloorImage },
 		{ NULL, NULL }
 	};
 
-	lua::RegisterNewClass(L, BackdropMT, BackdropMT, functions);
+	lua::RegisterNewClass(L, lua::metatables::BackdropMT, lua::metatables::BackdropMT, functions);
 }
 
 // ============================================================================
@@ -57,8 +57,6 @@ static void RegisterBackdropClass(lua_State* L) {
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
-	lua_State* L = _state;
-	lua::LuaStackProtector protector(L);
-	lua::RegisterFunction(L, lua::Metatables::ROOM, "GetBackdrop", lua_Room_GetBackdrop);
-	RegisterBackdropClass(L);
+	lua::LuaStackProtector protector(_state);
+	RegisterBackdropClass(_state);
 }

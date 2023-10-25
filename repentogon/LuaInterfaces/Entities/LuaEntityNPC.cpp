@@ -1,5 +1,3 @@
-#include <lua.hpp>
-
 #include <vector>
 #include <stdexcept>
 
@@ -24,7 +22,7 @@ static std::vector<Entity_Projectile*>& InitProjectileStorage() {
 	return projectiles;
 }
 
-int Lua_NPCUpdateDirtColor(lua_State* L)
+LUA_FUNCTION(Lua_NPCUpdateDirtColor)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	bool unk = lua_toboolean(L, 2);
@@ -33,7 +31,7 @@ int Lua_NPCUpdateDirtColor(lua_State* L)
 	return 0;
 }
 
-int Lua_NPCGetDirtColor(lua_State* L)
+LUA_FUNCTION(Lua_NPCGetDirtColor)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
@@ -43,16 +41,16 @@ int Lua_NPCGetDirtColor(lua_State* L)
 	return 1;
 }
 
-int Lua_NPCGetControllerId(lua_State* L)
+LUA_FUNCTION(Lua_NPCGetControllerId)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
-	lua_pushnumber(L,*npc->GetControllerId());
+	lua_pushnumber(L, *npc->GetControllerId());
 
 	return 1;
 }
 
-int Lua_NPCSetControllerId(lua_State* L)
+LUA_FUNCTION(Lua_NPCSetControllerId)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	int unk = (int)lua_tonumber(L, 2);
@@ -86,7 +84,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Vector* velocity = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	uint32_t mode = (uint32_t) luaL_checkinteger(L, 4);
+	uint32_t mode = (uint32_t)luaL_checkinteger(L, 4);
 
 	if (mode > 9) {
 		return luaL_error(L, "Invalid projectile mode %u\n", mode);
@@ -103,14 +101,14 @@ LUA_FUNCTION(Lua_EntityNPC_FireProjectilesEx) {
 
 LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	int numProjectiles = (int) luaL_checkinteger(L, 2);
+	int numProjectiles = (int)luaL_checkinteger(L, 2);
 
 	if (numProjectiles <= 0) {
 		return luaL_error(L, "Invalid amount of projectiles %d\n", numProjectiles);
 	}
 
 	Vector* targetPos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	float trajectoryModifier = (float) luaL_checknumber(L, 4);
+	float trajectoryModifier = (float)luaL_checknumber(L, 4);
 	ProjectileParams* params = lua::GetUserdata<ProjectileParams*>(L, 5, lua::Metatables::PROJECTILE_PARAMS, "ProjectileParams");
 
 	std::vector<Entity_Projectile*>& projectiles = InitProjectileStorage();
@@ -136,7 +134,7 @@ LUA_FUNCTION(Lua_NPCGetHitList) {
 	return 1;
 }
 
-int Lua_NPCGetShieldStrength(lua_State* L)
+LUA_FUNCTION(Lua_NPCGetShieldStrength)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
@@ -145,16 +143,16 @@ int Lua_NPCGetShieldStrength(lua_State* L)
 	return 1;
 }
 
-int Lua_NPCSetShieldStrength(lua_State* L)
+LUA_FUNCTION(Lua_NPCSetShieldStrength)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
-	*npc->GetShieldStrength() = (float) luaL_checknumber(L, 2);
+	*npc->GetShieldStrength() = (float)luaL_checknumber(L, 2);
 
 	return 1;
 }
 
-int Lua_NPCPlaySound(lua_State* L)
+LUA_FUNCTION(Lua_NPCPlaySound)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	int id = (int)luaL_checkinteger(L, 2);
@@ -182,38 +180,30 @@ LUA_FUNCTION(Lua_EntityNPC_GetV2) {
 	return 1;
 }
 
-/* Fix V1 and V2 not being pointers. */
-static void FixAttributes(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::ENTITY_NPC);
-	lua_pushstring(L, "__propget");
-	lua_rawget(L, -2);
-	lua_pushstring(L, "V1");
-	lua_pushcfunction(L, Lua_EntityNPC_GetV1);
-	lua_rawset(L, -3);
-	lua_pushstring(L, "V2");
-	lua_pushcfunction(L, Lua_EntityNPC_GetV2);
-	lua_rawset(L, -3);
-	lua_pop(L, 2);
-}
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	lua::Metatables mt = lua::Metatables::ENTITY_NPC;
-	lua::RegisterFunction(state, mt, "PlaySound", Lua_NPCPlaySound);
-	lua::RegisterFunction(state, mt, "UpdateDirtColor", Lua_NPCUpdateDirtColor);
-	lua::RegisterFunction(state, mt, "GetDirtColor", Lua_NPCGetDirtColor);
-	lua::RegisterFunction(state, mt, "GetControllerId", Lua_NPCGetControllerId);
-	lua::RegisterFunction(state, mt, "SetControllerId", Lua_NPCSetControllerId);
-	lua::RegisterFunction(state, mt, "TryForceTarget", Lua_NPCTryForceTarget);
-	lua::RegisterFunction(state, mt, "FireProjectilesEx", Lua_EntityNPC_FireProjectilesEx);
-	lua::RegisterFunction(state, mt, "FireBossProjectilesEx", Lua_EntityNPC_FireBossProjectilesEx);
-	lua::RegisterFunction(state, mt, "GetHitList", Lua_NPCGetHitList);
-	lua::RegisterFunction(state, mt, "GetShieldStrength", Lua_NPCGetShieldStrength);
-	lua::RegisterFunction(state, mt, "SetShieldStrength", Lua_NPCSetShieldStrength);
 
-	FixAttributes(state);
+	lua::LuaStackProtector protector(_state);
+
+	luaL_Reg functions[] = {
+		{ "PlaySound", Lua_NPCPlaySound },
+		{ "UpdateDirtColor", Lua_NPCUpdateDirtColor },
+		{ "GetDirtColor", Lua_NPCGetDirtColor },
+		{ "GetControllerId", Lua_NPCGetControllerId },
+		{ "SetControllerId", Lua_NPCSetControllerId },
+		{ "TryForceTarget", Lua_NPCTryForceTarget },
+		{ "FireProjectilesEx", Lua_EntityNPC_FireProjectilesEx },
+		{ "FireBossProjectilesEx", Lua_EntityNPC_FireBossProjectilesEx },
+		{ "GetHitList", Lua_NPCGetHitList },
+		{ "GetShieldStrength", Lua_NPCGetShieldStrength },
+		{ "SetShieldStrength", Lua_NPCSetShieldStrength },
+		{ NULL, NULL }
+	};
+	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_NPC, functions);
+
+	/* Fix V1 and V2 not being pointers. */
+	lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_NPC, "V1", Lua_EntityNPC_GetV1);
+	lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_NPC, "V2", Lua_EntityNPC_GetV2);
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {

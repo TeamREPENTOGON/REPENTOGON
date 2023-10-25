@@ -1950,7 +1950,7 @@ bool Lua_PushXMLNode(lua_State* L, XMLAttributes node, unordered_map<string, vec
 	return true;
 }
 
-int Lua_FromTypeVarSub(lua_State* L)
+LUA_FUNCTION(Lua_FromTypeVarSub)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected EntityType as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	int etype = (int)lua_tonumber(L, 1);
@@ -1966,7 +1966,7 @@ int Lua_FromTypeVarSub(lua_State* L)
 	return 1;
 }
 
-int Lua_GetFromEntity(lua_State* L)
+LUA_FUNCTION(Lua_GetFromEntity)
 {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	if (entity == NULL) { return luaL_error(L, "Expected entity as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
@@ -2019,7 +2019,7 @@ int Lua_GetFromEntity(lua_State* L)
 	return 1;
 }
 
-int Lua_GetEntryByNameXML(lua_State* L)
+LUA_FUNCTION(Lua_GetEntryByNameXML)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	if (!lua_isstring(L, 2)) { return luaL_error(L, "Expected string as parameter #2, got %s", lua_typename(L, lua_type(L, 1))); }
@@ -2144,22 +2144,13 @@ int Lua_GetEntryByNameXML(lua_State* L)
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	ClearXMLData();
 	super();
-	lua_State* L = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(L);
+	lua::LuaStackProtector protector(_state);
 
-	lua_newtable(L); 
-	lua_pushstring(L, "GetEntryByName"); 
-	lua_pushcfunction(L, Lua_GetEntryByNameXML); 
-	lua_settable(L, -3);
-	lua_pushstring(L, "GetEntityByTypeVarSub");
-	lua_pushcfunction(L, Lua_FromTypeVarSub);
-	lua_settable(L, -3);
-	lua_pushstring(L, "GetEntryFromEntity");
-	lua_pushcfunction(L, Lua_GetFromEntity);
-	lua_settable(L, -3);
-	lua_setglobal(L, "XMLData"); 
-	//lua_pop(L, 1);
-	
+	lua_newtable(_state);
+	lua::TableAssoc(_state, "GetEntryByName", Lua_GetEntryByNameXML);
+	lua::TableAssoc(_state, "GetEntityByTypeVarSub", Lua_FromTypeVarSub);
+	lua::TableAssoc(_state, "GetEntryFromEntity", Lua_GetFromEntity);
+	lua_setglobal(_state, "XMLData");
 }
 
 

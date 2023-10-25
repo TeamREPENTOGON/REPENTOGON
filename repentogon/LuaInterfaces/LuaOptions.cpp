@@ -62,58 +62,16 @@ LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
 }
 
 static void RegisterLuaOptions(lua_State* L) {
-	lua::LuaStackProtector protector(L);
-
-	lua_getglobal(L, "Options");
-	lua_pushstring(L, "__propget");
-	lua_rawget(L, -2);
-
-	lua_pushstring(L, "BetterVoidGeneration");
-	lua_pushcfunction(L, Lua_Options_GetVoidGeneration);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "HushPanicStateFix");
-	lua_pushcfunction(L, Lua_Options_GetHushFix);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "KeyMasterDealChance");
-	lua_pushcfunction(L, Lua_Options_GetKeyMasterDealChance);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "PreventModUpdates");
-	lua_pushcfunction(L, Lua_Options_GetKeyMasterDealChance);
-	lua_rawset(L, -3);
-
-	lua_pop(L, 1);
-
-	lua_pushstring(L, "__propset");
-	lua_rawget(L, -2);
-
-	lua_pushstring(L, "BetterVoidGeneration");
-	lua_pushcfunction(L, Lua_Options_SetVoidGeneration);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "HushPanicStateFix");
-	lua_pushcfunction(L, Lua_Options_SetHushFix);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "KeyMasterDealChance");
-	lua_pushcfunction(L, Lua_Options_SetKeyMasterDealChance);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "PreventModUpdates");
-	lua_pushcfunction(L, Lua_Options_GetKeyMasterDealChance);
-	lua_rawset(L, -3);
-
-	lua_pushstring(L, "SFXVolume");
-	lua_pushcfunction(L, Lua_Options_Fix_SetSFXVolume);
-	lua_rawset(L, -3);
-
-	lua_pop(L, 2);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "BetterVoidGeneration", Lua_Options_GetVoidGeneration, Lua_Options_SetVoidGeneration);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "HushPanicStateFix", Lua_Options_GetHushFix, Lua_Options_SetHushFix);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "KeyMasterDealChance", Lua_Options_GetKeyMasterDealChance, Lua_Options_SetKeyMasterDealChance);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "PreventModUpdates", Lua_Options_GetPreventModUpdates, Lua_Options_SetPreventModUpdates);
+	lua::RegisterGlobalClassVariableSetter(L, lua::GlobalClasses::Options, "SFXVolume", Lua_Options_Fix_SetSFXVolume);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
+	lua::LuaStackProtector protector(_state);
 	RegisterLuaOptions(_state);
 }

@@ -1,10 +1,8 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-int Lua_ItemPoolGetCardEx(lua_State* L)
+LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int seed = (int)luaL_checkinteger(L, 2);
@@ -24,7 +22,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleFromList) {
 		return 0;
 	}
 
-	size_t length = (size_t) lua_rawlen(L, 2);
+	size_t length = (size_t)lua_rawlen(L, 2);
 
 	// if the table is empty, we should pass default item
 	if (length == 0)
@@ -59,8 +57,10 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int collectibleID = (int)luaL_checkinteger(L, 2);
 
-	std::vector<bool> removedCollectibles = itemPool->_removedCollectibles;
-	lua_pushboolean(L, !removedCollectibles[collectibleID]);
+	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
+	std::vector<ItemConfig_Item*>& collectList = *g_Manager->GetItemConfig()->GetCollectibles();
+
+	lua_pushboolean(L, (collectibleID < collectList.size()) && (!removedCollectibles[collectibleID]));
 	/*const int itemPoolType = luaL_optinteger(L, 3, -1);
 
 	if (itemPoolType < POOL_NULL || itemPoolType > POOL_ROTTEN_BEGGAR) {
@@ -68,8 +68,8 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 	}
 
 	bool result = false;
-	if (itemPoolType == -1) { 
-		for (int i = 0; i < 33; i++) { 
+	if (itemPoolType == -1) {
+		for (int i = 0; i < 33; i++) {
 			std::vector<PoolItem> poolList = itemPool->_pools[i]._poolList;
 			for (auto& item : poolList) {
 				result = item._itemID == collectibleID && item._weight > .0f ? true : result;
@@ -93,7 +93,7 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 
 LUA_FUNCTION(Lua_ItemPoolGetRemovedCollectibles) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	std::vector<bool> removedCollectibles = itemPool->_removedCollectibles;
+	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 
 	lua_newtable(L);
 	int idx = 1;
@@ -152,14 +152,55 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	const unsigned int trinketID = (int)luaL_checkinteger(L, 2);
+
+	std::vector<ItemConfig_Item*>& trinketList = *g_Manager->GetItemConfig()->GetTrinkets();
+	std::vector<TrinketPoolItem>& poolTrinketItems = itemPool->_trinketPoolItems;
+
+	lua_pushinteger(L, poolTrinketItems[trinketID]._ID);
+
+	/*bool found = false;
+	for (const auto& trinketItem : poolTrinketItems) {
+		if (trinketItem._ID == trinketID) {
+			found = true;
+			lua_pushboolean(L, (trinketItem._inPool));
+			break;
+		}
+	}
+
+	if (!found || trinketID >= trinketList.size()) {
+		lua_pushboolean(L, false);
+	}
+	*/
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemPoolGetNumAvailableTrinkets) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	lua_pushinteger(L, itemPool->_numAvailableTrinkets);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	lua::Metatables mt = lua::Metatables::ITEM_POOL;
-	lua::RegisterFunction(state, mt, "GetCardEx", Lua_ItemPoolGetCardEx);
-	lua::RegisterFunction(state, mt, "GetCollectibleFromList", Lua_ItemPoolGetCollectibleFromList);
-	lua::RegisterFunction(state, mt, "HasCollectible", Lua_ItemPoolHasCollectible);
-	lua::RegisterFunction(state, mt, "GetRemovedCollectibles", Lua_ItemPoolGetRemovedCollectibles);
-	lua::RegisterFunction(state, mt, "GetCollectiblesFromPool", Lua_ItemPoolGetCollectiblesFromPool);
+
+	lua::LuaStackProtector protector(_state);
+
+	luaL_Reg functions[] = {
+		{ "GetCardEx", Lua_ItemPoolGetCardEx },
+		{ "GetCollectibleFromList", Lua_ItemPoolGetCollectibleFromList },
+		{ "HasCollectible", Lua_ItemPoolHasCollectible },
+		{ "GetRemovedCollectibles", Lua_ItemPoolGetRemovedCollectibles },
+		{ "GetCollectiblesFromPool", Lua_ItemPoolGetCollectiblesFromPool },
+		{ "HasTrinket", Lua_ItemPoolHasTrinket },
+		{ "GetNumAvailableTrinkets", Lua_ItemPoolGetNumAvailableTrinkets },
+
+		{ NULL, NULL }
+	};
+
+	lua::RegisterFunctions(_state, lua::Metatables::ITEM_POOL, functions);
 }

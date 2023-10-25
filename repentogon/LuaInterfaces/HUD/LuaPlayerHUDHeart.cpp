@@ -1,5 +1,3 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -35,11 +33,6 @@ LUA_FUNCTION(Lua_PlayerHUDHeartGetHeartOverlayAnim) {
 }
 
 static void RegisterPlayerHUDHeart(lua_State* L) {
-	luaL_newmetatable(L, lua::metatables::PlayerHUDHeartMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
-
 	luaL_Reg functions[] = {
 		{ "IsVisible", Lua_PlayerHUDHeartIsVisible },
 		{ "IsGoldenHeartOverlayVisible", Lua_PlayerHUDHeartIsGoldenHeartOverlayVisible },
@@ -48,15 +41,12 @@ static void RegisterPlayerHUDHeart(lua_State* L) {
 		{ "GetHeartOverlayAnim", Lua_PlayerHUDHeartGetHeartOverlayAnim },
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
-
+	lua::RegisterNewClass(L, lua::metatables::PlayerHUDHeartMT, lua::metatables::PlayerHUDHeartMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterPlayerHUDHeart(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterPlayerHUDHeart(_state);
 }

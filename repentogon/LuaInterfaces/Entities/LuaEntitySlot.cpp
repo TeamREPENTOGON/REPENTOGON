@@ -2,7 +2,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
-static int Lua_EntityToEntitySlot(lua_State* L) {
+LUA_FUNCTION(Lua_EntityToEntitySlot) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	if (*entity->GetType() == 6) { //TODO: enum
 		Entity_Slot* ud = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
@@ -14,14 +14,14 @@ static int Lua_EntityToEntitySlot(lua_State* L) {
 	return 1;
 }
 
-static int Lua_CreateDropsFromExplosion(lua_State* L) {
+LUA_FUNCTION(Lua_CreateDropsFromExplosion) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	slot->CreateDropsFromExplosion();
 	return 0;
 }
 
-static int Lua_SetPrizeCollectible(lua_State* L) {
+LUA_FUNCTION(Lua_SetPrizeCollectible) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	int collectible = (int)luaL_checkinteger(L, 2);
@@ -29,7 +29,7 @@ static int Lua_SetPrizeCollectible(lua_State* L) {
 	return 0;
 }
 
-static int Lua_RandomCoinJamAnim(lua_State* L) {
+LUA_FUNCTION(Lua_RandomCoinJamAnim) {
 	//this is such a trivial reimplementation that like, who cares
 	const char* CoinJamAnims[4] = { "CoinJam", "CoinJam2", "CoinJam3", "CoinJam4" };
 	const char* CoinJamAnim = CoinJamAnims[Isaac::Random(4)];
@@ -37,7 +37,7 @@ static int Lua_RandomCoinJamAnim(lua_State* L) {
 	return 1;
 }
 
-/*static int Lua_GetSlotRNG(lua_State* L) {
+/*LUA_FUNCTION(Lua_GetSlotRNG) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 
@@ -47,70 +47,70 @@ static int Lua_RandomCoinJamAnim(lua_State* L) {
 }
 */
 
-static int Lua_GetState(lua_State* L) {
+LUA_FUNCTION(Lua_GetState) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *slot->GetState());
 	return 1;
 }
 
-static int Lua_SetState(lua_State* L) {
+LUA_FUNCTION(Lua_SetState) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	*slot->GetState() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
-static int Lua_GetPrizeType(lua_State* L) {
+LUA_FUNCTION(Lua_GetPrizeType) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *slot->GetPrizeType());
 	return 1;
 }
 
-static int Lua_SetPrizeType(lua_State* L) {
+LUA_FUNCTION(Lua_SetPrizeType) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	*slot->GetPrizeType() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
-static int Lua_GetDonationValue(lua_State* L) {
+LUA_FUNCTION(Lua_GetDonationValue) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *slot->GetDonationValue());
 	return 1;
 }
 
-static int Lua_SetDonationValue(lua_State* L) {
+LUA_FUNCTION(Lua_SetDonationValue) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	*slot->GetDonationValue() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
-static int Lua_GetTimeout(lua_State* L) {
+LUA_FUNCTION(Lua_GetTimeout) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *slot->GetTimeout());
 	return 1;
 }
 
-static int Lua_SetTimeout(lua_State* L) {
+LUA_FUNCTION(Lua_SetTimeout) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	*slot->GetTimeout() = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
-static int Lua_GetTouch(lua_State* L) {
+LUA_FUNCTION(Lua_GetTouch) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *slot->GetTouch());
 	return 1;
 }
 
-static int Lua_SetTouch(lua_State* L) {
+LUA_FUNCTION(Lua_SetTouch) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
 	*slot->GetTouch() = (unsigned short)luaL_checkinteger(L, 2);
@@ -118,13 +118,7 @@ static int Lua_SetTouch(lua_State* L) {
 }
 
 void RegisterSlotMetatable(lua_State* L) {
-	lua::LuaStackProtector protector(L);
-
-	lua::PushMetatable(L, lua::Metatables::ENTITY);
-	lua_pushstring(L, "ToSlot");
-	lua_pushcfunction(L, Lua_EntityToEntitySlot);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	lua::RegisterFunction(L, lua::Metatables::ENTITY, "ToSlot", Lua_EntityToEntitySlot);
 
 	luaL_newmetatable(L, lua::metatables::EntitySlotMT); // meta
 
@@ -188,7 +182,7 @@ void RegisterSlotMetatable(lua_State* L) {
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterSlotMetatable(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterSlotMetatable(_state);
 }

@@ -1,10 +1,8 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static int Lua_GetItemOverlay(lua_State* L) 
+LUA_FUNCTION(Lua_GetItemOverlay)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ItemOverlay** ud = (ItemOverlay**)lua_newuserdata(L, sizeof(ItemOverlay*));
@@ -13,7 +11,7 @@ static int Lua_GetItemOverlay(lua_State* L)
 	return 1;
 }
 
-int Lua_ItemOverlayShow(lua_State* L)
+LUA_FUNCTION(Lua_ItemOverlayShow)
 {
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
 	int overlayID = (int)luaL_checkinteger(L, 2);
@@ -26,7 +24,7 @@ int Lua_ItemOverlayShow(lua_State* L)
 	return 0;
 }
 
-int Lua_ItemOverlayGetOverlayID(lua_State* L)
+LUA_FUNCTION(Lua_ItemOverlayGetOverlayID)
 {
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
 	lua_pushinteger(L, itemOverlay->GetOverlayID());
@@ -34,7 +32,7 @@ int Lua_ItemOverlayGetOverlayID(lua_State* L)
 	return 1;
 }
 
-int Lua_ItemOverlayGetSprite(lua_State* L)
+LUA_FUNCTION(Lua_ItemOverlayGetSprite)
 {
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
 	ANM2* anm2 = itemOverlay->GetSprite();
@@ -43,7 +41,7 @@ int Lua_ItemOverlayGetSprite(lua_State* L)
 	return 1;
 }
 
-int Lua_ItemOverlayGetDelay(lua_State* L)
+LUA_FUNCTION(Lua_ItemOverlayGetDelay)
 {
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
 	lua_pushinteger(L, *itemOverlay->GetDelay());
@@ -51,7 +49,7 @@ int Lua_ItemOverlayGetDelay(lua_State* L)
 	return 1;
 }
 
-static int Lua_ItemOverlayGetPlayer(lua_State* L) {
+LUA_FUNCTION(Lua_ItemOverlayGetPlayer) {
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
 	Entity_Player* player = itemOverlay->GetPlayer();
 	if (!player) {
@@ -64,16 +62,7 @@ static int Lua_ItemOverlayGetPlayer(lua_State* L) {
 }
 
 static void RegisterItemOverlay(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetItemOverlay");
-	lua_pushcfunction(L, Lua_GetItemOverlay);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	luaL_newmetatable(L, lua::metatables::ItemOverlayMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua::RegisterFunction(L, lua::Metatables::GAME, "GetItemOverlay", Lua_GetItemOverlay);
 
 	luaL_Reg functions[] = {
 		{ "GetOverlayID", Lua_ItemOverlayGetOverlayID },
@@ -83,15 +72,12 @@ static void RegisterItemOverlay(lua_State* L) {
 		//{ "GetPlayer", Lua_ItemOverlayGetPlayer },
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
-
+	lua::RegisterNewClass(L, lua::metatables::ItemOverlayMT, lua::metatables::ItemOverlayMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterItemOverlay(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterItemOverlay(_state);
 }

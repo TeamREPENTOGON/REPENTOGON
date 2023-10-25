@@ -5,7 +5,7 @@ reference BeamRenderer *g_BeamRenderer;
 static void BeamRenderer::Begin(ANM2 *anm2, unsigned int segments, bool unk1, bool unk2);
 
 "558bec83e4f883ec588b45":
-static void BeamRenderer::Add(Vector *point, float unk1, float unk2, ColorMod * color);
+static void BeamRenderer::Add(Vector *point, ColorMod * color, float unk1<xmm2>, float unk2<xmm3>);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0010000a1????????33c58945??5657508d45??64a3????????8b3d":
 static void BeamRenderer::End();

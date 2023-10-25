@@ -58,6 +58,7 @@ typedef std::vector<EntitySaveState> vector_EntitySaveState;
 typedef std::map<int, int> std_map_int_int;
 typedef std::vector<EntityId> vector_ErasedEntities;
 typedef std::vector<Entity_Player**> vector_EntityPlayerPtr;
+typedef std::vector<TrinketPoolItem> vector_TrinketPoolItem;
 
 struct PoolItem {
 	uint32_t _itemID;
@@ -71,7 +72,8 @@ struct PoolItem {
 };
 
 typedef std::vector<PoolItem> vector_PoolItem;
-typedef std::vector<bool> vector_bool;
+// Something goofy seemed to be happening with std::vector<bool> in zhl
+// typedef std::vector<bool> vector_bool;
 
 struct RoomConfig;
 typedef std::vector<RoomConfig*> RoomConfigPtrVector;

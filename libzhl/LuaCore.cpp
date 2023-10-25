@@ -333,7 +333,7 @@ namespace lua {
 		return p;
 	}
 
-	void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func) {
+	void RegisterFunction(lua_State* L, lua::Metatables mt, const char* name, lua_CFunction func) {
 		lua::PushMetatable(L, mt);
 		lua_pushstring(L, name);
 		lua_pushcfunction(L, func);
@@ -352,6 +352,69 @@ namespace lua {
 			++ptr;
 		}
 		lua_pop(L, 1);
+	}
+
+	void RegisterGlobalClassFunction(lua_State* L, const char* className, const char* funcName, lua_CFunction func) {
+		lua_getglobal(L, className);
+		lua_pushstring(L, funcName);
+		lua_pushcfunction(L, func);
+		lua_rawset(L, -3);
+		lua_pop(L, 1);
+	}
+
+	void RegisterVariable(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc) {
+		lua::PushMetatable(L, mt);
+		RegisterVariableToLoadedMT(L, variableName, getFunc, setFunc);
+	}
+
+	void RegisterVariableGetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func) {
+		lua::PushMetatable(L, mt);
+		RegisterVariableGetterToLoadedMT(L, variableName, func);
+	}
+
+	void RegisterVariableSetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func) {
+		lua::PushMetatable(L, mt);
+		RegisterVariableSetterToLoadedMT(L, variableName, func);
+	}
+
+	void RegisterGlobalClassVariable(lua_State* L, const char* className, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc) {
+		lua_getglobal(L, className);
+		RegisterVariableToLoadedMT(L, variableName, getFunc, setFunc);
+	}
+
+	void RegisterGlobalClassVariableGetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func) {
+		lua_getglobal(L, className);
+		RegisterVariableGetterToLoadedMT(L, variableName, func);
+	}
+
+	void RegisterGlobalClassVariableSetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func) {
+		lua_getglobal(L, className);
+		RegisterVariableSetterToLoadedMT(L, variableName, func);
+	}
+
+	void RegisterVariableToLoadedMT(lua_State* L, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc) {
+		RegisterVariableGetterToLoadedMT(L, variableName, getFunc, 1);
+		RegisterVariableSetterToLoadedMT(L, variableName, setFunc, 2);
+	}
+
+	void RegisterVariableGetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop) {
+		lua_pushstring(L, "__propget");
+		lua_rawget(L, -2);
+
+		lua_pushstring(L, variableName);
+		lua_pushcfunction(L, func);
+		lua_rawset(L, -3);
+		lua_pop(L, pop);
+	}
+
+	void RegisterVariableSetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop) {
+		lua_pushstring(L, "__propset");
+		lua_rawget(L, -2);
+
+		lua_pushstring(L, variableName);
+		lua_pushcfunction(L, func);
+		lua_rawset(L, -3);
+		lua_pop(L, pop);
 	}
 
 	namespace luabridge {
@@ -374,7 +437,7 @@ namespace lua {
 			if (p) {
 				new (lua_newuserdata(L, sizeof(UserdataPtr))) UserdataPtr(p);
 				luaL_setmetatable(L, meta);
-			} 
+			}
 			else {
 				lua_pushnil(L);
 			}
@@ -392,7 +455,7 @@ namespace lua {
 
 		namespace index {
 			static const HookSystem::ArgData* argdata = nullptr;
-			static FunctionDefinition indexMetaMethodDef("luabrige::Namespace::ClassBase::indexMetaMethod", typeid(lua_CFunction), 
+			static FunctionDefinition indexMetaMethodDef("luabrige::Namespace::ClassBase::indexMetaMethod", typeid(lua_CFunction),
 				"558bec83ec0c53568b7508576a0156ff15????????6a0256ff15", argdata, 1, 0, (void**)&indexMetaMethod);
 		}
 
@@ -609,33 +672,51 @@ namespace lua {
 		return _resultCode;
 	}
 
+	namespace GlobalClasses
+	{
+		const char* Input = "Input";
+		const char* Isaac = "Isaac";
+		const char* HUD = "HUD";
+		const char* Options = "Options";
+	}
+
 	namespace metatables
 	{
+		const char* AmbushMT = "Ambush";
 		const char* AnimationDataMT = "AnimationData";
 		const char* AnimationStateMT = "AnimationState";
 		const char* AnimationLayerMT = "AnimationLayer";
 		const char* AnimationFrameMT = "AnimationFrame";
+		const char* BackdropMT = "Backdrop";
+		const char* BeamRendererMT = "BeamRenderer";
 		const char* BestiaryMenuMT = "BestiaryMenu";
 		const char* BlendModeMT = "BlendMode";
+		const char* CameraMT = "Camera";
 		const char* CapsuleMT = "Capsule";
 		const char* ChallengeMenuMT = "ChallengeMenu";
+		const char* ChallengeParamMT = "ChallengeParam";
 		const char* CharacterMenuMT = "CharacterMenu";
 		const char* CollectionMenuMT = "CollectionMenu";
+		const char* ConsoleMT = "Console";
 		const char* ControllerSelectMenuMT = "ControllerSelectMenu";
 		const char* ColorModifierMT = "ColorModifier";
 		const char* CustomChallengeMenuMT = "CustomChallengeMenu";
 		const char* CutscenesMenuMT = "CutscenesMenu";
 		const char* DailyChallengeMT = "DailyChallenge";
 		const char* DailyChallengeMenuMT = "DailyChallengeMenu";
+		const char* DebugRendererMT = "DebugRenderer";
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* FXParamsMT = "FXParams";
 		const char* HistoryMT = "History";
+		const char* HistoryItemMT = "HistoryItem";
+		const char* ImGuiMT = "ImGui";
 		const char* ItemOverlayMT = "ItemOverlay";
 		const char* KeyConfigMenuMT = "KeyConfigMenu";
 		const char* LevelGeneratorMT = "LevelGenerator";
-		const char* LevelGeneratorRoomMT = "LevelGeneratorMT";
+		const char* LayerStateMT = "LayerState";
+		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
 		const char* MainMenuMT = "MainMenu";
 		const char* MenuManagerMT = "MenuManager";
 		const char* MinimapMT = "Minimap";
@@ -644,10 +725,25 @@ namespace lua {
 		const char* NightmareSceneMT = "NightmareScene";
 		const char* NullFrameMT = "NullFrame";
 		const char* OptionsMenuMT = "OptionsMenu";
+		const char* PersistentGameDataMT = "PersistentGameData";
 		const char* PlayerHUDMT = "PlayerHUD";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
+		const char* PlayerManagerMT = "PlayerManager";
+		const char* PocketItemMT = "PocketItem";
+		const char* ProceduralEffectMT = "ProceduralEffect";
+		const char* ProceduralItemMT = "ProceduralItem";
+		const char* ProceduralItemManagerMT = "ProceduralItemManager";
+		const char* RoomMT = "Room";
+		const char* RoomConfigHolderMT = "RoomConfigHolder";
+		const char* RoomDescriptorDoors = "RoomDescriptorDoors";
+		const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
+		const char* RoomPlacerMT = "RoomPlacer";
+		const char* RoomTransitionMT = "RoomTransition";
 		const char* SaveMenuMT = "SaveMenu";
+		const char* ScoreSheetMT = "ScoreSheet";
+		const char* ShapeMT = "Shape";
 		const char* SpecialSeedsMenuMT = "SpecialSeedsMenu";
+		const char* StageTransitionMT = "StageTransition";
 		const char* StatsMenuMT = "StatsMenu";
 		const char* TitleMenuMT = "TitleMenu";
 		const char* WeaponMT = "Weapon";

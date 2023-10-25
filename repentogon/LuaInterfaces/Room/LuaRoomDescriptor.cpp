@@ -1,12 +1,6 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-
-
-static constexpr const char* RoomDescriptorDoors = "RoomDescriptorDoors";
-static constexpr const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
 
 static RoomDescriptor* GetLeftRoom(RoomDescriptor* source) {
 	return nullptr;
@@ -15,26 +9,26 @@ static void RoomDescriptorGetAllowedDoors(lua_State* L, RoomDescriptor* descript
 	lua_pushinteger(L, descriptor->AllowedDoors);
 }
 
-static int Lua_RoomDescriptorGetAllowedDoors(lua_State* L) {
+LUA_FUNCTION(Lua_RoomDescriptorGetAllowedDoors) {
 	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	RoomDescriptorGetAllowedDoors(L, descriptor);
 	return 1;
 }
 
-static int Lua_RoomDescriptorGetAllowedDoorsConst(lua_State* L) {
+LUA_FUNCTION(Lua_RoomDescriptorGetAllowedDoorsConst) {
 	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
 	RoomDescriptorGetAllowedDoors(L, descriptor);
 	return 1;
 }
 
-static int Lua_RoomDescriptorSetAllowedDoors(lua_State* L) {
+LUA_FUNCTION(Lua_RoomDescriptorSetAllowedDoors) {
 	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	int doors = (int)luaL_checkinteger(L, 2);
 	descriptor->AllowedDoors = doors;
 	return 0;
 }
 
-static int Lua_RoomDescriptorSetDoor(lua_State* L) {
+LUA_FUNCTION(Lua_RoomDescriptorSetDoor) {
 	return 0;
 }
 
@@ -42,20 +36,20 @@ static void RoomDescriptorGetDoors(lua_State* L, RoomDescriptor* descriptor, boo
 	RoomDescriptor** ptr = (RoomDescriptor**)lua_newuserdata(L, sizeof(RoomDescriptor*));
 	*ptr = descriptor;
 	if (allowSet) {
-		luaL_setmetatable(L, RoomDescriptorDoors);
+		luaL_setmetatable(L, lua::metatables::RoomDescriptorDoors);
 	}
 	else {
-		luaL_setmetatable(L, RoomDescriptorDoorsConst);
+		luaL_setmetatable(L, lua::metatables::RoomDescriptorDoorsConst);
 	}
 }
 
-static int Lua_RoomDescriptorGetDoors(lua_State* L) {
+LUA_FUNCTION(Lua_RoomDescriptorGetDoors) {
 	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	RoomDescriptorGetDoors(L, descriptor, true);
 	return 1;
 }
 
-static int Lua_RoomDescriptorGetDoorsConst(lua_State* L) {
+LUA_FUNCTION(Lua_RoomDescriptorGetDoorsConst) {
 	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::CONST_ROOM_DESCRIPTOR, "const RoomDescriptor");
 	RoomDescriptorGetDoors(L, descriptor, false);
 	return 1;
@@ -71,20 +65,20 @@ static void _RoomDescriptorDoorsGet(lua_State* L, RoomDescriptor* descriptor) {
 	lua_pushinteger(L, descriptor->Doors[slot]);
 }
 
-static int Lua_RoomDescriptorDoorsGet(lua_State* L) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, RoomDescriptorDoors);
+LUA_FUNCTION(Lua_RoomDescriptorDoorsGet) {
+	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
 	_RoomDescriptorDoorsGet(L, *ptr);
 	return 1;
 }
 
-static int Lua_RoomDescriptorDoorsGetConst(lua_State* L) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, RoomDescriptorDoorsConst);
+LUA_FUNCTION(Lua_RoomDescriptorDoorsGetConst) {
+	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoorsConst);
 	_RoomDescriptorDoorsGet(L, *ptr);
 	return 1;
 }
 
-static int Lua_RoomDescriptorDoorsSet(lua_State* L) {
-	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, RoomDescriptorDoors);
+LUA_FUNCTION(Lua_RoomDescriptorDoorsSet) {
+	RoomDescriptor** ptr = lua::GetUserdata<RoomDescriptor**>(L, 1, lua::metatables::RoomDescriptorDoors);
 	RoomDescriptor* descriptor = *ptr;
 
 	int slot = (int)luaL_checkinteger(L, 2);
@@ -158,7 +152,7 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 	lua_rawset(L, -3);
 	lua_pop(L, 2);
 
-	luaL_newmetatable(L, RoomDescriptorDoors);
+	luaL_newmetatable(L, lua::metatables::RoomDescriptorDoors);
 	lua_pushstring(L, "__index");
 	lua_pushcfunction(L, Lua_RoomDescriptorDoorsGet);
 	lua_pushstring(L, "__newindex");
@@ -167,7 +161,7 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 	lua_rawset(L, -3);
 	lua_pop(L, 1);
 
-	luaL_newmetatable(L, RoomDescriptorDoorsConst);
+	luaL_newmetatable(L, lua::metatables::RoomDescriptorDoorsConst);
 	lua_pushstring(L, "__index");
 	lua_pushcfunction(L, Lua_RoomDescriptorDoorsGetConst);
 	lua_rawset(L, -3);
@@ -194,7 +188,7 @@ struct RoomDescriptor_SavedEntities {
 
 	LUA_FUNCTION(Lua_Get) {
 		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
-		size_t index = (size_t) luaL_checkinteger(L, 2);
+		size_t index = (size_t)luaL_checkinteger(L, 2);
 
 		if (index < 0 || index >= ud->data->size()) {
 			return luaL_error(L, "Invalid index for Get(): %d\n", index);
@@ -208,9 +202,9 @@ struct RoomDescriptor_SavedEntities {
 
 	LUA_FUNCTION(Lua_GetByType) {
 		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
-		int type = (int) luaL_checkinteger(L, 2);
-		int variant = (int) luaL_optinteger(L, 3, 0);
-		int subtype = (int) luaL_optinteger(L, 4, 0);
+		int type = (int)luaL_checkinteger(L, 2);
+		int variant = (int)luaL_optinteger(L, 3, 0);
+		int subtype = (int)luaL_optinteger(L, 4, 0);
 
 		lua_newtable(L);
 

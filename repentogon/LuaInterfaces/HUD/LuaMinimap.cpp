@@ -1,10 +1,8 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static int Lua_GameGetMinimap(lua_State* L)
+LUA_FUNCTION(Lua_GameGetMinimap)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Minimap** toLua = (Minimap**)lua_newuserdata(L, sizeof(Minimap*));
@@ -13,7 +11,7 @@ static int Lua_GameGetMinimap(lua_State* L)
 	return 1;
 }
 
-static int Lua_MinimapGetDisplayedSize(lua_State* L)
+LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
 {
 	Minimap* minimap = *lua::GetUserdata<Minimap**>(L, 1, lua::metatables::MinimapMT);
 	Vector buffer;
@@ -24,30 +22,19 @@ static int Lua_MinimapGetDisplayedSize(lua_State* L)
 }
 
 static void RegisterMinimap(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::GAME);
-	lua_pushstring(L, "GetMinimap");
-	lua_pushcfunction(L, Lua_GameGetMinimap);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
+	lua::RegisterFunction(L, lua::Metatables::GAME, "GetMinimap", Lua_GameGetMinimap);
 
-	luaL_newmetatable(L, lua::metatables::MinimapMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
-
-	luaL_Reg funcs[] = {
+	luaL_Reg functions[] = {
 		{ "GetDisplayedSize", Lua_MinimapGetDisplayedSize },
 		{ NULL, NULL }
 	};
 
-	luaL_setfuncs(L, funcs, 0);
-
-	lua_pop(L, 1);
+	lua::RegisterNewClass(L, lua::metatables::MinimapMT, lua::metatables::MinimapMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterMinimap(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterMinimap(_state);
 }

@@ -1,10 +1,8 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static int Lua_LevelCanSpawnDoorOutline(lua_State* L) {
+LUA_FUNCTION(Lua_LevelCanSpawnDoorOutline) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int roomIDX = (int)luaL_checkinteger(L, 2);
 	unsigned int doorSlot = (unsigned int)luaL_checkinteger(L, 3);
@@ -12,7 +10,7 @@ static int Lua_LevelCanSpawnDoorOutline(lua_State* L) {
 	return 1;
 }
 
-int Lua_LevelHasAbandonedMineshaft(lua_State* L)
+LUA_FUNCTION(Lua_LevelHasAbandonedMineshaft)
 {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushboolean(L, level->HasAbandonedMineshaft());
@@ -20,7 +18,7 @@ int Lua_LevelHasAbandonedMineshaft(lua_State* L)
 	return 1;
 }
 
-int Lua_LevelHasMirrorDimension(lua_State* L)
+LUA_FUNCTION(Lua_LevelHasMirrorDimension)
 {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushboolean(L, level->HasMirrorDimension());
@@ -28,7 +26,7 @@ int Lua_LevelHasMirrorDimension(lua_State* L)
 	return 1;
 }
 
-int Lua_LevelHasPhotoDoor(lua_State* L)
+LUA_FUNCTION(Lua_LevelHasPhotoDoor)
 {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushboolean(L, level->HasPhotoDoor());
@@ -53,6 +51,12 @@ LUA_FUNCTION(lua_LevelIsStageAvailable) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetDimension) {
+	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, level->GetDimension());
+	return 1;
+}
+
 /* HOOK_METHOD(Level, GetName, () -> std::string) {
 	std::string name = super();
 	if (!CustomStageName.empty()) {
@@ -71,14 +75,19 @@ HOOK_GLOBAL(GetLevelName, (std_string* result, uint32_t levelStage, uint32_t sta
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	lua::Metatables mt = lua::Metatables::LEVEL;
 
-	lua::RegisterFunction(state, mt, "CanSpawnDoorOutline", Lua_LevelCanSpawnDoorOutline);
-	lua::RegisterFunction(state, mt, "HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft);
-	lua::RegisterFunction(state, mt, "HasMirrorDimension", Lua_LevelHasMirrorDimension);
-	lua::RegisterFunction(state, mt, "HasPhotoDoor", Lua_LevelHasPhotoDoor);
-	lua::RegisterFunction(state, mt, "SetName", lua_LevelSetName);
-	lua::RegisterFunction(state, mt, "IsStageAvailable", lua_LevelIsStageAvailable);
+	lua::LuaStackProtector protector(_state);
+
+	luaL_Reg functions[] = {
+		{ "CanSpawnDoorOutline", Lua_LevelCanSpawnDoorOutline },
+		{	"HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
+		{	"HasMirrorDimension", Lua_LevelHasMirrorDimension },
+		{	"HasPhotoDoor", Lua_LevelHasPhotoDoor },
+		{	"SetName", lua_LevelSetName },
+		{	"IsStageAvailable", lua_LevelIsStageAvailable },
+		{ "GetDimension", Lua_GetDimension},
+		{ NULL, NULL }
+	};
+
+	lua::RegisterFunctions(_state, lua::Metatables::LEVEL, functions);
 }

@@ -4,7 +4,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static int Lua_GetFXParams(lua_State* L) {
+LUA_FUNCTION(Lua_GetFXParams) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, "Room");
 	FXParams** ud = (FXParams**)lua_newuserdata(L, sizeof(FXParams*));
 	*ud = room->GetFXParams();
@@ -12,7 +12,7 @@ static int Lua_GetFXParams(lua_State* L) {
 	return 1;
 }
 
-int Lua_GetColorModifier(lua_State* L)
+LUA_FUNCTION(Lua_GetColorModifier)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	ColorModState* color = params->GetColorModifier();
@@ -23,7 +23,7 @@ int Lua_GetColorModifier(lua_State* L)
 	return 1;
 }
 
-int Lua_SetColorModifier(lua_State* L)
+LUA_FUNCTION(Lua_SetColorModifier)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetColorModifier() = *lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
@@ -31,7 +31,7 @@ int Lua_SetColorModifier(lua_State* L)
 	return 0;
 }
 
-int Lua_GetWaterV2(lua_State* L)
+LUA_FUNCTION(Lua_GetWaterV2)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	lua_pushboolean(L, *params->GetWaterV2());
@@ -39,14 +39,14 @@ int Lua_GetWaterV2(lua_State* L)
 	return 1;
 }
 
-int Lua_SetWaterV2(lua_State* L)
+LUA_FUNCTION(Lua_SetWaterV2)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetWaterV2() = lua_toboolean(L, 2);
 	return 0;
 }
 
-int Lua_GetWaterColor(lua_State* L)
+LUA_FUNCTION(Lua_GetWaterColor)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
@@ -55,7 +55,7 @@ int Lua_GetWaterColor(lua_State* L)
 	return 1;
 }
 
-int Lua_SetWaterColor(lua_State* L)
+LUA_FUNCTION(Lua_SetWaterColor)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetWaterColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
@@ -63,7 +63,7 @@ int Lua_SetWaterColor(lua_State* L)
 	return 0;
 }
 
-int Lua_GetWaterColorMultiplier(lua_State* L)
+LUA_FUNCTION(Lua_GetWaterColorMultiplier)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
@@ -72,7 +72,7 @@ int Lua_GetWaterColorMultiplier(lua_State* L)
 	return 1;
 }
 
-int Lua_SetWaterColorMultiplier(lua_State* L)
+LUA_FUNCTION(Lua_SetWaterColorMultiplier)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetWaterColorMultiplier() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
@@ -80,7 +80,7 @@ int Lua_SetWaterColorMultiplier(lua_State* L)
 	return 0;
 }
 
-int Lua_GetShadowAlpha(lua_State* L)
+LUA_FUNCTION(Lua_GetShadowAlpha)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	lua_pushnumber(L, *params->GetShadowAlpha());
@@ -88,14 +88,14 @@ int Lua_GetShadowAlpha(lua_State* L)
 	return 1;
 }
 
-int Lua_SetShadowAlpha(lua_State* L)
+LUA_FUNCTION(Lua_SetShadowAlpha)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetShadowAlpha() = (float) lua_tonumber(L, 2);
+	*params->GetShadowAlpha() = (float)lua_tonumber(L, 2);
 	return 0;
 }
 
-int Lua_GetShadowColor(lua_State* L)
+LUA_FUNCTION(Lua_GetShadowColor)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
@@ -104,7 +104,7 @@ int Lua_GetShadowColor(lua_State* L)
 	return 1;
 }
 
-int Lua_SetShadowColor(lua_State* L)
+LUA_FUNCTION(Lua_SetShadowColor)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetShadowColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
@@ -112,7 +112,7 @@ int Lua_SetShadowColor(lua_State* L)
 	return 0;
 }
 
-int Lua_GetLightColor(lua_State* L)
+LUA_FUNCTION(Lua_GetLightColor)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	KColor* toLua = lua::luabridge::UserdataValue<KColor>::place(L, lua::GetMetatableKey(lua::Metatables::KCOLOR));
@@ -121,7 +121,7 @@ int Lua_GetLightColor(lua_State* L)
 	return 1;
 }
 
-int Lua_SetLightColor(lua_State* L)
+LUA_FUNCTION(Lua_SetLightColor)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetLightColor() = *lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
@@ -130,7 +130,7 @@ int Lua_SetLightColor(lua_State* L)
 }
 
 
-int Lua_GetWaterEffectColor(lua_State* L)
+LUA_FUNCTION(Lua_GetWaterEffectColor)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
@@ -139,7 +139,7 @@ int Lua_GetWaterEffectColor(lua_State* L)
 	return 1;
 }
 
-int Lua_SetWaterEffectColor(lua_State* L)
+LUA_FUNCTION(Lua_SetWaterEffectColor)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
 	*params->GetWaterEffectColor() = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
@@ -150,6 +150,7 @@ int Lua_SetWaterEffectColor(lua_State* L)
 static void RegisterFXParams(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::ROOM, "GetFXParams", Lua_GetFXParams);
 
+	// manual creation of FXParams class to ensure __newindex definition and variable additions work correctly
 	luaL_newmetatable(L, lua::metatables::FXParamsMT);
 	lua_pushstring(L, "__index");
 	lua_pushcfunction(L, lua::luabridge::indexMetaMethod);
@@ -235,12 +236,11 @@ static void RegisterFXParams(lua_State* L) {
 	lua_rawset(L, -3);
 
 	lua_pop(L, 1);
-
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterFXParams(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterFXParams(_state);
 }

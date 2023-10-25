@@ -1,11 +1,9 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
 
-static int Lua_HUDFlashRedHearts(lua_State* L) {
+LUA_FUNCTION(Lua_HUDFlashRedHearts) {
 	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 2, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
@@ -13,7 +11,7 @@ static int Lua_HUDFlashRedHearts(lua_State* L) {
 	return 0;
 }
 
-static int Lua_HUDGetChargeBarSprite(lua_State* L)
+LUA_FUNCTION(Lua_HUDGetChargeBarSprite)
 {
 	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = hud->GetChargeBarSprite();
@@ -22,7 +20,7 @@ static int Lua_HUDGetChargeBarSprite(lua_State* L)
 	return 1;
 }
 
-static int Lua_HUDGetPickupsHUDSprite(lua_State* L) {
+LUA_FUNCTION(Lua_HUDGetPickupsHUDSprite) {
 	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	ANM2* sprite = hud->GetPickupsHUDSprite();
 	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
@@ -32,10 +30,14 @@ static int Lua_HUDGetPickupsHUDSprite(lua_State* L) {
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	lua::Metatables mt = lua::Metatables::HUD;
-	lua::RegisterFunction(state, mt, "FlashRedHearts", Lua_HUDFlashRedHearts);
-	lua::RegisterFunction(state, mt, "GetChargeBarSprite", Lua_HUDGetChargeBarSprite);
-	lua::RegisterFunction(state, mt, "GetPickupsHUDSprite", Lua_HUDGetPickupsHUDSprite);
+
+	lua::LuaStackProtector protector(_state);
+
+	luaL_Reg functions[] = {
+		{ "FlashRedHearts", Lua_HUDFlashRedHearts },
+		{ "GetChargeBarSprite", Lua_HUDGetChargeBarSprite },
+		{ "GetPickupsHUDSprite", Lua_HUDGetPickupsHUDSprite },
+		{ NULL, NULL }
+	};
+	lua::RegisterFunctions(_state, lua::Metatables::HUD, functions);
 }

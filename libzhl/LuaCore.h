@@ -9,7 +9,6 @@
 struct lua_State;
 
 namespace lua {
-
     enum class Metatables {
         BEGIN_NORMAL,
         PILL_EFFECT,
@@ -146,31 +145,49 @@ namespace lua {
         METATABLES_MAX
     };
 
+    namespace GlobalClasses
+    {
+      extern LIBZHL_API const char* Input;
+      extern LIBZHL_API const char* Isaac;
+      extern LIBZHL_API const char* HUD;
+      extern LIBZHL_API const char* Options;
+    }
+
 		namespace metatables
 		{
+      extern LIBZHL_API const char* AmbushMT;
 			extern LIBZHL_API const char* AnimationDataMT;
 			extern LIBZHL_API const char* AnimationFrameMT;
 			extern LIBZHL_API const char* AnimationLayerMT;
 			extern LIBZHL_API const char* AnimationStateMT;
+      extern LIBZHL_API const char* BackdropMT;
+      extern LIBZHL_API const char* BeamRendererMT;
 			extern LIBZHL_API const char* BestiaryMenuMT;
 			extern LIBZHL_API const char* BlendModeMT;
+      extern LIBZHL_API const char* CameraMT;
 			extern LIBZHL_API const char* CapsuleMT;
 			extern LIBZHL_API const char* ChallengeMenuMT;
+      extern LIBZHL_API const char* ChallengeParamMT;
 			extern LIBZHL_API const char* CharacterMenuMT;
 			extern LIBZHL_API const char* CollectionMenuMT;
+      extern LIBZHL_API const char* ConsoleMT;
 			extern LIBZHL_API const char* ControllerSelectMenuMT;
 			extern LIBZHL_API const char* ColorModifierMT;
 			extern LIBZHL_API const char* CustomChallengeMenuMT;
 			extern LIBZHL_API const char* CutscenesMenuMT;
 			extern LIBZHL_API const char* DailyChallengeMT;
 			extern LIBZHL_API const char* DailyChallengeMenuMT;
+      extern LIBZHL_API const char* DebugRendererMT;
 			extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
 			extern LIBZHL_API const char* EntitySaveStateMT;
 			extern LIBZHL_API const char* EntitySlotMT;
 			extern LIBZHL_API const char* FXParamsMT;
 			extern LIBZHL_API const char* HistoryMT;
+      extern LIBZHL_API const char* HistoryItemMT;
+      extern LIBZHL_API const char* ImGuiMT;
 			extern LIBZHL_API const char* ItemOverlayMT;
 			extern LIBZHL_API const char* KeyConfigMenuMT;
+      extern LIBZHL_API const char* LayerStateMT;
 			extern LIBZHL_API const char* LevelGeneratorMT;
 			extern LIBZHL_API const char* LevelGeneratorRoomMT;
 			extern LIBZHL_API const char* MainMenuMT;
@@ -181,10 +198,25 @@ namespace lua {
 			extern LIBZHL_API const char* NightmareSceneMT;
 			extern LIBZHL_API const char* NullFrameMT;
 			extern LIBZHL_API const char* OptionsMenuMT;
+      extern LIBZHL_API const char* PersistentGameDataMT;
 			extern LIBZHL_API const char* PlayerHUDMT;
 			extern LIBZHL_API const char* PlayerHUDHeartMT;
+      extern LIBZHL_API const char* PlayerManagerMT;
+      extern LIBZHL_API const char* PocketItemMT;
+      extern LIBZHL_API const char* ProceduralEffectMT;
+      extern LIBZHL_API const char* ProceduralItemMT;
+      extern LIBZHL_API const char* ProceduralItemManagerMT;
+      extern LIBZHL_API const char* RoomMT;
+      extern LIBZHL_API const char* RoomConfigHolderMT;
+      extern LIBZHL_API const char* RoomDescriptorDoors;
+      extern LIBZHL_API const char* RoomDescriptorDoorsConst;
+      extern LIBZHL_API const char* RoomPlacerMT;
+      extern LIBZHL_API const char* RoomTransitionMT;
 			extern LIBZHL_API const char* SaveMenuMT;
+      extern LIBZHL_API const char* ScoreSheetMT;
+      extern LIBZHL_API const char* ShapeMT;
 			extern LIBZHL_API const char* SpecialSeedsMenuMT;
+      extern LIBZHL_API const char* StageTransitionMT;
 			extern LIBZHL_API const char* StatsMenuMT;
 			extern LIBZHL_API const char* TitleMenuMT;
 			extern LIBZHL_API const char* WeaponMT;
@@ -200,8 +232,20 @@ namespace lua {
     LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, std::string const& name);
     LIBZHL_API void* CheckUserdata(lua_State* L, int ud, lua::Metatables mt, lua::Metatables constMt, std::string const& name);
 
-    LIBZHL_API void RegisterFunction(lua_State *L, lua::Metatables mt, const char* name, lua_CFunction func);
+    LIBZHL_API void RegisterFunction(lua_State* L, lua::Metatables mt, const char* name, lua_CFunction func);
     LIBZHL_API void RegisterFunctions(lua_State* L, lua::Metatables mt, luaL_Reg* functions);
+
+    LIBZHL_API void RegisterGlobalClassFunction(lua_State* L, const char* className, const char* funcName, lua_CFunction func);
+
+    LIBZHL_API void RegisterVariable(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
+    LIBZHL_API void RegisterVariableGetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func);
+    LIBZHL_API void RegisterVariableSetter(lua_State* L, lua::Metatables mt, const char* variableName, lua_CFunction func);
+    LIBZHL_API void RegisterGlobalClassVariable(lua_State* L, const char* className, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
+    LIBZHL_API void RegisterGlobalClassVariableGetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func);
+    LIBZHL_API void RegisterGlobalClassVariableSetter(lua_State* L, const char* className, const char* variableName, lua_CFunction func);
+    LIBZHL_API void RegisterVariableToLoadedMT(lua_State* L, const char* variableName, lua_CFunction getFunc, lua_CFunction setFunc);
+    LIBZHL_API void RegisterVariableGetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop = 2);
+    LIBZHL_API void RegisterVariableSetterToLoadedMT(lua_State* L, const char* variableName, lua_CFunction func, int pop = 2);
 
     LIBZHL_API void RegisterNewClass(lua_State* L, const char* name, const char* metaname, luaL_Reg* functions, lua_CFunction gc = nullptr);
 	

@@ -1,0 +1,5 @@
+struct TrinketPoolItem {
+	uint32_t _ID : 0x0;
+	bool _inPool : 0x4;
+	bool _isAvailable: 0x5;
+} : 0x8;

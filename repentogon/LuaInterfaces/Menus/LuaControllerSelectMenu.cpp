@@ -1,10 +1,6 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-
-static constexpr const char* ControllerSelectMenuMT = "ControllerSelectMenu";
 
 LUA_FUNCTION(Lua_ControllerSelectMenu_GetControllerSelectSprite)
 {

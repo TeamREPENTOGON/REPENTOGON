@@ -1,10 +1,8 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static int Lua_GetPlayerHUD(lua_State* L) {
+LUA_FUNCTION(Lua_GetPlayerHUD) {
 	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	PlayerHUD** ud = (PlayerHUD**)lua_newuserdata(L, sizeof(PlayerHUD*));
 	int index = (int)luaL_checkinteger(L, 2);
@@ -13,7 +11,7 @@ static int Lua_GetPlayerHUD(lua_State* L) {
 	return 1;
 }
 
-static int Lua_PlayerHUDGetPlayer(lua_State* L) {
+LUA_FUNCTION(Lua_PlayerHUDGetPlayer) {
 	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	Entity_Player* player = playerHUD->GetPlayer();
 	if (!player) {
@@ -31,7 +29,7 @@ LUA_FUNCTION(Lua_PlayerHUDGetHUD) {
 	return 1;
 }
 
-static int Lua_PlayerHUDRenderActiveItem(lua_State* L) {
+LUA_FUNCTION(Lua_PlayerHUDRenderActiveItem) {
 	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
 	unsigned int slot = (unsigned int)luaL_checkinteger(L, 2);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
@@ -61,28 +59,19 @@ LUA_FUNCTION(Lua_PlayerHUDGetHearts) {
 
 LUA_FUNCTION(Lua_PlayerHUDGetHeartByIndex) {
 	PlayerHUD* playerHUD = *lua::GetUserdata<PlayerHUD**>(L, 1, lua::metatables::PlayerHUDMT);
-	int index = (int) luaL_checkinteger(L, 2); 
-	if (index < 0 || index > 23) { 
+	int index = (int)luaL_checkinteger(L, 2);
+	if (index < 0 || index > 23) {
 		return luaL_error(L, "Invalid index: %d", index);
-	} 
+	}
 	PlayerHUDHeart* hearts = playerHUD->_heart;
-	PlayerHUDHeart* ud = (PlayerHUDHeart*)lua_newuserdata(L, sizeof(PlayerHUDHeart)); 
-	*ud = hearts[index]; 
+	PlayerHUDHeart* ud = (PlayerHUDHeart*)lua_newuserdata(L, sizeof(PlayerHUDHeart));
+	*ud = hearts[index];
 	luaL_setmetatable(L, lua::metatables::PlayerHUDHeartMT);
 	return 1;
 }
 
 static void RegisterPlayerHUD(lua_State* L) {
-	lua::PushMetatable(L, lua::Metatables::HUD);
-	lua_pushstring(L, "GetPlayerHUD");
-	lua_pushcfunction(L, Lua_GetPlayerHUD);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
-
-	luaL_newmetatable(L, lua::metatables::PlayerHUDMT);
-	lua_pushstring(L, "__index");
-	lua_pushvalue(L, -2);
-	lua_settable(L, -3);
+	lua::RegisterFunction(L, lua::Metatables::HUD, "GetPlayerHUD", Lua_GetPlayerHUD);
 
 	luaL_Reg functions[] = {
 		{ "GetPlayer", Lua_PlayerHUDGetPlayer },
@@ -92,15 +81,12 @@ static void RegisterPlayerHUD(lua_State* L) {
 		{ "GetHeartByIndex", Lua_PlayerHUDGetHeartByIndex},
 		{ NULL, NULL }
 	};
-
-	luaL_setfuncs(L, functions, 0);
-	lua_pop(L, 1);
-
+	lua::RegisterNewClass(L, lua::metatables::PlayerHUDMT, lua::metatables::PlayerHUDMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterPlayerHUD(state);
+
+	lua::LuaStackProtector protector(_state);
+	RegisterPlayerHUD(_state);
 }
