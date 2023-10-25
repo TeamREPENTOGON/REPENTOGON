@@ -41,6 +41,6 @@ Returns ``true`` if collectible is available in item pools, ``false`` otherwise.
 ___
 ### Has·Trinket () {: aria-label='Functions' }
 #### boolean HasTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
-Returns ``true`` if collectible is currently available in trinket pool, ``false`` otherwise.
+Returns ``true`` if trinket is currently available in trinket pool, ``false`` otherwise.
 
 ___
