@@ -88,8 +88,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetAltRockType", Lua_GridEntityRockGetAltRockType },
 		{ "RegisterRockDestroyed", Lua_GridEntityRockRegisterRockDestroyed },
 		{ "UpdateCollision", Lua_GridEntityRockUpdateCollision },
-		{ "SpawnDrops", Lua_GridEntityRockSpawnDrops },
+		//{ "SpawnDrops", Lua_GridEntityRockSpawnDrops },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY_ROCK, functions);
+	lua::RegisterGlobalClassFunction(_state, "GridEntityRock", "SpawnDrops", Lua_GridEntityRockSpawnDrops);
 }
