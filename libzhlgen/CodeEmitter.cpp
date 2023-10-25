@@ -94,7 +94,7 @@ void CodeEmitter::Emit() {
     }
 
     BuildExternalNamespaces();
-    for (auto const [name, _] : _externals) {
+    for (auto const& [name, _] : _externals) {
         EmitNamespace(name);
     }
 }
@@ -889,7 +889,7 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
     Emit(*fn._ret);
     Emit(" ");
     if (fn._convention) {
-        if (*fn._convention != THISCALL) {
+        if (*fn._convention != THISCALL && *fn._convention != X86_64 && *fn._convention != X86_64_OUTPUT) {
             Emit(CallingConventionToString(*fn._convention));
             Emit(" ");
         }
@@ -1008,7 +1008,12 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
         if (hasImplicitOutput) {
             k -= 4;
             std::ostringstream ins;
-            ins << "push [ebp + " << k << "] // implicit_output";
+            if (fn._convention && *fn._convention == CallingConventions::X86_64_OUTPUT) {
+                ins << "mov ecx, [ebp + " << k << "] // implicit_output";
+            }
+            else {
+                ins << "push [ebp + " << k << "] // implicit_output";
+            }
             EmitInstruction(ins.str());
         }
 
@@ -1258,9 +1263,9 @@ void CodeEmitter::Emit(const ExternalFunction& fn) {
 }
 
 std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn) {
-    bool hasImplicitOutput = fn._ret->size() > 8 || (fn._ret->IsStruct() && fn._kind == METHOD);
-    uint32_t stackSize = 0;
-    uint32_t fnStackSize = 0;
+    bool hasImplicitOutput = fn._ret->size() > 8 || (fn._ret->IsStruct() && fn._kind == METHOD) || fn._convention == X86_64_OUTPUT;
+    uint32_t stackSize = 0; // How much the trampoline takes on the stack
+    uint32_t fnStackSize = 0; // How much the trampoline should pop after calling the function
 
     if (!hasImplicitOutput && fn._params.size() == 0) {
         Emit("static HookSystem::ArgData* args = nullptr;");
@@ -1269,47 +1274,137 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
         Emit("static HookSystem::ArgData args[] = {");
         EmitNL();
         IncrDepth();
-        if (fn._convention && *fn._convention == FASTCALL) {
-            Registers next = ECX;
-            for (size_t i = 0; i < fn._params.size(); ++i) {
-                FunctionParam const& param = fn._params[i];
-                EmitTab();
-                if (next != EAX && (param._type->IsPointer() || (param._type->IsBasic() && std::get<BasicType>(param._type->_value).size() <= 4))) {
-                    Emit("{ HookSystem::GPRegisters::");
-                    if (next == ECX) {
-                        Emit("ECX");
-                        next = EDX;
+        if (fn._convention && (*fn._convention == FASTCALL || *fn._convention == X86_64 || *fn._convention == X86_64_OUTPUT)) {
+            if (*fn._convention == FASTCALL) {
+                Registers next = ECX;
+                for (size_t i = 0; i < fn._params.size(); ++i) {
+                    FunctionParam const& param = fn._params[i];
+                    EmitTab();
+                    if (next != EAX && (param._type->IsPointer() || (param._type->IsBasic() && std::get<BasicType>(param._type->_value).size() <= 4))) {
+                        Emit("{ HookSystem::GPRegisters::");
+                        if (next == ECX) {
+                            Emit("ECX");
+                            next = EDX;
+                        }
+                        else {
+                            Emit("EDX");
+                            next = EAX;
+                        }
+
+                        Emit(", 0 } /* " + param._name + " */");
+                        /* Do not actually increase the size of the stack here :
+                         * because the trampoline is generated as a fastcall
+                         * function, parameters are already placed in registers
+                         * and not on the stack.
+                         */
+
+                         // stackSize += 4;
                     }
                     else {
-                        Emit("EDX");
-                        next = EAX;
+                        EmitParamData(fn, param, &fnStackSize, &stackSize);
                     }
 
-                    Emit(", 0 } /* " + param._name + " */");
-                    /* Do not actually increase the size of the stack here :
-                     * because the trampoline is generated as a fastcall 
-                     * function, parameters are already placed in registers
-                     * and not on the stack.
-                     */
-                    
-                    // stackSize += 4;
-                }
-                else {
-                    int paramSize = (int)std::ceil(param._type->size() / 4.f);
-                    if (paramSize == 0) {
-                        std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
+                    if (hasImplicitOutput || i != fn._params.size() - 1) {
+                        Emit(", ");
                     }
-                    Emit("{ HookSystem::NoRegister(), ");
-                    Emit(std::to_string(paramSize));
-                    Emit(" } /* " + param._name + " */");
-                    stackSize += paramSize * 4;
-                    fnStackSize += paramSize * 4;
+                    EmitNL();
+                }
+            }
+            else {
+                size_t position = 0;
+                if (hasImplicitOutput) {
+                    EmitTab();
+                    Emit("{ HookSystem::GPRegisters::ECX } ");
+                    ++position;
+
+                    if (fn._params.size() != 0) {
+                        Emit(", ");
+                    }
+
+                    Emit(" // implicit_output");
+                    EmitNL();
+
+                    stackSize += 4;
                 }
 
-                if (hasImplicitOutput || i != fn._params.size() - 1) {
-                    Emit(", ");
+                for (size_t i = 0; i < fn._params.size(); ++i) {
+                    FunctionParam const& param = fn._params[i];
+                    EmitTab();
+
+                    if (position < 2) {
+                        if (param._type->size() > 4) {
+                            std::ostringstream s;
+                            s << "[FATAL] While emitting code for function " << fn.ToString() << 
+                                " with x86-64 like calling convention, encountered parameter"  
+                                "that does not fit in register (parameter " << position + 1 << ")" << std::endl;
+                            throw std::runtime_error(s.str());
+                        }
+                    }
+
+                    if (param.IsX8664Valid(position)) {
+                        Registers reg;
+                        std::string category;
+                        if (param._type->IsBasic()) {
+                            BasicType basic = std::get<BasicType>(param._type->_value);
+                            
+                            if (basic._type == BasicTypes::INT || basic._type == BasicTypes::BOOL || basic._type == BasicTypes::CHAR) {
+                                reg = position == 0 ? Registers::ECX : Registers::EDX;
+                                category = "GPRegisters";
+                            }
+                            else {
+                                category = "XMMRegisters";
+                                switch (position) {
+                                case 0:
+                                    reg = Registers::XMM0;
+                                    break;
+
+                                case 1:
+                                    reg = Registers::XMM1;
+                                    break;
+
+                                case 2:
+                                    reg = Registers::XMM2;
+                                    break;
+
+                                case 3:
+                                    reg = Registers::XMM3;
+                                    break;
+                                }
+
+                                Emit("{ HookSystem::XMMRegisters::");
+                            }
+                        }
+                        else {
+                            reg = position == 0 ? Registers::ECX : Registers::EDX;
+                            category = "GPRegisters";
+                        }
+                        
+                        const_cast<FunctionParam&>(param)._reg = reg;
+
+                        Emit("{ HookSystem::");
+                        Emit(category);
+                        Emit("::");
+                        auto regStr = RegisterToString(reg);
+                        std::transform(regStr.begin(), regStr.end(), regStr.begin(), ::toupper);
+                        Emit(regStr);
+                        Emit(" }");
+
+                        stackSize += 4;
+                        ++position;
+                    }
+                    else {
+                        EmitParamData(fn, param, &fnStackSize, &stackSize);
+                    }
+
+                    if (i != fn._params.size() - 1) {
+                        Emit(", ");
+                    }
+
+                    Emit(" /* ");
+                    Emit(param._name);
+                    Emit(" */");
+                    EmitNL();
                 }
-                EmitNL();
             }
         }
         else {
@@ -1334,16 +1429,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
                     stackSize += 4;
                 }
                 else {
-                    int paramSize = (int)std::ceil(param._type->size() / 4.f);
-                    if (paramSize == 0) {
-                        std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
-                    }
-                    Emit("{ HookSystem::NoRegister(), ");
-                    Emit(std::to_string(paramSize));
-                    Emit(" } /* " + param._name + " */");
-
-                    stackSize += paramSize * 4;
-                    fnStackSize += paramSize * 4;
+                    EmitParamData(fn, param, &fnStackSize, &stackSize);
                 }
 
                 if (hasImplicitOutput || i != fn._params.size() - 1) {
@@ -1353,7 +1439,7 @@ std::tuple<bool, uint32_t, uint32_t> CodeEmitter::EmitArgData(Function const& fn
             }
         }
 
-        if (hasImplicitOutput) {
+        if (hasImplicitOutput && (!fn._convention || fn._convention != X86_64_OUTPUT)) {
             EmitTab();
             Emit("{ HookSystem::NoRegister(), 1 } // implicit_output"); // 1: pointer
             EmitNL();
@@ -1422,4 +1508,17 @@ Function const* CodeEmitter::GetFunction(std::variant<Signature, Skip, Function>
     else {
         return nullptr;
     }
+}
+
+void CodeEmitter::EmitParamData(Function const& fn, FunctionParam const& param, uint32_t* fnStackSize, uint32_t* stackSize) {
+    int paramSize = (int)std::ceil(param._type->size() / 4.f);
+    if (paramSize == 0) {
+        std::cerr << "Got a size of 0 for param " << param._name << " of type " << param._type->ToString(false) << " of function " << fn._name << ", true size is " << param._type->size() << std::endl;
+    }
+    Emit("{ HookSystem::NoRegister(), ");
+    Emit(std::to_string(paramSize));
+    Emit(" } /* " + param._name + " */");
+
+    *stackSize += paramSize * 4;
+    *fnStackSize += paramSize * 4;
 }
