@@ -55,6 +55,11 @@ ___
 Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
 
 ___
+### Can·Use·Pill () {: aria-label='Functions' }
+#### boolean CanUsePill ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) ID ) {: .copyable aria-label='Functions' }
+By some conditions, usually health-related, determines whether a player can use a given pill effect.
+
+___
 ### Drop·Collectible () {: aria-label='Functions' }
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 

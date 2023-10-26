@@ -275,7 +275,7 @@ LUA_FUNCTION(Lua_PlayerSetBoCContent) {
 		for (index = 0; index < length; index++)
 		{
 			lua_rawgeti(L, 2, index + 1);
-			int pickup = luaL_checkinteger(L, -1);
+			int pickup = (int)luaL_checkinteger(L, -1);
 			lua_pop(L, 1);
 			if (pickup < 0 || pickup > 29) {
 				luaL_error(L, "EntityPlayer::SetBagOfCraftingContent: Invalid pickup %d at index %d", pickup, index + 1);
@@ -1016,6 +1016,14 @@ LUA_FUNCTION(Lua_PlayerPlayDelayedSFX) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerCanUsePill) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const int pillEffect = (int)luaL_checkinteger(L, 2);
+	lua_pushboolean(L, player->CanUsePill(pillEffect));
+
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -1122,6 +1130,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMaggySwingCooldown", Lua_PlayerGetMaggySwingCooldown },
 		{ "SetMaggySwingCooldown", Lua_PlayerSetMaggySwingCooldown },
 		{ "PlayDelayedSFX", Lua_PlayerPlayDelayedSFX },
+		{ "CanUsePill", Lua_PlayerCanUsePill },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
