@@ -15,6 +15,7 @@ int main(int argc, char** argv) {
         extraTypesPath = "../../libzhl/functions/ExtraTypes";
     }
 
+    try {
         CodeEmitter emitter(test);
         emitter.ProcessZHLFiles(zhlPath);
         // emitter.ProcessFile("D:/Dev/Isaac/IsaacZHL/libzhlgen/IsaacRepentanceStripped.h");
@@ -27,6 +28,13 @@ int main(int argc, char** argv) {
                 std::cerr << err << std::endl;
             }
         }
+    }
+    catch (std::exception& e) {
+        std::ofstream s("parser.log", std::ios::out);
+        s << e.what() << std::endl;
+        s.close();
+        throw;
+    }
 
 	return 0;
 }

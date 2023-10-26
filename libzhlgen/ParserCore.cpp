@@ -76,16 +76,11 @@ std::any Parser::visitFunction(ZHLParser::FunctionContext* ctx) {
     std::optional<std::string> convention;
     if (auto node = ctx->CallingConvention()) {
         convention = node->getText();
-        if (convention == "__stdcall") {
-            fn._convention = CallingConventions::STDCALL;
+        if (*convention != "") {
+            fn._convention = StringToConvention(*convention);
         }
-        else if (convention == "__fastcall") {
-            fn._convention = CallingConventions::FASTCALL;
-        }
-        else if (convention == "__cdecl") {
-            fn._convention = CallingConventions::CDECL;
-        }
-        else if (convention == "__thiscall") {
+        
+        if (convention == "__thiscall") {
             if (!_currentStruct) {
                 if (ctx->nestedName()->functionName().size() == 0) {
                     _errors << ErrorLogger::error << "__thiscall convention applied to non member function " << fn._name << ErrorLogger::_end;
@@ -805,18 +800,8 @@ std::any Parser::visitFptr(ZHLParser::FptrContext* ctx) {
 
     if (auto convCtx = ctx->CallingConvention()) {
         std::string convention(ctx->CallingConvention()->getText());
-
-        if (convention == "__stdcall") {
-            ptr->_convention = CallingConventions::STDCALL;
-        }
-        else if (convention == "__fastcall") {
-            ptr->_convention = CallingConventions::FASTCALL;
-        }
-        else if (convention == "__cdecl") {
-            ptr->_convention = CallingConventions::CDECL;
-        }
-        else if (convention == "__thiscall") {
-            ptr->_convention = CallingConventions::THISCALL;
+        if (convention != "") {
+            ptr->_convention = StringToConvention(convention);
         }
     }
 
@@ -834,18 +819,8 @@ std::any Parser::visitMemberPtr(ZHLParser::MemberPtrContext* ctx) {
 
     if (auto convCtx = ctx->CallingConvention()) {
         std::string convention(ctx->CallingConvention()->getText());
-
-        if (convention == "__stdcall") {
-            ptr->_convention = CallingConventions::STDCALL;
-        }
-        else if (convention == "__fastcall") {
-            ptr->_convention = CallingConventions::FASTCALL;
-        }
-        else if (convention == "__cdecl") {
-            ptr->_convention = CallingConventions::CDECL;
-        }
-        else if (convention == "__thiscall") {
-            ptr->_convention = CallingConventions::THISCALL;
+        if (convention != "") {
+            ptr->_convention = StringToConvention(convention);
         }
     }
 

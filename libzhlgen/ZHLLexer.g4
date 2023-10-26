@@ -76,11 +76,13 @@ Xmm5: 'xmm5';
 Xmm6: 'xmm6';
 Xmm7: 'xmm7';
 
-CallingConvention: Stdcall | Cdecl | Fastcall | Thiscall;
+CallingConvention: Stdcall | Cdecl | Fastcall | Thiscall | X8664 | X8664_Output;
 Stdcall: '__stdcall';
 Cdecl: '__cdecl';
 Fastcall: '__fastcall';
 Thiscall: '__thiscall';
+X8664: '__x86_64';
+X8664_Output: '__x86_64_output';
 
 Signature: 
     DoubleQuote '.'? [0-9A-Fa-f?]+ DoubleQuote Colon;

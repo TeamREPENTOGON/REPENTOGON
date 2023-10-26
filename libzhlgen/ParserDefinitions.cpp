@@ -728,6 +728,10 @@ std::string CallingConventionToString(CallingConventions convention) {
     case THISCALL:
         return "__thiscall";
 
+    case X86_64:
+    case X86_64_OUTPUT:
+        return "";
+
     default:
         throw std::runtime_error("Invalid calling convention");
     }
@@ -748,7 +752,7 @@ bool Function::IsVirtual() const {
 }
 
 bool Function::IsCleanup() const {
-    return _qualifiers & CLEANUP || (_convention && *_convention == CDECL);
+    return _qualifiers & CLEANUP || (_convention && (*_convention == CDECL || *_convention == X86_64 || *_convention == X86_64_OUTPUT));
 }
 
 bool Function::IsStatic() const {
@@ -996,4 +1000,53 @@ bool Variable::operator<(Variable const& rhs) const {
         r = *rhs._offset;
 
     return l < r;
+}
+
+CallingConventions StringToConvention(std::string const& convention) {
+    if (convention == "__stdcall") {
+        return CallingConventions::STDCALL;
+    }
+    else if (convention == "__fastcall") {
+        return CallingConventions::FASTCALL;
+    }
+    else if (convention == "__cdecl") {
+        return CallingConventions::CDECL;
+    }
+    else if (convention == "__thiscall") {
+        return CallingConventions::THISCALL;
+    }
+    else if (convention == "__x86_64") {
+        return CallingConventions::X86_64;
+    }
+    else if (convention == "__x86_64_output") {
+        return CallingConventions::X86_64_OUTPUT;
+    }
+    else {
+        std::ostringstream err;
+        err << "Invalid convention kill me: " << convention << std::endl;
+        std::cerr << "SHUT UP: " << convention << std::endl;
+        throw std::runtime_error(err.str());
+    }
+}
+
+bool FunctionParam::IsX8664Valid(size_t position) const {
+    if (position >= 4) {
+        return false;
+    }
+
+    if (!_type->IsBasic() && !_type->IsPointer()) {
+        return false;
+    }
+
+    if (_type->IsPointer()) {
+        return position < 2;
+    }
+
+    BasicType basic = std::get<BasicType>(_type->_value);
+    if (basic._type == BasicTypes::INT || basic._type == BasicTypes::BOOL || basic._type == BasicTypes::CHAR) {
+        return position < 2;
+    }
+    else {
+        return true; // If type is VOID the program is ill-formed so I don't care
+    }
 }

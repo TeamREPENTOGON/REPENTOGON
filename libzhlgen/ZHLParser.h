@@ -25,10 +25,10 @@ public:
     Esi = 56, Edi = 57, Esp = 58, Ebp = 59, SSERegister = 60, Xmm0 = 61, 
     Xmm1 = 62, Xmm2 = 63, Xmm3 = 64, Xmm4 = 65, Xmm5 = 66, Xmm6 = 67, Xmm7 = 68, 
     CallingConvention = 69, Stdcall = 70, Cdecl = 71, Fastcall = 72, Thiscall = 73, 
-    Signature = 74, ReferenceSignature = 75, Operator = 76, OpSymbol = 77, 
-    Name = 78, Number = 79, HexNumber = 80, DecNumber = 81, GenericCode = 82, 
-    Whitespace = 83, Newline = 84, BlockComment = 85, LineComment = 86, 
-    Any = 87
+    X8664 = 74, X8664_Output = 75, Signature = 76, ReferenceSignature = 77, 
+    Operator = 78, OpSymbol = 79, Name = 80, Number = 81, HexNumber = 82, 
+    DecNumber = 83, GenericCode = 84, Whitespace = 85, Newline = 86, BlockComment = 87, 
+    LineComment = 88, Any = 89
   };
 
   enum {

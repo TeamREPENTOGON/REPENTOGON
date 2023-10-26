@@ -178,8 +178,12 @@ enum CallingConventions {
     CDECL,
     STDCALL,
     FASTCALL,
-    THISCALL
+    THISCALL,
+    X86_64,
+    X86_64_OUTPUT // With implicit output
 };
+
+CallingConventions StringToConvention(std::string const& name);
 
 struct FunctionPtr {
     Type* _ret;
@@ -245,6 +249,8 @@ struct FunctionParam {
 
     bool operator==(const FunctionParam& other) const;
     bool operator!=(const FunctionParam& other) const;
+
+    bool IsX8664Valid(size_t position) const;
 };
 
 struct Function {

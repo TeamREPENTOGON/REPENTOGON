@@ -161,19 +161,12 @@ LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
 
 	lua_pushinteger(L, poolTrinketItems[trinketID]._ID);
 
-	/*bool found = false;
-	for (const auto& trinketItem : poolTrinketItems) {
-		if (trinketItem._ID == trinketID) {
-			found = true;
-			lua_pushboolean(L, (trinketItem._inPool));
-			break;
-		}
-	}
-
-	if (!found || trinketID >= trinketList.size()) {
+	if (trinketID >= trinketList.size()) {
 		lua_pushboolean(L, false);
 	}
-	*/
+	else {
+		lua_pushboolean(L, (poolTrinketItems[trinketID]._inPool));
+	}
 
 	return 1;
 }

@@ -373,8 +373,8 @@ LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
 	if (lua_isboolean(L, 2)) {
 		scale = lua_toboolean(L, 2);
 	}
-
-	Vector result = GetRenderPosition(pos, scale);
+	
+	Vector result = Isaac::GetRenderPosition(pos, scale);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = result;
 
