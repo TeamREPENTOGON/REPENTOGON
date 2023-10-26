@@ -18,4 +18,6 @@ struct ItemPool depends (ItemPool_Item) {
 	// vector_bool _removedCollectibles : 0x67c;  // Something goofy seemed to be happening with std::vector<bool> in zhl
 	vector_TrinketPoolItem _trinketPoolItems : 0x78c;
 	int _numAvailableTrinkets : 0x798;
+	int _pillEffects[15] : 0x79c;
+	bool _idendifiedPillEffects[15] : 0x7d8;
 } : 0x828;

@@ -28,6 +28,13 @@ ___
 Returns the amount of trinkets available in the item pool.
 
 ___
+### Get·Pill·Color () {: aria-label='Functions' }
+#### [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) GetPillColor ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) ID ) {: .copyable aria-label='Functions' }
+Returns a PillColor matching the specificed PillEffect, returns -1 if the Effect is not in the rotation.
+
+Currently not applied by pill modifications, such as PHD/False PHD.
+
+___
 ### Get·Removed·Collectibles () {: aria-label='Functions' }
 #### table GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
 Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) removed from all pools.
@@ -42,5 +49,10 @@ ___
 ### Has·Trinket () {: aria-label='Functions' }
 #### boolean HasTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
 Returns ``true`` if trinket is currently available in trinket pool, ``false`` otherwise.
+
+___
+### Unidentify·Pill () {: aria-label='Functions' }
+#### void UnidentifyPill ( [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) Pill ) {: .copyable aria-label='Functions' }
+Will reset a pill back to unidentified (???) state.
 
 ___

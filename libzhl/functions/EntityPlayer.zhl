@@ -215,6 +215,9 @@ __thiscall TearParams* Entity_Player::GetTearHitParams(TearParams * res, int Wea
 "558bec83ec10538bd90f28ca":
 __thiscall void Entity_Player::PlayDelayedSFX(unsigned int soundEffectID, int soundDelay, int frameDelay, float volume<xmm2>);
 
+"558bec8b45??568bf183f801":
+__thiscall bool Entity_Player::CanUsePill(int pillEffect);
+
 struct Entity_Player depends (ANM2) : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }

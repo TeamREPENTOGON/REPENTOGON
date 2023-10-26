@@ -178,6 +178,29 @@ LUA_FUNCTION(Lua_ItemPoolGetNumAvailableTrinkets) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemPoolUnidentifyPill) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	const int pillColor = (int)luaL_checkinteger(L, 2);
+	itemPool->_idendifiedPillEffects[pillColor & 0x7ff] = false;
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ItemPoolGetPillColor) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	const int pillEffect = (int)luaL_checkinteger(L, 2);
+
+	for (int i = 1; i < 14; i++) {
+		if (itemPool->_pillEffects[i] == pillEffect) {
+			lua_pushinteger(L, i);
+			return 1;
+		}
+	}
+
+	lua_pushinteger(L, -1);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -191,6 +214,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetCollectiblesFromPool", Lua_ItemPoolGetCollectiblesFromPool },
 		{ "HasTrinket", Lua_ItemPoolHasTrinket },
 		{ "GetNumAvailableTrinkets", Lua_ItemPoolGetNumAvailableTrinkets },
+		{ "UnidentifyPill", Lua_ItemPoolUnidentifyPill },
+		{ "GetPillColor", Lua_ItemPoolGetPillColor },
 
 		{ NULL, NULL }
 	};
