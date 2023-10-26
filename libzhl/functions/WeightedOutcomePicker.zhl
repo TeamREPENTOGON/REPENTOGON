@@ -1,0 +1,15 @@
+"558bec83ec0c8bc15356":
+__thiscall unsigned int WeightedOutcomePicker::Pick(RNG rng);
+
+"558bec83ec0c807d??0056":
+__thiscall void WeightedOutcomePicker::AddOutcomeWeight(WeightedOutcomePicker_Outcome outcome, bool unk);
+
+"558bec83ec088b45??5356578bf98b0f2bc1c1f803":
+__thiscall void* WeightedOutcomePicker::InsertOutcomeToVec(WeightedOutcomePicker_Outcome* unk, WeightedOutcomePicker_Outcome* outcome);
+
+struct WeightedOutcomePicker depends (WeightedOutcomePicker_Outcome) {
+    vector_Outcome _outcomes : 0x0;
+{{
+    inline vector_Outcome* GetOutcomes() { return (vector_Outcome*)this; }
+}}
+} : 0xc;

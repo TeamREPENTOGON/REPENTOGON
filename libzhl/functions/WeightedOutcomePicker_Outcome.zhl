@@ -1,0 +1,4 @@
+struct WeightedOutcomePicker_Outcome {
+    uint32_t _value : 0x0;
+    uint32_t _weight : 0x4;
+} : 0x8;
