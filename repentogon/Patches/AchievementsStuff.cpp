@@ -24,11 +24,13 @@
 #include "stringbuffer.h"
 
 #include "../ImGuiFeatures/LogViewer.h"
+#include "../MiscFunctions.h"
 #include <lua.hpp>
 #include "LuaCore.h"
 #include "JsonSavedata.h"
 #include <filesystem>
 #include <regex>
+#include <queue>
 
 using namespace rapidxml;
 using namespace rapidjson;
@@ -42,9 +44,6 @@ unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathLi
 unordered_map<string, int> simplifiedeventsenum;
 string achivjsonpath;
 
-
-
-#include <queue>
 int dummyachiev = -1;
 bool achievdone = false;
 bool blocksteam = true;
@@ -53,14 +52,6 @@ queue<int> pendingachievs;
 
 
 void SaveAchieveemntsToJson() {
-	std::string directory = achivjsonpath.substr(0, achivjsonpath.find_last_of("\\/"));
-	if (!CreateDirectory(directory.c_str(), NULL)) {
-		if (GetLastError() != ERROR_ALREADY_EXISTS) {
-			logViewer.AddLog("[REPENTOGON]", "Error creating Repentogon Save directory\n");
-			return;
-		}
-	}
-
 	rapidjson::Document doc;
 	doc.SetObject();
 
@@ -171,7 +162,8 @@ HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int val) -> v
 
 
 HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
-	achivjsonpath = string((char*)&g_SaveDataPath) + "Repentogon/achievements" + to_string(saveslot) + ".json";
+	achivjsonpath = std::string(REPENTOGON::GetRepentogonDataPath());
+	achivjsonpath.append("achievements").append(to_string(saveslot)).append(".json");
 
 	LoadAchievementsFromJson();
 	super(saveslot);

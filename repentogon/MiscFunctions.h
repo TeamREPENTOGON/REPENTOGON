@@ -1,8 +1,10 @@
 #pragma once
 #include "Version.h"
 #include <Log.h>
+#include <IsaacRepentance.h>
 #include <Windows.h>
 
+#include <filesystem>
 #include <chrono>
 #include <iomanip>
 #include <sstream>
@@ -11,6 +13,7 @@
 
 static char titlebar[128];
 static auto gameStartTime = std::chrono::high_resolution_clock::now();
+static std::string optionsPath(std::string((char*)&g_SaveDataPath) + "Repentogon/");
 
 namespace REPENTOGON {
 
@@ -42,6 +45,16 @@ namespace REPENTOGON {
 		char newText[128];
 		sprintf(newText, " - %s (cur startup time: %s s)", text, formattedDiff.c_str());
 		ChangeWindowTitle(newText);
+	}
+
+	static const char* GetRepentogonDataPath() {
+		if (!CreateDirectory(optionsPath.c_str(), NULL)) {
+			if (GetLastError() != ERROR_ALREADY_EXISTS) {
+				ZHL::Log("Error %s creating Repentogon Save directory: %s\n", GetLastError(), optionsPath.c_str());
+				return "";
+			}
+		}
+		return optionsPath.c_str();
 	}
 
 }

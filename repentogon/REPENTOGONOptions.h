@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "ImGuiFeatures/LogViewer.h"
+#include "MiscFunctions.h"
 
 #define MINI_CASE_SENSITIVE
 #include "ini.h"
@@ -17,15 +18,9 @@ inline int defstoi(const std::string& str, int default) {
 
 struct REPENTOGONOptions {
 	void Init() {
-		optionsPath = std::string((char*)&g_SaveDataPath) + "Repentogon/options.ini";
-		std::string directory = optionsPath.substr(0, optionsPath.find_last_of("\\/"));
+		optionsPath = std::string(REPENTOGON::GetRepentogonDataPath());
+		optionsPath.append("options.ini");
 
-		if (!CreateDirectory(directory.c_str(), NULL)) {
-			if (GetLastError() != ERROR_ALREADY_EXISTS) {
-				logViewer.AddLog("[REPENTOGON]", "Error creating Repentogon Save directory\n");
-				return;
-			}
-		}
 		mINI::INIFile iniFile(optionsPath);
 
 		if (!std::filesystem::exists(optionsPath)) {

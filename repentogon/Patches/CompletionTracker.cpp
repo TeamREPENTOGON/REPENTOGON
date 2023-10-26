@@ -19,6 +19,7 @@
 #include "JsonSavedata.h"
 
 #include "../ImGuiFeatures/LogViewer.h"
+#include "../MiscFunctions.h"
 
 
 using namespace std;
@@ -632,14 +633,6 @@ unordered_map<string, std::array<int, 15> > CompletionMarks;
 string jsonpath;
 
 void SaveCompletionMarksToJson() {
-	std::string directory = jsonpath.substr(0, jsonpath.find_last_of("\\/"));
-	if (!CreateDirectory(directory.c_str(), NULL)) {
-		if (GetLastError() != ERROR_ALREADY_EXISTS) {
-			logViewer.AddLog("[REPENTOGON]", "Error creating Repentogon Save directory\n");
-			return;
-		}
-	}
-
 	rapidjson::Document doc;
 	doc.SetObject();
 
@@ -805,7 +798,8 @@ array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
 
 
 HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
-	jsonpath = string((char*)&g_SaveDataPath) + "Repentogon/completionmarks" + to_string(saveslot) + ".json";
+	jsonpath = std::string(REPENTOGON::GetRepentogonDataPath());
+	jsonpath.append("completionmarks").append(to_string(saveslot)).append(".json");
 
 	LoadCompletionMarksFromJson();
 	if (!initializedrendercmpl) {
