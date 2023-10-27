@@ -23,7 +23,7 @@ Adds an outcome to the outcome selector with the specified `Weight`.
 ___
 
 ### Pick·Outcome () {: aria-label='Functions' }
-#### int PickOutcome ( RNG RNG ) {: .copyable aria-label='Functions' }
+#### int PickOutcome ( [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) RNG ) {: .copyable aria-label='Functions' }
 Returns a random outcome from the list in WeightedOutcomePicker. Accepts [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html).
 
 ___
