@@ -1,5 +1,5 @@
 "558bec83ec0c8bc15356":
-__thiscall unsigned int WeightedOutcomePicker::Pick(RNG rng);
+__thiscall unsigned int WeightedOutcomePicker::PickOutcome(RNG rng);
 
 "558bec83ec0c807d??0056":
 __thiscall void WeightedOutcomePicker::AddOutcomeWeight(WeightedOutcomePicker_Outcome outcome, bool unk);

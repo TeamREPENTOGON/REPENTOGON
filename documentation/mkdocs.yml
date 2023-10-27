@@ -191,6 +191,7 @@ nav:
   - Sprite: Sprite.md
   - StageTransition: StageTransition.md
   - Weapon: Weapon.md
+  - WeightedOutcomePicker: WeightedOutcomePicker.md
   - XMLData: XMLData.md
 - Changes:
   - General: changes/General.md
