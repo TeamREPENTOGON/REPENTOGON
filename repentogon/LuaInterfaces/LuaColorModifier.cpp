@@ -186,6 +186,13 @@ LUA_FUNCTION(Lua_ColorModState__div) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ColorModState__gc) {
+	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
+	color->~ColorModState();
+
+	return 0;
+}
+
 static void RegisterColorModifier(lua_State* L) {
 
 	luaL_newmetatable(L, lua::metatables::ColorModifierMT);
@@ -277,14 +284,15 @@ static void RegisterColorModifier(lua_State* L) {
 
 	lua_rawset(L, -3);
 
-	lua_register(L, "ColorModifier", Lua_CreateColorModifier);
+	lua_register(L, lua::metatables::ColorModifierMT, Lua_CreateColorModifier);
 
 	luaL_Reg functions[] = {
-	{ "__eq",  Lua_ColorModState__eq },
+	{ "__eq",  Lua_ColorModState__eq  },
 	{ "__add", Lua_ColorModState__add },
 	{ "__sub", Lua_ColorModState__sub },
 	{ "__mul", Lua_ColorModState__mul },
 	{ "__div", Lua_ColorModState__div },
+	{ "__gc",  Lua_ColorModState__gc  },
 	{ NULL, NULL }
 	};
 

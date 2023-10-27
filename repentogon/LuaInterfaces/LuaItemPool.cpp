@@ -106,6 +106,21 @@ LUA_FUNCTION(Lua_ItemPoolGetRemovedCollectibles) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemPoolGetRoomBlacklistedCollectibles) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	std::vector<bool>& blacklistedCollectibles = *itemPool->GetRoomBlacklistedCollectibles();
+
+	lua_newtable(L);
+	int idx = 1;
+	for (auto collectible : blacklistedCollectibles) {
+		lua_pushnumber(L, idx);
+		lua_pushboolean(L, collectible);
+		lua_settable(L, -3);
+		idx++;
+	}
+	return 1;
+}
+
 LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int itemPoolType = (int)luaL_checkinteger(L, 2);
@@ -171,9 +186,31 @@ LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
 	return 1;
 }
 
+// this is a rewrite of an existing function with error checking so invalid ids don't crash
+LUA_FUNCTION(Lua_ItemPoolCanSpawnCollectible) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	const int id = (int)luaL_checkinteger(L, 2);
+	bool unkFlag = lua_toboolean(L, 3);
+
+	ItemConfig_Item* item = g_Manager->GetItemConfig()->GetCollectible(id);
+	if (item == nullptr) {
+		return luaL_argerror(L, 2, "Invalid collectible ID");
+	}
+
+	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
+	std::vector<bool>& blacklistedCollectibles = *itemPool->GetRoomBlacklistedCollectibles();
+
+	lua_pushboolean(L,
+		!removedCollectibles[id] && !blacklistedCollectibles[id]
+		&& item->IsAvailableEx((unkFlag ^ 1) * 2 - 3)
+		&& !(g_Game->GetPlayerManager()->FirstTrinketOwner(TRINKET_NO, 0x0, true) != 0x0 && item->type == 3));
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_ItemPoolGetNumAvailableTrinkets) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	lua_pushinteger(L, itemPool->_numAvailableTrinkets);
+	lua_pushboolean(L, itemPool->_numAvailableTrinkets);
 
 	return 1;
 }
@@ -211,7 +248,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetCollectibleFromList", Lua_ItemPoolGetCollectibleFromList },
 		{ "HasCollectible", Lua_ItemPoolHasCollectible },
 		{ "GetRemovedCollectibles", Lua_ItemPoolGetRemovedCollectibles },
+		{ "GetRoomBlacklistedCollectibles", Lua_ItemPoolGetRoomBlacklistedCollectibles },
 		{ "GetCollectiblesFromPool", Lua_ItemPoolGetCollectiblesFromPool },
+		{ "CanSpawnCollectible", Lua_ItemPoolCanSpawnCollectible },
 		{ "HasTrinket", Lua_ItemPoolHasTrinket },
 		{ "GetNumAvailableTrinkets", Lua_ItemPoolGetNumAvailableTrinkets },
 		{ "UnidentifyPill", Lua_ItemPoolUnidentifyPill },

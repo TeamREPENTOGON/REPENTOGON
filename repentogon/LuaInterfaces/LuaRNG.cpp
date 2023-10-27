@@ -90,20 +90,25 @@ LUA_FUNCTION(Lua_RNG_PhantomFloat) {
 	return 1;
 }
 
+void DoRandomVector(lua_State* L, RNG* rng, bool phantom) {
+	Vector result = Isaac::RandomUnitVector(rng->_seed);
+	if (!phantom) {
+		rng->Next(); // we do it after calling bc the func increments the seed before use
+	}
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = result;
+	return;
+}
+
 LUA_FUNCTION(Lua_RNG_RandomVector) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
-	Vector* result = Isaac::RandomUnitVector(result, rng->_seed);
-	rng->Next(); // we do it after calling bc the func increments the seed before use
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	*toLua = *result;
+	DoRandomVector(L, rng, false);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomVector) {
 	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
-	Vector* result = Isaac::RandomUnitVector(result, rng->_seed);
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	*toLua = *result;
+	DoRandomVector(L, rng, true);
 	return 1;
 }
 

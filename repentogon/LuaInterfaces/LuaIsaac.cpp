@@ -352,21 +352,6 @@ LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
 	return 1;
 }
 
-// this is a rewrite of the function, the ingame one returns the result in a wacky way that i can't get to not crash
-Vector GetRenderPosition(Vector *worldPos, bool scale) {
-	float x = (g_WIDTH - 338.0f) * 0.5f + (worldPos->x - 60.0f) * 0.65f;
-	float y = (g_HEIGHT - 182.0f) * 0.5f + (worldPos->y - 140.0f) * 0.65f;
-
-	Vector result(x, y);
-
-	if (scale) {
-		float scale = g_DisplayPixelsPerPoint * g_PointScale;
-		result.x = floor(x * scale + 0.5f) / scale;
-		result.y = floor(y * scale + 0.5f) / scale;
-	}
-	return result;
-}
-
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	bool scale = true;
@@ -375,6 +360,16 @@ LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
 	}
 	
 	Vector result = Isaac::GetRenderPosition(pos, scale);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = result;
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsaacGetCollectibleSpawnPosition) {
+	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+
+	Vector result = Isaac::GetCollectibleSpawnPosition(pos);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = result;
 
@@ -407,6 +402,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCutsceneIdByName", Lua_GetCutsceneByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNullItemIdByName", Lua_IsaacGetNullItemIdByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRenderPosition", Lua_IsaacGetRenderPosition);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCollectibleSpawnPosition", Lua_IsaacGetCollectibleSpawnPosition);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "PlayCutscene", Lua_PlayCutscene);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ShowErrorDialog", Lua_IsaacShowErrorDialog);
 
