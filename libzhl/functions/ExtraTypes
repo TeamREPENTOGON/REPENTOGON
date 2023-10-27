@@ -55,7 +55,17 @@ TypeInfo vector_TemporaryEffect {
     Align 4;
 };
 
+TypeInfo std_vector_Point {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo std_vector_int {
+    Size 12;
+    Align 4;
+};
+
+TypeInfo std_vector_Vector2 {
     Size 12;
     Align 4;
 };
