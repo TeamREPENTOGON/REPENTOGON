@@ -55,6 +55,12 @@ __thiscall void ANM2::Play(const char* anim, bool reset);
 "558bec83ec0880b9????????00":
 __thiscall void ANM2::Render_Wrapper(Vector* Position, Vector* topleftclamp, Vector* bottomrightclamp);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec14":
+__thiscall void ANM2::construct_from_copy(ANM2* right);
+
+"558bec6aff68????????64a1????????505156a1????????33c5508d45??64a3????????8bf1e8????????8b46":
+__thiscall void ANM2::destructor();
+
 struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
     inline AnimationState* GetAnimationState() { return &this->_animState; }
     inline AnimationState* GetOverlayAnimationState() { return &this->_overlayAnimState; }
