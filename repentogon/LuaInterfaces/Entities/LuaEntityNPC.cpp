@@ -53,7 +53,7 @@ LUA_FUNCTION(Lua_NPCGetControllerId)
 LUA_FUNCTION(Lua_NPCSetControllerId)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	int unk = (int)lua_tonumber(L, 2);
+	int unk = (int)luaL_checknumber(L, 2);
 
 	npc->SetControllerId(unk);
 	return 0;

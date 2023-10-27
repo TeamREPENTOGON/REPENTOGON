@@ -217,7 +217,7 @@ LUA_FUNCTION(Lua_LayerStateGetRotation)
 LUA_FUNCTION(Lua_LayerStateSetRotation)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->GetRotation() = (float)lua_tonumber(L, 2);
+	*layerState->GetRotation() = (float)luaL_checknumber(L, 2);
 
 	return 0;
 }

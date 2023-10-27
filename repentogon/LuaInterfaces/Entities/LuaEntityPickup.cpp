@@ -44,7 +44,7 @@ LUA_FUNCTION(Lua_PickupGetVarData) {
 
 LUA_FUNCTION(Lua_PickupSetVarData) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	*pickup->GetVarData() = (int)lua_tointeger(L, 2);
+	*pickup->GetVarData() = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }

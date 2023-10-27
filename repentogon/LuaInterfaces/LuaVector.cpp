@@ -46,13 +46,13 @@ LUA_FUNCTION(Lua_VectorUD_metamul) {
 	int t2 = lua_type(L, 2);
 
 	if (t1 == LUA_TNUMBER) {
-		float mult = (float) lua_tonumber(L, 1);
+		float mult = (float) luaL_checknumber(L, 1);
 		Vector* vector = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector result(mult * vector->x, mult * vector->y);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
 	}
 	else if (t2 == LUA_TNUMBER) {
-		float mult = (float) lua_tonumber(L, 2);
+		float mult = (float) luaL_checknumber(L, 2);
 		Vector* vector = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, lua::Metatables::CONST_VECTOR, "Vector");
 		Vector result(mult * vector->x, mult * vector->y);
 		lua::luabridge::UserdataValue<Vector>::push(L, VectorKey, result);
@@ -78,7 +78,7 @@ LUA_FUNCTION(Lua_VectorUD_metadiv) {
 		return luaL_error(L, "Cannot left multiply a Vector with a number");
 	}
 	else if (t2 == LUA_TNUMBER) {
-		float div = (float) lua_tonumber(L, 2);
+		float div = (float) luaL_checknumber(L, 2);
 		if (div == 0) {
 			return luaL_error(L, "Divide by zero");
 		}

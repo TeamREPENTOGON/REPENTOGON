@@ -28,7 +28,7 @@ LUA_FUNCTION(Lua_GetR)
 LUA_FUNCTION(Lua_SetR)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetR() = (float)lua_tonumber(L, 2);
+	*color->GetR() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -44,7 +44,7 @@ LUA_FUNCTION(Lua_GetG)
 LUA_FUNCTION(Lua_SetG)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetG() = (float)lua_tonumber(L, 2);
+	*color->GetG() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -60,7 +60,7 @@ LUA_FUNCTION(Lua_GetB)
 LUA_FUNCTION(Lua_SetB)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetB() = (float)lua_tonumber(L, 2);
+	*color->GetB() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -76,7 +76,7 @@ LUA_FUNCTION(Lua_GetA)
 LUA_FUNCTION(Lua_SetA)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetA() = (float)lua_tonumber(L, 2);
+	*color->GetA() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -92,7 +92,7 @@ LUA_FUNCTION(Lua_GetBrightness)
 LUA_FUNCTION(Lua_SetBrightness)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetBrightness() = (float)lua_tonumber(L, 2);
+	*color->GetBrightness() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -108,7 +108,7 @@ LUA_FUNCTION(Lua_GetContrast)
 LUA_FUNCTION(Lua_SetContrast)
 {
 	ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	*color->GetContrast() = (float)lua_tonumber(L, 2);
+	*color->GetContrast() = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -155,7 +155,7 @@ LUA_FUNCTION(Lua_ColorModState__mul) {
 	}
 	else if (t2 == LUA_TNUMBER) {
 		ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-		ColorModState result = *color * lua_tonumber(L, 2);
+		ColorModState result = *color * luaL_checknumber(L, 2);
 		ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 		luaL_setmetatable(L, lua::metatables::ColorModifierMT);
 		memcpy(toLua, &result, sizeof(ColorModState));
@@ -172,7 +172,7 @@ LUA_FUNCTION(Lua_ColorModState__div) {
 		return luaL_error(L, "Cannot left divide a ColorModifier with a number");
 	}
 	else if (t2 == LUA_TNUMBER) {
-		float div = (float)lua_tonumber(L, 2);
+		float div = (float)luaL_checknumber(L, 2);
 		if (div == 0) {
 			return luaL_error(L, "Divide by zero");
 		}
