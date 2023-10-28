@@ -50,7 +50,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HurtDamage", Lua_GridEntityHurtDamage },
 		{ "HurtSurroundings", Lua_GridEntityHurtSurroundings },
 		{ "GetRenderPosition", Lua_GridEntityGetRenderPosition },
-		{ "GetMaxFireDelay", Lua_GridEntityIsBreakableRock },
+		{ "IsBreakableRock", Lua_GridEntityIsBreakableRock },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY, functions);

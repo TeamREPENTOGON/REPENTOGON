@@ -2,7 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-int Lua_WorldToMenuPosition(lua_State* L)
+LUA_FUNCTION(Lua_WorldToMenuPosition)
 {
 	if (g_MenuManager != NULL) {
 		int n = lua_gettop(L);
@@ -76,14 +76,6 @@ int Lua_WorldToMenuPosition(lua_State* L)
 	else {
 		return luaL_error(L, "WorldToMenu can only be used in the main menu");
 	}
-}
-
-static void RegisterWorldToMenuPos(lua_State* L) {
-	lua_getglobal(L, "Isaac");
-	lua_pushstring(L, "WorldToMenuPosition");
-	lua_pushcfunction(L, Lua_WorldToMenuPosition);
-	lua_rawset(L, -3);
-	lua_pop(L, 1);
 }
 
 LUA_FUNCTION(Lua_MenuManager_GetShadowSprite)
@@ -205,9 +197,10 @@ LUA_FUNCTION(Lua_MenuSetColorModifier)
 	return 0;
 }
 
-
 static void RegisterMenuManager(lua_State* L)
 {
+	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "WorldToMenuPosition", Lua_WorldToMenuPosition);
+
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetShadowSprite", Lua_MenuManager_GetShadowSprite);
 	lua::TableAssoc(L, "GetBackWidgetSprite", Lua_MenuManager_GetBackWidgetSprite);
@@ -225,8 +218,7 @@ static void RegisterMenuManager(lua_State* L)
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
-	lua_State* state = g_LuaEngine->_state;
-	lua::LuaStackProtector protector(state);
-	RegisterMenuManager(state);
-	RegisterWorldToMenuPos(state);
+	
+	lua::LuaStackProtector protector(_state);
+	RegisterMenuManager(_state);
 }

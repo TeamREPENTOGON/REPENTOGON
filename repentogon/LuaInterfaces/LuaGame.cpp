@@ -130,24 +130,16 @@ LUA_FUNCTION(lua_GameIsErased) {
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
 		Entity* entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 
-		if (game->IsErased(entity->_type, entity->_variant, entity->_subtype)) {
-			lua_pushinteger(L, 1);
-		}
-		else {
-			lua_pushinteger(L, 0);
-		}
+		bool wasErased = game->IsErased(entity->_type, entity->_variant, entity->_subtype);
+		lua_pushboolean(L, wasErased);
 	}
 	else {
 		int type = (int)luaL_checkinteger(L, 2);
 		int variant = (int)luaL_optinteger(L, 3, -1);
 		int subtype = (int)luaL_optinteger(L, 4, -1);
 
-		if (game->IsErased(type, variant, subtype)) {
-			lua_pushinteger(L, 1);
-		}
-		else {
-			lua_pushinteger(L, 0);
-		}
+		bool wasErased = game->IsErased(type, variant, subtype);
+		lua_pushboolean(L, wasErased);
 	}
 
 	return 1;
@@ -224,7 +216,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsErased", lua_GameIsErased},
 		{ "GetCurrentColorModifier", Lua_GameGetCurrentColorModifier},
 		{ "GetTargetColorModifier", Lua_GameGetTargetColorModifier},
-		{ "GetColorModifierLerpAmount", Lua_GameGetLerpColorModifier},
+		{ "GetLerpColorModifier", Lua_GameGetLerpColorModifier},
 		{ "SetColorModifier", Lua_GameSetColorModifier},
 		{ NULL, NULL }
 	};

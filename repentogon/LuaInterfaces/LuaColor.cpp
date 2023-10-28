@@ -135,7 +135,7 @@ LUA_FUNCTION(Lua_ConstColor_Print) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_CreateColor) {
+/*LUA_FUNCTION(Lua_CreateColor) {
 	float array[11] = {
 		// colorize
 		(float)luaL_optnumber(L, 1, 1.0f),
@@ -157,7 +157,7 @@ LUA_FUNCTION(Lua_CreateColor) {
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
 	memcpy(toLua, &array, sizeof(ColorMod));
 	return 1;
-}
+}*/
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -165,13 +165,22 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
-	{ "GetTint", Lua_ColorGetTint },
-	{ "GetColorize", Lua_ColorGetColorize },
-	{ "GetOffset", Lua_ColorGetOffset },
-	{ "__tostring", Lua_Color_ToString },
-	{ "Print", Lua_Color_Print },
+		{ "GetTint", Lua_ColorGetTint },
+		{ "GetColorize", Lua_ColorGetColorize },
+		{ "GetOffset", Lua_ColorGetOffset },
+		{ "__tostring", Lua_Color_ToString },
+		{ "Print", Lua_Color_Print },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::COLOR, functions);
-	lua::RegisterFunctions(_state, lua::Metatables::CONST_COLOR, functions);
+
+	luaL_Reg constFunctions[] = {
+		{ "GetTint", Lua_ConstColorGetTint },
+		{ "GetColorize", Lua_ConstColorGetColorize },
+		{ "GetOffset", Lua_ConstColorGetOffset },
+		{ "__tostring", Lua_ConstColor_ToString },
+		{ "Print", Lua_ConstColor_Print },
+		{ NULL, NULL }
+	};
+	lua::RegisterFunctions(_state, lua::Metatables::CONST_COLOR, constFunctions);
 }

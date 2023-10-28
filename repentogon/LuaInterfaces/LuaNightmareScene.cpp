@@ -10,14 +10,14 @@ LUA_FUNCTION(Lua_GetNightmareScene) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_NightmareSceneShow)
+/*LUA_FUNCTION(Lua_NightmareSceneShow)
 {
 	NightmareScene* nc = *lua::GetUserdata<NightmareScene**>(L, 1, lua::metatables::NightmareSceneMT);
 	bool unk = lua_toboolean(L, 2);
 	nc->Show(unk);
 
 	return 0;
-}
+}*/
 
 LUA_FUNCTION(Lua_NightmareSceneGetBackgroundSprite)
 {

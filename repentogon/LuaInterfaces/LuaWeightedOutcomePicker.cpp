@@ -2,7 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_CreateWeightedOutcomePicker) {
+LUA_FUNCTION(Lua_WeightedOutcomePicker_Constructor) {
 	lua::place<WeightedOutcomePicker>(L, lua::metatables::WeightedOutcomePickerMT);
 	return 1;
 }
@@ -38,7 +38,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_gc) {
 }
 
 static void RegisterWeightedOutcomePicker(lua_State* L) {
-	lua_register(L, lua::metatables::WeightedOutcomePickerMT, Lua_CreateWeightedOutcomePicker);
+	lua_register(L, lua::metatables::WeightedOutcomePickerMT, Lua_WeightedOutcomePicker_Constructor);
 
 	luaL_Reg functions[] = {
 		{ "AddOutcomeWeight", Lua_WeightedOutcomePicker_AddOutcomeWeight },

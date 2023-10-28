@@ -2,7 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_CreateColorModifier) {
+LUA_FUNCTION(Lua_ColorModifier_Constructor) {
 	ColorModState color;
 	color.r = (float)luaL_optnumber(L, 1, 1.0f);
 	color.g = (float)luaL_optnumber(L, 2, 1.0f);
@@ -284,7 +284,7 @@ static void RegisterColorModifier(lua_State* L) {
 
 	lua_rawset(L, -3);
 
-	lua_register(L, lua::metatables::ColorModifierMT, Lua_CreateColorModifier);
+	lua_register(L, lua::metatables::ColorModifierMT, Lua_ColorModifier_Constructor);
 
 	luaL_Reg functions[] = {
 	{ "__eq",  Lua_ColorModState__eq  },

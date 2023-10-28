@@ -1,13 +1,9 @@
-#include <lua.hpp>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-static constexpr const char* RngMT = "RNG";
-
-int Lua_RNGSetSeed(lua_State* L) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+LUA_FUNCTION(Lua_RNGSetSeed) {
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 
 	unsigned int seed = (unsigned int)luaL_checkinteger(L, 2);
 	unsigned int shiftidx = (unsigned int)luaL_optinteger(L, 3, 35);
@@ -51,7 +47,7 @@ static void DoRandomInt(lua_State* L, RNG* rng, int& result, bool& negative) {
 }
 
 LUA_FUNCTION(Lua_RNG_RandomInt) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	bool negative = true;
 	int result = 0;
 	DoRandomInt(L, rng, result, negative);
@@ -65,7 +61,7 @@ LUA_FUNCTION(Lua_RNG_RandomInt) {
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomInt) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	RNG copy;
 	memcpy(&copy, rng, sizeof(RNG));
 	bool negative = true;
@@ -81,7 +77,7 @@ LUA_FUNCTION(Lua_RNG_PhantomInt) {
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomFloat) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	RNG copy;
 	memcpy(&copy, rng, sizeof(RNG));
 
@@ -101,13 +97,13 @@ void DoRandomVector(lua_State* L, RNG* rng, bool phantom) {
 }
 
 LUA_FUNCTION(Lua_RNG_RandomVector) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	DoRandomVector(L, rng, false);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RNG_PhantomVector) {
-	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, RngMT);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 1, lua::Metatables::RNG, lua::metatables::RngMT);
 	DoRandomVector(L, rng, true);
 	return 1;
 }
