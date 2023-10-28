@@ -18,7 +18,11 @@ Gets a modifiable copy of the color correction introduced in Repentance.
 
 ___
 ## Variables
+### Color·Modifier {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### [ColorModifier](ColorModifier.md) ColorModifier {: .copyable aria-label='Variables'}
 
+___
 ### Use·Water·V2 {: aria-label='Variables' }
 [ ](#){: .tooltip .badge }
 #### boolean UseWaterV2 {: .copyable aria-label='Variables'}

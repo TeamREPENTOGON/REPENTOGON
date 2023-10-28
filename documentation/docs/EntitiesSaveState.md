@@ -1,0 +1,4 @@
+# Class "EntitiesSaveState"
+
+## Functions
+

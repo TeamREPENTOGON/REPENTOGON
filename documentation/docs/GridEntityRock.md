@@ -15,7 +15,7 @@ ___
 
 ___
 ### Render·Top () {: aria-label='Functions' }
-#### void RenderTop ( Vector offset ) {: .copyable aria-label='Functions' }
+#### void RenderTop ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) offset ) {: .copyable aria-label='Functions' }
 
 ___
 ### Spawn·Drops () {: aria-label='Functions' }

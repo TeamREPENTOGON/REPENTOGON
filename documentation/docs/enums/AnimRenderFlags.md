@@ -4,7 +4,7 @@ tags:
 ---
 
 ???+ Warning
-    The flags contained in [Sprite](Sprite.md) and [LayerState](LayerState.md) are added together during rendering, thus if one is set in `Sprite` but not `LayerState` it will still take effect for that layer.
+    The flags contained in [Sprite](../Sprite.md) and [LayerState](../LayerState.md) are added together during rendering, thus if one is set in `Sprite` but not `LayerState` it will still take effect for that layer.
 
 Not fully documented yet, sorry!
 
