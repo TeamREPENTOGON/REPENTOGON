@@ -9,15 +9,41 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 	if (top < 4) {
 		luaL_error(L, "Expected at least 4 arguments, got %d", top);
 	}
-	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
-	const int layerID = (const int)luaL_checkinteger(L, 2);
+	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	bool loaded = sprite->_loaded;
+	printf("original loaded: %s\n", loaded == true ? "TRUE" : "FALSE");
+
+	int layerID = 0;
+	if (lua_type(L, 2) == LUA_TSTRING) {
+		LayerState* layerState = sprite->GetLayer(luaL_checkstring(L, 2));
+		if (layerState != nullptr) {
+			layerID = layerState->GetLayerID();
+		}
+	}
+	else {
+		layerID = (int)luaL_checkinteger(L, 2);
+	}
+	
 	bool useOverlay = lua_toboolean(L, 3);
 	bool unk = lua_toboolean(L, 4);
 	const int vectorSize = (const int)luaL_optinteger(L, 5, POINT_VECTOR_SIZE);
 
 	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamRendererMT, layerID, useOverlay, unk);
+
 	toLua->_anm2.construct_from_copy(sprite);
+	printf("copy loaded: %s\n", toLua->_anm2._loaded == true ? "TRUE" : "FALSE");
+	// fuck you, be loaded
+	if (true) {
+		__debugbreak();
+		toLua->_anm2.Load(sprite->_filename, true);
+		printf("copy loaded NOW: %s\n", toLua->_anm2._loaded == true ? "TRUE" : "FALSE");
+		printf("orig filename: %s\n", sprite->_filename.c_str());
+		printf("copy filename: %s\n",toLua->_anm2._filename.c_str());
+		printf("animState == nullptr? %s\n", toLua->_anm2._animState._animData == nullptr ? "TRUE" : "FALSE");
+		printf("overlayAnimState == nullptr? %s\n", toLua->_anm2._overlayAnimState._animData == nullptr ? "TRUE" : "FALSE");
+	}
+
 	toLua->_points.reserve(vectorSize);
 	luaL_setmetatable(L, lua::metatables::BeamRendererMT);
 	return 1;
@@ -26,11 +52,14 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 LUA_FUNCTION(Lua_BeamAdd) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	float heightMod = (float)luaL_checknumber(L, 3);
-	float widthMod = (float)luaL_checknumber(L, 4);
-	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+	float heightMod = (float)luaL_optnumber(L, 3, 1.0f);
+	float widthMod = (float)luaL_optnumber(L, 4, 1.0f);
+	ColorMod color;
+	if (lua_gettop(L) > 4) {
+		color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+	}
 
-	Point point(*pos, heightMod, widthMod, *color);
+	Point point(*pos, heightMod, widthMod, color);
 	beam->_points.push_back(point);
 
 	return 0;
@@ -41,6 +70,10 @@ const char* errors[3] = {
 	"Overlay AnimState is NULL!",
 	"Invalid layer id"
 };
+
+bool IsValidLayerID(BeamRenderer* beam, int id) {
+	return (beam->_layer >= 0 && (const unsigned int)beam->_layer + 1 <= beam->_anm2.GetLayerCount());
+}
 
 LUA_FUNCTION(Lua_BeamRender) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
@@ -62,7 +95,7 @@ LUA_FUNCTION(Lua_BeamRender) {
 		goto funcEnd;
 	}
 	
-	if (beam->_layer < 0 || (const unsigned int)beam->_layer + 1 > beam->_anm2.GetLayerCount()) {
+	if (!IsValidLayerID(beam, beam->_layer)) {
 		error = 3;
 		goto funcEnd;
 	}
@@ -111,7 +144,7 @@ LUA_FUNCTION(Lua_BeamSetSprite) {
 LUA_FUNCTION(Lua_BeamGetLayer)
 {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
-	lua_pushnumber(L, *beam->GetLayer());
+	lua_pushinteger(L, *beam->GetLayer());
 
 	return 1;
 }
@@ -119,7 +152,11 @@ LUA_FUNCTION(Lua_BeamGetLayer)
 LUA_FUNCTION(Lua_BeamSetLayer)
 {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
-	*beam->GetLayer() = luaL_checknumber(L, 2);
+	const int id = (int)luaL_checkinteger(L, 2);
+	if (!IsValidLayerID(beam, id)) {
+		return luaL_argerror(L, 2, errors[2]);
+	}
+	*beam->GetLayer() = id;
 	return 0;
 }
 

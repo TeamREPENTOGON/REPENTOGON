@@ -37,6 +37,9 @@ __thiscall int ANM2::SetFrame(const char* anim,float frame);
 "558bec5153568bf157837e??0074":
 __thiscall void ANM2::Load(std_string &ANM2Path, bool loadgraphics);
 
+"568bf1837e??0074??56":
+__thiscall void ANM2::Reload();
+
 "558bec83ec08538bc18b4d??565733ff8945??8b58??85db74??8b40??8bf08945??837e??108bc672??8b060f1f40008a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c074??8b4d??4781c63c0100003bfb72??5168????????6a00e8????????83c40c32c05f5e5b8be55dc208008b4d??69c73c01000083c130":
 __thiscall bool ANM2::SetAnimation(const char* anim, bool reset);
 
@@ -98,6 +101,7 @@ struct ANM2 depends (AnimationState, ColorMod, KColor, LayerState, Vector) { {{
     bool _flipX : 0x100;
     bool _flipY : 0x101;
     float _playbackSpeed : 0x104;
+	bool _loaded : 0x109;
     unsigned int _bitflags : 0x110;
 } : 0x114;
 
