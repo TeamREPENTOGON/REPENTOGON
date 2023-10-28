@@ -103,7 +103,7 @@ LUA_FUNCTION(Lua_BeamSetSprite) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
 	beam->_anm2.destructor();
-	beam->_anm2.construct_from_copy(anm2);
+	beam->_anm2 = *beam->_anm2.construct_from_copy(anm2);
 	return 0;
 
 }
