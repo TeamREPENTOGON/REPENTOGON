@@ -341,6 +341,9 @@ namespace lua {
             ++_n;
             return (T*)result;
         }
+
+        void pushTable(int narr = 0, int nrec = 0);
+
         LuaResults call(int nresults);
 
     private:
@@ -475,10 +478,42 @@ namespace lua {
         return (T*)data;
     }
 
+    struct LIBZHL_API LuaStackRef {
+        LuaStackRef(int ref) : _ref(ref) { }
+        operator int() {
+            return _ref;
+        }
+
+        int _ref;
+    };
+
+    /* The following four functions assume the destination table is at the top of the stack.
+     * If it's not the case you need to use the overload that takes two LuaStackRefs as 
+     * parameters. To do so, push the value you want to set in the table, then give both the
+     * index of this value and of the table as parameters to TableAssoc.
+     */
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, int value);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, float value);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, lua_CFunction fn);
     LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, void* ptr);
+    /* Store in the table at index dstTable the value at index srcObj.
+     * The value at index srcObj is subsequently poped from the stack.
+     */
+    LIBZHL_API void TableAssoc(lua_State* L, std::string const& name, LuaStackRef dstTable, LuaStackRef srcObj);
+
+    /* The following four functions assume the destination table is at the top of the stack.
+     * If it's not the case you need to use the overload that takes two LuaStackRefs as
+     * parameters. To do so, push the value you want to set in the table, then give both the
+     * index of this value and of the table as parameters to TableAssoc.
+     */
+    LIBZHL_API void TableAssoc(lua_State* L, int key, int value);
+    LIBZHL_API void TableAssoc(lua_State* L, int key, float value);
+    LIBZHL_API void TableAssoc(lua_State* L, int key, lua_CFunction fn);
+    LIBZHL_API void TableAssoc(lua_State* L, int key, void* ptr);
+    /* Store in the table at index dstTable the value at index srcObj.
+     * The value at index srcObj is subsequently poped from the stack.
+     */
+    LIBZHL_API void TableAssoc(lua_State* L, int key, LuaStackRef dstTable, LuaStackRef srcObj);
 
     namespace callbacks {
         LIBZHL_API int ToInteger(lua_State* L, int stackPosition);

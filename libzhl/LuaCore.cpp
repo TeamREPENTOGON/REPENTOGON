@@ -604,6 +604,11 @@ namespace lua {
 		return result;
 	}
 
+	void LuaCaller::pushTable(int narr, int nrec) {
+		lua_createtable(_L, narr, nrec);
+		++_n;
+	}
+
 	LuaResults LuaCaller::call(int nresults) {
 		int n = lua_gettop(_L) - _n - 1; // Expected amount after poping everything (number of params + function)
 		int result = lua_pcall(_L, _n, nresults, 0);
@@ -773,6 +778,52 @@ namespace lua {
 		lua_pushstring(L, name.c_str());
 		lua_pushlightuserdata(L, ptr);
 		lua_rawset(L, -3);
+	}
+
+	void TableAssoc(lua_State* L, std::string const& name, LuaStackRef dstTable, LuaStackRef srcObj) {
+		int src = lua_absindex(L, srcObj);
+		int dst = lua_absindex(L, dstTable);
+
+		lua_pushstring(L, name.c_str());
+		lua_pushvalue(L, src);
+		lua_rawset(L, dst);
+
+		lua_remove(L, src);
+	}
+
+	void TableAssoc(lua_State* L, int key, int value) {
+		lua_pushinteger(L, key);
+		lua_pushinteger(L, value);
+		lua_rawset(L, -3);
+	}
+
+	void TableAssoc(lua_State* L, int key, float f) {
+		lua_pushinteger(L, key);
+		lua_pushnumber(L, f);
+		lua_rawset(L, -3);
+	}
+
+	void TableAssoc(lua_State* L, int key, lua_CFunction fn) {
+		lua_pushinteger(L, key);
+		lua_pushcfunction(L, fn);
+		lua_rawset(L, -3);
+	}
+
+	void TableAssoc(lua_State* L, int key, void* ptr) {
+		lua_pushinteger(L, key);
+		lua_pushlightuserdata(L, ptr);
+		lua_rawset(L, -3);
+	}
+
+	void TableAssoc(lua_State* L, int key, LuaStackRef dstTable, LuaStackRef srcObj) {
+		int src = lua_absindex(L, srcObj);
+		int dst = lua_absindex(L, dstTable);
+
+		lua_pushinteger(L, key);
+		lua_pushvalue(L, src);
+		lua_rawset(L, dst);
+
+		lua_remove(L, src);
 	}
 
 	void PushCallbackID(lua_State* L, const char* name, const char* ns) {
