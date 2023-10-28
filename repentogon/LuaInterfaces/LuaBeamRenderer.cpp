@@ -108,6 +108,52 @@ LUA_FUNCTION(Lua_BeamSetSprite) {
 
 }
 
+LUA_FUNCTION(Lua_BeamGetLayer)
+{
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	lua_pushnumber(L, *beam->GetLayer());
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BeamSetLayer)
+{
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	*beam->GetLayer() = luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_BeamGetUseOverlay)
+{
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	lua_pushboolean(L, *beam->GetUseOverlay());
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BeamSetUseOverlay)
+{
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	*beam->GetUseOverlay() = lua_toboolean(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_BeamGetUnkBool)
+{
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	lua_pushboolean(L, *beam->GetUnkBool());
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BeamSetUnkBool)
+{
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	*beam->GetUnkBool() = lua_toboolean(L, 2);
+	return 0;
+}
+
+
 LUA_FUNCTION(Lua_BeamRenderer__gc) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
 	beam->_anm2.destructor();
@@ -122,6 +168,12 @@ static void RegisterBeamRenderer(lua_State* L) {
 		{ "Render", Lua_BeamRender},
 		{ "GetSprite", Lua_BeamGetSprite},
 		{ "SetSprite", Lua_BeamSetSprite},
+		{ "GetLayer", Lua_BeamGetLayer},
+		{ "SetLayer", Lua_BeamSetLayer},
+		{ "GetUseOverlay", Lua_BeamGetUseOverlay},
+		{ "SetUseOverlay", Lua_BeamSetUseOverlay},
+		{ "GetUnkBool", Lua_BeamGetUnkBool},
+		{ "SetUnkBool", Lua_BeamSetUnkBool},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::BeamRendererMT, lua::metatables::BeamRendererMT, functions, Lua_BeamRenderer__gc);
