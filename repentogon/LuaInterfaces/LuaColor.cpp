@@ -2,6 +2,7 @@
 
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
+#include "Log.h"
 #include "LuaCore.h"
 
 LUA_FUNCTION(Lua_ColorGetTint) {
@@ -135,29 +136,26 @@ LUA_FUNCTION(Lua_ConstColor_Print) {
 	return 0;
 }
 
-/*LUA_FUNCTION(Lua_CreateColor) {
-	float array[11] = {
-		// colorize
-		(float)luaL_optnumber(L, 1, 1.0f),
-		(float)luaL_optnumber(L, 2, 1.0f),
-		(float)luaL_optnumber(L, 3, 1.0f),
-		(float)luaL_optnumber(L, 4, 1.0f),
+LUA_FUNCTION(Lua_CreateColor) {
+	ColorMod mod;
+	for (int i = 0; i < 4; ++i) {
+		mod._tint[i] = (float)luaL_optnumber(L, 9 + i, 1.0f);
+		mod._colorize[i] = (float)luaL_optnumber(L, 2 + i, 1.0f);
+	}
 
-		//offset
-		(float)luaL_optnumber(L, 5, 0.0f),
-		(float)luaL_optnumber(L, 6, 0.0f),
-		(float)luaL_optnumber(L, 7, 0.0f),
+	for (int i = 0; i < 3; ++i) {
+		mod._offset[i] = (float)luaL_optnumber(L, 6 + i, 0.f);
+	}
 
-		//tint
-		(float)luaL_optnumber(L, 8, 1.0f),
-		(float)luaL_optnumber(L, 9, 1.0f),
-		(float)luaL_optnumber(L, 10, 1.0f),
-		(float)luaL_optnumber(L, 11, 1.0f),
-	};
+	/* Put the object on the stack after reading arguments
+	 * otherwise the calls to luaL_optnumber will read an userdata 
+	 * instead of nil.
+	 */
 	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
-	memcpy(toLua, &array, sizeof(ColorMod));
+	memcpy(toLua, &mod, sizeof(ColorMod));
+
 	return 1;
-}*/
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -173,14 +171,19 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::COLOR, functions);
+	lua::RegisterFunctions(_state, lua::Metatables::CONST_COLOR, functions);
+}
 
-	luaL_Reg constFunctions[] = {
-		{ "GetTint", Lua_ConstColorGetTint },
-		{ "GetColorize", Lua_ConstColorGetColorize },
-		{ "GetOffset", Lua_ConstColorGetOffset },
-		{ "__tostring", Lua_ConstColor_ToString },
-		{ "Print", Lua_ConstColor_Print },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::CONST_COLOR, constFunctions);
+HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
+	super(debug);
+
+	lua_State* L = _state;
+	lua::LuaStackProtector protector(L);
+
+	lua_getglobal(L, "Color");
+	lua_getmetatable(L, -1);
+	lua_pushstring(L, "__call");
+	lua_pushcfunction(L, Lua_CreateColor);
+	lua_rawset(L, -3);
+	lua_pop(L, 2);
 }
