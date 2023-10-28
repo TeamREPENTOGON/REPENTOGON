@@ -28,10 +28,6 @@ LUA_FUNCTION(Lua_RoomDescriptorSetAllowedDoors) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_RoomDescriptorSetDoor) {
-	return 0;
-}
-
 static void RoomDescriptorGetDoors(lua_State* L, RoomDescriptor* descriptor, bool allowSet) {
 	RoomDescriptor** ptr = (RoomDescriptor**)lua_newuserdata(L, sizeof(RoomDescriptor*));
 	*ptr = descriptor;

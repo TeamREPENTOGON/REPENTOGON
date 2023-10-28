@@ -162,9 +162,8 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
                 isInsideFunction = False
                 returnValue = "void"
         else:          
-            if "lua_pushstring" in line and isInsideFunction: # Meta-Table entry defined with a given name
-                lastPushString = line.split("\"")[1] 
-                print("String function defined: ",lastPushString)
+            if "lua_pushstring" in line and '"' in line: # Meta-Table entry defined with a given name
+                lastPushString = line.split("\"")[1]
             if "lua::RegisterNewClass" in line or "lua::RegisterFunctions" in line:
                 registerToClass = line.split(",")[1].strip() # second arg is always the metatable
                 registerToClass = registerToClass.replace("\"","").replace("_","").replace("MT","").split(":")[-1] # clean up inconsistant metatable defs
