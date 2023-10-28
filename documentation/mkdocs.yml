@@ -106,20 +106,14 @@ nav:
     - WispSubType: enums/WispSubType.md
     - XMLNode: enums/XMLNode.md
   - Ambush: Ambush.md
-  - AnimationData: AnimationData.md
-  - AnimationFrame: AnimationFrame.md
-  - AnimationLayer: AnimationLayer.md
-  - AnimationState: AnimationState.md
   - Backdrop: Backdrop.md
-  - BlendMode: BlendMode.md
   - Camera: Camera.md
-  - Capsule: Capsule.md
   - ChallengeParam: ChallengeParam.md
   - Color: Color.md
   - ColorModifier: ColorModifier.md
   - Console: Console.md
   - DailyChallenge: DailyChallenge.md
-  - DebugRenderer: DebugRenderer.md
+  - Debug: Debug.md
   - Entity:
     - Entity: Entity.md
     - EntityFamiliar: EntityFamiliar.md
@@ -136,18 +130,23 @@ nav:
     - GridEntityRock: GridEntityRock.md
   - History: History.md
   - HistoryItem: HistoryItem.md
-  - HUD: HUD.md
+  - HUDs:
+    - DebugRenderer: DebugRenderer.md
+    - HUD: HUD.md
+    - Minimap: Minimap.md
+    - PlayerHUD: PlayerHUD.md
+    - PlayerHUDHeart: PlayerHUDHeart.md
   - Image: Image.md
   - ImGui: ImGui.md
   - Isaac: Isaac.md
   - ItemConfig - PillEffect: ItemConfig_PillEffect.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
-  - LayerState: LayerState.md
   - Level: Level.md
-  - LevelGenerator: LevelGenerator.md
-  - LevelGeneratorEntry: LevelGeneratorEntry.md
-  - LevelGeneratorRoom: LevelGeneratorRoom.md
+  - LevelGenerator:
+    - LevelGenerator: LevelGenerator.md
+    - LevelGeneratorEntry: LevelGeneratorEntry.md
+    - LevelGeneratorRoom: LevelGeneratorRoom.md
   - Menus:
     - MenuManager: menus/MenuManager.md
     - BestiaryMenu: menus/BestiaryMenu.md
@@ -166,29 +165,42 @@ nav:
     - SpecialSeedsMenu: menus/SpecialSeedsMenu.md
     - StatsMenu: menus/StatsMenu.md
     - TitleMenu: menus/TitleMenu.md
-  - Minimap: Minimap.md
   - MultiShotParams: MultiShotParams.md
   - MusicManager: MusicManager.md
   - NightmareScene: NightmareScene.md
-  - NullFrame: NullFrame.md
   - Options: Options.md
   - PersistentGameData: PersistentGameData.md
-  - ProceduralEffect: ProceduralEffect.md
-  - ProceduralItem: ProceduralItem.md
-  - ProceduralItemManager: ProceduralItemManager.md
-  - PlayerHUD: PlayerHUD.md
-  - PlayerHUDHeart: PlayerHUDHeart.md
+  - Procedural Items:
+    - ProceduralEffect: ProceduralEffect.md
+    - ProceduralItem: ProceduralItem.md
+    - ProceduralItemManager: ProceduralItemManager.md
   - PlayerManager: PlayerManager.md
   - PocketItem: PocketItem.md
   - ProjectileParams: ProjectileParams.md
+  - Rendering:
+    - BeamRenderer: BeamRenderer.md
+    - BlendMode: BlendMode.md
+    - Capsule: Capsule.md
+    - Renderer: Renderer.md
+    - Shape: Shape.md
   - RNG: RNG.md
   - Room: Room.md
-  - RoomConfigHolder: RoomConfigHolder.md
-  - RoomConfigRoom: RoomConfigRoom.md
+  - RoomConfig:
+    - RoomConfigHolder: RoomConfigHolder.md
+    - RoomConfigRoom: RoomConfigRoom.md
+    - RoomDescriptor: RoomDescriptor.md
+    - EntitiesSaveState: EntitiesSaveState.md
+    - EntitiesSaveStateVector: EntitiesSaveStateVector.md
   - RoomTransition: RoomTransition.md
   - ScoreSheet: ScoreSheet.md
-  - Shape: Shape.md
-  - Sprite: Sprite.md
+  - Sprite:
+    - AnimationData: AnimationData.md
+    - AnimationFrame: AnimationFrame.md
+    - AnimationLayer: AnimationLayer.md
+    - AnimationState: AnimationState.md
+    - LayerState: LayerState.md
+    - NullFrame: NullFrame.md
+    - Sprite: Sprite.md
   - StageTransition: StageTransition.md
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
