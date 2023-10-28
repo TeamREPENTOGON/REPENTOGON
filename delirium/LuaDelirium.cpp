@@ -165,8 +165,12 @@ static void CreateDeliriumSetters(lua_State* L) {
 }
 
 namespace delirium {
+	static Entity_NPC* GetDelirium(lua_State* L, int idx = 1) {
+		return lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityDelirium");
+	}
+
 	LUA_FUNCTION(Lua_Delirium_Transform) {
-		Entity_NPC* delirium = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityDelirium");;
+		Entity_NPC* delirium = GetDelirium(L);
 		int type = luaL_checkinteger(L, 2);
 		if (type < 10) { // ENTITY_GAPER
 			return luaL_error(L, "Invalid EntityType %d for Delirium\n", type);
@@ -176,6 +180,58 @@ namespace delirium {
 
 		delirium::ForcedTransformations[delirium] = std::make_tuple(type, variant, callback);
 		*delirium->GetDeliriumTransformationTimer() = 1;
+		return 0;
+	}
+
+	// Delirium is red if any bit between 7 and 14 (inclusive) is 1
+	LUA_FUNCTION(Lua_Delirium_IsRed) {
+		Entity_NPC* delirium = GetDelirium(L);
+		uint32_t cycle = *delirium->GetDeliriumCycleID();
+		lua_pushboolean(L, ((cycle >> 7) & 0xFF) != 0);
+		return 1;
+	}
+
+	LUA_FUNCTION(Lua_Delirium_SetRedMode) {
+		Entity_NPC* delirium = GetDelirium(L);
+		bool on = lua_toboolean(L, 2);
+		uint32_t* cycle = delirium->GetDeliriumCycleID();
+		if (on) {
+			*cycle |= 0x00007F80;
+		}
+		else {
+			*cycle &= ~0x00007F80;
+		}
+		return 0;
+	}
+
+	LUA_FUNCTION(Lua_Delirium_GetTeleportationTimer) {
+		Entity_NPC* delirium = GetDelirium(L);
+		uint32_t cycle = *delirium->GetDeliriumCycleID();
+		uint16_t timer = (cycle >> 0xf) & 0x3FF;
+		lua_pushinteger(L, timer);
+		return 1;
+	}
+
+	LUA_FUNCTION(Lua_Delirium_SetTeleportationTimer) {
+		Entity_NPC* delirium = GetDelirium(L);
+		uint32_t* cycle = delirium->GetDeliriumCycleID();
+		lua_Integer timer = luaL_checkinteger(L, 2);
+		if (timer < 0) {
+			return luaL_error(L, "Invalid transformation timer %llu (positive number required)\n", timer);
+		}
+		else if (timer > 0x3FF) {
+			return luaL_error(L, "Invalid transformation timer %llu (max value %llu)\n", timer, 0x3FF);
+		}
+		
+		/* Teleportation timer is bits 15 -> 25 (inclusive: 11 bits, 0-indexed).
+		 * Reset bits 15 to 25 (11 bits), keep others: &
+		 *     28   24   20   16   12    8    4    0 
+		 * 0b1111 1100 0000 0000 0111 1111 1111 1111
+		 * 0x   F    C    0    0    7    F    F    F
+		 */
+		*cycle &= 0xFC007FFF; 
+		*cycle |= ((timer & 0x3FF) << 0xF);
+
 		return 0;
 	}
 }
@@ -221,6 +277,10 @@ static void RegisterDeliriumFunctions(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "Transform", delirium::Lua_Delirium_Transform },
+		{ "IsRedMode", delirium::Lua_Delirium_IsRed },
+		{ "SetRedMode", delirium::Lua_Delirium_SetRedMode },
+		{ "GetTeleportationTimer", delirium::Lua_Delirium_GetTeleportationTimer },
+		{ "SetTeleportationTimer", delirium::Lua_Delirium_SetTeleportationTimer },
 		{ NULL, NULL }
 	};
 
