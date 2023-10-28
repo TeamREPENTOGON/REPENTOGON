@@ -837,6 +837,116 @@ function RegisterMod(name, ver)
 	return out
 end
 
+-- Typecheck the return value of an invocation of a MC_PRE_OPENGL_RENDER callback.
+--
+-- Allowed return values are an integer (a shader ID) or a table containing two fields:
+--  "shader": int (if native shader) or Shader userdata (if custom shader)
+--  "buffer": VertexBuffer
+--
+-- Return true if ret is a valid return value, false otherwise.
+local function TypecheckPreOpenGL(ret)
+    if type(ret) == "int" then
+        return true
+    end
+    
+    if type(ret) == "table" then
+        if ret["shader"] == nil or ret["buffer"] == nil then
+            return false
+        end
+        
+        local shader = ret["shader"]
+        local buffer = ret["buffer"]
+        local tShader = type(shader)
+        if tShader ~= "int" and tShader ~= "userdata" then
+            return false
+        end
+        
+        local tBuffer = type(buffer)
+        if tBuffer ~= "userdata" then
+            return false
+        end
+        
+        if tShader == "int" then
+            -- 0 : ColorOffset, 19 : Mirror (MAX)
+            return shader >= 0 and shader <= 19
+        end
+        
+        if tShader == "userdata" and getmetatable(shader)["type"] ~= "Shader" then
+            return false
+        end 
+        
+        if getmetatable(buffer)["type"] ~= "VertexBuffer" then
+            return false
+        end
+    end
+    
+    return true
+end
+
+-- Call the MC_PRE_OPENGL_RENDER callback.
+-- 
+-- The purpose of this function is to reduce the amount of jumps between Lua and C++.
+-- For a given vertex buffer, we may have multiple render contexts. Trigerring the callback 
+-- from C++ on every single one of these contexts could induce hundreds of jumps. The
+-- solution here is to call this function as a precallback with lots of data as parameter,
+-- and this data is then sent to different invocations of the callback.
+--
+-- Parameters:
+--  - bufferAndContexts: a table consisting of pairs (vertexBuffer -> renderContext).
+-- When compared to what exists on the C++ side, this is equivalent to slicing the 
+-- input vertex buffer into the vertices associated with a single render operation.
+--  - shaderId: identifier of the vertex program, as returned by the glCreateProgram
+-- function, that is currently bound and should return during the incoming call to 
+-- glDrawElements.
+--
+-- Return: a table containing the return value of every invocation of the MC_PRE_OPENGL_RENDER
+-- callback. Check the documentation of the callback for more information.
+--
+-- This function is purely internal, despite being marked as global. Internally, as soon 
+-- as this file is loaded we register a reference to this function in the Lua registry 
+-- and free the symbol to prevent modders from overriding it.
+function PreOpenGLRender(bufferAndContexts, shaderId)
+    local callbacks = Isaac.GetCallback(ModCallbacks.MC_PRE_OPENGL_RENDER)
+    if not callbacks then
+        return {}
+    end
+    
+    local changedBuffers = {}
+    local returns = {}
+    
+    for _, callback in ipairs(callbacks) do
+        for i, bufferAndContext in ipairs(bufferAndContexts) do
+            if changedBuffers[i] then
+                goto skip
+            end
+            
+            returns[i] = -1
+        
+            local status, ret = xpcall(callback.Function, function(msg) 
+                return msg .. "\n" .. cleanTraceback(2)
+            end, callback.Mod, bufferAndContext.buffer, shaderId, bufferAndContext.context)
+            
+            
+            if status then
+                if ret ~= nil then
+                    if TypecheckPreOpenGL(ret) then
+                        returns[i] = ret
+                        changedBuffers[i] = true
+                    end
+                end 
+                
+                returns[ret] = bufferAndContext.buffer
+            else
+                logError(callbackID, callback.Mod.Name, ret)
+            end
+            
+            ::skip::
+        end
+    end
+    
+    return returns
+end
+
 -- Reset Imgui Data after reload of all mods
 Isaac.GetImGui():Reset()
 

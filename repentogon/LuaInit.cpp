@@ -9,6 +9,7 @@
 #include "HookSystem.h"
 #include "MiscFunctions.h"
 #include "CrashHandler.h"
+#include "LuaInterfaces/LuaRender.h"
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -181,6 +182,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua_State* state = g_LuaEngine->runCallbackRegistry->state;
 	this->RunBundledScript("resources/scripts/enums_ex.lua");
 	this->RunBundledScript("resources/scripts/main_ex.lua");
+
+	// Requires main_ex.lua to be loaded
+	LuaRender::PostLuaInit(this);
 
 	luaL_unref(state, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 	lua_getglobal(state, "_RunCallback");

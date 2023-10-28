@@ -272,4 +272,6 @@ namespace LuaRender {
 
 	static constexpr const uint32_t ELEMENT_BUFFER = 6;
 	static constexpr const uint32_t VERTEX_BUFFER = 4;
+
+	void PostLuaInit(LuaEngine* engine);
 }
