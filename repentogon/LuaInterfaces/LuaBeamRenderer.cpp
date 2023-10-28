@@ -16,9 +16,14 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 
 	int layerID = 0;
 	if (lua_type(L, 2) == LUA_TSTRING) {
-		LayerState* layerState = sprite->GetLayer(luaL_checkstring(L, 2));
+		const char* layerName = luaL_checkstring(L, 2);
+		LayerState* layerState = sprite->GetLayer(layerName);
 		if (layerState != nullptr) {
 			layerID = layerState->GetLayerID();
+		}
+		else
+		{
+			return luaL_error(L, "Invalid layer name %s\n", layerName);
 		}
 	}
 	else {
@@ -35,7 +40,6 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 	printf("copy loaded: %s\n", toLua->_anm2._loaded == true ? "TRUE" : "FALSE");
 	// fuck you, be loaded
 	if (true) {
-		__debugbreak();
 		toLua->_anm2.Load(sprite->_filename, true);
 		printf("copy loaded NOW: %s\n", toLua->_anm2._loaded == true ? "TRUE" : "FALSE");
 		printf("orig filename: %s\n", sprite->_filename.c_str());
@@ -78,7 +82,7 @@ bool IsValidLayerID(BeamRenderer* beam, int id) {
 LUA_FUNCTION(Lua_BeamRender) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
 	bool clearPoints = true;
-	byte error = 0;
+	int8_t error = -1;
 
 	if (lua_isboolean(L, 2)) {
 		clearPoints = lua_toboolean(L, 2);
@@ -91,12 +95,12 @@ LUA_FUNCTION(Lua_BeamRender) {
 		}
 	}
 	else if (beam->_anm2._animState._animData == nullptr) {
-		error = 2;
+		error = 0;
 		goto funcEnd;
 	}
 	
 	if (!IsValidLayerID(beam, beam->_layer)) {
-		error = 3;
+		error = 2;
 		goto funcEnd;
 	}
 
@@ -115,8 +119,8 @@ LUA_FUNCTION(Lua_BeamRender) {
 		beam->_points.clear();
 	}
 
-	if (error != 0) {
-		return luaL_error(L, errors[error-1]);
+	if (error != -1) {
+		return luaL_error(L, errors[error]);
 	}
 
 	return 0;
