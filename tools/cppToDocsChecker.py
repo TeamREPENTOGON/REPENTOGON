@@ -15,47 +15,33 @@ if "GITHUB_WORKSPACE" in os.environ:
     DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "documentation/docs/")
     CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "repentogon/")
 
-ignoreFunctionWords = ["Register","_Test","__gc", "Patch", "FixMusicManager", "lua_LGR_gc", "lua_Image_gc", "lua_Transformer_gc"]
-ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp"]
-subFolders = [["Menu","menus"]]
+ignoreLuaFunctions = ["lua_rawgeti", "luaL_argerror", "lua_type", "lua_next","lua_isnil", "lua_isinteger", "lua_isboolean"]
+ignoreFunctionNames = ["__index", "__newindex", "__call", "__len", "__gc"]
+ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp", "UNUSED"]
 
-parentClass = {
-               "Ambush": "Game",
-               "AnimationData": "Sprite",
-               "AnimationState": "Entity",
-               "Backdrop": "Room",
-               "Camera": "Room",
-               "Capsule": "Entity",
-               "ChallengeParam": "Game",
-               "ColorCorrction": "FXParams",
-               "Console":"Game",
-               "DailyChallenge":"Isaac",
-               "DebugRenderer":"Game,Entity,Shape",
-               "EntityPlayer":"PocketItem,MultiShotParams",
-               "EntitySlot":"Entity",
-               "FXParams": "Room",
-               "GridEntity":"Isaac,GridEntityRock",
-               "History":"EntityPlayer,HistoryItem",
-               "ItemConfig":"ItemConfig_PillEffect",
-               "ItemOverlay":"Game",
-               "ImGui":"Isaac",
-               "LocalizationStuff":"Isaac",
-               "LevelGenerator": "LevelGeneratorRoom",
-               "MenuManager":"Isaac",
-               "Minimap":"Game",
-               "NightmareScene":"Isaac",
-               "NullFrame":"Sprite",
-               "PersistentGameData":"Isaac",
-               "PlayerHUD":"HUD",
-               "PlayerManager":"Game",
-               "ProceduralItemManager":"Game",
-               "RoomTransition":"Game",
-               "RoomConfigHolder":"Game",
-               "ScoreSheet":"Game",
-               "StageTransition":"Game",
-               "Sprite":"LayerState",
-               "Weapon":"Isaac,EntityPlayer",
-               }
+luaCallToDataType = {
+    "luaL_checkstring": "string",
+    "luaL_optstring": "string",
+    "luaL_checkinteger": "int",
+    "luaL_optinteger": "int",
+    " lua_tointegerx": "int",
+    "luaL_checknumber": "float",
+    "luaL_optnumber": "float",
+    "lua_toboolean": "boolean",
+    "lua_isnoneornil": "boolean",
+    "luaL_optboolean": "boolean",
+    "lua_isfunction": "function",
+    "CheckAndSetCallback": "function",
+    "lua_istable": "table",
+    "lua_gettable":"table",
+    "lua_rawlen": "table",
+}
+luaReturnDataType = {
+    "lua_pushinteger": "int",
+    "lua_pushnumber": "float",
+    "lua_pushstring": "string",
+    "lua_pushboolean": "boolean"
+}
 
 
 def searchInDocFile(docFilePath, luaFunctions):
@@ -63,7 +49,7 @@ def searchInDocFile(docFilePath, luaFunctions):
         docFile = open(docFilePath, 'r')
         for line in docFile:
             if "####" in line: # function header
-                filterLinks = re.sub("\]\([a-zA-Z0-9\.\/:]*html\)", "", line)
+                filterLinks = re.sub("\]\([a-zA-Z0-9\.\/:_]*html\)", "", line)
                 filterMdLinks = re.sub("\]\(.*md\)", "", filterLinks).replace("[const ","[").replace("[","")
                 filteredLine = filterMdLinks.split("####")[1].split("{:")[0].replace(")","").strip()
                 lineSplit = filteredLine.split(" (")
@@ -89,7 +75,6 @@ def searchInDocFile(docFilePath, luaFunctions):
     else:
         print("###### No doc file found for file: "+docFilePath)
 
-
 for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
     skip = False
     for ignoreFile in ignoreFiles:
@@ -101,82 +86,142 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
     print(os.path.abspath(file))
     cppFile = open(os.path.abspath(file), 'r', encoding="utf-8")
 
-    className = ""
+    referencedClasses = []
+    referencedClasses.append(os.path.basename(file).split("Lua")[1].split(".")[0].lower())
     luaFunctions = []
     functionName = ""
     functionArgs = []
     functionOptArgs = []
+    returnValue = "void"
 
     lastPushString = ""
 
     isInsideFunction = False
+    functionNestingCount = 0
     for line in cppFile:
-        if "(lua_State* L)" in line and not "/*" in line:
-            # function body found
-            isInsideFunction = True
-
+        if "(lua_State* L)" in line and not "/*" in line: # possible lua-related function that doesnt use macro
             functionDef = line.split("(lua_State")[0]
             functionName = functionDef.split(" ")[len(functionDef.split(" "))-1]
-        elif "LUA_FUNCTION(" in line:
-            # function body found
+            if not functionName.startswith("Register") and "int" in line:
+                isInsideFunction = True
+                functionNestingCount = functionNestingCount + line.count('{')
+                print("\t WARNING: Lua function found that doesn't use LUA_FUNCTION() macro: ", functionName)
+        elif "LUA_FUNCTION(" in line and not "/*" in line: # lua-related function starts
             isInsideFunction = True
+            functionNestingCount = functionNestingCount + line.count('{')
             functionName = line.split("(")[1].split(")")[0].strip()
-        elif "lua::RegisterFunction" in line:
-            # check if an existing function name was mentioned in a later line. this means the function got registered under a new name
-            for func in luaFunctions:
-                if func[0] in line:
-                    func[0] = line.split("\"")[1]
         elif isInsideFunction:
-            if "lua_pushstring" in line and len(line.split("\"")) > 1:
-                lastPushString = line.split("\"")[1]
-            # check if an existing function name was mentioned in a later line. this means the function got registered under a new name
-            for func in luaFunctions:
-                if func[0] in line:
-                    if len(line.split("\"")) > 1:
-                        func[0] = line.split("\"")[1]
-                    else:
-                        func[0] = lastPushString
-                    lastPushString = ""
+            functionNestingCount = functionNestingCount + line.count('{') - line.count('}') # handle nesting
+            # find return value
+            if "luaL_setmetatable" in line or "UserdataPtr::push" in line:
+                returnValue = line.split(",")[-1].split(")")[0].replace("\"","").replace("MT","").split(":")[-1].strip()
+            else:
+                for returnCommand in luaReturnDataType: # look for typical return values
+                    if returnCommand in line:
+                        returnValue = luaReturnDataType[returnCommand]
+            
+            # Handle function arguments and stuff
+            if re.search("\((\s)*L,(\s)*([2-9]|\d{2,})", line): # access to lua stack; pattern searches for (L, [NUMBER bigger 1] 
+                isIgnore = False
+                for ignoreWord in ignoreLuaFunctions: # ignore arg error handling defs
+                    if ignoreWord in line:
+                        isIgnore = True
+                        break
+                if isIgnore:
+                    continue
 
-            # Handle function specific stuff
-            if "luaL_check" in line:
-                # args
-                functionArgs.append(line.split("luaL_check")[1].replace("(L,","").split(")")[0].strip())
-            elif "luaL_opt" in line:
-                # optional args
-                functionOptArgs.append(line.split("luaL_opt")[1].replace("(L,","").split(")")[0].strip())
-            elif "lua::GetUserdata" in line and "(L, 1" not in line:
-                # special args like vectors
-                functionArgs.append(line.strip().split(" ")[0])
-            elif "}" == line.strip() or "};" == line.strip():
-                luaFunctions.append([functionName, functionArgs, functionOptArgs,False])
+                variableType = ""
+                variableName = "var"
+                for luaType in luaCallToDataType:
+                    if luaType in line:
+                        variableType = luaCallToDataType[luaType]
+                        break
+                if "GetUserdata<" in line: # extract variableType from userdata
+                    variableType = line.split("GetUserdata<")[1].split(">")[0].replace("*","")
+                if "=" in line:
+                    varDefinition = line.split("=")[0].strip().split(" ")
+                    variableName = varDefinition[-1]
+                if "luaL_opt" in line: # optional Argument
+                    lastArgument = line.strip()[:-1].split(",")[-1]
+                    
+                    valueOfLastArgument = re.match("(\(.*?\))?(.*?)\)", lastArgument)
+                    defaultVal = valueOfLastArgument.groups()[-1]
+
+                    functionOptArgs.append(variableType + " " + variableName + " = " + defaultVal)
+                else: # required Argument
+                    functionArgs.append(variableType + " " + variableName)
+                if variableType == "":
+                    print("\t ERROR: no variable type found in line: ", line.strip())
+
+            elif functionNestingCount == 0: # function ends. save collected data
+                luaFunctions.append([functionName, functionArgs, functionOptArgs, False, referencedClasses[0], returnValue])
 
                 functionName = ""
                 functionArgs = []
                 functionOptArgs = []
                 isInsideFunction = False
-    
-    if className == "":
-        className = os.path.basename(file).split("Lua")[1].split(".")[0]
-    
-    subFolder = ""
-    for entry in subFolders:
-        if entry[0] in className:
-            subFolder = entry[1] + "/"
-            break
+                returnValue = "void"
+        else:          
+            if "lua_pushstring" in line and isInsideFunction: # Meta-Table entry defined with a given name
+                lastPushString = line.split("\"")[1] 
+                print("String function defined: ",lastPushString)
+            if "lua::RegisterNewClass" in line or "lua::RegisterFunctions" in line:
+                registerToClass = line.split(",")[1].strip() # second arg is always the metatable
+                registerToClass = registerToClass.replace("\"","").replace("_","").replace("MT","").split(":")[-1] # clean up inconsistant metatable defs
+                referencedClasses.append(registerToClass.lower())
+            for func in luaFunctions: # Try match function name with lua name  
+                if func[0] in line: # function was mentioned in this line
+                    if "lua::Register" in line: # function was registered to a specific class
+                        registerToClass = line.split(",")[1].strip() # second arg is always the metatable
+                        registerToClass = registerToClass.replace("\"","").replace("_","").replace("MT","").split(":")[-1] # clean up inconsistant metatable defs
+                        func[4] = registerToClass.lower()
+                        referencedClasses.append(registerToClass.lower())
+                    textPart = line.split("\"")
+                    if len(textPart) > 2:
+                        func[0] = textPart[-2]
+                    elif lastPushString != "":
+                        func[0] = lastPushString
     
     # search in own documentation and the parent documentation
-    searchInDocFile(DOCS_FOLDER_PATH + subFolder+ className + ".md", luaFunctions)
-    if className in parentClass:
-        for parent in parentClass[className].split(","):
-            searchInDocFile(DOCS_FOLDER_PATH + parent + ".md", luaFunctions)
+    for file in glob.glob(DOCS_FOLDER_PATH+"\**\*.md", recursive=True):
+        filename = file.split("\\")[-1].replace(".md","").lower()
+        if filename in referencedClasses:
+            searchInDocFile(file, luaFunctions)
 
     # Print missing matches
     for func in luaFunctions:
-        for ignoreWord in ignoreFunctionWords:
-            if ignoreWord in func[0]:
-                func[3] = True
-        
+        if func[0] in ignoreFunctionNames or func[0].endswith("_gc") or func[0].endswith("_Constructor"):
+            continue
         if not func[3]:
-            print("\t Missing: "+func[0]+ "\targs:"+str(func[1])+ "\topt-args:"+str(func[2]))
+            print("\t Missing: "+func[4]+"::"+func[0]+ "\targs:"+str(func[1])+ "\topt-args:"+str(func[2]))
+
+            if func[0].lower().startswith("lua_"):
+                # dont generate Docs of unmaped functions for now
+                continue
+
+            # generate Documentation entry
+            args = str(func[1]).replace("[","").replace("]","").replace("'","")
+            if len(func[1]) > 0 and len(func[2])>0:
+                args += ", " 
+            args+= str(func[2]).replace("[","").replace("]","").replace("'","")
+
+            returnVal = func[5]
+            if returnVal != "void" and returnVal != "int" and returnVal != "float" and returnVal != "string" and returnVal != "boolean":
+                returnVal = "["+func[5]+"]("+func[5]+".md)"
+            if returnVal == "void" and "get" in func[0].lower():
+                returnVal = "<UNDEFINED>"
+
+            # split function name with dots
+            splitFuncName = func[0]
+            loc = re.search(r"[a-z][A-Z]\w+", splitFuncName)
+            while(loc):
+                splitFuncName = splitFuncName[:loc.span()[0]+1] + "·" + splitFuncName[loc.span()[0]+1:]
+                loc = re.search(r"[a-z][A-Z]\w+", splitFuncName)
+
+            titleStr = "### "+splitFuncName+ " () {: aria-label='Functions' }"
+            funcStr = ("#### "+returnVal+" "+func[0]+ " ( "+args+" ) {: .copyable aria-label='Functions' }").replace("  "," ")
+
+            print(titleStr)
+            print(funcStr)
+            print("\n___")
         
