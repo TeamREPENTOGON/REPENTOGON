@@ -17,7 +17,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 	const int vectorSize = (const int)luaL_optinteger(L, 5, POINT_VECTOR_SIZE);
 
 	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamRendererMT, layerID, useOverlay, unk);
-	toLua->_anm2.construct_from_copy(sprite);
+	toLua->_anm2 = *toLua->_anm2.construct_from_copy(sprite);
 	toLua->_points.reserve(vectorSize);
 	luaL_setmetatable(L, lua::metatables::BeamRendererMT);
 	return 1;
