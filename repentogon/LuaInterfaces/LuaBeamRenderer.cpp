@@ -30,7 +30,7 @@ LUA_FUNCTION(Lua_BeamAdd) {
 	float widthMod = (float)luaL_checknumber(L, 4);
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
 
-	Point point(*pos, Vector(0, 0), heightMod, widthMod, *color);
+	Point point(*pos, heightMod, widthMod, *color);
 	beam->_points.push_back(point);
 
 	return 0;
