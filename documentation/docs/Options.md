@@ -25,3 +25,7 @@ ___
 If set, Key Master bums will also raise the chance for a deal when killed.
 
 ___
+### Prevent·Mod·Updates {: aria-label='Variables' }
+#### boolean PreventModUpdates {: .copyable aria-label='Variables' }
+
+___

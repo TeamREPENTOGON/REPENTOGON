@@ -26,6 +26,18 @@ ___
 Gets the maximum amount of normal challenge room waves. In vanilla play this is always 3. Mods can increase or decrease this.
 
 ___
+### Get·Next·Wave () {: aria-label='Functions' }
+#### [RoomConfigRoom](RoomConfigRoom.md) GetNextWave ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Next·Waves () {: aria-label='Functions' }
+#### table GetNextWaves ( ) {: .copyable aria-label='Functions' }
+Returns a table containing [RoomConfigRoom](RoomConfigRoom.md) objects.
+___
+### Is·Active () {: aria-label='Functions' }
+#### boolean IsActive ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Max·Bossrush·Waves () {: aria-label='Functions' }
 #### void SetMaxBossrushWaves ( int Waves ) {: .copyable aria-label='Functions' }
 Sets the maximum amount of boss rush waves. This caps out at 25 for now, until (if) inserting waves and whatnot is figured out.

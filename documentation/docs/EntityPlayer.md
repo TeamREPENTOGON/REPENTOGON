@@ -11,6 +11,10 @@ This class contains both new functions and modified reimplementations of existin
 Now accepts an optional `bool` to determine if [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ___
+### Add·Innate·Collectible () {: aria-label='Functions' }
+#### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, int amount = 1 ) {: .copyable aria-label='Functions' }
+
+___
 ### Clear·Dead·Eye·Charge () {: aria-label='Modified Functions' }
 #### void ClearDeadEyeCharge ( boolean Force = false ) {: .copyable aria-label='Modified Functions' }
 Now accepts a `Force` argument to forcefully reset the charge instead of only rolling for a change to reset.
@@ -281,7 +285,7 @@ ___
 
 ___
 ### Get·Wisp·Collectibles·List () {: aria-label='Functions' }
-#### table GetWispCollecitblesList ( ) {: .copyable aria-label='Functions' }
+#### table GetWispCollectiblesList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Increment·Player·Form·Counter () {: aria-label='Functions' }
@@ -406,7 +410,7 @@ ___
 
 ___
 ### Set·Next·Urethra·Block·Frame () {: aria-label='Functions' }
-#### void SetUrethraBlockFrame ( int Frame ) {: .copyable aria-label='Functions' }
+#### void SetNextUrethraBlockFrame ( int Frame ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Pony·Charge () {: aria-label='Functions' }

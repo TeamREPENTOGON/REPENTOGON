@@ -113,3 +113,7 @@ The game typically uses `1` or `-1` for its values depending on current strength
 
 `Vector(0, 0)` will remove the current.
 ___
+### Update·Color·Modifier () {: aria-label='Functions' }
+#### void UpdateColorModifier ( boolean process, boolean lerp, float rate = 0.015 ) {: .copyable aria-label='Functions' }
+
+___

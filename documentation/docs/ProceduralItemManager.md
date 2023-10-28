@@ -19,10 +19,10 @@ Returns the negative ID of the created item.
 
 ___
 ### Get·Procedural·Item () {: aria-label='Functions' }
-#### [ProceduralItem](ProceduralItem.md) GetProcedualItem ( int index ) {: .copyable aria-label='Functions' }
+#### [ProceduralItem](ProceduralItem.md) GetProceduralItem ( int index ) {: .copyable aria-label='Functions' }
 Get the glitch item at the given index.
 
 ___
 ### Get·Procedural·Item·Count () {: aria-label='Functions' }
-#### int GetProcedualItemCount ( ) {: .copyable aria-label='Functions' }
+#### int GetProceduralItemCount ( ) {: .copyable aria-label='Functions' }
 ___

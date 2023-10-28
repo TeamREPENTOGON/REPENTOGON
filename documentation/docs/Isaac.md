@@ -83,6 +83,10 @@ ___
 #### [Sprite](Sprite.md) GetCursorSprite ( ) {: .copyable aria-label='Functions' }
 Returns the cursor sprite that is rendered when ``Options.MouseControl`` is set to true. 
 ___
+### Get·Collectible·Spawn·Position () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCollectibleSpawnPosition ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Completion·Mark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](enums/CompletionType.md) marktype) {: .copyable aria-label='Functions' }
 Gets a completion mark value for a specific character. Supports both modded and vanilla characters. 
@@ -149,6 +153,10 @@ ___
 #### [NightmareScene](NightmareScene.md) GetNightmareScene ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Null·Item·Id·By·Name () {: aria-label='Functions' }
+#### int GetNullItemIdByName ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Menu·Manager () {: aria-label='Functions' }
 #### [MenuManager](menus/MenuManager.md) GetMenuManager ( ) {: .copyable aria-label='Functions' }
 Returns the menu manager object.
@@ -156,6 +164,10 @@ ___
 ### Get·Persistent·Game·Data () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
 Should probably be moved to Game for consistency.
+
+___
+### Get·Render·Position () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetRenderPosition ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, boolean scale = true ) {: .copyable aria-label='Functions' }       
 
 ___
 ### Get·String () {: aria-label='Functions' }

@@ -58,6 +58,10 @@ ___
 #### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Current·Color·Modifier () {: aria-label='Functions' }
+#### [ColorModifier](ColorModifier.md) GetCurrentColorModifier ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Debug·Flags () {: aria-label='Functions' }
 #### int GetDebugFlags ( ) {: .copyable aria-label='Functions' }
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
@@ -70,6 +74,10 @@ Used to render debug info like collision shapes.
 ___
 ### Get·Dimension () {: aria-label='Functions' }
 #### int GetDimension ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Lerp·Color·Modifier () {: aria-label='Functions' }
+#### [ColorModifier](ColorModifier.md) GetLerpColorModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Minimap () {: aria-label='Functions' }
@@ -102,12 +110,21 @@ ___
 
 ___
 ### Get·Score·Sheet () {: aria-label='Functions' }
-#### [ScoreSheet](ScoreSheet.md) GetScoreSheet( ) {: .copyable aria-label='Functions' }
+#### [ScoreSheet](ScoreSheet.md) GetScoreSheet ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Stage·Transition () {: aria-label='Functions' }
 #### [StageTransition](StageTransition.md) GetStageTransition ( ) {: .copyable aria-label='Functions' }
 
+___
+### Get·Target·Color·Modifier () {: aria-label='Functions' }
+#### [ColorModifier](ColorModifier.md) GetTargetColorModifier ( ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Erased () {: aria-label='Functions' }
+#### boolean IsErased ( [Entity](Entity.md) entity) {: .copyable aria-label='Functions' }
+#### boolean IsErased ( int type, int variant = -1, int subtype = -1 ) {: .copyable aria-label='Functions' }
+Checks if an entity was erased.
 ___
 ### Is·Greed·Boss () {: aria-label='Functions' }
 #### boolean IsGreedBoss ( ) {: .copyable aria-label='Functions' }
@@ -125,6 +142,10 @@ ___
 ### Is·Pause·Menu·Open () {: aria-label='Functions' }
 #### boolean IsPauseMenuOpen ( ) {: .copyable aria-label='Functions' }
 Returns `true` if the pause menu is open
+
+___
+### Set·Color·Modifier () {: aria-label='Functions' }
+#### void SetColorModifier ( [ColorModifier](ColorModifier.md) colorModifier, boolean lerp = true, float rate = 0.015 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Spawn·Bomb·Crater () {: aria-label='Functions' }

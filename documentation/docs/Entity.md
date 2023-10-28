@@ -32,6 +32,10 @@ ___
     At the moment, the duration setting gives no effect, so you need to call this function repeatedly.
 
 ___
+### Copy·Status·Effects () {: aria-label='Functions' }
+#### void CopyStatusEffects ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Animation·State () {: aria-label='Functions' }
 #### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
 
