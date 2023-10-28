@@ -12,11 +12,13 @@ static void BeamRenderer::End();
 
 struct BeamRenderer depends (ANM2) {
 	{{
-		BeamRenderer(ANM2* anm2, unsigned int layer, bool useOverlayData, bool unkBool) : _anm2(anm2), _layer(layer), _useOverlayData(useOverlayData), _unkBool(unkBool) {}
+		BeamRenderer(unsigned int layer, bool useOverlayData, bool unkBool) : _layer(layer), _useOverlayData(useOverlayData), _unkBool(unkBool) {}
+	
+		inline ANM2* GetANM2() { return &this->_anm2; }
 	}}
-	ANM2* _anm2 : 0x0;
-	unsigned int _layer : 0x4;
-	bool _useOverlayData : 0x8;
-	bool _unkBool : 0x9;
-	vector_Point _points : 0xc;
-} : 0x18;
+	ANM2 _anm2 : 0x0;
+	unsigned int _layer : 0x114;
+	bool _useOverlayData : 0x118;
+	bool _unkBool : 0x119;
+	vector_Point _points : 0x11c;
+} : 0x128;

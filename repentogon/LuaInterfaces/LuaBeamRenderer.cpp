@@ -2,18 +2,23 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+constexpr auto POINT_VECTOR_SIZE = 8;
+
 LUA_FUNCTION(Lua_CreateBeamDummy) {
 	int top = lua_gettop(L);
 	if (top < 4) {
-		luaL_error(L, "Expected 4 arguments, got %d", top);
+		luaL_error(L, "Expected at least 4 arguments, got %d", top);
 	}
 	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	const int layerID = (const int)luaL_checkinteger(L, 2);
 	bool useOverlay = lua_toboolean(L, 3);
 	bool unk = lua_toboolean(L, 4);
+	const int vectorSize = (const int)luaL_optinteger(L, 5, POINT_VECTOR_SIZE);
 
-	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamRendererMT, sprite, layerID, useOverlay, unk);
+	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamRendererMT, layerID, useOverlay, unk);
+	toLua->_anm2.construct_from_copy(sprite);
+	toLua->_points.reserve(vectorSize);
 	luaL_setmetatable(L, lua::metatables::BeamRendererMT);
 	return 1;
 }
@@ -47,22 +52,22 @@ LUA_FUNCTION(Lua_BeamRender) {
 	}
 
 	if (beam->_useOverlayData) {
-		if (beam->_anm2->_overlayAnimState._animData == nullptr) {
+		if (beam->_anm2._overlayAnimState._animData == nullptr) {
 			error = 1;
 			goto funcEnd;
 		}
 	}
-	else if (beam->_anm2->_animState._animData == nullptr) {
+	else if (beam->_anm2._animState._animData == nullptr) {
 		error = 2;
 		goto funcEnd;
 	}
 	
-	if (beam->_layer < 0 || (const unsigned int)beam->_layer + 1 > beam->_anm2->GetLayerCount()) {
+	if (beam->_layer < 0 || (const unsigned int)beam->_layer + 1 > beam->_anm2.GetLayerCount()) {
 		error = 3;
 		goto funcEnd;
 	}
 
-	g_BeamRenderer->Begin(beam->_anm2, beam->_layer, beam->_useOverlayData, beam->_unkBool);
+	g_BeamRenderer->Begin(beam->GetANM2(), beam->_layer, beam->_useOverlayData, beam->_unkBool);
 
 	for (auto it = beam->_points.begin(); it != beam->_points.end(); ++it) {
 		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_heightMod, it->_widthMod);
@@ -74,7 +79,7 @@ LUA_FUNCTION(Lua_BeamRender) {
 	funcEnd:
 
 	if (clearPoints) {
-		std::vector<Point>().swap(beam->_points);
+		beam->_points.clear();
 	}
 
 	if (error != 0) {
@@ -84,8 +89,28 @@ LUA_FUNCTION(Lua_BeamRender) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_BeamGetSprite) {
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	ANM2* anm2 = beam->GetANM2();
+	if (anm2 == nullptr) {
+		return luaL_error(L, "Beam Sprite is NULL!");
+	}
+	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BeamSetSprite) {
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
+	beam->_anm2.destructor();
+	beam->_anm2.construct_from_copy(anm2);
+	return 0;
+
+}
+
 LUA_FUNCTION(Lua_BeamRenderer__gc) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	beam->_anm2.destructor();
 	beam->~BeamRenderer();
 
 	return 0;
@@ -95,6 +120,8 @@ static void RegisterBeamRenderer(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "Add", Lua_BeamAdd},
 		{ "Render", Lua_BeamRender},
+		{ "GetSprite", Lua_BeamGetSprite},
+		{ "SetSprite", Lua_BeamSetSprite},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::BeamRendererMT, lua::metatables::BeamRendererMT, functions, Lua_BeamRenderer__gc);
