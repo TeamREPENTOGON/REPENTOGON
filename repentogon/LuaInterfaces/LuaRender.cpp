@@ -2509,8 +2509,8 @@ namespace LuaRender {
 		applyImagePatch.AddInternalCall(LuaPreDrawElements);
 		applyImagePatch.AddRelativeJump((char*)applyImage + 0x6);
 
-		// sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
-		// sASMPatcher.PatchAt(applyImage, &applyImagePatch);
+		sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
+		sASMPatcher.PatchAt(applyImage, &applyImagePatch);
 	}
 
 #define PAD(D, T, N) D.AddAttribute(T, N)
