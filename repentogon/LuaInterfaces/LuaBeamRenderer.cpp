@@ -17,7 +17,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 	const int vectorSize = (const int)luaL_optinteger(L, 5, POINT_VECTOR_SIZE);
 
 	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamRendererMT, layerID, useOverlay, unk);
-	toLua->_anm2 = *toLua->_anm2.construct_from_copy(sprite);
+	toLua->_anm2.construct_from_copy(sprite);
 	toLua->_points.reserve(vectorSize);
 	luaL_setmetatable(L, lua::metatables::BeamRendererMT);
 	return 1;
@@ -103,7 +103,7 @@ LUA_FUNCTION(Lua_BeamSetSprite) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
 	beam->_anm2.destructor();
-	beam->_anm2 = *beam->_anm2.construct_from_copy(anm2);
+	beam->_anm2.construct_from_copy(anm2);
 	return 0;
 
 }
