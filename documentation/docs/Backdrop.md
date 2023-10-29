@@ -13,12 +13,12 @@
 ## Functions
 
 ### Get·Floor·Image () {: aria-label='Functions' }
-#### [Image](Image.md) GetFloorImage ( ) {: .copyable aria-label='Functions' }
+#### [Image](renderer/Image.md) GetFloorImage ( ) {: .copyable aria-label='Functions' }
 Returns the buffer containing the floor texture of the current room.
 
 ___
 ### Get·Wall·Image () {: aria-label='Functions' }
-#### [Image](Image.md) GetWallImage ( ) {: .copyable aria-label='Functions' }
+#### [Image](renderer/Image.md) GetWallImage ( ) {: .copyable aria-label='Functions' }
 Returns the buffer containing the wall texture of the current room.
 
 ___

@@ -1,5 +1,0 @@
-# Class "Renderer"
-
-TODO
-
-## Functions

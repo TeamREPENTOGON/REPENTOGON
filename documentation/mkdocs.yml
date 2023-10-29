@@ -44,6 +44,9 @@ nav:
 - Docs:
   - Home: index.md
   - Enums:
+    - Renderer:
+      - GLSLType: enums/GLSLType.md
+      - ShaderType: enums/ShaderType.md
     - Achievement: enums/Achievement.md
     - AnimRenderFlags: enums/AnimRenderFlags.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
@@ -136,7 +139,6 @@ nav:
     - Minimap: Minimap.md
     - PlayerHUD: PlayerHUD.md
     - PlayerHUDHeart: PlayerHUDHeart.md
-  - Image: Image.md
   - ImGui: ImGui.md
   - Isaac: Isaac.md
   - ItemConfig - PillEffect: ItemConfig_PillEffect.md
@@ -180,9 +182,20 @@ nav:
   - Rendering:
     - Beam: Beam.md
     - BlendMode: BlendMode.md
-    - Capsule: Capsule.md
-    - Renderer: Renderer.md
-    - Shape: Shape.md
+    - Capsule: renderer/Capsule.md
+    - DestinationQuad: renderer/DestinationQuad.md
+    - GLSLValue: renderer/GLSLValue.md
+    - Image: renderer/Image.md
+    - Pipeline: renderer/Pipeline.md
+    - Renderer: renderer/Renderer.md
+    - RendererSet: renderer/RendererSet.md
+    - Shader: renderer/Shader.md
+    - SourceQuad: renderer/SourceQuad.md
+    - Shape: renderer/Shape.md
+    - Transformer: renderer/Transformer.md
+    - Vertex: renderer/Vertex.md
+    - VertexBuffer: renderer/VertexBuffer.md
+    - VertexDescriptor: renderer/VertexDescriptor.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfig:
@@ -212,7 +225,7 @@ nav:
 - XML:
   - players.xml: xml/players.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
-- Custom Rendering: CustomRendering.md
+- Custom Rendering: renderer/CustomRendering.md
 plugins:
 - search:
     separator: "[\\s\\-\\.\\_\\\xB7]+"

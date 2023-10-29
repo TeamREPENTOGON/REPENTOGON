@@ -264,11 +264,11 @@ value.
 The uniform you'll probably need in almost any situation is the projection matrix, 
 that converts coordinates from view space (the coordinates returned by the 
 `WorldToScreen()` function) into clip space (the screen on which rendering is being
-done). This matrix can be accessed by using the `Renderer.GetProjectionMatrix()`
+done). This matrix can be accessed by using the `Renderer.ProjectionMatrix()`
 function.
 
 ```lua
-mod.EdgeDetectionShader:BindMat4("Transform", Renderer.GetProjectionMatrix())
+mod.EdgeDetectionShader:BindMat4("Transform", Renderer.ProjectionMatrix())
 ```
 
 ### Successive passes and the view space
