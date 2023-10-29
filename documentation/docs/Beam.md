@@ -57,7 +57,6 @@ ___
 ___
 ### Set·Layer () {: aria-label='Functions' }
 #### void SetLayer ( int LayerID ) {: .copyable aria-label='Functions' }   
-### Set·Layer () {: aria-label='Functions' }
 #### void SetLayer ( string LayerName ) {: .copyable aria-label='Functions' }   
 ___
 ### Set·Sprite () {: aria-label='Functions' }
