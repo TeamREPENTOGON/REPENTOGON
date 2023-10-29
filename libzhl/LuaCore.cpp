@@ -510,6 +510,25 @@ namespace lua {
 		}
 	}
 
+	bool luaL_checkboolean(lua_State* L, int idx, BoolCheckModes mode) {
+		switch (mode) {
+		case BOOL_CHECK_MODE_DEFAULT:
+			return lua_toboolean(L, idx);
+
+		case BOOL_CHECK_MODE_NOT_NIL:
+			if (lua_isnil(L, idx)) {
+				return luaL_error(L, "Expected non nil boolean as parameter #%d\n", idx);
+			}
+			return lua_toboolean(L, idx);
+
+		case BOOL_CHECK_MODE_STRICT:
+			if (lua_type(L, idx) != LUA_TBOOLEAN) {
+				return luaL_error(L, "Stricly expected boolean as parameter #%d\n", idx);
+			}
+			return lua_toboolean(L, idx);
+		}
+	}
+
 	LuaCaller::LuaCaller(lua_State* L) : _L(L) { }
 
 	LuaCaller& LuaCaller::push(bool x) {

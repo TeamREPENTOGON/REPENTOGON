@@ -468,7 +468,14 @@ namespace lua {
         };
     }
 
+    enum BoolCheckModes : uint8_t {
+        BOOL_CHECK_MODE_DEFAULT,
+        BOOL_CHECK_MODE_NOT_NIL,
+        BOOL_CHECK_MODE_STRICT
+    };
+
     LIBZHL_API bool luaL_optboolean(lua_State* L, int idx, bool default);
+    LIBZHL_API bool luaL_checkboolean(lua_State* L, int idx, BoolCheckModes mode = BOOL_CHECK_MODE_NOT_NIL);
 
     template<typename T, typename... Args>
     T* place(lua_State* L, const char* mt, Args&&... args) {
