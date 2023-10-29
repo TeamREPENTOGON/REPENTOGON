@@ -1,13 +1,14 @@
 # Class "Beam"
-## Constructors
-### Beam () {: aria-label='Constructors' }
-[ ](#){: .abrep .tooltip .badge }
-#### [Beam](Beam.md) Beam ( [Sprite](Sprite.md) Sprite, int Layer, boolean UseOverlay, boolean UnkBool, int ) {: .copyable aria-label='Constructors' }
-#### [Beam](Beam.md) Beam ( [Sprite](Sprite.md) Sprite, string LayerName, boolean UseOverlay, boolean UnkBool) {: .copyable aria-label='Constructors' }
 
 This class provides access to the rendering system used for cords as used by Evis, Scrouge, Dogma, etc.
 
+## Constructors
+### Beam () {: aria-label='Constructors' }
+#### [Beam](Beam.md) Beam ( [Sprite](Sprite.md) Sprite, int Layer, boolean UseOverlay, boolean UnkBool, int PointsPreallocateSize = 8) {: .copyable aria-label='Constructors' }
+#### [Beam](Beam.md) Beam ( [Sprite](Sprite.md) Sprite, string LayerName, boolean UseOverlay, boolean UnkBool int PointsPreallocateSize = 8) {: .copyable aria-label='Constructors' }
 
+???- note "Notes"
+	`PointsPreallocateSize` is the amount of space that `Beam` will reserve to hold points. This is not a hard limit, but going past this amount will incur a performance cost as more memory must be allocated to hold new ones.
 
 ???- example "Example Code"
 	Here is an example of how you would use this class:
