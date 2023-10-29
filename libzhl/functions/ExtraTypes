@@ -50,6 +50,11 @@ TypeInfo WeaponType {
     Size 4;
 };
 
+TypeInfo vector_Point {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo vector_TemporaryEffect {
     Size 12;
     Align 4;

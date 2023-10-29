@@ -19,6 +19,9 @@ __thiscall void AnimationState::AdvancePosition(int amount);
 "568bf1c746??00000000c746??00000000":
 __thiscall void AnimationState::Rewind();
 
+"558bec8b45??568bf1578946":
+__thiscall void AnimationState::Reset(AnimationState* right);
+
 struct AnimationState depends (AnimationData, ANM2) { {{
     inline AnimationData* GetAnimationData() { return this->_animData; }
     inline void SetFrame(const float frame) { this->_animFrame = frame; }

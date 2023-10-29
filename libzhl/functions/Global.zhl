@@ -43,6 +43,8 @@ struct EntityId {
     int subtype;
 };
 
+// When adding typedefs, remember to define them in ExtraTypes!
+typedef std::vector<Point> vector_Point;
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
@@ -51,6 +53,7 @@ typedef std::string std_string;
 typedef std::vector<ModEntry*> vector_ModEntryPointer;
 typedef std::deque<std::string> deque_string;
 typedef std::vector<int> std_vector_int;
+typedef std::vector<Vector> std_vector_vector2;
 typedef std::vector<History_HistoryItem> std_vector_history_historyitem;
 typedef std::vector<unsigned int> std_vector_uint;
 typedef std::set<uint32_t> std_set_uint32t;

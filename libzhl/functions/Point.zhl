@@ -1,0 +1,11 @@
+"558bec83ec10568bf1f30f1046":
+__thiscall void Point::UpdateNormal(Vector* unk);
+
+struct Point depends (Vector, ColorMod) {
+	{{
+		Point(Vector const& pos, float height, float width, ColorMod const& color) : _pos(pos), _heightMod(height), _widthMod(width), _color(color) {}
+	}}
+	Vector _pos : 0x0;
+	float _heightMod : 0x8, _widthMod : 0xc;
+	ColorMod _color : 0x10;
+} : 0x3c;

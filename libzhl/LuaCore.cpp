@@ -693,7 +693,7 @@ namespace lua {
 		const char* AnimationLayerMT = "AnimationLayer";
 		const char* AnimationFrameMT = "AnimationFrame";
 		const char* BackdropMT = "Backdrop";
-		const char* BeamRendererMT = "BeamRenderer";
+		const char* BeamRendererMT = "Beam";
 		const char* BestiaryMenuMT = "BestiaryMenu";
 		const char* BlendModeMT = "BlendMode";
 		const char* CameraMT = "Camera";
