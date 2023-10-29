@@ -29,24 +29,24 @@ This class provides access to the rendering system used for cords as used by Evi
 ## Functions
 
 ### Add () {: aria-label='Functions' }
-#### void Add ( [Vector](Vector.md) Position, float Height = 1.0, float Width = 1.0, [Color](Color.md) Color = Color() ) {: .copyable aria-label='Functions' }   
+#### void Add ( [Vector](Vector.md) Position, float Height = 1.0, float Width = 1.0, [Color](Color.md) Color = Color ) {: .copyable aria-label='Functions' }   
 Adds a point to the beam. Points are stored in order of adding.
 
 ___
 ### Get·Layer () {: aria-label='Functions' }
-#### int GetLayer () {: .copyable aria-label='Functions' }   
+#### int GetLayer ( ) {: .copyable aria-label='Functions' }   
 
 ___
 ### Get·Sprite () {: aria-label='Functions' }
-#### [Sprite](Sprite.md) GetSprite () {: .copyable aria-label='Functions' }   
+#### [Sprite](Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }   
 
 ___
 ### Get·Use·Overlay () {: aria-label='Functions' }
-#### boolean GetUseOverlay () {: .copyable aria-label='Functions' }   
+#### boolean GetUseOverlay ( ) {: .copyable aria-label='Functions' }   
 
 ___
 ### Get·Unk·Bool () {: aria-label='Functions' }
-#### boolean GetUnkBool () {: .copyable aria-label='Functions' }   
+#### boolean GetUnkBool ( ) {: .copyable aria-label='Functions' }   
 
 ___
 
