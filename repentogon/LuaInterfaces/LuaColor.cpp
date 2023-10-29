@@ -19,7 +19,7 @@ LUA_FUNCTION(Lua_ColorGetTint) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ConstColorGetTint) {
+/*LUA_FUNCTION(Lua_ConstColorGetTint) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	lua_newtable(L);
 
@@ -31,7 +31,7 @@ LUA_FUNCTION(Lua_ConstColorGetTint) {
 		lua_settable(L, -3);
 	}
 	return 1;
-}
+}*/
 
 LUA_FUNCTION(Lua_ColorGetColorize) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::COLOR, "Color");
@@ -48,7 +48,7 @@ LUA_FUNCTION(Lua_ColorGetColorize) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ConstColorGetColorize) {
+/*LUA_FUNCTION(Lua_ConstColorGetColorize) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	lua_newtable(L);
 
@@ -61,7 +61,7 @@ LUA_FUNCTION(Lua_ConstColorGetColorize) {
 	}
 
 	return 1;
-}
+}*/
 
 
 LUA_FUNCTION(Lua_ColorGetOffset) {
@@ -79,7 +79,7 @@ LUA_FUNCTION(Lua_ColorGetOffset) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ConstColorGetOffset) {
+/*LUA_FUNCTION(Lua_ConstColorGetOffset) {
 	ColorMod* color = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	lua_newtable(L);
 
@@ -92,7 +92,7 @@ LUA_FUNCTION(Lua_ConstColorGetOffset) {
 	}
 
 	return 1;
-}
+}*/
 
 static void Lua_Color_ToString(lua_State* L, ColorMod* color) {
 	std::ostringstream s;
@@ -108,11 +108,11 @@ LUA_FUNCTION(Lua_Color_ToString) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_ConstColor_ToString) {
+/*LUA_FUNCTION(Lua_ConstColor_ToString) {
 	ColorMod* mod = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	Lua_Color_ToString(L, mod);
 	return 1;
-}
+}*/
 
 static void Lua_Color_Print(lua_State* L, ColorMod* color) {
 	std::ostringstream s;
@@ -130,11 +130,11 @@ LUA_FUNCTION(Lua_Color_Print) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_ConstColor_Print) {
+/*LUA_FUNCTION(Lua_ConstColor_Print) {
 	ColorMod* mod = lua::GetUserdata<ColorMod*>(L, 1, lua::Metatables::CONST_COLOR, "Color");
 	Lua_Color_Print(L, mod);
 	return 0;
-}
+}*/
 
 LUA_FUNCTION(Lua_CreateColor) {
 	ColorMod mod;

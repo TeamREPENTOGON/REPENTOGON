@@ -49,7 +49,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 		return luaL_error(L, "Must allocate at least two points");
 	}
 
-	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamRendererMT, layerID, useOverlay, unk);
+	BeamRenderer* toLua = lua::place<BeamRenderer>(L, lua::metatables::BeamMT, layerID, useOverlay, unk);
 
 	toLua->_anm2.construct_from_copy(sprite);
 	// fuck you, be loaded
@@ -58,12 +58,12 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 	}
 
 	toLua->_points.reserve(vectorSize);
-	luaL_setmetatable(L, lua::metatables::BeamRendererMT);
+	luaL_setmetatable(L, lua::metatables::BeamMT);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BeamAdd) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	float heightMod = (float)luaL_optnumber(L, 3, 1.0f);
 	float widthMod = (float)luaL_optnumber(L, 4, 1.0f);
@@ -79,7 +79,7 @@ LUA_FUNCTION(Lua_BeamAdd) {
 }
 
 LUA_FUNCTION(Lua_BeamRender) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	int8_t error = -1;
 	bool clearPoints = lua::luaL_optboolean(L, 2, true);
 
@@ -127,7 +127,7 @@ LUA_FUNCTION(Lua_BeamRender) {
 }
 
 LUA_FUNCTION(Lua_BeamGetSprite) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	ANM2* anm2 = beam->GetANM2();
 	if (anm2 == nullptr) {
 		return luaL_error(L, "Beam Sprite is NULL!");
@@ -137,7 +137,7 @@ LUA_FUNCTION(Lua_BeamGetSprite) {
 }
 
 LUA_FUNCTION(Lua_BeamSetSprite) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
 	beam->_anm2.destructor();
 	beam->_anm2.construct_from_copy(anm2);
@@ -147,14 +147,14 @@ LUA_FUNCTION(Lua_BeamSetSprite) {
 
 LUA_FUNCTION(Lua_BeamGetLayer)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	lua_pushinteger(L, *beam->GetLayer());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BeamSetLayer)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	int layerID = -1;
 	if (lua_type(L, 2) == LUA_TSTRING) {
 		const char* layerName = luaL_checkstring(L, 2);
@@ -180,35 +180,35 @@ LUA_FUNCTION(Lua_BeamSetLayer)
 
 LUA_FUNCTION(Lua_BeamGetUseOverlay)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	lua_pushboolean(L, *beam->GetUseOverlay());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BeamSetUseOverlay)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	*beam->GetUseOverlay() = lua_toboolean(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_BeamGetUnkBool)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	lua_pushboolean(L, *beam->GetUnkBool());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_BeamSetUnkBool)
 {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	*beam->GetUnkBool() = lua_toboolean(L, 2);
 	return 0;
 }
 
 
 LUA_FUNCTION(Lua_BeamRenderer__gc) {
-	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	beam->_anm2.destructor();
 	beam->~BeamRenderer();
 	return 0;
@@ -228,8 +228,8 @@ static void RegisterBeamRenderer(lua_State* L) {
 		{ "SetUnkBool", Lua_BeamSetUnkBool},
 		{ NULL, NULL }
 	};
-	lua::RegisterNewClass(L, lua::metatables::BeamRendererMT, lua::metatables::BeamRendererMT, functions, Lua_BeamRenderer__gc);
-	lua_register(L, lua::metatables::BeamRendererMT, Lua_CreateBeamDummy);
+	lua::RegisterNewClass(L, lua::metatables::BeamMT, lua::metatables::BeamMT, functions, Lua_BeamRenderer__gc);
+	lua_register(L, lua::metatables::BeamMT, Lua_CreateBeamDummy);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

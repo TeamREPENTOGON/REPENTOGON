@@ -711,7 +711,7 @@ namespace lua {
 		const char* AnimationLayerMT = "AnimationLayer";
 		const char* AnimationFrameMT = "AnimationFrame";
 		const char* BackdropMT = "Backdrop";
-		const char* BeamRendererMT = "Beam";
+		const char* BeamMT = "Beam";
 		const char* BestiaryMenuMT = "BestiaryMenu";
 		const char* BlendModeMT = "BlendMode";
 		const char* CameraMT = "Camera";
@@ -738,6 +738,7 @@ namespace lua {
 		const char* ItemOverlayMT = "ItemOverlay";
 		const char* KeyConfigMenuMT = "KeyConfigMenu";
 		const char* LevelGeneratorMT = "LevelGenerator";
+		const char* LevelGeneratorEntryMT = "LevelGeneratorEntry";
 		const char* LayerStateMT = "LayerState";
 		const char* LevelGeneratorRoomMT = "LevelGeneratorRoom";
 		const char* MainMenuMT = "MainMenu";
@@ -761,7 +762,6 @@ namespace lua {
 		const char* RoomConfigHolderMT = "RoomConfigHolder";
 		const char* RoomDescriptorDoors = "RoomDescriptorDoors";
 		const char* RoomDescriptorDoorsConst = "RoomDescriptorDoorsConst";
-		const char* RoomPlacerMT = "RoomPlacer";
 		const char* RoomTransitionMT = "RoomTransition";
 		const char* SaveMenuMT = "SaveMenu";
 		const char* ScoreSheetMT = "ScoreSheet";

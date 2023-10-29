@@ -138,7 +138,7 @@ static void RegisterTransformerClass(lua_State* L) {
 		{ "IsValid", lua_Transformer_IsValid },
 		{ NULL, NULL }
 	};
-	lua::RegisterNewClass(L, "Transformer", "Transformer", functions);
+	lua::RegisterNewClass(L, LuaRender::TransformerMT, LuaRender::TransformerMT, functions);
 }
 
 // ============================================================================
@@ -625,14 +625,14 @@ namespace GL {
 			return *this;
 		}
 
-		static int index(lua_State* L) {
+		LUA_FUNCTION(index) {
 			GLFloat* value = Get<GLFloat>(L);
 			AssertKey(L, ValueKey);
 			lua_pushnumber(L, *(value->ptr));
 			return 1;
 		}
 
-		static int newIndex(lua_State* L) {
+		LUA_FUNCTION(newIndex) {
 			GLFloat* value = Get<GLFloat>(L);
 			AssertKey(L, ValueKey);
 			*(value->ptr) = AssertFloat(L);
@@ -677,7 +677,7 @@ namespace GL {
 			lua::place<GLVec2>(L, LuaRender::GLVec2MT, ptr);
 		}
 
-		static int index(lua_State* L) {
+		LUA_FUNCTION(index) {
 			GLVec2* value = Get<GLVec2>(L);
 			if (CheckKey(L, XKey)) {
 				lua_pushnumber(L, value->ptr[0]);
@@ -690,7 +690,7 @@ namespace GL {
 			return 1;
 		}
 
-		static int newIndex(lua_State* L) {
+		LUA_FUNCTION(newIndex) {
 			GLVec2* value = Get<GLVec2>(L);
 			if (CheckKey(L, XKey)) {
 				value->ptr[0] = AssertFloat(L);
@@ -746,7 +746,7 @@ namespace GL {
 			lua::place<GLVec3>(L, LuaRender::GLVec3MT, ptr);
 		}
 
-		static int index(lua_State* L) {
+		LUA_FUNCTION(index) {
 			GLVec3* value = Get<GLVec3>(L);
 			if (CheckKey(L, XKey)) {
 				lua_pushnumber(L, value->ptr[0]);
@@ -762,7 +762,7 @@ namespace GL {
 			return 1;
 		}
 
-		static int newIndex(lua_State* L) {
+		LUA_FUNCTION(newIndex) {
 			GLVec3* value = Get<GLVec3>(L);
 			if (CheckKey(L, XKey)) {
 				value->ptr[0] = AssertFloat(L);
@@ -818,7 +818,7 @@ namespace GL {
 			lua::place<GLVec4>(L, LuaRender::GLVec4MT, ptr);
 		}
 
-		static int index(lua_State* L) {
+		LUA_FUNCTION(index) {
 			GLVec4* value = Get<GLVec4>(L);
 			if (CheckKey(L, XKey)) {
 				lua_pushnumber(L, value->ptr[0]);
@@ -837,7 +837,7 @@ namespace GL {
 			return 1;
 		}
 
-		static int newIndex(lua_State* L) {
+		LUA_FUNCTION(newIndex) {
 			GLVec4* value = Get<GLVec4>(L);
 			if (CheckKey(L, XKey)) {
 				value->ptr[0] = AssertFloat(L);
@@ -869,7 +869,7 @@ namespace GL {
 			glUniformMatrix2fv(location, 4, GL_TRUE, data);
 		}
 
-		static int index(lua_State* L) {
+		LUA_FUNCTION(index) {
 			GLMat2* mat = Get<GLMat2>(L);
 			switch (int key = CheckIntKey(L)) {
 			case 0:
@@ -887,7 +887,7 @@ namespace GL {
 			return 1;
 		}
 
-		static int newIndex(lua_State* L) {
+		LUA_FUNCTION(newIndex) {
 			GLMat2* mat = Get<GLMat2>(L);
 			GLVec2 vec = *AssertVec<GLVec2>(L);
 			switch (int key = CheckIntKey(L)) {
@@ -919,7 +919,7 @@ namespace GL {
 			glUniformMatrix3fv(location, 9, GL_TRUE, data);
 		}
 
-		static int index(lua_State* L) {
+		LUA_FUNCTION(index) {
 			GLMat3* mat = Get<GLMat3>(L);
 			switch (int key = CheckIntKey(L)) {
 			case 0:
@@ -941,7 +941,7 @@ namespace GL {
 			return 1;
 		}
 
-		static int newIndex(lua_State* L) {
+		LUA_FUNCTION(newIndex) {
 			GLMat3* mat = Get<GLMat3>(L);
 			GLVec3 vec = *AssertVec<GLVec3>(L);
 			switch (int key = CheckIntKey(L)) {
@@ -977,7 +977,7 @@ namespace GL {
 			glUniformMatrix4fv(location, 16, GL_TRUE, data);
 		}
 
-		static int index(lua_State* L) {
+		LUA_FUNCTION(index) {
 			GLMat4* mat = Get<GLMat4>(L);
 			switch (int key = CheckIntKey(L)) {
 			case 0:
@@ -1003,7 +1003,7 @@ namespace GL {
 			return 1;
 		}
 
-		static int newIndex(lua_State* L) {
+		LUA_FUNCTION(newIndex) {
 			GLMat4* mat = Get<GLMat4>(L);
 			GLVec4 vec = *AssertVec<GLVec4>(L);
 
@@ -1074,7 +1074,7 @@ namespace GL {
 			return _size;
 		}
 
-		static int Lua_AddAttribute(lua_State* L) {
+		LUA_FUNCTION(Lua_AddAttribute) {
 			VertexDescriptor* descriptor = lua::GetUserdata<VertexDescriptor*>(L, 1, LuaRender::VertexDescriptorMT);
 			int type = (int) luaL_checkinteger(L, 2);
 			if (type < 0 || type >= GLSLType::GLSL_MAX) {
@@ -1521,37 +1521,37 @@ namespace GL {
 			(*shader)->BindUniform(name, value);
 		}
 
-		static int Lua_BindFloat(lua_State* L) {
+		LUA_FUNCTION(Lua_BindFloat) {
 			Lua_BindUniform(L, LuaRender::GLFloatMT);
 			return 0;
 		}
 
-		static int Lua_BindVec2(lua_State* L) {
+		LUA_FUNCTION(Lua_BindVec2) {
 			Lua_BindUniform(L, LuaRender::GLVec2MT);
 			return 0;
 		}
 
-		static int Lua_BindVec3(lua_State* L) {
+		LUA_FUNCTION(Lua_BindVec3) {
 			Lua_BindUniform(L, LuaRender::GLVec3MT);
 			return 0;
 		}
 
-		static int Lua_BindVec4(lua_State* L) {
+		LUA_FUNCTION(Lua_BindVec4) {
 			Lua_BindUniform(L, LuaRender::GLVec4MT);
 			return 0;
 		}
 
-		static int Lua_BindMat2(lua_State* L) {
+		LUA_FUNCTION(Lua_BindMat2) {
 			Lua_BindUniform(L, LuaRender::GLMat2MT);
 			return 0;
 		}
 
-		static int Lua_BindMat3(lua_State* L) {
+		LUA_FUNCTION(Lua_BindMat3) {
 			Lua_BindUniform(L, LuaRender::GLMat3MT);
 			return 0;
 		}
 
-		static int Lua_BindMat4(lua_State* L) {
+		LUA_FUNCTION(Lua_BindMat4) {
 			Lua_BindUniform(L, LuaRender::GLMat4MT);
 			return 0;
 		}

@@ -161,7 +161,7 @@ namespace lua {
 			extern LIBZHL_API const char* AnimationLayerMT;
 			extern LIBZHL_API const char* AnimationStateMT;
       extern LIBZHL_API const char* BackdropMT;
-      extern LIBZHL_API const char* BeamRendererMT;
+      extern LIBZHL_API const char* BeamMT;
 			extern LIBZHL_API const char* BestiaryMenuMT;
 			extern LIBZHL_API const char* BlendModeMT;
       extern LIBZHL_API const char* CameraMT;
@@ -189,6 +189,7 @@ namespace lua {
 			extern LIBZHL_API const char* KeyConfigMenuMT;
       extern LIBZHL_API const char* LayerStateMT;
 			extern LIBZHL_API const char* LevelGeneratorMT;
+      extern LIBZHL_API const char* LevelGeneratorEntryMT;
 			extern LIBZHL_API const char* LevelGeneratorRoomMT;
 			extern LIBZHL_API const char* MainMenuMT;
 			extern LIBZHL_API const char* MenuManagerMT;
@@ -211,7 +212,6 @@ namespace lua {
       extern LIBZHL_API const char* RoomConfigHolderMT;
       extern LIBZHL_API const char* RoomDescriptorDoors;
       extern LIBZHL_API const char* RoomDescriptorDoorsConst;
-      extern LIBZHL_API const char* RoomPlacerMT;
       extern LIBZHL_API const char* RoomTransitionMT;
 			extern LIBZHL_API const char* SaveMenuMT;
       extern LIBZHL_API const char* ScoreSheetMT;
