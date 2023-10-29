@@ -15,20 +15,26 @@ if "GITHUB_WORKSPACE" in os.environ:
     DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "documentation/docs/")
     CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "repentogon/")
 
-ignoreLuaFunctions = ["lua_rawgeti", "luaL_argerror", "lua_type", "lua_next","lua_isnil", "lua_isinteger", "lua_isboolean"]
+ignoreLuaFunctions = ["lua_rawgeti", "luaL_argerror", "lua_type", "lua_next","lua_isnil", "lua_isinteger", "lua_isboolean", "lua_isnoneornil"]
 ignoreFunctionNames = ["__index", "__newindex", "__call", "__len", "__gc"]
 ignoreFiles = ["LuaASM.cpp", "LuaInit.cpp", "UNUSED"]
+
+cppMetatableToDocumentation = { # lookup table to convert metatable names into documentation file names
+    "pilleffect": "ItemConfig_PillEffect",
+    "constpilleffect": "ItemConfig_PillEffect",
+    "render": "Renderer"
+}
 
 luaCallToDataType = {
     "luaL_checkstring": "string",
     "luaL_optstring": "string",
     "luaL_checkinteger": "int",
     "luaL_optinteger": "int",
-    " lua_tointegerx": "int",
+    "lua_tointegerx": "int",
     "luaL_checknumber": "float",
     "luaL_optnumber": "float",
     "lua_toboolean": "boolean",
-    "lua_isnoneornil": "boolean",
+    "luaL_checkboolean": "boolean",
     "luaL_optboolean": "boolean",
     "lua_isfunction": "function",
     "CheckAndSetCallback": "function",
@@ -50,7 +56,7 @@ def searchInDocFile(docFilePath, luaFunctions):
         for line in docFile:
             if "####" in line: # function header
                 filterLinks = re.sub("\]\([a-zA-Z0-9\.\/:_]*html\)", "", line)
-                filterMdLinks = re.sub("\]\(.*md\)", "", filterLinks).replace("[const ","[").replace("[","")
+                filterMdLinks = re.sub("\]\([a-zA-Z0-9\.\/:_]*md\)", "", filterLinks).replace("[const ","[").replace("[","")
                 filteredLine = filterMdLinks.split("####")[1].split("{:")[0].replace(")","").strip()
                 lineSplit = filteredLine.split(" (")
 
@@ -102,7 +108,7 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
         if "(lua_State* L)" in line and not "/*" in line: # possible lua-related function that doesnt use macro
             functionDef = line.split("(lua_State")[0]
             functionName = functionDef.split(" ")[len(functionDef.split(" "))-1]
-            if not functionName.startswith("Register") and "int" in line:
+            if not functionName.startswith("Register") and "int" in line and not "inline" in line:
                 isInsideFunction = True
                 functionNestingCount = functionNestingCount + line.count('{')
                 print("\t WARNING: Lua function found that doesn't use LUA_FUNCTION() macro: ", functionName)
@@ -140,6 +146,7 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
                     variableType = line.split("GetUserdata<")[1].split(">")[0].replace("*","")
                 if "=" in line:
                     varDefinition = line.split("=")[0].strip().split(" ")
+                    variableType = varDefinition[0].replace("*", "")
                     variableName = varDefinition[-1]
                 if "luaL_opt" in line: # optional Argument
                     lastArgument = line.strip()[:-1].split(",")[-1]
@@ -181,6 +188,11 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
                     elif lastPushString != "":
                         func[0] = lastPushString
     
+    # possibly replace class names with documentation file names
+    for i, className in enumerate(referencedClasses):
+        if className in cppMetatableToDocumentation:
+            referencedClasses[i] = cppMetatableToDocumentation[className].lower()
+
     # search in own documentation and the parent documentation
     for file in glob.glob(DOCS_FOLDER_PATH+"\**\*.md", recursive=True):
         filename = file.split("\\")[-1].replace(".md","").lower()
