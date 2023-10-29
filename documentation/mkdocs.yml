@@ -178,7 +178,7 @@ nav:
   - PocketItem: PocketItem.md
   - ProjectileParams: ProjectileParams.md
   - Rendering:
-    - BeamRenderer: BeamRenderer.md
+    - Beam: Beam.md
     - BlendMode: BlendMode.md
     - Capsule: Capsule.md
     - Renderer: Renderer.md
