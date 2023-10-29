@@ -186,9 +186,7 @@ LUA_FUNCTION(Lua_MenuSetColorModifier)
 	if (g_MenuManager == NULL) { return luaL_error(L, "MenuManager functions can only be used in the main menu"); }
 	MenuManager* menuManager = g_MenuManager;
 	ColorModState* pColor = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-	bool lerp = true;
-	if lua_isboolean(L, 2)
-		lerp = lua_toboolean(L, 2);
+	bool lerp = lua::luaL_optboolean(L, 2, true);
 	float rate = (float)luaL_optnumber(L, 3, 0.015);
 
 	// game func is inlined, gotta do it ourselves

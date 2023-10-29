@@ -683,7 +683,7 @@ struct CustomImGui {
             return true;
 
         case IMGUI_ELEMENT::Checkbox:
-            element->elementData.checked = lua_toboolean(L, 4);
+            element->elementData.checked = lua::luaL_checkboolean(L, 4);
             return true;
 
         case IMGUI_ELEMENT::RadioButton:

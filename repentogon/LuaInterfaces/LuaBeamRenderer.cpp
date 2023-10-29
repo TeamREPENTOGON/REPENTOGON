@@ -80,12 +80,8 @@ LUA_FUNCTION(Lua_BeamAdd) {
 
 LUA_FUNCTION(Lua_BeamRender) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamRendererMT);
-	bool clearPoints = true;
 	int8_t error = -1;
-
-	if (lua_isboolean(L, 2)) {
-		clearPoints = lua_toboolean(L, 2);
-	}
+	bool clearPoints = lua::luaL_optboolean(L, 2, true);
 
 	if (beam->_points.size() < 2) {
 		error = 0;

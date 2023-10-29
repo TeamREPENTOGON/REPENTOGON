@@ -1954,12 +1954,9 @@ LUA_FUNCTION(Lua_FromTypeVarSub)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected EntityType as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	int etype = (int)luaL_checknumber(L, 1);
-	int evar = 0;
-	int esub = 0;
-	bool strict = false;
-	if (lua_isnumber(L, 2)) { evar = (int)luaL_checknumber(L, 2); }
-	if (lua_isnumber(L, 3)) { esub = (int)luaL_checknumber(L, 3); }
-	if (lua_isboolean(L, 4)) { strict = lua_toboolean(L, 4); }
+	int evar = luaL_optnumber(L ,2 ,0);
+	int esub = luaL_optnumber(L, 3, 0);
+	bool strict = lua::luaL_optboolean(L,4, false);
 	XMLAttributes Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict);
 	tuple idx = { toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) };
 	Lua_PushXMLNode(L, Node, XMLStuff.EntityData->childs[idx]);
@@ -1976,10 +1973,8 @@ LUA_FUNCTION(Lua_GetFromEntity)
 	if (evar == NULL) { evar = 0; }
 	if (esub == NULL) { esub = 0; }
 
-	bool automatic = true;
-	bool strict = false;
-	if (lua_isboolean(L, 2)) { automatic = lua_toboolean(L, 2); }
-	if (lua_isboolean(L, 3)) { strict = lua_toboolean(L, 3); }
+	bool automatic = lua::luaL_optboolean(L, 2, true);
+	bool strict = lua::luaL_optboolean(L, 3, false);
 	XMLAttributes Node;
 	XMLChilds Childs;
 	if (automatic){

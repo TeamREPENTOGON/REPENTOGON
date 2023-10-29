@@ -78,11 +78,9 @@ LUA_FUNCTION(Lua_PlayerSetItemState)
 
 LUA_FUNCTION(Lua_PlayerAddCacheFlags)
 {
-	bool evaluateCache = false;
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int flags = (int)luaL_checkinteger(L, 2);
-	if (lua_isboolean(L, 3))
-		evaluateCache = lua_toboolean(L, 3);
+	bool evaluateCache = lua::luaL_optboolean(L, 3, false);
 
 	player->AddCacheFlags(flags);
 	if (evaluateCache) {
@@ -196,14 +194,8 @@ LUA_FUNCTION(Lua_PlayerTeleport)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	bool doEffects = true;
-	bool teleportTwinPlayers = false;
-
-	if (lua_isboolean(L, 3))
-		doEffects = lua_toboolean(L, 3);
-
-	if (lua_isboolean(L, 4))
-		teleportTwinPlayers = lua_toboolean(L, 4);
+	bool doEffects = lua::luaL_optboolean(L, 3, true);
+	bool teleportTwinPlayers = lua::luaL_optboolean(L, 4, false);
 
 	player->Teleport(position, doEffects, teleportTwinPlayers);
 	return 0;
@@ -936,15 +928,8 @@ LUA_FUNCTION(Lua_ClearDeadEyeCharge) {
 
 LUA_FUNCTION(Lua_SwapForgottenForm) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	bool IgnoreHealth = false;
-	bool NoEffects = false;
-	if (lua_isboolean(L, 2)) {
-		IgnoreHealth = lua_toboolean(L, 2);
-	}
-
-	if (lua_isboolean(L, 3)) {
-		NoEffects = lua_toboolean(L, 3);
-	}
+	bool IgnoreHealth = lua::luaL_optboolean(L, 2, false);
+	bool NoEffects = lua::luaL_optboolean(L, 3, false);
 	player->SwapForgottenForm(IgnoreHealth, NoEffects);
 	return 0;
 }

@@ -62,8 +62,8 @@ LUA_FUNCTION(Lua_EntityAddKnockback)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector"); //replace with const?
 	int duration = (int)luaL_checkinteger(L, 4);
-	bool unk = lua_toboolean(L, 5);
-	ent->AddKnockback(*ref, *pos, duration, unk);
+	bool TakeImpactDamage = lua_toboolean(L, 5);
+	ent->AddKnockback(*ref, *pos, duration, TakeImpactDamage);
 	return 0;
 }
 

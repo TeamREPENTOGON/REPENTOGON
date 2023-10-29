@@ -214,7 +214,7 @@ LUA_FUNCTION(Lua_ImGui_AddButton)
 	const char* id = luaL_checkstring(L, 3);
 	const char* text = luaL_optstring(L, 4, "");
 	int stackID = CheckAndSetCallback(L, 5);
-	bool isSmall = lua_toboolean(L, 6);
+	bool isSmall = lua::luaL_optboolean(L, 6, false);
 
 	EvalIDAndParent(L, imGui, id, parentId);
 
@@ -237,7 +237,7 @@ LUA_FUNCTION(Lua_ImGui_AddText)
 
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* text = luaL_optstring(L, 3, "");
-	bool isWrapped = lua_toboolean(L, 4);
+	bool isWrapped = lua::luaL_optboolean(L, 4, false);
 	const char* id = luaL_optstring(L, 5, "");
 
 	EvalIDAndParent(L, imGui, id, parentId);
@@ -466,7 +466,7 @@ LUA_FUNCTION(Lua_ImGui_AddCheckbox)
 	const char* id = luaL_checkstring(L, 3);
 	const char* text = luaL_optstring(L, 4, "");
 	int stackID = CheckAndSetCallback(L, 5);
-	data.checked = lua_toboolean(L, 6);
+	data.checked = lua::luaL_optboolean(L, 6, false);
 
 	EvalIDAndParent(L, imGui, id, parentId);
 
@@ -496,9 +496,7 @@ LUA_FUNCTION(Lua_ImGui_AddRadioButtons)
 		return luaL_error(L, "Argument 5 needs to be a table!");
 	}
 	data.index = (int)luaL_optinteger(L, 6, 0);
-	if (!lua_isnoneornil(L, 7)) {
-		data.sameLine = lua_toboolean(L, 7);
-	}
+	data.sameLine = lua::luaL_optboolean(L, 7, true);
 
 	// get table input
 	auto tableLength = lua_rawlen(L, 5);
@@ -576,7 +574,7 @@ LUA_FUNCTION(Lua_ImGui_AddCombobox)
 		return luaL_error(L, "Argument 6 needs to be a table!");
 	}
 	data.index = (int)luaL_optinteger(L, 7, 0);
-	data.isSlider = lua_toboolean(L, 8);
+	data.isSlider = lua::luaL_optboolean(L, 8, false);
 
 	// get table input
 	auto tableLength = lua_rawlen(L, 6);
@@ -916,7 +914,7 @@ LUA_FUNCTION(Lua_ImGui_SetVisible)
 {
 	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
-	bool newState = lua_toboolean(L, 3);
+	bool newState = lua::luaL_checkboolean(L, 3);
 
 	bool success = imGui->SetVisible(elementId, newState);
 
@@ -998,7 +996,7 @@ LUA_FUNCTION(Lua_ImGui_SetWindowPinned)
 {
 	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
-	bool newState = lua_toboolean(L, 3);
+	bool newState = lua::luaL_checkboolean(L, 3);
 
 	bool success = imGui->SetPinned(elementId, newState);
 

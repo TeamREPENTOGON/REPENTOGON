@@ -17,12 +17,8 @@ LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 	int type = (int)luaL_checkinteger(L, 1);
 	int variant = (int)luaL_optinteger(L, 2, -1);
 	int subtype = (int)luaL_optinteger(L, 3, -1);
-	bool cache = false;
-	if lua_isboolean(L, 4)
-		cache = lua_toboolean(L, 4);
-	bool ignoreFriendly = false;
-	if lua_isboolean(L, 5)
-		ignoreFriendly = lua_toboolean(L, 5);
+	bool cache = lua::luaL_optboolean(L, 4, false);
+	bool ignoreFriendly = lua::luaL_optboolean(L, 5, false);
 	lua_newtable(L);
 	EntityList_EL res(*list->GetUpdateEL());
 
@@ -165,9 +161,7 @@ LUA_FUNCTION(Lua_CreateTimer) {
 	if (times < 0)
 		times = 1;
 
-	bool persistent = true;
-	if (lua_isboolean(L, 4))
-		persistent = lua_toboolean(L, 4);
+	bool persistent = lua::luaL_optboolean(L, 4, true);
 
 	Entity_Effect* effect = Entity_Effect::CreateTimer(&TimerFunction, delay, times, persistent);
 
@@ -354,10 +348,7 @@ LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
 
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	bool scale = true;
-	if (lua_isboolean(L, 2)) {
-		scale = lua_toboolean(L, 2);
-	}
+	bool scale = lua::luaL_optboolean(L, 2, true);
 	
 	Vector result = Isaac::GetRenderPosition(pos, scale);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));

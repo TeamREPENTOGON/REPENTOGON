@@ -11,14 +11,12 @@
 
 LUA_FUNCTION(Lua_SpriteReplaceSpritesheet)
 {
-	bool loadGraphics = false;
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 	int layerId = (int)luaL_checkinteger(L, 2);
 
 	std::string filename = luaL_checkstring(L, 3);
 
-	if (lua_isboolean(L, 4))
-		loadGraphics = lua_toboolean(L, 4);
+	bool loadGraphics = lua::luaL_optboolean(L, 4, false);
 
 	anm2->ReplaceSpritesheet(layerId, filename);
 
@@ -103,10 +101,7 @@ LUA_FUNCTION(Lua_SpriteSetOverlayFrame)
 LUA_FUNCTION(Lua_SpriteStop)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	bool stopOverlay = true;
-	if (lua_isboolean(L, 2)) {
-		stopOverlay = lua_toboolean(L, 2);
-	}
+	bool stopOverlay = lua::luaL_optboolean(L, 2, true);
 	anm2->GetAnimationState()->Stop();
 	if (stopOverlay) {
 		anm2->GetOverlayAnimationState()->Stop();
@@ -124,10 +119,7 @@ LUA_FUNCTION(Lua_SpriteStopOverlay)
 LUA_FUNCTION(Lua_SpriteContinue)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	bool continueOverlay = true;
-	if (lua_isboolean(L, 2)) {
-		continueOverlay = lua_toboolean(L, 2);
-	}
+	bool continueOverlay = lua::luaL_optboolean(L, 2, true);
 	anm2->GetAnimationState()->Play();
 	if (continueOverlay) {
 		anm2->GetOverlayAnimationState()->Play();

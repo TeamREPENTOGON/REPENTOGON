@@ -182,9 +182,7 @@ LUA_FUNCTION(Lua_GameSetColorModifier)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ColorModState* pColor = lua::GetUserdata<ColorModState*>(L, 2, lua::metatables::ColorModifierMT);
-	bool lerp = true;
-	if lua_isboolean(L, 3)
-		lerp = lua_toboolean(L, 3);
+	bool lerp = lua::luaL_optboolean(L, 3, true);
 	float rate = (float)luaL_optnumber(L, 4, 0.015);
 
 	game->SetColorModifier(pColor, lerp, rate);

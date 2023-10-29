@@ -209,12 +209,8 @@ LUA_FUNCTION(Lua_Room_IsChampionBossSeed) {
 LUA_FUNCTION(Lua_RoomColorModifierUpdate)
 {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	bool process = true;
-	if lua_isboolean(L, 2)
-		process = lua_toboolean(L, 2);
-	bool lerp = true;
-	if lua_isboolean(L, 3)
-		lerp = lua_toboolean(L, 3);
+	bool process = lua::luaL_optboolean(L, 2, true);
+	bool lerp = lua::luaL_optboolean(L, 3, true);
 	float rate = (float)luaL_optnumber(L, 4, 0.015);
 
 	ColorModState* pColor;

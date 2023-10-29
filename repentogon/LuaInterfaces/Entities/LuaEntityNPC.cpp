@@ -158,9 +158,7 @@ LUA_FUNCTION(Lua_NPCPlaySound)
 	int id = (int)luaL_checkinteger(L, 2);
 	float volume = (float)luaL_optnumber(L, 3, 1.0);
 	int framedelay = (int)luaL_optinteger(L, 4, 2);
-	bool loop = false;
-	if lua_isboolean(L, 5)
-		loop = lua_toboolean(L, 5);
+	bool loop = lua::luaL_optboolean(L, 5, false);
 	float pitch = (float)luaL_optnumber(L, 6, 1.0);
 
 	npc->PlaySound(id, volume, framedelay, loop, pitch);
