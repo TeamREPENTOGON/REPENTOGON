@@ -218,6 +218,12 @@ __thiscall void Entity_Player::PlayDelayedSFX(unsigned int soundEffectID, int so
 "558bec8b45??568bf183f801":
 __thiscall bool Entity_Player::CanUsePill(int pillEffect);
 
+"558bec518b15????????535633f6":
+__thiscall uint32_t Entity_Player::InvalidateCoPlayerItems();
+
+"558bec83ec30a1????????33c58945??53":
+__thiscall bool Entity_Player::TryRemoveSmeltedTrinket();
+
 struct Entity_Player depends (ANM2) : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
@@ -240,6 +246,7 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 	inline float* GetEdenLuck() { return (float*)((char*)this + 0x14a4); }
 	inline int* GetCanFly() { return (int*)((char*)this + 0x14b4); }
 	inline std_vector_int GetCollectiblesList() { return *(std_vector_int*)((char*)this + 0x15f0); }
+	inline std_vector_int* GetSmeltedTrinket() { return &this->_smeltedTrinkets; }
 	inline std_vector_int GetVoidedCollectiblesList() { return *(std_vector_int*)((char*)this + 0x167c); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
@@ -327,6 +334,7 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 	ANM2 _heldSprite : 0xf48;
 	float _damage : 0x13b8;
 	uint32_t _cacheFlags : 0x14b8;
+	std_vector_int _smeltedTrinkets : 0x1670;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
 	int _babySkin : 0x1a0c;

@@ -26,3 +26,7 @@ ___
 #### int GetTime ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Is·Trinket () {: aria-label='Functions' }
+#### boolean IsTrinket ( ) {: .copyable aria-label='Functions' }
+
+___

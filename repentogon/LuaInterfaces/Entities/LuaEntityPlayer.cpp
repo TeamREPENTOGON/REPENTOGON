@@ -615,12 +615,12 @@ LUA_FUNCTION(Lua_PlayerShuffleCostumes) {
 LUA_FUNCTION(Lua_PlayerGetCollectiblesList)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	std::vector<int> collecitbleInv = plr->GetCollectiblesList();
+	std::vector<int>& collecitbleInv = plr->GetCollectiblesList();
 
 	lua_newtable(L);
 	int idx = 1;
 	for (int collectible : collecitbleInv) {
-		lua_pushnumber(L, idx);
+		lua_pushinteger(L, idx);
 		lua_pushinteger(L, collectible);
 		lua_settable(L, -3);
 		idx++;
@@ -653,12 +653,12 @@ LUA_FUNCTION(Lua_PlayerSetTearPoisonDamage) {
 LUA_FUNCTION(Lua_PlayerGetVoidedCollectiblesList)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	std::vector<int> collecitbleInv = plr->GetVoidedCollectiblesList();
+	std::vector<int>& collecitbleInv = plr->GetVoidedCollectiblesList();
 
 	lua_newtable(L);
 	int idx = 1;
 	for (int collectible : collecitbleInv) {
-		lua_pushnumber(L, idx);
+		lua_pushinteger(L, idx);
 		lua_pushinteger(L, collectible);
 		lua_settable(L, -3);
 		idx++;
@@ -1009,6 +1009,45 @@ LUA_FUNCTION(Lua_PlayerCanUsePill) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const int trinketID = (int)luaL_checkinteger(L, 2);
+
+	bool trinketAdded = false;
+
+	if (ItemConfig::IsValidTrinket(trinketID)) {
+		const int actualTrinketID = trinketID & 0x7fff;
+		player->_smeltedTrinkets[actualTrinketID] += (trinketID != actualTrinketID) ? 0x10000 : 1;
+		player->TriggerTrinketAdded(trinketID, true);
+
+		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
+		player->GetHistory()->AddHistoryItem(historyItem);
+
+		delete(historyItem);
+
+		player->InvalidateCoPlayerItems();
+
+		trinketAdded = true;
+	}
+
+	lua_pushboolean(L, trinketAdded);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerGetSmeltedTrinkets) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	std::vector<int>& smeltedTrinkets = player->_smeltedTrinkets;
+
+	lua_newtable(L);
+	for (size_t i = 1; i < smeltedTrinkets.size(); i++) {
+		lua_pushinteger(L, i);
+		lua_pushinteger(L, smeltedTrinkets[i]);
+		lua_settable(L, -3);
+	}
+
+	return 1;
+}
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -1116,6 +1155,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetMaggySwingCooldown", Lua_PlayerSetMaggySwingCooldown },
 		{ "PlayDelayedSFX", Lua_PlayerPlayDelayedSFX },
 		{ "CanUsePill", Lua_PlayerCanUsePill },
+		{ "AddSmeltedTrinket", Lua_PlayerAddSmeltedTrinket },
+		{ "GetSmeltedTrinkets", Lua_PlayerGetSmeltedTrinkets },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

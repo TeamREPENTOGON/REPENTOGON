@@ -59,6 +59,13 @@ ___
 Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
 
 ___
+### Add·Smelted·Trinket () {: aria-label='Functions' }
+#### boolean AddSmeltedTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) TrinketID ) {: .copyable aria-label='Functions' }
+Adds a smelted trinket directly to the player's inventory.
+
+Returns ``true`` if the trinket was successfully added, otherwise ``false``.
+
+___
 ### Can·Use·Pill () {: aria-label='Functions' }
 #### boolean CanUsePill ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) ID ) {: .copyable aria-label='Functions' }
 By some conditions, usually health-related, determines whether a player can use a given pill effect.
@@ -262,6 +269,10 @@ ___
 ___
 ### Get·Total·Active·Charge () {: aria-label='Functions' }
 #### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Smelted·Trinkets () {: aria-label='Functions' }
+#### table GetSmeltedTrinkets ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Voided·Collectibles·List () {: aria-label='Functions' }

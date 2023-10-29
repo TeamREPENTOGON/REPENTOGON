@@ -91,6 +91,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
     float LIBZHL_API GetChampionBossChance() const;
 }} 
     RoomDescriptor* _descriptor : 0x4; //0x04
+	uint32_t _roomType : 0x8; //0x08
     GridEntity* _gridEntities[0x1BF] : 0x24; // 0x24
     GridEntity* _doors[8] : 0x724; // 0x724
     uint32_t _doorGridPositions[8] : 0x744; // 0x744

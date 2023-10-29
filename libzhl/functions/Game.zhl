@@ -210,6 +210,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
     Console _console : 0x1bb60; // 0x1BB60
     ItemOverlay _itemOverlay : 0x1bcc0; // 0x1BCC0
+	int _frameCount : 0x1a30dc; // 0x1a30dc
     int _treasureRoomsVisited : 0x1c3178; // 0x1C3178
     int _planetariumsVisited : 0x1c317c; // 0x1C317C
     Ambush _ambush : 0x1c31b8; // 0x1c31b8

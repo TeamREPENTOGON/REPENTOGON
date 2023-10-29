@@ -1,9 +1,29 @@
 struct History_HistoryItem
-{
+{ {{
+	
+	History_HistoryItem(TrinketType itemID, int levelStage, int stageType, int roomType, int itemPoolType, int time = -1)
+	{
+		_itemID = itemID;
+		_levelStage = levelStage;
+		_stageType = stageType;
+		_roomType = roomType;
+		_isTrinket = true;
+		_time = time;
+		_itemPoolType = itemPoolType;
+		
+		if (time < 0) {
+			_time = g_Game->_frameCount;
+		}
+	}
+}}
+	
     int _time : 0x0;
+	bool _isTrinket : 0x4;
     int _itemID : 0x8;
     int _levelStage : 0xC;
     int _stageType : 0x10;
     int _roomType : 0x14;
     int _itemPoolType : 0x18;
+	
 } : 0x1C;
+

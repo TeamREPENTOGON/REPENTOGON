@@ -50,6 +50,14 @@ LUA_FUNCTION(Lua_HistoryItemGetItemPoolType)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_HistoryItemIsTrinket)
+{
+	History_HistoryItem* historyItem = lua::GetUserdata<History_HistoryItem*>(L, 1, lua::metatables::HistoryItemMT);
+	lua_pushboolean(L, historyItem->_isTrinket);
+
+	return 1;
+}
+
 static void RegisterHistoryItem(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetTime", Lua_HistoryItemGetTime },
@@ -58,6 +66,7 @@ static void RegisterHistoryItem(lua_State* L) {
 		{ "GetStageType", Lua_HistoryItemGetStageType },
 		{ "GetRoomType", Lua_HistoryItemGetRoomType },
 		{ "GetItemPoolType", Lua_HistoryItemGetItemPoolType },
+		{ "IsTrinket", Lua_HistoryItemIsTrinket },
 		{ NULL, NULL }
 	};
 

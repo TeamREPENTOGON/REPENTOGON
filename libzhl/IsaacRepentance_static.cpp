@@ -106,3 +106,13 @@ bool Room::IsChampionBossSeed() const {
 	float random = rng.RandomFloat();
 	return random <= GetChampionBossChance();
 }
+
+bool ItemConfig::IsValidTrinket(unsigned int TrinketType) {
+	if (TrinketType != 0 && (TrinketType & 0x7fff) < g_Manager->GetItemConfig()->GetTrinkets()->size()) {
+		if (g_Manager->GetItemConfig()->GetTrinket(TrinketType & 0x7fff) != nullptr) {
+			return true;
+		}
+	}
+
+	return false;
+}
