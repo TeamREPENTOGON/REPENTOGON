@@ -236,8 +236,8 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 	inline Weapon** GetWeapon(int index) { return (Weapon**)((char*)this + index * 4 + 0x1328); }
 	inline Entity_Effect* GetMarkedTarget() { return *(Entity_Effect**)((char*)this + 0x1354); }
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
-	inline int* GetFireDelayModifier() { return (int*)((char*)this + 0x146c); }
-	inline int* GetDamageModifier() { return (int*)((char*)this + 0x1470); }
+	inline int* GetFireDelayModifier() { return &this->_fireDelayModifier; }
+	inline int* GetDamageModifier() { return &this->_damageModifier; }
 	inline float* GetEdenSpeed() { return (float*)((char*)this + 0x1490); }
 	inline float* GetEdenFireDelay() { return (float*)((char*)this + 0x1494); }
 	inline float* GetEdenDamage() { return (float*)((char*)this + 0x1498); }
@@ -246,7 +246,7 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 	inline float* GetEdenLuck() { return (float*)((char*)this + 0x14a4); }
 	inline int* GetCanFly() { return (int*)((char*)this + 0x14b4); }
 	inline std_vector_int GetCollectiblesList() { return *(std_vector_int*)((char*)this + 0x15f0); }
-	inline std_vector_int* GetSmeltedTrinket() { return &this->_smeltedTrinkets; }
+	inline vector_SmeltedTrinketDesc* GetSmeltedTrinket() { return &this->_smeltedTrinkets; }
 	inline std_vector_int GetVoidedCollectiblesList() { return *(std_vector_int*)((char*)this + 0x167c); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
 	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
@@ -333,8 +333,9 @@ struct Entity_Player depends (ANM2) : public Entity { {{
 
 	ANM2 _heldSprite : 0xf48;
 	float _damage : 0x13b8;
+	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
 	uint32_t _cacheFlags : 0x14b8;
-	std_vector_int _smeltedTrinkets : 0x1670;
+	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
 	int _babySkin : 0x1a0c;

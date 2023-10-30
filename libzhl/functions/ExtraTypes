@@ -144,3 +144,8 @@ TypeInfo vector_Outcome {
     Size 12;
     Align 4;
 };
+
+TypeInfo vector_SmeltedTrinketDesc {
+    Size 12;
+    Align 4;
+};

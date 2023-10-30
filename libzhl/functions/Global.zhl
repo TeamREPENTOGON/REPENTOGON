@@ -82,6 +82,12 @@ typedef std::vector<PoolItem> vector_PoolItem;
 struct RoomConfig;
 typedef std::vector<RoomConfig*> RoomConfigPtrVector;
 
+struct SmeltedTrinketDesc {
+	short _trinketNum;
+	short _goldenTrinketNum;
+};
+typedef std::vector<SmeltedTrinketDesc> vector_SmeltedTrinketDesc;
+
 }}
 
 //=================================================================================================================

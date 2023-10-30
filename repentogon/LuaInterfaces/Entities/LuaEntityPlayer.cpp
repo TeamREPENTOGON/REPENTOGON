@@ -331,31 +331,80 @@ LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetSpeedModifier)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_speedModifier);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetSpeedModifier)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_speedModifier = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerGetFireDelayModifier)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua_pushinteger(L, *player->GetFireDelayModifier());
+	lua_pushinteger(L, player->_fireDelayModifier);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetFireDelayModifier)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetFireDelayModifier() = (int)luaL_checkinteger(L, 2);
+	player->_fireDelayModifier = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerGetDamageModifier)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua_pushinteger(L, *player->GetDamageModifier());
+	lua_pushinteger(L, player->_damageModifier);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetDamageModifier)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*player->GetDamageModifier() = (int)luaL_checkinteger(L, 2);
+	player->_damageModifier = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerSetTearRangeModifier) // ._.
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_tearRangeModifier = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetShotSpeedModifier)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_shotSpeedModifier);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetShotSpeedModifier)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_shotSpeedModifier = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetLuckModifier)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_luckModifier);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetLuckModifier)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_luckModifier = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -1017,7 +1066,13 @@ LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 
 	if (ItemConfig::IsValidTrinket(trinketID)) {
 		const int actualTrinketID = trinketID & 0x7fff;
-		player->_smeltedTrinkets[actualTrinketID] += (trinketID != actualTrinketID) ? 0x10000 : 1;
+		if (trinketID != actualTrinketID) {
+			player->_smeltedTrinkets[actualTrinketID]._goldenTrinketNum++;
+		}
+		else {
+			player->_smeltedTrinkets[actualTrinketID]._trinketNum++;
+		}
+
 		player->TriggerTrinketAdded(trinketID, true);
 
 		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
@@ -1036,12 +1091,22 @@ LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 
 LUA_FUNCTION(Lua_PlayerGetSmeltedTrinkets) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	std::vector<int>& smeltedTrinkets = player->_smeltedTrinkets;
+	std::vector<SmeltedTrinketDesc>& smeltedTrinkets = player->_smeltedTrinkets;
 
 	lua_newtable(L);
 	for (size_t i = 1; i < smeltedTrinkets.size(); i++) {
-		lua_pushinteger(L, i);
-		lua_pushinteger(L, smeltedTrinkets[i]);
+		lua_pushinteger(L, i); 
+
+		lua_newtable(L);
+
+		lua_pushstring(L, "trinketAmount");
+		lua_pushinteger(L, smeltedTrinkets[i]._trinketNum);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "goldenTrinketAmount");
+		lua_pushinteger(L, smeltedTrinkets[i]._goldenTrinketNum);
+		lua_settable(L, -3);
+
 		lua_settable(L, -3);
 	}
 
@@ -1083,10 +1148,17 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot },
 		{ "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput },
 		{ "SetBagOfCraftingOutput", Lua_PlayerSetBagOfCraftingOutput },
+		{ "GetSpeedModifier", Lua_PlayerGetSpeedModifier },
+		{ "SetSpeedModifier", Lua_PlayerSetSpeedModifier },
 		{ "GetFireDelayModifier", Lua_PlayerGetFireDelayModifier },
 		{ "SetFireDelayModifier", Lua_PlayerSetFireDelayModifier },
 		{ "GetDamageModifier", Lua_PlayerGetDamageModifier },
 		{ "SetDamageModifier", Lua_PlayerSetDamageModifier },
+		{ "SetTearRangeModifier", Lua_PlayerSetTearRangeModifier }, // .-.
+		{ "GetShotSpeedModifier", Lua_PlayerGetShotSpeedModifier },
+		{ "SetShotSpeedModifier", Lua_PlayerSetShotSpeedModifier },
+		{ "GetLuckModifier", Lua_PlayerGetLuckModifier },
+		{ "SetLuckModifier", Lua_PlayerSetLuckModifier },
 		{ "GetRedStewBonusDuration", Lua_PlayerGetRedStewBonusDuration },
 		{ "SetRedStewBonusDuration", Lua_PlayerSetRedStewBonusDuration },
 		{ "GetWeaponModifiers", Lua_PlayerGetWeaponModifiers },

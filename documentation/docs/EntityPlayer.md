@@ -210,6 +210,10 @@ ___
 #### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Luck·Modifier () {: aria-label='Functions' }
+#### int GetLuckModifier ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Maggy·Swing·Cooldown () {: aria-label='Functions' }
 #### int GetMaggySwingCooldown ( ) {: .copyable aria-label='Functions' }
 Used for Tainted Magdalene's hugging attack.
@@ -271,8 +275,22 @@ ___
 #### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Shot·Speed·Modifier () {: aria-label='Functions' }
+#### int GetShotSpeedModifier ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Smelted·Trinkets () {: aria-label='Functions' }
 #### table GetSmeltedTrinkets ( ) {: .copyable aria-label='Functions' }
+Returns a table of smelted trinkets and their corresponding amounts. The returned table contains the following fields:
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| trinketNum | int | |
+| goldenTrinketNum | int | |
+
+___
+### Get·Speed·Modifier () {: aria-label='Functions' }
+#### int GetSpeedModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Voided·Collectibles·List () {: aria-label='Functions' }
@@ -408,6 +426,10 @@ ___
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
 
 ___
+### Set·Luck·Modifier () {: aria-label='Functions' }
+#### void SetLuckModifier ( int Modifier ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Maggy·Swing·Cooldown () {: aria-label='Functions' }
 #### void SetMaggySwingCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
 
@@ -445,8 +467,20 @@ ___
 #### void SetRedStewBonusDuration ( int Duration ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Shot·Speed·Modifier () {: aria-label='Functions' }
+#### void SetShotSpeedModifier ( int Modifier ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Speed·Modifier () {: aria-label='Functions' }
+#### void SetSpeedModifier ( int Modifier ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Tear·Poison·Damage () {: aria-label='Functions' }
 #### void SetTearPoisonDamage ( float Damage ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Tear·Range·Modifier () {: aria-label='Functions' }
+#### void SetTearRangeModifier ( int Modifier ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Urethra·Block () {: aria-label='Functions' }
