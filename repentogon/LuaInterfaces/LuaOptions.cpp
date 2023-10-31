@@ -10,7 +10,7 @@ LUA_FUNCTION(Lua_Options_GetVoidGeneration) {
 }
 
 LUA_FUNCTION(Lua_Options_SetVoidGeneration) {
-	bool value = lua_toboolean(L, 1);
+	bool value = lua::luaL_checkboolean(L, 1);
 	repentogonOptions.betterVoidGeneration = value;
 	repentogonOptions.Write("VanillaTweaks", "BetterVoidGeneration", value == true ? "1" : "0");
 	return 0;
@@ -22,7 +22,7 @@ LUA_FUNCTION(Lua_Options_GetHushFix) {
 }
 
 LUA_FUNCTION(Lua_Options_SetHushFix) {
-	bool value = lua_toboolean(L, 1);
+	bool value = lua::luaL_checkboolean(L, 1);
 	repentogonOptions.hushPanicStateFix = value;
 	repentogonOptions.Write("VanillaTweaks", "HushPanicStateFix", value == true ? "1" : "0");
 	return 0;
@@ -34,7 +34,7 @@ LUA_FUNCTION(Lua_Options_GetKeyMasterDealChance) {
 }
 
 LUA_FUNCTION(Lua_Options_SetKeyMasterDealChance) {
-	bool value = lua_toboolean(L, 1);
+	bool value = lua::luaL_checkboolean(L, 1);
 	repentogonOptions.keyMasterDealChance = value;
 	repentogonOptions.Write("VanillaTweaks", "KeyMasterDealChance", value == true ? "1" : "0");
 	return 0;
@@ -46,7 +46,7 @@ LUA_FUNCTION(Lua_Options_GetPreventModUpdates) {
 }
 
 LUA_FUNCTION(Lua_Options_SetPreventModUpdates) {
-	bool value = lua_toboolean(L, 1);
+	bool value = lua::luaL_checkboolean(L, 1);
 	repentogonOptions.preventModUpdates = value;
 	repentogonOptions.Write("VanillaTweaks", "PreventModUpdates", value == true ? "1" : "0");
 	return 0;

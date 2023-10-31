@@ -9,7 +9,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 	int specialChance = (int)luaL_checkinteger(L, 3);
 	int runeChance = (int)luaL_checkinteger(L, 4);
 	int suitChance = (int)luaL_checkinteger(L, 5);
-	bool allowNonCards = lua_toboolean(L, 6);
+	bool allowNonCards = lua::luaL_checkboolean(L, 6);
 	lua_pushinteger(L, itemPool->GetCardEx(seed, specialChance, runeChance, suitChance, allowNonCards));
 	return 1;
 }
@@ -190,7 +190,7 @@ LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
 LUA_FUNCTION(Lua_ItemPoolCanSpawnCollectible) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int id = (int)luaL_checkinteger(L, 2);
-	bool unkFlag = lua_toboolean(L, 3);
+	bool unkFlag = lua::luaL_checkboolean(L, 3);
 
 	ItemConfig_Item* item = g_Manager->GetItemConfig()->GetCollectible(id);
 	if (item == nullptr) {

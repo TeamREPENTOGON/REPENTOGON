@@ -5,7 +5,7 @@
 
 LUA_FUNCTION(lua_StageTransition_SetSame) {
 	StageTransition* transition = *lua::GetUserdata<StageTransition**>(L, 1, lua::metatables::StageTransitionMT);
-	bool sameStage = lua_toboolean(L, 2);
+	bool sameStage = lua::luaL_checkboolean(L, 2);
 
 	transition->_sameStage = sameStage;
 	return 0;

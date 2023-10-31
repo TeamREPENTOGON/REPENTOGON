@@ -101,7 +101,7 @@ LUA_FUNCTION(Lua_GameDevolveEnemy) {
 
 LUA_FUNCTION(lua_GameStartStageTransition) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	bool sameStage = lua_toboolean(L, 2);
+	bool sameStage = lua::luaL_checkboolean(L, 2);
 	int transition = (int)luaL_checkinteger(L, 3);
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
 

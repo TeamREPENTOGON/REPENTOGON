@@ -175,7 +175,7 @@ LUA_FUNCTION(Lua_LayerStateIsVisible)
 LUA_FUNCTION(Lua_LayerStateSetVisible)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	*layerState->IsVisible() = lua_toboolean(L, 2);
+	*layerState->IsVisible() = lua::luaL_checkboolean(L, 2);
 
 	return 0;
 }

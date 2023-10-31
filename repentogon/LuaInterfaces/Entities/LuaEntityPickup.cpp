@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_PickupTryRemoveCollectible) {
 
 LUA_FUNCTION(Lua_PickupSetForceBlind) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	bool setBlind = lua_toboolean(L, 2);
+	bool setBlind = lua::luaL_checkboolean(L, 2);
 
 	pickup->SetForceBlind(setBlind);
 

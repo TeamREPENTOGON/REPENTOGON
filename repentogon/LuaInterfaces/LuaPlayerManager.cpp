@@ -15,7 +15,7 @@ LUA_FUNCTION(Lua_FirstCollectibleOwner)
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int collectible = (int)luaL_checkinteger(L, 2);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
-	bool unk = lua_toboolean(L, 4);
+	bool unk = lua::luaL_checkboolean(L, 4);
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, unk);
 	if (!player) {
 		lua_pushnil(L);
@@ -85,7 +85,7 @@ LUA_FUNCTION(Lua_FirstTrinketOwner)
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
 	int trinket = (int)luaL_checkinteger(L, 2);
 	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
-	bool unk = lua_toboolean(L, 4);
+	bool unk = lua::luaL_checkboolean(L, 4);
 	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, unk);
 	if (!player) {
 		lua_pushnil(L);

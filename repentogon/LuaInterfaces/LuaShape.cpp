@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_EntityGetDebugShape) {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	bool unk = lua_toboolean(L, 2);
+	bool unk = lua::luaL_checkboolean(L, 2);
 	Shape** ud = (Shape**)lua_newuserdata(L, sizeof(Shape*));
 	*ud = g_Game->GetDebugRenderer()->Get(ent->GetIndex(), unk);
 	luaL_setmetatable(L, lua::metatables::ShapeMT);

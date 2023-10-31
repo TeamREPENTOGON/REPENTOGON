@@ -42,7 +42,7 @@ LUA_FUNCTION(Lua_GetWaterV2)
 LUA_FUNCTION(Lua_SetWaterV2)
 {
 	FXParams* params = *lua::GetUserdata<FXParams**>(L, 1, lua::metatables::FXParamsMT);
-	*params->GetWaterV2() = lua_toboolean(L, 2);
+	*params->GetWaterV2() = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 

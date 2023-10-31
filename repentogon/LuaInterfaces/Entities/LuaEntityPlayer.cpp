@@ -135,9 +135,9 @@ LUA_FUNCTION(Lua_PlayerAddActiveCharge) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	unsigned int charge = (unsigned int)luaL_checkinteger(L, 2);
 	int slot = (int)luaL_checkinteger(L, 3);
-	bool unknown = lua_toboolean(L, 4);
-	bool overcharge = lua_toboolean(L, 5);
-	bool force = lua_toboolean(L, 6);
+	bool unknown = lua::luaL_checkboolean(L, 4);
+	bool overcharge = lua::luaL_checkboolean(L, 5);
+	bool force = lua::luaL_checkboolean(L, 6);
 
 	int ret = player->AddActiveCharge(charge, slot, unknown, overcharge, force);
 	lua_pushinteger(L, ret);
@@ -178,7 +178,7 @@ LUA_FUNCTION(lua_PlayerRemoveCollectibleByHistoryIndex) {
 LUA_FUNCTION(Lua_PlayerSetCanShoot)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	bool canShoot = lua_toboolean(L, 2);
+	bool canShoot = lua::luaL_checkboolean(L, 2);
 	*player->GetCanShoot() = canShoot;
 	return 0;
 }
@@ -433,7 +433,7 @@ LUA_FUNCTION(Lua_PlayerEnableWeaponType)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int weaponType = (int)luaL_checkinteger(L, 2);
-	bool set = lua_toboolean(L, 3);
+	bool set = lua::luaL_checkboolean(L, 3);
 	player->EnableWeaponType((WeaponType)weaponType, set);
 	return 0;
 }
@@ -806,7 +806,7 @@ LUA_FUNCTION(Lua_PlayerSetCambionConceptionState)
 LUA_FUNCTION(Lua_PlayerUpdateIsaacPregnancy)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	bool cambion = lua_toboolean(L, 2);
+	bool cambion = lua::luaL_checkboolean(L, 2);
 	plr->UpdateIsaacPregnancy(cambion);
 
 	return 0;
@@ -857,7 +857,7 @@ LUA_FUNCTION(Lua_PlayerIsUrethraBlocked)
 LUA_FUNCTION(Lua_PlayerSetUrethraBlock)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*plr->IsUrethraBlocked() = lua_toboolean(L, 2);
+	*plr->IsUrethraBlocked() = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 

@@ -42,8 +42,8 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 		}
 	}
 	
-	bool useOverlay = lua_toboolean(L, 3);
-	bool unk = lua_toboolean(L, 4);
+	bool useOverlay = lua::luaL_checkboolean(L, 3);
+	bool unk = lua::luaL_checkboolean(L, 4);
 	int vectorSize = (int)luaL_optinteger(L, 5, POINT_VECTOR_SIZE);
 	if (vectorSize < 2) {
 		return luaL_error(L, "Must allocate at least two points");
@@ -188,7 +188,7 @@ LUA_FUNCTION(Lua_BeamGetUseOverlay)
 LUA_FUNCTION(Lua_BeamSetUseOverlay)
 {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
-	*beam->GetUseOverlay() = lua_toboolean(L, 2);
+	*beam->GetUseOverlay() = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
@@ -202,7 +202,7 @@ LUA_FUNCTION(Lua_BeamGetUnkBool)
 LUA_FUNCTION(Lua_BeamSetUnkBool)
 {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
-	*beam->GetUnkBool() = lua_toboolean(L, 2);
+	*beam->GetUnkBool() = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 

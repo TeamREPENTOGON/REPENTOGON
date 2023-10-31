@@ -25,9 +25,9 @@ static std::vector<Entity_Projectile*>& InitProjectileStorage() {
 LUA_FUNCTION(Lua_NPCUpdateDirtColor)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	bool unk = lua_toboolean(L, 2);
+	bool lerp = lua::luaL_checkboolean(L, 2);
 
-	npc->UpdateDirtColor(unk);
+	npc->UpdateDirtColor(lerp);
 	return 0;
 }
 

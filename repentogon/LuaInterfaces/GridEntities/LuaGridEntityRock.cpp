@@ -69,7 +69,7 @@ LUA_FUNCTION(Lua_GridEntityRockSpawnDrops)
 	int gridType = (int)luaL_checkinteger(L, 2);
 	int gridVariant = (int)luaL_checkinteger(L, 3);
 	unsigned int seed = (unsigned int)luaL_checkinteger(L, 4);
-	bool unk = lua_toboolean(L, 5);
+	bool unk = lua::luaL_checkboolean(L, 5);
 	int backdropType = (int)luaL_optinteger(L, 6, 0);
 	GridEntity_Rock::SpawnDrops(*position, gridType, gridVariant, seed, unk, backdropType);
 	return 0;

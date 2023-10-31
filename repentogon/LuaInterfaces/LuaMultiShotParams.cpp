@@ -133,7 +133,7 @@ LUA_FUNCTION(Lua_MultiShotParamsGetIsCrossEyed) {
 LUA_FUNCTION(Lua_MultiShotParamsSetIsCrossEyed) {
 	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
 
-	params->isCrossEyed = lua_toboolean(L, 2);
+	params->isCrossEyed = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
@@ -147,7 +147,7 @@ LUA_FUNCTION(Lua_MultiShotParamsGetIsShootingBackwards) {
 LUA_FUNCTION(Lua_MultiShotParamsSetIsShootingBackwards) {
 	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
 
-	params->isShootingBackwards = lua_toboolean(L, 2);
+	params->isShootingBackwards = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 
@@ -161,7 +161,7 @@ LUA_FUNCTION(Lua_MultiShotParamsGetIsShootingSideways) {
 LUA_FUNCTION(Lua_MultiShotParamsSetIsShootingSideways) {
 	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
 
-	params->isShootingSideways = lua_toboolean(L, 2);
+	params->isShootingSideways = lua::luaL_checkboolean(L, 2);
 	return 0;
 }
 

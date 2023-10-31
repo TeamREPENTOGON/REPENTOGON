@@ -172,7 +172,7 @@ LUA_FUNCTION(lua_CharMenu_SetIsCharacterUnlocked)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CharacterMenuMT);
 	Menu_Character* menu = g_MenuManager->GetMenuCharacter();
-	menu->IsCharacterUnlocked = lua_toboolean(L, 2);
+	menu->IsCharacterUnlocked = lua::luaL_checkboolean(L, 2);
 
 	return 0;
 }

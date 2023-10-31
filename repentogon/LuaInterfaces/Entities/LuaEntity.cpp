@@ -62,7 +62,7 @@ LUA_FUNCTION(Lua_EntityAddKnockback)
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector"); //replace with const?
 	int duration = (int)luaL_checkinteger(L, 4);
-	bool TakeImpactDamage = lua_toboolean(L, 5);
+	bool TakeImpactDamage = lua::luaL_checkboolean(L, 5);
 	ent->AddKnockback(*ref, *pos, duration, TakeImpactDamage);
 	return 0;
 }
@@ -139,7 +139,7 @@ LUA_FUNCTION(Lua_EntityForceCollide)
 {
 	Entity* first = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Entity* second = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	bool low = lua_toboolean(L, 3);
+	bool low = lua::luaL_checkboolean(L, 3);
 	lua_pushboolean(L, first->ForceCollide(first, second, low));
 	return 1;
 }
@@ -147,7 +147,7 @@ LUA_FUNCTION(Lua_EntityForceCollide)
 LUA_FUNCTION(Lua_EntitySetDead)
 {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	bool isDead = lua_toboolean(L, 2);
+	bool isDead = lua::luaL_checkboolean(L, 2);
 	*entity->IsDead() = isDead;
 	return 0;
 }
@@ -155,7 +155,7 @@ LUA_FUNCTION(Lua_EntitySetDead)
 LUA_FUNCTION(Lua_EntitySetInvincible)
 {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	bool isInvincible = lua_toboolean(L, 2);
+	bool isInvincible = lua::luaL_checkboolean(L, 2);
 	*entity->IsInvincible() = isInvincible;
 	return 0;
 }

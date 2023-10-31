@@ -48,7 +48,7 @@ LUA_FUNCTION(Lua_RoomConfigHolderGetRoomByStageTypeAndVariant) {
 LUA_FUNCTION(Lua_RoomConfigHolder_GetRandomRoom) {
 	RoomConfigHolder* holder = *lua::GetUserdata<RoomConfigHolder**>(L, 1, lua::metatables::RoomConfigHolderMT);
 	int seed = (int)luaL_checkinteger(L, 2);
-	bool reduceWeight = lua_toboolean(L, 3);
+	bool reduceWeight = lua::luaL_checkboolean(L, 3);
 
 	int stage = (int)luaL_checkinteger(L, 4);
 	if (stage < 0 || (stage > 17 && stage < 27) || stage > 36) {
