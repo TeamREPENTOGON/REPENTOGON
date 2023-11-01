@@ -224,7 +224,27 @@ __thiscall uint32_t Entity_Player::InvalidateCoPlayerItems();
 "558bec83ec30a1????????33c58945??53":
 __thiscall bool Entity_Player::TryRemoveSmeltedTrinket();
 
-struct Entity_Player depends (ANM2) : public Entity { {{
+"558bec518b45??538bd9895d":
+__thiscall bool Entity_Player::IsItemCostumeVisible(ItemConfig_Item* item, int playerSpriteLayerID);
+
+"558bec56ff75??8bf18b0d????????ff75??8d89????????e8????????50":
+__thiscall bool Entity_Player::IsCollectibleCostumeVisible(CollectibleType collectible, int playerSpriteLayerID);
+
+/*
+"":
+__thiscall bool Entity_Player::IsNullItemCostumeVisible(int nullItemID, int playerSpriteLayerID);
+*/
+
+"558bec6aff68????????64a1????????5083ec4ca1????????33c58945??535657508d45??64a3????????8bf18975??8b0d":
+__thiscall void Entity_Player::PlayCollectibleAnim(CollectibleType collectible, bool unk, std_string &animName, int frameNum, bool unused);
+
+"558bec51538bd98b0d????????5657ff75":
+__thiscall bool Entity_Player::IsCollectibleAnimFinished(CollectibleType collectible, std_string &animName);
+
+"558bec578bf980bf????????0075":
+__thiscall void Entity_Player::ClearCollectibleAnim(CollectibleType collectible);
+
+struct Entity_Player depends (ANM2, PlayerCostumeMap) : public Entity { {{
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
 	inline int* GetEternalHearts() {return (int*)((char*)this + 0x1298); }
@@ -332,6 +352,8 @@ struct Entity_Player depends (ANM2) : public Entity { {{
     }}
 
 	ANM2 _heldSprite : 0xf48;
+	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1170;
+	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
 	float _damage : 0x13b8;
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
 	uint32_t _cacheFlags : 0x14b8;

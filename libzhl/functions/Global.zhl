@@ -87,6 +87,7 @@ struct SmeltedTrinketDesc {
 	short _goldenTrinketNum;
 };
 typedef std::vector<SmeltedTrinketDesc> vector_SmeltedTrinketDesc;
+typedef std::vector<CostumeSpriteDesc> vector_CostumeSpriteDesc;
 
 }}
 

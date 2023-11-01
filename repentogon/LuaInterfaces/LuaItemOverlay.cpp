@@ -27,7 +27,7 @@ LUA_FUNCTION(Lua_ItemOverlayShow)
 LUA_FUNCTION(Lua_ItemOverlayGetOverlayID)
 {
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
-	lua_pushinteger(L, itemOverlay->GetOverlayID());
+	lua_pushinteger(L, itemOverlay->_overlayID);
 
 	return 1;
 }
@@ -44,20 +44,29 @@ LUA_FUNCTION(Lua_ItemOverlayGetSprite)
 LUA_FUNCTION(Lua_ItemOverlayGetDelay)
 {
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
-	lua_pushinteger(L, *itemOverlay->GetDelay());
+	lua_pushinteger(L, itemOverlay->_delay);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ItemOverlayGetPlayer) {
 	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
-	Entity_Player* player = itemOverlay->GetPlayer();
+	Entity_Player* player = itemOverlay->_player;
 	if (!player) {
 		lua_pushnil(L);
 	}
 	else {
 		lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
 	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemOverlayGetMegaMushPlayerSprite)
+{
+	ItemOverlay* itemOverlay = *lua::GetUserdata<ItemOverlay**>(L, 1, lua::metatables::ItemOverlayMT);
+	ANM2* anm2 = &itemOverlay->_megaMushPlayerSprite;
+	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
 	return 1;
 }
 
@@ -70,6 +79,7 @@ static void RegisterItemOverlay(lua_State* L) {
 		{ "GetSprite", Lua_ItemOverlayGetSprite },
 		//{ "GetDelay", Lua_ItemOverlayGetDelay },
 		//{ "GetPlayer", Lua_ItemOverlayGetPlayer },
+		{ "GetMegaMushPlayerSprite", Lua_ItemOverlayGetMegaMushPlayerSprite },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::ItemOverlayMT, lua::metatables::ItemOverlayMT, functions);

@@ -1113,6 +1113,84 @@ LUA_FUNCTION(Lua_PlayerGetSmeltedTrinkets) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetCostumeLayerMap)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	PlayerCostumeMap* costumeLayerMap = plr->_playerCostumeMap;
+
+	lua_newtable(L);
+	for (int idx = 0; idx < 15; idx++) {
+		lua_pushinteger(L, idx + 1);
+
+		lua_newtable(L);
+
+		lua_pushstring(L, "costumeIndex");
+		lua_pushinteger(L, costumeLayerMap[idx]._index);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "layerID");
+		lua_pushinteger(L, costumeLayerMap[idx]._layerID);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "priority");
+		lua_pushinteger(L, costumeLayerMap[idx]._priority);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "unkBool");
+		lua_pushboolean(L, costumeLayerMap[idx]._itemAnimPlay);
+		lua_settable(L, -3);
+
+		lua_settable(L, -3);
+	}
+	return 1;
+}
+
+
+LUA_FUNCTION(Player_PlayerIsItemCostumeVisible) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	ItemConfig_Item* item = lua::GetUserdata<ItemConfig_Item*>(L, 2, lua::Metatables::ITEM, "Item");
+	int playerSpriteLayer = (int)luaL_checkinteger(L, 3);
+
+	lua_pushboolean(L, plr->IsItemCostumeVisible(item, playerSpriteLayer));
+	return 1;
+}
+
+LUA_FUNCTION(Player_PlayerIsCollectibleCostumeVisible) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
+	int playerSpriteLayer = (int)luaL_checkinteger(L, 3);
+
+	lua_pushboolean(L, plr->IsCollectibleCostumeVisible(collectibleType, playerSpriteLayer));
+	return 1;
+}
+
+LUA_FUNCTION(Player_PlayCollectibleAnim) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
+	bool unk = lua::luaL_checkboolean(L, 3);
+	std::string animName = luaL_checkstring(L, 4);
+	int frameNum = luaL_optinteger(L, 5, -1);
+
+	plr->PlayCollectibleAnim(collectibleType, unk, animName, frameNum, false);
+	return 0;
+}
+
+LUA_FUNCTION(Player_IsCollectibleAnimFinished) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
+	std::string animName = luaL_checkstring(L, 3);
+
+	lua_pushboolean(L, plr->IsCollectibleAnimFinished(collectibleType, animName));
+	return 1;
+}
+
+LUA_FUNCTION(Player_ClearCollectibleAnim) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
+
+	plr->ClearCollectibleAnim(collectibleType);
+	return 0;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -1229,6 +1307,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CanUsePill", Lua_PlayerCanUsePill },
 		{ "AddSmeltedTrinket", Lua_PlayerAddSmeltedTrinket },
 		{ "GetSmeltedTrinkets", Lua_PlayerGetSmeltedTrinkets },
+		{ "GetCostumeLayerMap", Lua_PlayerGetCostumeLayerMap },
+		{ "IsItemCostumeVisible", Player_PlayerIsItemCostumeVisible },
+		{ "IsCollectibleCostumeVisible", Player_PlayerIsCollectibleCostumeVisible },
+		{ "PlayCollectibleAnim", Player_PlayCollectibleAnim },
+		{ "IsCollectibleAnimFinished", Player_IsCollectibleAnimFinished },
+		{ "ClearCollectibleAnim", Player_ClearCollectibleAnim },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

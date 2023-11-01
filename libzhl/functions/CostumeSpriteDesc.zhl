@@ -1,0 +1,14 @@
+struct PlayerCostumeMap {
+	int _index : 0x0, _layerID : 0x4, _priority : 0x8; 
+	bool _itemAnimPlay : 0xc;
+} : 0x10;
+
+struct CostumeSpriteDesc {
+	ANM2 _sprite : 0x0;
+	ItemConfig_Item* _item : 0x114;
+	int _priority : 0x118;
+	bool _itemAnimPlay : 0x11c, _isFlying : 0x11d, _hasOverlay : 0x11e, _hasSkinAlt : 0x11f;
+	int _headColor : 0x120, _bodyColor : 0x124;
+	bool _overwriteColor : 0x128, _itemStateOnly : 0x129;
+	int _playerType : 0x12c;
+} : 0x130;

@@ -6,8 +6,16 @@ __thiscall void ItemOverlay::Update(bool unk);
 
 struct ItemOverlay {
 {{
-	inline int GetOverlayID() { return *(int*)((char*)this + 0x4); } 
-	inline ANM2* GetSprite() { return (ANM2*)((char*)this + 0x8); } 
-	inline int* GetDelay() { return (int*)((char*)this + 0x1144); } 
-	inline Entity_Player* GetPlayer() { return (Entity_Player*)((char*)this + 0x1148); }
-}} } : 0x1260;
+	inline int* GetOverlayID() { return &_overlayID; } 
+	inline ANM2* GetSprite() { return &_sprite; } 
+	inline int* GetDelay() { return &_delay; } 
+	inline Entity_Player* GetPlayer() { &_player; }
+}}
+
+	int _overlayID : 0x4;
+	ANM2 _sprite : 0x8;
+	int _delay : 0x1144;
+	Entity_Player* _player : 0x1148;
+	ANM2 _megaMushPlayerSprite : 0x114c;
+	
+} : 0x1260;
