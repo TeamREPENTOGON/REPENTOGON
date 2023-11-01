@@ -139,12 +139,12 @@ LUA_FUNCTION(Lua_Color_Print) {
 LUA_FUNCTION(Lua_CreateColor) {
 	ColorMod mod;
 	for (int i = 0; i < 4; ++i) {
-		mod._colorize[i] = (float)luaL_optnumber(L, 9 + i, 1.0f);
+		mod._colorize[i] = (float)luaL_optnumber(L, 9 + i, 0.0f);
 		mod._tint[i] = (float)luaL_optnumber(L, 2 + i, 1.0f);
 	}
 
 	for (int i = 0; i < 3; ++i) {
-		mod._offset[i] = (float)luaL_optnumber(L, 6 + i, 0.f);
+		mod._offset[i] = (float)luaL_optnumber(L, 6 + i, 0.0f);
 	}
 
 	/* Put the object on the stack after reading arguments
