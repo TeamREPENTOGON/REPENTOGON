@@ -66,8 +66,8 @@ LUA_FUNCTION(Lua_PIGetEffectCount) {
 LUA_FUNCTION(Lua_PIGetEffect) {
 	ProceduralItem* pi = *lua::GetUserdata<ProceduralItem**>(L, 1, lua::metatables::ProceduralItemMT);
 	std::vector<ProceduralEffect*>* effect = pi->GetEffects();
-	int index = luaL_checkinteger(L, 2);
-	if (index >= 0 && index < effect->size()) {
+	int index = (int)luaL_checkinteger(L, 2);
+	if (index >= 0 && (unsigned int)index < effect->size()) {
 		ProceduralEffect** pe = (ProceduralEffect**)lua_newuserdata(L, sizeof(void*));
 		*pe = (*effect)[index];
 		luaL_setmetatable(L, "ProceduralEffect");

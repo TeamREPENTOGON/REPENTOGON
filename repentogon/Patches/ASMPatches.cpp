@@ -59,7 +59,7 @@ void ASMPatchAmbushWaveCount() {
 	printf("[REPENTOGON] Patching hardcoded ambush wave count at %p\n", addr);
 
 	char ptrMov[] = {
-		0x8B, 0X1D, 0, 0, 0, 0, 0
+		(char)0x8B, 0X1D, 0, 0, 0, 0, 0
 	};
 
 	void* ptr = &ambushWaves;
@@ -564,7 +564,7 @@ void ASMPatchModsMenu() {
 	PatchModMenu_Font("8d89????????f30f1100");
 }
 
-const int const stageidToAchievement[36] = {
+const int stageidToAchievement[36] = {
 	-1, // Special Rooms
 	-1, // Basement
 	86, // Cellar

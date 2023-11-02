@@ -71,7 +71,7 @@ LUA_FUNCTION(Lua_SpriteGetAllAnimationData)
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
 
 	lua_newtable(L);
-	for (auto i = 0; i < anm2->GetAnimationCount(); ++i) {
+	for (unsigned int i = 0; i < anm2->GetAnimationCount(); ++i) {
 		lua_pushinteger(L, i + 1);
 		AnimationData** toLua = (AnimationData**)lua_newuserdata(L, sizeof(AnimationData*));
 		*toLua = anm2->GetAnimationData(i);

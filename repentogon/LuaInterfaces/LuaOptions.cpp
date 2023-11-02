@@ -53,7 +53,7 @@ LUA_FUNCTION(Lua_Options_SetPreventModUpdates) {
 }
 
 LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
-	float value = luaL_checknumber(L, 1);
+	float value = (float)luaL_checknumber(L, 1);
 	value = (min(max(0.0f, value), 1.0f)) * 10; // clamp, then multiply in preparation for rounding
 	value = std::round(value) / 10; // round, then divide back down to first decimal
 	g_Manager->GetOptions()->_sfxVolume = value;

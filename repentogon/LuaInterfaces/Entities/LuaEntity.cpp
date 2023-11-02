@@ -222,7 +222,7 @@ LUA_FUNCTION(Lua_EntityTryThrow) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
 	Vector* dir = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	const float force = luaL_checknumber(L, 4);
+	const float force = (float)luaL_checknumber(L, 4);
 	lua_pushboolean(L, entity->TryThrow(*ref, dir, force));
 	return 1;
 }

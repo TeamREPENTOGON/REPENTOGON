@@ -3,7 +3,7 @@ struct PlayerCostumeMap {
 	bool _itemAnimPlay : 0xc;
 } : 0x10;
 
-struct CostumeSpriteDesc {
+struct CostumeSpriteDesc depends (ANM2, ItemConfig_Item) {
 	ANM2 _sprite : 0x0;
 	ItemConfig_Item* _item : 0x114;
 	int _priority : 0x118;

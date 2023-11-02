@@ -30,8 +30,8 @@ LUA_FUNCTION(Lua_PIMGetProceduralItem)
 {
 	ProceduralItemManager* pim = *lua::GetUserdata<ProceduralItemManager**>(L, 1, lua::metatables::ProceduralItemManagerMT);
 	std::vector<ProceduralItem*>* items = pim->GetProceduralItems();
-	int index = luaL_checkinteger(L, 2);
-	if (l_likely(index >= 0 && index < items->size())) {
+	int index = (int)luaL_checkinteger(L, 2);
+	if (l_likely(index >= 0 && (unsigned int)index < items->size())) {
 		ProceduralItem** ud = (ProceduralItem**)lua_newuserdata(L, sizeof(void*));
 		*ud = (*items)[index];
 		luaL_setmetatable(L, "ProceduralItem");

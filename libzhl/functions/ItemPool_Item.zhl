@@ -1,4 +1,4 @@
-struct ItemPool_Item {
+struct ItemPool_Item depends (RNG) {
 	vector_PoolItem _poolList : 0x4 ;
 	RNG _rng1 : 0x10 ;
 	RNG _rng2 : 0x20 ;

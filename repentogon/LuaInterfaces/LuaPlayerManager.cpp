@@ -137,7 +137,7 @@ LUA_FUNCTION(Lua_GetPlayers) {
 
 LUA_FUNCTION(Lua_GetEsauJrState) {
 	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	const int index = luaL_optinteger(L, 2, 0);
+	const int index = (int)luaL_optinteger(L, 2, 0);
 
 	if (index < 0 || index > 3) {
 		return luaL_error(L, "Invalid index %d", index);

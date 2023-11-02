@@ -19,7 +19,7 @@
 #include "XMLData.h"
 using namespace std;
 
-typedef enum CompletionType {
+enum CompletionType {
 	MOMS_HEART = 0,
 	ISAAC = 1,
 	SATAN = 2,
@@ -38,7 +38,7 @@ typedef enum CompletionType {
 };
 
 
-typedef enum MEventCounter {
+enum MEventCounter {
 	PROGRESSION_KILL_MOMS_HEART_WITH_ISAAC = 27, //(0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_MOMS_HEART_WITH_MAGDALENE = 28, //(0 for not done. 1 for normal difficulty, 2 for hard)
 	PROGRESSION_KILL_MOMS_HEART_WITH_CAIN = 29, //(0 for not done. 1 for normal difficulty, 2 for hard)

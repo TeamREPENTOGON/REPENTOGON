@@ -155,7 +155,7 @@ LUA_FUNCTION(Lua_ColorModState__mul) {
 	}
 	else if (t2 == LUA_TNUMBER) {
 		ColorModState* color = lua::GetUserdata<ColorModState*>(L, 1, lua::metatables::ColorModifierMT);
-		ColorModState result = *color * luaL_checknumber(L, 2);
+		ColorModState result = *color * (float)luaL_checknumber(L, 2);
 		ColorModState* toLua = (ColorModState*)lua_newuserdata(L, sizeof(ColorModState));
 		luaL_setmetatable(L, lua::metatables::ColorModifierMT);
 		memcpy(toLua, &result, sizeof(ColorModState));

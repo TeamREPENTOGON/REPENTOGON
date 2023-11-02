@@ -1954,8 +1954,8 @@ LUA_FUNCTION(Lua_FromTypeVarSub)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected EntityType as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	int etype = (int)luaL_checknumber(L, 1);
-	int evar = luaL_optnumber(L ,2 ,0);
-	int esub = luaL_optnumber(L, 3, 0);
+	int evar = (int)luaL_optnumber(L ,2 ,0);
+	int esub = (int)luaL_optnumber(L, 3, 0);
 	bool strict = lua::luaL_optboolean(L,4, false);
 	XMLAttributes Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict);
 	tuple idx = { toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) };

@@ -1169,7 +1169,7 @@ LUA_FUNCTION(Player_PlayCollectibleAnim) {
 	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
 	bool unk = lua::luaL_checkboolean(L, 3);
 	std::string animName = luaL_checkstring(L, 4);
-	int frameNum = luaL_optinteger(L, 5, -1);
+	int frameNum = (int)luaL_optinteger(L, 5, -1);
 
 	plr->PlayCollectibleAnim(collectibleType, unk, animName, frameNum, false);
 	return 0;

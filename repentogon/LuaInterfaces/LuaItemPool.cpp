@@ -60,7 +60,7 @@ LUA_FUNCTION(Lua_ItemPoolHasCollectible) {
 	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 	std::vector<ItemConfig_Item*>& collectList = *g_Manager->GetItemConfig()->GetCollectibles();
 
-	lua_pushboolean(L, (collectibleID < collectList.size()) && (!removedCollectibles[collectibleID]));
+	lua_pushboolean(L, (collectibleID >= 0 && (unsigned int)collectibleID < collectList.size()) && (!removedCollectibles[collectibleID]));
 	/*const int itemPoolType = luaL_optinteger(L, 3, -1);
 
 	if (itemPoolType < POOL_NULL || itemPoolType > POOL_ROTTEN_BEGGAR) {
