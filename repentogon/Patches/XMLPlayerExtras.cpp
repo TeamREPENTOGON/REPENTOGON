@@ -328,6 +328,6 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 	logViewer.AddLog("[REPENTOGON]", "I have chosen: %d (%s, slot %d on the menu)\n", chosenCharacter.second._id, name.c_str(), chosenCharacter.first);
 	this->_chosenRandomCharacter = chosenCharacter.second._id;
 	this->_randomRotationAmount = chosenCharacter.first + this->GetNumCharacters() * 2 + this->GetNumCharacters();
-	this->_randomRotationVelocity = (360 / this->GetNumCharacters()) / 30.0f;
+	this->_randomRotationVelocity = (360.0f / this->GetNumCharacters()) / 30.0f;
 
 }

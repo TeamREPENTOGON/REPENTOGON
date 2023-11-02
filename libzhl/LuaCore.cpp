@@ -487,7 +487,7 @@ namespace lua {
 		bool ToBoolean(lua_State* L, int stackPosition) {
 			lua_pushinteger(L, stackPosition);
 			lua_gettable(L, -2);
-			bool res = lua_toboolean(L, -1); //TODO add typechecking
+			bool res = luaL_checkboolean(L, -1);
 			lua_pop(L, 1);
 			return res;
 		}
