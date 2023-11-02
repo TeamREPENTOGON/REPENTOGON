@@ -22,3 +22,8 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 		g_Game->GetRoomConfigHolder()->configs[26].xmlFileName = "rooms/26.The Void_ex.xml";
 	super(Stage, Mode);
 }
+
+// Force achievements to be unlockable
+HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
+	return false;
+}

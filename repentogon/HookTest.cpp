@@ -13,16 +13,19 @@
 
 extern LogViewer logViewer;
 
+/*
 HOOK_METHOD(Game, StartStageTransition, (bool samestage, int animation, Entity_Player *player) -> void) {
 	logViewer.AddLog("[REPENTOGON]", "Game::StageStageTransition: samestage %c, animation: %d\n", samestage, animation);
 	super(samestage, animation, player);
 }
+*/
 
+/*
 HOOK_METHOD(Level, SetStage, (int stageid, int alt) -> void) {
 	logViewer.AddLog("[REPENTOGON]", "Level::SetStage: stageid: %d, alt: %d\n", stageid, alt);
 	super(stageid, alt);
 }
-
+*/
 
 /*HOOK_METHOD(Game, MakeShockwave, (const Vector &pos, float amp, float speed, int dur) -> void) {
 	super(pos, amp, speed, dur);
@@ -30,14 +33,16 @@ HOOK_METHOD(Level, SetStage, (int stageid, int alt) -> void) {
 }
 */
 
+/*
 HOOK_METHOD(Game, Update, () -> void) {
 	super();
-	/*printf("I'm a buff baby that can dance like a man,\n");
+	printf("I'm a buff baby that can dance like a man,\n");
 	printf("I can shake-ah my fanny, I can shake-ah my can!\n");
 	printf("I'm a tough tootin' baby, I can punch-ah yo buns!\n");
 	printf("Punch-ah yo buns, I can punch-ah yo buns!\n");
-	*/
+	
 }
+*/
 
 /*HOOK_METHOD(GridEntity_Rock, Update, () -> void) {
 	super();
@@ -107,10 +112,12 @@ HOOK_METHOD(Game, Update, () -> void) {
 }
 */
 
+/*
 HOOK_METHOD(Entity, Update, () -> void) {
 	super();
 	//printf("hellp");
 }
+*/
 
 /*HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
 	float ret = super();
@@ -170,13 +177,11 @@ HOOK_METHOD(Entity_Player, AddPrettyFly, () -> void) {
 }
 */
 
-HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
-	return false;
-}
+/*
 HOOK_STATIC(Manager, RecordPlayerCompletion, (int eEvent) -> void, __stdcall) {
 	super(eEvent);
 }
-
+*/
 
 /* //Sinful stuff, DONT JUDGE! (or at least do it in silence)
 int Lua_TEST(lua_State* L)
@@ -258,6 +263,7 @@ bool netStartInitialized = false; // temp
 	super(unk, challenge, seed, difficulty, state);
 }*/
 
+/*
 HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neighbors, uint32_t generationIndex, bool unk) -> void) {
 	super(neighbors, generationIndex, unk);
 	LevelGenerator_Room& room = (*GetAllRooms())[generationIndex];
@@ -268,6 +274,7 @@ HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neigh
 		logger.Log("\t(%d, %d, %d)\n", (*neighbors)[i]._gridColIdx, (*neighbors)[i]._gridLineIdx, (*neighbors)[i]._shape);
 	}
 }
+*/
 
 /*HOOK_METHOD(Entity, GetCollisionCapsule, (Capsule* capsule, const Vector& vec)-> Capsule*) {
 	Capsule* ret = super(capsule, vec);
