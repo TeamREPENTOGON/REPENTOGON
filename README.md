@@ -33,7 +33,7 @@ The nature of this project requires that we use the same compiler as the game. A
 
 ### Steps
 We assume Git Bash for the duration of this tutorial, as well as CMake GUI.
-1. *Recursively* clone the repository: `git clone --recursive https://github.com/IsaacZHL/IsaacZHL`
+1. *Recursively* clone the repository: `git clone --recursive https://github.com/IsaacZHL/REPENTOGON`
 2. Launch CMake.
 3. Under "Where is the source code", navigate to the root directory of the cloned repository (in most cases named IsaacZHL).
 4. Under "Where to put the binaries", choose any folder. This is where the generated files will live.
