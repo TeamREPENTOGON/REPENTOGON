@@ -34,7 +34,7 @@ LUA_FUNCTION(Lua_PIMGetProceduralItem)
 	if (l_likely(index >= 0 && (unsigned int)index < items->size())) {
 		ProceduralItem** ud = (ProceduralItem**)lua_newuserdata(L, sizeof(void*));
 		*ud = (*items)[index];
-		luaL_setmetatable(L, "ProceduralItem");
+		luaL_setmetatable(L, lua::metatables::ProceduralItemMT);
 	}
 	else {
 		lua_pushnil(L);

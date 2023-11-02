@@ -70,7 +70,7 @@ LUA_FUNCTION(Lua_PIGetEffect) {
 	if (index >= 0 && (unsigned int)index < effect->size()) {
 		ProceduralEffect** pe = (ProceduralEffect**)lua_newuserdata(L, sizeof(void*));
 		*pe = (*effect)[index];
-		luaL_setmetatable(L, "ProceduralEffect");
+		luaL_setmetatable(L, lua::metatables::ProceduralEffectMT);
 	}
 	else {
 		lua_pushnil(L);
