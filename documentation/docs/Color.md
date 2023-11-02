@@ -1,5 +1,13 @@
 # Class "Color"
- 
+
+## Modified Functions
+
+### Color () {: aria-label='Modified Functions' }
+#### [Color](Color.md) Color ( float R = 0, float G = 0, float B = 0, float A = 1, float RO = 0, float GO = 0, float BO = 0 ) {: .copyable aria-label='Constructors' }
+
+All arguments are now optional.
+
+___
 ## Functions
 
 ### __tostring () {: aria-label='Functions' }
@@ -37,7 +45,7 @@ ___
 ### Color.EmberFade {: aria-label='Constants' }
 [ ](#){: .rep .tooltip .badge }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) EmberFade {: .copyable aria-label='Constants' }
-Used for enemies like Crackles and Coal Spiders. Gibs start orange and fade into grey.
+Used for enemies like Crackles and Coal Spiders. This color has a hardcoded special property; gibs start orange and fade into grey.
 
 Tint of (0, 0, 0, 1.1)
 Colorize of (0, 0, 0, 0)
