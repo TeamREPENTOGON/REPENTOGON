@@ -3,9 +3,9 @@
 ## Modified Functions
 
 ### Color () {: aria-label='Modified Functions' }
-#### [Color](Color.md) Color ( float R = 0, float G = 0, float B = 0, float A = 1, float RO = 0, float GO = 0, float BO = 0 ) {: .copyable aria-label='Constructors' }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) Color ( float R = 1, float G = 1, float B = 1, float A = 1, float RO = 0, float GO = 0, float BO = 0, float RC = 0, float GC = 0, float BC = 0, float AC = 0 ) {: .copyable aria-label='Constructors' }
 
-All arguments are now optional.
+All arguments are now optional. `Colorize` can now be set through the constructor.
 
 ___
 ## Functions
