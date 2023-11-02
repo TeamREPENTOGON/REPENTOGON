@@ -1,6 +1,6 @@
 struct PlayerCostumeMap {
 	int _index : 0x0, _layerID : 0x4, _priority : 0x8; 
-	bool _itemAnimPlay : 0xc;
+	bool _isBodyLayer : 0xc;
 } : 0x10;
 
 struct CostumeSpriteDesc depends (ANM2, ItemConfig_Item) {

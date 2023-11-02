@@ -1136,8 +1136,8 @@ LUA_FUNCTION(Lua_PlayerGetCostumeLayerMap)
 		lua_pushinteger(L, costumeLayerMap[idx]._priority);
 		lua_settable(L, -3);
 
-		lua_pushstring(L, "unkBool");
-		lua_pushboolean(L, costumeLayerMap[idx]._itemAnimPlay);
+		lua_pushstring(L, "isBodyLayer");
+		lua_pushboolean(L, costumeLayerMap[idx]._isBodyLayer);
 		lua_settable(L, -3);
 
 		lua_settable(L, -3);

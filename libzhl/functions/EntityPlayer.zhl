@@ -236,7 +236,7 @@ __thiscall bool Entity_Player::IsNullItemCostumeVisible(int nullItemID, int play
 */
 
 "558bec6aff68????????64a1????????5083ec4ca1????????33c58945??535657508d45??64a3????????8bf18975??8b0d":
-__thiscall void Entity_Player::PlayCollectibleAnim(CollectibleType collectible, bool unk, std_string &animName, int frameNum, bool unused);
+__thiscall void Entity_Player::PlayCollectibleAnim(CollectibleType collectible, bool checkBodyAnim, std_string &animName, int frameNum, bool unused);
 
 "558bec51538bd98b0d????????5657ff75":
 __thiscall bool Entity_Player::IsCollectibleAnimFinished(CollectibleType collectible, std_string &animName);
