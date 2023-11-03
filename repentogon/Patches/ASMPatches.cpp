@@ -2,6 +2,7 @@
 #include "SigScan.h"
 #include "LuaCore.h"
 #include "../LuaInterfaces/Entities/EntityNPC.h"
+#include "../LuaInterfaces/Entities/EntityPlayer.h"
 #include "../LuaInterfaces/LuaRender.h"
 #include "XMLData.h"
 
@@ -896,6 +897,7 @@ void PerformASMPatches() {
 	PatchPreEntityTakeDamageCallbacks();
 	PatchPostEntityTakeDamageCallbacks();
 	PatchFamiliarCanBeDamagedByLaser();
+	PatchCheckFamiliar();
 	ASMPatchVoidGeneration();
 	ASMPatchHushBug();
 	ASMPatchFamiliarGetMultiplier();

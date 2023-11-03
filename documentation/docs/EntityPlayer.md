@@ -71,6 +71,12 @@ ___
 By some conditions, usually health-related, determines whether a player can use a given pill effect.
 
 ___
+### Check·Familiar·Ex () {: aria-label='Functions' }
+#### table CheckFamiliarEx ( int FamiliarVariant, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
+
+A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#checkfamiliar) that returns all familiars spawned by the function as a table.
+
+___
 ### Drop·Collectible () {: aria-label='Functions' }
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 

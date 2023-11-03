@@ -21,7 +21,41 @@ struct Entity_Familiar : public Entity {
 	inline Entity_Player** GetPlayer() { return (Entity_Player**)((char*)this + 0x360); }
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
 	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); } 
-}} } : 0xe70;
+}}
+
+    __vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		
+        override
+        "558bec6aff68????????64a1????????5081ec58020000a1????????33c58945??56":
+        void Update();
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+    };
+
+ } : 0xe70;
 
 "6a0068(????????)68????????6a0050e8????????8b8d0cffffff83c4148985fcfeffff":
 reference void* EntityFamiliarRTTI;

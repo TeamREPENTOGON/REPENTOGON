@@ -3,6 +3,8 @@
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "ASMPatcher.hpp"
+#include "SigScan.h"
 #include "HookSystem.h"
 #include "../LuaWeapon.h"
 
@@ -28,6 +30,19 @@ static std::mt19937 gen(rd());
 
 std::map<int, int> fakeItems;
 
+struct CheckFamiliarStorage {
+	std::vector<Entity_Familiar*> familiars;
+	bool inUse = false;
+};
+
+thread_local CheckFamiliarStorage familiarsStorage;
+
+static std::vector<Entity_Familiar*>& InitFamiliarStorage() {
+	std::vector<Entity_Familiar*>& familiars = familiarsStorage.familiars;
+	familiars.clear();
+	familiarsStorage.inUse = true;
+	return familiars;
+}
 
 LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
@@ -1192,6 +1207,63 @@ LUA_FUNCTION(Player_ClearCollectibleAnim) {
 	return 0;
 }
 
+static void FamiliarStorageToLua(lua_State* L, std::vector<Entity_Familiar*>& familiars) {
+	lua_newtable(L);
+	for (size_t i = 0; i < familiars.size(); ++i) {
+		lua_pushinteger(L, i + 1);
+		lua::luabridge::UserdataPtr::push(L, familiars[i], lua::GetMetatableKey(lua::Metatables::ENTITY_FAMILIAR));
+		lua_rawset(L, -3);
+	}
+
+	familiarsStorage.familiars.clear();
+	familiarsStorage.inUse = false;
+}
+
+LUA_FUNCTION(Lua_EntityPlayer_CheckFamiliarEx) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int variant = (int)luaL_checkinteger(L, 2);
+	int targetCount = (int)luaL_checkinteger(L, 3);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 4, lua::Metatables::RNG, lua::metatables::RngMT);
+	ItemConfig_Item* configPtr = nullptr;
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		configPtr = lua::GetUserdata<ItemConfig_Item*>(L, 5, lua::Metatables::ITEM, "ItemConfigItem");
+	}
+	
+	int subtype = max((int)luaL_optinteger(L, 6, -1), -1);
+
+	std::vector<Entity_Familiar*>& familiars = InitFamiliarStorage();
+	plr->CheckFamiliar(variant, targetCount, rng, configPtr, subtype);
+	FamiliarStorageToLua(L, familiars);
+
+	return 1;
+}
+
+void __stdcall CheckFamiliar_Internal(Entity_Familiar* familiar) {
+	familiar->Update();
+
+	if (familiarsStorage.inUse) {
+		familiarsStorage.familiars.push_back(familiar);
+	}
+	
+	return;
+}
+
+void PatchCheckFamiliar() {
+	SigScan scanner("8b06ff50??8b75"); // this is immediately before the call to Update()
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI)  // Push the familiar spawned
+		.AddInternalCall(CheckFamiliar_Internal) 
+		.RestoreRegisters(savedRegisters)
+		// this should neatly fit in the 5 bytes used to call Update, and we handle calling it there, nothing to restore
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -1313,6 +1385,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "PlayCollectibleAnim", Player_PlayCollectibleAnim },
 		{ "IsCollectibleAnimFinished", Player_IsCollectibleAnimFinished },
 		{ "ClearCollectibleAnim", Player_ClearCollectibleAnim },
+		{ "CheckFamiliarEx", Lua_EntityPlayer_CheckFamiliarEx },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

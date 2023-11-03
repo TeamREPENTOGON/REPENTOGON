@@ -98,6 +98,9 @@ __thiscall int Entity_Player::GetCollectibleCount();
 "558bec6aff68????????64a1????????5081ec70060000":
 __thiscall void Entity_Player::EvaluateItems();
 
+"558bec6aff68????????64a1????????5083ec20535657a1????????33c5508d45??64a3????????894dec":
+__thiscall void Entity_Player::CheckFamiliar(unsigned int FamiliarVariant, unsigned int TargetCount, RNG * rng, ItemConfig_Item* Item, int FamiliarSubType);
+
 "558bec8b45080981b8":
 __thiscall void Entity_Player::AddCacheFlags(int flags);
 
