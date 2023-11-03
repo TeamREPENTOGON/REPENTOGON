@@ -34,8 +34,8 @@ markdown_extensions:
 - admonition
 - pymdownx.details
 - pymdownx.emoji:
-    emoji_generator: !!python/name:materialx.emoji.to_svg ''
-    emoji_index: !!python/name:materialx.emoji.twemoji ''
+    emoji_index: !!python/name:material.extensions.emoji.twemoji
+    emoji_generator: !!python/name:material.extensions.emoji.to_svg
 - pymdownx.tabbed:
     alternate_style: true
 - attr_list
@@ -115,6 +115,7 @@ nav:
   - Color: Color.md
   - ColorModifier: ColorModifier.md
   - Console: Console.md
+  - CostumeSpriteDesc: CostumeSpriteDesc.md
   - DailyChallenge: DailyChallenge.md
   - Debug: Debug.md
   - Entity:
@@ -188,7 +189,7 @@ nav:
     - Image: renderer/Image.md
     - Pipeline: renderer/Pipeline.md
     - Renderer: renderer/Renderer.md
-    - RendererSet: renderer/RendererSet.md
+    - RenderSet: renderer/RenderSet.md
     - Shader: renderer/Shader.md
     - SourceQuad: renderer/SourceQuad.md
     - Shape: renderer/Shape.md

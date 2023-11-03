@@ -71,6 +71,10 @@ ___
 By some conditions, usually health-related, determines whether a player can use a given pill effect.
 
 ___
+### Clear·Collectible·Anim () {: aria-label='Functions' }
+#### void ClearCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) {: .copyable aria-label='Functions' }
+
+___
 ### Check·Familiar·Ex () {: aria-label='Functions' }
 #### table CheckFamiliarEx ( int FamiliarVariant, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
 
@@ -128,6 +132,18 @@ ___
 ### Get·Collectibles·List () {: aria-label='Functions' }
 #### table GetCollectiblesList ( ) {: .copyable aria-label='Functions' }
 
+___
+### Get·Costume·Layer·Map () {: aria-label='Functions' }
+#### table GetCostumeLayerMap ( ) {: .copyable aria-label='Functions' }
+Returns table of player sprite layers data for costumes with the following fields:
+* costumeIndex - int - Index of active/visible costume for layer.
+* layerID - int
+* priority - int
+* unkBool - bool
+___
+### Get·Costume·Sprite·Descs () {: aria-label='Functions' }
+#### table GetCostumeSpriteDescs ( ) {: .copyable aria-label='Functions' }
+Returns a table of [CostumeSpriteDesc](CostumeSpriteDesc.md).
 ___
 ### Get·D8·Damage·Modifier () {: aria-label='Functions' }
 #### int GetD8DamageModifier ( ) {: .copyable aria-label='Functions' }
@@ -342,6 +358,18 @@ I believe this is used by J&E, Strawman etc.
 	We've received confirmation from \_Kilburn that this is hardcoded to be handled on vanilla characters. We will need to add a workaround for this.
 
 ___
+### Is·Collectible·Anim·Finished () {: aria-label='Functions' }
+#### boolean IsCollectibleAnimFinished ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectibleType, string animName ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Collectible·Costume·Visible () {: aria-label='Functions' }
+#### boolean IsCollectibleCostumeVisible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectibleType, int playerSpriteLayer ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Item·Costume·Visible () {: aria-label='Functions' }
+#### boolean IsItemCostumeVisible ( [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) item, int playerSpriteLayer ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Local·Player () {: aria-label='Functions' }
 #### boolean IsLocalPlayer ( ) {: .copyable aria-label='Functions' }
 
@@ -349,6 +377,11 @@ ___
 ### Is·Urethra·Blocked () {: aria-label='Functions' }
 #### boolean IsUrethraBlocked ( ) {: .copyable aria-label='Functions' }
 
+___
+### Play·Collectible·Anim () {: aria-label='Functions' }
+#### void PlayCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectibleType, bool unk, string animName, int frameNum = -1 ) {: .copyable aria-label='Functions' }
+unk checks false for costumeSpriteMap.unkBool
+AnimName - takes animation name from collectibles costume sprite
 ___
 ### Play·Delayed·SFX () {: aria-label='Functions' }
 #### void PlayDelayedSFX ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) ID, int SoundDelay = 0, int FrameDelay = 2, float Volume = 1 ) {: .copyable aria-label='Functions' }

@@ -11,7 +11,7 @@ ___
 
 ___
 ### Projection·Matrix () {: aria-label='Functions' }
-#### [GLMat4](GLMetaDataObjects.md) ProjectionMatrix ( ) {: .copyable aria-label='Functions' }
+#### [GLMat4](GLSLValue.md) ProjectionMatrix ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Render·Set () {: aria-label='Functions' }
@@ -27,15 +27,15 @@ ___
 
 ___
 ### Vec2 () {: aria-label='Functions' }
-#### [GLVec2](GLMetaDataObjects.md) Vec2 ( float x = 0, float y = 0 ) {: .copyable aria-label='Functions' }
+#### [GLVec2](GLSLValue.md) Vec2 ( float x = 0, float y = 0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Vec3 () {: aria-label='Functions' }
-#### [GLVec3](GLMetaDataObjects.md) Vec3 ( float x = 0 float y = 0, float z = 0 ) {: .copyable aria-label='Functions' }
+#### [GLVec3](GLSLValue.md) Vec3 ( float x = 0 float y = 0, float z = 0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Vec4 () {: aria-label='Functions' }
-#### [GLVec4](GLMetaDataObjects.md) Vec4 ( float x = 0 float y = 0, float z = 0, float w = 0 ) {: .copyable aria-label='Functions' }
+#### [GLVec4](GLSLValue.md) Vec4 ( float x = 0 float y = 0, float z = 0, float w = 0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Vertex·Descriptor () {: aria-label='Functions' }

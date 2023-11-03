@@ -3,8 +3,8 @@
 ???+ info
     You can get this class by using the following functions:
 
-    * [Entity:GetCollisionCapsule()](Entity.md#getcollisioncapsule)
-    * [Entity:GetNullCapsule()](Entity.md#getnullcapsule)
+    * [Entity:GetCollisionCapsule()](../Entity.md#getcollisioncapsule)
+    * [Entity:GetNullCapsule()](../Entity.md#getnullcapsule)
         
 ## Functions
 

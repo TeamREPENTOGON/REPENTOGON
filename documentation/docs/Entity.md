@@ -45,11 +45,11 @@ ___
 
 ___
 ### Get·Collision·Capsule () {: aria-label='Functions' }
-#### [Capsule](Capsule.md) GetCollisionCapsule ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) vec ) {: .copyable aria-label='Functions' }
+#### [Capsule](renderer/Capsule.md) GetCollisionCapsule ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) vec ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Debug·Shape () {: aria-label='Functions' }
-#### [Shape](Shape.md) GetDebugShape ( boolean unknown ) {: .copyable aria-label='Functions' }
+#### [Shape](renderer/Shape.md) GetDebugShape ( boolean unknown ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Hit·List·Index () {: aria-label='Functions' }
@@ -65,7 +65,7 @@ Returns the minecart the entity is riding.
 
 ___
 ### Get·Null·Capsule () {: aria-label='Functions' }
-#### [Capsule](Capsule.md) GetNullCapsule ( string NullLayerName ) {: .copyable aria-label='Functions' }
+#### [Capsule](renderer/Capsule.md) GetNullCapsule ( string NullLayerName ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Null·Offset () {: aria-label='Functions' }
