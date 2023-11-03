@@ -88,8 +88,8 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 		}
 	}
 
-	ProcessPostAddCollectible(type, charge, firsttime, slot, vardata, this);
 	super(type, charge, firsttime, slot, vardata);
+	ProcessPostAddCollectible(type, charge, firsttime, slot, vardata, this);
 }
 
 //GRID_ROCK_UPDATE (id: 1010)
