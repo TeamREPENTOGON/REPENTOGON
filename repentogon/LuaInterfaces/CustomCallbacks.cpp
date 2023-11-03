@@ -26,7 +26,26 @@ HOOK_STATIC(Isaac,SetBuiltInCallbackState, (int callbackid, bool enable)-> void,
 extern int additiveCallbackKey;
 extern int preRenderCallbackKey;
 
-//AddCollectible Callback (id: 1004 enum pending)
+//PRE/POST_ADD_COLLECTIBLE (1004/1005)
+void ProcessPostAddCollectible(int type, int charge, bool firsttime, int slot, int vardata, Entity_Player* player) {
+	int callbackid = 1005;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(type)
+			.push(type)
+			.push(charge)
+			.push(firsttime)
+			.push(slot)
+			.push(vardata)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+	}
+}
+
 HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime, int slot, int vardata) -> void) {
 	int callbackid = 1004; 
 	if (CallbackState.test(callbackid - 1000)) {
@@ -57,23 +76,23 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 					lua_pop(L, 1);
 				}
 				super(result[0], result[1], result[2], result[3], result[4]);
+				ProcessPostAddCollectible(result[0], result[1], result[2], result[3], result[4], this);
 				return;
 			}
 			else if (lua_isinteger(L, -1))
 			{
 				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata);
+				ProcessPostAddCollectible((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata, this);
 				return;
 			}
 		}
 	}
+
+	ProcessPostAddCollectible(type, charge, firsttime, slot, vardata, this);
 	super(type, charge, firsttime, slot, vardata);
 }
-//AddCollectible Callback (id: 1004 enum pending)
-
-//1005 RESERVED - POST_ADD_COLLECTIBLE
 
 //GRID_ROCK_UPDATE (id: 1010)
-
 void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int type) {
 	int callbackid = 1010;
 	if (CallbackState.test(callbackid - 1000)) {
