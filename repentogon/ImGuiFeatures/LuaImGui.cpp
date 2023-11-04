@@ -2,8 +2,10 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "NotificationHandler.h"
 
 extern CustomImGui customImGui;
+extern NotificationHandler notificationHandler;
 
 extern bool menuShown;
 
@@ -864,6 +866,19 @@ LUA_FUNCTION(Lua_ImGui_AddProgressBar)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ImGui_PushNotification)
+{
+	const char* text = luaL_checkstring(L, 2);
+	int severity = (int)luaL_optinteger(L, 3, 0);
+	if (severity < 0  || severity > 3)
+		return luaL_error(L, "Severity needs to be a value between 0 and 3");
+	int lifetime = (int)luaL_optinteger(L, 4, 5000);
+
+	notificationHandler.AddNotification(text, severity, lifetime);
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_ImGui_Show)
 {
 	menuShown = true;
@@ -1089,6 +1104,7 @@ static void RegisterCustomImGui(lua_State* L)
 			{ "GetMousePosition", Lua_ImGui_GetMousePos },
 			{ "GetVisible", Lua_ImGui_GetVisible },
 			{ "GetWindowPinned", Lua_ImGui_GetWindowPinned },
+			{ "PushNotification", Lua_ImGui_PushNotification },
 			{ "Reset", Lua_ImGui_Reset },
 			{ "Show", Lua_ImGui_Show },
 			{ "Hide", Lua_ImGui_Hide },

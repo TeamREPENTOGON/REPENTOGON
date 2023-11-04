@@ -190,6 +190,11 @@ Connects a Window or Popup element to another element, making said element act a
     ```
 
 ___
+### Push·Notification () {: aria-label='Functions' }
+#### void PushNotification ( const text, int severity = 0, int lifetime = 5000 ) {: .copyable aria-label='Functions' }        
+Displays a pop-up message window in the style of a notification.
+Severity values are 0 = Info, 1 = success, 2 = warning, 3 = error
+___
 ### Remove·Callback () {: aria-label='Functions' }
 #### void RemoveCallback ( string elementId, [ImGuiCallback](enums/ImGuiCallback.md) type ) {: .copyable aria-label='Functions' }
 Remove the callback of the given type from the element.

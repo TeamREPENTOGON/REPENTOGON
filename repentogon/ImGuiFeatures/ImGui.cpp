@@ -4,6 +4,7 @@
 #include "HelpMenu.h"
 #include "HookSystem.h"
 #include "PerformanceWindow.h"
+#include "NotificationHandler.h"
 #include "IsaacRepentance.h"
 #include "LogViewer.h"
 #include "SigScan.h"
@@ -39,6 +40,7 @@ LogViewer logViewer;
 PerformanceWindow performanceWindow;
 ConsoleMega console;
 CustomImGui customImGui;
+NotificationHandler notificationHandler;
 
 int handleWindowFlags(int flags)
 {
@@ -303,23 +305,22 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         imguiSizeModifier = ImVec2(ImGui::GetMainViewport()->Size.x / oldSize.x, ImGui::GetMainViewport()->Size.y / oldSize.y);
     }
     oldSize = ImGui::GetMainViewport()->Size;
-    
 
-    if (menuShown) {
-        if (ImGui::BeginMainMenuBar()) {
-			if (ImGui::BeginMenu(ICON_FA_SCREWDRIVER_WRENCH " Tools")) {
-				ImGui::MenuItem(ICON_FA_TERMINAL" Debug Console", NULL, &console.enabled);
-				ImGui::MenuItem(ICON_FA_NEWSPAPER" Log Viewer", NULL, &logViewer.enabled);
-				ImGui::MenuItem(ICON_FA_GAUGE_HIGH" Performance", NULL, &performanceWindow.enabled);
-				ImGui::MenuItem(ICON_FA_PENCIL" Style Editor", NULL, &show_app_style_editor);
-				ImGui::EndMenu();
-            }
-            customImGui.DrawMenu();
-            helpMenu.Draw();
+		if (menuShown) {
+			if (ImGui::BeginMainMenuBar()) {
+				if (ImGui::BeginMenu(ICON_FA_SCREWDRIVER_WRENCH " Tools")) {
+					ImGui::MenuItem(ICON_FA_TERMINAL" Debug Console", NULL, &console.enabled);
+					ImGui::MenuItem(ICON_FA_NEWSPAPER" Log Viewer", NULL, &logViewer.enabled);
+					ImGui::MenuItem(ICON_FA_GAUGE_HIGH" Performance", NULL, &performanceWindow.enabled);
+					ImGui::MenuItem(ICON_FA_PENCIL" Style Editor", NULL, &show_app_style_editor);
+					ImGui::EndMenu();
+				}
+				customImGui.DrawMenu();
+				helpMenu.Draw();
 
-            ImGui::EndMainMenuBar();
-        }
-    }
+				ImGui::EndMainMenuBar();
+			}
+		}
 
     console.Draw(menuShown);
     logViewer.Draw(menuShown);
@@ -332,6 +333,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
         ImGui::ShowStyleEditor();
         ImGui::End();
     }
+
+    notificationHandler.Draw(menuShown);
 
     ImGui::Render();
 
