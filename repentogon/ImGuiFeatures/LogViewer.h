@@ -1,17 +1,17 @@
+#pragma once
 #include "imgui.h"
+#include "ImGuiEx.h"
 #include <iostream>
 #include <sstream>
 #include <string>
 
 extern int handleWindowFlags(int flags);
-extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
+extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
 extern bool imguiResized;
 extern ImVec2 imguiSizeModifier;
 
-struct LogViewer {
-    bool enabled;
-    bool pinned;
+struct LogViewer : ImGuiWindowObject {
     bool showGame;
     bool showRepentogon;
     bool showConsole;
@@ -22,10 +22,8 @@ struct LogViewer {
     ImGuiTextFilter internalFilter;
     ImVector<int> offsets;
 
-    LogViewer()
+    LogViewer() : ImGuiWindowObject("Log Viewer")
     {
-        enabled = false;
-        pinned = false;
         showGame = true;
         showRepentogon = true;
         showConsole = true;
@@ -58,12 +56,12 @@ struct LogViewer {
             return;
         }
 
-        if (ImGui::Begin("Log Viewer", &enabled, handleWindowFlags(0))) {
+        if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             if (imguiResized) {
                 ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
                 ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
             }
-            AddWindowContextMenu(&pinned);
+            AddWindowContextMenu();
             filter.Draw("Filter", -110.0f);
             ImGui::SameLine();
             if (ImGui::Button("Options")) {

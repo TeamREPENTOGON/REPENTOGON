@@ -1,4 +1,6 @@
+#pragma once
 #include "imgui.h"
+#include "ImGuiEx.h"
 #include "../Patches/XMLData.h"
 #include "natural_sort.hpp"
 #include "LuaCore.h"
@@ -8,7 +10,7 @@
 #include <regex>
 
 extern int handleWindowFlags(int flags);
-extern void AddWindowContextMenu(bool* pinned);
+extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
 extern bool imguiResized;
 extern ImVec2 imguiSizeModifier;
 
@@ -107,9 +109,7 @@ static std::vector<std::string> ParseCommand(std::string command, int size = 0) 
     return cmdlets;
 }
 
-struct ConsoleMega {
-    bool enabled;
-    bool pinned;
+struct ConsoleMega : ImGuiWindowObject {
     char inputBuf[1024];
     std::set<ConsoleCommand> commands;
     unsigned int historyPos;
@@ -152,10 +152,9 @@ struct ConsoleMega {
         macros.push_back(ConsoleMacro(macroName, &macroCommands));
     }
 
-    ConsoleMega()
+    ConsoleMega() : ImGuiWindowObject("Console")
     {
         enabled = true;
-        pinned = false;
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
 		
@@ -260,13 +259,13 @@ struct ConsoleMega {
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
         
-        if (ImGui::Begin("Console", &enabled, handleWindowFlags(0))) {
+        if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             if (imguiResized) {
                 ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
                 ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
 ;            }
 
-            AddWindowContextMenu(&pinned);
+            AddWindowContextMenu();
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame

@@ -1,25 +1,20 @@
 #include "imgui.h"
+#include "ImGuiEx.h"
 #include <iostream>
 #include <sstream>
 #include <string>
 #include "LuaCore.h"
 
 extern int handleWindowFlags(int flags);
-extern void AddWindowContextMenu(bool* pinned);
 
-struct PerformanceWindow {
-	bool enabled;
-	bool pinned;
-
+struct PerformanceWindow : ImGuiWindowObject {
 	std::list<float>* memUsages = new std::list<float>();
 	float timeframe = 10;
 	float minMemUsage = FLT_MAX;
 	float maxMemUsage = 0;
 	char hintText[256];
 
-	PerformanceWindow() {
-		enabled = false;
-		pinned = false;
+	PerformanceWindow() : ImGuiWindowObject("Performance") {
 	}
 
 	void Draw(boolean isImGuiActive)
@@ -28,12 +23,12 @@ struct PerformanceWindow {
 			return;
 		}
 
-		if (ImGui::Begin("Performance", &enabled, handleWindowFlags(0))) {
+		if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
 			if (imguiResized) {
 				ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
 				ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
 			}
-			AddWindowContextMenu(&pinned);
+			AddWindowContextMenu();
 
 			lua_State* state = g_LuaEngine->_state;
 			ImGui::InputFloat("Timeframe", &timeframe, 1, 5, "%.1f Seconds");

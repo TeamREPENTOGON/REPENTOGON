@@ -1,3 +1,4 @@
+#pragma once
 #include "imgui.h"
 #include <IsaacRepentance.h>
 #include <iostream>
@@ -11,6 +12,7 @@ extern int handleWindowFlags(int flags);
 extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
 extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
+extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
 extern bool menuShown;
 extern bool imguiResized;
 extern ImVec2 imguiSizeModifier;
@@ -917,7 +919,7 @@ struct CustomImGui {
             RunPreRenderCallbacks(&(*window));
 
             if ((isImGuiActive || !isImGuiActive && window->data.windowPinned) && window->evaluatedVisibleState) {
-                if (ImGui::Begin(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
+                if (WindowBeginEx(window->name.c_str(), &window->evaluatedVisibleState, handleWindowFlags(0))) {
                     if (window->data.newPositionRequested) {
                         ImGui::SetWindowPos(window->data.newPosition);
                         window->data.newPositionRequested = false;
