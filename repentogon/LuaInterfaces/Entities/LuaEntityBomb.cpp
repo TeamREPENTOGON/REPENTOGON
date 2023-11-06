@@ -18,6 +18,14 @@ LUA_FUNCTION(Lua_BombGetHitList) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_BombUpdateDirtColor)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	bomb->UpdateDirtColor();
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -25,6 +33,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetHitList", Lua_BombGetHitList },
+		{ "GetHitList", Lua_BombUpdateDirtColor },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);

@@ -4,6 +4,9 @@ __thiscall void Entity_Bomb::Render(Vector *offset);
 "558bec83e4f883ec58568b75??57ff75":
 __thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
 
+"558bec83ec5ca1????????33c58945??538bd9":
+__thiscall void Entity_Bomb::UpdateDirtColor();
+
 struct Entity_Bomb : public Entity {
 	std_vector_uint _hitList : 0x918;
 } : 0x928;
