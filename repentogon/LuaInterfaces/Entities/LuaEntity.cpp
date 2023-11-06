@@ -91,6 +91,15 @@ LUA_FUNCTION(Lua_EntityCopyStatusEffects)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityComputeStatusEffectDuration)
+{
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	unsigned int initial = max((int)luaL_checkinteger(L, 2), 0);
+	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	lua_pushinteger(L, ent->ComputeStatusEffectDuration(initial, ref));
+
+	return 1;
+}
 
 LUA_FUNCTION(Lua_EntityGetNullOffset)
 {
@@ -227,6 +236,84 @@ LUA_FUNCTION(Lua_EntityTryThrow) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityDoGroundImpactEffects) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector* vel = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	const float strength = (float)luaL_checknumber(L, 4);
+	Entity_Effect* effect = entity->DoGroundImpactEffects(pos, vel, strength);
+	if (!effect) {
+		lua_pushnil(L);
+	}
+	else {
+		lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	const float strength = (float)luaL_checknumber(L, 3);
+	Vector res;
+	entity->GetPredictedTargetPosition(&res, target, strength);
+
+	lua::luabridge::UserdataPtr::push(L, &res, lua::GetMetatableKey(lua::Metatables::VECTOR));
+
+	return 1;
+}
+
+// TODO: asm patch to return effect
+LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector pos;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	}
+	
+	ColorMod color;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	}
+	
+	float strength = (int)luaL_optnumber(L, 4, 1.0f);
+
+	entity->MakeBloodPoof(&pos, &color, strength);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector pos;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	}
+
+	ColorMod color;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	}
+
+	float strength = (float)luaL_optnumber(L, 4, 1.0f);
+
+	entity->MakeBloodPoof(&pos, &color, strength);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityIgnoreEffectFromFriendly) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	lua_pushboolean(L, entity->IgnoreEffectFromFriendly(ref));
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityTeleportToRandomPosition) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	entity->TeleportToRandomPosition();
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -243,8 +330,11 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetShadowSize", Lua_EntityGetShadowSize },
 		{ "SetShadowSize", Lua_EntitySetShadowSize },
 		{ "AddKnockback", Lua_EntityAddKnockback },
+		{ "ComputeStatusEffectDuration", Lua_EntityComputeStatusEffectDuration },
 		{ "CopyStatusEffects", Lua_EntityCopyStatusEffects },
+		{ "IgnoreEffectFromFriendly", Lua_EntityIgnoreEffectFromFriendly },
 		{ "GetNullOffset", Lua_EntityGetNullOffset },
+		{ "GetPredictedTargetPosition", Lua_EntityGetPredictedTargetPosition },
 		{ "GetType", lua_Entity_GetType },
 		{ "GetPosVel", lua_Entity_GetPosVel },
 		{ "GetBossStatusEffectCooldown", Lua_EntityGetBossStatusEffectCooldown },
@@ -254,11 +344,14 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetInvincible", Lua_EntitySetInvincible },
 		{ "GiveMinecart", lua_EntityGiveMinecart },
 		{ "GetMinecart", lua_EntityGetMinecart },
+		{ "MakeBloodPoof", Lua_EntityMakeBloodPoof },
+		{ "MakeGroundPoof", Lua_EntityMakeGroundPoof },
 		{ "GetHitListIndex", Lua_EntityGetHitListIndex },
 		{ "GetPauseTime", Lua_EntityGetPauseTime },
 		{ "SetPauseTime", Lua_EntitySetPauseTime },
 		{ "GetSpeedMultiplier", Lua_Entity_GetSpeedMultiplier },
 		{ "SetSpeedMultiplier", Lua_Entity_SetSpeedMultiplier },
+		{ "TeleportToRandomPosition", Lua_EntityTeleportToRandomPosition },
 		{ "TryThrow", Lua_EntityTryThrow },
 		{ NULL, NULL }
 	};

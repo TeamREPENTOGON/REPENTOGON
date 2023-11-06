@@ -33,7 +33,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetHitList", Lua_BombGetHitList },
-		{ "GetHitList", Lua_BombUpdateDirtColor },
+		{ "UpdateDirtColor", Lua_BombUpdateDirtColor },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);

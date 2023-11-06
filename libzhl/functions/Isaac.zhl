@@ -45,6 +45,9 @@ static __cdecl void Isaac::Shutdown();
 "558BEC83EC08807D0800F30F1002F30F5C05????????F30F10":
 static __x86_64_output Vector Isaac::GetRenderPosition(Vector* source, bool scale);
 
+"558beca1????????5356578b98":
+static __cdecl void Isaac::ClearBossHazards(bool includeNPCs);
+
 // this is under the Entity_Pickup namespace internally, but placing it here for more intuitive calling
 "558bec83e4f883ec148b02":
 static __x86_64_output Vector Isaac::GetCollectibleSpawnPosition(Vector* target);

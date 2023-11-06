@@ -32,6 +32,9 @@ __thiscall void Entity::AddIce(const EntityRef& ref, int duration);
 "558bec83e4f85156ff75??8bf1e8":
 __thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
 
+"558bec518379??01":
+__thiscall unsigned int Entity::ComputeStatusEffectDuration(int initial, EntityRef* source);
+
 "558bec83e4f883ec14568bf1837e??00":
 __thiscall Vector Entity::GetNullOffset(const char* nullLayerName);
 
@@ -49,6 +52,24 @@ __thiscall Capsule Entity::GetCollisionCapsule(Vector* vec);
 
 "8b51??8d42??3ddd0300000f87????????8bc2":
 __thiscall uint32_t Entity::GetHitListIndex();
+
+"558bec83e4f883ec5c53568b35":
+__thiscall Entity_Effect* Entity::DoGroundImpactEffects(Vector * pos, Vector * velocity, float strength);
+
+"558bec51568b75??f30f115d":
+__thiscall void Entity::GetPredictedTargetPosition(Vector * buffer, Entity * target, float distanceStrength<xmm3>);
+
+"558bec83e4f883ec088b81":
+__thiscall bool Entity::IgnoreEffectFromFriendly(EntityRef* source);
+
+"558bec83e4f883ec0c535657f30f115424??8bd9e8????????8b7d??8b0d????????6a00506a03":
+__thiscall void Entity::MakeBloodPoof(Vector * pos, ColorMod * color, float size<xmm2>);
+
+"558bec83e4f883ec0c535657f30f115424??8bd9e8????????8b7d??8b0d????????6a00506a01":
+__thiscall void Entity::MakeGroundPoof(Vector * pos, ColorMod * color, float size<xmm2>);
+
+"558bec83e4f881ec94000000f30f1005":
+__thiscall void Entity::TeleportToRandomPosition();
 
 struct Entity depends (AnimationState, ANM2) {
 {{
