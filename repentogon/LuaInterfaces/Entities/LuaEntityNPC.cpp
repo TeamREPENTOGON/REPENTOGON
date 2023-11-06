@@ -22,7 +22,7 @@ static std::vector<Entity_Projectile*>& InitProjectileStorage() {
 	return projectiles;
 }
 
-LUA_FUNCTION(Lua_NPCUpdateDirtColor)
+LUA_FUNCTION(Lua_EntityNPC_UpdateDirtColor)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	bool lerp = lua::luaL_checkboolean(L, 2);
@@ -31,7 +31,7 @@ LUA_FUNCTION(Lua_NPCUpdateDirtColor)
 	return 0;
 }
 
-LUA_FUNCTION(Lua_NPCGetDirtColor)
+LUA_FUNCTION(Lua_EntityNPC_GetDirtColor)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
@@ -41,7 +41,7 @@ LUA_FUNCTION(Lua_NPCGetDirtColor)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_NPCGetControllerId)
+LUA_FUNCTION(Lua_EntityNPC_GetControllerId)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
@@ -50,7 +50,7 @@ LUA_FUNCTION(Lua_NPCGetControllerId)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_NPCSetControllerId)
+LUA_FUNCTION(Lua_EntityNPC_SetControllerId)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	int unk = (int)luaL_checknumber(L, 2);
@@ -59,7 +59,7 @@ LUA_FUNCTION(Lua_NPCSetControllerId)
 	return 0;
 }
 
-LUA_FUNCTION(Lua_NPCTryForceTarget) {
+LUA_FUNCTION(Lua_EntityNPC_TryForceTarget) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Entity* target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	int duration = (int)luaL_checkinteger(L, 3);
@@ -118,7 +118,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireBossProjectilesEx) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_NPCGetHitList) {
+LUA_FUNCTION(Lua_EntityNPC_GetHitList) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	std::vector<unsigned int> hitList = npc->GetHitList();
 
@@ -134,7 +134,7 @@ LUA_FUNCTION(Lua_NPCGetHitList) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_NPCGetShieldStrength)
+LUA_FUNCTION(Lua_EntityNPC_GetShieldStrength)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
@@ -143,7 +143,7 @@ LUA_FUNCTION(Lua_NPCGetShieldStrength)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_NPCSetShieldStrength)
+LUA_FUNCTION(Lua_EntityNPC_SetShieldStrength)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 
@@ -152,7 +152,7 @@ LUA_FUNCTION(Lua_NPCSetShieldStrength)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_NPCPlaySound)
+LUA_FUNCTION(Lua_EntityNPC_PlaySound)
 {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	int id = (int)luaL_checkinteger(L, 2);
@@ -178,23 +178,122 @@ LUA_FUNCTION(Lua_EntityNPC_GetV2) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_FireGridEntity) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
+	GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+	Vector* velocity = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	int backdrop = min((int)luaL_optinteger(L, 5, g_Game->_room->GetBackdrop()->backdropId), 1);
+
+	lua::luabridge::UserdataPtr::push(L, npc->FireGridEntity(sprite, desc, velocity, backdrop), lua::Metatables::ENTITY_PROJECTILE);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_MakeBloodCloud) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector pos = *npc->GetPosition();
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	}
+
+	ColorMod color;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	}
+
+	lua::luabridge::UserdataPtr::push(L, npc->MakeBloodCloud(&pos, &color), lua::Metatables::ENTITY_EFFECT);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_MakeBloodEffect) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	int subtype = (int)luaL_optinteger(L, 2, 0);
+	Vector pos = *npc->GetPosition();
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	}
+	Vector offset;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		offset = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	}
+	ColorMod color;
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	}
+	Vector velocity;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		velocity = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	}
+
+	lua::luabridge::UserdataPtr::push(L, npc->MakeBloodEffect(subtype, &pos, &offset, &color, &velocity), lua::Metatables::ENTITY_EFFECT);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_MakeBloodSplash) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	npc->MakeBloodSplash();
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ThrowMaggot) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	float velocity = (float)luaL_optnumber(L, 3, -8.0f);
+	float yOffset = (float)luaL_optnumber(L, 4, 0.0f);
+
+	lua::luabridge::UserdataPtr::push(L, npc->ThrowMaggot(origin, velocity, yOffset), lua::Metatables::ENTITY_NPC);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ThrowMaggotAtPos) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	float velocity = (float)luaL_optnumber(L, 3, -8.0f);
+	float yOffset = (float)luaL_optnumber(L, 4, 0.0f);
+
+	lua::luabridge::UserdataPtr::push(L, npc->ThrowMaggotAtPos(target, velocity, yOffset), lua::Metatables::ENTITY_NPC);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_TryThrow) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	Vector* dir = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	const float force = (float)luaL_checknumber(L, 4);
+	lua_pushboolean(L, npc->TryThrow(*ref, dir, force));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
-		{ "PlaySound", Lua_NPCPlaySound },
-		{ "UpdateDirtColor", Lua_NPCUpdateDirtColor },
-		{ "GetDirtColor", Lua_NPCGetDirtColor },
-		{ "GetControllerId", Lua_NPCGetControllerId },
-		{ "SetControllerId", Lua_NPCSetControllerId },
-		{ "TryForceTarget", Lua_NPCTryForceTarget },
+		{ "PlaySound", Lua_EntityNPC_PlaySound },
+		{ "MakeBloodCloud", Lua_EntityNPC_MakeBloodCloud },
+		{ "MakeBloodEffect", Lua_EntityNPC_MakeBloodEffect },
+		{ "MakeBloodSplash", Lua_EntityNPC_MakeBloodEffect },
+		{ "UpdateDirtColor", Lua_EntityNPC_UpdateDirtColor },
+		{ "GetDirtColor", Lua_EntityNPC_GetDirtColor },
+		{ "GetControllerId", Lua_EntityNPC_GetControllerId },
+		{ "SetControllerId", Lua_EntityNPC_SetControllerId },
+		{ "TryForceTarget", Lua_EntityNPC_TryForceTarget },
+		{ "FireGridEntity", Lua_EntityNPC_FireGridEntity },
 		{ "FireProjectilesEx", Lua_EntityNPC_FireProjectilesEx },
 		{ "FireBossProjectilesEx", Lua_EntityNPC_FireBossProjectilesEx },
-		{ "GetHitList", Lua_NPCGetHitList },
-		{ "GetShieldStrength", Lua_NPCGetShieldStrength },
-		{ "SetShieldStrength", Lua_NPCSetShieldStrength },
+		{ "GetHitList", Lua_EntityNPC_GetHitList },
+		{ "GetShieldStrength", Lua_EntityNPC_GetShieldStrength },
+		{ "SetShieldStrength", Lua_EntityNPC_SetShieldStrength },
+		{ "ThrowMaggot", Lua_EntityNPC_ThrowMaggot },
+		{ "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos },
+		{ "TryThrow", Lua_EntityNPC_TryThrow },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_NPC, functions);

@@ -16,13 +16,19 @@ __thiscall bool Entity_Familiar::TryAimAtMarkedTarget(Vector *AimDirection, int 
 "558bec83e4f883ec245356578bf980bf????????00":
 __thiscall void Entity_Familiar::TriggerRoomClear();
 
-struct Entity_Familiar : public Entity {
+// jeez
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec88000000a1????????33c58945??5657508d45??64a3????????8bf18975??33c08945??8b0d":
+__thiscall void Entity_Familiar::UpdateDirtColor();
+
+struct Entity_Familiar depends (ColorMod) : public Entity {
 {{
 	inline Entity_Player** GetPlayer() { return (Entity_Player**)((char*)this + 0x360); }
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
-	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); } 
+	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); }
 }}
-
+	
+	ColorMod* _dirtColor : 0xe28;
+	
     __vtable {
 		skip; // Free
 		skip; // Init

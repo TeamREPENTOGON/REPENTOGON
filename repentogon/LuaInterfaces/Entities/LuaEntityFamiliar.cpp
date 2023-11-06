@@ -40,6 +40,23 @@ LUA_FUNCTION(Lua_FamiliarTriggerRoomClear)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_FamiliarUpdateDirtColor)
+{
+	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	fam->UpdateDirtColor();
+	return 0;
+}
+
+LUA_FUNCTION(Lua_FamiliarGetDirtColor)
+{
+	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+
+	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	*toLua = *fam->_dirtColor;
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -50,6 +67,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPathFinder", Lua_FamiliarGetPathFinder },
 		{ "TryAimAtMarkedTarget", Lua_FamiliarTryAimAtMarkedTarget },
 		{ "TriggerRoomClear", Lua_FamiliarTriggerRoomClear },
+		{ "UpdateDirtColor", Lua_FamiliarUpdateDirtColor },
+		{ "GetDirtColor", Lua_FamiliarGetDirtColor },
 		{ NULL, NULL }
 	};
 

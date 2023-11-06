@@ -267,7 +267,7 @@ LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
 // TODO: asm patch to return effect
 LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector pos;
+	Vector pos = *entity->GetPosition();
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
 		pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	}
@@ -277,7 +277,7 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 	}
 	
-	float strength = (int)luaL_optnumber(L, 4, 1.0f);
+	float strength = (float)luaL_optnumber(L, 4, 1.0f);
 
 	entity->MakeBloodPoof(&pos, &color, strength);
 	return 0;
@@ -285,7 +285,7 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 
 LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector pos;
+	Vector pos = *entity->GetPosition();
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
 		pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	}
