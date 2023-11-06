@@ -129,7 +129,7 @@ __thiscall int Entity_Player::AddActiveCharge(unsigned int charge, int slot, boo
 __thiscall int Entity_Player::DropCollectible(int collectible, int param2, bool param3);
 
 "558bec83e4f8518a55":
-__thiscall Entity_Player::AddHearts(int hearts, bool unk);
+__thiscall void Entity_Player::AddHearts(int hearts, bool unk);
 
 "558bec83e4f8515356578bf98b472c85c075??8b9f0c130000":
 __thiscall int Entity_Player::GetHealthLimit(bool keeper);

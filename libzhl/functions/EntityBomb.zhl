@@ -5,5 +5,5 @@ __thiscall void Entity_Bomb::Render(Vector *offset);
 __thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
 
 struct Entity_Bomb : public Entity {
-
+	std_vector_uint _hitList : 0x918;
 } : 0x928;

@@ -50,6 +50,11 @@ TypeInfo WeaponType {
     Size 4;
 };
 
+TypeInfo std_vector_uint {
+    Size 12;
+    Align 4;
+}; 
+
 TypeInfo vector_Point {
     Size 12;
     Align 4;
@@ -63,7 +68,7 @@ TypeInfo vector_TemporaryEffect {
 TypeInfo std_vector_int {
     Size 12;
     Align 4;
-}; 
+};
 
 TypeInfo std_set_int {
     Size 8;
