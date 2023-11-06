@@ -243,6 +243,13 @@ LUA_FUNCTION(Lua_PlayerGetActiveItemDesc)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetActiveItemSlot)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->GetActiveItemSlot((int)luaL_checkinteger(L, 2)));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerTryFakeDeath)
 {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1291,6 +1298,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMegaBlastDuration", Lua_PlayerGetMegaBlastDuration },
 		{ "SetMegaBlastDuration", Lua_PlayerSetMegaBlastDuration },
 		{ "GetActiveItemDesc", Lua_PlayerGetActiveItemDesc },
+		{ "GetActiveItemSlot", Lua_PlayerGetActiveItemSlot },
 		{ "TryFakeDeath", Lua_PlayerTryFakeDeath },
 		{ "GetBagOfCraftingContent", Lua_PlayerGetBoCContent },
 		{ "SetBagOfCraftingContent", Lua_PlayerSetBoCContent },
