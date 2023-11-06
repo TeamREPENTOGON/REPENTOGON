@@ -570,6 +570,9 @@ local function logError(callbackID, modName, err)
 	history = table.concat(history, "\n"):reverse()
 
 	local cbName = callbackIDToName[callbackID] or callbackID
+	if type(cbName) == "table" then
+		cbName = "<Unknown Callback>"
+	end
 	local consoleLog = '"' .. cbName .. '" from "' .. modName .. '" failed: ' .. err
 
 	-- We add a \n to our comparison to account for the parsed history having one.
