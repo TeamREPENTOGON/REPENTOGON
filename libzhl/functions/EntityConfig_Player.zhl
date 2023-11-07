@@ -26,6 +26,8 @@ struct EntityConfig_Player depends (ANM2) {
 	int _brokenHeart : 0xec;
 	uint32_t _pocketItemID: 0xf0;
 	std_string _birthrigthDescription : 0xf4;
+	std_string _unkString : 0x64;
+	std_string _extraPortraitPath : 0x7c;
 	std_string _bSkinParentName : 0x11c;
 	ANM2* _moddedControlsANM2 : 0x144;
 	
