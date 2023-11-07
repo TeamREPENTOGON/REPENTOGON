@@ -1285,6 +1285,19 @@ LUA_FUNCTION(Lua_PlayerSetEveSumptoriumCharge) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetPlayerFormCounter) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int playerFormType = (int)luaL_checkinteger(L, 2);
+
+	if (playerFormType >= 0 && playerFormType <= 14) {
+		lua_pushinteger(L, player->_playerForms[playerFormType]);
+	}
+	else {
+		luaL_error(L, "Invalid PlayerForm");
+	}
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -1410,6 +1423,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CheckFamiliarEx", Lua_EntityPlayer_CheckFamiliarEx },
 		{ "GetEveSumptoriumCharge", Lua_PlayerGetEveSumptoriumCharge },
 		{ "SetEveSumptoriumCharge", Lua_PlayerSetEveSumptoriumCharge },
+		{ "GetPlayerFormCounter", Lua_PlayerGetPlayerFormCounter },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

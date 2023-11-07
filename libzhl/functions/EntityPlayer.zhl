@@ -367,6 +367,7 @@ struct Entity_Player depends (ANM2, PlayerCostumeMap) : public Entity { {{
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
 	uint32_t _cacheFlags : 0x14b8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
+	int _playerForms[15] : 0x1700;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
 	int _babySkin : 0x1a0c;
