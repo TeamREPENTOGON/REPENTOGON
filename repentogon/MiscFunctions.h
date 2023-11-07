@@ -9,13 +9,10 @@
 #include <iomanip>
 #include <sstream>
 
-
-
-static char titlebar[128];
-static auto gameStartTime = std::chrono::high_resolution_clock::now();
-static std::string optionsPath(std::string((char*)&g_SaveDataPath) + "Repentogon/");
-
 namespace REPENTOGON {
+	static char titlebar[128];
+	static auto gameStartTime = std::chrono::high_resolution_clock::now();
+	static std::string optionsPath(std::string((char*)&g_SaveDataPath) + "Repentogon/");
 
 	static void ChangeWindowTitle(const char* text) {
 		sprintf(titlebar, "The Binding of Isaac: Repentance (+ REPENTOGON %s)%s", VERSION, text);

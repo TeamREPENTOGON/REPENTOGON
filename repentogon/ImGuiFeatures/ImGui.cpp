@@ -144,10 +144,9 @@ bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags = 0) {
 	return open;
 }
 
-
 void SaveSettings() {
 	ImGuiContext& g = *GImGui;
-	if (g.SettingsDirtyTimer <= 0.0f) return;
+	if (g.SettingsDirtyTimer <= 0.0f) return; // only save when the dirty flag is set
 	console.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(console.windowName.c_str())));
 	logViewer.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(logViewer.windowName.c_str())));
 	performanceWindow.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(performanceWindow.windowName.c_str())));
@@ -155,16 +154,23 @@ void SaveSettings() {
 	for (auto window = customImGui.windows->begin(); window != customImGui.windows->end(); ++window) {
 		CustomImGuiWindowSettings* settings = FindWindowSettingsByIDEx(ImHashStr(window->name.c_str()));
 		if (settings == nullptr) continue;
-		settings->Visible = window->isActive;
+		settings->Visible = window->evaluatedVisibleState;
 		settings->Pinned = window->data.windowPinned;
 	}
 }
 
 void LoadSettings() {
-	if (settingsLoaded) return;
+	if (settingsLoaded) return; // only load settings once after  ImGui::NewFrame() was called.
 	console.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(console.windowName.c_str())));
 	logViewer.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(logViewer.windowName.c_str())));
 	performanceWindow.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(performanceWindow.windowName.c_str())));
+
+	for (auto window = customImGui.windows->begin(); window != customImGui.windows->end(); ++window) {
+		CustomImGuiWindowSettings* settings = FindWindowSettingsByIDEx(ImHashStr(window->name.c_str()));
+		if (settings == nullptr) continue;
+		window->SetVisible(settings->Visible);
+		//window->data.windowPinned = settings->Pinned;  // Doesnt work right now. window gets positioned wrong on game startup :(
+	}
 	settingsLoaded = true;
 }
 
