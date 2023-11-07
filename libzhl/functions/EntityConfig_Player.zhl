@@ -3,10 +3,30 @@ __thiscall std_string EntityConfig_Player::GetDisplayName(void* ptr);
 
 struct EntityConfig_Player depends (ANM2) {
 	{{
-		inline int* GetAchievement() { return (int*)((char*)this + 0xE8); }
+		inline int* GetAchievement() { return &this->_achievement; }
 		inline ANM2** GetModdedMenuBackgroundANM2() { return (ANM2**)((char*)this + 0x134); }
 		inline ANM2** GetModdedMenuPortraitANM2() { return (ANM2**)((char*)this + 0x138); }
 	}}
 	int _id : 0x0;
 	std_string _name : 0x4;
+	std_string _skinPath : 0x1c;
+	std_string _nameImagePath : 0x34;
+	std_string _portraitPath : 0x4c;
+	std_string _costumeSuffixName : 0x94;
+	int _costumeID : 0xac;
+	int _heart : 0xb0;
+	int _armor : 0xb4;
+	int _blackHeart : 0xb8;
+	int _coins : 0xbc;
+	int _bombs : 0xc0;
+	int _keys : 0xc4;
+	bool _canShoot : 0xd0;
+	std_vector_int _collectibles : 0xd4;
+	int _achievement : 0xe8;
+	int _brokenHeart : 0xec;
+	uint32_t _pocketItemID: 0xf0;
+	std_string _birthrigthDescription : 0xf4;
+	std_string _bSkinParentName : 0x11c;
+	ANM2* _moddedControlsANM2 : 0x144;
+	
 } : 0x148;

@@ -1271,6 +1271,20 @@ void PatchCheckFamiliar() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+LUA_FUNCTION(Lua_PlayerGetEveSumptoriumCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_eveSumptoriumCharge);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetEveSumptoriumCharge) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_eveSumptoriumCharge = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -1394,6 +1408,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsCollectibleAnimFinished", Player_IsCollectibleAnimFinished },
 		{ "ClearCollectibleAnim", Player_ClearCollectibleAnim },
 		{ "CheckFamiliarEx", Lua_EntityPlayer_CheckFamiliarEx },
+		{ "GetEveSumptoriumCharge", Lua_PlayerGetEveSumptoriumCharge },
+		{ "SetEveSumptoriumCharge", Lua_PlayerSetEveSumptoriumCharge },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

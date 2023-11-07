@@ -375,6 +375,7 @@ struct Entity_Player depends (ANM2, PlayerCostumeMap) : public Entity { {{
 	int _maggySwingCooldown : 0x1df8;
 	char _bagOfCraftingContent[8]: 0x1e44;
 	char _poopSpellQueue[6] : 0x1e54;
+	int _eveSumptoriumCharge : 0x1e78;
 	std_map_int_int _itemWispsList : 0x1e7c;
 } : 0x2580;
 

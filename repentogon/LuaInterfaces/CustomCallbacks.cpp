@@ -512,6 +512,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 //PLAYER_INIT_POST_LEVEL_INIT_STATS (1042)
 HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
 	int callbackid = 1042;
+	super();
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -525,7 +526,6 @@ HOOK_METHOD(Entity_Player, InitPostLevelInitStats, () -> void) {
 			.push(ent, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
-	super();
 }
 
 //PRE_ROOM_EXIT (1043) (currently using Entity_Player::TriggerRoomExit as the base)

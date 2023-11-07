@@ -93,6 +93,10 @@ ___
 #### [ActiveItemDesc](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_ActiveItemDesc.html) GetActiveItemDesc ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = ActiveSlot.SLOT_PRIMARY ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Active·Item·Slot () {: aria-label='Functions' }
+#### [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) GetActiveItemSlot ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Active·Max·Charge () {: aria-label='Functions' }
 #### int GetActiveMaxCharge ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int VarData ) {: .copyable aria-label='Functions' }
 
@@ -136,10 +140,14 @@ ___
 ### Get·Costume·Layer·Map () {: aria-label='Functions' }
 #### table GetCostumeLayerMap ( ) {: .copyable aria-label='Functions' }
 Returns table of player sprite layers data for costumes with the following fields:
-* costumeIndex - int - Index of active/visible costume for layer.
-* layerID - int
-* priority - int
-* unkBool - bool
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| costumeIndex | int | Index of active/visible costume for layer. |
+| layerID | int | |
+| priority | int | |
+| isBodyLayer | bool | |
+
 ___
 ### Get·Costume·Sprite·Descs () {: aria-label='Functions' }
 #### table GetCostumeSpriteDescs ( ) {: .copyable aria-label='Functions' }
@@ -172,10 +180,6 @@ ___
 #### int GetDeadEyeCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Epiphora·Charge () {: aria-label='Functions' }
-#### int GetEpiphoraCharge ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Eden·Damage () {: aria-label='Functions' }
 #### float GetEdenDamage ( ) {: .copyable aria-label='Functions' }
 
@@ -198,6 +202,14 @@ ___
 ___
 ### Get·Eden·Shot·Speed () {: aria-label='Functions' }
 #### float GetEdenShotSpeed ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Epiphora·Charge () {: aria-label='Functions' }
+#### int GetEpiphoraCharge ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Eve·Sumptorium·Charge () {: aria-label='Functions' }
+#### int GetEveSumptoriumCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Fire·Delay·Modifier () {: aria-label='Functions' }
@@ -379,9 +391,8 @@ ___
 
 ___
 ### Play·Collectible·Anim () {: aria-label='Functions' }
-#### void PlayCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectibleType, bool unk, string animName, int frameNum = -1 ) {: .copyable aria-label='Functions' }
-unk checks false for costumeSpriteMap.unkBool
-AnimName - takes animation name from collectibles costume sprite
+#### void PlayCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectibleType, bool CheckBodyLayers, string animName, int frameNum = -1 ) {: .copyable aria-label='Functions' }
+
 ___
 ### Play·Delayed·SFX () {: aria-label='Functions' }
 #### void PlayDelayedSFX ( [SoundEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) ID, int SoundDelay = 0, int FrameDelay = 2, float Volume = 1 ) {: .copyable aria-label='Functions' }
@@ -450,6 +461,10 @@ ___
 ___
 ### Set·Eden·Shot·Speed () {: aria-label='Functions' }
 #### void SetEdenShotSpeed ( float Value ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Eve·Sumptorium·Charge () {: aria-label='Functions' }
+#### void SetEveSumptoriumCharge ( int ChargeNum ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Fire·Delay·Modifier () {: aria-label='Functions' }
