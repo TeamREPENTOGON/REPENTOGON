@@ -5,6 +5,7 @@ struct CustomImGuiWindowSettings : ImGuiWindowSettings {
 	std::string Name = "";
 	bool Visible = false;
 	bool Pinned = false;
+	bool IsManagedManually = false;
 	float FontWindowScale = 0.0f;
 
 	CustomImGuiWindowSettings()
@@ -33,6 +34,7 @@ struct ImGuiWindowObject {
 			return;
 		settings->Visible = enabled;
 		settings->Pinned = pinned;
+		settings->IsManagedManually = true;
 	}
 
 	void SetIsDirty() {

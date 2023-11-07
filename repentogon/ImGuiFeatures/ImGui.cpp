@@ -21,6 +21,7 @@
 #include "imgui_freetype.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
+#include "../MiscFunctions.h"
 
 // this blogpost https://werwolv.net/blog/dll_injection was a big help, thanks werwolv!
 
@@ -31,6 +32,7 @@ WNDPROC windowProc;
 bool menuShown = false;
 bool leftMouseClicked = false;
 bool settingsLoaded = false;
+std::string iniFilePath;
 static bool imguiInitialized = false;
 static bool show_app_style_editor = false;
 static bool shutdownInitiated = false;
@@ -146,11 +148,10 @@ bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags = 0) {
 
 void SaveSettings() {
 	ImGuiContext& g = *GImGui;
-	if (g.SettingsDirtyTimer <= 0.0f) return; // only save when the dirty flag is set
 	console.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(console.windowName.c_str())));
-	logViewer.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(logViewer.windowName.c_str())));
-	performanceWindow.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(performanceWindow.windowName.c_str())));
-
+		logViewer.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(logViewer.windowName.c_str())));
+		performanceWindow.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(performanceWindow.windowName.c_str())));
+	
 	for (auto window = customImGui.windows->begin(); window != customImGui.windows->end(); ++window) {
 		CustomImGuiWindowSettings* settings = FindWindowSettingsByIDEx(ImHashStr(window->name.c_str()));
 		if (settings == nullptr) continue;
@@ -160,7 +161,6 @@ void SaveSettings() {
 }
 
 void LoadSettings() {
-	if (settingsLoaded) return; // only load settings once after  ImGui::NewFrame() was called.
 	console.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(console.windowName.c_str())));
 	logViewer.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(logViewer.windowName.c_str())));
 	performanceWindow.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(performanceWindow.windowName.c_str())));
@@ -171,12 +171,25 @@ void LoadSettings() {
 		window->SetVisible(settings->Visible);
 		//window->data.windowPinned = settings->Pinned;  // Doesnt work right now. window gets positioned wrong on game startup :(
 	}
-	settingsLoaded = true;
 }
 
-void HandleSettings() {
-	LoadSettings();
-	SaveSettings();
+// Original imgui implementation of this function was called by NewFrame()
+void UpdateImGuiSettings()
+{
+	// Load settings on first frame
+	ImGuiContext& g = *GImGui;
+	if (!settingsLoaded) {
+		ImGui::LoadIniSettingsFromDisk(iniFilePath.c_str());
+		LoadSettings();
+		settingsLoaded = true;
+	}
+
+	// Save settings when we get the signal from imgui
+	if (g.IO.WantSaveIniSettings) {
+		SaveSettings();
+		ImGui::SaveIniSettingsToDisk(iniFilePath.c_str());
+		g.IO.WantSaveIniSettings = false;
+	}
 }
 
 static std::vector<WPARAM> pressedKeys;
@@ -314,6 +327,9 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		ImGui::GetStyle().WindowTitleAlign = ImVec2(0.5f, 0.5f);
 
 		ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = NULL; // Disable vanilla .ini file management
+		iniFilePath = std::string(REPENTOGON::GetRepentogonDataPath()) + "imgui.ini";
+
 		// mouse, keyboard and gamepad support
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard | ImGuiConfigFlags_NavEnableGamepad;
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
@@ -348,6 +364,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	UpdateImGuiSettings();
 
 	static float oldPointScale = 0;
 	if (g_PointScale != oldPointScale)
@@ -363,8 +380,6 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		imguiSizeModifier = ImVec2(ImGui::GetMainViewport()->Size.x / oldSize.x, ImGui::GetMainViewport()->Size.y / oldSize.y);
 	}
 	oldSize = ImGui::GetMainViewport()->Size;
-
-	HandleSettings();
 
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
