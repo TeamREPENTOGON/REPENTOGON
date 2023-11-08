@@ -1332,6 +1332,13 @@ LUA_FUNCTION(Lua_PlayerAddPocketItem) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->AddBoneOrbital();
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerAddItemCard) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	unsigned int id = max((int)luaL_optinteger(L, 2, 0), 0);
@@ -1678,6 +1685,21 @@ LUA_FUNCTION(Lua_PlayerSetControllerIndex) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetFootprintColor) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	KColor* color = nullptr;
+	if (lua::luaL_checkboolean(L, 2)) {
+		color = &player->_footprintColor2;
+	}
+	else
+	{
+		color = &player->_footprintColor1;
+	}
+	lua::luabridge::UserdataPtr::push(L, color, lua::Metatables::COLOR);
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	KColor* color = lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
@@ -1889,6 +1911,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPlayerFormCounter", Lua_PlayerGetPlayerFormCounter },
 		{ "GetMaxPocketItems", Lua_PlayerGetMaxPocketItems },
 		{ "AddPocketItem", Lua_PlayerAddPocketItem },
+		{ "AddBoneOrbital", Lua_PlayerAddItemCard },
 		{ "AddItemCard", Lua_PlayerAddItemCard },
 		{ "AddLeprocy", Lua_PlayerAddLeprocy },
 		{ "AddUrnSouls", Lua_PlayerAddUrnSouls },
@@ -1901,17 +1924,19 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "FireBrimstoneBall", Lua_PlayerFireBrimstoneBall },
 		{ "GetBodyMoveDirection", Lua_PlayerGetBodyMoveDirection },
 		{ "GetDeathAnimName", Lua_PlayerGetDeathAnimName },
-		{ "GetGlitchBabySubType", Lua_PlayerGetGlitchBabySubType },
-		{ "GetGreedsGulletHearts", Lua_PlayerGetGreedsGulletHearts },
-		{ "GetSpecialGridCollision", Lua_PlayerGetSpecialGridCollision },
 		{ "GetEnterPosition", Lua_PlayerGetEnterPosition },
 		//{ "GetExplosionRadiusMultiplier", Lua_PlayerGetExplosionRadiusMultiplier },
 		{ "GetFocusEntity", Lua_PlayerGetFocusEntity },
+		{ "GetFootprintColor", Lua_PlayerGetFootprintColor },
+		{ "SetFootprintColor", Lua_PlayerSetFootprintColor },
+		{ "GetGlitchBabySubType", Lua_PlayerGetGlitchBabySubType },
 		{ "GetGlyphOfBalanceDrop", Lua_PlayerGetGlyphOfBalanceDrop },
+		{ "GetGreedsGulletHearts", Lua_PlayerGetGreedsGulletHearts },
 		{ "GetLaserColor", Lua_PlayerGetLaserColor },
 		{ "SetLaserColor", Lua_PlayerSetLaserColor },
-		//{ "GetSoundPitch", Lua_PlayerGetSoundPitch },
 		//{ "GetSalvationScale", Lua_PlayerGetSalvationScale },
+		//{ "GetSoundPitch", Lua_PlayerGetSoundPitch },
+		{ "GetSpecialGridCollision", Lua_PlayerGetSpecialGridCollision },
 		{ "HasInstantDeathCurse", Lua_PlayerHasInstantDeathCurse },
 		{ "HasPoisonImmunity", Lua_PlayerHasPoisonImmunity },
 		{ "IsEntityValidTarget", Lua_PlayerIsEntityValidTarget },
@@ -1926,7 +1951,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "ResetPlayer", Lua_PlayerResetPlayer },
 		{ "ReviveCoopGhost", Lua_PlayerReviveCoopGhost },
 		{ "SalvageCollectible", Lua_PlayerSalvageCollectible },
-		{ "SetFootprintColor", Lua_PlayerSetFootprintColor },
+		{ "SetControllerIndex", Lua_PlayerSetControllerIndex },
 		{ "ShootBlueCandle", Lua_PlayerShootBlueCandle },
 		{ "SpawnClot", Lua_PlayerSpawnClot },
 		{ "SpawnSaturnusTears", Lua_PlayerSpawnSaturnusTears },

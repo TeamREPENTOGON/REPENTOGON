@@ -409,7 +409,7 @@ __thiscall void Entity_Player::UseRedKey();
 "558bec568bf133c08d96":
 __thiscall bool Entity_Player::VoidHasCollectible(int id);
 
-struct Entity_Player depends (ANM2, ColorMod, PlayerCostumeMap) : public Entity { {{
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public Entity { {{
 	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
@@ -527,6 +527,8 @@ struct Entity_Player depends (ANM2, ColorMod, PlayerCostumeMap) : public Entity 
 	uint32_t _cacheFlags : 0x14b8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	int _playerForms[15] : 0x1700;
+	KColor _footprintColor1 : 0x1768;
+	KColor _footprintColor2 : 0x1794;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
 	int _babySkin : 0x1a0c;
