@@ -98,6 +98,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
     Camera *_Camera : 0x11f8; //0x11F8
     bool _redHeartDamage : 0x120c; //0x120C
     EntityList _entityList : 0x1218; //0x1218
+	bool _pacifist : 0x7185;
     TemporaryEffects _temporaryEffects : 0x71f4; //0x71F4
 
     "558bec6aff68????????64a1000000005083ec305657a1????????33c550":
