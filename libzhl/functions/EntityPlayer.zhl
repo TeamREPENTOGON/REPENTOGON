@@ -240,7 +240,7 @@ __thiscall bool Entity_Player::CanUsePill(int pillEffect);
 __thiscall uint32_t Entity_Player::InvalidateCoPlayerItems();
 
 "558bec83ec30a1????????33c58945??53":
-__thiscall bool Entity_Player::TryRemoveSmeltedTrinket();
+__thiscall bool Entity_Player::TryRemoveSmeltedTrinket(unsigned int id);
 
 "558bec518b45??538bd9895d":
 __thiscall bool Entity_Player::IsItemCostumeVisible(ItemConfig_Item* item, int playerSpriteLayerID);
@@ -394,6 +394,20 @@ __thiscall unsigned int Entity_Player::SpawnSaturnusTears();
 "558bec83e4f851538b5d??568b75":
 __thiscall void Entity_Player::SyncConsumableCounts(int bitflags);
 
+"558bec83e4f883ec74a1????????33c4894424??53568b75":
+__thiscall void Entity_Player::TryAddToBagOfCrafting(Entity_Pickup* pickup);
+
+"558bec83ec08538a5d":
+__thiscall void Entity_Player::TryDecreaseGlowingHourglassUses(int unk1, bool unk2);
+
+"558bec83e4f883ec1c83b9????????23":
+__thiscall bool Entity_Player::TryForgottenThrow(Vector * dir);
+
+"558bec83e4f8f30f1015????????33d2":
+__thiscall void Entity_Player::UseRedKey();
+
+"558bec568bf133c08d96":
+__thiscall bool Entity_Player::VoidHasCollectible(int id);
 
 struct Entity_Player depends (ANM2, ColorMod, PlayerCostumeMap) : public Entity { {{
 	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }

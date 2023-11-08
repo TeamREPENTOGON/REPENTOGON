@@ -1718,6 +1718,48 @@ LUA_FUNCTION(Lua_PlayerSyncConsumableCounts) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerTryAddToBagOfCrafting) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 2, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	player->TryAddToBagOfCrafting(pickup);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerTryDecreaseGlowingHourglassUses) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int unk1 = (int)luaL_checkinteger(L, 2);
+	bool unk2 = lua::luaL_checkboolean(L, 3);
+	player->TryDecreaseGlowingHourglassUses(unk1, unk2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerTryForgottenThrow) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Vector* dir = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	lua_pushboolean(L, player->TryForgottenThrow(dir));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerTryRemoveSmeltedTrinket) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	unsigned int id = max((int)luaL_checkinteger(L, 2), 1);
+	player->TryRemoveSmeltedTrinket(id);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerUseRedKey) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->UseRedKey();
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerVoidHasCollectible) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	lua_pushboolean(L, player->VoidHasCollectible(id));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -1889,6 +1931,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SpawnClot", Lua_PlayerSpawnClot },
 		{ "SpawnSaturnusTears", Lua_PlayerSpawnSaturnusTears },
 		{ "SyncConsumableCounts", Lua_PlayerSyncConsumableCounts },
+		{ "TryAddToBagOfCrafting", Lua_PlayerTryAddToBagOfCrafting },
+		{ "TryDecreaseGlowingHourglassUses", Lua_PlayerTryDecreaseGlowingHourglassUses },
+		{ "TryForgottenThrow", Lua_PlayerTryForgottenThrow },
+		{ "TryRemoveSmeltedTrinket", Lua_PlayerTryRemoveSmeltedTrinket },
+		{ "UseRedKey", Lua_PlayerUseRedKey },
+		{ "VoidHasCollectible", Lua_PlayerVoidHasCollectible },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
