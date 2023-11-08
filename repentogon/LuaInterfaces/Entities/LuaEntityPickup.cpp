@@ -80,12 +80,76 @@ LUA_FUNCTION(Lua_PickupSetDropDelay)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PickupCanReroll)
+{
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushboolean(L, pickup->CanReroll());
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
+	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	int velType = (int)luaL_optinteger(L, 2, 0);
+	RNG rng;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		rng = *lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	}
+	ColorMod color;
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	}
+	Vector velocity;
+	Isaac::GetRandomPickupVelocity(&velocity, pos, velType, &rng);
+	lua::luabridge::UserdataPtr::push(L, &velocity, lua::Metatables::VECTOR);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupMakeShopItem) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	int shopItemID = (int)luaL_checkinteger(L, 2);
+
+	pickup->MakeShopItem(shopItemID);
+
+	return 0;
+}
+
+// reimplementation with error checking
+LUA_FUNCTION(Lua_PickupAddCycleCollectible) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	int id = (int)luaL_checkinteger(L, 2);
+
+	if (g_Manager->_itemConfig.GetCollectible(id) == nullptr) {
+		std::string error("Invalid collectible ID ");
+		error.append(std::to_string(id));
+		return luaL_argerror(L, 2, error.c_str());
+	}
+
+	bool res = false;
+	if (pickup->_cycleCollectibleCount < 8) {
+		pickup->_cycleCollectibleList[pickup->_cycleCollectibleCount] = id;
+		pickup->_cycleCollectibleCount += 1;
+	}
+
+	lua_pushboolean(L, res);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupTryFlip) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushboolean(L, pickup->TryFlip());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "AddCollectibleCycle", Lua_PickupAddCycleCollectible },
+		{ "CanReroll", Lua_PickupCanReroll },
 		{ "IsBlind", Lua_PickupIsBlind },
 		{ "SetAlternatePedestal", Lua_PickupSetAlternatePedestal },
 		{ "TryRemoveCollectible", Lua_PickupTryRemoveCollectible },
@@ -96,6 +160,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryInitOptionCycle", Lua_PickupTryInitOptionCycle },
 		{ "GetDropDelay", Lua_PickupGetDropDelay },
 		{ "SetDropDelay", Lua_PickupSetDropDelay },
+		{ "GetRandomPickupVelocity", Lua_PickupGetRandomVelocity },
+		{ "MakeShopItem", Lua_PickupMakeShopItem },
+		// i REALLY want a TryReroll but even looking through UseActiveItem i can't tell how the new id is determined
+		{ "TryFlip", Lua_PickupTryFlip },
 		{ NULL, NULL }
 	};
 

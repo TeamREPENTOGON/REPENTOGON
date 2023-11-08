@@ -270,6 +270,20 @@ LUA_FUNCTION(Lua_EntityNPC_TryThrow) {
 	return 1;
 }
 
+/*
+// gonna make a minecart metatable later
+LUA_FUNCTION(Lua_EntityNPC_Minecart_UpdateChild) {
+	Entity_NPC* cart = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	if (cart->_type != 965) {
+		return luaL_error("Must be called with a minecart NPC!");
+	}
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	cart->MinecartUpdateChild(npc);
+
+	return 0;
+}*/
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -294,6 +308,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "ThrowMaggot", Lua_EntityNPC_ThrowMaggot },
 		{ "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos },
 		{ "TryThrow", Lua_EntityNPC_TryThrow },
+		// Minecart
+		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_NPC, functions);
