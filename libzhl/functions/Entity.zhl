@@ -71,7 +71,7 @@ __thiscall void Entity::MakeGroundPoof(Vector * pos, ColorMod * color, float siz
 "558bec83e4f881ec94000000f30f1005":
 __thiscall void Entity::TeleportToRandomPosition();
 
-struct Entity depends (AnimationState, ANM2) {
+struct Entity depends (AnimationState, ANM2, RNG) {
 {{
 	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
@@ -127,6 +127,7 @@ struct Entity depends (AnimationState, ANM2) {
     bool _visible : 0x169; // 0x169 
 	float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
+	RNG _dropRNG : 0x334;
 
     __vtable {
 		skip; // Free

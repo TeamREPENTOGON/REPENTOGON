@@ -51,10 +51,6 @@ static __cdecl void Isaac::ClearBossHazards(bool includeNPCs);
 "558bec83e4f883ec24f30f1005":
 static __fastcall void Isaac::GetRandomPickupVelocity(Vector * buffer, Vector * position, unsigned int ePickupVelType, RNG * rng);
 
-// this is technically a player func but i'm putting it here
-"558bec5156578b7d??81ff02010000":
-static __fastcall bool Isaac::CanRerollCollectible(int id);
-
 // this is under the Entity_Pickup namespace internally, but placing it here for more intuitive calling
 "558bec83e4f883ec148b02":
 static __x86_64_output Vector Isaac::GetCollectibleSpawnPosition(Vector* target);

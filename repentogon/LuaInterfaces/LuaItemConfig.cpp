@@ -16,7 +16,7 @@ LUA_FUNCTION(Lua_ItemConfigPill_EffectSubClass_propget) {
 
 LUA_FUNCTION(Lua_ItemConfig_CanRerollCollectible) {
 	int id = (int)luaL_checkinteger(L, 1);
-	lua_pushboolean(Isaac::CanRerollCollectible(id));
+	lua_pushboolean(L, CanRerollCollectible(id));
 	return 1;
 }
 
@@ -24,12 +24,12 @@ LUA_FUNCTION(Lua_ItemConfig_GetTaggedItems) {
 	ItemConfig* config = lua::GetUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "ItemConfig");
 	unsigned int tags = (unsigned int)luaL_checkinteger(L, 2);
 
-	std::vector<ItemConfig_Item>& items = config->GetTaggedItems(tags);
+	std::vector<ItemConfig_Item*>& itemPtrs = config->GetTaggedItems(tags);
 
 	lua_newtable(L);
-	for (size_t i = 0; i < items.size(); ++i) {
+	for (size_t i = 0; i < itemPtrs.size(); ++i) {
 		lua_pushinteger(L, i + 1);
-		lua::luabridge::UserdataPtr::push(L, &items[i], lua::GetMetatableKey(lua::Metatables::ITEM));
+		lua::luabridge::UserdataPtr::push(L, itemPtrs[i], lua::GetMetatableKey(lua::Metatables::ITEM));
 		lua_rawset(L, -3);
 	}
 

@@ -162,30 +162,27 @@ LUA_FUNCTION(Lua_PlayerAddActiveCharge) {
 LUA_FUNCTION(Lua_PlayerDropCollectible) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int collectible = (int)luaL_checkinteger(L, 2);
-	Entity_Pickup pickup;
+	Entity_Pickup* pickup = nullptr;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pickup = *lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+		pickup = lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	}
-	bool removeFromForm = false;
-	if (lua_type(L, 4) == LUA_TBOOLEAN) {
-		removeFromForm = lua_toboolean(L, 4);
-	}
+	bool removeFromForm = lua::luaL_optboolean(L, 4, false);
 
-	player->DropCollectible(collectible, &pickup, removeFromForm);
-	lua::luabridge::UserdataPtr::push(L, &pickup, lua::Metatables::ENTITY_PICKUP); 
+	player->DropCollectible(collectible, pickup, removeFromForm);
+	lua::luabridge::UserdataPtr::push(L, pickup, lua::Metatables::ENTITY_PICKUP); 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerDropCollectibleByHistoryIndex) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int idx = (int)luaL_checkinteger(L, 2);
-	Entity_Pickup pickup;
+	Entity_Pickup* pickup = nullptr;
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pickup = *lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+		pickup = lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	}
 
-	player->DropCollectibleByHistoryIndex(idx, &pickup);
-	lua::luabridge::UserdataPtr::push(L, &pickup, lua::Metatables::ENTITY_PICKUP);
+	player->DropCollectibleByHistoryIndex(idx, pickup);
+	lua::luabridge::UserdataPtr::push(L, pickup, lua::Metatables::ENTITY_PICKUP);
 	return 1;
 }
 
@@ -1396,9 +1393,9 @@ LUA_FUNCTION(Lua_PlayerClearItemAnimNullItems) {
 
 LUA_FUNCTION(Lua_PlayerFireBoneClub) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Entity parent;
+	Entity* parent = nullptr;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		parent = *lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		parent = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	}
 	int variant = (int)luaL_checkinteger(L, 3);
 	bool unk = lua::luaL_checkboolean(L, 4);
@@ -1418,7 +1415,7 @@ LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
 		offset = *lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	}
 
-	player->FireBrimstoneBall(pos, vel, offset);
+	player->FireBrimstoneBall(pos, vel, &offset);
 
 	return 0;
 }
@@ -1508,14 +1505,14 @@ LUA_FUNCTION(Lua_PlayerGetGlyphOfBalanceDrop) {
 
 LUA_FUNCTION(Lua_PlayerGetLaserColor) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua::luabridge::UserdataPtr::push(L, player->_laserColor, lua::Metatables::COLOR);
+	lua::luabridge::UserdataPtr::push(L, &player->_laserColor, lua::Metatables::COLOR);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerSetLaserColor) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->_laserColor = lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+	player->_laserColor = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 
 	return 0;
 }
@@ -1604,6 +1601,19 @@ LUA_FUNCTION(Lua_PlayerMorphToCoopGhost) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerRemovePocketItem) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	if (id < 0 || id > 3) {
+		std::string error("Invalid slot ID ");
+		error.append(std::to_string(id));
+		return luaL_argerror(L, 2, error.c_str());
+	}
+	player->RemovePocketItem(id);
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PlayerRerollAllCollectibles) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	RNG rng;
@@ -1647,22 +1657,22 @@ LUA_FUNCTION(Lua_PlayerReviveCoopGhost) {
 LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 2, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	Vector pos = *pickup->GetPosition();
+	Vector *pos = pickup->GetPosition();
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pos = *lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+		pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	}
-	unsigned int seed = (unsigned int)luaL_optinteger(L, 4, pickup->GetDropRNG()->_seed);
+	unsigned int seed = (unsigned int)luaL_optinteger(L, 4, pickup->_dropRNG._seed);
 	int pool = (int)luaL_optinteger(L, 5, -1);
 
 	pickup->Remove();
-	player->SalvageCollectible(pos, pickup->GetSubType(), seed, pool);
+	player->SalvageCollectible(pos, pickup->_subtype, seed, pool);
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerSetControllerIndex) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	unsigned int idx = max(luaL_checkinteger(L, 2), 0);
+	unsigned int idx = max((unsigned int)luaL_checkinteger(L, 2), 0);
 	player->SetControllerIndex(idx);
 
 	return 0;
@@ -1672,7 +1682,7 @@ LUA_FUNCTION(Lua_PlayerSetFootprintColor) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	KColor* color = lua::GetUserdata<KColor*>(L, 2, lua::Metatables::KCOLOR, "KColor");
 	bool unk = lua::luaL_optboolean(L, 3, false);
-	player->SetFootprintColor(*color, unk);
+	player->SetFootprintColor(color, unk);
 
 	return 0;
 }
@@ -1869,6 +1879,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsInvisible", Lua_PlayerIsInvisible },
 		{ "IsPacifist", Lua_PlayerIsPacifist },
 		{ "MorphToCoopGhost", Lua_PlayerMorphToCoopGhost },
+		{ "RemovePocketItem", Lua_PlayerRemovePocketItem },
 		{ "RerollAllCollectibles", Lua_PlayerRerollAllCollectibles },
 		{ "ResetPlayer", Lua_PlayerResetPlayer },
 		{ "ReviveCoopGhost", Lua_PlayerReviveCoopGhost },
