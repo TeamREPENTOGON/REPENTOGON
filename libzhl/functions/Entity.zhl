@@ -148,7 +148,10 @@ struct Entity depends (AnimationState, ANM2) {
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 		
 		skip; // Kill
-		skip; // Remove
+		
+        "51568bf15780be????????00c686????????00??01":
+        void Remove(); 
+		
 		skip; // TriggerGlowingHourglass
 		skip; // GetRenderZ
 		skip; // CanOverwrite

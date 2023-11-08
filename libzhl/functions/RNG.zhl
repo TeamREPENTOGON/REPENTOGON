@@ -14,7 +14,7 @@ __thiscall float RNG::RandomFloat();
 __thiscall void RNG::Next();
 
 "558bec8b45??568bf1578b7d":
-__thiscall void RNG::game_constructor(uint seed, uint shiftidx);
+__thiscall void RNG::game_constructor(unsigned int seed, unsigned int shiftidx);
 
 struct RNG
 {
