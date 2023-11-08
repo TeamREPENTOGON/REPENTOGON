@@ -50,6 +50,7 @@ add_library(Lua5.3.3r SHARED ${LUA_SRC})
 
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
+LIST(APPEND ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/ExtraTypes)
 add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/libzhl/IsaacRepentance.cpp COMMAND zhlparser WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/libzhlgen" DEPENDS ${ZHL_FILES} zhlparser)
 
 # ZHL
