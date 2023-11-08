@@ -1902,7 +1902,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBodyMoveDirection", Lua_PlayerGetBodyMoveDirection },
 		{ "GetDeathAnimName", Lua_PlayerGetDeathAnimName },
 		{ "GetGlitchBabySubType", Lua_PlayerGetGlitchBabySubType },
-		{ "GetGreedsGulletHearst", Lua_PlayerGetGreedsGulletHearts },
+		{ "GetGreedsGulletHearts", Lua_PlayerGetGreedsGulletHearts },
 		{ "GetSpecialGridCollision", Lua_PlayerGetSpecialGridCollision },
 		{ "GetEnterPosition", Lua_PlayerGetEnterPosition },
 		//{ "GetExplosionRadiusMultiplier", Lua_PlayerGetExplosionRadiusMultiplier },
