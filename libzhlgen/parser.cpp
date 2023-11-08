@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <iostream>
 
 #include "CodeEmitter.h"
 
@@ -33,6 +34,7 @@ int main(int argc, char** argv) {
         std::ofstream s("parser.log", std::ios::out);
         s << e.what() << std::endl;
         s.close();
+        std::cerr << e.what() << std::endl;
         throw;
     }
 

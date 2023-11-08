@@ -641,7 +641,7 @@ uint32_t Struct::GetNbVirtualFunctions() const {
 
 std::tuple<Struct*, Signature*> Struct::GetVirtualFunctionSource(Function const& fn) const {
     if (_parents.size() > 1) {
-        throw std::runtime_error("Multiple inhertiance not supported");
+        throw std::runtime_error("Multiple inheritance not supported");
     }
 
     std::cout << "GetVirtualFunctionSource " << _name << "::" << fn._name << std::endl;
