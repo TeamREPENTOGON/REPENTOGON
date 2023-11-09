@@ -43,6 +43,38 @@ struct Entity_Pickup : public Entity { {{
 	inline int* GetVarData() { return (int*)((char*)this + 0x4e8); }
 }} 
 
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		skip; // Update
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		
+        override
+        "568bf18b8e????????85c9":
+        void Remove();
+		
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig	
+	};
+
 	unsigned int _cycleCollectibleList[8] : 0x4ec;
 	unsigned int _cycleCollectibleCount : 0x50c;
 	

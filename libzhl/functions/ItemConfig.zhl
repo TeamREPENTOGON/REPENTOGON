@@ -28,6 +28,13 @@ __thiscall void ItemConfig::Load(char *xmlpath, ModEntry* modentry);
 "558bec8b51??8b49":
 __thiscall ItemConfig_Item* ItemConfig::GetTrinket(unsigned int TrinketType);
 
+"558bec83e4f864a1????????83ec0c8b10a1????????53568bd9":
+__thiscall vector_ItemPtr& ItemConfig::GetTaggedItems(unsigned int tags);
+
+// this is technically a player func but i'm putting it here
+"558bec5156578b7d??81ff02010000":
+bool CanRerollCollectible(int id);
+
 struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill, ItemConfig_PlayerForm)
 {
 	{{

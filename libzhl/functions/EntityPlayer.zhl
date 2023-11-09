@@ -113,8 +113,14 @@ __thiscall int Entity_Player::GetActiveItemSlot(int id);
 "558bec8b55??5356578d04d5":
 __thiscall int Entity_Player::GetTotalActiveCharge(int slot);
 
+/*
 "558bec8b45??568b75??81fe1e010000":
 __thiscall int Entity_Player::GetActiveMaxCharge(int collectible, int vardata); //replace int to CollectibleType for collectible later
+*/
+
+// this is a wrapper function that takes a slot and accounts for red redemption. it's also like the existing func below
+"558bec518b55??83fa0374??83fa0275??81b9????????4402000075??a1????????83b8????????2c74??8d04d5????????2bc2ffb4":
+__thiscall int Entity_Player::GetActiveMaxCharge(int slot);
 
 "558bec518b55??83fa0374??83fa0275??81b9????????4402000075??a1????????83b8????????2c74??8d04d5????????2bc28d14":
 __thiscall int Entity_Player::GetActiveMinUsableCharge(int slot);
@@ -126,7 +132,10 @@ __thiscall void Entity_Player::SetActiveVarData(int vardata, int slot);
 __thiscall int Entity_Player::AddActiveCharge(unsigned int charge, int slot, bool unk, bool overcharge, bool force);
 
 "558bec83e4f883ec14538b5d??b841020000":
-__thiscall int Entity_Player::DropCollectible(int collectible, int param2, bool param3);
+__thiscall Entity_Pickup* Entity_Player::DropCollectible(int collectible, Entity_Pickup* existingCollectible, bool removeFromPlayerForm);
+
+"558bec515356578b7d??8bd9895d":
+__thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible);
 
 "558bec83e4f8518a55":
 __thiscall void Entity_Player::AddHearts(int hearts, bool unk);
@@ -231,7 +240,7 @@ __thiscall bool Entity_Player::CanUsePill(int pillEffect);
 __thiscall uint32_t Entity_Player::InvalidateCoPlayerItems();
 
 "558bec83ec30a1????????33c58945??53":
-__thiscall bool Entity_Player::TryRemoveSmeltedTrinket();
+__thiscall bool Entity_Player::TryRemoveSmeltedTrinket(unsigned int id);
 
 "558bec518b45??538bd9895d":
 __thiscall bool Entity_Player::IsItemCostumeVisible(ItemConfig_Item* item, int playerSpriteLayerID);
@@ -239,10 +248,9 @@ __thiscall bool Entity_Player::IsItemCostumeVisible(ItemConfig_Item* item, int p
 "558bec56ff75??8bf18b0d????????ff75??8d89????????e8????????50":
 __thiscall bool Entity_Player::IsCollectibleCostumeVisible(CollectibleType collectible, int playerSpriteLayerID);
 
-/*
-"":
+//this has two matches, but the thing i want comes before the other
+"558bec8b55??5685d278??a1????????8bb0????????8b80??????2bc6c1f8023bd07d??8b04??5e8945??5de9????33c05e8945??5de9":
 __thiscall bool Entity_Player::IsNullItemCostumeVisible(int nullItemID, int playerSpriteLayerID);
-*/
 
 "558bec6aff68????????64a1????????5083ec4ca1????????33c58945??535657508d45??64a3????????8bf18975??8b0d":
 __thiscall void Entity_Player::PlayCollectibleAnim(CollectibleType collectible, bool checkBodyAnim, std_string &animName, int frameNum, bool unused);
@@ -253,7 +261,156 @@ __thiscall bool Entity_Player::IsCollectibleAnimFinished(CollectibleType collect
 "558bec578bf980bf????????0075":
 __thiscall void Entity_Player::ClearCollectibleAnim(CollectibleType collectible);
 
-struct Entity_Player depends (ANM2, PlayerCostumeMap) : public Entity { {{
+"558bec83e4f856576a00":
+__thiscall unsigned int Entity_Player::GetMaxPocketItems();
+
+"558bec515356578bf9e8????????8b5d":
+__thiscall void Entity_Player::AddPocketItem(unsigned int slot, unsigned int itemID);
+
+"558bec568bf1e8????????8b0d":
+__thiscall void Entity_Player::AddBoneOrbital();
+
+"558bec83e4f883ec0c837d??005356578bd9":
+__thiscall unsigned int Entity_Player::AddItemCard(unsigned int itemID);
+
+"0fb781????????6683f803":
+__thiscall void Entity_Player::AddLeprocy();
+
+"558bec83ec088b45??8d55??0381????????83f814":
+__thiscall void Entity_Player::AddUrnSouls(unsigned int amount);
+
+"558bec83e4f8518b0d????????568b75":
+__thiscall bool Entity_Player::CanAddCollectibleToInventory(int id);
+
+"558bec8b45??568d14c5":
+__thiscall bool Entity_Player::CanOverrideActiveItem(unsigned int slot);
+
+"558bec578bf980bf????????0075":
+__thiscall void Entity_Player::ClearItemAnimCollectible(int id);
+
+"568bf180be????????0075??a1":
+__thiscall void Entity_Player::ClearItemAnimNullItems();
+
+"558bec83e4f883ec10568bf1f30f115c24":
+__thiscall Entity_Knife* Entity_Player::FireBoneClub(Entity* parent, unsigned int variant, bool unk);
+
+"558bec83e4f881ec88000000a1????????33c4898424????????568b75":
+__thiscall void Entity_Player::FireBrimstoneBall(Vector * pos, Vector * vel, Vector * offset);
+
+"558bec83e4f883ec0c568bf1f30f1086":
+__thiscall void Entity_Player::GetBodyMoveDirection(Vector * buffer);
+
+"5356578bf98bb7????????83fe0a":
+__thiscall char* Entity_Player::GetDeathAnimName();
+
+"558bec6aff68????????64a1????????5083ec34535657a1????????33c5508d45??64a3????????a1????????33db":
+__thiscall unsigned int Entity_Player::GetGlitchBabySubType();
+
+"565733f68bf95668f5010000":
+__thiscall int Entity_Player::GetGreedsGulletHearts();
+
+"558bec8b45??83ec10f30f1015":
+__thiscall unsigned int Entity_Player::GetSpecialGridCollision(Vector * pos);
+
+"558bec83e4f8568bf1576a53":
+__thiscall bool Entity_Player::CanCrushRocks();
+
+"558bec83e4f88b0d????????83ec14":
+__thiscall void Entity_Player::GetEnterPosition(Vector * buffer);
+
+/*
+"558bec83e4f851566a006a6a":
+__thiscall float<xmm0> Entity_Player::GetExplosionRadiusModifier(BitSet128 flags);
+*/
+
+"8b81????????85c075??56":
+__thiscall Entity* Entity_Player::GetFocusEntity();
+
+"558bec83e4f883ec145356578bf9c74424??00000000":
+__thiscall void Entity_Player::GetGlyphOfBalanceDrop(int * variant, int  * subtype);
+
+/*
+"558bec83e4f883ec0c568bf1837e??00":
+__thiscall float<xmm0> Entity_Player::GetSoundPitch();
+
+"558bec81c150140000":
+__thiscall float<xmm0> Entity_Player::GetSalvationScale();
+*/
+
+"568bf180be????????0075??8b86":
+__thiscall bool Entity_Player::HasInstantDeathCurse();
+
+"558bec83e4f851566a006852020000":
+__thiscall bool Entity_Player::HasPoisonImmunity();
+
+"558bec568b75??578bf93bf774??56e8????????84c075??817f??de00000075??817e??de00000074??8b46":
+__thiscall bool Entity_Player::IsEntityValidTarget(Entity * entity);
+
+"568bf15780be????????0075??8b86":
+__thiscall bool Entity_Player::IsInvisible();
+
+"558bec83e4f8515356578bf98b87":
+__thiscall bool Entity_Player::IsFootstepFrame(int eFoot);
+
+"566a0068ce000000":
+__thiscall bool Entity_Player::IsHeadless();
+
+"80b9????????0074??8b81????????83f81d":
+__thiscall bool Entity_Player::IsHologram();
+
+"558bec83e4f883ec1056578bf98b87":
+__thiscall void Entity_Player::MorphToCoopGhost();
+
+"558bec8b45??538bd983f8ff":
+__thiscall void Entity_Player::RemovePocketItem(int slot);
+
+"558bec6aff68????????64a1????????5083ec58535657a1????????33c5508d45??64a3????????8bf9":
+__thiscall void Entity_Player::RerollAllCollectibles(RNG * rng, bool includeActives);
+
+"558bec83ec0c568bf1837e??00":
+__thiscall void Entity_Player::ResetPlayer();
+
+"558bec83e4f883ec1056578bf96a00":
+__thiscall void Entity_Player::RevivePlayerGhost();
+
+"558bec6aff68????????64a1????????5081ecb8000000a1????????33c58945??535657508d45??64a3????????8bf9897d":
+__thiscall void Entity_Player::SalvageCollectible(Vector * pos, int subtype, unsigned int seed, int poolType);
+
+"558bec83e4f851807d??00":
+__thiscall void Entity_Player::SetControllerIndex(unsigned int index);
+
+"558bec566aff":
+__thiscall void Entity_Player::SetFootprintColor(KColor * color, bool unk);
+
+"558bec83e4f881ec88000000a1????????33c4898424????????56576a008bf9e8????????83e0018d0445????????5051c704240000803f8d4424??6a01508bcfe8????????8b45??8bcf6a0050f30f1000f30f114424??f30f1040??8d4424??50f30f114424??e8????????f30f105c24??f30f591d????????f30f1050??f30f5818f30f591d????????f30f115c24??f30f105c24??f30f591d????????f30f58daf30f591d????????f30f115c24??e8????????8b0d????????6a00506a00578d4424??508d87????????506a0a":
+__thiscall void Entity_Player::ShootBlueCandle(Vector * dir);
+
+"558bec83e4f881ec5401000053":
+__thiscall void Entity_Player::SpawnClot(Vector * pos, bool unk);
+
+"558bec83e4f083ec38568bf1":
+__thiscall unsigned int Entity_Player::SpawnSaturnusTears();
+
+"558bec83e4f851538b5d??568b75":
+__thiscall void Entity_Player::SyncConsumableCounts(int bitflags);
+
+"558bec83e4f883ec74a1????????33c4894424??53568b75":
+__thiscall void Entity_Player::TryAddToBagOfCrafting(Entity_Pickup* pickup);
+
+"558bec83ec08538a5d":
+__thiscall void Entity_Player::TryDecreaseGlowingHourglassUses(int unk1, bool unk2);
+
+"558bec83e4f883ec1c83b9????????23":
+__thiscall bool Entity_Player::TryForgottenThrow(Vector * dir);
+
+"558bec83e4f8f30f1015????????33d2":
+__thiscall void Entity_Player::UseRedKey();
+
+"558bec568bf133c08d96":
+__thiscall bool Entity_Player::VoidHasCollectible(int id);
+
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public Entity { {{
+	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
 	inline int* GetEternalHearts() {return (int*)((char*)this + 0x1298); }
@@ -306,6 +463,7 @@ struct Entity_Player depends (ANM2, PlayerCostumeMap) : public Entity { {{
 	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
 	inline ANM2* GetHeldSprite() { return &this->_heldSprite; }
 }} 
+
     __vtable {
 		skip; // Free
 		
@@ -364,10 +522,13 @@ struct Entity_Player depends (ANM2, PlayerCostumeMap) : public Entity { {{
 	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1170;
 	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
 	float _damage : 0x13b8;
+	ColorMod _laserColor : 0x140c;
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
 	uint32_t _cacheFlags : 0x14b8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	int _playerForms[15] : 0x1700;
+	KColor _footprintColor1 : 0x1768;
+	KColor _footprintColor2 : 0x1794;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
 	int _babySkin : 0x1a0c;
@@ -378,6 +539,7 @@ struct Entity_Player depends (ANM2, PlayerCostumeMap) : public Entity { {{
 	char _poopSpellQueue[6] : 0x1e54;
 	int _eveSumptoriumCharge : 0x1e78;
 	std_map_int_int _itemWispsList : 0x1e7c;
+	bool _isCoopGhost : 0x1f88;
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":
