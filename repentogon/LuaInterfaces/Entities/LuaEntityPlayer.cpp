@@ -1667,7 +1667,7 @@ int ValidatePool(lua_State* L, unsigned int pos)
 	if (ret > 30) {
 		std::string error("Invalid pool ID ");
 		error.append(std::to_string(ret));
-		return luaL_argerror(L, 4, error.c_str());
+		return luaL_argerror(L, pos, error.c_str());
 	}
 	return ret;
 }
