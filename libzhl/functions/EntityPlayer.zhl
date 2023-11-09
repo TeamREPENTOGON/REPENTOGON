@@ -409,6 +409,9 @@ __thiscall void Entity_Player::UseRedKey();
 "558bec568bf133c08d96":
 __thiscall bool Entity_Player::VoidHasCollectible(int id);
 
+"558bec83e4f851538bd98b8b????????568b75":
+__thiscall void Entity_Player::AttachMinecart(Entity_NPC * minecart);
+
 struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public Entity { {{
 	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }

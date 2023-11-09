@@ -1842,6 +1842,13 @@ LUA_FUNCTION(Lua_PlayerVoidHasCollectible) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerAttachMinecart) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_NPC* minecart = lua::GetUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	player->AttachMinecart(minecart);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2022,6 +2029,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryRemoveSmeltedTrinket", Lua_PlayerTryRemoveSmeltedTrinket },
 		{ "UseRedKey", Lua_PlayerUseRedKey },
 		{ "VoidHasCollectible", Lua_PlayerVoidHasCollectible },
+		{ "AttachMinecart", Lua_PlayerAttachMinecart },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
