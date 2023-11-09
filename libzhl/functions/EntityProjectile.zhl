@@ -4,6 +4,9 @@ __thiscall void Entity_Projectile::Render(Vector *offset);
 "558bec83e4f881ec94000000a1????????33c4898424????????538b5d":
 __thiscall bool Entity_Projectile::HandleCollision(Entity* collider, bool low);
 
+"558bec83e4f883ec08568bf1578b8e":
+__thiscall void Entity_Projectile::Reflect(Entity* unused, Vector* newVelocity);
+
 struct Entity_Projectile : public Entity {
 
 } : 0x3c0;
