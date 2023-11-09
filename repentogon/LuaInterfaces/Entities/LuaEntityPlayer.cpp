@@ -1326,7 +1326,17 @@ LUA_FUNCTION(Lua_PlayerGetMaxPocketItems) {
 LUA_FUNCTION(Lua_PlayerAddPocketItem) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int slot = (int)luaL_checkinteger(L, 2);
+	if (slot < 0 || slot > 3) {
+		std::string error("Invalid slot ID ");
+		error.append(std::to_string(id));
+		return luaL_argerror(L, 2, error.c_str());
+	}
 	int id = (int)luaL_checkinteger(L, 3);
+	if (g_Manager->_itemConfig.GetCollectible(id) == nullptr) {
+		std::string error("Invalid collectible ID ");
+		error.append(std::to_string(id));
+		return luaL_argerror(L, 3, error.c_str());
+	}
 	player->AddPocketItem(slot, id);
 
 	return 0;
@@ -1341,7 +1351,12 @@ LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 
 LUA_FUNCTION(Lua_PlayerAddItemCard) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	unsigned int id = max((int)luaL_optinteger(L, 2, 0), 0);
+	int id = (int)luaL_checkinteger(L, 2);
+	if (g_Manager->_itemConfig.GetCollectible(id) == nullptr) {
+		std::string error("Invalid collectible ID ");
+		error.append(std::to_string(id));
+		return luaL_argerror(L, 2, error.c_str());
+	}
 	lua_pushinteger(L, player->AddItemCard(id));
 
 	return 1;
@@ -1500,10 +1515,10 @@ LUA_FUNCTION(Lua_PlayerGetGlyphOfBalanceDrop) {
 	player->GetGlyphOfBalanceDrop(&variant, &subtype);
 
 	lua_newtable(L);
-	lua_pushinteger(L, 0);
+	lua_pushinteger(L, 1);
 	lua_pushinteger(L, variant);
 	lua_rawset(L, -3);
-	lua_pushinteger(L, 1);
+	lua_pushinteger(L, 2);
 	lua_pushinteger(L, subtype);
 	lua_rawset(L, -3);
 
@@ -1568,6 +1583,12 @@ LUA_FUNCTION(Lua_PlayerIsEntityValidTarget) {
 LUA_FUNCTION(Lua_PlayerIsFootstepFrame) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int foot = (int)luaL_optinteger(L, 2, -1);
+	if (id < -1 || id > 1) {
+		std::string error("Invalid foot ID ");
+		error.append(std::to_string(id));
+		error.append(", valid range is -1 to 1");
+		return luaL_argerror(L, 2, error.c_str());
+	}
 	lua_pushboolean(L, player->IsFootstepFrame(foot));
 
 	return 1;
@@ -1665,9 +1686,7 @@ int ValidatePool(lua_State* L, unsigned int pos)
 {
 	int ret = max((int)luaL_optinteger(L, pos, -1), -1);
 	if (ret > 30) {
-		std::string error("Invalid pool ID ");
-		error.append(std::to_string(ret));
-		return luaL_argerror(L, pos, error.c_str());
+		ret = -1;
 	}
 	return ret;
 }
