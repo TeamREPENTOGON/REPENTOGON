@@ -1661,19 +1661,60 @@ LUA_FUNCTION(Lua_PlayerReviveCoopGhost) {
 	return 1;
 }
 
+int ValidatePool(lua_State* L, unsigned int pos)
+{
+	int ret = max((int)luaL_optinteger(L, pos, -1), -1);
+	if (ret > 30) {
+		std::string error("Invalid pool ID ");
+		error.append(std::to_string(ret));
+		return luaL_argerror(L, 4, error.c_str());
+	}
+	return ret;
+}
+
 LUA_FUNCTION(Lua_PlayerSalvageCollectible) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 2, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	Vector *pos = pickup->GetPosition();
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	Vector* pos = nullptr;
+	RNG* rng = nullptr;
+	unsigned int subtype, seed;
+	int pool = -1;
+
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 2, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+		subtype = pickup->_subtype;
+		pos = pickup->GetPosition();
+		if (lua_type(L, 3) == LUA_TUSERDATA) {
+			rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
+		}
+		else
+		{
+			rng = &pickup->_dropRNG;
+		}
+		pool = ValidatePool(L, 4);
+
+		pickup->Remove();
 	}
-	unsigned int seed = (unsigned int)luaL_optinteger(L, 4, pickup->_dropRNG._seed);
-	int pool = (int)luaL_optinteger(L, 5, -1);
+	else {
+		subtype = max((int)luaL_checkinteger(L, 2), 1);
+		if (lua_type(L, 3) == LUA_TUSERDATA) {
+			pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+		}
+		else
+		{
+			pos = player->GetPosition();
+		}
+		if (lua_type(L, 4) == LUA_TUSERDATA) {
+			rng = lua::GetUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
+		}
+		else
+		{
+			rng = &player->_dropRNG;
+		}
+		pool = ValidatePool(L, 5);
+	}
+	seed = rng->Next();
 
-	pickup->Remove();
-	player->SalvageCollectible(pos, pickup->_subtype, seed, pool);
-
+	player->SalvageCollectible(pos, subtype, seed, pool);
 	return 0;
 }
 

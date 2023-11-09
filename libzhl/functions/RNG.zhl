@@ -11,7 +11,7 @@ __thiscall unsigned int RNG::RandomInt(unsigned int max);
 __thiscall float RNG::RandomFloat();
 
 "568bf18b1685d275??68????????6a03e8????????8b1683c40885d275??cc8b4e??8bc2d3e88b4e??33c28bd0d3e28b4e??33d08bc2d3e833c289065ec3":
-__thiscall void RNG::Next();
+__thiscall unsigned int RNG::Next();
 
 "558bec8b45??568bf1578b7d":
 __thiscall void RNG::game_constructor(unsigned int seed, unsigned int shiftidx);
