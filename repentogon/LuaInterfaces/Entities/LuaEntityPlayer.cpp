@@ -1328,7 +1328,7 @@ LUA_FUNCTION(Lua_PlayerAddPocketItem) {
 	int slot = (int)luaL_checkinteger(L, 2);
 	if (slot < 0 || slot > 3) {
 		std::string error("Invalid slot ID ");
-		error.append(std::to_string(id));
+		error.append(std::to_string(slot));
 		return luaL_argerror(L, 2, error.c_str());
 	}
 	int id = (int)luaL_checkinteger(L, 3);
@@ -1510,8 +1510,8 @@ LUA_FUNCTION(Lua_PlayerGetFocusEntity) {
 
 LUA_FUNCTION(Lua_PlayerGetGlyphOfBalanceDrop) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int variant = (int)luaL_checkinteger(L, 2);
-	int subtype = (int)luaL_checkinteger(L, 3);
+	int variant = (int)luaL_optinteger(L, 2, -1);
+	int subtype = (int)luaL_optinteger(L, 3, -1);
 	player->GetGlyphOfBalanceDrop(&variant, &subtype);
 
 	lua_newtable(L);
@@ -1583,9 +1583,9 @@ LUA_FUNCTION(Lua_PlayerIsEntityValidTarget) {
 LUA_FUNCTION(Lua_PlayerIsFootstepFrame) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int foot = (int)luaL_optinteger(L, 2, -1);
-	if (id < -1 || id > 1) {
+	if (foot < -1 || foot > 1) {
 		std::string error("Invalid foot ID ");
-		error.append(std::to_string(id));
+		error.append(std::to_string(foot));
 		error.append(", valid range is -1 to 1");
 		return luaL_argerror(L, 2, error.c_str());
 	}
