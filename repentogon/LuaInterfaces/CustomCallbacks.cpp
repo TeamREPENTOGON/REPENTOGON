@@ -1674,11 +1674,12 @@ HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 			}
 		}
 	}
+
 	super();
 }
 
 //PLAYER_GET_ACTIVE_MAX_CHARGE (id: 1072)
-HOOK_METHOD(Entity_Player, GetActiveMaxCharge, (int item, int vardata) -> int) {
+HOOK_OVERLOADED_METHOD(Entity_Player, GetActiveMaxCharge, int, (int, int), (int item, int vardata) -> int) {
 	int callbackid = 1072;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;

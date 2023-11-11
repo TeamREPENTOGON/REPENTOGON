@@ -113,10 +113,8 @@ __thiscall int Entity_Player::GetActiveItemSlot(int id);
 "558bec8b55??5356578d04d5":
 __thiscall int Entity_Player::GetTotalActiveCharge(int slot);
 
-/*
 "558bec8b45??568b75??81fe1e010000":
 __thiscall int Entity_Player::GetActiveMaxCharge(int collectible, int vardata); //replace int to CollectibleType for collectible later
-*/
 
 // this is a wrapper function that takes a slot and accounts for red redemption. it's also like the existing func below
 "558bec518b55??83fa0374??83fa0275??81b9????????4402000075??a1????????83b8????????2c74??8d04d5????????2bc2ffb4":

@@ -54,10 +54,26 @@ public:
 	auto __declspec(naked) Hook_##_id :: wrapper::super _type {__asm jmp internalSuper} \
 	auto Hook_##_id ::wrapper::hook _type
 
+#define _DEFINE_OVERLOADED_METHOD_HOOK(_id, _classname, _name, _ret, _args, _priority, _type) \
+	namespace { namespace Hook_##_id { \
+		static_assert(std::is_class_v<_classname>, "Cannot HOOK_METHOD on something that is not a class"); \
+		static_assert(std::is_member_function_pointer_v<decltype(static_cast<_ret (_classname::*)_args>(&_classname::_name))>, "Cannot HOOK_METHOD on something that is not a method (use HOOK_STATIC for static methods)"); \
+		static void *internalSuper = NULL; \
+		struct wrapper : public _classname { \
+			auto hook _type ; \
+			auto super _type ; \
+		}; \
+		static FunctionHook hookObj(#_classname "::" #_name, typeid(auto (_classname::*) _type), &wrapper::hook, &internalSuper, _priority); \
+	} } \
+	auto __declspec(naked) Hook_##_id :: wrapper::super _type {__asm jmp internalSuper} \
+	auto Hook_##_id ::wrapper::hook _type
+
 #define _DEFINE_METHOD_HOOK0(_id, _classname, _name, _priority, _type) _DEFINE_METHOD_HOOK1(_id, _classname, _name, _priority, _type)
 
 #define HOOK_METHOD(_classname, _name, _type) _DEFINE_METHOD_HOOK0(__LINE__, _classname, _name, 0, _type)
+#define HOOK_OVERLOADED_METHOD(_classname, _name, _ret, _args, _type) _DEFINE_OVERLOADED_METHOD_HOOK(__LINE__, _classname, _name, _ret, _args, 0, _type)
 #define HOOK_METHOD_PRIORITY(_classname, _name, _priority, _type) _DEFINE_METHOD_HOOK0(__LINE__, _classname, _name, _priority, _type)
+#define HOOK_OVERLOADED_METHOD_PRIORITY(_classname, _name, _priority, _ret, _args, _type) _DEFINE_OVERLOADED_METHOD_HOOK(__LINE__, _classname, _name, _ret, _ars, _priority, _type)
 
 //=================================================================================================
 
