@@ -883,7 +883,6 @@ void ASMPatchPreMMorphActiveCallback() {
 }
 
 void __stdcall SetRoomClearDelay(Room* room) {
-	printf("quickRoomClear: %s\n", repentogonOptions.quickRoomClear ? "TRUE" : "FALSE");
 	room->_roomClearDelay = repentogonOptions.quickRoomClear ? 0 : 10;
 }
 
