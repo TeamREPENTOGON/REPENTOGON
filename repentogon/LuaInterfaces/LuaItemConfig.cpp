@@ -63,8 +63,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 
-	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
-
 	FixItemConfigPillEffects(_state);
 	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
 	lua::RegisterFunctions(_state, lua::Metatables::CONST_CONFIG, functions);
