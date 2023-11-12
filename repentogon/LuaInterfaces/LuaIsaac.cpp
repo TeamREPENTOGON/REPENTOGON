@@ -311,7 +311,7 @@ LUA_FUNCTION(Lua_GetCutsceneByName) {
 }
 
 LUA_FUNCTION(Lua_IsaacCanStartTrueCoop) {
-	lua_pushboolean(L, !Isaac::CanStartTrueCoop());
+	lua_pushboolean(L, !PlayerManager::CoopBabiesOnly());
 	return 1;
 }
 

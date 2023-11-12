@@ -27,9 +27,6 @@ static cleanup Weapon* Isaac::CreateWeapon(WeaponType type<ecx>, Entity* ent<edx
 "568bf18b0e85c974??8b01":
 static cleanup void Isaac::DestoryWeapon(Weapon** wep<ecx>);
 
-"a1????????8b80????????83e010":
-static bool Isaac::CanStartTrueCoop();
-
 "558bec83e4f883ec4ca1????????33c4894424??53568bda":
 static cleanup void Isaac::SpawnLocust(Entity_Player* player<ecx>, int collectibleType<edx>, Vector* pos);
 

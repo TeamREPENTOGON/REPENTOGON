@@ -540,6 +540,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	char _poopSpellQueue[6] : 0x1e54;
 	int _eveSumptoriumCharge : 0x1e78;
 	std_map_int_int _itemWispsList : 0x1e7c;
+	int _keepersSackBonus : 0x1eb4;
 	bool _isCoopGhost : 0x1f88;
 } : 0x2580;
 

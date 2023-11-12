@@ -1849,6 +1849,18 @@ LUA_FUNCTION(Lua_PlayerAttachMinecart) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetKeepersSackBonus) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_keepersSackBonus);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetKeepersSackBonus) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_keepersSackBonus = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2030,6 +2042,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "UseRedKey", Lua_PlayerUseRedKey },
 		{ "VoidHasCollectible", Lua_PlayerVoidHasCollectible },
 		{ "AttachMinecart", Lua_PlayerAttachMinecart },
+		{ "GetKeepersSackBonus", Lua_PlayerGetKeepersSackBonus },
+		{ "SetKeepersSackBonus", Lua_PlayerSetKeepersSackBonus },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
