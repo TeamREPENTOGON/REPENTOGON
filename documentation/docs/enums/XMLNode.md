@@ -32,3 +32,4 @@ tags:
 |24 |STAGE {: .copyable } |  |
 |25 |BACKDROP {: .copyable } |  |
 |26 |ACHIEVEMENT {: .copyable } |  |
+|27 |GIANTBOOK {: .copyable } |  |

@@ -2318,6 +2318,7 @@ XMLNode = {
 	STAGE = 24,
 	BACKDROP = 25,
 	ACHIEVEMENT = 26,
+	GIANTBOOK = 27,
 }
 
 AutocompleteType = {

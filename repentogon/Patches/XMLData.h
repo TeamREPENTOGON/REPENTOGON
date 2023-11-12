@@ -317,6 +317,14 @@ public:
 	}
 };
 
+class XMLGeneric : public XMLDataHolder {
+public:
+	XMLGeneric(int m) {
+		this->maxid = m;
+		this->defmaxid = m;
+	}
+};
+
 class XMLChallenge : public XMLDataHolder {
 
 };
@@ -462,6 +470,7 @@ struct XMLData {
 	XMLStage* StageData = new XMLStage();
 	XMLBackdrop* BackdropData = new XMLBackdrop();
 	XMLAchievement* AchievementData = new XMLAchievement();
+	XMLGeneric* GiantBookData = new XMLGeneric(46);
 
 	XMLMod* ModData = new XMLMod();
 
@@ -492,10 +501,14 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["costumes"] = 19;
 	xmlnodeenum["itempools"] = 20;
 	xmlnodeenum["bosspools"] = 21;
+	xmlnodeenum["giantbook"] = 22;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 
-
+extern unordered_map<string, int> xmlmaxnode;
+inline void initxmlmaxnodeenum() {
+	xmlmaxnode["giantbook.xml"] = 46;
+}
 
 extern XMLData XMLStuff;
 
