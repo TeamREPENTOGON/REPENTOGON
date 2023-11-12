@@ -29,6 +29,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["BetterVoidGeneration"] = "1";
 			ini["VanillaTweaks"]["HushPanicStateFix"] = "1";
 			ini["VanillaTweaks"]["KeyMasterDealChance"] = "1";
+			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 
@@ -40,6 +41,7 @@ struct REPENTOGONOptions {
 		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],1);
 		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],1);
 		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],1);
+		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"],0);
 
 		printf("Loaded REPENTOGON INI\n");
@@ -60,6 +62,7 @@ struct REPENTOGONOptions {
 	bool betterVoidGeneration;
 	bool hushPanicStateFix;
 	bool keyMasterDealChance;
+	bool quickRoomClear;
 	bool preventModUpdates;
 	std::string optionsPath;
 };

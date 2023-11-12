@@ -36,6 +36,14 @@ LUA_FUNCTION(Lua_ItemConfig_GetTaggedItems) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
+	ItemConfig* config = lua::GetUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "Config");
+	const unsigned int trinketType = luaL_checkinteger(L, 2);
+	lua_pushboolean(L, ItemConfig::IsValidTrinket(trinketType));
+
+	return 1;
+}
+
 static void FixItemConfigPillEffects(lua_State* L) {
 	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectClass", Lua_ItemConfigPill_EffectClass_propget);
 	lua::RegisterVariableGetter(L, lua::Metatables::PILL_EFFECT, "EffectSubClass", Lua_ItemConfigPill_EffectSubClass_propget);
@@ -51,10 +59,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	luaL_Reg functions[] = {
 		{ "GetTaggedItems", Lua_ItemConfig_GetTaggedItems },
 		{ "CanRerollCollectible", Lua_ItemConfig_CanRerollCollectible },
+		//{ "IsValidTrinket", Lua_ItemConfig_IsValidTrinket },
 		{ NULL, NULL }
 	};
 
-	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
-
 	FixItemConfigPillEffects(_state);
+	lua::RegisterFunctions(_state, lua::Metatables::CONFIG, functions);
+	lua::RegisterFunctions(_state, lua::Metatables::CONST_CONFIG, functions);
+	//lua::RegisterGlobalClassFunction(_state, "Config", "IsValidTrinket", Lua_ItemConfig_IsValidTrinket);
 }

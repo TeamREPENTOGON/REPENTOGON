@@ -225,6 +225,27 @@ LUA_FUNCTION(Lua_RoomColorModifierUpdate)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RoomTryGetShopDiscount) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	const int shopItemIdx = (int)luaL_checkinteger(L, 2);
+	const int price = (int)luaL_checkinteger(L, 3);
+
+	lua_pushinteger(L, room->TryGetShopDiscount(shopItemIdx, price));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomGetRoomClearDelay) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushinteger(L, room->_roomClearDelay);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetRoomClearDelay) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->_roomClearDelay = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -253,6 +274,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetChampionBossChance", Lua_Room_GetBossChampionChance},
 		{ "IsChampionBossSeed", Lua_Room_IsChampionBossSeed},
 		{ "UpdateColorModifier", Lua_RoomColorModifierUpdate},
+		{ "TryGetShopDiscount", Lua_RoomTryGetShopDiscount},
+		{ "GetRoomClearDelay", Lua_RoomGetRoomClearDelay},
+		{ "SetRoomClearDelay", Lua_RoomSetRoomClearDelay},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);
