@@ -355,6 +355,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryThrow", Lua_EntityTryThrow },
 		{ NULL, NULL }
 	};
-	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
+	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
 
 }
