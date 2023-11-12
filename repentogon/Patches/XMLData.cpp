@@ -42,6 +42,7 @@ string currpath;
 
 unordered_map<string, int> xmlnodeenum;
 unordered_map<string, int> xmlmaxnode;
+unordered_map<string, int> xmlfullmerge;
 XMLData XMLStuff;
 
 
@@ -571,7 +572,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 	uint32_t unk;
 	string middleman = stringlower(node->name());
 	const char* nodename = middleman.c_str(); 
-	if (!initedxmlenums) { initedxmlenums = true; initxmlnodeenum(); initxmlmaxnodeenum(); }
+	if (!initedxmlenums) {
+		initedxmlenums = true; initxmlnodeenum(); initxmlmaxnodeenum(); initxmlfullmergelist();
+	}
 	if (xmlnodeenum.find(middleman) == xmlnodeenum.end()) { return; }
 	int nodetypeid = xmlnodeenum[middleman];
 	xml_node<char>* daddy;
@@ -2163,6 +2166,7 @@ LUA_FUNCTION(Lua_GetFromEntity)
 	}
 	else {
 		Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict);
+		Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
 	}
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -2592,6 +2596,25 @@ char* replaceLastChar(const char* str, const char* search, const char* replace) 
 	return result;
 }
 
+
+bool NodeHasSameAttrs(xml_node<>* node1, xml_node<>* node2) {
+	for (xml_attribute<>* attr1 = node1->first_attribute(); attr1; attr1 = attr1->next_attribute()) {
+		xml_attribute<>* attr2 = node2->first_attribute(attr1->name());
+		if (!attr2 || strcmp(attr1->value(), attr2->value()) != 0) {
+			return false;
+		}
+	}
+
+	for (xml_attribute<>* attr2 = node2->first_attribute(); attr2; attr2 = attr2->next_attribute()) {
+		xml_attribute<>* attr1 = node1->first_attribute(attr2->name());
+		if (!attr1) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 int maxnodebackdrop = 60;
 
 char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
@@ -2719,6 +2742,17 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 							//printf("2");
 						}
 					}
+					else if (strcmp(filename.c_str(), "ambush.xml") == 0) {
+						resourcescroot = resourcesdoc->first_node("bossrush"); //only bossrush works anyway, the rest was deprecated in rpeentance, so why bother?
+						root = xmldoc->first_node("bossrush");
+						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+							root->append_node(clonedNode);
+						}
+					}
+					else if (xmlfullmerge.find(filename) != xmlfullmerge.end()) { //generic fullmerge (a.k.a too complex to be minimalistic about it)
+					}
 					else if(xmlmaxnode.find(filename) != xmlmaxnode.end()){ //generic
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
@@ -2799,6 +2833,8 @@ char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
 		//printf("hackies done");
 		//printf("s: %s",xml); 
 	}
+	if (xmlfullmerge.find(filename) != xmlfullmerge.end()) { printf("s: %s", xml); }
+	//if (strcmp(filename.c_str(), "ambush.xml") == 0) { printf("s: %s", xml); }
 	//content
 	return xml;
 }
@@ -2888,7 +2924,11 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<giantb", 50)) {
 			super(BuildModdedXML(xmldata, "giantbook.xml", false));
-		}else if (charfind(xmldata, "<stages", 50)) {
+		}
+		else if ((charfind(xmldata, "<ambush", 50)) || (charfind(xmldata, "<bossru", 50)) || (charfind(xmldata, "<bossamb", 50))) {
+			super(BuildModdedXML(xmldata, "ambush.xml", false));
+		}
+		else if (charfind(xmldata, "<stages", 50)) {
 			super(BuildModdedXML(xmldata, "stages.xml", false));
 		}else if (charfind(xmldata, "<reci",  50)) {
 			string xml = string(xmldata);

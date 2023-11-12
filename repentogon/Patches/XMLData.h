@@ -508,6 +508,12 @@ inline void initxmlnodeenum() {
 extern unordered_map<string, int> xmlmaxnode;
 inline void initxmlmaxnodeenum() {
 	xmlmaxnode["giantbook.xml"] = 46;
+	xmlmaxnode["nightmares.xml"] = 16;
+}
+
+extern unordered_map<string, int> xmlfullmerge;
+inline void initxmlfullmergelist() {
+
 }
 
 extern XMLData XMLStuff;
