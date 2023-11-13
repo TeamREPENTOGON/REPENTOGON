@@ -20,6 +20,10 @@ When more than one eye is active, defines the angle the eyes are offset to eacho
 
 Example: for The Wiz, this is 45.
 ___
+### Get·Num·Eyes·Active () {: aria-label='Functions' }
+#### int GetNumEyesActive ( ) {: .copyable aria-label='Functions' }
+Returns the number of eyes simultaniously shooting. Examples: For The Wiz, its 2, for mutant Spider its 1.
+___
 ### Get·Num·Lanes·Per·Eye () {: aria-label='Functions' }
 #### int GetNumLanesPerEye ( ) {: .copyable aria-label='Functions' }
 Returns the amount of lanes used to spread the shot tears onto.
@@ -27,10 +31,6 @@ Lane positions are calculated by dividing the area, defined by the shooting dire
 Normally the number of lanes should be the same number as the amount of tears divided by the number of eyes. 
 
 A smaller number of lanes than the amount of tears will cause tears to overlap each other. A higher lane count than tears will make the fan pattern asymetrical.
-___
-### Get·Num·Eyes·Active () {: aria-label='Functions' }
-#### int GetNumEyesActive ( ) {: .copyable aria-label='Functions' }
-Returns the number of eyes simultaniously shooting. Examples: For The Wiz, its 2, for mutant Spider its 1.
 ___
 ### Get·Num·Random·Dir·Tears () {: aria-label='Functions' }
 #### int GetNumRandomDirTears ( ) {: .copyable aria-label='Functions' }
@@ -90,6 +90,10 @@ ___
 #### void SetNumEyesActive ( int value ) {: .copyable aria-label='Functions' }
 Set the number of eyes simultaniously shooting. Examples: For The Wiz, its 2, for mutant Spider its 1.
 ___
+### Set·Num·Lanes·Per·Eye () {: aria-label='Functions' }
+#### void SetNumLanesPerEye ( int value ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Num·Random·Dir·Tears () {: aria-label='Functions' }
 #### void SetNumRandomDirTears ( int value ) {: .copyable aria-label='Functions' }
 Set the amount of tears additionally shot in random directions. Same effect as "Eye Sore" collectible.
@@ -97,10 +101,6 @@ ___
 ### Set·Num·Tears () {: aria-label='Functions' }
 #### void SetNumTears ( int value ) {: .copyable aria-label='Functions' }
 Set the amount of tears the player can currently simultaneously fire.
-___
-### Set·Num·Lanes·Per·Eye () {: aria-label='Functions' }
-#### void SetNumLanesPerEye ( int value ) {: .copyable aria-label='Functions' }
-
 ___
 ### Set·Spread·Angle·Knife () {: aria-label='Functions' }
 #### void SetSpreadAngleKnife ( float angle ) {: .copyable aria-label='Functions' }

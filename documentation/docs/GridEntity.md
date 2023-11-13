@@ -22,16 +22,16 @@ ___
 #### void IsBreakableRock ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Play·Break·Sound () {: aria-label='Functions' }
+#### void PlayBreakSound ( int gridType, int backdropId ) {: .copyable aria-label='Functions' }
+
+___
 ### Register·Rock·Destroyed () {: aria-label='Functions' }
 #### void RegisterRockDestroyed ( int gridType ) {: .copyable aria-label='Functions' }
 
 ___
 ### Render·Top () {: aria-label='Functions' }
 #### void RenderTop ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset ) {: .copyable aria-label='Functions' }
-
-___
-### Play·Break·Sound () {: aria-label='Functions' }
-#### void PlayBreakSound ( int gridType, int backdropId ) {: .copyable aria-label='Functions' }
 
 ___
 ### Try·Spawn·Ladder () {: aria-label='Functions' }

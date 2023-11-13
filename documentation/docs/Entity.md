@@ -89,13 +89,13 @@ ___
 #### int GetPauseTime ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Predicted·Target·Position () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPredictedTargetPosition ( [Entity](Entity.md) target, int strength ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Pos·Vel () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPosVel ( ) {: .copyable aria-label='Functions' }
 Returns 2 values, both Vectors. 1st the Position of the entity, 2nd the Velocity of the entity.
+
+___
+### Get·Predicted·Target·Position () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPredictedTargetPosition ( [Entity](Entity.md) target, int strength ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Shadow·Size () {: aria-label='Functions' }

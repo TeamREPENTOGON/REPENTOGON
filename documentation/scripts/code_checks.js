@@ -21,6 +21,7 @@ const regularExpressions = [
   ["Internal link doesnt work because its CamelCase.", /\[\w+\]\(([a-z][^·_][A-Z])*#[A-Z]\w+[A-Z]*/],
 ];
 
+
 var hasError = false;
 
 for (const file of allFiles) {
@@ -29,6 +30,9 @@ for (const file of allFiles) {
   let constructors = [];
   let functions = [];
   let variables = [];
+  let modConstructors = [];
+  let modFunctions = [];
+  let modVariables = [];
 
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
@@ -36,10 +40,19 @@ for (const file of allFiles) {
       let cleanedLine = line.replaceAll("### ", "").replaceAll("·", "").split("{")[0].split("(")[0].trim();
       cleanedLine = cleanedLine.replaceAll("__", "zzzzz"); // Change sort priority to list underscore functions below normal ones
       if (line.includes("Constructors")) {
-        constructors.push(cleanedLine);
+        if(line.includes("Modified"))
+          modConstructors.push(cleanedLine);
+        else
+          constructors.push(cleanedLine);
       } else if (line.includes("Functions")) {
+        if(line.includes("Modified"))
+          modFunctions.push(cleanedLine);
+        else
         functions.push(cleanedLine);
       } else if (line.includes("Variables")) {
+        if(line.includes("Modified"))
+          modVariables.push(cleanedLine);
+        else
         variables.push(cleanedLine);
       }
     }
@@ -56,42 +69,27 @@ for (const file of allFiles) {
   }
 
   // check if functions are sorted alphabetically
-  /*let constructorsSort = constructors.slice();
-  let functionsSort = functions.slice();
-  let variablesSort = variables.slice();
-  constructorsSort.sort(function (a, b) {
-    return a.toLowerCase().localeCompare(b.toLowerCase());
-  });
-  functionsSort.sort(function (a, b) {
-    return a.toLowerCase().localeCompare(b.toLowerCase());
-  });
-  variablesSort.sort(function (a, b) {
-    return a.toLowerCase().localeCompare(b.toLowerCase());
-  });
+  checkSort(file, constructors);
+  checkSort(file, functions);
+  checkSort(file, variables);
+  checkSort(file, modConstructors);
+  checkSort(file, modFunctions);
+  checkSort(file, modVariables);
+}
 
-  for (let index = 0; index < constructorsSort.length; index++) {
-    let entry = constructors[index];
-    if (entry.toLowerCase() != constructorsSort[index].toLowerCase()) {
-      console.log(`${file}: Constructor '` + entry + `' is not sorted correctly! Should be at location ` + constructorsSort.indexOf(entry) + ` but its at location ` + index);
-      hasError = true;
+function checkSort(file, entryList){
+  let sortedList = entryList.slice();
+  sortedList.sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
+  for (let index = 0; index < sortedList.length; index++) {
+    let entry = entryList[index];
+    if (entry.toLowerCase() != sortedList[index].toLowerCase()) {
+      var diff = Math.abs(index - sortedList.indexOf(entry));
+      console.log(`${file}: Entry '` + entry + `' is not sorted correctly! Its at location ` + index+ ` but should be at ` + sortedList.indexOf(entry) + (diff >1?"\t !!!":""));
+      //hasError = true;   // ignore if error. sort is not that important to prevent build
     }
   }
-
-  for (let index = 0; index < functionsSort.length; index++) {
-    let entry = functions[index];
-    if (entry.toLowerCase() != functionsSort[index].toLowerCase()) {
-      console.log(`${file}: Function '` + entry + `' is not sorted correctly! Should be at location ` + functionsSort.indexOf(entry) + ` but its at location ` + index);
-      hasError = true;
-    }
-  }
-
-  for (let index = 0; index < variablesSort.length; index++) {
-    let entry = variables[index];
-    if (entry.toLowerCase() != variablesSort[index].toLowerCase()) {
-      console.log(`${file}: Variable '` + entry + `' is not sorted correctly! Should be at location ` + variablesSort.indexOf(entry) + ` but its at location ` + index);
-      hasError = true;
-    }
-  }*/
 }
 
 function getFilesForDirectory(directory) {

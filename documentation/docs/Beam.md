@@ -42,15 +42,14 @@ ___
 #### [Sprite](Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }   
 
 ___
-### Get·Use·Overlay () {: aria-label='Functions' }
-#### boolean GetUseOverlay ( ) {: .copyable aria-label='Functions' }   
-
-___
 ### Get·Unk·Bool () {: aria-label='Functions' }
 #### boolean GetUnkBool ( ) {: .copyable aria-label='Functions' }   
 
 ___
+### Get·Use·Overlay () {: aria-label='Functions' }
+#### boolean GetUseOverlay ( ) {: .copyable aria-label='Functions' }   
 
+___
 ### Render () {: aria-label='Functions' }
 #### void Render ( boolean ClearPoints = true ) {: .copyable aria-label='Functions' }
 
@@ -63,11 +62,11 @@ ___
 #### void SetSprite ( [Sprite](Sprite.md) Sprite ) {: .copyable aria-label='Functions' }   
 
 ___
-### Set·Use·Overlay () {: aria-label='Functions' }
-#### void SetUseOverlay ( boolean UseOverlay ) {: .copyable aria-label='Functions' }   
-
-___
 ### Set·Unk·Bool () {: aria-label='Functions' }
 #### void SetUnkBool ( boolean UnkBool ) {: .copyable aria-label='Functions' }   
+
+___
+### Set·Use·Overlay () {: aria-label='Functions' }
+#### void SetUseOverlay ( boolean UseOverlay ) {: .copyable aria-label='Functions' }   
 
 ___

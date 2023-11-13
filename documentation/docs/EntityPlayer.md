@@ -11,10 +11,6 @@ This class contains both new functions and modified reimplementations of existin
 Now accepts an optional `bool` to determine if [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ___
-### Add·Innate·Collectible () {: aria-label='Functions' }
-#### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, int amount = 1 ) {: .copyable aria-label='Functions' }
-
-___
 ### Clear·Dead·Eye·Charge () {: aria-label='Modified Functions' }
 #### void ClearDeadEyeCharge ( boolean Force = false ) {: .copyable aria-label='Modified Functions' }
 Now accepts a `Force` argument to forcefully reset the charge instead of only rolling for a change to reset.
@@ -55,6 +51,10 @@ Returns the true amount of charge added, which may have been capped by the targe
 ___
 ### Add·Bone·Orbital () {: aria-label='Functions' }
 #### void AddBoneOrbital ( ) {: .copyable aria-label='Functions' }
+
+___
+### Add·Innate·Collectible () {: aria-label='Functions' }
+#### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, int amount = 1 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Add·Item·Card () {: aria-label='Functions' }
@@ -107,6 +107,12 @@ ___
 By some conditions, usually health-related, determines whether a player can use a given pill effect.
 
 ___
+### Check·Familiar·Ex () {: aria-label='Functions' }
+#### table CheckFamiliarEx ( int FamiliarVariant, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
+
+A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#checkfamiliar) that returns all familiars spawned by the function as a table.
+
+___
 ### Clear·Collectible·Anim () {: aria-label='Functions' }
 #### void ClearCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) {: .copyable aria-label='Functions' }
 
@@ -118,12 +124,6 @@ ___
 ___
 ### Clear·Item·Anim·Null·Items () {: aria-label='Functions' }
 #### void ClearItemAnimNullItems ( ) {: .copyable aria-label='Functions' }
-
-___
-### Check·Familiar·Ex () {: aria-label='Functions' }
-#### table CheckFamiliarEx ( int FamiliarVariant, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
-
-A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#checkfamiliar) that returns all familiars spawned by the function as a table.
 
 ___
 ### Drop·Collectible () {: aria-label='Functions' }
@@ -218,21 +218,18 @@ ___
 #### int GetD8DamageModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·D8·Speed·Modifier () {: aria-label='Functions' }
-#### int GetD8SpeedModifier ( ) {: .copyable aria-label='Functions' }
-
-___
-
-### Get·D8·Range·Modifier () {: aria-label='Functions' }
-#### int GetD8RangeModifier ( ) {: .copyable aria-label='Functions' }
-
-___
-
 ### Get·D8·Fire·Delay·Modifier () {: aria-label='Functions' }
 #### int GetD8FireDelayModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·D8·Range·Modifier () {: aria-label='Functions' }
+#### int GetD8RangeModifier ( ) {: .copyable aria-label='Functions' }
 
+___
+### Get·D8·Speed·Modifier () {: aria-label='Functions' }
+#### int GetD8SpeedModifier ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Damage·Modifier () {: aria-label='Functions' }
 #### int GetDamageModifier ( ) {: .copyable aria-label='Functions' }
 
@@ -261,12 +258,12 @@ ___
 #### float GetEdenRange ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Eden·Speed () {: aria-label='Functions' }
-#### float GetEdenSpeed ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Eden·Shot·Speed () {: aria-label='Functions' }
 #### float GetEdenShotSpeed ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Eden·Speed () {: aria-label='Functions' }
+#### float GetEdenSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Enter·Position () {: aria-label='Functions' }
@@ -369,12 +366,12 @@ ___
 #### int GetMaxPocketItems ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Metronome·Collectible·ID () {: aria-label='Functions' }
-#### int GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Mega·Blast·Duration () {: aria-label='Functions' }
 #### int GetMegaBlastDuration ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Metronome·Collectible·ID () {: aria-label='Functions' }
+#### int GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Next·Urethra·Block·Frame () {: aria-label='Functions' }
@@ -410,16 +407,8 @@ ___
 #### int GetRedStewBonusDuration ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Total·Active·Charge () {: aria-label='Functions' }
-#### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Shot·Speed·Modifier () {: aria-label='Functions' }
 #### int GetShotSpeedModifier ( ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Special·Grid·Collision () {: aria-label='Functions' }
-#### int GetSpecialGridCollision ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }      
 
 ___
 ### Get·Smelted·Trinkets () {: aria-label='Functions' }
@@ -432,8 +421,16 @@ Returns a table of smelted trinkets and their corresponding amounts. The returne
 | goldenTrinketNum | int | |
 
 ___
+### Get·Special·Grid·Collision () {: aria-label='Functions' }
+#### int GetSpecialGridCollision ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }      
+
+___
 ### Get·Speed·Modifier () {: aria-label='Functions' }
 #### int GetSpeedModifier ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Total·Active·Charge () {: aria-label='Functions' }
+#### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Voided·Collectibles·List () {: aria-label='Functions' }
@@ -625,12 +622,12 @@ ___
 #### void SetEdenRange ( float Value ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Eden·Speed () {: aria-label='Functions' }
-#### void SetEdenSpeed ( float Value ) {: .copyable aria-label='Functions' }
-
-___
 ### Set·Eden·Shot·Speed () {: aria-label='Functions' }
 #### void SetEdenShotSpeed ( float Value ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Eden·Speed () {: aria-label='Functions' }
+#### void SetEdenSpeed ( float Value ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Eve·Sumptorium·Charge () {: aria-label='Functions' }
@@ -750,6 +747,10 @@ ___
 #### void SpawnClot ( [Vector](Vector.md) pos, bool unk = false ) {: .copyable aria-label='Functions' } 
 
 ___
+### Spawn·Saturnus·Tears () {: aria-label='Functions' }
+#### int SpawnSaturnusTears ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Swap·Forgotten·Form () {: aria-label='Functions' }
 #### void SwapForgottenForm ( boolean Force = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
 If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#getsubplayer), swaps between them. `Force` will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
@@ -757,10 +758,6 @@ If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityP
 
 ???+ warning "Warning"
     This function currently only has an effect for The Forgotten and The Soul.
-
-___
-### Spawn·Saturnus·Tears () {: aria-label='Functions' }
-#### int SpawnSaturnusTears ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Sync·Consumable·Counts () {: aria-label='Functions' }

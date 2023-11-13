@@ -23,6 +23,21 @@ ___
 #### [ColorModifier](ColorModifier.md) ColorModifier {: .copyable aria-label='Variables'}
 
 ___
+### Light·Color {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) LightColor {: .copyable aria-label='Variables'}
+
+___
+### Shadow·Alpha {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### float ShadowAlpha {: .copyable aria-label='Variables'}
+
+___
+### Shadow·Color {: aria-label='Variables' }
+[ ](#){: .tooltip .badge }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) ShadowColor {: .copyable aria-label='Variables'}
+
+___
 ### Use·Water·V2 {: aria-label='Variables' }
 [ ](#){: .tooltip .badge }
 #### boolean UseWaterV2 {: .copyable aria-label='Variables'}
@@ -39,21 +54,8 @@ ___
 #### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) WaterColorMultiplier {: .copyable aria-label='Variables'}
 
 ___
-### Shadow·Alpha {: aria-label='Variables' }
-[ ](#){: .tooltip .badge }
-#### float ShadowAlpha {: .copyable aria-label='Variables'}
-
-___
-### Shadow·Color {: aria-label='Variables' }
-[ ](#){: .tooltip .badge }
-#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) ShadowColor {: .copyable aria-label='Variables'}
-
-___
-### Light·Color {: aria-label='Variables' }
-[ ](#){: .tooltip .badge }
-#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) LightColor {: .copyable aria-label='Variables'}
-
-___
 ### Water·Effect·Color {: aria-label='Variables' }
 [ ](#){: .tooltip .badge }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterEffectColor {: .copyable aria-label='Variables'}
+
+___

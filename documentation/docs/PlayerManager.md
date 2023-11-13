@@ -22,6 +22,16 @@ ___
 Returns true when any player has the trinket and false when no one does.
 
 ___
+### First·Collectible·Owner () {: aria-label='Functions' }
+#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) FirstCollectibleOwner ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
+Returns `nil` if the specified collectible has never been picked up.
+
+___
+### First·Trinket·Owner () {: aria-label='Functions' }
+#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) FirstTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
+Returns `nil` if the specified trinket has never been picked up.
+
+___
 ### Get·Esau·Jr·State () {: aria-label='Functions' }
 #### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) GetEsauJrState ( int Index = 0 ) {: .copyable aria-label='Functions' }
 
@@ -38,16 +48,6 @@ Returns a table containing all players.
 ___
 ### Get·Total·Trinket·Multiplier () {: aria-label='Functions' }
 #### int GetTotalTrinketMultiplier ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
-
-___
-### First·Collectible·Owner () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) FirstCollectibleOwner ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
-Returns `nil` if the specified collectible has never been picked up.
-
-___
-### First·Trinket·Owner () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) FirstTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
-Returns `nil` if the specified trinket has never been picked up.
 
 ___
 ### Is·Coop·Play () {: aria-label='Functions' }

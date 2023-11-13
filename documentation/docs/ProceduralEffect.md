@@ -1,26 +1,6 @@
 # Class "ProceduralEffect"
 
 ## Functions
-### Get·Condition·Type () {: aria-label='Functions' }
-#### [ProceduralEffectConditionType](enums/ProceduralEffectConditionType.md) GetConditionType ( ) {: .copyable aria-label='Functions' }
-Returns the timing when the effect was triggered.
-
-___
-### Get·Condition·Property () {: aria-label='Functions' }
-#### table GetConditionProperty ( ) {: .copyable aria-label='Functions' }
-Returns a table that describes the condition argument.
-
-|Field|ActionType|Type|
-|:--|:--|:--|
-| type | ENTITY_SPAWN |  int |
-| variant | ENTITY_SPAWN |  int |
-
-___
-### Get·Action·Type () {: aria-label='Functions' }
-#### [ProceduralEffectActionType](enums/ProceduralEffectActionType.md) GetActionType ( ) {: .copyable aria-label='Functions' }
-Returns what to do after the effect is triggered.
-
-___
 ### Get·Action·Property () {: aria-label='Functions' }
 #### table GetActionProperty ( ) {: .copyable aria-label='Functions' }
 Returns a table that describes the action argument. The returned table will contains the following fields.
@@ -43,8 +23,28 @@ Returns a table that describes the action argument. The returned table will cont
 | radius | float | FART | |
 
 ___
+### Get·Action·Type () {: aria-label='Functions' }
+#### [ProceduralEffectActionType](enums/ProceduralEffectActionType.md) GetActionType ( ) {: .copyable aria-label='Functions' }
+Returns what to do after the effect is triggered.
 
+___
+### Get·Condition·Property () {: aria-label='Functions' }
+#### table GetConditionProperty ( ) {: .copyable aria-label='Functions' }
+Returns a table that describes the condition argument.
+
+|Field|ActionType|Type|
+|:--|:--|:--|
+| type | ENTITY_SPAWN |  int |
+| variant | ENTITY_SPAWN |  int |
+
+___
+### Get·Condition·Type () {: aria-label='Functions' }
+#### [ProceduralEffectConditionType](enums/ProceduralEffectConditionType.md) GetConditionType ( ) {: .copyable aria-label='Functions' }
+Returns the timing when the effect was triggered.
+
+___
 ### Get·Trigger·Rate () {: aria-label='Functions' }
 #### float GetTriggerRate ( ) {: .copyable aria-label='Functions' }
 
 Value form 0 to 1.
+___

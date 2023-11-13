@@ -2,6 +2,10 @@
 
 ## Functions
 
+### Get·Blend·Mode() {: aria-label='Functions' }
+#### [BlendMode](BlendMode.md) GetBlendMode ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Color () {: aria-label='Functions' }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetColor ( ) {: .copyable aria-label='Functions' }
 
@@ -10,8 +14,8 @@ ___
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCropOffset ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Pos () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
+### Get·Default·Spritesheet·Path () {: aria-label='Functions' }
+#### string GetDefaultSpritesheetPath ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Layer·ID () {: aria-label='Functions' }
@@ -20,6 +24,14 @@ ___
 ___
 ### Get·Name () {: aria-label='Functions' }
 #### string GetName ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Pos () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Render·Flags() {: aria-label='Functions' }
+#### [AnimRenderFlags](enums/AnimRenderFlags.md) GetRenderFlags ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Rotation () {: aria-label='Functions' }
@@ -32,10 +44,6 @@ ___
 ___
 ### Get·Spritesheet·Path () {: aria-label='Functions' }
 #### string GetSpritesheetPath ( ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Default·Spritesheet·Path () {: aria-label='Functions' }
-#### string GetDefaultSpritesheetPath ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Visible () {: aria-label='Functions' }
@@ -54,6 +62,10 @@ ___
 #### void SetPos ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Render·Flags () {: aria-label='Functions' }
+#### void SetRenderFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Rotation () {: aria-label='Functions' }
 #### void SetRotation ( float Rotation ) {: .copyable aria-label='Functions' }
 
@@ -64,17 +76,5 @@ ___
 ___
 ### Set·Visible () {: aria-label='Functions' }
 #### void SetVisible ( boolean Visible ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Blend·Mode() {: aria-label='Functions' }
-#### [BlendMode](BlendMode.md) GetBlendMode ( ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Render·Flags() {: aria-label='Functions' }
-#### [AnimRenderFlags](enums/AnimRenderFlags.md) GetRenderFlags ( ) {: .copyable aria-label='Functions' }
-
-___
-### Set·Render·Flags () {: aria-label='Functions' }
-#### void SetRenderFlags ( [AnimRenderFlags](enums/AnimRenderFlags.md) Flags ) {: .copyable aria-label='Functions' }
 
 ___

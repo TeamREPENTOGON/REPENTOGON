@@ -2,13 +2,13 @@
 
 ## Functions
 
+### Get·Heart·By·Index () {: aria-label='Functions' }
+#### [PlayerHUDHeart](PlayerHUDHeart.md) GetHeartByIndex ( int Index ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Hearts () {: aria-label='Functions' }
 #### table GetHearts ( ) {: .copyable aria-label='Functions' }
 Returns table of [hearts](PlayerHUDHeart.md)
-
-___
-### Get·Heart·By·Index () {: aria-label='Functions' }
-#### [PlayerHUDHeart](PlayerHUDHeart.md) GetHeartByIndex ( int Index ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·HUD () {: aria-label='Functions' }

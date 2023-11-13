@@ -30,6 +30,15 @@ ___
 #### boolean CanStartTrueCoop ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Clear·Boss·Hazards () {: aria-label='Functions' }
+#### void ClearBossHazards ( boolean npcs = false ) {: .copyable aria-label='Functions' }
+
+___
+### Clear·Completion·Marks () {: aria-label='Functions' }
+#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
+Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
+
+___
 ### Create·Timer () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) CreateTimer ( function Function, int Interval, int Times, boolean Persistent ) {: .copyable aria-label='Functions' }
 Spawns a timer EntityEffect. This entity will starting running `Function` function after `Interval` frames, and will repeat it `Times` amount of times. `Persistent` controls whether or not this timer "dies" in the current room, or persists across rooms.
@@ -38,15 +47,6 @@ Spawns a timer EntityEffect. This entity will starting running `Function` functi
     This timer is called every game update. This means the timer only takes into consideration frames in which the game is actively running, not paused, and uses update frames for its Delay parameter (30 frames per second). 
 	
 	If your use case requires that a timer takes paused time into account, stick with a custom timer running on a RENDER callback.
-
-___
-### Clear·Boss·Hazards () {: aria-label='Functions' }
-#### void ClearBossHazards ( boolean npcs = false ) {: .copyable aria-label='Functions' }
-
-___
-### Clear·Completion·Marks () {: aria-label='Functions' }
-#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
-Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
 
 ___
 ### Create·Weapon () {: aria-label='Functions' }
@@ -78,14 +78,6 @@ ___
 ### Get·Clipboard () {: aria-label='Functions' }
 #### string GetClipboard ( ) {: .copyable aria-label='Functions' }
 Gets the contents of the clipboard as long as they are in text form, otherwise it will just return nil.
-___
-### Get·Cutscene·Id·By·Name () {: aria-label='Functions' }
-#### table GetCutsceneIdByName ( string name ) {: .copyable aria-label='Functions' }
-Gets the Cutscene ID By Name.
-___
-### Get·Cursor·Sprite () {: aria-label='Functions' }
-#### [Sprite](Sprite.md) GetCursorSprite ( ) {: .copyable aria-label='Functions' }
-Returns the cursor sprite that is rendered when ``Options.MouseControl`` is set to true. 
 ___
 ### Get·Collectible·Spawn·Position () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCollectibleSpawnPosition ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
@@ -130,8 +122,21 @@ Returns a table containing all the marks for the character. Supports both modded
 			```
 
 ___
+### Get·Cursor·Sprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetCursorSprite ( ) {: .copyable aria-label='Functions' }
+Returns the cursor sprite that is rendered when ``Options.MouseControl`` is set to true. 
+___
+### Get·Cutscene·Id·By·Name () {: aria-label='Functions' }
+#### table GetCutsceneIdByName ( string name ) {: .copyable aria-label='Functions' }
+Gets the Cutscene ID By Name.
+___
 ### Get·Daily·Challenge () {: aria-label='Functions' }
 #### [DailyChallenge](DailyChallenge.md) GetDailyChallenge ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Entity·Sub·Type·By·Name () {: aria-label='Functions' }
+#### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
+Gets the entity SubType by entity name.
 
 ___
 ### Get·Im·Gui () {: aria-label='Functions' }
@@ -148,10 +153,9 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.
 
 ___
-### Get·Entity·Sub·Type·By·Name () {: aria-label='Functions' }
-#### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
-Gets the entity SubType by entity name.
-
+### Get·Menu·Manager () {: aria-label='Functions' }
+#### [MenuManager](menus/MenuManager.md) GetMenuManager ( ) {: .copyable aria-label='Functions' }
+Returns the menu manager object.
 ___
 ### Get·Nightmare·Scene () {: aria-label='Functions' }
 #### [NightmareScene](NightmareScene.md) GetNightmareScene ( ) {: .copyable aria-label='Functions' }
@@ -160,10 +164,6 @@ ___
 ### Get·Null·Item·Id·By·Name () {: aria-label='Functions' }
 #### int GetNullItemIdByName ( ) {: .copyable aria-label='Functions' }
 
-___
-### Get·Menu·Manager () {: aria-label='Functions' }
-#### [MenuManager](menus/MenuManager.md) GetMenuManager ( ) {: .copyable aria-label='Functions' }
-Returns the menu manager object.
 ___
 ### Get·Persistent·Game·Data () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }

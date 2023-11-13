@@ -12,16 +12,16 @@
         
 ## Functions
 
+### Get·Command·History () {: aria-label='Functions' }
+#### table GetCommandHistory ( ) {: .copyable aria-label='Functions' }
+Returns a table containing current command history.
+
+___
 ### Get·History () {: aria-label='Functions' }
 #### table GetHistory ( ) {: .copyable aria-label='Functions' }
 Returns a table containing every previous entry printed to the console this run.
 
 This is ordered last-to-first- the first entry will be the currently blank line awaiting user input, followed by the previous print, and so on. The last line will always be `Repentance Console`.
-
-___
-### Get·Command·History () {: aria-label='Functions' }
-#### table GetCommandHistory ( ) {: .copyable aria-label='Functions' }
-Returns a table containing current command history.
 
 ___
 ### Pop·History () {: aria-label='Functions' }

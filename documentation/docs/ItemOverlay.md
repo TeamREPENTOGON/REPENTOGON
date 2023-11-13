@@ -6,12 +6,12 @@
 #### int GetDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Overlay·ID () {: aria-label='Functions' }
-#### int GetOverlayID ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Mega·Mush·Player·Sprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetMegaMushPlayerSprite ( ) {: .copyable aria-label='Functions' } 
+
+___
+### Get·Overlay·ID () {: aria-label='Functions' }
+#### int GetOverlayID ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Player () {: aria-label='Functions' }

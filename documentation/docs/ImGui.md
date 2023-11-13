@@ -122,15 +122,15 @@ ___
 ### Add·Slider·Integer () {: aria-label='Functions' }
 #### void AddSliderInteger ( string parentId, string elementId, string label = "", function changeCallback = nil, int defaultVal = 0, int min = INTEGER_MIN, int min = INTEGER_MAX, string formatting = "%d%" ) {: .copyable aria-label='Functions' }
 ___
-### Add·Tab·Bar () {: aria-label='Functions' }
-#### void AddTabBar ( string parentId, string elementId ) {: .copyable aria-label='Functions' }
-A TabBar is a container which is used to store Tab elements.
-___
 ### Add·Tab () {: aria-label='Functions' }
 #### void AddTab ( string parentId, string elementId, string label ) {: .copyable aria-label='Functions' }
 A tab is a clickable area that shows another page or area.
 
 The parent object needs to be a TabBar.
+___
+### Add·Tab·Bar () {: aria-label='Functions' }
+#### void AddTabBar ( string parentId, string elementId ) {: .copyable aria-label='Functions' }
+A TabBar is a container which is used to store Tab elements.
 ___
 ### Add·Text () {: aria-label='Functions' }
 #### void AddText ( string parentId, string text, boolean wrapText = false, string elementId = "" ) {: .copyable aria-label='Functions' }
@@ -156,13 +156,13 @@ Returns the mouse position in Screen coordinates.
 
 Use this instead of `Input.GetMousePosition()` when working with imgui!
 ___
-### Get·Window·Pinned () {: aria-label='Functions' }
-#### boolean GetWindowPinned ( string windowId ) {: .copyable aria-label='Functions' }
-Get the pinned state of a window.
-___
 ### Get·Visible () {: aria-label='Functions' }
 #### boolean GetVisible ( string elementId ) {: .copyable aria-label='Functions' }
 Get if a window element is visible or not.
+___
+### Get·Window·Pinned () {: aria-label='Functions' }
+#### boolean GetWindowPinned ( string windowId ) {: .copyable aria-label='Functions' }
+Get the pinned state of a window.
 ___
 ### Hide () {: aria-label='Functions' }
 #### void Hide ( ) {: .copyable aria-label='Functions' }
@@ -223,13 +223,13 @@ ___
 #### void SetColor ( string elementId, [ImGuiColor](enums/ImGuiColor.md) colorType, float red, float green, float blue, float alpha = 1.0 ) {: .copyable aria-label='Functions' }
 Adds a color modifier to a given element.
 ___
-### Set·Text·Color () {: aria-label='Functions' }
-#### void SetTextColor ( string elementId, float red, float green, float blue, float alpha = 1.0 ) {: .copyable aria-label='Functions' }
-Shortcut function to add a color modifier to text of a given element.
-___
 ### Set·Helpmarker () {: aria-label='Functions' }
 #### void SetHelpmarker ( string elementId, string text ) {: .copyable aria-label='Functions' }
 Adds a helpmarker to a given element. A Helpmarker is a `(?)` element rendered on the right of an element, which when hovered displays a tooltip.
+___
+### Set·Text·Color () {: aria-label='Functions' }
+#### void SetTextColor ( string elementId, float red, float green, float blue, float alpha = 1.0 ) {: .copyable aria-label='Functions' }
+Shortcut function to add a color modifier to text of a given element.
 ___
 ### Set·Tooltip () {: aria-label='Functions' }
 #### void SetTooltip ( string elementId, string text ) {: .copyable aria-label='Functions' }

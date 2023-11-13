@@ -20,16 +20,8 @@ ___
 #### int GetBodyColor ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Sprite () {: aria-label='Functions' }
-#### [Sprite](Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }
-Returns sprite of associated to the costume.
-___
 ### Get·Head·Color () {: aria-label='Functions' }
 #### int GetHeadColor ( ) {: .copyable aria-label='Functions' }
-
-___
-### Is·Item·Anim·Playing () {: aria-label='Functions' }
-#### boolean IsItemAnimPlaying ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Item·Config () {: aria-label='Functions' }
@@ -40,17 +32,13 @@ ___
 #### int GetPlayerType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Flying () {: aria-label='Functions' }
-#### boolean IsFlying ( ) {: .copyable aria-label='Functions' }
-
-___
-### Is·Item·State·Only () {: aria-label='Functions' }
-#### boolean IsItemStateOnly ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Priority () {: aria-label='Functions' }
 #### int GetPriority ( ) {: .copyable aria-label='Functions' }
 
+___
+### Get·Sprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }
+Returns sprite of associated to the costume.
 ___
 ### Has·Overlay () {: aria-label='Functions' }
 #### boolean HasOverlay ( ) {: .copyable aria-label='Functions' }
@@ -58,5 +46,17 @@ ___
 ___
 ### Has·Skin·Alt () {: aria-label='Functions' }
 #### boolean HasSkinAlt ( ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Flying () {: aria-label='Functions' }
+#### boolean IsFlying ( ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Item·Anim·Playing () {: aria-label='Functions' }
+#### boolean IsItemAnimPlaying ( ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Item·State·Only () {: aria-label='Functions' }
+#### boolean IsItemStateOnly ( ) {: .copyable aria-label='Functions' }
 
 ___

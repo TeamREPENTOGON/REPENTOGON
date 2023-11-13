@@ -5,11 +5,6 @@
 
 ## Functions
 
-### Get·Dirt·Color() {: aria-label='Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetDirtColor ( ) {: .copyable aria-label='Functions' }
-Returns the dynamic dirt color of the entity. This lets entities like Nightcrawler blend in to the environment.
-
-___
 ### Fire·Boss·Projectiles·Ex() {: aria-label='Functions' }
 #### table FireBossProjectilesEx ( int numProjectiles, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
 Same as [FireBossProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
@@ -27,6 +22,11 @@ ___
 ### Get·Controller·Id() {: aria-label='Functions' }
 #### int GetControllerId ( ) {: .copyable aria-label='Functions' }
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return -1 when its not being controlled by any player.
+
+___
+### Get·Dirt·Color() {: aria-label='Functions' }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetDirtColor ( ) {: .copyable aria-label='Functions' }
+Returns the dynamic dirt color of the entity. This lets entities like Nightcrawler blend in to the environment.
 
 ___
 ### Get·Hit·List() {: aria-label='Functions' }

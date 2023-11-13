@@ -10,13 +10,6 @@ All arguments are now optional. `Colorize` can now be set through the constructo
 ___
 ## Functions
 
-### __tostring () {: aria-label='Functions' }
-#### string __tostring ( ) {: .copyable aria-label='Functions' }
-Creates a string representation of the color object.
-
-This enables direct printing of the object by doing `print(myColorObj)`
-
-___
 ### Get·Colorize () {: aria-label='Functions' }
 #### table GetColorize ( ) {: .copyable aria-label='Functions' }
 Returns a table corresponding to the color's current Colorize values: `{R, G, B, A}`
@@ -37,6 +30,13 @@ ___
 ### Print () {: aria-label='Functions' }
 #### string Print ( ) {: .copyable aria-label='Functions' }
 Returns a string representation of the color object.
+
+___
+### __tostring () {: aria-label='Functions' }
+#### string __tostring ( ) {: .copyable aria-label='Functions' }
+Creates a string representation of the color object.
+
+This enables direct printing of the object by doing `print(myColorObj)`
 
 ___
 

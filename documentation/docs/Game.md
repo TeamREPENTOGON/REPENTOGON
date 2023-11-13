@@ -88,10 +88,6 @@ ___
 #### int GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Procedural·Item·Manager () {: aria-label='Functions' }
-#### [ProceduralItemManager](ProceduralItemManager.md) GetProceduralItemManager ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Planetariums·Visited () {: aria-label='Functions' }
 #### int GetPlanetariumsVisited ( ) {: .copyable aria-label='Functions' }
 Returns the amount of planetariums the player has entered this run.
@@ -99,6 +95,10 @@ Returns the amount of planetariums the player has entered this run.
 ___
 ### Get·Player·Manager () {: aria-label='Functions' }
 #### [PlayerManager](PlayerManager.md) GetPlayerManager ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Procedural·Item·Manager () {: aria-label='Functions' }
+#### [ProceduralItemManager](ProceduralItemManager.md) GetProceduralItemManager ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Room·Config·Holder () {: aria-label='Functions' }

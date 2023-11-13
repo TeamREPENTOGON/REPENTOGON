@@ -15,12 +15,12 @@ ___
 #### int GetDonationValue ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·State() {: aria-label='Functions' }
-#### int GetState ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Prize·Type() {: aria-label='Functions' }
 #### int GetPrizeType ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·State() {: aria-label='Functions' }
+#### int GetState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Timeout() {: aria-label='Functions' }
@@ -29,6 +29,11 @@ ___
 ___
 ### Get·Touch() {: aria-label='Functions' }
 #### int GetTouch ( ) {: .copyable aria-label='Functions' }
+
+___
+### Random·Coin·Jam·Anim() {: aria-label='Functions' }
+#### string RandomCoinJamAnim ( ) {: .copyable aria-label='Functions' }
+Returns a random string from the following options: `CoinJam`, `CoinJam2`, `CoinJam3,` `CoinJam4`. Presumably only used on the donation machines.
 
 ___
 ### Set·Donation·Value() {: aria-label='Functions' }
@@ -54,10 +59,5 @@ ___
 ___
 ### Set·Touch() {: aria-label='Functions' }
 #### void SetTouch ( int Touch ) {: .copyable aria-label='Functions' }
-
-___
-### Random·Coin·Jam·Anim() {: aria-label='Functions' }
-#### string RandomCoinJamAnim ( ) {: .copyable aria-label='Functions' }
-Returns a random string from the following options: `CoinJam`, `CoinJam2`, `CoinJam3,` `CoinJam4`. Presumably only used on the donation machines.
 
 ___

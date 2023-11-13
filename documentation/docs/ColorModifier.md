@@ -11,23 +11,14 @@
         ```
 
 ## Variables
-### R {: aria-label='Variables' }
-#### float R {: .copyable aria-label='Variables'}
-
-
-___
-### G {: aria-label='Variables' }
-#### float G {: .copyable aria-label='Variables'}
-
-___
-### B {: aria-label='Variables' }
-#### float B {: .copyable aria-label='Variables'}
-
-___
 ### A {: aria-label='Variables' }
 #### float A {: .copyable aria-label='Variables'}
 ???+ warning "Warning"
     This acts as a strength multiplier and must be non-zero in order for RGB to have any effect!
+___
+### B {: aria-label='Variables' }
+#### float B {: .copyable aria-label='Variables'}
+
 ___
 ### Brightness {: aria-label='Variables' }
 #### float Brightness {: .copyable aria-label='Variables'}
@@ -36,6 +27,15 @@ ___
 ### Contrast {: aria-label='Variables' }
 #### float Contrast {: .copyable aria-label='Variables'}
 
+___
+### G {: aria-label='Variables' }
+#### float G {: .copyable aria-label='Variables'}
+
+___
+### R {: aria-label='Variables' }
+#### float R {: .copyable aria-label='Variables'}
+
+___
 ## Operators
 ### __add () {: aria-label='Operators' }
 #### [ColorModifier](ColorModifier.md) __add ( [ColorModifier](ColorModifier.md) right ) {: .copyable aria-label='Operators' }

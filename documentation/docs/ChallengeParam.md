@@ -18,16 +18,16 @@ ___
 #### int GetBlackHearts ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Coins () {: aria-label='Functions' }
+#### int GetCoins ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Collectible·List () {: aria-label='Functions' }
 #### table GetCollectibleList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Collectible·Twin·List () {: aria-label='Functions' }
 #### table GetCollectibleTwinList ( ) {: .copyable aria-label='Functions' }
-
-___
-### Get·Coins () {: aria-label='Functions' }
-#### int GetCoins ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Curse () {: aria-label='Functions' }

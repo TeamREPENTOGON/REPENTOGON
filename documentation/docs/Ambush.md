@@ -51,12 +51,12 @@ Sets how many waves should be in a normal challenge room.
 	Currently this value is not reset on game restart. This will be fixed as soon as we figure out how to cleanly run code on init on the C++ side!
 	
 ___
-### Spawn·Wave () {: aria-label='Functions' }
-#### void SpawnWave ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Spawn·Bossrush·Wave () {: aria-label='Functions' }
 #### void SpawnBossrushWave ( ) {: .copyable aria-label='Functions' }
+
+___
+### Spawn·Wave () {: aria-label='Functions' }
+#### void SpawnWave ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Start·Challenge () {: aria-label='Functions' }
