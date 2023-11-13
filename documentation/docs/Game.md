@@ -144,6 +144,10 @@ ___
 Returns `true` if the pause menu is open
 
 ___
+### Is·Rerun () {: aria-label='Functions' }
+#### boolean IsRerun ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Color·Modifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) colorModifier, boolean lerp = true, float rate = 0.015 ) {: .copyable aria-label='Functions' }
 

@@ -190,6 +190,13 @@ LUA_FUNCTION(Lua_GameSetColorModifier)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GameIsRerun) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushboolean(L, game->_isRerun);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -216,6 +223,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetTargetColorModifier", Lua_GameGetTargetColorModifier},
 		{ "GetLerpColorModifier", Lua_GameGetLerpColorModifier},
 		{ "SetColorModifier", Lua_GameSetColorModifier},
+		{ "IsRerun", Lua_GameIsRerun},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);
