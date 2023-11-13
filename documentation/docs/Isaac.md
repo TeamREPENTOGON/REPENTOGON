@@ -40,6 +40,10 @@ Spawns a timer EntityEffect. This entity will starting running `Function` functi
 	If your use case requires that a timer takes paused time into account, stick with a custom timer running on a RENDER callback.
 
 ___
+### Clear·Boss·Hazards () {: aria-label='Functions' }
+#### void ClearBossHazards ( boolean npcs = false ) {: .copyable aria-label='Functions' }
+
+___
 ### Clear·Completion·Marks () {: aria-label='Functions' }
 #### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
 Deletes all completion marks for a given character. Supports both modded and vanilla characters. 

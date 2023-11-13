@@ -120,12 +120,17 @@ nav:
   - Debug: Debug.md
   - Entity:
     - Entity: Entity.md
+    - EntityBomb: EntityBomb.md
+    - EntityEffect: EntityEffect.md
     - EntityFamiliar: EntityFamiliar.md
+    - EntityKnife: EntityKnife.md
     - EntityLaser: EntityLaser.md
     - EntityNPC: EntityNPC.md
     - EntityPlayer: EntityPlayer.md
     - EntityPickup: EntityPickup.md
+    - EntityProjectile: EntityProjectile.md
     - EntitySlot: EntitySlot.md
+    - EntityTear: EntityTear.md
   - Font: Font.md
   - FXParams: FXParams.md
   - Game: Game.md
@@ -142,7 +147,9 @@ nav:
     - PlayerHUDHeart: PlayerHUDHeart.md
   - ImGui: ImGui.md
   - Isaac: Isaac.md
-  - ItemConfig - PillEffect: ItemConfig_PillEffect.md
+  - ItemConfig:
+    - ItemConfig: ItemConfig.md
+    - ItemConfig - PillEffect: ItemConfig_PillEffect.md
   - ItemOverlay: ItemOverlay.md
   - ItemPool: ItemPool.md
   - Level: Level.md
@@ -223,6 +230,7 @@ nav:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
   - UI: changes/UI.md
+- Vector: Vector.md
 - XML:
   - players.xml: xml/players.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/

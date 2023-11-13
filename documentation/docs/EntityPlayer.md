@@ -53,10 +53,26 @@ ___
 Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
 
 ___
+### Add·Bone·Orbital () {: aria-label='Functions' }
+#### void AddBoneOrbital ( ) {: .copyable aria-label='Functions' }
+
+___
+### Add·Item·Card () {: aria-label='Functions' }
+#### int AddItemCard ( [Card](https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html) id ) {: .copyable aria-label='Functions' }
+
+___
+### Add·Leprocy () {: aria-label='Functions' }
+#### void AddLeprocy ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Add·Locust () {: aria-label='Functions' }
 #### int AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
 
 Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
+
+___
+### Add·Pocket·Item () {: aria-label='Functions' }
+#### void AddPocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' }
 
 ___
 ### Add·Smelted·Trinket () {: aria-label='Functions' }
@@ -66,6 +82,26 @@ Adds a smelted trinket directly to the player's inventory.
 Returns ``true`` if the trinket was successfully added, otherwise ``false``.
 
 ___
+### Add·Urn·Souls () {: aria-label='Functions' }
+#### void AddUrnSouls ( int count = 0 ) {: .copyable aria-label='Functions' }
+
+___
+### Attach·Minecart () {: aria-label='Functions' }
+#### void AttachMinecart ( [EntityNPC](EntityNPC.md) minecart ) {: .copyable aria-label='Functions' }     
+
+___
+### Can·Add·Collectible·To·Inventory () {: aria-label='Functions' }
+#### boolean CanAddCollectibleToInventory ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' } 
+
+___
+### Can·Crush·Rocks () {: aria-label='Functions' }
+#### boolean CanCrushRocks ( ) {: .copyable aria-label='Functions' }
+
+___
+### Can·Override·Active·Item () {: aria-label='Functions' }
+#### boolean CanOverrideActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' }        
+
+___
 ### Can·Use·Pill () {: aria-label='Functions' }
 #### boolean CanUsePill ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) ID ) {: .copyable aria-label='Functions' }
 By some conditions, usually health-related, determines whether a player can use a given pill effect.
@@ -73,6 +109,15 @@ By some conditions, usually health-related, determines whether a player can use 
 ___
 ### Clear·Collectible·Anim () {: aria-label='Functions' }
 #### void ClearCollectibleAnim ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) {: .copyable aria-label='Functions' }
+
+___
+### Clear·Item·Anim·Collectible () {: aria-label='Functions' }
+#### void ClearItemAnimCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' 
+}
+
+___
+### Clear·Item·Anim·Null·Items () {: aria-label='Functions' }
+#### void ClearItemAnimNullItems ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Check·Familiar·Ex () {: aria-label='Functions' }
@@ -85,8 +130,20 @@ ___
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 
 ___
+### Drop·Collectible·By·History·Index () {: aria-label='Functions' }
+#### [EntityPickup](EntityPickup.md) DropCollectibleByHistoryIndex ( int idx, [EntityPickup](EntityPickup.md) pickup = nil ) {: .copyable aria-label='Functions' }
+
+___
 ### Enable·Weapon·Type() {: aria-label='Functions' }
 #### void EnableWeaponType ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, boolean Set ) {: .copyable aria-label='Functions' }
+
+___
+### Fire·Bone·Club () {: aria-label='Functions' }
+#### [EntityKnife](EntityKnife.md) FireBoneClub ( [Entity](Entity.md) parent = nil, int variant, bool unk ) {: .copyable aria-label='Functions' }
+
+___
+### Fire·Brimstone·Ball () {: aria-label='Functions' }
+#### void FireBrimstoneBall ( [Vector](Vector.md) pos, [Vector](Vector.md) vel, [Vector](Vector.md) offset = nil ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Active·Item·Desc () {: aria-label='Functions' }
@@ -123,6 +180,10 @@ Gets the current content of the bag in the given Slot ID.
 ___
 ### Get·Bladder·Charge () {: aria-label='Functions' }
 #### int GetBladderCharge ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Body·Move·Direction () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }    
 
 ___
 ### Get·Cambion·Conception·State () {: aria-label='Functions' }
@@ -180,6 +241,10 @@ ___
 #### int GetDeadEyeCharge ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Death·Anim·Name () {: aria-label='Functions' }
+#### string GetDeathAnimName ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Eden·Damage () {: aria-label='Functions' }
 #### float GetEdenDamage ( ) {: .copyable aria-label='Functions' }
 
@@ -204,6 +269,10 @@ ___
 #### float GetEdenShotSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Enter·Position () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetEnterPosition ( ) {: .copyable aria-label='Functions' }        
+
+___
 ### Get·Epiphora·Charge () {: aria-label='Functions' }
 #### int GetEpiphoraCharge ( ) {: .copyable aria-label='Functions' }
 
@@ -221,6 +290,26 @@ ___
 Returns flipped form of the current character (only used for Tainted Lazarus)
 
 Otherwise, returns nil
+___
+### Get·Focus·Entity () {: aria-label='Functions' }
+#### [Entity](Entity.md) GetFocusEntity ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Footprint·Color () {: aria-label='Functions' }
+#### [Color](Color.md) GetFootprintColor ( boolean leftFootprint ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Glitch·Baby·Sub·Type () {: aria-label='Functions' }
+#### int GetGlitchBabySubType ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Glyph·Of·Balance·Drop () {: aria-label='Functions' }
+#### table GetGlyphOfBalanceDrop ( int variant = -1, int subtype = -1 ) {: .copyable aria-label='Functions' }
+returns a table containing the variant and subtype of the possible glyph of balance drop.
+___
+### Get·Greeds·Gullet·Hearts () {: aria-label='Functions' }
+#### int GetGreedsGulletHearts ( ) {: .copyable aria-label='Functions' }
+
 ___
 ### Get·Health·Type () {: aria-label='Functions' }
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
@@ -242,6 +331,14 @@ ___
 ___
 ### Get·Immaculate·Conception·State () {: aria-label='Functions' }
 #### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Keepers·Sack·Bonus () {: aria-label='Functions' }
+#### int GetKeepersSackBonus ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Laser·Color () {: aria-label='Functions' }
+#### [Color](Color.md) GetLaserColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Luck·Modifier () {: aria-label='Functions' }
@@ -268,6 +365,10 @@ ___
 #### int GetMaxPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Max·Pocket·Items () {: aria-label='Functions' }
+#### int GetMaxPocketItems ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Metronome·Collectible·ID () {: aria-label='Functions' }
 #### int GetMetronomeCollectibleID ( ) {: .copyable aria-label='Functions' }
 
@@ -286,6 +387,10 @@ ___
 ___
 ### Get·Pee·Burst·Cooldown () {: aria-label='Functions' }
 #### int GetPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Player·Form·Counter () {: aria-label='Functions' }
+#### int GetPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerForm.html) playerFormID ) {: .copyable aria-label='Functions' } 
 
 ___
 ### Get·Pony·Charge () {: aria-label='Functions' }
@@ -311,6 +416,10 @@ ___
 ___
 ### Get·Shot·Speed·Modifier () {: aria-label='Functions' }
 #### int GetShotSpeedModifier ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Special·Grid·Collision () {: aria-label='Functions' }
+#### int GetSpecialGridCollision ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }      
 
 ___
 ### Get·Smelted·Trinkets () {: aria-label='Functions' }
@@ -351,6 +460,14 @@ ___
 #### table GetWispCollectiblesList ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Has·Instant·Death·Curse () {: aria-label='Functions' }
+#### boolean HasInstantDeathCurse ( ) {: .copyable aria-label='Functions' }
+
+___
+### Has·Poison·Immunity () {: aria-label='Functions' }
+#### boolean HasPoisonImmunity ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Increment·Player·Form·Counter () {: aria-label='Functions' }
 #### void IncrementPlayerFormCounter ( [PlayerForm](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Form, int Num ) {: .copyable aria-label='Functions' }
 
@@ -378,6 +495,26 @@ ___
 #### boolean IsCollectibleCostumeVisible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) collectibleType, int playerSpriteLayer ) {: .copyable aria-label='Functions' }
 
 ___
+### Is·Entity·Valid·Target () {: aria-label='Functions' }
+#### boolean IsEntityValidTarget ( [Entity](Entity.md) entity ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Footstep·Frame () {: aria-label='Functions' }
+#### boolean IsFootstepFrame ( int foot = -1 ) {: .copyable aria-label='Functions' }       
+
+___
+### Is·Headless () {: aria-label='Functions' }
+#### boolean IsHeadless ( ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Hologram () {: aria-label='Functions' }
+#### boolean IsHologram ( ) {: .copyable aria-label='Functions' }
+
+___
+### Is·Invisible () {: aria-label='Functions' }
+#### boolean IsInvisible ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Item·Costume·Visible () {: aria-label='Functions' }
 #### boolean IsItemCostumeVisible ( [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) item, int playerSpriteLayer ) {: .copyable aria-label='Functions' }
 
@@ -386,8 +523,16 @@ ___
 #### boolean IsLocalPlayer ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Is·Pacifist () {: aria-label='Functions' }
+#### boolean IsPacifist ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Urethra·Blocked () {: aria-label='Functions' }
 #### boolean IsUrethraBlocked ( ) {: .copyable aria-label='Functions' }
+
+___
+### Morph·To·Coop·Ghost () {: aria-label='Functions' }
+#### void MorphToCoopGhost ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Play·Collectible·Anim () {: aria-label='Functions' }
@@ -402,9 +547,30 @@ ___
 #### void RemoveCollectibleByHistoryIndex ( int Index ) {: .copyable aria-label='Functions' }
 
 ___
+### Remove·Pocket·Item () {: aria-label='Functions' }
+#### void RemovePocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot ) {: .copyable aria-label='Functions' }
+
+___
 ### Remove·Poop·Spell () {: aria-label='Functions' }
 #### void RemovePoopSpell ( int Position = 0 ) {: .copyable aria-label='Functions' }
 Removes the poop spell from the specified queue position and shifts all spells after it forward to fill the space. A new spell is randomly picked to fill the last position.
+
+___
+### Reroll·All·Collectibles () {: aria-label='Functions' }
+#### void RerollAllCollectibles ( [RNG](RNG.md) rng, bool includeActiveItems ) {: .copyable aria-label='Functions' }
+
+___
+### Reset·Player () {: aria-label='Functions' }
+#### void ResetPlayer ( ) {: .copyable aria-label='Functions' }
+
+___
+### Revive·Coop·Ghost () {: aria-label='Functions' }
+#### boolean ReviveCoopGhost ( ) {: .copyable aria-label='Functions' }
+
+___
+### Salvage·Collectible () {: aria-label='Functions' }
+#### void SalvageCollectible ( [EntityPickup](EntityPickup.md) pickup, [RNG](RNG.md) rng = dropRNG, [ItemPool](ItemPool.md) pool = -1) {: .copyable aria-label='Functions' }
+#### void SalvageCollectible ( int subtype = 1, [Vector](Vector.md) position = playerPosition, [RNG](RNG.md) rng = dropRNG, [ItemPool](ItemPool.md) pool = -1 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Active·Var·Data () {: aria-label='Functions' }
@@ -434,6 +600,10 @@ ___
 ### Set·Can·Shoot () {: aria-label='Functions' }
 #### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
+___
+### Set·Controller·Index () {: aria-label='Functions' }
+#### void SetControllerIndex ( int idx ) {: .copyable aria-label='Functions' }        
+
 ___
 ### Set·Damage·Modifier () {: aria-label='Functions' }
 #### void SetDamageModifier ( int Modifier ) {: .copyable aria-label='Functions' }
@@ -471,6 +641,10 @@ ___
 #### void SetFireDelayModifier ( int Modifier ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Footprint·Color () {: aria-label='Functions' }
+#### void SetFootprintColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) color, bool unk = false ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Immaculate·Conception·State () {: aria-label='Functions' }
 #### void SetImmaculateConceptionState ( int State ) {: .copyable aria-label='Functions' }
 
@@ -478,6 +652,14 @@ ___
 ### Set·Item·State () {: aria-label='Functions' }
 #### void SetItemState ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType ) {: .copyable aria-label='Functions' }
 This is used for thrown/2-input items (e.g. Bob's Rotten Head).
+
+___
+### Set·Keepers·Sack·Bonus () {: aria-label='Functions' }
+#### void SetKeepersSackBonus ( int bonus ) {: .copyable aria-label='Functions' }
+
+___
+### Set·Laser·Color () {: aria-label='Functions' }
+#### void SetLaserColor ( [Color](Color.md) color ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Luck·Modifier () {: aria-label='Functions' }
@@ -545,6 +727,10 @@ ___
 #### void SetWeapon ( [Weapon](Weapon.md) Weapon, int WeaponSlot ) {: .copyable aria-label='Functions' }
 
 ___
+### Shoot·Blue·Candle () {: aria-label='Functions' }
+#### void ShootBlueCandle ( [Vector](Vector.md) direction ) {: .copyable aria-label='Functions' }
+
+___
 ### Shuffle·Costumes () {: aria-label='Functions' }
 #### void ShuffleCostumes ( int Seed ) {: .copyable aria-label='Functions' }
 Randomizes the current costumes.
@@ -560,6 +746,10 @@ Spawns a creep effect that acts like the ones created by Aquarius, including inh
 	``player->GetTearHitParams(&params, WeaponType.WEAPON_TEARS, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, -(int)(-Isaac::Random(2) != 0) & 2 - 1, nil)``
 
 ___
+### Spawn·Clot () {: aria-label='Functions' }
+#### void SpawnClot ( [Vector](Vector.md) pos, bool unk = false ) {: .copyable aria-label='Functions' } 
+
+___
 ### Swap·Forgotten·Form () {: aria-label='Functions' }
 #### void SwapForgottenForm ( boolean Force = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
 If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#getsubplayer), swaps between them. `Force` will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
@@ -567,6 +757,14 @@ If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityP
 
 ???+ warning "Warning"
     This function currently only has an effect for The Forgotten and The Soul.
+
+___
+### Spawn·Saturnus·Tears () {: aria-label='Functions' }
+#### int SpawnSaturnusTears ( ) {: .copyable aria-label='Functions' }
+
+___
+### Sync·Consumable·Counts () {: aria-label='Functions' }
+#### void SyncConsumableCounts ( int bitflags ) {: .copyable aria-label='Functions' }      
 
 ___
 ### Teleport () {: aria-label='Functions' }
@@ -580,8 +778,20 @@ ___
 #### void TriggerRoomClear ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Try·Add·To·Bag·Of·Crafting () {: aria-label='Functions' }
+#### void TryAddToBagOfCrafting ( [EntityPickup](EntityPickup.md) pickup ) {: .copyable aria-label='Functions' }
+
+___
+### Try·Decrease·Glowing·Hourglass·Uses () {: aria-label='Functions' }
+#### void TryDecreaseGlowingHourglassUses ( int unk1, bool unk2 ) {: .copyable aria-label='Functions' }
+
+___
 ### Try·Fake·Death () {: aria-label='Functions' }
 #### boolean TryFakeDeath ( ) {: .copyable aria-label='Functions' }
+
+___
+### Try·Forgotten·Throw () {: aria-label='Functions' }
+#### boolean TryForgottenThrow ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) direction ) {: .copyable aria-label='Functions' }        
 
 ___
 ### Try·Prevent·Death () {: aria-label='Functions' }
@@ -591,7 +801,19 @@ Adds a heart container to a character if there are none left, depending on its [
 Returns `true` on success, if not then `false`.
 
 ___
+### Try·Remove·Smelted·Trinket () {: aria-label='Functions' }
+#### void TryRemoveSmeltedTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) id ) {: .copyable aria-label='Functions' }    
+
+___
 ### Update·Isaac·Pregnancy () {: aria-label='Functions' }
 #### void UpdateIsaacPregnancy ( boolean Cambion ) {: .copyable aria-label='Functions' }
 Set ``true`` if you want to update Cambion Conception costume, otherwise Immaculate Conception.
+___
+### Use·Red·Key () {: aria-label='Functions' }
+#### void UseRedKey ( ) {: .copyable aria-label='Functions' }
+
+___
+### Void·Has·Collectible () {: aria-label='Functions' }
+#### boolean VoidHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' }
+
 ___

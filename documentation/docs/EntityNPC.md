@@ -10,21 +10,18 @@
 Returns the dynamic dirt color of the entity. This lets entities like Nightcrawler blend in to the environment.
 
 ___
-### Update·Dirt·Color() {: aria-label='Functions' }
-#### void UpdateDirtColor ( boolean Immediate ) {: .copyable aria-label='Functions' }
-Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
+### Fire·Boss·Projectiles·Ex() {: aria-label='Functions' }
+#### table FireBossProjectilesEx ( int numProjectiles, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
+Same as [FireBossProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
 
-If `Immediate` is set, the dirt color will be set to exactly what is beneath the entity. Otherwise, it will be updated smoothly over the course of multiple frames.
+___
+### Fire·Grid·Entity () {: aria-label='Functions' }
+#### [EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html) FireGridEntity ( [Sprite](Sprite.md) sprite, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) desc, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity, int backdrop = 1 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Fire·Projectiles·Ex() {: aria-label='Functions' }
 #### table FireProjectilesEx ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity, ProjectilesMode mode, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
 Same as [FireProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
-
-___
-### Fire·Boss·Projectiles·Ex() {: aria-label='Functions' }
-#### table FireBossProjectilesEx ( int numProjectiles, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
-Same as [FireBossProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
 ### Get·Controller·Id() {: aria-label='Functions' }
@@ -53,8 +50,35 @@ ___
 #### void SetShieldStrength ( float Strength ) {: .copyable aria-label='Functions' }
 
 ___
+### Spawn·Blood·Cloud () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [ColorModifier](ColorModifier.md) color ) {: .copyable aria-label='Functions' }
+
+___
+### Spawn·Blood·Effect () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position = entityPosition, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) offset = nil, [ColorModifier](ColorModifier.md) color = default, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity = nil, int subtype = 0 ) {: .copyable aria-label='Functions' }
+
+___
+### Spawn·Blood·Splash () {: aria-label='Functions' }
+#### void SpawnBloodSplash ( ) {: .copyable aria-label='Functions' }
+
+___
+### Throw·Maggot·At·Pos () {: aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) origin, float velocity = -8.0f, float yOffset = 0.0f ) {: .copyable aria-label='Functions' }
+
+___
 ### Try·Force·Target() {: aria-label='Functions' }
 #### boolean TryForceTarget ( [Entity](Entity.md) target, int duration ) {: .copyable aria-label='Functions' }
+
+___
+### Try·Throw () {: aria-label='Functions' }
+#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ref, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) dir, int force ) {: .copyable aria-label='Functions' }
+
+___
+### Update·Dirt·Color() {: aria-label='Functions' }
+#### void UpdateDirtColor ( boolean Immediate ) {: .copyable aria-label='Functions' }
+Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
+
+If `Immediate` is set, the dirt color will be set to exactly what is beneath the entity. Otherwise, it will be updated smoothly over the course of multiple frames.
 
 ___
 

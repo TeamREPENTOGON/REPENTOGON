@@ -32,8 +32,16 @@ ___
     At the moment, the duration setting gives no effect, so you need to call this function repeatedly.
 
 ___
+### Compute·Status·Effect·Duration () {: aria-label='Functions' }
+#### int ComputeStatusEffectDuration ( int initial, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ref ) {: .copyable aria-label='Functions' }
+
+___
 ### Copy·Status·Effects () {: aria-label='Functions' }
 #### void CopyStatusEffects ( ) {: .copyable aria-label='Functions' }
+
+___
+### Force·Collide () {: aria-label='Functions' }
+#### boolean ForceCollide ( [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, bool Low ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Animation·State () {: aria-label='Functions' }
@@ -81,6 +89,10 @@ ___
 #### int GetPauseTime ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Predicted·Target·Position () {: aria-label='Functions' }
+#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPredictedTargetPosition ( [Entity](Entity.md) target, int strength ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Pos·Vel () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPosVel ( ) {: .copyable aria-label='Functions' }
 Returns 2 values, both Vectors. 1st the Position of the entity, 2nd the Velocity of the entity.
@@ -102,8 +114,16 @@ ___
 #### [EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) GiveMinecart ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity ) {: .copyable aria-label='Functions' }
 
 ___
-### Force·Collide () {: aria-label='Functions' }
-#### boolean ForceCollide ( [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, bool Low ) {: .copyable aria-label='Functions' }
+### Ignore·Effect·From·Friendly () {: aria-label='Functions' }
+#### boolean IgnoreEffectFromFriendly ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ref ) {: .copyable aria-label='Functions' }
+
+___
+### Make·Blood·Poof () {: aria-label='Functions' }
+#### void MakeBloodPoof ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos = entityPosition, [ColorModifier](ColorModifier.md) colorModifier = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
+
+___
+### Make·Ground·Poof () {: aria-label='Functions' }
+#### void MakeGroundPoof ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos = entityPosition, [ColorModifier](ColorModifier.md) colorModifier = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Boss·Status·Effect·Cooldown () {: aria-label='Functions' }
@@ -128,6 +148,14 @@ ___
 ___
 ### Set·Speed·Multiplier () {: aria-label='Functions' }
 #### void SetSpeedMultiplier ( float amount ) {: .copyable aria-label='Functions' }
+
+___
+### Spawn·Ground·Impact·Effects () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnGroundImpactEffects ( [Vector](Vector.md) position, [Vector](Vector.md) vel, int strength ) {: .copyable aria-label='Functions' }
+
+___
+### Teleport·To·Random·Position () {: aria-label='Functions' }
+#### void TeleportToRandomPosition ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### To·Slot () {: aria-label='Functions' }

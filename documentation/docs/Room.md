@@ -45,6 +45,10 @@ ___
 #### [StbRailVariant](enums/StbRailVariant.md) GetRail ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Room·Clear·Delay () {: aria-label='Functions' }
+#### int GetRoomClearDelay ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Shop·Item·Price () {: aria-label='Functions' }
 #### int GetShopItemPrice ( int EntityVariant, int EntitySubType, int ShopItemID ) {: .copyable aria-label='Functions' }
 Returns the price of the item.
@@ -92,6 +96,10 @@ ___
 #### void SetRail ( int GridIndex, [StbRailVariant](enums/StbRailVariant.md) RailVariant ) {: .copyable aria-label='Functions' }
 
 ___
+### Set·Room·Clear·Delay () {: aria-label='Functions' }
+#### void SetRoomClearDelay ( int Delay ) {: .copyable aria-label='Functions' }
+
+___
 ### Set·Water·Amount () {: aria-label='Functions' }
 #### void SetWaterAmount ( float Amount ) {: .copyable aria-label='Functions' }
 Sets the amount of water that should be in the current room. Vanilla typically uses 0 for no water and 1 for water. You can technically go higher than this for some interesting results.
@@ -112,6 +120,10 @@ Sets the strength of the water current in the room. Current sounds and particles
 The game typically uses `1` or `-1` for its values depending on current strength and direction. You can technically go higher than this for some interesting results. Arbitrary directions are fully supported as well.
 
 `Vector(0, 0)` will remove the current.
+___
+### Try·Get·Shop·Discount () {: aria-label='Functions' }
+#### int TryGetShopDiscount ( int shopItemIdx, int price ) {: .copyable aria-label='Functions' }
+
 ___
 ### Update·Color·Modifier () {: aria-label='Functions' }
 #### void UpdateColorModifier ( boolean process, boolean lerp, float rate = 0.015 ) {: .copyable aria-label='Functions' }

@@ -29,3 +29,7 @@ ___
 #### boolean PreventModUpdates {: .copyable aria-label='Variables' }
 
 ___
+### Quick·Room·Clear {: aria-label='Variables' }
+#### boolean QuickRoomClear {: .copyable aria-label='Variables' }
+
+___

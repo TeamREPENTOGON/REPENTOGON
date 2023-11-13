@@ -4,18 +4,38 @@
 --8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
 ## Functions
 
-### Get·Var·Data () {: aria-label='Functions' }
-#### int GetVarData ( ) {: .copyable aria-label='Functions' }
+### Add·Collectible·Cycle () {: aria-label='Functions' }
+#### boolean AddCollectibleCycle ( int id ) {: .copyable aria-label='Functions' }
+
+___
+### Can·Reroll () {: aria-label='Functions' }
+#### boolean CanReroll ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Drop·Delay () {: aria-label='Functions' }
 #### int GetDropDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Price·Sprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetPriceSprite ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Random·Pickup·Velocity () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetRandomPickupVelocity ( [RNG](RNG.md) rng = default, [ColorModifier](ColorModifier.md) color = default, int velType = 0 ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Var·Data () {: aria-label='Functions' }
+#### int GetVarData ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Is·Blind () {: aria-label='Functions' }
 #### boolean IsBlind ( ) {: .copyable aria-label='Functions' }
 
 Returns whether a collectible is being hidden by the Curse of the Blind question mark graphics. Always returns false for non-collectible EntityPickups.
+
+___
+### Make·Shop·Item () {: aria-label='Functions' }
+#### void MakeShopItem ( int shopItemID ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Alternate·Pedestal () {: aria-label='Functions' }
@@ -40,6 +60,10 @@ Returns the new pickup index.
 ___
 ### Set·Var·Data () {: aria-label='Functions' }
 #### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
+
+___
+### Try·Flip () {: aria-label='Functions' }
+#### boolean TryFlip ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Try·Init·Option·Cycle () {: aria-label='Functions' }
