@@ -17,11 +17,12 @@ function addOriginalDocLink(){
     var className = splitURL[splitURL.length-1].split(".")[0];
     var url = "https://wofsauge.github.io/IsaacDocs/rep/"+className+".html";
     urlExists(url, function(exists){
-        var linkObj = $("<h3>This class is an extension of the original \"<a href=\""+url+"\">"+className+"</a>\" class!</h3>");
-        var ToCElement = $('<p style="margin: 0.5em;line-height: 0.6;" class="md-typeset md-button"> <a style="display: grid; text-align: center;" class="md-button" href="'+url+'">Go to original Class</a></p>');
+        if(className != "index"){
+            var linkObj = $("<h3>This class is an extension of the original \"<a href=\""+url+"\">"+className+"</a>\" class!</h3>");
+            linkObj.insertAfter($(".md-content__inner").find("h1").first());
+        }
+        var ToCElement = $('<p style="margin: 0.5em;line-height: 0.6;" class="md-typeset md-button"> <a style="display: grid; text-align: center;" class="md-button" href="'+url+'">Go to original docs</a></p>');
         
-        linkObj.insertAfter($(".md-content__inner").find("h1").first());
-
         $(".md-sidebar.md-sidebar--secondary").first().prepend(ToCElement);
       });
 }
