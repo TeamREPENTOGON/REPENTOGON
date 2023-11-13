@@ -73,7 +73,7 @@ LUA_FUNCTION(Lua_SpriteGetLayer)
 LUA_FUNCTION(Lua_SpriteGetRenderFlags)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
-	lua_pushnumber(L, *anm2->GetRenderFlags());
+	lua_pushinteger(L, *anm2->GetRenderFlags());
 	return 1;
 }
 
@@ -252,7 +252,7 @@ LUA_FUNCTION(Lua_LayerStateSetColor)
 LUA_FUNCTION(Lua_LayerStateGetRenderFlags)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	lua_pushnumber(L, *layerState->GetRenderFlags());
+	lua_pushinteger(L, *layerState->GetRenderFlags());
 	return 1;
 }
 LUA_FUNCTION(Lua_LayerStateSetRenderFlags)
