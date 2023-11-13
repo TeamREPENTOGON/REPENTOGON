@@ -1573,7 +1573,7 @@ LUA_FUNCTION(Lua_PlayerHasPoisonImmunity) {
 
 LUA_FUNCTION(Lua_PlayerIsEntityValidTarget) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Entity* target = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Entity* target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 
 	lua_pushboolean(L, player->IsEntityValidTarget(target));
 
@@ -1990,7 +1990,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPlayerFormCounter", Lua_PlayerGetPlayerFormCounter },
 		{ "GetMaxPocketItems", Lua_PlayerGetMaxPocketItems },
 		{ "AddPocketItem", Lua_PlayerAddPocketItem },
-		{ "AddBoneOrbital", Lua_PlayerAddItemCard },
+		{ "AddBoneOrbital", Lua_PlayerAddBoneOrbital },
 		{ "AddItemCard", Lua_PlayerAddItemCard },
 		{ "AddLeprocy", Lua_PlayerAddLeprocy },
 		{ "AddUrnSouls", Lua_PlayerAddUrnSouls },

@@ -236,7 +236,7 @@ LUA_FUNCTION(Lua_EntityTryThrow) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_EntityDoGroundImpactEffects) {
+LUA_FUNCTION(Lua_EntitySpawnGroundImpactEffects) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Vector* vel = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
@@ -351,6 +351,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetPauseTime", Lua_EntitySetPauseTime },
 		{ "GetSpeedMultiplier", Lua_Entity_GetSpeedMultiplier },
 		{ "SetSpeedMultiplier", Lua_Entity_SetSpeedMultiplier },
+		{ "SpawnGroundImpactEffects", Lua_EntitySpawnGroundImpactEffects },
 		{ "TeleportToRandomPosition", Lua_EntityTeleportToRandomPosition },
 		{ "TryThrow", Lua_EntityTryThrow },
 		{ NULL, NULL }

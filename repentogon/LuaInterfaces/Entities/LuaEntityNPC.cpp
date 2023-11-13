@@ -291,9 +291,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "PlaySound", Lua_EntityNPC_PlaySound },
-		{ "MakeBloodCloud", Lua_EntityNPC_MakeBloodCloud },
-		{ "MakeBloodEffect", Lua_EntityNPC_MakeBloodEffect },
-		{ "MakeBloodSplash", Lua_EntityNPC_MakeBloodEffect },
+		{ "SpawnBloodCloud", Lua_EntityNPC_MakeBloodCloud },
+		{ "SpawnBloodEffect", Lua_EntityNPC_MakeBloodEffect },
+		{ "SpawnBloodSplash", Lua_EntityNPC_MakeBloodSplash },
 		{ "UpdateDirtColor", Lua_EntityNPC_UpdateDirtColor },
 		{ "GetDirtColor", Lua_EntityNPC_GetDirtColor },
 		{ "GetControllerId", Lua_EntityNPC_GetControllerId },
