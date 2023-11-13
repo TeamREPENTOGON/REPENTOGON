@@ -1,3 +1,32 @@
+/////// REPENTOGON ADDITIONS //////////
+function urlExists(url, callback){
+    $.ajax({
+      type: 'HEAD',
+      url: url,
+      success: function(){
+        callback(true);
+      },
+      error: function() {
+        return false;
+      }
+    });
+  }
+
+function addOriginalDocLink(){
+    var splitURL = $(location).attr("href").split("/");
+    var className = splitURL[splitURL.length-1].split(".")[0];
+    var url = "https://wofsauge.github.io/IsaacDocs/rep/"+className+".html";
+    urlExists(url, function(exists){
+        var linkObj = $("<h3>This class is an extension of the original \"<a href=\""+url+"\">"+className+"</a>\" class!</h3>");
+        var ToCElement = $('<p style="margin: 0.5em;line-height: 0.6;" class="md-typeset md-button"> <a style="display: grid; text-align: center;" class="md-button" href="'+url+'">Go to original Class</a></p>');
+        
+        linkObj.insertAfter($(".md-content__inner").find("h1").first());
+
+        $(".md-sidebar.md-sidebar--secondary").first().prepend(ToCElement);
+      });
+}
+
+//////////////////////////////////////
 $(document).ready(function() {
     var check = "checked";
     if (typeof(Storage) !== "undefined" && localStorage.getItem("highlightResults") == 1) {
@@ -226,6 +255,7 @@ document$.subscribe(function() {
     modifyCallbackPageLayout();
     addBitsetCalculator();
     buildContentMap();
+    addOriginalDocLink();
 
     // reduce audio volume to 25%
     $("audio").prop("volume", 0.25);
