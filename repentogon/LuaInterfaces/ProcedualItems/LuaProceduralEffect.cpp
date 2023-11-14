@@ -79,24 +79,24 @@ LUA_FUNCTION(Lua_PEGetActionProperty) {
 }
 
 
-LUA_FUNCTION(Lua_PEGetTriggerRate) {
+LUA_FUNCTION(Lua_PEGetTriggerChance) {
 	ProceduralEffect* pi = *lua::GetUserdata<ProceduralEffect**>(L, 1, lua::metatables::ProceduralEffectMT);
-	float rate = pi->triggerRate;
-	//manually fix the rate from 0 ~ 1 to the actual rate.
+	float chance = pi->triggerChance;
+	//manually fix the chance from 0 ~ 1 to the actual rate.
 	switch (pi->effectConditionType)
 	{
 	case ProceduralEffect::CONDITION_TEAR_FIRE:
 	case ProceduralEffect::CONDITION_ENEMY_HIT:
 	case ProceduralEffect::CONDITION_ENTITY_SPAWN:
-		rate *= 0.05f;
+		chance *= 0.05f;
 		break;
 	case ProceduralEffect::CONDITION_ENEMY_KILL:
-		rate *= 0.2f;
+		chance *= 0.2f;
 		break;
 	default:
 		break;
 	}
-	lua_pushnumber(L, rate);
+	lua_pushnumber(L, chance);
 	return 1;
 }
 
@@ -106,7 +106,7 @@ static void RegisterProceduralItem(lua_State* L) {
 		{"GetActionType", Lua_PEGetActionType},
 		{"GetConditionProperty", Lua_PEGetConditionProperty},
 		{"GetActionProperty", Lua_PEGetActionProperty},
-		{"GetTriggerRate", Lua_PEGetTriggerRate},
+		{"GetTriggerChance", Lua_PEGetTriggerChance},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::ProceduralEffectMT, lua::metatables::ProceduralEffectMT, functions);
