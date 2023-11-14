@@ -3,24 +3,49 @@
 ## Functions
 ### Get·Action·Property () {: aria-label='Functions' }
 #### table GetActionProperty ( ) {: .copyable aria-label='Functions' }
-Returns a table that describes the action argument. The returned table will contains the following fields.
+Returns a table that describes the action argument.
 
-|Field|Type|ActionType|Comment|
-|:--|:--|:--|:--|
-| id | int | USE_ACTIVE_ITEM | |
-| id | int | ADD_TEMPRORY_EFFECT | |
-| type | int | SPAWN_ENTITY | |
-| variant | int | SPAWN_ENTITY | |
-| fromType | int | CONVERT_ENTITY | |
-| fromVariant | int | CONVERT_ENTITY | |
-| toType | int | CONVERT_ENTITY | target type |
-| toVariant | int | CONVERT_ENTITY | target variant |
-| radius | float | AREA_DAMAGE | |
-| damage | float | AREA_DAMAGE | |
-| flags1 | uint64 | AREA_DAMAGE | |
-| flags2 | uint64 | AREA_DAMAGE | |
-| scale | float | FART | |
-| radius | float | FART | |
+When `GetActionType` returns `USE_ACTIVE_ITEM`, the returned table has the following fields.
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| id | int | |
+
+When `GetActionType` returns `ADD_TEMPRORY_EFFECT`, the returned table has the following fields.
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| id | int | |
+
+When `GetActionType` returns `SPAWN_ENTITY`, the returned table has the following fields.
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| type | int | |
+| variant | int | |
+
+When `GetActionType` returns `CONVERT_ENTITY`, the returned table has the following fields.
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| fromType | int | |
+| fromVariant | int | |
+| toType | int | target type |
+| toVariant | int | target variant |
+
+When `GetActionType` returns `AREA_DAMAGE`, the returned table has the following fields.
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| radius | float | |
+| damage | float | |
+
+When `GetActionType` returns `FART`, the returned table has the following fields.
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| scale | float | |
+| radius | float | |
 
 ___
 ### Get·Action·Type () {: aria-label='Functions' }
@@ -28,23 +53,29 @@ ___
 Returns what to do after the effect is triggered.
 
 ___
+### Get·Action·Type () {: aria-label='Functions' }
+#### [ProceduralEffectActionType](enums/ProceduralEffectActionType.md) GetActionType ( ) {: .copyable aria-label='Functions' }
+Returns what to do after the effect is triggered.
+
 ### Get·Condition·Property () {: aria-label='Functions' }
 #### table GetConditionProperty ( ) {: .copyable aria-label='Functions' }
 Returns a table that describes the condition argument.
 
-|Field|ActionType|Type|
-|:--|:--|:--|
-| type | ENTITY_SPAWN |  int |
-| variant | ENTITY_SPAWN |  int |
+When `GetConditionType` returns `ENTITY_SPAWN`, the returned table has the following fields.
 
+|Field|Type|
+|:--|:--|
+| type |  int |
+| variant |  int |
+
+___
+### Get·Trigger·Chance () {: aria-label='Functions' }
+#### float GetTriggerChance ( ) {: .copyable aria-label='Functions' }
+
+Value form 0 to 1.
 ___
 ### Get·Condition·Type () {: aria-label='Functions' }
 #### [ProceduralEffectConditionType](enums/ProceduralEffectConditionType.md) GetConditionType ( ) {: .copyable aria-label='Functions' }
 Returns the timing when the effect was triggered.
 
-___
-### Get·Trigger·Rate () {: aria-label='Functions' }
-#### float GetTriggerRate ( ) {: .copyable aria-label='Functions' }
-
-Value form 0 to 1.
 ___
