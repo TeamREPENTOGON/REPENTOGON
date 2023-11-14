@@ -390,7 +390,7 @@ __thiscall void Entity_Player::SpawnClot(Vector * pos, bool unk);
 __thiscall unsigned int Entity_Player::SpawnSaturnusTears();
 
 "558bec83e4f851538b5d??568b75":
-__thiscall void Entity_Player::SyncConsumableCounts(int bitflags);
+__thiscall void Entity_Player::SyncConsumableCounts(Entity_Player* player, int bitflags);
 
 "558bec83e4f883ec74a1????????33c4894424??53568b75":
 __thiscall void Entity_Player::TryAddToBagOfCrafting(Entity_Pickup* pickup);

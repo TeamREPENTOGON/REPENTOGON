@@ -57,22 +57,17 @@ ___
 #### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, int amount = 1 ) {: .copyable aria-label='Functions' }
 
 ___
-### Add·Item·Card () {: aria-label='Functions' }
-#### int AddItemCard ( [Card](https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html) id ) {: .copyable aria-label='Functions' }
-
-___
 ### Add·Leprocy () {: aria-label='Functions' }
 #### void AddLeprocy ( ) {: .copyable aria-label='Functions' }
+
+???+ info "Info"
+    This is currently still capped at a max of three familiars, and would require further modification to cnange this.
 
 ___
 ### Add·Locust () {: aria-label='Functions' }
 #### int AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
 
 Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
-
-___
-### Add·Pocket·Item () {: aria-label='Functions' }
-#### void AddPocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) slot, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' }
 
 ___
 ### Add·Smelted·Trinket () {: aria-label='Functions' }
@@ -127,7 +122,9 @@ ___
 
 ___
 ### Drop·Collectible () {: aria-label='Functions' }
-#### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+#### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, EntityPickup ExistingPedestal = nil, bool RemoveFromPlayerForm = false ) {: .copyable aria-label='Functions' }
+
+If `ExistingPedestal` is set, the collectible it contains will be swapped out for the dropped collectible instead of a new pedestal spawning.
 
 ___
 ### Drop·Collectible·By·History·Index () {: aria-label='Functions' }
@@ -136,10 +133,6 @@ ___
 ___
 ### Enable·Weapon·Type() {: aria-label='Functions' }
 #### void EnableWeaponType ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, boolean Set ) {: .copyable aria-label='Functions' }
-
-___
-### Fire·Bone·Club () {: aria-label='Functions' }
-#### [EntityKnife](EntityKnife.md) FireBoneClub ( [Entity](Entity.md) parent = nil, int variant, bool unk ) {: .copyable aria-label='Functions' }
 
 ___
 ### Fire·Brimstone·Ball () {: aria-label='Functions' }
@@ -155,7 +148,7 @@ ___
 
 ___
 ### Get·Active·Max·Charge () {: aria-label='Functions' }
-#### int GetActiveMaxCharge ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int VarData ) {: .copyable aria-label='Functions' }
+#### int GetActiveMaxCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Active·Min·Usable·Charge () {: aria-label='Functions' }
@@ -560,14 +553,17 @@ ___
 ### Reset·Player () {: aria-label='Functions' }
 #### void ResetPlayer ( ) {: .copyable aria-label='Functions' }
 
+???+ info "Info"
+    This is used by the Genesis active item.
+
 ___
 ### Revive·Coop·Ghost () {: aria-label='Functions' }
 #### boolean ReviveCoopGhost ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Salvage·Collectible () {: aria-label='Functions' }
-#### void SalvageCollectible ( [EntityPickup](EntityPickup.md) pickup, [RNG](RNG.md) rng = dropRNG, [ItemPool](ItemPool.md) pool = -1) {: .copyable aria-label='Functions' }
-#### void SalvageCollectible ( int subtype = 1, [Vector](Vector.md) position = playerPosition, [RNG](RNG.md) rng = dropRNG, [ItemPool](ItemPool.md) pool = -1 ) {: .copyable aria-label='Functions' }
+#### void SalvageCollectible ( [EntityPickup](EntityPickup.md) pickup, [RNG](RNG.md) rng = PickupDropRNG, [ItemPool](ItemPool.md) pool = -1) {: .copyable aria-label='Functions' }
+#### void SalvageCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleID, [Vector](Vector.md) position = playerPosition, [RNG](RNG.md) rng = PlayerDropRNG, [ItemPool](ItemPool.md) pool = -1 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Active·Var·Data () {: aria-label='Functions' }
@@ -731,6 +727,7 @@ ___
 ### Shuffle·Costumes () {: aria-label='Functions' }
 #### void ShuffleCostumes ( int Seed ) {: .copyable aria-label='Functions' }
 Randomizes the current costumes.
+
 ___
 ### Spawn·Aquarius·Creep () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) SpawnAquariusCreep ( [TearParams](https://wofsauge.github.io/IsaacDocs/rep/TearParams.html) TearParams = nil) {: .copyable aria-label='Functions' }
@@ -744,7 +741,9 @@ Spawns a creep effect that acts like the ones created by Aquarius, including inh
 
 ___
 ### Spawn·Clot () {: aria-label='Functions' }
-#### void SpawnClot ( [Vector](Vector.md) pos, bool unk = false ) {: .copyable aria-label='Functions' } 
+#### void SpawnClot ( [Vector](Vector.md) pos, bool AllowPlayerDeath = false ) {: .copyable aria-label='Functions' } 
+
+Acts like a use of Sumptorium, removing health and spawning a clot with the type of health removed. If `AllowPlayerDeath` is set, a clot will spawn even if the health drained will kill the player.
 
 ___
 ### Spawn·Saturnus·Tears () {: aria-label='Functions' }
@@ -761,7 +760,7 @@ If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityP
 
 ___
 ### Sync·Consumable·Counts () {: aria-label='Functions' }
-#### void SyncConsumableCounts ( int bitflags ) {: .copyable aria-label='Functions' }      
+#### void SyncConsumableCounts ( [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int CollectibleFlags ) {: .copyable aria-label='Functions' }      
 
 ___
 ### Teleport () {: aria-label='Functions' }
@@ -805,9 +804,6 @@ ___
 ### Update·Isaac·Pregnancy () {: aria-label='Functions' }
 #### void UpdateIsaacPregnancy ( boolean Cambion ) {: .copyable aria-label='Functions' }
 Set ``true`` if you want to update Cambion Conception costume, otherwise Immaculate Conception.
-___
-### Use·Red·Key () {: aria-label='Functions' }
-#### void UseRedKey ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Void·Has·Collectible () {: aria-label='Functions' }

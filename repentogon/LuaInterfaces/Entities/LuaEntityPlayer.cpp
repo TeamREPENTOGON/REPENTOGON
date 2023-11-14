@@ -1323,25 +1323,6 @@ LUA_FUNCTION(Lua_PlayerGetMaxPocketItems) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PlayerAddPocketItem) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	int slot = (int)luaL_checkinteger(L, 2);
-	if (slot < 0 || slot > 3) {
-		std::string error("Invalid slot ID ");
-		error.append(std::to_string(slot));
-		return luaL_argerror(L, 2, error.c_str());
-	}
-	int id = (int)luaL_checkinteger(L, 3);
-	if (g_Manager->_itemConfig.GetCollectible(id) == nullptr) {
-		std::string error("Invalid collectible ID ");
-		error.append(std::to_string(id));
-		return luaL_argerror(L, 3, error.c_str());
-	}
-	player->AddPocketItem(slot, id);
-
-	return 0;
-}
-
 LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	player->AddBoneOrbital();
@@ -1349,6 +1330,8 @@ LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 	return 0;
 }
 
+/*
+// this seems to be super hardcoded to not work outside of cantripped
 LUA_FUNCTION(Lua_PlayerAddItemCard) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int id = (int)luaL_checkinteger(L, 2);
@@ -1361,6 +1344,7 @@ LUA_FUNCTION(Lua_PlayerAddItemCard) {
 
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_PlayerAddLeprocy) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1413,6 +1397,8 @@ LUA_FUNCTION(Lua_PlayerClearItemAnimNullItems) {
 	return 0;
 }
 
+/*
+// Spawns club, immediately kills it. Needs investigation
 LUA_FUNCTION(Lua_PlayerFireBoneClub) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Entity* parent = nullptr;
@@ -1422,10 +1408,12 @@ LUA_FUNCTION(Lua_PlayerFireBoneClub) {
 	int variant = (int)luaL_checkinteger(L, 3);
 	bool unk = lua::luaL_checkboolean(L, 4);
 
-	lua::luabridge::UserdataPtr::push(L, player->FireBoneClub(parent, variant, unk), lua::Metatables::ENTITY_KNIFE);
+	player->FireBoneClub(parent, variant, unk);
 
-	return 1;
+	return 0;
 }
+*/
+
 
 // might need asm patch to retrieve entities. this is wacky and can spawn both an effect and a laser
 LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
@@ -1433,7 +1421,7 @@ LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Vector* vel = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	Vector offset;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
 		offset = *lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	}
 
@@ -1644,20 +1632,21 @@ LUA_FUNCTION(Lua_PlayerRemovePocketItem) {
 
 LUA_FUNCTION(Lua_PlayerRerollAllCollectibles) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	RNG rng;
+	RNG* rng;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		rng = *lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+		rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
 	}
 	else
 	{
-		rng.game_constructor(g_Game->_frameCount, 35);
+		rng = &player->_dropRNG;
 	}
+
 	bool includeActives = false;
 	if (lua_isboolean(L, 3)) {
 		includeActives = lua_toboolean(L, 3);
 	}
 
-	player->RerollAllCollectibles(&rng, includeActives);
+	player->RerollAllCollectibles(rng, includeActives);
 
 	return 0;
 }
@@ -1673,7 +1662,9 @@ LUA_FUNCTION(Lua_PlayerReviveCoopGhost) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	bool res = false;
 	
+	printf("IsPlayerGhost: %s\n", player->_isCoopGhost ? "TRUE" : "FALSE");
 	if (player->_isCoopGhost) {
+		printf("attempting revive");
 		player->RevivePlayerGhost();
 		res = true;
 	}
@@ -1781,8 +1772,8 @@ LUA_FUNCTION(Lua_PlayerShootBlueCandle) {
 LUA_FUNCTION(Lua_PlayerSpawnClot) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	bool unk = lua::luaL_optboolean(L, 3, false);
-	player->SpawnClot(pos, unk);
+	bool canKillPlayer = lua::luaL_optboolean(L, 3, false);
+	player->SpawnClot(pos, canKillPlayer);
 	return 0;
 }
 
@@ -1794,9 +1785,10 @@ LUA_FUNCTION(Lua_PlayerSpawnSaturnusTears) {
 }
 
 LUA_FUNCTION(Lua_PlayerSyncConsumableCounts) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player1 = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Entity_Player* player2 = lua::GetUserdata<Entity_Player*>(L, 2, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int bitflags = (int)luaL_checkinteger(L, 2);
-	player->SyncConsumableCounts(bitflags);
+	player1->SyncConsumableCounts(player2, bitflags);
 	return 0;
 }
 
@@ -1829,11 +1821,15 @@ LUA_FUNCTION(Lua_PlayerTryRemoveSmeltedTrinket) {
 	return 0;
 }
 
+/*
+// this seems to rely on a struct of door outline effects that doesn't exist when red key or cracked key aren't in possession
 LUA_FUNCTION(Lua_PlayerUseRedKey) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	player->UseRedKey();
 	return 0;
 }
+*/
+
 
 LUA_FUNCTION(Lua_PlayerVoidHasCollectible) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1842,12 +1838,15 @@ LUA_FUNCTION(Lua_PlayerVoidHasCollectible) {
 	return 1;
 }
 
+/*
+// doesn't seem to work
 LUA_FUNCTION(Lua_PlayerAttachMinecart) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	Entity_NPC* minecart = lua::GetUserdata<Entity_NPC*>(L, 2, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	player->AttachMinecart(minecart);
 	return 0;
 }
+*/
 
 LUA_FUNCTION(Lua_PlayerGetKeepersSackBonus) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1989,9 +1988,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetEveSumptoriumCharge", Lua_PlayerSetEveSumptoriumCharge },
 		{ "GetPlayerFormCounter", Lua_PlayerGetPlayerFormCounter },
 		{ "GetMaxPocketItems", Lua_PlayerGetMaxPocketItems },
-		{ "AddPocketItem", Lua_PlayerAddPocketItem },
 		{ "AddBoneOrbital", Lua_PlayerAddBoneOrbital },
-		{ "AddItemCard", Lua_PlayerAddItemCard },
+		//{ "AddItemCard", Lua_PlayerAddItemCard },
 		{ "AddLeprocy", Lua_PlayerAddLeprocy },
 		{ "AddUrnSouls", Lua_PlayerAddUrnSouls },
 		{ "CanAddCollectibleToInventory", Lua_PlayerCanAddCollectibleToInventory },
@@ -1999,7 +1997,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CanOverrideActiveItem", Lua_PlayerCanOverrideActiveItem },
 		{ "ClearItemAnimCollectible", Lua_PlayerClearItemAnimCollectible },
 		{ "ClearItemAnimNullItems", Lua_PlayerClearItemAnimNullItems },
-		{ "FireBoneClub", Lua_PlayerFireBoneClub },
+		//{ "FireBoneClub", Lua_PlayerFireBoneClub },
 		{ "FireBrimstoneBall", Lua_PlayerFireBrimstoneBall },
 		{ "GetBodyMoveDirection", Lua_PlayerGetBodyMoveDirection },
 		{ "GetDeathAnimName", Lua_PlayerGetDeathAnimName },
@@ -2039,9 +2037,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryDecreaseGlowingHourglassUses", Lua_PlayerTryDecreaseGlowingHourglassUses },
 		{ "TryForgottenThrow", Lua_PlayerTryForgottenThrow },
 		{ "TryRemoveSmeltedTrinket", Lua_PlayerTryRemoveSmeltedTrinket },
-		{ "UseRedKey", Lua_PlayerUseRedKey },
+		//{ "UseRedKey", Lua_PlayerUseRedKey },
 		{ "VoidHasCollectible", Lua_PlayerVoidHasCollectible },
-		{ "AttachMinecart", Lua_PlayerAttachMinecart },
+		//{ "AttachMinecart", Lua_PlayerAttachMinecart },
 		{ "GetKeepersSackBonus", Lua_PlayerGetKeepersSackBonus },
 		{ "SetKeepersSackBonus", Lua_PlayerSetKeepersSackBonus },
 		{ NULL, NULL }

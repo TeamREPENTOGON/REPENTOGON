@@ -79,6 +79,9 @@ ___
 ### Get·Lerp·Color·Modifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetLerpColorModifier ( ) {: .copyable aria-label='Functions' }
 
+???+ info "Info"
+    This is formatted as the absolute rate of change (ie, all values are positive).
+
 ___
 ### Get·Minimap () {: aria-label='Functions' }
 #### [Minimap](Minimap.md) GetMinimap ( ) {: .copyable aria-label='Functions' }

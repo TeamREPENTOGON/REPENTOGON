@@ -38,7 +38,7 @@ LUA_FUNCTION(Lua_ItemConfig_GetTaggedItems) {
 
 LUA_FUNCTION(Lua_ItemConfig_IsValidTrinket) {
 	ItemConfig* config = lua::GetUserdata<ItemConfig*>(L, 1, lua::Metatables::CONFIG, "Config");
-	const unsigned int trinketType = luaL_checkinteger(L, 2);
+	const unsigned int trinketType = (const unsigned int)luaL_checkinteger(L, 2);
 	lua_pushboolean(L, ItemConfig::IsValidTrinket(trinketType));
 
 	return 1;

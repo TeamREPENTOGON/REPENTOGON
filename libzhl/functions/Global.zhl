@@ -43,6 +43,10 @@ struct EntityId {
     int subtype;
 };
 
+struct IntPair {
+    int pair[2];
+};
+
 // When adding typedefs, remember to define them in ExtraTypes!
 typedef std::vector<Point> vector_Point;
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
