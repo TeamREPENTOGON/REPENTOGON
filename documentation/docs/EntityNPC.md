@@ -51,11 +51,11 @@ ___
 
 ___
 ### Spawn·Blood·Cloud () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [ColorModifier](ColorModifier.md) color ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color ) {: .copyable aria-label='Functions' }
 
 ___
 ### Spawn·Blood·Effect () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position = entityPosition, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) offset = nil, [ColorModifier](ColorModifier.md) color = default, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity = nil, int subtype = 0 ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position = entityPosition, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) offset = nil, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity = nil, int subtype = 0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Spawn·Blood·Splash () {: aria-label='Functions' }

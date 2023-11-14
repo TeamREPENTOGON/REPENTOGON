@@ -21,7 +21,10 @@ ___
 
 ___
 ### Get·Random·Pickup·Velocity () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetRandomPickupVelocity ( [RNG](RNG.md) rng = default, [ColorModifier](ColorModifier.md) color = default, int velType = 0 ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetRandomPickupVelocity ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [RNG](RNG.md) rng, int velType = 0 ) {: .copyable aria-label='Functions' }
+
+???+ warning "Warning"
+    This is a static function and must be called via `EntityPickup.GetRandomPickupVelocity(position, rng, velType)`.
 
 ___
 ### Get·Var·Data () {: aria-label='Functions' }

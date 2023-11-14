@@ -90,17 +90,10 @@ LUA_FUNCTION(Lua_PickupCanReroll)
 
 LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	int velType = (int)luaL_optinteger(L, 2, 0);
-	RNG rng;
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		rng = *lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
-	}
-	ColorMod color;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
-	}
+	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	int velType = (int)luaL_optinteger(L, 3, 0);
 	Vector velocity;
-	Isaac::GetRandomPickupVelocity(&velocity, pos, velType, &rng);
+	Isaac::GetRandomPickupVelocity(&velocity, pos, velType, rng);
 	lua::luabridge::UserdataPtr::push(L, &velocity, lua::Metatables::VECTOR);
 
 	return 1;

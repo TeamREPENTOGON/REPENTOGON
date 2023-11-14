@@ -119,11 +119,11 @@ ___
 
 ___
 ### Make·Blood·Poof () {: aria-label='Functions' }
-#### void MakeBloodPoof ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos = entityPosition, [ColorModifier](ColorModifier.md) colorModifier = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
+#### void MakeBloodPoof ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos = entityPosition, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
 
 ___
 ### Make·Ground·Poof () {: aria-label='Functions' }
-#### void MakeGroundPoof ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos = entityPosition, [ColorModifier](ColorModifier.md) colorModifier = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
+#### void MakeGroundPoof ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos = entityPosition, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Boss·Status·Effect·Cooldown () {: aria-label='Functions' }
