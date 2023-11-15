@@ -328,9 +328,9 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2) {
 	ent2->_shrinkStatus1 = ent1->_shrinkStatus1;
 	ent2->_shrinkStatus2 = ent1->_shrinkStatus2;
 	if (ent1->_type >= 10 && ent1->_type < 1000) {
-		Entity_NPC* npc = static_cast<Entity_NPC*>(ent1);
+		Entity_NPC* npc = static_cast<Entity_NPC*>(ent2);
 		if (npc->_isBoss) {
-			ent1->_bossStatusEffectCooldown = ent2->_bossStatusEffectCooldown;
+			ent2->_bossStatusEffectCooldown = ent1->_bossStatusEffectCooldown;
 		}
 	}
 	// don't ask me what this does
