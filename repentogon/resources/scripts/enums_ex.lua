@@ -2405,3 +2405,16 @@ ProceduralEffectActionType = {
 	SPAWN_ENTITY = 4,
 	FART = 5,
 }
+
+EntityConfig = {
+  TAG_FLY = 1<<0,
+  TAG_SPIDER = 1<<1,
+  --unused?
+  TAG_GHOST = 1<<3,
+  TAG_NOREROLL = 1<<4,
+  TAG_CANSACRIFICE = 1<<5,
+  TAG_EXPLOSIVE_SOUL = 1<<6,
+  TAG_HOMING_SOUL = 1<<7,
+  TAG_BRIMSTONE_SOIL = 1<<8,
+  TAG_NODELIRIUM = 1<<9,
+}
