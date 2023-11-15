@@ -66,7 +66,6 @@ local StatsMenuRep = {
         } },
         {
             "BOSS KILLS", {
-            { "mom kills",          _EventCounter.MOM_KILLS },
             { "isaac kills",        _EventCounter.ISAAC_KILLS },
             { "satan kills",        _EventCounter.SATAN_KILLS },
             { "blue baby kills",    _EventCounter.BLUE_BABY_KILLS },
