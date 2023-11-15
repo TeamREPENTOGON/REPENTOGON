@@ -82,15 +82,6 @@ LUA_FUNCTION(Lua_EntitySetShadowSize)
 	return 0;
 }
 
-LUA_FUNCTION(Lua_EntityCopyStatusEffects)
-{
-	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-
-	ent->CopyStatusEffects();
-
-	return 0;
-}
-
 LUA_FUNCTION(Lua_EntityComputeStatusEffectDuration)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
@@ -311,6 +302,55 @@ LUA_FUNCTION(Lua_EntityIgnoreEffectFromFriendly) {
 LUA_FUNCTION(Lua_EntityTeleportToRandomPosition) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	entity->TeleportToRandomPosition();
+	return 0;
+}
+
+void CopyStatusEffects(Entity* ent1, Entity* ent2) {
+	ent2->_freezeCountdown = ent1->_freezeCountdown;
+	ent2->_poisonCountdown = ent1->_poisonCountdown;
+	ent2->_slowingCountdown = ent1->_slowingCountdown;
+	ent2->_charmedCountdown = ent1->_charmedCountdown;
+	ent2->_confusionCountdown = ent1->_confusionCountdown;
+	ent2->_midasFreezeCountdown = ent1->_midasFreezeCountdown;
+	ent2->_fearCountdown = ent1->_fearCountdown;
+	ent2->_burnCountdown = ent1->_burnCountdown;
+	ent2->_bleedingCountdown = ent1->_bleedingCountdown;
+	ent2->_shrinkCountdown = ent1->_shrinkCountdown;
+	ent2->_poisonDamage = ent1->_poisonDamage;
+	ent2->_burnDamage = ent1->_burnDamage;
+	ent2->_magnetizedCountdown = ent1->_magnetizedCountdown;
+	ent2->_baitedCountdown = ent1->_baitedCountdown;
+	ent2->_knockbackCountdown = ent1->_knockbackCountdown;
+	ent2->_knockbackDirection = ent1->_knockbackDirection;
+	ent2->_iceCountdown = ent1->_iceCountdown;
+	ent2->_weaknessCountdown = ent1->_weaknessCountdown;
+	ent2->_brimstoneMarkCountdown = ent1->_brimstoneMarkCountdown;
+	ent2->_shrinkStatus1 = ent1->_shrinkStatus1;
+	ent2->_shrinkStatus2 = ent1->_shrinkStatus2;
+	if (ent1->_type >= 10 && ent1->_type < 1000) {
+		Entity_NPC* npc = static_cast<Entity_NPC*>(ent1);
+		if (npc->_isBoss) {
+			ent1->_bossStatusEffectCooldown = ent2->_bossStatusEffectCooldown;
+		}
+	}
+	// don't ask me what this does
+	ent2->_flags[0] = ent2->_flags[0] & 0xdeffe01f | ent1->_flags[0] & 0x21001fe0;
+	ent2->_flags[1] = ent2->_flags[1] & 0xfea27fff | ent1->_flags[1] & 0x15d8000;
+}
+
+LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
+	Entity* ent1 = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		Entity* ent2 = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+		CopyStatusEffects(ent1, ent2);
+	}
+	else
+	{
+		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
+			CopyStatusEffects(ent1, child);
+		}
+	}
+
 	return 0;
 }
 

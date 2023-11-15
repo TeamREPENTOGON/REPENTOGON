@@ -71,7 +71,7 @@ __thiscall void Entity::MakeGroundPoof(Vector * pos, ColorMod * color, float siz
 "558bec83e4f881ec94000000f30f1005":
 __thiscall void Entity::TeleportToRandomPosition();
 
-struct Entity depends (AnimationState, ANM2, RNG) {
+struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
 	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
@@ -123,10 +123,38 @@ struct Entity depends (AnimationState, ANM2, RNG) {
     unsigned int _subtype : 0x30; //0x30
 	ANM2 _sprite : 0x3c;
     unsigned int _shadowSize : 0x150; //0x150   
+	unsigned int _flags[2] : 0x160;
     bool _dead : 0x168; 
     bool _visible : 0x169; // 0x169 
+	int _fireDamageCountdown : 0x208;
+	int _damageCountdown : 0x20c;
+	int _freezeCountdown : 0x210;
+	int _poisonCountdown : 0x214;
+	int _slowingCountdown : 0x218;
+	int _charmedCountdown : 0x21c;
+	int _confusionCountdown : 0x220;
+	int _midasFreezeCountdown : 0x224;
+	int _fearCountdown : 0x228;
+	int _burnCountdown : 0x22c;
+	int _bossStatusEffectCooldown : 0x230;
+	int _shrinkCountdown : 0x234;
+	int _poisonDamageTimer : 0x238;
+	int _burnDamageTimer : 0x23c;
+	int _bleedingCountdown : 0x240;
+	int _magnetizedCountdown : 0x248;
+	int _baitedCountdown : 0x24c;
+	int _knockbackCountdown : 0x250;
+	int _weaknessCountdown : 0x254;
+	int _iceCountdown : 0x258;
+	int _brimstoneMarkCountdown : 0x25c;
+	Vector _knockbackDirection : 0x260;
+	float _poisonDamage : 0x278;
+	float _burnDamage : 0x27c;
 	float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
+	float _shrinkStatus1 : 0x30c;
+	float _shrinkStatus2 : 0x310;
+	Entity * _child : 0x318;
 	RNG _dropRNG : 0x334;
 
     __vtable {
