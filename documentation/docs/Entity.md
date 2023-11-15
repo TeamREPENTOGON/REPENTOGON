@@ -38,6 +38,9 @@ ___
 ___
 ### Copy·Status·Effects () {: aria-label='Functions' }
 #### void CopyStatusEffects ( ) {: .copyable aria-label='Functions' }
+#### void CopyStatusEffects ( [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Target ) {: .copyable aria-label='Functions' }
+
+If no Entity is specified, this will recursively copy status effects to all [Child](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#child) Entities.
 
 ___
 ### Force·Collide () {: aria-label='Functions' }
