@@ -13,4 +13,4 @@ tags:
 |1 << 6 |TAG_EXPLOSIVE_SOUL {: .copyable } | |
 |1 << 7 |TAG_HOMING_SOUL {: .copyable } | |
 |1 << 8 |TAG_BRIMSTONE_SOUL {: .copyable } | |
-|1 << 9 |TAG_NO_DELIRIUM {: .copyable } | |
+|1 << 9 |TAG_NODELIRIUM {: .copyable } | |
