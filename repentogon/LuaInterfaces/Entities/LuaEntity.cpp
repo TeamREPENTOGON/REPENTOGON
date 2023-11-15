@@ -1,5 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "ASMPatcher.hpp"
+#include "SigScan.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_EntityAddBleeding)
@@ -354,6 +356,20 @@ LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 	return 0;
 }
 
+void PatchAddWeakness() {
+	SigScan scanner("576afd"); // this is the first push of args for ComputeStausEffectDuration
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch patch;
+	patch.Push(ASMPatch::Registers::EDI)  // Push entity
+		.Push(ASMPatch::Registers::EBP, 0x8) // Push duration
+		.AddBytes("\x8b\xce") // MOV ECX, ESI
+		// this fits exactly in the 5 bytes uses to push arguments
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -398,4 +414,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
 
+	PatchAddWeakness();
 }

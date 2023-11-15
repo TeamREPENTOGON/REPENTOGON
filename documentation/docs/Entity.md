@@ -28,8 +28,6 @@ ___
 ___
 ### Add·Weakness () {: aria-label='Functions' }
 #### void AddWeakness ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
-???+ bug "Bug"
-    At the moment, the duration setting gives no effect, so you need to call this function repeatedly.
 
 ___
 ### Compute·Status·Effect·Duration () {: aria-label='Functions' }
