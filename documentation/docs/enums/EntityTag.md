@@ -2,7 +2,7 @@
 tags:
   - Enum
 ---
-# Enum "EntityConfig"
+# Enum "EntityTag"
 |Value|Enumerator|Comment|
 |:--|:--|:--|:--|
 |1 << 0 |TAG_FLY {: .copyable } | |

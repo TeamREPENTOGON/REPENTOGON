@@ -64,7 +64,7 @@ nav:
     - Dimension: enums/Dimension.md
     - DipSubType: enums/DipSubType.md
     - Ending: enums/Ending.md
-    - EntityConfig: enums/EntityConfig.md
+    - EntityTag: enums/EntityTag.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
     - EventCounter: enums/EventCounter.md
     - ExtraHudStyle: enums/ExtraHudStyle.md
