@@ -134,6 +134,10 @@ ___
 #### [DailyChallenge](DailyChallenge.md) GetDailyChallenge ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Entity·Config () {: aria-label='Functions' }
+#### [EntityConfig](EntityConfig.md) GetEntityConfig ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Entity·Sub·Type·By·Name () {: aria-label='Functions' }
 #### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
 Gets the entity SubType by entity name.

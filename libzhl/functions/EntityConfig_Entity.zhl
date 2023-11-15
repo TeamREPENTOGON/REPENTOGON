@@ -7,8 +7,8 @@ struct EntityConfig_Entity depends (Vector, ModEntry) {
 	float shadowSize : 0x24;
 	float collisionDamage : 0x28;
 	int bossID : 0x30;
-	float size : 0x38;
-	Vector sizeMulti : 0x3C;
+	float collisionRadius : 0x38;
+	Vector collisionRadiusMulti : 0x3C;
 	float mass : 0x44;
 	int gridCollisionPoints : 0x48;
 	float friction : 0x4C;
