@@ -1175,3 +1175,12 @@ This callback triggers when an active gets rerolled by 'M (trinket id 138) and a
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1190 |MC_PRE_M_MORPH_ACTIVE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible)| [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
+
+### MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable }
+Called when the familiar fires a tear.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1252 |MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear, [EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |

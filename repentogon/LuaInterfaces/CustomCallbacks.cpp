@@ -2821,3 +2821,26 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 	}
 	return params;
 }
+
+//POST_FAMILIAR_FIRE_PROJECTILE (id: 1252)
+HOOK_METHOD(Entity_Familiar, FireProjectile, (Vector* AimDirection, bool unk) -> Entity_Tear*) {
+	Entity_Tear* tear = super(AimDirection, unk);
+	int callbackid = 1252;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		Entity_Familiar* fam = (Entity_Familiar*)this;
+
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*fam->GetVariant())
+			.push(tear, lua::Metatables::ENTITY_TEAR)
+			.push(fam, lua::Metatables::ENTITY_FAMILIAR)
+			.call(1);
+	}
+
+	return tear;
+}

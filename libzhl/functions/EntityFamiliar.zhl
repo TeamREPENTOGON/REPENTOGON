@@ -20,6 +20,9 @@ __thiscall void Entity_Familiar::TriggerRoomClear();
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec88000000a1????????33c58945??5657508d45??64a3????????8bf18975??33c08945??8b0d":
 __thiscall void Entity_Familiar::UpdateDirtColor();
 
+"558bec83e4f081ec38010000a1":
+__thiscall Entity_Tear* Entity_Familiar::FireProjectile(Vector *AimDirection, bool Unk);
+
 struct Entity_Familiar depends (ColorMod) : public Entity {
 {{
 	inline Entity_Player** GetPlayer() { return (Entity_Player**)((char*)this + 0x360); }
