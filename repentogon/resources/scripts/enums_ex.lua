@@ -2406,7 +2406,7 @@ ProceduralEffectActionType = {
 	FART = 5,
 }
 
-EntityConfig = {
+EntityTag = {
   TAG_FLY = 1<<0,
   TAG_SPIDER = 1<<1,
   --unused?

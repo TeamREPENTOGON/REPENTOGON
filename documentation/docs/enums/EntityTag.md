@@ -4,7 +4,7 @@ tags:
 ---
 # Enum "EntityTag"
 |Value|Enumerator|Comment|
-|:--|:--|:--|:--|
+|:--|:--|:--|
 |1 << 0 |TAG_FLY {: .copyable } | |
 |1 << 1 |TAG_SPIDER {: .copyable } | |
 |1 << 3 |TAG_GHOST {: .copyable } | |
