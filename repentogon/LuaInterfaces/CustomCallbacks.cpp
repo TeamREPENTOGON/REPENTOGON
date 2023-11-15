@@ -2839,6 +2839,7 @@ HOOK_METHOD(Entity_Familiar, FireProjectile, (Vector* AimDirection, bool unk) ->
 			.push(*fam->GetVariant())
 			.push(tear, lua::Metatables::ENTITY_TEAR)
 			.push(fam, lua::Metatables::ENTITY_FAMILIAR)
+			.pushUserdataValue(*AimDirection, lua::Metatables::VECTOR)
 			.call(1);
 	}
 
