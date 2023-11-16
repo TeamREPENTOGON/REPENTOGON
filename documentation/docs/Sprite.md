@@ -37,7 +37,7 @@ Returns a table of [AnimationData](AnimationData.md) representing all animations
 ___
 ### Get·All·Layers () {: aria-label='Functions' }
 #### table GetAllLayers ( ) {: .copyable aria-label='Functions' }
-Returns a table of all [LayerStates](LayerState.md) in this ANM2.
+Returns a table of all [LayerStates](LayerState.md) in this Sprite.
 
 ___
 ### Get·Animation·Data () {: aria-label='Functions' }
