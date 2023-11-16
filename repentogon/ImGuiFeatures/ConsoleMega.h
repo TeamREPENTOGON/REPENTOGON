@@ -251,7 +251,7 @@ struct ConsoleMega : ImGuiWindowObject {
         commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
         const ConsoleCommand* command = GetCommandByName(commandName);
         // redirect "giveitem" command to allow for trinket, card and pill being givin using their name.
-        if (command->autocompleteType == ITEM && autocompleteBuffer.size() > 0)
+        if (command->autocompleteType == ITEM && !autocompleteBuffer.empty())
         {
           AutocompleteEntry firstEntry = autocompleteBuffer.front();
           if (firstEntry.autocompleteText.at(firstEntry.autocompleteText.find(" ")+1) != 'c')
@@ -336,15 +336,14 @@ struct ConsoleMega : ImGuiWindowObject {
             ImGui::Separator();
 
             ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-            if (autocompleteBuffer.size() > 0) {
+            if (!autocompleteBuffer.empty()) {
                 ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
                 ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 302)); // 302 is chosen here to have a "pixel perfect" scroll to the bottom
                 if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
-                    int selected = 0;
                     if (ImGui::BeginTable("AutocompleteEntriesTable", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_NoBordersInBody)) {
                         for (size_t i = 0; i < autocompleteBuffer.size(); i++) {
                             AutocompleteEntry entry = autocompleteBuffer[i];
-                            bool isSelected = autocompletePos - 1 == i;
+                            bool isSelected = autocompletePos == i;
                             ImGui::TableNextRow();
                             ImGui::TableNextColumn();
 
@@ -361,6 +360,7 @@ struct ConsoleMega : ImGuiWindowObject {
                                 strcpy(inputBuf, entry.autocompleteText.c_str());
                                 autocompletePos = i;
                                 autocompleteNeedFocusChange = true;
+                                reclaimFocus = true;
                             }
 
                             if (!entry.autocompleteDesc.empty()) {
@@ -431,12 +431,12 @@ struct ConsoleMega : ImGuiWindowObject {
             {
                 if (autocompleteBuffer.size() > 0) {
                     ++autocompletePos;
-                    if (autocompletePos > autocompleteBuffer.size())
-                        autocompletePos = 1;
+                    if (autocompletePos >= autocompleteBuffer.size())
+                        autocompletePos = 0;
 
                     autocompleteActive = true;
                     data->DeleteChars(0, data->BufTextLen);
-                    data->InsertChars(0, autocompleteBuffer[autocompletePos - 1].autocompleteText.c_str());
+                    data->InsertChars(0, autocompleteBuffer[autocompletePos].autocompleteText.c_str());
                     autocompleteActive = false;
 
                     autocompleteNeedFocusChange = true;
@@ -1113,6 +1113,7 @@ struct ConsoleMega : ImGuiWindowObject {
             case ImGuiInputTextFlags_CallbackHistory:
             {
                 std::deque<std::string> history = *(g_Game->GetConsole())->GetCommandHistory();
+                autocompleteBuffer.clear();
 
                 const int prev_history_pos = historyPos;
 
