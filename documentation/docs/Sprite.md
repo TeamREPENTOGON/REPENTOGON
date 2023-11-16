@@ -32,7 +32,12 @@ Same as above, but only for the overlay animation.
 ___
 ### Get·All·Animation·Data () {: aria-label='Functions' }
 #### table GetAllAnimationData ( ) {: .copyable aria-label='Functions' }
-Returns a table of AnimationData representing all animations in this anm2 file.
+Returns a table of [AnimationData](AnimationData.md) representing all animations in this anm2 file.
+
+___
+### Get·All·Layers () {: aria-label='Functions' }
+#### table GetAllLayers ( ) {: .copyable aria-label='Functions' }
+Returns a table of all [LayerStates](LayerState.md) in this ANM2.
 
 ___
 ### Get·Animation·Data () {: aria-label='Functions' }

@@ -130,7 +130,7 @@ TypeInfo vector_EntityPlayerPtr {
 };
 
 TypeInfo std_map_int_int {
-    Size 16;
+    Size 8;
     Align 4;
 };
 

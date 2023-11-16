@@ -70,6 +70,25 @@ LUA_FUNCTION(Lua_SpriteGetLayer)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_SpriteGetAllLayers)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+
+	lua_newtable(L);
+	LayerState* layerState = nullptr;
+	for (size_t i = 0; i < anm2->GetLayerCount(); ++i) {
+		lua_pushinteger(L, i + 1);
+		layerState = anm2->GetLayer(i);
+		LayerState** luaLayer = (LayerState**)lua_newuserdata(L, sizeof(LayerState*));
+		*luaLayer = layerState;
+		luaL_setmetatable(L, lua::metatables::LayerStateMT);
+		lua_rawset(L, -3);
+	}
+
+	return 1;
+}
+
+
 LUA_FUNCTION(Lua_SpriteGetRenderFlags)
 {
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
@@ -291,6 +310,7 @@ LUA_FUNCTION(Lua_LayerStateGetBlendMode) {
 static void RegisterSpriteFuncs(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetLayer", Lua_SpriteGetLayer},
+		{ "GetAllLayers", Lua_SpriteGetAllLayers},
 		{ "ReplaceSpritesheet", Lua_SpriteReplaceSpritesheet},
 		{ "IsOverlayEventTriggered", Lua_SpriteIsOverlayEventTriggered},
 		{ "WasOverlayEventTriggered", Lua_SpriteWasOverlayEventTriggered},
