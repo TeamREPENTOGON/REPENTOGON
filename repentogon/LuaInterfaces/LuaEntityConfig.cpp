@@ -13,6 +13,25 @@ LUA_FUNCTION(Lua_IsaacGetEntityConfig)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityGetEntityConfigEntity)
+{
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+
+	EntityConfig_Entity* entityConfigEntity = g_Manager->GetEntityConfig()->GetEntity(*entity->GetType(), *entity->GetVariant(), *entity->GetSubType());
+
+	if (entityConfigEntity == nullptr) {
+		// how
+		lua_pushnil(L);
+	}
+	else {
+		EntityConfig_Entity** toLua = (EntityConfig_Entity**)lua_newuserdata(L, sizeof(EntityConfig_Entity*));
+		*toLua = entityConfigEntity;
+		luaL_setmetatable(L, lua::metatables::EntityConfigEntityMT);
+	}
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_EntityConfigGetEntity)
 {
 	EntityConfig* entityConfig = *lua::GetUserdata<EntityConfig**>(L, 1, lua::metatables::EntityConfigMT);
@@ -145,6 +164,33 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetModName)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityConfigEntityGetEntityTags)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushinteger(L, entity->tags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityHasEntityTags)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	const int tags = (int)luaL_checkinteger(L, 2);
+	if (tags <= 0) {
+		lua_pushboolean(L, false);
+	}
+	else {
+		lua_pushboolean(L, tags & entity->tags == tags);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetShadowSize)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushnumber(L, entity->shadowSize);
+	return 1;
+}
+
 static void RegisterEntityConfig(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetEntity", Lua_EntityConfigGetEntity },
@@ -170,6 +216,9 @@ static void RegisterEntityConfigEntity(lua_State* L) {
 		{ "GetStageHP", Lua_EntityConfigEntityGetStageHP },
 		{ "GetAnm2Path", Lua_EntityConfigEntityGetAnm2Path },
 		{ "GetModName", Lua_EntityConfigEntityGetModName },
+		{ "GetEntityTags", Lua_EntityConfigEntityGetEntityTags },
+		{ "HasEntityTags", Lua_EntityConfigEntityHasEntityTags },
+		{ "GetShadowSize", Lua_EntityConfigEntityGetShadowSize },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::EntityConfigEntityMT, lua::metatables::EntityConfigEntityMT, functions);
@@ -181,6 +230,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntityConfig", Lua_IsaacGetEntityConfig);
+	lua::RegisterFunction(_state, lua::Metatables::ENTITY, "GetEntityConfigEntity", Lua_EntityGetEntityConfigEntity);
 
 	RegisterEntityConfig(_state);
 	RegisterEntityConfigEntity(_state);

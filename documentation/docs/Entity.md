@@ -61,6 +61,11 @@ ___
 #### [Shape](renderer/Shape.md) GetDebugShape ( boolean unknown ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Entity·Config·Entity () {: aria-label='Functions' }
+#### [EntityConfigEntity](EntityConfigEntity.md) GetEntityConfigEntity ( ) {: .copyable aria-label='Functions' }
+Returns the corresponding [EntityConfig](EntityConfig.md) entry for this entity.
+
+___
 ### Get·Hit·List·Index () {: aria-label='Functions' }
 #### int GetHitListIndex ( ) {: .copyable aria-label='Functions' }
 
