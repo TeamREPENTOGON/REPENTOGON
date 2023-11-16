@@ -425,9 +425,9 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 			fonts.insert(std::pair<int, ImFont*>(i, io.Fonts->AddFontDefault(&cfg)));
 			cfg.MergeMode = true;
 			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 16, &cfg, icon_ranges);
-			// Unifont takes up about 60M of memory, while FontAwesome takes up about 10M of memory.
-			// Maybe an option should be added to skip loading for players who don't need the font.
-			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", 16, &cfg, getFontRanges());
+
+			// TODO: The font takes up too much memory.
+			// io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", 16, &cfg, getFontRanges());
 		}
 
 		imguiInitialized = true;
