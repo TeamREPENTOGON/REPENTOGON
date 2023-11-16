@@ -44,9 +44,6 @@ __thiscall void Entity_NPC::CreateGoldParticles(unsigned int unused, unsigned in
 "558bec5156f30f1155":
 __thiscall Entity_Effect* Entity_NPC::MakeBloodCloud(Vector* pos, ColorMod * color);
 
-"558bec56578bfa8bf1e8????????8b0d????????50566a00ff75??576a0268e8030000e8????????6a01":
-__fastcall Entity_Effect* Entity_NPC::MakeBloodEffect(int subtype, Vector * position, Vector * offset, ColorMod * color, Vector * velocity);
-
 "558bec83e4f883ec445356578bf9897c24??e8":
 __thiscall void Entity_NPC::MakeBloodSplash();
 

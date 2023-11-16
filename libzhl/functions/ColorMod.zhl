@@ -1,7 +1,7 @@
 struct ColorMod
 {   
 	{{
-		ColorMod() : _tint{1.0f, 1.0f, 1.0f, 1.0f}, _colorize{1.0f, 1.0f, 1.0f, 1.0f}, _offset{0.0f, 0.0f, 0.0f} {}
+		ColorMod() : _tint{1.0f, 1.0f, 1.0f, 1.0f}, _colorize{0.0f, 0.0f, 0.0f, 0.0f}, _offset{0.0f, 0.0f, 0.0f} {}
 	}}
     float _tint[4] : 0x0; //0x0
     float _colorize[4] : 0x10; //0x10

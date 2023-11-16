@@ -257,6 +257,35 @@ LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Entity_MakeBloodEffect) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	int subtype = (int)luaL_optinteger(L, 2, 0);
+	Vector pos = *entity->GetPosition();
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		pos = *lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	}
+	Vector offset;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		offset = *lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	}
+	ColorMod color;
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+	}
+	Vector velocity;
+	if (lua_type(L, 6) == LUA_TUSERDATA) {
+		velocity = *lua::GetUserdata<Vector*>(L, 6, lua::Metatables::VECTOR, "Vector");
+	}
+
+	Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 2, pos, velocity, nullptr, subtype, Isaac::genrand_int32(), 0);
+	effect->SetColor(&color, -1, 255, false, true);
+	effect->_sprite._offset = offset;
+	effect->_depthOffset = -10.0f;
+	lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
 // TODO: asm patch to return effect
 LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
@@ -407,6 +436,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetPauseTime", Lua_EntitySetPauseTime },
 		{ "GetSpeedMultiplier", Lua_Entity_GetSpeedMultiplier },
 		{ "SetSpeedMultiplier", Lua_Entity_SetSpeedMultiplier },
+		{ "SpawnBloodEffect", Lua_Entity_MakeBloodEffect },
 		{ "SpawnGroundImpactEffects", Lua_EntitySpawnGroundImpactEffects },
 		{ "TeleportToRandomPosition", Lua_EntityTeleportToRandomPosition },
 		{ "TryThrow", Lua_EntityTryThrow },

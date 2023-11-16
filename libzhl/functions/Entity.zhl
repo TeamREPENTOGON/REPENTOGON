@@ -150,6 +150,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	Vector _knockbackDirection : 0x260;
 	float _poisonDamage : 0x278;
 	float _burnDamage : 0x27c;
+	float _depthOffset : 0x2b0;
 	float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
 	float _shrinkStatus1 : 0x30c;

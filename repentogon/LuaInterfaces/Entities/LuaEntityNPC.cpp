@@ -207,31 +207,6 @@ LUA_FUNCTION(Lua_EntityNPC_MakeBloodCloud) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_EntityNPC_MakeBloodEffect) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	int subtype = (int)luaL_optinteger(L, 2, 0);
-	Vector pos = *npc->GetPosition();
-	if (lua_type(L, 3) == LUA_TUSERDATA) {
-		pos = *lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	}
-	Vector offset;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		offset = *lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
-	}
-	ColorMod color;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
-	}
-	Vector velocity;
-	if (lua_type(L, 6) == LUA_TUSERDATA) {
-		velocity = *lua::GetUserdata<Vector*>(L, 6, lua::Metatables::VECTOR, "Vector");
-	}
-
-	lua::luabridge::UserdataPtr::push(L, npc->MakeBloodEffect(subtype, &pos, &offset, &color, &velocity), lua::Metatables::ENTITY_EFFECT);
-
-	return 1;
-}
-
 LUA_FUNCTION(Lua_EntityNPC_MakeBloodSplash) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	npc->MakeBloodSplash();
@@ -292,7 +267,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	luaL_Reg functions[] = {
 		{ "PlaySound", Lua_EntityNPC_PlaySound },
 		{ "SpawnBloodCloud", Lua_EntityNPC_MakeBloodCloud },
-		{ "SpawnBloodEffect", Lua_EntityNPC_MakeBloodEffect },
 		{ "SpawnBloodSplash", Lua_EntityNPC_MakeBloodSplash },
 		{ "UpdateDirtColor", Lua_EntityNPC_UpdateDirtColor },
 		{ "GetDirtColor", Lua_EntityNPC_GetDirtColor },
