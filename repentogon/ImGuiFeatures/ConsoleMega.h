@@ -230,6 +230,40 @@ struct ConsoleMega : ImGuiWindowObject {
 
     }
 
+    const ConsoleCommand* GetCommandByName(std::string& commandName) {
+      for (auto& commandIter : commands) {
+        if (commandName == commandIter.name) {
+          return &commandIter;
+        }
+        for (auto& alias : commandIter.aliases) {
+          if (commandName == alias) {
+            return &commandIter;
+          }
+        }
+      }
+      return nullptr;
+    }
+
+    std::string FixSpawnCommand(char* input) {
+      std::vector<std::string> cmdlets = ParseCommand(input);
+      if (cmdlets.size() >= 2) {
+        std::string commandName = cmdlets.front();
+        commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
+        const ConsoleCommand* command = GetCommandByName(commandName);
+        // redirect "giveitem" command to allow for trinket, card and pill being givin using their name.
+        if (command->autocompleteType == ITEM && autocompleteBuffer.size() > 0)
+        {
+          AutocompleteEntry firstEntry = autocompleteBuffer.front();
+          if (firstEntry.autocompleteText.at(firstEntry.autocompleteText.find(" ")+1) != 'c')
+          {
+            // if first autocomplete entry is not a collectible, replace console input with autocomplete entry.
+            return firstEntry.autocompleteText;
+          }
+        }
+      }
+      return input;
+    }
+
     void ExecuteCommand(char* input) {
         Console* console = g_Game->GetConsole();
 
@@ -349,6 +383,8 @@ struct ConsoleMega : ImGuiWindowObject {
             if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
                 Strtrim(s);
+                std::string fixedCommand = FixSpawnCommand(s);
+                s = (char*)fixedCommand.c_str();
                 if (s[0])
                     ExecuteCommand(s);
                 reclaimFocus = true;
@@ -430,23 +466,12 @@ struct ConsoleMega : ImGuiWindowObject {
                         std::string commandName = cmdlets.front();
                         commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
 
-                        ConsoleCommand command;
-                        for (ConsoleCommand commandIter : commands) {
-                            if (commandName == commandIter.name) {
-                                command = commandIter;
-                                break;
-                            }
-                            for (std::string alias : commandIter.aliases) {
-                                if (commandName == alias) {
-                                    command = commandIter;
-                                    break;
-                                }
-                            }
-                        }
+                    const ConsoleCommand* command = GetCommandByName(commandName);
+                    if (command == nullptr) return 0;
 
                         std::set<AutocompleteEntry> entries;
 
-                        switch (command.autocompleteType) {
+                    switch (command->autocompleteType) {
                             case ENTITY: {
                                 std::unordered_map<tuple<int, int, int>, XMLAttributes> entities = XMLStuff.EntityData->nodes;
 
