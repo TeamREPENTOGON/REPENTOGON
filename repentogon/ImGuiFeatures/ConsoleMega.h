@@ -445,665 +445,666 @@ struct ConsoleMega : ImGuiWindowObject {
             }
             case ImGuiInputTextFlags_CallbackEdit:
             {
-                if (!autocompleteActive) {
-                    std::string strBuf = data->Buf;
-                    std::vector<std::string> cmdlets = ParseCommand(strBuf);
-                    autocompleteBuffer.clear();
-                    autocompletePos = 0;
+                if (autocompleteActive) return 0; // Dont execute callback when ImGuiInputTextFlags_CallbackCompletion does its thing
 
-                    if (cmdlets.size() == 1) {
-                        for (ConsoleCommand command : commands) {
-                            bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
+                std::string strBuf = data->Buf;
+                std::vector<std::string> cmdlets = ParseCommand(strBuf);
+                autocompleteBuffer.clear();
+                autocompletePos = 0;
 
-                            if (command.name.rfind(data->Buf, 0) == 0)
-                                if (inGame || (!inGame && command.showOnMenu == true)) {
-                                    autocompleteBuffer.push_back(AutocompleteEntry(command.name, command.desc));
-                                }
-                        }
+                if (cmdlets.size() == 1) {
+                    bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
+                    for (auto& command : commands) {
+                        if (command.name.rfind(data->Buf, 0) == 0)
+                            if (inGame || (!inGame && command.showOnMenu == true)) {
+                                autocompleteBuffer.push_back(AutocompleteEntry(command.name, command.desc));
+                            }
                     }
+                }
 
-                    if (cmdlets.size() >= 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
-                        std::string commandName = cmdlets.front();
-                        commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
+                if (cmdlets.size() >= 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
+                    std::string commandName = cmdlets.front();
+                    commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
 
                     const ConsoleCommand* command = GetCommandByName(commandName);
                     if (command == nullptr) return 0;
 
-                        std::set<AutocompleteEntry> entries;
+                    std::set<AutocompleteEntry> entries;
 
                     switch (command->autocompleteType) {
-                            case ENTITY: {
-                                std::unordered_map<tuple<int, int, int>, XMLAttributes> entities = XMLStuff.EntityData->nodes;
+                        case ENTITY: {
+                            std::unordered_map<tuple<int, int, int>, XMLAttributes> entities = XMLStuff.EntityData->nodes;
 
-                                std::vector<std::pair<int, XMLNodes>> XMLPairs = {
-                                    std::pair<int, XMLNodes>{100, XMLStuff.ItemData->nodes},
-                                    std::pair<int, XMLNodes>{300, XMLStuff.CardData->nodes},
-                                    std::pair<int, XMLNodes>{350, XMLStuff.TrinketData->nodes},
-                                };
+                            std::vector<std::pair<int, XMLNodes>> XMLPairs = {
+                                std::pair<int, XMLNodes>{100, XMLStuff.ItemData->nodes},
+                                std::pair<int, XMLNodes>{300, XMLStuff.CardData->nodes},
+                                std::pair<int, XMLNodes>{350, XMLStuff.TrinketData->nodes},
+                            };
                                 
-                                for (auto &entity : entities) {
-                                    int type = get<0>(entity.first);
-                                    int variant = get<1>(entity.first);
-                                    int subtype = get<2>(entity.first);
+                            for (auto &entity : entities) {
+                                int type = get<0>(entity.first);
+                                int variant = get<1>(entity.first);
+                                int subtype = get<2>(entity.first);
 
-                                    std::string name = entity.second["name"];
-                                    std::string id = std::to_string(type) + "." + std::to_string(variant) + "." + std::to_string(subtype);
+                                std::string name = entity.second["name"];
+                                std::string id = std::to_string(type) + "." + std::to_string(variant) + "." + std::to_string(subtype);
 
-                                    if (type == 5 && variant == 300) { // This is completely invalid
-                                        continue;
-                                    }
-
-                                    entries.insert(AutocompleteEntry(id, name));
+                                if (type == 5 && variant == 300) { // This is completely invalid
+                                    continue;
                                 }
 
-                                for (std::pair<int, XMLNodes> &pair : XMLPairs) {
-                                    for (std::pair<const int, XMLAttributes> &node : pair.second) {
-                                        std::string id = "5." + std::to_string(pair.first) + "." + std::to_string(node.first);
-                                        entries.insert(AutocompleteEntry(id, id == "5.300.0" ? "Tarot Card" : node.second["name"]));
-                                    }
-                                }
-
-                                break;
+                                entries.insert(AutocompleteEntry(id, name));
                             }
 
-                            case GOTO: {
-                                unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
-                                RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
-                                RoomConfig* config = stage.configs;
-                                std::map<int, std::string> specialRoomTypes = {
-                                    std::pair<int, std::string>(1, "default"),
-                                    std::pair<int, std::string>(2, "shop"),
-                                    std::pair<int, std::string>(3, "error"),
-                                    std::pair<int, std::string>(4, "treasure"),
-                                    std::pair<int, std::string>(5, "boss"),
-                                    std::pair<int, std::string>(6, "miniboss"),
-                                    std::pair<int, std::string>(7, "secret"),
-                                    std::pair<int, std::string>(8, "supersecret"),
-                                    std::pair<int, std::string>(9, "arcade"),
-                                    std::pair<int, std::string>(10, "curse"),
-                                    std::pair<int, std::string>(11, "challenge"),
-                                    std::pair<int, std::string>(12, "library"),
-                                    std::pair<int, std::string>(13, "sacrifice"),
-                                    std::pair<int, std::string>(14, "devil"),
-                                    std::pair<int, std::string>(15, "angel"),
-                                    std::pair<int, std::string>(16, "itemdungeon"),
-                                    std::pair<int, std::string>(17, "bossrush"),
-                                    std::pair<int, std::string>(18, "isaacs"),
-                                    std::pair<int, std::string>(19, "barren"),
-                                    std::pair<int, std::string>(20, "chest"),
-                                    std::pair<int, std::string>(21, "dice"),
-                                    std::pair<int, std::string>(22, "blackmarket"),
-                                    std::pair<int, std::string>(23, "greedexit"),
-                                    std::pair<int, std::string>(24, "planetarium"),
-                                    std::pair<int, std::string>(25, "teleporter"),
-                                    std::pair<int, std::string>(26, "teleporterexit"),
-                                    std::pair<int, std::string>(27, "secretexit"),
-                                    std::pair<int, std::string>(28, "blue"),
-                                    std::pair<int, std::string>(29, "ultrasecret"),
-                                };
-
-                                for (unsigned int i = 0; i < stage.nbRooms; ++i) {       
-                                    entries.insert(AutocompleteEntry(std::string("d.") + std::to_string(config->Variant), config->Name));
-                                    config++;
+                            for (std::pair<int, XMLNodes> &pair : XMLPairs) {
+                                for (std::pair<const int, XMLAttributes> &node : pair.second) {
+                                    std::string id = "5." + std::to_string(pair.first) + "." + std::to_string(node.first);
+                                    entries.insert(AutocompleteEntry(id, id == "5.300.0" ? "Tarot Card" : node.second["name"]));
                                 }
+                            }
 
-                                RoomConfigs special = g_Game->GetRoomConfigHolder()->configs[0];
-                                config = special.configs;
+                            break;
+                        }
 
-                                for (unsigned int i = 0; i < special.nbRooms; ++i) {
-                                    entries.insert(AutocompleteEntry(std::string("s.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
-                                    config++;
-                                }
+                        case GOTO: {
+                            unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+                            RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
+                            RoomConfig* config = stage.configs;
+                            std::map<int, std::string> specialRoomTypes = {
+                                std::pair<int, std::string>(1, "default"),
+                                std::pair<int, std::string>(2, "shop"),
+                                std::pair<int, std::string>(3, "error"),
+                                std::pair<int, std::string>(4, "treasure"),
+                                std::pair<int, std::string>(5, "boss"),
+                                std::pair<int, std::string>(6, "miniboss"),
+                                std::pair<int, std::string>(7, "secret"),
+                                std::pair<int, std::string>(8, "supersecret"),
+                                std::pair<int, std::string>(9, "arcade"),
+                                std::pair<int, std::string>(10, "curse"),
+                                std::pair<int, std::string>(11, "challenge"),
+                                std::pair<int, std::string>(12, "library"),
+                                std::pair<int, std::string>(13, "sacrifice"),
+                                std::pair<int, std::string>(14, "devil"),
+                                std::pair<int, std::string>(15, "angel"),
+                                std::pair<int, std::string>(16, "itemdungeon"),
+                                std::pair<int, std::string>(17, "bossrush"),
+                                std::pair<int, std::string>(18, "isaacs"),
+                                std::pair<int, std::string>(19, "barren"),
+                                std::pair<int, std::string>(20, "chest"),
+                                std::pair<int, std::string>(21, "dice"),
+                                std::pair<int, std::string>(22, "blackmarket"),
+                                std::pair<int, std::string>(23, "greedexit"),
+                                std::pair<int, std::string>(24, "planetarium"),
+                                std::pair<int, std::string>(25, "teleporter"),
+                                std::pair<int, std::string>(26, "teleporterexit"),
+                                std::pair<int, std::string>(27, "secretexit"),
+                                std::pair<int, std::string>(28, "blue"),
+                                std::pair<int, std::string>(29, "ultrasecret"),
+                            };
 
-                                for (std::pair<int, std::string> specialType : specialRoomTypes) {
-                                    entries.insert(AutocompleteEntry(std::string("x.") + specialType.second));
-                                }
+                            for (unsigned int i = 0; i < stage.nbRooms; ++i) {       
+                                entries.insert(AutocompleteEntry(std::string("d.") + std::to_string(config->Variant), config->Name));
+                                config++;
+                            }
+
+                            RoomConfigs special = g_Game->GetRoomConfigHolder()->configs[0];
+                            config = special.configs;
+
+                            for (unsigned int i = 0; i < special.nbRooms; ++i) {
+                                entries.insert(AutocompleteEntry(std::string("s.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
+                                config++;
+                            }
+
+                            for (auto& specialType : specialRoomTypes) {
+                                entries.insert(AutocompleteEntry(std::string("x.") + specialType.second));
+                            }
                                 
-                                break;
-                            }
+                            break;
+                        }
 
-                            case STAGE: {
+                        case STAGE: {
 
-                                if (g_Game->IsGreedMode()) {
-                                    entries = {
-                                        AutocompleteEntry("1", "Basement"),
-                                        AutocompleteEntry("1a", "Cellar"),
-                                        AutocompleteEntry("1b", "Burning Basement"),
-                                        AutocompleteEntry("2", "Caves"),
-                                        AutocompleteEntry("2a", "Catacombs"),
-                                        AutocompleteEntry("2b", "Flooded Caves"),
-                                        AutocompleteEntry("3", "Depths"),
-                                        AutocompleteEntry("3a", "Necropolis"),
-                                        AutocompleteEntry("3b", "Dank Depths"),
-                                        AutocompleteEntry("4", "Womb"),
-                                        AutocompleteEntry("4a", "Utero"),
-                                        AutocompleteEntry("4b", "Scarred Womb"),
-                                        AutocompleteEntry("5", "Sheol"),
-                                        AutocompleteEntry("6", "The Shop"),
-                                        AutocompleteEntry("7", "Ultra Greed")
-                                    };
-                                }
-                                else {
-                                    entries = {
-                                        AutocompleteEntry("1", "Basement I"),
-                                        AutocompleteEntry("1a", "Cellar I"),
-                                        AutocompleteEntry("1b", "Burning Basement I"),
-                                        AutocompleteEntry("1c", "Downpour I"),
-                                        AutocompleteEntry("1d", "Dross I"),
-                                        AutocompleteEntry("2", "Basement II"),
-                                        AutocompleteEntry("2a", "Cellar II"),
-                                        AutocompleteEntry("2b", "Burning Basement II"),
-                                        AutocompleteEntry("2c", "Downpour II"),
-                                        AutocompleteEntry("2d", "Dross II"),
-                                        AutocompleteEntry("3", "Caves I"),
-                                        AutocompleteEntry("3a", "Catacombs I"),
-                                        AutocompleteEntry("3b", "Flooded Caves I"),
-                                        AutocompleteEntry("3c", "Mines I"),
-                                        AutocompleteEntry("3d", "Ashpit I"),
-                                        AutocompleteEntry("4", "Caves II"),
-                                        AutocompleteEntry("4a", "Catacombs II"),
-                                        AutocompleteEntry("4b", "Flooded Caves II"),
-                                        AutocompleteEntry("4c", "Mines II"),
-                                        AutocompleteEntry("4d", "Ashpit II"),
-                                        AutocompleteEntry("5", "Depths I"),
-                                        AutocompleteEntry("5a", "Necropolis I"),
-                                        AutocompleteEntry("5b", "Dank Depths I"),
-                                        AutocompleteEntry("5c", "Mausoleum I"),
-                                        AutocompleteEntry("5d", "Gehenna I"),
-                                        AutocompleteEntry("6", "Depths II"),
-                                        AutocompleteEntry("6a", "Necropolis II"),
-                                        AutocompleteEntry("6b", "Dank Depths II"),
-                                        AutocompleteEntry("6c", "Mausoleum II"),
-                                        AutocompleteEntry("6d", "Gehenna II"),
-                                        AutocompleteEntry("7", "Womb I"),
-                                        AutocompleteEntry("7a", "Utero I"),
-                                        AutocompleteEntry("7b", "Scarred Womb I"),
-                                        AutocompleteEntry("7c", "Corpse I"),
-                                        AutocompleteEntry("8", "Womb II"),
-                                        AutocompleteEntry("8a", "Utero II"),
-                                        AutocompleteEntry("8b", "Scarred Womb II"),
-                                        AutocompleteEntry("8c", "Corpse II"),
-                                        AutocompleteEntry("9", "??? / Blue Womb"),
-                                        AutocompleteEntry("10", "Sheol"),
-                                        AutocompleteEntry("10a", "Cathedral"),
-                                        AutocompleteEntry("11", "Dark Room"),
-                                        AutocompleteEntry("11a", "Chest"),
-                                        AutocompleteEntry("12", "The Void"),
-                                        AutocompleteEntry("13", "Home (day)"),
-                                        AutocompleteEntry("13a", "Home (night)")
-                                    };
-                                }
-                                break;
-                            }
-
-                            case GRID: {
+                            if (g_Game->IsGreedMode()) {
                                 entries = {
-                                    AutocompleteEntry("0", "Decoration"),
-                                    AutocompleteEntry("1000", "Rock"),
-                                    AutocompleteEntry("1001", "Bomb Rock"),
-                                    AutocompleteEntry("1002", "Alt Rock"),
-                                    AutocompleteEntry("1003", "Tinted Rock"),
-                                    AutocompleteEntry("1008", "Marked Skull"),
-                                    AutocompleteEntry("1009", "Event Rock"),
-                                    AutocompleteEntry("1010", "Spiked Rock"),
-                                    AutocompleteEntry("1011", "Fool's Gold Rock"),
-                                    AutocompleteEntry("1300", "TNT"),
-                                    AutocompleteEntry("1490", "Red Poop"),
-                                    AutocompleteEntry("1494", "Rainbow Poop"),
-                                    AutocompleteEntry("1495", "Corny Poop"),
-                                    AutocompleteEntry("1496", "Golden Poop"),
-                                    AutocompleteEntry("1497", "Black Poop"),
-                                    AutocompleteEntry("1498", "White Poop"),
-                                    AutocompleteEntry("1499", "Giant Poop"),
-                                    AutocompleteEntry("1500", "Poop"),
-                                    AutocompleteEntry("1501", "Charming Poop"),
-                                    AutocompleteEntry("1900", "Block"),
-                                    AutocompleteEntry("1901", "Pillar"),
-                                    AutocompleteEntry("1930", "Spikes"),
-                                    AutocompleteEntry("1931", "Retracting Spikes"),
-                                    AutocompleteEntry("1931.1", "Retracting Spikes (Down 1/5)"),
-                                    AutocompleteEntry("1931.2", "Retracting Spikes (Down 2/5)"),
-                                    AutocompleteEntry("1931.3", "Retracting Spikes (Down 3/5)"),
-                                    AutocompleteEntry("1931.4", "Retracting Spikes (Down 4/5)"),
-                                    AutocompleteEntry("1931.5", "Retracting Spikes (Down 5/5)"),
-                                    AutocompleteEntry("1931.6", "Retracting Spikes (Up 1/5)"),
-                                    AutocompleteEntry("1931.7", "Retracting Spikes (Up 2/5)"),
-                                    AutocompleteEntry("1931.8", "Retracting Spikes (Up 3/5)"),
-                                    AutocompleteEntry("1931.9", "Retracting Spikes (Up 4/5)"),
-                                    AutocompleteEntry("1931.10", "Retracting Spikes (Up 5/5)"),
-                                    AutocompleteEntry("1940", "Cobweb"),
-                                    AutocompleteEntry("1999", "Invisible Block"),
-                                    AutocompleteEntry("3000", "Pit"),
-                                    AutocompleteEntry("3001", "Fissure Spawner"),
-                                    AutocompleteEntry("3002", "Event Rail"),
-                                    AutocompleteEntry("3009", "Event Pit"),
-                                    AutocompleteEntry("4000", "Key Block"),
-                                    AutocompleteEntry("4500", "Pressure Plate"),
-                                    AutocompleteEntry("4500.1", "Reward Plate"),
-                                    AutocompleteEntry("4500.2", "Greed Plate"),
-                                    AutocompleteEntry("4500.3", "Rail Plate"),
-                                    AutocompleteEntry("4500.9", "Kill Plate"),
-                                    AutocompleteEntry("4500.10", "Event Plate (group 0)"),
-                                    AutocompleteEntry("4500.11", "Event Plate (group 1)"),
-                                    AutocompleteEntry("4500.12", "Event Plate (group 2)"),
-                                    AutocompleteEntry("4500.13", "Event Plate (group 3)"),
-                                    AutocompleteEntry("5000", "Devil Statue"),
-                                    AutocompleteEntry("5001", "Angel Statue"),
-                                    AutocompleteEntry("6000", "Rail (horizontal)"),
-                                    AutocompleteEntry("6000.1", "Rail (vertical)"),
-                                    AutocompleteEntry("6000.2", "Rail (down-to-right)"),
-                                    AutocompleteEntry("6000.3", "Rail (down-to-left)"),
-                                    AutocompleteEntry("6000.4", "Rail (up-to-right)"),
-                                    AutocompleteEntry("6000.5", "Rail (up-to-left)"),
-                                    AutocompleteEntry("6000.6", "Rail (crossroad)"),
-                                    AutocompleteEntry("6000.7", "Rail (end-left)"),
-                                    AutocompleteEntry("6000.8", "Rail (end-right)"),
-                                    AutocompleteEntry("6000.9", "Rail (end-up)"),
-                                    AutocompleteEntry("6000.10", "Rail (end-down)"),
-                                    AutocompleteEntry("6000.16", "Rail (cart-left)"),
-                                    AutocompleteEntry("6000.17", "Rail (cart-up)"),
-                                    AutocompleteEntry("6000.32", "Rail (cart-right)"),
-                                    AutocompleteEntry("6000.33", "Rail (cart-down)"),
-                                    AutocompleteEntry("6000.80", "Mineshaft Rail (horizontal 1)"),
-                                    AutocompleteEntry("6000.81", "Mineshaft Rail (vertical 1)"),
-                                    AutocompleteEntry("6000.82", "Mineshaft Rail (down-to-right 1)"),
-                                    AutocompleteEntry("6000.83", "Mineshaft Rail (down-to-left 1)"),
-                                    AutocompleteEntry("6000.84", "Mineshaft Rail (up-to-right 1)"),
-                                    AutocompleteEntry("6000.85", "Mineshaft Rail (up-to-left 1)"),
-                                    AutocompleteEntry("6000.96", "Mineshaft Rail (horizontal 2)"),
-                                    AutocompleteEntry("6000.97", "Mineshaft Rail (vertical 2)"),
-                                    AutocompleteEntry("6000.98", "Mineshaft Rail (down-to-right 2)"),
-                                    AutocompleteEntry("6000.99", "Mineshaft Rail (down-to-left 2)"),
-                                    AutocompleteEntry("6000.100", "Mineshaft Rail (up-to-right 2)"),
-                                    AutocompleteEntry("6000.101", "Mineshaft Rail (up-to-left 2)"),
-                                    AutocompleteEntry("6000.112", "Mineshaft Rail (horizontal 3)"),
-                                    AutocompleteEntry("6000.113", "Mineshaft Rail (vertical 3)"),
-                                    AutocompleteEntry("6001", "Rail Pit (horizontal)"),
-                                    AutocompleteEntry("6001.1", "Rail Pit (vertical)"),
-                                    AutocompleteEntry("6001.2", "Rail Pit (down-to-right)"),
-                                    AutocompleteEntry("6001.3", "Rail Pit (down-to-left)"),
-                                    AutocompleteEntry("6001.4", "Rail Pit (up-to-right)"),
-                                    AutocompleteEntry("6001.5", "Rail Pit (up-to-left)"),
-                                    AutocompleteEntry("6001.6", "Rail Pit (crossroad)"),
-                                    AutocompleteEntry("6001.16", "Rail Pit (cart-left)"),
-                                    AutocompleteEntry("6001.17", "Rail Pit (cart-up)"),
-                                    AutocompleteEntry("6001.32", "Rail Pit (cart-right)"),
-                                    AutocompleteEntry("6001.33", "Rail Pit (cart-down)"),
-                                    AutocompleteEntry("6100", "Teleporter (square)"),
-                                    AutocompleteEntry("6100.1", "Teleporter (moon)"),
-                                    AutocompleteEntry("6100.2", "Teleporter (rhombus)"),
-                                    AutocompleteEntry("6100.3", "Teleporter (M)"),
-                                    AutocompleteEntry("6100.4", "Teleporter (pentagram)"),
-                                    AutocompleteEntry("6100.5", "Teleporter (cross)"),
-                                    AutocompleteEntry("6100.6", "Teleporter (triangle)"),
-                                    AutocompleteEntry("9000", "Trap Door"),
-                                    AutocompleteEntry("9000.1", "Void Portal"),
-                                    AutocompleteEntry("9100", "Crawlspace"),
-                                    AutocompleteEntry("10000", "Gravity"),
+                                    AutocompleteEntry("1", "Basement"),
+                                    AutocompleteEntry("1a", "Cellar"),
+                                    AutocompleteEntry("1b", "Burning Basement"),
+                                    AutocompleteEntry("2", "Caves"),
+                                    AutocompleteEntry("2a", "Catacombs"),
+                                    AutocompleteEntry("2b", "Flooded Caves"),
+                                    AutocompleteEntry("3", "Depths"),
+                                    AutocompleteEntry("3a", "Necropolis"),
+                                    AutocompleteEntry("3b", "Dank Depths"),
+                                    AutocompleteEntry("4", "Womb"),
+                                    AutocompleteEntry("4a", "Utero"),
+                                    AutocompleteEntry("4b", "Scarred Womb"),
+                                    AutocompleteEntry("5", "Sheol"),
+                                    AutocompleteEntry("6", "The Shop"),
+                                    AutocompleteEntry("7", "Ultra Greed")
                                 };
-                                break;
                             }
-
-                            case DEBUG_FLAG: {
+                            else {
                                 entries = {
-                                    AutocompleteEntry("1", "Entity Positions"),
-                                    AutocompleteEntry("2", "Grid"),
-                                    AutocompleteEntry("3", "Infinite HP"),
-                                    AutocompleteEntry("4", "High Damage"),
-                                    AutocompleteEntry("5", "Show Room Info"),
-                                    AutocompleteEntry("6", "Show Hitspheres"),
-                                    AutocompleteEntry("7", "Show Damage Values"),
-                                    AutocompleteEntry("8", "Infinite Item Charges"),
-                                    AutocompleteEntry("9", "High Luck"),
-                                    AutocompleteEntry("10", "Quick Kill"),
-                                    AutocompleteEntry("11", "Grid Info"),
-                                    AutocompleteEntry("12", "Player Item Info"),
-                                    AutocompleteEntry("13", "Show Grid Collision Points"),
-                                    AutocompleteEntry("14", "Show Lua Memory Usage")
+                                    AutocompleteEntry("1", "Basement I"),
+                                    AutocompleteEntry("1a", "Cellar I"),
+                                    AutocompleteEntry("1b", "Burning Basement I"),
+                                    AutocompleteEntry("1c", "Downpour I"),
+                                    AutocompleteEntry("1d", "Dross I"),
+                                    AutocompleteEntry("2", "Basement II"),
+                                    AutocompleteEntry("2a", "Cellar II"),
+                                    AutocompleteEntry("2b", "Burning Basement II"),
+                                    AutocompleteEntry("2c", "Downpour II"),
+                                    AutocompleteEntry("2d", "Dross II"),
+                                    AutocompleteEntry("3", "Caves I"),
+                                    AutocompleteEntry("3a", "Catacombs I"),
+                                    AutocompleteEntry("3b", "Flooded Caves I"),
+                                    AutocompleteEntry("3c", "Mines I"),
+                                    AutocompleteEntry("3d", "Ashpit I"),
+                                    AutocompleteEntry("4", "Caves II"),
+                                    AutocompleteEntry("4a", "Catacombs II"),
+                                    AutocompleteEntry("4b", "Flooded Caves II"),
+                                    AutocompleteEntry("4c", "Mines II"),
+                                    AutocompleteEntry("4d", "Ashpit II"),
+                                    AutocompleteEntry("5", "Depths I"),
+                                    AutocompleteEntry("5a", "Necropolis I"),
+                                    AutocompleteEntry("5b", "Dank Depths I"),
+                                    AutocompleteEntry("5c", "Mausoleum I"),
+                                    AutocompleteEntry("5d", "Gehenna I"),
+                                    AutocompleteEntry("6", "Depths II"),
+                                    AutocompleteEntry("6a", "Necropolis II"),
+                                    AutocompleteEntry("6b", "Dank Depths II"),
+                                    AutocompleteEntry("6c", "Mausoleum II"),
+                                    AutocompleteEntry("6d", "Gehenna II"),
+                                    AutocompleteEntry("7", "Womb I"),
+                                    AutocompleteEntry("7a", "Utero I"),
+                                    AutocompleteEntry("7b", "Scarred Womb I"),
+                                    AutocompleteEntry("7c", "Corpse I"),
+                                    AutocompleteEntry("8", "Womb II"),
+                                    AutocompleteEntry("8a", "Utero II"),
+                                    AutocompleteEntry("8b", "Scarred Womb II"),
+                                    AutocompleteEntry("8c", "Corpse II"),
+                                    AutocompleteEntry("9", "??? / Blue Womb"),
+                                    AutocompleteEntry("10", "Sheol"),
+                                    AutocompleteEntry("10a", "Cathedral"),
+                                    AutocompleteEntry("11", "Dark Room"),
+                                    AutocompleteEntry("11a", "Chest"),
+                                    AutocompleteEntry("12", "The Void"),
+                                    AutocompleteEntry("13", "Home (day)"),
+                                    AutocompleteEntry("13a", "Home (night)")
                                 };
-                                break;
                             }
+                            break;
+                        }
 
-                            case ITEM: {
-                                std::vector<std::pair<XMLNodes, std::string>> XMLPairs = {
-                                    {XMLStuff.ItemData->nodes, "c"},
-                                    {XMLStuff.TrinketData->nodes, "t"},
-                                    {XMLStuff.CardData->nodes, "k"},
-                                    {XMLStuff.PillData->nodes, "p"},
-                                };
+                        case GRID: {
+                            entries = {
+                                AutocompleteEntry("0", "Decoration"),
+                                AutocompleteEntry("1000", "Rock"),
+                                AutocompleteEntry("1001", "Bomb Rock"),
+                                AutocompleteEntry("1002", "Alt Rock"),
+                                AutocompleteEntry("1003", "Tinted Rock"),
+                                AutocompleteEntry("1008", "Marked Skull"),
+                                AutocompleteEntry("1009", "Event Rock"),
+                                AutocompleteEntry("1010", "Spiked Rock"),
+                                AutocompleteEntry("1011", "Fool's Gold Rock"),
+                                AutocompleteEntry("1300", "TNT"),
+                                AutocompleteEntry("1490", "Red Poop"),
+                                AutocompleteEntry("1494", "Rainbow Poop"),
+                                AutocompleteEntry("1495", "Corny Poop"),
+                                AutocompleteEntry("1496", "Golden Poop"),
+                                AutocompleteEntry("1497", "Black Poop"),
+                                AutocompleteEntry("1498", "White Poop"),
+                                AutocompleteEntry("1499", "Giant Poop"),
+                                AutocompleteEntry("1500", "Poop"),
+                                AutocompleteEntry("1501", "Charming Poop"),
+                                AutocompleteEntry("1900", "Block"),
+                                AutocompleteEntry("1901", "Pillar"),
+                                AutocompleteEntry("1930", "Spikes"),
+                                AutocompleteEntry("1931", "Retracting Spikes"),
+                                AutocompleteEntry("1931.1", "Retracting Spikes (Down 1/5)"),
+                                AutocompleteEntry("1931.2", "Retracting Spikes (Down 2/5)"),
+                                AutocompleteEntry("1931.3", "Retracting Spikes (Down 3/5)"),
+                                AutocompleteEntry("1931.4", "Retracting Spikes (Down 4/5)"),
+                                AutocompleteEntry("1931.5", "Retracting Spikes (Down 5/5)"),
+                                AutocompleteEntry("1931.6", "Retracting Spikes (Up 1/5)"),
+                                AutocompleteEntry("1931.7", "Retracting Spikes (Up 2/5)"),
+                                AutocompleteEntry("1931.8", "Retracting Spikes (Up 3/5)"),
+                                AutocompleteEntry("1931.9", "Retracting Spikes (Up 4/5)"),
+                                AutocompleteEntry("1931.10", "Retracting Spikes (Up 5/5)"),
+                                AutocompleteEntry("1940", "Cobweb"),
+                                AutocompleteEntry("1999", "Invisible Block"),
+                                AutocompleteEntry("3000", "Pit"),
+                                AutocompleteEntry("3001", "Fissure Spawner"),
+                                AutocompleteEntry("3002", "Event Rail"),
+                                AutocompleteEntry("3009", "Event Pit"),
+                                AutocompleteEntry("4000", "Key Block"),
+                                AutocompleteEntry("4500", "Pressure Plate"),
+                                AutocompleteEntry("4500.1", "Reward Plate"),
+                                AutocompleteEntry("4500.2", "Greed Plate"),
+                                AutocompleteEntry("4500.3", "Rail Plate"),
+                                AutocompleteEntry("4500.9", "Kill Plate"),
+                                AutocompleteEntry("4500.10", "Event Plate (group 0)"),
+                                AutocompleteEntry("4500.11", "Event Plate (group 1)"),
+                                AutocompleteEntry("4500.12", "Event Plate (group 2)"),
+                                AutocompleteEntry("4500.13", "Event Plate (group 3)"),
+                                AutocompleteEntry("5000", "Devil Statue"),
+                                AutocompleteEntry("5001", "Angel Statue"),
+                                AutocompleteEntry("6000", "Rail (horizontal)"),
+                                AutocompleteEntry("6000.1", "Rail (vertical)"),
+                                AutocompleteEntry("6000.2", "Rail (down-to-right)"),
+                                AutocompleteEntry("6000.3", "Rail (down-to-left)"),
+                                AutocompleteEntry("6000.4", "Rail (up-to-right)"),
+                                AutocompleteEntry("6000.5", "Rail (up-to-left)"),
+                                AutocompleteEntry("6000.6", "Rail (crossroad)"),
+                                AutocompleteEntry("6000.7", "Rail (end-left)"),
+                                AutocompleteEntry("6000.8", "Rail (end-right)"),
+                                AutocompleteEntry("6000.9", "Rail (end-up)"),
+                                AutocompleteEntry("6000.10", "Rail (end-down)"),
+                                AutocompleteEntry("6000.16", "Rail (cart-left)"),
+                                AutocompleteEntry("6000.17", "Rail (cart-up)"),
+                                AutocompleteEntry("6000.32", "Rail (cart-right)"),
+                                AutocompleteEntry("6000.33", "Rail (cart-down)"),
+                                AutocompleteEntry("6000.80", "Mineshaft Rail (horizontal 1)"),
+                                AutocompleteEntry("6000.81", "Mineshaft Rail (vertical 1)"),
+                                AutocompleteEntry("6000.82", "Mineshaft Rail (down-to-right 1)"),
+                                AutocompleteEntry("6000.83", "Mineshaft Rail (down-to-left 1)"),
+                                AutocompleteEntry("6000.84", "Mineshaft Rail (up-to-right 1)"),
+                                AutocompleteEntry("6000.85", "Mineshaft Rail (up-to-left 1)"),
+                                AutocompleteEntry("6000.96", "Mineshaft Rail (horizontal 2)"),
+                                AutocompleteEntry("6000.97", "Mineshaft Rail (vertical 2)"),
+                                AutocompleteEntry("6000.98", "Mineshaft Rail (down-to-right 2)"),
+                                AutocompleteEntry("6000.99", "Mineshaft Rail (down-to-left 2)"),
+                                AutocompleteEntry("6000.100", "Mineshaft Rail (up-to-right 2)"),
+                                AutocompleteEntry("6000.101", "Mineshaft Rail (up-to-left 2)"),
+                                AutocompleteEntry("6000.112", "Mineshaft Rail (horizontal 3)"),
+                                AutocompleteEntry("6000.113", "Mineshaft Rail (vertical 3)"),
+                                AutocompleteEntry("6001", "Rail Pit (horizontal)"),
+                                AutocompleteEntry("6001.1", "Rail Pit (vertical)"),
+                                AutocompleteEntry("6001.2", "Rail Pit (down-to-right)"),
+                                AutocompleteEntry("6001.3", "Rail Pit (down-to-left)"),
+                                AutocompleteEntry("6001.4", "Rail Pit (up-to-right)"),
+                                AutocompleteEntry("6001.5", "Rail Pit (up-to-left)"),
+                                AutocompleteEntry("6001.6", "Rail Pit (crossroad)"),
+                                AutocompleteEntry("6001.16", "Rail Pit (cart-left)"),
+                                AutocompleteEntry("6001.17", "Rail Pit (cart-up)"),
+                                AutocompleteEntry("6001.32", "Rail Pit (cart-right)"),
+                                AutocompleteEntry("6001.33", "Rail Pit (cart-down)"),
+                                AutocompleteEntry("6100", "Teleporter (square)"),
+                                AutocompleteEntry("6100.1", "Teleporter (moon)"),
+                                AutocompleteEntry("6100.2", "Teleporter (rhombus)"),
+                                AutocompleteEntry("6100.3", "Teleporter (M)"),
+                                AutocompleteEntry("6100.4", "Teleporter (pentagram)"),
+                                AutocompleteEntry("6100.5", "Teleporter (cross)"),
+                                AutocompleteEntry("6100.6", "Teleporter (triangle)"),
+                                AutocompleteEntry("9000", "Trap Door"),
+                                AutocompleteEntry("9000.1", "Void Portal"),
+                                AutocompleteEntry("9100", "Crawlspace"),
+                                AutocompleteEntry("10000", "Gravity"),
+                            };
+                            break;
+                        }
 
-                                for (std::pair<XMLNodes, std::string> XMLPair : XMLPairs) {
-                                    for (auto node : XMLPair.first) {
-                                        int id = node.first;
-                                        std::string name = node.second["name"];
-                                        entries.insert(AutocompleteEntry(XMLPair.second + std::to_string(id), name));
-                                    }
-                                }
-                                break;
-                            }
+                        case DEBUG_FLAG: {
+                            entries = {
+                                AutocompleteEntry("1", "Entity Positions"),
+                                AutocompleteEntry("2", "Grid"),
+                                AutocompleteEntry("3", "Infinite HP"),
+                                AutocompleteEntry("4", "High Damage"),
+                                AutocompleteEntry("5", "Show Room Info"),
+                                AutocompleteEntry("6", "Show Hitspheres"),
+                                AutocompleteEntry("7", "Show Damage Values"),
+                                AutocompleteEntry("8", "Infinite Item Charges"),
+                                AutocompleteEntry("9", "High Luck"),
+                                AutocompleteEntry("10", "Quick Kill"),
+                                AutocompleteEntry("11", "Grid Info"),
+                                AutocompleteEntry("12", "Player Item Info"),
+                                AutocompleteEntry("13", "Show Grid Collision Points"),
+                                AutocompleteEntry("14", "Show Lua Memory Usage")
+                            };
+                            break;
+                        }
 
-                            case CHALLENGE: {
-                                XMLNodes challenges = XMLStuff.ChallengeData->nodes;
-                                for (auto node : challenges) {
+                        case ITEM: {
+                            std::vector<std::pair<XMLNodes, std::string>> XMLPairs = {
+                                {XMLStuff.ItemData->nodes, "c"},
+                                {XMLStuff.TrinketData->nodes, "t"},
+                                {XMLStuff.CardData->nodes, "k"},
+                                {XMLStuff.PillData->nodes, "p"},
+                            };
+
+                            for (auto& XMLPair : XMLPairs) {
+                                for (auto& node : XMLPair.first) {
                                     int id = node.first;
-                                    std::string name;
-                                    if (id == 45) 
-                                        name = "DELETE THIS"; // Internally the challenge has no name, this is the somewhat canon one.
-                                    else
-                                        name = node.second["name"];
-
-                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
-                                }
-                                break;
-                            }
-
-                            case COMBO: {
-                                entries = {
-                                    AutocompleteEntry("0.", "Treasure"),
-                                    AutocompleteEntry("1.", "Shop"),
-                                    AutocompleteEntry("2.", "Boss"),
-                                    AutocompleteEntry("3.", "Devil"),
-                                    AutocompleteEntry("4.", "Angel"),
-                                    AutocompleteEntry("5.", "Secret"),
-                                    AutocompleteEntry("6.", "Library"),
-                                    AutocompleteEntry("7.", "Challenge"),
-                                    AutocompleteEntry("8.", "Golden Chest"),
-                                    AutocompleteEntry("9.", "Red Chest"),
-                                    AutocompleteEntry("10.", "Beggar"),
-                                    AutocompleteEntry("11.", "Demon Beggar"),
-                                    AutocompleteEntry("12.", "Curse"),
-                                    AutocompleteEntry("13.", "Key Master"),
-                                    AutocompleteEntry("14.", "Boss Rush"),
-                                    AutocompleteEntry("15.", "Dungeon"),
-                                };
-                                break;
-                            }
-
-                            case CUTSCENE: {
-                                XMLNodes cutscenes = XMLStuff.CutsceneData->nodes;
-                                for (auto node : cutscenes) {
-                                    int id = node.first;
+                                    if (id == 0) // dont display NULL item and trinket
+                                      continue;
                                     std::string name = node.second["name"];
-                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                    entries.insert(AutocompleteEntry(XMLPair.second + std::to_string(id), name));
                                 }
-                                break;
                             }
-                                  
-                            case MACRO: {
-                                for (ConsoleMacro macro : macros) {
-                                    entries.insert(AutocompleteEntry(macro.name));
-                                }
-                                break;
+                            break;
+                        }
+
+                        case CHALLENGE: {
+                            XMLNodes challenges = XMLStuff.ChallengeData->nodes;
+                            for (auto& node : challenges) {
+                                int id = node.first;
+                                std::string name;
+                                if (id == 45) 
+                                    name = "DELETE THIS"; // Internally the challenge has no name, this is the somewhat canon one.
+                                else
+                                    name = node.second["name"];
+
+                                entries.insert(AutocompleteEntry(std::to_string(id), name));
                             }
+                            break;
+                        }
 
-                            case SFX: {
-                                XMLNodes sounds = XMLStuff.SoundData->nodes;
-                                for (auto node : sounds) {
-                                    int id = node.first;
-                                    std::string name = node.second["name"];
-                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
-                                }
-                                break;
-                            }
+                        case COMBO: {
+                            entries = {
+                                AutocompleteEntry("0.", "Treasure"),
+                                AutocompleteEntry("1.", "Shop"),
+                                AutocompleteEntry("2.", "Boss"),
+                                AutocompleteEntry("3.", "Devil"),
+                                AutocompleteEntry("4.", "Angel"),
+                                AutocompleteEntry("5.", "Secret"),
+                                AutocompleteEntry("6.", "Library"),
+                                AutocompleteEntry("7.", "Challenge"),
+                                AutocompleteEntry("8.", "Golden Chest"),
+                                AutocompleteEntry("9.", "Red Chest"),
+                                AutocompleteEntry("10.", "Beggar"),
+                                AutocompleteEntry("11.", "Demon Beggar"),
+                                AutocompleteEntry("12.", "Curse"),
+                                AutocompleteEntry("13.", "Key Master"),
+                                AutocompleteEntry("14.", "Boss Rush"),
+                                AutocompleteEntry("15.", "Dungeon"),
+                            };
+                            break;
+                        }
 
-                            case CURSE: {
-                                XMLNodes curses = XMLStuff.CurseData->nodes;
-                                for (auto node : curses) {
-                                    int id = node.first;
-                                    std::string name = node.second["name"];
-                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
-                                }
-
-                                // This is a cut-down version of the parsing the other commands do.
-                                // We handle this ourselves to do bitwise calculation later.
-                                for (AutocompleteEntry entry : entries) {
-                                    entry.autocompleteText = cmdlets.front() + " " + entry.autocompleteText;
-                                    std::string lowerDescBuf;
-
-                                    for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
-                                        lowerDescBuf += *it;
-                                        if (it != cmdlets.end() - 1) {
-                                            lowerDescBuf += " ";
-                                        }
-                                    }
-
-                                    std::transform(lowerDescBuf.begin(), lowerDescBuf.end(), lowerDescBuf.begin(),
-                                        [](unsigned char c) { return std::tolower(c); });
-
-
-                                    std::string lowerDesc = entry.autocompleteDesc;
-                                    std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
-                                        [](unsigned char c) { return std::tolower(c); });
-
-                                    if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
-                                        autocompleteBuffer.push_back(entry);
-                                    }
-                                }
-
-                                // If no result, let's calculate ourselves to give a preview of what curses this command will activate
-                                if (autocompleteBuffer.empty() && cmdlets.size() == 2) {
-                                    long mask;
-                                    std::string calcCurses;
-
-                                    try {
-                                        mask = std::stoi(cmdlets[1]);
-                                    }
-                                    #pragma warning(suppress: 4101)
-                                    catch (std::invalid_argument& err) {
-                                        return 0;
-                                    }
-                                    for (auto node : curses) {
-                                        int id = node.first;
-                                        if ((mask & id) != 0) {
-                                            if (!calcCurses.empty())
-                                                calcCurses = calcCurses + " + ";
-                                            calcCurses = calcCurses + node.second["name"];
-                                        }
-                                    }
-                                    autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + std::to_string(mask), calcCurses));
-                                }
-
-                                return 0;
-                            }
-
-                            case METRO: {
-                                XMLNodes items = XMLStuff.ItemData->nodes;
-                                for (auto node : items) {
-                                    int id = node.first;
-                                    std::string name = node.second["name"];
-                                    entries.insert(AutocompleteEntry("c" + std::to_string(id), name));
-                                }
-                                break;
-                            }
-
-                            case DELIRIOUS: {
-                                entries = {
-                                    AutocompleteEntry("0", "None"),
-                                    AutocompleteEntry("1", "Monstro"),
-                                    AutocompleteEntry("2", "Larry Jr."),
-                                    AutocompleteEntry("3", "Chub"),
-                                    AutocompleteEntry("4", "Gurdy"),
-                                    AutocompleteEntry("5", "Monstro II"),
-                                    AutocompleteEntry("6", "Scolex"),
-                                    AutocompleteEntry("7", "Famine"),
-                                    AutocompleteEntry("8", "Pestilence"),
-                                    AutocompleteEntry("9", "War"),
-                                    AutocompleteEntry("10", "Death"),
-                                    AutocompleteEntry("11", "The Duke of Flies"),
-                                    AutocompleteEntry("12", "Peep"),
-                                    AutocompleteEntry("13", "Loki"),
-                                    AutocompleteEntry("14", "Blastocyst"),
-                                    AutocompleteEntry("15", "Gemini"),
-                                    AutocompleteEntry("16", "Fistula"),
-                                    AutocompleteEntry("17", "Gish"),
-                                    AutocompleteEntry("18", "Steven"),
-                                    AutocompleteEntry("19", "C.H.A.D."),
-                                    AutocompleteEntry("20", "The Headless Horseman"),
-                                    AutocompleteEntry("21", "The Fallen"),
-                                    AutocompleteEntry("22", "The Hollow"),
-                                    AutocompleteEntry("23", "Carrion Queen"),
-                                    AutocompleteEntry("24", "Gurdy Jr."),
-                                    AutocompleteEntry("25", "The Husk"),
-                                    AutocompleteEntry("26", "The Bloat"),
-                                    AutocompleteEntry("27", "Lokii"),
-                                    AutocompleteEntry("28", "The Blighted Ovum"),
-                                    AutocompleteEntry("29", "Teratoma"),
-                                    AutocompleteEntry("30", "The Widow"),
-                                    AutocompleteEntry("31", "Mask of Infamy"),
-                                    AutocompleteEntry("32", "The Wretched"),
-                                    AutocompleteEntry("33", "Pin"),
-                                    AutocompleteEntry("34", "Conquest"),
-                                    AutocompleteEntry("35", "Daddy Long Legs"),
-                                    AutocompleteEntry("36", "Triachnid"),
-                                    AutocompleteEntry("37", "The Haunt"),
-                                    AutocompleteEntry("38", "Dingle"),
-                                    AutocompleteEntry("39", "Mega Maw"),
-                                    AutocompleteEntry("40", "The Gate"),
-                                    AutocompleteEntry("41", "Mega Fatty"),
-                                    AutocompleteEntry("42", "The Cage"),
-                                    AutocompleteEntry("43", "Mama Gurdy"),
-                                    AutocompleteEntry("44", "Dark One"),
-                                    AutocompleteEntry("45", "The Adversary"),
-                                    AutocompleteEntry("46", "Polycephalus"),
-                                    AutocompleteEntry("47", "Mr. Fred"),
-                                    AutocompleteEntry("48", "Mega Satan"),
-                                    AutocompleteEntry("49", "Gurgling"),
-                                    AutocompleteEntry("50", "The Stain"),
-                                    AutocompleteEntry("51", "Brownie"),
-                                    AutocompleteEntry("52", "The Forsaken"),
-                                    AutocompleteEntry("53", "Little Horn"),
-                                    AutocompleteEntry("54", "Rag Man"),
-                                    AutocompleteEntry("55", "Hush"),
-                                    AutocompleteEntry("56", "Dangle"),
-                                    AutocompleteEntry("57", "Turdling"),
-                                    AutocompleteEntry("58", "The Frail"),
-                                    AutocompleteEntry("59", "Rag Mega"),
-                                    AutocompleteEntry("60", "Sisters Vis"),
-                                    AutocompleteEntry("61", "Big Horn")
-                                };
-                                break;
-                            }
-
-                            case PLAYER: {
-                              entries = {
-                                  AutocompleteEntry("-1", "Enemy"),
-                              };
-                              XMLNodes players = XMLStuff.PlayerData->nodes;
-                              for (auto node : players) {
+                        case CUTSCENE: {
+                            XMLNodes cutscenes = XMLStuff.CutsceneData->nodes;
+                            for (auto& node : cutscenes) {
                                 int id = node.first;
                                 std::string name = node.second["name"];
                                 entries.insert(AutocompleteEntry(std::to_string(id), name));
-                              }
-                              break;
                             }
-
-                            case ACHIEVEMENT: {
-                                XMLNodes achievs = XMLStuff.AchievementData->nodes;
-                                for (auto node : achievs) {
-                                    int id = node.first;
-                                    std::string name;
-                                    name = node.second["name"];
-
-                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
-                                }
-                                break;
+                            break;
+                        }
+                                  
+                        case MACRO: {
+                            for (auto& macro : macros) {
+                                entries.insert(AutocompleteEntry(macro.name));
                             }
-
-                            case CUSTOM: {
-                                // This is a Lua command with the CUSTOM AutocompleteType defined. It wants to add its own autocomplete.
-                                // Register the callback MC_CONSOLE_AUTOCOMPLETE with the command as an optional param.
-
-                                extern std::bitset<500> CallbackState;
-
-                                int callbackId = 1120;
-                                if (CallbackState.test(callbackId - 1000)) {
-                                    lua_State* L = g_LuaEngine->_state;
-                                    lua::LuaStackProtector protector(L);
-                                    lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-                                    std::string args;
-
-                                    for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
-                                        args += *it;
-                                        if (it != cmdlets.end() - 1) {
-                                            args += " ";
-                                        }
-                                    }
-
-                                    lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
-                                        .push(cmdlets.front().c_str())
-                                        .push(cmdlets.front().c_str())
-                                        .push(args.c_str())
-                                        .call(1);
-
-                                    if (!results) {
-                                        if (lua_istable(L, -1)) {
-                                            for (unsigned int i = 1; i <= (unsigned int)lua_rawlen(L, -1); ++i) {
-                                                AutocompleteEntry entry;
-                                                lua_pushinteger(L, i);
-                                                lua_gettable(L, -2);
-
-                                                if (lua_istable(L, -1)) {
-                                                    lua_pushinteger(L, 1);
-                                                    lua_gettable(L, -2);
-                                                    entry.autocompleteText = lua_tostring(L, -1);
-                                                    lua_pop(L, 1);
-
-                                                    if (lua_rawlen(L, -1) == (unsigned int)2) {
-                                                        lua_pushinteger(L, 2);
-                                                        lua_gettable(L, -2);
-                                                        entry.autocompleteDesc = lua_tostring(L, -1);
-                                                        lua_pop(L, 1);
-                                                    }
-                                                }
-
-                                                else if (lua_isstring(L, -1)) {
-                                                    entry.autocompleteText = lua_tostring(L, -1);
-                                                }
-
-                                                lua_pop(L, 1);
-                                                entries.insert(entry);
-                                            }
-                                        }
-                                    }
-                                }
-                                break;
-                            }
-
+                            break;
                         }
 
-                        for (AutocompleteEntry entry : entries) {
-                            entry.autocompleteText = cmdlets.front() + " " + entry.autocompleteText;
+                        case SFX: {
+                            XMLNodes sounds = XMLStuff.SoundData->nodes;
+                            for (auto& node : sounds) {
+                                int id = node.first;
+                                std::string name = node.second["name"];
+                                entries.insert(AutocompleteEntry(std::to_string(id), name));
+                            }
+                            break;
+                        }
 
-                            std::string lowerBuf = data->Buf;
-                            std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
-                                [](unsigned char c) { return std::tolower(c); });
+                        case CURSE: {
+                            XMLNodes curses = XMLStuff.CurseData->nodes;
+                            for (auto& node : curses) {
+                                int id = node.first;
+                                std::string name = node.second["name"];
+                                entries.insert(AutocompleteEntry(std::to_string(id), name));
+                            }
 
-                            std::string lowerText = entry.autocompleteText;
-                            std::transform(lowerText.begin(), lowerText.end(), lowerText.begin(),
-                                [](unsigned char c) { return std::tolower(c); });
+                            // This is a cut-down version of the parsing the other commands do.
+                            // We handle this ourselves to do bitwise calculation later.
+                            for (AutocompleteEntry entry : entries) {
+                                entry.autocompleteText = cmdlets.front() + " " + entry.autocompleteText;
+                                std::string lowerDescBuf;
 
-                            // Since we already split by space, let's take advantage of that. 
-                            // Construct a new string with our current input minus the command, and use it for position-agnostic description searching.
-                            std::string lowerDescBuf;
+                                for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
+                                    lowerDescBuf += *it;
+                                    if (it != cmdlets.end() - 1) {
+                                        lowerDescBuf += " ";
+                                    }
+                                }
 
-                            for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
-                                lowerDescBuf += *it;
-                                if (it != cmdlets.end() - 1) {
-                                    lowerDescBuf += " ";
+                                std::transform(lowerDescBuf.begin(), lowerDescBuf.end(), lowerDescBuf.begin(),
+                                    [](unsigned char c) { return std::tolower(c); });
+
+
+                                std::string lowerDesc = entry.autocompleteDesc;
+                                std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
+                                    [](unsigned char c) { return std::tolower(c); });
+
+                                if (entry.autocompleteText.rfind(data->Buf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
+                                    autocompleteBuffer.push_back(entry);
                                 }
                             }
 
-                            std::transform(lowerDescBuf.begin(), lowerDescBuf.end(), lowerDescBuf.begin(),
-                                [](unsigned char c) { return std::tolower(c); });
+                            // If no result, let's calculate ourselves to give a preview of what curses this command will activate
+                            if (autocompleteBuffer.empty() && cmdlets.size() == 2) {
+                                long mask;
+                                std::string calcCurses;
 
-
-                            std::string lowerDesc = entry.autocompleteDesc;
-                            std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
-                                [](unsigned char c) { return std::tolower(c); });
-
-                            if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
-                                autocompleteBuffer.push_back(entry);
+                                try {
+                                    mask = std::stoi(cmdlets[1]);
+                                }
+                                #pragma warning(suppress: 4101)
+                                catch (std::invalid_argument& err) {
+                                    return 0;
+                                }
+                                for (auto& node : curses) {
+                                    int id = node.first;
+                                    if ((mask & id) != 0) {
+                                        if (!calcCurses.empty())
+                                            calcCurses = calcCurses + " + ";
+                                        calcCurses = calcCurses + node.second["name"];
+                                    }
+                                }
+                                autocompleteBuffer.push_back(AutocompleteEntry(cmdlets.front() + " " + std::to_string(mask), calcCurses));
                             }
+
+                            return 0;
+                        }
+
+                        case METRO: {
+                            XMLNodes items = XMLStuff.ItemData->nodes;
+                            for (auto& node : items) {
+                                int id = node.first;
+                                std::string name = node.second["name"];
+                                entries.insert(AutocompleteEntry("c" + std::to_string(id), name));
+                            }
+                            break;
+                        }
+
+                        case DELIRIOUS: {
+                            entries = {
+                                AutocompleteEntry("0", "None"),
+                                AutocompleteEntry("1", "Monstro"),
+                                AutocompleteEntry("2", "Larry Jr."),
+                                AutocompleteEntry("3", "Chub"),
+                                AutocompleteEntry("4", "Gurdy"),
+                                AutocompleteEntry("5", "Monstro II"),
+                                AutocompleteEntry("6", "Scolex"),
+                                AutocompleteEntry("7", "Famine"),
+                                AutocompleteEntry("8", "Pestilence"),
+                                AutocompleteEntry("9", "War"),
+                                AutocompleteEntry("10", "Death"),
+                                AutocompleteEntry("11", "The Duke of Flies"),
+                                AutocompleteEntry("12", "Peep"),
+                                AutocompleteEntry("13", "Loki"),
+                                AutocompleteEntry("14", "Blastocyst"),
+                                AutocompleteEntry("15", "Gemini"),
+                                AutocompleteEntry("16", "Fistula"),
+                                AutocompleteEntry("17", "Gish"),
+                                AutocompleteEntry("18", "Steven"),
+                                AutocompleteEntry("19", "C.H.A.D."),
+                                AutocompleteEntry("20", "The Headless Horseman"),
+                                AutocompleteEntry("21", "The Fallen"),
+                                AutocompleteEntry("22", "The Hollow"),
+                                AutocompleteEntry("23", "Carrion Queen"),
+                                AutocompleteEntry("24", "Gurdy Jr."),
+                                AutocompleteEntry("25", "The Husk"),
+                                AutocompleteEntry("26", "The Bloat"),
+                                AutocompleteEntry("27", "Lokii"),
+                                AutocompleteEntry("28", "The Blighted Ovum"),
+                                AutocompleteEntry("29", "Teratoma"),
+                                AutocompleteEntry("30", "The Widow"),
+                                AutocompleteEntry("31", "Mask of Infamy"),
+                                AutocompleteEntry("32", "The Wretched"),
+                                AutocompleteEntry("33", "Pin"),
+                                AutocompleteEntry("34", "Conquest"),
+                                AutocompleteEntry("35", "Daddy Long Legs"),
+                                AutocompleteEntry("36", "Triachnid"),
+                                AutocompleteEntry("37", "The Haunt"),
+                                AutocompleteEntry("38", "Dingle"),
+                                AutocompleteEntry("39", "Mega Maw"),
+                                AutocompleteEntry("40", "The Gate"),
+                                AutocompleteEntry("41", "Mega Fatty"),
+                                AutocompleteEntry("42", "The Cage"),
+                                AutocompleteEntry("43", "Mama Gurdy"),
+                                AutocompleteEntry("44", "Dark One"),
+                                AutocompleteEntry("45", "The Adversary"),
+                                AutocompleteEntry("46", "Polycephalus"),
+                                AutocompleteEntry("47", "Mr. Fred"),
+                                AutocompleteEntry("48", "Mega Satan"),
+                                AutocompleteEntry("49", "Gurgling"),
+                                AutocompleteEntry("50", "The Stain"),
+                                AutocompleteEntry("51", "Brownie"),
+                                AutocompleteEntry("52", "The Forsaken"),
+                                AutocompleteEntry("53", "Little Horn"),
+                                AutocompleteEntry("54", "Rag Man"),
+                                AutocompleteEntry("55", "Hush"),
+                                AutocompleteEntry("56", "Dangle"),
+                                AutocompleteEntry("57", "Turdling"),
+                                AutocompleteEntry("58", "The Frail"),
+                                AutocompleteEntry("59", "Rag Mega"),
+                                AutocompleteEntry("60", "Sisters Vis"),
+                                AutocompleteEntry("61", "Big Horn")
+                            };
+                            break;
+                        }
+
+                        case PLAYER: {
+                          entries = {
+                              AutocompleteEntry("-1", "Enemy"),
+                          };
+                          XMLNodes players = XMLStuff.PlayerData->nodes;
+                          for (auto& node : players) {
+                            int id = node.first;
+                            std::string name = node.second["name"];
+                            entries.insert(AutocompleteEntry(std::to_string(id), name));
+                          }
+                          break;
+                        }
+
+                        case ACHIEVEMENT: {
+                            XMLNodes achievs = XMLStuff.AchievementData->nodes;
+                            for (auto& node : achievs) {
+                                int id = node.first;
+                                std::string name;
+                                name = node.second["name"];
+
+                                entries.insert(AutocompleteEntry(std::to_string(id), name));
+                            }
+                            break;
+                        }
+
+                        case CUSTOM: {
+                            // This is a Lua command with the CUSTOM AutocompleteType defined. It wants to add its own autocomplete.
+                            // Register the callback MC_CONSOLE_AUTOCOMPLETE with the command as an optional param.
+
+                            extern std::bitset<500> CallbackState;
+
+                            int callbackId = 1120;
+                            if (CallbackState.test(callbackId - 1000)) {
+                                lua_State* L = g_LuaEngine->_state;
+                                lua::LuaStackProtector protector(L);
+                                lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+                                std::string args;
+
+                                for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
+                                    args += *it;
+                                    if (it != cmdlets.end() - 1) {
+                                        args += " ";
+                                    }
+                                }
+
+                                lua::LuaResults results = lua::LuaCaller(L).push(callbackId)
+                                    .push(cmdlets.front().c_str())
+                                    .push(cmdlets.front().c_str())
+                                    .push(args.c_str())
+                                    .call(1);
+
+                                if (!results) {
+                                    if (lua_istable(L, -1)) {
+                                        for (unsigned int i = 1; i <= (unsigned int)lua_rawlen(L, -1); ++i) {
+                                            AutocompleteEntry entry;
+                                            lua_pushinteger(L, i);
+                                            lua_gettable(L, -2);
+
+                                            if (lua_istable(L, -1)) {
+                                                lua_pushinteger(L, 1);
+                                                lua_gettable(L, -2);
+                                                entry.autocompleteText = lua_tostring(L, -1);
+                                                lua_pop(L, 1);
+
+                                                if (lua_rawlen(L, -1) == (unsigned int)2) {
+                                                    lua_pushinteger(L, 2);
+                                                    lua_gettable(L, -2);
+                                                    entry.autocompleteDesc = lua_tostring(L, -1);
+                                                    lua_pop(L, 1);
+                                                }
+                                            }
+
+                                            else if (lua_isstring(L, -1)) {
+                                                entry.autocompleteText = lua_tostring(L, -1);
+                                            }
+
+                                            lua_pop(L, 1);
+                                            entries.insert(entry);
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        }
+
+                    }
+
+                    for (AutocompleteEntry entry : entries) {
+                        entry.autocompleteText = cmdlets.front() + " " + entry.autocompleteText;
+
+                        std::string lowerBuf = data->Buf;
+                        std::transform(lowerBuf.begin(), lowerBuf.end(), lowerBuf.begin(),
+                            [](unsigned char c) { return std::tolower(c); });
+
+                        std::string lowerText = entry.autocompleteText;
+                        std::transform(lowerText.begin(), lowerText.end(), lowerText.begin(),
+                            [](unsigned char c) { return std::tolower(c); });
+
+                        // Since we already split by space, let's take advantage of that. 
+                        // Construct a new string with our current input minus the command, and use it for position-agnostic description searching.
+                        std::string lowerDescBuf;
+
+                        for (auto it = cmdlets.begin() + 1; it != cmdlets.end(); ++it) {
+                            lowerDescBuf += *it;
+                            if (it != cmdlets.end() - 1) {
+                                lowerDescBuf += " ";
+                            }
+                        }
+
+                        std::transform(lowerDescBuf.begin(), lowerDescBuf.end(), lowerDescBuf.begin(),
+                            [](unsigned char c) { return std::tolower(c); });
+
+
+                        std::string lowerDesc = entry.autocompleteDesc;
+                        std::transform(lowerDesc.begin(), lowerDesc.end(), lowerDesc.begin(),
+                            [](unsigned char c) { return std::tolower(c); });
+
+                        if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
+                            autocompleteBuffer.push_back(entry);
                         }
                     }
                 }
