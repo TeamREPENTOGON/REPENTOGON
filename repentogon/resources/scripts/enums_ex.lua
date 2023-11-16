@@ -2345,6 +2345,7 @@ AutocompleteType = {
 
 AnimRenderFlags = {
 	GLITCH = 1<<1,
+	COLOROFFSET_CHAMPION = 1<<4,
 	STATIC = 1<<5,
 	IGNORE_GAME_TIME = 1<<6,
 	GOLDEN = 1<<7,
