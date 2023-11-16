@@ -192,6 +192,66 @@ void UpdateImGuiSettings()
 	}
 }
 
+bool handleImguiInputGB2312(WPARAM wParam, LPARAM lParam) {
+	//https://en.wikipedia.org/wiki/GB_2312
+	static char bytes[2] = { 0,0 };
+	if (bytes[0] == 0) {
+		if (wParam < 0xA1 || wParam > 0xF7) {
+			return false;
+		}
+		bytes[0] = wParam;
+		return true;
+	}
+	else {
+		if (wParam < 0xA1 || wParam > 0xFE) {
+			bytes[0] = 0;
+			return false;
+		}
+		bytes[1] = wParam;
+		wchar_t w;
+		::MultiByteToWideChar(936, MB_PRECOMPOSED, bytes, 2, &w, 1);
+		bytes[0] = 0;
+		if (ImGui::GetCurrentContext()) {
+			ImGui::GetIO().AddInputCharacter(w);
+			return true;
+		}
+	}
+	return false;
+}
+
+
+ImWchar* getFontRanges() {
+	static ImVector<ImWchar> ranges;
+	static bool built = false;
+	if (built)
+		return ranges.Data;
+	built = true;
+
+	ImFontGlyphRangesBuilder builder;
+
+	//add all GB2312 chars
+	for (unsigned int high = 0xA1; high <= 0xF7; high++) {
+		char bytes_line[0x201];
+		wchar_t chars_line[0x201];
+		int idx = 0;
+		for (unsigned int low = 0xA1; low <= 0xFE; low++) {
+			assert(idx + 1 < sizeof(bytes_line));
+			bytes_line[idx++] = high;
+			bytes_line[idx++] = low;
+		}
+		int n = ::MultiByteToWideChar(936, MB_PRECOMPOSED, bytes_line, idx, chars_line, sizeof(chars_line) / sizeof(*chars_line));
+		if (n <= 0)
+			continue;
+		for (int i = 0; i < n; i++) {
+			builder.AddChar(chars_line[i]);
+		}
+	}
+	//builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseSimplifiedCommon());
+
+	builder.BuildRanges(&ranges);
+	return ranges.Data;
+}
+
 static std::vector<WPARAM> pressedKeys;
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -298,6 +358,18 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		if (std::find(blockedMsgs.begin(), blockedMsgs.end(), uMsg) == blockedMsgs.end()) {
 			CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 		}
+
+		//we should manually handle multibyte input
+		//https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
+		if (uMsg == WM_CHAR) {
+			switch (GetACP()) {
+			case 936:
+				if (handleImguiInputGB2312(wParam, lParam))
+					return true;
+				break;
+			}
+		}
+
 		ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
 		return true;
 	}
@@ -353,6 +425,9 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 			fonts.insert(std::pair<int, ImFont*>(i, io.Fonts->AddFontDefault(&cfg)));
 			cfg.MergeMode = true;
 			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 16, &cfg, icon_ranges);
+			// Unifont takes up about 60M of memory, while FontAwesome takes up about 10M of memory.
+			// Maybe an option should be added to skip loading for players who don't need the font.
+			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", 16, &cfg, getFontRanges());
 		}
 
 		imguiInitialized = true;
