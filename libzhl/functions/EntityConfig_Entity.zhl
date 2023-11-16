@@ -3,19 +3,34 @@ struct EntityConfig_Entity depends (Vector, ModEntry) {
 	int variant : 0x4;
 	int subtype : 0x8;
 	std_string name : 0xC;
-	// It looks like shadowSize here is a float that is the shadowSize from the XML divided by 100?
-	float shadowSize : 0x24;
+	float shadowSize : 0x24;  // This is the shadowSize from the XML divided by 100
 	float collisionDamage : 0x28;
+	bool isBoss : 0x2C;
 	int bossID : 0x30;
+	bool canBeChampion : 0x34;
 	float collisionRadius : 0x38;
 	Vector collisionRadiusMulti : 0x3C;
 	float mass : 0x44;
-	int gridCollisionPoints : 0x48;
+	unsigned int gridCollisionPoints : 0x48;
 	float friction : 0x4C;
 	float baseHP : 0x50;
 	float stageHP : 0x54;
-	unsigned int gibsBitset : 0x60;
+	bool shutDoors : 0x58;
+	unsigned int gibsAmount : 0x5C;
+	unsigned int gibFlags : 0x60;
+	int portrait : 0x64;  // Defaults to -1
 	std_string anm2Path : 0x74;
+	std_string gridCollisionClassString : 0xB4;  // Why is this a string
+	bool reroll : 0xCC;
+	bool hasFloorAlts : 0xCD;
+	unsigned int collisionInterval : 0xD0;
 	unsigned int tags: 0xD8;
+	float shieldStrength : 0xE0;
+	Vector bestiaryOffset : 0xEC;
+	float bestiaryScale : 0xF4;
+	std_string bestiaryAnm2Path : 0xF8;
+	std_string bestiaryAnim : 0x110;
+	std_string bestiaryOverlay : 0x128;
+	std_string bestiaryFloorAlt : 0x140;
 	ModEntry* modEntry : 0x160;
 } : 0x198;

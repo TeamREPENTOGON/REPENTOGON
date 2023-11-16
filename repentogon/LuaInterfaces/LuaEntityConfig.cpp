@@ -191,6 +191,131 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetShadowSize)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityConfigEntityIsBoss)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushboolean(L, entity->isBoss);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityCanBeChampion)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushboolean(L, entity->canBeChampion);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityCanShutDoors)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushboolean(L, entity->shutDoors);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetGibsAmount)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushinteger(L, entity->gibsAmount);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetGibFlags)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushinteger(L, entity->gibFlags);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityHasGibFlags)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	const int flags = (int)luaL_checkinteger(L, 2);
+	if (flags <= 0) {
+		lua_pushboolean(L, false);
+	}
+	else {
+		lua_pushboolean(L, flags & entity->gibFlags == flags);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetPortraitID)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushinteger(L, entity->portrait);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityCanBeRerolledInto)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushboolean(L, entity->reroll);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityHasFloorAlts)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushboolean(L, entity->hasFloorAlts);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetCollisionInterval)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushinteger(L, entity->collisionInterval);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetShieldStrength)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushnumber(L, entity->shieldStrength);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryOffset)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::CONST_VECTOR), entity->bestiaryOffset);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryScale)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushnumber(L, entity->bestiaryScale);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryAnm2Path)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushstring(L, entity->bestiaryAnm2Path.c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryAnim)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushstring(L, entity->bestiaryAnim.c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryOverlay)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushstring(L, entity->bestiaryOverlay.c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryFloorAlt)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	lua_pushstring(L, entity->bestiaryFloorAlt.c_str());
+	return 1;
+}
+
 static void RegisterEntityConfig(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetEntity", Lua_EntityConfigGetEntity },
@@ -219,6 +344,22 @@ static void RegisterEntityConfigEntity(lua_State* L) {
 		{ "GetEntityTags", Lua_EntityConfigEntityGetEntityTags },
 		{ "HasEntityTags", Lua_EntityConfigEntityHasEntityTags },
 		{ "GetShadowSize", Lua_EntityConfigEntityGetShadowSize },
+		{ "IsBoss", Lua_EntityConfigEntityIsBoss },
+		{ "CanBeChampion", Lua_EntityConfigEntityCanBeChampion },
+		{ "CanShutDoors", Lua_EntityConfigEntityCanShutDoors },
+		{ "GetGibsAmount", Lua_EntityConfigEntityGetGibsAmount },
+		{ "GetGibFlags", Lua_EntityConfigEntityGetGibFlags },
+		{ "HasGibFlags", Lua_EntityConfigEntityHasGibFlags },
+		{ "GetPortraitID", Lua_EntityConfigEntityGetPortraitID },
+		{ "CanBeRerolledInto", Lua_EntityConfigEntityCanBeRerolledInto },
+		{ "GetCollisionInterval", Lua_EntityConfigEntityGetCollisionInterval },
+		{ "GetShieldStrength", Lua_EntityConfigEntityGetShieldStrength },
+		{ "GetBestiaryAnm2Path", Lua_EntityConfigEntityGetBestiaryAnm2Path },
+		{ "GetBestiaryAnimation", Lua_EntityConfigEntityGetBestiaryAnim },
+		{ "GetBestiaryOverlay", Lua_EntityConfigEntityGetBestiaryOverlay },
+		{ "GetBestiaryOffset", Lua_EntityConfigEntityGetBestiaryOffset },
+		{ "GetBestiaryScale", Lua_EntityConfigEntityGetBestiaryScale },
+		{ "GetBestiaryFloorAlt", Lua_EntityConfigEntityGetBestiaryFloorAlt },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::EntityConfigEntityMT, lua::metatables::EntityConfigEntityMT, functions);
