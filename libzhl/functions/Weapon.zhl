@@ -19,6 +19,9 @@ __thiscall void Weapon::ClearItemAnim(unsigned int collectibleID);
 "558bec8b51??85d274??837a??0174??8bc2":
 __thiscall void Weapon::SetHeadLockTime(int Time);
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec38010000a1????????33c58945??5657508d45??64a3????????f30f119d":
+static cleanup Entity_Laser* Weapon::FireBrimstone(Entity* entity<ecx>, Vector* position<edx>, Vector* direction, float damageMult<xmm3>, float unk1, unsigned int unk2);
+
 struct Weapon { {{
 	inline Entity* GetOwner() { return *(Entity**)((char*)this + 0x4); }
 	inline float* GetFireDelay() { return (float*)((char*)this + 0xC); }
