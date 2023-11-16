@@ -53,10 +53,6 @@ ___
 Returns what to do after the effect is triggered.
 
 ___
-### Get·Action·Type () {: aria-label='Functions' }
-#### [ProceduralEffectActionType](enums/ProceduralEffectActionType.md) GetActionType ( ) {: .copyable aria-label='Functions' }
-Returns what to do after the effect is triggered.
-
 ### Get·Condition·Property () {: aria-label='Functions' }
 #### table GetConditionProperty ( ) {: .copyable aria-label='Functions' }
 Returns a table that describes the condition argument.
