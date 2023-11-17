@@ -70,7 +70,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }
 	inline EntityList* GetEntityList() { return (EntityList*)((char*)this + 0x1218); }
 	inline FXParams* GetFXParams() { return (FXParams*)((char*)this + 0x1c90); } // doing this the lazy way while FXLayers isn't exposed
-	inline float* GetWaterAmount() { return (float*)((char*)this + 0x7134); }
+	inline float* GetWaterAmount() { return &this->_waterAmount; }
 	inline KColor* GetWaterColor() { return (KColor*)((char*)this + 0x7158 ); }
 	inline KColor* GetWaterColorMultiplier() { return (KColor*)((char*)this + 0x7168 ); }
 	
@@ -102,6 +102,8 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
     Camera *_Camera : 0x11f8; //0x11F8
     bool _redHeartDamage : 0x120c; //0x120C
     EntityList _entityList : 0x1218; //0x1218
+	int _greedWaveTimer : 0x7130;
+	float _waterAmount : 0x7134;
 	bool _pacifist : 0x7185;
     TemporaryEffects _temporaryEffects : 0x71f4; //0x71F4
 

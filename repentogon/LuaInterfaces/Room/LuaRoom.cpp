@@ -246,6 +246,18 @@ LUA_FUNCTION(Lua_RoomSetRoomClearDelay) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RoomGetGreedWaveTimer) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushinteger(L, room->_greedWaveTimer);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetGreedWaveTimer) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->_greedWaveTimer = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -277,6 +289,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryGetShopDiscount", Lua_RoomTryGetShopDiscount},
 		{ "GetRoomClearDelay", Lua_RoomGetRoomClearDelay},
 		{ "SetRoomClearDelay", Lua_RoomSetRoomClearDelay},
+		{ "GetGreedWaveTimer", Lua_RoomGetGreedWaveTimer},
+		{ "SetGreedWaveTimer", Lua_RoomSetGreedWaveTimer},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

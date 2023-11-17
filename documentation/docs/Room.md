@@ -25,6 +25,10 @@ ___
 Return the probability that boss spawns in this room will be champions.
 
 ___
+### Get·Greed·Wave·Timer () {: aria-label='Functions' }
+#### int GetGreedWaveTimer ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Effects () {: aria-label='Functions' }
 #### [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) GetEffects ( ) {: .copyable aria-label='Functions' }
 
@@ -86,6 +90,10 @@ ___
 This function will not work if the Unknown integer is passed as `0`.
 
 The backdrop variant chosen is seeded based on the room, and does not persist when leaving and re-entering. Calling this function again on re-entry will result in the same backdrop variant as before.
+
+___
+### Set·Greed·Wave·Timer () {: aria-label='Functions' }
+#### void SetGreedWaveTimer ( int Time ) {: .copyable aria-label='Functions' }
 
 ___
 ### Set·Pause·Timer () {: aria-label='Functions' }
