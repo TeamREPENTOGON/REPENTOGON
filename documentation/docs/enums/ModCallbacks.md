@@ -1177,10 +1177,107 @@ This callback triggers when an active gets rerolled by 'M (trinket id 138) and a
 |1190 |MC_PRE_M_MORPH_ACTIVE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible)| [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
 
 ### MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable }
-Called when the familiar fires a tear.
+Called when a familiar fires a tear.
 
 Returning any value will have no effect on later callback executions.
 
 |Value|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1252 |MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear, [EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) AimDirection | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
+|1252 |MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
+
+### MC_POST_FIRE_BOMB {: .copyable }
+Called when the player fires a Dr. Fetus bomb.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1253 |MC_POST_FIRE_BOMB {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb) | - | void |
+
+### MC_POST_FIRE_BONE_CLUB {: .copyable }
+Called when the player fired The Forgotten's bone club.
+
+This is only called when the club is initially spawned, not when swung or charged and shot.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1254 |MC_POST_FIRE_BONE_CLUB {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife) | - | void |
+
+### MC_POST_FIRE_BRIMSTONE {: .copyable }
+Called when the player fires a brimstone laser.
+
+This is also called for delayed brimstone.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1255 |MC_POST_FIRE_BRIMSTONE {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser) | - | void |
+
+### MC_POST_FIRE_BRIMSTONE_BALL {: .copyable }
+Called when the player fires a brimstone ball.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1256 |MC_POST_FIRE_BRIMSTONE_BALL {: .copyable } | ([EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) Effect) | - | void |
+
+### MC_POST_FIRE_KNIFE {: .copyable }
+Called when the player fires the knife from Mom's Knife.
+
+This is only called when the club is initially spawned, not when charged and shot.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1257 |MC_POST_FIRE_KNIFE {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife) | - | void |
+
+### MC_POST_FIRE_SWORD {: .copyable }
+Called when the player swings the sword from Spirit Sword.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1258 |MC_POST_FIRE_SWORD {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife) | - | void |
+
+### MC_POST_FIRE_TECH_LASER {: .copyable }
+Called when the player fires a Tech laser.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1259 |MC_POST_FIRE_TECH_LASER {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Laser) | - | void |
+
+### MC_POST_FIRE_TECH_X_LASER {: .copyable }
+Called when the player fires a Tech X laser.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1260 |MC_POST_FIRE_TECH_X_LASER {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Laser) | - | void |
+
+### MC_POST_FAMILIAR_FIRE_BRIMSTONE {: .copyable }
+Called when a familiar fires a brimstone laser.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1261 |MC_POST_FAMILIAR_FIRE_BRIMSTONE {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
+
+### MC_POST_FAMILIAR_FIRE_TECH_LASER {: .copyable }
+Called when a familiar fires a Tech laser.
+
+Returning any value will have no effect on later callback executions.
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1262 |MC_POST_FAMILIAR_FIRE_TECH_LASER {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
+

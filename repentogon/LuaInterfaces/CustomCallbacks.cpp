@@ -2823,7 +2823,7 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 }
 
 //POST_FAMILIAR_FIRE_PROJECTILE (id: 1252)
-HOOK_METHOD(Entity_Familiar, FireProjectile, (Vector* AimDirection, bool unk) -> Entity_Tear*) {
+HOOK_METHOD(Entity_Familiar, FireProjectile, (const Vector& AimDirection, bool unk) -> Entity_Tear*) {
 	Entity_Tear* tear = super(AimDirection, unk);
 	int callbackid = 1252;
 
@@ -2838,10 +2838,212 @@ HOOK_METHOD(Entity_Familiar, FireProjectile, (Vector* AimDirection, bool unk) ->
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*fam->GetVariant())
 			.push(tear, lua::Metatables::ENTITY_TEAR)
-			.push(fam, lua::Metatables::ENTITY_FAMILIAR)
-			.pushUserdataValue(*AimDirection, lua::Metatables::VECTOR)
 			.call(1);
 	}
 
 	return tear;
+}
+
+//POST_FIRE_BOMB (id: 1253)
+HOOK_METHOD(Entity_Player, FireBomb, (Vector* pos, Vector* vel, Entity* source) -> Entity_Bomb*) {
+	Entity_Bomb* bomb = super(pos, vel, source);
+	int callbackid = 1253;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(bomb, lua::Metatables::ENTITY_BOMB)
+			.call(1);
+	}
+
+	return bomb;
+}
+
+//POST_FIRE_BONE_CLUB (id: 1254)
+HOOK_METHOD(Entity_Player, FireBoneClub, (Entity* parent, uint32_t variant, bool unk) -> Entity_Knife*) {
+	Entity_Knife* club = super(parent, variant, unk);
+	int callbackid = 1254;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(club, lua::Metatables::ENTITY_KNIFE)
+			.call(1);
+	}
+
+	return club;
+}
+
+//POST_FIRE_BRIMSTONE (id: 1255)
+HOOK_STATIC(Weapon, FireBrimstone, (Entity* entity,  const Vector& position, const Vector& direction, float damageMult, float unk1, uint32_t unk2)-> Entity_Laser*, __cdecl) {
+	Entity_Laser* brimstone = super(entity, position, direction, damageMult, unk1, unk2);
+	int callbackid = 1255;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(brimstone, lua::Metatables::ENTITY_LASER)
+			.call(1);
+	}
+
+	return brimstone;
+}
+
+//POST_FIRE_BRIMSTONE_BALL (id: 1256)
+HOOK_METHOD(Entity_Player, FireBrimstoneBall, (const Vector& pos, const Vector& vel, const Vector& offset, uint32_t unk1, uint32_t unk2, Entity* unk3) -> Entity_Effect*) {
+	Entity_Effect* ball = super(pos, vel, offset, unk1, unk2, unk3);
+	int callbackid = 1256;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(ball, lua::Metatables::ENTITY_EFFECT)
+			.call(1);
+	}
+
+	return ball;
+}
+
+//POST_FIRE_KNIFE (id: 1257)
+HOOK_METHOD(Entity_Player, FireKnife, (Entity* parent, uint32_t variant, float rotationOffset, bool cantOverwrite, uint32_t subType) -> Entity_Knife*) {
+	Entity_Knife* knife = super(parent, variant, rotationOffset, cantOverwrite, subType);
+	int callbackid = 1257;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(knife, lua::Metatables::ENTITY_KNIFE)
+			.call(1);
+	}
+
+	return knife;
+}
+
+//POST_FIRE_SWORD (id: 1258)
+HOOK_METHOD(Weapon, FireSword, (Entity* param_1, uint32_t param_2, float param_3, bool param_4, bool param_5, uint32_t param_6, Entity* param_7) -> Entity_Knife*) {
+	Entity_Knife* sword = super(param_1, param_2, param_3, param_4, param_5, param_6, param_7);
+	int callbackid = 1258;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(sword, lua::Metatables::ENTITY_KNIFE)
+			.call(1);
+	}
+
+	return sword;
+}
+
+//POST_FIRE_TECH_LASER (id: 1259)
+HOOK_METHOD(Entity_Player, FireTechLaser, (const Vector& pos, uint32_t offsetID, const Vector& dir, bool leftEye, bool oneHit, Entity * source, float damageScale) -> Entity_Laser*) {
+	Entity_Laser* laser = super(pos, offsetID, dir, leftEye, oneHit, source, damageScale);
+	int callbackid = 1259;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(laser, lua::Metatables::ENTITY_LASER)
+			.call(1);
+	}
+
+	return laser;
+}
+
+//POST_FIRE_TECH_X_LASER (id: 1260)
+HOOK_METHOD(Entity_Player, FireTechXLaser, (const Vector& pos, const Vector& dir, float radius, Entity* source, float damageMultiplier) -> Entity_Laser*) {
+	Entity_Laser* laser = super(pos, dir, radius, source, damageMultiplier);
+	int callbackid = 1260;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(laser, lua::Metatables::ENTITY_LASER)
+			.call(1);
+	}
+
+	return laser;
+}
+
+//POST_FAMILIAR_FIRE_BRIMSTONE (id: 1261)
+HOOK_METHOD(Entity_Familiar, FireBrimstone, (const Vector& AimDirection, bool unk) -> Entity_Laser*) {
+	Entity_Laser* brimstone = super(AimDirection, unk);
+	int callbackid = 1261;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		Entity_Familiar* fam = (Entity_Familiar*)this;
+
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*fam->GetVariant())
+			.push(brimstone, lua::Metatables::ENTITY_LASER)
+			.call(1);
+	}
+
+	return brimstone;
+}
+
+//POST_FAMILIAR_FIRE_TECH_LASER (id: 1262)
+HOOK_METHOD(Entity_Familiar, FireTechLaser, (const Vector& AimDirection) -> Entity_Laser*) {
+	Entity_Laser* laser = super(AimDirection);
+	int callbackid = 1262;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		Entity_Familiar* fam = (Entity_Familiar*)this;
+
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*fam->GetVariant())
+			.push(laser, lua::Metatables::ENTITY_LASER)
+			.call(1);
+	}
+
+	return laser;
 }

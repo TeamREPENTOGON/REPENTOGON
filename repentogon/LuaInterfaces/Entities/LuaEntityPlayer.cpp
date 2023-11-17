@@ -1415,6 +1415,7 @@ LUA_FUNCTION(Lua_PlayerFireBoneClub) {
 */
 
 
+/*
 // might need asm patch to retrieve entities. this is wacky and can spawn both an effect and a laser
 LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1429,6 +1430,7 @@ LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
 
 	return 0;
 }
+*/
 
 LUA_FUNCTION(Lua_PlayerGetBodyMoveDirection) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1998,7 +2000,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "ClearItemAnimCollectible", Lua_PlayerClearItemAnimCollectible },
 		{ "ClearItemAnimNullItems", Lua_PlayerClearItemAnimNullItems },
 		//{ "FireBoneClub", Lua_PlayerFireBoneClub },
-		{ "FireBrimstoneBall", Lua_PlayerFireBrimstoneBall },
+		//{ "FireBrimstoneBall", Lua_PlayerFireBrimstoneBall },
 		{ "GetBodyMoveDirection", Lua_PlayerGetBodyMoveDirection },
 		{ "GetDeathAnimName", Lua_PlayerGetDeathAnimName },
 		{ "GetEnterPosition", Lua_PlayerGetEnterPosition },

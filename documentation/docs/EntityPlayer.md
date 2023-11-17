@@ -135,10 +135,6 @@ ___
 #### void EnableWeaponType ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, boolean Set ) {: .copyable aria-label='Functions' }
 
 ___
-### Fire·Brimstone·Ball () {: aria-label='Functions' }
-#### void FireBrimstoneBall ( [Vector](Vector.md) pos, [Vector](Vector.md) vel, [Vector](Vector.md) offset = nil ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Active·Item·Desc () {: aria-label='Functions' }
 #### [ActiveItemDesc](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_ActiveItemDesc.html) GetActiveItemDesc ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot = ActiveSlot.SLOT_PRIMARY ) {: .copyable aria-label='Functions' }
 

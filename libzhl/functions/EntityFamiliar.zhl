@@ -21,7 +21,14 @@ __thiscall void Entity_Familiar::TriggerRoomClear();
 __thiscall void Entity_Familiar::UpdateDirtColor();
 
 "558bec83e4f081ec38010000a1":
-__thiscall Entity_Tear* Entity_Familiar::FireProjectile(Vector *AimDirection, bool Unk);
+__thiscall Entity_Tear* Entity_Familiar::FireProjectile(const Vector& AimDirection, bool Unk);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec83ec40a1":
+__thiscall Entity_Laser* Entity_Familiar::FireBrimstone(const Vector& AimDirection, bool Unk);
+
+"558bec81ec98000000a1????????33c58945??53":
+__thiscall Entity_Laser* Entity_Familiar::FireTechLaser(const Vector& AimDirection);
+
 
 struct Entity_Familiar depends (ColorMod) : public Entity {
 {{
