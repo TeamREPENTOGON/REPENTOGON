@@ -10,6 +10,7 @@
 #include "SavedataHandler.h"
 #include "SigScan.h"
 #include "IconsFontAwesome6.h"
+#include "UnifontSupport.h"
 
 #include <Windows.h>
 #include <format>
@@ -22,6 +23,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_impl_win32.h"
 #include "../MiscFunctions.h"
+#include "../REPENTOGONOptions.h"
 
 // this blogpost https://werwolv.net/blog/dll_injection was a big help, thanks werwolv!
 
@@ -219,39 +221,6 @@ bool handleImguiInputGB2312(WPARAM wParam, LPARAM lParam) {
 	return false;
 }
 
-
-ImWchar* getFontRanges() {
-	static ImVector<ImWchar> ranges;
-	static bool built = false;
-	if (built)
-		return ranges.Data;
-	built = true;
-
-	ImFontGlyphRangesBuilder builder;
-
-	//add all GB2312 chars
-	for (unsigned int high = 0xA1; high <= 0xF7; high++) {
-		char bytes_line[0x201];
-		wchar_t chars_line[0x201];
-		int idx = 0;
-		for (unsigned int low = 0xA1; low <= 0xFE; low++) {
-			assert(idx + 1 < sizeof(bytes_line));
-			bytes_line[idx++] = high;
-			bytes_line[idx++] = low;
-		}
-		int n = ::MultiByteToWideChar(936, MB_PRECOMPOSED, bytes_line, idx, chars_line, sizeof(chars_line) / sizeof(*chars_line));
-		if (n <= 0)
-			continue;
-		for (int i = 0; i < n; i++) {
-			builder.AddChar(chars_line[i]);
-		}
-	}
-	//builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseSimplifiedCommon());
-
-	builder.BuildRanges(&ranges);
-	return ranges.Data;
-}
-
 static std::vector<WPARAM> pressedKeys;
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -379,6 +348,8 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 }
 
+ImFont* imFontUnifont = NULL;
+
 HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 {
 	static std::map<int, ImFont*> fonts;
@@ -425,9 +396,17 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 			fonts.insert(std::pair<int, ImFont*>(i, io.Fonts->AddFontDefault(&cfg)));
 			cfg.MergeMode = true;
 			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 16, &cfg, icon_ranges);
+		}
 
-			// TODO: The font takes up too much memory.
-			// io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", 16, &cfg, getFontRanges());
+		static UnifontRange unifont_ranges;
+		if (repentogonOptions.enableUnifont) {
+			const int unifont_base_size = 13;
+			cfg.MergeMode = false;
+			cfg.SizePixels = unifont_base_size;
+			imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", unifont_base_size, &cfg, unifont_ranges.Get());
+			cfg.MergeMode = true;
+			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", unifont_base_size, &cfg, icon_ranges);
+			io.Fonts->AddFontDefault(&cfg);
 		}
 
 		imguiInitialized = true;
@@ -443,11 +422,31 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
 	static float oldPointScale = 0;
 	if (g_PointScale != oldPointScale)
-		if (g_PointScale >= 0 && g_PointScale < fonts.size() && (fonts.find((int)g_PointScale) != fonts.end()))
+		if (g_PointScale >= 0 && g_PointScale < fonts.size() && (fonts.find((int)g_PointScale) != fonts.end())) 
 			ImGui::GetIO().FontDefault = fonts.at((int)g_PointScale);
 
 	oldPointScale = g_PointScale;
+	
+	if (repentogonOptions.enableUnifont) {
+		imFontUnifont->Scale = ImGui::GetIO().FontDefault->FontSize / imFontUnifont->FontSize;
+	}
+	else {
+		imFontUnifont = ImGui::GetIO().FontDefault;
+	}
 
+	static bool unifont_tex_nearest = false;
+	if(!unifont_tex_nearest)
+	{
+		unifont_tex_nearest = true;
+		// use nearest scale to ensure unifont is pixel perfect. must do this after ImGui_ImplOpenGL3_NewFrame()
+		GLint last_texture;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &last_texture);
+		glBindTexture(GL_TEXTURE_2D, (GLuint)imFontUnifont->ContainerAtlas->TexID);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D, last_texture);
+	}
+	
 	imguiResized = false;
 	static ImVec2 oldSize = ImVec2(0, 0);
 	if (oldSize.x != ImGui::GetMainViewport()->Size.x || oldSize.y != ImGui::GetMainViewport()->Size.y) { // no operator?

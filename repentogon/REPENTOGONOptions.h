@@ -32,7 +32,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
 			ini["internal"]["DidModReset"] = "0";
-
+			ini["internal"]["EnableUnifont"] = "1";
 			iniFile.generate(ini, true);
 		}
 
@@ -42,7 +42,8 @@ struct REPENTOGONOptions {
 		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],1);
 		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],1);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
-		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"],0);
+		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
+		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
 
 		printf("Loaded REPENTOGON INI\n");
 	}
@@ -64,6 +65,7 @@ struct REPENTOGONOptions {
 	bool keyMasterDealChance;
 	bool quickRoomClear;
 	bool preventModUpdates;
+	bool enableUnifont;
 	std::string optionsPath;
 };
 
