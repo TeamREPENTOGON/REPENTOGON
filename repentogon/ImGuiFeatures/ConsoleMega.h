@@ -331,8 +331,8 @@ struct ConsoleMega : ImGuiWindowObject {
                 if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
                     ImGui::SetScrollHereY(1.0f);
                 }
-                ImGui::EndChild();
             }
+            ImGui::EndChild();
 
             ImGui::Separator();
 
@@ -413,7 +413,7 @@ struct ConsoleMega : ImGuiWindowObject {
             ImGui::Text(previewText.c_str());
             ImGui::PopStyleColor();
         }
-
+        
         UpdateFont();
         ImGui::End(); // close window element
         ImGui::PopStyleVar();
