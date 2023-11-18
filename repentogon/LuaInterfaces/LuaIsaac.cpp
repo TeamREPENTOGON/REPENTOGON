@@ -281,11 +281,11 @@ LUA_FUNCTION(Lua_GetSubTypwByName) {
 	{
 		XMLAttributes ent = XMLStuff.EntityData->GetNodeByName(text);
 		if ((ent.count("subtype") > 0) && (ent["subtype"].length() > 0)) {
-			lua_pushnumber(L, stoi(ent["subtype"]));
+			lua_pushinteger(L, stoi(ent["subtype"]));
 			return 1;
 		}
 	};
-	lua_pushnumber(L, 0);
+	lua_pushinteger(L, 0);
 	return 1;
 }
 
@@ -302,11 +302,11 @@ LUA_FUNCTION(Lua_GetCutsceneByName) {
 	{
 		XMLAttributes ent = XMLStuff.CutsceneData->GetNodeByName(text);
 		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
-			lua_pushnumber(L, stoi(ent["id"]));
+			lua_pushinteger(L, stoi(ent["id"]));
 			return 1;
 		}
 	};
-	lua_pushnumber(L, 0);
+	lua_pushinteger(L, 0);
 	return 1;
 }
 
@@ -316,11 +316,11 @@ LUA_FUNCTION(Lua_GetGiantBookByName) {
 	{
 		XMLAttributes ent = XMLStuff.GiantBookData->GetNodeByName(text);
 		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
-			lua_pushnumber(L, stoi(ent["id"]));
+			lua_pushinteger(L, stoi(ent["id"]));
 			return 1;
 		}
 	};
-	lua_pushnumber(L, 0);
+	lua_pushinteger(L, 0);
 	return 1;
 }
 
