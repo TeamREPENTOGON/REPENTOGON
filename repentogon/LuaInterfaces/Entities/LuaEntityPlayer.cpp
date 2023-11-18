@@ -1101,6 +1101,7 @@ LUA_FUNCTION(Lua_PlayerCanUsePill) {
 LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	const int trinketID = (int)luaL_checkinteger(L, 2);
+	const bool firstTime = lua::luaL_optboolean(L, 3, true);
 
 	bool trinketAdded = false;
 
@@ -1113,7 +1114,7 @@ LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 			player->_smeltedTrinkets[actualTrinketID]._trinketNum++;
 		}
 
-		player->TriggerTrinketAdded(trinketID, true);
+		player->TriggerTrinketAdded(trinketID, firstTime);
 
 		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
 		player->GetHistory()->AddHistoryItem(historyItem);
@@ -1121,6 +1122,11 @@ LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 		delete(historyItem);
 
 		player->InvalidateCoPlayerItems();
+
+		ItemConfig_Item* config = g_Manager->GetItemConfig()->GetTrinket(actualTrinketID);
+		if (config && config->addCostumeOnPickup) {
+			player->AddCostume(config,false);
+		}
 
 		trinketAdded = true;
 	}

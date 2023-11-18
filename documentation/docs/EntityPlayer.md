@@ -61,7 +61,7 @@ ___
 #### void AddLeprocy ( ) {: .copyable aria-label='Functions' }
 
 ???+ info "Info"
-    This is currently still capped at a max of three familiars, and would require further modification to cnange this.
+    This is currently still capped at a max of three familiars, and would require further modification to change this.
 
 ___
 ### Add·Locust () {: aria-label='Functions' }
@@ -71,7 +71,7 @@ Returns the true amount of charge added, which may have been capped by the targe
 
 ___
 ### Add·Smelted·Trinket () {: aria-label='Functions' }
-#### boolean AddSmeltedTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) TrinketID ) {: .copyable aria-label='Functions' }
+#### boolean AddSmeltedTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) TrinketID, boolean FirstTimePickingUp = true ) {: .copyable aria-label='Functions' }
 Adds a smelted trinket directly to the player's inventory.
 
 Returns ``true`` if the trinket was successfully added, otherwise ``false``.
