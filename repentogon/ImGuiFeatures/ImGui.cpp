@@ -194,31 +194,71 @@ void UpdateImGuiSettings()
 	}
 }
 
-bool handleImguiInputGB2312(WPARAM wParam, LPARAM lParam) {
-	//https://en.wikipedia.org/wiki/GB_2312
+inline void handleImguiInput(const char bytes[], int len) {
+	wchar_t w;
+	int has_val = ::MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, bytes, len, &w, 1);
+	if (has_val && ImGui::GetCurrentContext()) {
+		ImGui::GetIO().AddInputCharacter(w);
+	}
+}
+
+bool handleImguiInputDBCS(WPARAM wParam, LPARAM lParam) {
 	static char bytes[2] = { 0,0 };
 	if (bytes[0] == 0) {
-		if (wParam < 0xA1 || wParam > 0xF7) {
+		if (!IsDBCSLeadByte(wParam)) {
 			return false;
 		}
 		bytes[0] = wParam;
 		return true;
 	}
 	else {
-		if (wParam < 0xA1 || wParam > 0xFE) {
-			bytes[0] = 0;
-			return false;
-		}
 		bytes[1] = wParam;
-		wchar_t w;
-		::MultiByteToWideChar(936, MB_PRECOMPOSED, bytes, 2, &w, 1);
+		handleImguiInput(bytes, 2);
 		bytes[0] = 0;
-		if (ImGui::GetCurrentContext()) {
-			ImGui::GetIO().AddInputCharacter(w);
+		return true;
+	}
+}
+
+// Not work for chinese IME in Win11, the only thing I got is '??'
+// probably it works with other language.
+bool handleImguiInputUTF8(WPARAM wParam, LPARAM lParam) {
+	static int byte_length = 0;
+	static int next_byte = 0;
+	static char bytes[4] = { 0 };
+	if (0 == (wParam & 0x80)) {
+		byte_length = 0;
+		return false; // ascii code
+	}
+	if (byte_length) {
+		if ((wParam & 0xC0) == 0x80) {
+			bytes[next_byte++] = wParam;
+			if (next_byte == byte_length) {
+				handleImguiInput(bytes, byte_length);
+				next_byte = byte_length = 0;
+			}
 			return true;
 		}
+		else {
+			byte_length = next_byte = 0;
+			return false;
+		}
 	}
-	return false;
+	else {
+		bytes[next_byte++] = wParam;
+		if ((wParam & 0xE0) == 0xC0) { // 110xxxxx
+			byte_length = 2;
+		}
+		else if ((wParam & 0xF0) == 0xE0) { // 1110xxxx
+			byte_length = 3;
+		}
+		else if ((wParam & 0xF8) == 0xF0) { // 11110xxx
+			byte_length = 4;
+		}
+		else {
+			byte_length = 0;
+		}
+		return true;
+	}
 }
 
 static std::vector<WPARAM> pressedKeys;
@@ -332,10 +372,18 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		//https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers
 		if (uMsg == WM_CHAR) {
 			switch (GetACP()) {
-			case 936:
-				if (handleImguiInputGB2312(wParam, lParam))
+			case 932: //shift_jis		Japanese
+			case 936: //gb2312			Chinese Simplified
+			case 949: //ks_c_5601-1987	Korean
+			case 950: //big5			Chinese Traditional
+				if (handleImguiInputDBCS(wParam, lParam))
 					return true;
 				break;
+			case 65001:
+				if (handleImguiInputUTF8(wParam, lParam))
+					return true;
+				break;
+
 			}
 		}
 
@@ -403,10 +451,10 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 			const int unifont_base_size = 13;
 			cfg.MergeMode = false;
 			cfg.SizePixels = unifont_base_size;
-			imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", unifont_base_size, &cfg, unifont_ranges.Get());
+			imFontUnifont = io.Fonts->AddFontDefault(&cfg); 
 			cfg.MergeMode = true;
 			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", unifont_base_size, &cfg, icon_ranges);
-			io.Fonts->AddFontDefault(&cfg);
+			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", unifont_base_size, &cfg, unifont_ranges.Get());
 		}
 
 		imguiInitialized = true;

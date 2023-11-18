@@ -44,23 +44,10 @@ public:
 	UnifontRange() {
 		ImFontGlyphRangesBuilder builder;
 
-		//add all GB2312 chars
-		for (unsigned int high = 0xA1; high <= 0xF7; high++) {
-			char bytes_line[0x201];
-			wchar_t chars_line[0x201];
-			int idx = 0;
-			for (unsigned int low = 0xA1; low <= 0xFE; low++) {
-				assert(idx + 1 < sizeof(bytes_line));
-				bytes_line[idx++] = high;
-				bytes_line[idx++] = low;
-			}
-			int n = ::MultiByteToWideChar(936, MB_PRECOMPOSED, bytes_line, idx, chars_line, sizeof(chars_line) / sizeof(*chars_line));
-			if (n <= 0)
-				continue;
-			for (int i = 0; i < n; i++) {
-				builder.AddChar(chars_line[i]);
-			}
-		}
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesChineseFull());
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesJapanese());
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesKorean());
+		builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
 		builder.BuildRanges(&ranges);
 	}
