@@ -845,8 +845,8 @@ end
 --
 -- Return true if ret is a valid return value, false otherwise.
 local function TypecheckPreOpenGL(ret)
-    if type(ret) == "int" then
-        return true
+    if type(ret) == "number" then
+        return ret >= 0 and ret <= 19
     end
     
     if type(ret) == "table" then
@@ -857,7 +857,7 @@ local function TypecheckPreOpenGL(ret)
         local shader = ret["shader"]
         local buffer = ret["buffer"]
         local tShader = type(shader)
-        if tShader ~= "int" and tShader ~= "userdata" then
+        if tShader ~= "number" and tShader ~= "userdata" then
             return false
         end
         
@@ -866,9 +866,11 @@ local function TypecheckPreOpenGL(ret)
             return false
         end
         
-        if tShader == "int" then
+        if tShader == "number" then
             -- 0 : ColorOffset, 19 : Mirror (MAX)
-            return shader >= 0 and shader <= 19
+            if shader < 0 or shader > 19 then
+                return false
+            end
         end
         
         if tShader == "userdata" and getmetatable(shader)["type"] ~= "Shader" then
@@ -896,7 +898,7 @@ end
 -- When compared to what exists on the C++ side, this is equivalent to slicing the 
 -- input vertex buffer into the vertices associated with a single render operation.
 --  - shaderId: identifier of the vertex program, as returned by the glCreateProgram
--- function, that is currently bound and should return during the incoming call to 
+-- function, that is currently bound and should run during the incoming call to 
 -- glDrawElements.
 --
 -- Return: a table containing the return value of every invocation of the MC_PRE_OPENGL_RENDER
@@ -906,7 +908,7 @@ end
 -- as this file is loaded we register a reference to this function in the Lua registry 
 -- and free the symbol to prevent modders from overriding it.
 function PreOpenGLRender(bufferAndContexts, shaderId)
-    local callbacks = Isaac.GetCallback(ModCallbacks.MC_PRE_OPENGL_RENDER)
+    local callbacks = Isaac.GetCallbacks(ModCallbacks.MC_PRE_OPENGL_RENDER)
     if not callbacks then
         return {}
     end
@@ -920,24 +922,29 @@ function PreOpenGLRender(bufferAndContexts, shaderId)
                 goto skip
             end
             
-            returns[i] = -1
+            returns[i] = { shader = shaderId, buffer = bufferAndContext.context }
         
             local status, ret = xpcall(callback.Function, function(msg) 
                 return msg .. "\n" .. cleanTraceback(2)
             end, callback.Mod, bufferAndContext.buffer, shaderId, bufferAndContext.context)
             
-            
             if status then
                 if ret ~= nil then
                     if TypecheckPreOpenGL(ret) then
-                        returns[i] = ret
+                        if type(ret) == "number" then
+                            returns[i] = { shader = ret, buffer = bufferAndContext.buffer }
+                        else
+                            returns[i] = ret
+                        end
+                        
                         changedBuffers[i] = true
+                        goto skip
                     end
                 end 
                 
-                returns[ret] = bufferAndContext.buffer
+                returns[i] = { shader = shaderId, buffer = bufferAndContext.buffer }
             else
-                logError(callbackID, callback.Mod.Name, ret)
+                logError(ModCallbacks.MC_PRE_OPENGL_RENDER, callback.Mod.Name, ret)
             end
             
             ::skip::

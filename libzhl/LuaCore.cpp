@@ -627,6 +627,16 @@ namespace lua {
 		++_n;
 	}
 
+	void LuaCaller::pushRef(int t, int ref) {
+		lua_rawgeti(_L, t, ref);
+		++_n;
+	}
+
+	void LuaCaller::pushGlobal(const char* global) {
+		lua_getglobal(_L, global);
+		++_n;
+	}
+
 	LuaResults LuaCaller::call(int nresults) {
 		int n = lua_gettop(_L) - _n - 1; // Expected amount after poping everything (number of params + function)
 		int result = lua_pcall(_L, _n, nresults, 0);

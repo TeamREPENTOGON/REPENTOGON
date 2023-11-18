@@ -1114,42 +1114,55 @@ namespace GL {
 	};
 
 	struct Elements {
+		struct NativeElements {
+			const void* _elements;
+			size_t _size;
+			GLenum _type;
+		};
+
 		Elements(uint32_t n, uint32_t nVertices) : _nVertices(nVertices) {
-			_indices.resize(n);
+			std::vector<unsigned int> elements(n);
+			_elements = std::move(elements);
 		}
 
-		Elements(const void* indices, GLuint type, size_t size, uint32_t nVertices) : _nativeIndices(indices), _nativeType(type), _nativeSize(size), _nVertices(nVertices) {
+		Elements(const void* indices, GLenum type, size_t size, uint32_t nVertices) : _nVertices(nVertices) {
+			NativeElements elements;
+			memset(&elements, 0, sizeof(elements));
+			elements._elements = indices;
+			elements._size = size;
+			elements._type = type;
 
+			_elements = elements;
 		}
 
 		uint32_t Get(uint32_t index) const {
-			if (_nativeIndices) {
-				if (index >= _nativeSize) {
+			if (NativeElements const* elements = std::get_if<NativeElements>(&_elements)) {
+				if (index >= elements->_size) {
 					throw std::out_of_range("Invalid index");
 				}
 
-				switch (_nativeType) {
+				switch (elements->_type) {
 				case GL_UNSIGNED_BYTE:
-					return *((uint8_t*)_nativeIndices + index);
+					return *((uint8_t*)elements->_elements + index);
 
 				case GL_UNSIGNED_SHORT:
-					return *((uint16_t*)_nativeIndices + index);
+					return *((uint16_t*)elements->_elements + index);
 
 				case GL_UNSIGNED_INT:
-					return *((uint32_t*)_nativeIndices + index);
+					return *((uint32_t*)elements->_elements + index);
 
 				default:
 					throw std::runtime_error("Invalid gl type");
 				}
 			}
 			else {
-				return _indices.at(index);
+				return std::get<std::vector<unsigned int>>(_elements).at(index);
 			}
 		}
 
 		void Set(uint32_t index, uint32_t value) {
-			if (_nativeIndices) {
-				if (index > _nativeSize) {
+			if (NativeElements* elements = std::get_if<NativeElements>(&_elements)) {
+				if (index > elements->_size) {
 					throw std::out_of_range("Invalid index");
 				}
 
@@ -1157,31 +1170,44 @@ namespace GL {
 					throw std::logic_error("Invalid value");
 				}
 
-				switch (_nativeType) {
+				switch (elements->_type) {
 				case GL_UNSIGNED_BYTE:
-					*((uint8_t*)_nativeIndices + index) = (uint8_t)value;
+					*((uint8_t*)elements->_elements + index) = (uint8_t)value;
+					break;
 
 				case GL_UNSIGNED_SHORT:
-					*((uint16_t*)_nativeIndices + index) = (uint16_t)value;
+					*((uint16_t*)elements->_elements + index) = (uint16_t)value;
+					break;
 
 				case GL_UNSIGNED_INT:
-					*((uint32_t*)_nativeIndices + index) = (uint32_t)value;
+					*((uint32_t*)elements->_elements + index) = (uint32_t)value;
+					break;
 
 				default:
 					throw std::runtime_error("Invalid gl type");
 				}
 			}
 			else {
-				_indices.at(index) = value;
+				std::get<std::vector<unsigned int>>(_elements).at(index) = value;
 			}
 		}
 
 		uint32_t Max() const {
-			if (_nativeIndices) {
-				return _nativeSize - 1;
+			if (NativeElements const* elements = std::get_if<NativeElements>(&_elements)) {
+				return elements->_size - 1;
 			}
 			else {
-				return _indices.size() - 1;
+				return std::get<std::vector<unsigned int>>(_elements).size() - 1;
+			}
+		}
+
+		std::tuple<const void*, size_t, GLenum> GetData() {
+			if (NativeElements* elements = std::get_if<NativeElements>(&_elements)) {
+				return std::make_tuple(elements->_elements, elements->_size, elements->_type);
+			}
+			else {
+				std::vector<unsigned int>& data = std::get<std::vector<unsigned int>>(_elements);
+				return std::make_tuple(data.data(), data.size(), GL_UNSIGNED_INT);
 			}
 		}
 
@@ -1233,13 +1259,8 @@ namespace GL {
 			lua_pop(L, 1);
 		}
 
-		std::vector<int> _indices;
+		std::variant<std::vector<unsigned int>, NativeElements> _elements;
 		uint32_t _nVertices;
-
-		// Used to interface with the native elements array
-		const void* _nativeIndices = nullptr;
-		GLuint _nativeType = 0;
-		size_t _nativeSize = 0;
 	};
 
 	struct Vertex {
@@ -1374,6 +1395,11 @@ namespace GL {
 		float* _data;
 	};
 
+	static constexpr size_t DefaultElementsArraySize = 6;
+	static int DefaultElementsArray[DefaultElementsArraySize] = {
+		0, 2, 1, 1, 2, 3
+	};
+
 	struct VertexBuffer {
 		float* _data = nullptr;
 		VertexDescriptor const* _descriptor = nullptr;
@@ -1391,9 +1417,10 @@ namespace GL {
 		 *	- nElements is the number of elements in the indices array.
 		 *	- type is the OpenGL type of the data (always GL_FLOAT).
 		 */
-		VertexBuffer(float* data, ShaderType shader, size_t nVertices, const void* indices, size_t nElements, GLuint type) :
+		VertexBuffer(float* data, ShaderType shader, size_t nVertices, const void* indices, size_t nElements, GLenum type) :
 			_data(data), _nVertices(nVertices), _elements(indices, type, nElements, nVertices) {
 			SetDescriptor(shader);
+			_needRelease = false;
 		}
 
 		/* Create an empty vertex buffer.
@@ -1404,6 +1431,28 @@ namespace GL {
 		VertexBuffer(size_t nVertices, size_t nElements, VertexDescriptor const& descriptor) : 
 			_nVertices(nVertices), _descriptor(&descriptor), _elements(nElements, nVertices) {
 			_data = new float[nVertices * _descriptor->GetSize()];
+			_needRelease = true;
+		}
+
+
+		/* Create a vertex buffer by slicing the content of source between start and end 
+		 * (respectively inclusive and exclusive). 
+		 */
+		VertexBuffer(VertexBuffer const& source, int start, int end, size_t nElements) : _elements(nElements, end - start) {
+			if (end <= start) {
+				throw std::runtime_error("Invalid vertex buffer slice");
+			}
+
+			_descriptor = source._descriptor;
+			_nVertices = end - start;
+			_needRelease = true;
+			size_t descriptorSize = _descriptor->GetSize();
+			_data = new float[_nVertices * descriptorSize];
+			memcpy(_data, source._data + descriptorSize * start, descriptorSize * _nVertices * sizeof(float));
+			std::vector<unsigned int>& elements = std::get<std::vector<unsigned int>>(_elements._elements);
+			assert(elements.size() == nElements);
+			// Faster than std::copy
+			memcpy(elements.data(), DefaultElementsArray, DefaultElementsArraySize * sizeof(int));
 		}
 
 		~VertexBuffer() {
@@ -1415,17 +1464,9 @@ namespace GL {
 			}
 		}
 
-		/* Slice the vertex buffer, copying the vertices and elements between begin and end.
-		 * into a new vertex buffer. The new vertex buffer uses the same vertex descriptor as 
-		 * this one.
-		 * 
-		 * begin is inclusive, end is exclusive. The function throws if begin >= end.
-		 */
-		VertexBuffer* Slice(int begin, int end);
-
 		void Bind();
-
 		void SetDescriptor(ShaderType shader);
+		void Draw();
 
 		std::optional<Vertex> GetVertex(size_t index, lua_State* L = nullptr) {
 			if (index > _nVertices) {
@@ -1450,31 +1491,31 @@ namespace GL {
 		}
 
 		LUA_FUNCTION(Lua_GetVertex) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
-			(*buffer)->GetVertex((size_t) luaL_checkinteger(L, 2), L);
+			VertexBuffer* buffer = lua::GetUserdata<VertexBuffer*>(L, 1, LuaRender::VertexBufferMT);
+			buffer->GetVertex((size_t) luaL_checkinteger(L, 2), L);
 			return 1;
 		}
 
 		LUA_FUNCTION(Lua_GetElements) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			VertexBuffer* buffer = lua::GetUserdata<VertexBuffer*>(L, 1, LuaRender::VertexBufferMT);
 			Elements** ud = (Elements**)lua_newuserdata(L, sizeof(void*));
-			*ud = &(*buffer)->_elements;
+			*ud = &buffer->_elements;
 			luaL_setmetatable(L, LuaRender::ElementsArrayMT);
 			return 1;
 		}
 
 		LUA_FUNCTION(Lua_gc) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
+			VertexBuffer* buffer = lua::GetUserdata<VertexBuffer*>(L, 1, LuaRender::VertexBufferMT);
 			/* FILE* f = fopen("repentogon.log", "a");
 			fprintf(f, "Lua GC freeing vertex buffer at %p\n", *buffer);
 			fclose(f); */
-			delete *buffer;
+			buffer->~VertexBuffer();
 			return 0;
 		}
 
 		LUA_FUNCTION(Lua_len) {
-			VertexBuffer** buffer = lua::GetUserdata<VertexBuffer**>(L, 1, LuaRender::VertexBufferMT);
-			lua_pushinteger(L, (*buffer)->_nVertices + 1);
+			VertexBuffer* buffer = lua::GetUserdata<VertexBuffer*>(L, 1, LuaRender::VertexBufferMT);
+			lua_pushinteger(L, buffer->_nVertices + 1);
 			return 1;
 		}
 
@@ -1670,7 +1711,9 @@ namespace GL {
 		}
 
 		void Render() {
-
+			for (Transformation& trans : _sequence) {
+				delete trans._buffer;
+			}
 		}
 
 		LUA_FUNCTION(Lua_NewPass) {
@@ -1680,8 +1723,7 @@ namespace GL {
 			size_t nbElements = (size_t) luaL_checkinteger(L, 4);
 
 			VertexBuffer* buffer = pipeline->NewPass(nbVertices, *shader, nbElements);
-			VertexBuffer** ud = (VertexBuffer**)lua_newuserdata(L, sizeof(buffer));
-			*ud = buffer;
+			lua_pushlightuserdata(L, buffer);
 			luaL_setmetatable(L, LuaRender::VertexBufferMT);
 			return 1;
 		}
@@ -1701,47 +1743,77 @@ namespace GL {
 
 	class ContextLuaVisitor {
 	public:
-		ContextLuaVisitor(lua_State* _L) : L(_L) {
-
+		ContextLuaVisitor(lua_State* _L, bool print) : L(_L) {
+			_print = print;
 		}
 
 		void operator()(Entity_Bomb* b) {
+			if (_print) {
+				ZHL::Log("Bomb %p\n", b);
+			}
 			Expose(b, LuaRender::RENDER_CTX_ENTITY_BOMB, lua::Metatables::ENTITY_BOMB);
 		}
 
 		void operator()(Entity_Effect* e) {
+			if (_print) {
+				ZHL::Log("Effect %p\n", e);
+			}
 			Expose(e, LuaRender::RENDER_CTX_ENTITY_EFFECT, lua::Metatables::ENTITY_EFFECT);
 		}
 
 		void operator()(Entity_Familiar* f) {
+			if (_print) {
+				ZHL::Log("Familiar %p\n", f);
+			}
 			Expose(f, LuaRender::RENDER_CTX_ENTITY_FAMILIAR, lua::Metatables::ENTITY_FAMILIAR);
 		}
 
 		void operator()(Entity_Knife* k) {
+			if (_print) {
+				ZHL::Log("Knife %p\n", k);
+			}
 			Expose(k, LuaRender::RENDER_CTX_ENTITY_KNIFE, lua::Metatables::ENTITY_KNIFE);
 		}
 
 		void operator()(Entity_Laser* l) {
+			if (_print) {
+				ZHL::Log("Laser %p\n", l);
+			}
 			Expose(l, LuaRender::RENDER_CTX_ENTITY_LASER, lua::Metatables::ENTITY_LASER);
 		}
 
 		void operator()(Entity_NPC* n) {
+			if (_print) {
+				ZHL::Log("NPC %p\n", n);
+			}
 			Expose(n, LuaRender::RENDER_CTX_ENTITY_NPC, lua::Metatables::ENTITY_NPC);
 		}
 
 		void operator()(Entity_Pickup* p) {
+			if (_print) {
+				ZHL::Log("Pickup %p\n", p);
+			}
 			Expose(p, LuaRender::RENDER_CTX_ENTITY_PICKUP, lua::Metatables::ENTITY_PICKUP);
 		}
 
 		void operator()(Entity_Player* p) {
+			if (_print) {
+				ZHL::Log("Player %p\n", p);
+			}
 			Expose(p, LuaRender::RENDER_CTX_ENTITY_PLAYER, lua::Metatables::ENTITY_PLAYER);
 		}
 
 		void operator()(Entity_Projectile* p) {
+			if (_print) {
+				ZHL::Log("Projectile %p\n", p);
+			}
 			Expose(p, LuaRender::RENDER_CTX_ENTITY_PROJECTILE, lua::Metatables::ENTITY_PROJECTILE);
 		}
 
 		void operator()(Entity_Slot* s) {
+			if (_print) {
+				ZHL::Log("Slot %p\n", s);
+			}
 			OpenTable();
 			PushType(LuaRender::RENDER_CTX_ENTITY_SLOT);
 			lua_pushstring(L, "Data");
@@ -1751,18 +1823,30 @@ namespace GL {
 		}
 
 		void operator()(Entity_Tear* t) {
+			if (_print) {
+				ZHL::Log("Tear %p\n", t);
+			}
 			Expose(t, LuaRender::RENDER_CTX_ENTITY_TEAR, lua::Metatables::ENTITY_TEAR);
 		}
 
 		void operator()(GridEntity_Rock* r) {
+			if (_print) {
+				ZHL::Log("Rock %p\n", r);
+			}
 			Expose(r, LuaRender::RENDER_CTX_GRIDENTITY_ROCK, lua::Metatables::GRID_ENTITY_ROCK);
 		}
 
 		void operator()(AnimationState* s) {
+			if (_print) {
+				ZHL::Log("AnimationState %p\n", s);
+			}
 			Expose(s->_animation, LuaRender::RENDER_CTX_ANIMATION_STATE, lua::Metatables::SPRITE);
 		}
 
 		void operator()(AnimationLayer* l) {
+			if (_print) {
+				ZHL::Log("AnimationLayer %p\n", l);
+			}
 			OpenTable();
 			PushType(LuaRender::RENDER_CTX_ANIMATION_LAYER);
 			lua_pushstring(L, "Data");
@@ -1796,6 +1880,7 @@ namespace GL {
 
 		lua_State* L; // Table at the top
 		int i = 1; // Index
+		bool _print;
 	};
 
 	class RenderOperationContext {
@@ -1815,7 +1900,7 @@ namespace GL {
 			lua_pushinteger(L, index);
 			lua_newtable(L);
 
-			ContextLuaVisitor visitor(L);
+			ContextLuaVisitor visitor(L, false);
 			for (LuaRender::Context const& ctx : queue) {
 				std::visit(visitor, ctx);
 			}
@@ -2054,21 +2139,42 @@ namespace GL {
 
 			glEnableVertexAttribArray(i);
 			glVertexAttribPointer(i, size, GL_FLOAT, GL_FALSE, stride, bufferOffset);
+			/* ZHL::Log("Enabling vertex attribute %u, of size %d, at %p (stride = %u)\n", i, size, bufferOffset, stride);
+			if (size >= 1) {
+				for (size_t vertex = 0; vertex < _nVertices; ++vertex) {
+					ZHL::Log("\tValue[%u.0] = %f\n", vertex, *(bufferOffset + stride * vertex));
+				}
+			}
+
+			if (size >= 2) {
+				for (size_t vertex = 0; vertex < _nVertices; ++vertex) {
+					ZHL::Log("\tValue[%u.1] = %f\n", vertex, *(bufferOffset + 1 + stride * vertex));
+				}
+			}
+
+			if (size >= 3) {
+				for (size_t vertex = 0; vertex < _nVertices; ++vertex) {
+					ZHL::Log("\tValue[%u.2] = %f\n", vertex, *(bufferOffset + 2 + stride * vertex));
+				}
+			}
+
+			if (size >= 4) {
+				for (size_t vertex = 0; vertex < _nVertices; ++vertex) {
+					ZHL::Log("\tValue[%u.3] = %f\n", vertex, *(bufferOffset + 3 + stride * vertex));
+				}
+			} */
 			bufferOffset += size;
 			++i;
 		}
 	}
 
-	VertexBuffer* VertexBuffer::Slice(int begin, int end) {
-		if (begin >= end) {
-			std::ostringstream err;
-			err << "Invalid slice range " << begin << ":" << end << std::endl;
-			throw std::runtime_error(err.str());
-		}
-
-		VertexBuffer* buffer = new VertexBuffer(end - begin, 6 * (end - begin), *_descriptor);
-		memcpy(buffer->_data, _data + begin, sizeof(float) * _descriptor->GetSize() * (end - begin));
-		// memcpy(buffer->_elements)
+	void VertexBuffer::Draw() {
+		auto [data, size, type] = _elements.GetData();
+		/* ZHL::Log("Drawing vertex buffer containing %u elements of type %u located at %p\n", size, type, data);
+		for (size_t i = 0; i < size; ++i) {
+			ZHL::Log("\tElements[%u] = %u\n", i, (unsigned int)_elements.Get(i));
+		} */
+		glDrawElements(GL_TRIANGLES, size, type, data);
 	}
 }
 
@@ -2152,6 +2258,86 @@ struct ContextDataVisitor {
 	}
 };
 
+bool ProcessCallbackResults(lua_State* L, lua::LuaResults& results, std::map<float*, std::tuple<float*, size_t>> const& validation) {
+	if (!results) {
+		assert(lua_type(L, -1) == LUA_TTABLE);
+
+		lua_pushnil(L);
+		while (lua_next(L, -2) != 0) {
+			// Index -2 is simply the key, discard it
+			int type = lua_type(L, -1);
+			/* Allow values in the table :
+			 *	- integer: a native shader ID
+			 *	- table containing two fields:
+			 *		- shader: integer (native shader ID) or userdata (shader object)
+			 *		- buffer: vertex buffer userdata
+			 */
+
+			 // Stack: ..., key, value
+			assert(type == LUA_TTABLE);
+			std::variant<GLuint, GL::Shader*> luaShader;
+			GL::VertexBuffer* luaVertexBuffer = nullptr;
+			// Stack: ..., key, value
+			{
+				lua::LuaStackProtector accessProtector(L);
+				lua_pushstring(L, "shader"); // Stack: ..., key, value, "shader"
+				type = lua_rawget(L, -2); // Stack: ..., key, value, value["shader"]
+				assert(type == LUA_TNUMBER || type == LUA_TUSERDATA);
+				if (type == LUA_TUSERDATA) {
+					lua_getmetatable(L, -1); // Stack: ..., key, value, value["shader"], getmetatable(value["shader"])
+					luaL_getmetatable(L, LuaRender::ShaderMT); // Stack: ..., key, value, value["shader"], getmetatable(value["shader"]), ShaderMT
+					assert(lua_rawequal(L, -1, -2));
+					lua_pop(L, 2); // Stack: ..., key, value, value["shader"]
+					luaShader = (GL::Shader*)lua_touserdata(L, -1);
+				}
+				else {
+					luaShader = (GLuint)luaL_checknumber(L, -1);
+				}
+
+				lua_pop(L, 1); // Stack: key, value
+			}
+
+			// Stack: ..., key, value
+			{
+				lua::LuaStackProtector accessProtector(L);
+				lua_pushstring(L, "buffer"); // Stack: ..., key, value, "buffer"
+				type = lua_rawget(L, -2); // Stack: ..., key, value, value["buffer"]
+				assert(type == LUA_TUSERDATA);
+				lua_getmetatable(L, -1); // Stack: ..., key, value, value["buffer"], getmetatable(value["buffer"])
+				luaL_getmetatable(L, LuaRender::VertexBufferMT); // Stack: ..., key, value, value["buffer"], getmetatable(value["buffer"]), VertexBufferMT
+				assert(lua_rawequal(L, -1, -2));
+				lua_pop(L, 2); // Stack: ..., key, value, value["buffer"]
+				luaVertexBuffer = (GL::VertexBuffer*)lua_touserdata(L, -1);
+				lua_pop(L, 1); // Stack: ..., key, value
+			}
+
+			if (GLuint* luaShaderId = std::get_if<GLuint>(&luaShader)) {
+				unsigned int asNativeShader = __ptr_g_AllShaders[*luaShaderId]->GetShaderId();
+				glUseProgram(asNativeShader);
+				ZHL::Log("Using shader %u\n", asNativeShader);
+			}
+			else {
+				GL::Shader* shader = std::get<GL::Shader*>(luaShader);
+				shader->Use();
+				ZHL::Log("Using shader %u\n", shader->GetProgram());
+			}
+
+			luaVertexBuffer->Bind();
+			luaVertexBuffer->Draw();
+
+			lua_pop(L, 1);
+		}
+
+		return true;
+	}
+	else {
+		ZHL::Log("%s\n", lua_tostring(L, -1));
+		assert(false);
+		return false;
+	}
+
+}
+
 void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GLenum mode, GLsizei count, GLenum type, const void* indices) {
 	float* vertexBuffer = (float*)descriptor->vertices.GetBase();
 	size_t size = 0;
@@ -2181,9 +2367,8 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 		contexts = &it->second;
 	}
 	int callbackId = 1136;
+	bool called = false;
 	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0 && contexts) {
-		GL::InitProjectionMatrix();
-
 		int currentShader; 
 		glGetIntegerv(GL_CURRENT_PROGRAM, &currentShader);
 
@@ -2197,41 +2382,80 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 			}
 		}
 
+		if (shaderId == -1) {
+			goto render;
+		}
+
+		GL::InitProjectionMatrix();
+		/* In a call to the function, the first parameter will have the following
+		 * structure :
+		 * bufferAndContexts = {
+		 *	[1] => {
+		 *	  buffer => {
+		 *		[1] => Data 1
+		 *		[2] => Data 2
+		 *		...
+		 *	  }, 
+		 *	  context => Context
+		 *	},
+		 *	[2] => {
+		 *	  ...
+		 *  }, 
+		 *  ...
+		 * }
+		 */
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua::LuaCaller caller(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaRender::PreOpenGLDrawInvoker);
 		caller.pushTable(contexts->size(), 0); // Stack: table (Lua fun param)
 		int paramTableIndex = lua_gettop(L);
 
 		GL::VertexBuffer asVertexBuffer(vertexBuffer, (ShaderType)shaderId, GL::GetNumberOfVertices(type, indices, count), indices, count, type);
 		int i = 1;
+		std::map<float*, std::tuple<float*, size_t>> validation;
 		for (LuaRender::ContextQueue const& queue : *contexts) {
 			lua_createtable(L, 0, 2); // Stack: table (Lua fun param), table (context and buffer)
 			int contextAndBufferIndex = lua_gettop(L);
 
 			// 1. Create the context's data
 			lua_createtable(L, queue.size(), 0); // Stack: table (Lua fun param), table (context and buffer), table (context data)
-			GL::ContextLuaVisitor visitor(L);
+			GL::ContextLuaVisitor visitor(L, false);
 			for (LuaRender::Context const& context : queue) {
 				std::visit(visitor, context);
 			}
 			lua::TableAssoc(L, "context", contextAndBufferIndex, -1);
 
 			// 2. Slice the vertex buffer and send it to Lua
-			
+			void* subVertexBuffer = lua_newuserdata(L, sizeof(GL::VertexBuffer));
+			luaL_setmetatable(L, LuaRender::VertexBufferMT);
+			new (subVertexBuffer) GL::VertexBuffer(asVertexBuffer, 4 * (i - 1), 4 * i, 6); // i starts at 1
+			// ZHL::Log("Allocated sliced vertex buffer at %p, _data at %p\n", subVertexBuffer, ((GL::VertexBuffer*)subVertexBuffer)->_data);
+			void* cmpDest = ((GL::VertexBuffer*)subVertexBuffer)->_data;
+			void* cmpSrc = asVertexBuffer._data + asVertexBuffer._descriptor->GetSize() * 4 * (i - 1);
+			size_t cmpSize = asVertexBuffer._descriptor->GetSize() * 4 * sizeof(float);
+			if (memcmp(cmpDest, cmpSrc, cmpSize)) {
+				assert(false);
+			}
+
 			lua::TableAssoc(L, "buffer", contextAndBufferIndex, -1);
 
 			lua::TableAssoc(L, i, paramTableIndex, contextAndBufferIndex);
+			++i;
 		}
 
-		// If the return value is a pipeline, override the default rendering.
+		caller.push(shaderId);
 		lua::LuaResults results = caller.call(1);
-		if (!results) {
-			assert(lua_type(L, -1) == LUA_TTABLE);
-		}
+		called = true;
+		// asVertexBuffer.Bind();
+		// asVertexBuffer.Draw();
+		// called = true;
+		called = ProcessCallbackResults(L, results, validation);
 	}
 
-	glDrawElements(mode, count, type, indices);
+render:
+	if (!called)
+		glDrawElements(mode, count, type, indices);
 
 	LuaRender::ElementsRenderContext[&descriptor->elements].clear();
 	LuaRender::VerticesRenderContext[&descriptor->vertices].clear();
@@ -2644,8 +2868,9 @@ namespace LuaRender {
 
 	void PostLuaInit(LuaEngine* engine) {
 		lua_State* L = engine->_state;
-		lua_getglobal(L, "PreOpenGLRender");
-		LuaRender::PreOpenGLDrawInvoker = luaL_ref(L, -1);
+		int res = lua_getglobal(L, "PreOpenGLRender");
+		assert(res == LUA_TFUNCTION);
+		LuaRender::PreOpenGLDrawInvoker = luaL_ref(L, LUA_REGISTRYINDEX);
 		lua_pushnil(L);
 		lua_setglobal(L, "PreOpenGLRender");
 	}
