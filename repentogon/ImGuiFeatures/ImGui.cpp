@@ -226,7 +226,7 @@ bool handleImguiInputUTF8(WPARAM wParam, LPARAM lParam) {
 	static int next_byte = 0;
 	static char bytes[4] = { 0 };
 	if (0 == (wParam & 0x80)) {
-		byte_length = 0;
+		byte_length = next_byte = 0;
 		return false; // ascii code
 	}
 	if (byte_length) {
@@ -234,7 +234,7 @@ bool handleImguiInputUTF8(WPARAM wParam, LPARAM lParam) {
 			bytes[next_byte++] = wParam;
 			if (next_byte == byte_length) {
 				handleImguiInput(bytes, byte_length);
-				next_byte = byte_length = 0;
+				byte_length = next_byte = 0;
 			}
 			return true;
 		}
