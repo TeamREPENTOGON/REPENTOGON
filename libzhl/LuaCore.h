@@ -344,6 +344,8 @@ namespace lua {
         }
 
         void pushTable(int narr = 0, int nrec = 0);
+        void pushRef(int t, int ref);
+        void pushGlobal(const char* global);
 
         LuaResults call(int nresults);
 
