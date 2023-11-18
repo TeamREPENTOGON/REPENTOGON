@@ -5,6 +5,7 @@
 #include "../LuaInterfaces/Entities/EntityPlayer.h"
 #include "../LuaInterfaces/LuaRender.h"
 #include "XMLData.h"
+#include "ModReloading.h"
 
 #include "ASMPatches.h"
 #include "ASMPatcher.hpp"
@@ -987,6 +988,22 @@ void ASMPatchRoomClearDelay() {
 }
 */
 
+void __stdcall GameRestartPatch() {
+	GameRestart();
+}
+
+void ASMPatchMenuOptionsLanguageChange() {
+	// before lua reset in MenuOptions::Update
+	// this only happens when switching the language in the Options menu.
+	SigScan scanner("743e8b35????????68????????6a00e8????????83c408"); 
+	scanner.Scan();
+	void* addr1 = scanner.GetAddress();
+	printf("[REPENTOGON] Patch options menu language change operate at %p.", addr1);
+	ASMPatch patch;
+	patch.AddInternalCall(GameRestart);
+	sASMPatcher.PatchAt(addr1, &patch);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
@@ -1011,4 +1028,5 @@ void PerformASMPatches() {
 	ASMPatchPostPlayerUseBomb();
 	ASMPatchPreMMorphActiveCallback();
 	PatchRoomClearDelay();
+	ASMPatchMenuOptionsLanguageChange();
 }
