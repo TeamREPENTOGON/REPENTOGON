@@ -179,7 +179,7 @@ LUA_FUNCTION(Lua_EntityConfigEntityHasEntityTags)
 		lua_pushboolean(L, false);
 	}
 	else {
-		lua_pushboolean(L, tags & entity->tags == tags);
+		lua_pushboolean(L, (tags & entity->tags) == tags);
 	}
 	return 1;
 }
@@ -234,7 +234,7 @@ LUA_FUNCTION(Lua_EntityConfigEntityHasGibFlags)
 		lua_pushboolean(L, false);
 	}
 	else {
-		lua_pushboolean(L, flags & entity->gibFlags == flags);
+		lua_pushboolean(L, (flags & entity->gibFlags) == flags);
 	}
 	return 1;
 }
