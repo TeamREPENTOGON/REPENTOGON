@@ -143,6 +143,11 @@ ___
 Gets the entity SubType by entity name.
 
 ___
+### Get·Giant·Book·Id·By·Name () {: aria-label='Functions' }
+#### int GetGiantBookIdByName ( string name) {: .copyable aria-label='Functions' }
+Gets a GiantBook Id by name. For vanilla giantbooks, the png filename, from thr gfx xml attribute, is used as the giantbook name.
+
+___
 ### Get·Im·Gui () {: aria-label='Functions' }
 #### [ImGui](ImGui.md) GetImGui ( ) {: .copyable aria-label='Functions' }
 

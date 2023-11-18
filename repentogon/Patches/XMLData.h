@@ -471,6 +471,7 @@ struct XMLData {
 	XMLBackdrop* BackdropData = new XMLBackdrop();
 	XMLAchievement* AchievementData = new XMLAchievement();
 	XMLGeneric* GiantBookData = new XMLGeneric(46);
+	XMLGeneric* BossRushData = new XMLGeneric(0);
 
 	XMLMod* ModData = new XMLMod();
 
@@ -502,6 +503,7 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["itempools"] = 20;
 	xmlnodeenum["bosspools"] = 21;
 	xmlnodeenum["giantbook"] = 22;
+	xmlnodeenum["bossrush"] = 23;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 

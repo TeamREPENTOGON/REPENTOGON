@@ -310,6 +310,20 @@ LUA_FUNCTION(Lua_GetCutsceneByName) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetGiantBookByName) {
+	string text = string(luaL_checkstring(L, 1));
+	if (XMLStuff.GiantBookData->byname.count(text) > 0)
+	{
+		XMLAttributes ent = XMLStuff.GiantBookData->GetNodeByName(text);
+		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
+			lua_pushnumber(L, stoi(ent["id"]));
+			return 1;
+		}
+	};
+	lua_pushnumber(L, 0);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_IsaacCanStartTrueCoop) {
 	lua_pushboolean(L, !PlayerManager::CoopBabiesOnly());
 	return 1;
@@ -401,6 +415,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetLoadedModules", Lua_GetLoadedModules);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypwByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCutsceneIdByName", Lua_GetCutsceneByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetGiantBookIdByName", Lua_GetGiantBookByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNullItemIdByName", Lua_IsaacGetNullItemIdByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetRenderPosition", Lua_IsaacGetRenderPosition);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCollectibleSpawnPosition", Lua_IsaacGetCollectibleSpawnPosition);

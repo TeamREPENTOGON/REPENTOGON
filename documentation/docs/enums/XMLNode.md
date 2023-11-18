@@ -33,3 +33,4 @@ tags:
 |25 |BACKDROP {: .copyable } |  |
 |26 |ACHIEVEMENT {: .copyable } |  |
 |27 |GIANTBOOK {: .copyable } |  |
+|28 |BOSSRUSHWAVE {: .copyable } |  |

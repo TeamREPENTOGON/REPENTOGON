@@ -2330,6 +2330,7 @@ XMLNode = {
 	BACKDROP = 25,
 	ACHIEVEMENT = 26,
 	GIANTBOOK = 27,
+	BOSSRUSHWAVE = 28,
 }
 
 AutocompleteType = {

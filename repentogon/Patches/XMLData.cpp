@@ -1809,7 +1809,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				attributes[stringlower(attr->name())] = string(attr->value());
 			}
 			string oldid = attributes["id"];
-			if ((attributes.find("id") != attributes.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+			if ((attributes.find("id") != attributes.end()) && ((attributes.find("sourceid") == attributes.end()) || !iscontent)) {
 				id = toint(attributes["id"]);
 			}
 
@@ -1823,19 +1823,55 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.GiantBookData->maxid = id;
 			}
 
-			if (oldid.length() > 0) { attributes["id"] = oldid; }
-			attributes["sourceid"] = lastmodid;
+			if (attributes.find("sourceid") == attributes.end()) {
+				attributes["sourceid"] = lastmodid;
+			}
 			XMLStuff.GiantBookData->ProcessChilds(auxnode, id);
 			if ((attributes.find("name") == attributes.end()) && (attributes.find("gfx") != attributes.end())) {
 				attributes["name"] = getFileName(attributes["gfx"]);
 			}
 			//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
-			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.GiantBookData->byrelativeid[lastmodid + attributes["relativeid"]] = id; }
-			XMLStuff.GiantBookData->bynamemod[attributes["name"] + lastmodid] = id;
-			XMLStuff.GiantBookData->bymod[lastmodid].push_back(id);
+			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.GiantBookData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
+			XMLStuff.GiantBookData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+			XMLStuff.GiantBookData->bymod[attributes["sourceid"]].push_back(id);
 			XMLStuff.GiantBookData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.GiantBookData->byname[attributes["name"]] = id;
 			XMLStuff.GiantBookData->nodes[id] = attributes;
+			//XMLStuff.ModData->sounds[lastmodid] += 1;
+			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+		}
+		break;
+	case 23: //bossrush
+		id = 1;
+		daddy = node;
+		babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes attributes;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				attributes[stringlower(attr->name())] = string(attr->value());
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				attributes[stringlower(attr->name())] = string(attr->value());
+			}
+			attributes["id"] = to_string(id);
+			if (id > XMLStuff.BossRushData->maxid) {
+				XMLStuff.BossRushData->maxid = id;
+			}
+			if (attributes.find("sourceid") == attributes.end()) {
+				lastmodid = "BaseGame";
+				attributes["sourceid"] = lastmodid;
+			}
+			XMLStuff.BossRushData->ProcessChilds(auxnode, id);
+			printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
+			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.BossRushData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
+			XMLStuff.BossRushData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+			XMLStuff.BossRushData->bymod[attributes["sourceid"]].push_back(id);
+			XMLStuff.BossRushData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.BossRushData->byname[attributes["name"]] = id;
+			XMLStuff.BossRushData->nodes[id] = attributes;
+			id++;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -2293,6 +2329,10 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 	case 27:
 		Node = XMLStuff.GiantBookData->GetNodeByName(entityname);
 		Childs = XMLStuff.GiantBookData->childs[XMLStuff.GiantBookData->byname[entityname]];
+		break;
+	case 28:
+		Node = XMLStuff.BossRushData->GetNodeByName(entityname);
+		Childs = XMLStuff.BossRushData->childs[XMLStuff.BossRushData->byname[entityname]];
 		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
