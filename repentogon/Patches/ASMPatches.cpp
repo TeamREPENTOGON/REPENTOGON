@@ -883,16 +883,18 @@ void ASMPatchPreMMorphActiveCallback() {
 }
 
 void __stdcall SetRoomClearDelay(Room* room) {
-	room->_roomClearDelay = repentogonOptions.quickRoomClear ? 0 : 10;
+	room->_roomClearDelay = repentogonOptions.quickRoomClear ? 3 : 10;
 }
 
-void ASMPatchRoomClearDelay() {
-	SigScan scanner("c787????????0a00000075??8b469");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
+bool __stdcall CheckSaveStateClearDelay(Room* room) {
+	return room->_roomClearDelay - 1 < (repentogonOptions.quickRoomClear ? 1 : 8);
+}
 
-	printf("[REPENTOGON] Patching Room Clear delay at %p\n", addr);
+bool __stdcall CheckDeepGaperClearDelay(Room* room) {
+	return room->_roomClearDelay - 1 < (repentogonOptions.quickRoomClear ? 2 : 9);
+}
 
+void ASMPatchRoomUpdate(void* addr) {
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
 	patch.Push(ASMPatch::Registers::EAX) // preserve unmodified eax
@@ -905,6 +907,46 @@ void ASMPatchRoomClearDelay() {
 		.Pop(ASMPatch::Registers::EAX) // restore unmodified eax
 		.AddRelativeJump((char*)addr + 0xa); // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchRoomSaveState(void* addr) {
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::ESI) // push Room
+		.AddInternalCall(CheckSaveStateClearDelay) // call CheckSaveStateClearDelay()
+		.AddBytes("\x84\xc0") // TEST AL, AL
+		.RestoreRegisters(reg)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x89) // jump if false
+		.AddRelativeJump((char*)addr + 0xc); // jump to roomdescriptor flag check
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchDeepGaperClearCheck(void* addr) {
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(reg)
+		.Push(ASMPatch::Registers::EAX, 0x18190) // push Room
+		.AddInternalCall(CheckDeepGaperClearDelay) // call CheckDeepGaperClearDelay()
+		.AddBytes("\x84\xc0") // TEST AL, AL
+		.RestoreRegisters(reg)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x27) // jump to canshutdoors = true
+		.AddRelativeJump((char*)addr + 0xf); // jump to next check
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void PatchRoomClearDelay() {
+	SigScan scanner1("c787????????0a00000075??8b469"); // Room::Update
+	SigScan scanner2("8b86????????4883f807"); // Room::SaveState
+	SigScan scanner3("8b80????????83b8????????09"); // ai_deep_gaper
+	scanner1.Scan();
+	scanner2.Scan();
+	scanner3.Scan();
+	void* addrs[3] = { scanner1.GetAddress(), scanner2.GetAddress(), scanner3.GetAddress() };
+	printf("[REPENTOGON] Patching Room clear delay setters/checks at %p, %p, %p\n", addrs[0], addrs[1], addrs[2]);
+	ASMPatchRoomUpdate(addrs[0]);
+	ASMPatchRoomSaveState(addrs[1]);
+	ASMPatchDeepGaperClearCheck(addrs[2]);
 }
 
 /*
@@ -968,5 +1010,5 @@ void PerformASMPatches() {
 	ASMPatchPrePlayerUseBomb();
 	ASMPatchPostPlayerUseBomb();
 	ASMPatchPreMMorphActiveCallback();
-	ASMPatchRoomClearDelay();
+	PatchRoomClearDelay();
 }
