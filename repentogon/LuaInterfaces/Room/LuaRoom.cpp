@@ -7,7 +7,7 @@ LUA_FUNCTION(Lua_SpawnGridEntity) {
 	bool ret = false;
 	int GridIndex = (int)luaL_checkinteger(L, 2);
 	if (GridIndex < 0 || GridIndex > 447) {
-		return luaL_argerror(L, 2, "Grid index invalid");
+		return luaL_error(L, "Grid index %d invalid", GridIndex);
 	}
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
 		GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
@@ -21,6 +21,7 @@ LUA_FUNCTION(Lua_SpawnGridEntity) {
 		int VarData = (int)luaL_optinteger(L, 6, 0);
 		ret = room->SpawnGridEntity(GridIndex, Type, Variant, Seed, VarData);
 	}
+	lua_pushboolean(L, ret);
 	return 1;
 }
 
