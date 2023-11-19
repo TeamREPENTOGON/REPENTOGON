@@ -281,6 +281,14 @@ LUA_FUNCTION(Lua_RoomSetGreedWaveTimer) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RoomIsPersistentRoomEntity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	const int type = luaL_checkinteger(L, 2);
+	const int varinat = luaL_optinteger(L, 3, 0);
+	lua_pushboolean(L, room->IsPersistentRoomEntity(type, varinat, 0));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -315,6 +323,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetRoomClearDelay", Lua_RoomSetRoomClearDelay},
 		{ "GetGreedWaveTimer", Lua_RoomGetGreedWaveTimer},
 		{ "SetGreedWaveTimer", Lua_RoomSetGreedWaveTimer},
+		{ "IsPersistentRoomEntity", Lua_RoomIsPersistentRoomEntity},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

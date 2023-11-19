@@ -3047,3 +3047,26 @@ HOOK_METHOD(Entity_Familiar, FireTechLaser, (const Vector& AimDirection) -> Enti
 
 	return laser;
 }
+
+//IS_PERSISTENT_ROOM_ENTITY (id: 1263)
+HOOK_METHOD(Room, IsPersistentRoomEntity, (int type, int variant, int subtype) -> bool) {
+	int callbackid = 1263;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(type)
+			.push(variant)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1)) {
+			return lua_toboolean(L, -1);
+		}
+	}
+	return super(type, variant, subtype);
+}

@@ -64,6 +64,9 @@ __thiscall ColorModState Room::ComputeColorModifier();
 "558bec83ec0c5356578b7d??8bd9895d??85ff":
 __thiscall int Room::TryGetShopDiscount(int shopItemIdx, int price);
 
+"558bec8b45??83f82a":
+bool Room::IsPersistentRoomEntity(int type, int variant, int subtype);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
