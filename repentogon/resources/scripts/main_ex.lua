@@ -2,7 +2,7 @@ REPENTOGON = {
 	["Real"] = true,
 	["Name"] = "REPENTOGON", --I avoid having to do RegisterMod this way, sorry ;P
 	["RESOURCEPATH"] = "../../../resources-repentogon",
-	["Extras"] = {}, -- Tables containing additional REPENTOGON data structures, example: ChangeLog or StatsMenu
+	["Extras"] = { ["Misc"]={}, }, -- Tables containing additional REPENTOGON data structures, example: ChangeLog or StatsMenu
 }
 
 collectgarbage("generational")
@@ -570,9 +570,6 @@ local function logError(callbackID, modName, err)
 	history = table.concat(history, "\n"):reverse()
 
 	local cbName = callbackIDToName[callbackID] or callbackID
-	if type(cbName) == "table" then
-		cbName = "<Unknown Callback>"
-	end
 	local consoleLog = '"' .. cbName .. '" from "' .. modName .. '" failed: ' .. err
 
 	-- We add a \n to our comparison to account for the parsed history having one.
@@ -840,10 +837,54 @@ end
 -- Reset Imgui Data after reload of all mods
 Isaac.GetImGui():Reset()
 
+--resource load error, used in changelog but it's not strictly a changelog thing so i'm putting it here
+local res_error_font=Font()
+local loaded_reserror_font=""
+
+local curlocale="default"
+local reserror_text={
+	["en"]={"Unable to load REPENTOGON",
+				"resources. Please make sure",
+				"that all files are copied",
+				"correctly and that mods are",
+				"enabled in the mods menu!",},
+	["ru"]={"Не удалось загрузить ресурсы",
+			"REPENTOGON-а. Просьба проверить",
+			"наличие всех файлов и убедиться,",
+			"что моды включены в меню модов!",},
+	["zh"]={"无法加载 REPENTOGON 资源。",
+			"请确保正确复制了所有文件，并在 mod",
+			"菜单中启用了 mod!",},
+}
+
+local reserror_fonts={
+	["en"]={"font/pftempestasevencondensed.fnt",0,0}, --font name, hori and vert offsets relative to en replacement
+	["ru"]={"font/pftempestasevencondensed.fnt",-30,0},
+	["zh"]={"font/cjk/lanapixel.fnt",-15,0},
+}
+
+
+local function NoRepentogonFolderErrRender()
+--	if MenuManager:GetActiveMenu()==MainMenuType.TITLE then
+		curlocale=Options.Language
+		if not reserror_text[curlocale] then curlocale="en" end
+		if loaded_reserror_font~=reserror_fonts[curlocale][1] or (not res_error_font:IsLoaded()) then res_error_font:Load(reserror_fonts[curlocale][1]) end
+		local rendercoords=Isaac.WorldToMenuPosition(MainMenuType.TITLE,Vector(260+reserror_fonts[curlocale][2],180+reserror_fonts[curlocale][3]))
+		for i,line in ipairs(reserror_text[curlocale]) do
+			res_error_font:DrawStringUTF8(line,rendercoords.X,rendercoords.Y + 12*(i-1) ,KColor(0.7,0.1,0.1,1.0),0,false)
+		end
+--	end
+end
+REPENTOGON.Extras.Misc.NoRPTGNFldrErr=NoRepentogonFolderErrRender
+
+--res load error stuff end
+
 pcall(require("repentogon_extras/changelog"))
 pcall(require("repentogon_extras/daily_stats"))
 pcall(require("repentogon_extras/stats_menu"))
 pcall(require("repentogon_extras/onlinestub"))
+
+
 
 -- TESTING !!
 pcall(require("repentogon_tests/test_imgui"))

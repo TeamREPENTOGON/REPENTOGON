@@ -131,9 +131,9 @@ function ChangeLog.MenuRender()
     end
     Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.NoteOffset))
     local versionPosition = Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.VersionOffset)
-    Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X + 1, versionPosition.Y + 1,
+    Cl.VersionFont:DrawStringUTF8("REPENTOGON 2d210f8", versionPosition.X + 1, versionPosition.Y + 1,
         KColor(0, 0, 0, 0.3), 200, true)
-    Cl.VersionFont:DrawStringUTF8("REPENTOGON dev build", versionPosition.X, versionPosition.Y,
+    Cl.VersionFont:DrawStringUTF8("REPENTOGON 2d210f8", versionPosition.X, versionPosition.Y,
         KColor(67 / 255, 5 / 255, 5 / 255, 1), 200, true)
     if MenuManager:GetActiveMenu() == _MainMenuType.TITLE then
         if IsActionTriggeredAll(_ButtonAction.ACTION_MAP) then
@@ -233,10 +233,10 @@ function ChangeLog.LoadAssets()
         Cl.NoteSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog_tab_paper.anm2", true)
         Cl.NoteSprite:Play("Idle")
         curattempt=curattempt+1
-        if curattempt>200 then
+        if curattempt>5 then
 		Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, ChangeLog.LoadAssets)
 		Isaac.RemoveCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, Cl.MenuRender)
-        	error("[NON-CRITICAL] Changelog graphics were not found!")
+            Isaac.AddCallback(REPENTOGON,_ModCallbacks.MC_MAIN_MENU_RENDER,REPENTOGON.Extras.Misc.NoRPTGNFldrErr)
         end
     end
     if not Cl.Font:IsLoaded() then
