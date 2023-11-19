@@ -998,7 +998,7 @@ void ASMPatchMenuOptionsLanguageChange() {
 	SigScan scanner("743e8b35????????68????????6a00e8????????83c408"); 
 	scanner.Scan();
 	void* addr1 = scanner.GetAddress();
-	printf("[REPENTOGON] Patch options menu language change operate at %p.", addr1);
+	printf("[REPENTOGON] Patch options menu language change operate at %p.\n", addr1);
 	ASMPatch patch;
 	patch.AddInternalCall(GameRestart);
 	sASMPatcher.PatchAt(addr1, &patch);

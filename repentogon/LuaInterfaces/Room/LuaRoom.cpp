@@ -2,6 +2,28 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+LUA_FUNCTION(Lua_SpawnGridEntity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	bool ret = false;
+	int GridIndex = (int)luaL_checkinteger(L, 2);
+	if (GridIndex < 0 || GridIndex > 447) {
+		return luaL_argerror(L, 2, "Grid index invalid");
+	}
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+		ret = room->SpawnGridEntity(GridIndex, desc);
+	}
+	else
+	{
+		int Type = (int)luaL_checkinteger(L, 3);
+		int Variant = (int)luaL_optinteger(L, 4, 0);
+		unsigned int Seed = (unsigned int)luaL_optinteger(L, 5, GridIndex + g_Game->_frameCount + 1);
+		int VarData = (int)luaL_optinteger(L, 6, 0);
+		ret = room->SpawnGridEntity(GridIndex, Type, Variant, Seed, VarData);
+	}
+	return 1;
+}
+
 LUA_FUNCTION(Lua_RemoveGridEntityImmediate) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	int GridIndex = (int)luaL_checkinteger(L, 2);
@@ -265,6 +287,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetShopItemPrice", Lua_RoomGetShopItemPrice},
+		{ "SpawnGridEntity", Lua_SpawnGridEntity},
 		{ "RemoveGridEntityImmediate", Lua_RemoveGridEntityImmediate},
 		{ "CanSpawnObstacleAtPosition", Lua_RoomCanSpawnObstacleAtPosition},
 		{ "GetWaterAmount", Lua_RoomGetWaterAmount},

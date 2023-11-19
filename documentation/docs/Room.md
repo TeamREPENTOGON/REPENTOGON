@@ -1,5 +1,14 @@
 # Class "Room"
 
+## Modified Functions
+
+### Spawn·Grid·Entity () {: aria-label='Functions' }
+#### boolean SpawnGridEntity ( int GridIndex, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant = 0, int Seed = default, int VarData = 0 ) {: .copyable aria-label='Modified Functions' }
+#### boolean SpawnGridEntity ( int GridIndex, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Descriptor) {: .copyable aria-label='Modified Functions' }
+
+No longer crashes if an invalid `GridIndex` is used. All arguments beyond `Type` are optional. An overload has been added to allow spawning a new grid entity using an existing `GridEntityDesc`.
+___
+
 ## Functions
 
 ### Can·Pickup·Grid·Entity () {: aria-label='Functions' }
