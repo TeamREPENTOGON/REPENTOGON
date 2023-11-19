@@ -4,8 +4,13 @@
 
 LUA_FUNCTION(Lua_GetPlayerHUD) {
 	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
+	int index = (int)luaL_optinteger(L, 2, 0);
+
+	if (index < 0 || index > 7) {
+		return luaL_error(L, "Invalid index %d, value must be between 0 and 7", index);
+	}
+
 	PlayerHUD** ud = (PlayerHUD**)lua_newuserdata(L, sizeof(PlayerHUD*));
-	int index = (int)luaL_checkinteger(L, 2);
 	*ud = hud->GetPlayerHUD(index);
 	luaL_setmetatable(L, lua::metatables::PlayerHUDMT);
 	return 1;

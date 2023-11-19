@@ -85,6 +85,10 @@ ___
 Return whether boss spawns in this room will be champions.
 
 ___
+### Is·Persistent·Room·Entity () {: aria-label='Functions' }
+#### boolean IsPersistentRoomEntity ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, Varinat = 0 ) {: .copyable aria-label='Functions' }
+
+___
 ### Pickup·Grid·Entity () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) PickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
 
@@ -95,7 +99,7 @@ ___
 
 ___
 ### Set·Backdrop·Type () {: aria-label='Functions' }
-#### void SetBackdropType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/BackdropType.html), int Unknown ) {: .copyable aria-label='Functions' }
+#### void SetBackdropType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html), int Unknown ) {: .copyable aria-label='Functions' }
 This function will not work if the Unknown integer is passed as `0`.
 
 The backdrop variant chosen is seeded based on the room, and does not persist when leaving and re-entering. Calling this function again on re-entry will result in the same backdrop variant as before.

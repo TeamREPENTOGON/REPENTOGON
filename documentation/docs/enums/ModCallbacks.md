@@ -1281,3 +1281,11 @@ Returning any value will have no effect on later callback executions.
 |:--|:--|:--|:--|:--|
 |1262 |MC_POST_FAMILIAR_FIRE_TECH_LASER {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
 
+### MC_IS_PERSISTENT_ROOM_ENTITY {: .copyable }
+Returning ``true`` allows entity to respawn.
+
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1263 |MC_IS_PERSISTENT_ROOM_ENTITY {: .copyable } | ([EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant) | - | boolean |
+
