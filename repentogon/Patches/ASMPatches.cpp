@@ -887,8 +887,10 @@ void __stdcall SetRoomClearDelay(Room* room) {
 	room->_roomClearDelay = repentogonOptions.quickRoomClear ? 3 : 10;
 }
 
-bool __stdcall CheckSaveStateClearDelay(Room* room) {
-	return room->_roomClearDelay - 1 < (repentogonOptions.quickRoomClear ? 1 : 8);
+void __stdcall CheckSaveStateClearDelay(void * addr) {
+	ASMPatch flat;
+	flat.AddBytes(ByteBuffer().AddByte(repentogonOptions.quickRoomClear ? 0x1 : 0x8));
+	sASMPatcher.FlatPatch(addr, &flat);
 }
 
 bool __stdcall CheckDeepGaperClearDelay(Room* room) {
@@ -911,15 +913,14 @@ void ASMPatchRoomUpdate(void* addr) {
 }
 
 void ASMPatchRoomSaveState(void* addr) {
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS, true);
-	ASMPatch patch;
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS - ASMPatch::SavedRegisters::EAX, true);
+	ASMPatch patch, flat;
 	patch.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::ESI) // push Room
+		.Push((int)((char*)addr + 0x9)) // push address of number to compare
 		.AddInternalCall(CheckSaveStateClearDelay) // call CheckSaveStateClearDelay()
-		.AddBytes("\x84\xc0") // TEST AL, AL
 		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x89) // jump if false
-		.AddRelativeJump((char*)addr + 0xc); // jump to roomdescriptor flag check
+		.MoveFromMemory(ASMPatch::Registers::ESI, 0x11ec, ASMPatch::Registers::EAX)
+		.AddRelativeJump((char*)addr + 0x6); // jump to DEC
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
