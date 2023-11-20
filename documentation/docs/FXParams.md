@@ -7,7 +7,7 @@
 
     ???+ example "Example Code"
         ```lua
-        local fxparams = Game():GetCurrentRoom():GetFXParams()
+        local fxparams = Game():GetRoom():GetFXParams()
         ```
         
 ## Functions
