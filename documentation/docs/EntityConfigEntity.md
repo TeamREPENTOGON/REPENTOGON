@@ -1,7 +1,13 @@
 # Class "EntityConfigEntity"
 
-Can be obtained via [EntityConfig:GetEntity(Type, Variant, SubType)](EntityConfig.md).
+???+ info
+    Can be obtained via the `EntityConfig` global table.
 
+    ???+ example "Example Code"
+        ```lua
+        local gaperConfig = EntityConfig.GetEntity(EntityType.ENTITY_GAPER)
+        ```
+        
 ## Functions
 
 ### Can·Be·Champion () {: aria-label='Functions' }

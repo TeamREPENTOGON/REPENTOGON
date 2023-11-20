@@ -181,6 +181,7 @@ namespace lua {
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* EntityConfigMT;
         extern LIBZHL_API const char* EntityConfigEntityMT;
+        extern LIBZHL_API const char* EntityConfigPlayerMT;
         extern LIBZHL_API const char* EntitySaveStateMT;
         extern LIBZHL_API const char* EntitySlotMT;
         extern LIBZHL_API const char* FXParamsMT;

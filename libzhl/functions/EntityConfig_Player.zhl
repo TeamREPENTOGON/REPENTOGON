@@ -12,6 +12,8 @@ struct EntityConfig_Player depends (ANM2) {
 	std_string _skinPath : 0x1c;
 	std_string _nameImagePath : 0x34;
 	std_string _portraitPath : 0x4c;
+	std_string _unkString : 0x64;
+	std_string _extraPortraitPath : 0x7c;
 	std_string _costumeSuffixName : 0x94;
 	int _costumeID : 0xac;
 	int _heart : 0xb0;
@@ -20,15 +22,26 @@ struct EntityConfig_Player depends (ANM2) {
 	int _coins : 0xbc;
 	int _bombs : 0xc0;
 	int _keys : 0xc4;
+	int _card : 0xc8;
+	int _pill : 0xcc;
 	bool _canShoot : 0xd0;
 	std_vector_int _collectibles : 0xd4;
+	int _trinket : 0xe0;
+	int _skinColor : 0xe4;
 	int _achievement : 0xe8;
 	int _brokenHeart : 0xec;
-	uint32_t _pocketItemID: 0xf0;
+	uint32_t _pocketActiveID: 0xf0;
 	std_string _birthrightDescription : 0xf4;
-	std_string _unkString : 0x64;
-	std_string _extraPortraitPath : 0x7c;
-	std_string _bSkinParentName : 0x11c;
+	std_string _bSkinParentName : 0x10c;  // Vanilla characters don't have this.
+	// For a MODDED character WITH a tainted version, this holds the ID of the TAINTED character.
+	// For EVERYBODY else, this holds the character's OWN ID.
+	int _moddedTaintedPlayerID : 0x124;
+	bool _hidden : 0x128;  // Vanilla characters don't have this.
+	ModEntry* _modEntry : 0x12C;
+	// ??? _unk : 0x130;
+	ANM2* _moddedMenuBackgroundANM2 : 0x134;
+	ANM2* _moddedMenuPortraitANM2 : 0x138;
+	ANM2* _moddedGameOverANM2 : 0x13C;
+	ANM2* _moddedCoopMenuANM2 : 0x140;
 	ANM2* _moddedControlsANM2 : 0x144;
-	
 } : 0x148;

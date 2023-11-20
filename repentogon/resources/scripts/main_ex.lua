@@ -834,6 +834,9 @@ function RegisterMod(name, ver)
 	return out
 end
 
+
+rawset(Isaac, "GetEntityConfig", function() return EntityConfig end)
+
 -- Reset Imgui Data after reload of all mods
 Isaac.GetImGui():Reset()
 

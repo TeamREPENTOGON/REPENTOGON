@@ -731,6 +731,7 @@ namespace lua {
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
 		const char* EntityConfigMT = "EntityConfig";
 		const char* EntityConfigEntityMT = "EntityConfigEntity";
+		const char* EntityConfigPlayerMT = "EntityConfigPlayer";
 		const char* EntitySaveStateMT = "EntitySaveState";
 		const char* EntitySlotMT = "EntitySlot";
 		const char* FXParamsMT = "FXParams";
