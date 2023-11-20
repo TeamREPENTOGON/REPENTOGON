@@ -86,7 +86,7 @@ Return whether boss spawns in this room will be champions.
 
 ___
 ### Is·Persistent·Room·Entity () {: aria-label='Functions' }
-#### boolean IsPersistentRoomEntity ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, Varinat = 0 ) {: .copyable aria-label='Functions' }
+#### boolean IsPersistentRoomEntity ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = 0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### Pickup·Grid·Entity () {: aria-label='Functions' }
