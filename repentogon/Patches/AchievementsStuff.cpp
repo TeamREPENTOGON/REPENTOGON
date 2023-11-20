@@ -80,7 +80,7 @@ void LoadAchievementsFromJson() {
 }
 
 HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
-	if (achieveemntid <= 638) {
+	if (achieveemntid < 638) {
 		return super(achieveemntid);
 	}
 	ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
@@ -143,7 +143,7 @@ HOOK_METHOD(AchievementOverlay, Update, () -> void) {
 }
 
 HOOK_METHOD(PersistentGameData, Unlocked, (int achieveemntid) -> bool) {
-	if (achieveemntid <= 638) {
+	if (achieveemntid < 638) {
 		return super(achieveemntid);
 	}
 	XMLAttributes modachiev = XMLStuff.AchievementData->nodes[achieveemntid];
