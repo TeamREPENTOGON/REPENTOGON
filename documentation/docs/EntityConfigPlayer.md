@@ -11,7 +11,7 @@
 ## Functions
 
 ### Can·Shoot () {: aria-label='Functions' }
-#### bool CanShoot ( ) {: .copyable aria-label='Functions' }
+#### boolean CanShoot ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Achievement·ID () {: aria-label='Functions' }
@@ -117,13 +117,13 @@ Note that this Sprite is shared by other characters from the same mod - there is
 Returns nil for vanilla characters, or characters with no corresponding animation.
 
 ___
+### Get·Name () {: aria-label='Functions' }
+#### string GetName ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Name·Image·Path () {: aria-label='Functions' }
 #### string GetNameImagePath ( ) {: .copyable aria-label='Functions' }
 Path to the PNG file used for the character's name on the boss VS screen.
-
-___
-### Get·Name () {: aria-label='Functions' }
-#### string GetName ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Pill () {: aria-label='Functions' }
@@ -176,15 +176,15 @@ Does not include starting trinkets obtained via unlocks.
 Does not include trinkets added by mods.
 
 ___
-### Is·Tainted () {: aria-label='Functions' }
-#### bool IsTainted ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Is·Hidden () {: aria-label='Functions' }
-#### bool IsHidden ( ) {: .copyable aria-label='Functions' }
+#### boolean IsHidden ( ) {: .copyable aria-label='Functions' }
 Returns true if the character is not visible/selectable from the character select screen.
 
 Doesn't include characters who are only hidden until unlocked.
+
+___
+### Is·Tainted () {: aria-label='Functions' }
+#### boolean IsTainted ( ) {: .copyable aria-label='Functions' }
 
 ___
 

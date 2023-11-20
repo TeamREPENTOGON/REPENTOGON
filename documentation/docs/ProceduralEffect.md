@@ -65,13 +65,13 @@ When `GetConditionType` returns `ENTITY_SPAWN`, the returned table has the follo
 | variant |  int |
 
 ___
-### Get·Trigger·Chance () {: aria-label='Functions' }
-#### float GetTriggerChance ( ) {: .copyable aria-label='Functions' }
-
-Value form 0 to 1.
-___
 ### Get·Condition·Type () {: aria-label='Functions' }
 #### [ProceduralEffectConditionType](enums/ProceduralEffectConditionType.md) GetConditionType ( ) {: .copyable aria-label='Functions' }
 Returns the timing when the effect was triggered.
 
+___
+### Get·Trigger·Chance () {: aria-label='Functions' }
+#### float GetTriggerChance ( ) {: .copyable aria-label='Functions' }
+
+Value form 0 to 1.
 ___

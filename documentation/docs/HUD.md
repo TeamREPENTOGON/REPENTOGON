@@ -15,6 +15,6 @@ ___
 
 ___
 ### Get·Player·HUD () {: aria-label='Functions' }
-#### [PlayerHUD](PlayerHUD.md) GetPlayerHUD ( Index = 0 ) {: .copyable aria-label='Functions' }
+#### [PlayerHUD](PlayerHUD.md) GetPlayerHUD ( int Index = 0 ) {: .copyable aria-label='Functions' }
 
 ___

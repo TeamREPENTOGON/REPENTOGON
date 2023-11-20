@@ -85,13 +85,13 @@ ___
 #### float GetFriction ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Gibs·Amount () {: aria-label='Functions' }
-#### int GetGibsAmount ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Gib·Flags () {: aria-label='Functions' }
 #### int GetGibFlags ( ) {: .copyable aria-label='Functions' }
 Returns the bitmask of [GibFlag](enums/GibFlag.md)s for this entity.
+
+___
+### Get·Gibs·Amount () {: aria-label='Functions' }
+#### int GetGibsAmount ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Grid·Collision·Points () {: aria-label='Functions' }
