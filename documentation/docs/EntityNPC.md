@@ -54,10 +54,6 @@ ___
 #### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color ) {: .copyable aria-label='Functions' }
 
 ___
-### Spawn·Blood·Effect () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( int subtype = 0, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position = entityPosition, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) offset = nil, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity = nil ) {: .copyable aria-label='Functions' }
-
-___
 ### Spawn·Blood·Splash () {: aria-label='Functions' }
 #### void SpawnBloodSplash ( ) {: .copyable aria-label='Functions' }
 

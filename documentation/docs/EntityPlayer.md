@@ -259,6 +259,10 @@ ___
 #### [Vector](Vector.md) GetEnterPosition ( ) {: .copyable aria-label='Functions' }        
 
 ___
+### Get·Entity·Config·Player () {: aria-label='Functions' }
+#### [EntityConfigPlayer](EntityConfigPlayer.md) GetEntityConfigPlayer ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Epiphora·Charge () {: aria-label='Functions' }
 #### int GetEpiphoraCharge ( ) {: .copyable aria-label='Functions' }
 

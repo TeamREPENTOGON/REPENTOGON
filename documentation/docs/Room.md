@@ -2,7 +2,7 @@
 
 ## Modified Functions
 
-### Spawn·Grid·Entity () {: aria-label='Functions' }
+### Spawn·Grid·Entity () {: aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant = 0, int Seed = default, int VarData = 0 ) {: .copyable aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Descriptor) {: .copyable aria-label='Modified Functions' }
 
@@ -34,10 +34,6 @@ ___
 Return the probability that boss spawns in this room will be champions.
 
 ___
-### Get·Greed·Wave·Timer () {: aria-label='Functions' }
-#### int GetGreedWaveTimer ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Effects () {: aria-label='Functions' }
 #### [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) GetEffects ( ) {: .copyable aria-label='Functions' }
 
@@ -48,6 +44,10 @@ ___
 ___
 ### Get·FXParams () {: aria-label='Functions' }
 #### [FXParams](FXParams.md) GetFXParams ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Greed·Wave·Timer () {: aria-label='Functions' }
+#### int GetGreedWaveTimer ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Grid·Index·By·Tile () {: aria-label='Functions' }

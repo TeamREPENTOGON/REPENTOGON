@@ -754,7 +754,7 @@ static void RegisterEntityConfigPlayer(lua_State* L) {
 		{ "GetName", Lua_EntityConfigPlayerGetName },
 		{ "GetSkinPath", Lua_EntityConfigPlayerGetSkinPath },
 		{ "GetNameImagePath", Lua_EntityConfigPlayerGetNameImagePath },
-		{ "GetPortaitPath", Lua_EntityConfigPlayerGetPortraitPath },
+		{ "GetPortraitPath", Lua_EntityConfigPlayerGetPortraitPath },
 		{ "GetExtraPortraitPath", Lua_EntityConfigPlayerGetExtraPortraitPath },
 		{ "GetCostumeSuffix", Lua_EntityConfigPlayerGetCostumeSuffix },
 		{ "GetCostumeID", Lua_EntityConfigPlayerGetCostumeID },

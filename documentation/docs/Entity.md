@@ -156,6 +156,10 @@ ___
 #### void SetSpeedMultiplier ( float amount ) {: .copyable aria-label='Functions' }
 
 ___
+### Spawn·Blood·Effect () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( int subtype = 0, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position = entityPosition, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) offset = nil, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity = nil ) {: .copyable aria-label='Functions' }
+
+___
 ### Spawn·Ground·Impact·Effects () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) SpawnGroundImpactEffects ( [Vector](Vector.md) position, [Vector](Vector.md) vel, int strength ) {: .copyable aria-label='Functions' }
 
