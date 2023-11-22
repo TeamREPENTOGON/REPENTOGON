@@ -244,9 +244,36 @@ LUA_FUNCTION(Lua_GetEntitiesSaveState) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetRestrictedGridIndexes) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	std::set<int>& gridIndexes = descriptor->RestrictedGridIndexes;
+	lua_newtable(L);
+	int idx = 1;
+	for (int gridIdx : gridIndexes) {
+		lua_pushinteger(L, idx);
+		lua_pushinteger(L, gridIdx);
+		lua_settable(L, -3);
+		idx++;
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AddRestrictedGridIndex) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	const int gridIdx = (int)luaL_checkinteger(L, 2);
+	std::set<int>& ents = descriptor->RestrictedGridIndexes;
+	
+	ents.insert(gridIdx);
+
+	return 0;
+}
+
 static void RegisterRoomDescriptorMethods(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetEntitiesSaveState", Lua_GetEntitiesSaveState },
+		{ "GetRestrictedGridIndexes", Lua_GetRestrictedGridIndexes },
+		{ "AddRestrictedGridIndex", Lua_AddRestrictedGridIndex },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::ROOM_DESCRIPTOR, functions);

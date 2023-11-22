@@ -1,8 +1,17 @@
 # Class "RoomDescriptor"
 
 ## Functions
+
+### Add·Restricted·Grid·Index () {: aria-label='Functions' }
+#### void AddRestrictedGridIndex ( int GridIndex ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Entities·Save·State () {: aria-label='Functions' }
 #### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Restricted·Grid·Indexes () {: aria-label='Functions' }
+#### table GetRestrictedGridIndexes ( ) {: .copyable aria-label='Functions' }
 
 ___
 

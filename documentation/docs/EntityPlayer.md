@@ -113,8 +113,7 @@ ___
 
 ___
 ### Clear·Item·Anim·Collectible () {: aria-label='Functions' }
-#### void ClearItemAnimCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' 
-}
+#### void ClearItemAnimCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' }
 
 ___
 ### Clear·Item·Anim·Null·Items () {: aria-label='Functions' }
