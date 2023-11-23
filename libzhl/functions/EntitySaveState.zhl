@@ -2,10 +2,23 @@ struct EntitySaveState depends (Vector) {
     int type : 0x0; // 0x0
     int variant : 0x4; // 0x4
     int subtype : 0x8; // 0x8
-    Vector position : 0x18; // 0x18
+	unsigned int intStorage1 : 0xc; // 0x1c
+	unsigned int intStorage2 : 0x10; // 0x10
+	unsigned int intStorage3 : 0x14; // 0x14
+    int intStorage4 : 0x18; // 0x18
+	int intStorage5 : 0x1c; // 0x1c
     int16_t gridSpawnIdx : 0x20; // 0x20
+	bool boolStorage1 : 0x22; // 0x22
+	bool boolStorage2 : 0x23; // 0x23
+	unsigned int intStorage6 : 0x24; // 0x24
     Vector targetPosition : 0x28; // 0x28
+	unsigned int _intStorage7 : 0x30; // 0x30
     unsigned int _initSeed : 0x34; // 0x34
+	unsigned int _dropSeed : 0x38; // 0x34
     int spawnerType : 0x3c; // 0x3C
     int spawnerVariant : 0x40; // 0x40
+	float floatStorage1 : 0x44; // 0x44
+	float floatStorage2 : 0x48; // 0x48
+	unsigned int intStorage8: 0x4c; // 0x4c
+	int8_t byteStorage : 0x50; // 0x50
 } : 0x68; // 0x68

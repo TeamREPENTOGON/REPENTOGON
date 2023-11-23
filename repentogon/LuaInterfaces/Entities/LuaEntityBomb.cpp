@@ -26,6 +26,22 @@ LUA_FUNCTION(Lua_BombUpdateDirtColor)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_BombGetScale)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	lua_pushnumber(L, bomb->_scale);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetScale)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	bomb->_scale = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -34,6 +50,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	luaL_Reg functions[] = {
 		{ "GetHitList", Lua_BombGetHitList },
 		{ "UpdateDirtColor", Lua_BombUpdateDirtColor },
+		{ "GetScale", Lua_BombGetScale },
+		{ "SetScale", Lua_BombSetScale },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);
