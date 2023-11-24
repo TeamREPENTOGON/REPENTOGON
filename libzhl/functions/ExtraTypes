@@ -109,6 +109,11 @@ TypeInfo vector_EntitySaveState {
     Align 4;
 };
 
+TypeInfo vector_GridEntityDesc {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo std_vector_history_historyitem {
     Size 12;
     Align 4;

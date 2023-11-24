@@ -666,11 +666,76 @@ LUA_FUNCTION(Lua_AddRestrictedGridIndex) {
 	return 0;
 }
 
+struct RoomDescriptor_SavedGridEntities {
+	std::vector<GridEntityDesc>* data;
+
+	static RoomDescriptor_SavedGridEntities* GetData(lua_State* L, int idx) {
+		return lua::GetUserdata<RoomDescriptor_SavedGridEntities*>(L, idx, lua::metatables::GridEntitiesSaveStateVectorMT);
+	}
+
+	LUA_FUNCTION(Lua_Get) {
+		RoomDescriptor_SavedGridEntities* ud = GetData(L, 1);
+		size_t index = (size_t)luaL_checkinteger(L, 2);
+
+		if (index < 0 || index >= ud->data->size()) {
+			return luaL_error(L, "Invalid index for Get(): %d\n", index);
+		}
+
+		lua::luabridge::UserdataPtr::push(L, &ud->data->data()[index], lua::Metatables::GRID_ENTITY_DESC);
+		return 1;
+	}
+
+	LUA_FUNCTION(Lua_GetByType) {
+		RoomDescriptor_SavedGridEntities* ud = GetData(L, 1);
+		int type = (int)luaL_checkinteger(L, 2);
+
+		lua_newtable(L);
+
+		int j = 1;
+		for (size_t i = 0; i < ud->data->size(); ++i) {
+			GridEntityDesc& st = (*ud->data)[i];
+			if (st._type == type) {
+				lua_pushinteger(L, j);
+				lua::luabridge::UserdataPtr::push(L, &st, lua::Metatables::GRID_ENTITY_DESC);
+				lua_rawset(L, -3);
+
+				++j;
+			}
+		}
+
+		return 1;
+	}
+
+	LUA_FUNCTION(Lua_MetaLen) {
+		RoomDescriptor_SavedGridEntities* ud = GetData(L, 1);
+		lua_pushinteger(L, ud->data->size());
+		return 1;
+	}
+
+	static luaL_Reg methods[];
+};
+
+luaL_Reg RoomDescriptor_SavedGridEntities::methods[] = {
+
+	{ "Get", RoomDescriptor_SavedGridEntities::Lua_Get },
+	{ "GetByType", RoomDescriptor_SavedGridEntities::Lua_GetByType },
+	{ "__len", RoomDescriptor_SavedGridEntities::Lua_MetaLen },
+	{ NULL, NULL }
+};
+
+LUA_FUNCTION(Lua_GetGridEntitiesSaveState) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	RoomDescriptor_SavedGridEntities* ud = lua::place<RoomDescriptor_SavedGridEntities>(L, lua::metatables::GridEntitiesSaveStateVectorMT);
+	ud->data = &(descriptor->SavedGridEntities);
+	return 1;
+}
+
 static void RegisterRoomDescriptorMethods(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetEntitiesSaveState", Lua_GetEntitiesSaveState },
 		{ "GetRestrictedGridIndexes", Lua_GetRestrictedGridIndexes },
 		{ "AddRestrictedGridIndex", Lua_AddRestrictedGridIndex },
+		{ "GetGridEntitiesSaveState", Lua_GetGridEntitiesSaveState },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::ROOM_DESCRIPTOR, functions);
@@ -679,6 +744,7 @@ static void RegisterRoomDescriptorMethods(lua_State* L) {
 static void RegisterEntitiesSaveStateMetatables(lua_State* L) {
 	lua::RegisterNewClass(L, "EntitiesSaveStateVector", lua::metatables::EntitiesSaveStateVectorMT, RoomDescriptor_SavedEntities::methods);
 	lua::RegisterNewClass(L, "EntitySaveState", lua::metatables::EntitySaveStateMT, Lua_EntitySaveState::methods);
+	lua::RegisterNewClass(L, "GridEntitiesSaveStateVector", lua::metatables::GridEntitiesSaveStateVectorMT, RoomDescriptor_SavedGridEntities::methods);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

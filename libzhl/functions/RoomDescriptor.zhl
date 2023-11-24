@@ -19,8 +19,10 @@ struct RoomDescriptor depends (RoomConfig)
     int32_t DecorationSeed : 0x58; // 0x58
     int32_t SpawnSeed : 0x5c; // 0x5C
     int32_t AwardSeed : 0x60; // 0x60
+	vector_GridEntityDesc SavedGridEntities : 0x68; // 0x68
     vector_EntitySaveState SavedEntities : 0x74; // 0x74
 	std_set_int RestrictedGridIndexes : 0x80; // 0x80;
+	vector_EntitySaveState SavedEntities2 : 0x88; // 0x88
     int16_t ShopItemIdx: 0xac; // 0xAC
     int16_t ShopItemDiscountIdx : 0xae; // 0xAE
     int32_t DeliriumDistance : 0xb0; // 0xB0

@@ -725,6 +725,7 @@ namespace lua {
 		const char* ColorModifierMT = "ColorModifier";
 		const char* CustomChallengeMenuMT = "CustomChallengeMenu";
 		const char* CutscenesMenuMT = "CutscenesMenu";
+		const char* GridEntitiesSaveStateVectorMT = "GridEntitiesSaveStateVector";
 		const char* DailyChallengeMT = "DailyChallenge";
 		const char* DailyChallengeMenuMT = "DailyChallengeMenu";
 		const char* DebugRendererMT = "DebugRenderer";

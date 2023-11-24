@@ -175,6 +175,7 @@ namespace lua {
         extern LIBZHL_API const char* ColorModifierMT;
         extern LIBZHL_API const char* CustomChallengeMenuMT;
         extern LIBZHL_API const char* CutscenesMenuMT;
+        extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
         extern LIBZHL_API const char* DailyChallengeMT;
         extern LIBZHL_API const char* DailyChallengeMenuMT;
         extern LIBZHL_API const char* DebugRendererMT;

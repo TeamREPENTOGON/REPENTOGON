@@ -6,7 +6,7 @@
 #### int RandomInt ( int min, int max ) {: .copyable aria-label='Modified Functions' }
 Can now emulate `math.random` by accepting a second argument to generate a number between the first argument and it, inclusive. Negative values are usable in this mode and will properly generate a number between `min` and `max` regardless of sign.
 
-__
+___
 
 ### Set·Seed () {: aria-label='Modified Functions' }
 #### void SetSeed ( int Seed, int ShiftIdx = 35 ) {: .copyable aria-label='Modified Functions' }

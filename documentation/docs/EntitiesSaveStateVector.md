@@ -6,11 +6,11 @@
 
 ___
 ### Get·By·Type () {: aria-label='Functions' }
-#### [EntitiesSaveState](EntitiesSaveState.md) GetByType ( int type, int variant = 0, int subType = 0 ) {: .copyable aria-label='Functions' }
+#### [EntitiesSaveState](EntitiesSaveState.md) GetByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = 0, int SubType = 0 ) {: .copyable aria-label='Functions' }
 
 ___
-### __len () {: aria-label='Functions' }
-#### int __len ( ) {: .copyable aria-label='Functions' }
+### __len () {: aria-label='Operators' }
+#### int __len ( ) {: .copyable aria-label='Operators' }
 
 ___
 

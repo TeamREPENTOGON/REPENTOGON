@@ -62,6 +62,7 @@ typedef std::vector<History_HistoryItem> std_vector_history_historyitem;
 typedef std::vector<unsigned int> std_vector_uint;
 typedef std::set<uint32_t> std_set_uint32t;
 typedef std::vector<EntitySaveState> vector_EntitySaveState;
+typedef std::vector<GridEntityDesc> vector_GridEntityDesc;
 typedef std::map<int, int> std_map_int_int;
 typedef std::vector<EntityId> vector_ErasedEntities;
 typedef std::vector<Entity_Player**> vector_EntityPlayerPtr;

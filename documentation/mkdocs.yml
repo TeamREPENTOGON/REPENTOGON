@@ -132,6 +132,10 @@ nav:
     - EntityProjectile: EntityProjectile.md
     - EntitySlot: EntitySlot.md
     - EntityTear: EntityTear.md
+  - EntityConfig :
+    - EntityConfig: EntityConfig.md
+    - EntityConfigEntity: EntityConfigEntity.md
+    - EntityConfigPlayer: EntityConfigPlayer.md
   - Font: Font.md
   - FXParams: FXParams.md
   - Game: Game.md
@@ -208,6 +212,7 @@ nav:
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfig:
+    - GridEntitiesSaveStateVector: GridEntitiesSaveStateVector.md
     - RoomConfigHolder: RoomConfigHolder.md
     - RoomConfigRoom: RoomConfigRoom.md
     - RoomDescriptor: RoomDescriptor.md
