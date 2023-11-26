@@ -25,6 +25,9 @@ The first mod to cause a Lua error will trigger a message at the top of the scre
 
 Multiple sequential instances of the same error will be flattened in the console (not the logs). Duplicate entries will be denoted with an (x2) (x3) etc. next to the error.
 
+## External console window
+Adding the `-console` launch parameter to the game will open a second window that displays debug messages created by calling `printf()` inside of the C++ code.
+
 ## Dear ImGui
 
 We have integrated the Dear ImGui user interface library into the game. This can be brought up at any time using the key that previously brought up the vanilla debug console. Mods can add their own user interfaces into the menu with the [ImGui](../ImGui.md) class.
