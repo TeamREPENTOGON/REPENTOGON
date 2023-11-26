@@ -7,7 +7,9 @@ __thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
 "558bec83ec5ca1????????33c58945??538bd9":
 __thiscall void Entity_Bomb::UpdateDirtColor();
 
-struct Entity_Bomb : public Entity {
+struct Entity_Bomb : public Entity { {{
+	inline int* GetExplosionCountdown() { return (int*)((char*)this + 0x360); }
+}}
 	float _scale : 0x384;
 	std_vector_uint _hitList : 0x918;
 } : 0x928;

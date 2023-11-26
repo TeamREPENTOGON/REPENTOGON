@@ -42,6 +42,14 @@ LUA_FUNCTION(Lua_BombSetScale)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_BombGetExplosionCountdown)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	lua_pushinteger(L, *bomb->GetExplosionCountdown());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -52,6 +60,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "UpdateDirtColor", Lua_BombUpdateDirtColor },
 		{ "GetScale", Lua_BombGetScale },
 		{ "SetScale", Lua_BombSetScale },
+		{ "GetExplosionCountdown", Lua_BombGetExplosionCountdown },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);

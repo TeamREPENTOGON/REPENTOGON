@@ -20,3 +20,7 @@ ___
 #### void UpdateDirtColor ( ) {: .copyable aria-label='Functions' }
 
 ___
+### Get·Explosion·Countdown () {: aria-label='Functions' }
+#### int GetExplosionCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
