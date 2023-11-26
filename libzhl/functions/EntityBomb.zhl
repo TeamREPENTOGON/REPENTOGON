@@ -8,8 +8,11 @@ __thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
 __thiscall void Entity_Bomb::UpdateDirtColor();
 
 struct Entity_Bomb : public Entity { {{
-	inline int* GetExplosionCountdown() { return (int*)((char*)this + 0x360); }
+	inline int* GetExplosionCountdown() { return &this->_explosionCountdown1; }
 }}
+	int _explosionCountdown1 : 0x360;
+	float _height : 0x36c;
+	float _fallingSpeed : 0x370;
 	float _scale : 0x384;
 	std_vector_uint _hitList : 0x918;
 } : 0x928;

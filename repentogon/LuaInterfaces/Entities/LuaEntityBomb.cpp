@@ -50,6 +50,38 @@ LUA_FUNCTION(Lua_BombGetExplosionCountdown)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_BombGetHeight)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	lua_pushnumber(L, bomb->_height);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetHeight)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	bomb->_height = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_BombGetFallingSpeed)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	lua_pushnumber(L, bomb->_fallingSpeed);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetFallingSpeed)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	bomb->_fallingSpeed = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -61,6 +93,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetScale", Lua_BombGetScale },
 		{ "SetScale", Lua_BombSetScale },
 		{ "GetExplosionCountdown", Lua_BombGetExplosionCountdown },
+		{ "GetHeight", Lua_BombGetHeight },
+		{ "SetHeight", Lua_BombSetHeight },
+		{ "GetFallingSpeed", Lua_BombGetFallingSpeed },
+		{ "SetFallingSpeed", Lua_BombSetFallingSpeed },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);
