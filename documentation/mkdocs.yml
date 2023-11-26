@@ -53,6 +53,7 @@ nav:
     - AutocompleteType: enums/AutocompleteType.md
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
     - BitwiseDebugFlag: enums/BitwiseDebugFlag.md
+    - BombCostumeLayer: enums/BombCostumeLayer.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
     - CompletionType: enums/CompletionType.md
@@ -64,13 +65,14 @@ nav:
     - Dimension: enums/Dimension.md
     - DipSubType: enums/DipSubType.md
     - Ending: enums/Ending.md
-    - EntityTag: enums/EntityTag.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
+    - EntityTag: enums/EntityTag.md
     - EventCounter: enums/EventCounter.md
     - ExtraHudStyle: enums/ExtraHudStyle.md
     - FadeoutTarget: enums/FadeoutTarget.md
     - FollowerPriority: enums/FollowerPriority.md
     - Giantbook: enums/Giantbook.md
+    - GibFlag: enums/GibFlag.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
@@ -132,7 +134,7 @@ nav:
     - EntityProjectile: EntityProjectile.md
     - EntitySlot: EntitySlot.md
     - EntityTear: EntityTear.md
-  - EntityConfig :
+  - EntityConfig:
     - EntityConfig: EntityConfig.md
     - EntityConfigEntity: EntityConfigEntity.md
     - EntityConfigPlayer: EntityConfigPlayer.md

@@ -82,6 +82,34 @@ LUA_FUNCTION(Lua_BombSetFallingSpeed)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_BombIsLoadingCostumes) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	lua_pushboolean(L, bomb->_loadCostumes);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetLoadCostumes)
+{
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+
+	bomb->_loadCostumes = lua::luaL_checkboolean(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_BombGetCostumeLayerSprite) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	const int index = (int)luaL_checkinteger(L, 2);
+	if (index >= 0 && index <= 5) {
+		lua::luabridge::UserdataPtr::push(L, &bomb->_bombCostumesSprites[index], lua::Metatables::SPRITE);
+	}
+	else {
+		return luaL_error(L, "Invalid index %d, value must be between 0 and 4", index);
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -97,6 +125,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetHeight", Lua_BombSetHeight },
 		{ "GetFallingSpeed", Lua_BombGetFallingSpeed },
 		{ "SetFallingSpeed", Lua_BombSetFallingSpeed },
+		{ "IsLoadingCostumes", Lua_BombIsLoadingCostumes },
+		{ "SetLoadCostumes", Lua_BombSetLoadCostumes },
+		{ "GetCostumeLayerSprite", Lua_BombGetCostumeLayerSprite },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);
