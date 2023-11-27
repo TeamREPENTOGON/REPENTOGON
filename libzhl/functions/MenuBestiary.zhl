@@ -1,3 +1,6 @@
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381eca8000000a1????????33c58945??5657508d45??64a3????????8bc1":
+__thiscall void Menu_Bestiary::LoadPreview();
+
 struct Menu_Bestiary depends (ANM2) { 
 {{
 	inline ANM2* GetBestiaryMenuSprite() { return &this->BestiaryMenuSprite; }
@@ -12,6 +15,8 @@ struct Menu_Bestiary depends (ANM2) {
     int CurrentPage : 0x344;
     int SelectedElement : 0x348;
     int LastEnemyPageID : 0x34c;
+    int unk1 : 0x35c;
+    int unk2 : 0x360;
     int _holdLeftArrowCounter : 0x368;
     int _holdUpArrowCounter : 0x36c;
     int _holdRightArrowCounter : 0x370;

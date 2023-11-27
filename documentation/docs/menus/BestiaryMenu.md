@@ -25,6 +25,18 @@ ___
 #### int GetLastEnemyPageID ( ) {: .copyable aria-label='Functions' }
 Gets the id of the last page enemies are displayed. Pages afterwards are reserved for bosses.
 ___
+### Get·Num·Boss·Pages () {: aria-label='Functions' }
+#### int GetNumBossPages ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Num·Monster·Pages () {: aria-label='Functions' }
+#### int GetNumMonsterPages ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Num·Pages () {: aria-label='Functions' }
+#### int GetNumPages ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Get·Selected·Element () {: aria-label='Functions' }
 #### int GetSelectedElement ( ) {: .copyable aria-label='Functions' }
 
