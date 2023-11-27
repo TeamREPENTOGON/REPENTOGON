@@ -117,10 +117,10 @@ ___
     ```
 ___
 ### Add·Slider·Float () {: aria-label='Functions' }
-#### void AddSliderFloat ( string parentId, string elementId, string label = "", function changeCallback = nil, float defaultVal = 0, float min = INTEGER_MIN, float min = INTEGER_MAX, string formatting = "%.3f" ) {: .copyable aria-label='Functions' }
+#### void AddSliderFloat ( string parentId, string elementId, string label = "", function changeCallback = nil, float defaultVal = 0, float min = INTEGER_MIN, float max = INTEGER_MAX, string formatting = "%.3f" ) {: .copyable aria-label='Functions' }
 ___
 ### Add·Slider·Integer () {: aria-label='Functions' }
-#### void AddSliderInteger ( string parentId, string elementId, string label = "", function changeCallback = nil, int defaultVal = 0, int min = INTEGER_MIN, int min = INTEGER_MAX, string formatting = "%d%" ) {: .copyable aria-label='Functions' }
+#### void AddSliderInteger ( string parentId, string elementId, string label = "", function changeCallback = nil, int defaultVal = 0, int min = INTEGER_MIN, int max = INTEGER_MAX, string formatting = "%d%" ) {: .copyable aria-label='Functions' }
 ___
 ### Add·Tab () {: aria-label='Functions' }
 #### void AddTab ( string parentId, string elementId, string label ) {: .copyable aria-label='Functions' }

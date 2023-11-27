@@ -373,11 +373,11 @@ struct CustomImGui {
     bool AddElement(const char* parentId, const char* id, const char* text, int type) IM_FMTARGS(2)
     {
         Element* parent = GetElementById(parentId);
-        if (parent != NULL) {
-            parent->AddChild(Element(id, text, type));
-            return true;
-        }
-        return false;
+        if (parent == NULL)
+            return false;
+
+        parent->AddChild(Element(id, text, type));
+        return true;
     }
 
     void RemoveElement(const char* elementId) IM_FMTARGS(2)
@@ -430,21 +430,21 @@ struct CustomImGui {
     bool AddCallback(const char* parentId, int type, int callbackID) IM_FMTARGS(2)
     {
         Element* parent = GetElementById(parentId);
-        if (parent != NULL) {
-            parent->AddCallback(type, callbackID);
-            return true;
-        }
-        return false;
+        if (parent == NULL)
+            return false;
+
+        parent->AddCallback(type, callbackID);
+        return true;
     }
 
     bool RemoveCallback(const char* parentId, int type) IM_FMTARGS(2)
     {
         Element* parent = GetElementById(parentId);
-        if (parent != NULL) {
-            parent->RemoveCallback(type);
-            return true;
-        }
-        return false;
+        if (parent == NULL)
+            return false;
+
+        parent->RemoveCallback(type);
+        return true;
     }
 
     bool LinkWindowToElement(const char* windowId, const char* elementId) IM_FMTARGS(2)
@@ -468,34 +468,37 @@ struct CustomImGui {
     bool UpdateText(const char* elementId, const char* newText)
     {
         Element* element = GetElementById(elementId);
-        if (element != NULL) {
-            element->name = std::string(newText);
-            return true;
-        }
+        if (element == NULL)
+            return false;
 
-        return false;
+        std::string newTextStr(newText);
+        if (element->name != newTextStr)
+            element->name = newTextStr;
+        return true;
     }
 
     bool SetTooltipText(const char* elementId, const char* newText)
     {
         Element* element = GetElementById(elementId);
-        if (element != NULL) {
-            element->data.tooltipText = std::string(newText);
-            return true;
-        }
+        if (element == NULL)
+            return false;
 
-        return false;
+        std::string newTextStr(newText);
+        if (element->data.tooltipText != newTextStr)
+            element->data.tooltipText = newTextStr;
+        return true;
     }
 
     bool SetHelpMarkerText(const char* elementId, const char* newText)
     {
         Element* element = GetElementById(elementId);
-        if (element != NULL) {
-            element->data.helpmarkerText = std::string(newText);
-            return true;
-        }
+        if (element == NULL)
+            return false;
 
-        return false;
+        std::string newTextStr(newText);
+        if (element->data.helpmarkerText != newTextStr)
+            element->data.helpmarkerText = newTextStr;
+        return true;
     }
 
     bool ElementExists(const char* elementId)
@@ -506,27 +509,28 @@ struct CustomImGui {
     bool SetVisible(const char* elementId, bool newState) IM_FMTARGS(2)
     {
         Element* element = GetElementById(elementId);
-        if (element != NULL) {
-            element->SetVisible(newState);
-            return true;
-        }
-        return false;
+        if (element == NULL)
+            return false;
+
+        element->SetVisible(newState);
+        return true;
     }
 
     bool GetVisible(const char* elementId) IM_FMTARGS(2)
     {
         Element* element = GetElementById(elementId);
-        if (element != NULL) {
-            return (menuShown || !menuShown && element->data.windowPinned) && element->evaluatedVisibleState;
-        }
-        return false;
+        if (element == NULL)
+            return false;
+
+        return (menuShown || !menuShown && element->data.windowPinned) && element->evaluatedVisibleState;
     }
 
     bool SetPinned(const char* elementId, bool newState) IM_FMTARGS(2)
     {
         Element* element = GetElementById(elementId);
         if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
-            element->data.windowPinned = newState;
+            if (element->data.windowPinned != newState)
+                element->data.windowPinned = newState;
             return true;
         }
         return false;
@@ -677,20 +681,28 @@ struct CustomImGui {
 
     bool UpdateElementValue(Element* element, lua_State* L)
     {
+        int intVal = 0;
+        bool checkVal = false;
+        float floatVal = 0.0;
         switch (element->type) {
         case IMGUI_ELEMENT::InputText:
         case IMGUI_ELEMENT::InputTextWithHint:
         case IMGUI_ELEMENT::InputTextMultiline:
-            element->elementData.inputText = luaL_checkstring(L, 4);
+            if (element->elementData.inputText != luaL_checkstring(L, 4))
+                element->elementData.inputText = luaL_checkstring(L, 4);
             return true;
 
         case IMGUI_ELEMENT::Checkbox:
-            element->elementData.checked = lua::luaL_checkboolean(L, 4);
+            checkVal = lua::luaL_checkboolean(L, 4);
+            if (element->elementData.checked != checkVal)
+                element->elementData.checked = checkVal;
             return true;
 
         case IMGUI_ELEMENT::RadioButton:
         case IMGUI_ELEMENT::Combobox:
-            element->elementData.index = (int)luaL_checkinteger(L, 4);
+            intVal = (int)luaL_checkinteger(L, 4);
+            if (element->elementData.index != intVal)
+                element->elementData.index = intVal;
             return true;
 
         case IMGUI_ELEMENT::InputInt:
@@ -698,14 +710,18 @@ struct CustomImGui {
         case IMGUI_ELEMENT::SliderInt:
         case IMGUI_ELEMENT::InputController:
         case IMGUI_ELEMENT::InputKeyboard:
-            element->elementData.currentIntVal = (int)luaL_checkinteger(L, 4);
+            intVal = (int)luaL_checkinteger(L, 4);
+            if (element->elementData.currentIntVal != intVal)
+                element->elementData.currentIntVal = intVal;
             return true;
 
         case IMGUI_ELEMENT::InputFloat:
         case IMGUI_ELEMENT::DragFloat:
         case IMGUI_ELEMENT::SliderFloat:
         case IMGUI_ELEMENT::ProgressBar:
-            element->elementData.currentFloatVal = (float)luaL_checknumber(L, 4);
+            floatVal = (float)luaL_checknumber(L, 4);
+            if (element->elementData.currentFloatVal != floatVal)
+                element->elementData.currentFloatVal = floatVal;
             return true;
 
         default:
@@ -718,9 +734,11 @@ struct CustomImGui {
         IMGUI_DATA dataType = static_cast<IMGUI_DATA>(luaL_checkinteger(L, 3));
         std::list<float>* newColorValues = new std::list<float>();
 
+        float floatVal = 0.0;
         switch (dataType) {
         case IMGUI_DATA::Label:
-            element->name = luaL_checkstring(L, 4);
+            if (element->name != luaL_checkstring(L, 4))
+                element->name = luaL_checkstring(L, 4);
             return true;
 
         case IMGUI_DATA::Value:
@@ -750,11 +768,11 @@ struct CustomImGui {
             switch (element->type) {
             case IMGUI_ELEMENT::DragInt:
             case IMGUI_ELEMENT::SliderInt:
-                element->elementData.minVal = (float)luaL_checkinteger(L, 4);
-                return true;
             case IMGUI_ELEMENT::DragFloat:
             case IMGUI_ELEMENT::SliderFloat:
-                element->elementData.minVal = (float)luaL_checknumber(L, 4);
+                floatVal = (float)luaL_checknumber(L, 4);
+                if (element->elementData.minVal != floatVal)
+                    element->elementData.minVal = floatVal;
                 return true;
             default:
                 return false;
@@ -764,11 +782,11 @@ struct CustomImGui {
             switch (element->type) {
             case IMGUI_ELEMENT::DragInt:
             case IMGUI_ELEMENT::SliderInt:
-                element->elementData.maxVal = (float)luaL_checkinteger(L, 4);
-                return true;
             case IMGUI_ELEMENT::DragFloat:
             case IMGUI_ELEMENT::SliderFloat:
-                element->elementData.maxVal = (float)luaL_checknumber(L, 4);
+                floatVal = (float)luaL_checknumber(L, 4);
+                if (element->elementData.maxVal != floatVal)
+                    element->elementData.maxVal = floatVal;
                 return true;
             default:
                 return false;
@@ -781,7 +799,8 @@ struct CustomImGui {
                 && element->type != IMGUI_ELEMENT::PlotHistogram
                 && element->type != IMGUI_ELEMENT::ProgressBar)
                 return false;
-            element->elementData.hintText = luaL_checkstring(L, 4);
+            if (element->elementData.hintText != luaL_checkstring(L, 4))
+                element->elementData.hintText = luaL_checkstring(L, 4);
             return true;
 
         case IMGUI_DATA::ColorValues:
@@ -1087,7 +1106,7 @@ struct CustomImGui {
                 break;
             case IMGUI_ELEMENT::DragFloat:
                 ImGui::DragFloat(name, &data->currentFloatVal, data->speed, data->minVal, data->maxVal, data->formatting);
-                RunCallbacks(&(*element));
+                RunCallbacks(&(*element)); 
                 break;
             case IMGUI_ELEMENT::SliderInt:
                 ImGui::SliderInt(name, &(int&)data->currentIntVal, (int)data->minVal, (int)data->maxVal, data->formatting);
