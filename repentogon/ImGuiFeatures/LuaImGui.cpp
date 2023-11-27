@@ -20,11 +20,11 @@ static int CheckAndSetCallback(lua_State* L, int slot)
 	return luaL_ref(L, LUA_REGISTRYINDEX); // get unique key
 }
 
-static int EvalIDAndParent(lua_State* L, CustomImGui* imGui, const char* id, const char* parentId)
+static int EvalIDAndParent(lua_State* L, const char* id, const char* parentId)
 {
-	if (!imGui->ElementExists(parentId))
+	if (!customImGui.ElementExists(parentId))
 		return luaL_error(L, "Parent Element with id '%s'doesnt exist.", parentId);
-	if (imGui->ElementExists(id))
+	if (customImGui.ElementExists(id))
 		return luaL_error(L, "Element with id '%s' exists already.", id);
 	return 0;
 }
@@ -40,42 +40,37 @@ LUA_FUNCTION(Lua_CustomImGui)
 
 LUA_FUNCTION(Lua_ImGui_AddElement)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
 	int type = (int)luaL_checkinteger(L, 4);
 	const char* text = luaL_optstring(L, 5, "");
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
-	imGui->AddElement(parentId, id, text, type);
+	customImGui.AddElement(parentId, id, text, type);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_RemoveElement)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 
-	imGui->RemoveElement(elementId);
+	customImGui.RemoveElement(elementId);
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ImGui_LinkWindowToElement)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* windowId = luaL_checkstring(L, 2);
 	const char* elementId = luaL_checkstring(L, 3);
 
-	if (imGui->GetElementById(windowId) == NULL) {
+	if (customImGui.GetElementById(windowId) == NULL) {
 		return luaL_error(L, "No window with id '%s' exists", windowId);
 	}
 
-	bool success = imGui->LinkWindowToElement(windowId, elementId);
+	bool success = customImGui.LinkWindowToElement(windowId, elementId);
 	if (!success) {
 		return luaL_error(L, "Element with id '%s' not found", elementId);
 	}
@@ -85,16 +80,14 @@ LUA_FUNCTION(Lua_ImGui_LinkWindowToElement)
 
 LUA_FUNCTION(Lua_ImGui_CreateMenu)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* id = luaL_checkstring(L, 2);
 	const char* text = luaL_checkstring(L, 3);
 
-	if (imGui->ElementExists(id)) {
+	if (customImGui.ElementExists(id)) {
 		return luaL_error(L, "Element with id '%s' exists already.", id);
 	}
 
-	bool success = imGui->CreateMenuElement(id, text);
+	bool success = customImGui.CreateMenuElement(id, text);
 	if (!success) {
 		return luaL_error(L, "Error while adding new Menu '%s'", id);
 	}
@@ -104,26 +97,23 @@ LUA_FUNCTION(Lua_ImGui_CreateMenu)
 
 LUA_FUNCTION(Lua_ImGui_RemoveMenu)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* menuId = luaL_checkstring(L, 2);
 
-	imGui->RemoveMenu(menuId);
+	customImGui.RemoveMenu(menuId);
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ImGui_CreateWindow)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* id = luaL_checkstring(L, 2);
 	const char* title = luaL_checkstring(L, 3);
 
-	if (imGui->ElementExists(id)) {
+	if (customImGui.ElementExists(id)) {
 		return luaL_error(L, "Element with id '%s' exists already.", id);
 	}
 
-	bool success = imGui->CreateWindowElement(id, title);
+	bool success = customImGui.CreateWindowElement(id, title);
 	if (!success) {
 		return luaL_error(L, "Error while adding new Window '%s'", id);
 	}
@@ -133,17 +123,15 @@ LUA_FUNCTION(Lua_ImGui_CreateWindow)
 
 LUA_FUNCTION(Lua_ImGui_RemoveWindow)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* windowId = luaL_checkstring(L, 2);
 
-	imGui->RemoveWindow(windowId);
+	customImGui.RemoveWindow(windowId);
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddCallback)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* parentId = luaL_checkstring(L, 2);
 	int type = (int)luaL_checkinteger(L, 3);
 	if (!lua_isfunction(L, 4)) {
@@ -151,7 +139,7 @@ LUA_FUNCTION(Lua_ImGui_AddCallback)
 	}
 	int stackID = CheckAndSetCallback(L, 4);
 
-	bool success = imGui->AddCallback(parentId, type, stackID);
+	bool success = customImGui.AddCallback(parentId, type, stackID);
 	if (!success) {
 		return luaL_error(L, "No element '%s' found.", parentId);
 	}
@@ -161,11 +149,10 @@ LUA_FUNCTION(Lua_ImGui_AddCallback)
 
 LUA_FUNCTION(Lua_ImGui_RemoveCallback)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* parentId = luaL_checkstring(L, 2);
 	int type = (int)luaL_checkinteger(L, 3);
 
-	bool success = imGui->RemoveCallback(parentId, type);
+	bool success = customImGui.RemoveCallback(parentId, type);
 	if (!success) {
 		return luaL_error(L, "No element '%s' found.", parentId);
 	}
@@ -175,12 +162,10 @@ LUA_FUNCTION(Lua_ImGui_RemoveCallback)
 
 LUA_FUNCTION(Lua_ImGui_UpdateText)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* id = luaL_checkstring(L, 2);
 	const char* text = luaL_checkstring(L, 3);
 
-	bool success = imGui->UpdateText(id, text);
+	bool success = customImGui.UpdateText(id, text);
 	if (!success) {
 		return luaL_error(L, "No element with id '%s' found.", id);
 	}
@@ -190,17 +175,15 @@ LUA_FUNCTION(Lua_ImGui_UpdateText)
 
 LUA_FUNCTION(Lua_ImGui_UpdateData)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	// prechecks
 	const char* id = luaL_checkstring(L, 2);
 	luaL_checkinteger(L, 3);
-	Element* createdElement = imGui->GetElementById(id);
+	Element* createdElement = customImGui.GetElementById(id);
 	if (createdElement == nullptr) {
 		return luaL_error(L, "No element with id '%s' found.", id);
 	}
 
-	bool success = imGui->UpdateElementData(createdElement, L);
+	bool success = customImGui.UpdateElementData(createdElement, L);
 	if (!success) {
 		return luaL_error(L, "The given element does not use the provided data type.");
 	}
@@ -210,24 +193,22 @@ LUA_FUNCTION(Lua_ImGui_UpdateData)
 
 LUA_FUNCTION(Lua_ImGui_AddButton)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
 	const char* text = luaL_optstring(L, 4, "");
 	int stackID = CheckAndSetCallback(L, 5);
 	bool isSmall = lua::luaL_optboolean(L, 6, false);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::Button);
 	if (isSmall)
 		type = static_cast<int>(IMGUI_ELEMENT::SmallButton);
 
-	imGui->AddElement(parentId, id, text, type);
+	customImGui.AddElement(parentId, id, text, type);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Clicked), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Clicked), stackID);
 	}
 
 	return 1;
@@ -235,28 +216,24 @@ LUA_FUNCTION(Lua_ImGui_AddButton)
 
 LUA_FUNCTION(Lua_ImGui_AddText)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* text = luaL_optstring(L, 3, "");
 	bool isWrapped = lua::luaL_optboolean(L, 4, false);
 	const char* id = luaL_optstring(L, 5, "");
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::Text);
 	if (isWrapped)
 		type = static_cast<int>(IMGUI_ELEMENT::TextWrapped);
 
-	imGui->AddElement(parentId, id, text, type);
+	customImGui.AddElement(parentId, id, text, type);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddInputInteger)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -266,25 +243,23 @@ LUA_FUNCTION(Lua_ImGui_AddInputInteger)
 	data.step = (float)luaL_optinteger(L, 7, (int)data.step);
 	data.stepFast = (float)luaL_optinteger(L, 8, (int)data.stepFast);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::InputInt);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddInputFloat)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -294,25 +269,23 @@ LUA_FUNCTION(Lua_ImGui_AddInputFloat)
 	data.step = (float)luaL_optnumber(L, 7, data.step);
 	data.stepFast = (float)luaL_optnumber(L, 8, data.stepFast);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::InputFloat);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddDragInteger)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -324,25 +297,23 @@ LUA_FUNCTION(Lua_ImGui_AddDragInteger)
 	data.maxVal = (float)luaL_optinteger(L, 9, (int)data.maxVal);
 	data.formatting = luaL_optstring(L, 10, data.DefaultIntNumberFormatting);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::DragInt);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddDragFloat)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -354,25 +325,23 @@ LUA_FUNCTION(Lua_ImGui_AddDragFloat)
 	data.maxVal = (float)luaL_optnumber(L, 9, data.maxVal);
 	data.formatting = luaL_optstring(L, 10, data.DefaultFloatNumberFormatting);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::DragFloat);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddSliderInteger)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -383,25 +352,23 @@ LUA_FUNCTION(Lua_ImGui_AddSliderInteger)
 	data.maxVal = (float)luaL_optinteger(L, 8, (int)data.maxVal);
 	data.formatting = luaL_optstring(L, 9, data.DefaultIntNumberFormatting);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::SliderInt);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddSliderFloat)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -412,25 +379,23 @@ LUA_FUNCTION(Lua_ImGui_AddSliderFloat)
 	data.maxVal = (float)luaL_optnumber(L, 8, data.maxVal);
 	data.formatting = luaL_optstring(L, 9, data.DefaultFloatNumberFormatting);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::SliderFloat);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddInputColor)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ColorData data = ColorData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -444,25 +409,23 @@ LUA_FUNCTION(Lua_ImGui_AddInputColor)
 
 	data.init();
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::ColorEdit);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddCheckbox)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -470,17 +433,17 @@ LUA_FUNCTION(Lua_ImGui_AddCheckbox)
 	int stackID = CheckAndSetCallback(L, 5);
 	data.checked = lua::luaL_optboolean(L, 6, false);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::Checkbox);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 
 	return 1;
@@ -488,8 +451,6 @@ LUA_FUNCTION(Lua_ImGui_AddCheckbox)
 
 LUA_FUNCTION(Lua_ImGui_AddRadioButtons)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -511,17 +472,17 @@ LUA_FUNCTION(Lua_ImGui_AddRadioButtons)
 		lua_pop(L, 1);
 	}
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::RadioButton);
 
-	imGui->AddElement(parentId, id, "", type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, "", type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 4)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 
 	return 1;
@@ -529,44 +490,38 @@ LUA_FUNCTION(Lua_ImGui_AddRadioButtons)
 
 LUA_FUNCTION(Lua_ImGui_AddTabBar)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::TabBar);
 
-	imGui->AddElement(parentId, id, "", type);
+	customImGui.AddElement(parentId, id, "", type);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddTab)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
 	const char* text = luaL_checkstring(L, 4);
 
-	EvalIDAndParent(L, imGui, id, parentId);
-	if (imGui->GetElementById(parentId)->type != IMGUI_ELEMENT::TabBar) {
+	EvalIDAndParent(L, id, parentId);
+	if (customImGui.GetElementById(parentId)->type != IMGUI_ELEMENT::TabBar) {
 		return luaL_error(L, "The given parent element is not of type 'TabBar'!");
 	}
 
 	int type = static_cast<int>(IMGUI_ELEMENT::Tab);
 
-	imGui->AddElement(parentId, id, text, type);
+	customImGui.AddElement(parentId, id, text, type);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddCombobox)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -589,17 +544,17 @@ LUA_FUNCTION(Lua_ImGui_AddCombobox)
 		lua_pop(L, 1);
 	}
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::Combobox);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 
 	return 1;
@@ -607,8 +562,6 @@ LUA_FUNCTION(Lua_ImGui_AddCombobox)
 
 LUA_FUNCTION(Lua_ImGui_AddInputText)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -617,25 +570,23 @@ LUA_FUNCTION(Lua_ImGui_AddInputText)
 	data.inputText = luaL_optstring(L, 6, "");
 	data.hintText = luaL_optstring(L, 7, "");
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::InputText);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddInputTextMultiline)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -644,29 +595,27 @@ LUA_FUNCTION(Lua_ImGui_AddInputTextMultiline)
 	data.inputText = luaL_optstring(L, 6, "");
 	data.lineCount = (float)luaL_optnumber(L, 7, 6);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::InputTextMultiline);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_SetTooltip)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* id = luaL_checkstring(L, 2);
 	const char* text = luaL_checkstring(L, 3);
 
-	bool success = imGui->SetTooltipText(id, text);
+	bool success = customImGui.SetTooltipText(id, text);
 	if (!success) {
 		return luaL_error(L, "No element with id '%s' found.", id);
 	}
@@ -676,12 +625,10 @@ LUA_FUNCTION(Lua_ImGui_SetTooltip)
 
 LUA_FUNCTION(Lua_ImGui_SetHelpmarker)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	const char* id = luaL_checkstring(L, 2);
 	const char* text = luaL_checkstring(L, 3);
 
-	bool success = imGui->SetHelpMarkerText(id, text);
+	bool success = customImGui.SetHelpMarkerText(id, text);
 	if (!success) {
 		return luaL_error(L, "No element with id '%s' found.", id);
 	}
@@ -691,8 +638,6 @@ LUA_FUNCTION(Lua_ImGui_SetHelpmarker)
 
 LUA_FUNCTION(Lua_ImGui_GetMousePos)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	float x = -1;
 	float y = -1;
 
@@ -715,8 +660,6 @@ LUA_FUNCTION(Lua_ImGui_GetMousePos)
 
 LUA_FUNCTION(Lua_ImGui_AddInputController)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -724,25 +667,23 @@ LUA_FUNCTION(Lua_ImGui_AddInputController)
 	int stackID = CheckAndSetCallback(L, 5);
 	data.currentIntVal = (int)luaL_optinteger(L, 6, 0);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::InputController);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddInputKeyboard)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -750,25 +691,23 @@ LUA_FUNCTION(Lua_ImGui_AddInputKeyboard)
 	int stackID = CheckAndSetCallback(L, 5);
 	data.currentIntVal = (int)luaL_optinteger(L, 6, 0);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::InputKeyboard);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
 	if (lua_isfunction(L, 5)) {
-		imGui->AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
+		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -781,7 +720,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 	data.maxVal = (float)luaL_optnumber(L, 8, FLT_MAX);
 	data.defaultFloatVal = (float)luaL_optnumber(L, 9, 40.0f);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	// get table input
 	auto tableLength = lua_rawlen(L, 5);
@@ -796,8 +735,8 @@ LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 
 	int type = static_cast<int>(IMGUI_ELEMENT::PlotLines);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
@@ -806,8 +745,6 @@ LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 
 LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -820,7 +757,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 	data.maxVal = (float)luaL_optnumber(L, 8, FLT_MAX);
 	data.defaultFloatVal = (float)luaL_optnumber(L, 9, 40.0f);
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	// get table input
 	auto tableLength = lua_rawlen(L, 5);
@@ -835,8 +772,8 @@ LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 
 	int type = static_cast<int>(IMGUI_ELEMENT::PlotHistogram);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
@@ -845,8 +782,6 @@ LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 
 LUA_FUNCTION(Lua_ImGui_AddProgressBar)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-
 	ElementData data = ElementData();
 	const char* parentId = luaL_checkstring(L, 2);
 	const char* id = luaL_checkstring(L, 3);
@@ -854,12 +789,12 @@ LUA_FUNCTION(Lua_ImGui_AddProgressBar)
 	data.currentFloatVal = (float)luaL_optnumber(L, 5, 0.0f);
 	data.hintText = luaL_optstring(L, 6, "__DEFAULT__"); // special placeholder for default behavior handling
 
-	EvalIDAndParent(L, imGui, id, parentId);
+	EvalIDAndParent(L, id, parentId);
 
 	int type = static_cast<int>(IMGUI_ELEMENT::ProgressBar);
 
-	imGui->AddElement(parentId, id, text, type);
-	Element* createdElement = imGui->GetElementById(id);
+	customImGui.AddElement(parentId, id, text, type);
+	Element* createdElement = customImGui.GetElementById(id);
 
 	createdElement->AddData(data);
 
@@ -870,7 +805,7 @@ LUA_FUNCTION(Lua_ImGui_PushNotification)
 {
 	const char* text = luaL_checkstring(L, 2);
 	int severity = (int)luaL_optinteger(L, 3, 0);
-	if (severity < 0  || severity > 3)
+	if (severity < 0 || severity > 3)
 		return luaL_error(L, "Severity needs to be a value between 0 and 3");
 	int lifetime = (int)luaL_optinteger(L, 4, 5000);
 
@@ -895,43 +830,39 @@ LUA_FUNCTION(Lua_ImGui_Hide)
 
 LUA_FUNCTION(Lua_ImGui_Reset)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
-	imGui->Reset();
+	customImGui.Reset();
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ImGui_ElementExists)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* id = luaL_checkstring(L, 2);
 
-	lua_pushboolean(L, imGui->ElementExists(id));
+	lua_pushboolean(L, customImGui.ElementExists(id));
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_ImGui_GetVisible)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 
-	if (!imGui->ElementExists(elementId)) {
+	if (!customImGui.ElementExists(elementId)) {
 		return luaL_error(L, "Element with id '%s' not found", elementId);
 	}
 
-	lua_pushboolean(L, imGui->GetVisible(elementId));
+	lua_pushboolean(L, customImGui.GetVisible(elementId));
 	return 1;
 }
 
 
 LUA_FUNCTION(Lua_ImGui_SetVisible)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 	bool newState = lua::luaL_checkboolean(L, 3);
 
-	bool success = imGui->SetVisible(elementId, newState);
+	bool success = customImGui.SetVisible(elementId, newState);
 
 	if (!success) {
 		return luaL_error(L, "Element with id '%s' not found", elementId);
@@ -942,7 +873,6 @@ LUA_FUNCTION(Lua_ImGui_SetVisible)
 
 LUA_FUNCTION(Lua_ImGui_SetColor)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 	int type = (int)luaL_checkinteger(L, 3);
 	float r = (float)luaL_checknumber(L, 4);
@@ -950,7 +880,7 @@ LUA_FUNCTION(Lua_ImGui_SetColor)
 	float b = (float)luaL_checknumber(L, 6);
 	float a = (float)luaL_optnumber(L, 7, 1.0f);
 
-	bool success = imGui->SetColor(elementId, static_cast<ImGuiCol_>(type), ImVec4(r, g, b, a));
+	bool success = customImGui.SetColor(elementId, static_cast<ImGuiCol_>(type), ImVec4(r, g, b, a));
 
 	if (!success) {
 		return luaL_error(L, "Element with id '%s' not found", elementId);
@@ -961,11 +891,10 @@ LUA_FUNCTION(Lua_ImGui_SetColor)
 
 LUA_FUNCTION(Lua_ImGui_RemoveColor)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 	int type = (int)luaL_checkinteger(L, 3);
 
-	bool success = imGui->RemoveColor(elementId, static_cast<ImGuiCol_>(type));
+	bool success = customImGui.RemoveColor(elementId, static_cast<ImGuiCol_>(type));
 
 	if (!success) {
 		return luaL_error(L, "Element with id '%s' not found", elementId);
@@ -976,14 +905,13 @@ LUA_FUNCTION(Lua_ImGui_RemoveColor)
 
 LUA_FUNCTION(Lua_ImGui_SetTextColor)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 	float r = (float)luaL_checknumber(L, 3);
 	float g = (float)luaL_checknumber(L, 4);
 	float b = (float)luaL_checknumber(L, 5);
 	float a = (float)luaL_optnumber(L, 6, 1.0f);
 
-	bool success = imGui->SetColor(elementId, ImGuiCol_Text, ImVec4(r, g, b, a));
+	bool success = customImGui.SetColor(elementId, ImGuiCol_Text, ImVec4(r, g, b, a));
 
 	if (!success) {
 		return luaL_error(L, "Element with id '%s' not found", elementId);
@@ -994,10 +922,9 @@ LUA_FUNCTION(Lua_ImGui_SetTextColor)
 
 LUA_FUNCTION(Lua_ImGui_GetWindowPinned)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 
-	Element* element = imGui->GetElementById(elementId);
+	Element* element = customImGui.GetElementById(elementId);
 	if (element != NULL && element->type == IMGUI_ELEMENT::Window) {
 		lua_pushboolean(L, element->data.windowPinned);
 		return 1;
@@ -1009,11 +936,10 @@ LUA_FUNCTION(Lua_ImGui_GetWindowPinned)
 
 LUA_FUNCTION(Lua_ImGui_SetWindowPinned)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 	bool newState = lua::luaL_checkboolean(L, 3);
 
-	bool success = imGui->SetPinned(elementId, newState);
+	bool success = customImGui.SetPinned(elementId, newState);
 
 	if (!success) {
 		return luaL_error(L, "Window Element with id '%s' not found", elementId);
@@ -1024,12 +950,11 @@ LUA_FUNCTION(Lua_ImGui_SetWindowPinned)
 
 LUA_FUNCTION(Lua_ImGui_SetWindowPosition)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 	float x = (float)luaL_checknumber(L, 3);
 	float y = (float)luaL_checknumber(L, 4);
 
-	bool success = imGui->SetWindowPosition(elementId, x, y);
+	bool success = customImGui.SetWindowPosition(elementId, x, y);
 
 	if (!success) {
 		return luaL_error(L, "Window Element with id '%s' not found", elementId);
@@ -1040,12 +965,11 @@ LUA_FUNCTION(Lua_ImGui_SetWindowPosition)
 
 LUA_FUNCTION(Lua_ImGui_SetWindowSize)
 {
-	CustomImGui* imGui = *lua::GetUserdata<CustomImGui**>(L, 1, lua::metatables::ImGuiMT);
 	const char* elementId = luaL_checkstring(L, 2);
 	float sizeX = (float)luaL_checknumber(L, 3);
 	float sizeY = (float)luaL_checknumber(L, 4);
 
-	bool success = imGui->SetWindowSize(elementId, sizeX, sizeY);
+	bool success = customImGui.SetWindowSize(elementId, sizeX, sizeY);
 
 	if (!success) {
 		return luaL_error(L, "Window Element with id '%s' not found", elementId);
