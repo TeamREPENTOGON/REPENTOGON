@@ -1006,7 +1006,7 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 	resSplit = result;
 
 	if (npc != nullptr) {
-		int callbackid = 1499;
+		int callbackid = 1191;
 
 		if (CallbackState.test(callbackid - 1000)) {
 			lua_State* L = g_LuaEngine->_state;
@@ -1016,8 +1016,9 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 
 			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 				.push(npc->_type)
-				.push(resSplit)
 				.push(npc, lua::Metatables::ENTITY_NPC)
+				.push(resSplit)
+				
 				.call(1);
 
 			if (!result) {
@@ -1046,7 +1047,7 @@ void ASMPatchTrySplit() {
 	printf("[REPENTOGON] Patching Entity_NPC::TrySplit at %p\n", addr);
 	void* ptr = &resSplit;
 	const int numOverriddenBytes = 8;
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS + ASMPatch::SavedRegisters::Registers::XMM0 + ASMPatch::SavedRegisters::Registers::XMM1, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters);
 	patch.AddBytes("\x0f\xb6\xc0") // MOVZX EAX,AL
