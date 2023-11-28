@@ -283,8 +283,8 @@ LUA_FUNCTION(Lua_RoomSetGreedWaveTimer) {
 
 LUA_FUNCTION(Lua_RoomIsPersistentRoomEntity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	const int type = luaL_checkinteger(L, 2);
-	const int varinat = luaL_optinteger(L, 3, 0);
+	const int type = (int)luaL_checkinteger(L, 2);
+	const int varinat = (int)luaL_optinteger(L, 3, 0);
 	lua_pushboolean(L, room->IsPersistentRoomEntity(type, varinat, 0));
 	return 1;
 }

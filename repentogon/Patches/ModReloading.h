@@ -1,7 +1,10 @@
 #include <limits.h>
 #include <iostream>
 
+#include "../REPENTOGONOptions.h"
+
 inline void GameRestart() {
+	repentogonOptions.Write("internal", "DidModReset", "1");
 	g_Manager->GetOptions()->Save();
 	STARTUPINFO si = {};
 	PROCESS_INFORMATION pi = {};

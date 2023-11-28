@@ -1,7 +1,6 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "ModReloading.h"
-#include "../REPENTOGONOptions.h"
 
 // We always want to restart after the game fully loads, this ensures that
 HOOK_METHOD(ModManager, UpdateWorkshopMods, () -> void) {
@@ -14,6 +13,5 @@ HOOK_METHOD(ModManager, UpdateWorkshopMods, () -> void) {
 }
 
 HOOK_METHOD(ModManager, Reset, () -> void) {
-		repentogonOptions.Write("internal", "DidModReset", "1");
 		GameRestart(); //if we ever walk back from this, for whateevr reason, we will need to recheck some stuff regarding a few xml reloads on xmldata
 }

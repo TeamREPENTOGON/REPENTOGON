@@ -10,7 +10,7 @@
 #include "ASMPatches.h"
 #include "ASMPatcher.hpp"
 #include "Log.h"
-#include "../REPENTOGONOptions.h"
+//#include "../REPENTOGONOptions.h"
 
 static DWORD SetPageMemoryRW(void* addr, MEMORY_BASIC_INFORMATION* info) {
 	VirtualQuery(addr, info, sizeof(*info));
@@ -914,7 +914,7 @@ void ASMPatchRoomUpdate(void* addr) {
 
 void ASMPatchRoomSaveState(void* addr) {
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS - ASMPatch::SavedRegisters::EAX, true);
-	ASMPatch patch, flat;
+	ASMPatch patch;
 	patch.PreserveRegisters(reg)
 		.Push((int)((char*)addr + 0x9)) // push address of number to compare
 		.AddInternalCall(CheckSaveStateClearDelay) // call CheckSaveStateClearDelay()
@@ -989,10 +989,6 @@ void ASMPatchRoomClearDelay() {
 }
 */
 
-void __stdcall GameRestartPatch() {
-	GameRestart();
-}
-
 void ASMPatchMenuOptionsLanguageChange() {
 	// before lua reset in MenuOptions::Update
 	// this only happens when switching the language in the Options menu.
@@ -1003,6 +999,65 @@ void ASMPatchMenuOptionsLanguageChange() {
 	ASMPatch patch;
 	patch.AddInternalCall(GameRestart);
 	sASMPatcher.PatchAt(addr1, &patch);
+}
+
+bool resSplit = false;
+void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
+	resSplit = result;
+
+	if (npc != nullptr) {
+		int callbackid = 1499;
+
+		if (CallbackState.test(callbackid - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+				.push(npc->_type)
+				.push(resSplit)
+				.push(npc, lua::Metatables::ENTITY_NPC)
+				.call(1);
+
+			if (!result) {
+				if (lua_isboolean(L, -1)) {
+					resSplit = lua_toboolean(L, -1);
+					return;
+				}
+			}
+		}
+		XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(npc->_type, npc->_variant, npc->_subtype, false);
+		const std::string nosplit = xmlData["nosplit"];
+
+		if (nosplit == "true") {
+			resSplit = true;
+		}
+		else if (nosplit == "false") {
+			resSplit = false;
+		}
+	}
+}
+
+void ASMPatchTrySplit() {
+	SigScan scanner("f30f100d????????0f2f8b");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Patching Entity_NPC::TrySplit at %p\n", addr);
+	void* ptr = &resSplit;
+	const int numOverriddenBytes = 8;
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
+	patch.PreserveRegisters(savedRegisters);
+	patch.AddBytes("\x0f\xb6\xc0") // MOVZX EAX,AL
+		.Push(ASMPatch::Registers::ECX)  // Push NPC
+		.Push(ASMPatch::Registers::EAX)  // Push current result
+		.AddInternalCall(TrySplitTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
+		.AddRelativeJump((char*)addr + numOverriddenBytes);
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 void PerformASMPatches() {
@@ -1030,4 +1085,5 @@ void PerformASMPatches() {
 	ASMPatchPreMMorphActiveCallback();
 	PatchRoomClearDelay();
 	ASMPatchMenuOptionsLanguageChange();
+	ASMPatchTrySplit();
 }
