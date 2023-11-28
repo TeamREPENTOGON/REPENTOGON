@@ -1177,13 +1177,13 @@ This callback triggers when an active gets rerolled by 'M (trinket id 138) and a
 |1190 |MC_PRE_M_MORPH_ACTIVE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible)| [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
 
 ### MC_PRE_NPC_SPLIT
-Called when the game is about to decide whether or not an EntityNPC can be split, ie the Meat Cleaver effect.
+Called when the game is about to decide whether or not an [EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) can be split, ie the Meat Cleaver effect.
 
-Return true to prevent the split, false to force it, or nil to continue default behavior.
+Return `true` to prevent the split, `false` to allow it even if blacklisted, or `nil` to continue default behavior.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1191 |MC_PRE_NPC_SPLIT {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC)| boolean IsBlacklisted |
+|1191 |MC_PRE_NPC_SPLIT {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, boolean IsBlacklisted) | ([EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean |
 
 ### MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable }
 Called when a familiar fires a tear.
