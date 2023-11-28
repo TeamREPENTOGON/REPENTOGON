@@ -1,6 +1,7 @@
 #include "ASMPatcher.hpp"
 #include "ConsoleMega.h"
 #include "CustomImGui.h"
+#include "GameOptions.h"
 #include "HelpMenu.h"
 #include "HookSystem.h"
 #include "PerformanceWindow.h"
@@ -44,6 +45,7 @@ static ImVec2 imguiSizeModifier;
 HelpMenu helpMenu;
 LogViewer logViewer;
 PerformanceWindow performanceWindow;
+GameOptionsWindow gameOptionsWindow;
 ConsoleMega console;
 CustomImGui customImGui;
 NotificationHandler notificationHandler;
@@ -153,6 +155,7 @@ void SaveSettings() {
 	console.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(console.windowName.c_str())));
 		logViewer.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(logViewer.windowName.c_str())));
 		performanceWindow.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(performanceWindow.windowName.c_str())));
+		gameOptionsWindow.SaveSettings(FindWindowSettingsByIDEx(ImHashStr(gameOptionsWindow.windowName.c_str())));
 	
 	for (auto window = customImGui.windows->begin(); window != customImGui.windows->end(); ++window) {
 		CustomImGuiWindowSettings* settings = FindWindowSettingsByIDEx(ImHashStr(window->name.c_str()));
@@ -166,6 +169,7 @@ void LoadSettings() {
 	console.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(console.windowName.c_str())));
 	logViewer.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(logViewer.windowName.c_str())));
 	performanceWindow.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(performanceWindow.windowName.c_str())));
+	gameOptionsWindow.LoadSettings(FindWindowSettingsByIDEx(ImHashStr(gameOptionsWindow.windowName.c_str())));
 
 	for (auto window = customImGui.windows->begin(); window != customImGui.windows->end(); ++window) {
 		CustomImGuiWindowSettings* settings = FindWindowSettingsByIDEx(ImHashStr(window->name.c_str()));
@@ -508,6 +512,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 			if (ImGui::BeginMenu(ICON_FA_SCREWDRIVER_WRENCH " Tools")) {
 				ImGui::MenuItem(ICON_FA_TERMINAL" Debug Console", NULL, &console.enabled);
 				ImGui::MenuItem(ICON_FA_NEWSPAPER" Log Viewer", NULL, &logViewer.enabled);
+				ImGui::MenuItem(ICON_FA_GEARS" Game Options", NULL, &gameOptionsWindow.enabled);
 				ImGui::MenuItem(ICON_FA_GAUGE_HIGH" Performance", NULL, &performanceWindow.enabled);
 				ImGui::MenuItem(ICON_FA_PENCIL" Style Editor", NULL, &show_app_style_editor);
 				ImGui::EndMenu();
@@ -522,6 +527,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	console.Draw(menuShown);
 	logViewer.Draw(menuShown);
 	performanceWindow.Draw(menuShown);
+	gameOptionsWindow.Draw(menuShown);
 
 	customImGui.DrawWindows(menuShown);
 

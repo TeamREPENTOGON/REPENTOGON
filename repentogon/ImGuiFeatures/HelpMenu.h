@@ -4,8 +4,6 @@
 #include <string>
 #include "IconsFontAwesome6.h"
 
-extern int handleWindowFlags(int flags);
-
 struct HelpMenu {
     HelpMenu() { }
 
