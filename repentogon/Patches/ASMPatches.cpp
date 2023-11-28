@@ -1048,14 +1048,14 @@ void ASMPatchTrySplit() {
 	const int numOverriddenBytes = 8;
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes));  // Restore the commands we overwrote
 	patch.PreserveRegisters(savedRegisters);
 	patch.AddBytes("\x0f\xb6\xc0") // MOVZX EAX,AL
-		.Push(ASMPatch::Registers::ECX)  // Push NPC
 		.Push(ASMPatch::Registers::EAX)  // Push current result
+		.Push(ASMPatch::Registers::EBX)  // Push NPC
 		.AddInternalCall(TrySplitTrampoline)
 		.RestoreRegisters(savedRegisters)
 		.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
+		.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + numOverriddenBytes);
 	sASMPatcher.PatchAt(addr, &patch);
 }
