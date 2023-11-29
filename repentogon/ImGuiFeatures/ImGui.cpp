@@ -273,13 +273,12 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 
 	// Enable the overlay using the grave key, disable using ESC
-	if (uMsg == WM_KEYDOWN && g_Manager->GetDebugConsoleEnabled()) {
+	if (uMsg == WM_KEYDOWN) {
 		ImGui::CloseCurrentPopup();
 
 		switch (wParam) {
 		case VK_OEM_3: {
 			menuShown = true;
-
 			break;
 		}
 
