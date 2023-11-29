@@ -12,7 +12,6 @@ extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
 extern bool imguiResized;
 extern ImVec2 imguiSizeModifier;
-REPENTOGONOptions options;
 
 struct GameOptionsWindow : ImGuiWindowObject {
     GameOptionsWindow()
@@ -65,7 +64,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                     ImGui::Checkbox("Faded Console Display", &g_Manager->GetOptions()->_enableFadedConsoleDisplay);
                     ImGui::Checkbox("Save Command History", &g_Manager->GetOptions()->_enableSaveCommandHistory);
                     ImGui::SliderInt("Console Font", &g_Manager->GetOptions()->_consoleFont, 0, 2, consoleFontModes[g_Manager->GetOptions()->_consoleFont], ImGuiSliderFlags_NoInput);
-                    ImGui::Checkbox("Enable unicode font", &options.enableUnifont);
+                    ImGui::Checkbox("Enable unicode font", &repentogonOptions.enableUnifont);
                     ImGui::SameLine();
                     HelpMarker("For improved non-latin language support. Will somewhat increase memory usage.");
 
@@ -117,20 +116,20 @@ struct GameOptionsWindow : ImGuiWindowObject {
                 }
 
                 if (ImGui::BeginTabItem("REPENTOGON")) {
-                    ImGui::Checkbox("Better Void Generation", &options.betterVoidGeneration);
+                    ImGui::Checkbox("Better Void Generation", &repentogonOptions.betterVoidGeneration);
                     ImGui::SameLine();
                     HelpMarker("The Void now pulls rooms from all unlocked floors, including alt path.");
-                    ImGui::Checkbox("Hush Panic State Fix", &options.hushPanicStateFix);
+                    ImGui::Checkbox("Hush Panic State Fix", &repentogonOptions.hushPanicStateFix);
                     ImGui::SameLine();
                     HelpMarker("Fixes the vanilla bug that causes Hush to no longer have any pause between attacks below 50% health.");
-                    ImGui::Checkbox("Key Masters affect deal chances", &options.keyMasterDealChance);
+                    ImGui::Checkbox("Key Masters affect deal chances", &repentogonOptions.keyMasterDealChance);
                     ImGui::SameLine();
                     HelpMarker("Killing Key Masters will raise the chance to spawn a deal, now consistent with killing other bums.");
-                    ImGui::Checkbox("Quicker Room Clear", &options.quickRoomClear);
+                    ImGui::Checkbox("Quicker Room Clear", &repentogonOptions.quickRoomClear);
                     ImGui::SameLine();
                     HelpMarker("Rooms will open their doors and spawn rewards quicker. Bosses still require their death animation to play out.");
                     ImGui::EndTabItem();
-                    ImGui::Checkbox("Prevent mod updates", &options.preventModUpdates);
+                    ImGui::Checkbox("Prevent mod updates", &repentogonOptions.preventModUpdates);
                     ImGui::SameLine();
                     HelpMarker("The game will skip updating your mods folder to match your current workshop folder. Useful for temporarily emptying your mods folder during mod development.");
                 }
