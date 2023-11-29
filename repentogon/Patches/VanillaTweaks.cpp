@@ -31,4 +31,5 @@ HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 // I'm putting this here bc I don't want to burden REPENTOGONOptions.h with the whole hooking system
 HOOK_METHOD(OptionsConfig, Save, () -> void) {
 	repentogonOptions.Save();
+	super();
 }
