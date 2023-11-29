@@ -1,0 +1,3 @@
+struct GridEntity_Door depends (ANM2) : public GridEntity {
+    ANM2 _extraSprite : 0x164;
+} : 0x2ec;
