@@ -1,3 +1,4 @@
+#pragma once
 #include "IsaacRepentance.h"
 #include "ImGuiFeatures/LogViewer.h"
 #include "MiscFunctions.h"
@@ -57,6 +58,21 @@ struct REPENTOGONOptions {
 		mINI::INIFile iniFile(optionsPath);
 		ini[category][field] = value;
 		return iniFile.write(ini);
+	}
+
+	bool Write(char* category, char* field, bool value) {
+		mINI::INIFile iniFile(optionsPath);
+		ini[category][field] = value? "1" : "0";
+		return iniFile.write(ini);
+	}
+
+	void Save() {
+		Write("VanillaTweaks", "BetterVoidGeneration", betterVoidGeneration);
+		Write("VanillaTweaks", "HushPanicStateFix",    hushPanicStateFix);
+		Write("VanillaTweaks", "KeyMasterDealChance",  keyMasterDealChance);
+		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
+		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
+		Write("internal",	   "EnableUnifont",		   enableUnifont);
 	}
 
 	mINI::INIStructure ini;
