@@ -7,7 +7,7 @@
 
     ???+ example "Example Code"
         ```lua
-        local camera = Game():GetCurrentRoom():GetBackdrop()
+        local backdrop = Game():GetRoom():GetBackdrop()
         ```
         
 ## Functions
