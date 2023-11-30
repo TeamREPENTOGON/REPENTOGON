@@ -30,6 +30,23 @@ Returns a table containing the attributes of the corresponding xml, the matching
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
 
+### Get·Entry·By·Id () {: aria-label='Functions' }
+#### table GetEntryById ( [XMLNode](enums/XMLNode.md) nodetype, int idx ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the corresponding xml, the matching nodetype(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given unique id.
+???- info "Table usage"
+	```lua
+	print("Sad Onion's description:", XMLData.GetEntryByName(XMLNode.ITEM,1).description)
+	```
+???+ note "child nodes"
+    Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
+???+ note "id?"
+    The Id usually matches the actual id of the node in question, with the exception of cases like the entities.xml where ids are not unique, on those cases, the id is the order of the node and wont correspond with the actual id. On the cases of xmls without ids, its just the order again.
+___
+
+### Get·Num·Entries () {: aria-label='Functions' }
+#### int GetNumEntries ( [XMLNode](enums/XMLNode.md) nodetype) {: .copyable aria-label='Functions' }
+Returns the number of entries a given xmlnode structure has.
+___
 ### Get·Entry·From·Entity () {: aria-label='Functions' }
 #### table GetEntryFromEntity ( [Entity](Entity.md) entity, bool autoxmlpick = true, bool strict) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the provided entity. The autoxmlpick parameter determines if only entities2.xml should be used or if it should pick the xml that matches the entitytype(Ex: items.xml for pedestal collectibles) . The strict parameter determines if it should only return a value when the type,variant and subtype attributes match or return whatever matches the type and take the rest as maybes.
