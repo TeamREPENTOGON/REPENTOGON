@@ -13,6 +13,9 @@ __thiscall void HUD::LoadGraphics();
 "558bec8b55??33c0391174??4081c1b006000083f80872??5dc20400":
 __thiscall void HUD::FlashRedHearts(Entity_Player *player);
 
+"558bec81eca8010000":
+__thiscall void HUD::ShowItemText(char* param_1,char *param_2,bool iscurse,bool idk);
+
 struct HUD depends (PlayerHUD, ANM2) { {{
 	//inline PlayerHUD GetPlayerHUD(int index) { return _playerHUD[index]; } 
 	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }

@@ -75,6 +75,9 @@ __thiscall void Game::NetStart(void *unk, int challenge, Seeds seed, unsigned in
 "558bec515356578b3d????????b9":
 static void Game::ProcessInput();
 
+"558bec6aff68????????64a1????????5081eca4000000a1":
+__thiscall void Game::Start(int playertype,int challenge,Seeds seeds,unsigned int difficulty);
+
 "558bec51807d??000f28fb":
 __thiscall void Game::SetColorModifier(ColorModState* color, bool lerp, float rate<xmm3>);
 

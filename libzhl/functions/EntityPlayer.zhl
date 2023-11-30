@@ -219,6 +219,9 @@ __thiscall void Entity_Player::CheckPoopSpellQueue();
 "558bec6aff68????????64a1????????5081ec78010000":
 __thiscall void Entity_Player::AddCostume(ItemConfig_Item* collectibleID, bool itemStateOnly);
 
+"558bec8b55??5685d278??a1????????8bb0????????8b80????????2bc6c1f8023bd07d??8b04??6a00":
+__thiscall void Entity_Player::AddNullCostume(int costumeid);
+
 "53568bf15783be????????0074":
 __thiscall void Entity_Player::ClearDeadEyeCharge();
 
@@ -418,6 +421,9 @@ __thiscall void Entity_Player::UseRedKey();
 
 "558bec568bf133c08d96":
 __thiscall bool Entity_Player::VoidHasCollectible(int id);
+
+"558bec568b75??578bf985f679":
+__thiscall RNG* Entity_Player::GetCollectibleRNG(int id);
 
 "558bec83e4f851538bd98b8b????????568b75":
 __thiscall void Entity_Player::AttachMinecart(Entity_NPC * minecart);

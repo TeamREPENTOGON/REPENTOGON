@@ -2333,6 +2333,7 @@ XMLNode = {
 	ACHIEVEMENT = 26,
 	GIANTBOOK = 27,
 	BOSSRUSHWAVE = 28,
+	PLAYERFORM = 29,
 }
 
 AutocompleteType = {

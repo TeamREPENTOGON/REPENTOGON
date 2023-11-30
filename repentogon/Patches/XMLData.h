@@ -472,6 +472,7 @@ struct XMLData {
 	XMLAchievement* AchievementData = new XMLAchievement();
 	XMLGeneric* GiantBookData = new XMLGeneric(46);
 	XMLGeneric* BossRushData = new XMLGeneric(0);
+	XMLGeneric* PlayerFormData = new XMLGeneric(14);
 
 	XMLMod* ModData = new XMLMod();
 
@@ -504,6 +505,7 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["bosspools"] = 21;
 	xmlnodeenum["giantbook"] = 22;
 	xmlnodeenum["bossrush"] = 23;
+	xmlnodeenum["playerforms"] = 24;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 
@@ -511,6 +513,7 @@ extern unordered_map<string, int> xmlmaxnode;
 inline void initxmlmaxnodeenum() {
 	xmlmaxnode["giantbook.xml"] = 46;
 	xmlmaxnode["nightmares.xml"] = 16;
+	xmlmaxnode["playerforms.xml"] = 14;
 }
 
 extern unordered_map<string, int> xmlfullmerge;

@@ -1876,6 +1876,60 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 		break;
+	case 24: //playerforms
+		id = 1;
+		daddy = node;
+		babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes attributes;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				attributes[stringlower(attr->name())] = string(attr->value());
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				attributes[stringlower(attr->name())] = string(attr->value());
+			}
+			string oldid = attributes["id"];
+			if ((attributes.find("id") != attributes.end()) && ((attributes.find("sourceid") == attributes.end()) || !iscontent)) {
+				id = toint(attributes["id"]);
+			}
+
+			else {
+				if (attributes.find("id") != attributes.end()) { attributes["relativeid"] = attributes["id"]; }
+				XMLStuff.PlayerFormData->maxid = XMLStuff.PlayerFormData->maxid + 1;
+				attributes["id"] = to_string(XMLStuff.PlayerFormData->maxid);
+				id = XMLStuff.PlayerFormData->maxid;
+			}
+			if (id > XMLStuff.PlayerFormData->maxid) {
+				XMLStuff.PlayerFormData->maxid = id;
+			}
+
+			if (attributes.find("sourceid") == attributes.end()) {
+				attributes["sourceid"] = lastmodid;
+			}
+			XMLStuff.PlayerFormData->ProcessChilds(auxnode, id);
+			if ((attributes.find("name") == attributes.end()) && (attributes.find("gfx") != attributes.end())) {
+				attributes["name"] = getFileName(attributes["gfx"]);
+			}
+
+			if (attributes["name"].find("#") != string::npos) {
+				attributes["untranslatedname"] = attributes["name"];
+				attributes["name"] = string(stringTable->GetString("Default", 0, attributes["name"].substr(1, attributes["name"].length()).c_str(), &unk));
+				if (attributes["name"].compare("StringTable::InvalidKey") == 0) { attributes["name"] = attributes["untranslatedname"]; }
+			}
+			
+			//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
+			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.PlayerFormData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
+			XMLStuff.PlayerFormData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+			XMLStuff.PlayerFormData->bymod[attributes["sourceid"]].push_back(id);
+			XMLStuff.PlayerFormData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.PlayerFormData->byname[attributes["name"]] = id;
+			XMLStuff.PlayerFormData->nodes[id] = attributes;
+			//XMLStuff.ModData->sounds[lastmodid] += 1;
+			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+		}
+		break;
 	case 99: //name for mod metadata
 	if (node->parent() && (strcmp(stringlower(node->parent()->name()).c_str(), "metadata") == 0)) {
 		daddy = node->parent();
@@ -2333,6 +2387,10 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 	case 28:
 		Node = XMLStuff.BossRushData->GetNodeByName(entityname);
 		Childs = XMLStuff.BossRushData->childs[XMLStuff.BossRushData->byname[entityname]];
+		break;
+	case 29:
+		Node = XMLStuff.PlayerFormData->GetNodeByName(entityname);
+		Childs = XMLStuff.PlayerFormData->childs[XMLStuff.PlayerFormData->byname[entityname]];
 		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
@@ -2964,6 +3022,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<giantb", 50)) {
 			super(BuildModdedXML(xmldata, "giantbook.xml", false));
+		}
+		else if (charfind(xmldata, "<playerfo", 50)) {
+			printf("yoyoyo %s", BuildModdedXML(xmldata, "playerforms.xml", false));
+			super(BuildModdedXML(xmldata, "playerforms.xml", false));
 		}
 		else if ((charfind(xmldata, "<ambush", 50)) || (charfind(xmldata, "<bossru", 50)) || (charfind(xmldata, "<bossamb", 50))) {
 			super(BuildModdedXML(xmldata, "ambush.xml", false));
