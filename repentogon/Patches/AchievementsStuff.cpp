@@ -38,9 +38,12 @@ using namespace std;
 
 
 unordered_map<string, int > Achievements;
-unordered_map<int, unordered_map<int, vector<int>> > CompletionMarkListeners;
-unordered_map<int, unordered_map<int, vector<int>> > EventCounterListeners;
-unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathListeners;
+unordered_map<string, XMLAttributes > AchievConditionsById;
+unordered_map<int, vector<string> > ConditionsByAchievId;
+unordered_map<string, unordered_map<int, int> > ConditionCounters;
+unordered_map<int, unordered_map<int, vector<string>> > CompletionMarkListeners;
+unordered_map<int, unordered_map<int, vector<string>> > EventCounterListeners;
+unordered_map<tuple<int, int, int>, unordered_map<int, vector<string>>> BossDeathListeners;
 unordered_map<string, int> simplifiedeventsenum;
 string achivjsonpath;
 
