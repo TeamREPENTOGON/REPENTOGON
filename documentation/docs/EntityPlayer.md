@@ -430,8 +430,8 @@ ___
 
 ___
 ### Get·Weapon () {: aria-label='Functions' }
-#### [Weapon](Weapon.md) GetWeapon ( ) {: .copyable aria-label='Functions' }
-
+#### [Weapon](Weapon.md) GetWeapon ( int slot ) {: .copyable aria-label='Functions' }
+Slot needs to be between 0 and 4.
 ___
 ### Get·Weapon·Modifiers () {: aria-label='Functions' }
 #### int GetWeaponModifiers ( ) {: .copyable aria-label='Functions' }
