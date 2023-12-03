@@ -241,7 +241,12 @@ nav:
   - UI: changes/UI.md
 - Vector: Vector.md
 - XML:
+  - XML Overview: xml/overview.md
   - players.xml: xml/players.md
+  - achievements.xml: xml/cutscenes.md
+  - cutscenes.xml: xml/cutscenes.md
+  - giantbook.xml: xml/giantbook.md
+  - ambush.xml: xml/ambush.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 - Custom Rendering: renderer/CustomRendering.md
 plugins:
