@@ -8,7 +8,7 @@ tags:
 
 **Content-Folder**{: .xmlInfo .green }: Using this file in a content folder will add new boss rush waves!
 
-With REPENTOGON, you have the ability to add new boss rush waves in an organic way, they should work just as vanilla boss rush waves do with the same xml structure.
+With REPENTOGON, you have the ability to add new boss rush waves in an organic way, they should work just as vanilla boss rush waves do with the same xml structure.   
 Take in mind that the only thing thats read by the game on this xml is bossrush waves, the challenge room stuff was deprecated in repentance and is no longer relevant (so dont bother adding those).
 
 ???+ note "More Info"

@@ -8,8 +8,8 @@ tags:
 
 **Content-Folder**{: .xmlInfo .green }: Using this file in a content folder will add new giantbook animations.
 
-With REPENTOGON, you have the ability to add new giantbook animations in an organic way, they should work just as vanilla giantbook animations do with the same xml structure.
-Take in mind that, in the same way as other content xmls, ids are automatically assigned and shouldnt be specified. If you do specify an id for a xml node, it will be ignored. 
+With REPENTOGON, you have the ability to add new giantbook animations in an organic way, they should work just as vanilla giantbook animations do with the same xml structure.   
+Take in mind that, in the same way as other content xmls, ids are automatically assigned and shouldnt be specified. If you do specify an id for a xml node, it will be ignored.    
 To get the Id of a Giant Book animation in lua, you can use Isaac.GetGiantBookIdByName, you can then play modded giant book animations using the ItemOverlay.Show function.
 
 ???+ note "More Info"
