@@ -1061,6 +1061,48 @@ void ASMPatchTrySplit() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+void __stdcall GridInitTrampoline(GridEntity* grid) {
+	int callbackid = 1499;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(grid->GetType())
+			.push(grid, lua::Metatables::GRID_ENTITY)
+			.call(1);
+	}
+}
+
+const int numOverriddenBytes = 5;
+void ASMPatchSpawnGridEntity(void* addr) {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes))  // Restore the commands we overwrote
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // GridEntity
+		.AddInternalCall(GridInitTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + numOverriddenBytes);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void PatchGridPalooza()
+{
+	SigScan scanner1("8947??b0015f5e5b5dc21400");
+	SigScan scanner2("8947??b0015f5e5b595dc20800");
+	scanner1.Scan();
+	scanner2.Scan();
+	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
+	
+	printf("[REPENTOGON] Patching SpawnGridEntity at %p, %p\n", addrs[0], addrs[1]);
+	ASMPatchSpawnGridEntity(addrs[0]);
+	ASMPatchSpawnGridEntity(addrs[1]);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchAmbushWaveCount();
@@ -1087,4 +1129,5 @@ void PerformASMPatches() {
 	PatchRoomClearDelay();
 	ASMPatchMenuOptionsLanguageChange();
 	ASMPatchTrySplit();
+	PatchGridPalooza();
 }
