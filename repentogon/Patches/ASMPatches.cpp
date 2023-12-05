@@ -1070,10 +1070,9 @@ const int numOverriddenBytes[2] = { 8, 5 };
 // Room::spawn_entity
 */ /////////////////
 
-unsigned int spawndata[2] = { 69420, 42069 };
+unsigned int spawndata[2] = { 0, 0 };
 GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, unsigned int vardata, unsigned int idx) {
 	int callbackid = 1499;
-
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1101,8 +1100,8 @@ GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int vari
 		}
 	}
 
-	//spawndata[0] = variant;
-	//spawndata[1] = vardata;
+	spawndata[0] = variant;
+	spawndata[1] = vardata;
 
 	GridEntity* ent = CreateGridEntity(type, idx);
 	return ent;
@@ -1115,20 +1114,19 @@ void ASMPatchRoomSpawnEntity() {
 	unsigned int* basePtr = spawndata; // stinky workaround
 	unsigned int** outPtr = &basePtr;
 
-
 	printf("[REPENTOGON] Patching Room::spawn_entity at %p\n", addr);
 
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::ECX) // type
 		.Push(ASMPatch::Registers::EDX) // idx
-		.Push(ASMPatch::Registers::ESI) // variant
 		.Push(ASMPatch::Registers::EDI) // vardata
+		.Push(ASMPatch::Registers::ESI) // variant
+		.Push(ASMPatch::Registers::ECX) // type
 		.AddInternalCall(RoomSpawnTrampoline)
-		//.AddBytes("\x8B\x35").AddBytes(ByteBuffer().AddAny((char*)outPtr, 4));
-		//basePtr = spawndata + 1;
-		//patch.AddBytes("\x8B\x3D").AddBytes(ByteBuffer().AddAny((char*)outPtr, 4))
+		.AddBytes("\x8B\x35").AddBytes(ByteBuffer().AddAny((char*)outPtr, 4));
+		basePtr = spawndata + 1;
+		patch.AddBytes("\x8B\x3D").AddBytes(ByteBuffer().AddAny((char*)outPtr, 4))
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
