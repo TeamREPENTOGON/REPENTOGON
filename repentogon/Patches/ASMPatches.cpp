@@ -1061,8 +1061,81 @@ void ASMPatchTrySplit() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void __stdcall GridInitTrampoline(GridEntity* grid) {
+//////////////////////////////////////////////
+// !!!!! GRID CALLBACK STUFF HERE !!!!!
+//////////////////////////////////////////////
+const int numOverriddenBytes[2] = { 8, 5 };
+
+/* /////////////////
+// Room::spawn_entity
+*/ /////////////////
+
+unsigned int spawndata[2] = { 0, 0 };
+GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, unsigned int vardata, unsigned int idx) {
 	int callbackid = 1499;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(type)
+			.push(type)
+			.push(variant)
+			.push(vardata)
+			.push(idx)
+			.call(1);
+
+		if (!result) {
+			if (lua_istable(L, -1)) {
+				type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
+				variant = lua::callbacks::ToInteger(L, 2);
+				vardata = lua::callbacks::ToInteger(L, 3);
+			}
+			else if (!lua::luaL_checkboolean(L, -1))
+			{
+				return nullptr;
+			}
+		}
+	}
+
+	spawndata[0] = variant;
+	spawndata[1] = vardata;
+
+	GridEntity* ent = CreateGridEntity(type, idx);
+	return ent;
+}
+
+void ASMPatchRoomSpawnEntity() {
+	SigScan scanner_spawn_entity("e8????????8bc885c90f84????????837d??17");
+	scanner_spawn_entity.Scan();
+	void* addr = scanner_spawn_entity.GetAddress();
+
+	printf("[REPENTOGON] Patching Room::spawn_entity at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::EAX - ASMPatch::SavedRegisters::Registers::ESI - ASMPatch::SavedRegisters::Registers::EDI, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX) // type
+		.Push(ASMPatch::Registers::ESI) // variant
+		.Push(ASMPatch::Registers::EDI) // vardata
+		.Push(ASMPatch::Registers::EBP, -0x38) // idx
+		.AddInternalCall(RoomSpawnTrampoline)
+		.MoveImmediate(ASMPatch::Registers::ESI, spawndata[0])
+		.MoveImmediate(ASMPatch::Registers::EDI, spawndata[1])
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+/* /////////////////////
+// Room::SpawnGridEntity
+*/ /////////////////////
+
+void __stdcall PostGridInitTrampoline(GridEntity* grid) {
+	int callbackid = 1101;
 
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -1077,20 +1150,19 @@ void __stdcall GridInitTrampoline(GridEntity* grid) {
 	}
 }
 
-const int numOverriddenBytes = 5;
-void ASMPatchSpawnGridEntity(void* addr) {
+void ASMPatchSpawnGridEntityPostInit(void* addr) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes))  // Restore the commands we overwrote
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes[1]))  // Restore the commands we overwrote
 		.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI) // GridEntity
-		.AddInternalCall(GridInitTrampoline)
+		.AddInternalCall(PostGridInitTrampoline)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + numOverriddenBytes);
+		.AddRelativeJump((char*)addr + numOverriddenBytes[1]);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void PatchGridPalooza()
+void PatchPostGridInit()
 {
 	SigScan scanner1("8947??b0015f5e5b5dc21400");
 	SigScan scanner2("8947??b0015f5e5b595dc20800");
@@ -1098,10 +1170,20 @@ void PatchGridPalooza()
 	scanner2.Scan();
 	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
 	
-	printf("[REPENTOGON] Patching SpawnGridEntity at %p, %p\n", addrs[0], addrs[1]);
-	ASMPatchSpawnGridEntity(addrs[0]);
-	ASMPatchSpawnGridEntity(addrs[1]);
+	printf("[REPENTOGON] Patching SpawnGridEntity POST_GRID_INIT at %p, %p\n", addrs[0], addrs[1]);
+	ASMPatchSpawnGridEntityPostInit(addrs[0]);
+	ASMPatchSpawnGridEntityPostInit(addrs[1]);
 }
+
+void PatchGridCallbackShit()
+{
+	ASMPatchRoomSpawnEntity();
+	PatchPostGridInit();
+}
+
+//////////////////////////////////////////////
+// !!!!! GRID CALLBACK STUFF DONE !!!!!
+//////////////////////////////////////////////
 
 void PerformASMPatches() {
 	ASMPatchLogMessage();
@@ -1129,5 +1211,5 @@ void PerformASMPatches() {
 	PatchRoomClearDelay();
 	ASMPatchMenuOptionsLanguageChange();
 	ASMPatchTrySplit();
-	PatchGridPalooza();
+	PatchGridCallbackShit();
 }
