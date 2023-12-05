@@ -1070,7 +1070,7 @@ const int numOverriddenBytes[2] = { 8, 5 };
 // Room::spawn_entity
 */ /////////////////
 
-unsigned int spawndata[2] = { 0, 0 };
+unsigned int spawndata[2] = { 69420, 42069 };
 GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, unsigned int vardata, unsigned int idx) {
 	int callbackid = 1499;
 
@@ -1081,11 +1081,11 @@ GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int vari
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(type)
-			.push(type)
-			.push(variant)
-			.push(vardata)
-			.push(idx)
+			.push((int)type)
+			.push((int)type)
+			.push((int)variant)
+			.push((int)vardata)
+			.push((int)idx)
 			.call(1);
 
 		if (!result) {
@@ -1094,15 +1094,15 @@ GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int vari
 				variant = lua::callbacks::ToInteger(L, 2);
 				vardata = lua::callbacks::ToInteger(L, 3);
 			}
-			else if (!lua::luaL_checkboolean(L, -1))
+			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 			{
 				return nullptr;
 			}
 		}
 	}
 
-	spawndata[0] = variant;
-	spawndata[1] = vardata;
+	//spawndata[0] = variant;
+	//spawndata[1] = vardata;
 
 	GridEntity* ent = CreateGridEntity(type, idx);
 	return ent;
@@ -1112,19 +1112,23 @@ void ASMPatchRoomSpawnEntity() {
 	SigScan scanner_spawn_entity("e8????????8bc885c90f84????????837d??17");
 	scanner_spawn_entity.Scan();
 	void* addr = scanner_spawn_entity.GetAddress();
+	unsigned int* basePtr = spawndata; // stinky workaround
+	unsigned int** outPtr = &basePtr;
+
 
 	printf("[REPENTOGON] Patching Room::spawn_entity at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::EAX - ASMPatch::SavedRegisters::Registers::ESI - ASMPatch::SavedRegisters::Registers::EDI, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::EAX, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::ECX) // type
+		.Push(ASMPatch::Registers::EDX) // idx
 		.Push(ASMPatch::Registers::ESI) // variant
 		.Push(ASMPatch::Registers::EDI) // vardata
-		.Push(ASMPatch::Registers::EBP, -0x38) // idx
 		.AddInternalCall(RoomSpawnTrampoline)
-		.MoveImmediate(ASMPatch::Registers::ESI, spawndata[0])
-		.MoveImmediate(ASMPatch::Registers::EDI, spawndata[1])
+		//.AddBytes("\x8B\x35").AddBytes(ByteBuffer().AddAny((char*)outPtr, 4));
+		//basePtr = spawndata + 1;
+		//patch.AddBytes("\x8B\x3D").AddBytes(ByteBuffer().AddAny((char*)outPtr, 4))
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
