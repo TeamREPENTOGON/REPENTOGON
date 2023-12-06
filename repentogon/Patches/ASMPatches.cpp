@@ -1198,29 +1198,32 @@ bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned in
 // ai_megafatty
 */ /////////////////////
 
-void ASMPatchInlinedSpawnGridEntity_MegaFatty(void* addr) {
+void ASMPatchInlinedSpawnGridEntity(void* addr, unsigned int offset, unsigned int type, unsigned int variant, int vardata) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
-		.Push(0) // vardata
+		.Push((int32_t)vardata) // vardata
 		.Push(ASMPatch::Registers::EAX) // seed
-		.Push(1) // variant
-		.Push(14) // type
+		.Push((int32_t)variant) // variant
+		.Push((int32_t)type) // type
 		.Push(ASMPatch::Registers::ESI) // idx
 		.AddInternalCall(SpawnGridEntityTrampoline)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0xf0);
+		.AddRelativeJump((char*)addr + offset);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
 void PatchInlinedSpawnGridEntity()
 {
 	SigScan scanner_megafatty("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??06000000e8????????c706");
+	SigScan scanner_larryjr("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??08000000");
 	scanner_megafatty.Scan();
-	void* addrs[1] = { scanner_megafatty.GetAddress() };
+	scanner_larryjr.Scan();
+	void* addrs[2] = { scanner_megafatty.GetAddress(), scanner_larryjr.GetAddress()};
 	
-	printf("[REPENTOGON] Patching inlined SpawnGridEntity at %p\n", addrs[0]);
-	ASMPatchInlinedSpawnGridEntity_MegaFatty(addrs[0]);
+	printf("[REPENTOGON] Patching inlined SpawnGridEntity at %p, %p\n", addrs[0], addrs[1]);
+	ASMPatchInlinedSpawnGridEntity(addrs[0], 0xf0, 14, 1, 0); // ai_mega_fatty
+	ASMPatchInlinedSpawnGridEntity(addrs[1], 0xf6, 14, 0, 0); // ai_larryjr
 }
 
 void PatchGridCallbackShit()
