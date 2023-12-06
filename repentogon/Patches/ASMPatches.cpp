@@ -1186,10 +1186,48 @@ void PatchPostGridInit()
 	ASMPatchSpawnGridEntityPostInit(addrs[1], 8);
 }
 
+/* /////////////////////
+// shared SpawnGridEntity trampoline
+*/ /////////////////////
+
+bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned int variant, unsigned int seed, int vardata) {
+	return g_Game->_room->SpawnGridEntity(idx, type, variant, seed, vardata);
+}
+
+/* /////////////////////
+// ai_megafatty
+*/ /////////////////////
+
+void ASMPatchInlinedSpawnGridEntity_MegaFatty(void* addr) {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(0) // vardata
+		.Push(ASMPatch::Registers::EAX) // seed
+		.Push(1) // variant
+		.Push(14) // type
+		.Push(ASMPatch::Registers::ESI) // idx
+		.AddInternalCall(SpawnGridEntityTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0xf0);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void PatchInlinedSpawnGridEntity()
+{
+	SigScan scanner_megafatty("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??06000000e8????????c706");
+	scanner_megafatty.Scan();
+	void* addrs[1] = { scanner_megafatty.GetAddress() };
+	
+	printf("[REPENTOGON] Patching inlined SpawnGridEntity at %p\n", addrs[0]);
+	ASMPatchInlinedSpawnGridEntity_MegaFatty(addrs[0]);
+}
+
 void PatchGridCallbackShit()
 {
 	ASMPatchRoomSpawnEntity();
 	PatchPostGridInit();
+	PatchInlinedSpawnGridEntity();
 }
 
 //////////////////////////////////////////////
