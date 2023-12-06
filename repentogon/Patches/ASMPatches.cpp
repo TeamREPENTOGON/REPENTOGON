@@ -1064,13 +1064,11 @@ void ASMPatchTrySplit() {
 //////////////////////////////////////////////
 // !!!!! GRID CALLBACK STUFF HERE !!!!!
 //////////////////////////////////////////////
-const int numOverriddenBytes[2] = { 8, 5 };
 
 /* /////////////////
 // Room::spawn_entity
 */ /////////////////
 
-unsigned int spawndata[2] = { 0, 0 };
 GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, int vardata, unsigned int seed, unsigned int idx, unsigned int teleState) {
 	const int callbackid = 1192;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -1163,15 +1161,15 @@ void __stdcall PostGridInitTrampoline(GridEntity* grid) {
 	}
 }
 
-void ASMPatchSpawnGridEntityPostInit(void* addr) {
+void ASMPatchSpawnGridEntityPostInit(void* addr, unsigned int overriddenBytes) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes[1]))  // Restore the commands we overwrote
+	patch.AddBytes(ByteBuffer().AddAny((char*)addr, overriddenBytes))  // Restore the commands we overwrote
 		.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI) // GridEntity
 		.AddInternalCall(PostGridInitTrampoline)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + numOverriddenBytes[1]);
+		.AddRelativeJump((char*)addr + overriddenBytes);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -1184,8 +1182,8 @@ void PatchPostGridInit()
 	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
 	
 	printf("[REPENTOGON] Patching SpawnGridEntity POST_GRID_INIT at %p, %p\n", addrs[0], addrs[1]);
-	ASMPatchSpawnGridEntityPostInit(addrs[0]);
-	ASMPatchSpawnGridEntityPostInit(addrs[1]);
+	ASMPatchSpawnGridEntityPostInit(addrs[0], 5);
+	ASMPatchSpawnGridEntityPostInit(addrs[1], 8);
 }
 
 void PatchGridCallbackShit()
