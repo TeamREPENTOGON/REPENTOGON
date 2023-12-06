@@ -1071,8 +1071,8 @@ const int numOverriddenBytes[2] = { 8, 5 };
 */ /////////////////
 
 unsigned int spawndata[2] = { 0, 0 };
-GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, unsigned int vardata, unsigned int idx) {
-	int callbackid = 1499;
+GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, int vardata, unsigned int seed, unsigned int idx, unsigned int teleState) {
+	const int callbackid = 1192;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1080,18 +1080,20 @@ GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int vari
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push((int)type)
-			.push((int)type)
-			.push((int)variant)
+			.push((unsigned int)type)
+			.push((unsigned int)type)
+			.push((unsigned int)variant)
 			.push((int)vardata)
-			.push((int)idx)
+			.push((unsigned int)idx)
+			.push((unsigned int)seed)
 			.call(1);
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
 				type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
-				variant = lua::callbacks::ToInteger(L, 2);
+				variant = (unsigned int)lua::callbacks::ToInteger(L, 2);
 				vardata = lua::callbacks::ToInteger(L, 3);
+				seed = (unsigned int)lua::callbacks::ToInteger(L, 4);
 			}
 			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 			{
@@ -1100,10 +1102,20 @@ GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int vari
 		}
 	}
 
-	spawndata[0] = variant;
-	spawndata[1] = vardata;
-
 	GridEntity* ent = CreateGridEntity(type, idx);
+	if (ent != nullptr) {
+		g_Game->_room->_gridEntities[idx] = ent;
+		GridEntityDesc* desc = ent->GetDesc();
+		desc->_variant = variant;
+		desc->_varData = vardata;
+
+		if (type == GRID_TELEPORTER) {
+			desc->_state = teleState != 0 ? teleState : 0;
+		}
+
+		ent->Init(seed);
+	}
+
 	return ent;
 }
 
@@ -1111,24 +1123,23 @@ void ASMPatchRoomSpawnEntity() {
 	SigScan scanner_spawn_entity("e8????????8bc885c90f84????????837d??17");
 	scanner_spawn_entity.Scan();
 	void* addr = scanner_spawn_entity.GetAddress();
-	unsigned int* basePtr = spawndata; // stinky workaround
-	unsigned int** outPtr = &basePtr;
 
 	printf("[REPENTOGON] Patching Room::spawn_entity at %p\n", addr);
 
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::EAX, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::ECX, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EBP, -0xa) //teleporter state
 		.Push(ASMPatch::Registers::EDX) // idx
+		.Push(ASMPatch::Registers::EBP, -0x40) // seed
 		.Push(ASMPatch::Registers::EDI) // vardata
 		.Push(ASMPatch::Registers::ESI) // variant
 		.Push(ASMPatch::Registers::ECX) // type
 		.AddInternalCall(RoomSpawnTrampoline)
-		.AddBytes("\x8B\x35").AddBytes(ByteBuffer().AddAny((char*)outPtr, 4));
-		basePtr = spawndata + 1;
-		patch.AddBytes("\x8B\x3D").AddBytes(ByteBuffer().AddAny((char*)outPtr, 4))
+		.AddBytes("\x85\xC0") // test eax,eax (does GridEntity exist)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0x5);
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr - 0xf2a) // jump to misc + return false
+		.AddRelativeJump((char*)addr + 0x3a); // jump to misc + return true
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -1137,7 +1148,7 @@ void ASMPatchRoomSpawnEntity() {
 */ /////////////////////
 
 void __stdcall PostGridInitTrampoline(GridEntity* grid) {
-	int callbackid = 1101;
+	const int callbackid = 1101;
 
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
