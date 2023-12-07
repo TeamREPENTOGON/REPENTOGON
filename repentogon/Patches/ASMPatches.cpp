@@ -1229,6 +1229,7 @@ void PatchInlinedSpawnGridEntity()
 	SigScan scanner_gideon("8b0d????????8bbf");
 	SigScan scanner_raglich_arm("8945??a1????????8b80");
 	SigScan scanner_singe_explosive_fart("8bd885f678");
+	SigScan scanner_player_collide_with_grid("8945??81ffc00100007d??8b75");
 	scanner_megafatty.Scan();
 	scanner_larryjr.Scan();
 	scanner_chub.Scan();
@@ -1237,6 +1238,7 @@ void PatchInlinedSpawnGridEntity()
 	scanner_gideon.Scan();
 	scanner_raglich_arm.Scan();
 	scanner_singe_explosive_fart.Scan();
+	scanner_player_collide_with_grid.Scan();
 	void* addrs[22] = { 
 		scanner_megafatty.GetAddress(),
 		scanner_larryjr.GetAddress(),
@@ -1245,7 +1247,8 @@ void PatchInlinedSpawnGridEntity()
 		scanner_dingle2.GetAddress(),
 		scanner_gideon.GetAddress(),
 		scanner_raglich_arm.GetAddress(),
-		scanner_singe_explosive_fart.GetAddress()
+		scanner_singe_explosive_fart.GetAddress(),
+		scanner_player_collide_with_grid.GetAddress()
 	};
 	printf("[REPENTOGON] Patching inlined SpawnGridEntity starting from %p, read log for rest\n", addrs[0]);
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[0], ASMPatch::Registers::ESI, 0, 0xf0, GRID_POOP, 1, 0); // ai_mega_fatty
@@ -1256,6 +1259,13 @@ void PatchInlinedSpawnGridEntity()
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[5], ASMPatch::Registers::EDI, 0xaf4, 0xc0, GRID_STAIRS, 1, 0); // CreateGideonDungeon
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[6], ASMPatch::Registers::EDI, 0, 0xc5, GRID_PIT, 0, 0); // ai_raglich_arm
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[7], ASMPatch::Registers::ESI, 0, 0xbd, GRID_PIT, 0, 0); // DoExplosiveFart
+	// This will need special handling, when trying to break a steel block it fails a GridPath check (I think) and returns without doing anything
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[8], ASMPatch::Registers::EDI, 0, 0x145, GRID_ROCK, 0, 0); // PlayerCollideWithGrid
+	// So will BombDamage (Custom handling of valid grid idx range
+	// And BombFlagTearEffects, (one grid idx range, one ???)
+	// And get_giant_part (Room path check)
+	//
+
 }
 
 void PatchGridCallbackShit()
