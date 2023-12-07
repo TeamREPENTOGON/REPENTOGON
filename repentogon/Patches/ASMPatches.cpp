@@ -1198,7 +1198,7 @@ bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned in
 // ai_megafatty
 */ /////////////////////
 
-void ASMPatchInlinedSpawnGridEntity(void* addr, unsigned int offset, unsigned int type, unsigned int variant, int vardata) {
+void ASMPatchInlinedSpawnGridEntity(void* addr, ASMPatch::Registers idxReg, unsigned int idxOffset, unsigned int jumpOffset, unsigned int type, unsigned int variant, int vardata) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
@@ -1206,10 +1206,10 @@ void ASMPatchInlinedSpawnGridEntity(void* addr, unsigned int offset, unsigned in
 		.Push(ASMPatch::Registers::EAX) // seed
 		.Push((int32_t)variant) // variant
 		.Push((int32_t)type) // type
-		.Push(ASMPatch::Registers::ESI) // idx
+		.Push(idxReg, idxOffset) // idx
 		.AddInternalCall(SpawnGridEntityTrampoline)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + offset);
+		.AddRelativeJump((char*)addr + jumpOffset);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -1220,19 +1220,22 @@ void PatchInlinedSpawnGridEntity()
 	SigScan scanner_chub("8b0d????????8945??8b81");
 	SigScan scanner_dingle1("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??06000000e8????????8b8d");
 	SigScan scanner_dingle2("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??1c000000");
+	SigScan scanner_gideon("8b0d????????8bbf");
 	scanner_megafatty.Scan();
 	scanner_larryjr.Scan();
 	scanner_chub.Scan();
 	scanner_dingle1.Scan();
 	scanner_dingle2.Scan();
-	void* addrs[5] = { scanner_megafatty.GetAddress(), scanner_larryjr.GetAddress(), scanner_chub.GetAddress(), scanner_dingle1.GetAddress(), scanner_dingle2.GetAddress() };
+	scanner_gideon.Scan();
+	void* addrs[6] = { scanner_megafatty.GetAddress(), scanner_larryjr.GetAddress(), scanner_chub.GetAddress(), scanner_dingle1.GetAddress(), scanner_dingle2.GetAddress(), scanner_gideon.GetAddress() };
 	
-	printf("[REPENTOGON] Patching inlined SpawnGridEntity at %p, %p, %p\n", addrs[0], addrs[1], addrs[2]);
-	ASMPatchInlinedSpawnGridEntity(addrs[0], 0xf0, 14, 1, 0); // ai_mega_fatty
-	ASMPatchInlinedSpawnGridEntity(addrs[1], 0xf6, 14, 0, 0); // ai_larryjr
-	ASMPatchInlinedSpawnGridEntity(addrs[2], 0x109, 14, 1, 0); // ai_chub
-	ASMPatchInlinedSpawnGridEntity(addrs[3], 0x139, 14, 1, 0); // ai_dingle (1)
-	ASMPatchInlinedSpawnGridEntity(addrs[4], 0xf0, 14, 1, 0); // ai_dingle (2)
+	printf("[REPENTOGON] Patching inlined SpawnGridEntity starting from %p, read log for rest\n", addrs[0]);
+	ASMPatchInlinedSpawnGridEntity(addrs[0], ASMPatch::Registers::ESI, 0, 0xf0, 14, 1, 0); // ai_mega_fatty
+	ASMPatchInlinedSpawnGridEntity(addrs[1], ASMPatch::Registers::ESI, 0, 0xf6, 14, 0, 0); // ai_larryjr
+	ASMPatchInlinedSpawnGridEntity(addrs[2], ASMPatch::Registers::ESI, 0, 0x109, 14, 1, 0); // ai_chub
+	ASMPatchInlinedSpawnGridEntity(addrs[3], ASMPatch::Registers::ESI, 0, 0x139, 14, 1, 0); // ai_dingle (1)
+	ASMPatchInlinedSpawnGridEntity(addrs[4], ASMPatch::Registers::ESI, 0, 0xf0, 14, 1, 0); // ai_dingle (2)
+	ASMPatchInlinedSpawnGridEntity(addrs[5], ASMPatch::Registers::EDI, 0xaf4, 0xc0, 18, 1, 0); // CreateGideonDungeon
 }
 
 void PatchGridCallbackShit()
