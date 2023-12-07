@@ -387,7 +387,7 @@ ___
 
 ___
 ### Get·Purity·State () {: aria-label='Functions' }
-#### [PurityState](PurityState.md) GetPurityState ( ) {: .copyable aria-label='Functions' }
+#### [PurityState](enums/PurityState.md) GetPurityState ( ) {: .copyable aria-label='Functions' }
 Returns the state in which the "Purity" item effect currently is. 
 
 ___
@@ -679,13 +679,9 @@ ___
 
 ___
 ### Set·Purity·State () {: aria-label='Functions' }
-#### void SetPurityState ( int state ) {: .copyable aria-label='Functions' }
-Set the state in which the "Purity" item effect currently is. 
+#### void SetPurityState ( [state](enums/PurityState.md) ) {: .copyable aria-label='Functions' }
+Set the state in which the "Purity" item effect currently is.
 
-- 0: Red
-- 1: Blue
-- 2: Yellow
-- 3: Orange
 ___
 ### Set·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
 #### void SetRedStewBonusDuration ( int Duration ) {: .copyable aria-label='Functions' }
