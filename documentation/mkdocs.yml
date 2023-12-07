@@ -97,6 +97,7 @@ nav:
     - ProceduralEffectActionType: enums/ProceduralEffectActionType.md
     - ProceduralEffectConditionType: enums/ProceduralEffectConditionType.md
     - ProjectileMode: enums/ProjectileMode.md
+    - PurityState: enums/PurityState.md
     - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
     - RoomSubType: enums/RoomSubType.md
     - SlotVariant: enums/SlotVariant.md

@@ -387,13 +387,9 @@ ___
 
 ___
 ### Get·Purity·State () {: aria-label='Functions' }
-#### int GetPurityState ( ) {: .copyable aria-label='Functions' }
+#### [PurityState](PurityState.md) GetPurityState ( ) {: .copyable aria-label='Functions' }
 Returns the state in which the "Purity" item effect currently is. 
 
-- 0: Red (Default value if no Purity item owned)
-- 1: Blue
-- 2: Yellow
-- 3: Orange
 ___
 ### Get·Red·Stew·Bonus·Duration () {: aria-label='Functions' }
 #### int GetRedStewBonusDuration ( ) {: .copyable aria-label='Functions' }

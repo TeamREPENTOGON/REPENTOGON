@@ -2459,3 +2459,11 @@ BombCostumeLayer = {
 	FRONT2 = 3,
 	OVERLAY = 4,
 }
+
+PurityState = {
+	--- Default value if no Purity item is owned.
+	RED = 0,
+	BLUE = 1,
+	YELLOW = 2,
+	ORANGE = 3,
+}
