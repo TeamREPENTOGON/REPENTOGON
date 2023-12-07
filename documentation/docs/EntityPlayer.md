@@ -187,6 +187,17 @@ ___
 ___
 ### Get·Collectibles·List () {: aria-label='Functions' }
 #### table GetCollectiblesList ( ) {: .copyable aria-label='Functions' }
+Returns a table with the amount of each collectible the player has without counting innate items.
+
+
+???- example "Example Code"
+    This code prints how many sad onions the player has.
+
+    ```lua
+    local collectiblesList = player:GetCollectiblesList()
+
+    print(collectiblesList[CollectibleType.COLLECTIBLE_SAD_ONION])
+    ```
 
 ___
 ### Get·Costume·Layer·Map () {: aria-label='Functions' }
