@@ -8,10 +8,6 @@
 #### boolean AddCollectibleCycle ( int id ) {: .copyable aria-label='Functions' }
 
 ___
-### Can·Reroll () {: aria-label='Functions' }
-#### boolean CanReroll ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Drop·Delay () {: aria-label='Functions' }
 #### int GetDropDelay ( ) {: .copyable aria-label='Functions' }
 
