@@ -84,14 +84,19 @@ HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
 			
 	}
 
+	std::string costumeSuffix = g_Manager->GetPlayerConfig()->at(this->GetPlayerType())._costumeSuffixName;
+
 	if (playerStatOverride) {
 		*this->GetPlayerTypeMutable() = 9; // EDEN
+		// Temporarily hijack Eden's costume suffix to match ours as well. Otherwise, the White Fireplace ghost won't have our modded character's costumes :(
+		g_Manager->GetPlayerConfig()->at(9)._costumeSuffixName = costumeSuffix;
 	}
 
 	super();
 
 	if (playerStatOverride) {
 		*this->GetPlayerTypeMutable() = id;
+		g_Manager->GetPlayerConfig()->at(9)._costumeSuffixName.clear();
 	}
 }
 
