@@ -322,6 +322,13 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 		}
 	}
 
+	// Avoids a crash if no characters are available (all tainteds locked). This is not an elegant solution but will work until we have the tainted menu hidden in this case.
+	if (allowedCharacters.empty()) { 
+		g_Manager->_sfxManager.Play(187, 1.0, 0, false, 1, 0);
+		this->Status = 0;
+		return;
+	}
+
 	int randomId = (Isaac::genrand_int32() % allowedCharacters.size());
 	std::pair<int, EntityConfig_Player> chosenCharacter = allowedCharacters[randomId];
 	std::string name = chosenCharacter.second.GetDisplayName(nullptr);
