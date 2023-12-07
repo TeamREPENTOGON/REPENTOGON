@@ -84,14 +84,19 @@ HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
 			
 	}
 
+	std::string costumeSuffix = g_Manager->GetPlayerConfig()->at(this->GetPlayerType())._costumeSuffixName;
+
 	if (playerStatOverride) {
 		*this->GetPlayerTypeMutable() = 9; // EDEN
+		// Temporarily hijack Eden's costume suffix to match ours as well. Otherwise, the White Fireplace ghost won't have our modded character's costumes :(
+		g_Manager->GetPlayerConfig()->at(9)._costumeSuffixName = costumeSuffix;
 	}
 
 	super();
 
 	if (playerStatOverride) {
 		*this->GetPlayerTypeMutable() = id;
+		g_Manager->GetPlayerConfig()->at(9)._costumeSuffixName.clear();
 	}
 }
 
@@ -320,6 +325,13 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 			}
 			offset++;
 		}
+	}
+
+	// Avoids a crash if no characters are available (all tainteds locked). This is not an elegant solution but will work until we have the tainted menu hidden in this case.
+	if (allowedCharacters.empty()) { 
+		g_Manager->_sfxManager.Play(187, 1.0, 0, false, 1, 0);
+		this->Status = 0;
+		return;
 	}
 
 	int randomId = (Isaac::genrand_int32() % allowedCharacters.size());

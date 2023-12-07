@@ -644,6 +644,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 			XMLStuff.EntityData->ProcessChilds(auxnode, idx);
 			XMLStuff.EntityData->nodes[idx] = entity;
+			XMLStuff.EntityData->byorder[XMLStuff.EntityData->nodes.size()] = idx;
 			XMLStuff.EntityData->byname[entity["name"]] = idx;
 			XMLStuff.EntityData->bytype[entity["id"]] = idx;
 			XMLStuff.EntityData->bybossid[entity["bossid"]] = idx;
@@ -1305,7 +1306,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (oldid > 0) {
 				recipe["id"] = oldid;
 			}
-			if (recipe.find("input") != recipe.end()) { recipe["name"] = recipe["input"]; };
+			if ((recipe.find("input") != recipe.end()) && (recipe.find("name") == recipe.end())) { recipe["name"] = recipe["input"]; };
 			recipe["sourceid"] = lastmodid;
 			if (recipe.find("relativeid") != recipe.end()) { XMLStuff.RecipeData->byrelativeid[lastmodid + recipe["relativeid"]] = id; }
 			XMLStuff.RecipeData->ProcessChilds(auxnode, id);
@@ -2263,6 +2264,140 @@ LUA_FUNCTION(Lua_GetFromEntity)
 }
 
 
+LUA_FUNCTION(Lua_GetEntryByIdXML)
+{
+	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
+	if (!lua_isnumber(L, 2)) { return luaL_error(L, "Expected number as parameter #2, got %s", lua_typename(L, lua_type(L, 2))); }
+	int nodetype = (int)luaL_checknumber(L, 1);
+	int id = (int)luaL_checknumber(L, 2);
+	XMLAttributes Node;
+	XMLChilds Childs;
+	switch (nodetype) {
+	case 0:
+		Node = XMLStuff.ModData->nodes[id];
+		Childs = XMLStuff.ModData->childs[id];
+		break;
+	case 1:
+		Node = XMLStuff.EntityData->nodes[XMLStuff.EntityData->byorder[id]];
+		Childs = XMLStuff.EntityData->childs[XMLStuff.EntityData->byorder[id]];
+		break;
+	case 2:
+		Node = XMLStuff.PlayerData->nodes[id];
+		Childs = XMLStuff.PlayerData->childs[id];
+		break;
+	case 3:
+		Node = XMLStuff.ItemData->nodes[id];
+		Childs = XMLStuff.ItemData->childs[id];
+		break;
+	case 4:
+		Node = XMLStuff.TrinketData->nodes[id];
+		Childs = XMLStuff.TrinketData->childs[id];
+		break;
+	case 5:
+		Node = XMLStuff.PillData->nodes[id];
+		Childs = XMLStuff.PillData->childs[id];
+		break;
+	case 6:
+		Node = XMLStuff.CardData->nodes[id];
+		Childs = XMLStuff.CardData->childs[id];
+		break;
+	case 7:
+		Node = XMLStuff.MusicData->nodes[id];
+		Childs = XMLStuff.MusicData->childs[id];
+		break;
+	case 8:
+		Node = XMLStuff.SoundData->nodes[id];
+		Childs = XMLStuff.SoundData->childs[id];
+		break;
+	case 9:
+		Node = XMLStuff.ChallengeData->nodes[id];
+		Childs = XMLStuff.ChallengeData->childs[id];
+		break;
+	case 10:
+		Node = XMLStuff.PoolData->nodes[id];
+		Childs = XMLStuff.PoolData->childs[id];
+		break;
+	case 11:
+		Node = XMLStuff.NightmareData->nodes[id];
+		Childs = XMLStuff.NightmareData->childs[id];
+		break;
+	case 12:
+		Node = XMLStuff.CostumeData->nodes[id];
+		Childs = XMLStuff.CostumeData->childs[id];
+		break;
+	case 13:
+		Node = XMLStuff.NullCostumeData->nodes[id];
+		Childs = XMLStuff.CostumeData->childs[id];
+		break;
+	case 14:
+		Node = XMLStuff.WispData->nodes[id];
+		Childs = XMLStuff.WispData->childs[id];
+		break;
+	case 15:
+		Node = XMLStuff.WispColorData->nodes[id];
+		Childs = XMLStuff.WispColorData->childs[id];
+		break;
+	case 16:
+		Node = XMLStuff.CurseData->nodes[id];
+		Childs = XMLStuff.CurseData->childs[id];
+		break;
+	case 17:
+		Node = XMLStuff.LocustData->nodes[id];
+		Childs = XMLStuff.LocustData->childs[id];
+		break;
+	case 18:
+		Node = XMLStuff.LocustColorData->nodes[id];
+		Childs = XMLStuff.LocustColorData->childs[id];
+		break;
+	case 19:
+		Node = XMLStuff.BombCostumeData->nodes[id];
+		Childs = XMLStuff.BombCostumeData->childs[id];
+		break;
+	case 20:
+		Node = XMLStuff.RecipeData->nodes[id];
+		Childs = XMLStuff.RecipeData->childs[id];
+		break;
+	case 21:
+		Node = XMLStuff.BossPoolData->nodes[id];
+		Childs = XMLStuff.BossPoolData->childs[id];
+		break;
+	case 22:
+		Node = XMLStuff.BossPortraitData->nodes[id];
+		Childs = XMLStuff.BossPortraitData->childs[id];
+		break;
+	case 23:
+		Node = XMLStuff.CutsceneData->nodes[id];
+		Childs = XMLStuff.CutsceneData->childs[id];
+		break;
+	case 24:
+		Node = XMLStuff.StageData->nodes[id];
+		Childs = XMLStuff.StageData->childs[id];
+		break;
+	case 25:
+		Node = XMLStuff.BackdropData->nodes[id];
+		Childs = XMLStuff.BackdropData->childs[id];
+		break;
+	case 26:
+		Node = XMLStuff.AchievementData->nodes[id];
+		Childs = XMLStuff.AchievementData->childs[id];
+		break;
+	case 27:
+		Node = XMLStuff.GiantBookData->nodes[id];
+		Childs = XMLStuff.GiantBookData->childs[id];
+		break;
+	case 28:
+		Node = XMLStuff.BossRushData->nodes[id];
+		Childs = XMLStuff.BossRushData->childs[id];
+		break;
+	case 29:
+		Node = XMLStuff.PlayerFormData->nodes[id];
+		Childs = XMLStuff.PlayerFormData->childs[id];
+		break;
+	}
+	Lua_PushXMLNode(L, Node, Childs);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_GetEntryByNameXML)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
@@ -2354,7 +2489,7 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 		break;
 	case 20:
 		Node = XMLStuff.RecipeData->GetNodeByName(entityname);
-		Childs = XMLStuff.BombCostumeData->childs[XMLStuff.RecipeData->byname[entityname]];
+		Childs = XMLStuff.RecipeData->childs[XMLStuff.RecipeData->byname[entityname]];
 		break;
 	case 21:
 		Node = XMLStuff.BossPoolData->GetNodeByName(entityname);
@@ -2396,6 +2531,106 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
 }
+LUA_FUNCTION(Lua_GetNumEntries)
+{
+	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
+	int nodetype = (int)luaL_checknumber(L, 1);
+	XMLAttributes Node;
+	XMLChilds Childs;
+	switch (nodetype) {
+	case 0:
+		lua_pushinteger(L, XMLStuff.ModData->childs.size());
+		break;
+	case 1:
+		lua_pushinteger(L, XMLStuff.EntityData->childs.size());
+		break;
+	case 2:
+		lua_pushinteger(L, XMLStuff.PlayerData->childs.size());
+		break;
+	case 3:
+		lua_pushinteger(L, XMLStuff.ItemData->childs.size());
+		break;
+	case 4:
+		lua_pushinteger(L, XMLStuff.TrinketData->childs.size());
+		break;
+	case 5:
+		lua_pushinteger(L, XMLStuff.PillData->childs.size());
+		break;
+	case 6:
+		lua_pushinteger(L, XMLStuff.CardData->childs.size());
+		break;
+	case 7:
+		lua_pushinteger(L, XMLStuff.MusicData->childs.size());
+		break;
+	case 8:
+		lua_pushinteger(L, XMLStuff.SoundData->childs.size());
+		break;
+	case 9:
+		lua_pushinteger(L, XMLStuff.ChallengeData->childs.size());
+		break;
+	case 10:
+		lua_pushinteger(L, XMLStuff.PoolData->childs.size());
+		break;
+	case 11:
+		lua_pushinteger(L, XMLStuff.NightmareData->childs.size());
+		break;
+	case 12:
+		lua_pushinteger(L, XMLStuff.CostumeData->childs.size());
+		break;
+	case 13:
+		lua_pushinteger(L, XMLStuff.NullCostumeData->childs.size());
+		break;
+	case 14:
+		lua_pushinteger(L, XMLStuff.WispData->childs.size());
+		break;
+	case 15:
+		lua_pushinteger(L, XMLStuff.WispColorData->childs.size());
+		break;
+	case 16:
+		lua_pushinteger(L, XMLStuff.CurseData->childs.size());
+		break;
+	case 17:
+		lua_pushinteger(L, XMLStuff.LocustData->childs.size());
+		break;
+	case 18:
+		lua_pushinteger(L, XMLStuff.LocustColorData->childs.size());
+		break;
+	case 19:
+		lua_pushinteger(L, XMLStuff.BombCostumeData->childs.size());
+		break;
+	case 20:
+		lua_pushinteger(L, XMLStuff.RecipeData->childs.size());
+		break;
+	case 21:
+		lua_pushinteger(L, XMLStuff.BossPoolData->childs.size());
+		break;
+	case 22:
+		lua_pushinteger(L, XMLStuff.BossPortraitData->childs.size());
+		break;
+	case 23:
+		lua_pushinteger(L, XMLStuff.CutsceneData->childs.size());
+		break;
+	case 24:
+		lua_pushinteger(L, XMLStuff.StageData->childs.size());
+		break;
+	case 25:
+		lua_pushinteger(L, XMLStuff.BackdropData->childs.size());
+		break;
+	case 26:
+		lua_pushinteger(L, XMLStuff.AchievementData->childs.size());
+		break;
+	case 27:
+		lua_pushinteger(L, XMLStuff.GiantBookData->childs.size());
+		break;
+	case 28:
+		lua_pushinteger(L, XMLStuff.BossRushData->childs.size());
+		break;
+	case 29:
+		lua_pushinteger(L, XMLStuff.PlayerFormData->childs.size());;
+		break;
+	}	
+	return 1;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	ClearXMLData();
@@ -2404,6 +2639,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua_newtable(_state);
 	lua::TableAssoc(_state, "GetEntryByName", Lua_GetEntryByNameXML);
+	lua::TableAssoc(_state, "GetEntryById", Lua_GetEntryByIdXML);
+	lua::TableAssoc(_state, "GetNumEntries", Lua_GetNumEntries);
 	lua::TableAssoc(_state, "GetEntityByTypeVarSub", Lua_FromTypeVarSub);
 	lua::TableAssoc(_state, "GetEntryFromEntity", Lua_GetFromEntity);
 	lua_setglobal(_state, "XMLData");

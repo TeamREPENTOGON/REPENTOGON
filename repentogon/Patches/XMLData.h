@@ -383,6 +383,7 @@ class XMLEntity {
 public:
 	unordered_map<tuple<int, int, int>, XMLAttributes> nodes; //idx is type-var-sub vector
 	XMLEntityKinder childs;
+	unordered_map<int, tuple<int, int, int>> byorder;
 	unordered_map<string, tuple<int, int, int>> byname;
 	unordered_map<string, tuple<int, int, int>> bynamemod;
 	unordered_map<string, tuple<int, int, int>> bytype;
