@@ -56,6 +56,9 @@ ___
 ### Add·Innate·Collectible () {: aria-label='Functions' }
 #### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, int amount = 1 ) {: .copyable aria-label='Functions' }
 
+???+ bug "Bug"
+	Currently this function directly modifies the contents of WispCollectiblesList, so if this list was updated on wisp init/delete, or the player exits the run, your added innate items will not be saved.
+	
 ___
 ### Add·Leprocy () {: aria-label='Functions' }
 #### void AddLeprocy ( ) {: .copyable aria-label='Functions' }
