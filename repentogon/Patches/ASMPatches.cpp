@@ -1228,6 +1228,7 @@ void PatchInlinedSpawnGridEntity()
 	SigScan scanner_dingle2("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??1c000000");
 	SigScan scanner_gideon("8b0d????????8bbf");
 	SigScan scanner_raglich_arm("8945??a1????????8b80");
+	SigScan scanner_singe_explosive_fart("8bd885f678");
 	scanner_megafatty.Scan();
 	scanner_larryjr.Scan();
 	scanner_chub.Scan();
@@ -1235,6 +1236,7 @@ void PatchInlinedSpawnGridEntity()
 	scanner_dingle2.Scan();
 	scanner_gideon.Scan();
 	scanner_raglich_arm.Scan();
+	scanner_singe_explosive_fart.Scan();
 	void* addrs[22] = { 
 		scanner_megafatty.GetAddress(),
 		scanner_larryjr.GetAddress(),
@@ -1242,7 +1244,8 @@ void PatchInlinedSpawnGridEntity()
 		scanner_dingle1.GetAddress(),
 		scanner_dingle2.GetAddress(),
 		scanner_gideon.GetAddress(),
-		scanner_raglich_arm.GetAddress()
+		scanner_raglich_arm.GetAddress(),
+		scanner_singe_explosive_fart.GetAddress()
 	};
 	printf("[REPENTOGON] Patching inlined SpawnGridEntity starting from %p, read log for rest\n", addrs[0]);
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[0], ASMPatch::Registers::ESI, 0, 0xf0, GRID_POOP, 1, 0); // ai_mega_fatty
@@ -1251,7 +1254,8 @@ void PatchInlinedSpawnGridEntity()
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[3], ASMPatch::Registers::ESI, 0, 0x139, GRID_POOP, 1, 0); // ai_dingle (1)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[4], ASMPatch::Registers::ESI, 0, 0xf0, GRID_POOP, 1, 0); // ai_dingle (2)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[5], ASMPatch::Registers::EDI, 0xaf4, 0xc0, GRID_STAIRS, 1, 0); // CreateGideonDungeon
-	ASMPatchInlinedSpawnGridEntity_Generic(addrs[6], ASMPatch::Registers::EDI, 0, 0xc5, GRID_PIT, 0, 0); // ai_raglich_arm (crashes pushing edi 
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[6], ASMPatch::Registers::EDI, 0, 0xc5, GRID_PIT, 0, 0); // ai_raglich_arm
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[7], ASMPatch::Registers::ESI, 0, 0xbd, GRID_PIT, 0, 0); // DoExplosiveFart
 }
 
 void PatchGridCallbackShit()
