@@ -689,7 +689,7 @@ ___
 
 ___
 ### Set·Purity·State () {: aria-label='Functions' }
-#### void SetPurityState ( [state](enums/PurityState.md) ) {: .copyable aria-label='Functions' }
+#### void SetPurityState ( [PurityState](enums/PurityState.md) State ) {: .copyable aria-label='Functions' }
 Set the state in which the "Purity" item effect currently is.
 
 ___
