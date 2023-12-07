@@ -23,7 +23,7 @@ ___
 
 ___
 ### Get·Progress·Bar·Map () {: aria-label='Functions' }
-#### table GetProgressBarMap ( ) {: .copyable aria-label='Functions' }
+#### int[] GetProgressBarMap ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Progress·Bar·Sprite () {: aria-label='Functions' }

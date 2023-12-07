@@ -103,7 +103,7 @@ By some conditions, usually health-related, determines whether a player can use 
 
 ___
 ### Check·Familiar·Ex () {: aria-label='Functions' }
-#### table CheckFamiliarEx ( int FamiliarVariant, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
+#### [EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html)[] CheckFamiliarEx ( int FamiliarVariant, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
 
 A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#checkfamiliar) that returns all familiars spawned by the function as a table.
 
@@ -155,7 +155,7 @@ ___
 
 ___
 ### Get·Bag·Of·Crafting·Content () {: aria-label='Functions' }
-#### table GetBagOfCraftingContent ( ) {: .copyable aria-label='Functions' }
+#### [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] GetBagOfCraftingContent ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Bag·Of·Crafting·Output () {: aria-label='Functions' }
@@ -199,7 +199,7 @@ Returns table of player sprite layers data for costumes with the following field
 
 ___
 ### Get·Costume·Sprite·Descs () {: aria-label='Functions' }
-#### table GetCostumeSpriteDescs ( ) {: .copyable aria-label='Functions' }
+#### [CostumeSpriteDesc](CostumeSpriteDesc.md)[] GetCostumeSpriteDescs ( ) {: .copyable aria-label='Functions' }
 Returns a table of [CostumeSpriteDesc](CostumeSpriteDesc.md).
 ___
 ### Get·D8·Damage·Modifier () {: aria-label='Functions' }
@@ -422,7 +422,7 @@ ___
 
 ___
 ### Get·Voided·Collectibles·List () {: aria-label='Functions' }
-#### table GetVoidedCollectiblesList ( ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] Slot GetVoidedCollectiblesList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Weapon () {: aria-label='Functions' }
@@ -566,7 +566,7 @@ ___
 
 ___
 ### Set·Bag·Of·Crafting·Content () {: aria-label='Functions' }
-#### void SetBagOfCraftingContent ( table ContentTable ) {: .copyable aria-label='Functions' }
+#### void SetBagOfCraftingContent ( [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] ContentTable ) {: .copyable aria-label='Functions' }
 Sets the content of the bag to the content of the table. Table must use valid [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) ids. Table can be shorter than 8, in which case the remaining indexes are set to empty.
 ___
 ### Set·Bag·Of·Crafting·Output () {: aria-label='Functions' }

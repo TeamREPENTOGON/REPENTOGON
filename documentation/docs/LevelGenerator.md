@@ -4,17 +4,17 @@
 ## Functions
 
 ### Get·All·Rooms () {: aria-label='Functions' }
-#### table GetAllRooms ( ) {: .copyable aria-label='Functions' }
+#### [LevelGeneratorRoom](LevelGeneratorRoom.md)[] GetAllRooms ( ) {: .copyable aria-label='Functions' }
 Returns a table of [LevelGeneratorRoom](LevelGeneratorRoom.md) objects.
 
 ___
 ### Get·Dead·Ends () {: aria-label='Functions' }
-#### table GetDeadEnds ( ) {: .copyable aria-label='Functions' }
+#### [LevelGeneratorRoom](LevelGeneratorRoom.md)[] GetDeadEnds ( ) {: .copyable aria-label='Functions' }
 Returns a table of [LevelGeneratorRoom](LevelGeneratorRoom.md) objects.
 
 ___
 ### Get·Non·Dead·Ends () {: aria-label='Functions' }
-#### table GetNonDeadEnds ( ) {: .copyable aria-label='Functions' }
+#### [LevelGeneratorRoom](LevelGeneratorRoom.md)[] GetNonDeadEnds ( ) {: .copyable aria-label='Functions' }
 Returns a table of [LevelGeneratorRoom](LevelGeneratorRoom.md) objects.
 
 ___

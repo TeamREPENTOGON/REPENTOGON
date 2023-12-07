@@ -42,7 +42,7 @@ Returns the number of collectibles held by all players.
 
 ___
 ### Get·Players () {: aria-label='Functions' }
-#### table GetPlayers ( ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html)[] GetPlayers ( ) {: .copyable aria-label='Functions' }
 Returns a table containing all players.
 
 ___

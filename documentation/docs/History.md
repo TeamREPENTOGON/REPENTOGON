@@ -3,7 +3,7 @@
 ## Functions
 
 ### Get·Collectibles·History () {: aria-label='Functions' }
-#### table GetCollectiblesHistory ( ) {: .copyable aria-label='Functions' }
+#### [HistoryItems](HistoryItem.md)[] GetCollectiblesHistory ( ) {: .copyable aria-label='Functions' }
 Returns table of collectible [HistoryItems](HistoryItem.md)
 
 ___

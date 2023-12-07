@@ -2,15 +2,15 @@
 ## Modified Functions
 
 ### Find·By·Type () {: aria-label='Modified Functions' }
-#### table FindByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html)[] FindByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
 Same as vanilla, but much faster.
 ___
 ### Find·In·Radius () {: aria-label='Modified Functions' }
-#### table FindInRadius ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html)[] FindInRadius ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
 Same as in vanilla, but much faster and with fixed search for effects.
 ___
 ### Get·Room·Entities () {: aria-label='Modified Functions' }
-#### table GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html)[] GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
 Same as vanilla, but much faster.
 
 ___
@@ -188,7 +188,7 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
 ___
 ### Play·Cutscene () {: aria-label='Functions' }
-#### table PlayCutscene ( string cutsceneid ) {: .copyable aria-label='Functions' }
+#### int PlayCutscene ( int cutsceneid ) {: .copyable aria-label='Functions' }
 Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
 ___
 ### Set·Clipboard () {: aria-label='Functions' }

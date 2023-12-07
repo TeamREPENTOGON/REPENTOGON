@@ -7,7 +7,7 @@
 
 ___
 ### Get·Achievement·List () {: aria-label='Functions' }
-#### table GetAchievementList ( ) {: .copyable aria-label='Functions' }
+#### [Achievement](enums/Achievement.md)[] GetAchievementList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Add·Damage () {: aria-label='Functions' }
@@ -23,11 +23,11 @@ ___
 
 ___
 ### Get·Collectible·List () {: aria-label='Functions' }
-#### table GetCollectibleList ( ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetCollectibleList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Collectible·Twin·List () {: aria-label='Functions' }
-#### table GetCollectibleTwinList ( ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetCollectibleTwinList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Curse () {: aria-label='Functions' }
@@ -67,7 +67,7 @@ ___
 
 ___
 ### Get·Room·Filter () {: aria-label='Functions' }
-#### table GetRoomFilter ( ) {: .copyable aria-label='Functions' }
+#### [RoomType](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomType.html)[] GetRoomFilter ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Soul·Hearts () {: aria-label='Functions' }
@@ -83,7 +83,7 @@ ___
 
 ___
 ### Get·Trinket·List () {: aria-label='Functions' }
-#### table GetTrinketList ( ) {: .copyable aria-label='Functions' }
+#### [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html)[] GetTrinketList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Is·Alt·Path () {: aria-label='Functions' }

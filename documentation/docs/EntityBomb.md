@@ -21,7 +21,7 @@ ___
 
 ___
 ### Get·Hit·List () {: aria-label='Functions' }
-#### table GetHitList ( ) {: .copyable aria-label='Functions' }
+#### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Scale () {: aria-label='Functions' }

@@ -49,7 +49,7 @@ ___
 
 ___
 ### Get·Collectibles () {: aria-label='Functions' }
-#### table GetCollectibles ( ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetCollectibles ( ) {: .copyable aria-label='Functions' }
 Returns a table of [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)s for the character's starting items.
 
 ___
