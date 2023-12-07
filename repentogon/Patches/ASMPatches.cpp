@@ -1234,12 +1234,19 @@ void PatchInlinedSpawnGridEntity()
 	SigScan scanner_dingle2("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??1c000000");
 	SigScan scanner_gideon("8b0d????????8bbf");
 	SigScan scanner_raglich_arm("8945??a1????????8b80");
+	//
 	SigScan scanner_singe_explosive_fart("8bd885f678");
 	SigScan scanner_player_collide_with_grid("8945??81ffc00100007d??8b75");
+	//
+	//
+	//
+	//
 	SigScan scanner_make_wall1("8945??85ff78??81ffc00100007c??68????????6a03e8????????83c40881bc??????????840300007f??6854010000e8????????8bf083c4048975??8bcec745??00000000");
 	SigScan scanner_make_wall2("8945??85ff78??81ffc00100007c??68????????6a03e8????????83c40881bc??????????840300007f??6854010000e8????????8bf083c4048975??8bcec745??27000000");
 	SigScan scanner_card_against_humanity("8945??a1????????8bb0????????8975");
 	SigScan scanner_pickup_grid_entity1("8945??81ffbf010000");
+	//
+	//
 	SigScan scanner_pressure_plate_reward1("8bf885ff78??81ffc00100007c??68????????6a03e8????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c4048975??8bcec745??1c000000");
 	SigScan scanner_pressure_plate_reward2("8bf885ff78??81ffc00100007c??68????????6a03e8????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c4048975??8bcec745??06000000");
 	scanner_megafatty.Scan();
@@ -1249,12 +1256,19 @@ void PatchInlinedSpawnGridEntity()
 	scanner_dingle2.Scan();
 	scanner_gideon.Scan();
 	scanner_raglich_arm.Scan();
+	//
 	scanner_singe_explosive_fart.Scan();
 	scanner_player_collide_with_grid.Scan();
+	//
+	//
+	//
+	//
 	scanner_make_wall1.Scan();
 	scanner_make_wall2.Scan();
 	scanner_card_against_humanity.Scan();
 	scanner_pickup_grid_entity1.Scan();
+	//
+	//
 	scanner_pressure_plate_reward1.Scan();
 	scanner_pressure_plate_reward2.Scan();
 	void* addrs[22] = {
@@ -1276,6 +1290,8 @@ void PatchInlinedSpawnGridEntity()
 		scanner_make_wall2.GetAddress(),
 		scanner_card_against_humanity.GetAddress(),
 		scanner_pickup_grid_entity1.GetAddress(),
+		0x0,
+		0x0,
 		scanner_pressure_plate_reward1.GetAddress(),
 		scanner_pressure_plate_reward2.GetAddress()
 	};
@@ -1287,26 +1303,26 @@ void PatchInlinedSpawnGridEntity()
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[4], ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EAX, 0x0, 0xf0, GRID_POOP, 1, 0); // ai_dingle (2)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[5], ASMPatch::Registers::EDI, 0xaf4, ASMPatch::Registers::EAX, 0x0, 0xc0, GRID_STAIRS, 1, 0); // CreateGideonDungeon
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[6], ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0x0, 0xc5, GRID_PIT, 0, 0); // ai_raglich_arm
-	// There's a Rotgut function here that needs a patch
+	// There's a Rotgut function here that needs a patch [7]
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[8], ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EAX, 0x0, 0xbd, GRID_PIT, 0, 0); // DoExplosiveFart
 
 	// This will need special handling, when trying to break a steel block it fails a GridPath check (I think) and returns without doing anything
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[9], ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0x0, 0x145, GRID_ROCK, 0, 0); // PlayerCollideWithGrid
 
-	// So will BombDamage (Custom handling of valid grid idx range)
-	// And BombFlagTearEffects (grid idx range)
-	// BombFlagTearEffects again (??? can't tell)
-	// And get_giant_part (Room path check)
+	// So will BombDamage (Custom handling of valid grid idx range) [10]
+	// And BombFlagTearEffects (grid idx range) [11]
+	// BombFlagTearEffects again (??? can't tell) [12]
+	// And get_giant_part (Room path check) [13]
 
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[14], ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0x0, 0xa9, GRID_DECORATION, 10, 0); // make_wall (crawlspace ladder)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[15], ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0x0, 0xa9, GRID_GRAVITY, 0, 0); // make_wall (crawlspace gravity)
 	// Possibly will need another, unique patch for the default case of spawning a wall, idk if it's worth it
-	ASMPatchInlinedSpawnGridEntity_Generic(addrs[16], ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0x0, 0xe1, GRID_POOP, 0, 0); // make_wall (crawlspace gravity)
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[16], ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0x0, 0xe1, GRID_POOP, 0, 0); // card against humanity
 
 	// This needs special handling bc the code loads g_Game back into EAX near the end of the inline
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[17], ASMPatch::Registers::EDI, 0, ASMPatch::Registers::EAX, 0x0, 0xd5, GRID_DECORATION, 1000, 0); // PickupGridEntity
-	// So will the other use, inlining in this function is wacky
-	// TrySpawnSanguineSpikes needs special handling to advance the seed before use
+	// So will the other use, inlining in this function is wacky [18]
+	// TrySpawnSanguineSpikes needs special handling to advance the seed before use [19]
 	
 	// These aren't done yet
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[20], ASMPatch::Registers::EAX, 0, ASMPatch::Registers::EBP, -0x1c, 0x1164, GRID_POOP, 0, 0); // pressure plate reward (1)
