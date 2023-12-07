@@ -1232,6 +1232,7 @@ void PatchInlinedSpawnGridEntity()
 	SigScan scanner_player_collide_with_grid("8945??81ffc00100007d??8b75");
 	SigScan scanner_make_wall1("8945??85ff78??81ffc00100007c??68????????6a03e8????????83c40881bc??????????840300007f??6854010000e8????????8bf083c4048975??8bcec745??00000000");
 	SigScan scanner_make_wall2("8945??85ff78??81ffc00100007c??68????????6a03e8????????83c40881bc??????????840300007f??6854010000e8????????8bf083c4048975??8bcec745??27000000");
+	SigScan scanner_card_against_humanity("8945??a1????????8bb0????????8975");
 	scanner_megafatty.Scan();
 	scanner_larryjr.Scan();
 	scanner_chub.Scan();
@@ -1243,6 +1244,7 @@ void PatchInlinedSpawnGridEntity()
 	scanner_player_collide_with_grid.Scan();
 	scanner_make_wall1.Scan();
 	scanner_make_wall2.Scan();
+	scanner_card_against_humanity.Scan();
 	void* addrs[22] = { 
 		scanner_megafatty.GetAddress(),
 		scanner_larryjr.GetAddress(),
@@ -1254,7 +1256,8 @@ void PatchInlinedSpawnGridEntity()
 		scanner_singe_explosive_fart.GetAddress(),
 		scanner_player_collide_with_grid.GetAddress(),
 		scanner_make_wall1.GetAddress(),
-		scanner_make_wall2.GetAddress()
+		scanner_make_wall2.GetAddress(),
+		scanner_card_against_humanity.GetAddress()
 	};
 	printf("[REPENTOGON] Patching inlined SpawnGridEntity starting from %p, read log for rest\n", addrs[0]);
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[0], ASMPatch::Registers::ESI, 0, 0xf0, GRID_POOP, 1, 0); // ai_mega_fatty
@@ -1271,8 +1274,9 @@ void PatchInlinedSpawnGridEntity()
 	// And BombFlagTearEffects, (one grid idx range, one ???)
 	// And get_giant_part (Room path check)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[9], ASMPatch::Registers::EDI, 0, 0xa9, GRID_DECORATION, 10, 0); // make_wall (crawlspace ladder)
-	ASMPatchInlinedSpawnGridEntity_Generic(addrs[10], ASMPatch::Registers::EDI, 0, 0xa9, GRID_GRAVITY, 10, 0); // make_wall (crawlspace gravity)
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[10], ASMPatch::Registers::EDI, 0, 0xa9, GRID_GRAVITY, 0, 0); // make_wall (crawlspace gravity)
 	// Possibly will need another, unique patch for the default case of spawning a wall, idk if it's worth it
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[11], ASMPatch::Registers::EDI, 0, 0xe1, GRID_POOP, 0, 0); // make_wall (crawlspace gravity)
 
 }
 
