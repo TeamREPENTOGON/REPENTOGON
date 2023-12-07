@@ -704,15 +704,14 @@ LUA_FUNCTION(Lua_PlayerShuffleCostumes) {
 LUA_FUNCTION(Lua_PlayerGetCollectiblesList)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	std::vector<int>& collecitbleInv = plr->GetCollectiblesList();
+	std::vector<int>& collectibleInv = plr->GetCollectiblesList();
 
 	lua_newtable(L);
-	int idx = 1;
-	for (int collectible : collecitbleInv) {
-		lua_pushinteger(L, idx);
-		lua_pushinteger(L, collectible);
+
+	for (size_t i = 1; i < collectibleInv.size(); i++) {
+		lua_pushinteger(L, i);
+		lua_pushinteger(L, collectibleInv[i]);
 		lua_settable(L, -3);
-		idx++;
 	}
 
 	return 1;
