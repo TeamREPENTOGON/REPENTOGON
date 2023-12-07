@@ -15,7 +15,7 @@ ___
 
 ___
 ### Get·Restricted·Grid·Indexes () {: aria-label='Functions' }
-#### table GetRestrictedGridIndexes ( ) {: .copyable aria-label='Functions' }
+#### int[] GetRestrictedGridIndexes ( ) {: .copyable aria-label='Functions' }
 
 ___
 

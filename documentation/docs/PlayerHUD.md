@@ -7,7 +7,7 @@
 
 ___
 ### Get·Hearts () {: aria-label='Functions' }
-#### table GetHearts ( ) {: .copyable aria-label='Functions' }
+#### [hearts](PlayerHUDHeart.md) GetHearts ( ) {: .copyable aria-label='Functions' }
 Returns table of [hearts](PlayerHUDHeart.md)
 
 ___

@@ -14,6 +14,6 @@ ___
 
 ___
 ### List·Loaded·Files () {: aria-label='Functions' }
-#### table ListLoadedFiles ( ) {: .copyable aria-label='Functions' }
+#### string[] ListLoadedFiles ( ) {: .copyable aria-label='Functions' }
 returns a list of all files loaded into the LUA environment.
 ___

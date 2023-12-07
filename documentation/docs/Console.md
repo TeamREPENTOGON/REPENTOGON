@@ -13,12 +13,12 @@
 ## Functions
 
 ### Get·Command·History () {: aria-label='Functions' }
-#### table GetCommandHistory ( ) {: .copyable aria-label='Functions' }
+#### string[] GetCommandHistory ( ) {: .copyable aria-label='Functions' }
 Returns a table containing current command history.
 
 ___
 ### Get·History () {: aria-label='Functions' }
-#### table GetHistory ( ) {: .copyable aria-label='Functions' }
+#### string[] GetHistory ( ) {: .copyable aria-label='Functions' }
 Returns a table containing every previous entry printed to the console this run.
 
 This is ordered last-to-first- the first entry will be the currently blank line awaiting user input, followed by the previous print, and so on. The last line will always be `Repentance Console`.
@@ -49,7 +49,7 @@ Registers a command in the new console. These will show up in the new console's 
 
 ___
 ### Register·Macro () {: aria-label='Functions' }
-#### void RegisterMacro ( string Name, table Commands ) {: .copyable aria-label='Functions' }
+#### void RegisterMacro ( string Name, string[] Commands ) {: .copyable aria-label='Functions' }
 Registers a macro in the new console. These will show up in the new console's autocomplete for the `macro` command.
 
 * `Commands` is a table of strings containing the commands that should be executed, in order.

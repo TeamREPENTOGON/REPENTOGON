@@ -7,7 +7,7 @@
 
 ___    
 ### Get·Tagged·Items () {: aria-label='Functions' }
-#### table GetTaggedItems ( int tags ) {: .copyable aria-label='Functions' }
+#### [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html)[] GetTaggedItems ( int tags ) {: .copyable aria-label='Functions' }
 Returns a table of [ItemConfig_Item](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) objects with the given tags
 ___
 ### Is·Valid·Trinket () {: aria-label='Functions' }

@@ -37,7 +37,7 @@ Returns the [RoomConfigRoom](RoomConfigRoom.md) of the next challenge room wave.
 
 ___
 ### Get·Next·Waves () {: aria-label='Functions' }
-#### table GetNextWaves ( ) {: .copyable aria-label='Functions' }
+#### [RoomConfigRoom](RoomConfigRoom.md)[] GetNextWaves ( ) {: .copyable aria-label='Functions' }
 Returns a table containing the [RoomConfigRoom](RoomConfigRoom.md) of the next challenge room waves.
 
 ___

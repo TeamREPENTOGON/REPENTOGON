@@ -11,7 +11,7 @@ ___
 More sophisticated version of [ItemPool:GetCard()](https://wofsauge.github.io/IsaacDocs/rep/ItemPool.html#getcard) that allows to define individual chances.
 ___
 ### Get·Collectible·From·List () {: aria-label='Functions' }
-#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectibleFromList ( table ItemList, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_BREAKFAST, boolean AddToBlacklist = true, boolean ExcludeLockedItems = false ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectibleFromList ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] ItemList, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_BREAKFAST, boolean AddToBlacklist = true, boolean ExcludeLockedItems = false ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Collectibles·From·Pool () {: aria-label='Functions' }
@@ -40,12 +40,12 @@ Currently not applied by pill modifications, such as PHD/False PHD.
 
 ___
 ### Get·Removed·Collectibles () {: aria-label='Functions' }
-#### table GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
 Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) removed from all pools.
 
 ___
 ### Get·Room·Blacklisted·Collectibles () {: aria-label='Functions' }
-#### table GetRoomBlacklistedCollectibles ( ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetRoomBlacklistedCollectibles ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Has·Collectible () {: aria-label='Functions' }

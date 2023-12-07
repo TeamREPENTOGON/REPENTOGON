@@ -20,7 +20,7 @@ ___
 
 ___
 ### Neighbors () {: aria-label='Functions' }
-#### table Neighbors ( ) {: .copyable aria-label='Functions' }
+#### int[] Neighbors ( ) {: .copyable aria-label='Functions' }
 Returns a table of idx of the neighboring rooms
 
 ___
