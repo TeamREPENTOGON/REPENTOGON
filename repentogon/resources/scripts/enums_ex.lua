@@ -2467,3 +2467,10 @@ PurityState = {
 	YELLOW = 2,
 	ORANGE = 3,
 }
+
+ImGuiNotificationType = {
+	INFO = 0,
+	SUCCESS = 1,
+	WARNING = 2,
+	ERROR = 3,
+}

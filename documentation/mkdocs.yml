@@ -79,6 +79,7 @@ nav:
     - ImGuiColor: enums/ImGuiColor.md
     - ImGuiData: enums/ImGuiData.md
     - ImGuiElement: enums/ImGuiElement.md
+    - ImGuiNotificationType: enums/ImGuiNotificationType.md
     - ItemAnim: enums/ItemAnim.md
     - KnifeSubType: enums/KnifeSubType.md
     - KnifeVariant: enums/KnifeVariant.md
