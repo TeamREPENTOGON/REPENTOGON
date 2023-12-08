@@ -667,14 +667,14 @@ Accepts an integer to change chargebar for the active item.
 |1072 |MC_PLAYER_GET_ACTIVE_MAX_CHARGE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int VarData)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | int |
 
 ### MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE
-Accepts an integer to change the minimum charge to use the active item.
+Accepts an integer to change the minimum charge to use the active item. If the item currently has the minimum amount of charge, it'll also show the white outline.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1073 |MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE {: .copyable } | ([ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot)| [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | int |
 
 ### MC_PRE_PLAYER_USE_BOMB
-Return false to stop the player from using a bomb.
+Return `false` to stop the player from using a bomb.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -711,6 +711,9 @@ Accepts no return parameters.
 
 ### MC_PLAYER_GET_HEART_LIMIT
 Accepts an override `integer` for heart limit.
+
+???- info
+    You can set the limit to any arbitrary amount but the game can only render up to 4 lines of hearts in the HUD. However, even if they're not visible, the hearts still work properly.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -969,7 +972,7 @@ Accepts no return parameters.
 ### MC_PRE_ITEM_OVERLAY_SHOW
 Accepts an integer to change [GiantBook](Giantbook.md)
 
-Alternatively accepts ``true`` to cancel item overlay show
+Alternatively accepts `true` to cancel item overlay show
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1031,6 +1034,8 @@ Alternatively accepts `false` to stop the rendering.
 |1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | int ModCount, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems)| - | int |
 
 ### MC_PRE_PLAYER_HAS_COLLECTIBLE
+
+Return a boolean to indicate whether a player should be counted as having an item or not.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1155,6 +1160,11 @@ Accepts no return parameters.
 |1134 |MC_POST_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player)| [GiantBook](Giantbook.md) | void |
 
 ### MC_PRE_LEVEL_PLACE_ROOM {: .copyable }
+Return a room config to replace the room that will be placed
+
+???+ warning "Warning"
+    The new room shape must be the same, and the new available door slots must be compatible with the original room doors.
+
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1291,7 +1301,7 @@ Returning any value will have no effect on later callback executions.
 |1262 |MC_POST_FAMILIAR_FIRE_TECH_LASER {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
 
 ### MC_IS_PERSISTENT_ROOM_ENTITY {: .copyable }
-Returning ``true`` allows entity to respawn.
+Returning `true` allows entity to respawn.
 
 
 |Value|Name|Function Args|Optional Args|Return Type|
