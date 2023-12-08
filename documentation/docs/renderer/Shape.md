@@ -3,7 +3,7 @@
 ???+ info
     You can get this class by using the following functions:
 
-    * [DebugRenderer:Get()](../DebugRenderer.md#getcollisiogetncapsule)
+    * [DebugRenderer:Get()](../DebugRenderer.md#get)
         
 ## Functions
 
