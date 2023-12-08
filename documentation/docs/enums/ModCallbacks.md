@@ -206,7 +206,7 @@ Accepts no return parameters.
 
 
 ### MC_PRE_PAUSE_SCREEN_RENDER {: .copyable }
-Can return `false` to prevent the completion marks from rendering.
+Can return `false` to prevent the pause screen from rendering. Doing so will also the screen from darkening.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
