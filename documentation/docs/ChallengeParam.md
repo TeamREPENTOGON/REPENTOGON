@@ -1,7 +1,7 @@
 # Class "ChallengeParam"
 
 ???+ info
-    You can get this class by using the Console global table.
+    You can get this class by using the ChallengeParam global table.
     ???+ example "Example Code"
         ```lua
         local canshoot = ChallengeParam.CanShoot ()

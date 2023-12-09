@@ -12,10 +12,10 @@ LUA_FUNCTION(Lua_GetPlayerManager) {
 
 LUA_FUNCTION(Lua_FirstCollectibleOwner)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	int collectible = (int)luaL_checkinteger(L, 2);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
-	bool unk = lua::luaL_checkboolean(L, 4);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	int collectible = (int)luaL_checkinteger(L, 1);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	bool unk = lua::luaL_checkboolean(L, 3);
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, unk);
 	if (!player) {
 		lua_pushnil(L);
@@ -29,8 +29,8 @@ LUA_FUNCTION(Lua_FirstCollectibleOwner)
 
 LUA_FUNCTION(Lua_AnyoneHasCollectible)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	int collectible = (int)luaL_checkinteger(L, 2);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	int collectible = (int)luaL_checkinteger(L, 1);
 	RNG* rng = new RNG();
 	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, true);
 	if (!player) {
@@ -44,8 +44,8 @@ LUA_FUNCTION(Lua_AnyoneHasCollectible)
 
 LUA_FUNCTION(Lua_SpawnCoPlayer2)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	int playerType = (int)luaL_checkinteger(L, 2);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	int playerType = (int)luaL_checkinteger(L, 1);
 
 	Entity_Player* player = playerManager->SpawnCoPlayer2(playerType);
 	lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
@@ -55,7 +55,7 @@ LUA_FUNCTION(Lua_SpawnCoPlayer2)
 
 LUA_FUNCTION(Lua_PlayerManagerIsCoopPlay)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
 
 	bool result = playerManager->IsCoopPlay();
 	lua_pushboolean(L, result);
@@ -64,8 +64,8 @@ LUA_FUNCTION(Lua_PlayerManagerIsCoopPlay)
 
 LUA_FUNCTION(Lua_PlayerManagerGetNumCollectibles)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	int collectibleID = (int)luaL_checkinteger(L, 2);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	int collectibleID = (int)luaL_checkinteger(L, 1);
 	lua_pushinteger(L, playerManager->GetNumCollectibles((CollectibleType)collectibleID));
 
 	return 1;
@@ -73,8 +73,8 @@ LUA_FUNCTION(Lua_PlayerManagerGetNumCollectibles)
 
 LUA_FUNCTION(Lua_PlayerManagerGetTrinketMultiplier)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	int trinketID = (int)luaL_checkinteger(L, 2);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	int trinketID = (int)luaL_checkinteger(L, 1);
 	lua_pushinteger(L, playerManager->GetTrinketMultiplier((TrinketType)trinketID));
 
 	return 1;
@@ -82,10 +82,10 @@ LUA_FUNCTION(Lua_PlayerManagerGetTrinketMultiplier)
 
 LUA_FUNCTION(Lua_FirstTrinketOwner)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	int trinket = (int)luaL_checkinteger(L, 2);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 3, lua::Metatables::RNG, "RNG");
-	bool unk = lua::luaL_checkboolean(L, 4);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	int trinket = (int)luaL_checkinteger(L, 1);
+	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	bool unk = lua::luaL_checkboolean(L, 3);
 	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, unk);
 	if (!player) {
 		lua_pushnil(L);
@@ -98,7 +98,7 @@ LUA_FUNCTION(Lua_FirstTrinketOwner)
 
 LUA_FUNCTION(Lua_TriggerRoomClear)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	playerManager->TriggerRoomClear();
 
 	return 0;
@@ -106,8 +106,8 @@ LUA_FUNCTION(Lua_TriggerRoomClear)
 
 LUA_FUNCTION(Lua_AnyoneHasTrinket)
 {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	int trinket = (int)luaL_checkinteger(L, 2);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	int trinket = (int)luaL_checkinteger(L, 1);
 	RNG* rng = new RNG();
 	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, true);
 	if (!player) {
@@ -120,7 +120,7 @@ LUA_FUNCTION(Lua_AnyoneHasTrinket)
 }
 
 LUA_FUNCTION(Lua_GetPlayers) {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
 
 	std::vector<Entity_Player**> players = playerManager->_playerList;
 
@@ -136,8 +136,8 @@ LUA_FUNCTION(Lua_GetPlayers) {
 }
 
 LUA_FUNCTION(Lua_GetEsauJrState) {
-	PlayerManager* playerManager = *lua::GetUserdata<PlayerManager**>(L, 1, lua::metatables::PlayerManagerMT);
-	const int index = (int)luaL_optinteger(L, 2, 0);
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	const int index = (int)luaL_optinteger(L, 1, 0);
 
 	if (index < 0 || index > 3) {
 		return luaL_error(L, "Invalid index %d", index);
@@ -155,24 +155,22 @@ LUA_FUNCTION(Lua_GetEsauJrState) {
 }
 
 static void RegisterPlayerManager(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::GAME, "GetPlayerManager", Lua_GetPlayerManager);
+	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetPlayerManager", Lua_GetPlayerManager);
+	lua_newtable(L);
+		lua::TableAssoc(L, "FirstCollectibleOwner", Lua_FirstCollectibleOwner );
+		lua::TableAssoc(L, "AnyoneHasCollectible", Lua_AnyoneHasCollectible);
+		lua::TableAssoc(L, "SpawnCoPlayer2", Lua_SpawnCoPlayer2 );
+		lua::TableAssoc(L, "IsCoopPlay", Lua_PlayerManagerIsCoopPlay);
+		lua::TableAssoc(L, "GetNumCollectibles", Lua_PlayerManagerGetNumCollectibles);
+		lua::TableAssoc(L, "GetTotalTrinketMultiplier", Lua_PlayerManagerGetTrinketMultiplier);
+		lua::TableAssoc(L, "FirstTrinketOwner", Lua_FirstTrinketOwner );
+		lua::TableAssoc(L, "TriggerRoomClear", Lua_TriggerRoomClear );
+		lua::TableAssoc(L, "AnyoneHasTrinket", Lua_AnyoneHasTrinket);
+		lua::TableAssoc(L, "GetPlayers", Lua_GetPlayers);
+		lua::TableAssoc(L, "GetEsauJrState", Lua_GetEsauJrState);
+		
 
-	luaL_Reg functions[] = {
-		{ "FirstCollectibleOwner", Lua_FirstCollectibleOwner },
-		{ "AnyoneHasCollectible", Lua_AnyoneHasCollectible},
-		{ "SpawnCoPlayer2", Lua_SpawnCoPlayer2 },
-		{ "IsCoopPlay", Lua_PlayerManagerIsCoopPlay},
-		{ "GetNumCollectibles", Lua_PlayerManagerGetNumCollectibles},
-		{ "GetTotalTrinketMultiplier", Lua_PlayerManagerGetTrinketMultiplier},
-		{ "FirstTrinketOwner", Lua_FirstTrinketOwner },
-		{ "TriggerRoomClear", Lua_TriggerRoomClear },
-		{ "AnyoneHasTrinket", Lua_AnyoneHasTrinket},
-		{ "GetPlayers", Lua_GetPlayers},
-		{ "GetEsauJrState", Lua_GetEsauJrState},
-		{ NULL, NULL }
-	};
-
-	lua::RegisterNewClass(L, lua::metatables::PlayerManagerMT, lua::metatables::PlayerManagerMT, functions);
+		lua_setglobal(L, "PlayerManager");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

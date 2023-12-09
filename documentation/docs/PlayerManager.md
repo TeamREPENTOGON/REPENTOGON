@@ -1,13 +1,10 @@
 # Class "PlayerManager"
 
 ???+ info
-    You can get this class by using the following functions:
-
-    * [Game:GetPlayerManager](Game.md#getplayermanager)
-
+    You can get this class by using the PlayerManager global table.
     ???+ example "Example Code"
         ```lua
-        local manager = Game():GetPlayerManager()
+        local hastrinket = PlayerManager.AnyoneHasTrinket (1)
         ```
         
 ## Functions
