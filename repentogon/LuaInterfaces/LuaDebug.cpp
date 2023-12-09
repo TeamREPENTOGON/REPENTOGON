@@ -11,19 +11,23 @@ namespace Debug {
 	LUA_FUNCTION(GetSignature) {
 		lua_Integer addr = luaL_checkinteger(L, 1);
 		if (addr < 0) {
-			return luaL_error(L, "Invalid address %lld\n", addr);
+			return luaL_error(L, "GetSignature: Invalid address %d\n", addr);
 		}
 
 		uintptr_t asUptr = (uintptr_t)addr;
 		if (asUptr != addr) {
-			return luaL_error(L, "GetSignature: address %lld falls outside the virtual address space\n", addr);
+			return luaL_error(L, "GetSignature: address %d falls outside the virtual address space\n", addr);
 		}
 
 		MEMORY_BASIC_INFORMATION info;
+		memset(&info, 0, sizeof(info));
 		SIZE_T queryResult = VirtualQuery((void*)asUptr, &info, sizeof(info));
-		if (!queryResult) {
+		if (!queryResult || info.Type == 0) {
 			DWORD error = GetLastError();
-			return luaL_error(L, "GetSignature: VirtualQuery failed with error code %d\n", error);
+			if (!queryResult)
+				return luaL_error(L, "GetSignature: VirtualQuery failed with error code %d\n", error);
+			else
+				return luaL_error(L, "GetSignature: address %d is not mapped in memory\n", addr);
 		}
 
 		Signature sig((void*)addr, NULL, NULL);
