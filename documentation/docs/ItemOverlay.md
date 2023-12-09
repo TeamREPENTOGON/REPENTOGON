@@ -1,5 +1,12 @@
 # Class "ItemOverlay"
 
+???+ info
+    You can get this class by using the ItemOverlay global table.
+    ???+ example "Example Code"
+        ```lua
+        local overlaysprite = ItemOverlay.GetSprite ()
+        ```
+        
 ## Functions
 
 ### Get·Delay () {: aria-label='Functions' }

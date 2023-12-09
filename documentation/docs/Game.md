@@ -5,11 +5,6 @@ This class contains both new functions and modified reimplementations of existin
 ## Modified Functions
 
 
-### Get·Item·Overlay () {: aria-label='Modified Functions' }
-#### [ItemOverlay](ItemOverlay.md) GetItemOverlay ( ) {: .copyable aria-label='Modified Functions' }
-Now returns a proper [ItemOverlay](ItemOverlay.md) metatable.
-
-___
 ### Get·Last·Devil·Room·Stage () {: aria-label='Modified Functions' }
 #### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastDevilRoomStage ( ) {: .copyable aria-label='Modified Functions' }
 Now returns integer instead of unusable userdata.

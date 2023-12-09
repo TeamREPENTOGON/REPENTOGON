@@ -223,6 +223,7 @@ string getFileName(const string& filePath) {
 HOOK_METHOD(ItemOverlay, Show, (int eOverlayID, int delay, Entity_Player* player)-> void) {
 	if ((eOverlayID > 46) && (XMLStuff.GiantBookData->nodes.find(eOverlayID) != XMLStuff.GiantBookData->nodes.end())){
 		super(1, delay, player);
+		this->_overlayID = eOverlayID;
 		ANM2* sprite = this->GetSprite();
 		XMLAttributes att = XMLStuff.GiantBookData->nodes[eOverlayID];
 		if (att.find("anm2") != att.end()) {
