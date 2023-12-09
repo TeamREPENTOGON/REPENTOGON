@@ -43,7 +43,7 @@ static __cdecl void Isaac::Shutdown();
 static __x86_64_output Vector Isaac::GetRenderPosition(Vector* source, bool scale);
 
 "558beca1????????5356578b98":
-static __cdecl void Isaac::ClearBossHazards(bool includeNPCs);
+static __stdcall void Isaac::ClearBossHazards(bool includeNPCs);
 
 "558bec83e4f883ec24f30f1005":
 static __fastcall void Isaac::GetRandomPickupVelocity(Vector * buffer, Vector * position, unsigned int ePickupVelType, RNG * rng);
