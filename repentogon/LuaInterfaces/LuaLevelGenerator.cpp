@@ -805,7 +805,7 @@ static void RegisterLevelGeneratorRoom(lua_State* L) {
 		{ "GenerationIndex", lua_LGR_GenerationIndex },
 		{ "DoorMask", lua_LGR_DoorMask },
 		{ "Column", lua_LGR_Column },
-		{ "Line", lua_LGR_Line },
+		{ "Row", lua_LGR_Line },
 		{ "Shape", lua_LGR_Shape },
 		{ "Neighbors", lua_LGR_Neighbors },
 		{ "IsDeadEnd", lua_LGR_IsDeadEnd },
