@@ -45,10 +45,6 @@ ___
 #### [ChallengeParam](ChallengeParam.md) GetChallengeParams ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Console () {: aria-label='Functions' }
-#### [Console](Console.md) GetConsole ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Current·Color·Modifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetCurrentColorModifier ( ) {: .copyable aria-label='Functions' }
 

@@ -1,14 +1,12 @@
 # Class "Console"
 
 ???+ info
-    You can get this class by using the following functions:
-
-    * [Game:GetConsole](Game.md#getconsole)
-
+    You can get this class by using the Console global table.
     ???+ example "Example Code"
         ```lua
-        local console = Game():GetConsole()
+        local cmdhistory = Console.GetCommandHistory ()
         ```
+        
         
 ## Functions
 

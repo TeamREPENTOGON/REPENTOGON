@@ -14,15 +14,15 @@ LUA_FUNCTION(Lua_GetConsole) {
 
 LUA_FUNCTION(Lua_ConsolePrintError)
 {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
-	const char* err = luaL_checkstring(L, 2);
+	Console* console = g_Game->GetConsole();
+	const char* err = luaL_checkstring(L, 1);
 	console->PrintError(err);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ConsoleGetHistory)
 {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
+	Console* console = g_Game->GetConsole();
 	std::deque<Console_HistoryEntry>* history = console->GetHistory();
 
 	lua_newtable(L);
@@ -39,7 +39,7 @@ LUA_FUNCTION(Lua_ConsoleGetHistory)
 
 LUA_FUNCTION(Lua_ConsoleGetCommandHistory)
 {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
+	Console* console = g_Game->GetConsole();
 	std::deque<std::string> commandHistory = *console->GetCommandHistory();
 
 	lua_newtable(L);
@@ -59,16 +59,16 @@ LUA_FUNCTION(Lua_ConsoleGetCommandHistory)
 
 LUA_FUNCTION(Lua_ConsolePrintWarning)
 {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
-	std::string err = luaL_checkstring(L, 2) + std::string("\n");
+	Console* console = g_Game->GetConsole();
+	std::string err = luaL_checkstring(L, 1) + std::string("\n");
 
 	console->Print(err, 0xFFFCCA03, 0x96u);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_ConsolePopHistory) {
-	Console* console = *lua::GetUserdata<Console**>(L, 1, lua::metatables::ConsoleMT);
-	int amount = (int)luaL_optinteger(L, 2, 1);
+	Console* console = g_Game->GetConsole();
+	int amount = (int)luaL_optinteger(L, 1, 1);
 	std::deque<Console_HistoryEntry>* history = console->GetHistory();
 	amount++;
 
@@ -80,11 +80,11 @@ LUA_FUNCTION(Lua_ConsolePopHistory) {
 }
 
 LUA_FUNCTION(Lua_RegisterCommand) {
-	const char* name = luaL_checkstring(L, 2);
-	const char* desc = luaL_checkstring(L, 3);
-	const char* helpText = luaL_checkstring(L, 4);
-	bool showOnMenu = lua::luaL_optboolean(L, 5, false);
-	ConsoleMega::AutocompleteType autocompleteType = (ConsoleMega::AutocompleteType)luaL_optnumber(L, 6, 0);
+	const char* name = luaL_checkstring(L, 1);
+	const char* desc = luaL_checkstring(L, 2);
+	const char* helpText = luaL_checkstring(L, 3);
+	bool showOnMenu = lua::luaL_optboolean(L, 4, false);
+	ConsoleMega::AutocompleteType autocompleteType = (ConsoleMega::AutocompleteType)luaL_optnumber(L, 5, 0);
 
 	console.RegisterCommand(name, desc, helpText, showOnMenu, autocompleteType);
 
@@ -93,23 +93,23 @@ LUA_FUNCTION(Lua_RegisterCommand) {
 
 LUA_FUNCTION(Lua_RegisterMacro) {
 	lua::LuaStackProtector protector(L);
-	const char* name = luaL_checkstring(L, 2);
-	if (!lua_istable(L, 3)) {
+	const char* name = luaL_checkstring(L, 1);
+	if (!lua_istable(L, 2)) {
 
 		std::string err = "Expected a table of strings, got ";
-		err.append(lua_typename(L, lua_type(L, 3)));
-		luaL_argerror(L, 3, err.c_str());
+		err.append(lua_typename(L, lua_type(L, 2)));
+		luaL_argerror(L, 2, err.c_str());
 
 		return 0;
 	}
 
 	std::vector<std::string> commands;
 	// Get the number of vertices we received.
-	unsigned int len = (unsigned int)lua_rawlen(L, 3);
+	unsigned int len = (unsigned int)lua_rawlen(L, 2);
 
 	for (unsigned int i = 1; i <= len; ++i) {
 		lua_pushinteger(L, i);
-		lua_gettable(L, 3);
+		lua_gettable(L, 2);
 		if (lua_type(L, -1) == LUA_TNIL) break;
 		commands.push_back(luaL_checkstring(L, -1));
 		lua_pop(L, 1);
@@ -120,19 +120,18 @@ LUA_FUNCTION(Lua_RegisterMacro) {
 }
 
 static void RegisterConsole(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::GAME, "GetConsole", Lua_GetConsole);
+	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetConsole", Lua_GetConsole);
+	lua_newtable(L);
 
-	luaL_Reg functions[] = {
-		{ "PrintError", Lua_ConsolePrintError },
-		{ "GetCommandHistory", Lua_ConsoleGetCommandHistory },
-		{ "GetHistory", Lua_ConsoleGetHistory },
-		{ "PopHistory", Lua_ConsolePopHistory },
-		{ "PrintWarning", Lua_ConsolePrintWarning },
-		{ "RegisterCommand", Lua_RegisterCommand },
-		{ "RegisterMacro", Lua_RegisterMacro },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, lua::metatables::ConsoleMT, lua::metatables::ConsoleMT, functions);
+		lua::TableAssoc(L, "PrintError", Lua_ConsolePrintError );
+		lua::TableAssoc(L, "GetCommandHistory", Lua_ConsoleGetCommandHistory );
+		lua::TableAssoc(L, "GetHistory", Lua_ConsoleGetHistory );
+		lua::TableAssoc(L, "PopHistory", Lua_ConsolePopHistory );
+		lua::TableAssoc(L, "PrintWarning", Lua_ConsolePrintWarning );
+		lua::TableAssoc(L, "RegisterCommand", Lua_RegisterCommand );
+		lua::TableAssoc(L, "RegisterMacro", Lua_RegisterMacro );
+
+	lua_setglobal(L, "Console");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
