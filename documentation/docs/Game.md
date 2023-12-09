@@ -83,10 +83,6 @@ ___
 #### [ProceduralItemManager](ProceduralItemManager.md) GetProceduralItemManager ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Room·Config·Holder () {: aria-label='Functions' }
-#### [RoomConfigHolder](RoomConfigHolder.md) GetRoomConfigHolder ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Room·Transition () {: aria-label='Functions' }
 #### [RoomTransition](RoomTransition.md) GetRoomTransition ( ) {: .copyable aria-label='Functions' }
 

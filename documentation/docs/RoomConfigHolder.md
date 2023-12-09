@@ -1,5 +1,12 @@
 # Class "RoomConfigHolder"
 
+???+ info
+    You can get this class by using the RoomConfigHolder global table.
+    ???+ example "Example Code"
+        ```lua
+        local roomconf = RoomConfigHolder.GetRoomByStageTypeAndVariant (StbType.BASEMENT,RoomType.ROOM_DEFAULT,1,0)
+        ```
+
 ## Functions
 
 ### Get·Random·Room () {: aria-label='Functions' }

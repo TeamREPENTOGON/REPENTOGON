@@ -12,24 +12,24 @@ LUA_FUNCTION(Lua_GameGetRoomConfigHolder) {
 
 LUA_FUNCTION(Lua_RoomConfigHolderGetRoomByStageTypeAndVariant) {
 	int n = lua_gettop(L);
-	if (n != 5) {
-		return luaL_error(L, "Expected five parameters, got %d\n", n);
+	if (n != 4) {
+		return luaL_error(L, "Expected four parameters, got %d\n", n);
 	}
 
-	RoomConfigHolder* holder = *lua::GetUserdata<RoomConfigHolder**>(L, 1, lua::metatables::RoomConfigHolderMT);
-	int stage = (int)luaL_checkinteger(L, 2);
+	RoomConfigHolder* holder = g_Game->GetRoomConfigHolder();
+	int stage = (int)luaL_checkinteger(L, 1);
 
 	if (stage < 0 || stage > 36) {
 		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
 	}
 
-	int type = (int)luaL_checkinteger(L, 3);
+	int type = (int)luaL_checkinteger(L, 2);
 	if (type < 1 || type > 29) {
 		return luaL_error(L, "Type must be between 1 and 29 (both inclusive), got %d\n", type);
 	}
 
-	int variant = (int)luaL_checkinteger(L, 4);
-	int difficulty = (int)luaL_checkinteger(L, 5);
+	int variant = (int)luaL_checkinteger(L, 3);
+	int difficulty = (int)luaL_checkinteger(L, 4);
 	if (difficulty < -2 || difficulty > 1) {
 		difficulty = -1;
 	}
@@ -46,31 +46,31 @@ LUA_FUNCTION(Lua_RoomConfigHolderGetRoomByStageTypeAndVariant) {
 }
 
 LUA_FUNCTION(Lua_RoomConfigHolder_GetRandomRoom) {
-	RoomConfigHolder* holder = *lua::GetUserdata<RoomConfigHolder**>(L, 1, lua::metatables::RoomConfigHolderMT);
-	int seed = (int)luaL_checkinteger(L, 2);
-	bool reduceWeight = lua::luaL_checkboolean(L, 3);
+	RoomConfigHolder* holder = g_Game->GetRoomConfigHolder();
+	int seed = (int)luaL_checkinteger(L, 1);
+	bool reduceWeight = lua::luaL_checkboolean(L, 2);
 
-	int stage = (int)luaL_checkinteger(L, 4);
+	int stage = (int)luaL_checkinteger(L, 3);
 	if (stage < 0 || (stage > 17 && stage < 27) || stage > 36) {
 		return luaL_error(L, "Invalid stage %d\n", stage);
 	}
 
-	int type = (int)luaL_checkinteger(L, 5);
+	int type = (int)luaL_checkinteger(L, 4);
 	if (type < 1 || type > 29) {
 		return luaL_error(L, "Invalid type %d\n", type);
 	}
 
-	int shape = (int)luaL_optinteger(L, 6, 13); //NUM_ROOMSHAPES
+	int shape = (int)luaL_optinteger(L, 5, 13); //NUM_ROOMSHAPES
 	if (shape < 1 || shape > 13) {
 		return luaL_error(L, "Invalid shape %d\n", shape);
 	}
 
-	int minVariant = (int)luaL_optinteger(L, 7, 0);
+	int minVariant = (int)luaL_optinteger(L, 6, 0);
 	if (minVariant < 0) {
 		minVariant = 0;
 	}
 
-	int maxVariant = (int)luaL_optinteger(L, 8, -1);
+	int maxVariant = (int)luaL_optinteger(L, 7, -1);
 	if (maxVariant < minVariant && maxVariant >= 0) {
 		return luaL_error(L, "maxVariant is lower than minVariant (min = %d, max = %d)\n", minVariant, maxVariant);
 	}
@@ -78,26 +78,26 @@ LUA_FUNCTION(Lua_RoomConfigHolder_GetRandomRoom) {
 		maxVariant = -1;
 	}
 
-	int minDifficulty = (int)luaL_optinteger(L, 9, 0);
+	int minDifficulty = (int)luaL_optinteger(L, 8, 0);
 	if (minDifficulty < 0) {
 		minDifficulty = 0;
 	}
 
-	int maxDifficulty = (int)luaL_optinteger(L, 10, 10);
+	int maxDifficulty = (int)luaL_optinteger(L, 9, 10);
 	if (maxDifficulty < minDifficulty) {
 		return luaL_error(L, "maxDifficulty is lower than minDifficulty (min = %d, max = %d)\n", minDifficulty, maxDifficulty);
 	}
 
-	int doors = (int)luaL_optinteger(L, 11, 0);
+	int doors = (int)luaL_optinteger(L, 10, 0);
 	if (doors < 0) {
 		return luaL_error(L, "Invalid door mask %d\n", doors);
 	}
 
-	int subtype = (int)luaL_optinteger(L, 12, -1);
+	int subtype = (int)luaL_optinteger(L, 11, -1);
 	if (subtype < -1) {
 		return luaL_error(L, "Invalid subtype %d\n", subtype);
 	}
-	int mode = (int)luaL_optinteger(L, 13, -1);
+	int mode = (int)luaL_optinteger(L, 12, -1);
 	if (mode < -1 || mode > 1) {
 		return luaL_error(L, "Invalid mode %d\n", mode);
 	}
@@ -109,14 +109,11 @@ LUA_FUNCTION(Lua_RoomConfigHolder_GetRandomRoom) {
 }
 
 static void RegisterRoomConfigHolder(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomConfigHolder", Lua_GameGetRoomConfigHolder);
-
-	luaL_Reg functions[] = {
-		{ "GetRoomByStageTypeAndVariant", Lua_RoomConfigHolderGetRoomByStageTypeAndVariant },
-		{ "GetRandomRoom", Lua_RoomConfigHolder_GetRandomRoom },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, lua::metatables::RoomConfigHolderMT, lua::metatables::RoomConfigHolderMT, functions);
+	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomConfigHolder", Lua_GameGetRoomConfigHolder);
+	lua_newtable(L);
+	lua::TableAssoc(L, "GetRoomByStageTypeAndVariant", Lua_RoomConfigHolderGetRoomByStageTypeAndVariant);
+	lua::TableAssoc(L, "GetRandomRoom", Lua_RoomConfigHolder_GetRandomRoom);
+	lua_setglobal(L, "RoomConfigHolder");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
