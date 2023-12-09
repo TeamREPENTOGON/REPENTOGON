@@ -65,7 +65,19 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 					int n = strlen(fileName);
 					if(n >= 4 && !_stricmp(fileName + n - 4, ".dll") && !_strnicmp(fileName, "zhl", 3))
 					{
-						mods.push_back(std::make_pair(findData.cFileName, LoadLibraryA(findData.cFileName)));
+						HMODULE library = LoadLibraryA(fileName);
+						if (!library)
+						{
+							DWORD error = GetLastError();
+							FILE* f = fopen("dsound.log", "a");
+							if (f)
+							{
+								fprintf(f, "[ERROR] Unable to open library %s (error = %d)\n", fileName, error);
+								fclose(f);
+							}
+						}
+						else
+							mods.push_back(std::make_pair(fileName, library));
 						//printf("loaded mod %s\n", fileName);
 					}
 				}
@@ -80,7 +92,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			if(init)
 				init(argc, argv);
 			else
-				printf("failed to find ModInit (%s, %08x)\n", it->first.c_str(), it->second);
+				printf("failed to find ModInit (%s, %p)\n", it->first.c_str(), it->second);
 		}
 
 		printf("Loaded all mods in %d msecs\n", GetTickCount() - startTime);
