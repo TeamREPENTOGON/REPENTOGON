@@ -14,6 +14,18 @@ namespace Debug {
 			return luaL_error(L, "Invalid address %lld\n", addr);
 		}
 
+		uintptr_t asUptr = (uintptr_t)addr;
+		if (asUptr != addr) {
+			return luaL_error(L, "GetSignature: address %lld falls outside the virtual address space\n", addr);
+		}
+
+		MEMORY_BASIC_INFORMATION info;
+		SIZE_T queryResult = VirtualQuery((void*)asUptr, &info, sizeof(info));
+		if (!queryResult) {
+			DWORD error = GetLastError();
+			return luaL_error(L, "GetSignature: VirtualQuery failed with error code %d\n", error);
+		}
+
 		Signature sig((void*)addr, NULL, NULL);
 		std::optional<ByteBuffer> bytes = sig.Make();
 
