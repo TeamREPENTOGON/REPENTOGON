@@ -209,7 +209,7 @@ local typecheckFunctions = {
 		["Vector"] = true,
 		["boolean"] = true
 	},
-	[ModCallbacks.MC_PRE_GRID_INIT] = {
+	[ModCallbacks.MC_PRE_GRID_ENTITY_SPAWN] = {
 		["boolean"] = true,
 		["number"] = checkInteger
 	},
