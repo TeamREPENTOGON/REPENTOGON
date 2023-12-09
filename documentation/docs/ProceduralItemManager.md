@@ -1,15 +1,12 @@
 # Class "ProceduralItemManager"
 
 ???+ info
-    You can get this class by using the following functions:
-
-    * [Game:GetProceduralItemManager](Game.md#getproceduralitemmanager)
-
+    You can get this class by using the ProceduralItemManager global table.
     ???+ example "Example Code"
         ```lua
-        local manager = Game():GetProceduralItemManager()
+        local procitem = ProceduralItemManager.GetProceduralItem (0)
         ```
-        
+
 		
 ## Functions
 ### Create·Procedural·Item () {: aria-label='Functions' }

@@ -12,25 +12,25 @@ LUA_FUNCTION(Lua_GetProceduralItemManager) {
 
 LUA_FUNCTION(Lua_PIMCreateProceduralItem)
 {
-	ProceduralItemManager* pim = *lua::GetUserdata<ProceduralItemManager**>(L, 1, lua::metatables::ProceduralItemManagerMT);
-	unsigned int seed = (unsigned int)luaL_checkinteger(L, 2);
-	unsigned int unk = (unsigned int)luaL_checkinteger(L, 3);
+	ProceduralItemManager* pim = g_Game->GetProceduralItemManager();
+	unsigned int seed = (unsigned int)luaL_checkinteger(L, 1);
+	unsigned int unk = (unsigned int)luaL_checkinteger(L, 2);
 	lua_pushinteger(L, pim->CreateProceduralItem(seed, unk));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PIMGetProceduralItemCount)
 {
-	ProceduralItemManager* pim = *lua::GetUserdata<ProceduralItemManager**>(L, 1, lua::metatables::ProceduralItemManagerMT);
+	ProceduralItemManager* pim = g_Game->GetProceduralItemManager();
 	lua_pushinteger(L, pim->GetProceduralItems()->size());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PIMGetProceduralItem)
 {
-	ProceduralItemManager* pim = *lua::GetUserdata<ProceduralItemManager**>(L, 1, lua::metatables::ProceduralItemManagerMT);
+	ProceduralItemManager* pim = g_Game->GetProceduralItemManager();
 	std::vector<ProceduralItem*>* items = pim->GetProceduralItems();
-	int index = (int)luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 1);
 	if (l_likely(index >= 0 && (unsigned int)index < items->size())) {
 		ProceduralItem** ud = (ProceduralItem**)lua_newuserdata(L, sizeof(void*));
 		*ud = (*items)[index];
@@ -43,16 +43,14 @@ LUA_FUNCTION(Lua_PIMGetProceduralItem)
 }
 
 static void RegisterProceduralItemManager(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::GAME, "GetProceduralItemManager", Lua_GetProceduralItemManager);
-
-	luaL_Reg functions[] = {
-		{ "CreateProceduralItem", Lua_PIMCreateProceduralItem },
-		{ "GetProceduralItemCount", Lua_PIMGetProceduralItemCount},
-		{ "GetProceduralItem", Lua_PIMGetProceduralItem},
-		{ NULL, NULL }
-	};
-
-	lua::RegisterNewClass(L, lua::metatables::ProceduralItemManagerMT, lua::metatables::ProceduralItemManagerMT, functions);
+	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetProceduralItemManager", Lua_GetProceduralItemManager);
+	lua_newtable(L);
+	
+	lua::TableAssoc(L, "CreateProceduralItem", Lua_PIMCreateProceduralItem);
+	lua::TableAssoc(L, "GetProceduralItemCount", Lua_PIMGetProceduralItemCount);
+	lua::TableAssoc(L, "GetProceduralItem", Lua_PIMGetProceduralItem);
+	lua_setglobal(L, "ProceduralItemManager");
+	//lua::RegisterNewClass(L, lua::metatables::ProceduralItemManagerMT, lua::metatables::ProceduralItemManagerMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

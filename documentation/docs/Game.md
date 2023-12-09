@@ -79,10 +79,6 @@ ___
 Returns the amount of planetariums the player has entered this run.
 
 ___
-### Get·Procedural·Item·Manager () {: aria-label='Functions' }
-#### [ProceduralItemManager](ProceduralItemManager.md) GetProceduralItemManager ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Room·Transition () {: aria-label='Functions' }
 #### [RoomTransition](RoomTransition.md) GetRoomTransition ( ) {: .copyable aria-label='Functions' }
 
