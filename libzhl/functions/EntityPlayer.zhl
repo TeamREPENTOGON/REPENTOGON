@@ -428,8 +428,6 @@ __thiscall RNG* Entity_Player::GetCollectibleRNG(int id);
 "558bec83e4f851538bd98b8b????????568b75":
 __thiscall void Entity_Player::AttachMinecart(Entity_NPC * minecart);
 
-"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec385657a1????????33c5508d45??64a3????????8bf9":
-__thiscall void Entity_Player::PlayerCollideWithGrid(bool forceNoCollide);
 
 struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public Entity { {{
 	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }

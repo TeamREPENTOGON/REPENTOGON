@@ -1241,22 +1241,6 @@ void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxR
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-// Condensed, with variant in a register
-void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, unsigned int jumpOffset, GridEntityType type, ASMPatch::Registers variantReg) {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(savedRegisters)
-		.Push(0) // vardata
-		.Push(ASMPatch::Registers::EAX) // seed
-		.Push(variantReg) // variant
-		.Push((int32_t)type) // type
-		.Push(idxReg) // idx
-		.AddInternalCall(SpawnGridEntityTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + jumpOffset);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
 void PatchInlinedSpawnGridEntity()
 {
 	SigScan scanner_megafatty("8b0d????????8985????????8b81????????8985????????85f678??81fec00100007c??68????????6a03e8????????8b85????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c40489b5????????8bcec745??06000000e8????????c706");
@@ -1339,20 +1323,19 @@ void PatchInlinedSpawnGridEntity()
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[8], ASMPatch::Registers::ESI, 0xbd, GRID_PIT, 0); // DoExplosiveFart
 
 	// This will need special handling, when trying to break a steel block it fails a GridPath check (I think) and returns without doing anything
-	ASMPatchInlinedSpawnGridEntity_Generic(addrs[9], ASMPatch::Registers::EDI, 0x145, GRID_ROCK, 0); // PlayerCollideWithGrid
+	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[9], ASMPatch::Registers::EDI, 0, 0x0, 0x145, GRID_ROCK, 0); // PlayerCollideWithGrid
 
 	// So will BombDamage (Custom handling of valid grid idx range) [10]
 	// And BombFlagTearEffects (grid idx range) [11]
 	// BombFlagTearEffects again (??? can't tell) [12]
-	
-	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[13], ASMPatch::Registers::EDI, 0xdb, GRID_POOP, ASMPatch::Registers::EBX); // get_giant_part (crashes)
+	// And get_giant_part (Room path check) [13]
 
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[14], ASMPatch::Registers::EDI, 0xa9, GRID_DECORATION, 10); // make_wall (crawlspace ladder)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[15], ASMPatch::Registers::EDI, 0xa9, GRID_GRAVITY, 0); // make_wall (crawlspace gravity)
 	// Possibly will need another, unique patch for the default case of spawning a wall, idk if it's worth it
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[16], ASMPatch::Registers::EDI, 0xe1, GRID_POOP, 0); // card against humanity
 
-	// This needs special handling bc the code loads g_Game back into EAX near the end of the inline (also this function relies on get_giant_part)
+	// This needs special handling bc the code loads g_Game back into EAX near the end of the inline
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[17], ASMPatch::Registers::EDI, 0xd5, GRID_DECORATION, 1000); // PickupGridEntity
 	// So will the other use, inlining in this function is wacky [18]
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[19], ASMPatch::Registers::EBP, -0x14, ASMPatch::Registers::EBX, 0x0, 0xc6, GRID_SPIKES, 100); // TrySpawnSanguineBondSpike
@@ -1362,60 +1345,11 @@ void PatchInlinedSpawnGridEntity()
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[21], ASMPatch::Registers::EAX, 0, ASMPatch::Registers::EBP, -0x1c, 0x1164, GRID_POOP, 3); // pressure plate reward (2)
 }
 
-unsigned int playerCollideGridIdx = -1;
-GridEntity* playerCollideGridEntity = nullptr;
-void __stdcall StoreGridEntity(unsigned int idx, GridEntity* ent) {
-	playerCollideGridIdx = idx;
-	playerCollideGridEntity = ent;
-}
-
-// this can be optimized by removing the internal call but works for now
-void ASMPatchPlayerGridCollide() {
-	SigScan scanner("8b45??8b74????eb");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	const int numOverriddenBytes = 7;
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
-	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, numOverriddenBytes))  // Restore the commands we overwrote
-		.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EDI) // gridIdx
-		.Push(ASMPatch::Registers::ESI) // gridEntity
-		.AddInternalCall(SpawnGridEntityTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0xb);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-HOOK_METHOD(Entity_Player, PlayerCollideWithGrid, (bool forceNoCollide) -> void) {
-	super(forceNoCollide);
-
-	const int callbackid = 1195;
-	if (playerCollideGridEntity != nullptr && CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(playerCollideGridEntity, lua::Metatables::GRID_ENTITY)
-			.push((int)playerCollideGridIdx)
-			.call(1);
-	}
-
-	playerCollideGridIdx = -1;
-	playerCollideGridEntity = nullptr;
-}
-
 void PatchGridCallbackShit()
 {
 	ASMPatchRoomSpawnEntity();
 	//PatchPostGridInit();
 	PatchInlinedSpawnGridEntity();
-	ASMPatchPlayerGridCollide();
 }
 
 //////////////////////////////////////////////
