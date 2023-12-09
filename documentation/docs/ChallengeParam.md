@@ -1,5 +1,12 @@
 # Class "ChallengeParam"
 
+???+ info
+    You can get this class by using the Console global table.
+    ???+ example "Example Code"
+        ```lua
+        local canshoot = ChallengeParam.CanShoot ()
+        ```
+		
 ## Functions
 
 ### Can·Shoot () {: aria-label='Functions' }

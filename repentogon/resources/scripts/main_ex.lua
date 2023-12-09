@@ -466,7 +466,7 @@ local function logWarning(callbackID, modName, warn)
 
 	table.insert(printedWarnings, warn)
 
-	Game():GetConsole():PrintWarning('"' ..
+	Console.PrintWarning('"' ..
 	cbName ..
 	'" from "' .. modName .. '" failed: ' .. warn .. "\n(This warning will not reappear until the next Lua reload.)")
 	Isaac.DebugString('Error in "' ..
@@ -556,8 +556,7 @@ local function logError(callbackID, modName, err)
 		 This is likely not the best for performance, but this only runs when there's an error anyways-
 		 all bets are already off the table at that point.
 	  ]]
-	local console = Game():GetConsole()
-	local ohistory = console:GetHistory()
+	local ohistory = Console.GetHistory()
 	local history = {}
 
 	--[[ First, inverse the table, as console history is returned last-to-first.
@@ -584,13 +583,13 @@ local function logError(callbackID, modName, err)
 			 the amount of newlines, and this will return the amount to pop.
 		]]
 		err_dupecount = err_dupecount + 1
-		console:PopHistory(select(2, string.gsub(parsedHistory, "\n", "")))
+		Console.PopHistory(select(2, string.gsub(parsedHistory, "\n", "")))
 		consoleLog = consoleLog .. " (x" .. err_dupecount .. ")"
 	else
 		err_dupecount = 1
 	end
 
-	console:PrintError(consoleLog)
+	Console.PrintError(consoleLog)
 	Isaac.DebugString('Error in "' .. cbName .. '" call from "' .. modName .. '": ' .. err) -- this should be replaced with a proper log function so it can have the [INFO] header
 
 	if not err_shown then
