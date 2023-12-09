@@ -782,6 +782,12 @@ LUA_FUNCTION(lua_LGR_Neighbors) {
 	return 1;
 }
 
+LUA_FUNCTION(lua_LGR_IsDeadEnd) {
+	LuaLevelGeneratorRoom* data = GetLGR(L);
+	lua_pushboolean(L, data->room->_deadEnd);
+	return 1;
+}
+
 static void RegisterLevelGenerator(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetAllRooms", lua_LG_GetAllRooms },
@@ -802,6 +808,7 @@ static void RegisterLevelGeneratorRoom(lua_State* L) {
 		{ "Line", lua_LGR_Line },
 		{ "Shape", lua_LGR_Shape },
 		{ "Neighbors", lua_LGR_Neighbors },
+		{ "IsDeadEnd", lua_LGR_IsDeadEnd },
 		{ NULL, NULL }
 	};
 
