@@ -1100,7 +1100,7 @@ GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int vari
 		}
 	}
 
-	GridEntity* ent = CreateGridEntity(type, idx);
+	GridEntity* ent = Isaac::CreateGridEntity(type, idx);
 	if (ent != nullptr) {
 		g_Game->_room->_gridEntities[idx] = ent;
 		GridEntityDesc* desc = ent->GetDesc();
