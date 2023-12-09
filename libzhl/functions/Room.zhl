@@ -17,7 +17,7 @@ __thiscall int Room::GetShopItemPrice(unsigned int entVariant, unsigned int entS
 __thiscall bool Room::SpawnGridEntity(int GridIndex, unsigned int Type, unsigned int Variant, unsigned int Seed, int VarData);
 
 "558bec5153568b75??8bd95785f6":
-__thiscall bool Room::SpawnGridEntity(int GridIndex, GridEntityDesc *Desc);
+__thiscall bool Room::SpawnGridEntityDesc(int GridIndex, GridEntityDesc *Desc);
 
 "558bec8b55??568bf181fabf010000":
 __thiscall void Room::RemoveGridEntityImmediate(int GridIndex, int PathTrail, bool KeepDecoration);

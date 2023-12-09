@@ -1529,11 +1529,9 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	}
 }
 
-//PRE/POST_GRID_INIT (id: 1100/1101)
-HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
-	int callbackid = 1100;
-	lua_State* L = g_LuaEngine->_state;
-
+//PRE_GRID_ENTITY_SPAWN (id: 1100)
+HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int variant, unsigned int seed, int vardata) -> bool) {
+	const int callbackid = 1100;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1541,35 +1539,92 @@ HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(this->GetDesc()->_type)
-			.push(this, lua::Metatables::GRID_ENTITY)
-			.push(Seed)
+			.push(type)
+			.push(type)
+			.push(variant)
+			.push(vardata)
+			.push(idx)
+			.push(seed)
 			.call(1);
 
 		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				if (!lua_toboolean(L, -1)) {
-					Room* room = *g_Game->GetCurrentRoom();
-					room->RemoveGridEntityImmediate(*this->GetGridIndex(), 0, false);
-					return;
-				}
+			if (lua_istable(L, -1)) {
+				type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
+				variant = (unsigned int)lua::callbacks::ToInteger(L, 2);
+				vardata = lua::callbacks::ToInteger(L, 3);
+				idx = (unsigned int)lua::callbacks::ToInteger(L, 4);
+				seed = (unsigned int)lua::callbacks::ToInteger(L, 5);
 			}
 			else if (lua_isinteger(L, -1)) {
-				Seed = (unsigned int)lua_tointeger(L, -1);
+				idx = (int)lua_tointeger(L, -1);
+				if (idx < 0 || idx > 447) {
+					return false;
+				}
+			}
+			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
+			{
+				return nullptr;
 			}
 		}
 	}
+	return super(idx, type, variant, seed, vardata);
+}
 
+//PRE_GRID_ENTITY_DESC_SPAWN (id: 1193)
+HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) {
+	const int callbackid = 1193;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(desc->_type)
+			.push(desc, lua::Metatables::GRID_ENTITY_DESC)
+			.push((int)idx)
+			.call(1);
+
+		if (!result) {
+			if (lua_isuserdata(L, -1)) {
+				desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+			}
+			else if (lua_isinteger(L, -1)) {
+				idx = (int)lua_tointeger(L, -1);
+				if (idx < 0 || idx > 447) {
+					return false;
+				}
+			}
+			else if (lua_istable(L, -1)) {
+				idx = (unsigned int)lua::callbacks::ToInteger(L, 1);
+				lua_pushinteger(L, 2);
+				lua_gettable(L, -2);
+				desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				lua_pop(L, 1);
+			}
+			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
+			{
+				return true;
+			}
+		}
+	}
+	return super(idx, desc);
+}
+
+//POST_GRID_ENTITY_SPAWN (id: 1101)
+//there's another call in ASMPatches
+HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
 	super(Seed);
 
-	callbackid = 1101;
+	const int callbackid = 1101;
+	lua_State* L = g_LuaEngine->_state;
 	if (CallbackState.test(callbackid - 1000)) {
+		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid)
 			.push(this->GetDesc()->_type)
 			.push(this, lua::Metatables::GRID_ENTITY)
-			.push(Seed)
 			.call(1);
 	}
 };

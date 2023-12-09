@@ -11,7 +11,7 @@ LUA_FUNCTION(Lua_SpawnGridEntity) {
 	}
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
 		GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
-		ret = room->SpawnGridEntity(GridIndex, desc);
+		ret = room->SpawnGridEntityDesc(GridIndex, desc);
 	}
 	else
 	{
