@@ -4,11 +4,7 @@ This class contains both new functions and modified reimplementations of existin
 
 ## Modified Functions
 
-### Get·Ambush () {: aria-label='Modified Functions' }
-#### [Ambush](Ambush.md) GetAmbush ( ) {: .copyable aria-label='Modified Functions' }
-Now returns a proper [Ambush](Ambush.md) metatable.
 
-___
 ### Get·Item·Overlay () {: aria-label='Modified Functions' }
 #### [ItemOverlay](ItemOverlay.md) GetItemOverlay ( ) {: .copyable aria-label='Modified Functions' }
 Now returns a proper [ItemOverlay](ItemOverlay.md) metatable.

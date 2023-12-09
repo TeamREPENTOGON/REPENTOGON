@@ -1865,7 +1865,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				attributes["sourceid"] = lastmodid;
 			}
 			XMLStuff.BossRushData->ProcessChilds(auxnode, id);
-			printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
+			//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.BossRushData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 			XMLStuff.BossRushData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
 			XMLStuff.BossRushData->bymod[attributes["sourceid"]].push_back(id);
@@ -3261,7 +3261,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			super(BuildModdedXML(xmldata, "giantbook.xml", false));
 		}
 		else if (charfind(xmldata, "<playerfo", 50)) {
-			printf("yoyoyo %s", BuildModdedXML(xmldata, "playerforms.xml", false));
+			//printf("yoyoyo %s", BuildModdedXML(xmldata, "playerforms.xml", false));
 			super(BuildModdedXML(xmldata, "playerforms.xml", false));
 		}
 		else if ((charfind(xmldata, "<ambush", 50)) || (charfind(xmldata, "<bossru", 50)) || (charfind(xmldata, "<bossamb", 50))) {

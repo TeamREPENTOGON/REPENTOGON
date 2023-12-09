@@ -14,36 +14,36 @@ LUA_FUNCTION(Lua_GetAmbush) {
 
 LUA_FUNCTION(Lua_AmbushStartChallenge)
 {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	ambush->StartChallenge();
 	return 0;
 }
 
 LUA_FUNCTION(Lua_AmbushSpawnBossrushWave)
 {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	ambush->SpawnBossrushWave();
 	return 0;
 }
 
 LUA_FUNCTION(Lua_AmbushSpawnWave)
 {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	ambush->SpawnWave();
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GetMaxBossrushWaves)
 {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	lua_pushinteger(L, *ambush->GetMaxBossrushWaves());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetMaxBossrushWaves)
 {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
-	int amount = (int)luaL_checkinteger(L, 2);
+	Ambush* ambush = g_Game->GetAmbush();
+	int amount = (int)luaL_checkinteger(L, 1);
 	if (amount > 25) amount = 25;
 
 	*ambush->GetMaxBossrushWaves() = amount;
@@ -53,15 +53,15 @@ LUA_FUNCTION(Lua_SetMaxBossrushWaves)
 
 LUA_FUNCTION(Lua_GetMaxChallengeWaves)
 {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	lua_pushinteger(L, ambushWaves);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetMaxChallengeWaves)
 {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
-	int amount = (int)luaL_checkinteger(L, 2);
+	Ambush* ambush = g_Game->GetAmbush();
+	int amount = (int)luaL_checkinteger(L, 1);
 
 	ambushWaves = amount;
 
@@ -70,14 +70,14 @@ LUA_FUNCTION(Lua_SetMaxChallengeWaves)
 
 LUA_FUNCTION(Lua_GetCurrentWave)
 {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	lua_pushinteger(L, *ambush->GetCurrentWave());
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_Ambush_IsActive) {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	// lua_pushboolean(L, ambush->isActive);
 	return 1;
 }
@@ -115,7 +115,7 @@ void SetupAmbushData(lua_State* L, Ambush* ambush, RNG* rng, int* index, int* su
 }
 
 LUA_FUNCTION(Lua_Ambush_GetNextWave) {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	RoomConfig* currentRoom = g_Game->_room->_descriptor->Data;
 	RNG rng;
 	int index;
@@ -155,7 +155,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 }
 
 LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
-	Ambush* ambush = *lua::GetUserdata<Ambush**>(L, 1, lua::metatables::AmbushMT);
+	Ambush* ambush = g_Game->GetAmbush();
 	RoomDescriptor* descriptor = g_Game->_room->_descriptor;
 	RoomConfig* currentRoom = descriptor->Data;
 
@@ -223,25 +223,23 @@ LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 }
 
 static void RegisterAmbush(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::GAME, "GetAmbush", Lua_GetAmbush);
+	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetAmbush", Lua_GetAmbush);
+	lua_newtable(L);
+	lua::TableAssoc(L, "StartChallenge", Lua_AmbushStartChallenge);
+	lua::TableAssoc(L, "SpawnBossrushWave", Lua_AmbushSpawnBossrushWave);
+	lua::TableAssoc(L, "SpawnWave", Lua_AmbushSpawnWave );
+		//{ "GetNumBossesPerWave", Lua_GetNumBossesPerWave );
+		//{ "SetNumBossesPerWave", Lua_SetNumBossesPerWave );
+		lua::TableAssoc(L, "GetMaxBossrushWaves", Lua_GetMaxBossrushWaves );
+		lua::TableAssoc(L, "SetMaxBossrushWaves", Lua_SetMaxBossrushWaves );
+		lua::TableAssoc(L, "GetMaxChallengeWaves", Lua_GetMaxChallengeWaves );
+		lua::TableAssoc(L, "SetMaxChallengeWaves", Lua_SetMaxChallengeWaves );
+		lua::TableAssoc(L, "GetCurrentWave", Lua_GetCurrentWave );
+		// { "IsActive", Lua_Ambush_IsActive );
+			lua::TableAssoc(L, "GetNextWave", Lua_Ambush_GetNextWave );
+			lua::TableAssoc(L, "GetNextWaves", Lua_Ambush_GetNextWaves );
 
-	luaL_Reg functions[] = {
-		{ "StartChallenge", Lua_AmbushStartChallenge },
-		{ "SpawnBossrushWave", Lua_AmbushSpawnBossrushWave },
-		{ "SpawnWave", Lua_AmbushSpawnWave },
-		//{ "GetNumBossesPerWave", Lua_GetNumBossesPerWave },
-		//{ "SetNumBossesPerWave", Lua_SetNumBossesPerWave },
-		{ "GetMaxBossrushWaves", Lua_GetMaxBossrushWaves },
-		{ "SetMaxBossrushWaves", Lua_SetMaxBossrushWaves },
-		{ "GetMaxChallengeWaves", Lua_GetMaxChallengeWaves },
-		{ "SetMaxChallengeWaves", Lua_SetMaxChallengeWaves },
-		{ "GetCurrentWave", Lua_GetCurrentWave },
-		// { "IsActive", Lua_Ambush_IsActive },
-		{ "GetNextWave", Lua_Ambush_GetNextWave },
-		{ "GetNextWaves", Lua_Ambush_GetNextWaves },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, lua::metatables::AmbushMT, lua::metatables::AmbushMT, functions);
+	lua_setglobal(L, "Ambush");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

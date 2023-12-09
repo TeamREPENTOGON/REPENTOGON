@@ -1,13 +1,10 @@
 # Class "Ambush"
 
 ???+ info
-    You can get this class by using the following functions:
-
-    * [Game:GetAmbush](Game.md#getambush)
-
+    You can get this class by using the Ambush global table.
     ???+ example "Example Code"
         ```lua
-        local ambush = Game():GetAmbush()
+        local currwave = Ambush.GetCurrentWave ()
         ```
         
 ## Functions
