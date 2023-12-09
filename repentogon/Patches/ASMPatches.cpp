@@ -1145,7 +1145,7 @@ void ASMPatchRoomSpawnEntity() {
 // Room::SpawnGridEntity
 */ /////////////////////
 
-void __stdcall PostGridInitTrampoline(GridEntity* grid) {
+void __stdcall PostGridSpawnTrampoline(GridEntity* grid) {
 	const int callbackid = 1101;
 
 	if (CallbackState.test(callbackid - 1000)) {
@@ -1161,19 +1161,19 @@ void __stdcall PostGridInitTrampoline(GridEntity* grid) {
 	}
 }
 
-void ASMPatchSpawnGridEntityPostInit(void* addr, unsigned int overriddenBytes) {
+void ASMPatchSpawnGridEntityPost(void* addr, unsigned int overriddenBytes) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 	patch.AddBytes(ByteBuffer().AddAny((char*)addr, overriddenBytes))  // Restore the commands we overwrote
 		.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI) // GridEntity
-		.AddInternalCall(PostGridInitTrampoline)
+		.AddInternalCall(PostGridSpawnTrampoline)
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + overriddenBytes);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void PatchPostGridInit()
+void PatchPostSpawnGridEntity()
 {
 	SigScan scanner1("8947??b0015f5e5b5dc21400");
 	SigScan scanner2("8947??b0015f5e5b595dc20800");
@@ -1182,8 +1182,8 @@ void PatchPostGridInit()
 	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
 	
 	printf("[REPENTOGON] Patching SpawnGridEntity POST_GRID_INIT at %p, %p\n", addrs[0], addrs[1]);
-	ASMPatchSpawnGridEntityPostInit(addrs[0], 5);
-	ASMPatchSpawnGridEntityPostInit(addrs[1], 8);
+	ASMPatchSpawnGridEntityPost(addrs[0], 5);
+	ASMPatchSpawnGridEntityPost(addrs[1], 8);
 }
 
 /* /////////////////////
@@ -1348,7 +1348,7 @@ void PatchInlinedSpawnGridEntity()
 void PatchGridCallbackShit()
 {
 	ASMPatchRoomSpawnEntity();
-	//PatchPostGridInit();
+	PatchPostSpawnGridEntity();
 	PatchInlinedSpawnGridEntity();
 }
 
