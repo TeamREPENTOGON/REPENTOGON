@@ -2,7 +2,7 @@
 __thiscall void RoomTransition::ChangeRoom();
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec80000000a1????????33c58945??5657508d45??64a3????????8bf989bd":
-__thiscall void RoomTransition::StartBossIntro(int bossID1, int bossID2);
+__thiscall void RoomTransition::StartBossIntro(unsigned int bossID1,unsigned int bossID2);
 
 struct RoomTransition depends (ANM2) { {{
 	inline int GetTransitionMode() { return *(int*)((char*)this); }
