@@ -162,10 +162,6 @@ ___
 #### [MenuManager](menus/MenuManager.md) GetMenuManager ( ) {: .copyable aria-label='Functions' }
 Returns the menu manager object.
 ___
-### Get·Nightmare·Scene () {: aria-label='Functions' }
-#### [NightmareScene](NightmareScene.md) GetNightmareScene ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Null·Item·Id·By·Name () {: aria-label='Functions' }
 #### int GetNullItemIdByName ( ) {: .copyable aria-label='Functions' }
 

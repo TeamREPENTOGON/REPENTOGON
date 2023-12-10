@@ -1,14 +1,12 @@
 # Class "NightmareScene"
 
 ???+ info
-    You can get this class by using the following functions:
-
-    * [Isaac.GetNightmareScene](Isaac.md#getnightmarescene)
-
+    You can get this class by using the NightmareScene global table.
     ???+ example "Example Code"
         ```lua
-        local nightmareScene = Isaac.GetNightmareScene()
+        local nightmaresprite = NightmareScene.GetBubbleSprite()
         ```
+
 ???+ warning "Warning"
     This class' functions should not be called until the game fully initializes! Make sure not to try using them outside of callbacks
     
