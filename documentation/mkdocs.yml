@@ -43,6 +43,27 @@ nav:
 - Home: index.md
 - Docs:
   - Home: index.md
+  - "Last visited":
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+      - "": PLACEHOLDER.md
+  - "Frequently used":
+      - "Isaac.": Isaac.md
+      - "Entity": Entity.md
+      - "-- EntityPlayer": EntityPlayer.md
+      - "-- EntityNPC": EntityNPC.md
+      - "-- EntityEffect": EntityEffect.md
+      - "Game():": Game.md
+      - "Room": Room.md
+      - "Level": Level.md
+      - "ModCallbacks": enums/ModCallbacks.md
   - Enums:
     - Renderer:
       - GLSLType: enums/GLSLType.md
@@ -234,6 +255,7 @@ nav:
     - NullFrame: NullFrame.md
     - Sprite: Sprite.md
   - StageTransition: StageTransition.md
+  - Vector: Vector.md
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
   - XMLData: XMLData.md
@@ -241,7 +263,6 @@ nav:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
   - UI: changes/UI.md
-- Vector: Vector.md
 - XML:
   - XML Overview: xml/overview.md
   - players.xml: xml/players.md

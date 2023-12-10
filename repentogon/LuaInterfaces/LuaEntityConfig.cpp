@@ -743,6 +743,7 @@ static void RegisterEntityConfigEntity(lua_State* L) {
 		{ "GetBestiaryOffset", Lua_EntityConfigEntityGetBestiaryOffset },
 		{ "GetBestiaryScale", Lua_EntityConfigEntityGetBestiaryScale },
 		{ "GetBestiaryFloorAlt", Lua_EntityConfigEntityGetBestiaryFloorAlt },
+		{ "HasFloorAlts", Lua_EntityConfigEntityHasFloorAlts},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::EntityConfigEntityMT, lua::metatables::EntityConfigEntityMT, functions);

@@ -148,6 +148,10 @@ ___
 Returns true if the entity has all [EntityTag](enums/EntityTag.md)s specified in the provided bitset.
 
 ___
+### Has·Floor·Alts () {: aria-label='Functions' }
+#### boolean HasFloorAlts ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Has·Gib·Flags () {: aria-label='Functions' }
 #### boolean HasGibFlags ( int flags ) {: .copyable aria-label='Functions' }
 Returns true if the entity has all [GibFlag](enums/GibFlag.md)s specified in the provided bitset.
