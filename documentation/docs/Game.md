@@ -83,10 +83,6 @@ ___
 #### [ScoreSheet](ScoreSheet.md) GetScoreSheet ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Stage·Transition () {: aria-label='Functions' }
-#### [StageTransition](StageTransition.md) GetStageTransition ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Target·Color·Modifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetTargetColorModifier ( ) {: .copyable aria-label='Functions' }
 

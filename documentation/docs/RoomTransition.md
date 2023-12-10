@@ -1,7 +1,7 @@
 # Class "RoomTransition"
 
 ???+ info
-    You can get this class by using the GetTransitionMode global table.
+    You can get this class by using the RoomTransition global table.
     ???+ example "Example Code"
         ```lua
         local tmode = RoomTransition.GetTransitionMode ()
