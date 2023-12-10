@@ -13,7 +13,7 @@ LUA_FUNCTION(Lua_GameGetMinimap)
 
 LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
 {
-	Minimap* minimap = *lua::GetUserdata<Minimap**>(L, 1, lua::metatables::MinimapMT);
+	Minimap* minimap = g_Game->GetMinimap();
 	Vector buffer;
 	buffer = *minimap->GetDisplayedSize(buffer);
 	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), buffer);
@@ -22,14 +22,13 @@ LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
 }
 
 static void RegisterMinimap(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::GAME, "GetMinimap", Lua_GameGetMinimap);
-
-	luaL_Reg functions[] = {
-		{ "GetDisplayedSize", Lua_MinimapGetDisplayedSize },
-		{ NULL, NULL }
-	};
-
-	lua::RegisterNewClass(L, lua::metatables::MinimapMT, lua::metatables::MinimapMT, functions);
+	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetMinimap", Lua_GameGetMinimap);
+	lua_newtable(L);
+	//luaL_Reg functions[] = {
+	lua::TableAssoc(L, "GetDisplayedSize", Lua_MinimapGetDisplayedSize);
+	//};
+	lua_setglobal(L, "Minimap");
+	//lua::RegisterNewClass(L, lua::metatables::MinimapMT, lua::metatables::MinimapMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

@@ -50,11 +50,6 @@ ___
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
-### Get·Debug·Renderer () {: aria-label='Functions' }
-#### [DebugRenderer](DebugRenderer.md) GetDebugRenderer ( ) {: .copyable aria-label='Functions' }
-Used to render debug info like collision shapes.
-
-___
 ### Get·Dimension () {: aria-label='Functions' }
 #### int GetDimension ( ) {: .copyable aria-label='Functions' }
 
@@ -66,10 +61,6 @@ ___
     This is formatted as the absolute rate of change (ie, all values are positive).
 
 ___
-### Get·Minimap () {: aria-label='Functions' }
-#### [Minimap](Minimap.md) GetMinimap ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Pause·Menu·State () {: aria-label='Functions' }
 #### int GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
 
@@ -77,10 +68,6 @@ ___
 ### Get·Planetariums·Visited () {: aria-label='Functions' }
 #### int GetPlanetariumsVisited ( ) {: .copyable aria-label='Functions' }
 Returns the amount of planetariums the player has entered this run.
-
-___
-### Get·Score·Sheet () {: aria-label='Functions' }
-#### [ScoreSheet](ScoreSheet.md) GetScoreSheet ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Target·Color·Modifier () {: aria-label='Functions' }

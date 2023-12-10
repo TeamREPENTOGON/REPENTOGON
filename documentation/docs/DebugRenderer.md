@@ -1,9 +1,12 @@
 # Class "DebugRenderer"
 
 ???+ info
-    You can get this class by using the following functions:
+    You can get this class by using the DebugRenderer global table.
+    ???+ example "Example Code"
+        ```lua
+        local shapeone = DebugRenderer.Get(1,true)
+        ```
 
-    * [Game:GetDebugRenderer()](Game.md#getdebugrenderer)
         
 ## Functions
 

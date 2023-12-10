@@ -1,14 +1,13 @@
 # Class "Minimap"
 
 ???+ info
-    You can get this class by using the following functions:
-
-    * [Game:GetMinimap](Game.md#getminimap)
-
+    You can get this class by using the Minimap global table.
     ???+ example "Example Code"
         ```lua
-        local minimap = Game():GetMinimap()
+        local mapsize = Minimap.GetDisplayedSize ()
         ```
+
+
         
 ## Functions
 

@@ -12,9 +12,9 @@ LUA_FUNCTION(Lua_GetDebugRenderer)
 }
 
 LUA_FUNCTION(Lua_DebugRendererGet) {
-	DebugRenderer* debugRenderer = *lua::GetUserdata<DebugRenderer**>(L, 1, lua::metatables::DebugRendererMT);
-	int index = (int)luaL_checkinteger(L, 2);
-	bool unk = lua_toboolean(L, 3);
+	DebugRenderer* debugRenderer = g_Game->GetDebugRenderer();
+	int index = (int)luaL_checkinteger(L, 1);
+	bool unk = lua_toboolean(L, 2);
 	Shape** ud = (Shape**)lua_newuserdata(L, sizeof(Shape*));
 	*ud = debugRenderer->Get(index, unk);
 	luaL_setmetatable(L, lua::metatables::ShapeMT);
@@ -23,13 +23,14 @@ LUA_FUNCTION(Lua_DebugRendererGet) {
 }
 
 static void RegisterDebugRenderer(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::GAME, "GetDebugRenderer", Lua_GetDebugRenderer);
-
-	luaL_Reg functions[] = {
-		{ "Get", Lua_DebugRendererGet },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, lua::metatables::DebugRendererMT, lua::metatables::DebugRendererMT, functions);
+	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetDebugRenderer", Lua_GetDebugRenderer);
+	lua_newtable(L);
+	//luaL_Reg functions[] = {
+	lua::TableAssoc(L, "Get", Lua_DebugRendererGet);
+//		{ NULL, NULL }
+	//};
+	//lua::RegisterNewClass(L, lua::metatables::DebugRendererMT, lua::metatables::DebugRendererMT, functions);
+	lua_setglobal(L, "DebugRenderer");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
