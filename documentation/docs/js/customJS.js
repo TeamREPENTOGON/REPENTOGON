@@ -107,7 +107,7 @@ function buildContentMap() {
     }
     var mapObj = $("<div class=\"contentMap\"><h2 class=\"overviewHeader\">Content Overview</h2><table class=\"contentTable\" id=\"contentOverviewTable\"><thead><tr><th>Return value</th><th>Function</th></tr></thead><tbody></tbody></table><hr/></div>");
     if ($("#class-diagram").length == 0) {
-        mapObj.insertAfter($(".md-content__inner").find("h1").first());
+        mapObj.insertBefore($(".md-content__inner").find("h2").first());
     } else {
         // insert content map after mermaid diagram
         mapObj.insertAfter($(".mermaidDiagram").first());
@@ -328,13 +328,14 @@ document$.subscribe(function() {
         }
 
         var connector = ".";
-        if (funcNameLine.includes("(") && !pathname.includes("Isaac") && !pathname.includes("Input")) {
+        var isGlobalClass = $("h1").first().text().includes("Global ");
+        if (funcNameLine.includes("(") && !isGlobalClass && !pathname.includes("Isaac") && !pathname.includes("Input")) {
             connector = ":";
         }
         if (parent.attr("aria-label") == "Constructors") {
             connector = "";
         }
-        if (!window.location.pathname.includes("enums") && !pathname.includes("Isaac") && !pathname.includes("Input")) {
+        if (!window.location.pathname.includes("enums") && !isGlobalClass && !pathname.includes("Isaac") && !pathname.includes("Input")) {
             pathname = "";
         }
 
