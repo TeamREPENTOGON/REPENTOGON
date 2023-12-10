@@ -130,10 +130,6 @@ ___
 #### table GetCutsceneIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Cutscene ID By Name.
 ___
-### Get·Entity·Config () {: aria-label='Functions' }
-#### [EntityConfig](EntityConfig.md) GetEntityConfig ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Entity·Sub·Type·By·Name () {: aria-label='Functions' }
 #### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
 Gets the entity SubType by entity name.
@@ -157,10 +153,6 @@ ___
 #### string GetLocalizedString ( string category, string key, int language ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.
 
-___
-### Get·Menu·Manager () {: aria-label='Functions' }
-#### [MenuManager](menus/MenuManager.md) GetMenuManager ( ) {: .copyable aria-label='Functions' }
-Returns the menu manager object.
 ___
 ### Get·Null·Item·Id·By·Name () {: aria-label='Functions' }
 #### int GetNullItemIdByName ( ) {: .copyable aria-label='Functions' }
