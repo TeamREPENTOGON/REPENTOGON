@@ -7,7 +7,7 @@
 
     ???+ example "Example Code"
         ```lua
-        local params = Game():GetPlayer(0):GetMultiShotParams(0)
+        local params = Game():GetPlayer(0):GetMultiShotParams(WeaponType.WEAPON_TEARS)
         ```
 
 **[MultiShotParams](MultiShotParams.md)** contains information the game uses to properly calculate the position and velocity of every tear fired, among other things.
