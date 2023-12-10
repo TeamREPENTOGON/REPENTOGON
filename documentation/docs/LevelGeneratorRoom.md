@@ -30,14 +30,14 @@ ___
 Index of the room during generation: 0 if the room was the first to be generated, 1 if it was the second etc.
 
 ___
-### Row () {: aria-label='Functions' }
-#### int Row ( ) {: .copyable aria-label='Functions' }
-Return the row of the room slot on the level grid (index is 0 based).
-
-___
 ### Neighbors () {: aria-label='Functions' }
 #### int[] Neighbors ( ) {: .copyable aria-label='Functions' }
 Returns a table of the generation indices of the neighboring rooms.
+
+___
+### Row () {: aria-label='Functions' }
+#### int Row ( ) {: .copyable aria-label='Functions' }
+Return the row of the room slot on the level grid (index is 0 based).
 
 ___
 ### Shape () {: aria-label='Functions' }

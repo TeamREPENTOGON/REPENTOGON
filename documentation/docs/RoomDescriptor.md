@@ -6,12 +6,12 @@
 #### void AddRestrictedGridIndex ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Grid·Entities·Save·State () {: aria-label='Functions' }
-#### [GridEntitiesSaveStateVector](GridEntitiesSaveStateVector.md) GetGridEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Entities·Save·State () {: aria-label='Functions' }
 #### [EntitiesSaveStateVector](EntitiesSaveStateVector.md) GetEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
+
+___
+### Get·Grid·Entities·Save·State () {: aria-label='Functions' }
+#### [GridEntitiesSaveStateVector](GridEntitiesSaveStateVector.md) GetGridEntitiesSaveState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Restricted·Grid·Indexes () {: aria-label='Functions' }

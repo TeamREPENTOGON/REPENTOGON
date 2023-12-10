@@ -9,4 +9,3 @@ tags:
 |1 |BLUE {: .copyable } |  |
 |2 |YELLOW {: .copyable } |  |
 |3 |ORANGE {: .copyable } |  |
-

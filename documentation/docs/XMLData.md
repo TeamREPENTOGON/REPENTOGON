@@ -18,18 +18,6 @@ Returns a table containing the attributes of the entity on entities2.xml that ma
 ???+ note "child nodes"
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
-
-### Get·Entry·By·Name () {: aria-label='Functions' }
-#### table GetEntryByName ( [XMLNode](enums/XMLNode.md) nodetype, string name ) {: .copyable aria-label='Functions' }
-Returns a table containing the attributes of the corresponding xml, the matching nodetype(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given name parameter.
-???- info "Table usage"
-	```lua
-	print("Sad Onion's description:", XMLData.GetEntryByName(XMLNode.ITEM,"The Sad Onion").description)
-	```
-???+ note "child nodes"
-    Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
-___
-
 ### Get·Entry·By·Id () {: aria-label='Functions' }
 #### table GetEntryById ( [XMLNode](enums/XMLNode.md) nodetype, int idx ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the corresponding xml, the matching nodetype(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given unique id.
@@ -42,10 +30,15 @@ Returns a table containing the attributes of the corresponding xml, the matching
 ???+ note "id?"
     The Id usually matches the actual id of the node in question, with the exception of cases like the entities.xml where ids are not unique, on those cases, the id is the order of the node and wont correspond with the actual id. On the cases of xmls without ids, its just the order again.
 ___
-
-### Get·Num·Entries () {: aria-label='Functions' }
-#### int GetNumEntries ( [XMLNode](enums/XMLNode.md) nodetype) {: .copyable aria-label='Functions' }
-Returns the number of entries a given xmlnode structure has.
+### Get·Entry·By·Name () {: aria-label='Functions' }
+#### table GetEntryByName ( [XMLNode](enums/XMLNode.md) nodetype, string name ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the corresponding xml, the matching nodetype(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given name parameter.
+???- info "Table usage"
+	```lua
+	print("Sad Onion's description:", XMLData.GetEntryByName(XMLNode.ITEM,"The Sad Onion").description)
+	```
+???+ note "child nodes"
+    Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
 ### Get·Entry·From·Entity () {: aria-label='Functions' }
 #### table GetEntryFromEntity ( [Entity](Entity.md) entity, bool autoxmlpick = true, bool strict) {: .copyable aria-label='Functions' }
@@ -57,7 +50,7 @@ Returns a table containing the attributes of the provided entity. The autoxmlpic
 ???+ note "child nodes"
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
-
-
-
-
+### Get·Num·Entries () {: aria-label='Functions' }
+#### int GetNumEntries ( [XMLNode](enums/XMLNode.md) nodetype) {: .copyable aria-label='Functions' }
+Returns the number of entries a given xmlnode structure has.
+___

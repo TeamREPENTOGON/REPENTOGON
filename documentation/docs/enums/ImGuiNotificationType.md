@@ -9,4 +9,3 @@ tags:
 |1 |SUCCESS {: .copyable } |  |
 |2 |WARNING {: .copyable } |  |
 |3 |ERROR {: .copyable } |  |
-
