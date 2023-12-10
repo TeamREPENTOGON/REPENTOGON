@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_GetDailyChallenge) {
 
 LUA_FUNCTION(Lua_DailyChallengeGetChallengeParams)
 {
-	DailyChallenge* dailyChallenge = *lua::GetUserdata<DailyChallenge**>(L, 1, lua::metatables::DailyChallengeMT);
+	DailyChallenge* dailyChallenge = g_Manager->GetDailyChallenge();
 	ChallengeParam** ud = (ChallengeParam**)lua_newuserdata(L, sizeof(ChallengeParam*));
 	*ud = dailyChallenge->GetChallengeParams();
 	luaL_setmetatable(L, lua::metatables::ChallengeParamMT);
@@ -21,13 +21,14 @@ LUA_FUNCTION(Lua_DailyChallengeGetChallengeParams)
 
 static void RegisterDailyChallenge(lua_State* L)
 {
-	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetDailyChallenge", Lua_GetDailyChallenge);
-
-	luaL_Reg functions[] = {
-		{ "GetChallengeParams", Lua_DailyChallengeGetChallengeParams },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, lua::metatables::DailyChallengeMT, lua::metatables::DailyChallengeMT, functions);
+	//lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetDailyChallenge", Lua_GetDailyChallenge);
+	lua_newtable(L);
+	//luaL_Reg functions[] = {
+		lua::TableAssoc(L, "GetChallengeParams", Lua_DailyChallengeGetChallengeParams);
+		//{ NULL, NULL }
+	//};
+	//lua::RegisterNewClass(L, lua::metatables::DailyChallengeMT, lua::metatables::DailyChallengeMT, functions);
+	lua_setglobal(L, "DailyChallenge");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
