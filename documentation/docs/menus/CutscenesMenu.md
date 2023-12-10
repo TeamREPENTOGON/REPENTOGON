@@ -1,8 +1,20 @@
-# Class "CutscenesMenu"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "CutscenesMenu"
 
 ???+ info
     You can get this class by using the `CutscenesMenu` global table.
-        
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local sprite = CutscenesMenu.GetSprite()
+        ```
+     
 ## Functions
 
 ### Get·Sprite () {: aria-label='Functions' }

@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "EntityEffect"
 
 ## Class Diagram

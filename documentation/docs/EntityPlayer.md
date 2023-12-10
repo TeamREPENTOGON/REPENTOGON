@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "EntityPlayer"
 
 This class contains both new functions and modified reimplementations of existing ones.
@@ -27,7 +31,7 @@ This magically vanished from the API some time after 1.7.8.
 
 Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than [MultiShotParams:GetNumTears()](MultiShotParams.md#getnumtears).
 ### Get·Pocket·Item () {: aria-label='Modified Functions' }
-#### [PocketItem](PocketItem.md) GetPocketItem ( int SlotId ) {: .copyable aria-label='Modified Functions' }
+#### [PocketItem](PocketItem.md) GetPocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) SlotId ) {: .copyable aria-label='Modified Functions' }
 Now returns a proper `PocketItem` object.
 
 ___

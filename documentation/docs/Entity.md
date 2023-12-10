@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "Entity"
 
 ## Functions

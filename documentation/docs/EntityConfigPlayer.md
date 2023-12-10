@@ -1,7 +1,13 @@
+---
+tags:
+  - Class
+---
 # Class "EntityConfigPlayer"
 
 ???+ info
-    Can be obtained via the `EntityConfig` global table.
+    You can get this class by using the following functions:
+
+    * [EntityConfig.GetPlayer()](EntityConfig.md#getplayer)
 
     ???+ example "Example Code"
         ```lua

@@ -1,8 +1,20 @@
-# Class "MenuManager"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "MenuManager"
 
 ???+ info
-    You can get this class by just accesing the `MenuManager` global table.
-        
+    You can get this class by using the `MenuManager` global table.
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local sprite = MenuManager.GetBackWidgetSprite()
+        ```
+
 ## Functions
 
 ### Get·Active·Menu () {: aria-label='Functions' }

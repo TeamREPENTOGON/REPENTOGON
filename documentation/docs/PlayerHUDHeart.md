@@ -1,4 +1,18 @@
+---
+tags:
+  - Class
+---
 # Class "PlayerHUDHeart"
+
+???+ info
+    You can get this class by using the following functions:
+
+    * [PlayerHUD.GetHeartByIndex()](PlayerHUD.md#getheartbyindex)
+
+    ???+ example "Example Code"
+        ```lua
+        local playerHud = HUD.GetPlayerHUD(0):GetHeartByIndex(0)
+        ```
 
 ## Functions
 

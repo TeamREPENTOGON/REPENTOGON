@@ -1,5 +1,18 @@
+---
+tags:
+  - Class
+---
 # Class "PocketItem"
 
+???+ info
+    You can get this class by using the following functions:
+
+    * [EntityPlayer:GetPocketItem()](EntityPlayer.md#getpocketitem)
+
+    ???+ example "Example Code"
+        ```lua
+        local imgui = Isaac.GetPlayer(0):GetPocketItem(ActiveSlot.SLOT_PRIMARY)
+        ```
 ## Functions
 
 ### Get·Slot () {: aria-label='Functions' }

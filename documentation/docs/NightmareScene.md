@@ -1,10 +1,18 @@
-# Class "NightmareScene"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "NightmareScene"
 
 ???+ info
-    You can get this class by using the NightmareScene global table.
+    You can get this class by using the `NightmareScene` global table.
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
     ???+ example "Example Code"
         ```lua
-        local nightmaresprite = NightmareScene.GetBubbleSprite()
+        local sprite = NightmareScene.GetBubbleSprite()
         ```
 
 ???+ warning "Warning"

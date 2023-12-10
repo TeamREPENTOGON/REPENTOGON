@@ -168,14 +168,16 @@ nav:
     - GridEntity: GridEntity.md
     - GridEntityDoor: GridEntityDoor.md
     - GridEntityRock: GridEntityRock.md
-  - History: History.md
-  - HistoryItem: HistoryItem.md
+  - History:
+    - History: History.md
+    - HistoryItem: HistoryItem.md
   - HUDs:
     - DebugRenderer: DebugRenderer.md
     - HUD: HUD.md
     - Minimap: Minimap.md
     - PlayerHUD: PlayerHUD.md
     - PlayerHUDHeart: PlayerHUDHeart.md
+    - ScoreSheet: ScoreSheet.md
   - ImGui: ImGui.md
   - Isaac: Isaac.md
   - ItemConfig:
@@ -211,11 +213,11 @@ nav:
   - NightmareScene: NightmareScene.md
   - Options: Options.md
   - PersistentGameData: PersistentGameData.md
+  - PlayerManager: PlayerManager.md
   - Procedural Items:
+    - ProceduralItemManager: ProceduralItemManager.md
     - ProceduralEffect: ProceduralEffect.md
     - ProceduralItem: ProceduralItem.md
-    - ProceduralItemManager: ProceduralItemManager.md
-  - PlayerManager: PlayerManager.md
   - PocketItem: PocketItem.md
   - ProjectileParams: ProjectileParams.md
   - Rendering:
@@ -245,7 +247,6 @@ nav:
     - EntitiesSaveState: EntitiesSaveState.md
     - EntitiesSaveStateVector: EntitiesSaveStateVector.md
   - RoomTransition: RoomTransition.md
-  - ScoreSheet: ScoreSheet.md
   - Sprite:
     - AnimationData: AnimationData.md
     - AnimationFrame: AnimationFrame.md
@@ -272,9 +273,12 @@ nav:
   - ambush.xml: xml/ambush.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 - Custom Rendering: renderer/CustomRendering.md
+- Tags: tags.md
 plugins:
 - search:
     separator: "[\\s\\-\\.\\_\\\xB7]+"
+- tags:
+    tags_file: tags.md
 repo_name: IsaacZHL/REPENTOGON
 repo_url: https://github.com/IsaacZHL/REPENTOGON
 site_name: 'BoI: REPENTOGON Docs'

@@ -1,6 +1,8 @@
+---
+tags:
+  - Class
+---
 # Class "Game"
-
-This class contains both new functions and modified reimplementations of existing ones.
 
 ## Modified Functions
 

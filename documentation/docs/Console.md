@@ -1,10 +1,18 @@
-# Class "Console"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "Console"
 
 ???+ info
-    You can get this class by using the Console global table.
+    You can get this class by using the `Console` global table.
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
     ???+ example "Example Code"
         ```lua
-        local cmdhistory = Console.GetCommandHistory ()
+        local cmdhistory = Console.GetCommandHistory()
         ```
         
         

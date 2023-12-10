@@ -1,8 +1,20 @@
-# Class "BestiaryMenu"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "BestiaryMenu"
 
 ???+ info
     You can get this class by using the `BestiaryMenu` global table.
-        
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local sprite = BestiaryMenu.GetBestiaryMenuSprite()
+        ```
+
 ## Functions
 
 ### Get·Bestiary·Menu·Sprite () {: aria-label='Functions' }

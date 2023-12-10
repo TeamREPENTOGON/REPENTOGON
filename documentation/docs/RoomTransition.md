@@ -1,10 +1,15 @@
-# Class "RoomTransition"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "RoomTransition"
 
 ???+ info
-    You can get this class by using the RoomTransition global table.
+    You can get this class by using the `RoomTransition` global table.
     ???+ example "Example Code"
         ```lua
-        local tmode = RoomTransition.GetTransitionMode ()
+        local tmode = RoomTransition.GetTransitionMode()
         ```
 
 

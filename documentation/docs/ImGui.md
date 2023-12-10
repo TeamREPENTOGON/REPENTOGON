@@ -1,21 +1,33 @@
+---
+tags:
+  - Class
+---
 # Class "ImGui"
 
-## Reference
-For element types we use the same names as in ImGui itself. You can find an interactive ImGui example here:
+???+ info
+    You can get this class by using the following functions:
 
-**[https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html)**
+    * [Isaac.GetImGui()](Isaac.md#getimgui)
 
-## Icons
-All imgui text supports the usage of icons. Right now, we use "FontAwesome 6", which provides ~1400 icons. You can search for fitting icons here:[https://fontawesome.com/search?o=r&m=free&s=solid](https://fontawesome.com/search?o=r&m=free&s=solid)
+    ???+ example "Example Code"
+        ```lua
+        local imgui = Isaac.GetImGui()
+        ```
+    ### Reference
+    For element types we use the same names as in ImGui itself. Check out the **[interactive ImGui example](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html)**.
+    
+    ### Icons
+    All imgui text supports the usage of icons. Right now, we use "FontAwesome 6", which provides ~1400 icons. You can search for fitting icons here: [https://fontawesome.com/search?o=r&m=free&s=solid](https://fontawesome.com/search?o=r&m=free&s=solid)
 
-### Usage in Lua:
-If you want to add an Icon into your widget, just use the "Unicode" representation of the icon and put it in between a `\u{ }` string. You can find this, by selecting the icon on the fontawesome page, and looking in the top right corner of the popup-window. You can add it to your element like this:
+    **Icon usage in Lua:**
 
-`"\u{f0f9} My Text"`
+    If you want to add an Icon into your widget, just use the "Unicode" representation of the icon and put it in between a `\u{ }` string. You can find this, by selecting the icon on the fontawesome page, and looking in the top right corner of the popup-window. You can add it to your element like this:
 
-This will add the "truck-medical" icon in front of the text "My text".
+    `"\u{f0f9} My Text"`
 
-Result: ":fontawesome-solid-truck-medical: My Text"
+    This will add the "truck-medical" icon in front of the text "My text".
+
+    Result: ":fontawesome-solid-truck-medical: My Text"
 
 
 ## Functions

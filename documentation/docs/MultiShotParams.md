@@ -1,6 +1,12 @@
-# Class "[MultiShotParams](MultiShotParams.md)"
+---
+tags:
+  - Class
+---
+# Class "MultiShotParams"
 
 ???+ info
+    **[MultiShotParams](MultiShotParams.md)** contains information the game uses to properly calculate the position and velocity of every tear fired, among other things.
+    
     You can get this class by using the following functions:
 
     * [EntityPlayer:GetMultiShotParams](EntityPlayer.md#getmultishotparams)
@@ -10,7 +16,6 @@
         local params = Game():GetPlayer(0):GetMultiShotParams(WeaponType.WEAPON_TEARS)
         ```
 
-**[MultiShotParams](MultiShotParams.md)** contains information the game uses to properly calculate the position and velocity of every tear fired, among other things.
 
 ## Functions
 

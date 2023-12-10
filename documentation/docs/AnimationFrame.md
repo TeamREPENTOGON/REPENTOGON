@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "AnimationFrame"
 
 Cached data for a single frame of one layer of an animation from an Anm2 file. Shared by all Sprites using the same Anm2 and cannot be modified.

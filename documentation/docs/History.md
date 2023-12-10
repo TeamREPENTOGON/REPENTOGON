@@ -1,5 +1,19 @@
+---
+tags:
+  - Class
+---
 # Class "History"
 
+???+ info
+    You can get this class by using the following functions:
+
+    * [EntityPlayer:GetHistory()](EntityPlayer.md#gethistory)
+
+    ???+ example "Example Code"
+        ```lua
+        local history = Isaac.GetPlayer(0):GetHistory()
+        ```
+        
 ## Functions
 
 ### Get·Collectibles·History () {: aria-label='Functions' }

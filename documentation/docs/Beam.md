@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "Beam"
 
 This class provides access to the rendering system used for cords as used by Evis, Scrouge, Dogma, etc.

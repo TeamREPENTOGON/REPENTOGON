@@ -1,4 +1,17 @@
+---
+tags:
+  - Class
+---
 # Class "LevelGeneratorEntry"
+???+ info
+    You can get this class by using the following functions:
+
+    * [Isaac.LevelGeneratorEntry()](Isaac.md#levelgeneratorentry)
+
+    ???+ example "Example Code"
+        ```lua
+        local newLevelGeneratorEntry = Isaac.LevelGeneratorEntry()
+        ```
 
 ## Functions
 ### Set·Allowed·Doors () {: aria-label='Functions' }

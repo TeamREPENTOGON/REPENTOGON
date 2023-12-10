@@ -1,4 +1,18 @@
+---
+tags:
+  - Class
+---
 # Class "ProceduralEffect"
+
+???+ info
+    You can get this class by using the following functions:
+
+    * [ProceduralItem.GetEffect()](ProceduralItem.md#geteffect)
+
+    ???+ example "Example Code"
+        ```lua
+        local pItemEffect = ProceduralItemManager.GetProceduralItem(0):GetEffect(0)
+        ```
 
 ## Functions
 ### Get·Action·Property () {: aria-label='Functions' }

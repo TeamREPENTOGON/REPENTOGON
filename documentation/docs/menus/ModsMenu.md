@@ -1,8 +1,20 @@
-# Class "ModsMenu"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "ModsMenu"
 
 ???+ info
     You can get this class by using the `ModsMenu` global table.
-        
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local sprite = ModsMenu.GetSprite()
+        ```
+
 ## Functions
 
 ### Get·Sprite () {: aria-label='Functions' }

@@ -1,4 +1,18 @@
+---
+tags:
+  - Class
+---
 # Class "ProceduralItem"
+
+???+ info
+    You can get this class by using the following functions:
+
+    * [ProceduralItemManager.GetProceduralItem()](ProceduralItemManager.md#getproceduralitem)
+
+    ???+ example "Example Code"
+        ```lua
+        local pItem = ProceduralItemManager.GetProceduralItem(0)
+        ```
 
 ## Functions
 ### Get·Damage () {: aria-label='Functions' }

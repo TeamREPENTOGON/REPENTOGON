@@ -1,8 +1,17 @@
+---
+tags:
+  - Class
+---
 # Class "LevelGeneratorRoom"
 
-This class is used during level generation. Its purpose is to represent a slot in the graph of rooms that is generated during the generation phase.
-This class is immutable and cannot be instanciated manually: you cannot change the value of the fields of an instance and you cannot instance it by yourself.
-Access to instances is always performed through methods or the [LevelGenerator](LevelGenerator.md) itself, or instances are given as parameters of callback.
+???+ info
+    This class is used during level generation. Its purpose is to represent a slot in the graph of rooms that is generated during the generation phase.
+    
+    This class is immutable and cannot be instanciated manually: you cannot change the value of the fields of an instance and you cannot instance it by yourself.
+    
+    Access to instances is always performed through methods of the [LevelGenerator](LevelGenerator.md) itself, or instances are given as parameters of the callbacks:  
+    
+    * [MC_PRE_LEVEL_PLACE_ROOM](/enums/ModCallbacks.html#mc_pre_level_place_room)
 
 ## Functions
 

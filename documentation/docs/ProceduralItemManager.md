@@ -1,13 +1,20 @@
-# Class "ProceduralItemManager"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "ProceduralItemManager"
 
 ???+ info
-    You can get this class by using the ProceduralItemManager global table.
+    You can get this class by using the `ProceduralItemManager` global table.
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
     ???+ example "Example Code"
         ```lua
-        local procitem = ProceduralItemManager.GetProceduralItem (0)
+        local pItem = ProceduralItemManager.GetProceduralItem(0)
         ```
 
-		
 ## Functions
 ### Create·Procedural·Item () {: aria-label='Functions' }
 #### int CreateProceduralItem ( int Seed, int Unknown ) {: .copyable aria-label='Functions' }

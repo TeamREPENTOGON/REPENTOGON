@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "AnimationState"
 
 Obtained via [Entity:GetAnimationState()](Entity.md#getanimationstate).

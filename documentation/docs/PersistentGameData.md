@@ -1,9 +1,13 @@
+---
+tags:
+  - Class
+---
 # Class "PersistentGameData"
 
 ???+ info
     You can get this class by using the following functions:
 
-    * [Isaac:GetPersistentGameData](Isaac.md#getpersistentgamedata)
+    * [Isaac.GetPersistentGameData()](Isaac.md#getpersistentgamedata)
 
     ???+ example "Example Code"
         ```lua

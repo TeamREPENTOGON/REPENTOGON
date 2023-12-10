@@ -1,4 +1,19 @@
-# Class "HUD"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "HUD"
+
+???+ info
+    You can get this class by using the `HUD` global table.
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local sprite = HUD.GetChargeBarSprite()
+        ```
 
 ## Functions
 

@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "Vector"
 ## Operators
 ### __add () {: aria-label='Operators' }

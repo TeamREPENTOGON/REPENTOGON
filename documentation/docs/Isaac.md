@@ -1,4 +1,9 @@
-# Class "Isaac"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "Isaac"
 ## Modified Functions
 
 ### Find·By·Type () {: aria-label='Modified Functions' }

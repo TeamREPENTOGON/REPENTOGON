@@ -1,9 +1,19 @@
-# Class "WeightedOutcomePicker"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "WeightedOutcomePicker"
 
 ???+ info
-    You can get this class by using the following functions:
+    You can get this class by using the `WeightedOutcomePicker` global table.
 
-    * WeightedOutcomePicker()
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local sprite = WeightedOutcomePicker.AddOutcomeWeight(1, 65)
+        ```
     
 ## Functions
 

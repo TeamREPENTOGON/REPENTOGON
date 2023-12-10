@@ -1,12 +1,20 @@
-# Class "PlayerManager"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "PlayerManager"
 
 ???+ info
-    You can get this class by using the PlayerManager global table.
+    You can get this class by using the `PlayerManager` global table.
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
     ???+ example "Example Code"
         ```lua
-        local hastrinket = PlayerManager.AnyoneHasTrinket (1)
+        local sprite = PlayerManager.AnyoneHasTrinket(TrinketType.TRINKET_SWALLOWED_PENNY)
         ```
-        
+
 ## Functions
 
 ### Anyone·Has·Collectible () {: aria-label='Functions' }
@@ -15,7 +23,7 @@ Returns true when any player has the item and false when no one does.
 
 ___
 ### Anyone·Has·Trinket () {: aria-label='Functions' }
-#### boolean AnyoneHasTrinket ( [Trinket](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
+#### boolean AnyoneHasTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
 Returns true when any player has the trinket and false when no one does.
 
 ___

@@ -1,8 +1,20 @@
-# Class "SpecialSeedsMenu"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "SpecialSeedsMenu"
 
 ???+ info
     You can get this class by using the `SpecialSeedsMenu` global table.
-        
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local sprite = SpecialSeedsMenu.GetSprite()
+        ```
+
 ## Functions
 
 ### Get·Sprite () {: aria-label='Functions' }

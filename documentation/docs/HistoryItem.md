@@ -1,5 +1,19 @@
+---
+tags:
+  - Class
+---
 # Class "HistoryItem"
 
+???+ info
+    You can get this class by using the following functions:
+
+    * [History:GetCollectiblesHistory()](History.md#getcollectibleshistory)
+
+    ???+ example "Example Code"
+        ```lua
+        local history = Isaac.GetPlayer(0):GetHistory():GetCollectiblesHistory()[1]
+        ```
+        
 ## Functions
 
 ### Get·Item·ID () {: aria-label='Functions' }

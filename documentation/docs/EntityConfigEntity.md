@@ -1,7 +1,13 @@
+---
+tags:
+  - Class
+---
 # Class "EntityConfigEntity"
 
 ???+ info
-    Can be obtained via the `EntityConfig` global table.
+    You can get this class by using the following functions:
+
+    * [EntityConfig.GetEntity()](EntityConfig.md#getentity)
 
     ???+ example "Example Code"
         ```lua

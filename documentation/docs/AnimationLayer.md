@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "AnimationLayer"
 
 Cached data for one layer of an animation from a loaded Anm2 file. Shared by all Sprites using the same Anm2 and cannot be modified.

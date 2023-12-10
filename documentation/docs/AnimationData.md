@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "AnimationData"
 
 Cached data for one animation from a loaded Anm2 file. Shared by all Sprites using the same Anm2 and cannot be modified.

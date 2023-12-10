@@ -1,15 +1,20 @@
-# Class "ScoreSheet"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "ScoreSheet"
 
 ???+ info
-    You can **currently** get this class by using the following functions:
+    You can get this class by using the `ScoreSheet` global table.
 
-    * [Game:GetScoreSheet()](Game.md#getscoresheet)
-
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
     ???+ example "Example Code"
         ```lua
-        local scoreSheet = Game():GetScoreSheet()
+        local bonus = ScoreSheet.GetBlueBabyBonus()
         ```
-        
+       
 ## Functions
 
 ### Calculate () {: aria-label='Functions' }

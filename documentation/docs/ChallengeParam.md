@@ -1,4 +1,19 @@
+---
+tags:
+  - Class
+---
 # Class "ChallengeParam"
+
+???+ info
+    You can get this class by using the following functions:
+
+    * [Game():GetChallengeParams()](Game.md#getchallengeparams)
+    * [DailyChallenge.GetChallengeParams()](DailyChallenge.md#getchallengeparams)
+
+    ???+ example "Example Code"
+        ```lua
+        local params = Game():GetChallengeParams()
+        ```
 
 ## Functions
 

@@ -1,10 +1,15 @@
-# Class "ItemOverlay"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "ItemOverlay"
 
 ???+ info
-    You can get this class by using the ItemOverlay global table.
+    You can get this class by using the `ItemOverlay` global table.
     ???+ example "Example Code"
         ```lua
-        local overlaysprite = ItemOverlay.GetSprite ()
+        local overlaysprite = ItemOverlay.GetSprite()
         ```
         
 ## Functions

@@ -1,8 +1,22 @@
-# Table "XMLData"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "XMLData"
 
 ???+ info
-    A public table containing all the functions related to gathering XML attributes accross the different xmls with updated values to match the real values.
+	A public table containing all the functions related to gathering XML attributes accross the different xmls with updated values to match the real values.
+    
+    You can get this class by using the `XMLData` global table.
 
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local numEntries = XMLData.GetNumEntries(XMLNode.ENTITY)
+        ```
+        
 ???+ warning "Warning"
     XML attributes are converted to lowercase when being parsed by REPENTOGON! This eliminates capitializtion inconsistency in vanilla tags, but might result in not being able to find attributes if they're looked up by their name as definined in the XML (e.g `bossID` will return `nil`, so use `bossid` instead.)
         

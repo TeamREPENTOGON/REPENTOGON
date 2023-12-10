@@ -1,8 +1,20 @@
-# Class "KeyConfigMenu"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "KeyConfigMenu"
 
 ???+ info
     You can get this class by using the `KeyConfigMenu` global table.
-        
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
+    ???+ example "Example Code"
+        ```lua
+        local sprite = KeyConfigMenu.GetSprite()
+        ```
+     
 ## Functions
 
 ### Get·Sprite () {: aria-label='Functions' }

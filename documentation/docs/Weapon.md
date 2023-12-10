@@ -1,4 +1,18 @@
+---
+tags:
+  - Class
+---
 # Class "Weapon"
+
+???+ info
+    You can get this class by using the following functions:
+
+    * [EntityPlayer:GetWeapon()](EntityPlayer.md#getweapon)
+
+    ???+ example "Example Code"
+        ```lua
+        local weapon = Isaac.GetPlayer(0):GetWeapon(WeaponType.WEAPON_TEARS)
+        ```
 
 ## Functions
 

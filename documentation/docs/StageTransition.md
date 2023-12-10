@@ -1,14 +1,19 @@
-# Class "StageTransition"
-
-This class gives access to data exclusive to the stage transition screen.
-
-Please note that the `StageTransition` is only used to configure how the stage transition plays. If you want to manipulate the content of the screen during a stage transition, you need to use the NightmareScene class.
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "StageTransition"
 
 ???+ info
-    You can get this class by using the StageTransition global table.
+    This class gives access to data exclusive to the stage transition screen.
+    
+    Please note that the `StageTransition` is only used to configure how the stage transition plays. If you want to manipulate the content of the screen during a stage transition, you need to use the NightmareScene class.
+    
+    You can get this class by using the `StageTransition` global table.
     ???+ example "Example Code"
         ```lua
-        local samestage = StageTransition.GetSameStage ()
+        local samestage = StageTransition.GetSameStage()
         ```
 
 

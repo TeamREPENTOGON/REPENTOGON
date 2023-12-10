@@ -1,7 +1,12 @@
-# Class "DailyChallenge"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "DailyChallenge"
 
 ???+ info
-    You can get this class by using the DailyChallenge global table.
+    You can get this class by using the `DailyChallenge` global table.
     ???+ example "Example Code"
         ```lua
         local dailyparams = DailyChallenge.GetChallengeParams()

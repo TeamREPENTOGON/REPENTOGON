@@ -1,4 +1,18 @@
+---
+tags:
+  - Class
+---
 # Class "PlayerHUD"
+
+???+ info
+    You can get this class by using the following functions:
+
+    * [HUD.GetPlayerHUD()](HUD.md#getplayerhud)
+
+    ???+ example "Example Code"
+        ```lua
+        local playerHud = HUD.GetPlayerHUD(0)
+        ```
 
 ## Functions
 
@@ -7,8 +21,8 @@
 
 ___
 ### Get·Hearts () {: aria-label='Functions' }
-#### [hearts](PlayerHUDHeart.md) GetHearts ( ) {: .copyable aria-label='Functions' }
-Returns table of [hearts](PlayerHUDHeart.md)
+#### [PlayerHUDHeart](PlayerHUDHeart.md)[] GetHearts ( ) {: .copyable aria-label='Functions' }
+Returns table of [PlayerHUDHeart](PlayerHUDHeart.md) objects.
 
 ___
 ### Get·HUD () {: aria-label='Functions' }

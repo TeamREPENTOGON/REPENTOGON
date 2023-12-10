@@ -1,9 +1,20 @@
+---
+tags:
+  - Class
+---
 # Class "Color"
 
-## Modified Functions
+???+ info
+    This class can be get by using its constructor:
+    ???+ example "Example Code"
+        ```lua
+        local redColor = Color(1,0,0,1)
+        ```
 
-### Color () {: aria-label='Modified Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) Color ( float R = 1, float G = 1, float B = 1, float A = 1, float RO = 0, float GO = 0, float BO = 0, float RC = 0, float GC = 0, float BC = 0, float AC = 0 ) {: .copyable aria-label='Constructors' }
+## Modified Constructors
+
+### Color () {: aria-label='Modified Constructors' }
+#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) Color ( float R = 1, float G = 1, float B = 1, float A = 1, float RO = 0, float GO = 0, float BO = 0, float RC = 0, float GC = 0, float BC = 0, float AC = 0 ) {: .copyable aria-label='Modified Constructors' }
 
 All arguments are now optional. `Colorize` can now be set through the constructor.
 

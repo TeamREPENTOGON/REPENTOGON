@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "GLSLValue"
 
 Helper Classes to store GL data.

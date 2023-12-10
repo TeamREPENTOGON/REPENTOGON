@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "EntityLaser"
 
 ## Class Diagram

@@ -1,3 +1,7 @@
+---
+tags:
+  - Class
+---
 # Class "RoomConfigRoom"
 
 ## Modified Variables

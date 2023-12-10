@@ -1,6 +1,6 @@
 ---
 tags:
-  - Globals
+  - Global
   - Class
 search:
   boost: 0.25

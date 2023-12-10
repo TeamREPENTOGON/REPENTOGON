@@ -1,4 +1,9 @@
-# Class "EntityConfig"
+---
+tags:
+  - Global
+  - Class
+---
+# Global Class "EntityConfig"
 
 ???+ info
     These functions can be accessed via the `EntityConfig` global table.
