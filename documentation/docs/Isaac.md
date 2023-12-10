@@ -130,10 +130,6 @@ ___
 #### table GetCutsceneIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Cutscene ID By Name.
 ___
-### Get·Daily·Challenge () {: aria-label='Functions' }
-#### [DailyChallenge](DailyChallenge.md) GetDailyChallenge ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Entity·Config () {: aria-label='Functions' }
 #### [EntityConfig](EntityConfig.md) GetEntityConfig ( ) {: .copyable aria-label='Functions' }
 
