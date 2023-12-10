@@ -1,15 +1,12 @@
 # Class "RoomTransition"
 
 ???+ info
-    You can get this class by using the following functions:
-
-    * [Game:GetRoomTransition](Game.md#getroomtransition)
-
+    You can get this class by using the GetTransitionMode global table.
     ???+ example "Example Code"
         ```lua
-        local roomTransition = Game():GetRoomTransition()
+        local tmode = RoomTransition.GetTransitionMode ()
         ```
-        
+
 
 ## Functions
 

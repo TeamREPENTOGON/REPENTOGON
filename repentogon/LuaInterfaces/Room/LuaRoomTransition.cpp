@@ -11,44 +11,42 @@ LUA_FUNCTION(Lua_GetRoomTransition) {
 }
 
 LUA_FUNCTION(Lua_RoomTransitionGetVersusScreenSprite) {
-	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, lua::metatables::RoomTransitionMT);
+	RoomTransition* roomTransition = g_Game->GetRoomTransition();
 	ANM2* sprite = roomTransition->GetVersusScreenSprite();
 	lua::luabridge::UserdataPtr::push(L, sprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomTransitionStartBossIntro) {
-	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, lua::metatables::RoomTransitionMT);
-	int bossID1 = (int)luaL_checkinteger(L, 2);
-	int bossID2 = (int)luaL_optinteger(L, 3, 0);
+	RoomTransition* roomTransition = g_Game->GetRoomTransition();
+	int bossID1 = (int)luaL_checkinteger(L, 1);
+	int bossID2 = (int)luaL_optinteger(L, 2, 0);
 
 	roomTransition->StartBossIntro(bossID1, bossID2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_RoomTransitionGetTransitionMode) {
-	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, lua::metatables::RoomTransitionMT);
+	RoomTransition* roomTransition = g_Game->GetRoomTransition();
 	lua_pushinteger(L, roomTransition->GetTransitionMode());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomTransitionIsRenderingBossIntro) {
-	RoomTransition* roomTransition = *lua::GetUserdata<RoomTransition**>(L, 1, lua::metatables::RoomTransitionMT);
+	RoomTransition* roomTransition = g_Game->GetRoomTransition();
 	lua_pushboolean(L, roomTransition->IsRenderingBossIntro());
 	return 1;
 }
 
 static void RegistertRoomTransition(lua_State* L) {
-	lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomTransition", Lua_GetRoomTransition);
-
-	luaL_Reg functions[] = {
-		{ "GetVersusScreenSprite", Lua_RoomTransitionGetVersusScreenSprite },
-		{ "StartBossIntro", Lua_RoomTransitionStartBossIntro },
-		{ "GetTransitionMode", Lua_RoomTransitionGetTransitionMode },
-		{ "IsRenderingBossIntro", Lua_RoomTransitionIsRenderingBossIntro },
-		{ NULL, NULL }
-	};
-	lua::RegisterNewClass(L, lua::metatables::RoomTransitionMT, lua::metatables::RoomTransitionMT, functions);
+	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomTransition", Lua_GetRoomTransition);
+	lua_newtable(L);
+		lua::TableAssoc(L, "GetVersusScreenSprite", Lua_RoomTransitionGetVersusScreenSprite );
+		lua::TableAssoc(L, "StartBossIntro", Lua_RoomTransitionStartBossIntro );
+		lua::TableAssoc(L, "GetTransitionMode", Lua_RoomTransitionGetTransitionMode );
+		lua::TableAssoc(L, "IsRenderingBossIntro", Lua_RoomTransitionIsRenderingBossIntro );
+	//lua::RegisterNewClass(L, lua::metatables::RoomTransitionMT, lua::metatables::RoomTransitionMT, functions);
+	lua_setglobal(L, "RoomTransition");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

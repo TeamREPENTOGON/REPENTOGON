@@ -79,10 +79,6 @@ ___
 Returns the amount of planetariums the player has entered this run.
 
 ___
-### Get·Room·Transition () {: aria-label='Functions' }
-#### [RoomTransition](RoomTransition.md) GetRoomTransition ( ) {: .copyable aria-label='Functions' }
-
-___
 ### Get·Score·Sheet () {: aria-label='Functions' }
 #### [ScoreSheet](ScoreSheet.md) GetScoreSheet ( ) {: .copyable aria-label='Functions' }
 
