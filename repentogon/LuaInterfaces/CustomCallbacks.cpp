@@ -2508,7 +2508,7 @@ HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, fl
 	}
 }
 
-
+// MC_POST_LEVEL_LAYOUT_GENERATED
 HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4, unsigned int const& allowedShapes, unsigned int numDeadEnds, LevelGenerator_Room* startRoom) -> void) {
 	super(unk, unk2, unk3, unk4, allowedShapes, numDeadEnds, startRoom);
 

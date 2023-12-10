@@ -176,6 +176,11 @@ ___
 #### string GetString ( string category, string key ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
 ___
+### Level·Generator·Entry () {: aria-label='Functions' }
+#### [LevelGeneratorEntry](LevelGeneratorEntry.md) LevelGeneratorEntry ( ) {: .copyable aria-label='Functions' }
+Creates a new blank [LevelGeneratorEntry](LevelGeneratorEntry.md) object.
+
+___
 ### Play·Cutscene () {: aria-label='Functions' }
 #### int PlayCutscene ( int cutsceneid ) {: .copyable aria-label='Functions' }
 Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
@@ -226,11 +231,3 @@ ___
 ### World·To·Menu·Position () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
 Converts the World position from input to a pinned main menu position that varies depending on the enum selected. It's important to reconvert this every frame, in a similar fashion to WorldToRender, in order to properly render when menus are changed or the window is resized.
-
-## Variables
-
-### Level·Generator·Entry {: aria-label='Variables' }
-#### [LevelGeneratorEntry](LevelGeneratorEntry.md) LevelGeneratorEntry  {: .copyable aria-label='Variables' }
-Fetches a blank LevelGeneratorEntry from the game.
-
-___
