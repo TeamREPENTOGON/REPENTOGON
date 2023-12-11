@@ -2222,8 +2222,8 @@ HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCount
 	return originalCount + modCount;
 }
 
-//PRE_PLAYER_HAS_COLLECTIBLE (1093) [currently lags with enabled debug 12]
-HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTrueItems) -> bool) {
+//PRE_PLAYER_HAS_COLLECTIBLE (1093) [currently lags with enabled debug 12, unused]
+/*HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTrueItems) -> bool) {
 	const int callbackid = 1093;
 
 	if (CallbackState.test(callbackid - 1000)) {
@@ -2246,6 +2246,7 @@ HOOK_METHOD(Entity_Player, HasCollectible, (int CollectibleID, bool OnlyCountTru
 	}
 	return super(CollectibleID, OnlyCountTrueItems);
 }
+*/
 
 //PRE_MUSIC_PLAY_JINGLE (1094)
 HOOK_METHOD(Music, PlayJingle, (int musicId, int unusedInt, bool unusedBool) -> void) {

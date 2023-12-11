@@ -1046,6 +1046,8 @@ Alternatively accepts `false` to stop the rendering.
 ### MC_PRE_PLAYER_HAS_COLLECTIBLE
 
 Return a boolean to indicate whether a player should be counted as having an item or not.
+???+ bug
+    This callback doesn't work right now since it cause massive lag issues!
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
