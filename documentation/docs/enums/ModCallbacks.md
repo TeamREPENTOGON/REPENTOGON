@@ -627,23 +627,33 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1090 |MC_POST_SLOT_RENDER {: .copyable } | ([EntitySlot](../EntitySlot.md) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset)| [SlotVariant](SlotVariant.md) | void |
 
-### MC_PRE_GRID_INIT
-This is called when a grid is being placed into a room for the first time.
+### MC_PRE_GRID_ENTITY_SPAWN
+This is called when a [GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) is spawned outside of Room initialization.
 
-Accepts `false` to cancel grid initialization and immediately remove the residual grid from the room. **This will cause the game to call PRE_GRID_INIT again the next time the room is entered.**
+Accepts `false` to cancel spawning the grid, a table of `{Type, Variant, Vardata, SpawnSeed}` to modify it, or a [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) to override it entirely.
 
-Alternatively accepts an int to modify the init seed.
+???+ warning "Warning"
+    `Desc` will in most cases be `nil`. The exceptions to this are the poops spawned by Mole npcs, grids spawned by [TurnGold](https://wofsauge.github.io/IsaacDocs/rep/Room.html#void-turngold), or lua-made spawns called with the new `SpawnGridEntity(int GridIndex, GridEntityDesc Descriptor)` override.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1100 |MC_PRE_GRID_INIT {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) Grid, int Seed)| [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean or int |
+|1100 |MC_PRE_GRID_ENTITY_SPAWN {: .copyable } | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant, int VarData, int GridIdx, int SpawnSeed, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Desc | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | boolean, table, or GridEntityDesc |
 
-### MC_POST_GRID_INIT
+### MC_PRE_ROOM_GRID_ENTITY_SPAWN
+This is called during Room initiization when [GridEntities](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) from the layout are being spawned.
+
+Accepts `false` to cancel spawning the grid or a table of `{Type, Variant, Vardata, SpawnSeed}` to modify it.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1192 |MC_PRE_ROOM_GRID_ENTITY_SPAWN {: .copyable } | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant, int VarData, int GridIdx, int SpawnSeed | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | boolean or table |
+
+### MC_POST_GRID_ENTITY_SPAWN
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1101 |MC_POST_GRID_INIT {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) Grid, int Seed)| [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1101 |MC_POST_GRID_ENTITY_SPAWN {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) Grid | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_ROOM_TRIGGER_CLEAR
 Accepts no return parameters.
