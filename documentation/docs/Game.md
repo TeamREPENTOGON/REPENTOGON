@@ -49,6 +49,7 @@ ___
 ___
 ### Get·Current·Color·Modifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetCurrentColorModifier ( ) {: .copyable aria-label='Functions' }
+Gets a copy of the color correction introduced in Repentance. This stores the raw values currently being used (which can be affected by items such as Astral Projection) and not what the room is set to use (see [FXParams.ColorModifier](FXParams.md#colormodifier) for this).
 
 ___
 ### Get·Debug·Flags () {: aria-label='Functions' }
@@ -78,6 +79,7 @@ Returns the amount of planetariums the player has entered this run.
 ___
 ### Get·Target·Color·Modifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetTargetColorModifier ( ) {: .copyable aria-label='Functions' }
+If currently lerping between two [ColorModifier](ColorModifier.md) states, returns the target state. Is otherwise the same as [GetCurrentColorModifier](Game.md#getcurrentcolormodifier). 
 
 ___
 ### Is·Erased () {: aria-label='Functions' }
