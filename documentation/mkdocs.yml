@@ -40,9 +40,10 @@ markdown_extensions:
     alternate_style: true
 - attr_list
 nav:
-- Home: index.md
+- Home: ./index.md
+- Download: https://github.com/IsaacZHL/REPENTOGON/releases
 - Docs:
-  - Home: index.md
+  - Home: ./docs.md
   - "Last visited":
       - "": PLACEHOLDER.md
       - "": PLACEHOLDER.md
@@ -260,6 +261,7 @@ nav:
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
   - XMLData: XMLData.md
+- Blog: blog
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
@@ -275,6 +277,9 @@ nav:
 - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md
 plugins:
+- blog:
+    authors: false
+    blog_toc: true
 - search:
     separator: "[\\s\\-\\.\\_\\\xB7]+"
 - tags:
@@ -310,3 +315,27 @@ theme:
       icon: material/weather-sunny
       name: Switch to light mode
 use_directory_urls: false
+
+home_cover_image: img/repentoMEGA.gif
+home_tagline: A new era for Isaac modding begins now.
+home_description: |
+    REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported on other versions) that extends the Lua API with much-needed bug fixes, extra functionality, and performance enhancements. This is analogous to a "script extender" for other games like Skyrim.
+    <br>
+    <br>
+    REPENTOGON is the result of thousands of hours of combined work by over a dozen modders responsible for some of the most popular mods for Isaac. Frustrated with the shortcomings of the API, we've decided to take matters into our own hands.
+    <br>
+    <br>
+    Thanks to our changes to the API, you can expect mods to run faster out of the box, and our extra features empower mod developers to push the performance envelope for mods further than ever before. Furthermore, highly requested features that were previously impossible for a traditional mod, such as completion marks for modded characters on the main menu and Devil and Planetarium room chance manipulation, are all here. <strike>We even added 30+ rideable dragons!</strike>
+
+
+home_button1_name: Download
+home_button1_url: https://github.com/IsaacZHL/REPENTOGON/releases
+home_button1_theme: md-button md-button--primary
+
+home_button2_name: Docs
+home_button2_url: docs.html
+home_button2_theme: md-button 
+
+home_button3_name: Blog  
+home_button3_url: blog  
+home_button3_theme: md-button

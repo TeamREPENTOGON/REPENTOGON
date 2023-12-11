@@ -91,3 +91,10 @@ viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
     </div>
 </footer>
 {% endblock %}
+
+<!-- Elements added to "main.html" will be displayed on all pages -->
+
+{% block extrahead %}
+    <!-- main.html | Added "navigation.instant" support -->
+    <link rel="canonical" href=".">
+{% endblock %}
