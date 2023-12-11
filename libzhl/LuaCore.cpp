@@ -737,11 +737,13 @@ namespace lua {
 		const char* EntitySlotMT = "EntitySlot";
 		const char* FXParamsMT = "FXParams";
 		const char* GridDecorationMT = "GridEntityDecoration";
+		const char* GridFireMT = "GridEntityFire";
 		const char* GridGravityMT = "GridEntityGravity";
 		const char* GridLockMT = "GridEntityLock";
 		const char* GridStairsMT = "GridEntityStairs";
 		const char* GridStatueMT = "GridEntityStatue";
 		const char* GridTeleporterMT = "GridEntityTeleporter";
+		const char* GridTNT_MT = "GridEntityTNT";
 		const char* GridTrapDoorMT = "GridEntityTrapDoor";
 		const char* GridWebMT = "GridEntityWeb";
 		const char* HistoryMT = "History";

@@ -1,0 +1,18 @@
+struct GridEntity_Fire : public GridEntity {
+	__vtable {
+		skip; // Free
+		skip; // PostInit
+		
+		"558bec83e4f883ec6c53":
+        void Update();
+		
+		skip; // Render
+		skip; // Hurt
+		skip; // Destroy
+		skip; // GetWaterClipInfo
+		skip; // CanTakeDamageFromTearEffects
+		skip; // BeginBatches
+		skip; // EndBatches
+		skip; // InitSubclass
+    };
+} : 0x154;
