@@ -152,7 +152,7 @@ ___
 ___
 ### Update·Color·Modifier () {: aria-label='Functions' }
 #### void UpdateColorModifier ( boolean Process = true, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
-Updates the room's color correction with the copy of [ColorModifier](ColorModifier.md) stored in FXParams](FXParams.md).
+Updates the room's color correction with the copy of [ColorModifier](ColorModifier.md) stored in [FXParams](FXParams.md).
 `Process` runs the color correction through some additional modifications for lava and the abandoned mineshaft sequence.
 
 ___
