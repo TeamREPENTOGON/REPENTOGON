@@ -3449,7 +3449,7 @@ bool DoGridPreRenderCallback(GridEntity* grid, Vector& offset, const char* mt, i
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -3477,7 +3477,7 @@ bool DoGridPreRenderCallback(GridEntity* grid, Vector& offset, lua::Metatables m
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -3485,7 +3485,7 @@ bool DoGridPreRenderCallback(GridEntity* grid, Vector& offset, lua::Metatables m
 	return true;
 }
 //PRE/POST_GRID_ENTITY_[x]_RENDER(1432-1441)
-HOOK_METHOD(GridEntity, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity, Render, (Vector& offset) -> void) {
 	int preCallbackId, postCallbackId;
 	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
 	if (gridRenderCallbacks[gridType].id == NULL)
@@ -3496,7 +3496,7 @@ HOOK_METHOD(GridEntity, Render, (Vector* offset) -> void) {
 
 	if (gridType == GRID_SPIKES || gridType == GRID_SPIKES_ONOFF) {
 
-		if (!DoGridPreRenderCallback(this, *offset, lua::Metatables::GRID_ENTITY_SPIKES, preCallbackId))
+		if (!DoGridPreRenderCallback(this, offset, lua::Metatables::GRID_ENTITY_SPIKES, preCallbackId))
 			return;
 
 		super(offset);
@@ -3505,7 +3505,7 @@ HOOK_METHOD(GridEntity, Render, (Vector* offset) -> void) {
 	}
 	else
 	{
-		if (!DoGridPreRenderCallback(this, *offset, gridRenderCallbacks[gridType].cmt, preCallbackId))
+		if (!DoGridPreRenderCallback(this, offset, gridRenderCallbacks[gridType].cmt, preCallbackId))
 			return;
 
 		super(offset);
@@ -3515,11 +3515,11 @@ HOOK_METHOD(GridEntity, Render, (Vector* offset) -> void) {
 }
 
 //PRE/POST_GRID_ENTITY_DECORATION_RENDER (1444,1445)
-HOOK_METHOD(GridEntity_Decoration, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_Decoration, Render, (Vector& offset) -> void) {
 	const int preCallbackId = 1444;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, lua::metatables::GridDecorationMT, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, lua::metatables::GridDecorationMT, preCallbackId))
 		return;
 
 	super(offset);
@@ -3528,11 +3528,11 @@ HOOK_METHOD(GridEntity_Decoration, Render, (Vector* offset) -> void) {
 }
 
 //PRE/POST_GRID_ENTITY_DOOR_RENDER (1446,1447)
-HOOK_METHOD(GridEntity_Door, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_Door, Render, (Vector& offset) -> void) {
 	const int preCallbackId = 1446;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, lua::Metatables::GRID_ENTITY_DOOR, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, lua::Metatables::GRID_ENTITY_DOOR, preCallbackId))
 		return;
 
 	super(offset);
@@ -3541,11 +3541,11 @@ HOOK_METHOD(GridEntity_Door, Render, (Vector* offset) -> void) {
 }
 
 //PRE/POST_GRID_ENTITY_FIRE_RENDER (1448,1449)
-HOOK_METHOD(GridEntity_Fire, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_Fire, Render, (Vector& offset) -> void) {
 	const int preCallbackId = 1448;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, lua::metatables::GridFireMT, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, lua::metatables::GridFireMT, preCallbackId))
 		return;
 
 	super(offset);
@@ -3555,13 +3555,13 @@ HOOK_METHOD(GridEntity_Fire, Render, (Vector* offset) -> void) {
 
 //PRE/POST_GRID_ENTITY_LOCK_RENDER (1450,1451)
 //PRE/POST_GRID_ENTITY_TELEPRTER_RENDER (1452,1453)
-HOOK_METHOD(GridEntity_Lock, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_Lock, Render, (Vector& offset) -> void) {
 	bool isTeleporter = this->GetDesc()->_type = 23;
 	const char* mt = isTeleporter ? lua::metatables::GridTeleporterMT : lua::metatables::GridLockMT;
 	int preCallbackId = isTeleporter ? 1450 : 1452;
 	int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, mt, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, mt, preCallbackId))
 		return;
 
 	super(offset);
@@ -3570,11 +3570,11 @@ HOOK_METHOD(GridEntity_Lock, Render, (Vector* offset) -> void) {
 }
 
 //PRE/POST_GRID_ENTITY_PIT_RENDER (1454,1455)
-HOOK_METHOD(GridEntity_Pit, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_Pit, Render, (Vector& offset) -> void) {
 	const int preCallbackId = 1454;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, lua::Metatables::GRID_ENTITY_PIT, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, lua::Metatables::GRID_ENTITY_PIT, preCallbackId))
 		return;
 
 	super(offset);
@@ -3583,11 +3583,11 @@ HOOK_METHOD(GridEntity_Pit, Render, (Vector* offset) -> void) {
 }
 
 //PRE/POST_GRID_ENTITY_POOP_RENDER (1456,1457)
-HOOK_METHOD(GridEntity_Poop, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_Poop, Render, (Vector& offset) -> void) {
 	const int preCallbackId = 1456;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, lua::Metatables::GRID_ENTITY_POOP, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, lua::Metatables::GRID_ENTITY_POOP, preCallbackId))
 		return;
 
 	super(offset);
@@ -3596,11 +3596,11 @@ HOOK_METHOD(GridEntity_Poop, Render, (Vector* offset) -> void) {
 }
 
 //PRE/POST_GRID_ENTITY_ROCK_RENDER (1458,1459)
-HOOK_METHOD(GridEntity_Rock, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_Rock, Render, (Vector& offset) -> void) {
 	const int preCallbackId = 1458;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, lua::Metatables::GRID_ENTITY_ROCK, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, lua::Metatables::GRID_ENTITY_ROCK, preCallbackId))
 		return;
 
 	super(offset);
@@ -3609,11 +3609,11 @@ HOOK_METHOD(GridEntity_Rock, Render, (Vector* offset) -> void) {
 }
 
 //PRE/POST_GRID_ENTITY_PRESSUREPLATE_RENDER (1460,1461)
-HOOK_METHOD(GridEntity_PressurePlate, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_PressurePlate, Render, (Vector& offset) -> void) {
 	const int preCallbackId = 1460;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE, preCallbackId))
 		return;
 
 	super(offset);
@@ -3622,11 +3622,11 @@ HOOK_METHOD(GridEntity_PressurePlate, Render, (Vector* offset) -> void) {
 }
 
 //PRE/POST_GRID_ENTITY_WALL_RENDER (1462,1463)
-HOOK_METHOD(GridEntity_Wall, Render, (Vector* offset) -> void) {
+HOOK_METHOD(GridEntity_Wall, Render, (Vector& offset) -> void) {
 	const int preCallbackId = 1462;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (!DoGridPreRenderCallback(this, *offset, lua::metatables::GridWallMT, preCallbackId))
+	if (!DoGridPreRenderCallback(this, offset, lua::metatables::GridWallMT, preCallbackId))
 		return;
 
 	super(offset);

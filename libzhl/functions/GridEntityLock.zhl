@@ -8,7 +8,7 @@ struct GridEntity_Lock : public GridEntity {
 		
 		override
 		"558bec83e4f883ec145356578d4424??8bf1":
-        void Render(const Vector& Offset);
+        void Render(Vector& Offset);
 		
 		skip; // Hurt
 		skip; // Destroy

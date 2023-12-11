@@ -668,7 +668,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetTaintedCounterpart)
 	}
 	else if (!player->_bSkinParentName.empty()) {
 		// Modded Tainted
-		for (int i = 41; i < g_Manager->GetEntityConfig()->GetPlayers()->size(); i++) {
+		for (unsigned int i = 41; i < g_Manager->GetEntityConfig()->GetPlayers()->size(); i++) {
 			EntityConfig_Player* otherPlayer = g_Manager->GetEntityConfig()->GetPlayer(i);
 			if (otherPlayer->_id != player->_id && otherPlayer->_name == player->_bSkinParentName && otherPlayer->_bSkinParentName.empty()) {
 				counterpartID = otherPlayer->_id;
@@ -683,7 +683,7 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetTaintedCounterpart)
 		counterpartID = player->_moddedTaintedPlayerID;
 	}
 
-	if (counterpartID < 0 || counterpartID >= g_Manager->GetEntityConfig()->GetPlayers()->size()) {
+	if (counterpartID < 0 || (unsigned int)counterpartID >= g_Manager->GetEntityConfig()->GetPlayers()->size()) {
 		lua_pushnil(L);
 	}
 	else {

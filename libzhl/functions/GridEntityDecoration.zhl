@@ -8,7 +8,7 @@ struct GridEntity_Decoration : public GridEntity {
 		
 		override
 		"558bec83e4f883ec3c56":
-        void Render(const Vector& Offset);
+        void Render(Vector& Offset);
 		
 		skip; // Hurt
 		skip; // Destroy
