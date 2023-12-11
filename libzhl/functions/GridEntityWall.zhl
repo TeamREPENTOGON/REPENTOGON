@@ -1,0 +1,21 @@
+struct GridEntity_Wall : public GridEntity {
+	__vtable {
+		skip; // Free
+		skip; // PostInit
+		
+		"558bec83e4f883ec308379??00":
+        void Update();
+		
+		override
+		"558bec83e4f8a1????????83ec3c":
+		void Render(const Vector& Offset);
+		
+		skip; // Hurt
+		skip; // Destroy
+		skip; // GetWaterClipInfo
+		skip; // CanTakeDamageFromTearEffects
+		skip; // BeginBatches
+		skip; // EndBatches
+		skip; // InitSubclass
+    };
+} : 0x154;

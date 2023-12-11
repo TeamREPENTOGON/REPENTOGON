@@ -195,6 +195,7 @@ namespace lua {
         extern LIBZHL_API const char* GridTeleporterMT;
         extern LIBZHL_API const char* GridTNT_MT;
         extern LIBZHL_API const char* GridTrapDoorMT;
+        extern LIBZHL_API const char* GridWallMT;
         extern LIBZHL_API const char* GridWebMT;
         extern LIBZHL_API const char* HistoryMT;
         extern LIBZHL_API const char* HistoryItemMT;

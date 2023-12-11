@@ -745,6 +745,7 @@ namespace lua {
 		const char* GridTeleporterMT = "GridEntityTeleporter";
 		const char* GridTNT_MT = "GridEntityTNT";
 		const char* GridTrapDoorMT = "GridEntityTrapDoor";
+		const char* GridWallMT = "GridEntityWall";
 		const char* GridWebMT = "GridEntityWeb";
 		const char* HistoryMT = "History";
 		const char* HistoryItemMT = "HistoryItem";
