@@ -9,7 +9,6 @@ tags:
 ## Modified Variables
 ___
 ### Homing·Type {: aria-label='Modified Variables' }
-[ ](#){: .tooltip .badge }
 #### int HomingType  {: .copyable aria-label='Modified Variables' }
 Same as default, but now returns a proper integer value instead of userdata.
 

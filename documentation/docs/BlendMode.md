@@ -27,22 +27,18 @@ Ranges from 0-2. Invalid modes are ignored. The game generally uses `1`, but use
 ___
 ## Variables
 ### Flag1 {: aria-label='Variables' }
-[ ](#){: .tooltip .badge }
 #### int Flag1 {: .copyable aria-label='Variables'}
 
 ___
 ### Flag2 {: aria-label='Variables' }
-[ ](#){: .tooltip .badge }
 #### int Flag2 {: .copyable aria-label='Variables'}
 
 ___
 ### Flag3 {: aria-label='Variables' }
-[ ](#){: .tooltip .badge }
 #### int Flag3 {: .copyable aria-label='Variables'}
 
 ___
 ### Flag4 {: aria-label='Variables' }
-[ ](#){: .tooltip .badge }
 #### int Flag4 {: .copyable aria-label='Variables'}
 
 ___

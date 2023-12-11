@@ -39,7 +39,6 @@ ___
 ## Modified Variables
 ___
 ### Baby·Skin {: aria-label='Modified Variables' }
-[ ](#){: .tooltip .badge }
 #### [BabySubType](https://wofsauge.github.io/IsaacDocs/rep/enums/BabySubType.html) BabySkin  {: .copyable aria-label='Modified Variables' }
 Same as default, but now returns a proper integer value instead of userdata.
 
