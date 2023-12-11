@@ -1529,8 +1529,11 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	}
 }
 
+bool noInfLoop = false;
+
 //PRE_GRID_ENTITY_SPAWN (id: 1100)
 HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int variant, unsigned int seed, int vardata) -> bool) {
+	noInfLoop = false;
 	const int callbackid = 1100;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -1545,10 +1548,16 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 			.push(vardata)
 			.push(idx)
 			.push(seed)
+			.pushnil() // no GridEntityDesc
 			.call(1);
 
 		if (!result) {
-			if (lua_istable(L, -1)) {
+			if (lua_isuserdata(L, -1)) {
+				GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				noInfLoop = true;
+				return g_Game->_room->SpawnGridEntityDesc(idx, desc);
+			}
+			else if (lua_istable(L, -1)) {
 				type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
 				variant = (unsigned int)lua::callbacks::ToInteger(L, 2);
 				vardata = lua::callbacks::ToInteger(L, 3);
@@ -1563,51 +1572,58 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 			}
 			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 			{
-				return nullptr;
+				return false;
 			}
 		}
 	}
 	return super(idx, type, variant, seed, vardata);
 }
 
-//PRE_GRID_ENTITY_DESC_SPAWN (id: 1193)
+//also PRE_GRID_ENTITY_SPAWN (id: 1100), but for the override
 HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) {
-	const int callbackid = 1193;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	const int callbackid = 1100;
+	if (!noInfLoop) {
+		if (CallbackState.test(callbackid - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(desc->_type)
-			.push(desc, lua::Metatables::GRID_ENTITY_DESC)
-			.push((int)idx)
-			.call(1);
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+				.push(desc->_type)
+				.push(desc->_type)
+				.push(desc->_variant)
+				.push(desc->_varData)
+				.push(idx)
+				.push(desc->_spawnSeed)
+				.push(desc, lua::Metatables::GRID_ENTITY_DESC) // yes GridEntityDesc
+				.call(1);
 
-		if (!result) {
-			if (lua_isuserdata(L, -1)) {
-				desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
-			}
-			else if (lua_isinteger(L, -1)) {
-				idx = (int)lua_tointeger(L, -1);
-				if (idx < 0 || idx > 447) {
+			if (!result) {
+				if (lua_isuserdata(L, -1)) {
+					desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+				}
+				else if (lua_istable(L, -1)) {
+					desc->_type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
+					desc->_variant = (unsigned int)lua::callbacks::ToInteger(L, 2);
+					desc->_varData = lua::callbacks::ToInteger(L, 3);
+					idx = (unsigned int)lua::callbacks::ToInteger(L, 4);
+					desc->_spawnSeed = (unsigned int)lua::callbacks::ToInteger(L, 5);
+				}
+				else if (lua_isinteger(L, -1)) {
+					idx = (int)lua_tointeger(L, -1);
+					if (idx < 0 || idx > 447) {
+						return false;
+					}
+				}
+				else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
+				{
 					return false;
 				}
 			}
-			else if (lua_istable(L, -1)) {
-				idx = (unsigned int)lua::callbacks::ToInteger(L, 1);
-				lua_pushinteger(L, 2);
-				lua_gettable(L, -2);
-				desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
-				lua_pop(L, 1);
-			}
-			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
-			{
-				return true;
-			}
 		}
 	}
+	noInfLoop = false;
 	return super(idx, desc);
 }
 
