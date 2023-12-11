@@ -6,7 +6,10 @@ struct GridEntity_Teleporter : public GridEntity {
 		"558bec83e4f883ec1453568bf1578b46":
         void Update();
 		
-		skip; // Render
+		override
+		"558bec83e4f883ec145356578d4424??8bf1":
+        void Render(const Vector& Offset);
+		
 		skip; // Hurt
 		skip; // Destroy
 		skip; // GetWaterClipInfo

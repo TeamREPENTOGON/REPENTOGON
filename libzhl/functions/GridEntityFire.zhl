@@ -6,7 +6,10 @@ struct GridEntity_Fire : public GridEntity {
 		"558bec83e4f883ec6c53":
         void Update();
 		
-		skip; // Render
+		override
+		"558bec83e4f883ec145356578d4424??8bf9":
+        void Render(const Vector& Offset);
+		
 		skip; // Hurt
 		skip; // Destroy
 		skip; // GetWaterClipInfo

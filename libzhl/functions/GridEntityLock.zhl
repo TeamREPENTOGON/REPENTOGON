@@ -6,7 +6,10 @@ struct GridEntity_Lock : public GridEntity {
 		"558bec83e4f883ec0c538bd95657895c24":
         void Update();
 		
-		skip; // Render
+		override
+		"558bec83e4f883ec145356578d4424??8bf1":
+        void Render(const Vector& Offset);
+		
 		skip; // Hurt
 		skip; // Destroy
 		skip; // GetWaterClipInfo

@@ -26,12 +26,6 @@ static cleanup void GridEntity_Rock::RegisterRockDestroyed(int GridEntityType<ec
 __thiscall void GridEntity_Rock::update_collision();
 
 struct GridEntity_Rock : public GridEntity { 
-    "558bec83e4f881ecd40000005356578d4424208bd950e8????????8b5508":
-    void Render(const Vector& offset);
-
-{{
-
-}}
 	__vtable {
 		skip; // Free
 		skip; // PostInit
@@ -39,7 +33,10 @@ struct GridEntity_Rock : public GridEntity {
 		"558bec6aff68????????64a1????????5081ec88000000a1????????33c58945??5657508d45??64a3????????8bf9897d??8b57":
 		void Update();
 		
-		skip; // Render
+		override
+		"558bec83e4f881ecd40000005356578d4424208bd950e8????????8b5508":
+		void Render(const Vector& offset);
+	
 		skip; // Hurt
 		
 		override

@@ -27,8 +27,8 @@ struct Entity_Slot : public Entity { {{
 		
         override
         "558bec6aff68????????64a1000000005081ecc0000000a1????????33c58945f053":
-		
         void Update();
+		
 		skip; // Interpolate
 		skip; // Render
 		skip; // RenderShadowLayer

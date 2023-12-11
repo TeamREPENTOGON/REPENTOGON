@@ -6,7 +6,10 @@ struct GridEntity_Pit : public GridEntity {
 		"558bec83e4f881ec84000000538bd9":
         void Update();
 		
-		skip; // Render
+		override
+		"558bec83e4f883ec445356578d4424":
+        void Render(const Vector& Offset);
+		
 		skip; // Hurt
 		skip; // Destroy
 		skip; // GetWaterClipInfo

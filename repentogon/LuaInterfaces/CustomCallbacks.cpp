@@ -92,34 +92,9 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 	ProcessPostAddCollectible(type, charge, firsttime, slot, vardata, this);
 }
 
-//GRID_ROCK_UPDATE (id: 1010)
-void ProcessGridRockUpdate(GridEntity_Rock* gridRock, int type) {
-	const int callbackid = 1010;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+// 1010 used to have GRID_ROCK_UPDATE, now free
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(callbackid)
-			.push(type)
-			.push(gridRock, lua::Metatables::GRID_ENTITY_ROCK)
-			.push(type)
-			.call(1); // Sylmir note: original version said there was 1 result on the stack
-	}
-}
-
-HOOK_METHOD(GridEntity_Rock, Update, () -> void) {
-	GridEntity_Rock* rockGridEnt = (GridEntity_Rock*)this;
-
-	int type = this->GetDesc()->_type;
-	ProcessGridRockUpdate(this, type);
-	super();
-}
-
-//GRID_ROCK_UPDATE callback end
-
-//_UPDATE (id: 1020)
+//HUD_UPDATE (id: 1020)
 
 HOOK_METHOD(HUD, Update, () -> void) {
 	const int callbackid = 1020;

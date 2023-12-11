@@ -6,7 +6,10 @@ struct GridEntity_Decoration : public GridEntity {
 		"558bec6aff68????????64a1????????5083ec44a1????????33c58945??535657508d45??64a3????????8bd9":
         void Update();
 		
-		skip; // Render
+		override
+		"558bec83e4f883ec3c56":
+        void Render(const Vector& Offset);
+		
 		skip; // Hurt
 		skip; // Destroy
 		skip; // GetWaterClipInfo

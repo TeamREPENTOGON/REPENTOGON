@@ -6,7 +6,10 @@ struct GridEntity_PressurePlate : public GridEntity {
 		"558bec83e4f851568bf180be????????0074":
         void Update();
 		
-		skip; // Render
+		override
+		"558bec83e4f883ec74a1????????33c4894424??a1":
+        void Render(const Vector& Offset);
+		
 		skip; // Hurt
 		skip; // Destroy
 		skip; // GetWaterClipInfo
