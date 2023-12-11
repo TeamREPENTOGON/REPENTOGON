@@ -35,7 +35,7 @@ struct GridEntity_Rock : public GridEntity {
 		
 		override
 		"558bec83e4f881ecd40000005356578d4424208bd950e8????????8b5508":
-		void Render(const Vector& offset);
+		void Render(Vector& offset);
 	
 		skip; // Hurt
 		

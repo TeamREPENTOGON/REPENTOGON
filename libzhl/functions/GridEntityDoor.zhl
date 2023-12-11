@@ -10,7 +10,7 @@ struct GridEntity_Door depends (ANM2) : public GridEntity {
 		
 		override
 		"558bec83e4f883ec3c0f57c0":
-        void Render(const Vector& Offset);
+        void Render(Vector& Offset);
 		
 		skip; // Hurt
 		skip; // Destroy
