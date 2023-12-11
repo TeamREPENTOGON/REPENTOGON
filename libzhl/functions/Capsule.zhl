@@ -1,10 +1,14 @@
 "558bec83e4f883ec58f30f103d":
-static cleanup bool Capsule::Collide(Capsule* Cap1<ecx>, Capsule* Cap2<edx>, Vector* vec);
+static cleanup bool Capsule::Collide(Capsule* Cap1<ecx>, Capsule* Cap2<edx>, Vector* retHitLocation);
 
 struct Capsule depends (Vector) { {{
-	inline Vector* GetVec1() { return &_vec1; }
+	inline Vector* GetPosition() { return &_position; }
 	inline Vector* GetVec2() { return &_vec2; }
 }} 
-	Vector _vec1 : 0x0;
+	Vector _position : 0x0;
 	Vector _vec2 : 0x8;
+	Vector _vec3 : 0x10;
+	Vector _direction : 0x18;
+	float _unkFloat1 : 0x20;
+	float _unkFloat2 : 0x24;
 } : 0x28;

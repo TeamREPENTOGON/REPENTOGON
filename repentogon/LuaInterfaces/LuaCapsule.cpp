@@ -23,11 +23,53 @@ LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
 	return 1;
 };
 
-LUA_FUNCTION(Lua_CapsuleGetVec1)
+LUA_FUNCTION(Lua_CapsuleGetPosition)
 {
 	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	*toLua = *capsule->GetVec1();
+	*toLua = *capsule->GetPosition();
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_CapsuleGetVec2)
+{
+	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = capsule->_vec2;
+
+	return 1;
+}
+LUA_FUNCTION(Lua_CapsuleGetVec3)
+{
+	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = capsule->_vec3;
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_CapsuleGetDirection)
+{
+	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = capsule->_direction;
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_CapsuleGetUnkF1)
+{
+	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	lua_pushnumber(L, capsule->_unkFloat1);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_CapsuleGetUnkF2)
+{
+	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	lua_pushnumber(L, capsule->_unkFloat2);
 
 	return 1;
 }
@@ -46,7 +88,12 @@ static void RegisterCapsule(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::ENTITY, "GetCollisionCapsule", Lua_EntityGetCollisionCapsule);
 
 	luaL_Reg functions[] = {
-		{ "GetVec1", Lua_CapsuleGetVec1 },
+		{ "GetPosition", Lua_CapsuleGetPosition },
+		{ "GetVec2", Lua_CapsuleGetVec2 },
+		{ "GetVec3", Lua_CapsuleGetVec3 },
+		{ "GetDirection", Lua_CapsuleGetDirection },
+		{ "GetF1", Lua_CapsuleGetUnkF1 },
+		{ "GetF2", Lua_CapsuleGetUnkF2 },
 		{ "Collide", Lua_CapsuleCollide },
 		{ NULL, NULL }
 	};
