@@ -13,18 +13,13 @@ tags:
         ```lua
         local fxparams = Game():GetRoom():GetFXParams()
         ```
-        
-## Functions
 
-### Get·Color·Correction () {: aria-label='Functions' }
-#### [ColorModifier](ColorModifier.md) GetColorModifier ( ) {: .copyable aria-label='Functions' }
-Gets a modifiable copy of the color correction introduced in Repentance.
-
-___
 ## Variables
 ### Color·Modifier {: aria-label='Variables' }
 #### [ColorModifier](ColorModifier.md) ColorModifier {: .copyable aria-label='Variables'}
+Gets a modifiable copy of the color correction introduced in Repentance. This stores the values used in `fxlayers.xml` and not the raw values (see [GetCurrentColorModifier](Game.md#getcurrentcolormodifier) for this).
 
+Changes made here are _not_ automatically applied, use [UpdateColorModifier](Room.md#updatecolormodifier) to do this.
 ___
 ### Light·Color {: aria-label='Variables' }
 #### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) LightColor {: .copyable aria-label='Variables'}
