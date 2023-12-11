@@ -147,10 +147,12 @@ The game typically uses `1` or `-1` for its values depending on current strength
 `Vector(0, 0)` will remove the current.
 ___
 ### Try·Get·Shop·Discount () {: aria-label='Functions' }
-#### int TryGetShopDiscount ( int shopItemIdx, int price ) {: .copyable aria-label='Functions' }
+#### int TryGetShopDiscount ( int ShopItemIdx, int Price ) {: .copyable aria-label='Functions' }
 
 ___
 ### Update·Color·Modifier () {: aria-label='Functions' }
-#### void UpdateColorModifier ( boolean process, boolean lerp, float rate = 0.015 ) {: .copyable aria-label='Functions' }
+#### void UpdateColorModifier ( boolean Process = true, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
+Updates the room's color correction with the copy of [ColorModifier](ColorModifier.md) stored in FXParams](FXParams.md).
+`Process` runs the color correction through some additional modifications for lava and the abandoned mineshaft sequence.
 
 ___
