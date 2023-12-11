@@ -53,7 +53,7 @@ jobs:
             - name: Install PIP packages
               run: |
                    pip install mkdocs
-                   pip install mkdocs-material==8.5.11
+                   pip install mkdocs-material
                    pip install mkdocs-git-revision-date-plugin
                    pip install mkdocs-git-revision-date-localized-plugin
             
