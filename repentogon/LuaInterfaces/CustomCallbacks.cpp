@@ -1561,14 +1561,7 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 				type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
 				variant = (unsigned int)lua::callbacks::ToInteger(L, 2);
 				vardata = lua::callbacks::ToInteger(L, 3);
-				idx = (unsigned int)lua::callbacks::ToInteger(L, 4);
-				seed = (unsigned int)lua::callbacks::ToInteger(L, 5);
-			}
-			else if (lua_isinteger(L, -1)) {
-				idx = (int)lua_tointeger(L, -1);
-				if (idx < 0 || idx > 447) {
-					return false;
-				}
+				seed = (unsigned int)lua::callbacks::ToInteger(L, 4);
 			}
 			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 			{
@@ -1607,14 +1600,7 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 					desc->_type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
 					desc->_variant = (unsigned int)lua::callbacks::ToInteger(L, 2);
 					desc->_varData = lua::callbacks::ToInteger(L, 3);
-					idx = (unsigned int)lua::callbacks::ToInteger(L, 4);
-					desc->_spawnSeed = (unsigned int)lua::callbacks::ToInteger(L, 5);
-				}
-				else if (lua_isinteger(L, -1)) {
-					idx = (int)lua_tointeger(L, -1);
-					if (idx < 0 || idx > 447) {
-						return false;
-					}
+					desc->_spawnSeed = (unsigned int)lua::callbacks::ToInteger(L, 4);
 				}
 				else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 				{
