@@ -1,11 +1,9 @@
-struct GridEntity_Door depends (ANM2) : public GridEntity {
-    ANM2 _extraSprite : 0x164;
-	
+struct GridEntity_Stairs : public GridEntity {
 	__vtable {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec83e4f883ec6c53":
+		"558bec6aff68????????64a1????????5083ec28535657a1????????33c5508d45??64a3????????8bf98b0d":
         void Update();
 		
 		skip; // Render
@@ -17,4 +15,4 @@ struct GridEntity_Door depends (ANM2) : public GridEntity {
 		skip; // EndBatches
 		skip; // InitSubclass
     };
-} : 0x2ec;
+} : 0x154;
