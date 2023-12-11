@@ -2399,7 +2399,7 @@ HOOK_METHOD(KAGE_Memory_MemoryPoolDescriptor, Allocate, (uint32_t n) -> void*) {
 	return result;
 }
 
-HOOK_METHOD(GridEntity_Rock, Render, (Vector const& offset) -> void) {
+HOOK_METHOD(GridEntity_Rock, Render, (Vector& offset) -> void) {
 	LuaRender::ScopedContext<GridEntity_Rock*> context(this);
 	super(offset);
 }
