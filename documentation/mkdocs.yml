@@ -16,6 +16,44 @@ extra_javascript:
 - js/tablesort.number.min.js
 - js/customJS.js
 - js/jquery.mark.min.js
+home_button1_icon: ''
+home_button1_name: Download
+home_button1_theme: md-button md-button--primary
+home_button1_url: https://github.com/IsaacZHL/REPENTOGON/releases
+home_button2_name: Docs
+home_button2_theme: md-button
+home_button2_url: docs.html
+home_button3_name: Blog
+home_button3_theme: md-button
+home_button3_url: blog
+home_cover_image: img/repentoMEGA.gif
+home_description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The
+  Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported
+  on other versions) that extends the Lua API with much-needed bug fixes, extra functionality,
+  and performance enhancements. This is analogous to a "script extender" for other
+  games like Skyrim.
+
+  <br>
+
+  <br>
+
+  REPENTOGON is the result of thousands of hours of combined work by over a dozen
+  modders responsible for some of the most popular mods for Isaac. Frustrated with
+  the shortcomings of the API, we''ve decided to take matters into our own hands.
+
+  <br>
+
+  <br>
+
+  Thanks to our changes to the API, you can expect mods to run faster out of the box,
+  and our extra features empower mod developers to push the performance envelope for
+  mods further than ever before. Furthermore, highly requested features that were
+  previously impossible for a traditional mod, such as completion marks for modded
+  characters on the main menu and Devil and Planetarium room chance manipulation,
+  are all here. <strike>We even added 30+ rideable dragons!</strike>
+
+  '
+home_tagline: A new era for Isaac modding begins now.
 markdown_extensions:
 - toc:
     permalink: "\u2693\uFE0E"
@@ -44,31 +82,38 @@ nav:
 - Download: https://github.com/IsaacZHL/REPENTOGON/releases
 - Docs:
   - Home: ./docs.md
-  - "Last visited":
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-      - "": PLACEHOLDER.md
-  - "Frequently used":
-      - "Isaac.": Isaac.md
-      - "Entity": Entity.md
-      - "-- EntityPlayer": EntityPlayer.md
-      - "-- EntityNPC": EntityNPC.md
-      - "-- EntityEffect": EntityEffect.md
-      - "Game():": Game.md
-      - "Room": Room.md
-      - "Level": Level.md
-      - "ModCallbacks": enums/ModCallbacks.md
+  - Last visited:
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+    - ? ''
+      : PLACEHOLDER.md
+  - Frequently used:
+    - Isaac.: Isaac.md
+    - Entity: Entity.md
+    - -- EntityPlayer: EntityPlayer.md
+    - -- EntityNPC: EntityNPC.md
+    - -- EntityEffect: EntityEffect.md
+    - 'Game():': Game.md
+    - Room: Room.md
+    - Level: Level.md
+    - ModCallbacks: enums/ModCallbacks.md
   - Enums:
-    - Renderer:
-      - GLSLType: enums/GLSLType.md
-      - ShaderType: enums/ShaderType.md
     - Achievement: enums/Achievement.md
     - AnimRenderFlags: enums/AnimRenderFlags.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
@@ -289,7 +334,6 @@ repo_url: https://github.com/IsaacZHL/REPENTOGON
 site_name: 'BoI: REPENTOGON'
 site_url: https://repentogon.com
 theme:
-  logo: img/favicon.ico
   custom_dir: overrides
   favicon: img/favicon.ico
   features:
@@ -301,6 +345,7 @@ theme:
   - navigation.top
   icon:
     repo: fontawesome/brands/github
+  logo: img/favicon.ico
   name: material
   palette:
   - media: '(prefers-color-scheme: light)'
@@ -316,28 +361,3 @@ theme:
       icon: material/weather-sunny
       name: Switch to light mode
 use_directory_urls: false
-
-home_cover_image: img/repentoMEGA.gif
-home_tagline: A new era for Isaac modding begins now.
-home_description: |
-    REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported on other versions) that extends the Lua API with much-needed bug fixes, extra functionality, and performance enhancements. This is analogous to a "script extender" for other games like Skyrim.
-    <br>
-    <br>
-    REPENTOGON is the result of thousands of hours of combined work by over a dozen modders responsible for some of the most popular mods for Isaac. Frustrated with the shortcomings of the API, we've decided to take matters into our own hands.
-    <br>
-    <br>
-    Thanks to our changes to the API, you can expect mods to run faster out of the box, and our extra features empower mod developers to push the performance envelope for mods further than ever before. Furthermore, highly requested features that were previously impossible for a traditional mod, such as completion marks for modded characters on the main menu and Devil and Planetarium room chance manipulation, are all here. <strike>We even added 30+ rideable dragons!</strike>
-
-
-home_button1_name: Download
-home_button1_icon: ""
-home_button1_url: https://github.com/IsaacZHL/REPENTOGON/releases
-home_button1_theme: md-button md-button--primary
-
-home_button2_name: Docs
-home_button2_url: docs.html
-home_button2_theme: md-button 
-
-home_button3_name: Blog
-home_button3_url: blog  
-home_button3_theme: md-button

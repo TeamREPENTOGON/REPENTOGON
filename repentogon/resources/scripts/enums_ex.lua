@@ -157,64 +157,64 @@ ModCallbacks.MC_POST_FAMILIAR_FIRE_BRIMSTONE = 1261
 ModCallbacks.MC_POST_FAMILIAR_FIRE_TECH_LASER = 1262
 ModCallbacks.MC_IS_PERSISTENT_ROOM_ENTITY = 1263
 
-ModCallbacks.PRE_GRID_ENTITY_DECORATION_UPDATE = 1400
-ModCallbacks.POST_GRID_ENTITY_DECORATION_UPDATE = 1401
-ModCallbacks.PRE_GRID_ENTITY_DOOR_UPDATE = 1402
-ModCallbacks.POST_GRID_ENTITY_DOOR_UPDATE = 1403
-ModCallbacks.PRE_GRID_ENTITY_FIRE_UPDATE = 1404
-ModCallbacks.POST_GRID_ENTITY_FIRE_UPDATE = 1405
-ModCallbacks.PRE_GRID_ENTITY_GRAVITY_UPDATE = 1406
-ModCallbacks.POST_GRID_ENTITY_GRAVITY_UPDATE = 1407
-ModCallbacks.PRE_GRID_ENTITY_LOCK_UPDATE = 1408
-ModCallbacks.POST_GRID_ENTITY_LOCK_UPDATE = 1409
-ModCallbacks.PRE_GRID_ENTITY_PIT_UPDATE = 1410
-ModCallbacks.POST_GRID_ENTITY_PIT_UPDATE = 1411
-ModCallbacks.PRE_GRID_ENTITY_POOP_UPDATE = 1412
-ModCallbacks.POST_GRID_ENTITY_POOP_UPDATE = 1413
-ModCallbacks.PRE_GRID_ENTITY_PRESSUREPLATE_UPDATE = 1414
-ModCallbacks.POST_GRID_ENTITY_PRESSUREPLATE_UPDATE = 1415
-ModCallbacks.PRE_GRID_ENTITY_ROCK_UPDATE = 1416
-ModCallbacks.POST_GRID_ENTITY_ROCK_UPDATE = 1417
-ModCallbacks.PRE_GRID_ENTITY_SPIKES_UPDATE = 1418
-ModCallbacks.POST_GRID_ENTITY_SPIKES_UPDATE = 1419
-ModCallbacks.PRE_GRID_ENTITY_STAIRCASE_UPDATE = 1420
-ModCallbacks.POST_GRID_ENTITY_STAIRCASE_UPDATE = 1421
-ModCallbacks.PRE_GRID_ENTITY_STATUE_UPDATE = 1422
-ModCallbacks.POST_GRID_ENTITY_STATUE_UPDATE = 1423
-ModCallbacks.PRE_GRID_ENTITY_TELEPORTER_UPDATE = 1424
-ModCallbacks.POST_GRID_ENTITY_TELEPORTER_UPDATE = 1425
-ModCallbacks.PRE_GRID_ENTITY_TRAPDOOR_UPDATE = 1426
-ModCallbacks.POST_GRID_ENTITY_TRAPDOOR_UPDATE = 1427
-ModCallbacks.PRE_GRID_ENTITY_WEB_UPDATE = 1428
-ModCallbacks.POST_GRID_ENTITY_WEB_UPDATE = 1429
-ModCallbacks.PRE_GRID_ENTITY_SPIKES_RENDER = 1432
-ModCallbacks.POST_GRID_ENTITY_SPIKES_RENDER = 1433
-ModCallbacks.PRE_GRID_ENTITY_WEB_RENDER = 1434
-ModCallbacks.POST_GRID_ENTITY_WEB_RENDER = 1435
-ModCallbacks.PRE_GRID_ENTITY_TNT_RENDER = 1436
-ModCallbacks.POST_GRID_ENTITY_TNT_RENDER = 1437
-ModCallbacks.PRE_GRID_ENTITY_TRAPDOOR_RENDER = 1438
-ModCallbacks.POST_GRID_ENTITY_TRAPDOOR_RENDER = 1439
-ModCallbacks.PRE_GRID_ENTITY_STAIRCASE_RENDER = 1440
-ModCallbacks.POST_GRID_ENTITY_STAIRCASE_RENDER = 1441
-ModCallbacks.PRE_GRID_ENTITY_DECORATION_RENDER = 1444
-ModCallbacks.POST_GRID_ENTITY_DECORATION_RENDER = 1445
-ModCallbacks.PRE_GRID_ENTITY_DOOR_RENDER = 1446
-ModCallbacks.POST_GRID_ENTITY_DOOR_RENDER = 1447
-ModCallbacks.PRE_GRID_ENTITY_FIRE_RENDER = 1448
-ModCallbacks.POST_GRID_ENTITY_FIRE_RENDER = 1449
-ModCallbacks.PRE_GRID_ENTITY_LOCK_RENDER = 1450
-ModCallbacks.POST_GRID_ENTITY_LOCK_RENDER = 1451
-ModCallbacks.PRE_GRID_ENTITY_PIT_RENDER = 1454
-ModCallbacks.POST_GRID_ENTITY_PIT_RENDER = 1455
-ModCallbacks.PRE_GRID_ENTITY_POOP_RENDER = 1456
-ModCallbacks.POST_GRID_ENTITY_POOP_RENDER = 1457
-ModCallbacks.PRE_GRID_ENTITY_ROCK_RENDER = 1458
-ModCallbacks.POST_GRID_ENTITY_ROCK_RENDER = 1459
-ModCallbacks.PRE_GRID_ENTITY_PRESSUREPLATE_RENDER = 1460
-ModCallbacks.POST_GRID_ENTITY_PRESSUREPLATE_RENDER = 1461
-ModCallbacks.PRE_GRID_ENTITY_WALL_RENDER = 1462
-ModCallbacks.POST_GRID_ENTITY_WALL_RENDER = 1463
+ModCallbacks.MC_PRE_GRID_ENTITY_DECORATION_UPDATE = 1400
+ModCallbacks.MC_POST_GRID_ENTITY_DECORATION_UPDATE = 1401
+ModCallbacks.MC_PRE_GRID_ENTITY_DOOR_UPDATE = 1402
+ModCallbacks.MC_POST_GRID_ENTITY_DOOR_UPDATE = 1403
+ModCallbacks.MC_PRE_GRID_ENTITY_FIRE_UPDATE = 1404
+ModCallbacks.MC_POST_GRID_ENTITY_FIRE_UPDATE = 1405
+ModCallbacks.MC_PRE_GRID_ENTITY_GRAVITY_UPDATE = 1406
+ModCallbacks.MC_POST_GRID_ENTITY_GRAVITY_UPDATE = 1407
+ModCallbacks.MC_PRE_GRID_ENTITY_LOCK_UPDATE = 1408
+ModCallbacks.MC_POST_GRID_ENTITY_LOCK_UPDATE = 1409
+ModCallbacks.MC_PRE_GRID_ENTITY_PIT_UPDATE = 1410
+ModCallbacks.MC_POST_GRID_ENTITY_PIT_UPDATE = 1411
+ModCallbacks.MC_PRE_GRID_ENTITY_POOP_UPDATE = 1412
+ModCallbacks.MC_POST_GRID_ENTITY_POOP_UPDATE = 1413
+ModCallbacks.MC_PRE_GRID_ENTITY_PRESSUREPLATE_UPDATE = 1414
+ModCallbacks.MC_POST_GRID_ENTITY_PRESSUREPLATE_UPDATE = 1415
+ModCallbacks.MC_PRE_GRID_ENTITY_ROCK_UPDATE = 1416
+ModCallbacks.MC_POST_GRID_ENTITY_ROCK_UPDATE = 1417
+ModCallbacks.MC_PRE_GRID_ENTITY_SPIKES_UPDATE = 1418
+ModCallbacks.MC_POST_GRID_ENTITY_SPIKES_UPDATE = 1419
+ModCallbacks.MC_PRE_GRID_ENTITY_STAIRCASE_UPDATE = 1420
+ModCallbacks.MC_POST_GRID_ENTITY_STAIRCASE_UPDATE = 1421
+ModCallbacks.MC_PRE_GRID_ENTITY_STATUE_UPDATE = 1422
+ModCallbacks.MC_POST_GRID_ENTITY_STATUE_UPDATE = 1423
+ModCallbacks.MC_PRE_GRID_ENTITY_TELEPORTER_UPDATE = 1424
+ModCallbacks.MC_POST_GRID_ENTITY_TELEPORTER_UPDATE = 1425
+ModCallbacks.MC_PRE_GRID_ENTITY_TRAPDOOR_UPDATE = 1426
+ModCallbacks.MC_POST_GRID_ENTITY_TRAPDOOR_UPDATE = 1427
+ModCallbacks.MC_PRE_GRID_ENTITY_WEB_UPDATE = 1428
+ModCallbacks.MC_POST_GRID_ENTITY_WEB_UPDATE = 1429
+ModCallbacks.MC_PRE_GRID_ENTITY_SPIKES_RENDER = 1432
+ModCallbacks.MC_POST_GRID_ENTITY_SPIKES_RENDER = 1433
+ModCallbacks.MC_PRE_GRID_ENTITY_WEB_RENDER = 1434
+ModCallbacks.MC_POST_GRID_ENTITY_WEB_RENDER = 1435
+ModCallbacks.MC_PRE_GRID_ENTITY_TNT_RENDER = 1436
+ModCallbacks.MC_POST_GRID_ENTITY_TNT_RENDER = 1437
+ModCallbacks.MC_PRE_GRID_ENTITY_TRAPDOOR_RENDER = 1438
+ModCallbacks.MC_POST_GRID_ENTITY_TRAPDOOR_RENDER = 1439
+ModCallbacks.MC_PRE_GRID_ENTITY_STAIRCASE_RENDER = 1440
+ModCallbacks.MC_POST_GRID_ENTITY_STAIRCASE_RENDER = 1441
+ModCallbacks.MC_PRE_GRID_ENTITY_DECORATION_RENDER = 1444
+ModCallbacks.MC_POST_GRID_ENTITY_DECORATION_RENDER = 1445
+ModCallbacks.MC_PRE_GRID_ENTITY_DOOR_RENDER = 1446
+ModCallbacks.MC_POST_GRID_ENTITY_DOOR_RENDER = 1447
+ModCallbacks.MC_PRE_GRID_ENTITY_FIRE_RENDER = 1448
+ModCallbacks.MC_POST_GRID_ENTITY_FIRE_RENDER = 1449
+ModCallbacks.MC_PRE_GRID_ENTITY_LOCK_RENDER = 1450
+ModCallbacks.MC_POST_GRID_ENTITY_LOCK_RENDER = 1451
+ModCallbacks.MC_PRE_GRID_ENTITY_PIT_RENDER = 1454
+ModCallbacks.MC_POST_GRID_ENTITY_PIT_RENDER = 1455
+ModCallbacks.MC_PRE_GRID_ENTITY_POOP_RENDER = 1456
+ModCallbacks.MC_POST_GRID_ENTITY_POOP_RENDER = 1457
+ModCallbacks.MC_PRE_GRID_ENTITY_ROCK_RENDER = 1458
+ModCallbacks.MC_POST_GRID_ENTITY_ROCK_RENDER = 1459
+ModCallbacks.MC_PRE_GRID_ENTITY_PRESSUREPLATE_RENDER = 1460
+ModCallbacks.MC_POST_GRID_ENTITY_PRESSUREPLATE_RENDER = 1461
+ModCallbacks.MC_PRE_GRID_ENTITY_WALL_RENDER = 1462
+ModCallbacks.MC_POST_GRID_ENTITY_WALL_RENDER = 1463
 
 EntityPartition.ALL = 0xffffffff
 
@@ -1887,7 +1887,8 @@ EventCounter = {
 	NUM_EVENT_COUNTERS = 496,
 }
 
-WispSubType = { -- Unless specified, use CollectibleType
+WispSubType = {
+	 -- Unless specified, use CollectibleType
 	SPECIAL_FLAG = 65536,
 	NOTCHED_AXE_COAL = 65536, -- 0 | SPECIAL_FLAG
 	NOTCHED_AXE_IRON = 65537, -- 1 | SPECIAL_FLAG
@@ -2174,66 +2175,6 @@ WeaponModifier = {
 	C_SECTION = 2048,
 }
 
-
-rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
-Color.EmberFade:SetTint(0, 0, 0, 1.1)
-
-local function quickRegisterColorPreset(name, R, G, B, A, RO, GO, BO, RC, GC, BC, CA)
-	rawset(getmetatable(Color), name, Color(R, G, B, A or 1, RO or 0, GO or 0, BO or 0))
-	Color[name]:SetColorize(RC or 0, GC or 0, BC or 0, CA or 0)
-end
-
-rawset(getmetatable(Vector), "__type", "Vector")
-
-local colorPresets = {
-	TearIpecac = {0.5, 0.9, 0.4},
-	TearHoming = {0.4, 0.15, 0.38, 1, 71/255, 0, 116/255},
-	TearTar = {0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255},
-	TearSoy = {1.5, 2, 2},
-	TearChocolate = {0.33, 0.18, 0.18, 1, 66/255, 40/255, 40/255},
-	TearAlmond = {1.8, 1.7, 1},
-	TearScorpio = {50/255, 1, 50/255},
-	TearSerpentsKiss = {0.5, 0.97, 0.5},
-	TearCommonCold = {0.4, 0.97, 0.5},
-	TearCoal = {0.2, 0.09, 0.065},
-	TearNumberOne = {1, 1, 0, 1, 45/255, 15/255, 0},
-
-	ProjectileIpecac = {1, 1, 1, 1, 0, 0, 0, 0.4, 2, 0.5, 1},
-	ProjectileHoming = {1, 1, 1, 1, 0.26, 0.05, 0.4, 0.8, 0.15, 1, 1},
-	ProjectileTar	= {1, 1, 1, 1, 0, 0, 0, 0.5, 0.5, 0.5, 1},
-	ProjectileSoy = {1, 1, 1, 1, 0.8, 0.7, 0.5, 1, 1, 1, 1},
-	ProjectileFireWave = {1, 1, 1, 1, 1, 0.3, 0},
-
-	ProjectileCageBlue = {1, 1, 1, 1, 0, 0, 0, 0.8, 1, 0.85, 1},
-	ProjectileMegaSatanBlack = {1, 1, 1, 1, 0, 0, 0, 0.6, 0.6, 0.6, 1},
-	ProjectileMegaSatanWhite = {1, 1, 1, 1, 0, 0, 0, 2, 2, 2, 1},
-	ProjectileHushBlue = {1, 1, 1, 1, 0, 0.2, 0.4},
-	ProjectileHushYellow = {1, 1, 1, 1, 0.4, 0.2, 0},
-	ProjectileHushGreen = {1, 1, 1, 1, 0.2, 0.2, 0},
-
-	LaserIpecac = {1, 1, 1, 1, 0, 0, 0, 1.8, 3, 1, 1},
-	LaserHoming = {1, 1, 1, 1, 0, 0, 0, 3, 1, 3.5, 1},
-	LaserSoy = {1, 1, 1, 1, 0, 0, 0, 5.6, 5, 4.2, 1},
-	LaserChocolate = {1, 1, 1, 1, 0, 0, 0, 3, 1.7, 1.7, 1},
-	LaserAlmond = {1, 1, 1, 1, 0, 0, 0, 5.6, 5.2, 3.8, 1},
-	LaserPoison = {1, 1, 1, 1, 0, 0, 0, 1.8, 4, 1, 1},
-	LaserCoal = {3, 3, 3, 1, -0.5, -0.5, -0.5, 1.3, 1.2, 1.2, 1},
-	LaserFireMind = {1, 1, 1, 1, 0, 0, 0, 5, 3, 1, 1},
-	LaserNumberOne = {1, 1, 1, 1, 0, 0, 0, 5, 4.9, 1, 1},
-	LaserMother = {1, 1, 1, 1, 0, 0, 0, 2, 2.2, 1, 1},
-
-	ProjectileCorpsePink = {1, 1, 1, 1, 0, 0, 0, 4, 3.5, 3.2, 1},
-	ProjectileCorpseWhite = {1, 1, 1, 1, 0, 0, 0, 2.7, 3, 2, 1},
-	ProjectileCorpseGreen = {1, 1, 1, 1, 0, 0, 0, 1.5, 2, 1, 1},
-	ProjectileCorpseYellow = {1, 1, 1, 1, 0, 0, 0, 3.5, 2.5, 1, 1},
-	ProjectileCorpseClusterLight = {4, 4, 4, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
-	ProjectileCorpseClusterDark = {1, 1, 1, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
-}
-
-for colorName, colorData in pairs(colorPresets) do
-	quickRegisterColorPreset(colorName, table.unpack(colorData))
-end
-
 ImGuiElement = {
 	Window = 0,
 	Menu = 1,
@@ -2470,7 +2411,7 @@ ProceduralEffectConditionType = {
 	ROOM_CLEAR = 5,
 	ENTITY_SPAWN = 6,
 	PICKUP_COLLECTED = 7,
-	CHAIN = 8,
+	CHAIN = 8, -- trigger if previous `ProceduralEffect` is triggered (or dropped by rate).
 }
 
 ProceduralEffectActionType = {

@@ -1,10 +1,10 @@
 import os
+import sys
 import yaml
 from yaml import Loader, Dumper
-from slpp import slpp as lua
 import subprocess
 
-BRANCH_NAME = "main-msvc"
+BRANCH_NAME = "main"
 
 SCRIPT_PATH = os.path.realpath(__file__)
 SOURCE_DIRECTORY = os.path.dirname(SCRIPT_PATH)
@@ -18,53 +18,72 @@ if "GITHUB_WORKSPACE" in os.environ:
     DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "documentation/")
 
 
+data = []
+
 with open(ENUM_FILE_PATH, "r") as enums:
-    data = lua.decode("{" + enums.read() + "}")
+
+    for enum in enums.readlines():
+        enum = enum.strip().split("--")
+        content = enum[0].strip()
+        content = content.split(", ")
+        if len(enum) > 1:
+            comment = enum[1].lstrip()
+            content[len(content) - 1] = content[len(content) - 1] + " -- " + comment
+        for entry in content:
+            data.append(entry)    
 
 with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml")) as cfg:
     mkdocs = yaml.load(cfg, Loader)
 
 new_mkdocs_enums = [
     {"ModCallbacks": "enums/ModCallbacks.md"},
+    {"AnimRenderFlags": "enums/AnimRenderFlags.md"}
 ]
 
-blocked_values = [".MC_", "colorPresets", "Color(", "function", "rawset", "pairs", "0xffffffff", ".Set", "Vector", "= {", "SetColorize", ".ALL"]
+blocked_values = [".MC_", "colorPresets", "Color(", "function", "rawset", "pairs", "0xffffffff", ".ALL"]
+banned_classes = ["AnimRenderFlags"]
+
+filtered_data = {}
+current_class = ""
 
 for value in data:
     beaned = False
     for subvalue in blocked_values:
-        if isinstance(value, int) or subvalue.lower() in value.lower():
+        if isinstance(value, int) or subvalue.lower() in value.lower() or value.startswith(" --") or value == "" or value == "end" or value == "}":
             beaned = True
-    if not beaned: 
-        with open(os.path.join(DOCS_FOLDER_PATH, f"docs/enums/{value}.md"), "w+") as md:
-            md.write(f'---\ntags:\n  - Enum\n---\n# Enum "{value}"\n|Value|Enumerator|Comment|\n|:--|:--|:--|\n')
-            enumLinesStart = 0
-            enumLinesEnd = 0
-            with open(ENUM_FILE_PATH, "r") as enums:
-                for l_no, line in enumerate(enums):
-                    if f"{value} = " in line:
-                        enumLinesStart = l_no
-                    if enumLinesStart > 0 and "}" in line:
-                        enumLinesEnd = l_no
-                        break
+    if not beaned:
+        if(value.replace(" ", "").endswith("={")):
+            current_class = value.split()[0]
+            if current_class not in banned_classes:
+                filtered_data[current_class] = []
+        elif current_class not in banned_classes:
+            entry = {}
+            value = value.split("=", 1)
+            entry["name"] = value[0].strip()
 
-            if type(data[value]) is dict:
-                for i, enum in enumerate(data[value]):
-                    # get comment from line
-                    comment = ""
-                    with open(ENUM_FILE_PATH, "r") as enums:
-                        for l_no, line in enumerate(enums):
-                            if l_no > enumLinesStart and l_no < enumLinesEnd and "--" in line and f"\t{enum} = " in line:
-                                comment = line.split("--")[1].strip().replace("|","&#124;") # get comment and escape pipe characters
-                    # write table entry
-                    md.write(f"|{data[value][enum]} |{enum} \u007b: .copyable \u007d | {comment} |\n")
+            if len(value[1].split("--")) > 1:
+                entry["value"] = value[1].split(",")[0].split("--")[0].replace(",", "").strip()
+                entry["comment"] = value[1].split("--")[1].strip()
             else:
-                md.write(f"|{data[value]} |{value} \u007b: .copyable \u007d |  |\n")
-        new_mkdocs_enums.append({value: f"enums/{value}.md"})
+                entry["value"] = value[1].replace(",", "").strip()
 
-mkdocs['nav'][1]['Docs'][1]['Enums'] = sorted(new_mkdocs_enums, key=lambda x: list(x.keys())[0])
+            if "x" in entry["value"]:
+                entry["value"] = int(entry["value"], 16)
+            filtered_data[current_class].append(entry)
 
-print(mkdocs['nav'][1]['Docs'][1]['Enums'])
+
+for class_name in filtered_data:
+    with open(os.path.join(DOCS_FOLDER_PATH, f"docs/enums/{class_name}.md"), "w+") as md:
+        md.write(f"---\ntags:\n  - Enum\n---\n# Enum \"{class_name}\"\n|Value|Enumerator|Comment|\n|:--|:--|:--|\n")
+        for entry in filtered_data[class_name]:
+            if "comment" in entry:
+                md.write(f"|{entry['value']} |{entry['name']} \u007b: .copyable \u007d | {entry['comment'].replace('|', '&#124;')} |\n")
+            else:
+                md.write(f"|{entry['value']} |{entry['name']} \u007b: .copyable \u007d |  |\n")
+    new_mkdocs_enums.append({class_name: f"enums/{class_name}.md"})
+
+mkdocs['nav'][2]['Docs'][3]['Enums'] = sorted(new_mkdocs_enums, key=lambda x: list(x.keys())[0])
+
 with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml"), 'w+') as cfg:
     cfg.write(yaml.dump(mkdocs))
 

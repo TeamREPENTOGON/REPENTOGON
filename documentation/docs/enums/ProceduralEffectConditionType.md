@@ -14,4 +14,3 @@ tags:
 |6 |ENTITY_SPAWN {: .copyable } |  |
 |7 |PICKUP_COLLECTED {: .copyable } |  |
 |8 |CHAIN {: .copyable } | trigger if previous `ProceduralEffect` is triggered (or dropped by rate). |
-

@@ -27,6 +27,65 @@ function require(modname)
 	return ret
 end
 
+rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
+Color.EmberFade:SetTint(0, 0, 0, 1.1)
+
+local function quickRegisterColorPreset(name, R, G, B, A, RO, GO, BO, RC, GC, BC, CA)
+	rawset(getmetatable(Color), name, Color(R, G, B, A or 1, RO or 0, GO or 0, BO or 0))
+	Color[name]:SetColorize(RC or 0, GC or 0, BC or 0, CA or 0)
+end
+
+rawset(getmetatable(Vector), "__type", "Vector")
+
+local colorPresets = {
+	TearIpecac = {0.5, 0.9, 0.4},
+	TearHoming = {0.4, 0.15, 0.38, 1, 71/255, 0, 116/255},
+	TearTar = {0.95, 0.8, 0.6, 1, -150/255, -150/255, -150/255},
+	TearSoy = {1.5, 2, 2},
+	TearChocolate = {0.33, 0.18, 0.18, 1, 66/255, 40/255, 40/255},
+	TearAlmond = {1.8, 1.7, 1},
+	TearScorpio = {50/255, 1, 50/255},
+	TearSerpentsKiss = {0.5, 0.97, 0.5},
+	TearCommonCold = {0.4, 0.97, 0.5},
+	TearCoal = {0.2, 0.09, 0.065},
+	TearNumberOne = {1, 1, 0, 1, 45/255, 15/255, 0},
+
+	ProjectileIpecac = {1, 1, 1, 1, 0, 0, 0, 0.4, 2, 0.5, 1},
+	ProjectileHoming = {1, 1, 1, 1, 0.26, 0.05, 0.4, 0.8, 0.15, 1, 1},
+	ProjectileTar	= {1, 1, 1, 1, 0, 0, 0, 0.5, 0.5, 0.5, 1},
+	ProjectileSoy = {1, 1, 1, 1, 0.8, 0.7, 0.5, 1, 1, 1, 1},
+	ProjectileFireWave = {1, 1, 1, 1, 1, 0.3, 0},
+
+	ProjectileCageBlue = {1, 1, 1, 1, 0, 0, 0, 0.8, 1, 0.85, 1},
+	ProjectileMegaSatanBlack = {1, 1, 1, 1, 0, 0, 0, 0.6, 0.6, 0.6, 1},
+	ProjectileMegaSatanWhite = {1, 1, 1, 1, 0, 0, 0, 2, 2, 2, 1},
+	ProjectileHushBlue = {1, 1, 1, 1, 0, 0.2, 0.4},
+	ProjectileHushYellow = {1, 1, 1, 1, 0.4, 0.2, 0},
+	ProjectileHushGreen = {1, 1, 1, 1, 0.2, 0.2, 0},
+
+	LaserIpecac = {1, 1, 1, 1, 0, 0, 0, 1.8, 3, 1, 1},
+	LaserHoming = {1, 1, 1, 1, 0, 0, 0, 3, 1, 3.5, 1},
+	LaserSoy = {1, 1, 1, 1, 0, 0, 0, 5.6, 5, 4.2, 1},
+	LaserChocolate = {1, 1, 1, 1, 0, 0, 0, 3, 1.7, 1.7, 1},
+	LaserAlmond = {1, 1, 1, 1, 0, 0, 0, 5.6, 5.2, 3.8, 1},
+	LaserPoison = {1, 1, 1, 1, 0, 0, 0, 1.8, 4, 1, 1},
+	LaserCoal = {3, 3, 3, 1, -0.5, -0.5, -0.5, 1.3, 1.2, 1.2, 1},
+	LaserFireMind = {1, 1, 1, 1, 0, 0, 0, 5, 3, 1, 1},
+	LaserNumberOne = {1, 1, 1, 1, 0, 0, 0, 5, 4.9, 1, 1},
+	LaserMother = {1, 1, 1, 1, 0, 0, 0, 2, 2.2, 1, 1},
+
+	ProjectileCorpsePink = {1, 1, 1, 1, 0, 0, 0, 4, 3.5, 3.2, 1},
+	ProjectileCorpseWhite = {1, 1, 1, 1, 0, 0, 0, 2.7, 3, 2, 1},
+	ProjectileCorpseGreen = {1, 1, 1, 1, 0, 0, 0, 1.5, 2, 1, 1},
+	ProjectileCorpseYellow = {1, 1, 1, 1, 0, 0, 0, 3.5, 2.5, 1, 1},
+	ProjectileCorpseClusterLight = {4, 4, 4, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
+	ProjectileCorpseClusterDark = {1, 1, 1, 1, 0, 0, 0, 0.63, 0.85, 0.32, 1},
+}
+
+for colorName, colorData in pairs(colorPresets) do
+	quickRegisterColorPreset(colorName, table.unpack(colorData))
+end
+
 -- I hate Luabridge, we can't have nice things.
 local function GetMetatableType(ret)
 	-- TODO directly pcall in here?
