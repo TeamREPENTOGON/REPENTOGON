@@ -3188,7 +3188,7 @@ HOOK_METHOD(GridEntity_Decoration, Update, () -> void) {
 	const int preCallbackId = 1400;
 	const int postCallbackId = preCallbackId+1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridDecorationMT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridDecorationMT, preCallbackId)) {
 		return;
 	}
 
@@ -3202,7 +3202,7 @@ HOOK_METHOD(GridEntity_Door, Update, () -> void) {
 	const int preCallbackId = 1402;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_DOOR, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_DOOR, preCallbackId)) {
 		return;
 	}
 
@@ -3216,7 +3216,7 @@ HOOK_METHOD(GridEntity_Fire, Update, () -> void) {
 	const int preCallbackId = 1404;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridFireMT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridFireMT, preCallbackId)) {
 		return;
 	}
 
@@ -3230,7 +3230,7 @@ HOOK_METHOD(GridEntity_Gravity, Update, () -> void) {
 	const int preCallbackId = 1406;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridGravityMT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridGravityMT, preCallbackId)) {
 		return;
 	}
 
@@ -3244,7 +3244,7 @@ HOOK_METHOD(GridEntity_Lock, Update, () -> void) {
 	const int preCallbackId = 1408;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridLockMT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridLockMT, preCallbackId)) {
 		return;
 	}
 
@@ -3258,7 +3258,7 @@ HOOK_METHOD(GridEntity_Pit, Update, () -> void) {
 	const int preCallbackId = 1410;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_PIT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_PIT, preCallbackId)) {
 		return;
 	}
 
@@ -3272,7 +3272,7 @@ HOOK_METHOD(GridEntity_Poop, Update, () -> void) {
 	const int preCallbackId = 1412;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_POOP, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_POOP, preCallbackId)) {
 		return;
 	}
 
@@ -3286,7 +3286,7 @@ HOOK_METHOD(GridEntity_PressurePlate, Update, () -> void) {
 	const int preCallbackId = 1414;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE, preCallbackId)) {
 		return;
 	}
 
@@ -3300,7 +3300,7 @@ HOOK_METHOD(GridEntity_Rock, Update, () -> void) {
 	const int preCallbackId = 1416;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_ROCK, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_ROCK, preCallbackId)) {
 		return;
 	}
 
@@ -3314,7 +3314,7 @@ HOOK_METHOD(GridEntity_Spikes, Update, () -> void) {
 	const int preCallbackId = 1418;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_SPIKES, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::Metatables::GRID_ENTITY_SPIKES, preCallbackId)) {
 		return;
 	}
 
@@ -3328,7 +3328,7 @@ HOOK_METHOD(GridEntity_Statue, Update, () -> void) {
 	const int preCallbackId = 1420;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridStatueMT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridStatueMT, preCallbackId)) {
 		return;
 	}
 
@@ -3342,7 +3342,7 @@ HOOK_METHOD(GridEntity_Teleporter, Update, () -> void) {
 	const int preCallbackId = 1422;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridTeleporterMT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridTeleporterMT, preCallbackId)) {
 		return;
 	}
 
@@ -3356,7 +3356,7 @@ HOOK_METHOD(GridEntity_TNT, Update, () -> void) {
 	const int preCallbackId = 1424;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridTNT_MT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridTNT_MT, preCallbackId)) {
 		return;
 	}
 
@@ -3370,7 +3370,7 @@ HOOK_METHOD(GridEntity_TrapDoor, Update, () -> void) {
 	const int preCallbackId = 1426;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridTrapDoorMT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridTrapDoorMT, preCallbackId)) {
 		return;
 	}
 
@@ -3384,7 +3384,7 @@ HOOK_METHOD(GridEntity_Web, Update, () -> void) {
 	const int preCallbackId = 1428;
 	const int postCallbackId = preCallbackId + 1;
 
-	if (DoGridPreUpdateCallback(this, lua::metatables::GridWebMT, preCallbackId)) {
+	if (!DoGridPreUpdateCallback(this, lua::metatables::GridWebMT, preCallbackId)) {
 		return;
 	}
 
