@@ -140,6 +140,38 @@ function buildContentMap() {
     $('#contentOverviewTable > tbody').append(tableContent);
 }
 
+function trimSearchResults(){
+    // Trim search results exceeding a given size
+    $(".md-search-result__article mark").each(function (index) {
+        var pElements = $(this).parent().contents();
+        pElements.each(function (index2) {
+          if (this.nodeName == "MARK") {
+            if (index2 - 1 >= 0 && pElements[index2 - 1].nodeType == 3) {
+              // raw text element preceeding the <mark> object
+              var oldText = pElements[index2 - 1].textContent;
+              if (oldText.length > 100) {
+                pElements[index2 - 1].textContent = "..." + oldText.substring(oldText.length - 90, oldText.length);
+              }
+            }
+            // raw text element between two <mark> objects
+            if (index2 + 1 < pElements.length && pElements[index2 + 1].nodeType == 3 && index2 + 2 < pElements.length && pElements[index2 + 2].nodeName == "MARK") {
+              var oldText = pElements[index2 + 1].textContent;
+              if (oldText.length > 100) {
+                pElements[index2 + 1].textContent = oldText.substring(0, 45) + " ... " + oldText.substring(oldText.length - 45, oldText.length);
+              }
+            }
+            if (index2 + 1 < pElements.length && pElements[index2 + 1].nodeType == 3) {
+              // raw text element trailing the <mark> object
+              var oldText = pElements[index2 + 1].textContent;
+              if (oldText.length > 100) {
+                pElements[index2 + 1].textContent = oldText.substring(0, 90) + "...";
+              }
+            }
+          }
+        });
+      });
+}
+
 function modifyCallbackPageLayout() {
     if (!window.location.pathname.includes("ModCallbacks")) {
         return;
@@ -371,8 +403,9 @@ document$.subscribe(function() {
             if ($(this).attr("data-md-score") < 0) {
                 $(this).parent().parent().hide();
             }
-        })
+        });
 
+        trimSearchResults();
     });
     var config = { attributes: true, childList: true, characterData: true };
     observer.observe(target, config);

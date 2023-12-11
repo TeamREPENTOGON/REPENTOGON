@@ -420,19 +420,15 @@ div[data-md-component$="announce"] {
     height: .8rem;
 }
 
-.md-search-result__article {
-    max-height: 10rem;
-}
-
 /* search result header smaller */
 .md-search-result .md-typeset h1 {
     line-height: 1;
-    margin: 0.25em 0;
+    margin: 0.5em 0;
 }
 
 /* search result header smaller */
 .md-search-result .md-typeset h2 {
-    line-height: 0.6;
+    line-height: 1;
 }
 
 /* Hide tags from search results*/
@@ -440,7 +436,10 @@ div[data-md-component$="announce"] {
     display: none;
 }
 
-
+/* Hide list entries not immediatly adjacent to the search result*/
+.md-search-result__article li:not(:has(+ li>mark)):not(:has(mark)) {
+    display: none;
+}
 
 /*Format default table layout*/
 
