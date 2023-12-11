@@ -653,7 +653,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1101 |MC_POST_GRID_ENTITY_SPAWN {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) Grid | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1101 |MC_POST_GRID_ENTITY_SPAWN {: .copyable } | [GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) Grid | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | void |
 
 ### MC_PRE_ROOM_TRIGGER_CLEAR
 Accepts no return parameters.
