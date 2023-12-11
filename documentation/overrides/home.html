@@ -244,19 +244,28 @@
 
           <!-- Added Buttons (up to 3) -->
           {%- if config.home_button1_name -%}
-          <a href="{{ config.home_button1_url }}" title="Material | MkDocs" class="{{ config.home_button1_theme }}">
+          <a href="{{ config.home_button1_url }}" title="{{ config.home_button1_name }}" class="{{ config.home_button1_theme }}">
+            <span class="twemoji">
+                {% include ".icons/fontawesome/solid/download.svg" %}
+            </span>
             {{ config.home_button1_name }}
           </a>
 	  {%- endif -%}
 	  
           {%- if config.home_button2_name -%}
-          <a href="{{ config.home_button2_url }}" title="Material | MkDocs" class="{{ config.home_button2_theme }}">
+          <a href="{{ config.home_button2_url }}" title="{{ config.home_button2_name }}" class="{{ config.home_button2_theme }}">
+            <span class="twemoji">
+                {% include ".icons/fontawesome/solid/book.svg" %}
+            </span>
             {{ config.home_button2_name }}
           </a>
 	  {%- endif -%}
 	  
 	  {%- if config.home_button3_name -%}
-          <a href="{{ config.home_button3_url }}" title="Material | MkDocs" class="{{ config.home_button3_theme }}">
+          <a href="{{ config.home_button3_url }}" title="{{ config.home_button3_name }}" class="{{ config.home_button3_theme }}">
+            <span class="twemoji">
+                {% include ".icons/fontawesome/solid/blog.svg" %}
+            </span>
             {{ config.home_button3_name }}
           </a>
 	  {%- endif -%}

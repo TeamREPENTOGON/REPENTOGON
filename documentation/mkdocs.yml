@@ -329,6 +329,7 @@ home_description: |
 
 
 home_button1_name: Download
+home_button1_icon: ""
 home_button1_url: https://github.com/IsaacZHL/REPENTOGON/releases
 home_button1_theme: md-button md-button--primary
 
@@ -336,6 +337,6 @@ home_button2_name: Docs
 home_button2_url: docs.html
 home_button2_theme: md-button 
 
-home_button3_name: Blog  
+home_button3_name: Blog
 home_button3_url: blog  
 home_button3_theme: md-button
