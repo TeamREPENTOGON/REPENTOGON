@@ -637,7 +637,7 @@ Accepts `false` to cancel spawning the grid, a table of `{Type, Variant, Vardata
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1100 |MC_PRE_GRID_ENTITY_SPAWN {: .copyable } | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant, int VarData, int GridIdx, int SpawnSeed, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Desc | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | boolean, table, or GridEntityDesc |
+|1100 |MC_PRE_GRID_ENTITY_SPAWN {: .copyable } | ([GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant, int VarData, int GridIdx, int SpawnSeed, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Desc | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type) | boolean, table, or [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) |
 
 ### MC_PRE_ROOM_GRID_ENTITY_SPAWN
 This is called during Room initiization when [GridEntities](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) from the layout are being spawned.
@@ -646,7 +646,7 @@ Accepts `false` to cancel spawning the grid or a table of `{Type, Variant, Varda
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1192 |MC_PRE_ROOM_GRID_ENTITY_SPAWN {: .copyable } | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant, int VarData, int GridIdx, int SpawnSeed | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | boolean or table |
+|1192 |MC_PRE_ROOM_GRID_ENTITY_SPAWN {: .copyable } | ([GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant, int VarData, int GridIdx, int SpawnSeed) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | boolean or table |
 
 ### MC_POST_GRID_ENTITY_SPAWN
 Accepts no return parameters.
