@@ -19,6 +19,7 @@
     --constants-overview-bg-color: #f5e5e5;
     --abp-color: #FDD835;
     --rep-color: #F44336;
+    
     --md-typeset-mark-text-color: #000000;
 }
 
@@ -44,24 +45,6 @@ nav[aria-label='Operators'] {
 
 nav[aria-label='Constants'] {
     border-left-color: var(--constants-color) !important;
-}
-
-.md-typeset h2 {
-    margin: 0 !important;
-    text-align: center;
-}
-
-.wrongParsing {
-    color: white !important;
-    background-color: red;
-    font-size: 20px !important;
-}
-
-.wrongParsing::after {
-    content: "THIS PART IS NOT PARSED CORRECTLY! PLEASE FIX MANUALLY!!!!!";
-    color: red !important;
-    background-color: black;
-    display: block;
 }
 
 h3[aria-label$='Functions'],
@@ -138,22 +121,10 @@ h4[aria-label$='Constants'] {
     background-color: var(--constants-color-light);
 }
 
-.subHeader {
-    border-bottom: 1px solid var(--md-default-fg-color--light);
-    font-size: 1em !important;
-    font-weight: 800!important;
-}
-
 .frequentlyUsed {
     padding-bottom: 5pt;
     border-bottom: 2pt solid var(--md-primary-fg-color);
 }
-
-.secondH4 {
-    border-top: 1px solid #777777;
-    border-radius: 5px !important;
-}
-
 
 /**** BADGES ****/
 
@@ -340,7 +311,8 @@ a.tooltip:hover:after {
 
 /**** Mark.js Highlights ****/
 
-.md-typeset mark {
+/*change color of inner highlight text, for highlights in the main content*/
+article.md-content__inner.md-typeset mark {
     color: var(--md-typeset-mark-text-color);
 }
 
@@ -363,12 +335,26 @@ a.tooltip:hover:after {
 
 /**** WEBSITE FORMATTING ****/
 
+/* No kerning on header 2, and center text */
+article.md-content__inner.md-typeset h2 {
+    margin: 0 !important;
+    text-align: center;
+}
+
+/* Change link color for landing page */
+.tx-hero__content a{
+    color: #ffc41e;
+}
+.tx-hero__content a:hover{
+    color: #d19e14;
+}
+
 .md-content p {
     /* Block-text for content texts */
     text-align: justify
 }
 
-.md-typeset details {
+article.md-content__inner.md-typeset details {
     /* Increase text size for Admonitions / info boxes */
     font-size: .74rem;
 }
@@ -426,73 +412,67 @@ div[data-md-component$="announce"] {
 }
 
 
+/********** Search feature **********/
 /* Smaller Search results */
-
 .md-search-result__icon {
     margin: 0.2rem 0.35rem;
     display: block;
     height: .8rem;
-    width: .8rem;
-}
-
-.md-search-result__article--document .md-search-result__title {
-    line-height: 0.5;
 }
 
 .md-search-result__article {
-    padding-left: 1.7rem;
+    max-height: 10rem;
 }
 
-.md-search-result__link:last-child p:last-child {
-    margin-bottom: 0.3rem;
-}
-
-.md-search-result__title {
+/* search result header smaller */
+.md-search-result .md-typeset h1 {
     line-height: 1;
     margin: 0.25em 0;
 }
 
-.md-search-result__more summary {
-    padding: 0.5em .8rem;
+/* search result header smaller */
+.md-search-result .md-typeset h2 {
+    line-height: 0.6;
 }
 
-.md-search-result__article .md-tag {
+/* Hide tags from search results*/
+.md-search-result .md-tag {
     display: none;
 }
 
 
+
 /*Format default table layout*/
 
-.md-typeset table:not([class]) {
+article.md-content__inner.md-typeset table:not([class]) {
     display: table;
 }
 
-.md-typeset table:not([class]) tr td:first-child {
+article.md-content__inner.md-typeset table:not([class]) tr td:first-child {
     border-left: 0;
 }
 
-.md-typeset table:not([class]) tr td {
+article.md-content__inner.md-typeset table:not([class]) tr td {
     border-left: .05rem solid var(--md-default-fg-color--lightest);
     padding: .8em .9em;
 }
 
-.md-typeset table:not([class]) tr th:first-child {
+article.md-content__inner.md-typeset table:not([class]) tr th:first-child {
     border-left: 0;
 }
 
-.md-typeset table:not([class]) tr th {
+article.md-content__inner.md-typeset table:not([class]) tr th {
     border-left: .05rem solid var(--md-default-fg-color--lighter);
     min-width: 0rem;
 }
 
 
-/* Table of content */
+/******* Table of content *******/
 
 .md-nav__title {
     text-align: center;
     border-bottom: 1px solid #ababab;
 }
-
 
 /* Make H2 Table of content entries bold */
 

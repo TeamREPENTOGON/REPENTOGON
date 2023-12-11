@@ -286,9 +286,10 @@ plugins:
     tags_file: tags.md
 repo_name: IsaacZHL/REPENTOGON
 repo_url: https://github.com/IsaacZHL/REPENTOGON
-site_name: 'BoI: REPENTOGON Docs'
+site_name: 'BoI: REPENTOGON'
 site_url: https://repentogon.com
 theme:
+  logo: img/favicon.ico
   custom_dir: overrides
   favicon: img/favicon.ico
   features:
