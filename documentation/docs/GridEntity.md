@@ -89,7 +89,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStatue](GridEn
 	
 ___
 
-### To·TrapDoor () {: aria-label='Functions' }
+### To·Trap.Door () {: aria-label='Functions' }
 #### [GridEntityTrapDoor](GridEntityTrapDoor.md) ToTrapDoor ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityTrapDoor](GridEntityTrapDoor.md) object.
