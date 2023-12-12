@@ -183,6 +183,7 @@ nav:
   - Ambush: Ambush.md
   - Backdrop: Backdrop.md
   - Camera: Camera.md
+  - Capsule: Capsule.md
   - ChallengeParam: ChallengeParam.md
   - Color: Color.md
   - ColorModifier: ColorModifier.md
@@ -278,7 +279,6 @@ nav:
   - Rendering:
     - Beam: Beam.md
     - BlendMode: BlendMode.md
-    - Capsule: renderer/Capsule.md
     - DestinationQuad: renderer/DestinationQuad.md
     - GLSLValue: renderer/GLSLValue.md
     - Image: renderer/Image.md

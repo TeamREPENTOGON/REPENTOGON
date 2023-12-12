@@ -390,6 +390,39 @@ LUA_FUNCTION(Lua_IsaacClearBossHazards) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_IsaacFindInCapsule)
+{
+	Room* room = *g_Game->GetCurrentRoom();
+	EntityList* list = room->GetEntityList();
+	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	unsigned int partition = (unsigned int)luaL_optinteger(L, 2, -1);
+
+	lua_newtable(L);
+	EntityList_EL res(*list->GetUpdateEL());
+
+	list->QueryCapsule(&res, capsule, partition);
+
+	unsigned int size = res._size;
+
+	if (size) {
+		Entity** data = res._data;
+		unsigned int idx = 1;
+		while (size) {
+			Entity* ent = *data;
+			lua_pushnumber(L, idx);
+			lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY));
+			lua_settable(L, -3);
+			++data;
+			idx++;
+			--size;
+		}
+
+		res.Destroy();
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -421,6 +454,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCollectibleSpawnPosition", Lua_IsaacGetCollectibleSpawnPosition);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "PlayCutscene", Lua_PlayCutscene);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ShowErrorDialog", Lua_IsaacShowErrorDialog);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindInCapsule", Lua_IsaacFindInCapsule);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

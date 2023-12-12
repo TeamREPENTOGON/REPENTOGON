@@ -76,6 +76,10 @@ ___
 #### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
 Completes all completion marks for a given character. Supports both modded and vanilla characters. 
 ___
+### Find·In·Capsule () {: aria-label='Functions' }
+#### [Entity](Entity.md)[] FindInCapsule ( [Capsule](Capsule.md) Capsule, [EntityPartitions](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityPartition.html) Partitions = -1 ) {: .copyable aria-label='Functions' }
+Return entities inside of given capsule, filtered by partitions mask.
+___
 ### Get·Achievement·Id·By·Name () {: aria-label='Functions' }
 #### table GetAchievementIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.

@@ -2,6 +2,18 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+LUA_FUNCTION(Lua_CapsuleConstructor) {
+	Vector* position = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* multiplier = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	Capsule* capsule = new Capsule(position, multiplier);
+
+	Capsule* toLua = (Capsule*)lua_newuserdata(L, sizeof(Capsule));
+	luaL_setmetatable(L, lua::metatables::CapsuleMT);
+	memcpy(toLua, &capsule, sizeof(Capsule));
+	return 1;
+}
+
 LUA_FUNCTION(Lua_EntityGetNullCapsule) {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	const char* str = luaL_checkstring(L, 2);
@@ -86,6 +98,8 @@ LUA_FUNCTION(Lua_CapsuleCollide)
 static void RegisterCapsule(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::ENTITY, "GetNullCapsule", Lua_EntityGetNullCapsule);
 	lua::RegisterFunction(L, lua::Metatables::ENTITY, "GetCollisionCapsule", Lua_EntityGetCollisionCapsule);
+
+	//lua_register(L, lua::metatables::CapsuleMT, Lua_CapsuleConstructor);
 
 	luaL_Reg functions[] = {
 		{ "GetPosition", Lua_CapsuleGetPosition },
