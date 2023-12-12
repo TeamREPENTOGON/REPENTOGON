@@ -1,1 +1,1 @@
-# REPENTOGON Blog
+# Blog

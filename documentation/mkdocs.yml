@@ -25,7 +25,7 @@ home_button2_theme: md-button
 home_button2_url: docs.html
 home_button3_name: Blog
 home_button3_theme: md-button
-home_button3_url: blog
+home_button3_url: blog/index.html
 home_cover_image: img/repentoMEGA.gif
 home_description: 'REPENTOGON is a mod for <a href=https://store.steampowered.com/app/1426300/The_Binding_of_Isaac_Repentance/>The
   Binding of Isaac: Repentance</a> version v1.7.9b.J835 (untested and likely unsupported
@@ -306,7 +306,7 @@ nav:
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
   - XMLData: XMLData.md
-- Blog: blog
+- Blog: blog/index.html
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md
