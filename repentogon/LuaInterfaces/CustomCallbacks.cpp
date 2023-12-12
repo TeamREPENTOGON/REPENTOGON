@@ -79,6 +79,12 @@ HOOK_METHOD(Entity_Player, AddCollectible, (int type, int charge, bool firsttime
 				ProcessPostAddCollectible(result[0], result[1], result[2], result[3], result[4], this);
 				return;
 			}
+			else if (lua_isboolean(L, -1))
+			{
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
 			else if (lua_isinteger(L, -1))
 			{
 				super((int)lua_tointeger(L, -1), charge, firsttime, slot, vardata);

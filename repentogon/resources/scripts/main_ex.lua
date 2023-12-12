@@ -179,7 +179,8 @@ end
 local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = {
 		["table"] = checkTableTypeFunction({ "integer", "integer", "boolean", "integer", "integer" }),
-		["number"] = checkInteger
+		["number"] = checkInteger,
+		["boolean"] = true,
 	},
 	[ModCallbacks.MC_PRE_SFX_PLAY] = {
 		["table"] = checkTableTypeFunction({ "integer", "number", "integer", "boolean", "number", "number" }),

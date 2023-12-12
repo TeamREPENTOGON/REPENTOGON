@@ -111,7 +111,7 @@ Modified values are passed along to the remaining callbacks. Returning false to 
 ### MC_PRE_ADD_COLLECTIBLE
 Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData, Player}`
 
-Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) to change the type without changing any other parameters
+Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) to change the type without changing any other parameters or a boolean to cancel the addition altogether (false) or force it to happen skipping the following callbacks (true).
 
 ???- example "Example Code"
     This code will transform every collectible into Money = Power once the player picks it up.
