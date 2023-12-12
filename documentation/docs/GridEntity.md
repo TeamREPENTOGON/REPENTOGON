@@ -40,7 +40,7 @@ ___
 ___
 
 ### To·Decoration () {: aria-label='Functions' }
-#### (GridEntityDecoration)[GridEntityDoor.md] ToDecoration ( ) {: .copyable aria-label='Functions' }
+#### (GridEntityDecoration)[GridEntityDecoration.md] ToDecoration ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityDecoration](GridEntityDecoration.md) object.
 
@@ -50,7 +50,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityDecoration](Gr
 ___
 
 ### To·Fire () {: aria-label='Functions' }
-#### (GridEntityFire)[GridEntityDoor.md] ToFire ( ) {: .copyable aria-label='Functions' }
+#### (GridEntityFire)[GridEntityFire.md] ToFire ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityFire](GridEntityFire.md) object.
 
@@ -60,7 +60,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityFire](GridEnti
 ___
 
 ### To·Gravity () {: aria-label='Functions' }
-#### (GridEntityGravity)[GridEntityDoor.md] ToGravity ( ) {: .copyable aria-label='Functions' }
+#### (GridEntityGravity)[GridEntityGravity.md] ToGravity ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityGravity](GridEntityGravity.md) object.
 
@@ -70,7 +70,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityGravity](GridE
 ___
 
 ### To·Stairs () {: aria-label='Functions' }
-#### (GridEntityStairs)[GridEntityDoor.md] ToStairs ( ) {: .copyable aria-label='Functions' }
+#### (GridEntityStairs)[GridEntityStairs.md] ToStairs ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStairs](GridEntityStairs.md) object.
 
@@ -80,7 +80,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStairs](GridEn
 ___
 
 ### To·Statue () {: aria-label='Functions' }
-#### (GridEntityStatue)[GridEntityDoor.md] ToStatue ( ) {: .copyable aria-label='Functions' }
+#### (GridEntityStatue)[GridEntityStatue.md] ToStatue ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStatue](GridEntityStatue.md) object.
 
@@ -90,7 +90,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStatue](GridEn
 ___
 
 ### To·TrapDoor () {: aria-label='Functions' }
-#### (GridEntityTrapDoor)[GridEntityDoor.md] ToTrapDoor ( ) {: .copyable aria-label='Functions' }
+#### (GridEntityTrapDoor)[GridEntityTrapDoor.md] ToTrapDoor ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityTrapDoor](GridEntityTrapDoor.md) object.
 
@@ -100,7 +100,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityTrapDoor](Grid
 ___
 
 ### To·Wall () {: aria-label='Functions' }
-#### (GridEntityWall)[GridEntityDoor.md] ToWall ( ) {: .copyable aria-label='Functions' }
+#### (GridEntityWall)[GridEntityWall.md] ToWall ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityWall](GridEntityWall.md) object.
 
@@ -110,7 +110,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityWall](GridEnti
 ___
 
 ### To·Web () {: aria-label='Functions' }
-#### (GridEntityWeb)[GridEntityDoor.md] ToWeb ( ) {: .copyable aria-label='Functions' }
+#### (GridEntityWeb)[GridEntityWeb.md] ToWeb ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityWeb](GridEntityWeb.md) object.
 

@@ -212,6 +212,7 @@ nav:
   - Game: Game.md
   - GridEntity:
     - GridEntity: GridEntity.md
+    - GridEntityDecoration: GridEntityDecoration.md
     - GridEntityDoor: GridEntityDoor.md
     - GridEntityFire: GridEntityFire.md
     - GridEntityGravity: GridEntityGravity.md
