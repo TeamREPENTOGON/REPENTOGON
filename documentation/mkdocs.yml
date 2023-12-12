@@ -213,7 +213,15 @@ nav:
   - GridEntity:
     - GridEntity: GridEntity.md
     - GridEntityDoor: GridEntityDoor.md
+    - GridEntityFire: GridEntityFire.md
+    - GridEntityGravity: GridEntityGravity.md
     - GridEntityRock: GridEntityRock.md
+    - GridEntityStairs: GridEntityStairs.md
+    - GridEntityStatue: GridEntityStatue.md
+    - GridEntityTeleporter: GridEntityTeleporter.md
+    - GridEntityTrapDoor: GridEntityTrapDoor.md
+    - GridEntityWall: GridEntityWall.md
+    - GridEntityWeb: GridEntityWeb.md
   - History:
     - History: History.md
     - HistoryItem: HistoryItem.md
