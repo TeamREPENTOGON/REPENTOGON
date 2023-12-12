@@ -1331,28 +1331,28 @@ Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1400 |MC_PRE_GRID_ENTITY_DECORATION_UPDATE {: .copyable } | ([GridEntityDecoration](GridEntityDecoration.md) Decoration) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1400 |MC_PRE_GRID_ENTITY_DECORATION_UPDATE {: .copyable } | ([GridEntityDecoration](../GridEntityDecoration.md) Decoration) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_DECORATION_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1401 |MC_POST_GRID_ENTITY_DECORATION_UPDATE_RENDER {: .copyable } | ([GridEntityDecoration](GridEntityDecoration.md) Decoration) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1401 |MC_POST_GRID_ENTITY_DECORATION_UPDATE_RENDER {: .copyable } | ([GridEntityDecoration](../GridEntityDecoration.md) Decoration) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_DOOR_UPDATE
 Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1402 |MC_PRE_GRID_ENTITY_DOOR_UPDATE {: .copyable } | ([GridEntityDoor](GridEntityDoor.md) Door) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1402 |MC_PRE_GRID_ENTITY_DOOR_UPDATE {: .copyable } | ([GridEntityDoor](../GridEntityDoor.md) Door) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_DOOR_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1403 |MC_POST_GRID_ENTITY_DOOR_UPDATE_RENDER {: .copyable } | ([GridEntityDoor](GridEntityDoor.md) Door) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1403 |MC_POST_GRID_ENTITY_DOOR_UPDATE_RENDER {: .copyable } | ([GridEntityDoor](../GridEntityDoor.md) Door) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_FIRE_UPDATE
 Accepts `false` to cancel the update.
@@ -1363,28 +1363,28 @@ Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1404 |MC_PRE_GRID_ENTITY_FIRE_UPDATE {: .copyable } | ([GridEntityFire](GridEntityFire.md) Fire) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1404 |MC_PRE_GRID_ENTITY_FIRE_UPDATE {: .copyable } | ([GridEntityFire](../GridEntityFire.md) Fire) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_FIRE_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1405 |MC_POST_GRID_ENTITY_FIRE_UPDATE_RENDER {: .copyable } | ([GridEntityFire](GridEntityFire.md) Fire) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1405 |MC_POST_GRID_ENTITY_FIRE_UPDATE_RENDER {: .copyable } | ([GridEntityFire](../GridEntityFire.md) Fire) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_GRAVITY_UPDATE
 Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1406 |MC_PRE_GRID_ENTITY_GRAVITY_UPDATE {: .copyable } | ([GridEntityGravity](GridEntityGravity.md) Gravity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1406 |MC_PRE_GRID_ENTITY_GRAVITY_UPDATE {: .copyable } | ([GridEntityGravity](../GridEntityGravity.md) Gravity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_GRAVITY_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1407 |MC_POST_GRID_ENTITY_GRAVITY_UPDATE_RENDER {: .copyable } | ([GridEntityGravity](GridEntityGravity.md) Gravity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1407 |MC_POST_GRID_ENTITY_GRAVITY_UPDATE_RENDER {: .copyable } | ([GridEntityGravity](../GridEntityGravity.md) Gravity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_LOCK_UPDATE
 Accepts `false` to cancel the update.
@@ -1433,28 +1433,28 @@ Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1414 |MC_PRE_GRID_ENTITY_PRESSUREPLATE_UPDATE {: .copyable } | ([GridEntityPressurePlate](GridEntityPressurePlate.md) PressurePlate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1414 |MC_PRE_GRID_ENTITY_PRESSUREPLATE_UPDATE {: .copyable } | ([GridEntityPressurePlate](../GridEntityPressurePlate.md) PressurePlate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_PRESSUREPLATE_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1415 |MC_POST_GRID_ENTITY_PRESSUREPLATE_UPDATE_RENDER {: .copyable } | ([GridEntityPressurePlate](GridEntityPressurePlate.md) PressurePlate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1415 |MC_POST_GRID_ENTITY_PRESSUREPLATE_UPDATE_RENDER {: .copyable } | ([GridEntityPressurePlate](../GridEntityPressurePlate.md) PressurePlate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_ROCK_UPDATE
 Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1416 |MC_PRE_GRID_ENTITY_ROCK_UPDATE {: .copyable } | ([GridEntityRock](GridEntityRock.md) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1416 |MC_PRE_GRID_ENTITY_ROCK_UPDATE {: .copyable } | ([GridEntityRock](../GridEntityRock.md) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_ROCK_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1417 |MC_POST_GRID_ENTITY_ROCK_UPDATE_RENDER {: .copyable } | ([GridEntityRock](GridEntityRock.md) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1417 |MC_POST_GRID_ENTITY_ROCK_UPDATE_RENDER {: .copyable } | ([GridEntityRock](../GridEntityRock.md) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_SPIKES_UPDATE
 Accepts `false` to cancel the update.
@@ -1475,70 +1475,70 @@ Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1420 |MC_PRE_GRID_ENTITY_STAIRCASE_UPDATE {: .copyable } | ([GridEntityStaircase](GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1420 |MC_PRE_GRID_ENTITY_STAIRCASE_UPDATE {: .copyable } | ([GridEntityStaircase](../GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_STAIRCASE_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1421 |MC_POST_GRID_ENTITY_STAIRCASE_UPDATE_RENDER {: .copyable } | ([GridEntityStaircase](GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1421 |MC_POST_GRID_ENTITY_STAIRCASE_UPDATE_RENDER {: .copyable } | ([GridEntityStaircase](../GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_STATUE_UPDATE
 Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1422 |MC_PRE_GRID_ENTITY_STATUE_UPDATE {: .copyable } | ([GridEntityStatue](GridEntityStatue.md) Statue) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1422 |MC_PRE_GRID_ENTITY_STATUE_UPDATE {: .copyable } | ([GridEntityStatue](../GridEntityStatue.md) Statue) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_STATUE_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1423 |MC_POST_GRID_ENTITY_STATUE_UPDATE_RENDER {: .copyable } | ([GridEntityStatue](GridEntityStatue.md) Statue) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1423 |MC_POST_GRID_ENTITY_STATUE_UPDATE_RENDER {: .copyable } | ([GridEntityStatue](../GridEntityStatue.md) Statue) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_TELEPORTER_UPDATE
 Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1424 |MC_PRE_GRID_ENTITY_TELEPORTER_UPDATE {: .copyable } | ([GridEntityTeleporter](GridEntityTeleporter.md) Teleporter) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1424 |MC_PRE_GRID_ENTITY_TELEPORTER_UPDATE {: .copyable } | ([GridEntityTeleporter](../GridEntityTeleporter.md) Teleporter) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_TELEPORTER_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1425 |MC_POST_GRID_ENTITY_TELEPORTER_UPDATE_RENDER {: .copyable } | ([GridEntityTeleporter](GridEntityTeleporter.md) Teleporter) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1425 |MC_POST_GRID_ENTITY_TELEPORTER_UPDATE_RENDER {: .copyable } | ([GridEntityTeleporter](../GridEntityTeleporter.md) Teleporter) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_TRAPDOOR_UPDATE
 Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1426 |MC_PRE_GRID_ENTITY_TRAPDOOR_UPDATE {: .copyable } | ([GridEntityTrapDoor](GridEntityTrapDoor.md) TrapDoor) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1426 |MC_PRE_GRID_ENTITY_TRAPDOOR_UPDATE {: .copyable } | ([GridEntityTrapDoor](../GridEntityTrapDoor.md) TrapDoor) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_TRAPDOOR_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1427 |MC_POST_GRID_ENTITY_TRAPDOOR_UPDATE_RENDER {: .copyable } | ([GridEntityTrapDoor](GridEntityTrapDoor.md) TrapDoor) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1427 |MC_POST_GRID_ENTITY_TRAPDOOR_UPDATE_RENDER {: .copyable } | ([GridEntityTrapDoor](../GridEntityTrapDoor.md) TrapDoor) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_WEB_UPDATE
 Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1428 |MC_PRE_GRID_ENTITY_WEB_UPDATE {: .copyable } | ([GridEntityWeb](GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1428 |MC_PRE_GRID_ENTITY_WEB_UPDATE {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_WEB_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1429 |MC_POST_GRID_ENTITY_WEB_UPDATE_RENDER {: .copyable } | ([GridEntityWeb](GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1429 |MC_POST_GRID_ENTITY_WEB_UPDATE_RENDER {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_SPIKES_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
@@ -1559,14 +1559,14 @@ Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modi
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1434 |MC_PRE_GRID_ENTITY_WEB_RENDER {: .copyable } | ([GridEntityWeb](GridEntityWeb.md) Web, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1434 |MC_PRE_GRID_ENTITY_WEB_RENDER {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_WEB_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1435 |MC_POST_GRID_ENTITY_WEB_RENDER {: .copyable } | ([GridEntityWeb](GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1435 |MC_POST_GRID_ENTITY_WEB_RENDER {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_TNT_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
@@ -1587,56 +1587,56 @@ Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modi
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1438 |MC_PRE_GRID_ENTITY_TRAPDOOR_RENDER {: .copyable } | ([GridEntityTrapDoor](GridEntityTrapDoor.md) TrapDoor, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1438 |MC_PRE_GRID_ENTITY_TRAPDOOR_RENDER {: .copyable } | ([GridEntityTrapDoor](../GridEntityTrapDoor.md) TrapDoor, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_TRAPDOOR_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1439 |MC_POST_GRID_ENTITY_TRAPDOOR_RENDER {: .copyable } | ([GridEntityTrapDoor](GridEntityTrapDoor.md) TrapDoor) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1439 |MC_POST_GRID_ENTITY_TRAPDOOR_RENDER {: .copyable } | ([GridEntityTrapDoor](../GridEntityTrapDoor.md) TrapDoor) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_STAIRCASE_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1440 |MC_PRE_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStaircase](GridEntityStaircase.md) Staircase, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1440 |MC_PRE_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStaircase](../GridEntityStaircase.md) Staircase, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_STAIRCASE_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1441 |MC_POST_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStaircase](GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1441 |MC_POST_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStaircase](../GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_DECORATION_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1444 |MC_PRE_GRID_ENTITY_DECORATION_RENDER {: .copyable } | ([GridEntityDecoration](GridEntityDecoration.md) Decoration, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1444 |MC_PRE_GRID_ENTITY_DECORATION_RENDER {: .copyable } | ([GridEntityDecoration](../GridEntityDecoration.md) Decoration, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_DECORATION_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1445 |MC_POST_GRID_ENTITY_DECORATION_RENDER {: .copyable } | ([GridEntityDecoration](GridEntityDecoration.md) Decoration) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1445 |MC_POST_GRID_ENTITY_DECORATION_RENDER {: .copyable } | ([GridEntityDecoration](../GridEntityDecoration.md) Decoration) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_DOOR_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1446 |MC_PRE_GRID_ENTITY_DOOR_RENDER {: .copyable } | ([GridEntityDoor](GridEntityDoor.md) Door, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1446 |MC_PRE_GRID_ENTITY_DOOR_RENDER {: .copyable } | ([GridEntityDoor](../GridEntityDoor.md) Door, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_DOOR_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1447 |MC_POST_GRID_ENTITY_DOOR_RENDER {: .copyable } | ([GridEntityDoor](GridEntityDoor.md) Door) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1447 |MC_POST_GRID_ENTITY_DOOR_RENDER {: .copyable } | ([GridEntityDoor](../GridEntityDoor.md) Door) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_FIRE_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
@@ -1646,14 +1646,14 @@ Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modi
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1448 |MC_PRE_GRID_ENTITY_FIRE_RENDER {: .copyable } | ([GridEntityFire](GridEntityFire.md) Fire, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1448 |MC_PRE_GRID_ENTITY_FIRE_RENDER {: .copyable } | ([GridEntityFire](../GridEntityFire.md) Fire, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_FIRE_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1449 |MC_POST_GRID_ENTITY_FIRE_RENDER {: .copyable } | ([GridEntityFire](GridEntityFire.md) Fire) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1449 |MC_POST_GRID_ENTITY_FIRE_RENDER {: .copyable } | ([GridEntityFire](../GridEntityFire.md) Fire) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_LOCK_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
@@ -1674,14 +1674,14 @@ Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modi
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1452 |MC_PRE_GRID_ENTITY_TELEPORTER_RENDER {: .copyable } | ([GridEntityTeleporter](GridEntityTeleporter.md) Teleporter, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1452 |MC_PRE_GRID_ENTITY_TELEPORTER_RENDER {: .copyable } | ([GridEntityTeleporter](../GridEntityTeleporter.md) Teleporter, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_TELEPORTER_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1453 |MC_POST_GRID_ENTITY_TELEPORTER_RENDER {: .copyable } | ([GridEntityTeleporter](GridEntityTeleporter.md) Teleporter) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1453 |MC_POST_GRID_ENTITY_TELEPORTER_RENDER {: .copyable } | ([GridEntityTeleporter](../GridEntityTeleporter.md) Teleporter) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_PIT_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
@@ -1719,39 +1719,39 @@ Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modi
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1458 |MC_PRE_GRID_ENTITY_ROCK_RENDER {: .copyable } | ([GridEntityRock](GridEntityRock.md) Rock, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1458 |MC_PRE_GRID_ENTITY_ROCK_RENDER {: .copyable } | ([GridEntityRock](../GridEntityRock.md) Rock, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_ROCK_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1459 |MC_POST_GRID_ENTITY_ROCK_RENDER {: .copyable } | ([GridEntityRock](GridEntityRock.md) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1459 |MC_POST_GRID_ENTITY_ROCK_RENDER {: .copyable } | ([GridEntityRock](../GridEntityRock.md) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_PRESSUREPLATE_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1460 |MC_PRE_GRID_ENTITY_PRESSUREPLATE_RENDER {: .copyable } | ([GridEntityPressurePlate](GridEntityPressurePlate.md) PressurePlate, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1460 |MC_PRE_GRID_ENTITY_PRESSUREPLATE_RENDER {: .copyable } | ([GridEntityPressurePlate](../GridEntityPressurePlate.md) PressurePlate, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_PRESSUREPLATE_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1461 |MC_POST_GRID_ENTITY_PRESSUREPLATE_RENDER {: .copyable } | ([GridEntityPressurePlate](GridEntityPressurePlate.md) PressurePlate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1461 |MC_POST_GRID_ENTITY_PRESSUREPLATE_RENDER {: .copyable } | ([GridEntityPressurePlate](../GridEntityPressurePlate.md) PressurePlate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_WALL_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1462 |MC_PRE_GRID_ENTITY_WALL_RENDER {: .copyable } | ([GridEntityWall](GridEntityWall.md) Wall, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1462 |MC_PRE_GRID_ENTITY_WALL_RENDER {: .copyable } | ([GridEntityWall](../GridEntityWall.md) Wall, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_WALL_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1463 |MC_POST_GRID_ENTITY_WALL_RENDER {: .copyable } | ([GridEntityWall](GridEntityWall.md) Wall) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1463 |MC_POST_GRID_ENTITY_WALL_RENDER {: .copyable } | ([GridEntityWall](../GridEntityWall.md) Wall) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
