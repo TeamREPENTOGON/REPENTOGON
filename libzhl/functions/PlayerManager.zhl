@@ -10,12 +10,17 @@ __thiscall Entity_Player* PlayerManager::FirstCollectibleOwner(CollectibleType c
 "558bec518b41??53":
 __thiscall bool PlayerManager::IsCoopPlay();
 
-
 "558bec83e4f883ec0c535657ff75??8bf933db":
 __thiscall int PlayerManager::GetNumCollectibles(CollectibleType type);
 
 "558bec83ec08a1????????53":
 __thiscall Entity_Player* PlayerManager::FirstTrinketOwner(TrinketType trinketType, RNG **rng, bool unk);
+
+"558bec8b41??8b49??563bc174??8b75??8b10837a??0075??39b2????????74??83c0043bc175??33c0":
+__thiscall Entity_Player* PlayerManager::FirstPlayerByType(unsigned int type);
+
+"558bec83e4f851538bd956578b73":
+__thiscall Entity_Player* PlayerManager::FirstBirthrightOwner(unsigned int type);
 
 "558bec8b511056":
 __thiscall bool PlayerManager::HasTemporaryEffect(ItemConfig_Item *item);

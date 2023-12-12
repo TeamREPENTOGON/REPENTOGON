@@ -154,6 +154,50 @@ LUA_FUNCTION(Lua_GetEsauJrState) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FirstPlayerByType)
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
+	Entity_Player* player = playerManager->FirstPlayerByType(playerType);
+	
+	player ? lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER)) : lua_pushnil(L);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AnyoneIsPlayerType)
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
+	Entity_Player* player = playerManager->FirstPlayerByType(playerType);
+
+	lua_pushboolean(L, player ? true : false);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FirstBirthrightOwner)
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
+	Entity_Player* player = playerManager->FirstBirthrightOwner(playerType);
+
+	player ? lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER)) : lua_pushnil(L);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_AnyPlayerTypeHasBirthright)
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	unsigned int playerType = (unsigned int)luaL_checkinteger(L, 1);
+	Entity_Player* player = playerManager->FirstBirthrightOwner(playerType);
+
+	lua_pushboolean(L, player ? true : false);
+
+	return 1;
+}
+
 static void RegisterPlayerManager(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetPlayerManager", Lua_GetPlayerManager);
 	lua_newtable(L);
@@ -168,6 +212,10 @@ static void RegisterPlayerManager(lua_State* L) {
 		lua::TableAssoc(L, "AnyoneHasTrinket", Lua_AnyoneHasTrinket);
 		lua::TableAssoc(L, "GetPlayers", Lua_GetPlayers);
 		lua::TableAssoc(L, "GetEsauJrState", Lua_GetEsauJrState);
+		lua::TableAssoc(L, "FirstPlayerByType", Lua_FirstPlayerByType);
+		lua::TableAssoc(L, "AnyoneIsPlayerType", Lua_AnyoneIsPlayerType);
+		lua::TableAssoc(L, "FirstBirthrightOwner", Lua_FirstBirthrightOwner);
+		lua::TableAssoc(L, "AnyPlayerTypeHasBirthright", Lua_AnyPlayerTypeHasBirthright);
 		
 
 		lua_setglobal(L, "PlayerManager");
