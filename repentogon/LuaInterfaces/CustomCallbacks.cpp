@@ -2830,8 +2830,16 @@ HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
 }
 
 //MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)
+static bool isMultiShotParamsEvaluating = false;
 HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, int weaponType) -> Weapon_MultiShotParams*) {
+	if (isMultiShotParamsEvaluating) // Prevent infinite loop when number of shots was altered
+	{
+		return super(params, weaponType);
+	}
+
 	params = super(params, weaponType);
+
+	isMultiShotParamsEvaluating = true;
 	const int callbackid = 1251;
 
 	if (CallbackState.test(callbackid - 1000)) {
@@ -2858,6 +2866,7 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 			}
 		}
 	}
+	isMultiShotParamsEvaluating = false;
 	return params;
 }
 
