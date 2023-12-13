@@ -10,15 +10,15 @@ Obtained via [AnimationData:GetLayer()](AnimationData.md#getlayer).
 
 ## Functions
 
-### Get·Frame () {: aria-label='Functions' }
+### GetFrame () {: aria-label='Functions' }
 #### [AnimationFrame](AnimationFrame.md) GetFrame ( int Frame ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Layer·ID () {: aria-label='Functions' }
+### GetLayerID () {: aria-label='Functions' }
 #### int GetLayerID ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Visible () {: aria-label='Functions' }
+### IsVisible () {: aria-label='Functions' }
 #### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 
 ___

@@ -328,7 +328,7 @@ plugins:
     authors: false
     blog_toc: true
 - search:
-    separator: "[\\s\\-\\.\\_\\\xB7]+"
+    separator: '[\s\-,:!=\[\]()"/_]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
 - tags:
     tags_file: tags.md
 repo_name: IsaacZHL/REPENTOGON

@@ -17,7 +17,7 @@ tags:
     
 ## Functions
 
-### Add·Outcome·Weight () {: aria-label='Functions' }
+### AddOutcomeWeight () {: aria-label='Functions' }
 #### void AddOutcomeWeight ( int Value, int Weight ) {: .copyable aria-label='Functions' }
 Adds an outcome to the outcome selector with the specified `Weight`.
 
@@ -32,7 +32,7 @@ Adds an outcome to the outcome selector with the specified `Weight`.
 
 ___
 
-### Pick·Outcome () {: aria-label='Functions' }
+### PickOutcome () {: aria-label='Functions' }
 #### int PickOutcome ( [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) RNG ) {: .copyable aria-label='Functions' }
 Returns a random outcome from the list in WeightedOutcomePicker. Accepts [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html).
 

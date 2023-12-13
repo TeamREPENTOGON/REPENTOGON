@@ -16,17 +16,17 @@ tags:
         ```
 
 ## Functions
-### Create·Procedural·Item () {: aria-label='Functions' }
+### CreateProceduralItem () {: aria-label='Functions' }
 #### int CreateProceduralItem ( int Seed, int Unknown ) {: .copyable aria-label='Functions' }
 Creates a glitch item based on a given seed. 
 Returns the negative ID of the created item.
 
 ___
-### Get·Procedural·Item () {: aria-label='Functions' }
+### GetProceduralItem () {: aria-label='Functions' }
 #### [ProceduralItem](ProceduralItem.md) GetProceduralItem ( int index ) {: .copyable aria-label='Functions' }
 Get the glitch item at the given index.
 
 ___
-### Get·Procedural·Item·Count () {: aria-label='Functions' }
+### GetProceduralItemCount () {: aria-label='Functions' }
 #### int GetProceduralItemCount ( ) {: .copyable aria-label='Functions' }
 ___

@@ -10,26 +10,26 @@ Can be obtained via [Sprite:GetAnimationData()](Sprite.md#getanimationdata), [Sp
 
 ## Functions
 
-### Get·All·Layers () {: aria-label='Functions' }
+### GetAllLayers () {: aria-label='Functions' }
 #### [AnimationLayer](AnimationLayer.md)[] GetAllLayers ( ) {: .copyable aria-label='Functions' }
 Returns a table of AnimationLayers, in order from bottom to top (NOT ordered by layer ID).
 
 ___
-### Get·Layer () {: aria-label='Functions' }
+### GetLayer () {: aria-label='Functions' }
 #### [AnimationLayer](AnimationLayer.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
 Gets an AnimationLayer by that layer's ID number.
 
 ___
-### Get·Length () {: aria-label='Functions' }
+### GetLength () {: aria-label='Functions' }
 #### int GetLength ( ) {: .copyable aria-label='Functions' }
 Length of this animation in frames.
 
 ___
-### Get·Name () {: aria-label='Functions' }
+### GetName () {: aria-label='Functions' }
 #### string GetName ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Looping·Animation () {: aria-label='Functions' }
+### IsLoopingAnimation () {: aria-label='Functions' }
 #### boolean IsLoopingAnimation ( ) {: .copyable aria-label='Functions' }
 
 ___

@@ -22,7 +22,7 @@ tags:
         
 ## Functions
 
-### Get·Entity·By·Type·Var·Sub () {: aria-label='Functions' }
+### GetEntityByTypeVarSub () {: aria-label='Functions' }
 #### table GetEntityByTypeVarSub ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) type, int variant = 0 , int subtype = 0, bool strict = false) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the entity on entities2.xml that match the given type and/or variant and/or subtype. The strict parameter determines if it should only return a value when all 3 attributes(type, var and sub) match or return whatever matches the type and take the rest as maybes.
 ???- info "Table usage"
@@ -32,7 +32,7 @@ Returns a table containing the attributes of the entity on entities2.xml that ma
 ???+ note "child nodes"
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
-### Get·Entry·By·Id () {: aria-label='Functions' }
+### GetEntryById () {: aria-label='Functions' }
 #### table GetEntryById ( [XMLNode](enums/XMLNode.md) nodetype, int idx ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the corresponding xml, the matching nodetype(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given unique id.
 ???- info "Table usage"
@@ -44,7 +44,7 @@ Returns a table containing the attributes of the corresponding xml, the matching
 ???+ note "id?"
     The Id usually matches the actual id of the node in question, with the exception of cases like the entities.xml where ids are not unique, on those cases, the id is the order of the node and wont correspond with the actual id. On the cases of xmls without ids, its just the order again.
 ___
-### Get·Entry·By·Name () {: aria-label='Functions' }
+### GetEntryByName () {: aria-label='Functions' }
 #### table GetEntryByName ( [XMLNode](enums/XMLNode.md) nodetype, string name ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the corresponding xml, the matching nodetype(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given name parameter.
 ???- info "Table usage"
@@ -54,7 +54,7 @@ Returns a table containing the attributes of the corresponding xml, the matching
 ???+ note "child nodes"
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
-### Get·Entry·From·Entity () {: aria-label='Functions' }
+### GetEntryFromEntity () {: aria-label='Functions' }
 #### table GetEntryFromEntity ( [Entity](Entity.md) entity, bool autoxmlpick = true, bool strict) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the provided entity. The autoxmlpick parameter determines if only entities2.xml should be used or if it should pick the xml that matches the entitytype(Ex: items.xml for pedestal collectibles) . The strict parameter determines if it should only return a value when the type,variant and subtype attributes match or return whatever matches the type and take the rest as maybes.
 ???- info "Table usage"
@@ -64,7 +64,7 @@ Returns a table containing the attributes of the provided entity. The autoxmlpic
 ???+ note "child nodes"
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
-### Get·Num·Entries () {: aria-label='Functions' }
+### GetNumEntries () {: aria-label='Functions' }
 #### int GetNumEntries ( [XMLNode](enums/XMLNode.md) nodetype) {: .copyable aria-label='Functions' }
 Returns the number of entries a given xmlnode structure has.
 ___

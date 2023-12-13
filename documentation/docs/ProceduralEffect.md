@@ -15,7 +15,7 @@ tags:
         ```
 
 ## Functions
-### Get·Action·Property () {: aria-label='Functions' }
+### GetActionProperty () {: aria-label='Functions' }
 #### table GetActionProperty ( ) {: .copyable aria-label='Functions' }
 Returns a table that describes the action argument.
 
@@ -62,12 +62,12 @@ When `GetActionType` returns `FART`, the returned table has the following fields
 | radius | float | |
 
 ___
-### Get·Action·Type () {: aria-label='Functions' }
+### GetActionType () {: aria-label='Functions' }
 #### [ProceduralEffectActionType](enums/ProceduralEffectActionType.md) GetActionType ( ) {: .copyable aria-label='Functions' }
 Returns what to do after the effect is triggered.
 
 ___
-### Get·Condition·Property () {: aria-label='Functions' }
+### GetConditionProperty () {: aria-label='Functions' }
 #### table GetConditionProperty ( ) {: .copyable aria-label='Functions' }
 Returns a table that describes the condition argument.
 
@@ -79,12 +79,12 @@ When `GetConditionType` returns `ENTITY_SPAWN`, the returned table has the follo
 | variant |  int |
 
 ___
-### Get·Condition·Type () {: aria-label='Functions' }
+### GetConditionType () {: aria-label='Functions' }
 #### [ProceduralEffectConditionType](enums/ProceduralEffectConditionType.md) GetConditionType ( ) {: .copyable aria-label='Functions' }
 Returns the timing when the effect was triggered.
 
 ___
-### Get·Trigger·Chance () {: aria-label='Functions' }
+### GetTriggerChance () {: aria-label='Functions' }
 #### float GetTriggerChance ( ) {: .copyable aria-label='Functions' }
 
 Value form 0 to 1.

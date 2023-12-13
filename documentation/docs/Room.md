@@ -6,7 +6,7 @@ tags:
 
 ## Modified Functions
 
-### Spawn·Grid·Entity () {: aria-label='Modified Functions' }
+### SpawnGridEntity () {: aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant = 0, int Seed = default, int VarData = 0 ) {: .copyable aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Descriptor) {: .copyable aria-label='Modified Functions' }
 
@@ -15,130 +15,130 @@ ___
 
 ## Functions
 
-### Can·Pickup·Grid·Entity () {: aria-label='Functions' }
+### CanPickupGridEntity () {: aria-label='Functions' }
 #### boolean CanPickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
 Returns true if the gridentity at the given position can be picked up.
 ___
-### Can·Spawn·Obstacle·At·Position () {: aria-label='Functions' }
+### CanSpawnObstacleAtPosition () {: aria-label='Functions' }
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Backdrop () {: aria-label='Functions' }
+### GetBackdrop () {: aria-label='Functions' }
 #### [Backdrop](Backdrop.md) GetBackdrop ( ) {: .copyable aria-label='Functions' }
 Returns a [Backdrop](Backdrop.md) object.
 
 ___
-### Get·Camera () {: aria-label='Functions' }
+### GetCamera () {: aria-label='Functions' }
 #### [Camera](Camera.md) GetCamera ( ) {: .copyable aria-label='Functions' }
 Returns a [Camera](Camera.md) object.
 
 ___
-### Get·Champion·Boss·Chance () {: aria-label='Functions' }
+### GetChampionBossChance () {: aria-label='Functions' }
 #### float GetChampionBossChance ( ) {: .copyable aria-label='Functions' }
 Return the probability that boss spawns in this room will be champions.
 
 ___
-### Get·Effects () {: aria-label='Functions' }
+### GetEffects () {: aria-label='Functions' }
 #### [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html) GetEffects ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Floor·Color () {: aria-label='Functions' }
+### GetFloorColor () {: aria-label='Functions' }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetFloorColor ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·FXParams () {: aria-label='Functions' }
+### GetFXParams () {: aria-label='Functions' }
 #### [FXParams](FXParams.md) GetFXParams ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Greed·Wave·Timer () {: aria-label='Functions' }
+### GetGreedWaveTimer () {: aria-label='Functions' }
 #### int GetGreedWaveTimer ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Grid·Index·By·Tile () {: aria-label='Functions' }
+### GetGridIndexByTile () {: aria-label='Functions' }
 #### int GetGridIndexByTile ( int gridRow, int gridColumn ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Rail () {: aria-label='Functions' }
+### GetRail () {: aria-label='Functions' }
 #### [StbRailVariant](enums/StbRailVariant.md) GetRail ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Room·Clear·Delay () {: aria-label='Functions' }
+### GetRoomClearDelay () {: aria-label='Functions' }
 #### int GetRoomClearDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Shop·Item·Price () {: aria-label='Functions' }
+### GetShopItemPrice () {: aria-label='Functions' }
 #### int GetShopItemPrice ( int EntityVariant, int EntitySubType, int ShopItemID ) {: .copyable aria-label='Functions' }
 Returns the price of the item.
 
 ___
-### Get·Water·Amount () {: aria-label='Functions' }
+### GetWaterAmount () {: aria-label='Functions' }
 #### float GetWaterAmount ( ) {: .copyable aria-label='Functions' }
 Returns the "amount" of water currently in the room. Generally this will be 0 for no water and 1 for water, but values in between 0 and 1 (and technically above 1 in modded scenarios) are possible.
 
 ___
-### Get·Water·Color () {: aria-label='Functions' }
+### GetWaterColor () {: aria-label='Functions' }
 #### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetWaterColor ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Water·Color·Multiplier () {: aria-label='Functions' }
+### GetWaterColorMultiplier () {: aria-label='Functions' }
 #### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetWaterColorMultiplier ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Champion·Boss·Seed () {: aria-label='Functions' }
+### IsChampionBossSeed () {: aria-label='Functions' }
 #### boolean IsChampionBossSeed ( ) {: .copyable aria-label='Functions' }
 Return whether boss spawns in this room will be champions.
 
 ___
-### Is·Persistent·Room·Entity () {: aria-label='Functions' }
+### IsPersistentRoomEntity () {: aria-label='Functions' }
 #### boolean IsPersistentRoomEntity ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = 0 ) {: .copyable aria-label='Functions' }
 
 ___
-### Pickup·Grid·Entity () {: aria-label='Functions' }
+### PickupGridEntity () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) PickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
-### Remove·Grid·Entity·Immediate () {: aria-label='Functions' }
+### RemoveGridEntityImmediate () {: aria-label='Functions' }
 #### void RemoveGridEntityImmediate ( int GridIndex, int PathTrail, boolean KeepDecoration ) {: .copyable aria-label='Functions' }
 *Immediately* removes the GridEntity at the given index. This means grids can be properly removed and immediately replaced, *without* the need to call Room:Update.
 
 ___
-### Set·Backdrop·Type () {: aria-label='Functions' }
+### SetBackdropType () {: aria-label='Functions' }
 #### void SetBackdropType ( [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html), int Unknown ) {: .copyable aria-label='Functions' }
 This function will not work if the Unknown integer is passed as `0`.
 
 The backdrop variant chosen is seeded based on the room, and does not persist when leaving and re-entering. Calling this function again on re-entry will result in the same backdrop variant as before.
 
 ___
-### Set·Greed·Wave·Timer () {: aria-label='Functions' }
+### SetGreedWaveTimer () {: aria-label='Functions' }
 #### void SetGreedWaveTimer ( int Time ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Pause·Timer () {: aria-label='Functions' }
+### SetPauseTimer () {: aria-label='Functions' }
 #### void SetPauseTimer ( int Duration ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Rail () {: aria-label='Functions' }
+### SetRail () {: aria-label='Functions' }
 #### void SetRail ( int GridIndex, [StbRailVariant](enums/StbRailVariant.md) RailVariant ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Room·Clear·Delay () {: aria-label='Functions' }
+### SetRoomClearDelay () {: aria-label='Functions' }
 #### void SetRoomClearDelay ( int Delay ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Water·Amount () {: aria-label='Functions' }
+### SetWaterAmount () {: aria-label='Functions' }
 #### void SetWaterAmount ( float Amount ) {: .copyable aria-label='Functions' }
 Sets the amount of water that should be in the current room. Vanilla typically uses 0 for no water and 1 for water. You can technically go higher than this for some interesting results.
 
 ___
-### Set·Water·Color () {: aria-label='Functions' }
+### SetWaterColor () {: aria-label='Functions' }
 #### void SetWaterColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Water·Color·Multiplier () {: aria-label='Functions' }
+### SetWaterColorMultiplier () {: aria-label='Functions' }
 #### void SetWaterColorMultiplier ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Water·Current () {: aria-label='Functions' }
+### SetWaterCurrent () {: aria-label='Functions' }
 #### void SetWaterCurrent ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WaterCurrent ) {: .copyable aria-label='Functions' }
 Sets the strength of the water current in the room. Current sounds and particles are automatically handled.
 
@@ -146,11 +146,11 @@ The game typically uses `1` or `-1` for its values depending on current strength
 
 `Vector(0, 0)` will remove the current.
 ___
-### Try·Get·Shop·Discount () {: aria-label='Functions' }
+### TryGetShopDiscount () {: aria-label='Functions' }
 #### int TryGetShopDiscount ( int ShopItemIdx, int Price ) {: .copyable aria-label='Functions' }
 
 ___
-### Update·Color·Modifier () {: aria-label='Functions' }
+### UpdateColorModifier () {: aria-label='Functions' }
 #### void UpdateColorModifier ( boolean Process = true, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
 Updates the room's color correction with the copy of [ColorModifier](ColorModifier.md) stored in [FXParams](FXParams.md).
 `Process` runs the color correction through some additional modifications for lava and the abandoned mineshaft sequence.

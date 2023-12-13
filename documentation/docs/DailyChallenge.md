@@ -17,7 +17,7 @@ tags:
     
 ## Functions
 
-### Get·Challenge·Params () {: aria-label='Functions' }
+### GetChallengeParams () {: aria-label='Functions' }
 #### [ChallengeParam](ChallengeParam.md) GetChallengeParams ( ) {: .copyable aria-label='Functions' }
 
 ___

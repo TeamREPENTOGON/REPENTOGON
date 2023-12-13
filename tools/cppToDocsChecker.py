@@ -222,14 +222,7 @@ for file in glob.glob(CPP_FOLDER_PATH+"\**\Lua*.cpp", recursive=True):
             if returnVal == "void" and "get" in func[0].lower():
                 returnVal = "<UNDEFINED>"
 
-            # split function name with dots
-            splitFuncName = func[0]
-            loc = re.search(r"[a-z][A-Z]\w+", splitFuncName)
-            while(loc):
-                splitFuncName = splitFuncName[:loc.span()[0]+1] + "·" + splitFuncName[loc.span()[0]+1:]
-                loc = re.search(r"[a-z][A-Z]\w+", splitFuncName)
-
-            titleStr = "### "+splitFuncName+ " () {: aria-label='Functions' }"
+            titleStr = "### "+func[0]+ " () {: aria-label='Functions' }"
             funcStr = ("#### "+returnVal+" "+func[0]+ " ( "+args+" ) {: .copyable aria-label='Functions' }").replace("  "," ")
 
             print(titleStr)

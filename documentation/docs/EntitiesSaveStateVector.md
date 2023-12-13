@@ -9,7 +9,7 @@ tags:
 #### [EntitiesSaveState](EntitiesSaveState.md) Get ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·By·Type () {: aria-label='Functions' }
+### GetByType () {: aria-label='Functions' }
 #### [EntitiesSaveState](EntitiesSaveState.md) GetByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = 0, int SubType = 0 ) {: .copyable aria-label='Functions' }
 
 ___

@@ -15,48 +15,48 @@ tags:
         ```
 
 ## Functions
-### Get·Damage () {: aria-label='Functions' }
+### GetDamage () {: aria-label='Functions' }
 #### float GetDamage ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Effect () {: aria-label='Functions' }
+### GetEffect () {: aria-label='Functions' }
 #### [ProceduralEffect](ProceduralEffect.md) GetEffect ( int index ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Effect·Count () {: aria-label='Functions' }
+### GetEffectCount () {: aria-label='Functions' }
 #### int GetEffectCount ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Fire·Delay () {: aria-label='Functions' }
+### GetFireDelay () {: aria-label='Functions' }
 #### float GetFireDelay ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·ID () {: aria-label='Functions' }
+### GetID () {: aria-label='Functions' }
 #### int GetID ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Item () {: aria-label='Functions' }
+### GetItem () {: aria-label='Functions' }
 #### [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) GetItem ( ) {: .copyable aria-label='Functions' }
 Get the item config of the current glitched item.
 
 ___
-### Get·Luck () {: aria-label='Functions' }
+### GetLuck () {: aria-label='Functions' }
 #### float GetLuck ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Range () {: aria-label='Functions' }
+### GetRange () {: aria-label='Functions' }
 #### float GetRange ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Shot·Speed () {: aria-label='Functions' }
+### GetShotSpeed () {: aria-label='Functions' }
 #### float GetShotSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Speed () {: aria-label='Functions' }
+### GetSpeed () {: aria-label='Functions' }
 #### float GetSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Target·Item () {: aria-label='Functions' }
+### GetTargetItem () {: aria-label='Functions' }
 #### [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) GetTargetItem ( ) {: .copyable aria-label='Functions' }
 Get the item config that randomly selected by the current glitched item, may returns `nil` of not exists.
 

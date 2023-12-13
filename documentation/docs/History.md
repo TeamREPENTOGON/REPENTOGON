@@ -16,12 +16,12 @@ tags:
         
 ## Functions
 
-### Get·Collectibles·History () {: aria-label='Functions' }
+### GetCollectiblesHistory () {: aria-label='Functions' }
 #### [HistoryItems](HistoryItem.md)[] GetCollectiblesHistory ( ) {: .copyable aria-label='Functions' }
 Returns table of collectible [HistoryItems](HistoryItem.md)
 
 ___
-### Remove·History·Item·By·Index () {: aria-label='Functions' }
+### RemoveHistoryItemByIndex () {: aria-label='Functions' }
 #### boolean RemoveHistoryItemByIndex ( int Index ) {: .copyable aria-label='Functions' }
 Removes an item from the item history tracker on the right-hand side of the screen. Note that this does not remove the item effect from Isaac.
 

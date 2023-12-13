@@ -6,40 +6,40 @@ tags:
 
 ## Functions
 
-### Get·Alt·Rock·Type () {: aria-label='Functions' }
+### GetAltRockType () {: aria-label='Functions' }
 #### int GetAltRockType ( int backdropId ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Render·Position () {: aria-label='Functions' }
+### GetRenderPosition () {: aria-label='Functions' }
 #### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetRenderPosition ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Hurt·Damage () {: aria-label='Functions' }
+### HurtDamage () {: aria-label='Functions' }
 #### void HurtDamage ( [Entity](Entity.md) entity, int damage, int damageFlags, float unknown, boolean unknown ) {: .copyable aria-label='Functions' }
 
 ___
-### Hurt·Surroundings () {: aria-label='Functions' }
+### HurtSurroundings () {: aria-label='Functions' }
 #### void HurtSurroundings ( int damage, int gridType, int damageFlags, float unknown, boolean unknown ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Breakable·Rock () {: aria-label='Functions' }
+### IsBreakableRock () {: aria-label='Functions' }
 #### void IsBreakableRock ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Play·Break·Sound () {: aria-label='Functions' }
+### PlayBreakSound () {: aria-label='Functions' }
 #### void PlayBreakSound ( int gridType, int backdropId ) {: .copyable aria-label='Functions' }
 
 ___
-### Register·Rock·Destroyed () {: aria-label='Functions' }
+### RegisterRockDestroyed () {: aria-label='Functions' }
 #### void RegisterRockDestroyed ( int gridType ) {: .copyable aria-label='Functions' }
 
 ___
-### Render·Top () {: aria-label='Functions' }
+### RenderTop () {: aria-label='Functions' }
 #### void RenderTop ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset ) {: .copyable aria-label='Functions' }
 
 ___
 
-### To·Decoration () {: aria-label='Functions' }
+### ToDecoration () {: aria-label='Functions' }
 #### [GridEntityDecoration](GridEntityDecoration.md) ToDecoration ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityDecoration](GridEntityDecoration.md) object.
@@ -49,7 +49,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityDecoration](Gr
 	
 ___
 
-### To·Fire () {: aria-label='Functions' }
+### ToFire () {: aria-label='Functions' }
 #### [GridEntityFire](GridEntityFire.md) ToFire ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityFire](GridEntityFire.md) object.
@@ -59,7 +59,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityFire](GridEnti
 	
 ___
 
-### To·Gravity () {: aria-label='Functions' }
+### ToGravity () {: aria-label='Functions' }
 #### [GridEntityGravity](GridEntityGravity.md) ToGravity ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityGravity](GridEntityGravity.md) object.
@@ -69,7 +69,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityGravity](GridE
 	
 ___
 
-### To·Stairs () {: aria-label='Functions' }
+### ToStairs () {: aria-label='Functions' }
 #### [GridEntityStairs](GridEntityStairs.md) ToStairs ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStairs](GridEntityStairs.md) object.
@@ -79,7 +79,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStairs](GridEn
 	
 ___
 
-### To·Statue () {: aria-label='Functions' }
+### ToStatue () {: aria-label='Functions' }
 #### [GridEntityStatue](GridEntityStatue.md) ToStatue ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStatue](GridEntityStatue.md) object.
@@ -89,7 +89,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStatue](GridEn
 	
 ___
 
-### To·Trap·Door () {: aria-label='Functions' }
+### ToTrapDoor () {: aria-label='Functions' }
 #### [GridEntityTrapDoor](GridEntityTrapDoor.md) ToTrapDoor ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityTrapDoor](GridEntityTrapDoor.md) object.
@@ -99,7 +99,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityTrapDoor](Grid
 	
 ___
 
-### To·Wall () {: aria-label='Functions' }
+### ToWall () {: aria-label='Functions' }
 #### [GridEntityWall](GridEntityWall.md)ToWall ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityWall](GridEntityWall.md) object.
@@ -109,7 +109,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityWall](GridEnti
 	
 ___
 
-### To·Web () {: aria-label='Functions' }
+### ToWeb () {: aria-label='Functions' }
 #### [GridEntityWeb](GridEntityWeb.md) ToWeb ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityWeb](GridEntityWeb.md) object.
@@ -119,19 +119,19 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityWeb](GridEntit
 	
 ___
 
-### Try·Spawn·Ladder () {: aria-label='Functions' }
+### TrySpawnLadder () {: aria-label='Functions' }
 #### void TrySpawnLadder ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Try·Spawn·Worms () {: aria-label='Functions' }
+### TrySpawnWorms () {: aria-label='Functions' }
 #### void TrySpawnWorms ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Update·Collision () {: aria-label='Functions' }
+### UpdateCollision () {: aria-label='Functions' }
 #### void UpdateCollision ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Update·Neighbors () {: aria-label='Functions' }
+### UpdateNeighbors () {: aria-label='Functions' }
 #### void UpdateNeighbors ( ) {: .copyable aria-label='Functions' }
 
 ___

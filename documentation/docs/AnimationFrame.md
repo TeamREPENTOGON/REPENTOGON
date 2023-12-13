@@ -14,43 +14,43 @@ Obtained via [AnimationLayer:GetFrame()](AnimationLayer.md#getframe).
 
 ## Functions
 
-### Get·Color () {: aria-label='Functions' }
+### GetColor () {: aria-label='Functions' }
 #### [const Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetColor ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Crop () {: aria-label='Functions' }
+### GetCrop () {: aria-label='Functions' }
 #### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCrop ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Height () {: aria-label='Functions' }
+### GetHeight () {: aria-label='Functions' }
 #### float GetHeight ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Pivot () {: aria-label='Functions' }
+### GetPivot () {: aria-label='Functions' }
 #### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPivot ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Pos () {: aria-label='Functions' }
+### GetPos () {: aria-label='Functions' }
 #### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Rotation () {: aria-label='Functions' }
+### GetRotation () {: aria-label='Functions' }
 #### float GetRotation ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Scale () {: aria-label='Functions' }
+### GetScale () {: aria-label='Functions' }
 #### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetScale ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Width () {: aria-label='Functions' }
+### GetWidth () {: aria-label='Functions' }
 #### float GetWidth ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Interpolated () {: aria-label='Functions' }
+### IsInterpolated () {: aria-label='Functions' }
 #### boolean IsInterpolated ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Visible () {: aria-label='Functions' }
+### IsVisible () {: aria-label='Functions' }
 #### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 
 ___

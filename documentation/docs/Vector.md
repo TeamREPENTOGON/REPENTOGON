@@ -31,7 +31,7 @@ Defines the Subtraction of two Vector objects using the `-` operator.
 ___
 
 ## Functions
-### From·Angle () {: aria-label='Functions' }
+### FromAngle () {: aria-label='Functions' }
 #### void FromAngle ( float angle ) {: .copyable aria-label='Functions' }
 
 ___

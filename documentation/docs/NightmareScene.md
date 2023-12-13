@@ -20,23 +20,23 @@ tags:
     
 ## Functions
 
-### Get·Background·Sprite () {: aria-label='Functions' }
+### GetBackgroundSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetBackgroundSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bubble·Sprite () {: aria-label='Functions' }
+### GetBubbleSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetBubbleSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Progress·Bar·Map () {: aria-label='Functions' }
+### GetProgressBarMap () {: aria-label='Functions' }
 #### int[] GetProgressBarMap ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Progress·Bar·Sprite () {: aria-label='Functions' }
+### GetProgressBarSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetProgressBarSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Dogma·Nightmare () {: aria-label='Functions' }
+### IsDogmaNightmare () {: aria-label='Functions' }
 #### boolean IsDogmaNightmare ( ) {: .copyable aria-label='Functions' }
 
 ___

@@ -13,22 +13,22 @@ tags:
 
 ## Functions
 
-### Get·All·Rooms () {: aria-label='Functions' }
+### GetAllRooms () {: aria-label='Functions' }
 #### [LevelGeneratorRoom](LevelGeneratorRoom.md)[] GetAllRooms ( ) {: .copyable aria-label='Functions' }
 Returns a table of [LevelGeneratorRoom](LevelGeneratorRoom.md) representing all the rooms that have been generated so far.
 
 ___
-### Get·Dead·Ends () {: aria-label='Functions' }
+### GetDeadEnds () {: aria-label='Functions' }
 #### [LevelGeneratorRoom](LevelGeneratorRoom.md)[] GetDeadEnds ( ) {: .copyable aria-label='Functions' }
 Returns a table of [LevelGeneratorRoom](LevelGeneratorRoom.md) representing all the dead end rooms that have been generated so far.
 
 ___
-### Get·Non·Dead·Ends () {: aria-label='Functions' }
+### GetNonDeadEnds () {: aria-label='Functions' }
 #### [LevelGeneratorRoom](LevelGeneratorRoom.md)[] GetNonDeadEnds ( ) {: .copyable aria-label='Functions' }
 Returns a table of [LevelGeneratorRoom](LevelGeneratorRoom.md) representing all the non dead end rooms that have been generator so far.
 
 ___
-### Place·Room () {: aria-label='Functions' }
+### PlaceRoom () {: aria-label='Functions' }
 #### int PlaceRoom ( int column, int row, int shape, [LevelGeneratorRoom](LevelGeneratorRoom.md) origin ) {: .copyable aria-label='Functions' }
 Place a [LevelGeneratorRoom](LevelGeneratorRoom.md) object onto the level-grid. 
 The `origin` parameter is used as the index of the connecting room. For instance, if you want to place a room on top of the starting room, then `origin` can be the starting room of the floor.

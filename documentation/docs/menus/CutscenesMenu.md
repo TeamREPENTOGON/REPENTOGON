@@ -17,15 +17,15 @@ tags:
      
 ## Functions
 
-### Get·Sprite () {: aria-label='Functions' }
+### GetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Selected·Element () {: aria-label='Functions' }
+### GetSelectedElement () {: aria-label='Functions' }
 #### int GetSelectedElement ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Selected·Element () {: aria-label='Functions' }
+### SetSelectedElement () {: aria-label='Functions' }
 #### void SetSelectedElement ( int element ) {: .copyable aria-label='Functions' }
 
 ___

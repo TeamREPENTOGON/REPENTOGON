@@ -12,13 +12,13 @@ const regularExpressions = [
   ["Variable definitions that are falsely marked as functions", /#{4}(.)*([^\)]\s\{:)(.)*(\bFunctions\b)/],
   ["Function declaration with no arguments does not have spaces in between the brackets", /#{4}(.)*\(\)[^,]/],
   ["Variables with function or links in the title", /#{3}(.)*([\(\)]\s\{:)(.)*(\bVariables\b)/],
-  ['Function header name is not split with middle dot characters "·"', /^#{3} .*([a-z][^·_][A-Z])+.*Functions/],
   ["Headers should not have a link in them", /^#{3}\s\[/],
   ["Link to return value is missing", new RegExp("#{4} (const\\s|static\\s)*(?!\\[)(?!" + defaultVariables + "|" + ignoreVars + ")")],
   ["Function declaration first argument has no link", new RegExp("#{4}(.)*\\w \\( (?!" + defaultVariables + "|" + ignoreVars + "|\\)|\\[)")],
   ["Function declaration later argument has no link", new RegExp("#{4}(.)*\\w \\(.*,(?!\\s[" + defaultVariables + "|" + ignoreVars + "|(\\[.*\\]\\(.*\\))])")],
   ["Badge has more type-definitions than allowed", /\[ \]\(#\)\{: ((.static|.const|.abrep|.rep|.abp)\s){2,5}.tooltip .badge \}/],
-  ["Internal link doesnt work because its CamelCase.", /\[\w+\]\(([a-z][^·_][A-Z])*#[A-Z]\w+[A-Z]*/],
+  ["Internal link doesnt work because its CamelCase.", /\[\w+\]\(([a-z][^_][A-Z])*#[A-Z]\w+[A-Z]*/],
+  ["Function Header needs a space between function name and brackets", new RegExp("^### [a-zA-Z]+\\(\\)")],
 ];
 
 
@@ -37,7 +37,7 @@ for (const file of allFiles) {
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index];
     if (line.trim().startsWith("### ")) {
-      let cleanedLine = line.replaceAll("### ", "").replaceAll("·", "").split("{")[0].split("(")[0].trim();
+      let cleanedLine = line.replaceAll("### ", "").split("{")[0].split("(")[0].trim();
       cleanedLine = cleanedLine.replaceAll("__", "zzzzz"); // Change sort priority to list underscore functions below normal ones
       if (line.includes("Constructors")) {
         if(line.includes("Modified"))

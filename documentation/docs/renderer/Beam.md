@@ -38,19 +38,19 @@ This class provides access to the rendering system used for cords as used by Evi
 Adds a point to the beam. Points are stored in order of adding.
 
 ___
-### Get·Layer () {: aria-label='Functions' }
+### GetLayer () {: aria-label='Functions' }
 #### int GetLayer ( ) {: .copyable aria-label='Functions' }   
 
 ___
-### Get·Sprite () {: aria-label='Functions' }
+### GetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }   
 
 ___
-### Get·Unk·Bool () {: aria-label='Functions' }
+### GetUnkBool () {: aria-label='Functions' }
 #### boolean GetUnkBool ( ) {: .copyable aria-label='Functions' }   
 
 ___
-### Get·Use·Overlay () {: aria-label='Functions' }
+### GetUseOverlay () {: aria-label='Functions' }
 #### boolean GetUseOverlay ( ) {: .copyable aria-label='Functions' }   
 
 ___
@@ -58,19 +58,19 @@ ___
 #### void Render ( boolean ClearPoints = true ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Layer () {: aria-label='Functions' }
+### SetLayer () {: aria-label='Functions' }
 #### void SetLayer ( int LayerID ) {: .copyable aria-label='Functions' }   
 #### void SetLayer ( string LayerName ) {: .copyable aria-label='Functions' }   
 ___
-### Set·Sprite () {: aria-label='Functions' }
+### SetSprite () {: aria-label='Functions' }
 #### void SetSprite ( [Sprite](../Sprite.md) Sprite ) {: .copyable aria-label='Functions' }   
 
 ___
-### Set·Unk·Bool () {: aria-label='Functions' }
+### SetUnkBool () {: aria-label='Functions' }
 #### void SetUnkBool ( boolean UnkBool ) {: .copyable aria-label='Functions' }   
 
 ___
-### Set·Use·Overlay () {: aria-label='Functions' }
+### SetUseOverlay () {: aria-label='Functions' }
 #### void SetUseOverlay ( boolean UseOverlay ) {: .copyable aria-label='Functions' }   
 
 ___

@@ -11,11 +11,11 @@ tags:
         
 ## Functions
 
-### Get·Timeout () {: aria-label='Functions' }
+### GetTimeout () {: aria-label='Functions' }
 #### int GetTimeout ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Timeout () {: aria-label='Functions' }
+### SetTimeout () {: aria-label='Functions' }
 #### void SetTimeout ( int timeout ) {: .copyable aria-label='Functions' }
 
 ___

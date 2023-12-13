@@ -19,13 +19,13 @@ tags:
 
 ## Functions 
 
-### Get·Same·Stage () {: aria-label='Functions' }
+### GetSameStage () {: aria-label='Functions' }
 #### boolean GetSameStage ( ) {: .copyable aria-label='Functions' }
 
 Indicate if the stage transition screen will display Isaac's head moving from one stage to the other (`false`) or not (`true`).
 ___
 
-### Set·Same·Stage () {: aria-label='Functions' }
+### SetSameStage () {: aria-label='Functions' }
 #### void SetSameStage ( boolean on ) {: .copyable aria-label='Functions' }
 Configure whether the stage transition will display Isaac's head moving from one stage to the other (`false`) or not (`true`).
 

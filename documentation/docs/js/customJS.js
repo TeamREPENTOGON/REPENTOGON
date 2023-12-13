@@ -395,9 +395,6 @@ document$.subscribe(function() {
             var firstATag = $(this).find('a').first();
             colorizeSearchResults(firstATag);
         });
-        $("li.md-search-result__item").find('a').each(function(e) {
-            hidePlaceholderChar($(this));
-        });
         $("article.md-search-result__article").each(function(e) {
             if ($(this).attr("data-md-score") < 0) {
                 $(this).parent().parent().hide();
@@ -408,11 +405,6 @@ document$.subscribe(function() {
     });
     var config = { attributes: true, childList: true, characterData: true };
     observer.observe(target, config);
-
-    //Hide Placeholder chars everywhere
-    $("h3, a.md-nav__link").each(function(e) {
-        hidePlaceholderChar($(this));
-    })
 
     //Add Edit button to each header
     var editButton = $(".md-content__button.md-icon")
@@ -494,10 +486,6 @@ function jumpToElement(element) {
     $('html, body').animate({
         scrollTop: $(element).offset().top - 75
     }, 5);
-}
-
-function hidePlaceholderChar(element) {
-    element.html(element.html().replaceAll('·', ""));
 }
 
 function colorizeSearchResults(element) {

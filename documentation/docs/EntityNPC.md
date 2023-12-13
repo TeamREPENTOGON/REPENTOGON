@@ -9,72 +9,72 @@ tags:
 
 ## Functions
 
-### Fire·Boss·Projectiles·Ex() {: aria-label='Functions' }
+### FireBossProjectilesEx () {: aria-label='Functions' }
 #### [EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html)[] FireBossProjectilesEx ( int numProjectiles, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
 Same as [FireBossProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
-### Fire·Grid·Entity () {: aria-label='Functions' }
+### FireGridEntity () {: aria-label='Functions' }
 #### [EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html) FireGridEntity ( [Sprite](Sprite.md) sprite, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) desc, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity, int backdrop = 1 ) {: .copyable aria-label='Functions' }
 
 ___
-### Fire·Projectiles·Ex() {: aria-label='Functions' }
+### FireProjectilesEx () {: aria-label='Functions' }
 #### [EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html)[] FireProjectilesEx ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity, ProjectilesMode mode, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
 Same as [FireProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
-### Get·Controller·Id() {: aria-label='Functions' }
+### GetControllerId () {: aria-label='Functions' }
 #### int GetControllerId ( ) {: .copyable aria-label='Functions' }
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return -1 when its not being controlled by any player.
 
 ___
-### Get·Dirt·Color() {: aria-label='Functions' }
+### GetDirtColor () {: aria-label='Functions' }
 #### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetDirtColor ( ) {: .copyable aria-label='Functions' }
 Returns the dynamic dirt color of the entity. This lets entities like Nightcrawler blend in to the environment.
 
 ___
-### Get·Hit·List() {: aria-label='Functions' }
+### GetHitList () {: aria-label='Functions' }
 #### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Shield·Strength() {: aria-label='Functions' }
+### GetShieldStrength () {: aria-label='Functions' }
 #### float GetShieldStrength ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Play·Sound () {: aria-label='Functions' }
+### PlaySound () {: aria-label='Functions' }
 #### void PlaySound ( int id, float volume = 1.0, int framedelay = 2, boolean loop = false, float pitch = 1.0 ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Controller·Id() {: aria-label='Functions' }
+### SetControllerId () {: aria-label='Functions' }
 #### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
 Sets the ControllerId for the NPC, which indicates which player will control it. Set it to -1 for no player controls(back to normal behaviour).
 
 ___
-### Set·Shield·Strength() {: aria-label='Functions' }
+### SetShieldStrength () {: aria-label='Functions' }
 #### void SetShieldStrength ( float Strength ) {: .copyable aria-label='Functions' }
 
 ___
-### Spawn·Blood·Cloud () {: aria-label='Functions' }
+### SpawnBloodCloud () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color ) {: .copyable aria-label='Functions' }
 
 ___
-### Spawn·Blood·Splash () {: aria-label='Functions' }
+### SpawnBloodSplash () {: aria-label='Functions' }
 #### void SpawnBloodSplash ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Throw·Maggot·At·Pos () {: aria-label='Functions' }
+### ThrowMaggotAtPos () {: aria-label='Functions' }
 #### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) origin, float velocity = -8.0f, float yOffset = 0.0f ) {: .copyable aria-label='Functions' }
 
 ___
-### Try·Force·Target() {: aria-label='Functions' }
+### TryForceTarget () {: aria-label='Functions' }
 #### boolean TryForceTarget ( [Entity](Entity.md) target, int duration ) {: .copyable aria-label='Functions' }
 
 ___
-### Try·Throw () {: aria-label='Functions' }
+### TryThrow () {: aria-label='Functions' }
 #### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ref, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) dir, int force ) {: .copyable aria-label='Functions' }
 
 ___
-### Update·Dirt·Color() {: aria-label='Functions' }
+### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( boolean Immediate ) {: .copyable aria-label='Functions' }
 Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
 

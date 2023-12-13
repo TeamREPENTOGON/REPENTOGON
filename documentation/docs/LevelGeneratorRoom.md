@@ -20,7 +20,7 @@ tags:
 Return the column of the room slot on the level grid (index is 0 based).
 
 ___
-### Door·Mask () {: aria-label='Functions' }
+### DoorMask () {: aria-label='Functions' }
 #### int DoorMask ( ) {: .copyable aria-label='Functions' }
 Return a mask of the available doors of the room slot.
 In order to check if a door at a given slot is available, use the DoorSlot enumeration.
@@ -34,7 +34,7 @@ In order to check if a door at a given slot is available, use the DoorSlot enume
     ```
 
 ___
-### Generation·Index () {: aria-label='Functions' }
+### GenerationIndex () {: aria-label='Functions' }
 #### int GenerationIndex ( ) {: .copyable aria-label='Functions' }
 Index of the room during generation: 0 if the room was the first to be generated, 1 if it was the second etc.
 

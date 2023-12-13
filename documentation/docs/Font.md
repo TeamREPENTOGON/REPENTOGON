@@ -6,33 +6,33 @@ tags:
 
 ## Modified Functions
 
-### Draw·String () {: aria-label='Modified Functions' }
+### DrawString () {: aria-label='Modified Functions' }
 #### void DrawString ( string String, float PositionX, float PositionY, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) RenderColor, int BoxWidth = 0, boolean Center = false ) {: .copyable aria-label='Modified Functions' }
 Same as default function, but input gets validated better to prevent crashes
 
 ___
 
-### Draw·String·Scaled () {: aria-label='Modified Functions' }
+### DrawStringScaled () {: aria-label='Modified Functions' }
 #### void DrawStringScaled ( string String, float PositionX, float PositionY, float ScaleX, float ScaleY, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) RenderColor, int BoxWidth = 0, boolean Center = false ) {: .copyable aria-label='Modified Functions' }
 Same as default function, but input gets validated better to prevent crashes
 
 ___
-### Draw·String·Scaled·UTF8 () {: aria-label='Modified Functions' }
+### DrawStringScaledUTF8 () {: aria-label='Modified Functions' }
 #### void DrawStringScaledUTF8 ( string String, float PositionX, float PositionY, float ScaleX, float ScaleY, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) RenderColor, int BoxWidth = 0, boolean Center = false ) {: .copyable aria-label='Modified Functions' }
 Same as default function, but input gets validated better to prevent crashes
 
 ___
-### Draw·String·UTF8 () {: aria-label='Modified Functions' }
+### DrawStringUTF8 () {: aria-label='Modified Functions' }
 #### void DrawStringUTF8 ( string String, float PositionX, float PositionY, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) RenderColor, int BoxWidth = 0, boolean Center = false ) {: .copyable aria-label='Modified Functions' }
 Same as default function, but input gets validated better to prevent crashes
 
 ___
-### Get·String·Width () {: aria-label='Modified Functions' }
+### GetStringWidth () {: aria-label='Modified Functions' }
 #### int GetStringWidth ( string String ) {: .copyable aria-label='Modified Functions' }
 Same as default function, but input gets validated better to prevent crashes
 
 ___
-### Get·String·Width·UTF8 () {: aria-label='Modified Functions' }
+### GetStringWidthUTF8 () {: aria-label='Modified Functions' }
 #### int GetStringWidthUTF8 ( string String ) {: .copyable aria-label='Modified Functions' }
 Same as default function, but input gets validated better to prevent crashes
 

@@ -16,31 +16,31 @@ tags:
         
 ## Functions
 
-### Get·Item·ID () {: aria-label='Functions' }
+### GetItemID () {: aria-label='Functions' }
 #### int GetItemID ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Item·Pool·Type () {: aria-label='Functions' }
+### GetItemPoolType () {: aria-label='Functions' }
 #### [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) GetItemPoolType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Level·Stage () {: aria-label='Functions' }
+### GetLevelStage () {: aria-label='Functions' }
 #### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLevelStage ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Room·Type () {: aria-label='Functions' }
+### GetRoomType () {: aria-label='Functions' }
 #### [RoomType](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomType.html) GetRoomType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Stage·Type () {: aria-label='Functions' }
+### GetStageType () {: aria-label='Functions' }
 #### [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) GetStageType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Time () {: aria-label='Functions' }
+### GetTime () {: aria-label='Functions' }
 #### int GetTime ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Trinket () {: aria-label='Functions' }
+### IsTrinket () {: aria-label='Functions' }
 #### boolean IsTrinket ( ) {: .copyable aria-label='Functions' }
 
 ___

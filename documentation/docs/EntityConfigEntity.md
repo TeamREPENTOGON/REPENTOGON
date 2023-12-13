@@ -16,154 +16,154 @@ tags:
         
 ## Functions
 
-### Can·Be·Champion () {: aria-label='Functions' }
+### CanBeChampion () {: aria-label='Functions' }
 #### boolean CanBeChampion ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Can·Be·Rerolled·Into () {: aria-label='Functions' }
+### CanBeRerolledInto () {: aria-label='Functions' }
 #### boolean CanBeRerolledInto ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Can·Shut·Doors () {: aria-label='Functions' }
+### CanShutDoors () {: aria-label='Functions' }
 #### boolean CanShutDoors ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Anm2·Path () {: aria-label='Functions' }
+### GetAnm2Path () {: aria-label='Functions' }
 #### string GetAnm2Path ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Base·HP () {: aria-label='Functions' }
+### GetBaseHP () {: aria-label='Functions' }
 #### float GetBaseHP ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bestiary·Animation () {: aria-label='Functions' }
+### GetBestiaryAnimation () {: aria-label='Functions' }
 #### string GetBestiaryAnimation ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bestiary·Anm2·Path () {: aria-label='Functions' }
+### GetBestiaryAnm2Path () {: aria-label='Functions' }
 #### string GetBestiaryAnm2Path ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bestiary·Floor·Alt () {: aria-label='Functions' }
+### GetBestiaryFloorAlt () {: aria-label='Functions' }
 #### string GetBestiaryFloorAlt ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bestiary·Offset () {: aria-label='Functions' }
+### GetBestiaryOffset () {: aria-label='Functions' }
 #### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetBestiaryOffset ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bestiary·Overlay () {: aria-label='Functions' }
+### GetBestiaryOverlay () {: aria-label='Functions' }
 #### string GetBestiaryOverlay ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bestiary·Scale () {: aria-label='Functions' }
+### GetBestiaryScale () {: aria-label='Functions' }
 #### float GetBestiaryScale ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Boss·ID () {: aria-label='Functions' }
+### GetBossID () {: aria-label='Functions' }
 #### int GetBossID ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Collision·Damage () {: aria-label='Functions' }
+### GetCollisionDamage () {: aria-label='Functions' }
 #### float GetCollisionDamage ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Collision·Interval () {: aria-label='Functions' }
+### GetCollisionInterval () {: aria-label='Functions' }
 #### int GetCollisionInterval ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Collision·Radius () {: aria-label='Functions' }
+### GetCollisionRadius () {: aria-label='Functions' }
 #### float GetCollisionRadius ( ) {: .copyable aria-label='Functions' }
 Also known as "Size".
 
 ___
-### Get·Collision·Radius·Multiplier () {: aria-label='Functions' }
+### GetCollisionRadiusMultiplier () {: aria-label='Functions' }
 #### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCollisionRadiusMultiplier ( ) {: .copyable aria-label='Functions' }
 Also known as "SizeMulti".
 
 ___
-### Get·Entity·Tags () {: aria-label='Functions' }
+### GetEntityTags () {: aria-label='Functions' }
 #### int GetEntityTags ( ) {: .copyable aria-label='Functions' }
 Returns the bitmask of [EntityTag](enums/EntityTag.md)s for this entity.
 
 ___
-### Get·Friction () {: aria-label='Functions' }
+### GetFriction () {: aria-label='Functions' }
 #### float GetFriction ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Gib·Flags () {: aria-label='Functions' }
+### GetGibFlags () {: aria-label='Functions' }
 #### int GetGibFlags ( ) {: .copyable aria-label='Functions' }
 Returns the bitmask of [GibFlag](enums/GibFlag.md)s for this entity.
 
 ___
-### Get·Gibs·Amount () {: aria-label='Functions' }
+### GetGibsAmount () {: aria-label='Functions' }
 #### int GetGibsAmount ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Grid·Collision·Points () {: aria-label='Functions' }
+### GetGridCollisionPoints () {: aria-label='Functions' }
 #### int GetGridCollisionPoints ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Mass () {: aria-label='Functions' }
+### GetMass () {: aria-label='Functions' }
 #### float GetMass ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Mod·Name () {: aria-label='Functions' }
+### GetModName () {: aria-label='Functions' }
 #### string GetModName ( ) {: .copyable aria-label='Functions' }
 Name string of the mod that entity is from.
 
 Returns nil for vanilla entities.
 
 ___
-### Get·Name () {: aria-label='Functions' }
+### GetName () {: aria-label='Functions' }
 #### string GetName ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Portrait·ID () {: aria-label='Functions' }
+### GetPortraitID () {: aria-label='Functions' }
 #### int GetPortraitID ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Shadow·Size () {: aria-label='Functions' }
+### GetShadowSize () {: aria-label='Functions' }
 #### float GetShadowSize ( ) {: .copyable aria-label='Functions' }
 Note that this value is the "shadowSize" specified in the XML divided by 100.
 
 ___
-### Get·Shield·Strength () {: aria-label='Functions' }
+### GetShieldStrength () {: aria-label='Functions' }
 #### float GetShieldStrength ( ) {: .copyable aria-label='Functions' }
 The amount of armor the entity has.
 
 ___
-### Get·Stage·HP () {: aria-label='Functions' }
+### GetStageHP () {: aria-label='Functions' }
 #### float GetStageHP ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Sub·Type () {: aria-label='Functions' }
+### GetSubType () {: aria-label='Functions' }
 #### int GetSubType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Type () {: aria-label='Functions' }
+### GetType () {: aria-label='Functions' }
 #### int GetType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Variant () {: aria-label='Functions' }
+### GetVariant () {: aria-label='Functions' }
 #### int GetVariant ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Has·Entity·Tags () {: aria-label='Functions' }
+### HasEntityTags () {: aria-label='Functions' }
 #### boolean HasEntityTags ( int tags ) {: .copyable aria-label='Functions' }
 Returns true if the entity has all [EntityTag](enums/EntityTag.md)s specified in the provided bitset.
 
 ___
-### Has·Floor·Alts () {: aria-label='Functions' }
+### HasFloorAlts () {: aria-label='Functions' }
 #### boolean HasFloorAlts ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Has·Gib·Flags () {: aria-label='Functions' }
+### HasGibFlags () {: aria-label='Functions' }
 #### boolean HasGibFlags ( int flags ) {: .copyable aria-label='Functions' }
 Returns true if the entity has all [GibFlag](enums/GibFlag.md)s specified in the provided bitset.
 
 ___
-### Is·Boss () {: aria-label='Functions' }
+### IsBoss () {: aria-label='Functions' }
 #### boolean IsBoss ( ) {: .copyable aria-label='Functions' }
 
 ___

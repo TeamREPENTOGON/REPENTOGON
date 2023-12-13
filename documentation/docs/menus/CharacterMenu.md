@@ -17,115 +17,115 @@ tags:
 
 ## Functions
 
-### Get·Big·Char·Page·Sprite () {: aria-label='Functions' }
+### GetBigCharPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetBigCharPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·B·G·Sprite () {: aria-label='Functions' }
+### GetBGSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetBGSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Character·Portrait·Sprite () {: aria-label='Functions' }
+### GetCharacterPortraitSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetCharacterPortraitSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Character·Wheel·Depth () {: aria-label='Functions' }
+### GetCharacterWheelDepth () {: aria-label='Functions' }
 #### float GetCharacterWheelDepth ( ) {: .copyable aria-label='Functions' }
 Returns the depth of the character selection wheel object.
 ___
-### Get·Character·Wheel·Width () {: aria-label='Functions' }
+### GetCharacterWheelWidth () {: aria-label='Functions' }
 #### float GetCharacterWheelWidth ( ) {: .copyable aria-label='Functions' }
 Returns the width of the character selection wheel object.
 ___
-### Get·Difficulty () {: aria-label='Functions' }
+### GetDifficulty () {: aria-label='Functions' }
 #### int GetDifficulty ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Difficulty·Page·Sprite () {: aria-label='Functions' }
+### GetDifficultyPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetDifficultyPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Difficulty·Overlay·Sprite () {: aria-label='Functions' }
+### GetDifficultyOverlaySprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetDifficultyOverlaySprite ( ) {: .copyable aria-label='Functions' }
 The blood stain when selecting Hard mode / Greedier
 ___
-### Get·Easteregg·Page·Sprite () {: aria-label='Functions' }
+### GetEastereggPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetEastereggPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Is·Character·Unlocked () {: aria-label='Functions' }
+### GetIsCharacterUnlocked () {: aria-label='Functions' }
 #### boolean GetIsCharacterUnlocked ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Greed·Deco·Sprite () {: aria-label='Functions' }
+### GetGreedDecoSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetGreedDecoSprite ( ) {: .copyable aria-label='Functions' }
 Displayed when greedmode is selected
 ___
-### Get·Num·Characters () {: aria-label='Functions' }
+### GetNumCharacters () {: aria-label='Functions' }
 #### int GetNumCharacters ( ) {: .copyable aria-label='Functions' }
 Number of characters in the wheel. 
 ___
-### Get·Page·Swap·Widget·Sprite () {: aria-label='Functions' }
+### GetPageSwapWidgetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetPageSwapWidgetSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Scroll·Speed () {: aria-label='Functions' }
+### GetScrollSpeed () {: aria-label='Functions' }
 #### float GetScrollSpeed ( ) {: .copyable aria-label='Functions' }
 Returns the speed of the animation playing when rotating the character selection wheel.
 ___
-### Get·Seed·Entry·Sprite () {: aria-label='Functions' }
+### GetSeedEntrySprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSeedEntrySprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Seed·Page·Sprite () {: aria-label='Functions' }
+### GetSeedPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSeedPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Seed·Unlock·Page·Sprite () {: aria-label='Functions' }
+### GetSeedUnlockPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSeedUnlockPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Selected·Character·Menu () {: aria-label='Functions' }
+### GetSelectedCharacterMenu () {: aria-label='Functions' }
 #### int GetSelectedCharacterMenu ( ) {: .copyable aria-label='Functions' }
 0 for Normal, 1 for Tainted
 ___
-### Get·Selected·Character·ID () {: aria-label='Functions' }
+### GetSelectedCharacterID () {: aria-label='Functions' }
 #### int GetSelectedCharacterID ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Tainted·B·G·Deco·Sprite () {: aria-label='Functions' }
+### GetTaintedBGDecoSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetTaintedBGDecoSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Win·Streak·Page·Sprite () {: aria-label='Functions' }
+### GetWinStreakPageSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetWinStreakPageSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Character·Wheel·Depth () {: aria-label='Functions' }
+### SetCharacterWheelDepth () {: aria-label='Functions' }
 #### void SetCharacterWheelDepth ( float value ) {: .copyable aria-label='Functions' }
 Set the depth of the character selection wheel object.
 ___
-### Set·Character·Wheel·Width () {: aria-label='Functions' }
+### SetCharacterWheelWidth () {: aria-label='Functions' }
 #### void SetCharacterWheelWidth ( float value ) {: .copyable aria-label='Functions' }
 Set the width of the character selection wheel object.
 ___
-### Set·Difficulty () {: aria-label='Functions' }
+### SetDifficulty () {: aria-label='Functions' }
 #### void SetDifficulty ( int Difficulty ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Is·Character·Unlocked () {: aria-label='Functions' }
+### SetIsCharacterUnlocked () {: aria-label='Functions' }
 #### void SetIsCharacterUnlocked ( boolean IsUnlocked ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Scroll·Speed () {: aria-label='Functions' }
+### SetScrollSpeed () {: aria-label='Functions' }
 #### void SetScrollSpeed ( float speed ) {: .copyable aria-label='Functions' }
 Set the speed of the animation playing when rotating the character selection wheel.
 ___
-### Set·Selected·Character·Menu () {: aria-label='Functions' }
+### SetSelectedCharacterMenu () {: aria-label='Functions' }
 #### void SetSelectedCharacterMenu ( int menu ) {: .copyable aria-label='Functions' }
 0 for Normal, 1 for Tainted
 ___
-### Set·Selected·Character·ID () {: aria-label='Functions' }
+### SetSelectedCharacterID () {: aria-label='Functions' }
 #### void SetSelectedCharacterID ( int characterID ) {: .copyable aria-label='Functions' }
 
 ___

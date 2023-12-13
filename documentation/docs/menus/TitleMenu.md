@@ -17,7 +17,7 @@ tags:
 
 ## Functions
 
-### Get·Sprite () {: aria-label='Functions' }
+### GetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }
 
 ___

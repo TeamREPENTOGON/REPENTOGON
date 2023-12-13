@@ -18,37 +18,37 @@ tags:
     
 ## Functions
 
-### Get·Bestiary·Death·Count () {: aria-label='Functions' }
+### GetBestiaryDeathCount () {: aria-label='Functions' }
 #### void GetBestiaryDeathCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bestiary·Encounter·Count () {: aria-label='Functions' }
+### GetBestiaryEncounterCount () {: aria-label='Functions' }
 #### void GetBestiaryEncounterCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Bestiary·Kill·Count () {: aria-label='Functions' }
+### GetBestiaryKillCount () {: aria-label='Functions' }
 #### void GetBestiaryKillCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Event·Counter () {: aria-label='Functions' }
+### GetEventCounter () {: aria-label='Functions' }
 #### void GetEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter ) {: .copyable aria-label='Functions' }
 
 ___
-### Increase·Event·Counter () {: aria-label='Functions' }
+### IncreaseEventCounter () {: aria-label='Functions' }
 #### void IncreaseEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter, int Num ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Challenge·Completed () {: aria-label='Functions' }
+### IsChallengeCompleted () {: aria-label='Functions' }
 #### boolean IsChallengeCompleted ( [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) ChallengeId ) {: .copyable aria-label='Functions' }
 Checks if a challenge is completed.
 
 ___
-### Is·Item·In·Collection () {: aria-label='Functions' }
+### IsItemInCollection () {: aria-label='Functions' }
 #### boolean IsItemInCollection ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleId ) {: .copyable aria-label='Functions' }
 Checks if an item is in the collection. Aka. its at least picked up once in any run.
 
 ___
-### Try·Unlock () {: aria-label='Functions' }
+### TryUnlock () {: aria-label='Functions' }
 #### boolean TryUnlock ( [Achievement](enums/Achievement.md) Unlock ) {: .copyable aria-label='Functions' }
 Returns `true` if successful, `false` if unlocking failed or the secret was already unlocked.
 

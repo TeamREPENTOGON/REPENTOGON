@@ -17,19 +17,19 @@ tags:
 
 ## Functions
 
-### Flash·Red·Hearts () {: aria-label='Functions' }
+### FlashRedHearts () {: aria-label='Functions' }
 #### void FlashRedHearts ( [EntityPlayer](EntityPlayer.md) Player ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Charge·Bar·Sprite () {: aria-label='Functions' }
+### GetChargeBarSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetChargeBarSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Pickups·HUD·Sprite () {: aria-label='Functions' }
+### GetPickupsHUDSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetPickupsHUDSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Player·HUD () {: aria-label='Functions' }
+### GetPlayerHUD () {: aria-label='Functions' }
 #### [PlayerHUD](PlayerHUD.md) GetPlayerHUD ( int Index = 0 ) {: .copyable aria-label='Functions' }
 
 ___

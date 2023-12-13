@@ -8,51 +8,51 @@ tags:
 --8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
 ## Functions
 
-### Get·Costume·Layer·Sprite () {: aria-label='Functions' }
+### GetCostumeLayerSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetCostumeLayerSprite ( [BombCostumeLayer](enums/BombCostumeLayer.md) LayerID ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Explosion·Countdown () {: aria-label='Functions' }
+### GetExplosionCountdown () {: aria-label='Functions' }
 #### int GetExplosionCountdown ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Falling·Speed () {: aria-label='Functions' }
+### GetFallingSpeed () {: aria-label='Functions' }
 #### float GetFallingSpeed ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Height () {: aria-label='Functions' }
+### GetHeight () {: aria-label='Functions' }
 #### float GetHeight ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Hit·List () {: aria-label='Functions' }
+### GetHitList () {: aria-label='Functions' }
 #### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Get·Scale () {: aria-label='Functions' }
+### GetScale () {: aria-label='Functions' }
 #### float GetScale ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Is·Loading·Costumes () {: aria-label='Functions' }
+### IsLoadingCostumes () {: aria-label='Functions' }
 #### boolean IsLoadingCostumes ( ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Falling·Speed () {: aria-label='Functions' }
+### SetFallingSpeed () {: aria-label='Functions' }
 #### void SetFallingSpeed ( float Speed ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Height () {: aria-label='Functions' }
+### SetHeight () {: aria-label='Functions' }
 #### void SetHeight ( float Height ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Load·Costumes () {: aria-label='Functions' }
+### SetLoadCostumes () {: aria-label='Functions' }
 #### void SetLoadCostumes ( boolean Load ) {: .copyable aria-label='Functions' }
 
 ___
-### Set·Scale () {: aria-label='Functions' }
+### SetScale () {: aria-label='Functions' }
 #### void SetScale ( float Scale ) {: .copyable aria-label='Functions' }
 
 ___
-### Update·Dirt·Color () {: aria-label='Functions' }
+### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( ) {: .copyable aria-label='Functions' }
 
 ___
