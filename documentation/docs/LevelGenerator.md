@@ -9,7 +9,7 @@ tags:
     
     This class cannot be instanciated. The only way to access it is through callback parameters.
 
-    * [MC_POST_LEVEL_LAYOUT_GENERATED](/enums/ModCallbacks.html#mc_post_level_layout_generated)
+    * [MC_POST_LEVEL_LAYOUT_GENERATED](enums/ModCallbacks.md#mc_post_level_layout_generated)
 
 ## Functions
 

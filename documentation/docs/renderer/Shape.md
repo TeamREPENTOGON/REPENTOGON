@@ -20,6 +20,6 @@ ___
 
 ___
 ### Capsule () {: aria-label='Functions' }
-#### void Capsule ([Capsule](Capsule.md) capsule ) {: .copyable aria-label='Functions' }
+#### void Capsule ([Capsule](../Capsule.md) capsule ) {: .copyable aria-label='Functions' }
 Assign a capsule collider to the shape.
 ___

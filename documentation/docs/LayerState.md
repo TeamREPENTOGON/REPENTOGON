@@ -7,7 +7,7 @@ tags:
 ## Functions
 
 ### Get·Blend·Mode() {: aria-label='Functions' }
-#### [BlendMode](BlendMode.md) GetBlendMode ( ) {: .copyable aria-label='Functions' }
+#### [BlendMode](renderer/BlendMode.md) GetBlendMode ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Color () {: aria-label='Functions' }

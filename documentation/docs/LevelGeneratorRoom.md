@@ -11,7 +11,7 @@ tags:
     
     Access to instances is always performed through methods of the [LevelGenerator](LevelGenerator.md) itself, or instances are given as parameters of the callbacks:  
     
-    * [MC_PRE_LEVEL_PLACE_ROOM](/enums/ModCallbacks.html#mc_pre_level_place_room)
+    * [MC_PRE_LEVEL_PLACE_ROOM](enums/ModCallbacks.md#mc_pre_level_place_room)
 
 ## Functions
 

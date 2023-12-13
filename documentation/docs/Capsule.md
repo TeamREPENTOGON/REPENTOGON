@@ -7,13 +7,13 @@ tags:
 ???+ info
     You can get this class by using the following functions:
 
-    * [Entity:GetCollisionCapsule()](../Entity.md#getcollisioncapsule)
-    * [Entity:GetNullCapsule()](../Entity.md#getnullcapsule)
+    * [Entity:GetCollisionCapsule()](Entity.md#getcollisioncapsule)
+    * [Entity:GetNullCapsule()](Entity.md#getnullcapsule)
         
 ## Functions
 
 ### Collide () {: aria-label='Functions' }
-#### boolean Collide ( [Capsule](Capsule.md) capsule2, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) vec ) {: .copyable aria-label='Functions' }
+#### boolean Collide ( [Capsule](Capsule.md) capsule2, [Vector](Vector.md) vec ) {: .copyable aria-label='Functions' }
 
 ___
 ### Get·Direction () {: aria-label='Functions' }

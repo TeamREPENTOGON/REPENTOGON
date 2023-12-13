@@ -1475,14 +1475,14 @@ Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1420 |MC_PRE_GRID_ENTITY_STAIRCASE_UPDATE {: .copyable } | ([GridEntityStaircase](../GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1420 |MC_PRE_GRID_ENTITY_STAIRCASE_UPDATE {: .copyable } | ([GridEntityStairs](../GridEntityStairs.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_STAIRCASE_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1421 |MC_POST_GRID_ENTITY_STAIRCASE_UPDATE_RENDER {: .copyable } | ([GridEntityStaircase](../GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1421 |MC_POST_GRID_ENTITY_STAIRCASE_UPDATE_RENDER {: .copyable } | ([GridEntityStairs](../GridEntityStairs.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_STATUE_UPDATE
 Accepts `false` to cancel the update.
@@ -1601,14 +1601,14 @@ Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modi
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1440 |MC_PRE_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStaircase](../GridEntityStaircase.md) Staircase, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1440 |MC_PRE_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStairs](../GridEntityStairs.md) Staircase, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
 
 ### MC_POST_GRID_ENTITY_STAIRCASE_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1441 |MC_POST_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStaircase](../GridEntityStaircase.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1441 |MC_POST_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStairs](../GridEntityStairs.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_DECORATION_RENDER
 Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.

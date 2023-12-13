@@ -83,26 +83,16 @@ nav:
 - Docs:
   - Home: ./docs.md
   - Last visited:
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
-    - ? ''
-      : PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
+    - '': snippets/PLACEHOLDER.md
   - Frequently used:
     - Isaac.: Isaac.md
     - Entity: Entity.md
@@ -140,6 +130,7 @@ nav:
     - FollowerPriority: enums/FollowerPriority.md
     - Giantbook: enums/Giantbook.md
     - GibFlag: enums/GibFlag.md
+    - GLSLType: enums/GLSLType.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
@@ -168,6 +159,7 @@ nav:
     - PurityState: enums/PurityState.md
     - RetractingSpikesVariant: enums/RetractingSpikesVariant.md
     - RoomSubType: enums/RoomSubType.md
+    - ShaderType: enums/ShaderType.md
     - SlotVariant: enums/SlotVariant.md
     - StbGridType: enums/StbGridType.md
     - StbPoopSubType: enums/StbPoopSubType.md
@@ -217,6 +209,7 @@ nav:
     - GridEntityDoor: GridEntityDoor.md
     - GridEntityFire: GridEntityFire.md
     - GridEntityGravity: GridEntityGravity.md
+    - GridEntityPressurePlate: GridEntityPressurePlate.md
     - GridEntityRock: GridEntityRock.md
     - GridEntityStairs: GridEntityStairs.md
     - GridEntityStatue: GridEntityStatue.md
@@ -277,8 +270,8 @@ nav:
   - PocketItem: PocketItem.md
   - ProjectileParams: ProjectileParams.md
   - Rendering:
-    - Beam: Beam.md
-    - BlendMode: BlendMode.md
+    - Beam: renderer/Beam.md
+    - BlendMode: renderer/BlendMode.md
     - DestinationQuad: renderer/DestinationQuad.md
     - GLSLValue: renderer/GLSLValue.md
     - Image: renderer/Image.md
@@ -315,7 +308,7 @@ nav:
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
   - XMLData: XMLData.md
-- Blog: blog/index.html
+- Blog: blog/index.md
 - Changes:
   - General: changes/General.md
   - Debugging: changes/Debugging.md

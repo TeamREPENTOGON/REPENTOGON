@@ -7,7 +7,7 @@ tags:
 ???+ info
     You can get this class by using the following functions:
 
-    * [LayerState:GetBlendMode()](LayerState.md#getblendmode)
+    * [LayerState:GetBlendMode()](../LayerState.md#getblendmode)
 
     ???+ example "Example Code"
         ```lua
