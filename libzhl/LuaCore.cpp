@@ -640,10 +640,10 @@ namespace lua {
 	}
 
 	LuaStackProtector::~LuaStackProtector() {
-		ZHL::Logger logger(true);
 		if (_L) {
 			int n = lua_gettop(_L);
 			if (n != _orig + _n) {
+				ZHL::Logger logger(true);
 				logger.Log("Inconsistent Lua stack, expected %d elements, got %d\n", _orig + _n, n);
 				logger.DumpLuaStack(_L);
 				abort();
