@@ -74,7 +74,7 @@ function unmarkStuff() {
 
 function reevaluateLastVisit() {
     if (typeof(Storage) !== "undefined") {
-        $(".md-nav__link:contains('Last visited')").find("a").each(function(index) {
+        $(".md-nav label:contains('Last visited')").parent().find("a").each(function(index) {
             var lastVisitEntry = getRecentList()[index];
             if (lastVisitEntry !== undefined) {
                 $(this).attr("href", lastVisitEntry);
@@ -87,7 +87,7 @@ function reevaluateLastVisit() {
         });
 
     } else {
-        $(".md-nav__link:contains('Last visited')").parent().hide();
+        $(".md-nav label:contains('Last visited')").parent().hide();
     }
 }
 
@@ -302,10 +302,9 @@ document$.subscribe(function() {
     // handle frequently used Entry
     $(".md-nav__link:contains('Frequently used')").addClass("frequentlyUsed");
 
-    $(".md-nav__link:contains('Last visited')").siblings().click(function() {
+    $(".md-nav label:contains('Last visited')").siblings().click(function() {
         reevaluateLastVisit();
     });
-    $("div.md-footer-nav").find("a[href*='PLACEHOLDER']").first().hide();
 
     //moves scroll position on href clicking a bit further up
     $('a[href^="#"]').on('click', function(e) {
