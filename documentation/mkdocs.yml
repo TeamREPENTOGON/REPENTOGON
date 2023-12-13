@@ -11,7 +11,7 @@ extra:
 extra_css:
 - css/custom.css
 extra_javascript:
-- https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js
+- https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js
 - https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js
 - js/tablesort.number.min.js
 - js/customJS.js
@@ -320,9 +320,9 @@ nav:
   - cutscenes.xml: xml/cutscenes.md
   - giantbook.xml: xml/giantbook.md
   - ambush.xml: xml/ambush.md
-- Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md
+- Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
 - blog:
     authors: false
