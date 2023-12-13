@@ -31,10 +31,10 @@ ___
 ___
 
 ### GetPlayer () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) GetPlayer ( ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) GetPlayer ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### RenderActiveItem () {: aria-label='Functions' }
-#### void RenderActiveItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, float Alpha = 1.0, float Unknown = 1.0 ) {: .copyable aria-label='Functions' }
+#### void RenderActiveItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, [Vector](Vector.md) Position, float Alpha = 1.0, float Unknown = 1.0 ) {: .copyable aria-label='Functions' }
 
 ___

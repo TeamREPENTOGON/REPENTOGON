@@ -47,6 +47,6 @@ ___
 
 ___
 ### WaterEffectColor {: aria-label='Variables' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterEffectColor {: .copyable aria-label='Variables'}
+#### [Color](Color.md) WaterEffectColor {: .copyable aria-label='Variables'}
 
 ___

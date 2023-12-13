@@ -28,17 +28,17 @@ Returns true when any player has the trinket and false when no one does.
 
 ___
 ### FirstCollectibleOwner () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) FirstCollectibleOwner ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) FirstCollectibleOwner ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
 Returns `nil` if the specified collectible has never been picked up.
 
 ___
 ### FirstTrinketOwner () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) FirstTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) FirstTrinketOwner ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
 Returns `nil` if the specified trinket has never been picked up.
 
 ___
 ### GetEsauJrState () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) GetEsauJrState ( int Index = 0 ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) GetEsauJrState ( int Index = 0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetNumCollectibles () {: aria-label='Functions' }
@@ -47,7 +47,7 @@ Returns the number of collectibles held by all players.
 
 ___
 ### GetPlayers () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html)[] GetPlayers ( ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md)[] GetPlayers ( ) {: .copyable aria-label='Functions' }
 Returns a table containing all players.
 
 ___
@@ -61,7 +61,7 @@ Returns `true` if the game is in co-op mode.
 
 ___
 ### SpawnCoPlayer2 () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) SpawnCoPlayer2 ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) SpawnCoPlayer2 ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 
 ___
 ### TriggerRoomClear () {: aria-label='Functions' }

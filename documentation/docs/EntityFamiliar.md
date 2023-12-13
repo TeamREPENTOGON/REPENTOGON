@@ -25,7 +25,7 @@ ___
 
 ___
 ### TryAimAtMarkedTarget () {: aria-label='Functions' }
-#### boolean TryAimAtMarkedTarget ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) AimDirection, int Direction, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) unkVec = nil ) {: .copyable aria-label='Functions' }
+#### boolean TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection, int Direction, [Vector](Vector.md) unkVec = nil ) {: .copyable aria-label='Functions' }
 
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }

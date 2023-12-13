@@ -10,17 +10,17 @@ tags:
 ## Functions
 
 ### FireBossProjectilesEx () {: aria-label='Functions' }
-#### [EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html)[] FireBossProjectilesEx ( int numProjectiles, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) targetPos, float trajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
-Same as [FireBossProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#firebossprojectiles), but returns a table containing the list of spawned projectiles.
+#### [EntityProjectile](EntityProjectile.md)[] FireBossProjectilesEx ( int numProjectiles, [Vector](Vector.md) targetPos, float trajectoryModifier, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params ) {: .copyable aria-label='Functions' }
+Same as [FireBossProjectiles](EntityNPC.md#firebossprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
 ### FireGridEntity () {: aria-label='Functions' }
-#### [EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html) FireGridEntity ( [Sprite](Sprite.md) sprite, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) desc, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity, int backdrop = 1 ) {: .copyable aria-label='Functions' }
+#### [EntityProjectile](EntityProjectile.md) FireGridEntity ( [Sprite](Sprite.md) sprite, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) desc, [Vector](Vector.md) velocity, int backdrop = 1 ) {: .copyable aria-label='Functions' }
 
 ___
 ### FireProjectilesEx () {: aria-label='Functions' }
-#### [EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html)[] FireProjectilesEx ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity, ProjectilesMode mode, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
-Same as [FireProjectiles](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html#fireprojectiles), but returns a table containing the list of spawned projectiles.
+#### [EntityProjectile](EntityProjectile.md)[] FireProjectilesEx ([Vector](Vector.md) position, [Vector](Vector.md) velocity, ProjectilesMode mode, [ProjectileParams](https://wofsauge.github.io/IsaacDocs/rep/ProjectileParams.html) params) {: .copyable aria-label='Functions' }
+Same as [FireProjectiles](EntityNPC.md#fireprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
 ### GetControllerId () {: aria-label='Functions' }
@@ -29,7 +29,7 @@ Returns the ControllerId for the NPC, which indicates which player is controllin
 
 ___
 ### GetDirtColor () {: aria-label='Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetDirtColor ( ) {: .copyable aria-label='Functions' }
+#### [Color](Color.md) GetDirtColor ( ) {: .copyable aria-label='Functions' }
 Returns the dynamic dirt color of the entity. This lets entities like Nightcrawler blend in to the environment.
 
 ___
@@ -55,7 +55,7 @@ ___
 
 ___
 ### SpawnBloodCloud () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](Vector.md) position, [Color](Color.md) color ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodSplash () {: aria-label='Functions' }
@@ -63,7 +63,7 @@ ___
 
 ___
 ### ThrowMaggotAtPos () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) origin, float velocity = -8.0f, float yOffset = 0.0f ) {: .copyable aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) origin, float velocity = -8.0f, float yOffset = 0.0f ) {: .copyable aria-label='Functions' }
 
 ___
 ### TryForceTarget () {: aria-label='Functions' }
@@ -71,7 +71,7 @@ ___
 
 ___
 ### TryThrow () {: aria-label='Functions' }
-#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ref, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) dir, int force ) {: .copyable aria-label='Functions' }
+#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ref, [Vector](Vector.md) dir, int force ) {: .copyable aria-label='Functions' }
 
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
@@ -84,10 +84,10 @@ ___
 
 ## Variables
 ### V1 {: aria-label='Variables' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) V1 {: .copyable aria-label='Variables' }
+#### [Vector](Vector.md) V1 {: .copyable aria-label='Variables' }
 Fix of original function that now correctly returns a pointer to the vector.
 ___
 ### V2 {: aria-label='Variables' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) V2 {: .copyable aria-label='Variables' }
+#### [Vector](Vector.md) V2 {: .copyable aria-label='Variables' }
 Fix of original function that now correctly returns a pointer to the vector.
 ___

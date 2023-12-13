@@ -7,11 +7,11 @@ tags:
 ## Functions
 
 ### GetColor () {: aria-label='Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetColor ( ) {: .copyable aria-label='Functions' }
+#### [Color](Color.md) GetColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPos () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetPos ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRotation () {: aria-label='Functions' }
@@ -19,7 +19,7 @@ ___
 
 ___
 ### GetScale () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetScale ( ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetScale ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsVisible () {: aria-label='Functions' }

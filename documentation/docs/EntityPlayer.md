@@ -12,7 +12,7 @@ This class contains both new functions and modified reimplementations of existin
 
 ### AddCacheFlags () {: aria-label='Modified Functions' }
 #### void AddCacheFlags ( [CacheFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/CacheFlag.html) CacheFlag, boolean EvaluateItems = false ) {: .copyable aria-label='Modified Functions' }
-Now accepts an optional `bool` to determine if [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
+Now accepts an optional `bool` to determine if [EntityPlayer](EntityPlayer.md):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ___
 ### ClearDeadEyeCharge () {: aria-label='Modified Functions' }
@@ -26,7 +26,7 @@ Now returns a proper `MultiShotParams` object.
 
 ___
 ### GetMultiShotPositionVelocity () {: aria-label='Modified Functions' }
-#### [PosVel](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_PosVel.html) GetMultiShotPositionVelocity ( int LoopIndex, [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ShotDirection, float ShotSpeed, [MultiShotParams](MultiShotParams.md) Params ) {: .copyable aria-label='Modified Functions' }
+#### [PosVel](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_PosVel.html) GetMultiShotPositionVelocity ( int LoopIndex, [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, [Vector](Vector.md) ShotDirection, float ShotSpeed, [MultiShotParams](MultiShotParams.md) Params ) {: .copyable aria-label='Modified Functions' }
 This magically vanished from the API some time after 1.7.8.
 
 Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than [MultiShotParams:GetNumTears()](MultiShotParams.md#getnumtears).
@@ -71,7 +71,7 @@ ___
 
 ___
 ### AddLocust () {: aria-label='Functions' }
-#### int AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
+#### int AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
 
@@ -111,7 +111,7 @@ ___
 ### CheckFamiliarEx () {: aria-label='Functions' }
 #### [EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html)[] CheckFamiliarEx ( int FamiliarVariant, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
 
-A version of [CheckFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#checkfamiliar) that returns all familiars spawned by the function as a table.
+A version of [CheckFamiliar](EntityPlayer.md#checkfamiliar) that returns all familiars spawned by the function as a table.
 
 ___
 ### ClearCollectibleAnim () {: aria-label='Functions' }
@@ -292,7 +292,7 @@ ___
 
 ___
 ### GetFlippedForm () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) GetFlippedForm ( ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) GetFlippedForm ( ) {: .copyable aria-label='Functions' }
 Returns flipped form of the current character (only used for Tainted Lazarus)
 
 Otherwise, returns nil
@@ -322,12 +322,12 @@ ___
 
 ___
 ### GetHeldEntity () {: aria-label='Functions' }
-#### [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) GetHeldEntity ( ) {: .copyable aria-label='Functions' }
+#### [Entity](Entity.md) GetHeldEntity ( ) {: .copyable aria-label='Functions' }
 Returns the Entity that the player is holding over their head, such as with throwable red bombs or Suplex! Returns nil if no entity is currently being held.
 
 ___
 ### GetHeldSprite () {: aria-label='Functions' }
-#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetHeldSprite ( ) {: .copyable aria-label='Functions' }
+#### [Sprite](Sprite.md) GetHeldSprite ( ) {: .copyable aria-label='Functions' }
 Gets the Sprite object used for when the player is doing an animation that involves holding a sprite over their head, such as active item usage.
 
 ___
@@ -476,7 +476,7 @@ Call this after spawning characters with "special" tears (Forgotten, Lilith, Aza
 
 ___
 ### InitTwin () {: aria-label='Functions' }
-#### [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) InitTwin ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) InitTwin ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 I believe this is used by J&E, Strawman etc.
 
 ???+ bug "Bug"
@@ -756,7 +756,7 @@ ___
 ___
 ### SwapForgottenForm () {: aria-label='Functions' }
 #### void SwapForgottenForm ( boolean Force = false, boolean NoEffects = false) {: .copyable aria-label='Functions' }
-If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html#getsubplayer), swaps between them. `Force` will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
+If the player has a [SubPlayer](EntityPlayer.md#getsubplayer), swaps between them. `Force` will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. `NoEffects` will disable the dust effect & fade from white when switching from The Soul to The Forgotten.
 
 
 ???+ warning "Warning"
@@ -764,11 +764,11 @@ If the player has a [SubPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityP
 
 ___
 ### SyncConsumableCounts () {: aria-label='Functions' }
-#### void SyncConsumableCounts ( [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int CollectibleFlags ) {: .copyable aria-label='Functions' }      
+#### void SyncConsumableCounts ( [EntityPlayer](EntityPlayer.md) Player, int CollectibleFlags ) {: .copyable aria-label='Functions' }      
 
 ___
 ### Teleport () {: aria-label='Functions' }
-#### void Teleport ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, boolean DoEffects = true, boolean TeleportTwinPlayers = false ) {: .copyable aria-label='Functions' }
+#### void Teleport ( [Vector](Vector.md) Position, boolean DoEffects = true, boolean TeleportTwinPlayers = false ) {: .copyable aria-label='Functions' }
 Teleports the player to a position within the room. 
 
 `DoEffects` controls whether the teleport animation and sound plays. `TeleportTwinPlayers` controls whether twin players (e.g. Esau, Tainted Lazarus w/ Birthright) are teleported alongside this one.
@@ -791,7 +791,7 @@ ___
 
 ___
 ### TryForgottenThrow () {: aria-label='Functions' }
-#### boolean TryForgottenThrow ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) direction ) {: .copyable aria-label='Functions' }        
+#### boolean TryForgottenThrow ( [Vector](Vector.md) direction ) {: .copyable aria-label='Functions' }        
 
 ___
 ### TryPreventDeath () {: aria-label='Functions' }

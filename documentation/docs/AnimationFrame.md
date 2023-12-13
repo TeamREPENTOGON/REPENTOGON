@@ -15,11 +15,11 @@ Obtained via [AnimationLayer:GetFrame()](AnimationLayer.md#getframe).
 ## Functions
 
 ### GetColor () {: aria-label='Functions' }
-#### [const Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetColor ( ) {: .copyable aria-label='Functions' }
+#### [const Color](Color.md) GetColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCrop () {: aria-label='Functions' }
-#### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCrop ( ) {: .copyable aria-label='Functions' }
+#### [const Vector](Vector.md) GetCrop ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetHeight () {: aria-label='Functions' }
@@ -27,11 +27,11 @@ ___
 
 ___
 ### GetPivot () {: aria-label='Functions' }
-#### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPivot ( ) {: .copyable aria-label='Functions' }
+#### [const Vector](Vector.md) GetPivot ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPos () {: aria-label='Functions' }
-#### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
+#### [const Vector](Vector.md) GetPos ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRotation () {: aria-label='Functions' }
@@ -39,7 +39,7 @@ ___
 
 ___
 ### GetScale () {: aria-label='Functions' }
-#### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetScale ( ) {: .copyable aria-label='Functions' }
+#### [const Vector](Vector.md) GetScale ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetWidth () {: aria-label='Functions' }

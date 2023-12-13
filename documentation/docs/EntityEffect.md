@@ -9,6 +9,6 @@ tags:
 ## Functions
 
 ### CreateLight () {: aria-label='Functions' }
-#### void CreateLight ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, int unk1, int unk2 ) {: .copyable aria-label='Functions' }
+#### void CreateLight ( [Vector](Vector.md) pos, [Color](Color.md) color = default, int unk1, int unk2 ) {: .copyable aria-label='Functions' }
 
 ___

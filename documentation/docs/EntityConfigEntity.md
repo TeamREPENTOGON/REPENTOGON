@@ -49,7 +49,7 @@ ___
 
 ___
 ### GetBestiaryOffset () {: aria-label='Functions' }
-#### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetBestiaryOffset ( ) {: .copyable aria-label='Functions' }
+#### [const Vector](Vector.md) GetBestiaryOffset ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetBestiaryOverlay () {: aria-label='Functions' }
@@ -78,7 +78,7 @@ Also known as "Size".
 
 ___
 ### GetCollisionRadiusMultiplier () {: aria-label='Functions' }
-#### [const Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCollisionRadiusMultiplier ( ) {: .copyable aria-label='Functions' }
+#### [const Vector](Vector.md) GetCollisionRadiusMultiplier ( ) {: .copyable aria-label='Functions' }
 Also known as "SizeMulti".
 
 ___

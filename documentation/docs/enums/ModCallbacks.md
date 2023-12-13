@@ -9,7 +9,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1064 |MC_USE_PILL {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) Effect, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlags.html) Flags, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/PillColor.html) Color) | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) | void |
+|1064 |MC_USE_PILL {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) Effect, [EntityPlayer](../EntityPlayer.md) Player, [UseFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/UseFlags.html) Flags, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/PillColor.html) Color) | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) | void |
 
 ### MC_PRE_PLAYER_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -19,7 +19,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1065 |MC_PRE_PLAYER_COLLISION {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [PlayerVariant](PlayerVariant.md) | boolean or table |
+|1065 |MC_PRE_PLAYER_COLLISION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [Entity](../Entity.md) Collider, bool Low) | [PlayerVariant](PlayerVariant.md) | boolean or table |
 
 ### MC_PRE_TEAR_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -29,7 +29,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1232 |MC_PRE_TEAR_COLLISION {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | boolean or table |
+|1232 |MC_PRE_TEAR_COLLISION {: .copyable } | ([EntityTear](../EntityTear.md) Tear, [Entity](../Entity.md) Collider, bool Low) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | boolean or table |
 
 ### MC_PRE_FAMILIAR_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -41,7 +41,7 @@ For example, you can return `{ Collide=true }` to make a familiar to collide phy
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1234 |MC_PRE_FAMILIAR_COLLISION {: .copyable } | ([EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | boolean or table |
+|1234 |MC_PRE_FAMILIAR_COLLISION {: .copyable } | ([EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Entity](../Entity.md) Collider, bool Low) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | boolean or table |
 
 ### MC_PRE_BOMB_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -51,7 +51,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1236 |MC_PRE_BOMB_COLLISION {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.html) | boolean or table |
+|1236 |MC_PRE_BOMB_COLLISION {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Entity](../Entity.md) Collider, bool Low) | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.html) | boolean or table |
 
 ### MC_PRE_PICKUP_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -61,7 +61,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1238 |MC_PRE_PICKUP_COLLISION {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean or table |
+|1238 |MC_PRE_PICKUP_COLLISION {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, [Entity](../Entity.md) Collider, bool Low) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean or table |
 
 ### MC_PRE_KNIFE_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -71,7 +71,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1242 |MC_PRE_KNIFE_COLLISION {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [KnifeSubType](KnifeSubType.md) | boolean or table |
+|1242 |MC_PRE_KNIFE_COLLISION {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife, [Entity](../Entity.md) Collider, bool Low) | [KnifeSubType](KnifeSubType.md) | boolean or table |
 
 ### MC_PRE_PROJECTILE_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -81,7 +81,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1244 |MC_PRE_PROJECTILE_COLLISION {: .copyable } | ([EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html) Projectile, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | boolean or table |
+|1244 |MC_PRE_PROJECTILE_COLLISION {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, [Entity](../Entity.md) Collider, bool Low) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | boolean or table |
 
 ### MC_PRE_NPC_COLLISION
 Now optionally accepts returning a table, with any combination of the following fields:
@@ -91,7 +91,7 @@ Now optionally accepts returning a table, with any combination of the following 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1246 |MC_PRE_NPC_COLLISION {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
+|1246 |MC_PRE_NPC_COLLISION {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, [Entity](../Entity.md) Collider, bool Low) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
 
 ### MC_ENTITY_TAKE_DMG
 Now optionally accepts returning a table, with any combination of the following fields, to override the corresponding argument:
@@ -104,7 +104,7 @@ Modified values are passed along to the remaining callbacks. Returning false to 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1007 |MC_ENTITY_TAKE_DMG {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
+|1007 |MC_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean or table |
 
 
 ## New Callbacks
@@ -132,21 +132,21 @@ Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/r
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1004 |MC_PRE_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, int Charge, boolean FirstTime, int Slot, int VarData, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | table or [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
+|1004 |MC_PRE_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, int Charge, boolean FirstTime, int Slot, int VarData, [EntityPlayer](../EntityPlayer.md) Player) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | table or [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
 
 ### MC_POST_ADD_COLLECTIBLE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1005 |MC_POST_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, int Charge, boolean FirstTime, int Slot, int VarData, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+|1005 |MC_POST_ADD_COLLECTIBLE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, int Charge, boolean FirstTime, int Slot, int VarData, [EntityPlayer](../EntityPlayer.md) Player) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
 
 ### MC_POST_ENTITY_TAKE_DMG {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1006 |MC_POST_ENTITY_TAKE_DMG {: .copyable } | ([Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+|1006 |MC_POST_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_GRID_ROCK_UPDATE {: .copyable }
 Accepts no return parameters.
@@ -167,14 +167,14 @@ Return false if entity or player should ignore damage from it.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1012 |MC_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) GridEntity, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, int DamageAmount, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, float Unknown  boolean Unknown) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1012 |MC_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, [Entity](../Entity.md) Entity, int DamageAmount, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, float Unknown  boolean Unknown) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_HURT_DAMAGE {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1013 |MC_POST_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) GridEntity, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, int DamageAmount, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, float Unknown  boolean Unknown) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1013 |MC_POST_GRID_HURT_DAMAGE {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, [Entity](../Entity.md) Entity, int DamageAmount, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, float Unknown  boolean Unknown) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_HUD_UPDATE {: .copyable }
 Accepts no return parameters.
@@ -210,14 +210,14 @@ Can return `false` to prevent the pause screen from rendering. Doing so will als
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1218 |MC_PRE_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseBody,[Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseStats) | - | void |
+|1218 |MC_PRE_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](../Sprite.md) PauseBody,[Sprite](../Sprite.md) PauseStats) | - | void |
 
 ### MC_POST_PAUSE_SCREEN_RENDER {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1219 |MC_POST_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseBody,[Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) PauseStats) | - | void |
+|1219 |MC_POST_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](../Sprite.md) PauseBody,[Sprite](../Sprite.md) PauseStats) | - | void |
 
 
 ### MC_PRE_COMPLETION_MARKS_RENDER {: .copyable }
@@ -225,14 +225,14 @@ Can return `false` to prevent the completion marks from rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1216 |MC_PRE_COMPLETION_MARKS_RENDER {: .copyable } | ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) CompletionMarksSprite,[Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RenderPos,[Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RenderScale,int PlayerType) | - | void |
+|1216 |MC_PRE_COMPLETION_MARKS_RENDER {: .copyable } | ([Sprite](../Sprite.md) CompletionMarksSprite,[Vector](../Vector.md) RenderPos,[Vector](../Vector.md) RenderScale,int PlayerType) | - | void |
 
 ### MC_POST_COMPLETION_MARKS_RENDER {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1217 |MC_POST_COMPLETION_MARKS_RENDER {: .copyable } | ([Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) CompletionMarksSprite,[Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RenderPos,[Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RenderScale,int PlayerType) | - | void |
+|1217 |MC_POST_COMPLETION_MARKS_RENDER {: .copyable } | ([Sprite](../Sprite.md) CompletionMarksSprite,[Vector](../Vector.md) RenderPos,[Vector](../Vector.md) RenderScale,int PlayerType) | - | void |
 
 
 ### MC_PRE_SFX_PLAY
@@ -295,13 +295,13 @@ Accepts a music layer ID (enum pending) to change the layer, or a bool to change
 |1035 |MC_PRE_MUSIC_LAYER_TOGGLE {: .copyable } | (int ID, boolean CurrentState) | int | int or boolean |
 
 ### MC_PRE_RENDER_PLAYER_HEAD
-Accepts an override [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) for RenderPos.
+Accepts an override [Vector](../Vector.md) for RenderPos.
 
 Alternatively accepts a `false` to stop the rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1038 |MC_PRE_RENDER_PLAYER_HEAD {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) player, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RenderPos) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1038 |MC_PRE_RENDER_PLAYER_HEAD {: .copyable } | ([EntityPlayer](../EntityPlayer.md) player, [Vector](../Vector.md) RenderPos) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_RENDER_PLAYER_BODY
 Accepts an override `vector` for RenderPos.
@@ -310,36 +310,36 @@ Alternatively accepts a `false` to stop the rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1039 |MC_PRE_RENDER_PLAYER_BODY {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) player, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) RenderPos) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1039 |MC_PRE_RENDER_PLAYER_BODY {: .copyable } | ([EntityPlayer](../EntityPlayer.md) player, [Vector](../Vector.md) RenderPos) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [Vector](../Vector.md) or boolean |
 
 
 ### MC_PRE_ENTITY_THROW
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) which will modify the velocity of the thrown entity.
+Accepts a [Vector](../Vector.md) which will modify the velocity of the thrown entity.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1040 |MC_PRE_ENTITY_THROW {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) ThrowingPlayer, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) HeldEntity, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Velocity) | - | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) |
+|1040 |MC_PRE_ENTITY_THROW {: .copyable } | ([EntityPlayer](../EntityPlayer.md) ThrowingPlayer, [Entity](../Entity.md) HeldEntity, [Vector](../Vector.md) Velocity) | - | [Vector](../Vector.md) |
 
 ### MC_POST_ENTITY_THROW
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1041 |MC_POST_ENTITY_THROW {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) ThrowingPlayer, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) ThrownEntity, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Velocity) | - | void |
+|1041 |MC_POST_ENTITY_THROW {: .copyable } | ([EntityPlayer](../EntityPlayer.md) ThrowingPlayer, [Entity](../Entity.md) ThrownEntity, [Vector](../Vector.md) Velocity) | - | void |
 
 ### MC_PLAYER_INIT_POST_LEVEL_INIT_STATS {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1042 |MC_PLAYER_INIT_POST_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+|1042 |MC_PLAYER_INIT_POST_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_PRE_ROOM_EXIT
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1043 |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, boolean Unknown) | - | void |
+|1043 |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, boolean Unknown) | - | void |
 
 ### MC_PRE_COMPLETION_EVENT
 Can return `false` to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.
@@ -387,7 +387,7 @@ Accepts `false` to cancel the death, reviving the player in-place with half a he
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1050 |MC_PRE_TRIGGER_PLAYER_DEATH {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | - | boolean |
+|1050 |MC_PRE_TRIGGER_PLAYER_DEATH {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
 
 ### MC_PRE_RESTOCK_SHOP
 Accepts `false` to cancel the restock, blocking shop rerolls from restock machines or restocks from Restock altogether.
@@ -422,7 +422,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1062 |MC_POST_PICKUP_SHOP_PURCHASE {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int MoneySpent) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.md) | void |
+|1062 |MC_POST_PICKUP_SHOP_PURCHASE {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, [EntityPlayer](../EntityPlayer.md) Player, int MoneySpent) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.md) | void |
 
 ### MC_GET_FOLLOWER_PRIORITY
 Accepts [FollowerPriority](FollowerPriority.md) to give familiar priority. Can accept any int.
@@ -454,7 +454,7 @@ Return an entity to make the NPC target that entity instead.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1222 |MC_NPC_PICK_TARGET {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) CurrentTarget) | EntityType | Entity |
+|1222 |MC_NPC_PICK_TARGET {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, [Entity](../Entity.md) CurrentTarget) | EntityType | Entity |
 
 ### MC_PRE_NPC_MORPH
 Accepts a table of parameters: `{EntityType, Variant, SubType, Championid}` or just `{EntityType, Variant, SubType}`. 
@@ -477,14 +477,14 @@ Accepts `true` to cancel card use.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1064 |MC_PRE_USE_CARD {: .copyable } | ([Card](https://wofsauge.github.io/IsaacDocs/rep/enums/Card.md) ID, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int UseFlag) | - | boolean |
+|1064 |MC_PRE_USE_CARD {: .copyable } | ([Card](https://wofsauge.github.io/IsaacDocs/rep/enums/Card.md) ID, [EntityPlayer](../EntityPlayer.md) Player, int UseFlag) | - | boolean |
 
 ### MC_PRE_USE_PILL
 Accepts `true` to cancel pill use.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1065 |MC_PRE_USE_PILL {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.md) ID, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.md) PillColor, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int UseFlag) | - | boolean |
+|1065 |MC_PRE_USE_PILL {: .copyable } | ([PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.md) ID, [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.md) PillColor, [EntityPlayer](../EntityPlayer.md) Player, int UseFlag) | - | boolean |
 
 ### MC_GET_SHOP_ITEM_PRICE
 Accepts an integer to change the price of the item.
@@ -498,10 +498,10 @@ Accepts an [HealthType](HealthType.md) to change health type for the character.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | - | [HealthType](HealthType.md) |
+|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | [HealthType](HealthType.md) |
 
 ### MC_PRE_FAMILIAR_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -510,10 +510,10 @@ Alternatively accepts `false` to cancel rendering
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1080 |MC_PRE_FAMILIAR_RENDER {: .copyable } | ([EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1080 |MC_PRE_FAMILIAR_RENDER {: .copyable } | ([EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Vector](../Vector.md) Offset) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_NPC_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -522,10 +522,10 @@ Alternatively accepts `false` to cancel rendering
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1081 |MC_PRE_NPC_RENDER {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1081 |MC_PRE_NPC_RENDER {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, [Vector](../Vector.md) Offset) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_PLAYER_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -534,10 +534,10 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1082 |MC_PRE_PLAYER_RENDER {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [PlayerVariant](PlayerVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1082 |MC_PRE_PLAYER_RENDER {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [Vector](../Vector.md) Offset) | [PlayerVariant](PlayerVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_PICKUP_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -546,10 +546,10 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1083 |MC_PRE_PICKUP_RENDER {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1083 |MC_PRE_PICKUP_RENDER {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, [Vector](../Vector.md) Offset) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_TEAR_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -558,10 +558,10 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1084 |MC_PRE_TEAR_RENDER {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1084 |MC_PRE_TEAR_RENDER {: .copyable } | ([EntityTear](../EntityTear.md) Tear, [Vector](../Vector.md) Offset) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_PROJECTILE_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -570,10 +570,10 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1085 |MC_PRE_PROJECTILE_RENDER {: .copyable } | ([EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html) Projectile, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1085 |MC_PRE_PROJECTILE_RENDER {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, [Vector](../Vector.md) Offset) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_KNIFE_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -582,10 +582,10 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1086 |MC_PRE_KNIFE_RENDER {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [KnifeVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/KnifeVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1086 |MC_PRE_KNIFE_RENDER {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife, [Vector](../Vector.md) Offset) | [KnifeVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/KnifeVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_EFFECT_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -594,10 +594,10 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1087 |MC_PRE_EFFECT_RENDER {: .copyable } | ([EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/Entityeffect.html) Effect, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [EffectVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/EffectVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1087 |MC_PRE_EFFECT_RENDER {: .copyable } | ([EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/Entityeffect.html) Effect, [Vector](../Vector.md) Offset) | [EffectVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/EffectVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_BOMB_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -606,10 +606,10 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1088 |MC_PRE_BOMB_RENDER {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1088 |MC_PRE_BOMB_RENDER {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Vector](../Vector.md) Offset) | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_SLOT_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset
+Accepts a [Vector](../Vector.md) to modify render offset
 
 Alternatively accepts `false` to cancel rendering
 
@@ -618,17 +618,17 @@ Alternatively accepts `false` to cancel rendering
     
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1089 |MC_PRE_SLOT_RENDER {: .copyable } | ([EntitySlot](../EntitySlot.md) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [SlotVariant](SlotVariant.md) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1089 |MC_PRE_SLOT_RENDER {: .copyable } | ([EntitySlot](../EntitySlot.md) Slot, [Vector](../Vector.md) Offset) | [SlotVariant](SlotVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_SLOT_RENDER
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1090 |MC_POST_SLOT_RENDER {: .copyable } | ([EntitySlot](../EntitySlot.md) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [SlotVariant](SlotVariant.md) | void |
+|1090 |MC_POST_SLOT_RENDER {: .copyable } | ([EntitySlot](../EntitySlot.md) Slot, [Vector](../Vector.md) Offset) | [SlotVariant](SlotVariant.md) | void |
 
 ### MC_PRE_GRID_ENTITY_SPAWN
-This is called when a [GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) is spawned outside of Room initialization.
+This is called when a [GridEntity](../GridEntity.md) is spawned outside of Room initialization.
 
 Accepts `false` to cancel spawning the grid, a table of `{Type, Variant, Vardata, SpawnSeed}` to modify it, or a [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) to override it entirely.
 
@@ -640,7 +640,7 @@ Accepts `false` to cancel spawning the grid, a table of `{Type, Variant, Vardata
 |1100 |MC_PRE_GRID_ENTITY_SPAWN {: .copyable } | ([GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant, int VarData, int GridIdx, int SpawnSeed, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Desc | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type) | boolean, table, or [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) |
 
 ### MC_PRE_ROOM_GRID_ENTITY_SPAWN
-This is called during Room initiization when [GridEntities](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) from the layout are being spawned.
+This is called during Room initiization when [GridEntities](../GridEntity.md) from the layout are being spawned.
 
 Accepts `false` to cancel spawning the grid or a table of `{Type, Variant, Vardata, SpawnSeed}` to modify it.
 
@@ -653,7 +653,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1101 |MC_POST_GRID_ENTITY_SPAWN {: .copyable } | [GridEntity](https://wofsauge.github.io/IsaacDocs/rep/GridEntity.html) Grid | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | void |
+|1101 |MC_POST_GRID_ENTITY_SPAWN {: .copyable } | [GridEntity](../GridEntity.md) Grid | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type | void |
 
 ### MC_PRE_ROOM_TRIGGER_CLEAR
 Accepts no return parameters.
@@ -667,7 +667,7 @@ Accepts `false` to cancel trigger effects.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1069 |MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
+|1069 |MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
 
 ### MC_PLAYER_GET_ACTIVE_MAX_CHARGE
 Accepts an integer to change chargebar for the active item.
@@ -688,13 +688,13 @@ Return `false` to stop the player from using a bomb.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1020 |MC_PRE_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
+|1020 |MC_PRE_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerVariant](PlayerVariant.md) | boolean |
 
 ### MC_POST_PLAYER_USE_BOMB
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1021 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
+|1021 |MC_POST_PLAYER_USE_BOMB {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb) | [PlayerVariant](PlayerVariant.md) | void |
 
 ### MC_PRE_PLAYER_TAKE_DMG
 Runs earlier than MC_ENTITY_TAKE_DMG, and even if the player is considered invincible or has Holy Mantles.
@@ -703,7 +703,7 @@ Only accepts returning false to cancel the damage. Good for giving the player in
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1008 |MC_PRE_PLAYER_TAKE_DMG {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [PlayerVariant](PlayerVariant.md) | boolean |
+|1008 |MC_PRE_PLAYER_TAKE_DMG {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [PlayerVariant](PlayerVariant.md) | boolean |
 
 ### MC_PRE_REPLACE_SPRITESHEET
 Accepts a table of parameters: `{int LayerID, string PNGFilename}`
@@ -727,7 +727,7 @@ Accepts an override `integer` for heart limit.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1074 |MC_PLAYER_GET_HEART_LIMIT {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, int HeartLimit, boolean IsKeeper) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | int |
+|1074 |MC_PLAYER_GET_HEART_LIMIT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int HeartLimit, boolean IsKeeper) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | int |
 
 ### MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
 This callback is run at the start of planetarium calculation. Before running calculation, the game first checks if the current floor is valid to spawn a planetarium. If the current floor is invalid, all further calculation (and thus, all further callbacks) will be canceled.
@@ -822,14 +822,14 @@ Also accepts returning a table, with any combination of the following fields:
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1240 |MC_PRE_SLOT_COLLISION {: .copyable } | ([EntitySlot](../EntitySlot.md), [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low) | [SlotVariant](SlotVariant.md) | bool |
+|1240 |MC_PRE_SLOT_COLLISION {: .copyable } | ([EntitySlot](../EntitySlot.md), [Entity](../Entity.md) Collider, bool Low) | [SlotVariant](SlotVariant.md) | bool |
 
 ### MC_POST_SLOT_COLLISION
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1241 |MC_POST_SLOT_COLLISION {: .copyable } | ([EntitySlot](../EntitySlot.md), [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [SlotVariant](SlotVariant.md) | void |
+|1241 |MC_POST_SLOT_COLLISION {: .copyable } | ([EntitySlot](../EntitySlot.md), [Entity](../Entity.md) Collider, bool Low | [SlotVariant](SlotVariant.md) | void |
 
 ### MC_PRE_SLOT_CREATE_EXPLOSION_DROPS
 Return `false` to stop explosions from dropping the standard consumables. This is useful, for example, to allow custom slots to drop their own loot on explosion.
@@ -866,70 +866,70 @@ Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1231 |MC_POST_PLAYER_COLLISION {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [PlayerVariant](PlayerVariant.md) | void |
+|1231 |MC_POST_PLAYER_COLLISION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [Entity](../Entity.md) Collider, bool Low | [PlayerVariant](PlayerVariant.md) | void |
 
 ### MC_POST_TEAR_COLLISION
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1233 |MC_POST_TEAR_COLLISION {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | void |
+|1233 |MC_POST_TEAR_COLLISION {: .copyable } | ([EntityTear](../EntityTear.md) Tear, [Entity](../Entity.md) Collider, bool Low | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | void |
 
 ### MC_POST_FAMILIAR_COLLISION
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1235 |MC_POST_FAMILIAR_COLLISION {: .copyable } | ([EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
+|1235 |MC_POST_FAMILIAR_COLLISION {: .copyable } | ([EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, [Entity](../Entity.md) Collider, bool Low | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
 
 ### MC_POST_BOMB_COLLISION
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1237 |MC_POST_BOMB_COLLISION {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.html) | void |
+|1237 |MC_POST_BOMB_COLLISION {: .copyable } | ([EntityBomb](https://wofsauge.github.io/IsaacDocs/rep/EntityBomb.html) Bomb, [Entity](../Entity.md) Collider, bool Low | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.html) | void |
 
 ### MC_POST_PICKUP_COLLISION
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1239 |MC_POST_PICKUP_COLLISION {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | void |
+|1239 |MC_POST_PICKUP_COLLISION {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, [Entity](../Entity.md) Collider, bool Low | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | void |
 
 ### MC_POST_KNIFE_COLLISION
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1243 |MC_POST_KNIFE_COLLISION {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [KnifeSubType](KnifeSubType.md) | void |
+|1243 |MC_POST_KNIFE_COLLISION {: .copyable } | ([EntityKnife](https://wofsauge.github.io/IsaacDocs/rep/EntityKnife.html) Knife, [Entity](../Entity.md) Collider, bool Low | [KnifeSubType](KnifeSubType.md) | void |
 
 ### MC_POST_PROJECTILE_COLLISION
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1245 |MC_POST_PROJECTILE_COLLISION {: .copyable } | ([EntityProjectile](https://wofsauge.github.io/IsaacDocs/rep/EntityProjectile.html) Projectile, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | void |
+|1245 |MC_POST_PROJECTILE_COLLISION {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, [Entity](../Entity.md) Collider, bool Low | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | void |
 
 ### MC_POST_NPC_COLLISION
 Runs after the on-collision code of this entity, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1247 |MC_POST_NPC_COLLISION {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider, bool Low | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+|1247 |MC_POST_NPC_COLLISION {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, [Entity](../Entity.md) Collider, bool Low | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
 ### MC_PRE_LASER_COLLISION
 Runs right before a laser hits an entity. Return true to ignore the collision.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1248 |MC_PRE_LASER_COLLISION {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider) | [LaserVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/LaserVariant.html) | boolean |
+|1248 |MC_PRE_LASER_COLLISION {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser, [Entity](../Entity.md) Collider) | [LaserVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/LaserVariant.html) | boolean |
 
 ### MC_POST_LASER_COLLISION
 Runs after a laser hits an entity.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1249 |MC_POST_LASER_COLLISION {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Collider) | [LaserVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/LaserVariant.html) | void |
+|1249 |MC_POST_LASER_COLLISION {: .copyable } | ([EntityLaser](https://wofsauge.github.io/IsaacDocs/rep/EntityLaser.html) Laser, [Entity](../Entity.md) Collider) | [LaserVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/LaserVariant.html) | void |
 
 
 ### MC_PRE_DEVIL_APPLY_ITEMS
@@ -986,31 +986,31 @@ Alternatively accepts `true` to cancel item overlay show
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1076 |MC_PRE_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [GiantBook](Giantbook.md) | [GiantBook](Giantbook.md) or boolean |
+|1076 |MC_PRE_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](../EntityPlayer.md) Player) | [GiantBook](Giantbook.md) | [GiantBook](Giantbook.md) or boolean |
 
 ### MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1077 |MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | - |
+|1077 |MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | - |
 
 ### MC_POST_PLAYER_NEW_LEVEL
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1078 |MC_POST_PLAYER_NEW_LEVEL {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | - |
+|1078 |MC_POST_PLAYER_NEW_LEVEL {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | - |
 
 ### MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1079 |MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset, float Alpha) | - | - |
+|1079 |MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, [Vector](../Vector.md) Offset, float Alpha) | - | - |
 
 ### MC_POST_PLAYERHUD_RENDER_HEARTS
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1091 |MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset(?), [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) HeartsSprite, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, float Unknown) | - | - |
+|1091 |MC_POST_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset(?), [Sprite](../Sprite.md) HeartsSprite, [Vector](../Vector.md) Position, float Unknown) | - | - |
 
 ### MC_PRE_GET_LIGHTING_ALPHA
 Accepts a `float` to modify the lighting alpha. Generally this is between 0 and 1 but you can technically go higher than this.
@@ -1020,28 +1020,28 @@ Accepts a `float` to modify the lighting alpha. Generally this is between 0 and 
 |1150 |MC_PRE_GET_LIGHTING_ALPHA {: .copyable } | (float OriginalAlpha) | - | float |
 
 ### MC_PRE_RENDER_GRID_LIGHTING
-Accepts an override [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) for Offset.
+Accepts an override [Vector](../Vector.md) for Offset.
 
 Alternatively accepts `false` to stop the rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1151 |MC_PRE_RENDER_GRID_LIGHTING {: .copyable } | ([GridEntity](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) grid, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1151 |MC_PRE_RENDER_GRID_LIGHTING {: .copyable } | ([GridEntity](../EntityPlayer.md) grid, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
  
 ### MC_PRE_RENDER_ENTITY_LIGHTING
-Accepts an override [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) for Offset.
+Accepts an override [Vector](../Vector.md) for Offset.
 
 Alternatively accepts `false` to stop the rendering.
 
  |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1152 |MC_PRE_RENDER_ENTITY_LIGHTING {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) player, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1152 |MC_PRE_RENDER_ENTITY_LIGHTING {: .copyable } | ([EntityPlayer](../EntityPlayer.md) player, [Vector](../Vector.md) Offset) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | int ModCount, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems) | - | int |
+|1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | int ModCount, [EntityPlayer](../EntityPlayer.md) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems) | - | int |
 
 ### MC_PRE_PLAYER_HAS_COLLECTIBLE
 
@@ -1051,7 +1051,7 @@ Return a boolean to indicate whether a player should be counted as having an ite
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1093 |MC_PRE_PLAYER_HAS_COLLECTIBLE {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | bool |
+|1093 |MC_PRE_PLAYER_HAS_COLLECTIBLE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | bool |
 
 ### MC_PRE_MUSIC_PLAY_JINGLE
 Accepts a [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) to change the track
@@ -1067,28 +1067,28 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
+|1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
 
 ### MC_POST_TRIGGER_TRINKET_ADDED {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1096 |MC_POST_TRIGGER_TRINKET_ADDED {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, boolean FirstTimePickingUp) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+|1096 |MC_POST_TRIGGER_TRINKET_ADDED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type, boolean FirstTimePickingUp) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
 ### MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1097 |MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
+|1097 |MC_POST_TRIGGER_TRINKET_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Type) | [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) | void |
 
 ### MC_POST_TRIGGER_WEAPON_FIRED {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1098 |MC_POST_TRIGGER_WEAPON_FIRED {: .copyable } | ([Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) FireDirection, int FireAmount, [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Owner) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
+|1098 |MC_POST_TRIGGER_WEAPON_FIRED {: .copyable } | ([Vector](../Vector.md) FireDirection, int FireAmount, [Entity](../Entity.md) Owner) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
 
 ### MC_POST_NIGHTMARE_SCENE_RENDER {: .copyable }
 Accepts no return parameters.
@@ -1109,7 +1109,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1105 |MC_POST_WEAPON_FIRE {: .copyable } | ([Weapon](../Weapon.md) Weapon, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) FireDirection, boolean IsShooting, boolean IsInterpolated) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
+|1105 |MC_POST_WEAPON_FIRE {: .copyable } | ([Weapon](../Weapon.md) Weapon, [Vector](../Vector.md) FireDirection, boolean IsShooting, boolean IsInterpolated) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
 
 ### MC_CONSOLE_AUTOCOMPLETE
 This is called whenever a function with the CUSTOM [AutocompleteType](AutocompleteType.md) enum is being entered into the console. Called every time the console input changes.
@@ -1127,7 +1127,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1127 |MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
+|1127 |MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_CUSTOM_CHARACTER_UNLOCKED
 This is called on the main menu every frame for every custom character with the `needsunlock` tag.
@@ -1169,7 +1169,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1134 |MC_POST_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [GiantBook](Giantbook.md) | void |
+|1134 |MC_POST_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](../EntityPlayer.md) Player) | [GiantBook](Giantbook.md) | void |
 
 ### MC_PRE_LEVEL_PLACE_ROOM {: .copyable }
 Return a room config to replace the room that will be placed
@@ -1193,7 +1193,7 @@ Return a [MultiShotParams](../MultiShotParams.md) object to change the propertie
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1251 |MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS {: .copyable } | ([EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [MultiShotParams](../MultiShotParams.md) |
+|1251 |MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [MultiShotParams](../MultiShotParams.md) |
 
 ### MC_PRE_M_MORPH_ACTIVE
 This callback triggers when an active gets rerolled by 'M (trinket id 138) and allows for overriding its behavior.
@@ -1202,16 +1202,16 @@ This callback triggers when an active gets rerolled by 'M (trinket id 138) and a
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1190 |MC_PRE_M_MORPH_ACTIVE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) | [EntityPlayer](https://wofsauge.github.io/IsaacDocs/rep/EntityPlayer.html) Player | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
+|1190 |MC_PRE_M_MORPH_ACTIVE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) | [EntityPlayer](../EntityPlayer.md) Player | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
 
 ### MC_PRE_NPC_SPLIT
-Called when the game is about to decide whether or not an [EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) can be split, ie the Meat Cleaver effect.
+Called when the game is about to decide whether or not an [EntityNPC](../EntityNPC.md) can be split, ie the Meat Cleaver effect.
 
 Return `true` to prevent the split, `false` to allow it even if blacklisted, or `nil` to continue default behavior.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1191 |MC_PRE_NPC_SPLIT {: .copyable } | ([EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) NPC, boolean IsBlacklisted) | ([EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean |
+|1191 |MC_PRE_NPC_SPLIT {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, boolean IsBlacklisted) | ([EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean |
 
 ### MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable }
 Called when a familiar fires a tear.
@@ -1220,7 +1220,7 @@ Returning any value will have no effect on later callback executions.
 
 |Value|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1252 |MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable } | ([EntityTear](https://wofsauge.github.io/IsaacDocs/rep/EntityTear.html) Tear) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
+|1252 |MC_POST_FAMILIAR_FIRE_PROJECTILE {: .copyable } | ([EntityTear](../EntityTear.md) Tear) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
 
 ### MC_POST_FIRE_BOMB {: .copyable }
 Called when the player fires a Dr. Fetus bomb.
@@ -1358,7 +1358,7 @@ Accepts no return parameters.
 Accepts `false` to cancel the update.
 
 ???+ warning "Warning"
-    Fire grid entities are largely unused, and in most cases you'll want to target the [EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) fireplaces.
+    Fire grid entities are largely unused, and in most cases you'll want to target the [EntityNPC](../EntityNPC.md) fireplaces.
 
 
 |ID|Name|Function Args|Optional Args|Return Type|
@@ -1541,11 +1541,11 @@ Accepts no return parameters.
 |1429 |MC_POST_GRID_ENTITY_WEB_UPDATE_RENDER {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_SPIKES_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1432 |MC_PRE_GRID_ENTITY_SPIKES_RENDER {: .copyable } | ([GridEntitySpikes](https://wofsauge.github.io/IsaacDocs/rep/GridEntitySpikes.html) Grid, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1432 |MC_PRE_GRID_ENTITY_SPIKES_RENDER {: .copyable } | ([GridEntitySpikes](https://wofsauge.github.io/IsaacDocs/rep/GridEntitySpikes.html) Grid, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_SPIKES_RENDER
 Accepts no return parameters.
@@ -1555,11 +1555,11 @@ Accepts no return parameters.
 |1433 |MC_POST_GRID_ENTITY_SPIKES_RENDER {: .copyable } | ([GridEntitySpikes](https://wofsauge.github.io/IsaacDocs/rep/GridEntitySpikes.html) Grid) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_WEB_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1434 |MC_PRE_GRID_ENTITY_WEB_RENDER {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1434 |MC_PRE_GRID_ENTITY_WEB_RENDER {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_WEB_RENDER
 Accepts no return parameters.
@@ -1569,11 +1569,11 @@ Accepts no return parameters.
 |1435 |MC_POST_GRID_ENTITY_WEB_RENDER {: .copyable } | ([GridEntityWeb](../GridEntityWeb.md) Web) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_TNT_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1436 |MC_PRE_GRID_ENTITY_TNT_RENDER {: .copyable } | ([GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) TNT, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1436 |MC_PRE_GRID_ENTITY_TNT_RENDER {: .copyable } | ([GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) TNT, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_TNT_RENDER
 Accepts no return parameters.
@@ -1583,11 +1583,11 @@ Accepts no return parameters.
 |1437 |MC_POST_GRID_ENTITY_TNT_RENDER {: .copyable } | ([GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) TNT) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_TRAPDOOR_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1438 |MC_PRE_GRID_ENTITY_TRAPDOOR_RENDER {: .copyable } | ([GridEntityTrapDoor](../GridEntityTrapDoor.md) TrapDoor, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1438 |MC_PRE_GRID_ENTITY_TRAPDOOR_RENDER {: .copyable } | ([GridEntityTrapDoor](../GridEntityTrapDoor.md) TrapDoor, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_TRAPDOOR_RENDER
 Accepts no return parameters.
@@ -1597,11 +1597,11 @@ Accepts no return parameters.
 |1439 |MC_POST_GRID_ENTITY_TRAPDOOR_RENDER {: .copyable } | ([GridEntityTrapDoor](../GridEntityTrapDoor.md) TrapDoor) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_STAIRCASE_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1440 |MC_PRE_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStairs](../GridEntityStairs.md) Staircase, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1440 |MC_PRE_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStairs](../GridEntityStairs.md) Staircase, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_STAIRCASE_RENDER
 Accepts no return parameters.
@@ -1611,11 +1611,11 @@ Accepts no return parameters.
 |1441 |MC_POST_GRID_ENTITY_STAIRCASE_RENDER {: .copyable } | ([GridEntityStairs](../GridEntityStairs.md) Staircase) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_DECORATION_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1444 |MC_PRE_GRID_ENTITY_DECORATION_RENDER {: .copyable } | ([GridEntityDecoration](../GridEntityDecoration.md) Decoration, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1444 |MC_PRE_GRID_ENTITY_DECORATION_RENDER {: .copyable } | ([GridEntityDecoration](../GridEntityDecoration.md) Decoration, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_DECORATION_RENDER
 Accepts no return parameters.
@@ -1625,11 +1625,11 @@ Accepts no return parameters.
 |1445 |MC_POST_GRID_ENTITY_DECORATION_RENDER {: .copyable } | ([GridEntityDecoration](../GridEntityDecoration.md) Decoration) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_DOOR_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1446 |MC_PRE_GRID_ENTITY_DOOR_RENDER {: .copyable } | ([GridEntityDoor](../GridEntityDoor.md) Door, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1446 |MC_PRE_GRID_ENTITY_DOOR_RENDER {: .copyable } | ([GridEntityDoor](../GridEntityDoor.md) Door, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_DOOR_RENDER
 Accepts no return parameters.
@@ -1639,14 +1639,14 @@ Accepts no return parameters.
 |1447 |MC_POST_GRID_ENTITY_DOOR_RENDER {: .copyable } | ([GridEntityDoor](../GridEntityDoor.md) Door) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_FIRE_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 ???+ warning "Warning"
-    Fire grid entities are largely unused, and in most cases you'll want to target the [EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) fireplaces.
+    Fire grid entities are largely unused, and in most cases you'll want to target the [EntityNPC](../EntityNPC.md) fireplaces.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1448 |MC_PRE_GRID_ENTITY_FIRE_RENDER {: .copyable } | ([GridEntityFire](../GridEntityFire.md) Fire, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1448 |MC_PRE_GRID_ENTITY_FIRE_RENDER {: .copyable } | ([GridEntityFire](../GridEntityFire.md) Fire, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_FIRE_RENDER
 Accepts no return parameters.
@@ -1656,11 +1656,11 @@ Accepts no return parameters.
 |1449 |MC_POST_GRID_ENTITY_FIRE_RENDER {: .copyable } | ([GridEntityFire](../GridEntityFire.md) Fire) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_PIT_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1454 |MC_PRE_GRID_ENTITY_PIT_RENDER {: .copyable } | ([GridEntityPit](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPit.html) Pit, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1454 |MC_PRE_GRID_ENTITY_PIT_RENDER {: .copyable } | ([GridEntityPit](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPit.html) Pit, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_PIT_RENDER
 Accepts no return parameters.
@@ -1670,14 +1670,14 @@ Accepts no return parameters.
 |1455 |MC_POST_GRID_ENTITY_PIT_RENDER {: .copyable } | ([GridEntityPit](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPit.html) Pit) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_POOP_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 ???- warning "Warning"
-    This callback does not include the [EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) poops used by Tainted ???.
+    This callback does not include the [EntityNPC](../EntityNPC.md) poops used by Tainted ???.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1456 |MC_PRE_GRID_ENTITY_POOP_RENDER {: .copyable } | ([GridEntityPoop](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPoop.html) Poop, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1456 |MC_PRE_GRID_ENTITY_POOP_RENDER {: .copyable } | ([GridEntityPoop](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPoop.html) Poop, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_POOP_RENDER
 Accepts no return parameters.
@@ -1687,11 +1687,11 @@ Accepts no return parameters.
 |1457 |MC_POST_GRID_ENTITY_POOP_RENDER {: .copyable } | ([GridEntityPoop](https://wofsauge.github.io/IsaacDocs/rep/GridEntityPoop.html) Poop) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_ROCK_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1458 |MC_PRE_GRID_ENTITY_ROCK_RENDER {: .copyable } | ([GridEntityRock](../GridEntityRock.md) Rock, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1458 |MC_PRE_GRID_ENTITY_ROCK_RENDER {: .copyable } | ([GridEntityRock](../GridEntityRock.md) Rock, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_ROCK_RENDER
 Accepts no return parameters.
@@ -1701,11 +1701,11 @@ Accepts no return parameters.
 |1459 |MC_POST_GRID_ENTITY_ROCK_RENDER {: .copyable } | ([GridEntityRock](../GridEntityRock.md) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_PRESSUREPLATE_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1460 |MC_PRE_GRID_ENTITY_PRESSUREPLATE_RENDER {: .copyable } | ([GridEntityPressurePlate](../GridEntityPressurePlate.md) PressurePlate, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1460 |MC_PRE_GRID_ENTITY_PRESSUREPLATE_RENDER {: .copyable } | ([GridEntityPressurePlate](../GridEntityPressurePlate.md) PressurePlate, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_PRESSUREPLATE_RENDER
 Accepts no return parameters.
@@ -1715,11 +1715,11 @@ Accepts no return parameters.
 |1461 |MC_POST_GRID_ENTITY_PRESSUREPLATE_RENDER {: .copyable } | ([GridEntityPressurePlate](../GridEntityPressurePlate.md) PressurePlate) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_WALL_RENDER
-Accepts a [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) to modify render offset or `false` to cancel rendering.
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1462 |MC_PRE_GRID_ENTITY_WALL_RENDER {: .copyable } | ([GridEntityWall](../GridEntityWall.md) Wall, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) or boolean |
+|1462 |MC_PRE_GRID_ENTITY_WALL_RENDER {: .copyable } | ([GridEntityWall](../GridEntityWall.md) Wall, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_POST_GRID_ENTITY_WALL_RENDER
 Accepts no return parameters.

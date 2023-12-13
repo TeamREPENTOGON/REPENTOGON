@@ -7,15 +7,15 @@ tags:
 ## Modified Functions
 
 ### FindByType () {: aria-label='Modified Functions' }
-#### [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html)[] FindByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](Entity.md)[] FindByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
 Same as vanilla, but much faster.
 ___
 ### FindInRadius () {: aria-label='Modified Functions' }
-#### [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html)[] FindInRadius ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
 Same as in vanilla, but much faster and with fixed search for effects.
 ___
 ### GetRoomEntities () {: aria-label='Modified Functions' }
-#### [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html)[] GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
+#### [Entity](Entity.md)[] GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
 Same as vanilla, but much faster.
 
 ___
@@ -63,12 +63,12 @@ ___
 
 ___
 ### DrawLine () {: aria-label='Functions' }
-#### void DrawLine ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos1, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos2, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col1, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col2, int Thickness ) {: .copyable aria-label='Functions' }
+#### void DrawLine ( [Vector](Vector.md) Pos1, [Vector](Vector.md) Pos2, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col1, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col2, int Thickness ) {: .copyable aria-label='Functions' }
 Draws a line between the two given positions this render frame.
 
 ___
 ### DrawQuad () {: aria-label='Functions' }
-#### void DrawQuad ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) TopLeftPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) TopRightPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) BottomLeftPos, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) BottomRightPos, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Color, int Thickness ) {: .copyable aria-label='Functions' }
+#### void DrawQuad ( [Vector](Vector.md) TopLeftPos, [Vector](Vector.md) TopRightPos, [Vector](Vector.md) BottomLeftPos, [Vector](Vector.md) BottomRightPos, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Color, int Thickness ) {: .copyable aria-label='Functions' }
 Draws a line between the two given positions this render frame. Internally the game uses its own struct for this, DestinationQuad, but I haven't gotten to adding that to Lua yet :crocodile:
 
 ___
@@ -89,7 +89,7 @@ ___
 Gets the contents of the clipboard as long as they are in text form, otherwise it will just return nil.
 ___
 ### GetCollectibleSpawnPosition () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCollectibleSpawnPosition ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetCollectibleSpawnPosition ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCompletionMark () {: aria-label='Functions' }
@@ -173,7 +173,7 @@ Should probably be moved to Game for consistency.
 
 ___
 ### GetRenderPosition () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetRenderPosition ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, boolean scale = true ) {: .copyable aria-label='Functions' }       
+#### [Vector](Vector.md) GetRenderPosition ( [Vector](Vector.md) position, boolean scale = true ) {: .copyable aria-label='Functions' }       
 
 ___
 ### GetString () {: aria-label='Functions' }
@@ -233,5 +233,5 @@ ___
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
 ___
 ### WorldToMenuPosition () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 Converts the World position from input to a pinned main menu position that varies depending on the enum selected. It's important to reconvert this every frame, in a similar fashion to WorldToRender, in order to properly render when menus are changed or the window is resized.

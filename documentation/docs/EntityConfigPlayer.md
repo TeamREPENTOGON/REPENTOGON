@@ -79,7 +79,7 @@ ___
 
 ___
 ### GetModdedControlsSprite () {: aria-label='Functions' }
-#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetModdedControlsSprite ( ) {: .copyable aria-label='Functions' }
+#### [Sprite](Sprite.md) GetModdedControlsSprite ( ) {: .copyable aria-label='Functions' }
 Returns the Sprite used for a modded character's starting room controls.
 
 Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
@@ -88,7 +88,7 @@ Returns nil for vanilla characters, or characters with no corresponding animatio
 
 ___
 ### GetModdedCoopMenuSprite () {: aria-label='Functions' }
-#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetModdedCoopMenuSprite ( ) {: .copyable aria-label='Functions' }
+#### [Sprite](Sprite.md) GetModdedCoopMenuSprite ( ) {: .copyable aria-label='Functions' }
 Returns the Sprite used for a modded character's icon in the co-op character select wheel.
 
 Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
@@ -97,7 +97,7 @@ Returns nil for vanilla characters, or characters with no corresponding animatio
 
 ___
 ### GetModdedGameOverSprite () {: aria-label='Functions' }
-#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetModdedGameOverSprite ( ) {: .copyable aria-label='Functions' }
+#### [Sprite](Sprite.md) GetModdedGameOverSprite ( ) {: .copyable aria-label='Functions' }
 Returns the Sprite used for a modded character's game over screen (ie, their name).
 
 Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
@@ -106,7 +106,7 @@ Returns nil for vanilla characters, or characters with no corresponding animatio
 
 ___
 ### GetModdedMenuBackgroundSprite () {: aria-label='Functions' }
-#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetModdedMenuBackgroundSprite ( ) {: .copyable aria-label='Functions' }
+#### [Sprite](Sprite.md) GetModdedMenuBackgroundSprite ( ) {: .copyable aria-label='Functions' }
 Returns the Sprite used for a modded character's character select screen.
 
 Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.
@@ -115,7 +115,7 @@ Returns nil for vanilla characters, or characters with no corresponding animatio
 
 ___
 ### GetModdedMenuPortraitSprite () {: aria-label='Functions' }
-#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetModdedMenuPortraitSprite ( ) {: .copyable aria-label='Functions' }
+#### [Sprite](Sprite.md) GetModdedMenuPortraitSprite ( ) {: .copyable aria-label='Functions' }
 Returns the Sprite used for a modded character's character select portrait.
 
 Note that this Sprite is shared by other characters from the same mod - there is an animation with the same name as this character.

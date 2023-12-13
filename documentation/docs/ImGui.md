@@ -181,7 +181,7 @@ ___
 Closes ImGui.
 ___
 ### ImGuiToWorld () {: aria-label='Functions' }
-#### void ImGuiToWorld ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
+#### void ImGuiToWorld ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }
 Converts ImGui coordinates into World coordinates.
 
 ???+ bug "Bug"
@@ -281,7 +281,7 @@ ___
 Shortcut function to update an element text or label.
 ___
 ### WorldToImGui () {: aria-label='Functions' }
-#### void WorldToImGui ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position ) {: .copyable aria-label='Functions' }
+#### void WorldToImGui ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }
 Converts world coordinates into ImGui coordinates.
 
 ???+ bug "Bug"

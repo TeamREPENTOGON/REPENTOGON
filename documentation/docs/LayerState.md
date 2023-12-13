@@ -11,11 +11,11 @@ tags:
 
 ___
 ### GetColor () {: aria-label='Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetColor ( ) {: .copyable aria-label='Functions' }
+#### [Color](Color.md) GetColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCropOffset () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetCropOffset ( ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetCropOffset ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetDefaultSpritesheetPath () {: aria-label='Functions' }
@@ -31,7 +31,7 @@ ___
 
 ___
 ### GetPos () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPos ( ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetPos ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRenderFlags () {: aria-label='Functions' }
@@ -43,7 +43,7 @@ ___
 
 ___
 ### GetSize () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetSize ( ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetSize ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetSpritesheetPath () {: aria-label='Functions' }
@@ -55,15 +55,15 @@ ___
 
 ___
 ### SetColor () {: aria-label='Functions' }
-#### void SetColor ( [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) Color ) {: .copyable aria-label='Functions' }
+#### void SetColor ( [Color](Color.md) Color ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCropOffset () {: aria-label='Functions' }
-#### void SetCropOffset ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset ) {: .copyable aria-label='Functions' }
+#### void SetCropOffset ( [Vector](Vector.md) Offset ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetPos () {: aria-label='Functions' }
-#### void SetPos ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Pos ) {: .copyable aria-label='Functions' }
+#### void SetPos ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetRenderFlags () {: aria-label='Functions' }
@@ -75,7 +75,7 @@ ___
 
 ___
 ### SetSize () {: aria-label='Functions' }
-#### void SetSize ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Size ) {: .copyable aria-label='Functions' }
+#### void SetSize ( [Vector](Vector.md) Size ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetVisible () {: aria-label='Functions' }

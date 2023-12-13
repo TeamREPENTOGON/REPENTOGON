@@ -23,7 +23,7 @@ ___
 
 ___
 ### AddKnockback () {: aria-label='Functions' }
-#### void AddKnockback ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) PushDirection, int Duration, boolean TakeImpactDamage ) {: .copyable aria-label='Functions' }
+#### void AddKnockback ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) PushDirection, int Duration, boolean TakeImpactDamage ) {: .copyable aria-label='Functions' }
 
 ___
 ### AddMagnetized () {: aria-label='Functions' }
@@ -40,13 +40,13 @@ ___
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
 #### void CopyStatusEffects ( ) {: .copyable aria-label='Functions' }
-#### void CopyStatusEffects ( [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Target ) {: .copyable aria-label='Functions' }
+#### void CopyStatusEffects ( [Entity](Entity.md) Target ) {: .copyable aria-label='Functions' }
 
-If no Entity is specified, this will recursively copy status effects to all [Child](https://wofsauge.github.io/IsaacDocs/rep/Entity.html#child) Entities.
+If no Entity is specified, this will recursively copy status effects to all [Child](Entity.md#child) Entities.
 
 ___
 ### ForceCollide () {: aria-label='Functions' }
-#### boolean ForceCollide ( [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) Entity, bool Low ) {: .copyable aria-label='Functions' }
+#### boolean ForceCollide ( [Entity](Entity.md) Entity, bool Low ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetAnimationState () {: aria-label='Functions' }
@@ -58,7 +58,7 @@ ___
 
 ___
 ### GetCollisionCapsule () {: aria-label='Functions' }
-#### [Capsule](Capsule.md) GetCollisionCapsule ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) vec ) {: .copyable aria-label='Functions' }
+#### [Capsule](Capsule.md) GetCollisionCapsule ( [Vector](Vector.md) vec ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetDebugShape () {: aria-label='Functions' }
@@ -87,7 +87,7 @@ ___
 
 ___
 ### GetNullOffset () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetNullOffset ( string NullLayerName ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetNullOffset ( string NullLayerName ) {: .copyable aria-label='Functions' }
 Returns position of null layer mark. Alternatively returns Vector.Zero if the layer is not visible, has no frame available for the current animation, or for other unknown reasons.
 
 ___
@@ -105,7 +105,7 @@ Returns 2 values, both Vectors. 1st the Position of the entity, 2nd the Velocity
 
 ___
 ### GetPredictedTargetPosition () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetPredictedTargetPosition ( [Entity](Entity.md) target, int strength ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetPredictedTargetPosition ( [Entity](Entity.md) target, int strength ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetShadowSize () {: aria-label='Functions' }
@@ -121,7 +121,7 @@ ___
 
 ___
 ### GiveMinecart () {: aria-label='Functions' }
-#### [EntityNPC](https://wofsauge.github.io/IsaacDocs/rep/EntityNPC.html) GiveMinecart ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity ) {: .copyable aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) GiveMinecart ( [Vector](Vector.md) position, [Vector](Vector.md) velocity ) {: .copyable aria-label='Functions' }
 
 ___
 ### IgnoreEffectFromFriendly () {: aria-label='Functions' }
@@ -129,11 +129,11 @@ ___
 
 ___
 ### MakeBloodPoof () {: aria-label='Functions' }
-#### void MakeBloodPoof ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos = entityPosition, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
+#### void MakeBloodPoof ( [Vector](Vector.md) pos = entityPosition, [Color](Color.md) color = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
 
 ___
 ### MakeGroundPoof () {: aria-label='Functions' }
-#### void MakeGroundPoof ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) pos = entityPosition, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
+#### void MakeGroundPoof ( [Vector](Vector.md) pos = entityPosition, [Color](Color.md) color = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBossStatusEffectCooldown () {: aria-label='Functions' }
@@ -161,7 +161,7 @@ ___
 
 ___
 ### SpawnBloodEffect () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( int subtype = 0, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position = entityPosition, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) offset = nil, [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) color = default, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) velocity = nil ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( int subtype = 0, [Vector](Vector.md) position = entityPosition, [Vector](Vector.md) offset = nil, [Color](Color.md) color = default, [Vector](Vector.md) velocity = nil ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnGroundImpactEffects () {: aria-label='Functions' }
@@ -174,13 +174,13 @@ ___
 ___
 ### ToSlot () {: aria-label='Functions' }
 #### [EntitySlot](EntitySlot.md) ToSlot ( ) {: .copyable aria-label='Functions' }
-Used to cast an [Entity](https://wofsauge.github.io/IsaacDocs/rep/Entity.html) object to an [EntitySlot](EntitySlot.md) object.
+Used to cast an [Entity](Entity.md) object to an [EntitySlot](EntitySlot.md) object.
 
 ???+ note "Return behavior"
     If the conversion is not successful, this function returns `nil`.
 
 ___
 ### TryThrow () {: aria-label='Functions' }
-#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) ThrowDirection, float Force ) {: .copyable aria-label='Functions' }
+#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) ThrowDirection, float Force ) {: .copyable aria-label='Functions' }
 
 ___

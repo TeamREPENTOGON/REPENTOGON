@@ -11,7 +11,7 @@ tags:
 
 ___
 ### GetRenderPosition () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetRenderPosition ( ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetRenderPosition ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### HurtDamage () {: aria-label='Functions' }
@@ -35,7 +35,7 @@ ___
 
 ___
 ### RenderTop () {: aria-label='Functions' }
-#### void RenderTop ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Offset ) {: .copyable aria-label='Functions' }
+#### void RenderTop ( [Vector](Vector.md) Offset ) {: .copyable aria-label='Functions' }
 
 ___
 

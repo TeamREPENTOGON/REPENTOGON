@@ -43,7 +43,7 @@ ___
 
 ___
 ### GetFloorColor () {: aria-label='Functions' }
-#### [Color](https://wofsauge.github.io/IsaacDocs/rep/Color.html) GetFloorColor ( ) {: .copyable aria-label='Functions' }
+#### [Color](Color.md) GetFloorColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetFXParams () {: aria-label='Functions' }
@@ -131,15 +131,15 @@ Sets the amount of water that should be in the current room. Vanilla typically u
 
 ___
 ### SetWaterColor () {: aria-label='Functions' }
-#### void SetWaterColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
+#### void SetWaterColor ( [KColor](Color.md) WaterColor ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetWaterColorMultiplier () {: aria-label='Functions' }
-#### void SetWaterColorMultiplier ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/Color.html) WaterColor ) {: .copyable aria-label='Functions' }
+#### void SetWaterColorMultiplier ( [KColor](Color.md) WaterColor ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetWaterCurrent () {: aria-label='Functions' }
-#### void SetWaterCurrent ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) WaterCurrent ) {: .copyable aria-label='Functions' }
+#### void SetWaterCurrent ( [Vector](Vector.md) WaterCurrent ) {: .copyable aria-label='Functions' }
 Sets the strength of the water current in the room. Current sounds and particles are automatically handled.
 
 The game typically uses `1` or `-1` for its values depending on current strength and direction. You can technically go higher than this for some interesting results. Arbitrary directions are fully supported as well.

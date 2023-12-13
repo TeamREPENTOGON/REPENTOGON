@@ -25,7 +25,7 @@ ___
 
 ___
 ### GetDirection () {: aria-label='Functions' }
-#### [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) GetDirection ( ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetDirection ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetFireDelay () {: aria-label='Functions' }
@@ -61,7 +61,7 @@ ___
 
 ___
 ### PlayItemAnim () {: aria-label='Functions' }
-#### void PlayItemAnim ( int itemID, int anim, [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, float charge ) {: .copyable aria-label='Functions' }
+#### void PlayItemAnim ( int itemID, int anim, [Vector](Vector.md) position, float charge ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCharge () {: aria-label='Functions' }

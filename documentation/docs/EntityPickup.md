@@ -21,7 +21,7 @@ ___
 
 ___
 ### GetRandomPickupVelocity () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetRandomPickupVelocity ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) position, [RNG](RNG.md) rng, int velType = 0 ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetRandomPickupVelocity ( [Vector](Vector.md) position, [RNG](RNG.md) rng, int velType = 0 ) {: .copyable aria-label='Functions' }
 
 ???+ warning "Warning"
     This is a static function and must be called via `EntityPickup.GetRandomPickupVelocity(position, rng, velType)`.

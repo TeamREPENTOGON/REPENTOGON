@@ -20,7 +20,7 @@ tags:
 
 ___
 ### GetVersusScreenSprite () {: aria-label='Functions' }
-#### [Sprite](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html) GetVersusScreenSprite ( ) {: .copyable aria-label='Functions' }
+#### [Sprite](Sprite.md) GetVersusScreenSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsRenderingBossIntro () {: aria-label='Functions' }

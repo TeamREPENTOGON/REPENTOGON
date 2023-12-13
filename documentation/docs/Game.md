@@ -114,6 +114,6 @@ ___
 
 ___
 ### SpawnBombCrater () {: aria-label='Functions' }
-#### [Entity](Entity.md) SpawnBombCrater ( [Vector](https://wofsauge.github.io/IsaacDocs/rep/Vector.html) Position ) {: .copyable aria-label='Functions' }
+#### [Entity](Entity.md) SpawnBombCrater ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
