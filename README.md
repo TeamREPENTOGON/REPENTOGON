@@ -29,7 +29,6 @@ The nature of this project requires that we use the same compiler as the game. A
 * CMake 3.13 or above
 * Git
 * Visual Studio 2019 or above
-* Doxygen (for now, looking into removing this in the future)
 
 ### Steps
 We assume Git Bash for the duration of this tutorial, as well as CMake GUI.
