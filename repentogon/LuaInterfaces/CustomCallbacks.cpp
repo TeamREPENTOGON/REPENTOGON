@@ -3560,6 +3560,7 @@ HOOK_METHOD(GridEntity_Fire, Render, (Vector& offset) -> void) {
 	DoPostGridCallback(this, lua::metatables::GridFireMT, postCallbackId);
 }
 
+/* this is causing locks to turn into teleporters on reentering a room???????????????????????
 //PRE/POST_GRID_ENTITY_LOCK_RENDER (1450,1451)
 //PRE/POST_GRID_ENTITY_TELEPRTER_RENDER (1452,1453)
 HOOK_METHOD(GridEntity_Lock, Render, (Vector& offset) -> void) {
@@ -3575,6 +3576,7 @@ HOOK_METHOD(GridEntity_Lock, Render, (Vector& offset) -> void) {
 
 	DoPostGridCallback(this, mt, postCallbackId);
 }
+*/
 
 //PRE/POST_GRID_ENTITY_PIT_RENDER (1454,1455)
 HOOK_METHOD(GridEntity_Pit, Render, (Vector& offset) -> void) {
