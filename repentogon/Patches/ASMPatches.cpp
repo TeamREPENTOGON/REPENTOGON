@@ -1069,7 +1069,7 @@ void ASMPatchTrySplit() {
 // Room::spawn_entity
 */ /////////////////
 
-GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, int vardata, unsigned int seed, unsigned int idx, unsigned int teleState) {
+GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, int vardata, unsigned int seed, unsigned int idx, unsigned short entrySubtype, unsigned int teleState) {
 	const int callbackid = 1192;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -1108,7 +1108,7 @@ GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int vari
 		desc->_varData = vardata;
 
 		if (type == GRID_TELEPORTER) {
-			desc->_state = teleState != 0 ? teleState : 0;
+			desc->_state = entrySubtype != 0 ? teleState : 0;
 		}
 
 		ent->Init(seed);
@@ -1127,7 +1127,8 @@ void ASMPatchRoomSpawnEntity() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::ECX, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EBP, -0xa) //teleporter state
+		.Push(ASMPatch::Registers::EBP, -0x44) // teleporter state
+		.Push(ASMPatch::Registers::EBP, -0xa) // entry subtype
 		.Push(ASMPatch::Registers::EDX) // idx
 		.Push(ASMPatch::Registers::EBP, -0x40) // seed
 		.Push(ASMPatch::Registers::EDI) // vardata

@@ -10,6 +10,7 @@ pch.h
 lib/*.lib
 *.vcxproj
 *.vcxproj.filters
+nami_code_checks.js
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,cmake,c,c++,lua
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,visualstudiocode,cmake,c,c++,lua
