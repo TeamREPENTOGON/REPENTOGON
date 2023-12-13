@@ -45,21 +45,9 @@ ___
 #### int GetNumTears ( ) {: .copyable aria-label='Functions' }
 Returns the amount of tears the player can currently simultaneously fire.
 ___
-### GetSpreadAngleKnife () {: aria-label='Functions' }
-#### float GetSpreadAngleKnife ( ) {: .copyable aria-label='Functions' }
-Get the spread angle for knife and meelee attacks.
-___
-### GetSpreadAngleLaser () {: aria-label='Functions' }
-#### float GetSpreadAngleLaser ( ) {: .copyable aria-label='Functions' }
-Get the spread angle for laser and brimstone attacks.
-___
-### GetSpreadAngleTears () {: aria-label='Functions' }
-#### float GetSpreadAngleTears ( ) {: .copyable aria-label='Functions' }
-Get the spread angle for tear, dr fetus and default attacks.
-___
-### GetSpreadAngleTechX () {: aria-label='Functions' }
-#### float GetSpreadAngleTechX ( ) {: .copyable aria-label='Functions' }
-Get the spread angle for tech X attacks.
+### GetSpreadAngle () {: aria-label='Functions' }
+#### float GetSpreadAngle ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType ) {: .copyable aria-label='Functions' }
+Get the spread angle for the given [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html).
 ___
 ### IsCrossEyed () {: aria-label='Functions' }
 #### boolean IsCrossEyed ( ) {: .copyable aria-label='Functions' }
@@ -107,19 +95,7 @@ ___
 #### void SetNumTears ( int value ) {: .copyable aria-label='Functions' }
 Set the amount of tears the player can currently simultaneously fire.
 ___
-### SetSpreadAngleKnife () {: aria-label='Functions' }
-#### void SetSpreadAngleKnife ( float angle ) {: .copyable aria-label='Functions' }
-Set the spread angle for knife and meelee attacks.
-___
-### SetSpreadAngleLaser () {: aria-label='Functions' }
-#### void SetSpreadAngleLaser ( float angle ) {: .copyable aria-label='Functions' }
-Set the spread angle for laser and brimstone attacks.
-___
-### SetSpreadAngleTears () {: aria-label='Functions' }
-#### void SetSpreadAngleTears ( float angle ) {: .copyable aria-label='Functions' }
-Set the spread angle for tear, dr fetus and default attacks.
-___
-### SetSpreadAngleTechX () {: aria-label='Functions' }
-#### void SetSpreadAngleTechX ( float angle ) {: .copyable aria-label='Functions' }
-Set the spread angle for tech X attacks.
+### SetSpreadAngle () {: aria-label='Functions' }
+#### void SetSpreadAngle ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, float angle ) {: .copyable aria-label='Functions' }
+Set the spread angle for the given [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html).
 ___

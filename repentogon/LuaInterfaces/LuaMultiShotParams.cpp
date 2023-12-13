@@ -39,59 +39,87 @@ LUA_FUNCTION(Lua_MultiShotParamsSetNumLanesPerEye) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_MultiShotParamsGetSpreadAngleTears) {
+LUA_FUNCTION(Lua_MultiShotParamsGetSpreadAngle) {
 	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+	int weaponType = (int)luaL_checkinteger(L, 2);
 
-	lua_pushnumber(L, params->spreadAngleTears);
+	switch (weaponType)
+	{
+	case 1: //	WEAPON_TEARS
+	case 5: //	WEAPON_BOMBS
+		lua_pushnumber(L, params->spreadAngleTears);
+		break;
+	case 2: //	WEAPON_BRIMSTONE
+	case 3: //	WEAPON_LASER
+		lua_pushnumber(L, params->spreadAngleLaser);
+		break;
+	case 4: //	WEAPON_KNIFE
+		lua_pushnumber(L, params->spreadAngleKnife);
+		break;
+	case 9: //	WEAPON_TECH_X
+	case 14: //	WEAPON_FETUS  - C Section
+		lua_pushnumber(L, params->speadAngleTechX);
+		break;
+	case 10: //	WEAPON_BONE
+	case 11: //	WEAPON_NOTCHED_AXE
+		lua_pushnumber(L, params->spreadAngleKnife*3); // Needs to be multiplied by 3 to get the correct angle
+		break;
+	case 6: //	WEAPON_ROCKETS
+	case 7: //	WEAPON_MONSTROS_LUNGS
+	case 8: //	WEAPON_LUDOVICO_TECHNIQUE
+	case 12: //	WEAPON_URN_OF_SOULS
+	case 13: //	WEAPON_SPIRIT_SWORD
+	case 15: //	WEAPON_UMBILICAL_WHIP
+		lua_pushnumber(L, 0); // return 0. These weapons dont use spread angle
+		break;
+	default:
+		return luaL_error(L, "WeaponTypes bigger 15 are not supported!");
+	}
 	return 1;
 }
 
-LUA_FUNCTION(Lua_MultiShotParamsSetSpreadAngleTears) {
+LUA_FUNCTION(Lua_MultiShotParamsSetSpreadAngle) {
 	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+	int weaponType = (int)luaL_checkinteger(L, 2);
+	float targetAngle = (float)luaL_checknumber(L, 3);
 
-	params->spreadAngleTears = (float)luaL_checknumber(L, 2);
-	return 0;
-}
+	switch (weaponType)
+	{
+	case 1: //	WEAPON_TEARS
+	case 5: //	WEAPON_BOMBS
+		params->spreadAngleTears = targetAngle;
+		break;
+	case 2: //	WEAPON_BRIMSTONE
+	case 3: //	WEAPON_LASER
+		params->spreadAngleLaser = targetAngle;
+		break;
+	case 4: //	WEAPON_KNIFE
+		params->spreadAngleKnife = targetAngle;
+		break;
+	case 9: //	WEAPON_TECH_X
+	case 14: //	WEAPON_FETUS  - C Section
+		params->speadAngleTechX = targetAngle;
+		break;
+	case 10: //	WEAPON_BONE
+	case 11: //	WEAPON_NOTCHED_AXE
+		params->spreadAngleKnife = targetAngle / 3; // somehow needs to be divided by 3 to get the correct angle
+		break;
+	case 6: //	WEAPON_ROCKETS
+	case 7: //	WEAPON_MONSTROS_LUNGS
+	case 8: //	WEAPON_LUDOVICO_TECHNIQUE
+	case 12: //	WEAPON_URN_OF_SOULS
+	case 13: //	WEAPON_SPIRIT_SWORD
+	case 15: //	WEAPON_UMBILICAL_WHIP
+		return luaL_error(L, "The given WeaponType cant change its spread angle!");
+	default:
+		return luaL_error(L, "A WeaponType bigger 15 is not supported!");
+	}
 
-LUA_FUNCTION(Lua_MultiShotParamsGetSpreadAngleLaser) {
-	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
+	if (params->numLanesPerEye < 2) // spread angle changes only work when number of lines is bigger 1
+	{
+		params->numLanesPerEye = 2;
+	}
 
-	lua_pushnumber(L, params->spreadAngleLaser);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MultiShotParamsSetSpreadAngleLaser) {
-	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
-
-	params->spreadAngleLaser = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_MultiShotParamsGetSpreadAngleTechX) {
-	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
-
-	lua_pushnumber(L, params->speadAngleTechX);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MultiShotParamsSetSpreadAngleTechX) {
-	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
-
-	params->speadAngleTechX = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_MultiShotParamsGetSpreadAngleKnife) {
-	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
-
-	lua_pushnumber(L, params->spreadAngleKnife);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_MultiShotParamsSetSpreadAngleKnife) {
-	Weapon_MultiShotParams* params = lua::GetUserdata<Weapon_MultiShotParams*>(L, 1, lua::metatables::MultiShotParamsMT);
-
-	params->spreadAngleKnife = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -185,22 +213,16 @@ static void RegisterMultiShotParams(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetNumTears", Lua_MultiShotParamsGetNumTears },
 		{ "GetNumLanesPerEye", Lua_MultiShotParamsGetNumLanesPerEye },
-		{ "GetSpreadAngleTears", Lua_MultiShotParamsGetSpreadAngleTears },
-		{ "GetSpreadAngleLaser", Lua_MultiShotParamsGetSpreadAngleLaser },
-		{ "GetSpreadAngleTechX", Lua_MultiShotParamsGetSpreadAngleTechX },
-		{ "GetSpreadAngleKnife", Lua_MultiShotParamsGetSpreadAngleKnife },
+		{ "GetSpreadAngle", Lua_MultiShotParamsGetSpreadAngle },
 		{ "GetNumEyesActive", Lua_MultiShotParamsGetNumEyesActive },
+		{ "GetNumRandomDirTears", Lua_MultiShotParamsGetNumRandomDirTears },
 		{ "GetMultiEyeAngle", Lua_MultiShotParamsGetMultiEyeAngle },
 		{ "IsCrossEyed", Lua_MultiShotParamsGetIsCrossEyed },
 		{ "IsShootingBackwards", Lua_MultiShotParamsGetIsShootingBackwards },
 		{ "IsShootingSideways", Lua_MultiShotParamsGetIsShootingSideways },
-		{ "GetNumRandomDirTears", Lua_MultiShotParamsGetNumRandomDirTears },
 		{ "SetNumTears", Lua_MultiShotParamsSetNumTears },
 		{ "SetNumLanesPerEye", Lua_MultiShotParamsSetNumLanesPerEye },
-		{ "SetSpreadAngleTears", Lua_MultiShotParamsSetSpreadAngleTears },
-		{ "SetSpreadAngleLaser", Lua_MultiShotParamsSetSpreadAngleLaser },
-		{ "SetSpreadAngleTechX", Lua_MultiShotParamsSetSpreadAngleTechX },
-		{ "SetSpreadAngleKnife", Lua_MultiShotParamsSetSpreadAngleKnife },
+		{ "SetSpreadAngle", Lua_MultiShotParamsSetSpreadAngle },
 		{ "SetNumEyesActive", Lua_MultiShotParamsSetNumEyesActive },
 		{ "SetMultiEyeAngle", Lua_MultiShotParamsSetMultiEyeAngle },
 		{ "SetIsCrossEyed", Lua_MultiShotParamsSetIsCrossEyed },
