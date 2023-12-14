@@ -449,8 +449,10 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		cfg.MergeMode = true;
 		if (repentogonOptions.enableUnifont)
 			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", unifont_base_size, &cfg, unifont_ranges.Get());
-		cfg.GlyphOffset = ImVec2(0, 3);
-		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 16, &cfg, icon_ranges);
+		// icon font
+		cfg.GlyphOffset = ImVec2(0, 1.5f); // move icon a bit down to center them in objects
+		cfg.RasterizerDensity = 5; // increase DPI, to make icons look less fucked by the rasterizer
+		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", unifont_base_size, &cfg, icon_ranges);
 	
 
 		imguiInitialized = true;
