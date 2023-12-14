@@ -53,5 +53,7 @@ static __fastcall void Isaac::GetRandomPickupVelocity(Vector * buffer, Vector * 
 static __x86_64_output Vector Isaac::GetCollectibleSpawnPosition(Vector* target);
 
 struct Isaac {
-
+    {{
+    LIBZHL_API static bool IsInGame();
+    }}
 } : 0;
