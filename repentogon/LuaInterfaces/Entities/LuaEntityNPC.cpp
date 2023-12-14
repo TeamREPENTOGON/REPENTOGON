@@ -257,6 +257,55 @@ LUA_FUNCTION(Lua_EntityNPC_TryThrow) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_ThrowStrider) {
+	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Entity* entity = nullptr;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	}
+
+	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowStrider(origin, entity, target), lua::Metatables::ENTITY_NPC);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ThrowRockSpider) {
+	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Entity* entity = nullptr;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	}
+
+	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	const int variant = luaL_optinteger(L, 4, 0);
+	const float yPosOffset = luaL_optnumber(L, 5, -10.0f);
+
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowRockSpider(origin, target, entity, variant, yPosOffset), lua::Metatables::ENTITY_NPC);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ThrowLeech) {
+	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Entity* entity = nullptr;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	}
+
+	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	const float yPosOffset = luaL_optnumber(L, 4, -10.0f);
+	bool big = lua::luaL_optboolean(L, 5, false);
+
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowLeech(origin, entity, yPosOffset, target, big), lua::Metatables::ENTITY_NPC);
+
+	return 1;
+}
+
 /*
 // gonna make a minecart metatable later
 LUA_FUNCTION(Lua_EntityNPC_Minecart_UpdateChild) {
@@ -307,6 +356,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowMaggot", Lua_EntityNPC_ThrowMaggot);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ShootMaggotProjectile", Lua_EntityNPC_ShootMaggotProjectile);
+	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowStrider", Lua_EntityNPC_ThrowStrider);
+	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowRockSpider", Lua_EntityNPC_ThrowRockSpider);
+	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowLeech", Lua_EntityNPC_ThrowLeech);
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
