@@ -291,8 +291,7 @@ struct ConsoleMega : ImGuiWindowObject {
         if (!enabled || !isImGuiActive && !pinned) {
             return;
         }
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
+        ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
         
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             if (imguiResized) {
@@ -416,7 +415,6 @@ struct ConsoleMega : ImGuiWindowObject {
         
         UpdateFont();
         ImGui::End(); // close window element
-        ImGui::PopStyleVar();
     }
 
     static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)

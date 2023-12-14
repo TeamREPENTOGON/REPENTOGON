@@ -55,6 +55,7 @@ struct LogViewer : ImGuiWindowObject {
         if (!enabled || !isImGuiActive && !pinned) {
             return;
         }
+        ImGui::SetNextWindowSize(ImVec2(575, 325), ImGuiCond_FirstUseEver);
 
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             if (imguiResized) {

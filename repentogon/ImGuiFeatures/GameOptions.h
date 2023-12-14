@@ -50,6 +50,8 @@ struct GameOptionsWindow : ImGuiWindowObject {
         if (!enabled || !isImGuiActive && !pinned) {
             return;
         }
+        ImGui::SetNextWindowSize(ImVec2(675, 375), ImGuiCond_FirstUseEver);
+
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             if (imguiResized) {
                 ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));

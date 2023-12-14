@@ -932,7 +932,7 @@ struct CustomImGui {
     {
         for (auto window = windows->begin(); window != windows->end(); ++window) {
             ImGui::PushID(window->GetHash());
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(300, 100));
+            ImGui::SetNextWindowSize(ImVec2(300, 100), ImGuiCond_FirstUseEver);
             HandleElementColors(window->GetElementData(), true);
             window->EvaluateVisible();
             RunPreRenderCallbacks(&(*window));
@@ -957,7 +957,6 @@ struct CustomImGui {
                 ImGui::End(); // close window element
             }
             HandleElementColors(window->GetElementData(), false);
-            ImGui::PopStyleVar();
             ImGui::PopID();
         }
     }
@@ -1106,7 +1105,7 @@ struct CustomImGui {
                 break;
             case IMGUI_ELEMENT::DragFloat:
                 ImGui::DragFloat(name, &data->currentFloatVal, data->speed, data->minVal, data->maxVal, data->formatting);
-                RunCallbacks(&(*element)); 
+                RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SliderInt:
                 ImGui::SliderInt(name, &(int&)data->currentIntVal, (int)data->minVal, (int)data->maxVal, data->formatting);
