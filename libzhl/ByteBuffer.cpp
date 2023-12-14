@@ -1,6 +1,7 @@
 #include <stdexcept>
 
 #include "ByteBuffer.h"
+#include "Log.h"
 
 void EndianSwap(char* src, int a, int b) {
 	char copy = src[a];
@@ -49,8 +50,26 @@ ByteBuffer& ByteBuffer::operator=(ByteBuffer&& other) {
 	return *this;
 }
 
-ByteBuffer& ByteBuffer::AddByte(char byte) {
-	return AddAny(&byte, 1);
+ByteBuffer& ByteBuffer::AddByte(unsigned char byte, size_t n) {
+	char* buffer;
+	if (n != 1) {
+		buffer = (char*)malloc(n);
+		if (!buffer) {
+			ZHL::Log("[critical] ByteBuffer::AddByte: out of memory\n");
+			return *this;
+		}
+		memset(buffer, byte, n);
+	}
+	else
+		buffer = (char*)& byte;
+
+	AddAny(buffer, n);
+
+	if (n != 1) {
+		free(buffer);
+	}
+
+	return *this;
 }
 
 ByteBuffer& ByteBuffer::AddString(const char* s) {

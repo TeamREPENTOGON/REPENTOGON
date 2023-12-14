@@ -331,6 +331,7 @@ namespace lua {
         LuaCaller& push(const char* fmt, va_list va);
         LuaCaller& push(void* ptr, Metatables meta);
         LuaCaller& pushLuabridge(void* ptr, const char* meta); 
+        LuaCaller& pushLuabridge(void* ptr, lua::Metatables meta);
         LuaCaller& pushCallbackID(const char* name, const char* ns = nullptr);
         template<typename T>
         std::enable_if_t<std::is_pointer_v<T>, LuaCaller&> push(T ptr, const char* meta) {

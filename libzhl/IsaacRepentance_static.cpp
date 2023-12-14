@@ -116,3 +116,7 @@ bool ItemConfig::IsValidTrinket(unsigned int TrinketType) {
 
 	return false;
 }
+
+bool Isaac::IsInGame() {
+	return g_Manager->GetState() == 2 && g_Game;
+}

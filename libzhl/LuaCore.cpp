@@ -609,6 +609,13 @@ namespace lua {
 		return *this;
 	}
 
+	LuaCaller& LuaCaller::pushLuabridge(void* ptr, lua::Metatables meta)
+	{
+		luabridge::UserdataPtr::push(_L, ptr, meta);
+		++_n;
+		return *this;
+	}
+
 	LuaCaller& LuaCaller::pushCallbackID(const char* name, const char* ns) {
 		PushCallbackID(_L, name, ns);
 		++_n;

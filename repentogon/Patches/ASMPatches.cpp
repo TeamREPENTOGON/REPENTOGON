@@ -1353,6 +1353,35 @@ void PatchGridCallbackShit()
 	PatchInlinedSpawnGridEntity();
 }
 
+void ASMPatchInputAction()
+{
+	const char* signatures[] = {
+		"837f??0275??833d????????0074??8d45??505351",
+		"8378??0275??833d????????00",
+		"837f??0275??833d????????0074??8d45??50536a00",
+		"837f??0275??833d????????0074??8d45??50536a01",
+		NULL
+	};
+
+	const char** start = signatures;
+	while (*start) {
+		const char* signature = *start;
+		SigScan scanner(signature);
+		if (!scanner.Scan()) {
+			ZHL::Log("[fatal] ASMPatchInputAction: could not find signature %s\n", signature);
+			throw std::runtime_error("Could not find signature");
+		}
+		else {
+			ZHL::Log("[info] ASMPatchInputAction: found signature at %p\n", scanner.GetAddress());
+		}
+
+		ASMPatch patch(ByteBuffer().AddByte(0x90, 6));
+		sASMPatcher.FlatPatch(scanner.GetAddress(), &patch);
+
+		++start;
+	}
+}
+
 //////////////////////////////////////////////
 // !!!!! GRID CALLBACK STUFF DONE !!!!!
 //////////////////////////////////////////////
@@ -1384,4 +1413,5 @@ void PerformASMPatches() {
 	ASMPatchMenuOptionsLanguageChange();
 	ASMPatchTrySplit();
 	PatchGridCallbackShit();
+	ASMPatchInputAction();
 }
