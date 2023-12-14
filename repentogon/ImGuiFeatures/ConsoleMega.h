@@ -251,7 +251,7 @@ struct ConsoleMega : ImGuiWindowObject {
         std::string commandName = cmdlets.front();
         commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
         const ConsoleCommand* command = GetCommandByName(commandName);
-        // redirect "giveitem" command to allow for trinket, card and pill being givin using their name.
+        // redirect "giveitem" command to allow for trinket, card and pill being given using their name.
         if (command && (command->autocompleteType == ITEM && !autocompleteBuffer.empty()))
         {
           AutocompleteEntry firstEntry = autocompleteBuffer.front();
@@ -304,7 +304,7 @@ struct ConsoleMega : ImGuiWindowObject {
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
-            if (ImGui::BeginChild("Text View", ImVec2(0, (-14 - ImGui::GetIO().FontDefault->FontSize)), true)) {
+            if (ImGui::BeginChild("Text View", ImVec2(0, (-14 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize))), true)) {
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.

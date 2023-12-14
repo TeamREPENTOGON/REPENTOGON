@@ -439,26 +439,19 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		RegisterSaveDataHandler();
 
 		static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-
-		for (int i = 1; i <= 12; ++i) {
-			// ImGui font scaling will make it blurry, this is a suboptimal but (for better or worse) functional workaround.
-			cfg.MergeMode = false;
-			cfg.SizePixels = 13.0f * i;
-			fonts.insert(std::pair<int, ImFont*>(i, io.Fonts->AddFontDefault(&cfg)));
-			cfg.MergeMode = true;
-			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 16, &cfg, icon_ranges);
-		}
-
 		static UnifontRange unifont_ranges;
-		if (repentogonOptions.enableUnifont) {
-			const int unifont_base_size = 13;
-			cfg.MergeMode = false;
-			cfg.SizePixels = unifont_base_size;
-			imFontUnifont = io.Fonts->AddFontDefault(&cfg); 
-			cfg.MergeMode = true;
-			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", unifont_base_size, &cfg, icon_ranges);
+
+		const int unifont_base_size = 13;
+		cfg.MergeMode = false;
+		cfg.SizePixels = unifont_base_size;
+		imFontUnifont = io.Fonts->AddFontDefault(&cfg); 
+		ImGui::GetIO().FontDefault = imFontUnifont;
+		cfg.MergeMode = true;
+		if (repentogonOptions.enableUnifont)
 			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", unifont_base_size, &cfg, unifont_ranges.Get());
-		}
+		cfg.GlyphOffset = ImVec2(0, 3);
+		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", 16, &cfg, icon_ranges);
+	
 
 		imguiInitialized = true;
 		ImGui::GetIO().FontAllowUserScaling = true;
@@ -470,20 +463,13 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
-
-	static float oldPointScale = 0;
-	if (g_PointScale != oldPointScale)
-		if (g_PointScale >= 0 && g_PointScale < fonts.size() && (fonts.find((int)g_PointScale) != fonts.end())) 
-			ImGui::GetIO().FontDefault = fonts.at((int)g_PointScale);
-
-	oldPointScale = g_PointScale;
-	
-	if (repentogonOptions.enableUnifont) {
-		imFontUnifont->Scale = ImGui::GetIO().FontDefault->FontSize / imFontUnifont->FontSize;
+;
+	if (g_PointScale > 0) {
+		imFontUnifont->Scale = g_PointScale;
+		ImGui::GetStyle().FramePadding.y = 4 * g_PointScale;
+		ImGui::GetStyle().ItemSpacing.x = 6 * g_PointScale;
 	}
-	else {
-		imFontUnifont = ImGui::GetIO().FontDefault;
-	}
+		
 
 	static bool unifont_tex_nearest = false;
 	if(!unifont_tex_nearest)
@@ -500,7 +486,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	
 	imguiResized = false;
 	static ImVec2 oldSize = ImVec2(0, 0);
-	if (oldSize.x != ImGui::GetMainViewport()->Size.x || oldSize.y != ImGui::GetMainViewport()->Size.y) { // no operator?
+	if ((oldSize.x != ImGui::GetMainViewport()->Size.x || oldSize.y != ImGui::GetMainViewport()->Size.y) && (ImGui::GetMainViewport()->Size.x < 1 && ImGui::GetMainViewport()->Size.y < 1)) { // no operator? (megamind stares intently at the camera)
 		imguiResized = true;
 		imguiSizeModifier = ImVec2(ImGui::GetMainViewport()->Size.x / oldSize.x, ImGui::GetMainViewport()->Size.y / oldSize.y);
 	}
