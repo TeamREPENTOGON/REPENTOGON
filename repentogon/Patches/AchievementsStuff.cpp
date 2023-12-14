@@ -170,11 +170,21 @@ HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
 }
 
 bool LockAchievement(int achievementid) {
-	PersistentGameData* ps = g_Manager->GetPersistentGameData();
-	bool had = ps->achievements[achievementid];
-	ps->achievements[achievementid] = 0;
-	ps->TryUnlock(0);
-	return had != ps->achievements[achievementid];
+	if (achievementid < 638) {
+		PersistentGameData* ps = g_Manager->GetPersistentGameData();
+		bool had = ps->achievements[achievementid];
+		ps->achievements[achievementid] = 0;
+		ps->TryUnlock(0);
+		return had != ps->achievements[achievementid];
+	}
+	else {
+		XMLAttributes node = XMLStuff.AchievementData->nodes[achievementid];
+		string idx = node["name"] + node["sourceid"];
+		bool had = Achievements[idx] > 0;
+		Achievements[idx] = 0;
+		SaveAchieveemntsToJson();
+		return had != Achievements[idx];
+	}
 }
 
 static std::vector<std::string> ParseCommandA(std::string command, int size = 0) {
