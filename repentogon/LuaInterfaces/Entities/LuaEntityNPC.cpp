@@ -215,23 +215,35 @@ LUA_FUNCTION(Lua_EntityNPC_MakeBloodSplash) {
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowMaggot) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	Vector* origin = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	float velocity = (float)luaL_optnumber(L, 3, -8.0f);
-	float yOffset = (float)luaL_optnumber(L, 4, 0.0f);
+	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	float yOffset = (float)luaL_optnumber(L, 3, -10.0f);
+	float fallSpeed = (float)luaL_optnumber(L, 4, -8.0f);
 
-	lua::luabridge::UserdataPtr::push(L, npc->ThrowMaggot(origin, velocity, yOffset), lua::Metatables::ENTITY_NPC);
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggot(origin, target, yOffset, fallSpeed), lua::Metatables::ENTITY_NPC);
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityNPC_ThrowMaggotAtPos) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	float velocity = (float)luaL_optnumber(L, 3, -8.0f);
-	float yOffset = (float)luaL_optnumber(L, 4, 0.0f);
+	float yOffset = (float)luaL_optnumber(L, 3, -8.0f);
 
-	lua::luabridge::UserdataPtr::push(L, npc->ThrowMaggotAtPos(target, velocity, yOffset), lua::Metatables::ENTITY_NPC);
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggotAtPos(origin, target, yOffset), lua::Metatables::ENTITY_NPC);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ShootMaggotProjectile) {
+	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	float velocity = (float)luaL_optnumber(L, 3, -24.0f);
+	float yOffset = (float)luaL_optnumber(L, 4, -8.0f);
+
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ShootMaggotProjectile(origin, target, velocity, yOffset), lua::Metatables::ENTITY_NPC);
 
 	return 1;
 }
@@ -279,8 +291,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetHitList", Lua_EntityNPC_GetHitList },
 		{ "GetShieldStrength", Lua_EntityNPC_GetShieldStrength },
 		{ "SetShieldStrength", Lua_EntityNPC_SetShieldStrength },
-		{ "ThrowMaggot", Lua_EntityNPC_ThrowMaggot },
-		{ "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos },
+		//{ "ThrowMaggot", Lua_EntityNPC_ThrowMaggot },
+		//{ "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos },
 		{ "TryThrow", Lua_EntityNPC_TryThrow },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
@@ -291,6 +303,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	/* Fix V1 and V2 not being pointers. */
 	lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_NPC, "V1", Lua_EntityNPC_GetV1);
 	lua::RegisterVariableGetter(_state, lua::Metatables::ENTITY_NPC, "V2", Lua_EntityNPC_GetV2);
+
+	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowMaggot", Lua_EntityNPC_ThrowMaggot);
+	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos);
+	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ShootMaggotProjectile", Lua_EntityNPC_ShootMaggotProjectile);
 }
 
 void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {

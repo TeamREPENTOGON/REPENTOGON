@@ -69,7 +69,7 @@ __thiscall void Entity::MakeBloodPoof(Vector * pos, ColorMod * color, float size
 __thiscall void Entity::MakeGroundPoof(Vector * pos, ColorMod * color, float size<xmm2>);
 
 "558bec83e4f881ec94000000f30f1005":
-__thiscall void Entity::TeleportToRandomPosition();
+__thiscall void Entity::TeleportToRandomPosition(bool unused);
 
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{

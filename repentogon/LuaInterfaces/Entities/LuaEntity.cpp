@@ -332,7 +332,7 @@ LUA_FUNCTION(Lua_EntityIgnoreEffectFromFriendly) {
 
 LUA_FUNCTION(Lua_EntityTeleportToRandomPosition) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	entity->TeleportToRandomPosition();
+	entity->TeleportToRandomPosition(true);
 	return 0;
 }
 
