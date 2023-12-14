@@ -49,6 +49,7 @@ XMLData XMLStuff;
 void ClearXMLData() {
 	XMLStuff.PlayerData->Clear();
 	XMLStuff.ItemData->Clear();
+	XMLStuff.NullItemData->Clear();
 	XMLStuff.PoolData->Clear();
 	XMLStuff.TrinketData->Clear();
 	XMLStuff.MusicData->Clear();
@@ -929,6 +930,43 @@ void ProcessXmlNode(xml_node<char>* node) {
 					XMLStuff.TrinketData->nodes[id] = trinket;
 					XMLStuff.ModData->trinkets[lastmodid] += 1;
 				}
+			} else if (!isitemmetadata && (strcmp(auxnodename, "null") == 0)) {
+				XMLAttributes item;
+				for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					item[stringlower(attr->name())] = string(attr->value());
+				}
+				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+				{
+					item[stringlower(attr->name())] = string(attr->value());
+				}
+				item["sourceid"] = lastmodid;
+				item["type"] = auxnodename;
+
+				if ((item.find("id") != item.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+					id = toint(item["id"]);
+				} else {
+					if (item.find("id") != item.end()) {
+						item["relativeid"] = item["id"];
+					}
+					XMLStuff.NullItemData->maxid += 1;
+					item["id"] = to_string(XMLStuff.NullItemData->maxid);
+					id = XMLStuff.NullItemData->maxid;
+				}
+
+				if (id > XMLStuff.NullItemData->maxid) {
+					XMLStuff.NullItemData->maxid = id;
+				}
+
+				if (item.find("relativeid") != item.end()) { XMLStuff.NullItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
+
+				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
+				XMLStuff.NullItemData->bynamemod[item["name"] + lastmodid] = id;
+				XMLStuff.NullItemData->bymod[lastmodid].push_back(id);
+				XMLStuff.NullItemData->byfilepathmulti.tab[currpath].push_back(id);
+				XMLStuff.NullItemData->byname[item["name"]] = id;
+				XMLStuff.NullItemData->nodes[id] = item;
+				XMLStuff.ModData->nullitems[lastmodid] += 1;
 			}
 		}
 		break;
@@ -1644,6 +1682,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 		daddy = node;
 		babee = node->first_node();
 		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			if (string(auxnode->name()) != "costume") continue;
 			XMLAttributes costume;
 			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 			{
@@ -1698,14 +1737,22 @@ void ProcessXmlNode(xml_node<char>* node) {
 				}
 				else {
 					if (costume.count("id") > 0) {costume["relativeid"] = costume["id"];}
-					XMLStuff.NullCostumeData->maxid = XMLStuff.NullCostumeData->maxid + 1;
-					costume["id"] = to_string(XMLStuff.NullCostumeData->maxid);
-					idnull = XMLStuff.NullCostumeData->maxid;
+					if (costume.count("relativeid") > 0 && XMLStuff.NullItemData->byrelativeid.count(lastmodid + costume["relativeid"]) > 0) {
+						// If the costume shares a relative ID with a NullItem from the same mod, use the ID of that NullItem.
+						// This aligns with Repentogon's support for null items/costumes (NullItemsAndCostumes.cpp).
+						idnull = XMLStuff.NullItemData->byrelativeid[lastmodid + costume["relativeid"]];
+					}
+					else {
+						// The game will auto-generate a new NullItem for this costume and assign this costume to that ID. Account for that.
+						// Just to be clear, yes, incrementing and using the maxid from NullItemData and not NullCostumeData is intentional here.
+						XMLStuff.NullItemData->maxid = XMLStuff.NullItemData->maxid + 1;
+						idnull = XMLStuff.NullItemData->maxid;
+					}
 				}
 				if (idnull > XMLStuff.NullCostumeData->maxid) {
 					XMLStuff.NullCostumeData->maxid = idnull;
-					costume["id"] = idnull;
 				}
+				costume["id"] = to_string(idnull);
 				for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
 				{
 					costume[stringlower(attr->name())] = attr->value();
@@ -2394,6 +2441,10 @@ LUA_FUNCTION(Lua_GetEntryByIdXML)
 		Node = XMLStuff.PlayerFormData->nodes[id];
 		Childs = XMLStuff.PlayerFormData->childs[id];
 		break;
+	case 30:
+		Node = XMLStuff.NullItemData->nodes[id];
+		Childs = XMLStuff.NullItemData->childs[id];
+		break;
 	}
 	Lua_PushXMLNode(L, Node, Childs);
 	return 1;
@@ -2528,6 +2579,10 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 		Node = XMLStuff.PlayerFormData->GetNodeByName(entityname);
 		Childs = XMLStuff.PlayerFormData->childs[XMLStuff.PlayerFormData->byname[entityname]];
 		break;
+	case 30:
+		Node = XMLStuff.NullItemData->GetNodeByName(entityname);
+		Childs = XMLStuff.NullItemData->childs[XMLStuff.NullItemData->byname[entityname]];
+		break;
 	}	
 	Lua_PushXMLNode(L, Node,Childs);
 	return 1;
@@ -2628,6 +2683,9 @@ LUA_FUNCTION(Lua_GetNumEntries)
 		break;
 	case 29:
 		lua_pushinteger(L, XMLStuff.PlayerFormData->childs.size());;
+		break;
+	case 30:
+		lua_pushinteger(L, XMLStuff.NullItemData->childs.size());;
 		break;
 	}	
 	return 1;

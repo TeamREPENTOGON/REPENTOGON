@@ -44,6 +44,14 @@ struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill, It
 		inline std::vector<ItemConfig_Card*>* GetCards() { return (std::vector<ItemConfig_Card*>*)((char*)this + 0x24); }
 		inline std::vector<ItemConfig_Pill*>* GetPillEffects() { return (std::vector<ItemConfig_Pill*>*)((char*)this + 0x30); }
 		inline std::vector<ItemConfig_PlayerForm*>* GetPlayerForms() { return (std::vector<ItemConfig_PlayerForm*>*)((char*)this + 0x44); }
+
+		inline ItemConfig_Item* GetNullItem(const unsigned int id) {
+			const auto* nullItems = this->GetNullItems();
+			if (id < nullItems->size()) {
+				return nullItems->at(id);
+			}
+			return nullptr;
+		}
 		
 		static bool LIBZHL_API IsValidTrinket(unsigned int TrinketType);
 	}}

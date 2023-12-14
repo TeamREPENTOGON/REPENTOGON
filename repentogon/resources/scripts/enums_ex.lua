@@ -2338,6 +2338,7 @@ XMLNode = {
 	GIANTBOOK = 27,
 	BOSSRUSHWAVE = 28,
 	PLAYERFORM = 29,
+	NULLITEM = 30,
 }
 
 AutocompleteType = {

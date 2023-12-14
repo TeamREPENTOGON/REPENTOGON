@@ -168,6 +168,7 @@ public:
 	XMLNodeIdxLookup players;
 	XMLNodeIdxLookup entities;
 	XMLNodeIdxLookup items;
+	XMLNodeIdxLookup nullitems;
 	XMLNodeIdxLookup itempools;
 	XMLNodeIdxLookup trinkets;
 	XMLNodeIdxLookup cards;
@@ -447,7 +448,8 @@ public:
 struct XMLData {
 	XMLPlayer* PlayerData = new XMLPlayer();
 	XMLEntity* EntityData = new XMLEntity();
-	XMLItem*   ItemData = new XMLItem();
+	XMLItem* ItemData = new XMLItem();
+	XMLItem* NullItemData = new XMLItem();
 	XMLItemPools* PoolData = new XMLItemPools();
 	XMLBossPools* BossPoolData = new XMLBossPools();
 	XMLBossPortrait* BossPortraitData = new XMLBossPortrait();
