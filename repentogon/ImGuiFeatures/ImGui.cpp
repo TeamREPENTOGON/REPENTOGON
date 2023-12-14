@@ -486,13 +486,13 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	
 	imguiResized = false;
 	static ImVec2 oldSize = ImVec2(0, 0);
-	/*if ((oldSize.x != ImGui::GetMainViewport()->Size.x || oldSize.y != ImGui::GetMainViewport()->Size.y) &&
+	if ((oldSize.x != ImGui::GetMainViewport()->Size.x || oldSize.y != ImGui::GetMainViewport()->Size.y) &&
 		(oldSize.x > 1 && oldSize.y > 1) &&
 		(ImGui::GetMainViewport()->Size.x > 1 && ImGui::GetMainViewport()->Size.y > 1)) { // no operator? (megamind stares intently at the camera)
 		imguiResized = true;
 		imguiSizeModifier = ImVec2(ImGui::GetMainViewport()->Size.x / oldSize.x, ImGui::GetMainViewport()->Size.y / oldSize.y);
 	}
-	oldSize = ImGui::GetMainViewport()->Size;*/
+	oldSize = ImGui::GetMainViewport()->Size;
 
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
