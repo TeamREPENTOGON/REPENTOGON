@@ -3651,3 +3651,12 @@ HOOK_METHOD(GridEntity_Wall, Render, (Vector& offset) -> void) {
 
 	DoPostGridCallback(this, lua::metatables::GridWallMT, postCallbackId);
 }
+
+HOOK_METHOD(LuaCallbackCaller, CallInputAction, (LuaEngine* engine, Entity* entity, int hook, int action) -> LuaCallbackCallerResult) {
+	int repentogonCallbackId = 1464;
+	if (CallbackState.test(repentogonCallbackId - 1000) && !Isaac::IsInGame()) {
+		callbackId = repentogonCallbackId;
+	}
+
+	return super(engine, entity, hook, action);
+}
