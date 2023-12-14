@@ -1,6 +1,7 @@
 #pragma once
-#include "imgui.h"
+#include "IconsFontAwesome6.h"
 #include "ImGuiEx.h"
+#include "imgui.h"
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -22,7 +23,8 @@ struct LogViewer : ImGuiWindowObject {
     ImGuiTextFilter internalFilter;
     ImVector<int> offsets;
 
-    LogViewer() : ImGuiWindowObject("Log Viewer")
+    LogViewer()
+        : ImGuiWindowObject("Log Viewer")
     {
         showGame = true;
         showRepentogon = true;
@@ -55,7 +57,7 @@ struct LogViewer : ImGuiWindowObject {
         if (!enabled || !isImGuiActive && !pinned) {
             return;
         }
-        ImGui::SetNextWindowSize(ImVec2(575, 325), ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowSize(ImVec2(550, 300), ImGuiCond_FirstUseEver);
 
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             if (imguiResized) {
@@ -63,26 +65,31 @@ struct LogViewer : ImGuiWindowObject {
                 ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
             }
             AddWindowContextMenu();
-            filter.Draw("Filter", -110.0f);
-            ImGui::SameLine();
-            if (ImGui::Button("Options")) {
-                ImGui::OpenPopup("LogViewerPopup");
-            }
-            if (ImGui::BeginPopup("LogViewerPopup")) {
-                ImGui::Checkbox("Pin Window", &pinned);
-                ImGui::SameLine();
-                HelpMarker("Pinning a window will keep it visible even after closing Dev Tools.");
-                ImGui::Checkbox("Autoscroll", &autoscroll);
-                ImGui::EndPopup();
-            }
 
-            ImGui::Text("Show:");
-            ImGui::SameLine();
-            ImGui::Checkbox("Game", &showGame);
-            ImGui::SameLine();
-            ImGui::Checkbox("REPENTOGON", &showRepentogon);
-            ImGui::SameLine();
-            ImGui::Checkbox("Console", &showConsole);
+            if (ImGui::BeginTable("LogViewer_Table", 2, ImGuiTableFlags_SizingStretchProp)) { // table layout makes it scale nicer
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+                filter.Draw("Filter");
+
+                ImGui::TableSetColumnIndex(1);
+                if (ImGui::Button(ICON_FA_GEARS)) {
+                    ImGui::OpenPopup("LogViewerPopup");
+                }
+                if (ImGui::BeginPopup("LogViewerPopup")) {
+                    ImGui::Checkbox("Pin Window", &pinned);
+                    ImGui::SameLine();
+                    HelpMarker("Pinning a window will keep it visible even after closing Dev Tools.");
+                    ImGui::Checkbox("Autoscroll", &autoscroll);
+
+                    ImGui::SeparatorText("Show categories:");
+                    ImGui::Checkbox("Game", &showGame);
+                    ImGui::Checkbox("REPENTOGON", &showRepentogon);
+                    ImGui::Checkbox("Console", &showConsole);
+
+                    ImGui::EndPopup();
+                }
+                ImGui::EndTable();
+            }
             ImGui::Separator();
 
             std::vector<const char*> internalFilterStrings;
