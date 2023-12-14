@@ -232,10 +232,10 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		int id = toint(cmdlets[1]);
 		PersistentGameData* ps = g_Manager->GetPersistentGameData();
 		if (ps->TryUnlock(id)) {
-			g_Game->GetConsole()->PrintError("Achievement UnLocked!");
+			g_Game->GetConsole()->PrintError("Achievement Unlocked!");
 		}
 		else {
-			g_Game->GetConsole()->PrintError("No Achievement UnLocked (was already unlocked!)");
+			g_Game->GetConsole()->PrintError("No Achievement Unlocked (was already unlocked!)");
 		}
 	}
 	super(in, out, player);
