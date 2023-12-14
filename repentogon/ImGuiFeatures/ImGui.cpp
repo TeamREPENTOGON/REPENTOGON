@@ -455,8 +455,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
 		imguiInitialized = true;
 		ImGui::GetIO().FontAllowUserScaling = true;
-		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui\n");
-		printf("[REPENTOGON] Dear ImGui initialized! Any further logs can be seen in the in-game log viewer.\n");
+		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
+		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
 	}
 
 	ImGui_ImplOpenGL3_NewFrame();
