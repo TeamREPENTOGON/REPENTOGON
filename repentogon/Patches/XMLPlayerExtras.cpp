@@ -128,18 +128,15 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 
 
 bool characterUnlocked(int id) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
-	int achievement;
+	std::string const& achievement = XMLStuff.PlayerData->nodes[id]["achievement"];
 
-	if (!playerXML["achievement"].empty()) {
-		try {
-			achievement = stoi(playerXML["achievement"]);
+	if (!achievement.empty()) {
+		char* end = NULL;
+		long id = strtol(achievement.c_str(), &end, 0);
+		if (id == 0 && end == achievement.c_str()) {
+			id = GetAchievementIdByName(achievement);
 		}
-		catch (std::invalid_argument) {
-			achievement = GetAchievementIdByName(playerXML["achievement"]);
-		}
-
-		return g_Manager->GetPersistentGameData()->Unlocked(achievement);
+		return g_Manager->GetPersistentGameData()->Unlocked(id);
 	}
 	return true;
 }
