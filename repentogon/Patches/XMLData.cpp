@@ -92,14 +92,15 @@ void CharToChar(char** dest, char* source) {
 	*dest = destination;
 }
 
-int toint(string str) {
-	if (str.length() == 0) { return 0; }
-	try {
-		return stoi(str);
+int toint(const string &str) {
+	if (str.length() > 0) {
+		char* endPtr;
+		int returnval = strtol(str.c_str(), &endPtr, 0);
+		if (endPtr != "\0") {
+			return returnval;
+		}
 	}
-	catch (exception ex) {
 		return 0;
-	}
 }
 
 XMLAttributes BuildGenericEntry(xml_node<char>* node) {
@@ -141,7 +142,7 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 	
 }
 
-ModEntry* GetModEntryById(string Id) {
+ModEntry* GetModEntryById(const string &Id) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if ((mod->GetId() != NULL) && (strcmp(Id.c_str(), mod->GetId()) == 0)) {
 			return mod;
@@ -150,7 +151,7 @@ ModEntry* GetModEntryById(string Id) {
 	return NULL;
 }
 
-ModEntry* GetModEntryByName(string Name) {
+ModEntry* GetModEntryByName(const string &Name) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (strcmp(Name.c_str(), mod->GetName().c_str())==0) {
 			return mod;
@@ -159,7 +160,7 @@ ModEntry* GetModEntryByName(string Name) {
 	return NULL;
 }
 
-ModEntry* GetModEntryByDir(string Dir) {
+ModEntry* GetModEntryByDir(const string &Dir) {
 	for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (strcmp(Dir.c_str(), mod->GetDir().c_str())==0) {
 			return mod;
@@ -168,7 +169,7 @@ ModEntry* GetModEntryByDir(string Dir) {
 	return NULL;
 }
 
-ModEntry* GetModEntryByContentPath(string path) {
+ModEntry* GetModEntryByContentPath(const string &path) {
 	if ((path.find("/content/") != string::npos) && (path.find("/mods/") != string::npos)) {
 		std::regex regex("/mods/(.*?)/content/");
 		std::smatch match;
@@ -295,7 +296,7 @@ HOOK_METHOD(Cutscene, Init, (char* xmlfilepath)-> void) {
 }
 
 
-static std::vector<std::string> ParseCommand2(std::string command, int size = 0) {
+static std::vector<std::string> ParseCommand2(const std::string &command, int size = 0) {
 	std::vector<std::string> cmdlets;
 
 	std::stringstream sstream(command);
@@ -470,7 +471,7 @@ HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
 	super(xmlpath);
 }
 */
-tuple<int, int> ConsoleStageIdToTuple(string input) {
+tuple<int, int> ConsoleStageIdToTuple(const string &input) {
 	string* numberPart = new string("");
 	int letterValue = 0;
 	for (char c : input) {
@@ -2720,7 +2721,7 @@ int getLineNumber(const char* data, const char* errorOffset) {
 	return lineNumber;
 }
 
-bool XMLParse(xml_document<char>* xmldoc, char* xml, string dir) {
+bool XMLParse(xml_document<char>* xmldoc, char* xml,const string &dir) {
 	try {
 		if (strlen(xml) == strlen(xml + 1)) {
 			xmldoc->parse<0>(xml);
@@ -2744,7 +2745,7 @@ bool XMLParse(xml_document<char>* xmldoc, char* xml, string dir) {
 	return false;
 }
 
-char* GetResources(char* xml,string dir, string filename) {
+char* GetResources(char* xml,const string &dir,const string &filename) {
 	vector<string> paths = { dir + "\\resources\\" + filename, dir + "\\resources-dlc3\\" + filename };
 	for (const string & path : paths) {
 		ifstream file(path.c_str());
@@ -2760,7 +2761,7 @@ char* GetResources(char* xml,string dir, string filename) {
 	return "";
 }
 
-bool GetContent(string dir, xml_document<char>* xmldoc) {
+bool GetContent(const string &dir, xml_document<char>* xmldoc) {
 	ifstream file(dir.c_str());
 	if (file.is_open()) {
 //		printf("path: %s \n", dir.c_str());
@@ -3011,7 +3012,7 @@ bool NodeHasSameAttrs(xml_node<>* node1, xml_node<>* node2) {
 
 int maxnodebackdrop = 60;
 
-char * BuildModdedXML(char * xml,string filename,bool needsresourcepatch) {
+char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch) {
 	if (no) {return xml;}
 	//resources
 	if (needsresourcepatch) {
@@ -3339,10 +3340,8 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 				string itemname = (*it)[1].str();
 				//printf("itemname: %s \n", itemname.c_str());
 				size_t pos = 0;
-				try {
-					int itemid = stoi(itemname);
-				}
-				catch (exception ex) {
+				int itemid = toint(itemname);
+				if (itemid == 0) {
 					string itemid = to_string(XMLStuff.ItemData->byname[itemname]);
 					while ((pos = xml.find(itemname, pos)) != std::string::npos) {
 						xml.replace(pos, itemname.length(), itemid);

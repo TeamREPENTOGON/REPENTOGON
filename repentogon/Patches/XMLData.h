@@ -69,12 +69,12 @@ inline string stringlower(const char* str)
 class XMLNodeTable {
 public:
 	XMLNodeIdxLookupMultiple tab;
-	vector<int> Get(string index) {
+	vector<int> Get(const string &index) {
 		if (tab.find(index) != tab.end()) {
 			return tab[index];
 		}
 	}
-	void Set(string index,int id) {
+	void Set(const string &index,int id) {
 		if (tab.find(index) != tab.end()) {
 			vector<int> v;
 			v.push_back(id);
@@ -109,7 +109,7 @@ public:
 		maxid = defmaxid;
 	}
 
-	void ClearByPath(string path) {
+	void ClearByPath(const string &path) {
 		if (byfilepathmulti.tab.find(path) != byfilepathmulti.tab.end()) {
 			for each (int idx in byfilepathmulti.Get(path)) {
 				XMLAttributes node = nodes[idx];
@@ -125,13 +125,13 @@ public:
 		}
 	}
 
-	XMLAttributes GetNodeByName(string name) {
+	XMLAttributes GetNodeByName(const string &name) {
 		return this->nodes[this->byname[name]];
 	}
-	XMLAttributes GetNodeByNameMod(string name) {
+	XMLAttributes GetNodeByNameMod(const string &name) {
 		return this->nodes[this->bynamemod[name]];
 	}
-	XMLAttributes GetNodesByMod(string name) {
+	XMLAttributes GetNodesByMod(const string &name) {
 		return this->nodes[this->bynamemod[name]];
 	}
 
@@ -402,13 +402,13 @@ public:
 		maxid = 0;
 	}
 
-	XMLAttributes GetNodeByName(string name) {
+	XMLAttributes GetNodeByName(const string &name) {
 		return this->nodes[this->byname[name]];
 	}
-	XMLAttributes GetNodeByNameMod(string name) {
+	XMLAttributes GetNodeByNameMod(const string &name) {
 		return this->nodes[this->bynamemod[name]];
 	}
-	XMLAttributes GetNodesByMod(string name) {
+	XMLAttributes GetNodesByMod(const string &name) {
 		return this->nodes[this->bynamemod[name]];
 	}
 	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub,bool strict ) {

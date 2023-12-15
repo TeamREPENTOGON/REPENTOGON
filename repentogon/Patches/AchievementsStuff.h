@@ -527,7 +527,7 @@ extern unordered_map<int, unordered_map<int, vector<int>> > EventCounterListener
 extern unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathListeners;
 extern string achivjsonpath;
 
-extern int toint(string str);
+extern int toint(const string &str);
 
 inline void IncreaseAchievementCounter(int achievementid) {
 	string achievement = XMLStuff.AchievementData->nodes[achievementid]["name"] +  XMLStuff.AchievementData->nodes[achievementid]["sourceid"];
