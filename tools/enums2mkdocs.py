@@ -37,7 +37,9 @@ with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml")) as cfg:
 
 new_mkdocs_enums = [
     {"ModCallbacks": "enums/ModCallbacks.md"},
-    {"AnimRenderFlags": "enums/AnimRenderFlags.md"}
+    {"AnimRenderFlags": "enums/AnimRenderFlags.md"},
+    {"GLSLType": "enums/GLSLType.md"},
+    {"ShaderType": "enums/ShaderType.md"}
 ]
 
 blocked_values = [".MC_", "colorPresets", "Color(", "function", "rawset", "pairs", "0xffffffff", ".ALL"]

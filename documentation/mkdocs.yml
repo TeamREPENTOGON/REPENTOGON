@@ -83,16 +83,26 @@ nav:
 - Docs:
   - Home: ./docs.md
   - Last visited:
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
   - Frequently used:
     - Isaac.: Isaac.md
     - Entity: Entity.md
@@ -109,7 +119,6 @@ nav:
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - AutocompleteType: enums/AutocompleteType.md
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
-    - BitwiseDebugFlag: enums/BitwiseDebugFlag.md
     - BombCostumeLayer: enums/BombCostumeLayer.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
@@ -128,9 +137,9 @@ nav:
     - ExtraHudStyle: enums/ExtraHudStyle.md
     - FadeoutTarget: enums/FadeoutTarget.md
     - FollowerPriority: enums/FollowerPriority.md
+    - GLSLType: enums/GLSLType.md
     - Giantbook: enums/Giantbook.md
     - GibFlag: enums/GibFlag.md
-    - GLSLType: enums/GLSLType.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
