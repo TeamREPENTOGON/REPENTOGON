@@ -776,7 +776,7 @@ namespace lua {
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";
 		const char* PlayerManagerMT = "PlayerManager";
 		const char* PocketItemMT = "PocketItem";
-		const char* Point = "Point";
+		const char* PointMT = "Point";
 		const char* ProceduralEffectMT = "ProceduralEffect";
 		const char* ProceduralItemMT = "ProceduralItem";
 		const char* ProceduralItemManagerMT = "ProceduralItemManager";

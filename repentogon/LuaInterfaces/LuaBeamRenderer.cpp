@@ -16,7 +16,7 @@ bool IsValidLayerID(ANM2* anm2, int id) {
 }
 
 LUA_FUNCTION(Lua_CreateBeamDummy) {
-	int top = lua_gettop(L);
+	const int top = lua_gettop(L);
 	if (top < 4) {
 		luaL_error(L, "Expected at least 4 arguments, got %d", top);
 	}
@@ -64,15 +64,21 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 
 LUA_FUNCTION(Lua_BeamAdd) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
-	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	float heightMod = (float)luaL_optnumber(L, 3, 1.0f);
-	float widthMod = (float)luaL_optnumber(L, 4, 1.0f);
-	ColorMod color;
-	if (lua_gettop(L) > 4) {
-		color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+	Point point;
+
+	if (lua_gettop(L) == 2) {
+		point = *lua::GetUserdata<Point*>(L, 2, lua::metatables::PointMT);
+	}
+	else
+	{
+		point._pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+		point._width = (float)luaL_optnumber(L, 3, 1.f);
+		point._height = (float)luaL_optnumber(L, 4, 100.f);
+		if (lua_gettop(L) > 4) {
+			point._color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+		}
 	}
 
-	Point point(*pos, heightMod, widthMod, color);
 	beam->_points.push_back(point);
 
 	return 0;
@@ -109,11 +115,9 @@ LUA_FUNCTION(Lua_BeamRender) {
 	for (auto it = beam->_points.begin(); it != beam->_points.end(); ++it) {
 		Vector pos = it->_pos;
 		if (it->_worldSpace) {
-			Vector newPos;
-			LuaEngine::Isaac_WorldToScreen(&newPos, &pos);
-			pos = newPos;
+			LuaEngine::Isaac_WorldToScreen(&pos, &pos);
 		}
-		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_heightMod, it->_widthMod);
+		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_height, it->_width);
 	}
 
 	g_BeamRenderer->End();
@@ -276,7 +280,7 @@ LUA_FUNCTION(Lua_PointSetColor)
 LUA_FUNCTION(Lua_PointGetWidth)
 {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	lua_pushnumber(L, point->_widthMod);
+	lua_pushnumber(L, point->_width);
 
 	return 1;
 }
@@ -284,7 +288,7 @@ LUA_FUNCTION(Lua_PointGetWidth)
 LUA_FUNCTION(Lua_PointSetWidth)
 {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	point->_widthMod = (float)lua_tonumber(L, 2);
+	point->_width = (float)lua_tonumber(L, 2);
 
 	return 0;
 }
@@ -292,7 +296,7 @@ LUA_FUNCTION(Lua_PointSetWidth)
 LUA_FUNCTION(Lua_PointGetHeight)
 {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	lua_pushnumber(L, point->_heightMod);
+	lua_pushnumber(L, point->_height);
 
 	return 1;
 }
@@ -300,7 +304,7 @@ LUA_FUNCTION(Lua_PointGetHeight)
 LUA_FUNCTION(Lua_PointSetHeight)
 {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	point->_heightMod = (float)lua_tonumber(L, 2);
+	point->_height = (float)lua_tonumber(L, 2);
 
 	return 0;
 }
