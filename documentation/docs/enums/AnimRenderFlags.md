@@ -8,6 +8,9 @@ tags:
 
 Not fully documented yet, sorry! (A test script is provided below if you'd like to help document this)
 
+???+ tip "Bitset Calculator"
+    [](#){: .bitsetCalculator }
+	
 # Enum "AnimRenderFlags"
 |Value|Enumerator|Comment|
 |:--|:--|:--|

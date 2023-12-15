@@ -3,7 +3,7 @@ edit_uri: edit/main/documentation/docs/
 extra:
   social:
   - icon: fontawesome/brands/github
-    link: https://github.com/IsaacZHL/REPENTOGON
+    link: https://github.com/TeamREPENTOGON/REPENTOGON
     name: REPENTOGON source code and documentation
   version:
     default: rep
@@ -19,7 +19,7 @@ extra_javascript:
 home_button1_icon: ''
 home_button1_name: Download
 home_button1_theme: md-button md-button--primary
-home_button1_url: https://github.com/IsaacZHL/REPENTOGON/releases
+home_button1_url: https://github.com/TeamREPENTOGON/REPENTOGON/releases
 home_button2_name: Docs
 home_button2_theme: md-button
 home_button2_url: docs.html
@@ -79,20 +79,30 @@ markdown_extensions:
 - attr_list
 nav:
 - Home: ./index.md
-- Download: https://github.com/IsaacZHL/REPENTOGON/releases
+- Download: https://github.com/TeamREPENTOGON/REPENTOGON/releases
 - Docs:
   - Home: ./docs.md
   - Last visited:
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
-    - '': snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
+    - ? ''
+      : snippets/PLACEHOLDER.md
   - Frequently used:
     - Isaac.: Isaac.md
     - Entity: Entity.md
@@ -109,7 +119,6 @@ nav:
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - AutocompleteType: enums/AutocompleteType.md
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
-    - BitwiseDebugFlag: enums/BitwiseDebugFlag.md
     - BombCostumeLayer: enums/BombCostumeLayer.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
@@ -128,9 +137,9 @@ nav:
     - ExtraHudStyle: enums/ExtraHudStyle.md
     - FadeoutTarget: enums/FadeoutTarget.md
     - FollowerPriority: enums/FollowerPriority.md
+    - GLSLType: enums/GLSLType.md
     - Giantbook: enums/Giantbook.md
     - GibFlag: enums/GibFlag.md
-    - GLSLType: enums/GLSLType.md
     - GridPoopVariant: enums/GridPoopVariant.md
     - HealthType: enums/HealthType.md
     - ImGuiCallback: enums/ImGuiCallback.md
@@ -331,8 +340,8 @@ plugins:
     separator: '[\s\-,:!=\[\]()"/_]+|(?!\b)(?=[A-Z][a-z])|\.(?!\d)|&[lg]t;'
 - tags:
     tags_file: tags.md
-repo_name: IsaacZHL/REPENTOGON
-repo_url: https://github.com/IsaacZHL/REPENTOGON
+repo_name: TeamREPENTOGON/REPENTOGON
+repo_url: https://github.com/TeamREPENTOGON/REPENTOGON
 site_name: 'BoI: REPENTOGON'
 site_url: https://repentogon.com
 theme:

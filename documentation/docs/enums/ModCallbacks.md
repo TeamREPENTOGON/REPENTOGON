@@ -1129,6 +1129,19 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1127 |MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
+
+### MC_POST_SAVESLOT_LOAD
+This is called wheenver a saveslot loads. This is the callback you should use to handle savedata loads that are not tied to a run or should be displayed in the main menu.
+
+This callback should be used to initialize achievement and completionmark checks, since this is called right after the game loads those.
+
+???+ warning "Warning"
+    This callback is called many times before a run is started, either from changing saveslots or because the game doesnt give a damn, so code accounting for that, clearing previous data when necessary.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1140 |MC_POST_SAVESLOT_LOAD {: .copyable } | ( int saveslot ) |  |  |
+
 ### MC_PRE_NEW_ROOM
 Accepts no return parameters.
 

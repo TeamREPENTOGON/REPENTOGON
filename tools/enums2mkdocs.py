@@ -37,13 +37,16 @@ with open(os.path.join(DOCS_FOLDER_PATH, "mkdocs.yml")) as cfg:
 
 new_mkdocs_enums = [
     {"ModCallbacks": "enums/ModCallbacks.md"},
-    {"AnimRenderFlags": "enums/AnimRenderFlags.md"}
+    {"AnimRenderFlags": "enums/AnimRenderFlags.md"},
+    {"GLSLType": "enums/GLSLType.md"},
+    {"ShaderType": "enums/ShaderType.md"}
 ]
 
 blocked_values = [".MC_", "colorPresets", "Color(", "function", "rawset", "pairs", "0xffffffff", ".ALL"]
 banned_classes = ["AnimRenderFlags"]
 
 filtered_data = {}
+bitwise_classes = []
 current_class = ""
 
 for value in data:
@@ -52,10 +55,12 @@ for value in data:
         if isinstance(value, int) or subvalue.lower() in value.lower() or value.startswith(" --") or value == "" or value == "end" or value == "}":
             beaned = True
     if not beaned:
-        if(value.replace(" ", "").endswith("={")):
+        if value.replace(" ", "").replace("--bitwise","").endswith("={"):
             current_class = value.split()[0]
             if current_class not in banned_classes:
                 filtered_data[current_class] = []
+                if value.replace(" ", "").endswith("--bitwise"):
+                    bitwise_classes.append(current_class)
         elif current_class not in banned_classes:
             entry = {}
             value = value.split("=", 1)
@@ -74,7 +79,11 @@ for value in data:
 
 for class_name in filtered_data:
     with open(os.path.join(DOCS_FOLDER_PATH, f"docs/enums/{class_name}.md"), "w+") as md:
-        md.write(f"---\ntags:\n  - Enum\n---\n# Enum \"{class_name}\"\n|Value|Enumerator|Comment|\n|:--|:--|:--|\n")
+        md.write(f"---\ntags:\n  - Enum\n---\n# Enum \"{class_name}\"\n")
+        if class_name in bitwise_classes:
+            md.write("???+ tip \"Bitset Calculator\"\n    [](#){: .bitsetCalculator }\n")
+        md.write("|Value|Enumerator|Comment|\n|:--|:--|:--|\n")
+
         for entry in filtered_data[class_name]:
             if "comment" in entry:
                 md.write(f"|{entry['value']} |{entry['name']} \u007b: .copyable \u007d | {entry['comment'].replace('|', '&#124;')} |\n")

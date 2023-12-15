@@ -3654,9 +3654,30 @@ HOOK_METHOD(GridEntity_Wall, Render, (Vector& offset) -> void) {
 
 HOOK_METHOD(LuaCallbackCaller, CallInputAction, (LuaEngine* engine, Entity* entity, int hook, int action) -> LuaCallbackCallerResult) {
 	int repentogonCallbackId = 1464;
-	if (CallbackState.test(repentogonCallbackId - 1000) && !Isaac::IsInGame()) {
+	if (!Isaac::IsInGame()) {
 		callbackId = repentogonCallbackId;
 	}
 
 	return super(engine, entity, hook, action);
+}
+
+//MC_POST_SAVESLOT_LOAD (1470)
+HOOK_METHOD_PRIORITY(Manager, LoadGameState, -9999, (int saveslot) -> void) {
+	super(saveslot);
+	const int callbackid1 = 1470;
+	lua_State* L = g_LuaEngine->_state;
+	if (CallbackState.test(callbackid1 - 1000)) {
+
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
+			.push(saveslot)
+			.push(saveslot)
+			.call(1);
+
+	}
+
+
 }
