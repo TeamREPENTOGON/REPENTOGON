@@ -17,10 +17,9 @@ REPENTOGON makes additions and modifications to the Lua API and adds tons of new
 # Uninstalling
 Technically, removing `dsound.dll` and verifying integrity is all that's needed, but here's a "full" uninstall procedure:
 1. Remove `dsound.dll`, `libzhl.dll`, `freetype.dll`, `resources-repentogon` and `zhlREPENTOGON.dll` from the game folder.
-2. In the `resources\scripts` folder, remove `main_ex.lua` and `enums_ex.lua`.
-3. Verify the game integrity on Steam to replace Lua5.3.3r.dll with the original.
-
-
+2. Delete `resources\rooms` (containing `26.The Void_ex.stb`) and `resources\shaders` (containing `coloroffset_gold_mesafix`).
+3. In the `resources\scripts` folder, remove `main_ex.lua` and `enums_ex.lua`.
+4. Verify the game integrity on Steam to replace Lua5.3.3r.dll with the original.
 
 # Building
 (Unless you're a developer, we recommend grabbing a build from [GitHub Actions](https://github.com/IsaacZHL/IsaacZHL/actions/workflows/ci.yml) instead.)
@@ -32,9 +31,9 @@ The nature of this project requires that we use the same compiler as the game. A
 
 ### Steps
 We assume Git Bash for the duration of this tutorial, as well as CMake GUI.
-1. *Recursively* clone the repository: `git clone --recursive https://github.com/IsaacZHL/REPENTOGON`
+1. *Recursively* clone the repository: `git clone --recursive https://github.com/TeamREPENTOGON/REPENTOGON`
 2. Launch CMake.
-3. Under "Where is the source code", navigate to the root directory of the cloned repository (in most cases named IsaacZHL).
+3. Under "Where is the source code", navigate to the root directory of the cloned repository (in most cases named REPENTOGON).
 4. Under "Where to put the binaries", choose any folder. This is where the generated files will live.
 ![cmake1](assets/cmake1.png)
 5. At the bottom of the CMake GUI, hit "Configure".
