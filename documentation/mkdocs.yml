@@ -279,6 +279,7 @@ nav:
   - PocketItem: PocketItem.md
   - ProjectileParams: ProjectileParams.md
   - Rendering:
+    - Beam: renderer/Beam.md
     - BlendMode: renderer/BlendMode.md
     - DestinationQuad: renderer/DestinationQuad.md
     - GLSLValue: renderer/GLSLValue.md
