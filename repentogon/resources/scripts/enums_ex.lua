@@ -219,6 +219,8 @@ ModCallbacks.MC_PRE_GRID_ENTITY_WALL_RENDER = 1462
 ModCallbacks.MC_POST_GRID_ENTITY_WALL_RENDER = 1463
 ModCallbacks.MC_MENU_INPUT_ACTION = 1464
 
+ModCallbacks.MC_POST_SAVESLOT_LOAD = 1470
+
 EntityPartition.ALL = 0xffffffff
 
 StbType = {

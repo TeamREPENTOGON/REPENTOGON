@@ -35,7 +35,7 @@ LUA_FUNCTION(Lua_MainMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MainMenuMT);
 	Menu_Game* menuGame = g_MenuManager->GetMenuGame();
-	menuGame->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menuGame->SelectedElement = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }

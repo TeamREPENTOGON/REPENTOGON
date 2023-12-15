@@ -120,7 +120,7 @@ LUA_FUNCTION(Lua_SetSelectedMenuID)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
 	MenuManager* menuManager = g_MenuManager;
-	menuManager->_selectedMenuID = (int)luaL_checkinteger(L, 2);
+	menuManager->_selectedMenuID = (int)luaL_checkinteger(L, 1);
 	return 1;
 }
 
