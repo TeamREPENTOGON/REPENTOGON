@@ -107,6 +107,12 @@ LUA_FUNCTION(Lua_BeamRender) {
 	g_BeamRenderer->Begin(beam->GetANM2(), beam->_layer, beam->_useOverlayData, beam->_unkBool);
 
 	for (auto it = beam->_points.begin(); it != beam->_points.end(); ++it) {
+		Vector pos = it->_pos;
+		if (it->_worldSpace) {
+			Vector newPos;
+			LuaEngine::Isaac_WorldToScreen(&newPos, &pos);
+			pos = newPos;
+		}
 		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_heightMod, it->_widthMod);
 	}
 
@@ -206,7 +212,6 @@ LUA_FUNCTION(Lua_BeamSetUnkBool)
 	return 0;
 }
 
-
 LUA_FUNCTION(Lua_BeamRenderer__gc) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	beam->_anm2.destructor();
@@ -214,8 +219,111 @@ LUA_FUNCTION(Lua_BeamRenderer__gc) {
 	return 0;
 }
 
+// Point
+LUA_FUNCTION(Lua_CreatePointDummy) {
+	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	float widthMod = (float)luaL_optnumber(L, 2, 1.0f);
+	float heightMod = (float)luaL_optnumber(L, 3, 1.0f);
+
+	ColorMod color;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
+	}
+
+	bool worldSpace = true;
+	if (lua_isboolean(L, 4)) {
+		worldSpace = lua_toboolean(L, 4);
+	}
+
+	Point* toLua = lua::place<Point>(L, lua::metatables::PointMT, *pos, heightMod, widthMod, color, worldSpace);
+	luaL_setmetatable(L, lua::metatables::PointMT);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointGetPos) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = point->_pos;
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetPos) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PointGetColor)
+{
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	*toLua = point->_color;
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetColor)
+{
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PointGetWidth)
+{
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	lua_pushnumber(L, point->_widthMod);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetWidth)
+{
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_widthMod = (float)lua_tonumber(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PointGetHeight)
+{
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	lua_pushnumber(L, point->_heightMod);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetHeight)
+{
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_heightMod = (float)lua_tonumber(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PointGetIsWorldSpace)
+{
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	lua_pushboolean(L, point->_worldSpace);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetIsWorldSpace)
+{
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_worldSpace = lua::luaL_checkboolean(L, 2);
+
+	return 0;
+}
+
 static void RegisterBeamRenderer(lua_State* L) {
-	luaL_Reg functions[] = {
+	// Beam
+	luaL_Reg beamFunctions[] = {
 		{ "Add", Lua_BeamAdd},
 		{ "Render", Lua_BeamRender},
 		{ "GetSprite", Lua_BeamGetSprite},
@@ -228,8 +336,70 @@ static void RegisterBeamRenderer(lua_State* L) {
 		{ "SetUnkBool", Lua_BeamSetUnkBool},
 		{ NULL, NULL }
 	};
-	lua::RegisterNewClass(L, lua::metatables::BeamMT, lua::metatables::BeamMT, functions, Lua_BeamRenderer__gc);
+	lua::RegisterNewClass(L, lua::metatables::BeamMT, lua::metatables::BeamMT, beamFunctions, Lua_BeamRenderer__gc);
 	lua_register(L, lua::metatables::BeamMT, Lua_CreateBeamDummy);
+
+	// Point
+	luaL_newmetatable(L, lua::metatables::PointMT);
+	lua_pushstring(L, "__index");
+	lua_pushcfunction(L, lua::luabridge::indexMetaMethod);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__newindex");
+	lua_pushcfunction(L, lua::luabridge::newIndexMetaMethod);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__propget");
+	lua_newtable(L);
+
+	lua_pushstring(L, "Position");
+	lua_pushcfunction(L, Lua_PointGetPos);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Color");
+	lua_pushcfunction(L, Lua_PointGetColor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Width");
+	lua_pushcfunction(L, Lua_PointGetWidth);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Height");
+	lua_pushcfunction(L, Lua_PointGetHeight);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "IsWorldSpace");
+	lua_pushcfunction(L, Lua_PointGetIsWorldSpace);
+	lua_rawset(L, -3);
+
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "__propset");
+	lua_newtable(L);
+
+	lua_pushstring(L, "Position");
+	lua_pushcfunction(L, Lua_PointSetPos);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Color");
+	lua_pushcfunction(L, Lua_PointSetColor);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Width");
+	lua_pushcfunction(L, Lua_PointSetWidth);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "Height");
+	lua_pushcfunction(L, Lua_PointSetHeight);
+	lua_rawset(L, -3);
+
+	lua_pushstring(L, "IsWorldSpace");
+	lua_pushcfunction(L, Lua_PointSetIsWorldSpace);
+	lua_rawset(L, -3);
+
+	lua_rawset(L, -3);
+
+	lua_pop(L, 1);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
