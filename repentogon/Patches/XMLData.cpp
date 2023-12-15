@@ -1761,7 +1761,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					costume["name"] = getFileName(costume["anm2path"]);
 				}
 				costume["sourceid"] = lastmodid;
-				if (costume.count("relativeid") > 0) { XMLStuff.NullCostumeData->byrelativeid[lastmodid + costume["relativeid"]] = id; }
+				if (costume.count("relativeid") > 0) { XMLStuff.NullCostumeData->byrelativeid[lastmodid + costume["relativeid"]] = idnull; }
 				//printf("nullcostume: %s %s (%s) \n", costume["name"].c_str(), costume["id"].c_str(), costume["type"].c_str());
 				XMLStuff.NullCostumeData->ProcessChilds(auxnode, idnull);
 				XMLStuff.NullCostumeData->bynamemod[costume["name"] + lastmodid] = idnull;

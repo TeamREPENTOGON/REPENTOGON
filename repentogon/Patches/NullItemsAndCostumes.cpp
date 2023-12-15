@@ -111,7 +111,7 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 		const unsigned int nullItemID = XMLStuff.NullItemData->byrelativeid[modRelativeKey];
 		const XMLAttributes& nullItemXml = XMLStuff.NullItemData->nodes[nullItemID];
 		const ItemConfig_Item* nullItem = g_Manager->GetItemConfig()->GetNullItem(nullItemID);
-		g_Game->GetConsole()->Print(costume->anm2Path, 0xffffffff, 60);
+
 		if (!nullItem || nullItem->name != nullItemXml.at("name")) {
 			const std::string err = "WARNING: Trying to match costume [" + std::string(costume->anm2Path) + "] "
 				+ "to a NullItem with same mod-relative ID [" + std::to_string(costume->id) + "] from mod [" + lastModIdButCooler + "], "
@@ -120,6 +120,7 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 			ZHL::Log(err.c_str());
 			if (!nullItem) return false;
 		}
+
 		// This mod defined a null costume and a null item with the same relative ID.
 		// Assign the ID of that null item to this costume and return true to skip the game generating a new null item.
 		costume->id = nullItemID;
