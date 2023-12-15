@@ -36,4 +36,4 @@ You will need to add `WINEDLLOVERRIDES=dsound=n,b %command%` as a launch option 
 **It's complicated.** If you're using the version of Repentance from the App Store, no. We have not researched this version and it likely doesn't support mods anyways. Running the Windows version in Wine should work, although you'll need to add the same launch option mentioned in the previous question.
 
 ### **Q: Does REPENTOGON support Rebirth, Afterbirth, or Afterbirth+?**
-**No, and we never will.** It doesn't make much sense to support those DLCs as they are legacy verisons of the game. Rebirth and Afterbirth don't have Lua mod support and and most major mods have moved on from Afterbirth+. We will solely focus on Repentance.
+**No, and we never will.** It doesn't make much sense to support those DLCs as they are legacy verisons of the game. Rebirth and Afterbirth don't have Lua mod support and most major mods have moved on from Afterbirth+. We will solely focus on Repentance.
