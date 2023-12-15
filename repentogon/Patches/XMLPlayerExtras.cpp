@@ -2,6 +2,7 @@
 #include "HookSystem.h"
 #include "XMLData.h"
 #include "LuaCore.h"
+#include "AchievementsStuff.h"
 #include "../ImGuiFeatures/LogViewer.h"
 
 std::map<int, bool> characterUnlockData;
@@ -125,12 +126,28 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 	return orig;
 }
 
-extern std::bitset<500> CallbackState;
+
+bool characterUnlocked(int id) {
+	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
+	int achievement;
+
+	if (!playerXML["achievement"].empty()) {
+		try {
+			achievement = stoi(playerXML["achievement"]);
+		}
+		catch (std::invalid_argument) {
+			achievement = GetAchievementIdByName(playerXML["achievement"]);
+		}
+
+		return g_Manager->GetPersistentGameData()->Unlocked(achievement);
+	}
+	return true;
+}
 
 HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
 	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
 
-	if (playerXML["needsunlock"] == "true" && characterUnlockData[id] == false) {
+	if (!characterUnlocked(id)) {
 		ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
 		if ((*portrait) != nullptr) {
 			(*portrait)->Play(playerXML["name"].c_str(), false);
@@ -166,7 +183,7 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 	ANM2** background = g_Manager->GetPlayerConfig()->at(CharacterId).GetModdedMenuBackgroundANM2();
 
 	if (*background != nullptr) {
-		if (playerXML["needsunlock"] == "true" && characterUnlockData[CharacterId] == false)
+		if (!characterUnlocked(CharacterId))
 			disableState = false;
 		else
 			disableState = true;
@@ -189,50 +206,12 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 
 }
 
-// Unlock checking
-HOOK_METHOD(Menu_Character, Render, () -> void) {
-
-	// This gets run every render frame... which works out for us! Locked status reset every render frame. This is certainly efficient, thanks Nicalis!
-	for (std::pair<int, bool> character : characterUnlockData) {
-		XMLAttributes playerXML = XMLStuff.PlayerData->nodes[character.first];
-
-		if (playerXML["needsunlock"] == "true") {
-			characterUnlockData[character.first] = false;
-
-			// Run a callback here. Let Lua mods determine if they need to do unlocks. Once this is done, we'll worry about archetypes.
-			int callbackid = 1140;
-			if (CallbackState.test(callbackid - 1000)) {
-
-				lua_State* L = g_LuaEngine->_state;
-				lua::LuaStackProtector protector(L);
-
-				lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-				lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-					.push(character.first)
-					.push(character.first)
-					.call(1);
-
-				if (!result) {
-					if (lua_isboolean(L, -1)) {
-						if (lua_toboolean(L, -1)) {
-							characterUnlockData[character.first] = true;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	super();
-}
-
 HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
 	super(CharacterId, RenderPos, DefaultSprite);
 
 	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
 
-	if (playerXML["needsunlock"] == "true" && characterUnlockData[CharacterId] == false)
+	if (!characterUnlocked(CharacterId))
 		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
 }
 
@@ -304,8 +283,8 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 
 
 			// This is a locked modded character, increment offset and skip
-			if (playerXML["needsunlock"] == "true" && characterUnlockData[player._id] == false) {
-				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a locked character at offset %d\n", player._id, name.c_str(), offset);
+			if (!characterUnlocked(player._id)) {
+				logViewer.AddLog("[REPENTOGON]", "Skipping %d (%s) as a locked modded character at offset %d\n", player._id, name.c_str(), offset);
 				offset++;
 				continue;
 			}

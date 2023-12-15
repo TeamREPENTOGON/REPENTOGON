@@ -204,17 +204,10 @@ static std::vector<std::string> ParseCommandA(std::string command, int size = 0)
 }
 
 
+
 LUA_FUNCTION(Lua_GetAchievementByName) {
 	string text = string(luaL_checkstring(L, 1));
-	if (XMLStuff.AchievementData->byname.count(text) > 0)
-	{
-		XMLAttributes ent = XMLStuff.AchievementData->GetNodeByName(text);
-		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
-			lua_pushnumber(L, stoi(ent["id"]));
-			return 1;
-		}
-	};
-	lua_pushnumber(L, 0);
+	lua_pushinteger(L, GetAchievementIdByName(text));
 	return 1;
 }
 
@@ -231,10 +224,10 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
 		int id = toint(cmdlets[1]);
 		if (LockAchievement(id)) {
-			g_Game->GetConsole()->PrintError("Achievement Locked!");
+			g_Game->GetConsole()->Print("Locked achievement.", Console::Color::WHITE, 0x96U);
 		}
 		else {
-			g_Game->GetConsole()->PrintError("No Achievement Locked (was already locked!)");
+			g_Game->GetConsole()->PrintError("Achievement already locked.");
 		}
 	}
 	if (in.rfind("achievement", 0) == 0) {
@@ -242,10 +235,10 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		int id = toint(cmdlets[1]);
 		PersistentGameData* ps = g_Manager->GetPersistentGameData();
 		if (ps->TryUnlock(id)) {
-			g_Game->GetConsole()->PrintError("Achievement Unlocked!");
+			g_Game->GetConsole()->Print("Unlocked achievement.", Console::Color::WHITE, 0x96U);
 		}
 		else {
-			g_Game->GetConsole()->PrintError("No Achievement Unlocked (was already unlocked!)");
+			g_Game->GetConsole()->PrintError("Achievement already unlocked.");
 		}
 	}
 	super(in, out, player);

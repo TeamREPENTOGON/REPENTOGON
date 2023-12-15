@@ -32,7 +32,7 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 |gigabombs|int|The amount of giga bombs the character should start with. These do not replace normal bombs.|
 |completionparent|string|Used for characters that have shared completion marks with a preexistent character, like Dark Judas and Judas. The name of the parent character should be used for this attribute|
 |nomarks|bool|if it has any value other than 'false', it will hide the completion marks for the given character|
-|needsunlock|bool|If the character should be locked by default. Combine with MC_CUSTOM_CHARACTER_UNLOCKED to trigger unlocking the character. Characters with this tag should have a second frame in their `characterportraits(alt).anm2` which should be the "locked" picture for the character. In addition, all stat/item layers on the main menu will be hidden and the `Unlocked By` layer will be visible.|
+|achievement|bool|This is now respected on modded characters. For mods, it's best to define this as the *name* of the achievement (for example, `achievement='You unlocked "Tainted Golem"'`). Characters with this tag should have a second frame in their `characterportraits(alt).anm2` which should be the "locked" picture for the character. In addition, all stat/item layers on the main menu will be hidden and the `Unlocked By` layer will be visible. See the [achievements XML section](achievements.md) for more info.|
 
 ???+ note "More Info"
-    For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/players.html). 
+    For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/players.html).

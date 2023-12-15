@@ -585,7 +585,15 @@ inline void RunTrackersForEventCounter(int eventid, int charaid = 0) {
 }
 
 
-
+inline int GetAchievementIdByName(std::string name) {
+	if (XMLStuff.AchievementData->byname.count(name) > 0) {
+		XMLAttributes ent = XMLStuff.AchievementData->GetNodeByName(name);
+		if ((ent.count("id") > 0) && (ent["id"].length() > 0)) {
+			return stoi(ent["id"]);
+		}
+	};
+	return 0;
+}
 
 
 
