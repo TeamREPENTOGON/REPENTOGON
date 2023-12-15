@@ -1,3 +1,10 @@
+/*
+	I'm not satisfied with the implementation of this class, and it also doesn't provide access to the Evis-style cords that modders actually want
+	(it's an entirely separate system that is absolutely not set up to be used globally with quite a bit of very hard to parse code).
+	For now, I'm taking the liberty of disabling this class so mods don't end up relying on this and breaking when I change it.
+*/
+
+/*
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -41,7 +48,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 			return luaL_error(L, "Invalid layer ID %d", layerID);
 		}
 	}
-	
+
 	bool useOverlay = lua::luaL_checkboolean(L, 3);
 	bool unk = lua::luaL_checkboolean(L, 4);
 	int vectorSize = (int)luaL_optinteger(L, 5, POINT_VECTOR_SIZE);
@@ -98,7 +105,7 @@ LUA_FUNCTION(Lua_BeamRender) {
 		error = 2;
 		goto funcEnd;
 	}
-	
+
 	if (!IsValidLayerID(beam->GetANM2(), beam->_layer)) {
 		error = 3;
 		goto funcEnd;
@@ -167,7 +174,7 @@ LUA_FUNCTION(Lua_BeamSetLayer)
 			return luaL_error(L, "Invalid layer name %s", layerName);
 		}
 	}
-	else 
+	else
 	{
 		layerID = (int)luaL_checkinteger(L, 2);
 		if (!IsValidLayerID(beam->GetANM2(), layerID)) {
@@ -238,3 +245,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 	RegisterBeamRenderer(_state);
 }
+*/
