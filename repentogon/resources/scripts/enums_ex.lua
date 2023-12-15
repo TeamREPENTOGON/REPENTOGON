@@ -2073,21 +2073,21 @@ PedestalType = {
 	MEGA_CHEST_COIN_SLOT = 19,
 }
 
-DebugFlag = {
-	ENTITY_POSITIONS = 1<<0,
-	GRID = 1<<1,
-	INFINITE_HP = 1<<2,
-	HIGH_DAMAGE = 1<<3,
-	ROOM_INFO = 1<<4,
-	HITSPHERES = 1<<5,
-	DAMAGE_VALUES = 1<<6,
-	INFINITE_ITEM_CHARGES = 1<<7,
-	HIGH_LUCK = 1<<8,
-	QUICK_KILL = 1<<9,
-	GRID_INFO = 1<<10,
-	PLAYER_ITEM_INFO = 1<<11,
-	GRID_COLLISION_POINTS = 1<<12,
-	LUA_MEMORY_USAGE = 1<<13
+DebugFlag = { -- bitwise
+	ENTITY_POSITIONS = 1 << 0,
+	GRID = 1 << 1,
+	INFINITE_HP = 1 << 2,
+	HIGH_DAMAGE = 1 << 3,
+	ROOM_INFO = 1 << 4,
+	HITSPHERES = 1 << 5,
+	DAMAGE_VALUES = 1 << 6,
+	INFINITE_ITEM_CHARGES = 1 << 7,
+	HIGH_LUCK = 1 << 8,
+	QUICK_KILL = 1 << 9,
+	GRID_INFO = 1 << 10,
+	PLAYER_ITEM_INFO = 1 << 11,
+	GRID_COLLISION_POINTS = 1 << 12,
+	LUA_MEMORY_USAGE = 1 << 13
 }
 
 DipSubType = {
@@ -2347,14 +2347,14 @@ AutocompleteType = {
 	CUSTOM = 17,
 }
 
-AnimRenderFlags = {
-	GLITCH = 1<<1,
-	COLOROFFSET_CHAMPION = 1<<4,
-	STATIC = 1<<5,
-	IGNORE_GAME_TIME = 1<<6,
-	GOLDEN = 1<<7,
-	ENABLE_LAYER_LIGHTING = 1<<10,
-	ENABLE_NULL_LAYER_LIGHTING = 1<<11
+AnimRenderFlags = { -- bitwise
+	GLITCH = 1 << 1,
+	COLOROFFSET_CHAMPION = 1 << 4,
+	STATIC = 1 << 5,
+	IGNORE_GAME_TIME = 1 << 6,
+	GOLDEN = 1 << 7,
+	ENABLE_LAYER_LIGHTING = 1 << 10,
+	ENABLE_NULL_LAYER_LIGHTING = 1 << 11
 }
 
 DialogButtons = {
@@ -2412,34 +2412,34 @@ ProceduralEffectActionType = {
 	FART = 5,
 }
 
-EntityTag = {
-	FLY = 1<<0,
-	SPIDER = 1<<1,
+EntityTag = { -- bitwise
+	FLY = 1 << 0,
+	SPIDER = 1 << 1,
 	--unused?
-	GHOST = 1<<3,
-	NOREROLL = 1<<4,
-	CANSACRIFICE = 1<<5,
-	EXPLOSIVE_SOUL = 1<<6,
-	HOMING_SOUL = 1<<7,
-	BRIMSTONE_SOUL = 1<<8,
-	NODELIRIUM = 1<<9,
+	GHOST = 1 << 3,
+	NOREROLL = 1 << 4,
+	CANSACRIFICE = 1 << 5,
+	EXPLOSIVE_SOUL = 1 << 6,
+	HOMING_SOUL = 1 << 7,
+	BRIMSTONE_SOUL = 1 << 8,
+	NODELIRIUM = 1 << 9,
 }
 
-GibFlag = {
-	BLOOD = 1<<0,
-	BONE = 1<<1,
-	GUT = 1<<2,
-	EYE = 1<<3,
-	LARGE = 1<<4,
-	POOP = 1<<5,
-	WORM = 1<<6,
-	ROCK = 1<<7,
-	ROCK_SMALL = 1<<8,
-	SOUND_BABY = 1<<9,
-	SOUND_BONE = 1<<10,
-	CHAIN = 1<<11,
-	DUST = 1<<12,
-	HUGE = 1<<13,
+GibFlag = { -- bitwise
+	BLOOD = 1 << 0,
+	BONE = 1 << 1,
+	GUT = 1 << 2,
+	EYE = 1 << 3,
+	LARGE = 1 << 4,
+	POOP = 1 << 5,
+	WORM = 1 << 6,
+	ROCK = 1 << 7,
+	ROCK_SMALL = 1 << 8,
+	SOUND_BABY = 1 << 9,
+	SOUND_BONE = 1 << 10,
+	CHAIN = 1 << 11,
+	DUST = 1 << 12,
+	HUGE = 1 << 13,
 }
 
 BombCostumeLayer = {

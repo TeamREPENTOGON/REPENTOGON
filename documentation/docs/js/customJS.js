@@ -230,7 +230,7 @@ function addBitsetCalculator() {
                     var bitToFull = BigInt(bit) << BigInt(i);
                     var isMatched = false;
                     $(".md-typeset__table").find("tr").each(function(index) {
-                        var val = $(this).find("td:eq(1)");
+                        var val = $(this).find("td:eq(0)");
                         if (val.length > 0 && bit == 1) {
                             val = val.text();
                             val = val.replace("BitSet128(0,0)", "0");
