@@ -711,6 +711,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 
 			XMLStuff.PlayerData->ProcessChilds(auxnode, id);
 			XMLStuff.PlayerData->nodes[id] = player;
+			XMLStuff.PlayerData->bymod[lastmodid].push_back(id);
 			XMLStuff.ModData->players[lastmodid] += 1;
 			}
 	break;

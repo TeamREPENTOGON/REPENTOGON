@@ -9,7 +9,8 @@
 * This file contains fixes/support for Null Items and Null Costumes, primarily via ASM patches.
 * 
 * 1. Fixes the game not properly loading null items from mod's XMLs in the first place.
-* 2. Allows for mods to assign costumes to their null items by given them the same ID in their XMLs.
+* 2. Allow mods to assign costumes to their null items by giving them the same relative ID in their respective XMLs.
+* 3. Allow mods to assign costumes to heir characters in players.xml via a new "modcostume" attribute (must match the costume's relative ID).
 */
 
 // Track the latest mod to be loading XML data, same as the XMLData code.
@@ -151,6 +152,42 @@ void ASMPatchTieModdedCostumesToModdedNullItems() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+/*
+* Hook that allows mods to assign one of their costumes to a player, if the mod-relative "id" of the costume and the "modcostume" attribute of the player matches.
+* This allows the costume to be permanantly applied to the player, including during the mineshaft sequence, like the hair of vanilla characters.
+*/
+HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void) {
+	UpdateLastModId(modentry);
+
+	super(xmlpath, modentry);
+
+	if (lastModIdButCooler.empty()) return;
+
+	// Check the XMLData of all players added by this mod.
+	for (const int id : XMLStuff.PlayerData->bymod[lastModIdButCooler]) {
+
+		if (id == 0 || XMLStuff.PlayerData->nodes.count(id) == 0) continue;
+
+		const XMLAttributes& playerXML = XMLStuff.PlayerData->nodes[id];
+		EntityConfig_Player* playerConfig = g_Manager->GetEntityConfig()->GetPlayer(id);
+
+		if (!playerConfig || playerConfig->_name != playerXML.at("name")) {
+			ZHL::Log("WARNING: Player ID [%d] used in XMLData for player [%s] does not match corresponding EntityConfig_Player [%s]!\n", id, playerXML.at("name").c_str(), (playerConfig ? playerConfig->_name : "<NULL>").c_str());
+			if (!playerConfig) continue;
+		}
+
+		if (playerConfig->_costumeID == -1 && playerXML.count("modcostume") > 0) {
+			const std::string modRelativeKey = lastModIdButCooler + playerXML.at("modcostume");
+			if (XMLStuff.NullCostumeData->byrelativeid.count(modRelativeKey) > 0) {
+				// Found a null costume from the same mod that matches the player's "modcostume" attribute.
+				playerConfig->_costumeID = XMLStuff.NullCostumeData->byrelativeid[modRelativeKey];
+			}
+		}
+	}
+}
+
+
+// Function called in ASMPatches.cpp to run patches at the appropriate time.
 void PatchNullItemAndNullCostumeSupport() {
 	ASMPatchFixLoadingNullItemsFromXml();
 	ASMPatchTieModdedCostumesToModdedNullItems();
