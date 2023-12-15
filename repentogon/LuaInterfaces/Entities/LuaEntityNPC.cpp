@@ -281,8 +281,8 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowRockSpider) {
 	}
 
 	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	const int variant = luaL_optinteger(L, 4, 0);
-	const float yPosOffset = luaL_optnumber(L, 5, -10.0f);
+	const int variant = (int)luaL_optinteger(L, 4, 0);
+	const float yPosOffset = (float)luaL_optnumber(L, 5, -10.0f);
 
 	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowRockSpider(origin, target, entity, variant, yPosOffset), lua::Metatables::ENTITY_NPC);
 
@@ -298,7 +298,7 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowLeech) {
 	}
 
 	Vector* target = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	const float yPosOffset = luaL_optnumber(L, 4, -10.0f);
+	const float yPosOffset = (float)luaL_optnumber(L, 4, -10.0f);
 	bool big = lua::luaL_optboolean(L, 5, false);
 
 	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowLeech(origin, entity, yPosOffset, target, big), lua::Metatables::ENTITY_NPC);
