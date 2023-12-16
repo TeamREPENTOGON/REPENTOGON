@@ -144,18 +144,14 @@ bool characterUnlocked(int id) {
 HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
 	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
 
-	if (!characterUnlocked(id)) {
-		ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
-		if ((*portrait) != nullptr) {
-			(*portrait)->Play(playerXML["name"].c_str(), false);
-			(*portrait)->SetLayerFrame(0, 1);
-			(*portrait)->_color = *color;
-			(*portrait)->_scale = *scale;
-			(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
-		}
+	ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
+	if ((*portrait) != nullptr) {
+		(*portrait)->Play(playerXML["name"].c_str(), true);
+		(*portrait)->SetLayerFrame(0, !characterUnlocked(id) ? 1 : 0);
+		(*portrait)->_color = *color;
+		(*portrait)->_scale = *scale;
+		(*portrait)->Render_Wrapper(pos, &Vector(0, 0), &Vector(0, 0));
 	}
-	else
-		super(id, pos, color, scale);
 }
 
 HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
