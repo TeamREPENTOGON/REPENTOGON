@@ -11,18 +11,28 @@ tags:
 
     ???+ example "Example Code"
         ```lua
-        local camera = Game():GetCurrentRoom():GetCamera()
+        local camera = Game():GetRoom():GetCamera()
         ```
         
 ## Functions
 
 ### SetFocusPosition () {: aria-label='Functions' }
 #### void SetFocusPosition ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
-The camera will attempt to focus on the specified position. Currently, this must be called every frame or else the game will stop trying to focus on it.
+Sets the camera's current focus position, causing it to shift towards the specified position
+
+The camera will only move if the current room size is larger than 1x1. If the room size is 1x1 or smaller, the camera will remain stationary and this function will do nothing. 
+
+This function must be called on every game update, otherwise the game will override the camera's position.
 
 ___
 ### SnapToPosition () {: aria-label='Functions' }
 #### void SnapToPosition ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
-Immediately moves the camera to the specified position. As of now, this function seems to be either bugged or not made to work with Active Cam as this mode will snap back to its intended position on the next camera update.
+Sets the camera's position instantly to the specified position.
+
+The camera will only move if the current room size is larger than 1x1. If the room size is 1x1 or smaller, the camera will remain stationary and this function will do nothing.
+
+Additionally, if the "Active Cam" setting is enabled, the camera won't move camera.
+
+This function must be called on every game update, otherwise the game will override the camera's position.
 
 ___
