@@ -20,6 +20,9 @@ __thiscall void ModManager::UpdateRooms(int id, int mode);
 "51568b35????????5768":
 __thiscall void ModManager::Reset();
 
+"558bec83e4f851568bf1e8????????8bce":
+__thiscall void ModManager::TriggerResize();
+
 struct ModManager depends (ModEntry) {
 	vector_ModEntryPointer _mods : 0x0;
 } : 0x2025c;

@@ -235,3 +235,14 @@ ___
 ### WorldToMenuPosition () {: aria-label='Functions' }
 #### [Vector](Vector.md) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 Converts the World position from input to a pinned main menu position that varies depending on the enum selected. It's important to reconvert this every frame, in a similar fashion to WorldToRender, in order to properly render when menus are changed or the window is resized.
+___
+### TriggerWindowResize () {: aria-label='Functions' }
+#### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }
+Simulates a window resize, useful to refresh some option changes like maxrender.
+___
+### CenterCursor () {: aria-label='Functions' }
+#### void CenterCursor ( ) {: .copyable aria-label='Functions' }
+Moves the windows mouse cursor to the center of the game's window. This is incredibly niche but useful if you want to use cursor controls for anything fancy and have full control over it. It wont move the cursor if Isaac.exe becomes out of focus.
+
+???- info "Note"
+    Take in mind the screen center is NOT the center of the room necessarily, it's just the center of the game's window(center of the actual screen if you are on fullscreen).

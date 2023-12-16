@@ -423,6 +423,30 @@ LUA_FUNCTION(Lua_IsaacFindInCapsule)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_TriggerWindowResize)
+{
+	g_Manager->ResizeWindow(g_WindowSizeX, g_WindowSizeY);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_CenterCursor)
+{
+	HWND hwnd = GetActiveWindow();
+	DWORD activeProcessId;
+	GetWindowThreadProcessId(hwnd, &activeProcessId);
+	DWORD currentProcessId = GetCurrentProcessId();
+
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	int windowWidth = rect.right - rect.left;
+	int windowHeight = rect.bottom - rect.top;
+
+	if (activeProcessId == currentProcessId) { //so it doesnt do it if Isaac is not the active win
+		SetCursorPos(rect.left + windowWidth / 2, rect.top + windowHeight / 2);
+	}
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -455,6 +479,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "PlayCutscene", Lua_PlayCutscene);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ShowErrorDialog", Lua_IsaacShowErrorDialog);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindInCapsule", Lua_IsaacFindInCapsule);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "TriggerWindowResize", Lua_TriggerWindowResize);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CenterCursor", Lua_CenterCursor);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
