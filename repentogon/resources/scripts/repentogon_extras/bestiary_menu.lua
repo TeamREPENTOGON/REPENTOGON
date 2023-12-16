@@ -44,30 +44,30 @@ end
 Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 local function RenderBestiaryMenu()
-    local selectedPage = BestiaryMenu:GetSelectedPage()
-    local lastEnemyPage = BestiaryMenu:GetNumMonsterPages()
-    local totalPages = BestiaryMenu:GetNumPages()
+    local selectedPage = BestiaryMenu.GetSelectedPage()
+    local lastEnemyPage = BestiaryMenu.GetNumMonsterPages()
+    local totalPages = BestiaryMenu.GetNumPages()
     local isEnemyPage = selectedPage <= lastEnemyPage
     if MenuManager:GetActiveMenu() == _MainMenuType.BESTIARY then
         if IsActionTriggeredAll(_ButtonAction.ACTION_MENUTAB) then
             SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
 			if isEnemyPage then
-				BestiaryMenu:SetSelectedPage(lastEnemyPage+1)
+				BestiaryMenu.SetSelectedPage(lastEnemyPage+1)
 			else
-				BestiaryMenu:SetSelectedPage(0)
+				BestiaryMenu.SetSelectedPage(0)
 			end
-            BestiaryMenu:SetSelectedElement(0)
+            BestiaryMenu.SetSelectedElement(0)
         elseif IsActionTriggeredAll(_ButtonAction.ACTION_BOMB) then
-            if selectedPage < BestiaryMenu:GetNumPages() then -- last page reached
+            if selectedPage < BestiaryMenu.GetNumPages() then -- last page reached
                 SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
-                BestiaryMenu:SetSelectedPage(selectedPage + 1)
-                BestiaryMenu:SetSelectedElement(0)
+                BestiaryMenu.SetSelectedPage(selectedPage + 1)
+                BestiaryMenu.SetSelectedElement(0)
             end
         elseif IsActionTriggeredAll(_ButtonAction.ACTION_PILLCARD) then
             if selectedPage > 0 then -- first page
                 SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
-                BestiaryMenu:SetSelectedPage(selectedPage - 1)
-                BestiaryMenu:SetSelectedElement(0)
+                BestiaryMenu.SetSelectedPage(selectedPage - 1)
+                BestiaryMenu.SetSelectedElement(0)
             end
         end
     end

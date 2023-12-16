@@ -86,8 +86,8 @@ Isaac.AddCallback(REPENTOGON, _ModCallbacks.MC_MAIN_MENU_RENDER, LoadAssets)
 
 local function RenderDailyStats()
     if ScheduleRefresh and MenuManager:GetActiveMenu() == _MainMenuType.DAILYRUN then
-        local dailyChallenge = Isaac.GetDailyChallenge()
-		local challengeParam = dailyChallenge:GetChallengeParams()
+        local dailyChallenge = DailyChallenge
+		local challengeParam = dailyChallenge.GetChallengeParams()
         WinStreak = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_STREAK)
         TotalDailies = Isaac.GetPersistentGameData():GetEventCounter(_EventCounter.DAILYS_PLAYED)
         GetStageGoal = challengeParam:GetEndStage()
