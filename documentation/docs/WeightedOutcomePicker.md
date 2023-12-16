@@ -1,19 +1,21 @@
 ---
 tags:
-  - Global
   - Class
 ---
-# Global Class "WeightedOutcomePicker"
+# Class "WeightedOutcomePicker"
 
 ???+ info
-    You can get this class by using the `WeightedOutcomePicker` global table.
-
-    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
-    
+    This class can be get by using its constructor:
     ???+ example "Example Code"
         ```lua
-        local sprite = WeightedOutcomePicker.AddOutcomeWeight(1, 65)
+        local wop = WeightedOutcomePicker()
         ```
+
+## Constructors
+
+### WeightedOutcomePicker () {: aria-label='Constructors' }
+#### [WeightedOutcomePicker](WeightedOutcomePicker.md) WeightedOutcomePicker ( ) {: .copyable aria-label='Constructors' }
+___
     
 ## Functions
 

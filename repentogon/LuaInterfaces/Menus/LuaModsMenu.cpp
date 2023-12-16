@@ -25,7 +25,7 @@ LUA_FUNCTION(Lua_ModsMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::ModsMenuMT);
 	Menu_Mods* menu = g_MenuManager->GetMenuMods();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }

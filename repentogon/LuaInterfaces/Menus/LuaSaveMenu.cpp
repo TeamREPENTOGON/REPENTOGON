@@ -75,7 +75,7 @@ LUA_FUNCTION(Lua_SaveMenu_SetSelectedSave)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::SaveMenuMT);
 	Menu_Save* menu = g_MenuManager->GetMenuSave();
-	menu->SelectedSave = (int)luaL_checkinteger(L, 2);
+	menu->SelectedSave = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }

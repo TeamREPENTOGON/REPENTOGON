@@ -1,18 +1,18 @@
 ---
 tags:
-  - Global
   - Class
 ---
-# Global Class "HUD"
+# Class "HUD"
 
 ???+ info
-    You can get this class by using the `HUD` global table.
+    You can get this class by using the following functions:
 
-    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    * [Game:GetHUD()](https://wofsauge.github.io/IsaacDocs/rep/Game.html#gethud)
     
     ???+ example "Example Code"
         ```lua
-        local sprite = HUD.GetChargeBarSprite()
+        local hud = Game():GetHUD()
+        local sprite = hud:GetChargeBarSprite()
         ```
 
 ## Functions

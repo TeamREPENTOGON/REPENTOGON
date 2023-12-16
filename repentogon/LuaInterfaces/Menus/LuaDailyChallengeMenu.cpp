@@ -45,7 +45,7 @@ LUA_FUNCTION(Lua_DailyChallengeMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::DailyChallengeMenuMT);
 	Menu_DailyChallenge* menu = g_MenuManager->GetMenuDailyChallenge();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }

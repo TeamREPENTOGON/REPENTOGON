@@ -25,7 +25,7 @@ LUA_FUNCTION(Lua_CutscenesMenu_SetSelectedElement)
 {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::CutscenesMenuMT);
 	Menu_Cutscenes* menu = g_MenuManager->GetMenuCutscenes();
-	menu->SelectedElement = (int)luaL_checkinteger(L, 2);
+	menu->SelectedElement = (int)luaL_checkinteger(L, 1);
 
 	return 0;
 }
