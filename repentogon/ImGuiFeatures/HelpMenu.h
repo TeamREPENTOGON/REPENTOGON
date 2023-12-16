@@ -107,7 +107,7 @@ struct HelpMenu {
             }
             if (ImGui::BeginMenu("Documentation")) {
                 ImGui::Text("The documentation can be found here: ");
-                AddHyperLink("https://repentogon.com/");
+                AddHyperLink("https://repentogon.com/docs.html");
                 ImGui::EndMenu();
             }
             ImGui::EndMenu();

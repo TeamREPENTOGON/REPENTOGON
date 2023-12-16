@@ -6,7 +6,7 @@ REPENTOGON is a mod for *The Binding of Isaac: Repentance* version v1.7.9b.J835 
 Generally referred to as an "EXE mod" by the community, REPENTOGON works very differently than a traditional mod. Powered by *LibZHL*, the same framework used by *[Antibirth](https://antibirth.com/)*, REPENTOGON hooks directly into the game, allowing direct control over functionality which was previously impossible to replicate in mods, or would require significant  performance-intensive hacks or rewrites to replicate.
 
 # LUA API Documentation
-REPENTOGON makes additions and modifications to the Lua API and adds tons of new features. You can find the documentation here: [https://repentogon.com/](https://repentogon.com/)
+REPENTOGON makes additions and modifications to the Lua API and adds tons of new features. You can find the documentation here: [https://repentogon.com/docs.html](https://repentogon.com/docs.html)
 
 # Installing
 1. Download a build from [GitHub Actions](https://github.com/IsaacZHL/IsaacZHL/actions/workflows/ci.yml).
