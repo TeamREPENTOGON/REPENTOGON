@@ -30,6 +30,13 @@ option(ANTLR_BUILD_STATIC "" OFF)
 add_subdirectory("libs/antlr4/runtime/Cpp")
 include_directories ("libs/antlr4/runtime/Cpp/runtime/src")
 
+# libcurl
+option(BUILD_CURL_EXE "" OFF)
+option(BUILD_SHARED_LIBS "" OFF)
+option(BUILD_STATIC_LIBS "" ON)
+option(CURL_USE_SCHANNEL "" ON)
+add_subdirectory("libs/curl")
+
 # Parser
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
 add_executable(zhlparser ${PARSER_SRC})
@@ -65,6 +72,8 @@ target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 # Injected DLL
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
+target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})
+target_link_libraries(dsound libcurl)
 target_compile_options(dsound PUBLIC "/MD" "/wd4996")
 
 # ImGUI

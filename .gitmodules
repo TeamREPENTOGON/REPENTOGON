@@ -32,3 +32,6 @@
 [submodule "libs/mINI"]
 	path = libs/mINI
 	url = https://github.com/pulzed/mINI
+[submodule "libs/curl"]
+	path = libs/curl
+	url = https://github.com/curl/curl

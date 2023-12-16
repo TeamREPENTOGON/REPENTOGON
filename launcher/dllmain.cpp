@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include "ConsoleWindow.h"
+#include "Updater.h"
 #include "utils.h"
 #include <stdio.h>
 #include <vector>
@@ -40,6 +41,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		if(HasCommandLineArgument("-console"))
 			ConsoleWindow::Init();
 		
+		CheckForUpdates();
+
 		/*if(GetIsaacVersion() != ISAAC_REBIRTH)
 		{
 			printf("Afterbirth does not support mod loading yet, aborting\n");
