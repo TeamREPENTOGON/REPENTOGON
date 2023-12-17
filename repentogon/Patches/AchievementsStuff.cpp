@@ -40,6 +40,7 @@ using namespace std;
 unordered_map<string, int > Achievements;
 unordered_map<int, unordered_map<int, vector<int>> > CompletionMarkListeners;
 unordered_map<int, unordered_map<int, vector<int>> > EventCounterListeners;
+unordered_map<int, vector<int>> AchievementListeners; //achievementid - achievements to complete
 unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathListeners;
 unordered_map<string, int> simplifiedeventsenum;
 string achivjsonpath;
@@ -74,7 +75,12 @@ void LoadAchievementsFromJson() {
 		logViewer.AddLog("[REPENTOGON]", "No achievements for saveslot in: %s \n", achivjsonpath.c_str());
 		return;
 	}
-	JsonToArray(doc["Achievements"],Achievements);
+	//JsonToArray(doc["Achievements"],Achievements);
+	for (auto itr = doc["Achievements"].MemberBegin(); itr != doc["Achievements"].MemberEnd(); ++itr) {
+		if (Achievements[itr->name.GetString()] < itr->value.GetInt()) {
+			Achievements[itr->name.GetString()] = itr->value.GetInt(); //only load if the stored value is higher, otherwise the conditions of the achievement may have changed
+		}
+	}
 
 	logViewer.AddLog("[REPENTOGON]", "Achievements loaded from: %s \n", achivjsonpath.c_str());
 }
@@ -88,8 +94,9 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 	string achievid = modachiev["name"] + modachiev["sourceid"];
 	if (Achievements[achievid] <= 1) {
 		Achievements[achievid] = 2; //2 is for notified, 1 is accomplished, <1 is in progress
+		RunTrackersForAchievementCounter(achieveemntid);
 		SaveAchieveemntsToJson();
-		if (g_Manager->GetOptions()->PopUpsEnabled()) { //it is prevented even without this check, but theres no point in doing the hackies if thats the case.
+		if (((modachiev.find("hidden") == modachiev.end()) || (modachiev["hidden"] == "false")) && g_Manager->GetOptions()->PopUpsEnabled()) { //it is prevented even without this check, but theres no point in doing the hackies if thats the case.
 			pendingachievs.push(achieveemntid);
 			if (dummyachiev < 0) {
 				dummyachiev = 2;
@@ -109,7 +116,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 			blocksteam = false;
 			this->achievements[dum] = had;
 		}
-		else { printf("[Achiev] Modded popup prevented due to pops disabled \n"); }
+		else { printf("[Achiev] Modded popup prevented due to pops disabled or hidden achiev \n"); }
 		return true;
 	}
 	return false;
