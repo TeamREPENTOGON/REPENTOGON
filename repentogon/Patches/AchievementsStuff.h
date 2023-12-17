@@ -524,6 +524,7 @@ inline void initsimplifiedeventsenum() {
 extern unordered_map<string, int > Achievements; //1 unlocked != 1 locked
 extern unordered_map<int, unordered_map<int,vector<int>> > CompletionMarkListeners;
 extern unordered_map<int, unordered_map<int, vector<int>> > EventCounterListeners;
+extern unordered_map<int, vector<int>> AchievementListeners; //achievementid - achievements to complete
 extern unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathListeners;
 extern string achivjsonpath;
 
@@ -571,6 +572,28 @@ inline void RunTrackersForBossDeath(tuple<int, int, int>* boss,int charaid = 0) 
 
 inline void AddEventCounterTracker(int achievementid,int eventid,int charaid = 0) {
 	EventCounterListeners[eventid][charaid].push_back(achievementid);
+}
+
+inline void AddAchievCounterTracker(int achievementid,const string &achievs,const string &idx) {
+	size_t start = 0;
+	size_t pos = achievs.find(',');
+	string item;
+	while ((pos = achievs.find(',')) != std::string::npos) {
+		item = achievs.substr(0, pos);
+		AchievementListeners[toint(item)].push_back(achievementid);
+		Achievements[idx] -= 1;
+		start = pos + 1;
+		pos = achievs.find(',', start);
+	}
+	std::string lastItem = achievs.substr(start);
+	AchievementListeners[toint(lastItem)].push_back(achievementid);
+	Achievements[idx] -= 1;
+}
+
+inline void RunTrackersForAchievementCounter(int achievementid, int charaid = 0) {
+	for each (int toincrease in AchievementListeners[achievementid]) {
+		IncreaseAchievementCounter(toincrease);
+	}
 }
 
 inline void RunTrackersForEventCounter(int eventid, int charaid = 0) {
@@ -624,6 +647,10 @@ inline void InitAchievs() {
 			}else if (node.count("eventcondition") > 0) {
 				printf("[Achiev] Event tracker for '%s' with condition %s \n", node["characondition"].c_str(), node["eventcondition"].c_str());
 				AddEventCounterTracker(att.first, simplifiedeventsenum[node["eventcondition"]], completionchara);
+			}
+			else if (node.count("achievcondition") > 0) {
+				printf("[Achiev] Event tracker for '%s' with condition %s \n", node["characondition"].c_str(), node["eventcondition"].c_str());
+				AddAchievCounterTracker(att.first, node["achievcondition"], idx);
 			}
 
 		}
