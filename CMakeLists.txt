@@ -35,6 +35,7 @@ option(BUILD_TESTING "" OFF)
 option(BUILD_CURL_EXE "" OFF)
 option(BUILD_SHARED_LIBS "" OFF)
 option(BUILD_STATIC_LIBS "" ON)
+option(ENABLE_THREADED_RESOLVER "" OFF)
 option(CURL_USE_SCHANNEL "" ON)
 add_subdirectory("libs/curl")
 

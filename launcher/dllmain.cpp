@@ -153,7 +153,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		if(HasCommandLineArgument("-console"))
 			ConsoleWindow::Init();
 		
-		CheckForUpdates();
+		if(!HasCommandLineArgument("-skipupdates"))
+			CheckForUpdates();
 
 		/*if(GetIsaacVersion() != ISAAC_REBIRTH)
 		{
