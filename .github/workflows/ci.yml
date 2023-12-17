@@ -46,7 +46,7 @@ jobs:
         mv dsound.dll artifact
         mv libzhl.dll artifact
         mv zhlREPENTOGON.dll artifact
-        mv Lua5.3.3r.dll artifact
+        mv Lua5.4.dll artifact
         mv freetype.dll artifact
         
     - name: Upload Artifact
