@@ -31,6 +31,7 @@ add_subdirectory("libs/antlr4/runtime/Cpp")
 include_directories ("libs/antlr4/runtime/Cpp/runtime/src")
 
 # libcurl
+option(BUILD_TESTING "" OFF)
 option(BUILD_CURL_EXE "" OFF)
 option(BUILD_SHARED_LIBS "" OFF)
 option(BUILD_STATIC_LIBS "" ON)
