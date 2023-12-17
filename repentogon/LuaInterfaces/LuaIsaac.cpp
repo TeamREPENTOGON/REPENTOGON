@@ -436,13 +436,16 @@ LUA_FUNCTION(Lua_CenterCursor)
 	GetWindowThreadProcessId(hwnd, &activeProcessId);
 	DWORD currentProcessId = GetCurrentProcessId();
 
-	RECT rect;
-	GetClientRect(hwnd, &rect);
-	int windowWidth = rect.right - rect.left;
-	int windowHeight = rect.bottom - rect.top;
+	RECT clientRect;
+	GetClientRect(hwnd, &clientRect);
 
+	POINT clientCenter;
+	clientCenter.x = (clientRect.right - clientRect.left) / 2;
+	clientCenter.y = (clientRect.bottom - clientRect.top) / 2;
+
+	ClientToScreen(hwnd, &clientCenter);
 	if (activeProcessId == currentProcessId) { //so it doesnt do it if Isaac is not the active win
-		SetCursorPos(rect.left + windowWidth / 2, rect.top + windowHeight / 2);
+		SetCursorPos(clientCenter.x, clientCenter.y);
 	}
 	return 1;
 }
