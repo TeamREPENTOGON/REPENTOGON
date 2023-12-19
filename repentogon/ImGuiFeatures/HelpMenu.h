@@ -108,6 +108,12 @@ struct HelpMenu {
             if (ImGui::BeginMenu(ICON_FA_BOOK" Documentation")) {
                 ImGui::Text("The documentation can be found here: ");
                 AddHyperLink("https://repentogon.com/docs.html");
+
+                // cool dragon
+                ImGui::SameLine(0, 15);
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 50.0f / 255.0f, 50.0f / 255.0f, 0.5f));
+                ImGui::Text(ICON_FA_DRAGON);
+                ImGui::PopStyleColor();
                 ImGui::EndMenu();
             }
             ImGui::EndMenu();
