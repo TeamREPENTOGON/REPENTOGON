@@ -1,11 +1,17 @@
+#include "IconsFontAwesome6.h"
 #include "imgui.h"
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "IconsFontAwesome6.h"
 
 struct HelpMenu {
     HelpMenu() { }
+
+    static const int numTests = 1;
+    string executeableTests[numTests][3] = {
+        { "Lua->ImGui Interface tests", "Uses lua functions to add imgui elements with different behavior.", "luarun resources/scripts/repentogon_tests/test_imgui.lua" }
+    };
+    bool testsExecuted[numTests];
 
     string controlsPS[7][2] = {
         { "D-PAD", "Move, Tweak values (when input active)" },
@@ -61,10 +67,10 @@ struct HelpMenu {
 
     void Draw()
     {
-        if (ImGui::BeginMenu(ICON_FA_CIRCLE_QUESTION" Help")) {
-            if (ImGui::BeginMenu(ICON_FA_GAMEPAD" Controls")) {
+        if (ImGui::BeginMenu(ICON_FA_CIRCLE_QUESTION " Help")) {
+            if (ImGui::BeginMenu(ICON_FA_GAMEPAD " Controls")) {
                 if (ImGui::MenuItem("Mouse")) {
-                  ImGui::Text("Scale Text: Mousewheel + CTRL and hover over the text/window you want to scale");
+                    ImGui::Text("Scale Text: Mousewheel + CTRL and hover over the text/window you want to scale");
                 }
                 if (ImGui::MenuItem("Keyboard")) { }
                 if (ImGui::BeginMenu("Controller")) {
@@ -105,7 +111,7 @@ struct HelpMenu {
                 }
                 ImGui::EndMenu();
             }
-            if (ImGui::BeginMenu(ICON_FA_BOOK" Documentation")) {
+            if (ImGui::BeginMenu(ICON_FA_BOOK " Documentation")) {
                 ImGui::Text("The documentation can be found here: ");
                 AddHyperLink("https://repentogon.com/docs.html");
 
@@ -114,6 +120,20 @@ struct HelpMenu {
                 ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 50.0f / 255.0f, 50.0f / 255.0f, 0.5f));
                 ImGui::Text(ICON_FA_DRAGON);
                 ImGui::PopStyleColor();
+                ImGui::EndMenu();
+            }
+            if (ImGui::BeginMenu(ICON_FA_FLASK_VIAL " Tests")) {
+                ImGui::Text("Some feature tests can be executed here");
+                ImGui::Separator();
+                for (size_t i = 0; i < numTests; i++) {
+                    if (ImGui::MenuItem(string("Run: ").append(executeableTests[i][0]).c_str(), NULL, &testsExecuted[i])) {
+                        std::string out;
+                        // kinda hacky method to load arbitrary lua files
+                        g_Game->GetConsole()->RunCommand(executeableTests[i][2], &out, NULL);
+                    }
+                    ImGui::SetItemTooltip(executeableTests[i][1].c_str());
+                }
+
                 ImGui::EndMenu();
             }
             ImGui::EndMenu();
