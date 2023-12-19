@@ -114,7 +114,7 @@ struct LogViewer : ImGuiWindowObject {
 
             internalFilter = internalFilterRes.str().c_str();
 
-            if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysHorizontalScrollbar)) {
+            if (ImGui::BeginChild("LogViewScrollable", ImVec2(0, 0), ImGuiChildFlags_None, ImGuiWindowFlags_AlwaysHorizontalScrollbar)) {
                 const char* buf_begin = logBuf.begin();
                 const char* buf_end = logBuf.end();
 

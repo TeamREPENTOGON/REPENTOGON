@@ -62,7 +62,7 @@ struct HelpMenu {
     void Draw()
     {
         if (ImGui::BeginMenu(ICON_FA_CIRCLE_QUESTION" Help")) {
-            if (ImGui::BeginMenu("Controls")) {
+            if (ImGui::BeginMenu(ICON_FA_GAMEPAD" Controls")) {
                 if (ImGui::MenuItem("Mouse")) {
                   ImGui::Text("Scale Text: Mousewheel + CTRL and hover over the text/window you want to scale");
                 }
@@ -105,7 +105,7 @@ struct HelpMenu {
                 }
                 ImGui::EndMenu();
             }
-            if (ImGui::BeginMenu("Documentation")) {
+            if (ImGui::BeginMenu(ICON_FA_BOOK" Documentation")) {
                 ImGui::Text("The documentation can be found here: ");
                 AddHyperLink("https://repentogon.com/docs.html");
                 ImGui::EndMenu();
