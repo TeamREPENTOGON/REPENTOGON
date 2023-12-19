@@ -159,7 +159,7 @@ struct ConsoleMega : ImGuiWindowObject {
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
 		
-		RegisterCommand("achievement", "UnLocks achievements", "UnLocks achievements", true, ACHIEVEMENT);
+		RegisterCommand("achievement", "Unlocks achievements", "Unlocks achievements", true, ACHIEVEMENT);
         RegisterCommand("addplayer", "Spawns a new player", "Spawns a new player entity. On default, it spawns Isaac with controller ID 0.\nPlayer ID -1 lets you take control of a random enemy in the room.\nExample:\n(addplayer 7 1) Spawns Azazel and can be controlled with the second input device (controller 1 in most cases)", false, PLAYER);
         RegisterCommand("challenge", "Start a challenge run", "Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n", false, CHALLENGE);
         RegisterCommand("clear", "Clear the debug console", "Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.", true);
@@ -303,7 +303,12 @@ struct ConsoleMega : ImGuiWindowObject {
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
-            if (ImGui::BeginChild("Text View", ImVec2(0, (-14 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize))), true)) {
+            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize);
+            if (!isImGuiActive)
+            {
+              textboxHeight = 0;
+            }
+            if (ImGui::BeginChild("Text View", ImVec2(0, textboxHeight), ImGuiChildFlags_Border)) {
                 /* For "simplicity" and so we don't have duplicated memory while still allowing both old and new console to be usable,
                 * we reuse existing console history.
                 * The vanilla console stores history backwards, so we iterate over it in reverse.
@@ -333,84 +338,85 @@ struct ConsoleMega : ImGuiWindowObject {
             }
             ImGui::EndChild();
 
-            ImGui::Separator();
-
-            ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-            if (!autocompleteBuffer.empty()) {
+            if (isImGuiActive) {
+              ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+              if (!autocompleteBuffer.empty()) {
                 ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y));
                 ImGui::SetNextWindowSizeConstraints(ImVec2(ImGui::GetWindowSize().x, 0), ImVec2(ImGui::GetWindowSize().x, 302)); // 302 is chosen here to have a "pixel perfect" scroll to the bottom
                 if (ImGui::BeginPopup("Console Autocomplete", ImGuiWindowFlags_NoFocusOnAppearing)) {
-                    if (ImGui::BeginTable("AutocompleteEntriesTable", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_NoBordersInBody)) {
-                        for (size_t i = 0; i < autocompleteBuffer.size(); i++) {
-                            AutocompleteEntry entry = autocompleteBuffer[i];
-                            bool isSelected = autocompletePos == i;
-                            ImGui::TableNextRow();
-                            ImGui::TableNextColumn();
+                  if (ImGui::BeginTable("AutocompleteEntriesTable", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_NoSavedSettings | ImGuiTableFlags_NoBordersInBody)) {
+                    for (size_t i = 0; i < autocompleteBuffer.size(); i++) {
+                      AutocompleteEntry entry = autocompleteBuffer[i];
+                      bool isSelected = autocompletePos == i;
+                      ImGui::TableNextRow();
+                      ImGui::TableNextColumn();
 
-                            if (isSelected) {
-                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
-                                if (autocompleteNeedFocusChange) {
-                                    ImGui::SetScrollHereY();
-                                    autocompleteNeedFocusChange = false;
-                                }
-                            } else
-                                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
-
-                            if (ImGui::Selectable(entry.autocompleteText.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns)) {
-                                strcpy(inputBuf, entry.autocompleteText.c_str());
-                                autocompletePos = i;
-                                autocompleteNeedFocusChange = true;
-                                reclaimFocus = true;
-                            }
-
-                            if (!entry.autocompleteDesc.empty()) {
-                                entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
-                                ImGui::TableNextColumn();
-                                ImGui::TextUnformatted(UpdateFont(entry.autocompleteDesc.c_str()));
-                            }
-
-                            ImGui::PopStyleColor();
+                      if (isSelected) {
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+                        if (autocompleteNeedFocusChange) {
+                          ImGui::SetScrollHereY();
+                          autocompleteNeedFocusChange = false;
                         }
-                        ImGui::EndTable();
+                      }
+                      else
+                        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
+
+                      if (ImGui::Selectable(entry.autocompleteText.c_str(), isSelected, ImGuiSelectableFlags_SpanAllColumns)) {
+                        strcpy(inputBuf, entry.autocompleteText.c_str());
+                        autocompletePos = i;
+                        autocompleteNeedFocusChange = true;
+                        reclaimFocus = true;
+                      }
+
+                      if (!entry.autocompleteDesc.empty()) {
+                        entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
+                        ImGui::TableNextColumn();
+                        ImGui::TextUnformatted(UpdateFont(entry.autocompleteDesc.c_str()));
+                      }
+
+                      ImGui::PopStyleColor();
                     }
-                    ImGui::EndPopup();
+                    ImGui::EndTable();
+                  }
+                  ImGui::EndPopup();
                 }
                 ImGui::OpenPopup("Console Autocomplete");
-            }
-            ImVec2 drawPos = ImGui::GetCursorPos();
+              }
+              ImVec2 drawPos = ImGui::GetCursorPos();
 
-            ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
-            if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", UpdateFont(inputBuf), 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
+              ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
+              if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", UpdateFont(inputBuf), 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
                 Strtrim(s);
                 std::string fixedCommand = FixSpawnCommand(s);
                 s = (char*)fixedCommand.c_str();
                 if (s[0])
-                    ExecuteCommand(s);
+                  ExecuteCommand(s);
                 reclaimFocus = true;
-            }
-            ImGui::PopItemWidth();
+              }
+              ImGui::PopItemWidth();
 
-            ImGui::SetItemDefaultFocus();
-            if (reclaimFocus) {
+              ImGui::SetItemDefaultFocus();
+              if (reclaimFocus) {
                 ImGui::SetKeyboardFocusHere(-1);
                 reclaimFocus = false;
-            }
+              }
 
-            // Handle preview text
-            std::string previewText;
-            if (!autocompleteBuffer.empty() && autocompletePos >= 0 && autocompletePos < autocompleteBuffer.size())
-            {
+              // Handle preview text
+              if (!autocompleteBuffer.empty() && autocompletePos >= 0 && autocompletePos < autocompleteBuffer.size())
+              {
                 AutocompleteEntry entry = autocompleteBuffer[autocompletePos];
-                previewText = entry.autocompleteText.substr(min(strlen(inputBuf), entry.autocompleteText.size()));
+                std::string previewText = entry.autocompleteText.substr(min(strlen(inputBuf), entry.autocompleteText.size()));
+
+                // render at end of input text
+                ImVec2 textSize = ImGui::CalcTextSize(inputBuf);
+                ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x + textSize.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
+
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
+                ImGui::Text(previewText.c_str());
+                ImGui::PopStyleColor();
+              }
             }
-            // render at end of input text
-            ImVec2 textSize = ImGui::CalcTextSize(inputBuf);
-            ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x + textSize.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
-            
-            ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
-            ImGui::Text(previewText.c_str());
-            ImGui::PopStyleColor();
         }
         
         UpdateFont();
