@@ -35,7 +35,7 @@ __thiscall bool Entity_Pickup::CanReroll();
 __thiscall void Entity_Pickup::MakeShopItem(int shopId);
 
 "558bec6aff68????????64a1????????5083ec6c5657":
-__thiscall bool Entity_Pickup::TryFlip();
+__thiscall bool Entity_Pickup::TryFlip(Entity_Player * unusedPlayer, unsigned int unusedSeed);
 
 struct Entity_Pickup depends (ANM2) : public Entity { {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
