@@ -71,9 +71,7 @@ ___
 
 ___
 ### AddLocust () {: aria-label='Functions' }
-#### int AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
-
-Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
+#### void AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) CollectibleType, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
 ### AddSmeltedTrinket () {: aria-label='Functions' }
@@ -92,7 +90,7 @@ ___
 
 ___
 ### CanAddCollectibleToInventory () {: aria-label='Functions' }
-#### boolean CanAddCollectibleToInventory ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' } 
+#### boolean CanAddCollectibleToInventory ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' }
 
 ___
 ### CanCrushRocks () {: aria-label='Functions' }
@@ -100,16 +98,16 @@ ___
 
 ___
 ### CanOverrideActiveItem () {: aria-label='Functions' }
-#### boolean CanOverrideActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' }        
+#### boolean CanOverrideActiveItem ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) id ) {: .copyable aria-label='Functions' }
 
 ___
 ### CanUsePill () {: aria-label='Functions' }
-#### boolean CanUsePill ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) ID ) {: .copyable aria-label='Functions' }
+#### boolean CanUsePill ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) id ) {: .copyable aria-label='Functions' }
 By some conditions, usually health-related, determines whether a player can use a given pill effect.
 
 ___
 ### CheckFamiliarEx () {: aria-label='Functions' }
-#### [EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html)[] CheckFamiliarEx ( int FamiliarVariant, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
+#### [EntityFamiliar](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html)[] CheckFamiliarEx ( int [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/EntityFamiliar.html) Familiar, int TargetCount, [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) rng, [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) SourceItemConfigItem = nil, int FamiliarSubType = -1 ) {: .copyable aria-label='Functions' }
 
 A version of [CheckFamiliar](EntityPlayer.md#checkfamiliar) that returns all familiars spawned by the function as a table.
 
@@ -137,7 +135,7 @@ ___
 
 ___
 ### EnableWeaponType () {: aria-label='Functions' }
-#### void EnableWeaponType ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, boolean Set ) {: .copyable aria-label='Functions' }
+#### void EnableWeaponType ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) Weapon, boolean Set ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetActiveItemDesc () {: aria-label='Functions' }
@@ -218,6 +216,7 @@ ___
 ### GetCostumeSpriteDescs () {: aria-label='Functions' }
 #### [CostumeSpriteDesc](CostumeSpriteDesc.md)[] GetCostumeSpriteDescs ( ) {: .copyable aria-label='Functions' }
 Returns a table of [CostumeSpriteDesc](CostumeSpriteDesc.md).
+
 ___
 ### GetD8DamageModifier () {: aria-label='Functions' }
 #### int GetD8DamageModifier ( ) {: .copyable aria-label='Functions' }
@@ -237,6 +236,7 @@ ___
 ___
 ### GetDamageModifier () {: aria-label='Functions' }
 #### int GetDamageModifier ( ) {: .copyable aria-label='Functions' }
+For Experimental Treatement, returns -1, 0 or 1 depending on the damage rolled.
 
 ___
 ### GetDeadEyeCharge () {: aria-label='Functions' }
@@ -289,16 +289,21 @@ ___
 ___
 ### GetFireDelayModifier () {: aria-label='Functions' }
 #### int GetFireDelayModifier ( ) {: .copyable aria-label='Functions' }
+For Experimental Treatement, returns -1, 0 or 1 depending on the fire delay rolled.
 
 ___
 ### GetFlippedForm () {: aria-label='Functions' }
 #### [EntityPlayer](EntityPlayer.md) GetFlippedForm ( ) {: .copyable aria-label='Functions' }
-Returns flipped form of the current character (only used for Tainted Lazarus)
+Returns flipped form of the current character. (only used for Tainted Lazarus)
 
 Otherwise, returns nil
+
 ___
 ### GetFocusEntity () {: aria-label='Functions' }
 #### [Entity](Entity.md) GetFocusEntity ( ) {: .copyable aria-label='Functions' }
+
+Returns the entity representing the target of the [Marked](https://bindingofisaacrebirth.fandom.com/wiki/Marked) item.
+If the target is not displayed on the ground, this function returns nil.
 
 ___
 ### GetFootprintColor () {: aria-label='Functions' }
@@ -323,7 +328,8 @@ ___
 ___
 ### GetHeldEntity () {: aria-label='Functions' }
 #### [Entity](Entity.md) GetHeldEntity ( ) {: .copyable aria-label='Functions' }
-Returns the Entity that the player is holding over their head, such as with throwable red bombs or Suplex! Returns nil if no entity is currently being held.
+Returns the Entity that the player is holding over their head, such as with throwable red bombs or Suplex!
+Returns nil if no entity is currently being held.
 
 ___
 ### GetHeldSprite () {: aria-label='Functions' }
@@ -349,6 +355,7 @@ ___
 ___
 ### GetLuckModifier () {: aria-label='Functions' }
 #### int GetLuckModifier ( ) {: .copyable aria-label='Functions' }
+For Experimental Treatement, returns -1, 0 or 1 depending on the luck rolled.
 
 ___
 ### GetMaggySwingCooldown () {: aria-label='Functions' }
@@ -385,10 +392,12 @@ ___
 ___
 ### GetNextUrethraBlockFrame () {: aria-label='Functions' }
 #### int GetNextUrethraBlockFrame ( ) {: .copyable aria-label='Functions' }
+Returns the frame at which the player stops shooting and starts charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
 
 ___
 ### GetPeeBurstCooldown () {: aria-label='Functions' }
 #### int GetPeeBurstCooldown ( ) {: .copyable aria-label='Functions' }
+Returns the attack duration of the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
 
 ___
 ### GetPlayerFormCounter () {: aria-label='Functions' }
@@ -410,6 +419,7 @@ ___
 ___
 ### GetShotSpeedModifier () {: aria-label='Functions' }
 #### int GetShotSpeedModifier ( ) {: .copyable aria-label='Functions' }
+For Experimental Treatement, returns -1, 0 or 1 depending on the shot speed rolled.
 
 ___
 ### GetSmeltedTrinkets () {: aria-label='Functions' }
@@ -428,6 +438,7 @@ ___
 ___
 ### GetSpeedModifier () {: aria-label='Functions' }
 #### int GetSpeedModifier ( ) {: .copyable aria-label='Functions' }
+For Experimental Treatement, returns -1, 0 or 1 depending on the speed rolled.
 
 ___
 ### GetTotalActiveCharge () {: aria-label='Functions' }
@@ -527,6 +538,7 @@ ___
 ___
 ### IsUrethraBlocked () {: aria-label='Functions' }
 #### boolean IsUrethraBlocked ( ) {: .copyable aria-label='Functions' }
+Returns true when the player can no longer shoot due to charging the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
 
 ___
 ### MorphToCoopGhost () {: aria-label='Functions' }
