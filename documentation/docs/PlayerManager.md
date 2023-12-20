@@ -27,9 +27,25 @@ ___
 Returns true when any player has the trinket and false when no one does.
 
 ___
+### AnyoneIsPlayerType () {: aria-label='Functions' }
+#### boolean AnyoneIsPlayerType ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
+
+___
+### AnyPlayerTypeHasBirthright () {: aria-label='Functions' }
+#### boolean AnyPlayerTypeHasBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
+
+___
+### FirstBirthrightOwner () {: aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) FirstBirthrightOwner ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
+
+___
 ### FirstCollectibleOwner () {: aria-label='Functions' }
 #### [EntityPlayer](EntityPlayer.md) FirstCollectibleOwner ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, RNG RNG, boolean Unknown ) {: .copyable aria-label='Functions' }
 Returns `nil` if the specified collectible has never been picked up.
+
+___
+### FirstPlayerByType () {: aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) FirstPlayerByType ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 
 ___
 ### FirstTrinketOwner () {: aria-label='Functions' }
