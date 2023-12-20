@@ -131,7 +131,7 @@ LUA_FUNCTION(Lua_PickupAddCycleCollectible) {
 
 LUA_FUNCTION(Lua_PickupTryFlip) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	lua_pushboolean(L, pickup->TryFlip());
+	lua_pushboolean(L, pickup->TryFlip(nullptr, 0));
 	return 1;
 }
 
