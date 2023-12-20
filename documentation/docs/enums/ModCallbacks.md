@@ -1026,7 +1026,7 @@ Alternatively accepts `false` to stop the rendering.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1151 |MC_PRE_RENDER_GRID_LIGHTING {: .copyable } | ([GridEntity](../EntityPlayer.md) grid, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
+|1151 |MC_PRE_RENDER_GRID_LIGHTING {: .copyable } | ([GridEntity](../GridEntity.md) GridEntity, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
  
 ### MC_PRE_RENDER_ENTITY_LIGHTING
 Accepts an override [Vector](../Vector.md) for Offset.
@@ -1035,7 +1035,7 @@ Alternatively accepts `false` to stop the rendering.
 
  |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1152 |MC_PRE_RENDER_ENTITY_LIGHTING {: .copyable } | ([Entity](../Entity.md) player, [Vector](../Vector.md) Offset) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](../Vector.md) or boolean |
+|1152 |MC_PRE_RENDER_ENTITY_LIGHTING {: .copyable } | ([Entity](../Entity.md) Entity, [Vector](../Vector.md) Offset) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM
 
