@@ -860,7 +860,7 @@ HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion, 100, (int eEvent) -> void,
 			if (g_Game->IsHardMode()) {
 				marktype = 2;
 			}
-			if (CompletionMarks[idx][eEvent] != marktype) {
+			if (CompletionMarks[idx][eEvent] < marktype) {
 				if (PreMarksCallbackTrigger(eEvent, playertype)) {
 					CompletionMarks[idx][eEvent] = marktype;
 					RunTrackersForMark(eEvent, playertype);
