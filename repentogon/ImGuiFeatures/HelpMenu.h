@@ -79,7 +79,7 @@ struct EasterEggGame {
 
         AddState(GameState(10, ICON_FA_QUESTION, "You begin to wonder if your legally distinct gun dragon is rideable.", colorRed, 408)); // sfx: SOUND_QUESTION_MARK
         AddState(GameState(15, ICON_FA_CLOUD, "You and your blatant reference take off to the sky!", colorWhite, 2)); //sfx: SOUND_BIRD_FLAP
-        AddState(GameState(10, ICON_FA_DRAGON, "You feel as if you and your reminiscence are inseparable.", colorRed, 270)); // sfx: SOUND_HAPPY_RAINBOW
+        AddState(GameState(10, ICON_FA_DRAGON, "You feel as if you and your reference to the reference game are inseparable.", colorRed, 270)); // sfx: SOUND_HAPPY_RAINBOW
         AddState(GameState(10, ICON_FA_CROSS, "You keep ascending!", colorGold, 266)); // sfx: SOUND_SUPERHOLY
         AddState(GameState(10, ICON_FA_CROSS, "You keep ascending!", colorGold, 266)); // sfx: SOUND_SUPERHOLY
         AddState(GameState(10, ICON_FA_CROSS, "You keep ascending!", colorGold, 266)); // sfx: SOUND_SUPERHOLY
