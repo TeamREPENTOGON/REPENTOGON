@@ -5,7 +5,7 @@
 #include "AchievementsStuff.h"
 #include "../ImGuiFeatures/LogViewer.h"
 
-std::map<int, bool> characterUnlockData;
+#include <tuple>
 
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 
@@ -58,61 +58,34 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {
 	return orig;
 }
 
-bool playerStatOverride = true;
-int playerStatOverrideId;
+float modCharacterSpeed = 0;
+float modCharacterFireDelay = 0;
+float modCharacterDamage = 0;
+float modCharacterRange = 0;
+float modCharacterShotSpeed = 0;
+float modCharacterLuck = 0;
 
 HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
-	int id = this->GetPlayerType();
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
-	playerStatOverride = false;
-	std::map<std::string, float*> damageValues = {
-	std::pair<std::string, float*> {"speedmodifier", this->GetEdenSpeed()},
-	std::pair<std::string, float*> {"firedelaymodifier", this->GetEdenFireDelay()},
-	std::pair<std::string, float*> {"damagemodifier", this->GetEdenDamage()},
-	std::pair<std::string, float*> {"rangemodifier", this->GetEdenRange()},
-	std::pair<std::string, float*> {"shotspeedmodifier", this->GetEdenShotSpeed()},
-	std::pair<std::string, float*> {"luckmodifier", this->GetEdenLuck()},
+	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[this->GetPlayerType()];
 
+	std::tuple<std::string, float*, float> statValues[] = {
+	std::tuple<std::string, float*, float> {"speedmodifier", &modCharacterSpeed, 1},
+	std::tuple<std::string, float*, float> {"firedelaymodifier", &modCharacterFireDelay, 1},
+	std::tuple<std::string, float*, float> {"damagemodifier", &modCharacterDamage, 1},
+	std::tuple<std::string, float*, float> {"rangemodifier", &modCharacterRange, 40},
+	std::tuple<std::string, float*, float> {"shotspeedmodifier", &modCharacterShotSpeed, 1},
+	std::tuple<std::string, float*, float> {"luckmodifier", &modCharacterLuck, 1},
 	};
 
-	for (std::pair<std::string, float*> value : damageValues) {
-		if (!playerXML[value.first].empty()) {
-			playerStatOverride = true;
-			playerStatOverrideId = id;
-			*value.second = stof(playerXML[value.first]);
-		}
-			
+	for (std::tuple<std::string, float*, float> value : statValues) {
+		*std::get<1>(value) = 0;
+
+		if (!playerXML[std::get<0>(value)].empty())
+			*std::get<1>(value) = stof(playerXML[std::get<0>(value)]) * std::get<2>(value);
 	}
-
-	std::string costumeSuffix = g_Manager->GetPlayerConfig()->at(this->GetPlayerType())._costumeSuffixName;
-
-	if (playerStatOverride) {
-		*this->GetPlayerTypeMutable() = 9; // EDEN
-		// Temporarily hijack Eden's costume suffix to match ours as well. Otherwise, the White Fireplace ghost won't have our modded character's costumes :(
-		g_Manager->GetPlayerConfig()->at(9)._costumeSuffixName = costumeSuffix;
-	}
-
 	super();
-
-	if (playerStatOverride) {
-		*this->GetPlayerTypeMutable() = id;
-		g_Manager->GetPlayerConfig()->at(9)._costumeSuffixName.clear();
-	}
 }
-
-HOOK_METHOD(LuaEngine, EvaluateItems, (Entity_Player* player, int cacheFlags) -> void) {
-	if (playerStatOverride) {
-		*player->GetPlayerTypeMutable() = playerStatOverrideId;
-	}
-
-	super(player, cacheFlags);
-
-	if (playerStatOverride) {
-		*player->GetPlayerTypeMutable() = 9;
-	}
-}
-
 
 HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[this->GetPlayerType()];

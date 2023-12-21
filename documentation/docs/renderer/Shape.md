@@ -8,6 +8,7 @@ tags:
     You can get this class by using the following functions:
 
     * [DebugRenderer:Get()](../DebugRenderer.md#get)
+    * [Entity:GetDebugShape()](../Entity.md#getdebugshape)
         
 ## Functions
 

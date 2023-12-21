@@ -49,7 +49,7 @@ struct PerformanceWindow : ImGuiWindowObject {
 
 			sprintf(hintText, "%.2f MB", megaBytes);
 
-			ImGui::PlotLines("Mem Usage", &values[0], memUsages->size(), NULL, hintText, minMemUsage - 1, maxMemUsage + 2, ImVec2(0, 100));
+			ImGui::PlotLines("Lua Mem Usage", &values[0], memUsages->size(), NULL, hintText, minMemUsage - 1, maxMemUsage + 2, ImVec2(0, 100));
 		}
 		ImGui::End(); // close window element
 
