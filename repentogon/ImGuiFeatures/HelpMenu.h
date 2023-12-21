@@ -62,7 +62,57 @@ struct EasterEggGame {
         AddState(GameState(10, ICON_FA_BACON, "You feed the dragon some bacon.\nIt eats it with delight!", ImVec4(1, 100 / 255.0f, 86 / 255.0f, 1), 270)); // sfx: SOUND_HAPPY_RAINBOW
         AddState(GameState(25, ICON_FA_DRAGON, "Your dragon wants attention!", colorRed, 816)); // sfx: SOUND_BEAST_GRUMBLE
         AddState(GameState(10, ICON_FA_HEART, "You pet the dragon a lot and give him lots of love.", ImVec4(1, 0, 0, 1), 321)); // sfx: SOUND_HEARTBEAT
-        AddState(GameState(1, ICON_FA_DRAGON, "Your dragon looks happy!", colorRed, 270)); // sfx: SOUND_HAPPY_RAINBOW
+        AddState(GameState(10, ICON_FA_DRAGON, "Your dragon looks happy!", colorRed, 270)); // sfx: SOUND_HAPPY_RAINBOW
+
+
+        AddState(GameState(10, ICON_FA_QUESTION, "You begin to wonder if the dragon is rideable.", colorRed, 408)); // sfx: SOUND_QUESTION_MARK
+        AddState(GameState(15, ICON_FA_CLOUD, "You and your dragon take off to the sky!", colorWhite, 2)); //sfx: SOUND_BIRD_FLAP
+        AddState(GameState(10, ICON_FA_DRAGON, "You feel as if you and your dragon companion are inseparable.", colorRed, 270)); // sfx: SOUND_HAPPY_RAINBOW
+        AddState(GameState(10, ICON_FA_CROSS, "You keep ascending!\nYou have reached the heavens.", colorGold, 266)); // sfx: SOUND_SUPERHOLY
+        AddState(GameState(5, ICON_FA_BOLT_LIGHTNING, "Unfortunately, God cares not for your antics.\nHe smites your dragon on the spot, as you descend into the unknown depths below.", colorGold, 273)); // sfx: SOUND_LASERRING_STRONG
+        AddState(GameState(5, ICON_FA_SKULL, "You survive the fall, but your dragon dies on impact..", colorRed, 217)); // sfx: SOUND_ISAACDIES
+
+        AddState(GameState(5, ICON_FA_FACE_ANGRY, "You will have your revenge.\nBut how?", colorRed, 654)); // sfx: SOUND_FAMINE_DASH_START
+        AddState(GameState(10, ICON_FA_HAMMER, "We can rebuild him.", colorGold, 229)); // sfx: SoundEffect.SOUND_METAL_BLOCKBREAK
+        AddState(GameState(10, ICON_FA_DUMBBELL, "We can make him stronger.", colorGold, 365)); // sfx: SoundEffect.SOUND_STRENGTH
+        AddState(GameState(10, ICON_FA_GUN, "Your dragon has been reborn as a gun!", colorWhite, 482)); // sfx: SoundEffect.SOUND_BULLET_SHOT
+
+        AddState(GameState(10, ICON_FA_QUESTION, "You begin to wonder if your legally distinct gun dragon is rideable.", colorRed, 408)); // sfx: SOUND_QUESTION_MARK
+        AddState(GameState(15, ICON_FA_CLOUD, "You and your blatant reference take off to the sky!", colorWhite, 2)); //sfx: SOUND_BIRD_FLAP
+        AddState(GameState(10, ICON_FA_DRAGON, "You feel as if you and your reminiscence are inseparable.", colorRed, 270)); // sfx: SOUND_HAPPY_RAINBOW
+        AddState(GameState(10, ICON_FA_CROSS, "You keep ascending!", colorGold, 266)); // sfx: SOUND_SUPERHOLY
+        AddState(GameState(10, ICON_FA_CROSS, "You keep ascending!", colorGold, 266)); // sfx: SOUND_SUPERHOLY
+        AddState(GameState(10, ICON_FA_CROSS, "You keep ascending!", colorGold, 266)); // sfx: SOUND_SUPERHOLY
+        AddState(GameState(10, ICON_FA_CROSS, "You keep ascending...", colorGold, 266)); // sfx: SOUND_SUPERHOLY
+
+        AddState(GameState(15, ICON_FA_BOOK_SKULL, "You feel your sins crawling on your back.", colorRed, 417)); // sfx: SoundEffect.SOUND_THE_FORSAKEN_LAUGH
+        AddState(GameState(15, ICON_FA_POO_STORM, "Fool that you are, for there is no heaven.", colorRed, 418)); // sfx: SoundEffect.SOUND_THE_FORSAKEN_SCREAM
+        AddState(GameState(15, ICON_FA_DRAGON, "There is no dragon.", colorRed, 422)); // sfx: SoundEffect.SOUND_HUSH_GROWL
+
+        AddState(GameState(15, ICON_FA_SQUARE_FULL, "There is nothing.", colorRed, 569)); // sfx: SoundEffect.SOUND_MENU_FLIP_LIGHT
+        AddState(GameState(15, ICON_FA_SQUARE_FULL, "", colorRed, 569)); // sfx: SoundEffect.SOUND_MENU_FLIP_LIGHT
+        AddState(GameState(15, ICON_FA_SQUARE_FULL, "", colorRed, 569)); // sfx: SoundEffect.SOUND_MENU_FLIP_LIGHT
+        AddState(GameState(15, ICON_FA_SQUARE_FULL, "", colorRed, 569)); // sfx: SoundEffect.SOUND_MENU_FLIP_LIGHT
+        AddState(GameState(15, ICON_FA_SQUARE_FULL, "", colorRed, 569)); // sfx: SoundEffect.SOUND_MENU_FLIP_LIGHT
+        AddState(GameState(100, ICON_FA_SQUARE_FULL, "", colorRed, 569)); // sfx: SoundEffect.SOUND_MENU_FLIP_LIGHT
+
+        AddState(GameState(15, ICON_FA_FAN, "Howdy! It's me, FLOWEY! FLOWEY the FLOWER!", colorWhite, 569)); // sfx: SoundEffect.SOUND_BROWNIE_LAUGH
+        AddState(GameState(15, ICON_FA_FAN, "I owe you a HUGE thanks! You really did a number on that old fool!\nWithout you, I NEVER could have gotten past him!", colorGold, 569)); // sfx: SoundEffect.SOUND_BROWNIE_LAUGH
+        AddState(GameState(10, ICON_FA_FAN, "But now, with YOUR help...", colorRed, 569)); // sfx: SoundEffect.SOUND_BROWNIE_LAUGH
+        AddState(GameState(5, ICON_FA_FAN, "He's DEAD.", colorRed, 217)); // sfx: SOUND_ISAACDIES
+        AddState(GameState(5, ICON_FA_FAN, "And I'VE got the human SOULS!", colorGold, 418)); // sfx: SoundEffect.SOUND_THE_FORSAKEN_SCREAM
+        AddState(GameState(10, ICON_FA_FAN, "Boy! I've been empty for so long...\nIt feels great to have a SOUL inside me again.", colorWhite, 426)); // sfx: SoundEffect.SOUND_MAW_OF_VOID
+        AddState(GameState(5, ICON_FA_FAN, "Mmmm, I can feel them wriggling...", colorWhite, 3)); // sfx: SoundEffect.SOUND_BLOBBY_WIGGLE
+        AddState(GameState(10, ICON_FA_FAN, "Awww, you're feeling left out, aren't you?", colorWhite, 9)); // sfx: SoundEffect.SOUND_BOSS_BUG_HISS
+        AddState(GameState(15, ICON_FA_FAN, "Well, that's just perfect. After all, I only have six souls.\nI still need one more...", colorWhite, 44)); // sfx: SoundEffect.SOUND_FLOATY_BABY_ROAR
+        AddState(GameState(5, ICON_FA_FAN, "Before I become GOD.", colorRed, 34)); // sfx: SoundEffect.SOUND_DEVIL_CARD
+        AddState(GameState(5, ICON_FA_FAN, "And then, with my newfound powers...", colorGold, 569)); // sfx: SoundEffect.SOUND_BROWNIE_LAUGH
+        AddState(GameState(3, ICON_FA_FAN, "Monsters...", colorBrown, 167)); // sfx: SoundEffect.SOUND_ZOMBIE_WALKER_KID
+        AddState(GameState(3, ICON_FA_FAN, "Humans...", colorGold, 55)); // sfx: SoundEffect.SOUND_ISAAC_HURT_GRUNT
+        AddState(GameState(3, ICON_FA_FAN, "Everyone...", colorRed, 52)); // sfx: SoundEffect.SOUND_HELLBOSS_GROUNDPOUND
+        AddState(GameState(10, ICON_FA_FAN, "I'll show them all the REAL meaning of this world!", colorRed, 707)); // sfx: SoundEffect.SOUND_BEAST_GHOST_ROAR
+        AddState(GameState(25, ICON_FA_GUN, "There may be no dragon, but there still is a gun.\nYou pull out your gun and shoot Flowey, killing him instantly.", colorWhite, 482)); // sfx: SoundEffect.SOUND_BULLET_SHOT
+        AddState(GameState(10, ICON_FA_EXPLOSION, "The day is saved! That's the power of REPENTOGON.", colorGold, 184)); // SoundEffect.SOUND_EXPLOSION_STRONG
     }
 
     void AddState(GameState state)
