@@ -1,6 +1,7 @@
 REPENTOGON = {
 	["Real"] = true,
 	["Name"] = "REPENTOGON", --I avoid having to do RegisterMod this way, sorry ;P
+	["Version"] = "dev build",
 	["RESOURCEPATH"] = "../../../resources-repentogon",
 	["Extras"] = { ["Misc"]={}, }, -- Tables containing additional REPENTOGON data structures, example: ChangeLog or StatsMenu
 }
