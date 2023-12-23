@@ -471,6 +471,7 @@ ___
 ___
 ### HasInstantDeathCurse () {: aria-label='Functions' }
 #### boolean HasInstantDeathCurse ( ) {: .copyable aria-label='Functions' }
+Returns true when the player is in the Lost form triggered by the white fire in Downpour. (or when in Tainted Jacob's ghost form when being touched by Dark Esau)
 
 ___
 ### HasPoisonImmunity () {: aria-label='Functions' }
