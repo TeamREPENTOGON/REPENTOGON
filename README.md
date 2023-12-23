@@ -10,11 +10,12 @@ REPENTOGON makes additions and modifications to the Lua API and adds tons of new
 
 # Installing
 1. Download a build from [GitHub Actions](https://github.com/TeamREPENTOGON/REPENTOGON/actions/workflows/ci.yml).
-2. Extract the *contents* of the zip file into your game's directory.
+2. Extract the contents of the zip file into your game's directory. You can find the directory by right clicking `The Binding of Isaac: Rebirth` in your Steam library page, clicking `Properties`, then `Installed Files` followed by `Browse` (located on the top right corner) on the window that appears.
+   * If you are running the game on Linux via Proton, you will also need to access the `Properties` window, go to `General`, and enter `WINEDLLOVERRIDES="dsound=n,b" %command%` into the `Launch Options` entry. Without this launch option, REPENTOGON will be unable to load.
 3. Launch the game. If REPENTOGON successfully loaded, you should now see `zhl.log` and `repentogon.log` files in your game directory, and the title bar should now say `Binding of Isaac: Repentance (+ REPENTOGON vX.X.X)`.
 
 # Uninstalling
-Technically, removing `dsound.dll` is all that's needed to disable REPENTOGON, but for a "complete" uninstall:
+Technically, using the launch option `-repentogonoff` or removing `dsound.dll` is all that's needed to disable REPENTOGON, but for a "complete" uninstall:
 1. Remove `dsound.dll`, `freetype.dll`, `libzhl.dll`, `Lua5.4.dll`, `resources-repentogon`, and `zhlREPENTOGON.dll` from the game folder.
 2. Optionally, remove log files `dsound.log`, `repentogon.log`, and `zhl.log`.
 2. Delete `resources\rooms` (containing `26.The Void_ex.stb`) and `resources\shaders` (containing `coloroffset_gold_mesafix`).
