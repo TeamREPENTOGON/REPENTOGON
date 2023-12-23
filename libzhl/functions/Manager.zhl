@@ -66,6 +66,9 @@ __thiscall void Manager::ResizeWindowCallback(int windowWidth,int windowHeight);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec81ece8000000a1????????33c58945??8a43":
 __thiscall void Manager::SetFullscreenRendering(bool value);
 
+"558bec81ec18040000":
+__thiscall void Manager::SetSaveSlot(unsigned int slot);
+
 
 struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }

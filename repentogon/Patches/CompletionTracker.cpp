@@ -797,7 +797,10 @@ array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
 }
 
 
-HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
+HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
+	super(slot);
+	int saveslot = 1;
+	if (slot > 0) { saveslot = slot; }
 	jsonpath = std::string(REPENTOGON::GetRepentogonDataPath());
 	jsonpath.append("completionmarks").append(to_string(saveslot)).append(".json");
 
@@ -807,7 +810,6 @@ HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
 		initreversenum();
 		initmarkstoevents();
 	}
-	super(saveslot);
 }
 
 
