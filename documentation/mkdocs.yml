@@ -329,6 +329,7 @@ nav:
   - cutscenes.xml: xml/cutscenes.md
   - giantbook.xml: xml/giantbook.md
   - ambush.xml: xml/ambush.md
+  - items.xml: xml/items.md
 - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
