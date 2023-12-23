@@ -1488,5 +1488,5 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	PatchGridCallbackShit();
 	ASMPatchInputAction();
-	ASMPatchPlayerStats();
+	//ASMPatchPlayerStats();
 }
