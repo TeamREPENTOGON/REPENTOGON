@@ -472,7 +472,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 
 	if (!results) {
 		if (lua_isuserdata(L, -1)) {
-			Velocity = &lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector");
+			Velocity = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			Entity* res = super(Velocity);
 			ProcessPostEntityThrow(Velocity, this, res);
 			return res;
@@ -1624,12 +1624,12 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(this->GetPlayerType())
 			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(x, lua::Metatables::VECTOR)
+			.pushUserdataValue(*x, lua::Metatables::VECTOR)
 			.call(1);
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				super(&lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector"));
+				super(lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector"));
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
@@ -1654,12 +1654,12 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(this->GetPlayerType())
 			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(x, lua::Metatables::VECTOR)
+			.pushUserdataValue(*x, lua::Metatables::VECTOR)
 			.call(1);
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				super(&lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector"));
+				super(lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector"));
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
@@ -2165,7 +2165,7 @@ HOOK_METHOD(Room, RenderGridLight, (GridEntity* grid, Vector& offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = offset + lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -2194,7 +2194,7 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = offset + lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -3465,7 +3465,7 @@ bool DoGridPreRenderCallback(GridEntity* grid, Vector& offset, const char* mt, i
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = offset + lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -3493,7 +3493,7 @@ bool DoGridPreRenderCallback(GridEntity* grid, Vector& offset, lua::Metatables m
 				}
 			}
 			else if (lua_isuserdata(L, -1)) {
-				offset = offset + lua::GetUserdata<Vector>(L, -1, lua::Metatables::VECTOR, "Vector");
+				offset = offset + *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}

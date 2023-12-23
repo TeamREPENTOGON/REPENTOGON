@@ -220,7 +220,7 @@ LUA_FUNCTION(lua_Quad_GetBottomRight) {
 
 static void SetQuadComponent(lua_State* L, Vector* (*fn)(QuadVar const&)) {
 	Vector* component = fn(GetQuad(L));
-	*component = lua::GetUserdata<Vector>(L, 2, lua::Metatables::VECTOR, "Vector");
+	*component = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 }
 
 LUA_FUNCTION(lua_Quad_SetTopLeft) {
