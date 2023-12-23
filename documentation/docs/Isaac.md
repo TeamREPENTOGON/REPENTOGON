@@ -59,7 +59,7 @@ ___
 
 ___
 ### DestroyWeapon () {: aria-label='Functions' }
-#### void DestroyWeapon ( ) {: .copyable aria-label='Functions' }
+#### void DestroyWeapon ( [Weapon](Weapon.md) Weapon ) {: .copyable aria-label='Functions' }
 
 ___
 ### DrawLine () {: aria-label='Functions' }
