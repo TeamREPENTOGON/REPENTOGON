@@ -1131,16 +1131,19 @@ Accepts no return parameters.
 
 
 ### MC_POST_SAVESLOT_LOAD
-This is called wheenver a saveslot loads. This is the callback you should use to handle savedata loads that are not tied to a run or should be displayed in the main menu.
+This is called wheenver a saveslot is loaded by the game.
 
-This callback should be used to initialize achievement and completionmark checks, since this is called right after the game loads those.
+This is the callback you should use to handle savedata loads, ideally, from normal Mod::LoadData to Repentogon Marks/Achievement checks, since it's the callback that triggers when those are loaded.
+
+The first parameter is the slot you should care about, the 2nd parameter (isslotselected) indicates if the slot that is being loaded has actually been selected from the save menu screen (you can limit your save handling to when this is true if you want to get fancy), and the 3rd parameter(rawslot) is the actual saveslot the game uses (not the one the api uses since it can be 0!).
 
 ???+ warning "Warning"
-    This callback is called many times before a run is started, either from changing saveslots or because the game doesnt give a damn, so code accounting for that, clearing previous data when necessary.
+    This callback is called many times before a run is started, either from changing saveslots naturally or because the game doesnt give a damn, so code accounting for that, clearing previous data when necessary.
+	The 3rd param is actually only useful to check for the 0 slot state, which is the one the game defaults to before the actual slot is loaded by the player. When on this state, the moddata and the gamedata WONT BE IN SYNC (moddata is slot 1, while vanilla game data is 3)
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1140 |MC_POST_SAVESLOT_LOAD {: .copyable } | ( int saveslot ) |  |  |
+|1140 |MC_POST_SAVESLOT_LOAD {: .copyable } | ( int saveslot, bool isslotselected, int rawslot ) |  |  |
 
 ### MC_PRE_NEW_ROOM
 Accepts no return parameters.

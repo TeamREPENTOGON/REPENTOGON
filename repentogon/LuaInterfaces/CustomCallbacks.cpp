@@ -3662,8 +3662,17 @@ HOOK_METHOD(LuaCallbackCaller, CallInputAction, (LuaEngine* engine, Entity* enti
 }
 
 //MC_POST_SAVESLOT_LOAD (1470)
-HOOK_METHOD_PRIORITY(Manager, LoadGameState, -9999, (int saveslot) -> void) {
-	super(saveslot);
+bool saveslotselected = false;
+bool waszero = false;
+HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
+	super(slot);
+
+	unsigned int saveslot = 1;
+	if (slot > 0) { 
+		saveslot = slot; 
+		if (waszero) { saveslotselected = true; } 
+	}else { waszero = true; }
+
 	const int callbackid1 = 1470;
 	lua_State* L = g_LuaEngine->_state;
 	if (CallbackState.test(callbackid1 - 1000)) {
@@ -3675,6 +3684,8 @@ HOOK_METHOD_PRIORITY(Manager, LoadGameState, -9999, (int saveslot) -> void) {
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.push(saveslot)
 			.push(saveslot)
+			.push(saveslotselected)
+			.push(slot)
 			.call(1);
 
 	}
