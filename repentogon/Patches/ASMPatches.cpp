@@ -1360,17 +1360,16 @@ void ASMPatchFireDelay() {
 }
 
 extern float modCharacterSpeed;
-
 void ASMPatchSpeed() {
-	SigScan scanner("f30f5905????????f30f58c1f30f1187????????8b87");
+	SigScan scanner("f30f1187????????8b87????????83f829");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 	void* speedPtr = &modCharacterSpeed;
 	printf("[REPENTOGON] Patching EvaluateCache Speed at %p\n", addr);
 	ASMPatch patch;
 
-	patch.AddBytes("\xF3\x0F\x59\x05\x50\xA3\xA7").AddZeroes(1) // mulss xmm0, dword ptr [0x2f]
-		.AddBytes("\xF3\x0F\x58\x05").AddBytes(ByteBuffer().AddAny((char*)&speedPtr, 4)) // addss xmm0, dword ptr ds:[0xXXXXXXXX]
+	patch.AddBytes("\xF3\x0F\x58\x05").AddBytes(ByteBuffer().AddAny((char*)&speedPtr, 4)) // addss xmm0, dword ptr ds:[0xXXXXXXXX]
+		.AddBytes("\xF3\x0F\x11\x87\xAC\x14").AddZeroes(2) // movss dword ptr [edi + 0x14ac], xmm0
 		.AddRelativeJump((char*)addr + 0x8); // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -1488,5 +1487,5 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	PatchGridCallbackShit();
 	ASMPatchInputAction();
-	//ASMPatchPlayerStats();
+	ASMPatchPlayerStats();
 }
