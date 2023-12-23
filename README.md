@@ -47,6 +47,7 @@ We assume Git Bash for the duration of this tutorial, as well as CMake GUI.
 7. Open the generated .sln in Visual Studio.
 8. Build the project. Unless you're a developer, we recommend Release mode for performance.
 9. When the build is finished, copy `resources`, `resources-repentogon`, `dsound.dll`, `freetype.dll`, `libzhl.dll`, `Lua5.4.dll`, and `zhlREPENTOGON.dll` and to the game's folder.
+  * Optionally, the `ISAAC_DIRECTORY` setting can be set to the game's root directory to automatically copy these files after a build.
 
 # License
 REPENTOGON is licensed under the GNU General Public License version 2.
