@@ -604,6 +604,10 @@ ___
 ___
 ### SetBladderCharge () {: aria-label='Functions' }
 #### void SetBladderCharge ( int Charge ) {: .copyable aria-label='Functions' }
+Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_Stone) item.
+
+???+ bug "Bug"
+    The player's head turns pitch black when this function is used without Kidney Stone.
 
 ___
 ### SetCambionConceptionState () {: aria-label='Functions' }
