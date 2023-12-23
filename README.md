@@ -9,20 +9,21 @@ Generally referred to as an "EXE mod" by the community, REPENTOGON works very di
 REPENTOGON makes additions and modifications to the Lua API and adds tons of new features. You can find the documentation here: [https://repentogon.com/docs.html](https://repentogon.com/docs.html)
 
 # Installing
-1. Download a build from [GitHub Actions](https://github.com/IsaacZHL/IsaacZHL/actions/workflows/ci.yml).
-2. Extract the *contents* of the zip file into your game's directory.
-    * Overwrite `Lua5.3.3r.dll` when prompted.
+1. Download a build from [GitHub Actions](https://github.com/TeamREPENTOGON/REPENTOGON/actions/workflows/ci.yml).
+2. Extract the contents of the zip file into your game's directory. You can find the directory by right clicking `The Binding of Isaac: Rebirth` in your Steam library page, clicking `Properties`, then `Installed Files` followed by `Browse` (located on the top right corner) on the window that appears.
+   * If you are running the game on Linux via Proton, you will also need to access the `Properties` window, go to `General`, and enter `WINEDLLOVERRIDES="dsound=n,b" %command%` into the `Launch Options` entry. Without this launch option, REPENTOGON will be unable to load.
 3. Launch the game. If REPENTOGON successfully loaded, you should now see `zhl.log` and `repentogon.log` files in your game directory, and the title bar should now say `Binding of Isaac: Repentance (+ REPENTOGON vX.X.X)`.
 
 # Uninstalling
-Technically, removing `dsound.dll` and verifying integrity is all that's needed, but here's a "full" uninstall procedure:
-1. Remove `dsound.dll`, `libzhl.dll`, `freetype.dll`, `resources-repentogon` and `zhlREPENTOGON.dll` from the game folder.
+Technically, using the launch option `-repentogonoff` or removing `dsound.dll` is all that's needed to disable REPENTOGON, but for a "complete" uninstall:
+1. Remove `dsound.dll`, `freetype.dll`, `libzhl.dll`, `Lua5.4.dll`, `resources-repentogon`, and `zhlREPENTOGON.dll` from the game folder.
+2. Optionally, remove log files `dsound.log`, `repentogon.log`, and `zhl.log`.
 2. Delete `resources\rooms` (containing `26.The Void_ex.stb`) and `resources\shaders` (containing `coloroffset_gold_mesafix`).
 3. In the `resources\scripts` folder, remove `main_ex.lua` and `enums_ex.lua`.
-4. Verify the game integrity on Steam to replace Lua5.3.3r.dll with the original.
+4. In `User\Documents\My Games\Binding of Isaac Repentance` (or the Save Data Path in `savedatapath.txt`), delete the `Repentogon` folder. Note that this will erase all custom achievements and completion marks!
 
 # Building
-(Unless you're a developer, we recommend grabbing a build from [GitHub Actions](https://github.com/IsaacZHL/IsaacZHL/actions/workflows/ci.yml) instead.)
+(Unless you're a developer, we recommend grabbing a build from [GitHub Actions](https://github.com/TeamREPENTOGON/REPENTOGON/actions/workflows/ci.yml) instead.)
 ### Requirements
 The nature of this project requires that we use the same compiler as the game. As a result, a Windows system is explicitly required, along with the following:
 * CMake 3.13 or above
@@ -45,7 +46,8 @@ We assume Git Bash for the duration of this tutorial, as well as CMake GUI.
 6. Once configuration is done, hit "Generate". This will create a .sln in the folder you specified before.
 7. Open the generated .sln in Visual Studio.
 8. Build the project. Unless you're a developer, we recommend Release mode for performance.
-9. When the build is finished, copy `resources`, `dsound.dll`, `libzhl.dll`, `freetype.dll`, `zhlREPENTOGON.dll`, and `Lua5.3.3r.dll` to the game's folder. Overwrite `Lua5.3.3r.dll` when prompted.
+9. When the build is finished, copy `resources`, `resources-repentogon`, `dsound.dll`, `freetype.dll`, `libzhl.dll`, `Lua5.4.dll`, and `zhlREPENTOGON.dll` and to the game's folder.
+  * Optionally, the `ISAAC_DIRECTORY` setting can be set to the game's root directory to automatically copy these files after a build.
 
 # License
 REPENTOGON is licensed under the GNU General Public License version 2.

@@ -50,6 +50,12 @@ ByteBuffer& ByteBuffer::operator=(ByteBuffer&& other) {
 	return *this;
 }
 
+ByteBuffer& ByteBuffer::AddPointer(void* ptr) {
+	CheckAndResize(sizeof(ptr));
+	void** p = &ptr;
+	return AddAny((char*)p, sizeof(p));
+}
+
 ByteBuffer& ByteBuffer::AddByte(unsigned char byte, size_t n) {
 	char* buffer;
 	if (n != 1) {
