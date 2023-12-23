@@ -800,8 +800,9 @@ ___
 
 ___
 ### TryDecreaseGlowingHourglassUses () {: aria-label='Functions' }
-#### void TryDecreaseGlowingHourglassUses ( int Charges, boolean ForceHourglass = false ) {: .copyable aria-label='Functions' }
-`Charges` are only decreased by 1, doesn't matter how large of a number you tell it to remove.
+#### void TryDecreaseGlowingHourglassUses ( int Uses, boolean ForceHourglass = false ) {: .copyable aria-label='Functions' }
+`Uses` are only decreased by 1, doesn't matter how large of a number you tell it to remove.
+
 `ForceHourglass` instantly removes all the charges and turns Glowing Hourglass into it's regular Hourglass form.
 
 ___
