@@ -26,6 +26,7 @@ public:
 	ByteBuffer& AddZeroes(uint32_t n);
 	ByteBuffer& AddAny(const char* addr, size_t n);
 	ByteBuffer& AddByteBuffer(ByteBuffer const& other);
+	ByteBuffer& AddPointer(void* ptr);
 
 	size_t GetSize() const;
 	char* GetData() const;
