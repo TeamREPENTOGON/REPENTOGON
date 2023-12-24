@@ -645,6 +645,19 @@ void ProcessXmlNode(xml_node<char>* node) {
 				entity["name"] = string(stringTable->GetString("Entities", 0, entity["name"].substr(1, entity["name"].length()).c_str(), &unk));
 				if (entity["name"].compare("StringTable::InvalidKey") == 0) { entity["name"] = entity["untranslatedname"]; }
 			}
+			if (entity.count("customtags") > 0) {
+				// Convert the customtags attribute to lowercase and parse each individual tag.
+				const string customtagsstr = stringlower(entity["customtags"].c_str());
+				if (!customtagsstr.empty()) {
+					stringstream tagstream(customtagsstr);
+					string tag;
+					while (getline(tagstream, tag, ' ')) {
+						if (!tag.empty()) {
+							XMLStuff.EntityData->customtags[idx].insert(tag);
+						}
+					}
+				}
+			}
 			XMLStuff.EntityData->ProcessChilds(auxnode, idx);
 			XMLStuff.EntityData->nodes[idx] = entity;
 			XMLStuff.EntityData->byorder[XMLStuff.EntityData->nodes.size()] = idx;

@@ -391,6 +391,8 @@ public:
 	unordered_map<string, tuple<int, int, int>> bybossid;
 	XMLNodeIdxLookup bymod;
 	unordered_map<tuple<int, int, int>, tuple<int, int, int>> bytypevar;
+	// Holds the contents of an entity's "customtags" attribute, converted to lowercase and parsed into a set.
+	unordered_map<tuple<int, int, int>, set<string>> customtags;
 
 	void Clear() {
 		nodes.clear();
@@ -399,6 +401,7 @@ public:
 		bynamemod.clear();
 		bymod.clear();
 		bytypevar.clear();
+		customtags.clear();
 		maxid = 0;
 	}
 
@@ -420,13 +423,36 @@ public:
 		else if (strict) {
 			return none;
 		}
-		else if (this->nodes.count({ type, var, 0 })) {
+		else if (this->nodes.count({ type, var, 0 }) > 0) {
 			return this->nodes[{ type, var, 0 }];
 		}
-		else if (this->nodes.count({ type, 0, 0 })) {
+		else if (this->nodes.count({ type, 0, 0 }) > 0) {
 			return this->nodes[{ type, 0, 0 }];
 		}
 		return none;
+	}
+
+	const set<string>& GetCustomTags(int type, int var, int sub) {
+		if (this->nodes.count({ type, var, sub }) > 0) {
+			return this->customtags[{ type, var, sub }];
+		}
+		else if (this->customtags.count({ type, var, 0 }) > 0) {
+			return this->customtags[{ type, var, 0 }];
+		}
+		return this->customtags[{ type, 0, 0 }];
+	}
+
+	const set<string>& GetCustomTags(const EntityConfig_Entity& entity) {
+		return GetCustomTags(entity.id, entity.variant, entity.subtype);
+	}
+
+	bool HasCustomTag(int type, int var, int sub, const std::string tag) {
+		const set<string>& customtags = GetCustomTags(type, var, sub);
+		return customtags.find(stringlower(tag.c_str())) != customtags.end();
+	}
+
+	bool HasCustomTag(const EntityConfig_Entity& entity, const std::string tag) {
+		return HasCustomTag(entity.id, entity.variant, entity.subtype, tag);
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, tuple<int, int, int> id) {

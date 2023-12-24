@@ -7,6 +7,7 @@
 #include "XMLData.h"
 #include "ModReloading.h"
 #include "NullItemsAndCostumes.h"
+#include "FamiliarTags.h"
 
 #include "ASMPatches.h"
 #include "ASMPatcher.hpp"
@@ -231,79 +232,6 @@ void PatchPreLaserCollision() {
 }
 
 // End of PRE_LASER_COLLISION patches
-
-// Re-implementation of the inlined Entity_Familiar::CanBeDamagedByLaser() that allows for overriding via an XML tag.
-bool __stdcall FamiliarCanBeDamagedByLaserReimplementation(Entity_Familiar* fam) {
-	const unsigned int var = *fam->GetVariant();
-	const unsigned int subt = *fam->GetSubType();
-	// Check a new XML attribute for whether or not to allow laser collisions.
-	XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(3, var, subt, false);
-	const std::string laserCollisionsTag = xmlData["familiarallowlasercollision"];
-	if (laserCollisionsTag == "true") {
-		return true;
-	}
-	else if (laserCollisionsTag == "false") {
-		return false;
-	}
-	// Re-implementation of Entity_Familiar::CanBeDamagedByLaser()
-	return var == 61 || var == 67 || var == 211 || (var == 206 && subt == 427);
-}
-
-// Entity_Familiar::CanBeDamagedByLaser() is inlined into Entity_Laser::CanDamageEntity().
-// This patch injects a re-implementation of that function.
-void PatchFamiliarCanBeDamagedByLaser() {
-	SigScan scanner("8b47??83f83e74??83f84374??3dd3000000");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(reg)
-		.AddBytes("\x57") // Push EDI (the familiar) for function input
-		.AddInternalCall(FamiliarCanBeDamagedByLaserReimplementation) // call function
-		.AddBytes("\x84\xC0") // TEST AL, AL
-		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x24) // Jump for TRUE (can be hit)
-		.AddRelativeJump((char*)addr + 0x28); // Jump for FALSE (can't be hit)
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-bool __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* fam) {
-	const unsigned int var = *fam->GetVariant();
-	const unsigned int subt = *fam->GetSubType();
-
-	XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(3, var, subt, false);
-	const std::string ignoreBFFSTag = xmlData["familiarignorebffs"];
-
-	Entity_Player* plr = *fam->GetPlayer();
-
-	if (ignoreBFFSTag != "true" && plr && plr->HasCollectible(0xF7, false)) {
-	 	return true;
-	}
-
-	return false;
-}
-
-// This patch allows for disabling the check for BFFS in Entity_Familiar::GetMultiplier() with a custom XML tag.
-void ASMPatchFamiliarGetMultiplier() {
-	SigScan scanner("e8????????84c074??8b46??83f82b");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	printf("[REPENTOGON] Patching Entity_Familiar::GetMultiplier at %p\n", addr);
-	
-	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch;
-	patch.AddBytes("\x83\xC4\x08") // add esp, 4
-		.PreserveRegisters(reg)
-		.Push(ASMPatch::Registers::ESI)
-		.AddInternalCall(FamiliarGetMultiplierTrampoline) // call FamiliarGetMultiplierTrampoline()
-		.AddBytes("\x84\xC0") // test al, al
-		.RestoreRegisters(reg)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x16) // jump for false
-		.AddRelativeJump((char*)addr + 0x9); // jump for true
-	sASMPatcher.PatchAt(addr, &patch);
-}
 
 /* * MC_ENTITY_TAKE_DMG REIMPLEMENTATION * *
 * This section patches in a new ENTITY_TAKE_DMG callback with table returns for overridding.
@@ -1473,11 +1401,10 @@ void PerformASMPatches() {
 	PatchPreLaserCollision();
 	PatchPreEntityTakeDamageCallbacks();
 	PatchPostEntityTakeDamageCallbacks();
-	PatchFamiliarCanBeDamagedByLaser();
+	ASMPatchesForFamiliarCustomTags();
 	PatchCheckFamiliar();
 	ASMPatchVoidGeneration();
 	ASMPatchHushBug();
-	ASMPatchFamiliarGetMultiplier();
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchPrePlayerUseBomb();
 	ASMPatchPostPlayerUseBomb();
