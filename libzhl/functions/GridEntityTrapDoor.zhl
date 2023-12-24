@@ -1,4 +1,8 @@
 struct GridEntity_TrapDoor : public GridEntity {
+	{{
+	void Dummy();
+	}}
+
 	__vtable {
 		skip; // Free
 		skip; // PostInit

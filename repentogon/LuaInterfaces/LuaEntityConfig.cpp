@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../Patches/XMLData.h"
 
 LUA_FUNCTION(Lua_EntityGetEntityConfigEntity)
 {
@@ -348,6 +349,30 @@ LUA_FUNCTION(Lua_EntityConfigEntityGetBestiaryFloorAlt)
 {
 	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
 	lua_pushstring(L, entity->bestiaryFloorAlt.c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityGetCustomTags)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	const std::set<std::string>& customtags = XMLStuff.EntityData->GetCustomTags(*entity);
+
+	lua_newtable(L);
+	int i = 0;
+	for (const std::string& tag : customtags) {
+		lua_pushinteger(L, ++i);
+		lua_pushstring(L, tag.c_str());
+		lua_settable(L, -3);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigEntityHasCustomTag)
+{
+	EntityConfig_Entity* entity = *lua::GetUserdata<EntityConfig_Entity**>(L, 1, lua::metatables::EntityConfigEntityMT);
+	const std::string tag = luaL_checkstring(L, 2);
+	lua_pushboolean(L, XMLStuff.EntityData->HasCustomTag(*entity, tag));
 	return 1;
 }
 
@@ -743,7 +768,9 @@ static void RegisterEntityConfigEntity(lua_State* L) {
 		{ "GetBestiaryOffset", Lua_EntityConfigEntityGetBestiaryOffset },
 		{ "GetBestiaryScale", Lua_EntityConfigEntityGetBestiaryScale },
 		{ "GetBestiaryFloorAlt", Lua_EntityConfigEntityGetBestiaryFloorAlt },
-		{ "HasFloorAlts", Lua_EntityConfigEntityHasFloorAlts},
+		{ "HasFloorAlts", Lua_EntityConfigEntityHasFloorAlts },
+		{ "GetCustomTags", Lua_EntityConfigEntityGetCustomTags },
+		{ "HasCustomTag", Lua_EntityConfigEntityHasCustomTag },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::EntityConfigEntityMT, lua::metatables::EntityConfigEntityMT, functions);
