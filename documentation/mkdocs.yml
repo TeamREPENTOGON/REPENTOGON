@@ -316,7 +316,7 @@ nav:
   - Vector: Vector.md
   - Weapon: Weapon.md
   - WeightedOutcomePicker: WeightedOutcomePicker.md
-  - XMLData: XMLData.md
+  - Data: XMLData.md
 - Blog: blog/index.md
 - Changes:
   - General: changes/General.md
@@ -324,12 +324,13 @@ nav:
   - UI: changes/UI.md
 - XML:
   - XML Overview: xml/overview.md
-  - players.xml: xml/players.md
   - achievements.xml: xml/achievements.md
+  - ambush.xml: xml/ambush.md
+  - costumes.xml: xml/costumes.md
   - cutscenes.xml: xml/cutscenes.md
   - giantbook.xml: xml/giantbook.md
-  - ambush.xml: xml/ambush.md
   - items.xml: xml/items.md
+  - players.xml: xml/players.md
 - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
