@@ -1138,7 +1138,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.AchievementData->maxid = id;
 			}
 			if (oldid.length() > 0) { achievement["id"] = oldid; }
-			achievement["sourceid"] = lastmodid;
+			if (achievement.find("sourceid") == achievement.end()) {
+				achievement["sourceid"] = lastmodid;
+			}
 			XMLStuff.AchievementData->ProcessChilds(auxnode, id);
 			if (achievement.count("name") == 0){
 				achievement["name"] = achievement["text"];
