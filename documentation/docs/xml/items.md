@@ -23,17 +23,18 @@ Null items can be very useful for implementing temporary or persistent effects t
 |persistent|bool|By default null item effects only last for the current room. Set persistent to true to have the effect persist between rooms.|
 |cooldown|int|If set, defines how long the effect of the null item lasts, in update frames (30 frames ~= 1 second). After this duration, the effect removes itself.|
 
-    ???+ example "Examples"
-        ```xml
-        <!-- Null item whose effect stays on the player permanantly, unless removed. -->
-        <null id="1" name="my null item 1" persistent="true" />
-        
-        <!-- Null item that triggers a damage & tears cache evaluation when added or removed. Only lasts for the current room. -->
-        <null id="2" name="my null item 2" cache="damage firedelay" />
-        
-        <!-- Null item whose effect lasts for 10 seconds, then removes itself. -->
-        <null id="3" name="my null item 3" cooldown="300" persistent="true" />
-        ```
+
+Null item examples:
+```xml
+<!-- Null item whose effect stays on the player permanantly, unless removed. -->
+<null id="1" name="my null item 1" persistent="true" />
+
+<!-- Null item that triggers a damage & tears cache evaluation when added or removed. Only lasts for the current room. -->
+<null id="2" name="my null item 2" cache="damage firedelay" />
+
+<!-- Null item whose effect lasts for 10 seconds, then removes itself. -->
+<null id="3" name="my null item 3" cooldown="300" persistent="true" />
+```
 
 You can use `Isaac.GetNullItemIdByName("my null item")` to get the in-game ID of your null item.
 
