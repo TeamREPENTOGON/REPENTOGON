@@ -1343,8 +1343,8 @@ Returning `true` allows entity to respawn.
 
 Accepts returning a table, with any combination of the following fields:
 
-*Position - Alters trinket position.
-*Scale - Alters trinket scale.
+* Position - Alters trinket position.
+* Scale - Alters trinket scale.
 
 Alternative accepts ``true``, which cancels trinket rendering.
 
