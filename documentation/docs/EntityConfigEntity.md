@@ -82,6 +82,11 @@ ___
 Also known as "SizeMulti".
 
 ___
+### GetCustomTags () {: aria-label='Functions' }
+#### table GetCustomTags ( ) {: .copyable aria-label='Functions' }
+Returns a table containing all the strings specified in the entity's `customtags` attribute in [entities2.xml](xml/entities.md). Tags are always provided in all lowercase. See [entities2.xml](xml/entities.md) for more information on `customtags`.
+
+___
 ### GetEntityTags () {: aria-label='Functions' }
 #### int GetEntityTags ( ) {: .copyable aria-label='Functions' }
 Returns the bitmask of [EntityTag](enums/EntityTag.md)s for this entity.
@@ -147,6 +152,11 @@ ___
 ___
 ### GetVariant () {: aria-label='Functions' }
 #### int GetVariant ( ) {: .copyable aria-label='Functions' }
+
+___
+### HasCustomTag () {: aria-label='Functions' }
+#### boolean HasCustomTag ( string tag ) {: .copyable aria-label='Functions' }
+Returns true if the entity has the provided string specified in its `customtags` attribute in [entities2.xml](xml/entities.md). Capitalization does not matter. See [entities2.xml](xml/entities.md) for more information on `customtags`.
 
 ___
 ### HasEntityTags () {: aria-label='Functions' }
