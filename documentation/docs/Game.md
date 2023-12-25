@@ -114,6 +114,6 @@ ___
 
 ___
 ### SpawnBombCrater () {: aria-label='Functions' }
-#### [Entity](Entity.md) SpawnBombCrater ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
+#### [Entity](Entity.md) SpawnBombCrater ( [Vector](Vector.md) Position, float Radius = 1.0 ) {: .copyable aria-label='Functions' }
 
 ___
