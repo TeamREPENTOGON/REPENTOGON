@@ -11,7 +11,7 @@ __thiscall void PlayerHUD::RenderHearts(Vector *unk1, ANM2 *sprite, const Vector
 __thiscall void PlayerHUD::UpdateHearts(PlayerHUDHeart* heart, int unkInt, Entity_Player* player); 
 
 "558bec83e4f081ecc80000008b11":
-__thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos);
+__thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos, float scale<xmm3>);
 
 struct PlayerHUD depends (PlayerHUDHeart) { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }

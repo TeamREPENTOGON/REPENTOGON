@@ -1333,6 +1333,21 @@ Returning `true` allows entity to respawn.
 |:--|:--|:--|:--|:--|
 |1263 |MC_IS_PERSISTENT_ROOM_ENTITY {: .copyable } | ([EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant) | - | boolean |
 
+### MC_PRE_PLAYERHUD_TRINKET_RENDER {: .copyable }
+Returning `true` allows entity to respawn.
+
+
+|Value|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1264 |MC_PRE_PLAYERHUD_TRINKET_RENDER {: .copyable } | (int Slot, [Vector](../Vector.md) Position, float Scale, [EntityPlayer](../EntityPlayer.md) Player ) | int Slot | table or boolean |
+
+Accepts returning a table, with any combination of the following fields:
+
+*Position - Alters trinket position.
+*Scale - Alters trinket scale.
+
+Alternative accepts ``true``, which cancels trinket rendering.
+
 ### MC_PRE_GRID_ENTITY_DECORATION_UPDATE
 Accepts `false` to cancel the update.
 
