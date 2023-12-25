@@ -1948,7 +1948,7 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(this->GetOverlayID())
-			.push(this, lua::metatables::ItemOverlayMT)
+			//.push(this, lua::metatables::ItemOverlayMT)
 			.push(this->GetOverlayID())
 			.push(unk)
 			.call(1);
@@ -1967,7 +1967,7 @@ HOOK_METHOD(ItemOverlay, Show, (int overlayID, int delay, Entity_Player* player)
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.push(overlayID)
-			.push(this, lua::metatables::ItemOverlayMT)
+			//.push(this, lua::metatables::ItemOverlayMT)
 			.push(overlayID)
 			.push(delay)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
@@ -1991,7 +1991,7 @@ HOOK_METHOD(ItemOverlay, Show, (int overlayID, int delay, Entity_Player* player)
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
 			.push(overlayID)
-			.push(this, lua::metatables::ItemOverlayMT)
+			//.push(this, lua::metatables::ItemOverlayMT)
 			.push(overlayID)
 			.push(delay)
 			.push(player, lua::Metatables::ENTITY_PLAYER)
@@ -2545,7 +2545,7 @@ HOOK_METHOD(NightmareScene, Render, () -> void) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(this, lua::metatables::NightmareSceneMT)
+			//.push(this, lua::metatables::NightmareSceneMT)
 			.call(1);
 	}
 }
@@ -2561,7 +2561,7 @@ HOOK_METHOD(NightmareScene, Show, (bool unk) -> void) {
 
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(this, lua::metatables::NightmareSceneMT)
+			//.push(this, lua::metatables::NightmareSceneMT)
 			.push(unk)
 			.call(1);
 	}
