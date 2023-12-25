@@ -6,7 +6,7 @@ tags:
 
 ## Functions
 ### Get () {: aria-label='Functions' }
-#### [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Get ( ) {: .copyable aria-label='Functions' }
+#### [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Get ( int Index ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetByType () {: aria-label='Functions' }

@@ -6,7 +6,7 @@ tags:
 
 ## Functions
 ### Get () {: aria-label='Functions' }
-#### [EntitiesSaveState](EntitiesSaveState.md) Get ( ) {: .copyable aria-label='Functions' }
+#### [EntitiesSaveState](EntitiesSaveState.md) Get ( int Index ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetByType () {: aria-label='Functions' }
