@@ -714,6 +714,7 @@ int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleI
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.push(collectibleId)
 			.call(1);
@@ -1386,6 +1387,37 @@ void ASMPatchPlayerStats() {
 // !!!!! EVALUATEITEMS STATS DONE !!!!!
 //////////////////////////////////////////////
 
+void __stdcall RunPostNightmareSceneRender(NightmareScene* ns) {
+	const int callbackid = 1102;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			//.push(ns, lua::metatables::NightmareSceneMT)
+			.call(1);
+	}
+}
+
+void ASMPatchPostNightmareSceneCallback() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+
+	SigScan scanner_transition("f30f108f????????0f57c00f2fc80f86????????f30f1005");
+	scanner_transition.Scan();
+	void* addr = scanner_transition.GetAddress();
+
+		patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // NightmareScene
+		.AddInternalCall(RunPostNightmareSceneRender)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 8))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 8);
+	sASMPatcher.PatchAt(addr, &patch);
+}
 
 void PerformASMPatches() {
 	ASMPatchLogMessage();
@@ -1415,4 +1447,5 @@ void PerformASMPatches() {
 	PatchGridCallbackShit();
 	ASMPatchInputAction();
 	ASMPatchPlayerStats();
+	ASMPatchPostNightmareSceneCallback();
 }

@@ -2535,7 +2535,7 @@ HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4,
 }
 
 //POST_NIGHTMARE_SCENE_RENDER (1102)
-HOOK_METHOD(NightmareScene, Render, () -> void) {
+/*HOOK_METHOD(NightmareScene, Render, () -> void) {
 	super();
 	const int callbackid = 1102;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -2549,6 +2549,7 @@ HOOK_METHOD(NightmareScene, Render, () -> void) {
 			.call(1);
 	}
 }
+*/
 
 //POST_NIGHTMARE_SCENE_SHOW (1103)
 HOOK_METHOD(NightmareScene, Show, (bool unk) -> void) {
