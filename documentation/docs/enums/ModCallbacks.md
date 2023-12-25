@@ -977,7 +977,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1075 |MC_POST_ITEM_OVERLAY_UPDATE {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay) | [GiantBook](Giantbook.md) | void |
+|1075 |MC_POST_ITEM_OVERLAY_UPDATE {: .copyable } | | [GiantBook](Giantbook.md) | void |
 
 ### MC_PRE_ITEM_OVERLAY_SHOW
 Accepts an integer to change [GiantBook](Giantbook.md)
@@ -986,7 +986,7 @@ Alternatively accepts `true` to cancel item overlay show
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1076 |MC_PRE_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](../EntityPlayer.md) Player) | [GiantBook](Giantbook.md) | [GiantBook](Giantbook.md) or boolean |
+|1076 |MC_PRE_ITEM_OVERLAY_SHOW {: .copyable } | ( [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](../EntityPlayer.md) Player) | [GiantBook](Giantbook.md) | [GiantBook](Giantbook.md) or boolean |
 
 ### MC_POST_PLAYER_NEW_ROOM_TEMP_EFFECTS
 
@@ -1095,14 +1095,14 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1102 |MC_POST_NIGHTMARE_SCENE_RENDER {: .copyable } | ([NightmareScene](../NightmareScene.md) NightmareScene) | - | void |
+|1102 |MC_POST_NIGHTMARE_SCENE_RENDER {: .copyable } |  | - | void |
 
 ### MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1103 |MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable } | ([NightmareScene](../NightmareScene.md) NightmareScene, boolean Unknown) | - | void |
+|1103 |MC_POST_NIGHTMARE_SCENE_SHOW {: .copyable } | ( boolean Unknown) | - | void |
 
 ### MC_POST_WEAPON_FIRE {: .copyable }
 Accepts no return parameters.
@@ -1176,7 +1176,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1134 |MC_POST_ITEM_OVERLAY_SHOW {: .copyable } | ([ItemOverlay](../ItemOverlay.md) ItemOverlay, [GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](../EntityPlayer.md) Player) | [GiantBook](Giantbook.md) | void |
+|1134 |MC_POST_ITEM_OVERLAY_SHOW {: .copyable } | ([GiantBook](Giantbook.md) GiantBookID, int Delay, [EntityPlayer](../EntityPlayer.md) Player) | [GiantBook](Giantbook.md) | void |
 
 ### MC_PRE_LEVEL_PLACE_ROOM {: .copyable }
 Return a room config to replace the room that will be placed
