@@ -85,7 +85,9 @@ LUA_FUNCTION(Lua_GameAddDebugFlags)
 LUA_FUNCTION(Lua_GameSpawnBombCrater) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Entity* crater = game->SpawnBombCrater(pos);
+	const float radius = luaL_optnumber(L, 3, 1.0f);
+	Entity* crater = game->SpawnBombCrater(pos, radius);
+	
 	lua::luabridge::UserdataPtr::push(L, crater, lua::GetMetatableKey(lua::Metatables::ENTITY));
 
 	return 1;
@@ -213,7 +215,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetLastLevelWithoutHalfHp", Lua_GetLastLevelWithoutHalfHpFix},
 		{ "GetDebugFlags", Lua_GameGetDebugFlags},
 		{ "AddDebugFlags", Lua_GameAddDebugFlags},
-		//{ "SpawnBombCrater", Lua_GameSpawnBombCrater},
+		{ "SpawnBombCrater", Lua_GameSpawnBombCrater},
 		{ "DevolveEnemy", Lua_GameDevolveEnemy},
 		{ "IsGreedBoss", Lua_GameIsGreedBoss},
 		{ "IsGreedFinalBoss", Lua_GameIsGreedFinalBoss},
