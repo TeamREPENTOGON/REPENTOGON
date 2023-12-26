@@ -5,10 +5,10 @@ __fastcall GridEntity* CreateGridEntity(GridEntityType type, unsigned int seed);
 __thiscall void GridEntity::Init(unsigned int Seed);
 
 "558bec83ec488a55":
-__thiscall void GridEntity::hurt_func(Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4);
+__thiscall void GridEntity::hurt_func(Entity * collider, int playerDamage, unsigned long long DamageFlags, bool unk, float npcDamage<xmm2>);
 
 "558bec83ec148bd1f30f115d":
-__thiscall void GridEntity::hurt_surroundings(int Damage, unsigned long long DamageFlags, float unk3, bool unk4);
+__thiscall void GridEntity::hurt_surroundings(int playerDamage, unsigned long long DamageFlags, bool unk, float npcDistance<xmm1>, float playerDistance<xmm2>, float npcDamage<xmm3>);
 
 "558bec83ec088b41":
 __thiscall Vector* GridEntity::GetRenderPosition(Vector* buffer);

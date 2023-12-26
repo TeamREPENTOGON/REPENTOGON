@@ -2,26 +2,28 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GridEntityHurtDamage)
+LUA_FUNCTION(Lua_GridEntityHurtEntity)
 {
 	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
 	Entity* entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	int damage = (int)luaL_checkinteger(L, 3);
-	int damageFlags = (int)luaL_checkinteger(L, 4);
-	float unk3 = (float)luaL_checknumber(L, 5);
-	bool unk4 = lua::luaL_checkboolean(L, 6);
-	gridEnt->hurt_func(entity, damage, damageFlags, unk3, unk4);
+	float npcDamage = (float)luaL_checknumber(L, 3);
+	int playerDamage = (int)luaL_checkinteger(L, 4);
+	unsigned int damageFlags = (int)luaL_checkinteger(L, 5);
+	bool unk = lua::luaL_checkboolean(L, 6);
+	gridEnt->hurt_func(entity, playerDamage, damageFlags, unk, npcDamage);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_GridEntityHurtSurroundings)
 {
 	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	int damage = (int)luaL_checkinteger(L, 2);
-	int damageFlags = (int)luaL_checkinteger(L, 3);
-	float unk3 = (float)luaL_checknumber(L, 4);
-	bool unk4 = lua::luaL_checkboolean(L, 5);
-	gridEnt->hurt_surroundings(damage, damageFlags, unk3, unk4);
+	float npcDistance = (float)luaL_checknumber(L, 2);
+	float npcDamage = (float)luaL_checknumber(L, 3);
+	float playerDistance = (float)luaL_checknumber(L, 4);
+	int playerDamage = (int)luaL_checkinteger(L, 5);
+	unsigned int damageFlags = (int)luaL_checkinteger(L, 6);
+	bool unk = lua::luaL_checkboolean(L, 7);
+	gridEnt->hurt_surroundings(playerDamage, damageFlags, unk, npcDistance, playerDistance, npcDamage);
 	return 0;
 }
 
@@ -47,7 +49,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
-		{ "HurtDamage", Lua_GridEntityHurtDamage },
+		{ "HurtEntity", Lua_GridEntityHurtEntity },
 		{ "HurtSurroundings", Lua_GridEntityHurtSurroundings },
 		{ "GetRenderPosition", Lua_GridEntityGetRenderPosition },
 		{ "IsBreakableRock", Lua_GridEntityIsBreakableRock },
