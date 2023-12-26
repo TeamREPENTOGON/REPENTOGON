@@ -3693,3 +3693,49 @@ HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 
 
 }
+
+HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float scale) -> void) {
+	const int callbackid = 1264;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(slot)
+			.push(slot)
+			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+			.push(scale)
+			.push(_player, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!result) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Position") {
+							*pos = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+						}
+					}
+					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Scale") {
+							scale = lua_tonumber(L, -1);
+						}
+					}
+					lua_pop(L, 1);
+				}
+			}
+			else if (lua_isboolean(L, -1))
+			{
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+	super(slot, pos, scale);
+}

@@ -64,7 +64,7 @@ __thiscall void Game::ToggleDebugFlag(unsigned int flag);
 __thiscall bool Game::GetDebugFlag(unsigned int flag);
 
 "558bec6aff68????????64a1????????5083ec78535657a1????????33c5508d45??64a3????????f30f1155":
-__thiscall Entity* Game::SpawnBombCrater(Vector* Pos);
+__thiscall Entity* Game::SpawnBombCrater(Vector* Pos, float Scale<xmm2>);
 
 "558bec83ec3ca1????????33c58945??538b1d":
 static void Game::DevolveEnemy(Entity* ent);
