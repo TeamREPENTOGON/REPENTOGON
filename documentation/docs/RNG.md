@@ -7,7 +7,7 @@ tags:
 ## Modified Functions
 
 ### RandomInt () {: aria-label='Modified Functions' }
-#### int RandomInt ( int min, int max ) {: .copyable aria-label='Modified Functions' }
+#### int RandomInt ( int Min, int Max ) {: .copyable aria-label='Modified Functions' }
 Can now emulate `math.random` by accepting a second argument to generate a number between the first argument and it, inclusive. Negative values are usable in this mode and will properly generate a number between `min` and `max` regardless of sign.
 
 ___
@@ -26,7 +26,7 @@ ___
 
 ### PhantomFloat () {: aria-label='Functions' }
 #### float PhantomFloat ( ) {: .copyable aria-label='Functions' }
-Generates a random float between 0 (inclusive) and 1 (exclusive).
+Generates a random float between `0` (inclusive) and `1` (exclusive).
 
 This does not advance the internal state of the RNG object.
 

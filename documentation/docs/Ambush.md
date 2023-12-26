@@ -26,14 +26,14 @@ ___
 #### int GetMaxBossrushWaves ( ) {: .copyable aria-label='Functions' }
 Returns the maximum amount of boss rush waves. 
 
-By default, the maximum amount of boss rush waves are 15. It's important to note that mods can modify the maximum amount of boss rush waves.
+By default, the maximum amount of boss rush waves are `15`. It's important to note that mods can modify the maximum amount of boss rush waves.
 
 ___
 ### GetMaxChallengeWaves () {: aria-label='Functions' }
 #### int GetMaxChallengeWaves ( ) {: .copyable aria-label='Functions' }
 Returns the maximum amount of challenge room waves. 
 
-By default, the maximum amount of challenge room waves are 3. It's important to note that mods can modify the maximum amount of challenge room waves.
+By default, the maximum amount of challenge room waves are `3`. It's important to note that mods can modify the maximum amount of challenge room waves.
 
 ___
 ### GetNextWave () {: aria-label='Functions' }
@@ -48,7 +48,7 @@ Returns a table containing the [RoomConfigRoom](RoomConfigRoom.md) of the next c
 ___
 ### SetMaxBossrushWaves () {: aria-label='Functions' }
 #### void SetMaxBossrushWaves ( int Waves ) {: .copyable aria-label='Functions' }
-Sets the maximum amount of boss rush waves. As of now, there is a maximum cap of 25 waves.
+Sets the maximum amount of boss rush waves. As of now, there is a maximum cap of `25` waves.
 
 ___
 ### SetMaxChallengeWaves () {: aria-label='Functions' }

@@ -26,7 +26,7 @@ Indicate if the stage transition screen will display Isaac's head moving from on
 ___
 
 ### SetSameStage () {: aria-label='Functions' }
-#### void SetSameStage ( boolean on ) {: .copyable aria-label='Functions' }
+#### void SetSameStage ( boolean Value ) {: .copyable aria-label='Functions' }
 Configure whether the stage transition will display Isaac's head moving from one stage to the other (`false`) or not (`true`).
 
 This function is useful if you want to move the player to the first stage, or want to repeat the last stage on the progress bar of the transition screen, and have it be less jarring. 

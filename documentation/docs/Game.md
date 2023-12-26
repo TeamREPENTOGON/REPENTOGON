@@ -22,8 +22,9 @@ Now returns integer instead of unusable userdata.
 
 ___
 ### StartStageTransition ()  {: aria-label='Modified Functions' }
-#### void StartStageTransition ( boolean SameStage, int TransitionOverride, [EntityPlayer](EntityPlayer.md) player ) {: .copyable aria-label='Modified Functions' }
+#### void StartStageTransition ( boolean SameStage, int TransitionOverride, [EntityPlayer](EntityPlayer.md) Player = nil ) {: .copyable aria-label='Modified Functions' }
 Fixed the crash that sometimes occured due to an incorrect call on the C++ side.
+`Player` is now optional (will default to `GetPlayer(0)`).
 
 ___
 
@@ -31,12 +32,12 @@ ___
 
 ### AchievementUnlocksDisallowed () {: aria-label='Functions' }
 #### boolean AchievementUnlocksDisallowed ( ) {: .copyable aria-label='Functions' }
-Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc)
+Returns `true` if achievements can't be unlocked this run (challenges, seeded, etc).
 
 ___
 ### AddDebugFlags () {: aria-label='Functions' }
 #### void AddDebugFlags ( [DebugFlag](enums/DebugFlag.md) Flag ) {: .copyable aria-label='Functions' }
-Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `DebugFlag.ENTITY_POSITIONS | DebugFlag.HITSPHERES`)
+Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `DebugFlag.ENTITY_POSITIONS | DebugFlag.HITSPHERES`).
 
 ___
 ### DevolveEnemy () {: aria-label='Functions' }

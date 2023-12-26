@@ -45,22 +45,22 @@ ___
 
 ___
 ### RotateToAngle () {: aria-label='Functions' }
-#### void RotateToAngle ( float angle, float speed = 8.0f ) {: .copyable aria-label='Functions' }
+#### void RotateToAngle ( float Angle, float Speed = 8.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetDisableFollowParent () {: aria-label='Functions' }
-#### void SetDisableFollowParent ( boolean value ) {: .copyable aria-label='Functions' }
+#### void SetDisableFollowParent ( boolean Value ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetScale () {: aria-label='Functions' }
-#### void SetScale ( float value ) {: .copyable aria-label='Functions' }
+#### void SetScale ( float Value ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetShrink () {: aria-label='Functions' }
-#### void SetShrink ( boolean value ) {: .copyable aria-label='Functions' }
+#### void SetShrink ( boolean Value ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetTimeout () {: aria-label='Functions' }
-#### void SetTimeout ( boolean value ) {: .copyable aria-label='Functions' }
+#### void SetTimeout ( boolean Value ) {: .copyable aria-label='Functions' }
 
 ___

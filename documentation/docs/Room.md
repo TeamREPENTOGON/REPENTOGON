@@ -7,7 +7,7 @@ tags:
 ## Modified Functions
 
 ### SpawnGridEntity () {: aria-label='Modified Functions' }
-#### boolean SpawnGridEntity ( int GridIndex, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant = 0, int Seed = default, int VarData = 0 ) {: .copyable aria-label='Modified Functions' }
+#### boolean SpawnGridEntity ( int GridIndex, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant = 0, int Seed = nil, int VarData = 0 ) {: .copyable aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Descriptor) {: .copyable aria-label='Modified Functions' }
 
 No longer crashes if an invalid `GridIndex` is used. All arguments beyond `Type` are optional. An overload has been added to allow spawning a new grid entity using an existing `GridEntityDesc`.
@@ -73,7 +73,7 @@ Returns the price of the item.
 ___
 ### GetWaterAmount () {: aria-label='Functions' }
 #### float GetWaterAmount ( ) {: .copyable aria-label='Functions' }
-Returns the "amount" of water currently in the room. Generally this will be 0 for no water and 1 for water, but values in between 0 and 1 (and technically above 1 in modded scenarios) are possible.
+Returns the "amount" of water currently in the room. Generally this will be `0` for no water and `1` for water, but values in between `0` and `1` (and technically above `1` in modded scenarios) are possible.
 
 ___
 ### GetWaterColor () {: aria-label='Functions' }
@@ -127,7 +127,7 @@ ___
 ___
 ### SetWaterAmount () {: aria-label='Functions' }
 #### void SetWaterAmount ( float Amount ) {: .copyable aria-label='Functions' }
-Sets the amount of water that should be in the current room. Vanilla typically uses 0 for no water and 1 for water. You can technically go higher than this for some interesting results.
+Sets the amount of water that should be in the current room. Vanilla typically uses `0` for no water and `1` for water. You can technically go higher than this for some interesting results.
 
 ___
 ### SetWaterColor () {: aria-label='Functions' }

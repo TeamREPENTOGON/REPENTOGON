@@ -4,11 +4,11 @@ tags:
 ---
 # Class "AnimationFrame"
 
-Cached data for a single frame of one layer of an animation from an Anm2 file. Shared by all Sprites using the same Anm2 and cannot be modified.
+Cached data for a single frame of one layer of an animation from an ANM2 file. Shared by all Sprites using the same ANM2 and cannot be modified.
 
 Note that interpolation and root animations have already been baked into these values.
 
-Otherwise, these values correspond to the same ones viewable in the Anm2 editor, and have been named the same way.
+Otherwise, these values correspond to the same ones viewable in the ANM2 editor, and have been named the same way.
 
 Obtained via [AnimationLayer:GetFrame()](AnimationLayer.md#getframe).
 

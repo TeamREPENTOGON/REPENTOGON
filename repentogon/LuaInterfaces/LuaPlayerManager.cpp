@@ -14,9 +14,8 @@ LUA_FUNCTION(Lua_FirstCollectibleOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int collectible = (int)luaL_checkinteger(L, 1);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
-	bool unk = lua::luaL_checkboolean(L, 3);
-	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, &rng, unk);
+	bool unk = lua::luaL_checkboolean(L, 2);
+	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, unk);
 	if (!player) {
 		lua_pushnil(L);
 	}

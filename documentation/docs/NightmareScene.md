@@ -16,7 +16,7 @@ tags:
         ```
 
 ???+ warning "Warning"
-    This class' functions should not be called until the game fully initializes! Make sure not to try using them outside of callbacks
+    This class' functions should not be called until the game fully initializes! Make sure not to try using them outside of callbacks.
     
 ## Functions
 
