@@ -45,7 +45,7 @@ ___
 
 ___
 ### SetPrizeCollectible () {: aria-label='Functions' }
-#### void SetPrizeCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectibl ) {: .copyable aria-label='Functions' }
+#### void SetPrizeCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Seems to only be used by Crane Game and Hell Game. This sets the collectible that the games will pay out with, and updates the rendered collectible accordingly.
 
 ___
