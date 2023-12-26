@@ -126,12 +126,15 @@ public:
 	}
 
 	XMLAttributes GetNodeByName(const string &name) {
+		if (this->byname.find(name) == this->byname.end()) { return XMLAttributes(); }
 		return this->nodes[this->byname[name]];
 	}
 	XMLAttributes GetNodeByNameMod(const string &name) {
+		if (this->bynamemod.find(name) == this->bynamemod.end()) { return XMLAttributes(); }
 		return this->nodes[this->bynamemod[name]];
 	}
 	XMLAttributes GetNodesByMod(const string &name) {
+		if (this->bynamemod.find(name) == this->bynamemod.end()) { return XMLAttributes(); }
 		return this->nodes[this->bynamemod[name]];
 	}
 

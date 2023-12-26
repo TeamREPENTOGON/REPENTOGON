@@ -37,6 +37,7 @@ using namespace rapidjson;
 using namespace std;
 
 
+unordered_map<int, int > Conditionals; //condid - achievid
 unordered_map<string, int > Achievements;
 unordered_map<int, unordered_map<int, vector<int>> > CompletionMarkListeners;
 unordered_map<int, unordered_map<int, vector<int>> > EventCounterListeners;
@@ -86,7 +87,11 @@ void LoadAchievementsFromJson() {
 }
 
 HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
-	if (achieveemntid < 638) {
+	//if (achieveemntid < 0) {
+		//AccomplishCondition(achieveemntid);
+		//return false;
+	//}
+	if ((achieveemntid > 0) && (achieveemntid < 638)) {
 		return super(achieveemntid);
 	}
 	ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
@@ -155,7 +160,7 @@ HOOK_METHOD(PersistentGameData, Unlocked, (int achieveemntid) -> bool) {
 	}
 	XMLAttributes modachiev = XMLStuff.AchievementData->nodes[achieveemntid];
 	string achievid = modachiev["name"] + modachiev["sourceid"];
-	return Achievements[achievid];
+	return Achievements[achievid] > 0;
 }
 
 HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int val) -> void) {
@@ -168,12 +173,14 @@ HOOK_METHOD(PersistentGameData, IncreaseEventCounter, (int eEvent, int val) -> v
 }
 
 
-HOOK_METHOD(Manager, LoadGameState, (int saveslot) -> void) {
+HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
+	super(slot);
+	int saveslot = 1;
+	if (slot > 0) { saveslot = slot; }
 	achivjsonpath = std::string(REPENTOGON::GetRepentogonDataPath());
 	achivjsonpath.append("achievements").append(to_string(saveslot)).append(".json");
 
 	LoadAchievementsFromJson();
-	super(saveslot);
 }
 
 bool LockAchievement(int achievementid) {
@@ -188,9 +195,10 @@ bool LockAchievement(int achievementid) {
 		XMLAttributes node = XMLStuff.AchievementData->nodes[achievementid];
 		string idx = node["name"] + node["sourceid"];
 		bool had = Achievements[idx] > 0;
-		Achievements[idx] = 0;
+		Achievements[idx] = -9999;
 		SaveAchieveemntsToJson();
-		return had != Achievements[idx];
+		LoadAchievementsFromJson();
+		return had;
 	}
 }
 
@@ -230,8 +238,11 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	if (in.rfind("lockachievement", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
 		int id = toint(cmdlets[1]);
-		if (LockAchievement(id)) {
-			g_Game->GetConsole()->Print("Locked achievement.", Console::Color::WHITE, 0x96U);
+		if (id == 0) {
+			g_Game->GetConsole()->PrintError("No achievement Id Provided. \n");
+		}
+		else if (LockAchievement(id)) {
+			g_Game->GetConsole()->Print("Locked achievement. \n", Console::Color::WHITE, 0x96U);
 		}
 		else {
 			g_Game->GetConsole()->PrintError("Achievement already locked.");
@@ -239,13 +250,17 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	}
 	if (in.rfind("achievement", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
+		if (cmdlets.size() < 2) { g_Game->GetConsole()->PrintError("No achievement Id Provided. \n"); super(in, out, player); return; }
 		int id = toint(cmdlets[1]);
 		PersistentGameData* ps = g_Manager->GetPersistentGameData();
-		if (ps->TryUnlock(id)) {
-			g_Game->GetConsole()->Print("Unlocked achievement.", Console::Color::WHITE, 0x96U);
+		if (id == 0) {
+			g_Game->GetConsole()->PrintError("No achievement Id Provided. \n");
+		}
+		else if (ps->TryUnlock(id)) {
+			g_Game->GetConsole()->Print("Unlocked achievement. \n", Console::Color::WHITE, 0x96U);
 		}
 		else {
-			g_Game->GetConsole()->PrintError("Achievement already unlocked.");
+			g_Game->GetConsole()->PrintError("Achievement already unlocked. \n");
 		}
 	}
 	super(in, out, player);

@@ -707,7 +707,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				if (player["birthright"].compare("StringTable::InvalidKey") == 0) { player["birthright"] = player["untranslatedbirthright"]; }
 			}
 
-			if (player.find("bskinparent") != player.end()){
+			if ((player.find("bskinparent") != player.end()) || ((id > 20) && (id <= 40))){
 				XMLStuff.PlayerData->byname[player["name"] + "-Tainted-"] = id; }
 			else{ 
 				XMLStuff.PlayerData->byname[player["name"]] = id; }
@@ -2244,6 +2244,7 @@ bool Lua_PushXMLSubNodes(lua_State* L, vector<XMLAttributes> node)
 
 bool Lua_PushXMLNode(lua_State* L, XMLAttributes node, unordered_map<string, vector <XMLAttributes>> childs)
 {
+	if (node.end() == node.begin()) { return false; }
 	lua_newtable(L);
 	for each (const auto & att in node)
 	{
