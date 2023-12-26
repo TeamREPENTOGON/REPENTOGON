@@ -22,12 +22,12 @@ ___
 ## Functions
 
 ### AllMarksFilled () {: aria-label='Functions' }
-#### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
+#### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
 Checks if a given character has completed all marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
 
 ___
 ### AllTaintedCompletion () {: aria-label='Functions' }
-#### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [TaintedMarksGroup](enums/TaintedMarksGroup.md) complgroup) {: .copyable aria-label='Functions' }
+#### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [TaintedMarksGroup](enums/TaintedMarksGroup.md) Group) {: .copyable aria-label='Functions' }
 Checks if a given character has completed all the tainted unlock-related marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
 
 ___
@@ -35,12 +35,22 @@ ___
 #### boolean CanStartTrueCoop ( ) {: .copyable aria-label='Functions' }
 
 ___
+### CenterCursor () {: aria-label='Functions' }
+#### void CenterCursor ( ) {: .copyable aria-label='Functions' }
+Moves the windows mouse cursor to the center of the game's window. This is incredibly niche but useful if you want to use cursor controls for anything fancy and have full control over it. It wont move the cursor if Isaac.exe becomes out of focus.
+
+???- info "Note"
+    Take in mind the screen center is NOT the center of the room necessarily, it's just the center of the game's window(center of the actual screen if you are on fullscreen).
+
+___
 ### ClearBossHazards () {: aria-label='Functions' }
-#### void ClearBossHazards ( boolean npcs = false ) {: .copyable aria-label='Functions' }
+#### void ClearBossHazards ( boolean IgnoreNPCs = false ) {: .copyable aria-label='Functions' }
+
+Kills all projectiles and, if `IgnoreNPCs` is false, all non-friendly NPCs capable of keeping doors closed. 
 
 ___
 ### ClearCompletionMarks () {: aria-label='Functions' }
-#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
+#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
 Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
 
 ___
@@ -63,7 +73,7 @@ ___
 
 ___
 ### DrawLine () {: aria-label='Functions' }
-#### void DrawLine ( [Vector](Vector.md) Pos1, [Vector](Vector.md) Pos2, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col1, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) Col2, int Thickness ) {: .copyable aria-label='Functions' }
+#### void DrawLine ( [Vector](Vector.md) StartPos, [Vector](Vector.md) EndPos, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) StartColor, [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor) EndColor, int Thickness ) {: .copyable aria-label='Functions' }
 Draws a line between the two given positions this render frame.
 
 ___
@@ -73,7 +83,7 @@ Draws a line between the two given positions this render frame. Internally the g
 
 ___
 ### FillCompletionMarks () {: aria-label='Functions' }
-#### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype) {: .copyable aria-label='Functions' }
+#### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
 Completes all completion marks for a given character. Supports both modded and vanilla characters. 
 ___
 ### FindInCapsule () {: aria-label='Functions' }
@@ -89,7 +99,7 @@ ___
 Gets the contents of the clipboard as long as they are in text form, otherwise it will just return nil.
 ___
 ### GetCollectibleSpawnPosition () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetCollectibleSpawnPosition ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetCollectibleSpawnPosition ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCompletionMark () {: aria-label='Functions' }
@@ -134,10 +144,12 @@ ___
 ### GetCursorSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetCursorSprite ( ) {: .copyable aria-label='Functions' }
 Returns the cursor sprite that is rendered when ``Options.MouseControl`` is set to true. 
+
 ___
 ### GetCutsceneIdByName () {: aria-label='Functions' }
 #### table GetCutsceneIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Cutscene ID By Name.
+
 ___
 ### GetEntitySubTypeByName () {: aria-label='Functions' }
 #### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
@@ -159,7 +171,7 @@ Returns a key - value table containing all loaded script files, where the key is
 
 ___
 ### GetLocalizedString () {: aria-label='Functions' }
-#### string GetLocalizedString ( string category, string key, int language ) {: .copyable aria-label='Functions' }
+#### string GetLocalizedString ( string Category, string Key, int Language ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.
 
 ___
@@ -169,16 +181,16 @@ ___
 ___
 ### GetPersistentGameData () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
-Should probably be moved to Game for consistency.
 
 ___
 ### GetRenderPosition () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetRenderPosition ( [Vector](Vector.md) position, boolean scale = true ) {: .copyable aria-label='Functions' }       
+#### [Vector](Vector.md) GetRenderPosition ( [Vector](Vector.md) Position, boolean Scale = true ) {: .copyable aria-label='Functions' }       
 
 ___
 ### GetString () {: aria-label='Functions' }
-#### string GetString ( string category, string key ) {: .copyable aria-label='Functions' }
+#### string GetString ( string Category, string Key ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
+
 ___
 ### LevelGeneratorEntry () {: aria-label='Functions' }
 #### [LevelGeneratorEntry](LevelGeneratorEntry.md) LevelGeneratorEntry ( ) {: .copyable aria-label='Functions' }
@@ -186,7 +198,7 @@ Creates a new blank [LevelGeneratorEntry](LevelGeneratorEntry.md) object.
 
 ___
 ### PlayCutscene () {: aria-label='Functions' }
-#### int PlayCutscene ( int cutsceneid ) {: .copyable aria-label='Functions' }
+#### int PlayCutscene ( int ID ) {: .copyable aria-label='Functions' }
 Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
 ___
 ### SetClipboard () {: aria-label='Functions' }
@@ -196,13 +208,12 @@ Sets the contents of the clipboard to the provided string.
 ___
 ### SetCompletionMark () {: aria-label='Functions' }
 #### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) playertype, [CompletionType](enums/CompletionType.md) marktype, int value) {: .copyable aria-label='Functions' }
-Sets a completion mark of a character to match a specific value from 0 to 2. Supports both modded and vanilla characters. 
-
+Sets a completion mark of a character to match a specific value from `0` to `2`. Supports both modded and vanilla characters. 
 
 ___
 ### SetCompletionMarks () {: aria-label='Functions' }
 #### void SetCompletionMarks ( table marks) {: .copyable aria-label='Functions' }
-Sets the completion marks of a character to match an input table. Supports both modded and vanilla characters. Requires a table containing all the marks for the character, getting it from Isaac.GetCompletionMarks is adviced for convenience.
+Sets the completion marks of a character to match an input table. Supports both modded and vanilla characters. Requires a table containing all the marks for the character, getting it from [GetCompletionMarks](Isaac.md#GetCompletionMarks) is adviced for convenience.
 
 ???- info "Table structure & usage"
 	- The table needs the following fields: 
@@ -238,11 +249,5 @@ Converts the World position from input to a pinned main menu position that varie
 ___
 ### TriggerWindowResize () {: aria-label='Functions' }
 #### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }
-Simulates a window resize, useful to refresh some option changes like maxrender.
+Simulates a window resize, useful to refresh some option changes like `maxrender`.
 ___
-### CenterCursor () {: aria-label='Functions' }
-#### void CenterCursor ( ) {: .copyable aria-label='Functions' }
-Moves the windows mouse cursor to the center of the game's window. This is incredibly niche but useful if you want to use cursor controls for anything fancy and have full control over it. It wont move the cursor if Isaac.exe becomes out of focus.
-
-???- info "Note"
-    Take in mind the screen center is NOT the center of the room necessarily, it's just the center of the game's window(center of the actual screen if you are on fullscreen).

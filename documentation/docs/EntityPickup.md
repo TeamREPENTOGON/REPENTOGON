@@ -21,10 +21,12 @@ ___
 
 ___
 ### GetRandomPickupVelocity () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetRandomPickupVelocity ( [Vector](Vector.md) position, [RNG](RNG.md) rng, int velType = 0 ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetRandomPickupVelocity ( [Vector](Vector.md) Position, [RNG](RNG.md) RNG = nil, int VelocityType = 0 ) {: .copyable aria-label='Functions' }
+
+`VelocityType` seems to only affect pickups in Challenge Rooms, causing them to have a weaker velocity.
 
 ???+ warning "Warning"
-    This is a static function and must be called via `EntityPickup.GetRandomPickupVelocity(position, rng, velType)`.
+    This is a static function and must be called via `EntityPickup.GetRandomPickupVelocity(Position, RNG, VelocityType)`.
 
 ___
 ### GetVarData () {: aria-label='Functions' }
@@ -38,7 +40,7 @@ Returns whether a collectible is being hidden by the Curse of the Blind question
 
 ___
 ### MakeShopItem () {: aria-label='Functions' }
-#### void MakeShopItem ( int shopItemID ) {: .copyable aria-label='Functions' }
+#### void MakeShopItem ( int ShopItemID ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetAlternatePedestal () {: aria-label='Functions' }

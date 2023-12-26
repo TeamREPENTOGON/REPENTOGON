@@ -1194,18 +1194,52 @@ LUA_FUNCTION(Lua_PlayerGetCostumeLayerMap)
 LUA_FUNCTION(Player_PlayerIsItemCostumeVisible) {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	ItemConfig_Item* item = lua::GetUserdata<ItemConfig_Item*>(L, 2, lua::Metatables::ITEM, "Item");
-	int playerSpriteLayer = (int)luaL_checkinteger(L, 3);
+	int layerID = 0;
+	if (lua_type(L, 3) == LUA_TSTRING) {
+		const char* layerName = luaL_checkstring(L, 3);
+		LayerState* layerState = plr->_sprite.GetLayer(layerName);
+		if (layerState != nullptr) {
+			layerID = layerState->GetLayerID();
+		}
+		else
+		{
+			return luaL_error(L, "Invalid layer name %s", layerName);
+		}
+	}
+	else {
+		layerID = (int)luaL_checkinteger(L, 2);
+		if (layerID < 0 || (const unsigned int)layerID + 1 > plr->_sprite.GetLayerCount()) {
+			return luaL_error(L, "Invalid layer ID %d", layerID);
+		}
+	}
 
-	lua_pushboolean(L, plr->IsItemCostumeVisible(item, playerSpriteLayer));
+	lua_pushboolean(L, plr->IsItemCostumeVisible(item, layerID));
 	return 1;
 }
 
 LUA_FUNCTION(Player_PlayerIsCollectibleCostumeVisible) {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	CollectibleType collectibleType = (CollectibleType)luaL_checkinteger(L, 2);
-	int playerSpriteLayer = (int)luaL_checkinteger(L, 3);
+	int layerID = 0;
+	if (lua_type(L, 3) == LUA_TSTRING) {
+		const char* layerName = luaL_checkstring(L, 3);
+		LayerState* layerState = plr->_sprite.GetLayer(layerName);
+		if (layerState != nullptr) {
+			layerID = layerState->GetLayerID();
+		}
+		else
+		{
+			return luaL_error(L, "Invalid layer name %s", layerName);
+		}
+	}
+	else {
+		layerID = (int)luaL_checkinteger(L, 2);
+		if (layerID < 0 || (const unsigned int)layerID + 1 > plr->_sprite.GetLayerCount()) {
+			return luaL_error(L, "Invalid layer ID %d", layerID);
+		}
+	}
 
-	lua_pushboolean(L, plr->IsCollectibleCostumeVisible(collectibleType, playerSpriteLayer));
+	lua_pushboolean(L, plr->IsCollectibleCostumeVisible(collectibleType, layerID));
 	return 1;
 }
 

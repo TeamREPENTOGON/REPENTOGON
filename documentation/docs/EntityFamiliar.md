@@ -9,7 +9,7 @@ tags:
 ## Functions
 
 ### GetDirtColor () {: aria-label='Functions' }
-#### [ColorModifier](ColorModifier.md) GetDirtColor ( ) {: .copyable aria-label='Functions' }
+#### [Color](Color.md) GetDirtColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetFollowerPriority () {: aria-label='Functions' }
@@ -25,8 +25,8 @@ ___
 
 ___
 ### TryAimAtMarkedTarget () {: aria-label='Functions' }
-#### boolean TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection, int Direction, [Vector](Vector.md) unkVec = nil ) {: .copyable aria-label='Functions' }
-
+#### [Vector](Vector.md) TryAimAtMarkedTarget ( [Vector](Vector.md) AimDirection, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction) {: .copyable aria-label='Functions' }
+Returns `nil` if unsuccessful.
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( ) {: .copyable aria-label='Functions' }

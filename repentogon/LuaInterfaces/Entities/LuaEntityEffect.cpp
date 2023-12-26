@@ -11,10 +11,10 @@ LUA_FUNCTION(Lua_EffectCreateLight)
 	if (lua_type(L, 3) == LUA_TUSERDATA) {
 		color = *lua::GetUserdata<ColorMod*>(L, 3, lua::Metatables::COLOR, "Color");
 	}
-	int unk1 = (int)luaL_checkinteger(L, 4);
-	int unk2 = (int)luaL_checkinteger(L, 5);
+	int lifespan = (int)luaL_checkinteger(L, 4);
+	int state = (int)luaL_optinteger(L, 5, 0);
 
-	effect->CreateLight(pos, &color, unk1, unk2);
+	effect->CreateLight(pos, &color, lifespan, state);
 	return 0;
 }
 

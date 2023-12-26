@@ -385,8 +385,8 @@ LUA_FUNCTION(Lua_IsaacClearBossHazards) {
 	if (g_Game == nullptr || g_Game->_room == nullptr) {
 		return luaL_error(L, "Must be in a room to use this!");
 	}
-	bool npcs = lua::luaL_optboolean(L, 1, false);
-	Isaac::ClearBossHazards(npcs);
+	bool ignoreNPCs = lua::luaL_optboolean(L, 1, false);
+	Isaac::ClearBossHazards(ignoreNPCs);
 	return 0;
 }
 

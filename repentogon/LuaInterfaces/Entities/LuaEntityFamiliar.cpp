@@ -24,11 +24,14 @@ LUA_FUNCTION(Lua_FamiliarTryAimAtMarkedTarget)
 	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	Vector* aimDirection = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	int direction = (int)luaL_checkinteger(L, 3);
-	Vector* unkVec = NULL;
-	if (lua_gettop(L) == 4 && !lua_isnil(L, 4)) {
-		unkVec = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
+	Vector buffer;
+	if (fam->TryAimAtMarkedTarget(aimDirection, direction, &buffer)) {
+		lua::luabridge::UserdataPtr::push(L, &buffer, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	}
-	lua_pushboolean(L, fam->TryAimAtMarkedTarget(aimDirection, direction, unkVec));
+	else
+	{
+		lua_pushnil(L);
+	}
 	return 1;
 }
 

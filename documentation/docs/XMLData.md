@@ -23,7 +23,7 @@ tags:
 ## Functions
 
 ### GetEntityByTypeVarSub () {: aria-label='Functions' }
-#### table GetEntityByTypeVarSub ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) type, int variant = 0 , int subtype = 0, bool strict = false) {: .copyable aria-label='Functions' }
+#### table GetEntityByTypeVarSub ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) type, int variant = 0 , int subtype = 0, boolean strict = false) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the entity on entities2.xml that match the given type and/or variant and/or subtype. The strict parameter determines if it should only return a value when all 3 attributes(type, var and sub) match or return whatever matches the type and take the rest as maybes.
 ???- info "Table usage"
 	```lua
@@ -55,7 +55,7 @@ Returns a table containing the attributes of the corresponding xml, the matching
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can just do soundentry.sample[1].
 ___
 ### GetEntryFromEntity () {: aria-label='Functions' }
-#### table GetEntryFromEntity ( [Entity](Entity.md) entity, bool autoxmlpick = true, bool strict) {: .copyable aria-label='Functions' }
+#### table GetEntryFromEntity ( [Entity](Entity.md) entity, boolean autoxmlpick = true, boolean strict) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the provided entity. The autoxmlpick parameter determines if only entities2.xml should be used or if it should pick the xml that matches the entitytype(Ex: items.xml for pedestal collectibles) . The strict parameter determines if it should only return a value when the type,variant and subtype attributes match or return whatever matches the type and take the rest as maybes.
 ???- info "Table usage"
 	```lua
