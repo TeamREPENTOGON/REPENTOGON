@@ -35,18 +35,17 @@ ___
 
 ___
 ### ComputeStatusEffectDuration () {: aria-label='Functions' }
-#### int ComputeStatusEffectDuration ( int initial, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ref ) {: .copyable aria-label='Functions' }
+#### int ComputeStatusEffectDuration ( int InitialLength, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source ) {: .copyable aria-label='Functions' }
 
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
 #### void CopyStatusEffects ( ) {: .copyable aria-label='Functions' }
 #### void CopyStatusEffects ( [Entity](Entity.md) Target ) {: .copyable aria-label='Functions' }
-
 If no Entity is specified, this will recursively copy status effects to all [Child](Entity.md#child) Entities.
 
 ___
 ### ForceCollide () {: aria-label='Functions' }
-#### boolean ForceCollide ( [Entity](Entity.md) Entity, bool Low ) {: .copyable aria-label='Functions' }
+#### boolean ForceCollide ( [Entity](Entity.md) Entity, boolean Low ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetAnimationState () {: aria-label='Functions' }
@@ -58,7 +57,7 @@ ___
 
 ___
 ### GetCollisionCapsule () {: aria-label='Functions' }
-#### [Capsule](Capsule.md) GetCollisionCapsule ( [Vector](Vector.md) vec ) {: .copyable aria-label='Functions' }
+#### [Capsule](Capsule.md) GetCollisionCapsule ( [Vector](Vector.md) Vector ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetDebugShape () {: aria-label='Functions' }
@@ -105,7 +104,9 @@ Returns 2 values, both Vectors. 1st the Position of the entity, 2nd the Velocity
 
 ___
 ### GetPredictedTargetPosition () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetPredictedTargetPosition ( [Entity](Entity.md) target, int strength ) {: .copyable aria-label='Functions' }
+#### [Vector](Vector.md) GetPredictedTargetPosition ( [Entity](Entity.md) Target, float Delay ) {: .copyable aria-label='Functions' }
+The prediction is the target's current position plus their velocity multiplied by the distance between this and the target.
+`Delay` acts as a multiplier for how far ahead the prediction should be. For example, `1.0` would predict where the target's velocity would place them on the next update.
 
 ___
 ### GetShadowSize () {: aria-label='Functions' }
@@ -121,19 +122,20 @@ ___
 
 ___
 ### GiveMinecart () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) GiveMinecart ( [Vector](Vector.md) position, [Vector](Vector.md) velocity ) {: .copyable aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) GiveMinecart ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity ) {: .copyable aria-label='Functions' }
 
 ___
 ### IgnoreEffectFromFriendly () {: aria-label='Functions' }
-#### boolean IgnoreEffectFromFriendly ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) ref ) {: .copyable aria-label='Functions' }
+#### boolean IgnoreEffectFromFriendly ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source ) {: .copyable aria-label='Functions' }
+Used to determine if this entity should ignore any status effect coming from `Source`.
 
 ___
 ### MakeBloodPoof () {: aria-label='Functions' }
-#### void MakeBloodPoof ( [Vector](Vector.md) pos = entityPosition, [Color](Color.md) color = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
+#### void MakeBloodPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### MakeGroundPoof () {: aria-label='Functions' }
-#### void MakeGroundPoof ( [Vector](Vector.md) pos = entityPosition, [Color](Color.md) color = default, float strength = 1.0f ) {: .copyable aria-label='Functions' }
+#### void MakeGroundPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBossStatusEffectCooldown () {: aria-label='Functions' }
@@ -157,15 +159,15 @@ ___
 
 ___
 ### SetSpeedMultiplier () {: aria-label='Functions' }
-#### void SetSpeedMultiplier ( float amount ) {: .copyable aria-label='Functions' }
+#### void SetSpeedMultiplier ( float Amount ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodEffect () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( int subtype = 0, [Vector](Vector.md) position = entityPosition, [Vector](Vector.md) offset = nil, [Color](Color.md) color = default, [Vector](Vector.md) velocity = nil ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( int SubType = 0, [Vector](Vector.md) position = self.Position, [Vector](Vector.md) Offset = Vector.Zero, [Color](Color.md) Color = Default, [Vector](Vector.md) Velocity = Vector.Zero ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnGroundImpactEffects () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnGroundImpactEffects ( [Vector](Vector.md) position, [Vector](Vector.md) vel, int strength ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnGroundImpactEffects ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity = Vector.Zero, float Scale ) {: .copyable aria-label='Functions' }
 
 ___
 ### TeleportToRandomPosition () {: aria-label='Functions' }

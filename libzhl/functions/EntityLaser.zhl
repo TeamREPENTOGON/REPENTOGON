@@ -14,7 +14,7 @@ struct Entity_Laser : public Entity { {{
 	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x420); }
 	inline float* GetScale() { return (float*)((char*)this + 0x430); }
 	
-	inline bool* GetTimeout() { return (bool*)((char*)this + 0x3a8); }
+	inline int* GetTimeout() { return (int*)((char*)this + 0x3a8); }
 	inline bool* GetShrink() { return (bool*)((char*)this + 0x3ae); }
 	inline bool* GetDisableFollowParent() { return (bool*)((char*)this + 0x434); }
 	inline bool* GetOneHit() { return (bool*)((char*)this + 0x465); }

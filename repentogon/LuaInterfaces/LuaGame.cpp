@@ -85,7 +85,7 @@ LUA_FUNCTION(Lua_GameAddDebugFlags)
 LUA_FUNCTION(Lua_GameSpawnBombCrater) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	const float radius = luaL_optnumber(L, 3, 1.0f);
+	const float radius = (const float)luaL_optnumber(L, 3, 1.0f);
 	Entity* crater = game->SpawnBombCrater(pos, radius);
 	
 	lua::luabridge::UserdataPtr::push(L, crater, lua::GetMetatableKey(lua::Metatables::ENTITY));

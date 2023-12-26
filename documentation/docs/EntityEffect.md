@@ -9,6 +9,7 @@ tags:
 ## Functions
 
 ### CreateLight () {: aria-label='Functions' }
-#### void CreateLight ( [Vector](Vector.md) pos, [Color](Color.md) color = default, int unk1, int unk2 ) {: .copyable aria-label='Functions' }
-
+#### void CreateLight ( [Vector](Vector.md) Position, [Color](Color.md) Color = Default, int Lifespan, int State = 0 ) {: .copyable aria-label='Functions' }
+???+ warning "Warning"
+    This is a static function and must be called via `EntityEffect.CreateLight`.
 ___

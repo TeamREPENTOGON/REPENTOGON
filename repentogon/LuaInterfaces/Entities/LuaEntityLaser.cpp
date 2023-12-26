@@ -45,19 +45,10 @@ LUA_FUNCTION(Lua_EntityLaserSetShrink)
 LUA_FUNCTION(Lua_EntityLaserGetTimeout)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, *laser->GetTimeout());
+	lua_pushinteger(L, *laser->GetTimeout());
 
 	return 1;
 }
-
-LUA_FUNCTION(Lua_EntityLaserSetTimeout)
-{
-	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetTimeout() = lua::luaL_checkboolean(L, 2);
-
-	return 0;
-}
-
 
 LUA_FUNCTION(Lua_EntityLaserGetScale)
 {
@@ -141,7 +132,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetShrink", Lua_EntityLaserGetShrink },
 		{ "SetShrink", Lua_EntityLaserSetShrink },
 		{ "GetTimeout", Lua_EntityLaserGetTimeout },
-		{ "SetTimeout", Lua_EntityLaserSetTimeout },
 		{ "ResetSpriteScale", Lua_EntityLaserResetSpriteScale },
 		{ "RotateToAngle", Lua_EntityLaserRotateToAngle },
 		{ NULL, NULL }

@@ -35,7 +35,7 @@ Returns `true` if achievements can't be unlocked this run (challenges, seeded, e
 
 ___
 ### AddDebugFlags () {: aria-label='Functions' }
-#### void AddDebugFlags ( [DebugFlag](enums/DebugFlag.md) flag ) {: .copyable aria-label='Functions' }
+#### void AddDebugFlags ( [DebugFlag](enums/DebugFlag.md) Flag ) {: .copyable aria-label='Functions' }
 Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `DebugFlag.ENTITY_POSITIONS | DebugFlag.HITSPHERES`)
 
 ___
@@ -84,7 +84,7 @@ If currently lerping between two [ColorModifier](ColorModifier.md) states, retur
 ___
 ### IsErased () {: aria-label='Functions' }
 #### boolean IsErased ( [Entity](Entity.md) entity) {: .copyable aria-label='Functions' }
-#### boolean IsErased ( int type, int variant = -1, int subtype = -1 ) {: .copyable aria-label='Functions' }
+#### boolean IsErased ( int Type, int Variant = -1, int SubType = -1 ) {: .copyable aria-label='Functions' }
 Checks if an entity was erased.
 ___
 ### IsGreedBoss () {: aria-label='Functions' }
@@ -97,12 +97,12 @@ ___
 ___
 ### IsHardMode () {: aria-label='Functions' }
 #### boolean IsHardMode ( ) {: .copyable aria-label='Functions' }
-Returns `true` if hard mode or greedier
+Returns `true` if current mode is Hard Mode or Greedier.
 
 ___
 ### IsPauseMenuOpen () {: aria-label='Functions' }
 #### boolean IsPauseMenuOpen ( ) {: .copyable aria-label='Functions' }
-Returns `true` if the pause menu is open
+Returns `true` if the pause menu is open.
 
 ___
 ### IsRerun () {: aria-label='Functions' }
@@ -110,7 +110,7 @@ ___
 
 ___
 ### SetColorModifier () {: aria-label='Functions' }
-#### void SetColorModifier ( [ColorModifier](ColorModifier.md) colorModifier, boolean lerp = true, float rate = 0.015 ) {: .copyable aria-label='Functions' }
+#### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBombCrater () {: aria-label='Functions' }

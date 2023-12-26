@@ -232,9 +232,12 @@ LUA_FUNCTION(Lua_EntityTryThrow) {
 LUA_FUNCTION(Lua_EntitySpawnGroundImpactEffects) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* vel = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
-	const float strength = (float)luaL_checknumber(L, 4);
-	Entity_Effect* effect = entity->DoGroundImpactEffects(pos, vel, strength);
+	Vector vel;
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		vel = *lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	}
+	const float scale = (float)luaL_checknumber(L, 4);
+	Entity_Effect* effect = entity->DoGroundImpactEffects(pos, &vel, scale);
 	if (!effect) {
 		lua_pushnil(L);
 	}
@@ -248,9 +251,9 @@ LUA_FUNCTION(Lua_EntitySpawnGroundImpactEffects) {
 LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Entity* target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	const float strength = (float)luaL_checknumber(L, 3);
+	const float delay = (float)luaL_checknumber(L, 3);
 	Vector res;
-	entity->GetPredictedTargetPosition(&res, target, strength);
+	entity->GetPredictedTargetPosition(&res, target, delay);
 
 	lua::luabridge::UserdataPtr::push(L, &res, lua::GetMetatableKey(lua::Metatables::VECTOR));
 
@@ -299,9 +302,9 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 	}
 	
-	float strength = (float)luaL_optnumber(L, 4, 1.0f);
+	float scale = (float)luaL_optnumber(L, 4, 1.0f);
 
-	entity->MakeBloodPoof(&pos, &color, strength);
+	entity->MakeBloodPoof(&pos, &color, scale);
 	return 0;
 }
 
@@ -317,9 +320,9 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 		color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 	}
 
-	float strength = (float)luaL_optnumber(L, 4, 1.0f);
+	float scale = (float)luaL_optnumber(L, 4, 1.0f);
 
-	entity->MakeBloodPoof(&pos, &color, strength);
+	entity->MakeBloodPoof(&pos, &color, scale);
 	return 0;
 }
 

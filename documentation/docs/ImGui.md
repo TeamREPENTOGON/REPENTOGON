@@ -269,7 +269,7 @@ ___
 ### UpdateData () {: aria-label='Functions' }
 #### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, int newDataValue ) {: .copyable aria-label='Functions' }
 #### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, float newDataValue ) {: .copyable aria-label='Functions' }
-#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, bool newDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, boolean newDataValue ) {: .copyable aria-label='Functions' }
 #### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, string newDataValue ) {: .copyable aria-label='Functions' }
 #### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, table newDataValues ) {: .copyable aria-label='Functions' }
 Update arbitrary data of a given element. See [ImGuiData](enums/ImGuiData.md) for possible data to update.
