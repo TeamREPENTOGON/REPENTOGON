@@ -105,7 +105,10 @@ LUA_FUNCTION(lua_GameStartStageTransition) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	bool sameStage = lua::luaL_checkboolean(L, 2);
 	int transition = (int)luaL_checkinteger(L, 3);
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
+	Entity_Player* player = nullptr;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
+	}
 
 	game->StartStageTransition(sameStage, transition, player);
 	return 0;

@@ -17,7 +17,7 @@ tags:
 ## Functions
 
 ### ClearItemAnim () {: aria-label='Functions' }
-#### void ClearItemAnim ( int itemID ) {: .copyable aria-label='Functions' }
+#### void ClearItemAnim ( int ItemID ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCharge () {: aria-label='Functions' }
@@ -57,22 +57,22 @@ ___
 
 ___
 ### IsItemAnimFinished () {: aria-label='Functions' }
-#### boolean IsItemAnimFinished ( int item ) {: .copyable aria-label='Functions' }
+#### boolean IsItemAnimFinished ( int ItemID ) {: .copyable aria-label='Functions' }
 
 ___
 ### PlayItemAnim () {: aria-label='Functions' }
-#### void PlayItemAnim ( int itemID, int anim, [Vector](Vector.md) position, float charge ) {: .copyable aria-label='Functions' }
+#### void PlayItemAnim ( int ItemID, [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) AnimDirection, [Vector](Vector.md) Position, float Charge ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCharge () {: aria-label='Functions' }
-#### void SetCharge ( int charge ) {: .copyable aria-label='Functions' }
+#### void SetCharge ( int Charge ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetFireDelay () {: aria-label='Functions' }
-#### void SetFireDelay ( float delay ) {: .copyable aria-label='Functions' }
+#### void SetFireDelay ( float Delay ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetHeadLockTime () {: aria-label='Functions' }
-#### void SetHeadLockTime ( int time ) {: .copyable aria-label='Functions' }
+#### void SetHeadLockTime ( int Time ) {: .copyable aria-label='Functions' }
 
 ___

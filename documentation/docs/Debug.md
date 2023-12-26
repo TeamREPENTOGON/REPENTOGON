@@ -18,14 +18,14 @@ tags:
 ## Functions
 
 ### ForceUnload () {: aria-label='Functions' }
-#### void ForceUnload ( string moduleName ) {: .copyable aria-label='Functions' }
+#### void ForceUnload ( string ModuleName ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetSignature () {: aria-label='Functions' }
-#### string GetSignature ( int addr ) {: .copyable aria-label='Functions' }
+#### string GetSignature ( int Address ) {: .copyable aria-label='Functions' }
 
 ___
 ### ListLoadedFiles () {: aria-label='Functions' }
 #### string[] ListLoadedFiles ( ) {: .copyable aria-label='Functions' }
-returns a list of all files loaded into the LUA environment.
+Returns a list of all files loaded into the LUA environment.
 ___

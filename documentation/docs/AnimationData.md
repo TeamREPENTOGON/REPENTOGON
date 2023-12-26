@@ -4,7 +4,7 @@ tags:
 ---
 # Class "AnimationData"
 
-Cached data for one animation from a loaded Anm2 file. Shared by all Sprites using the same Anm2 and cannot be modified.
+Cached data for one animation from a loaded ANM2 file. Shared by all Sprites using the same ANM2 and cannot be modified.
 
 Can be obtained via [Sprite:GetAnimationData()](Sprite.md#getanimationdata), [Sprite:GetCurrentAnimationData()](Sprite.md#getanimationdata) or [Sprite:GetOverlayAnimationData()](Sprite.md#getanimationdata).
 

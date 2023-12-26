@@ -19,15 +19,15 @@ tags:
 ## Functions
 
 ### GetBestiaryDeathCount () {: aria-label='Functions' }
-#### void GetBestiaryDeathCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
+#### void GetBestiaryDeathCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetBestiaryEncounterCount () {: aria-label='Functions' }
-#### void GetBestiaryEncounterCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
+#### void GetBestiaryEncounterCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetBestiaryKillCount () {: aria-label='Functions' }
-#### void GetBestiaryKillCount ( int entType, int entVariant ) {: .copyable aria-label='Functions' }
+#### void GetBestiaryKillCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetEventCounter () {: aria-label='Functions' }
@@ -35,7 +35,7 @@ ___
 
 ___
 ### IncreaseEventCounter () {: aria-label='Functions' }
-#### void IncreaseEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter, int Num ) {: .copyable aria-label='Functions' }
+#### void IncreaseEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter, int Count ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsChallengeCompleted () {: aria-label='Functions' }

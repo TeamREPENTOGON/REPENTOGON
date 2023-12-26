@@ -17,7 +17,7 @@ If set, The Void will draw from all unlocked floors, including alt path ones.
 ___
 ### HushPanicStateFix {: aria-label='Variables' }
 #### boolean HushPanicStateFix {: .copyable aria-label='Variables'}
-Fixes the vanilla bug that causes Hush to have no attack cooldown below 50% health. Disable to activate `Vinh Mode`.
+Fixes the vanilla bug that causes Hush to have no attack cooldown below 50% health.
 
 ___
 ### KeyMasterDealChance {: aria-label='Variables' }

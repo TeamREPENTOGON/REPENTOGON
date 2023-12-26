@@ -28,7 +28,7 @@ Returns `true` if the floor has the photo door used to enter Mausoleum/Gehenna l
 
 ___
 ### IsStageAvailable () {: aria-label='Functions' }
-#### void IsStageAvailable ( int levelStage, int stageType ) {: .copyable aria-label='Functions' }
+#### void IsStageAvailable ( [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) Level, [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) Stage) {: .copyable aria-label='Functions' }
 
 ___
 ### PlaceRoom () {: aria-label='Functions' }

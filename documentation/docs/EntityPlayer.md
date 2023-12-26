@@ -359,7 +359,7 @@ ___
 ### GetKeepersSackBonus () {: aria-label='Functions' }
 #### int GetKeepersSackBonus ( ) {: .copyable aria-label='Functions' }
 
-Gets the number of coins spent while possessing [Keeper's Sac]((https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
+Gets the number of coins spent while possessing [Keeper's Sack]((https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
 
 ___
 ### GetLaserColor () {: aria-label='Functions' }
@@ -695,7 +695,7 @@ ___
 ### SetKeepersSackBonus () {: aria-label='Functions' }
 #### void SetKeepersSackBonus ( int Bonus ) {: .copyable aria-label='Functions' }
 
-This is the number of coins spent while possessing [Keeper's Sac]((https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
+This is the number of coins spent while possessing [Keeper's Sack]((https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
 
 ___
 ### SetLaserColor () {: aria-label='Functions' }
@@ -818,29 +818,30 @@ ___
 
 ___
 ### TryAddToBagOfCrafting () {: aria-label='Functions' }
-#### void TryAddToBagOfCrafting ( [EntityPickup](EntityPickup.md) pickup ) {: .copyable aria-label='Functions' }
+#### void TryAddToBagOfCrafting ( [EntityPickup](EntityPickup.md) Pickup ) {: .copyable aria-label='Functions' }
 
 ___
 ### TryDecreaseGlowingHourglassUses () {: aria-label='Functions' }
 #### void TryDecreaseGlowingHourglassUses ( int Uses, boolean ForceHourglass = false ) {: .copyable aria-label='Functions' }
-`Uses` are only decreased by 1, doesn't matter how large of a number you tell it to remove.
-
 `ForceHourglass` instantly removes all the charges and turns Glowing Hourglass into it's regular Hourglass form.
 
+???+ bug "Bug"
+	`Uses` are only decreased by 1 regardless of how large of a number you tell it to remove.
+	
 ___
 ### TryFakeDeath () {: aria-label='Functions' }
 #### boolean TryFakeDeath ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### TryForgottenThrow () {: aria-label='Functions' }
-#### boolean TryForgottenThrow ( [Vector](Vector.md) direction ) {: .copyable aria-label='Functions' }        
+#### boolean TryForgottenThrow ( [Vector](Vector.md) Direction ) {: .copyable aria-label='Functions' }        
 
 ___
 ### TryPreventDeath () {: aria-label='Functions' }
 #### boolean TryPreventDeath ( ) {: .copyable aria-label='Functions' }
 Adds a heart container to a character if there are none left, depending on its [HealthType](enums/HealthType.md).
 
-Returns `true` on success, if not then `false`.
+Returns `true` on success, otherwise `false`.
 
 ___
 ### TryRemoveSmeltedTrinket () {: aria-label='Functions' }
@@ -848,7 +849,7 @@ ___
 
 ___
 ### UpdateIsaacPregnancy () {: aria-label='Functions' }
-#### void UpdateIsaacPregnancy ( boolean Cambion ) {: .copyable aria-label='Functions' }
+#### void UpdateIsaacPregnancy ( boolean UpdateCambion ) {: .copyable aria-label='Functions' }
 Set ``true`` if you want to update the [Cambion Conception](https://bindingofisaacrebirth.fandom.com/wiki/Cambion_Conception) costume, otherwise updates the [Immaculate Conception](https://bindingofisaacrebirth.fandom.com/wiki/Immaculate_Conception) costume.
 
 ___

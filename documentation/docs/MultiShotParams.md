@@ -23,11 +23,11 @@ tags:
 #### float GetMultiEyeAngle ( ) {: .copyable aria-label='Functions' }
 When more than one eye is active, defines the angle the eyes are offset to eachother. Similar to cross eye effect. 
 
-Example: for The Wiz, this is 45.
+Example: for The Wiz, this is `45`.
 ___
 ### GetNumEyesActive () {: aria-label='Functions' }
 #### int GetNumEyesActive ( ) {: .copyable aria-label='Functions' }
-Returns the number of eyes simultaniously shooting. Examples: For The Wiz, its 2, for mutant Spider its 1.
+Returns the number of eyes simultaniously shooting. Examples: For The Wiz, its `2`, for mutant Spider its `1`.
 ___
 ### GetNumLanesPerEye () {: aria-label='Functions' }
 #### int GetNumLanesPerEye ( ) {: .copyable aria-label='Functions' }
@@ -51,7 +51,7 @@ Get the spread angle for the given [WeaponType](https://wofsauge.github.io/Isaac
 ___
 ### IsCrossEyed () {: aria-label='Functions' }
 #### boolean IsCrossEyed ( ) {: .copyable aria-label='Functions' }
-Returns if a cross eye effect is active, aka. player shoots in 2 directions with 45° offset to eachother.
+Returns if a cross eye effect is active, aka. player shoots in two directions with 45° offset to eachother.
 ___
 ### IsShootingBackwards () {: aria-label='Functions' }
 #### boolean IsShootingBackwards ( ) {: .copyable aria-label='Functions' }
@@ -62,40 +62,40 @@ ___
 Returns if two additional shots sideways will be triggered. Similar effect to Loki's horns.
 ___
 ### SetIsCrossEyed () {: aria-label='Functions' }
-#### void SetIsCrossEyed ( boolean value ) {: .copyable aria-label='Functions' }
-Set if a cross eye effect is active, aka. player shoots in 2 directions with 45° offset to eachother.
+#### void SetIsCrossEyed ( boolean Value ) {: .copyable aria-label='Functions' }
+Set if a cross eye effect is active, aka. player shoots in two directions with 45° offset to eachother.
 ___
 ### SetIsShootingBackwards () {: aria-label='Functions' }
-#### void SetIsShootingBackwards ( boolean value ) {: .copyable aria-label='Functions' }
+#### void SetIsShootingBackwards ( boolean Value ) {: .copyable aria-label='Functions' }
 Set if an additional shot backwards will be triggered. Similar effect to Mom's Eye.
 ___
 ### SetIsShootingSideways () {: aria-label='Functions' }
-#### void SetIsShootingSideways ( boolean value ) {: .copyable aria-label='Functions' }
+#### void SetIsShootingSideways ( boolean Value ) {: .copyable aria-label='Functions' }
 Set if two additional shots sideways will be triggered. Similar effect to Loki's horns.
 ___
 ### SetMultiEyeAngle () {: aria-label='Functions' }
-#### void SetMultiEyeAngle ( float angle ) {: .copyable aria-label='Functions' }
+#### void SetMultiEyeAngle ( float Angle ) {: .copyable aria-label='Functions' }
 When more than one eye is active, defines the angle the eyes are offset to eachother. Similar to cross eye effect. 
 
-Example: for The Wiz, this is 45.
+Example: for The Wiz, this is `45`.
 ___
 ### SetNumEyesActive () {: aria-label='Functions' }
-#### void SetNumEyesActive ( int value ) {: .copyable aria-label='Functions' }
-Set the number of eyes simultaniously shooting. Examples: For The Wiz, its 2, for mutant Spider its 1.
+#### void SetNumEyesActive ( int Value ) {: .copyable aria-label='Functions' }
+Set the number of eyes simultaniously shooting. Examples: For The Wiz, its `2`, for mutant Spider its `1`.
 ___
 ### SetNumLanesPerEye () {: aria-label='Functions' }
-#### void SetNumLanesPerEye ( int value ) {: .copyable aria-label='Functions' }
+#### void SetNumLanesPerEye ( int Value ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetNumRandomDirTears () {: aria-label='Functions' }
-#### void SetNumRandomDirTears ( int value ) {: .copyable aria-label='Functions' }
+#### void SetNumRandomDirTears ( int Value ) {: .copyable aria-label='Functions' }
 Set the amount of tears additionally shot in random directions. Same effect as "Eye Sore" collectible.
 ___
 ### SetNumTears () {: aria-label='Functions' }
-#### void SetNumTears ( int value ) {: .copyable aria-label='Functions' }
+#### void SetNumTears ( int Value ) {: .copyable aria-label='Functions' }
 Set the amount of tears the player can currently simultaneously fire.
 ___
 ### SetSpreadAngle () {: aria-label='Functions' }
-#### void SetSpreadAngle ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, float angle ) {: .copyable aria-label='Functions' }
+#### void SetSpreadAngle ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType, float Angle ) {: .copyable aria-label='Functions' }
 Set the spread angle for the given [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html).
 ___

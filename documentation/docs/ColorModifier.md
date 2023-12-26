@@ -8,10 +8,12 @@ tags:
     You can get this class by using the following functions:
 
     * [FXParams:GetColorModifier()](FXParams.md#getcolormodifier)
+	* [Game:GetCurrentColorModifier()](Game.md#getcurrentcolormodifier)
+	* [MenuManager.GetCurrentColorModifier()](menus/MenuManager.md#getcurrentcolormodifier)
 
     ???+ example "Example Code"
         ```lua
-        local colorMod = Game():GetCurrentRoom():GetFXParams():GetColorModifier()
+        local colorMod = Game():GetRoom():GetFXParams():GetColorModifier()
         ```
 
 ## Variables

@@ -13,7 +13,7 @@ tags:
 ## Functions
 
 ### Collide () {: aria-label='Functions' }
-#### boolean Collide ( [Capsule](Capsule.md) capsule2, [Vector](Vector.md) vec ) {: .copyable aria-label='Functions' }
+#### boolean Collide ( [Capsule](Capsule.md) Capsule, [Vector](Vector.md) Point ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetDirection () {: aria-label='Functions' }

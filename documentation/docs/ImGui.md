@@ -33,17 +33,17 @@ tags:
 ## Functions
 
 ### AddButton () {: aria-label='Functions' }
-#### void AddButton ( string parentId, string elementId, string label = "", function clickCallback = nil, boolean isSmall = false ) {: .copyable aria-label='Functions' }
+#### void AddButton ( string ParentId, string ElementId, string Label = "", function ClickCallback = nil, boolean IsSmall = false ) {: .copyable aria-label='Functions' }
 ___
 ### AddCallback () {: aria-label='Functions' }
-#### void AddCallback ( string elementId, [ImGuiCallback](enums/ImGuiCallback.md) type, function func ) {: .copyable aria-label='Functions' }
+#### void AddCallback ( string ElementId, [ImGuiCallback](enums/ImGuiCallback.md) Type, Function func ) {: .copyable aria-label='Functions' }
 Add a callback to an ImGui-element. An element can have one callback per type.
 ___
 ### AddCheckbox () {: aria-label='Functions' }
-#### void AddCheckbox ( string parentId, string elementId, string label = "", function changeCallback = nil, boolean isActive = false ) {: .copyable aria-label='Functions' }
+#### void AddCheckbox ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, boolean IsActive = false ) {: .copyable aria-label='Functions' }
 ___
 ### AddCombobox () {: aria-label='Functions' }
-#### void AddCombobox ( string parentId, string elementId, string label = "", function changeCallback = nil, table options, int selectedIndex = 0, boolean isSlider = false ) {: .copyable aria-label='Functions' }
+#### void AddCombobox ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, table Options, int SelectedIndex = 0, boolean IsSlider = false ) {: .copyable aria-label='Functions' }
 Adds a Combobox element which represents a single line element that allows you to select a value from a dropdown menu. If `isSlider` is set to true, instead of a dropdown menu, the values can be selected by interacting with a slider element.
 
 ???+ example "Example Code"
@@ -53,19 +53,19 @@ Adds a Combobox element which represents a single line element that allows you t
     ```
 ___
 ### AddDragFloat () {: aria-label='Functions' }
-#### void AddDragFloat ( string parentId, string elementId, string label = "", function changeCallback = nil, float defaultVal = 0, float speed = 1, float min = INTEGER_MIN, float min = INTEGER_MAX, string formatting = "%.3f" ) {: .copyable aria-label='Functions' }
+#### void AddDragFloat ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, float DefaultVal = 0, float Speed = 1, float Min = INTEGER_MIN, float Min = INTEGER_MAX, string Formatting = "%.3f" ) {: .copyable aria-label='Functions' }
 ___
 ### AddDragInteger () {: aria-label='Functions' }
-#### void AddDragInteger ( string parentId, string elementId, string label = "", function changeCallback = nil, int defaultVal = 0, float speed = 1, int min = INTEGER_MIN, int min = INTEGER_MAX, string formatting = "%d%" ) {: .copyable aria-label='Functions' }
+#### void AddDragInteger ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, int DefaultVal = 0, float Speed = 1, int Min = INTEGER_MIN, int Min = INTEGER_MAX, string Formatting = "%d%" ) {: .copyable aria-label='Functions' }
 ___
 ### AddElement () {: aria-label='Functions' }
-#### void AddElement ( string parentId, string elementId = "", [ImGuiElement](enums/ImGuiElement.md) type, string label = "" ) {: .copyable aria-label='Functions' }
+#### void AddElement ( string ParentId, string ElementId = "", [ImGuiElement](enums/ImGuiElement.md) type, string Label = "" ) {: .copyable aria-label='Functions' }
 Adds a generic element to a given parent. Useful to add control elements like "SameLine", "Bullet" or "Text".
 ___
 ### AddInputColor () {: aria-label='Functions' }
-#### void AddInputColor ( string parentId, string elementId, string label = "", function changeCallback = nil, float r = 0, float g = 0, float b = 0) {: .copyable aria-label='Functions' }
-#### void AddInputColor ( string parentId, string elementId, string label = "", function changeCallback = nil, float r = 0, float g = 0, float b = 0, float a = 1 ) {: .copyable aria-label='Functions' }
-Adds a color input element. If the parameter `a` is set, it acts as an RGBA input. Otherwise its just an RGB input. The float values are between 0 and 1.
+#### void AddInputColor ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, float r = 0, float g = 0, float b = 0) {: .copyable aria-label='Functions' }
+#### void AddInputColor ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, float r = 0, float g = 0, float b = 0, float a = 1 ) {: .copyable aria-label='Functions' }
+Adds a color input element. If the parameter `a` is set, it acts as an RGBA input. Otherwise its just an RGB input. The float values are between `0` and `1`.
 
 The callback gets passed the r,g,b and a values as seperate parameters.
 
@@ -78,49 +78,49 @@ The callback gets passed the r,g,b and a values as seperate parameters.
     ```
 ___
 ### AddInputController () {: aria-label='Functions' }
-#### void AddInputController ( string parentId, string elementId, string buttonLabel = "", function changeCallback = nil, float defaultVal = 0 ) {: .copyable aria-label='Functions' }
+#### void AddInputController ( string ParentId, string ElementId, string ButtonLabel = "", function ChangeCallback = nil, float DefaultVal = 0 ) {: .copyable aria-label='Functions' }
 Adds an input for Gamepad / controller buttons.
 
 The callback gets passed the [ButtonAction ID](https://wofsauge.github.io/IsaacDocs/rep/enums/ButtonAction.html) and the ImGuiKey name of the new button.
 ___
 ### AddInputFloat () {: aria-label='Functions' }
-#### void AddInputFloat ( string parentId, string elementId, string label = "", function changeCallback = nil, float defaultVal = 0, float step = 1, float stepFast = 100  ) {: .copyable aria-label='Functions' }
+#### void AddInputFloat ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, float DefaultVal = 0, float Step = 1, float StepFast = 100  ) {: .copyable aria-label='Functions' }
 ___
 ### AddInputInteger () {: aria-label='Functions' }
-#### void AddInputInteger ( string parentId, string elementId, string label = "", function changeCallback = nil, int defaultVal = 0, int step = 1, int stepFast = 100  ) {: .copyable aria-label='Functions' }
+#### void AddInputInteger ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, int DefaultVal = 0, int Step = 1, int StepFast = 100  ) {: .copyable aria-label='Functions' }
 ___
 ### AddInputKeyboard () {: aria-label='Functions' }
-#### void AddInputKeyboard ( string parentId, string elementId, string buttonLabel = "", function changeCallback = nil, float defaultVal = 0 ) {: .copyable aria-label='Functions' }
+#### void AddInputKeyboard ( string ParentId, string ElementId, string ButtonLabel = "", function ChangeCallback = nil, float DefaultVal = 0 ) {: .copyable aria-label='Functions' }
 Adds an input for keyboard buttons.
 
 The callback gets passed the [Keyboard key ID](https://wofsauge.github.io/IsaacDocs/rep/enums/Keyboard.html) and the ImGuiKey name of the new button.
 ___
 ### AddInputText () {: aria-label='Functions' }
-#### void AddInputText ( string parentId, string elementId, string description = "", function changeCallback = nil, string defaultVal = "", string hintText = "" ) {: .copyable aria-label='Functions' }
-Adds a text input element. The text from `hintText` will get displayed as a "placeholder" inside the input element, if the input of the element is empty.
+#### void AddInputText ( string ParentId, string ElementId, string Description = "", function ChangeCallback = nil, string DefaultVal = "", string HintText = "" ) {: .copyable aria-label='Functions' }
+Adds a text input element. The text from `HintText` will get displayed as a "placeholder" inside the input element, if the input of the element is empty.
 ___
 ### AddInputTextMultiline () {: aria-label='Functions' }
-#### void AddInputTextMultiline ( string parentId, string elementId, string description = "", function changeCallback = nil, string defaultVal = "", float displayedLines = 6 ) {: .copyable aria-label='Functions' }
+#### void AddInputTextMultiline ( string ParentId, string ElementId, string Description = "", function ChangeCallback = nil, string DefaultVal = "", float DisplayedLines = 6 ) {: .copyable aria-label='Functions' }
 Adds a text input element that allows to input multiple lines of text. The attribute `displayedLines` can be used to change the height of the element.
 ___
 ### AddPlotHistogram () {: aria-label='Functions' }
-#### void AddPlotHistogram ( string parentId, string elementId, string label = "", table values, string overlayText = "", float minimum = FLT_MIN, float maximum = FLT_MAX, float height = 40 ) {: .copyable aria-label='Functions' }
+#### void AddPlotHistogram ( string ParentId, string ElementId, string Label = "", table Values, string OverlayText = "", float Minimum = FLT_MIN, float Maximum = FLT_MAX, float Height = 40 ) {: .copyable aria-label='Functions' }
 Adds a bar-diagram displaying the given data as vertical bars. On default, minimum and maximum are set "dynamicaly", making the diagram fit its content perfectly.
 ___
 ### AddPlotLines () {: aria-label='Functions' }
-#### void AddPlotLines ( string parentId, string elementId, string label = "", table values, string overlayText = "", float minimum = FLT_MIN, float maximum = FLT_MAX, float height = 40 ) {: .copyable aria-label='Functions' }
+#### void AddPlotLines ( string ParentId, string ElementId, string Label = "", table Values, string OverlayText = "", float Minimum = FLT_MIN, float Maximum = FLT_MAX, float Height = 40 ) {: .copyable aria-label='Functions' }
 Adds a line-diagram connecting the given values using lines. On default, minimum and maximum are set "dynamicaly", making the diagram fit its content perfectly.
 ___
 ### AddProgressBar () {: aria-label='Functions' }
-#### void AddProgressBar ( string parentId, string elementId, string label = "", float progress = 0, string overlayText = "__DEFAULT__" ) {: .copyable aria-label='Functions' }
-Adds a progressbar element. The `progress` value defines the fill percentage (0 to 1). 
+#### void AddProgressBar ( string ParentId, string ElementId, string Label = "", float Progress = 0, string OverlayText = "__DEFAULT__" ) {: .copyable aria-label='Functions' }
+Adds a progressbar element. The `progress` value defines the fill percentage (`0` to `1`). 
 
 If the `overlayText` was not defined, the progressbar will display the current fill state in percent inside the progressbar (for example 50% when progress is set to 0.5).
 
 If the `label` is empty, the progressbar will render over the full width of the parent element.
 ___
 ### AddRadioButtons () {: aria-label='Functions' }
-#### void AddRadioButtons ( string parentId, string elementId, function changeCallback = nil, table options, int selectedIndex = 0, boolean renderSameLine = true ) {: .copyable aria-label='Functions' }
+#### void AddRadioButtons ( string ParentId, string ElementId, function ChangeCallback = nil, table options, int SelectedIndex = 0, boolean renderSameLine = true ) {: .copyable aria-label='Functions' }
 
 ???+ example "Example Code"
     ```lua
@@ -129,37 +129,37 @@ ___
     ```
 ___
 ### AddSliderFloat () {: aria-label='Functions' }
-#### void AddSliderFloat ( string parentId, string elementId, string label = "", function changeCallback = nil, float defaultVal = 0, float min = INTEGER_MIN, float max = INTEGER_MAX, string formatting = "%.3f" ) {: .copyable aria-label='Functions' }
+#### void AddSliderFloat ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, float DefaultVal = 0, float Min = INTEGER_MIN, float Max = INTEGER_MAX, string Formatting = "%.3f" ) {: .copyable aria-label='Functions' }
 ___
 ### AddSliderInteger () {: aria-label='Functions' }
-#### void AddSliderInteger ( string parentId, string elementId, string label = "", function changeCallback = nil, int defaultVal = 0, int min = INTEGER_MIN, int max = INTEGER_MAX, string formatting = "%d%" ) {: .copyable aria-label='Functions' }
+#### void AddSliderInteger ( string ParentId, string ElementId, string Label = "", function ChangeCallback = nil, int DefaultVal = 0, int Min = INTEGER_MIN, int Max = INTEGER_MAX, string Formatting = "%d%" ) {: .copyable aria-label='Functions' }
 ___
 ### AddTab () {: aria-label='Functions' }
-#### void AddTab ( string parentId, string elementId, string label ) {: .copyable aria-label='Functions' }
+#### void AddTab ( string ParentId, string ElementId, string Label ) {: .copyable aria-label='Functions' }
 A tab is a clickable area that shows another page or area.
 
 The parent object needs to be a TabBar.
 ___
 ### AddTabBar () {: aria-label='Functions' }
-#### void AddTabBar ( string parentId, string elementId ) {: .copyable aria-label='Functions' }
+#### void AddTabBar ( string ParentId, string ElementId ) {: .copyable aria-label='Functions' }
 A TabBar is a container which is used to store Tab elements.
 ___
 ### AddText () {: aria-label='Functions' }
-#### void AddText ( string parentId, string text, boolean wrapText = false, string elementId = "" ) {: .copyable aria-label='Functions' }
+#### void AddText ( string ParentId, string Text, boolean WrapText = false, string ElementId = "" ) {: .copyable aria-label='Functions' }
 Creates a text element. If `wrapText` is set to `true`, the text will wrap on the window borders. If set to `false` it will expand the window content till it fits.
 
-The elementID can be set as well, if the text should be able to be edited by later code.
+The ElementId can be set as well, if the text should be able to be edited by later code.
 ___
 ### CreateMenu () {: aria-label='Functions' }
-#### void CreateMenu ( string elementId, string label = "" ) {: .copyable aria-label='Functions' }
+#### void CreateMenu ( string ElementId, string Label = "" ) {: .copyable aria-label='Functions' }
 Creates an entry to the main menu bar of Repentogon.
 ___
 ### CreateWindow () {: aria-label='Functions' }
-#### void CreateWindow ( string elementId, string title = "" ) {: .copyable aria-label='Functions' }
+#### void CreateWindow ( string ElementId, string Title = "" ) {: .copyable aria-label='Functions' }
 Creates a window object. You need to use `LinkWindowToElement()` or `SetVisible()` to toggle the visibility of the window.
 ___
 ### ElementExists () {: aria-label='Functions' }
-#### boolean ElementExists ( string elementId ) {: .copyable aria-label='Functions' }
+#### boolean ElementExists ( string ElementId ) {: .copyable aria-label='Functions' }
 Returns true if an element with the given ID exists already.
 ___
 ### GetMousePosition () {: aria-label='Functions' }
@@ -169,11 +169,11 @@ Returns the mouse position in Screen coordinates.
 Use this instead of `Input.GetMousePosition()` when working with imgui!
 ___
 ### GetVisible () {: aria-label='Functions' }
-#### boolean GetVisible ( string elementId ) {: .copyable aria-label='Functions' }
+#### boolean GetVisible ( string ElementId ) {: .copyable aria-label='Functions' }
 Get if a window element is visible or not.
 ___
 ### GetWindowPinned () {: aria-label='Functions' }
-#### boolean GetWindowPinned ( string windowId ) {: .copyable aria-label='Functions' }
+#### boolean GetWindowPinned ( string WindowId ) {: .copyable aria-label='Functions' }
 Get the pinned state of a window.
 ___
 ### Hide () {: aria-label='Functions' }
@@ -181,14 +181,14 @@ ___
 Closes ImGui.
 ___
 ### ImGuiToWorld () {: aria-label='Functions' }
-#### void ImGuiToWorld ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }
+#### void ImGuiToWorld ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 Converts ImGui coordinates into World coordinates.
 
 ???+ bug "Bug"
     This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___
 ### LinkWindowToElement () {: aria-label='Functions' }
-#### void LinkWindowToElement ( string windowId, string elementId ) {: .copyable aria-label='Functions' }
+#### void LinkWindowToElement ( string WindowId, string ElementId ) {: .copyable aria-label='Functions' }
 Connects a Window or Popup element to another element, making said element act as a "toggle" for that window.
 
 ???- example "Example Code"
@@ -203,27 +203,27 @@ Connects a Window or Popup element to another element, making said element act a
 
 ___
 ### PushNotification () {: aria-label='Functions' }
-#### void PushNotification ( const text, [ImGuiNotificationType](enums/ImGuiNotificationType.md) notificationType = 0, int lifetime = 5000 ) {: .copyable aria-label='Functions' }        
+#### void PushNotification ( const Text, [ImGuiNotificationType](enums/ImGuiNotificationType.md) notificationType = 0, int lifetime = 5000 ) {: .copyable aria-label='Functions' }        
 Displays a pop-up message window in the style of a notification.
 ___
 ### RemoveCallback () {: aria-label='Functions' }
-#### void RemoveCallback ( string elementId, [ImGuiCallback](enums/ImGuiCallback.md) type ) {: .copyable aria-label='Functions' }
+#### void RemoveCallback ( string ElementId, [ImGuiCallback](enums/ImGuiCallback.md) type ) {: .copyable aria-label='Functions' }
 Remove the callback of the given type from the element.
 ___
 ### RemoveColor () {: aria-label='Functions' }
-#### void RemoveColor ( string elementId, [ImGuiColor](enums/ImGuiColor.md) colorType ) {: .copyable aria-label='Functions' }
+#### void RemoveColor ( string ElementId, [ImGuiColor](enums/ImGuiColor.md) colorType ) {: .copyable aria-label='Functions' }
 Remove a color modifier of the given type from the element.
 ___
 ### RemoveElement () {: aria-label='Functions' }
-#### void RemoveElement ( string elementId ) {: .copyable aria-label='Functions' }
+#### void RemoveElement ( string ElementId ) {: .copyable aria-label='Functions' }
 General function to remove any kind of element.
 ___
 ### RemoveMenu () {: aria-label='Functions' }
-#### void RemoveMenu ( string elementId ) {: .copyable aria-label='Functions' }
+#### void RemoveMenu ( string ElementId ) {: .copyable aria-label='Functions' }
 
 ___
 ### RemoveWindow () {: aria-label='Functions' }
-#### void RemoveWindow ( string elementId ) {: .copyable aria-label='Functions' }
+#### void RemoveWindow ( string ElementId ) {: .copyable aria-label='Functions' }
 
 ___
 ### Reset () {: aria-label='Functions' }
@@ -231,35 +231,35 @@ ___
 Removes all custom defined Imgui elements and resets imgui back to its original state.
 ___
 ### SetColor () {: aria-label='Functions' }
-#### void SetColor ( string elementId, [ImGuiColor](enums/ImGuiColor.md) colorType, float red, float green, float blue, float alpha = 1.0 ) {: .copyable aria-label='Functions' }
+#### void SetColor ( string ElementId, [ImGuiColor](enums/ImGuiColor.md) ColorType, float r, float g, float b, float a = 1.0 ) {: .copyable aria-label='Functions' }
 Adds a color modifier to a given element.
 ___
 ### SetHelpmarker () {: aria-label='Functions' }
-#### void SetHelpmarker ( string elementId, string text ) {: .copyable aria-label='Functions' }
+#### void SetHelpmarker ( string ElementId, string Text ) {: .copyable aria-label='Functions' }
 Adds a helpmarker to a given element. A Helpmarker is a `(?)` element rendered on the right of an element, which when hovered displays a tooltip.
 ___
 ### SetTextColor () {: aria-label='Functions' }
-#### void SetTextColor ( string elementId, float red, float green, float blue, float alpha = 1.0 ) {: .copyable aria-label='Functions' }
+#### void SetTextColor ( string ElementId, float r, float g, float b, float a = 1.0 ) {: .copyable aria-label='Functions' }
 Shortcut function to add a color modifier to text of a given element.
 ___
 ### SetTooltip () {: aria-label='Functions' }
-#### void SetTooltip ( string elementId, string text ) {: .copyable aria-label='Functions' }
+#### void SetTooltip ( string ElementId, string Text ) {: .copyable aria-label='Functions' }
 Adds a tooltip to a given element. The tooltip is visible when the user hovers over the element.
 ___
 ### SetVisible () {: aria-label='Functions' }
-#### void SetVisible ( string elementId, boolean visible ) {: .copyable aria-label='Functions' }
+#### void SetVisible ( string ElementId, boolean Visible ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetWindowPinned () {: aria-label='Functions' }
-#### void SetWindowPinned ( string windowId, boolean pinned ) {: .copyable aria-label='Functions' }
+#### void SetWindowPinned ( string WindowId, boolean Pinned ) {: .copyable aria-label='Functions' }
 Set the pinned state of a window, making it visible when the ImGui interface is not active.
 ___
 ### SetWindowPosition () {: aria-label='Functions' }
-#### void SetWindowPosition ( string windowId, float x, float y ) {: .copyable aria-label='Functions' }
+#### void SetWindowPosition ( string WindowId, float x, float y ) {: .copyable aria-label='Functions' }
 Set the position of a window in screen coordinates.
 ___
 ### SetWindowSize () {: aria-label='Functions' }
-#### void SetWindowSize ( string windowId, float width, float height ) {: .copyable aria-label='Functions' }
+#### void SetWindowSize ( string WindowId, float width, float Height ) {: .copyable aria-label='Functions' }
 Set the width and height of a window, in pixels.
 ___
 ### Show () {: aria-label='Functions' }
@@ -267,21 +267,21 @@ ___
 Opens ImGui.
 ___
 ### UpdateData () {: aria-label='Functions' }
-#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, int newDataValue ) {: .copyable aria-label='Functions' }
-#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, float newDataValue ) {: .copyable aria-label='Functions' }
-#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, boolean newDataValue ) {: .copyable aria-label='Functions' }
-#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, string newDataValue ) {: .copyable aria-label='Functions' }
-#### void UpdateData ( string elementId, [ImGuiData](enums/ImGuiData.md) dataType, table newDataValues ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string ElementId, [ImGuiData](enums/ImGuiData.md) DataType, int NewDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string ElementId, [ImGuiData](enums/ImGuiData.md) DataType, float NewDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string ElementId, [ImGuiData](enums/ImGuiData.md) DataType, boolean NewDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string ElementId, [ImGuiData](enums/ImGuiData.md) DataType, string NewDataValue ) {: .copyable aria-label='Functions' }
+#### void UpdateData ( string ElementId, [ImGuiData](enums/ImGuiData.md) DataType, table NewDataValues ) {: .copyable aria-label='Functions' }
 Update arbitrary data of a given element. See [ImGuiData](enums/ImGuiData.md) for possible data to update.
 
-The dataTypes and the expected newDataValue are evaluated per element. Therefore, if you try to update data of an element where this data is not used, this function will throw an error for you.
+The dataTypes and the expected NewDataValue are evaluated per element. Therefore, if you try to update data of an element where this data is not used, this function will throw an error for you.
 ___
 ### UpdateText () {: aria-label='Functions' }
-#### void UpdateText ( string elementId, string text ) {: .copyable aria-label='Functions' }
+#### void UpdateText ( string ElementId, string Text ) {: .copyable aria-label='Functions' }
 Shortcut function to update an element text or label.
 ___
 ### WorldToImGui () {: aria-label='Functions' }
-#### void WorldToImGui ( [Vector](Vector.md) position ) {: .copyable aria-label='Functions' }
+#### void WorldToImGui ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 Converts world coordinates into ImGui coordinates.
 
 ???+ bug "Bug"

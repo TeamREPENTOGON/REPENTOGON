@@ -31,8 +31,9 @@ Sets the camera's position instantly to the specified position.
 
 The camera will only move if the current room size is larger than 1x1. If the room size is 1x1 or smaller, the camera will remain stationary and this function will do nothing.
 
-Additionally, if the "Active Cam" setting is enabled, the camera won't move camera.
-
 This function must be called on every game update, otherwise the game will override the camera's position.
+
+???+ bug "Bug"
+	This function seems to only work when Active Camera is off.
 
 ___

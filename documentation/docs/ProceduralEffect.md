@@ -87,5 +87,5 @@ ___
 ### GetTriggerChance () {: aria-label='Functions' }
 #### float GetTriggerChance ( ) {: .copyable aria-label='Functions' }
 
-Value form 0 to 1.
+Values range from `0` to `1`.
 ___

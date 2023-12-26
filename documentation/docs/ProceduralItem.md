@@ -20,7 +20,7 @@ tags:
 
 ___
 ### GetEffect () {: aria-label='Functions' }
-#### [ProceduralEffect](ProceduralEffect.md) GetEffect ( int index ) {: .copyable aria-label='Functions' }
+#### [ProceduralEffect](ProceduralEffect.md) GetEffect ( int Index ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetEffectCount () {: aria-label='Functions' }
@@ -58,6 +58,6 @@ ___
 ___
 ### GetTargetItem () {: aria-label='Functions' }
 #### [ItemConfigItem](https://wofsauge.github.io/IsaacDocs/rep/ItemConfig_Item.html) GetTargetItem ( ) {: .copyable aria-label='Functions' }
-Get the item config that randomly selected by the current glitched item, may returns `nil` of not exists.
+Returns the item config that was randomly selected by the current glitched item, or `nil` if it doesn't exist.
 
 ___

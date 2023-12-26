@@ -10,7 +10,7 @@ tags:
 ## Modified Functions
 
 ### PlaySound () {: aria-label='Functions' }
-#### void PlaySound ( int ID, float Volume = 1.0, int FrameDelay = 2, boolean Loop = true, float Pitch = 1.0 ) {: .copyable aria-label='Functions' }
+#### void PlaySound ( int ID, float Volume = 1.0, int FrameDelay = 2, boolean Loop = true, float Pitch = 1.0 ) {: .copyable aria-label='Modified Functions' }
 All arguments besides `ID` are now optional.
 
 ___
@@ -33,7 +33,7 @@ Same as [FireProjectiles](EntityNPC.md#fireprojectiles), but returns a table con
 ___
 ### GetControllerId () {: aria-label='Functions' }
 #### int GetControllerId ( ) {: .copyable aria-label='Functions' }
-Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return -1 when its not being controlled by any player.
+Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return `-1` when not being controlled by any player.
 
 ___
 ### GetDirtColor () {: aria-label='Functions' }
@@ -51,7 +51,7 @@ ___
 ___
 ### SetControllerId () {: aria-label='Functions' }
 #### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
-Sets the ControllerId for the NPC, which indicates which player will control it. Set it to -1 for no player controls(back to normal behaviour).
+Sets the ControllerId for the NPC, which indicates which player will control it. Set it to `-1` for no player controls(back to normal behaviour).
 
 ___
 ### SetShieldStrength () {: aria-label='Functions' }
@@ -59,7 +59,7 @@ ___
 
 ___
 ### SpawnBloodCloud () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](Vector.md) position, [Color](Color.md) color ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](Vector.md) position, [Color](Color.md) Color ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodSplash () {: aria-label='Functions' }
@@ -67,7 +67,7 @@ ___
 
 ___
 ### ThrowMaggotAtPos () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) Origin, float Velocity = -8.0f, float yOffset = 0.0f ) {: .copyable aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) Origin, float Velocity = -8.0, float yOffset = 0.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### TryForceTarget () {: aria-label='Functions' }
@@ -76,7 +76,10 @@ Used by Lost Fly to force this NPC to focus on a specific target.
 
 ___
 ### TryThrow () {: aria-label='Functions' }
-#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) Direction, int Force ) {: .copyable aria-label='Functions' }
+#### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) Direction, float Force ) {: .copyable aria-label='Functions' }
+
+???+ info "Info"
+    `Force` only applies to NPC poop (it's modified and then used as V1.y, with V1.x being -20.0) and may be incorrect. This needs further investigation.
 
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
