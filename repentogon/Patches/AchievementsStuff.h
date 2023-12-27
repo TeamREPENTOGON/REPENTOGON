@@ -679,30 +679,31 @@ inline void InitAchievs() {
 	for (int i = 638; i <= XMLStuff.AchievementData->maxid; i++)
 	{
 		XMLAttributes node = XMLStuff.AchievementData->nodes[i];
-		string idx = node["name"] + node["sourceid"];
-		Achievements[idx] = 0;
+		if (node["name"].length() > 0) {
+			string idx = node["name"] + node["sourceid"];
+			Achievements[idx] = 0;
 
-		string achievcond = "";
-		//if (node["conditiontype"] == "achievement") { achievcond += node["conditionvalue"]; }
-		for each (XMLAttributes child in XMLStuff.AchievementData->childs[i]["condition"]) {
-			condid++;
-			Conditionals[-condid] = i;
-			XMLStuff.AchievementData->nodes[-condid] = child;
-			XMLStuff.AchievementData->nodes[-condid]["id"] = to_string(-condid);
-			XMLStuff.AchievementData->nodes[-condid]["sourceid"] = node["sourceid"];
-			XMLStuff.AchievementData->nodes[-condid]["name"] = idx + "-Cond-" + XMLStuff.AchievementData->nodes[-condid]["conditiontype"] + "-" + XMLStuff.AchievementData->nodes[-condid]["conditionvalue"] + "-" + XMLStuff.AchievementData->nodes[-condid]["conditioncharacter"];
-			XMLStuff.AchievementData->nodes[-condid]["hidden"] = "true";
-			XMLStuff.AchievementData->byname[XMLStuff.AchievementData->nodes[-condid]["name"]] = -condid;
-			XMLStuff.AchievementData->bynamemod[XMLStuff.AchievementData->nodes[-condid]["name"] + node["sourceid"]] = -condid;
-			node["conditiontype"] = "achievement";
-			if (achievcond.length() > 0) { achievcond += ","; }
-			achievcond += XMLStuff.AchievementData->nodes[-condid]["name"];
-			AddTrackers4Achiev(XMLStuff.AchievementData->nodes[-condid]["name"] + node["sourceid"], -condid, child);
+			string achievcond = "";
+			//if (node["conditiontype"] == "achievement") { achievcond += node["conditionvalue"]; }
+			for each (XMLAttributes child in XMLStuff.AchievementData->childs[i]["condition"]) {
+				condid++;
+				Conditionals[-condid] = i;
+				XMLStuff.AchievementData->nodes[-condid] = child;
+				XMLStuff.AchievementData->nodes[-condid]["id"] = to_string(-condid);
+				XMLStuff.AchievementData->nodes[-condid]["sourceid"] = node["sourceid"];
+				XMLStuff.AchievementData->nodes[-condid]["name"] = idx + "-Cond-" + XMLStuff.AchievementData->nodes[-condid]["conditiontype"] + "-" + XMLStuff.AchievementData->nodes[-condid]["conditionvalue"] + "-" + XMLStuff.AchievementData->nodes[-condid]["conditioncharacter"];
+				XMLStuff.AchievementData->nodes[-condid]["hidden"] = "true";
+				XMLStuff.AchievementData->byname[XMLStuff.AchievementData->nodes[-condid]["name"]] = -condid;
+				XMLStuff.AchievementData->bynamemod[XMLStuff.AchievementData->nodes[-condid]["name"] + node["sourceid"]] = -condid;
+				node["conditiontype"] = "achievement";
+				if (achievcond.length() > 0) { achievcond += ","; }
+				achievcond += XMLStuff.AchievementData->nodes[-condid]["name"];
+				AddTrackers4Achiev(XMLStuff.AchievementData->nodes[-condid]["name"] + node["sourceid"], -condid, child);
+			}
+			node["conditionvalue"] = achievcond;
+			XMLStuff.AchievementData->nodes[i] = node;
+			AddTrackers4Achiev(idx, i, node);
 		}
-		node["conditionvalue"] = achievcond;
-		XMLStuff.AchievementData->nodes[i] = node;
-		AddTrackers4Achiev(idx, i, node);
-
 	}
 }
 
