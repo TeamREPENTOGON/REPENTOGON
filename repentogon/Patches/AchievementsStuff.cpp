@@ -91,7 +91,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 		//AccomplishCondition(achieveemntid);
 		//return false;
 	//}
-	if ((achieveemntid > 0) && (achieveemntid < 638)) {
+	if ((achieveemntid >= 0) && (achieveemntid < 638)) {
 		return super(achieveemntid);
 	}
 	ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();

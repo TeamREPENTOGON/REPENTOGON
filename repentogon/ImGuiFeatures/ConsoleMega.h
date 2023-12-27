@@ -1009,10 +1009,12 @@ struct ConsoleMega : ImGuiWindowObject {
                             XMLNodes achievs = XMLStuff.AchievementData->nodes;
                             for (auto& node : achievs) {
                                 int id = node.first;
-                                std::string name;
-                                name = node.second["name"];
+                                if (id > 0) { //to exclude negative achievement hackies
+                                    std::string name;
+                                    name = node.second["name"];
 
-                                entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                    entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                }
                             }
                             break;
                         }
