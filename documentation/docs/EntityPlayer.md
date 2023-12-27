@@ -327,7 +327,7 @@ ___
 ___
 ### GetGlyphOfBalanceDrop () {: aria-label='Functions' }
 #### table GetGlyphOfBalanceDrop ( int Variant = -1, int SubType = -1 ) {: .copyable aria-label='Functions' }
-returns a table containing the variant and subtype of the possible [Glyph of Balance]((https://bindingofisaacrebirth.fandom.com/wiki/Glyph_of_Balance) drop.
+Returns a table containing the variant and subtype of the possible [Glyph of Balance](https://bindingofisaacrebirth.fandom.com/wiki/Glyph_of_Balance) drop.
 ___
 ### GetGreedsGulletHearts () {: aria-label='Functions' }
 #### int GetGreedsGulletHearts ( ) {: .copyable aria-label='Functions' }
@@ -339,7 +339,7 @@ ___
 ___
 ### GetHeldEntity () {: aria-label='Functions' }
 #### [Entity](Entity.md) GetHeldEntity ( ) {: .copyable aria-label='Functions' }
-Returns the Entity that the player is holding over their head, such as with throwable red bombs or [Suplex!]((https://bindingofisaacrebirth.fandom.com/wiki/Suplex!)
+Returns the Entity that the player is holding over their head, such as with throwable red bombs or [Suplex!](https://bindingofisaacrebirth.fandom.com/wiki/Suplex!)
 Returns `nil` if no entity is currently being held.
 
 ___
@@ -359,7 +359,7 @@ ___
 ### GetKeepersSackBonus () {: aria-label='Functions' }
 #### int GetKeepersSackBonus ( ) {: .copyable aria-label='Functions' }
 
-Gets the number of coins spent while possessing [Keeper's Sack]((https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
+Gets the number of coins spent while possessing [Keeper's Sack](https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
 
 ___
 ### GetLaserColor () {: aria-label='Functions' }
@@ -695,7 +695,7 @@ ___
 ### SetKeepersSackBonus () {: aria-label='Functions' }
 #### void SetKeepersSackBonus ( int Bonus ) {: .copyable aria-label='Functions' }
 
-This is the number of coins spent while possessing [Keeper's Sack]((https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
+This is the number of coins spent while possessing [Keeper's Sack](https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack).
 
 ___
 ### SetLaserColor () {: aria-label='Functions' }
