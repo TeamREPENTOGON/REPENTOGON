@@ -1035,17 +1035,16 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 		player->GetTearHitParams(&params, 1, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)(Isaac::Random(2) != 0) & 2) - 1, 0);
 	}
 
-	Entity* ent = g_Game->Spawn(1000, 54, *castPlayer->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
+	Entity_Effect* ent = (Entity_Effect*)g_Game->Spawn(1000, 54, *castPlayer->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
 
 	ent->_sprite._scale *= ((_distrib(gen) * 0.5f) + 0.2f);
 	ent->_collisionDamage = params._tearDamage;
 	ent->SetColor(&params._tearColor, 0, -1, true, false);
 
-	Entity_Effect* creep = (Entity_Effect*)ent;
-	creep->_varData = params._flags;
-	creep->Update();
+	ent->_varData = params._flags;
+	ent->Update();
 
-	lua::luabridge::UserdataPtr::push(L, creep, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 
 	return 1;
 }
