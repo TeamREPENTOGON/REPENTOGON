@@ -5,7 +5,7 @@ __thiscall void Entity_Effect::Render(Vector *offset);
 static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);
 
 "558bec83e4f883ec5ca1????????33c4894424??8b45??53":
-__fastcall void Entity_Effect::CreateLight(Vector * pos, ColorMod * color, int unk1, int unk2);
+static cleanup void Entity_Effect::CreateLight(Vector * pos<ecx>, ColorMod * color<edx>, int unk1, int unk2);
 
 struct Entity_Effect depends (BitSet128) : public Entity {
     __vtable {
