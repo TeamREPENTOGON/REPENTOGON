@@ -93,6 +93,9 @@ ___
 ### GetAchievementIdByName () {: aria-label='Functions' }
 #### table GetAchievementIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
+
+???+ warning "Warning"
+    Modded achievements are not loaded until past the main menu is initialized, so dont use this function on modload to get your ids. A suggested place to do so is the MC_POST_SAVESLOT_LOAD callback.
 ___
 ### GetClipboard () {: aria-label='Functions' }
 #### string GetClipboard ( ) {: .copyable aria-label='Functions' }
