@@ -175,6 +175,9 @@ ___
 ### SpawnWaterImpactEffects () {: aria-label='Functions' }
 #### void SpawnWaterImpactEffects ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity = Vector.Zero, float Strength ) {: .copyable aria-label='Functions' }
 
+???+ warning "Warning"
+    This function will only spawn effects if the Room's [water amount](Room.md#getwateramount) is above or equal to `0.2`.
+
 ___
 ### TeleportToRandomPosition () {: aria-label='Functions' }
 #### void TeleportToRandomPosition ( ) {: .copyable aria-label='Functions' }
