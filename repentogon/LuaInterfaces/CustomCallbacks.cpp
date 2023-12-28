@@ -3665,9 +3665,8 @@ HOOK_METHOD(LuaCallbackCaller, CallInputAction, (LuaEngine* engine, Entity* enti
 //MC_POST_SAVESLOT_LOAD (1470)
 bool saveslotselected = false;
 bool waszero = false;
-HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
+HOOK_METHOD_PRIORITY(Manager, SetSaveSlot,-9999, (unsigned int slot) -> void) {
 	super(slot);
-
 	unsigned int saveslot = 1;
 	if (slot > 0) { 
 		saveslot = slot; 
