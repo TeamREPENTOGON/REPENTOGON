@@ -97,8 +97,8 @@ LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
 	int velType = (int)luaL_optinteger(L, 3, 0);
 
 	Vector velocity;
-	velocity = *Entity_Pickup::GetRandomPickupVelocity(velocity, pos, rng, velType);
-	lua::luabridge::UserdataPtr::push(L, &velocity, lua::Metatables::VECTOR);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *Entity_Pickup::GetRandomPickupVelocity(velocity, pos, rng, velType);
 
 	return 1;
 }
