@@ -5,11 +5,12 @@
 LUA_FUNCTION(Lua_EffectCreateLight)
 {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	int lifespan = (int)luaL_optinteger(L, 2, -1);
-	int state = (int)luaL_optinteger(L, 3, 6);
+	float scale = (float)luaL_optnumber(L, 2, (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)));
+	int lifespan = (int)luaL_optinteger(L, 3, -1);
+	int state = (int)luaL_optinteger(L, 4, 6);
 	ColorMod color;
-	if (lua_type(L, 4) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 4, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, 5) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
 	}
 
 	if (lifespan < 1) {
@@ -28,7 +29,7 @@ LUA_FUNCTION(Lua_EffectCreateLight)
 		effect->_timeout = lifespan;
 		effect->_lifespan = lifespan;
 		effect->SetColor(&color, -1, 255, false, false);
-		effect->_sprite._scale *= (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+		effect->_sprite._scale *= scale;
 
 		lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 	}
