@@ -229,7 +229,8 @@ LUA_FUNCTION(Lua_EntityTryThrow) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_EntitySpawnGroundImpactEffects) {
+// will need an asm patch to return a table of effects
+LUA_FUNCTION(Lua_EntitySpawnWaterImpactEffects) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	Vector vel;
@@ -237,15 +238,10 @@ LUA_FUNCTION(Lua_EntitySpawnGroundImpactEffects) {
 		vel = *lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	}
 	const float scale = (float)luaL_checknumber(L, 4);
-	Entity_Effect* effect = entity->DoGroundImpactEffects(pos, &vel, scale);
-	if (!effect) {
-		lua_pushnil(L);
-	}
-	else {
-		lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
-	}
 
-	return 1;
+	Entity::DoGroundImpactEffects(pos, &vel, scale);
+
+	return 0;
 }
 
 LUA_FUNCTION(Lua_EntityGetPredictedTargetPosition) {
@@ -304,8 +300,16 @@ LUA_FUNCTION(Lua_EntityMakeBloodPoof) {
 	
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
 
-	entity->MakeBloodPoof(&pos, &color, scale);
-	return 0;
+	Entity_Effect* poof = entity->MakeBloodPoof(&pos, &color, scale);
+	if (!poof) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		lua::luabridge::UserdataPtr::push(L, poof, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	}
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
@@ -322,8 +326,16 @@ LUA_FUNCTION(Lua_EntityMakeGroundPoof) {
 
 	float scale = (float)luaL_optnumber(L, 4, 1.0f);
 
-	entity->MakeBloodPoof(&pos, &color, scale);
-	return 0;
+	Entity_Effect* poof = entity->MakeGroundPoof(&pos, &color, scale);
+	if (!poof) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		lua::luabridge::UserdataPtr::push(L, poof, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	}
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_EntityIgnoreEffectFromFriendly) {
@@ -440,7 +452,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetSpeedMultiplier", Lua_Entity_GetSpeedMultiplier },
 		{ "SetSpeedMultiplier", Lua_Entity_SetSpeedMultiplier },
 		{ "SpawnBloodEffect", Lua_Entity_MakeBloodEffect },
-		{ "SpawnGroundImpactEffects", Lua_EntitySpawnGroundImpactEffects },
+		{ "SpawnWaterImpactEffects", Lua_EntitySpawnWaterImpactEffects },
 		{ "TeleportToRandomPosition", Lua_EntityTeleportToRandomPosition },
 		{ "TryThrow", Lua_EntityTryThrow },
 		{ NULL, NULL }

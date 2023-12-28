@@ -49,7 +49,7 @@ LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, b
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int loopIndex = (int)luaL_checkinteger(L, 2);
 	int weaponType = (int)luaL_checkinteger(L, 3);
-	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::ENTITY, "Vector");
+	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::ENTITY, "Vector");
 	float shotSpeed = (float)luaL_checknumber(L, 5);
 
 	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, lua::metatables::MultiShotParamsMT);
@@ -1035,17 +1035,16 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 		player->GetTearHitParams(&params, 1, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)(Isaac::Random(2) != 0) & 2) - 1, 0);
 	}
 
-	Entity* ent = g_Game->Spawn(1000, 54, *castPlayer->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
+	Entity_Effect* ent = (Entity_Effect*)g_Game->Spawn(1000, 54, *castPlayer->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
 
 	ent->_sprite._scale *= ((_distrib(gen) * 0.5f) + 0.2f);
 	ent->_collisionDamage = params._tearDamage;
 	ent->SetColor(&params._tearColor, 0, -1, true, false);
 
-	Entity_Effect* creep = (Entity_Effect*)ent;
-	creep->_varData = params._flags;
-	creep->Update();
+	ent->_varData = params._flags;
+	ent->Update();
 
-	lua::luabridge::UserdataPtr::push(L, creep, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	lua::luabridge::UserdataPtr::push(L, ent, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 
 	return 1;
 }
@@ -1207,7 +1206,7 @@ LUA_FUNCTION(Player_PlayerIsItemCostumeVisible) {
 		}
 	}
 	else {
-		layerID = (int)luaL_checkinteger(L, 2);
+		layerID = (int)luaL_checkinteger(L, 3);
 		if (layerID < 0 || (const unsigned int)layerID + 1 > plr->_sprite.GetLayerCount()) {
 			return luaL_error(L, "Invalid layer ID %d", layerID);
 		}
@@ -1233,7 +1232,7 @@ LUA_FUNCTION(Player_PlayerIsCollectibleCostumeVisible) {
 		}
 	}
 	else {
-		layerID = (int)luaL_checkinteger(L, 2);
+		layerID = (int)luaL_checkinteger(L, 3);
 		if (layerID < 0 || (const unsigned int)layerID + 1 > plr->_sprite.GetLayerCount()) {
 			return luaL_error(L, "Invalid layer ID %d", layerID);
 		}
@@ -1242,6 +1241,33 @@ LUA_FUNCTION(Player_PlayerIsCollectibleCostumeVisible) {
 	lua_pushboolean(L, plr->IsCollectibleCostumeVisible(collectibleType, layerID));
 	return 1;
 }
+
+LUA_FUNCTION(Lua_PlayerIsNullItemCostumeVisible) {
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int nullItem = (int)luaL_checkinteger(L, 2);
+	int layerID = 0;
+	if (lua_type(L, 3) == LUA_TSTRING) {
+		const char* layerName = luaL_checkstring(L, 3);
+		LayerState* layerState = plr->_sprite.GetLayer(layerName);
+		if (layerState != nullptr) {
+			layerID = layerState->GetLayerID();
+		}
+		else
+		{
+			return luaL_error(L, "Invalid layer name %s", layerName);
+		}
+	}
+	else {
+		layerID = (int)luaL_checkinteger(L, 3);
+		if (layerID < 0 || (const unsigned int)layerID + 1 > plr->_sprite.GetLayerCount()) {
+			return luaL_error(L, "Invalid layer ID %d", layerID);
+		}
+	}
+
+	lua_pushboolean(L, plr->IsNullItemCostumeVisible(nullItem, layerID));
+	return 1;
+}
+
 
 LUA_FUNCTION(Player_PlayCollectibleAnim) {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -2020,6 +2046,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetCostumeLayerMap", Lua_PlayerGetCostumeLayerMap },
 		{ "IsItemCostumeVisible", Player_PlayerIsItemCostumeVisible },
 		{ "IsCollectibleCostumeVisible", Player_PlayerIsCollectibleCostumeVisible },
+		{ "IsNullItemCostumeVisible", Lua_PlayerIsNullItemCostumeVisible },
 		{ "PlayCollectibleAnim", Player_PlayCollectibleAnim },
 		{ "IsCollectibleAnimFinished", Player_IsCollectibleAnimFinished },
 		{ "ClearCollectibleAnim", Player_ClearCollectibleAnim },

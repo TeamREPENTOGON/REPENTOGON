@@ -3722,7 +3722,7 @@ HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float sca
 					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
 						const std::string key = lua_tostring(L, -2);
 						if (key == "Scale") {
-							scale = lua_tonumber(L, -1);
+							scale = (float)lua_tonumber(L, -1);
 						}
 					}
 					lua_pop(L, 1);

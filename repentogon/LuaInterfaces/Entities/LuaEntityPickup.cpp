@@ -95,9 +95,10 @@ LUA_FUNCTION(Lua_PickupGetRandomVelocity) {
 		lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
 	}
 	int velType = (int)luaL_optinteger(L, 3, 0);
+
 	Vector velocity;
-	Isaac::GetRandomPickupVelocity(&velocity, pos, velType, rng);
-	lua::luabridge::UserdataPtr::push(L, &velocity, lua::Metatables::VECTOR);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = *Entity_Pickup::GetRandomPickupVelocity(velocity, pos, rng, velType);
 
 	return 1;
 }
@@ -171,4 +172,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	};
 
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PICKUP, functions);
+
+	lua::RegisterGlobalClassFunction(_state, "EntityPickup", "GetRandomPickupVelocity", Lua_PickupGetRandomVelocity);
 }

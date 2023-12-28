@@ -4,9 +4,6 @@ __thiscall void Entity_Effect::Render(Vector *offset);
 "558bec83e4f856578bfa":
 static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);
 
-"558bec83e4f883ec5ca1????????33c4894424??8b45??53":
-__fastcall void Entity_Effect::CreateLight(Vector * pos, ColorMod * color, int unk1, int unk2);
-
 struct Entity_Effect depends (BitSet128) : public Entity {
     __vtable {
 		skip; // Free
@@ -40,5 +37,10 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 		skip; // LoadEntityConfig
 
     };
+
 	BitSet128 _varData : 0x370; // this can be any data type, the game uses it arbitrarily based on effect variant
+	int _state : 0x3a0;
+	int _timeout : 0x3ac;
+	int _lifespan : 0x3b0;
+
 } : 0x3e0;
