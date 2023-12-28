@@ -131,11 +131,17 @@ Used to determine if this entity should ignore any status effect coming from `So
 
 ___
 ### MakeBloodPoof () {: aria-label='Functions' }
-#### void MakeBloodPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) MakeBloodPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
+
+???+ info "Info"
+    This function spawns two effects; the second will be the the Child of the one returned.
 
 ___
 ### MakeGroundPoof () {: aria-label='Functions' }
-#### void MakeGroundPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) MakeGroundPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
+
+???+ info "Info"
+    This function spawns two effects; the second will be the the Child of the one returned.
 
 ___
 ### SetBossStatusEffectCooldown () {: aria-label='Functions' }
@@ -166,8 +172,8 @@ ___
 #### [EntityEffect](EntityEffect.md) SpawnBloodEffect ( int SubType = 0, [Vector](Vector.md) position = self.Position, [Vector](Vector.md) Offset = Vector.Zero, [Color](Color.md) Color = Default, [Vector](Vector.md) Velocity = Vector.Zero ) {: .copyable aria-label='Functions' }
 
 ___
-### SpawnGroundImpactEffects () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnGroundImpactEffects ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity = Vector.Zero, float Scale ) {: .copyable aria-label='Functions' }
+### SpawnWaterImpactEffects () {: aria-label='Functions' }
+#### void SpawnWaterImpactEffects ( [Vector](Vector.md) Position, [Vector](Vector.md) Velocity = Vector.Zero, float Strength ) {: .copyable aria-label='Functions' }
 
 ___
 ### TeleportToRandomPosition () {: aria-label='Functions' }
