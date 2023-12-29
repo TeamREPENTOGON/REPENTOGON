@@ -65,7 +65,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 LUA_FUNCTION(Lua_BeamAdd) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	float heightMod = (float)luaL_optnumber(L, 3, 1.0f);
+	float heightMod = (float)luaL_checknumber(L, 3);
 	float widthMod = (float)luaL_optnumber(L, 4, 1.0f);
 	ColorMod color;
 	if (lua_gettop(L) > 4) {
