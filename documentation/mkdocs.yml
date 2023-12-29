@@ -285,6 +285,7 @@ nav:
     - GLSLValue: renderer/GLSLValue.md
     - Image: renderer/Image.md
     - Pipeline: renderer/Pipeline.md
+    - Point: renderer/Point.md
     - Renderer: renderer/Renderer.md
     - RenderSet: renderer/RenderSet.md
     - Shader: renderer/Shader.md

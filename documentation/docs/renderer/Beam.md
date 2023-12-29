@@ -51,6 +51,13 @@ ___
 #### int GetLayer ( ) {: .copyable aria-label='Functions' }   
 
 ___
+
+### GetPoints () {: aria-label='Functions' }
+#### [Point](Point.md)Point[] GetPoints ( ) {: .copyable aria-label='Functions' }   
+Returns a table of [Points](Point.md).
+
+___
+
 ### GetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }   
 
@@ -69,7 +76,13 @@ ___
 ___
 ### SetLayer () {: aria-label='Functions' }
 #### void SetLayer ( int LayerID ) {: .copyable aria-label='Functions' }   
-#### void SetLayer ( string LayerName ) {: .copyable aria-label='Functions' }   
+#### void SetLayer ( string LayerName ) {: .copyable aria-label='Functions' } 
+  
+___
+### SetPoints () {: aria-label='Functions' }
+####  GetPoints ( [Point](Point.md)[] Points) {: .copyable aria-label='Functions' }   
+Sets the [Points](Point.md) used by this.
+
 ___
 ### SetSprite () {: aria-label='Functions' }
 #### void SetSprite ( [Sprite](../Sprite.md) Sprite ) {: .copyable aria-label='Functions' }   
