@@ -53,8 +53,8 @@ ___
 ___
 
 ### GetPoints () {: aria-label='Functions' }
-#### [Point](Point.md)Point[] GetPoints ( ) {: .copyable aria-label='Functions' }   
-Returns a table of [Points](Point.md).
+#### [Point](Point.md)[] GetPoints ( ) {: .copyable aria-label='Functions' }   
+Returns a table of the [Points](Point.md) currently stored.
 
 ___
 
@@ -80,7 +80,7 @@ ___
   
 ___
 ### SetPoints () {: aria-label='Functions' }
-####  GetPoints ( [Point](Point.md)[] Points) {: .copyable aria-label='Functions' }   
+#### void SetPoints ( [Point](Point.md)[] Points) {: .copyable aria-label='Functions' }   
 Sets the [Points](Point.md) used by this.
 
 ___
