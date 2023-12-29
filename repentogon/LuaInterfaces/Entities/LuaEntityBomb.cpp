@@ -93,7 +93,7 @@ LUA_FUNCTION(Lua_BombSetLoadCostumes)
 {
 	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
 
-	bomb->_loadCostumes = lua::luaL_checkboolean(L, 2);
+	bomb->_loadCostumes = lua::luaL_optboolean(L, 2, true);
 	return 0;
 }
 

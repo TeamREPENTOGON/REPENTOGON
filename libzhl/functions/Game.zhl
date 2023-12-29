@@ -149,7 +149,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	
 	inline unsigned int GetChallenge() { return *(unsigned int*)((char*)this + 0x1C319C); }
 	
-	inline int GetDebug() { return *(int*)((char*)this + 0x1c31a1); }
+	inline bool* IsDebug() { return &this->_isDebug; }
 	
 	inline unsigned int* GetDebugFlags() { return (unsigned int*)((char*)this + 0X1C3164); }
 	
@@ -217,6 +217,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     int _treasureRoomsVisited : 0x1c3178; // 0x1C3178
     int _planetariumsVisited : 0x1c317c; // 0x1C317C
 	bool _isRerun : 0x1c31a0;
+	bool _isDebug : 0x1c31a1;
     Ambush _ambush : 0x1c31b8; // 0x1c31b8
 	ScoreSheet _scoreSheet : 0x1c32b8; //
     uint32_t _difficulty : 0x243624; // 0x243624
