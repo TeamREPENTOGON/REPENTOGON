@@ -5,13 +5,18 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <filesystem>
 
 #include <cryptopp/sha.h>
 #include <cryptopp/hex.h>
 
+#define MINI_CASE_SENSITIVE
+#include "ini.h"
+
 std::string version = "dev build";
 
 using namespace rapidjson;
+
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
@@ -30,13 +35,38 @@ std::string trim(const std::string& input) {
     return string_stream.str();
 }
 
+mINI::INIStructure ini;
+
+mINI::INIFile iniFile("dsound.ini");
 
 void CheckForUpdates() {
+
+    if (!std::filesystem::exists("dsound.ini")) {
+        printf("dsound.ini doesn't exist, creating\n");
+        if (MessageBoxA(NULL, "Would you like REPENTOGON to automatically check for updates on game start?\n(We highly recommend saying yes here, we're probably gonna have a lot of them.)", "REPENTOGON", MB_YESNO) == IDYES)
+            ini["Options"]["CheckForUpdates"] = "1";
+        else
+            ini["Options"]["CheckForUpdates"] = "0";
+
+        ini["internal"]["RanUpdater"] = "0";
+        iniFile.generate(ini, true);
+    }
+
+    iniFile.read(ini);
+
+    if (ini["Options"]["CheckForUpdates"] == "0")
+        return;
+
+    if (ini["internal"]["RanUpdater"] == "1") {
+        ini["internal"]["RanUpdater"] = "0";
+        iniFile.write(ini);
+        return;
+    }
+
     if (version.compare("dev build") == 0 || version.find("nightly-") != std::string::npos) {
         printf("Skipping update check (dev build)\n");
     }
     else {
-
         printf("Checking for updates\n");
 
         CURL* curl;
@@ -177,6 +207,8 @@ void CheckForUpdates() {
                     curl_easy_cleanup(curl);
                     printf("Finished, launching updater\n");
                     // chnage da world,
+                    ini["internal"]["RanUpdater"] = "1";
+                    iniFile.write(ini);
                     ShellExecute(NULL, "open", "REPENTOGONUpdater.exe", "-auto", NULL, SW_SHOWDEFAULT);
                     ExitProcess(1);
                 }
