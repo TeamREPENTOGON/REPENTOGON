@@ -39,7 +39,8 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 ## Functions
 
 ### Add () {: aria-label='Functions' }
-#### void Add ( [Vector](../Vector.md) Position, float Height, float Width = 1.0, [Color](../Color.md) Color = Color ) {: .copyable aria-label='Functions' }   
+#### void Add ( [Vector](../Vector.md) Position, float Height, float Width = 1.0, [Color](../Color.md) Color = Color ) {: .copyable aria-label='Functions' }
+#### void Add ( [Point](Point.md) Point ) {: .copyable aria-label='Functions' }   
 Adds a point to the beam. Points are stored in order of adding.
 
 ???+ info "Info"
@@ -80,7 +81,7 @@ ___
   
 ___
 ### SetPoints () {: aria-label='Functions' }
-#### void SetPoints ( [Point](Point.md)[] Points) {: .copyable aria-label='Functions' }   
+#### void SetPoints ( [Point](Point.md)[] Points ) {: .copyable aria-label='Functions' }   
 Sets the [Points](Point.md) used by this.
 
 ___
