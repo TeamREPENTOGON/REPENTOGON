@@ -32,7 +32,11 @@ std::string trim(const std::string& input) {
 
 
 void CheckForUpdates() {
-    if (version.compare("dev build") != 0 || version.find("nightly-") == std::string::npos) {
+    if (version.compare("dev build") == 0 || version.find("nightly-") != std::string::npos) {
+        printf("Skipping update check (dev build)\n");
+    }
+    else {
+
         printf("Checking for updates\n");
 
         CURL* curl;
@@ -178,9 +182,6 @@ void CheckForUpdates() {
                 }
             }
         }
-    }
-    else {
-        printf("Skipping update check (dev build)\n");
     }
 }
 
