@@ -54,6 +54,10 @@ option(CURL_DISABLE_TELNET "" ON)
 option(CURL_DISABLE_TFTP "" ON)
 add_subdirectory("libs/curl")
 
+# Crypto++
+option(CRYPTOPP_BUILD_TESTING "" OFF)
+add_subdirectory("libs/cryptopp-cmake")
+
 # Parser
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
 add_executable(zhlparser ${PARSER_SRC})
@@ -90,7 +94,7 @@ target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
 target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})
-target_link_libraries(dsound libcurl)
+target_link_libraries(dsound libcurl cryptopp)
 target_compile_options(dsound PUBLIC "/MD" "/wd4996")
 target_link_libraries(dsound Imagehlp)
 
