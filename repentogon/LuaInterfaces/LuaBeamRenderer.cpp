@@ -107,7 +107,7 @@ LUA_FUNCTION(Lua_BeamRender) {
 	g_BeamRenderer->Begin(beam->GetANM2(), beam->_layer, beam->_useOverlayData, beam->_unkBool);
 
 	for (auto it = beam->_points.begin(); it != beam->_points.end(); ++it) {
-		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_heightMod, it->_widthMod);
+		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_height, it->_width);
 	}
 
 	g_BeamRenderer->End();
@@ -206,11 +206,77 @@ LUA_FUNCTION(Lua_BeamSetUnkBool)
 	return 0;
 }
 
-
 LUA_FUNCTION(Lua_BeamRenderer__gc) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	beam->_anm2.destructor();
 	beam->~BeamRenderer();
+	return 0;
+}
+
+// Points
+LUA_FUNCTION(Lua_BeamGetPoints)
+{
+	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
+	lua_newtable(L);
+	for (size_t i = 0; i < beam->_points.size(); ++i) {
+		lua_pushinteger(L, i + 1);
+		Point* ud = (Point*)lua_newuserdata(L, sizeof(Point));
+		*ud = beam->_points[i];
+		luaL_setmetatable(L, lua::metatables::PointMT);
+
+		lua_rawset(L, -3);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointGetHeight) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	lua_pushnumber(L, point->_height);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetHeight) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_height = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PointGetWidth) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	lua_pushnumber(L, point->_width);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetWidth) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_width = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PointGetPosition) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = point->_pos;
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetPosition) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PointGetColor) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	ColorMod* toLua = lua::luabridge::UserdataValue<ColorMod>::place(L, lua::GetMetatableKey(lua::Metatables::COLOR));
+	*toLua = point->_color;
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetColor) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_color = *lua::GetUserdata<ColorMod*>(L, 2, lua::Metatables::COLOR, "Color");
 	return 0;
 }
 
@@ -226,10 +292,24 @@ static void RegisterBeamRenderer(lua_State* L) {
 		{ "SetUseOverlay", Lua_BeamSetUseOverlay},
 		{ "GetUnkBool", Lua_BeamGetUnkBool},
 		{ "SetUnkBool", Lua_BeamSetUnkBool},
+		{ "GetPoints", Lua_BeamGetPoints},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::BeamMT, lua::metatables::BeamMT, functions, Lua_BeamRenderer__gc);
 	lua_register(L, lua::metatables::BeamMT, Lua_CreateBeamDummy);
+
+	luaL_Reg pointFunctions[] = {
+		{ "GetHeight", Lua_PointGetHeight},
+		{ "SetHeight", Lua_PointSetHeight},
+		{ "GetWidth", Lua_PointGetWidth},
+		{ "SetWidth", Lua_PointSetWidth},
+		{ "GetPosition", Lua_PointGetPosition},
+		{ "SetPosition", Lua_PointSetPosition},
+		{ "GetColor", Lua_PointGetColor},
+		{ "SetColor", Lua_PointSetColor},
+		{ NULL, NULL }
+	};
+	lua::RegisterNewClass(L, lua::metatables::PointMT, lua::metatables::PointMT, pointFunctions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
