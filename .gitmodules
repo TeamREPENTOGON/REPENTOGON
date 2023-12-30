@@ -35,3 +35,6 @@
 [submodule "libs/curl"]
 	path = libs/curl
 	url = https://github.com/curl/curl
+[submodule "libs/cryptopp-cmake"]
+	path = libs/cryptopp-cmake
+	url = https://github.com/abdes/cryptopp-cmake
