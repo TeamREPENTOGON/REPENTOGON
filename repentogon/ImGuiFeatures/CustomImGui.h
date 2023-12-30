@@ -380,28 +380,34 @@ struct CustomImGui {
         return true;
     }
 
-    void RemoveElement(const char* elementId) IM_FMTARGS(2)
+    bool RemoveElement(const char* elementId) IM_FMTARGS(2)
     {
         Element* element = GetElementByList(elementId, menuElements);
         if (element == NULL) {
             element = GetElementByList(elementId, windows);
             if (element == NULL) {
-                return;
+                g_Game->GetConsole()->PrintError("Couldnt find the element to remove! (" + std::string(elementId) + ") \n");
+                return false;
             }
         }
-        Element* daddy = element->parent;
-        if ((daddy != NULL) && (daddy->children->size() > 0)) {
-            std::list<Element>* siblings = daddy->children;
-            for (auto elem = siblings->begin(); elem != siblings->end(); ++elem) {
-                if (strcmp(elem->id.c_str(), elementId) == 0) {
-                    siblings->erase(elem);
-                    return;
+        if (element->type == IMGUI_ELEMENT::Menu) { g_Game->GetConsole()->PrintError("Cant Remove a Menu, Use RemoveMenu to Remove menus! (" + std::string(elementId) + ") \n"); return false; }
+        if (element->type == IMGUI_ELEMENT::Window) { g_Game->GetConsole()->PrintError("Cant Remove a Window, Use RemoveWindow to Remove windows! (" + std::string(elementId) + ") \n"); return false; }
+        if (element->type == IMGUI_ELEMENT::ColorEdit) { g_Game->GetConsole()->PrintError("Cant Remove a Color, Use RemoveColor to Remove colors! (" + std::string(elementId) + ") \n"); return false; }
+
+        if (element->parent != NULL) {
+            Element* daddy = element->parent;
+            if ((daddy != NULL) && (daddy->children != NULL) && (daddy->children->size() > 0)) {
+                std::list<Element>* siblings = daddy->children;
+                for (auto elem = siblings->begin(); elem != siblings->end(); ++elem) {
+                    if (strcmp(elem->id.c_str(), elementId) == 0) {
+                        siblings->erase(elem);
+                        return true;
+                    }
                 }
             }
         }
-        else {
-            g_Game->GetConsole()->PrintError("Couldnt find the element to remove! ("+ std::string(elementId)+") \n");
-        }
+        g_Game->GetConsole()->PrintError("Couldnt find the element to remove! (" + std::string(elementId) + ") \n");
+        return false;
     }
 
     bool CreateMenuElement(const char* id, const char* text) IM_FMTARGS(2)
