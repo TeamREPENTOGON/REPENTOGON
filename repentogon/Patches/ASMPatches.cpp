@@ -1449,4 +1449,6 @@ void PerformASMPatches() {
 	ASMPatchInputAction();
 	ASMPatchPlayerStats();
 	ASMPatchPostNightmareSceneCallback();
+	delirium::AddTransformationCallback();
+	delirium::AddPostTransformationCallback();
 }
