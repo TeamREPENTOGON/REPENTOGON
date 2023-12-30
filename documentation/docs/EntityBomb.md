@@ -30,6 +30,7 @@ ___
 ___
 ### GetScale () {: aria-label='Functions' }
 #### float GetScale ( ) {: .copyable aria-label='Functions' }
+Used to apply animation set for bomb costume.
 
 ___
 ### IsLoadingCostumes () {: aria-label='Functions' }
@@ -45,11 +46,12 @@ ___
 
 ___
 ### SetLoadCostumes () {: aria-label='Functions' }
-#### void SetLoadCostumes ( boolean Load ) {: .copyable aria-label='Functions' }
+#### void SetLoadCostumes ( boolean Load = true ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetScale () {: aria-label='Functions' }
 #### void SetScale ( float Scale ) {: .copyable aria-label='Functions' }
+Should be used with [SetLoadCostumes](#setloadcostumes) method.
 
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }

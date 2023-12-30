@@ -31,7 +31,7 @@ This is ordered last-to-first- the first entry will be the currently blank line 
 
 ___
 ### PopHistory () {: aria-label='Functions' }
-#### void PopHistory ( int amount = 1 ) {: .copyable aria-label='Functions' }
+#### void PopHistory ( int Amount = 1 ) {: .copyable aria-label='Functions' }
 Removes previous lines from history. Optionally, use amount to define how many entries should be removed. The line currently awaiting user input in the console counts as a part of the history, but this is already accounted for on the C++ side.
 
 ___
