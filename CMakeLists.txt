@@ -57,6 +57,7 @@ add_subdirectory("libs/curl")
 # Crypto++
 option(CRYPTOPP_BUILD_TESTING "" OFF)
 add_subdirectory("libs/cryptopp-cmake")
+target_compile_options(cryptopp PUBLIC "/MD")
 
 # Parser
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
