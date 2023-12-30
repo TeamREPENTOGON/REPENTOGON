@@ -183,6 +183,15 @@ ___
 #### void TeleportToRandomPosition ( ) {: .copyable aria-label='Functions' }
 
 ___
+### ToDelirium () {: aria-label='Functions' }
+#### [EntityDelirium](EntityDelirium.md) ToDelirium ( ) {: .copyable aria-label='Functions' }
+Convert an [Entity](Entity.md) userdata to an [EntityDelirium](EntityDelirium.md) userdata.
+The conversion will only succeed if the source entity is an instance of Delirium (in its normal form or in a transformed form).
+
+???+ note "Return behavior"
+    If the conversion fails, this function returns `nil`.
+
+___
 ### ToSlot () {: aria-label='Functions' }
 #### [EntitySlot](EntitySlot.md) ToSlot ( ) {: .copyable aria-label='Functions' }
 Used to cast an [Entity](Entity.md) object to an [EntitySlot](EntitySlot.md) object.
@@ -191,6 +200,7 @@ Used to cast an [Entity](Entity.md) object to an [EntitySlot](EntitySlot.md) obj
     If the conversion is not successful, this function returns `nil`.
 
 ___
+
 ### TryThrow () {: aria-label='Functions' }
 #### boolean TryThrow ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) ThrowDirection, float Force ) {: .copyable aria-label='Functions' }
 

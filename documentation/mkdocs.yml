@@ -125,6 +125,7 @@ nav:
     - CompletionType: enums/CompletionType.md
     - ConsoleFont: enums/ConsoleFont.md
     - DebugFlag: enums/DebugFlag.md
+    - DeliriumCallbacks: enums/DeliriumCallbacks.md
     - DialogButtons: enums/DialogButtons.md
     - DialogIcons: enums/DialogIcons.md
     - DialogReturn: enums/DialogReturn.md
@@ -195,6 +196,7 @@ nav:
   - Entity:
     - Entity: Entity.md
     - EntityBomb: EntityBomb.md
+    - EntityDelirium: EntityDelirium.md
     - EntityEffect: EntityEffect.md
     - EntityFamiliar: EntityFamiliar.md
     - EntityKnife: EntityKnife.md
