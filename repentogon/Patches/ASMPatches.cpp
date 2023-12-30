@@ -10,6 +10,7 @@
 #include "FamiliarTags.h"
 
 #include "ASMPatches.h"
+#include "ASMDelirium.h"
 #include "ASMPatcher.hpp"
 #include "Log.h"
 //#include "../REPENTOGONOptions.h"

@@ -2,7 +2,8 @@
 #include "HookSystem.h"
 #include "Log.h"
 #include "LuaCore.h"
-#include "Delirium.h"
+
+#include "../REPENTOGONDelirium.h"
 
 static int lua_EntityToDelirium(lua_State* L) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "EntityNPC");
@@ -295,20 +296,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(L);
 	// RegisterMemoryFunctions(L);
 	RegisterDeliriumFunctions(L);
-}
-
-HOOK_METHOD_PRIORITY(LuaEngine, Init, 100,  (bool debug) -> void) {
-	super(debug);
-	bool result = this->RunBundledScript("resources-delirium/scripts/enums.lua");
-	ZHL::Log("Loading Delirium scripts: %d\n", result);
-}
-
-extern "C" __declspec(dllexport) int ModInit(int argc, char** argv) {
-	delirium::PatchSkipFrames();
-	delirium::PatchCompanion();
-	// delirium::AddPreTransformationCallback();
-	delirium::AddTransformationCallback();
-	delirium::PatchVadeRetro();
-	delirium::AddPostTransformationCallback();
-	return 0;
 }
