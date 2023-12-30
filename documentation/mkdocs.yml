@@ -284,19 +284,19 @@ nav:
     - Beam: renderer/Beam.md
     - BlendMode: renderer/BlendMode.md
     - DestinationQuad: renderer/DestinationQuad.md
-    - GLSLValue: renderer/GLSLValue.md
+    # - GLSLValue: renderer/GLSLValue.md
     - Image: renderer/Image.md
-    - Pipeline: renderer/Pipeline.md
+    # - Pipeline: renderer/Pipeline.md
     - Point: renderer/Point.md
-    - Renderer: renderer/Renderer.md
-    - RenderSet: renderer/RenderSet.md
-    - Shader: renderer/Shader.md
+    # - Renderer: renderer/Renderer.md
+    # - RenderSet: renderer/RenderSet.md
+    # - Shader: renderer/Shader.md
     - SourceQuad: renderer/SourceQuad.md
     - Shape: renderer/Shape.md
-    - Transformer: renderer/Transformer.md
-    - Vertex: renderer/Vertex.md
-    - VertexBuffer: renderer/VertexBuffer.md
-    - VertexDescriptor: renderer/VertexDescriptor.md
+    # - Transformer: renderer/Transformer.md
+    # - Vertex: renderer/Vertex.md
+    # - VertexBuffer: renderer/VertexBuffer.md
+    # - VertexDescriptor: renderer/VertexDescriptor.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfig:
@@ -335,7 +335,7 @@ nav:
   - giantbook.xml: xml/giantbook.md
   - items.xml: xml/items.md
   - players.xml: xml/players.md
-- Custom Rendering: renderer/CustomRendering.md
+# - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
