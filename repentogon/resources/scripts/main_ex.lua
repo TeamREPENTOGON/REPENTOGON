@@ -561,7 +561,7 @@ local function RenderErrHudCB()
 	if mouse_pos.X > err_bounding_x and mouse_pos.X < Isaac.GetScreenWidth() - err_bounding_x and mouse_pos.Y < 18 then
 		mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity)
 		if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
-			Isaac.GetImGui():Show()
+			ImGui.Show()
 			UnlinkCallbacks()
 		
 		end
@@ -584,7 +584,6 @@ end
 
 
 local function imGuiError(errortext)
-	local imgui = Isaac.GetImGui()
 	local windowId = "ErrorDisplayWindow"
 	if not ImGui.ElementExists("ErrorDisplayMenu") then
 		ImGui.CreateMenu("ErrorDisplayMenu", "REPENTOGON Error Display")
@@ -862,8 +861,8 @@ MenuManager.StatsMenu = StatsMenu
 
 -- ImGui alias functions
 --local ImGui = Isaac.GetImGui()
-rawset(getmetatable(ImGui), "ImGuiToWorld", function (_, position) return Isaac.ScreenToWorld(position) end)
-rawset(getmetatable(ImGui), "WorldToImGui", function (_, position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end)
+ImGui.ImGuiToWorld = function (_, position) return Isaac.ScreenToWorld(position) end
+ImGui.WorldToImGui = function (_, position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end
 
 if not _LUADEBUG then
 	debug = nil
@@ -898,7 +897,7 @@ end
 rawset(Isaac, "GetEntityConfig", function() return EntityConfig end)
 
 -- Reset Imgui Data after reload of all mods
-Isaac.GetImGui():Reset()
+ImGui.Reset()
 
 --resource load error, used in changelog but it's not strictly a changelog thing so i'm putting it here
 local res_error_font=Font()
