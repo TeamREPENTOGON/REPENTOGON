@@ -586,21 +586,21 @@ end
 local function imGuiError(errortext)
 	local imgui = Isaac.GetImGui()
 	local windowId = "ErrorDisplayWindow"
-	if not imgui:ElementExists("ErrorDisplayMenu") then
-		imgui:CreateMenu("ErrorDisplayMenu", "REPENTOGON Error Display")
-		imgui:AddElement("ErrorDisplayMenu", "ErrorDisplayMenuEntry", ImGuiElement.MenuItem, "Error Display")
+	if not ImGui.ElementExists("ErrorDisplayMenu") then
+		ImGui.CreateMenu("ErrorDisplayMenu", "REPENTOGON Error Display")
+		ImGui.AddElement("ErrorDisplayMenu", "ErrorDisplayMenuEntry", ImGuiElement.MenuItem, "Error Display")
 	
-		imgui:CreateWindow(windowId, "Error Display")
-		imgui:LinkWindowToElement(windowId, "ErrorDisplayMenuEntry")
+		ImGui.CreateWindow(windowId, "Error Display")
+		ImGui.LinkWindowToElement(windowId, "ErrorDisplayMenuEntry")
 	
-		imgui:AddText(windowId, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", true)
-		imgui:AddText(windowId, errortext, true, "ErrorDisplayText")
-		imgui:AddElement(windowId, "ErrorDisplayCopyToClipboard", ImGuiElement.Button, "Copy to Clipboard")
-		imgui:AddCallback("ErrorDisplayCopyToClipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
+		ImGui.AddText(windowId, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", true)
+		ImGui.AddText(windowId, errortext, true, "ErrorDisplayText")
+		ImGui.AddElement(windowId, "ErrorDisplayCopyToClipboard", ImGuiElement.Button, "Copy to Clipboard")
+		ImGui.AddCallback("ErrorDisplayCopyToClipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
 	else
-		imgui:UpdateText("ErrorDisplayText", errortext)
+		ImGui.UpdateText("ErrorDisplayText", errortext)
 	end
-	imgui:SetVisible(windowId, true)
+	ImGui.SetVisible(windowId, true)
 end
 
 local err_dupecount = 1
@@ -861,7 +861,7 @@ MenuManager.CharacterMenu = CharacterMenu
 MenuManager.StatsMenu = StatsMenu
 
 -- ImGui alias functions
-local ImGui = Isaac.GetImGui()
+--local ImGui = Isaac.GetImGui()
 rawset(getmetatable(ImGui), "ImGuiToWorld", function (_, position) return Isaac.ScreenToWorld(position) end)
 rawset(getmetatable(ImGui), "WorldToImGui", function (_, position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end)
 

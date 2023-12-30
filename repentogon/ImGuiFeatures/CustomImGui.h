@@ -234,8 +234,8 @@ struct Element {
 
     void AddChild(Element element)
     {
-        children->push_back(element);
         element.parent = this;
+        children->push_back(element);
     }
 
     void AddCallback(int type, int callbackID)
@@ -389,11 +389,18 @@ struct CustomImGui {
                 return;
             }
         }
-        for (auto elem = element->parent->children->begin(); elem != element->parent->children->end(); ++elem) {
-            if (strcmp(elem->id.c_str(), elementId) == 0) {
-                element->parent->children->erase(elem);
-                return;
+        Element* daddy = element->parent;
+        if ((daddy != NULL) && (daddy->children->size() > 0)) {
+            std::list<Element>* siblings = daddy->children;
+            for (auto elem = siblings->begin(); elem != siblings->end(); ++elem) {
+                if (strcmp(elem->id.c_str(), elementId) == 0) {
+                    siblings->erase(elem);
+                    return;
+                }
             }
+        }
+        else {
+            g_Game->GetConsole()->PrintError("Couldnt find the element to remove! ("+ std::string(elementId)+") \n");
         }
     }
 
