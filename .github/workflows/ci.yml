@@ -28,6 +28,8 @@ jobs:
         $sha = git rev-parse --short HEAD
         echo "#define VERSION `"nightly-$sha`"" >> ${{github.workspace}}/repentogon/Version.h
         (gc ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua) -replace 'dev build', nightly-$sha | Out-File -encoding ASCII ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua
+        (gc ${{github.workspace}}/launcher/Updater.cpp) -replace 'std::string version = "dev build";', 'std::string version = "nightly-$sha";' | Out-File -encoding ASCII ${{github.workspace}}/launcher/Updater.cpp
+
 
 
     - name: Configure CMake
