@@ -5,13 +5,12 @@ tags:
 # Class "ImGui"
 
 ???+ info
-    You can get this class by using the following functions:
+    You can get this class by using the global table "ImGui"
 
-    * [Isaac.GetImGui()](Isaac.md#getimgui)
 
     ???+ example "Example Code"
         ```lua
-        local imgui = Isaac.GetImGui()
+        local isblind = ImGui.GetVisible("braillemenu")
         ```
     ### Reference
     For element types we use the same names as in ImGui itself. Check out the **[interactive ImGui example](https://pthom.github.io/imgui_manual_online/manual/imgui_manual.html)**.
@@ -48,8 +47,7 @@ Adds a Combobox element which represents a single line element that allows you t
 
 ???+ example "Example Code"
     ```lua
-    local imgui = Isaac.GetImGui()
-    imgui:AddCombobox("catInput", "combobox1", "Combobox", function(index, val) print(index, val) end, { "Item 1", "Item 2", "Item 3" }, 1)
+    ImGui.AddCombobox("catInput", "combobox1", "Combobox", function(index, val) print(index, val) end, { "Item 1", "Item 2", "Item 3" }, 1)
     ```
 ___
 ### AddDragFloat () {: aria-label='Functions' }
@@ -71,9 +69,8 @@ The callback gets passed the r,g,b and a values as seperate parameters.
 
 ???+ example "Example Code"
     ```lua
-    local imgui = Isaac.GetImGui()
-    imgui:AddInputColor("catInput", "inputColorRGB", "RGB input", function(r, g, b) print(r, g, b) end, 1, 0.25, 0.45)
-    imgui:AddInputColor("catInput", "inputColorRGBA", "RGBA input", function(r, g, b, a) print(r, g, b, a) end, 0.5, 0.5, 0.5,
+    ImGui.AddInputColor("catInput", "inputColorRGB", "RGB input", function(r, g, b) print(r, g, b) end, 1, 0.25, 0.45)
+    ImGui.AddInputColor("catInput", "inputColorRGBA", "RGBA input", function(r, g, b, a) print(r, g, b, a) end, 0.5, 0.5, 0.5,
         0.5)
     ```
 ___
@@ -124,8 +121,7 @@ ___
 
 ???+ example "Example Code"
     ```lua
-    local imgui = Isaac.GetImGui()
-    imgui:AddRadioButtons("catInput", "radioButtons", function(index) print(index) end, { "Radio 1", "Radio 2", "Radio 3" }, 1)
+    ImGui.AddRadioButtons("catInput", "radioButtons", function(index) print(index) end, { "Radio 1", "Radio 2", "Radio 3" }, 1)
     ```
 ___
 ### AddSliderFloat () {: aria-label='Functions' }
@@ -194,11 +190,10 @@ Connects a Window or Popup element to another element, making said element act a
 ???- example "Example Code"
     this code creates a new menu entry with one menuitem, which on click toggles a window
     ```lua
-    local imgui = Isaac.GetImGui()
-    imgui:CreateMenu("myMenu", "Test Menu")
-    imgui:AddElement("myMenu", "myButton", ImGuiElement.MenuItem, "Some Text")
-    imgui:CreateWindow("myWindow", "Some Window title")
-    imgui:LinkWindowToElement("myWindow", "myButton")
+    ImGui.CreateMenu("myMenu", "Test Menu")
+    ImGui.AddElement("myMenu", "myButton", ImGuiElement.MenuItem, "Some Text")
+    ImGui.CreateWindow("myWindow", "Some Window title")
+    ImGui.LinkWindowToElement("myWindow", "myButton")
     ```
 
 ___

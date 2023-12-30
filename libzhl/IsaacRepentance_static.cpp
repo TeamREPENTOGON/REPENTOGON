@@ -69,7 +69,7 @@ bool Game::IsErased(int type, int variant, int subtype) {
 float Room::GetChampionBossChance() const {
 	PersistentGameData* data = g_Manager->GetPersistentGameData();
 	float chance = 0.f;
-	bool subcond = g_Manager->GetState() == 2 && (g_Game->GetDailyChallenge()._id != 0 || g_Game->GetDebug() != 0);
+	bool subcond = g_Manager->GetState() == 2 && (g_Game->GetDailyChallenge()._id != 0 || g_Game->_isDebug);
 
 	if (data->achievements[0x3] || subcond) { /* Womb unlock */
 		chance = 0.1f;

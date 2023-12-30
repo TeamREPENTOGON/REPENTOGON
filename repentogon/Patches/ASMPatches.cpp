@@ -10,6 +10,7 @@
 #include "FamiliarTags.h"
 
 #include "ASMPatches.h"
+#include "ASMDelirium.h"
 #include "ASMPatcher.hpp"
 #include "Log.h"
 //#include "../REPENTOGONOptions.h"
@@ -1138,7 +1139,7 @@ void PatchInlinedSpawnGridEntity()
 	SigScan scanner_card_against_humanity("8945??a1????????8bb0????????8975");
 	SigScan scanner_pickup_grid_entity1("8945??81ffbf010000");
 	//
-	SigScan scanner_try_spawn_sanguine_spikes("8b75??85f678??81fec0010000");
+	SigScan scanner_try_spawn_sanguine_spikes("85f678??81fec00100007c??68????????6a03e8????????83c40881bc??????????84030000");
 	SigScan scanner_pressure_plate_reward1("8bf885ff78??81ffc00100007c??68????????6a03e8????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c4048975??8bcec745??1c000000");
 	SigScan scanner_pressure_plate_reward2("8bf885ff78??81ffc00100007c??68????????6a03e8????????83c40881bc??????????840300000f8f????????6874010000e8????????8bf083c4048975??8bcec745??06000000");
 	scanner_megafatty.Scan();
@@ -1214,7 +1215,7 @@ void PatchInlinedSpawnGridEntity()
 	// This needs special handling bc the code loads g_Game back into EAX near the end of the inline
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[17], ASMPatch::Registers::EDI, 0xd5, GRID_DECORATION, 1000); // PickupGridEntity
 	// So will the other use, inlining in this function is wacky [18]
-	ASMPatchInlinedSpawnGridEntity_Generic(addrs[19], ASMPatch::Registers::EBP, -0x14, ASMPatch::Registers::EBX, 0x0, 0xc6, GRID_SPIKES, 100); // TrySpawnSanguineBondSpike
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[19], ASMPatch::Registers::ESI, 0, ASMPatch::Registers::EBX, 0x0, 0xbd, GRID_SPIKES, 100); // TrySpawnSanguineBondSpike
 	
 	// These aren't done yet
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[20], ASMPatch::Registers::EAX, 0, ASMPatch::Registers::EBP, -0x1c, 0x1164, GRID_POOP, 0); // pressure plate reward (1)
@@ -1448,4 +1449,6 @@ void PerformASMPatches() {
 	ASMPatchInputAction();
 	ASMPatchPlayerStats();
 	ASMPatchPostNightmareSceneCallback();
+	delirium::AddTransformationCallback();
+	delirium::AddPostTransformationCallback();
 }

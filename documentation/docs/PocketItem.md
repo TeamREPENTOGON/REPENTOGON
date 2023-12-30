@@ -11,7 +11,7 @@ tags:
 
     ???+ example "Example Code"
         ```lua
-        local imgui = Isaac.GetPlayer(0):GetPocketItem(ActiveSlot.SLOT_PRIMARY)
+        local pocket = Isaac.GetPlayer(0):GetPocketItem(ActiveSlot.SLOT_PRIMARY)
         ```
 ## Functions
 

@@ -224,6 +224,12 @@ ModCallbacks.MC_MENU_INPUT_ACTION = 1464
 
 ModCallbacks.MC_POST_SAVESLOT_LOAD = 1470
 
+DeliriumCallbacks = {
+    PRE_TRANSFORMATION = "DeliriumPreTransformation",
+    TRANSFORMATION = "DeliriumTransformation",
+    POST_TRANSFORMATION = "DeliriumPostTransformation"
+}
+
 EntityPartition.ALL = 0xffffffff
 
 StbType = {

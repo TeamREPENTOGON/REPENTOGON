@@ -561,7 +561,7 @@ local function RenderErrHudCB()
 	if mouse_pos.X > err_bounding_x and mouse_pos.X < Isaac.GetScreenWidth() - err_bounding_x and mouse_pos.Y < 18 then
 		mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity)
 		if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
-			Isaac.GetImGui():Show()
+			ImGui.Show()
 			UnlinkCallbacks()
 		
 		end
@@ -584,23 +584,22 @@ end
 
 
 local function imGuiError(errortext)
-	local imgui = Isaac.GetImGui()
 	local windowId = "ErrorDisplayWindow"
-	if not imgui:ElementExists("ErrorDisplayMenu") then
-		imgui:CreateMenu("ErrorDisplayMenu", "REPENTOGON Error Display")
-		imgui:AddElement("ErrorDisplayMenu", "ErrorDisplayMenuEntry", ImGuiElement.MenuItem, "Error Display")
+	if not ImGui.ElementExists("ErrorDisplayMenu") then
+		ImGui.CreateMenu("ErrorDisplayMenu", "REPENTOGON Error Display")
+		ImGui.AddElement("ErrorDisplayMenu", "ErrorDisplayMenuEntry", ImGuiElement.MenuItem, "Error Display")
 	
-		imgui:CreateWindow(windowId, "Error Display")
-		imgui:LinkWindowToElement(windowId, "ErrorDisplayMenuEntry")
+		ImGui.CreateWindow(windowId, "Error Display")
+		ImGui.LinkWindowToElement(windowId, "ErrorDisplayMenuEntry")
 	
-		imgui:AddText(windowId, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", true)
-		imgui:AddText(windowId, errortext, true, "ErrorDisplayText")
-		imgui:AddElement(windowId, "ErrorDisplayCopyToClipboard", ImGuiElement.Button, "Copy to Clipboard")
-		imgui:AddCallback("ErrorDisplayCopyToClipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
+		ImGui.AddText(windowId, "Below is the first error in the chain, which is likely (but not always) the one causing further problems.\nThis is **not** a replacement for a proper log file: it is simply an overview.\nAlways be sure to provide your full log file to mod developers.\n\n", true)
+		ImGui.AddText(windowId, errortext, true, "ErrorDisplayText")
+		ImGui.AddElement(windowId, "ErrorDisplayCopyToClipboard", ImGuiElement.Button, "Copy to Clipboard")
+		ImGui.AddCallback("ErrorDisplayCopyToClipboard", ImGuiCallback.Clicked, function() Isaac.SetClipboard(errortext) end)
 	else
-		imgui:UpdateText("ErrorDisplayText", errortext)
+		ImGui.UpdateText("ErrorDisplayText", errortext)
 	end
-	imgui:SetVisible(windowId, true)
+	ImGui.SetVisible(windowId, true)
 end
 
 local err_dupecount = 1
@@ -861,9 +860,9 @@ MenuManager.CharacterMenu = CharacterMenu
 MenuManager.StatsMenu = StatsMenu
 
 -- ImGui alias functions
-local ImGui = Isaac.GetImGui()
-rawset(getmetatable(ImGui), "ImGuiToWorld", function (_, position) return Isaac.ScreenToWorld(position) end)
-rawset(getmetatable(ImGui), "WorldToImGui", function (_, position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end)
+--local ImGui = Isaac.GetImGui()
+ImGui.ImGuiToWorld = function (_, position) return Isaac.ScreenToWorld(position) end
+ImGui.WorldToImGui = function (_, position) return Isaac.WorldToScreen(position) * Isaac.GetScreenPointScale() end
 
 if not _LUADEBUG then
 	debug = nil
@@ -898,7 +897,7 @@ end
 rawset(Isaac, "GetEntityConfig", function() return EntityConfig end)
 
 -- Reset Imgui Data after reload of all mods
-Isaac.GetImGui():Reset()
+ImGui.Reset()
 
 --resource load error, used in changelog but it's not strictly a changelog thing so i'm putting it here
 local res_error_font=Font()

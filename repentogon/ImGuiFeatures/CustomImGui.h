@@ -234,8 +234,8 @@ struct Element {
 
     void AddChild(Element element)
     {
-        children->push_back(element);
         element.parent = this;
+        children->push_back(element);
     }
 
     void AddCallback(int type, int callbackID)
@@ -380,21 +380,34 @@ struct CustomImGui {
         return true;
     }
 
-    void RemoveElement(const char* elementId) IM_FMTARGS(2)
+    bool RemoveElement(const char* elementId) IM_FMTARGS(2)
     {
         Element* element = GetElementByList(elementId, menuElements);
         if (element == NULL) {
             element = GetElementByList(elementId, windows);
             if (element == NULL) {
-                return;
+                g_Game->GetConsole()->PrintError("Couldnt find the element to remove! (" + std::string(elementId) + ") \n");
+                return false;
             }
         }
-        for (auto elem = element->parent->children->begin(); elem != element->parent->children->end(); ++elem) {
-            if (strcmp(elem->id.c_str(), elementId) == 0) {
-                element->parent->children->erase(elem);
-                return;
+        if (element->type == IMGUI_ELEMENT::Menu) { g_Game->GetConsole()->PrintError("Cant Remove a Menu, Use RemoveMenu to Remove menus! (" + std::string(elementId) + ") \n"); return false; }
+        if (element->type == IMGUI_ELEMENT::Window) { g_Game->GetConsole()->PrintError("Cant Remove a Window, Use RemoveWindow to Remove windows! (" + std::string(elementId) + ") \n"); return false; }
+        if (element->type == IMGUI_ELEMENT::ColorEdit) { g_Game->GetConsole()->PrintError("Cant Remove a Color, Use RemoveColor to Remove colors! (" + std::string(elementId) + ") \n"); return false; }
+
+        if (element->parent != NULL) {
+            Element* daddy = element->parent;
+            if ((daddy != NULL) && (daddy->children != NULL) && (daddy->children->size() > 0)) {
+                std::list<Element>* siblings = daddy->children;
+                for (auto elem = siblings->begin(); elem != siblings->end(); ++elem) {
+                    if (strcmp(elem->id.c_str(), elementId) == 0) {
+                        siblings->erase(elem);
+                        return true;
+                    }
+                }
             }
         }
+        g_Game->GetConsole()->PrintError("Couldnt find the element to remove! (" + std::string(elementId) + ") \n");
+        return false;
     }
 
     bool CreateMenuElement(const char* id, const char* text) IM_FMTARGS(2)
@@ -688,19 +701,19 @@ struct CustomImGui {
         case IMGUI_ELEMENT::InputText:
         case IMGUI_ELEMENT::InputTextWithHint:
         case IMGUI_ELEMENT::InputTextMultiline:
-            if (element->elementData.inputText != luaL_checkstring(L, 4))
-                element->elementData.inputText = luaL_checkstring(L, 4);
+            if (element->elementData.inputText != luaL_checkstring(L, 3))
+                element->elementData.inputText = luaL_checkstring(L, 3);
             return true;
 
         case IMGUI_ELEMENT::Checkbox:
-            checkVal = lua::luaL_checkboolean(L, 4);
+            checkVal = lua::luaL_checkboolean(L, 3);
             if (element->elementData.checked != checkVal)
                 element->elementData.checked = checkVal;
             return true;
 
         case IMGUI_ELEMENT::RadioButton:
         case IMGUI_ELEMENT::Combobox:
-            intVal = (int)luaL_checkinteger(L, 4);
+            intVal = (int)luaL_checkinteger(L, 3);
             if (element->elementData.index != intVal)
                 element->elementData.index = intVal;
             return true;
@@ -710,7 +723,7 @@ struct CustomImGui {
         case IMGUI_ELEMENT::SliderInt:
         case IMGUI_ELEMENT::InputController:
         case IMGUI_ELEMENT::InputKeyboard:
-            intVal = (int)luaL_checkinteger(L, 4);
+            intVal = (int)luaL_checkinteger(L, 3);
             if (element->elementData.currentIntVal != intVal)
                 element->elementData.currentIntVal = intVal;
             return true;
@@ -719,7 +732,7 @@ struct CustomImGui {
         case IMGUI_ELEMENT::DragFloat:
         case IMGUI_ELEMENT::SliderFloat:
         case IMGUI_ELEMENT::ProgressBar:
-            floatVal = (float)luaL_checknumber(L, 4);
+            floatVal = (float)luaL_checknumber(L, 3);
             if (element->elementData.currentFloatVal != floatVal)
                 element->elementData.currentFloatVal = floatVal;
             return true;
@@ -731,28 +744,28 @@ struct CustomImGui {
 
     bool UpdateElementData(Element* element, lua_State* L)
     {
-        IMGUI_DATA dataType = static_cast<IMGUI_DATA>(luaL_checkinteger(L, 3));
+        IMGUI_DATA dataType = static_cast<IMGUI_DATA>(luaL_checkinteger(L, 2));
         std::list<float>* newColorValues = new std::list<float>();
 
         float floatVal = 0.0;
         switch (dataType) {
         case IMGUI_DATA::Label:
-            if (element->name != luaL_checkstring(L, 4))
-                element->name = luaL_checkstring(L, 4);
+            if (element->name != luaL_checkstring(L, 3))
+                element->name = luaL_checkstring(L, 3);
             return true;
 
         case IMGUI_DATA::Value:
             return UpdateElementValue(element, L);
 
         case IMGUI_DATA::ListValues:
-            if (!lua_istable(L, 4))
+            if (!lua_istable(L, 3))
                 return luaL_error(L, "Argument 4 needs to be a table!");
 
             element->elementData.plotValues->clear();
             element->elementData.values->clear();
-            for (auto i = 1; i <= lua_rawlen(L, 4); ++i) {
+            for (auto i = 1; i <= lua_rawlen(L, 3); ++i) {
                 lua_pushinteger(L, i);
-                lua_gettable(L, 4);
+                lua_gettable(L, 3);
                 if (lua_type(L, -1) == LUA_TNIL)
                     break;
                 if (element->type == IMGUI_ELEMENT::PlotLines || element->type == IMGUI_ELEMENT::PlotHistogram) {
@@ -770,7 +783,7 @@ struct CustomImGui {
             case IMGUI_ELEMENT::SliderInt:
             case IMGUI_ELEMENT::DragFloat:
             case IMGUI_ELEMENT::SliderFloat:
-                floatVal = (float)luaL_checknumber(L, 4);
+                floatVal = (float)luaL_checknumber(L, 3);
                 if (element->elementData.minVal != floatVal)
                     element->elementData.minVal = floatVal;
                 return true;
@@ -784,7 +797,7 @@ struct CustomImGui {
             case IMGUI_ELEMENT::SliderInt:
             case IMGUI_ELEMENT::DragFloat:
             case IMGUI_ELEMENT::SliderFloat:
-                floatVal = (float)luaL_checknumber(L, 4);
+                floatVal = (float)luaL_checknumber(L, 3);
                 if (element->elementData.maxVal != floatVal)
                     element->elementData.maxVal = floatVal;
                 return true;
@@ -799,8 +812,8 @@ struct CustomImGui {
                 && element->type != IMGUI_ELEMENT::PlotHistogram
                 && element->type != IMGUI_ELEMENT::ProgressBar)
                 return false;
-            if (element->elementData.hintText != luaL_checkstring(L, 4))
-                element->elementData.hintText = luaL_checkstring(L, 4);
+            if (element->elementData.hintText != luaL_checkstring(L, 3))
+                element->elementData.hintText = luaL_checkstring(L, 3);
             return true;
 
         case IMGUI_DATA::ColorValues:
@@ -810,9 +823,9 @@ struct CustomImGui {
                 return luaL_error(L, "Argument 4 needs to be a table!");
 
             // get table input
-            for (auto i = 1; i <= lua_rawlen(L, 4); ++i) {
+            for (auto i = 1; i <= lua_rawlen(L, 3); ++i) {
                 lua_pushinteger(L, i);
-                lua_gettable(L, 4);
+                lua_gettable(L, 3);
                 if (lua_type(L, -1) == LUA_TNIL)
                     break;
                 newColorValues->push_back((float)luaL_checknumber(L, -1));

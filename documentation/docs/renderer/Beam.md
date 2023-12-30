@@ -39,7 +39,8 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 ## Functions
 
 ### Add () {: aria-label='Functions' }
-#### void Add ( [Vector](../Vector.md) Position, float Height, float Width = 1.0, [Color](../Color.md) Color = Color ) {: .copyable aria-label='Functions' }   
+#### void Add ( [Vector](../Vector.md) Position, float Height, float Width = 1.0, [Color](../Color.md) Color = Color ) {: .copyable aria-label='Functions' }
+#### void Add ( [Point](Point.md) Point ) {: .copyable aria-label='Functions' }   
 Adds a point to the beam. Points are stored in order of adding.
 
 ???+ info "Info"
@@ -51,6 +52,13 @@ ___
 #### int GetLayer ( ) {: .copyable aria-label='Functions' }   
 
 ___
+
+### GetPoints () {: aria-label='Functions' }
+#### [Point](Point.md)[] GetPoints ( ) {: .copyable aria-label='Functions' }   
+Returns a table of the [Points](Point.md) currently stored.
+
+___
+
 ### GetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }   
 
@@ -69,7 +77,13 @@ ___
 ___
 ### SetLayer () {: aria-label='Functions' }
 #### void SetLayer ( int LayerID ) {: .copyable aria-label='Functions' }   
-#### void SetLayer ( string LayerName ) {: .copyable aria-label='Functions' }   
+#### void SetLayer ( string LayerName ) {: .copyable aria-label='Functions' } 
+  
+___
+### SetPoints () {: aria-label='Functions' }
+#### void SetPoints ( [Point](Point.md)[] Points ) {: .copyable aria-label='Functions' }   
+Sets the [Points](Point.md) used by this.
+
 ___
 ### SetSprite () {: aria-label='Functions' }
 #### void SetSprite ( [Sprite](../Sprite.md) Sprite ) {: .copyable aria-label='Functions' }   

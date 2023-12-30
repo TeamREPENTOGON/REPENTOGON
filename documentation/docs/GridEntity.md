@@ -100,7 +100,7 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityTrapDoor](Grid
 ___
 
 ### ToWall () {: aria-label='Functions' }
-#### [GridEntityWall](GridEntityWall.md)ToWall ( ) {: .copyable aria-label='Functions' }
+#### [GridEntityWall](GridEntityWall.md) ToWall ( ) {: .copyable aria-label='Functions' }
 
 Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityWall](GridEntityWall.md) object.
 

@@ -187,7 +187,8 @@ function ChangeLog.MenuRender()
                     if UseFade then
                         Cl.FontColor.Alpha = Cl.FontColor.Alpha * 0.75
                     end
-                    Cl.Font:DrawStringScaledUTF8(line, LogRenderPosition.X + NullPos.X + XOffset, FullY, NullScale.X,
+                    local TextStretchFactor=math.min(1.0, BoxSize/Cl.Font:GetStringWidthUTF8(line) )    --this way the long lines of text get squished horizontally
+                    Cl.Font:DrawStringScaledUTF8(line, LogRenderPosition.X + NullPos.X + XOffset, FullY, NullScale.X*TextStretchFactor,
                         NullScale.Y, Cl.FontColor, 0, false)
                     YOffset = YOffset + Cl.LineHeight
                 end
