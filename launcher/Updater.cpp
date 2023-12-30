@@ -1,5 +1,6 @@
 #include "Updater.h"
 #include "document.h"
+#include "utils.h"
 
 #include <curl/curl.h>
 #include <string>
@@ -16,7 +17,6 @@
 std::string version = "dev build";
 
 using namespace rapidjson;
-
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp)
 {
@@ -209,7 +209,16 @@ void CheckForUpdates() {
                     // chnage da world,
                     ini["internal"]["RanUpdater"] = "1";
                     iniFile.write(ini);
-                    ShellExecute(NULL, "open", "REPENTOGONUpdater.exe", "-auto", NULL, SW_SHOWDEFAULT);
+
+                    if (!argv)
+                        argv = CommandLineToArgvA(GetCommandLineA(), &argc);
+
+                    std::string args = "-auto";
+                    for (int i = 1; i < argc; ++i) {
+                        args.append(" ").append(argv[i]);
+                    }
+
+                    ShellExecute(NULL, "open", "REPENTOGONUpdater.exe", args.c_str(), NULL, SW_SHOWDEFAULT);
                     ExitProcess(1);
                 }
             }

@@ -12,22 +12,6 @@
 
 typedef int (*ModInitFunc)(int, char **);
 
-static int argc = 0;
-static char **argv = NULL;
-
-static bool HasCommandLineArgument(const char *arg)
-{
-	if(!argv)
-		argv = CommandLineToArgvA(GetCommandLineA(), &argc);
-
-	for(int i=1 ; i < argc ; ++i)
-	{
-		if(_stricmp(argv[i], arg) == 0) return true;
-	}
-
-	return false;
-}
-
 static std::vector<std::pair<std::string, HMODULE>> mods;
 
 DWORD RedirectLua(HMODULE* outLua) {
