@@ -30,11 +30,11 @@ ___
 
 ___
 ### SetSelectedColumn () {: aria-label='Functions' }
-#### void SetSelectedColumn ( int column ) {: .copyable aria-label='Functions' }
+#### void SetSelectedColumn ( int Column ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetSelectedElement () {: aria-label='Functions' }
-#### void SetSelectedElement ( int element ) {: .copyable aria-label='Functions' }
+#### void SetSelectedElement ( int Element ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsEditActive () {: aria-label='Functions' }

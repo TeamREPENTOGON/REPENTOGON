@@ -55,7 +55,7 @@ ___
 
 ___
 ### GetGridIndexByTile () {: aria-label='Functions' }
-#### int GetGridIndexByTile ( int gridRow, int gridColumn ) {: .copyable aria-label='Functions' }
+#### int GetGridIndexByTile ( int GridRow, int GridColumn ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRail () {: aria-label='Functions' }

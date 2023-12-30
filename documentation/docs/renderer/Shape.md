@@ -17,10 +17,10 @@ tags:
 
 ___
 ### SetTimeout () {: aria-label='Functions' }
-#### void SetTimeout ( int timeout ) {: .copyable aria-label='Functions' }
+#### void SetTimeout ( int Timeout ) {: .copyable aria-label='Functions' }
 
 ___
 ### Capsule () {: aria-label='Functions' }
-#### void Capsule ([Capsule](../Capsule.md) capsule ) {: .copyable aria-label='Functions' }
+#### void Capsule ([Capsule](../Capsule.md) Capsule ) {: .copyable aria-label='Functions' }
 Assign a capsule collider to the shape.
 ___

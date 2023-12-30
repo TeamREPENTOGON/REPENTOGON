@@ -51,11 +51,11 @@ ___
 
 ___
 ### SetActiveMenu () {: aria-label='Functions' }
-#### int SetActiveMenu ([MainMenuType](../enums/MainMenuType.md) menu ) {: .copyable aria-label='Functions' }
+#### int SetActiveMenu ([MainMenuType](../enums/MainMenuType.md) Menu ) {: .copyable aria-label='Functions' }
 Changes the active menu on the main menu to match the input menutype.
 
 ___
 ### SetColorModifier () {: aria-label='Functions' }
-#### void SetColorModifier ( [ColorModifier](../ColorModifier.md) colorModifier, boolean lerp = true, float rate = 0.015 ) {: .copyable aria-label='Functions' }
+#### void SetColorModifier ( [ColorModifier](../ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
 
 ___

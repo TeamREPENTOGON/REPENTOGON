@@ -29,7 +29,7 @@ Returns a table of [LevelGeneratorRoom](LevelGeneratorRoom.md) representing all 
 
 ___
 ### PlaceRoom () {: aria-label='Functions' }
-#### int PlaceRoom ( int column, int row, int shape, [LevelGeneratorRoom](LevelGeneratorRoom.md) Origin ) {: .copyable aria-label='Functions' }
+#### int PlaceRoom ( int Column, int Row, [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) Shape, [LevelGeneratorRoom](LevelGeneratorRoom.md) Origin ) {: .copyable aria-label='Functions' }
 Place a [LevelGeneratorRoom](LevelGeneratorRoom.md) object onto the level-grid. 
 The `Origin` parameter is used as the index of the connecting room. For instance, if you want to place a room on top of the starting room, then `Origin` can be the starting room of the floor.
 

@@ -84,7 +84,7 @@ If currently lerping between two [ColorModifier](ColorModifier.md) states, retur
 
 ___
 ### IsErased () {: aria-label='Functions' }
-#### boolean IsErased ( [Entity](Entity.md) entity) {: .copyable aria-label='Functions' }
+#### boolean IsErased ( [Entity](Entity.md) Entity ) {: .copyable aria-label='Functions' }
 #### boolean IsErased ( int Type, int Variant = -1, int SubType = -1 ) {: .copyable aria-label='Functions' }
 Checks if an entity was erased.
 ___

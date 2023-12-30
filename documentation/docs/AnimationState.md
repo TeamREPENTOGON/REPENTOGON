@@ -13,7 +13,7 @@ Obtained via [Entity:GetAnimationState()](Entity.md#getanimationstate).
 
 ___
 ### IsEventTriggered () {: aria-label='Functions' }
-#### boolean IsEventTriggered ( string eventName ) {: .copyable aria-label='Functions' }
+#### boolean IsEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 
 ___
 

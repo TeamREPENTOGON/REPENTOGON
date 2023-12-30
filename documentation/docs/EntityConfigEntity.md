@@ -160,7 +160,7 @@ Returns true if the entity has the provided string specified in its `customtags`
 
 ___
 ### HasEntityTags () {: aria-label='Functions' }
-#### boolean HasEntityTags ( int tags ) {: .copyable aria-label='Functions' }
+#### boolean HasEntityTags ( int Tags ) {: .copyable aria-label='Functions' }
 Returns true if the entity has all [EntityTag](enums/EntityTag.md)s specified in the provided bitset.
 
 ___
@@ -169,7 +169,7 @@ ___
 
 ___
 ### HasGibFlags () {: aria-label='Functions' }
-#### boolean HasGibFlags ( int flags ) {: .copyable aria-label='Functions' }
+#### boolean HasGibFlags ( int Flags ) {: .copyable aria-label='Functions' }
 Returns true if the entity has all [GibFlag](enums/GibFlag.md)s specified in the provided bitset.
 
 ___

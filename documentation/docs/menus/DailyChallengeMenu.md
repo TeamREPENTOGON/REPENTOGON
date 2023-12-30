@@ -50,6 +50,6 @@ ___
 
 ___
 ### SetSelectedElement () {: aria-label='Functions' }
-#### void SetSelectedElement ( int elementID ) {: .copyable aria-label='Functions' }
+#### void SetSelectedElement ( int ElementID ) {: .copyable aria-label='Functions' }
 
 ___

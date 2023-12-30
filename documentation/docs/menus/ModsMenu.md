@@ -26,7 +26,7 @@ ___
 
 ___
 ### SetSelectedElement () {: aria-label='Functions' }
-#### void SetSelectedElement ( int element ) {: .copyable aria-label='Functions' }
+#### void SetSelectedElement ( int Element ) {: .copyable aria-label='Functions' }
 
 ___
 ### WasListEdited () {: aria-label='Functions' }

@@ -54,10 +54,10 @@ ___
 
 ___
 ### SetSelectedPage () {: aria-label='Functions' }
-#### void SetSelectedPage ( int page ) {: .copyable aria-label='Functions' }
+#### void SetSelectedPage ( int Page ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetSelectedElement () {: aria-label='Functions' }
-#### void SetSelectedElement ( int element ) {: .copyable aria-label='Functions' }
+#### void SetSelectedElement ( int Element ) {: .copyable aria-label='Functions' }
 
 ___

@@ -102,15 +102,15 @@ ___
 
 ___
 ### SetCharacterWheelDepth () {: aria-label='Functions' }
-#### void SetCharacterWheelDepth ( float value ) {: .copyable aria-label='Functions' }
+#### void SetCharacterWheelDepth ( float Value ) {: .copyable aria-label='Functions' }
 Set the depth of the character selection wheel object.
 ___
 ### SetCharacterWheelWidth () {: aria-label='Functions' }
-#### void SetCharacterWheelWidth ( float value ) {: .copyable aria-label='Functions' }
+#### void SetCharacterWheelWidth ( float Value ) {: .copyable aria-label='Functions' }
 Set the width of the character selection wheel object.
 ___
 ### SetDifficulty () {: aria-label='Functions' }
-#### void SetDifficulty ( int Difficulty ) {: .copyable aria-label='Functions' }
+#### void SetDifficulty ( [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) Difficulty ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetIsCharacterUnlocked () {: aria-label='Functions' }
@@ -118,14 +118,14 @@ ___
 
 ___
 ### SetScrollSpeed () {: aria-label='Functions' }
-#### void SetScrollSpeed ( float speed ) {: .copyable aria-label='Functions' }
+#### void SetScrollSpeed ( float Speed ) {: .copyable aria-label='Functions' }
 Set the speed of the animation playing when rotating the character selection wheel.
 ___
 ### SetSelectedCharacterMenu () {: aria-label='Functions' }
-#### void SetSelectedCharacterMenu ( int menu ) {: .copyable aria-label='Functions' }
+#### void SetSelectedCharacterMenu ( int Menu ) {: .copyable aria-label='Functions' }
 0 for Normal, 1 for Tainted
 ___
 ### SetSelectedCharacterID () {: aria-label='Functions' }
-#### void SetSelectedCharacterID ( int characterID ) {: .copyable aria-label='Functions' }
+#### void SetSelectedCharacterID ( int CharacterID ) {: .copyable aria-label='Functions' }
 
 ___

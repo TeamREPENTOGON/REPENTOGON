@@ -61,7 +61,7 @@ ___
 
 ___
 ### GetDebugShape () {: aria-label='Functions' }
-#### [Shape](renderer/Shape.md) GetDebugShape ( boolean unknown ) {: .copyable aria-label='Functions' }
+#### [Shape](renderer/Shape.md) GetDebugShape ( boolean Unknown ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetEntityConfigEntity () {: aria-label='Functions' }
@@ -149,11 +149,11 @@ ___
 
 ___
 ### SetDead () {: aria-label='Functions' }
-#### void SetDead ( boolean isDead ) {: .copyable aria-label='Functions' }
+#### void SetDead ( boolean IsDead ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetInvincible () {: aria-label='Functions' }
-#### void SetInvincible ( boolean isInvincible ) {: .copyable aria-label='Functions' }
+#### void SetInvincible ( boolean IsInvincible ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetPauseTime () {: aria-label='Functions' }

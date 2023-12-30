@@ -26,6 +26,6 @@ ___
 
 ___
 ### SetSelectedChallengeID () {: aria-label='Functions' }
-#### void SetSelectedChallengeID ( int challengeID ) {: .copyable aria-label='Functions' }
+#### void SetSelectedChallengeID ( int ChallengeID ) {: .copyable aria-label='Functions' }
 
 ___

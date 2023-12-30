@@ -44,7 +44,7 @@ Returns a string representation of the color object.
 
 ___
 ### __tostring () {: aria-label='Functions' }
-#### string __tostring ( ) {: .copyable aria-label='Functions' }
+#### string __tostring ( ) {: .copyable aria-label='Operators' }
 Creates a string representation of the color object.
 
 This enables direct printing of the object by doing `print(myColorObj)`

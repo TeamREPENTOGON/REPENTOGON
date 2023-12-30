@@ -7,7 +7,7 @@ tags:
 ## Functions
 
 ### CanSpawnCollectible () {: aria-label='Functions' }
-#### boolean CanSpawnCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean unkFlag ) {: .copyable aria-label='Functions' }
+#### boolean CanSpawnCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean UnkFlag ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCardEx () {: aria-label='Functions' }

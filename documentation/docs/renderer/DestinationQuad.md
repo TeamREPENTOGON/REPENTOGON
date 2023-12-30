@@ -6,7 +6,7 @@ tags:
 
 ## Constructors
 ### DestinationQuad () {: aria-label='Constructors' }
-#### [DestinationQuad](DestinationQuad.md) DestinationQuad ( [Vector](../Vector.md) topLeft, [Vector](../Vector.md) topRight, [Vector](../Vector.md) bottomLeft, [Vector](../Vector.md) bottomRight ) {: .copyable aria-label='Constructors' }
+#### [DestinationQuad](DestinationQuad.md) DestinationQuad ( [Vector](../Vector.md) TopLeft, [Vector](../Vector.md) TopRight, [Vector](../Vector.md) BottomLeft, [Vector](../Vector.md) BottomRight ) {: .copyable aria-label='Constructors' }
 
 ## Functions
 
@@ -27,18 +27,18 @@ ___
 
 ___
 ### SetBottomLeft () {: aria-label='Functions' }
-#### void SetBottomLeft ( [Vector](../Vector.md) vector ) {: .copyable aria-label='Functions' }
+#### void SetBottomLeft ( [Vector](../Vector.md) Vector ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBottomRight () {: aria-label='Functions' }
-#### void SetBottomRight ( [Vector](../Vector.md) vector ) {: .copyable aria-label='Functions' }
+#### void SetBottomRight ( [Vector](../Vector.md) Vector ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetTopLeft () {: aria-label='Functions' }
-#### void SetTopLeft ( [Vector](../Vector.md) vector ) {: .copyable aria-label='Functions' }
+#### void SetTopLeft ( [Vector](../Vector.md) Vector ) {: .copyable aria-label='Functions' }
 
 ___
-### SetTopLeft () {: aria-label='Functions' }
-#### void SetTopLeft ( [Vector]../Vector.md) vector ) {: .copyable aria-label='Functions' }
+### SetTopRight () {: aria-label='Functions' }
+#### void SetTopRight ( [Vector](../Vector.md) Vector ) {: .copyable aria-label='Functions' }
 
 ___

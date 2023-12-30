@@ -15,11 +15,11 @@ ___
 
 ___
 ### HurtDamage () {: aria-label='Functions' }
-#### void HurtDamage ( [Entity](Entity.md) entity, int damage, int damageFlags, float unknown, boolean unknown ) {: .copyable aria-label='Functions' }
+#### void HurtDamage ( [Entity](Entity.md) Entity, int Damage, int DamageFlags, float Unknown, boolean Unknown ) {: .copyable aria-label='Functions' }
 
 ___
 ### HurtSurroundings () {: aria-label='Functions' }
-#### void HurtSurroundings ( int damage, int gridType, int damageFlags, float unknown, boolean unknown ) {: .copyable aria-label='Functions' }
+#### void HurtSurroundings ( int Damage, int DamageFlags, float Unknown, boolean Unknown ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsBreakableRock () {: aria-label='Functions' }

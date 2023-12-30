@@ -250,7 +250,7 @@ static void RegisterQuadClasses(lua_State* L) {
 		{ "GetBottomLeft", lua_Quad_GetBottomLeft },
 		{ "GetBottomRight", lua_Quad_GetBottomRight },
 		{ "SetTopLeft", lua_Quad_SetTopLeft },
-		{ "SetTopLeft", lua_Quad_SetTopRight },
+		{ "SetTopRight", lua_Quad_SetTopRight },
 		{ "SetBottomLeft", lua_Quad_SetBottomLeft },
 		{ "SetBottomRight", lua_Quad_SetBottomRight },
 		{ NULL, NULL }

@@ -19,6 +19,6 @@ tags:
 ## Functions
 
 ### Get () {: aria-label='Functions' }
-#### [Shape](renderer/Shape.md) Get ( int Index, boolean unknown) {: .copyable aria-label='Functions' }
+#### [Shape](renderer/Shape.md) Get ( int Index, boolean Unknown) {: .copyable aria-label='Functions' }
 
 ___

@@ -21,7 +21,7 @@ Returns a boolean indicating if the red mode is activated or not.
     
 ___
 ### SetRedMode () {: aria-label='Functions' }
-#### void SetRedMode ( boolean on ) {: .copyable aria-label='Functions' }
+#### void SetRedMode ( boolean On ) {: .copyable aria-label='Functions' }
 Enable or disable red mode according to the parameter `on`. 
 
 ???+ info "About red mode"
@@ -29,12 +29,12 @@ Enable or disable red mode according to the parameter `on`.
     
 ___
 ### SetTeleportationTimer () {: aria-label='Functions' }
-#### void SetTeleportationTimer ( int timer ) {: .copyable aria-label='Functions' }
+#### void SetTeleportationTimer ( int Timer ) {: .copyable aria-label='Functions' }
 Set the number of frames before Delirium teleports. Negative values are not allowed.
 
 ___
 ### Transform () {: aria-label='Functions' }
-#### void Transform ( int type, int variant = 0 ) {: .copyable aria-label='Functions' }
+#### void Transform ( int Type, int Variant = 0 ) {: .copyable aria-label='Functions' }
 Transform Delirium into the entity with the specified type and variant. 
 
 ???+ warn "Warning"

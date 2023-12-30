@@ -150,17 +150,17 @@ Returns the cursor sprite that is rendered when ``Options.MouseControl`` is set 
 
 ___
 ### GetCutsceneIdByName () {: aria-label='Functions' }
-#### table GetCutsceneIdByName ( string name ) {: .copyable aria-label='Functions' }
+#### table GetCutsceneIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the Cutscene ID By Name.
 
 ___
 ### GetEntitySubTypeByName () {: aria-label='Functions' }
-#### int GetEntitySubTypeByName ( string name) {: .copyable aria-label='Functions' }
+#### int GetEntitySubTypeByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the entity SubType by entity name.
 
 ___
 ### GetGiantBookIdByName () {: aria-label='Functions' }
-#### int GetGiantBookIdByName ( string name) {: .copyable aria-label='Functions' }
+#### int GetGiantBookIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets a GiantBook Id by name. For vanilla giantbooks, the png filename, from the gfx xml attribute, is used as the giantbook name.
 
 ___
@@ -201,7 +201,7 @@ ___
 Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
 ___
 ### SetClipboard () {: aria-label='Functions' }
-#### boolean SetClipboard ( string ClipboardData) {: .copyable aria-label='Functions' }
+#### boolean SetClipboard ( string ClipboardData ) {: .copyable aria-label='Functions' }
 Sets the contents of the clipboard to the provided string.
 
 ___
@@ -211,7 +211,7 @@ Sets a completion mark of a character to match a specific value from `0` to `2`.
 
 ___
 ### SetCompletionMarks () {: aria-label='Functions' }
-#### void SetCompletionMarks ( table marks) {: .copyable aria-label='Functions' }
+#### void SetCompletionMarks ( table Marks ) {: .copyable aria-label='Functions' }
 Sets the completion marks of a character to match an input table. Supports both modded and vanilla characters. Requires a table containing all the marks for the character, getting it from [GetCompletionMarks](Isaac.md#GetCompletionMarks) is adviced for convenience.
 
 ???- info "Table structure & usage"
@@ -239,7 +239,7 @@ Sets the completion marks of a character to match an input table. Supports both 
 			```
 ___
 ### ShowErrorDialog () {: aria-label='Functions' }
-#### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string title, string text, [DialogIcons](enums/DialogIcons.md) icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
+#### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
 ___
 ### WorldToMenuPosition () {: aria-label='Functions' }
