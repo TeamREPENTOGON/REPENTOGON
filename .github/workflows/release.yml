@@ -32,7 +32,7 @@ jobs:
         type ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
         echo "#pragma once" > ${{github.workspace}}/repentogon/Version.h
         $version = Get-Content ${{github.workspace}}/version.txt -Raw 
-        echo $version | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        echo "$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         echo "#define VERSION `"$version`"" >> ${{github.workspace}}/repentogon/Version.h
         (gc ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua) -replace 'dev build', "$version" | Out-File -encoding ASCII ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua
         (gc ${{github.workspace}}/launcher/Updater.cpp) -replace 'std::string version = "dev build";', 'std::string version = "$version";' | Out-File -encoding ASCII ${{github.workspace}}/launcher/Updater.cpp
