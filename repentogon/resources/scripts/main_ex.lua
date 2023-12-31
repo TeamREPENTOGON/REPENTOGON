@@ -446,6 +446,10 @@ for callback, typeTable in pairs(typecheckFunctions) do
 	setExpectedTypes(typeTable)
 end
 
+for callback, typeTable in pairs(typecheckWarnFunctions) do
+	setExpectedTypes(typeTable)
+end
+
 rawset(Isaac, "SetCallbackTypeCheck", function(callbackID, tbl, noSetExpected)
 	typecheckFunctions[callbackID] = tbl
 	if not noSetExpected then
