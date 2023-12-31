@@ -296,7 +296,7 @@ __thiscall void Entity_Player::ClearItemAnimNullItems();
 __thiscall Entity_Bomb* Entity_Player::FireBomb(Vector * pos, Vector * vel, Entity * source);
 
 "558bec83e4f883ec10568bf1f30f115c24":
-__thiscall Entity_Knife* Entity_Player::FireBoneClub(Entity* parent, unsigned int variant, bool unk);
+__thiscall Entity_Knife* Entity_Player::FireBoneClub(Entity* parent, unsigned int variant, bool unk, Weapon* weapon, float unk2<xmm3>);
 
 "558bec83e4f881ec88000000a1????????33c4898424????????568b75":
 __thiscall Entity_Effect* Entity_Player::FireBrimstoneBall(const Vector& pos, const Vector& vel, const Vector& offset, unsigned int unk1, unsigned int unk2, Entity* unk3);

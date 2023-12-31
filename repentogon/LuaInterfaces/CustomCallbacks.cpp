@@ -2914,8 +2914,8 @@ HOOK_METHOD(Entity_Player, FireBomb, (Vector* pos, Vector* vel, Entity* source) 
 }
 
 //POST_FIRE_BONE_CLUB (id: 1254)
-HOOK_METHOD(Entity_Player, FireBoneClub, (Entity* parent, uint32_t variant, bool unk) -> Entity_Knife*) {
-	Entity_Knife* club = super(parent, variant, unk);
+HOOK_METHOD(Entity_Player, FireBoneClub, (Entity* parent, uint32_t variant, bool unk, Weapon* weapon, float unk2) -> Entity_Knife*) {
+	Entity_Knife* club = super(parent, variant, unk, weapon, unk2);
 	const int callbackid = 1254;
 
 	if (CallbackState.test(callbackid - 1000)) {
