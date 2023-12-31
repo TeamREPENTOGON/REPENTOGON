@@ -120,24 +120,27 @@ void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 	else {
 		lastmodid = "BaseGame";
 	}
-
-	if (stringlower(xmlpath).find("/content/") > 0) {
+	if ((stringlower(xmlpath).find("/content/") != string::npos) || (stringlower(xmlpath).find("/content-dlc3/") != string::npos)) {
 		iscontent = true;
 	}
 	else {
 		iscontent = false;
 	}
-	if (string(lastmodid).length() == 0) {
+	if ((string(lastmodid).length() == 0) || ((string(lastmodid)== "BaseGame") && iscontent)) {
 		string path = string(xmlpath);
 		int first = path.find("/mods/") + 6;
 		int last = path.find("/content");
 		if (!iscontent) {
 			last = path.find("/resources");
 		}
+		else if (last <= 0) {
+			last = path.find("/content-dlc3");
+		}
 		path = path.substr(first, last - first); //when the id is null(which it can fucking be) just use the folder name as ID...
 		lastmodid = new char[path.length() + 1]; //this is the sort of stuff I dont like about C++
 		strcpy(lastmodid, path.c_str());
 	}
+	//printf("path: %s (mod:%s iscontent:%d) \n", xmlpath,lastmodid,iscontent);
 	logViewer.AddLog("[REPENTOGON]", "Mod ID: %s \n", lastmodid);
 	
 }
@@ -172,6 +175,15 @@ ModEntry* GetModEntryByDir(const string &Dir) {
 ModEntry* GetModEntryByContentPath(const string &path) {
 	if ((path.find("/content/") != string::npos) && (path.find("/mods/") != string::npos)) {
 		std::regex regex("/mods/(.*?)/content/");
+		std::smatch match;
+		if (std::regex_search(path, match, regex)) {
+			if (XMLStuff.ModData->byfolder.count(match.str(1)) > 0) {
+				return XMLStuff.ModData->modentries[XMLStuff.ModData->byfolder[match.str(1)]];
+			}
+		}
+	}
+	else if ((path.find("/content-dlc3/") != string::npos) && (path.find("/mods/") != string::npos)) {
+		std::regex regex("/mods/(.*?)/content-dlc3/");
 		std::smatch match;
 		if (std::regex_search(path, match, regex)) {
 			if (XMLStuff.ModData->byfolder.count(match.str(1)) > 0) {
@@ -667,7 +679,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 		}
 	break;
 	case 2: //player 
-		id = 1;
+		id = 0;
 		daddy = node->parent();
 		for (xml_node<char>* auxnode = node; auxnode; auxnode = auxnode->next_sibling()) {
 			XMLAttributes player;
@@ -721,7 +733,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 
 			player["sourceid"] = lastmodid;
 			if (player.find("relativeid") != player.end()) { XMLStuff.PlayerData->byrelativeid[lastmodid + player["relativeid"]] = id;}
-
+			//printf("playa: %d (%s) \n", id, player["name"].c_str());
 			XMLStuff.PlayerData->ProcessChilds(auxnode, id);
 			XMLStuff.PlayerData->nodes[id] = player;
 			XMLStuff.PlayerData->bymod[lastmodid].push_back(id);
