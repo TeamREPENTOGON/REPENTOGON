@@ -17,9 +17,9 @@ extra_javascript:
 - js/customJS.js
 - js/jquery.mark.min.js
 home_button1_icon: ''
-home_button1_name: Download
+home_button1_name: Install
 home_button1_theme: md-button md-button--primary
-home_button1_url: https://github.com/TeamREPENTOGON/REPENTOGON/releases
+home_button1_url: install.html
 home_button2_name: Docs
 home_button2_theme: md-button
 home_button2_url: docs.html
@@ -79,7 +79,7 @@ markdown_extensions:
 - attr_list
 nav:
 - Home: ./index.md
-- Download: https://github.com/TeamREPENTOGON/REPENTOGON/releases
+- Install: ./install.md
 - Docs:
   - Home: ./docs.md
   - Last visited:
