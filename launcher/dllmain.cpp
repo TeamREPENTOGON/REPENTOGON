@@ -121,6 +121,13 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
 	{
 		if (HasCommandLineArgument("-repentogonoff")) {
+			FILE* f = fopen("repentogon.log", "a");
+			if (f) {
+				fprintf(f, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+				fprintf(f, "!!!!!!!!!!!!REPENTOGON DISABLED!!!!!!!!!!!!\n");
+				fprintf(f, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+				fclose(f);
+			}
 			return TRUE;
 		}
 		DWORD redirectResult = RedirectLua(&luaHandle);
