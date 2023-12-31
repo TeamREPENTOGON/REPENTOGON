@@ -8,7 +8,7 @@ local ChangeLog = {
     ["AssetsLoaded"] = false,
     ["NoteOffset"] = Vector(275, 190),
     ["PaperOffset"] = Vector(-37, -15),
-    ["VersionOffset"] = Vector(100, 0),
+    ["VersionOffset"] = Vector(238, 240),
     ["ChangelogSprite"] = Sprite(),
     ["NoteSprite"] = Sprite(),
 
@@ -131,11 +131,12 @@ function ChangeLog.MenuRender()
     end
     Cl.NoteSprite:Render(Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.NoteOffset))
     local versionPosition = Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.VersionOffset)
+    local versionString = "REPENTOGON " .. REPENTOGON.Version
 
-    Cl.VersionFont:DrawStringUTF8("REPENTOGON " .. REPENTOGON.Version, versionPosition.X + 1, versionPosition.Y + 1,
-        KColor(0, 0, 0, 0.3), 200, true) -- shadow
-    Cl.VersionFont:DrawStringUTF8("REPENTOGON " .. REPENTOGON.Version, versionPosition.X, versionPosition.Y,
-        KColor(67 / 255, 5 / 255, 5 / 255, 1), 200, true) -- text
+    Cl.VersionFont:DrawStringUTF8(versionString, versionPosition.X + 1, versionPosition.Y + 1,
+        KColor(0, 0, 0, 0.3), 200) -- shadow
+    Cl.VersionFont:DrawStringUTF8(versionString, versionPosition.X, versionPosition.Y,
+        KColor(67 / 255, 5 / 255, 5 / 255, 1), 200) -- text
     if MenuManager:GetActiveMenu() == _MainMenuType.TITLE then
         if IsActionTriggeredAll(_ButtonAction.ACTION_MAP) then
             Cl.CurrentState = not Cl.CurrentState
