@@ -12,4 +12,4 @@ Our ultimate goal is to reduce the amount of asinine workarounds needed in order
 
 REPENTOGON is free and open source, and always will be. We're far from finished- expect even more new features in the future.
 
-Head over to the [installation guide](../../../../install.html) to get started.
+Head over to the [installation guide](../../../../install.html) to get started. PLEASE let us know of any bugs or crashes that arise- we've done lots of testing but can't possibly predict every single mod configuration.
