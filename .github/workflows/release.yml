@@ -39,7 +39,7 @@ jobs:
       id: version
       shell: bash
       run:
-        cat ${{github.workspace}}/version.txt >> $GITHUB_OUTPUT
+        cat '${{github.workspace}}/version.txt' >> $GITHUB_OUTPUT
 
     - name: Configure CMake
       run: cmake -G "Visual Studio 17 2022" -A "Win32" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
