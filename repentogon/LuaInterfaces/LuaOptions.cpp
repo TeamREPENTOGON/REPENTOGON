@@ -1,8 +1,18 @@
+#include <algorithm>
+
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 
 #include "../REPENTOGONOptions.h"
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif 
 
 LUA_FUNCTION(Lua_Options_GetVoidGeneration) {
 	lua_pushboolean(L, repentogonOptions.betterVoidGeneration);
@@ -66,7 +76,7 @@ LUA_FUNCTION(Lua_Options_SetPreventModUpdates) {
 
 LUA_FUNCTION(Lua_Options_Fix_SetSFXVolume) {
 	float value = (float)luaL_checknumber(L, 1);
-	value = (min(max(0.0f, value), 1.0f)) * 10; // clamp, then multiply in preparation for rounding
+	value = (std::min(std::max(0.0f, value), 1.0f)) * 10; // clamp, then multiply in preparation for rounding
 	value = std::round(value) / 10; // round, then divide back down to first decimal
 	g_Manager->GetOptions()->_sfxVolume = value;
 	g_Manager->_sfxManager.ClearVolumeModifier();
