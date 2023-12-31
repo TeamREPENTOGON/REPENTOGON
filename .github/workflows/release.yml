@@ -12,7 +12,9 @@ env:
 jobs:
   build:
     runs-on: windows-latest
-    if: "contains(github.event.head_commit.message, 'chore: release') || ${{ github.event_name == 'workflow_dispatch' }}"
+    if: "${{ contains(github.event.head_commit.message, 'chore: release') || github.event_name == 'workflow_dispatch' }}"
+    outputs:
+      version: ${{ steps.changelog.outputs.version }}
 
     steps:
     - uses: actions/checkout@v3
@@ -21,6 +23,7 @@ jobs:
         fetch-depth: 0
           
     - name: Generate changelog
+      id: changelog
       run: |
         echo "return [[" > ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
         Get-Content ${{github.workspace}}/changelog.txt -Raw >> ${{github.workspace}}/repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
@@ -63,5 +66,5 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         artifacts: "${{github.workspace}}/build/Release/REPENTOGON.zip,${{github.workspace}}/build/Release/hash.txt"
-        tag: ${{steps.versioning.outputs.version}}
+        tag: ${{steps.changelog.outputs.version}}
         token: ${{ secrets.GITHUB_TOKEN }}
