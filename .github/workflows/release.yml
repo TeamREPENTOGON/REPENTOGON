@@ -58,7 +58,8 @@ jobs:
         mv Lua5.4.dll artifact
         mv freetype.dll artifact
         Compress-Archive -Path artifact/* -Destination REPENTOGON.zip
-
+        mkdir ${{github.workspace}}/workshop/REPENTOGON
+        Copy-Item artifact/* ${{github.workspace}}/workshop/REPENTOGON
         $PSDefaultParameterValues['*:Encoding'] = 'Default'
         $OutputEncoding = [System.Text.Utf8Encoding]::new($false)
         Get-FileHash .\REPENTOGON.zip | Select-Object -ExpandProperty Hash > hash.txt
@@ -69,3 +70,10 @@ jobs:
         artifacts: "${{github.workspace}}/build/Release/REPENTOGON.zip,${{github.workspace}}/build/Release/hash.txt"
         tag: ${{steps.changelog.outputs.version}}
         token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload to Steam Workshop
+        uses: IsaacScript/isaac-steam-workshop-upload@v1
+        with:
+          mod_path: workshop
+        env:
+          CONFIG_VDF_CONTENTS: ${{ secrets.CONFIG_VDF_CONTENTS }}
