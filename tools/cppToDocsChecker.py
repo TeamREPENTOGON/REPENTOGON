@@ -7,12 +7,12 @@ BRANCH_NAME = "main-msvc"
 SCRIPT_PATH = os.path.realpath(__file__)
 SOURCE_DIRECTORY = os.path.dirname(SCRIPT_PATH)
 
-DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../documentation/docs/")
+DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../docs/docs/")
 CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "../repentogon/")
 
 if "GITHUB_WORKSPACE" in os.environ:
     SOURCE_DIRECTORY = os.environ["GITHUB_WORKSPACE"]
-    DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "documentation/docs/")
+    DOCS_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "docs/docs/")
     CPP_FOLDER_PATH = os.path.join(SOURCE_DIRECTORY, "repentogon/")
 
 ignoreLuaFunctions = ["lua_rawgeti", "luaL_argerror", "lua_type", "lua_next","lua_isnil", "lua_isinteger", "lua_isboolean", "lua_isnoneornil"]
