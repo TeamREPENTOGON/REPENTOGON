@@ -62,6 +62,10 @@ ___
 #### [StbRailVariant](enums/StbRailVariant.md) GetRail ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
+### GetRailManager () {: aria-label='Functions' }
+#### [RailManager](RailManager.md) GetRailManager ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetRoomClearDelay () {: aria-label='Functions' }
 #### int GetRoomClearDelay ( ) {: .copyable aria-label='Functions' }
 

@@ -280,6 +280,7 @@ nav:
     - ProceduralItem: ProceduralItem.md
   - PocketItem: PocketItem.md
   - ProjectileParams: ProjectileParams.md
+  - RailManager: RailManager.md
   - Rendering:
     - Beam: renderer/Beam.md
     - BlendMode: renderer/BlendMode.md
