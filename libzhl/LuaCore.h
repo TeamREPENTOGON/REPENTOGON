@@ -239,6 +239,7 @@ namespace lua {
         extern LIBZHL_API const char* WeaponMT;
         extern LIBZHL_API const char* WeightedOutcomePickerMT;
         extern LIBZHL_API const char* CostumeSpriteDescMT;
+        extern LIBZHL_API const char* RailManagerMT;
     }
 
     LIBZHL_API void UnloadMetatables();

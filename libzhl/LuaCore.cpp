@@ -796,6 +796,7 @@ namespace lua {
 		const char* WeaponMT = "Weapon";
 		const char* WeightedOutcomePickerMT = "WeightedOutcomePicker";
 		const char* CostumeSpriteDescMT = "CostumeSpriteDesc";
+		const char* RailManagerMT = "RailManager";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {

@@ -67,7 +67,7 @@ __thiscall int Room::TryGetShopDiscount(int shopItemIdx, int price);
 "558bec8b45??83f82a":
 bool Room::IsPersistentRoomEntity(int type, int variant, int subtype);
 
-struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }
@@ -109,6 +109,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects) {
 	float _waterAmount : 0x7134;
 	bool _pacifist : 0x7185;
     TemporaryEffects _temporaryEffects : 0x71f4; //0x71F4
+	RailManager _railManager : 0x734c; //0x734c
 
     "558bec6aff68????????64a1000000005083ec305657a1????????33c550":
     bool save_entity(Entity* entity, EntitySaveState* data, bool unk);
