@@ -54,7 +54,7 @@ struct LogViewer : ImGuiWindowObject {
         int old_size = logBuf.size();
         bool recomputeOffsets = false;
 
-        ZHL::Log("[DEBUG] logBuf size = %d, offsets size = %d\n", logBuf.size(), offsets.size());
+        // ZHL::Log("[DEBUG] logBuf size = %d, offsets size = %d\n", logBuf.size(), offsets.size());
 
         // Split the format string on newline, in order to add each line separately in the buffer
         while (std::getline(ss, token, '\n')) {
@@ -120,7 +120,7 @@ struct LogViewer : ImGuiWindowObject {
         }
 
         if (recomputeOffsets) {
-            ZHL::Log("[DEBUG] Recomputing offsets in imgui\n");
+            // ZHL::Log("[DEBUG] Recomputing offsets in imgui\n");
             offsets.clear();
             const char* start = logBuf.Buf.Data;
             const char* content = start;
