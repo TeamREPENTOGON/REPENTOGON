@@ -15,10 +15,10 @@ env:
 jobs:
   build:
     runs-on: windows-latest
+    if: "contains(github.event.head_commit.message, 'chore: release') && github.event_name != 'pull_request'"
 
     steps:
     - uses: actions/checkout@v3
-      if: "contains(github.event.head_commit.message, 'chore: release') && github.event_name != 'pull_request'"
       with:
         submodules: 'true'
         fetch-depth: 0
