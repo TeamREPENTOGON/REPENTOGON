@@ -23,6 +23,8 @@ LuaRender::ContextQueue LuaRender::RenderContextQueue;
 LuaRender::RenderContext LuaRender::ElementsRenderContext;
 LuaRender::RenderContext LuaRender::VerticesRenderContext;
 
+static constexpr bool EnableCustomRendering = false;
+
 // ============================================================================
 // Image
 
@@ -2372,6 +2374,10 @@ LUA_FUNCTION(Lua_Renderer_RenderSet) {
 
 HOOK_METHOD(KAGE_Memory_MemoryPoolDescriptor, Allocate, (uint32_t n) -> void*) {
 	void* result = super(n);
+	if (!EnableCustomRendering) {
+		return result;
+	}
+
 	// ZHL::Log("Allocating memory in descriptor %p. Amount is %u, base is located at %p, result is at %p\n", this, n, GetBase(), result);
 
 	ptrdiff_t diff = (ptrdiff_t)result - (ptrdiff_t)GetBase();
@@ -2527,8 +2533,10 @@ namespace LuaRender {
 		applyImagePatch.AddInternalCall(LuaPreDrawElements);
 		applyImagePatch.AddRelativeJump((char*)applyImage + 0x6);
 
-		// sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
-		// sASMPatcher.PatchAt(applyImage, &applyImagePatch);
+		if (EnableCustomRendering) {
+			sASMPatcher.PatchAt(secondLoop, &secondLoopPatch);
+			sASMPatcher.PatchAt(applyImage, &applyImagePatch);
+		}
 	}
 
 #define PAD(D, T, N) D.AddAttribute(T, N)
