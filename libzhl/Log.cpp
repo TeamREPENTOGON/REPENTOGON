@@ -1,5 +1,6 @@
 #include <cstdarg>
 #include <cstdio>
+#include <chrono>
 
 #include "Log.h"
 
@@ -7,11 +8,27 @@
 #define ZHL_LOG_FILE "repentogon.log"
 #endif
 
+static bool FormatTime(char* buffer, size_t size) {
+	time_t now = time(nullptr);
+	tm* nowtm = localtime(&now);
+	size_t count = strftime(buffer, size, "[%Y-%m-%d %H:%M:%S] ", nowtm);
+	return count != 0;
+}
+
 void ZHL::Log(const char* fmt, ...) {
 	va_list va;
 	va_start(va, fmt);
 	
 	FILE* f = fopen(ZHL_LOG_FILE, "a");
+	if (!f) {
+		va_end(va);
+		return;
+	}
+
+	char buffer[4096];
+	if (FormatTime(buffer, 4095)) {
+		fprintf(f, "%s", buffer);
+	}
 	vfprintf(f, fmt, va);
 	fclose(f);
 
@@ -39,6 +56,10 @@ namespace ZHL {
 	void Logger::Log(const char* fmt, ...) {
 		va_list va;
 		va_start(va, fmt);
+		char buffer[4096];
+		if (FormatTime(buffer, 4095)) {
+			fprintf(_f, "%s", buffer);
+		}
 		vfprintf(_f, fmt, va);
 		va_end(va);
 
