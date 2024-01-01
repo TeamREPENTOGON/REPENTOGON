@@ -67,7 +67,7 @@ We have two methods of installation: **Automatic** and **Manual.** We also have 
 ## Steam Workshop
 
 ### What you'll need
-* [REPENTOGON from the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3127536138
+* [REPENTOGON from the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3127536138)
 
 ### Instructions
 1. Within Steam, navigate to *The Binding of Isaac: Rebirth*
