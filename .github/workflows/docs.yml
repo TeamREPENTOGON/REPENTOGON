@@ -8,6 +8,8 @@ on:
         paths:
             - repentogon/resources/scripts/enums_ex.lua
             - docs/**
+permissions:
+  contents: write
 
 jobs:
     enums_update:
@@ -38,3 +40,30 @@ jobs:
             - name: Run code checks
               run: node ./docs/scripts/code_checks.js
               shell: bash
+      
+      deployment:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout the repository
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
+
+            - name: Install Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: 3.x
+
+            - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+              with:
+                  token: '${{ secrets.GITHUB_TOKEN }}'
+
+            - name: Install PIP packages
+              run: |
+                   pip install -r ./docs/requirements.txt
+                   
+            - name: Deploy Documentation
+              if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
+              run: |
+                   cd ./docs
+                   mkdocs gh-deploy --force
