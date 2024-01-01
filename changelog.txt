@@ -1,3 +1,2 @@
-Welcome to the first release of REPENTOGON! This changelog will be used to communicate changes in the future. 
-
-Happy Year of the Dragon!
+v1.0.1 - 
+Fixed the updater erroneously asking to update, sorry :(
