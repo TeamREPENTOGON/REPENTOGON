@@ -67,7 +67,7 @@ We have two methods of installation: **Automatic** and **Manual.** We also have 
 ## Steam Workshop
 
 ### What you'll need
-* [REPENTOGON from the Steam Workshop (TODO: LINK)](https://github.com/TeamREPENTOGON/REPENTOGON/releases/latest/download/REPENTOGON.zip)
+* [REPENTOGON from the Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3127536138
 
 ### Instructions
 1. Within Steam, navigate to *The Binding of Isaac: Rebirth*
@@ -82,14 +82,14 @@ We have two methods of installation: **Automatic** and **Manual.** We also have 
 
 ![Installed Files location](img/install_02.png)
 
-5. Navigate to the `mods` folder, then `REPENTOGON_ (TODO: WORKSHOP ID)`.
+5. Navigate to the `mods` folder, then `REPENTOGON_3127536138`.
 
-6. Move the *contents* of the REPENTOGON folder to the game's folder.
+6. Extract the *contents* of `REPENTOGON.zip` to the game's folder.
 
 
 ![A successful installation](img/install_05.png)
 
 ???+ info 
     On Linux and Steam Deck, add `WINEDLLOVERRIDES="dsound=n,b" %command%` as a launch option for Isaac.
-    
+
 You can now unsubscribe from the mod on Steam, if you wish.
