@@ -5,7 +5,7 @@ struct GridEntity_Door depends (ANM2) : public GridEntity {
 		skip; // Free
 		skip; // PostInit
 		
-		"558bec83e4f883ec6c53":
+		"558bec83e4c081ecb4000000a1????????33c4898424????????538bd95657":
         void Update();
 		
 		override
