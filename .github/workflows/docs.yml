@@ -40,8 +40,8 @@ jobs:
             - name: Run code checks
               run: node ./docs/scripts/code_checks.js
               shell: bash
-      
-      deployment:
+              
+    deployment:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout the repository
