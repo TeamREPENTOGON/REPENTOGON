@@ -48,7 +48,7 @@ string achivjsonpath;
 
 int dummyachiev = -1;
 bool achievdone = false;
-bool blocksteam = true;
+bool blocksteam = false;
 int lastdummyachievframe = 10;
 queue<int> pendingachievs;
 
