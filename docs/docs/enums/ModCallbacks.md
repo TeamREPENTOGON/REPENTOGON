@@ -337,6 +337,9 @@ Accepts no return parameters.
 ### MC_PRE_ROOM_EXIT
 Accepts no return parameters.
 
+???- info "NewLevel"
+    NewLevel returns `true` when entering a new level or when exiting a run.
+
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1043 |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, boolean NewLevel) | - | void |
