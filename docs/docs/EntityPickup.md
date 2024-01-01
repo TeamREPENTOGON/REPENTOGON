@@ -12,6 +12,10 @@ tags:
 #### boolean AddCollectibleCycle ( int id ) {: .copyable aria-label='Functions' }
 
 ___
+### GetAlternatePedestal () {: aria-label='Functions' }
+#### int GetAlternatePedestal ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDropDelay () {: aria-label='Functions' }
 #### int GetDropDelay ( ) {: .copyable aria-label='Functions' }
 

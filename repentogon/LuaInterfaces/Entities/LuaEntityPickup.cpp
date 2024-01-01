@@ -145,6 +145,12 @@ LUA_FUNCTION(Lua_PickupGetPriceSprite) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PickupGetAlternatePedestal) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	lua_pushinteger(L, pickup->GetAlternatePedestal());
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -168,6 +174,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		// i REALLY want a TryReroll but even looking through UseActiveItem i can't tell how the new id is determined
 		{ "TryFlip", Lua_PickupTryFlip },
 		{ "GetPriceSprite", Lua_PickupGetPriceSprite },
+		{ "GetAlternatePedestal", Lua_PickupGetAlternatePedestal },
 		{ NULL, NULL }
 	};
 
