@@ -1,4 +1,9 @@
 struct SourceQuad depends(Vector) {
+{{
+	SourceQuad() : _topLeft(Vector()), _topRight(Vector()), _bottomLeft(Vector()), _bottomRight(Vector()), __coordinateSpaceEnum(0) {}
+	SourceQuad(Vector tl, Vector tr, Vector bl, Vector br, int crd) : _topLeft(tl), _topRight(tr), _bottomLeft(bl), _bottomRight(br), __coordinateSpaceEnum(crd) {}
+}}
+
     Vector _topLeft : 0x0, _topRight : 0x8, _bottomLeft : 0x10, _bottomRight : 0x18;
     int __coordinateSpaceEnum : 0x20;
 } : 0x24;

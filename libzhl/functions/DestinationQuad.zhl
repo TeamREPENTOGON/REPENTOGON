@@ -1,3 +1,8 @@
 struct DestinationQuad depends (Vector) {
+{{
+	DestinationQuad() : _topLeft(Vector()), _topRight(Vector()), _bottomLeft(Vector()), _bottomRight(Vector()) {}
+	DestinationQuad(Vector tl, Vector tr, Vector bl, Vector br) : _topLeft(tl), _topRight(tr), _bottomLeft(bl), _bottomRight(br) {}
+}}
+
     Vector _topLeft : 0x0, _topRight : 0x8, _bottomLeft : 0x10, _bottomRight : 0x18;
 } : 0x20;
