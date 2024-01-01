@@ -339,7 +339,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1043 |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, boolean Unknown) | - | void |
+|1043 |MC_PRE_ROOM_EXIT {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, boolean NewLevel) | - | void |
 
 ### MC_PRE_COMPLETION_EVENT
 Can return `false` to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.
