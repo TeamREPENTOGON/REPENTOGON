@@ -37,6 +37,9 @@ We have two methods of installation: **Automatic** and **Manual.** We also have 
 
 ![A successful installation](img/install_04.png)
 
+???+ info 
+    On Linux and Steam Deck, add `WINEDLLOVERRIDES="dsound=n,b" %command%` as a launch option for Isaac.
+
 ## Manual
 
 ### What you'll need
@@ -59,6 +62,8 @@ We have two methods of installation: **Automatic** and **Manual.** We also have 
 
 ![A successful installation](img/install_05.png)
 
+???+ info 
+    On Linux and Steam Deck, add `WINEDLLOVERRIDES="dsound=n,b" %command%` as a launch option for Isaac.
 ## Steam Workshop
 
 ### What you'll need
@@ -84,4 +89,7 @@ We have two methods of installation: **Automatic** and **Manual.** We also have 
 
 ![A successful installation](img/install_05.png)
 
+???+ info 
+    On Linux and Steam Deck, add `WINEDLLOVERRIDES="dsound=n,b" %command%` as a launch option for Isaac.
+    
 You can now unsubscribe from the mod on Steam, if you wish.
