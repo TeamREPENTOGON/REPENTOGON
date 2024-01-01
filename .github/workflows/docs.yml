@@ -7,7 +7,9 @@ on:
             - main
         paths:
             - repentogon/resources/scripts/enums_ex.lua
-            - documentation/**
+            - docs/**
+permissions:
+  contents: write
 
 jobs:
     enums_update:
@@ -36,8 +38,9 @@ jobs:
               run: npm install @actions/core
               
             - name: Run code checks
-              run: node ./documentation/scripts/code_checks.js
+              run: node ./docs/scripts/code_checks.js
               shell: bash
+              
     deployment:
         runs-on: ubuntu-latest
         steps:
@@ -45,37 +48,22 @@ jobs:
               uses: actions/checkout@v2
               with:
                   fetch-depth: 0
+
             - name: Install Python
               uses: actions/setup-python@v2
               with:
                   python-version: 3.x
 
+            - uses: oleksiyrudenko/gha-git-credentials@v2-latest
+              with:
+                  token: '${{ secrets.GITHUB_TOKEN }}'
+
             - name: Install PIP packages
               run: |
-                   pip install mkdocs
-                   pip install mkdocs-material
-                   pip install mkdocs-git-revision-date-plugin
-                   pip install mkdocs-git-revision-date-localized-plugin
-            
-            - name: Install SSH key
-              uses: shimataro/ssh-key-action@v2
-              with:
-                key: ${{ secrets.PRIVATE_KEY }}
-                known_hosts: ${{ secrets.KNOWN_HOSTS }}
-                if_key_exists: fail 
-
-            - name: Deploy Repentogon Docs
-              if:   ( github.event_name == 'push' && github.ref == 'refs/heads/main' ) || github.event_name == 'workflow_dispatch' 
-              run: |
-                   cd documentation
-                   mkdocs build
+                   pip install -r ./docs/requirements.txt
                    
-
-            - name: Add /bin to PATH (?????????)
-              run: echo "/bin" >> $GITHUB_PATH
-              
-            - name: Upload to Website
-              if:   ( github.event_name == 'push' && github.ref == 'refs/heads/main' ) || github.event_name == 'workflow_dispatch' 
+            - name: Deploy Documentation
+              if:   github.event_name == 'push' && github.ref == 'refs/heads/main'
               run: |
-                   cd documentation
-                   rsync -r site/* ${{ secrets.SERVER_ADDRESS }}:${{ secrets.PATH }}
+                   cd ./docs
+                   mkdocs gh-deploy --force

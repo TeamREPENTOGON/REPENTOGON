@@ -37,7 +37,7 @@ jobs:
         echo "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         echo "#define VERSION `"$version`"" >> ${{github.workspace}}/repentogon/Version.h
         (gc ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua) -replace 'dev build', "$version" | Out-File -encoding ASCII ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua
-        (gc ${{github.workspace}}/launcher/Updater.cpp) -replace 'std::string version = "dev build";', 'std::string version = "$version";' | Out-File -encoding ASCII ${{github.workspace}}/launcher/Updater.cpp
+        (gc ${{github.workspace}}/launcher/Updater.cpp) -replace 'std::string version = "dev build";', "std::string version = `"$version`";" | Out-File -encoding ASCII ${{github.workspace}}/launcher/Updater.cpp
 
     - name: Configure CMake
       run: cmake -G "Visual Studio 17 2022" -A "Win32" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
@@ -57,6 +57,8 @@ jobs:
         mv zhlREPENTOGON.dll artifact
         mv Lua5.4.dll artifact
         mv freetype.dll artifact
+        Install-Module Microsoft.PowerShell.Archive -MinimumVersion 1.2.3.0 -Repository PSGallery -Force
+        Import-Module Microsoft.PowerShell.Archive
         Compress-Archive -Path artifact/* -Destination REPENTOGON.zip
         mkdir ${{github.workspace}}/workshop/REPENTOGON
         Copy-Item artifact/* ${{github.workspace}}/workshop/REPENTOGON
@@ -70,10 +72,3 @@ jobs:
         artifacts: "${{github.workspace}}/build/Release/REPENTOGON.zip,${{github.workspace}}/build/Release/hash.txt"
         tag: ${{steps.changelog.outputs.version}}
         token: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload to Steam Workshop
-      uses: IsaacScript/isaac-steam-workshop-upload@v1
-      with:
-         mod_path: workshop
-      env:
-          CONFIG_VDF_CONTENTS: ${{ secrets.CONFIG_VDF_CONTENTS }}

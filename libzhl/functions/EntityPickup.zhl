@@ -40,6 +40,9 @@ __thiscall bool Entity_Pickup::TryFlip(Entity_Player * unusedPlayer, unsigned in
 "558bec56ff75??8bf1ff75??e8":
 static cleanup Vector * Entity_Pickup::GetRandomPickupVelocity(const Vector& buffer<ecx>, Vector * position<edx>, RNG * rng, unsigned int ePickupVelType);
 
+"558bec83ec24a1????????33c58945??538bd9":
+__thiscall int Entity_Pickup::GetAlternatePedestal();
+
 struct Entity_Pickup depends (ANM2) : public Entity { {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
 	inline int* GetDropDelay() { return (int*)((char*)this + 0x4a0); }

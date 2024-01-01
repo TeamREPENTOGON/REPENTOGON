@@ -34,6 +34,10 @@ struct PerformanceWindow : ImGuiWindowObject {
 			lua_State* state = g_LuaEngine->_state;
 			ImGui::InputFloat("Timeframe", &timeframe, 1, 5, "%.1f Seconds");
 
+			if (timeframe <= 0) {
+				timeframe = 1;
+			}
+
 			int curBytes = state->l_G->totalbytes + state->l_G->GCdebt;
 
 			float megaBytes = curBytes / 1048576.0f;

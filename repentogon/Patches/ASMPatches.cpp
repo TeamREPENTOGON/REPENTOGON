@@ -1192,7 +1192,7 @@ void PatchInlinedSpawnGridEntity()
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[0], ASMPatch::Registers::ESI, 0xf0, GRID_POOP, 1); // ai_mega_fatty
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[1], ASMPatch::Registers::ESI, 0xf6, GRID_POOP, 0); // ai_larryjr
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[2], ASMPatch::Registers::ESI, 0x109, GRID_POOP, 1); // ai_chub
-	ASMPatchInlinedSpawnGridEntity_Generic(addrs[3], ASMPatch::Registers::ESI, 0x139, GRID_POOP, 1); // ai_dingle (1)
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[3], ASMPatch::Registers::ESI, 0x139, GRID_POOP, 0); // ai_dingle (1)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[4], ASMPatch::Registers::ESI, 0xf0, GRID_POOP, 1); // ai_dingle (2)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[5], ASMPatch::Registers::EDI, 0xaf4, ASMPatch::Registers::EAX, 0x0, 0xc0, GRID_STAIRS, 1); // CreateGideonDungeon
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[6], ASMPatch::Registers::EDI, 0xc5, GRID_PIT, 0); // ai_raglich_arm
