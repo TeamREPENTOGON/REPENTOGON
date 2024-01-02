@@ -2902,6 +2902,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mc_pre_level_select" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_LEVEL_SELECT
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5729,6 +5738,15 @@
   <a href="#mc_post_grid_entity_wall_render" class="md-nav__link">
     <span class="md-ellipsis">
       MC_POST_GRID_ENTITY_WALL_RENDER
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_pre_level_select" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_LEVEL_SELECT
     </span>
   </a>
   
@@ -11640,6 +11658,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mc_pre_level_select" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_LEVEL_SELECT
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -16455,6 +16482,44 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <td class="copyable" style="text-align: left;">MC_POST_GRID_ENTITY_WALL_RENDER</td>
 <td style="text-align: left;">(<a href="../GridEntityWall.html">GridEntityWall</a> Wall)</td>
 <td style="text-align: left;"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html">GridEntityType</a></td>
+<td style="text-align: left;">void</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mc_pre_level_select">MC_PRE_LEVEL_SELECT<a class="headerlink" href="#mc_pre_level_select" title="Permanent link">⚓︎</a></h3>
+<p>This callback is fired when the game selects which level (also known as stage) to load, usually when the player enters a trapdoor.
+The callback accepts two parameters:</p>
+<ul>
+<li>Level: the level selected by the game, as defined in the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html">LevelStage</a> enumeration.</li>
+<li>Type: the type of the level selected by the game, as defined in the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html">StageType</a> enumeration.</li>
+</ul>
+<p>This callback can return either nothing or a table. </p>
+<ul>
+<li>Nothing: let the game continue with the level stage / stage type pair it selected;</li>
+<li>Table: must contain two fields (anonymous). The first field is the desired level stage, second field is the desired stage type.</li>
+</ul>
+<p>If you return a table, Repentogon will check that the values fall in the allowed ranges for the level stage and the stage type.</p>
+<details class="warn" open="open">
+<summary>Value ranges</summary>
+<p>Remember that the range of level types is not the same between normal / hard on one side and greed / greedier on the other. </p>
+<p>Also remember that since Repentance the stage type value 3 is deprecated.</p>
+</details>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1104</td>
+<td class="copyable" style="text-align: left;">MC_PRE_LEVEL_SELECT</td>
+<td style="text-align: left;">(<a href="https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html">LevelStage</a> Level, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html">StageType</a> Type)</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">void</td>
 </tr>
 </tbody>
