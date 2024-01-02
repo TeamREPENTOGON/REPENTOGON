@@ -141,6 +141,7 @@ struct ConsoleMega : ImGuiWindowObject {
         DELIRIOUS,
         PLAYER,
 		ACHIEVEMENT,
+        MODFOLDER,
         CUSTOM
     };
 
@@ -184,7 +185,7 @@ struct ConsoleMega : ImGuiWindowObject {
 		RegisterCommand("lockachievement", "Locks achievements", "Locks achievements", true,ACHIEVEMENT);
         RegisterCommand("lua", "Run Lua code", "Runs the given Lua code immediately. Anything which would work in a standard file will work here.\nThis command also has shorthand which is just (l).", true);
         RegisterCommand("luamem", "Display lua memory usage", "Displays the currently used RAM of LUA.", true);
-        RegisterCommand("luamod", "Reload a Lua mod", "Reloads Lua code for the given mod folder.\nExample:\n(luamod testmod) will reload Lua code for the mod in the folder \"testmod\".", true);
+        RegisterCommand("luamod", "Reload a Lua mod", "Reloads Lua code for the given mod folder.\nExample:\n(luamod testmod) will reload Lua code for the mod in the folder \"testmod\".", true, MODFOLDER);
         RegisterCommand("luareset", "[EXPERIMENTAL] Reset the Lua context", "Destroys the current Lua context and recreates it from scratch. This is mostly a backend command meant to help sync up networked play.\nThis has Unforeseen Consequences if done in-game, please only do this on the menu unless you know what you're doing. Please?", true);
         RegisterCommand("luarun", "Run a Lua file", "Runs a given Lua file immediately.\nExample:\n(luarun mods/test/test.lua) would run \"test.lua\" inside the \"test\" mod folder.", true);
         RegisterCommand("macro", "Trigger a set of commands", "Run a set of commands in a specified order. These are effectively shortcuts. Refer to autocomplete for a list of macro commands.", false, MACRO, {"m"});
@@ -1014,6 +1015,14 @@ struct ConsoleMega : ImGuiWindowObject {
                                     name = node.second["name"];
 
                                     entries.insert(AutocompleteEntry(std::to_string(id), name));
+                                }
+                            }
+                            break;
+                        }
+                        case MODFOLDER: {
+                            for (auto& node : XMLStuff.ModData->nodes) {
+                                if (node.second["enabled"] == "true") {
+                                    entries.insert(AutocompleteEntry(node.second["realdirectory"], node.second["name"]));
                                 }
                             }
                             break;
