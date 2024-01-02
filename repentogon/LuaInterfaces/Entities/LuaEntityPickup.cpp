@@ -151,6 +151,29 @@ LUA_FUNCTION(Lua_PickupGetAlternatePedestal) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PickupGetCollectibleCycle) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+
+	lua_newtable(L);
+
+	for (int i = 0; i < 7; i++) {
+		lua_pushinteger(L, pickup->_cycleCollectibleList[i]);
+		lua_rawseti(L, -2, i + 1);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PickupRemoveCollectibleCycle) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	for (int i = 0; i < 7; i++) {
+		pickup->_cycleCollectibleList[i] = 0; 
+	}
+	pickup->_cycleCollectibleCount = 0;
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -175,6 +198,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryFlip", Lua_PickupTryFlip },
 		{ "GetPriceSprite", Lua_PickupGetPriceSprite },
 		{ "GetAlternatePedestal", Lua_PickupGetAlternatePedestal },
+		{ "GetCollectibleCycle", Lua_PickupGetCollectibleCycle },
+		{ "RemoveCollectibleCycle", Lua_PickupRemoveCollectibleCycle },
 		{ NULL, NULL }
 	};
 

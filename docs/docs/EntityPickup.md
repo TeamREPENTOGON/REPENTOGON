@@ -16,6 +16,10 @@ ___
 #### int GetAlternatePedestal ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetCollectibleCycle () {: aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetCollectibleCycle ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDropDelay () {: aria-label='Functions' }
 #### int GetDropDelay ( ) {: .copyable aria-label='Functions' }
 
@@ -45,6 +49,10 @@ Returns whether a collectible is being hidden by the Curse of the Blind question
 ___
 ### MakeShopItem () {: aria-label='Functions' }
 #### void MakeShopItem ( int ShopItemID ) {: .copyable aria-label='Functions' }
+
+___
+### RemoveCollectibleCycle () {: aria-label='Functions' }
+#### void RemoveCollectibleCycle ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetAlternatePedestal () {: aria-label='Functions' }
