@@ -2,6 +2,10 @@
 
 We have two methods of installation: **Automatic** and **Manual.** We also have a **Steam Workshop** page that has a similar method to **Manual**.
 
+If the installation is successful you should be able to notice multiple changes to the game, most notably you should see **REPENTOGON version in the titlebar**. Here is an example of a complete installation:
+
+![Screenshot of the properly installed REPENTOGON](img/install_example.png)
+
 ## Automatic
 
 ???+ info 
