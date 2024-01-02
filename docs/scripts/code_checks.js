@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const allFiles = getFilesForDirectory("./documentation/docs/");
+const allFiles = getFilesForDirectory("./docs/docs/");
 const defaultVariables = "int|char|static|const|userdata|table|void|boolean|float|string|Object|function";
 const ignoreVars = "LRoomAreaDesc|LRoomTileDesc|Ambush|ItemOverlay|HomingLaser|LaserHomingType|SkinColor|PlayerPocketItem|DoorSet|MultiShotParams|EntityDesc|Ending|FadeoutTarget";
 
