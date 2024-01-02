@@ -2590,18 +2590,51 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 			return;
 		}
 		else {
-			lua_rawgeti(L, -1, 1);
-			int level = (int)lua_tointeger(L, -1);
-			lua_pop(L, 1);
+			if (resTop == startTop + 1) {
+				lua_len(L, -1);
+				int len = lua_tointeger(L, -1);
+				lua_pop(L, 1);
 
-			lua_rawgeti(L, -1, 2);
-			int type = (int)lua_tointeger(L, -1);
-			lua_pop(L, 1);
+				if (len != 2) {
+					logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid return value, table contains %d elements, expected 2\n", len);
+					goto error;
+				}
 
-			logViewer.AddLog("[REPENTOGON]", "MC_PRE_SELECT_LEVEL %d %d", level, type);
-			super(level, type);
-			return;
+				lua_rawgeti(L, -1, 1);
+				int level = lua_tointeger(L, -1);
+				lua_pop(L, 1);
+				if (g_Game->IsGreedMode()) {
+					if (level < 1 || level > 7) {
+						logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 7] (detected greed(ier) mode)\n", level);
+						goto error;
+					}
+				}
+				else {
+					if (level < 1 || level > 14) {
+						logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 14] (detected normal/hard mode)\n", level);
+						goto error;
+					}
+				}
+
+				lua_rawgeti(L, -1, 2);
+				int type = (int)lua_tointeger(L, -1);
+				lua_pop(L, 1);
+				if (type < 0 || type == 3 || type > 5) {
+					logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid stage type, received value %d, expected 0, 1, 2, 4 or 5\n", type);
+					goto error;
+				}
+
+				super(level, type);
+				return;
+			}
+			else {
+				logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid number of return values, got %d, expected 1\n", resTop - startTop);
+				goto error;
+			}
 		}
+
+	error:
+		super(levelType, stageType);
 	}
 	else {
 		super(levelType, stageType);

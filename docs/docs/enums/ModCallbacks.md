@@ -1760,7 +1760,17 @@ The callback accepts two parameters:
 * Level: the level selected by the game, as defined in the [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) enumeration.
 * Type: the type of the level selected by the game, as defined in the [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) enumeration.
 
-This callback can return at least two values. The first two values returned are interpreted as overrides to the level and type selected by the game. Other values are ignored.
+This callback can return either nothing or a table. 
+
+* Nothing: let the game continue with the level stage / stage type pair it selected;
+* Table: must contain two fields (anonymous). The first field is the desired level stage, second field is the desired stage type.
+
+If you return a table, Repentogon will check that the values fall in the allowed ranges for the level stage and the stage type.
+
+???+ warn "Value ranges"
+    Remember that the range of level types is not the same between normal / hard on one side and greed / greedier on the other. 
+
+    Also remember that since Repentance the stage type value 3 is deprecated.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
