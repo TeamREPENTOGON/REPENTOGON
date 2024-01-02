@@ -3264,6 +3264,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetPlayer ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#startstagetransition" class="md-nav__link">
     <span class="md-ellipsis">
       StartStageTransition ()
@@ -6228,6 +6237,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getplayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetPlayer ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#startstagetransition" class="md-nav__link">
     <span class="md-ellipsis">
       StartStageTransition ()
@@ -6469,6 +6487,10 @@
 <h3 aria-label="Modified Functions" id="getlastlevelwithouthalfhp">GetLastLevelWithoutHalfHp ()<a class="headerlink" href="#getlastlevelwithouthalfhp" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="levelstage-getlastlevelwithouthalfhp"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html">LevelStage</a> GetLastLevelWithoutHalfHp ( )<a class="headerlink" href="#levelstage-getlastlevelwithouthalfhp" title="Permanent link">⚓︎</a></h4>
 <p>Now returns integer instead of unusable userdata.</p>
+<hr />
+<h3 aria-label="Modified Functions" id="getplayer">GetPlayer ()<a class="headerlink" href="#getplayer" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Modified Functions" class="copyable" id="entityplayer-getplayer-int-index"><a href="EntityPlayer.html">EntityPlayer</a> GetPlayer ( int Index )<a class="headerlink" href="#entityplayer-getplayer-int-index" title="Permanent link">⚓︎</a></h4>
+<p>If no players exist, this now returns <code>nil</code> to prevent a crash. Invalid indexes will return index <code>0</code>.</p>
 <hr />
 <h3 aria-label="Modified Functions" id="startstagetransition">StartStageTransition ()<a class="headerlink" href="#startstagetransition" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="void-startstagetransition-boolean-samestage-int-transitionoverride-entityplayer-player-nil">void StartStageTransition ( boolean SameStage, int TransitionOverride, <a href="EntityPlayer.html">EntityPlayer</a> Player = nil )<a class="headerlink" href="#void-startstagetransition-boolean-samestage-int-transitionoverride-entityplayer-player-nil" title="Permanent link">⚓︎</a></h4>
