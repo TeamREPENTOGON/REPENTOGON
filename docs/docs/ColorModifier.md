@@ -5,16 +5,15 @@ tags:
 # Class "ColorModifier"
 
 ???+ info
-    You can get this class by using the following functions:
-
-    * [FXParams:GetColorModifier()](FXParams.md#getcolormodifier)
-	* [Game:GetCurrentColorModifier()](Game.md#getcurrentcolormodifier)
-	* [MenuManager.GetCurrentColorModifier()](menus/MenuManager.md#getcurrentcolormodifier)
-
+    This class can be accessed by using its constructor:
     ???+ example "Example Code"
         ```lua
-        local colorMod = Game():GetRoom():GetFXParams():GetColorModifier()
+        local tintRed = ColorModifier(1,0,0,0.33,0,1)
         ```
+
+## Constructors
+### ColorModifier () {: aria-label='Constructors' }
+#### [ColorModifier](ColorModifier.md) ColorModifier ( float R = 1, float G = 1, float B = 1, float A = 0, float Brightness = 0, float Contrast = 1 ) {: .copyable aria-label='Constructors' }
 
 ## Variables
 ### A {: aria-label='Variables' }
