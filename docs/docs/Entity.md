@@ -48,10 +48,6 @@ ___
 #### boolean ForceCollide ( [Entity](Entity.md) Entity, boolean Low ) {: .copyable aria-label='Functions' }
 
 ___
-### GetAnimationState () {: aria-label='Functions' }
-#### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
-
-___
 ### GetBossStatusEffectCooldown () {: aria-label='Functions' }
 #### int GetBossStatusEffectCooldown ( ) {: .copyable aria-label='Functions' }
 
@@ -88,10 +84,6 @@ ___
 ### GetNullOffset () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetNullOffset ( string NullLayerName ) {: .copyable aria-label='Functions' }
 Returns position of null layer mark. Alternatively returns Vector.Zero if the layer is not visible, has no frame available for the current animation, or for other unknown reasons.
-
-___
-### GetOverlayAnimationState () {: aria-label='Functions' }
-#### [AnimationState](AnimationState.md) GetOverlayAnimationState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPauseTime () {: aria-label='Functions' }

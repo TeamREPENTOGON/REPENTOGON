@@ -312,7 +312,6 @@ nav:
     - AnimationData: AnimationData.md
     - AnimationFrame: AnimationFrame.md
     - AnimationLayer: AnimationLayer.md
-    - AnimationState: AnimationState.md
     - LayerState: LayerState.md
     - NullFrame: NullFrame.md
     - Sprite: Sprite.md

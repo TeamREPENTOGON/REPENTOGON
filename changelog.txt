@@ -1,2 +1,13 @@
+v1.0.2 - 
+Additions:
+* Added Pickup:GetAlternatePedestal()
+* rREPENTOGON'S logfile (repentogon.log) now shows timestamps
+
+Fixes:
+* Fixed a crash when time is set to 0 in the performance logger
+* Fixed Dingle always spawning a red poop
+* Fixed achievements not firing in Steam
+
+
 v1.0.1 - 
 Fixed the updater erroneously asking to update, sorry :(
