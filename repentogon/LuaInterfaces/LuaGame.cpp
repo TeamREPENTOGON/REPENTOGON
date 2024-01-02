@@ -202,6 +202,30 @@ LUA_FUNCTION(Lua_GameIsRerun) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GameGetPlayer) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	int idx = (int)luaL_optinteger(L, 2, 0);
+
+	if (!g_Game || g_Game->_playerManager._playerList.size() == 0) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		if (idx < 0)
+			idx = 0;
+		Entity_Player* player = game->GetPlayer(idx);
+		if (!player) {
+			lua_pushnil(L);
+		}
+		else
+		{
+			lua::luabridge::UserdataPtr::push(L, player, lua::GetMetatableKey(lua::Metatables::ENTITY_PLAYER));
+		}
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -229,6 +253,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetLerpColorModifier", Lua_GameGetLerpColorModifier},
 		{ "SetColorModifier", Lua_GameSetColorModifier},
 		{ "IsRerun", Lua_GameIsRerun},
+		{ "GetPlayer", Lua_GameGetPlayer},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

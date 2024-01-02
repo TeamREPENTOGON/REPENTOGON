@@ -191,6 +191,12 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
 
 ___
+### IsInGame () {: aria-label='Functions' }
+#### boolean IsInGame ( ) {: .copyable aria-label='Functions' }
+Returns `true` if `Game` is non-nil and the current state is correct.
+
+___
+
 ### LevelGeneratorEntry () {: aria-label='Functions' }
 #### [LevelGeneratorEntry](LevelGeneratorEntry.md) LevelGeneratorEntry ( ) {: .copyable aria-label='Functions' }
 Creates a new blank [LevelGeneratorEntry](LevelGeneratorEntry.md) object.
