@@ -1,3 +1,8 @@
+v1.0.3 - 
+Fixes:
+* Fixed a possible crash when GetNullFrame is called on a Sprite that is not yet fully loaded
+
+
 v1.0.2 - 
 Additions:
 * Added Pickup:GetAlternatePedestal()

@@ -387,7 +387,7 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2) {
 LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 	Entity* ent1 = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		Entity* ent2 = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+		Entity* ent2 = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 		CopyStatusEffects(ent1, ent2);
 	}
 	else

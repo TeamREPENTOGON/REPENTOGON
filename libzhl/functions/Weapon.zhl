@@ -23,7 +23,7 @@ __thiscall void Weapon::SetHeadLockTime(int Time);
 static cleanup Entity_Laser* Weapon::FireBrimstone(Entity* entity<ecx>, const Vector& position<edx>, const Vector& direction, float damageMult<xmm3>, float unk1, unsigned int unk2);
 
 "558bec83e4f881ec90000000a1????????33c4898424????????8b45??5657":
-__thiscall Entity_Knife* Weapon::FireSword(Entity * param_1, unsigned int param_2, float param_3, bool param_4, bool param_5, unsigned int param_6, Entity * param_7);
+__thiscall Entity_Knife* Weapon::FireSword(Entity * param_1, unsigned int param_2, float param_3<xmm3>, bool param_4, bool param_5, unsigned int param_6, Entity * param_7);
 
 struct Weapon { {{
 	inline Entity* GetOwner() { return *(Entity**)((char*)this + 0x4); }
