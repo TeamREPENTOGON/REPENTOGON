@@ -498,6 +498,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
+			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
 			if (ImGui::BeginMenu(ICON_FA_SCREWDRIVER_WRENCH " Tools")) {
 				ImGui::MenuItem(ICON_FA_TERMINAL" Debug Console", NULL, &console.enabled);
 				ImGui::MenuItem(ICON_FA_NEWSPAPER" Log Viewer", NULL, &logViewer.enabled);
