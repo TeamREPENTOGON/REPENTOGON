@@ -382,6 +382,8 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2) {
 	// don't ask me what this does
 	ent2->_flags[0] = ent2->_flags[0] & 0xdeffe01f | ent1->_flags[0] & 0x21001fe0;
 	ent2->_flags[1] = ent2->_flags[1] & 0xfea27fff | ent1->_flags[1] & 0x15d8000;
+
+	ent2->_entityColors = ent1->_entityColors;
 }
 
 LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
