@@ -3501,12 +3501,16 @@ bool DoGridPreRenderCallback(GridEntity* grid, Vector& offset, lua::Metatables m
 
 	return true;
 }
+
 //PRE/POST_GRID_ENTITY_[x]_RENDER(1432-1441)
 HOOK_METHOD(GridEntity, Render, (Vector& offset) -> void) {
 	int preCallbackId, postCallbackId;
 	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
 	if (gridRenderCallbacks[gridType].id == NULL)
+	{
+		super(offset);
 		return;
+	}
 
 	preCallbackId = gridRenderCallbacks[gridType].id;
 	postCallbackId = preCallbackId + 1;
