@@ -4,6 +4,13 @@ tags:
 ---
 # Class "Sprite"
 
+## Modified Constructors
+
+### Sprite () {: aria-label='Modified Constructors' }
+#### [Sprite](Sprite.md),bool Sprite ( string ANM2Path, bool LoadGraphics = true ) {: .copyable aria-label='Modified Constructors' }
+
+Added two optional arguments, the function now returns two values: [Sprite](Sprite.md) object and the bool signifying whether the sprite was loaded successfully or not.
+___
 ## Modified Functions
 
 ### ReplaceSpritesheet () {: aria-label='Modified Functions' }

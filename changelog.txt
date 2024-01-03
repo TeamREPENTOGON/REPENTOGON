@@ -7,6 +7,7 @@ Additions:
 * The luamod command now supports autocomplete
 * Dear ImGui console now has a back button to allow controllers & Steam Deck to exit
 * dsound.dll will log when it's been unloaded to help debug cases of REPENTOGON not loading
+* Improved constructors for Sprite and Font classes
 
 Fixes:
 * Fix a crash with weapon-copying familiars and Spirit Sword
@@ -18,6 +19,7 @@ Fixes:
 * Fix potential issue with XMLData.GetNumEntries
 * Improve paramater validation for MC_PRE_LEVEL_SELECT to prevent possible crashes
 * Modify vanilla function Game():GetPlayer to prevent possible crashes
+* Changelog can now be safely closed using the "menu back" button e.g. Esc
 
 
 v1.0.2 - 
