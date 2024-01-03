@@ -1338,7 +1338,7 @@ void ASMPatchDamage() {
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&damagePtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 		.AddBytes("\xF3\x0F\x58\x06") // addss xmm0, dword ptr [esi]
 		.AddBytes("\xF3\x0F\x11\x06") // movss dword ptr [esi], xmm0
-		.AddBytes("\x83\xFA\x09") // cmp edx, 0x9
+		.AddBytes("\x83\xF9\x09") // cmp this, 0x9
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x14) // jz isaac-ng.XXXXXXXX
 		.AddRelativeJump((char*)addr + 0x5);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
@@ -1357,7 +1357,7 @@ void ASMPatchRange() {
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&rangePtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 		.AddBytes("\xF3\x0F\x58\x87\xC8\x13").AddZeroes(2) // addss xmm0, dword ptr [edi + 0x13c8]
 		.AddBytes("\xF3\x0F\x11\x87\xC8\x13").AddZeroes(2) // movss dword ptr [edi + 0x13c8], xmm0
-		.AddBytes("\x83\xFA\x09") // cmp edx, 0x9
+		.AddBytes("\x83\xF8\x09") // cmp eax, 0x9
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x48) // jz isaac-ng.XXXXXXXX
 		.AddRelativeJump((char*)addr + 0x5);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
@@ -1375,7 +1375,7 @@ void ASMPatchShotSpeed() {
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&shotSpeedPtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 		.AddBytes("\xF3\x0F\x58\x07") // addss xmm0, dword ptr [edi]
 		.AddBytes("\xF3\x0F\x11\x07") // movss dword ptr [edi], xmm0
-		.AddBytes("\x83\xFA\x09") // cmp edx, 0x9
+		.AddBytes("\x83\xF9\x09") // cmp this, 0x9
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x30) // jz isaac-ng.XXXXXXXX
 		.AddRelativeJump((char*)addr + 0x5);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);

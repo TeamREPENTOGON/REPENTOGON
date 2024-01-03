@@ -1,3 +1,7 @@
+v1.0.4 - 
+Fixes:
+* Fixed Eden's damage, range, and shot speed stats not properly changing
+
 v1.0.3 - 
 Additions:
 * ColorParams
