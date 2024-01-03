@@ -252,7 +252,7 @@ LUA_FUNCTION(Lua_ImGui_AddInputInteger)
 
 	createdElement->AddData(data);
 
-	if (lua_isfunction(L, 5)) {
+	if (lua_isfunction(L, 4)) {
 		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
