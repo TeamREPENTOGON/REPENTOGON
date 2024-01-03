@@ -1,6 +1,7 @@
 v1.0.3 - 
 Fixes:
 * Fixed a possible crash when GetNullFrame is called on a Sprite that is not yet fully loaded
+* Fixed MC_POST_ENTITY_TAKE_DMG triggering when the player touches the white fireplace in downpour/dross
 
 
 v1.0.2 - 
