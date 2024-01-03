@@ -1,5 +1,8 @@
 v1.0.3 - 
 Additions:
+* ColorParams
+* Entity:CopyStatusEffects() now copies the Color over to the target Entity, including the proper duration and other parameters
+	- This can be toggled with the CopyColor argument, default true
 * Isaac.IsInGame
 * EntityPickup :
 	- GetCollectibleCycle

@@ -133,7 +133,11 @@ struct Entity_NPC depends (Vector) : public Entity {
 
 		skip; // GetForwardVector
 		skip; // HandleCollision
-		skip; // ResetColor
+		
+		override
+		"558bec81ecdc000000":
+		void ResetColor();
+		
 		skip; // LoadEntityConfig
     };	
 	

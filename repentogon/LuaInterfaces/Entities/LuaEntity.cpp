@@ -351,7 +351,7 @@ LUA_FUNCTION(Lua_EntityTeleportToRandomPosition) {
 	return 0;
 }
 
-void CopyStatusEffects(Entity* ent1, Entity* ent2) {
+void CopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor) {
 	ent2->_freezeCountdown = ent1->_freezeCountdown;
 	ent2->_poisonCountdown = ent1->_poisonCountdown;
 	ent2->_slowingCountdown = ent1->_slowingCountdown;
@@ -382,19 +382,70 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2) {
 	// don't ask me what this does
 	ent2->_flags[0] = ent2->_flags[0] & 0xdeffe01f | ent1->_flags[0] & 0x21001fe0;
 	ent2->_flags[1] = ent2->_flags[1] & 0xfea27fff | ent1->_flags[1] & 0x15d8000;
+
+	if (setColor) {
+		ent2->_colorParams = ent1->_colorParams;
+		ent2->_sprite._color = ent1->_sprite._color;
+	}
 }
 
 LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 	Entity* ent1 = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	bool setColor;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
 		Entity* ent2 = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-		CopyStatusEffects(ent1, ent2);
+		setColor = lua::luaL_optboolean(L, 3, true);
+		CopyStatusEffects(ent1, ent2, setColor);
 	}
 	else
 	{
+		setColor = lua::luaL_optboolean(L, 2, true);
 		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
-			CopyStatusEffects(ent1, child);
+			CopyStatusEffects(ent1, child, setColor);
 		}
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetColorParams) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_newtable(L);
+	for (size_t i = 0; i < entity->_colorParams.size(); ++i) {
+		lua_pushinteger(L, i + 1);
+		ColorParams* ud = (ColorParams*)lua_newuserdata(L, sizeof(ColorParams));
+		*ud = entity->_colorParams[i];
+		luaL_setmetatable(L, lua::metatables::ColorParamsMT);
+		lua_rawset(L, -3);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetColorParams) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	if (!lua_istable(L, 2))
+	{
+		return luaL_argerror(L, 2, "Expected a table as second argument");
+	}
+
+	size_t length = (size_t)lua_rawlen(L, 2);
+
+	if (length == 0)
+	{
+		entity->_colorParams.clear();
+	}
+	else
+	{
+		vector_ColorParams list;
+		list.reserve(length);
+		for (size_t i = 0; i < length; i++)
+		{
+			lua_rawgeti(L, 2, i + 1);
+			list.push_back(*lua::GetUserdata<ColorParams*>(L, -1, lua::metatables::ColorParamsMT));
+			lua_pop(L, 1);
+		}
+		entity->_colorParams = list;
 	}
 
 	return 0;
@@ -455,6 +506,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SpawnWaterImpactEffects", Lua_EntitySpawnWaterImpactEffects },
 		{ "TeleportToRandomPosition", Lua_EntityTeleportToRandomPosition },
 		{ "TryThrow", Lua_EntityTryThrow },
+		{ "GetColorParams", Lua_EntityGetColorParams },
+		{ "SetColorParams", Lua_EntitySetColorParams },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
