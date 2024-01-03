@@ -93,11 +93,11 @@ target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 
 # Injected DLL
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
-add_library(dsound SHARED ${LAUNCHER_SRC})
-target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})
-target_link_libraries(dsound libcurl cryptopp)
-target_compile_options(dsound PUBLIC "/MD" "/wd4996")
-target_link_libraries(dsound Imagehlp)
+add_library(launcher SHARED ${LAUNCHER_SRC})
+target_include_directories(launcher PUBLIC ${CURL_INCLUDE_DIR})
+target_link_libraries(launcher libcurl cryptopp)
+target_compile_options(launcher PUBLIC "/MD" "/wd4996")
+target_link_libraries(launcher Imagehlp)
 
 # ImGUI
 enable_language(RC)
@@ -188,10 +188,13 @@ add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E c
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources-repentogon")
 # add_custom_command(TARGET zhlDelirium POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/delirium/resources-delirium" "$<TARGET_FILE_DIR:zhlDelirium>/resources-delirium")
 
+# Injector
+add_executable(injector injector/injector.c)
 if(NOT ISAAC_DIRECTORY STREQUAL "")
     message (STATUS "Files will be installed to " ${ISAAC_DIRECTORY})
-    add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/Lua5.4.dll" "${ISAAC_DIRECTORY}")
-    add_custom_command(TARGET dsound POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/dsound.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:launcher>/Lua5.4.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET injector POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:injector>/injector.exe" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET launcher POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:launcher>/launcher.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:libzhl>/libzhl.dll" "${ISAAC_DIRECTORY}")
 	add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:freetype>/freetype.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlREPENTOGON>/zhlREPENTOGON.dll" "${ISAAC_DIRECTORY}")
@@ -218,4 +221,5 @@ target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_target_properties(freetype antlr4_shared imgui Lua5.4 stb stbc Zydis Zycore cryptopp libcurl_object libcurl_static curl_uninstall PROPERTIES FOLDER "External Libs")
 set_target_properties(libzhl zhlparser PROPERTIES FOLDER "libzhl")
-set_target_properties(dsound zhlDelirium zhlREPENTOGON PROPERTIES FOLDER "Repentogon")
+set_target_properties(launcher zhlDelirium zhlREPENTOGON PROPERTIES FOLDER "Repentogon")
+
