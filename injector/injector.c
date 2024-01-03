@@ -91,7 +91,7 @@ int main() {
 		"\x57" // push edi
 		"\x3e\x8b\x5d\x08" // mov ebx, dword ptr ds:[ebp+8], put parameter in ebx
 		"\x8b\x73\x04" // mov esi, dword ptr ds:[ebx+4], put load library a in esi
-		"\x8b\x7b\x08" // mov edi, dword ptr ds:[ebx+8], put dllname in edi
+		"\x8d\x7b\x08" // lea edi, [ebx+8], put dllname in edi
 		"\x57" // push edi, push dllname on stack
 		"\xff\xd6" // call LoadLibraryA
 		"\x5f" // pop edi
