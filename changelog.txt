@@ -1,4 +1,8 @@
 v1.0.3 - 
+Additions:
+* ColorParams
+* Entity:CopyStatusEffects() now copies the Color over to the target Entity, including the proper duration and other parameters
+
 Fixes:
 * Fixed a possible crash when GetNullFrame is called on a Sprite that is not yet fully loaded
 

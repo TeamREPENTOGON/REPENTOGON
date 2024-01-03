@@ -429,7 +429,6 @@ LUA_FUNCTION(Lua_EntitySetColorParams) {
 	if (length == 0)
 	{
 		entity->_colorParams.clear();
-		entity->ResetColor();
 	}
 	else
 	{
