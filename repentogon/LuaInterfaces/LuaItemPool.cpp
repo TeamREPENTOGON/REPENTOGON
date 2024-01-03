@@ -174,8 +174,6 @@ LUA_FUNCTION(Lua_ItemPoolHasTrinket) {
 	std::vector<ItemConfig_Item*>& trinketList = *g_Manager->GetItemConfig()->GetTrinkets();
 	std::vector<TrinketPoolItem>& poolTrinketItems = itemPool->_trinketPoolItems;
 
-	lua_pushinteger(L, poolTrinketItems[trinketID]._ID);
-
 	if (trinketID >= trinketList.size()) {
 		lua_pushboolean(L, false);
 	}
@@ -210,7 +208,7 @@ LUA_FUNCTION(Lua_ItemPoolCanSpawnCollectible) {
 
 LUA_FUNCTION(Lua_ItemPoolGetNumAvailableTrinkets) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	lua_pushboolean(L, itemPool->_numAvailableTrinkets);
+	lua_pushinteger(L, itemPool->_numAvailableTrinkets);
 
 	return 1;
 }
