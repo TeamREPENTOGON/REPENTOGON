@@ -13,7 +13,7 @@ Additions:
 * Dear ImGui console now has a back button to allow controllers & Steam Deck to exit
 * dsound.dll will log when it's been unloaded to help debug cases of REPENTOGON not loading
 * Improved constructors for Sprite and Font classes
-* Added documentation and stronger validation for the MC_PRE_LEVEL_SELECT callback, fixing many potential crashes
+* Added documentation for the MC_PRE_LEVEL_SELECT callback
 
 Fixes:
 * Fix a crash with weapon-copying familiars and Spirit Sword
