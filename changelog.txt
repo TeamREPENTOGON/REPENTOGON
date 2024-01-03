@@ -30,6 +30,7 @@ Fixes:
 * Modify vanilla function Game():GetPlayer to prevent possible crashes
 * Changelog can now be safely closed using the "menu back" button e.g. Esc
 * Fixed AnimationData:IsLoopingAnimation returning boolean, instead of integer
+* Fixed ItemPool:NumAvailableTrinkets returning boolean, instead of integer
 
 
 v1.0.2 - 
