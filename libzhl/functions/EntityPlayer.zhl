@@ -524,7 +524,11 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 		
 		skip; // GetForwardVector
 		skip; // HandleCollision
-		skip; // ResetColor
+		
+		override
+		"558bec0f1081":
+		void ResetColor();
+		
 		skip; // LoadEntityConfig
     };
     

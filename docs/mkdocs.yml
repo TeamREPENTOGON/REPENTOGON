@@ -189,6 +189,7 @@ nav:
   - ChallengeParam: ChallengeParam.md
   - Color: Color.md
   - ColorModifier: ColorModifier.md
+  - ColorParams: ColorParams.md
   - Console: Console.md
   - CostumeSpriteDesc: CostumeSpriteDesc.md
   - DailyChallenge: DailyChallenge.md

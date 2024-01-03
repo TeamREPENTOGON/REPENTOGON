@@ -1,0 +1,10 @@
+struct ColorParams depends (ColorMod)
+{   
+	{{
+		ColorParams() : _priority(255), _color(ColorMod()), _duration1(-1), _duration2(-1), _fadeout(false), _shared(false) {}
+	}}
+	int _priority : 0x0;
+	ColorMod _color : 0x4;
+	int _duration1 : 0x30, _duration2 : 0x34;
+	bool _fadeout : 0x38, _shared : 0x39;
+} : 0x3C; //0x3C

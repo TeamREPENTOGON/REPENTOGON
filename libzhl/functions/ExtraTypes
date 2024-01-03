@@ -55,6 +55,11 @@ TypeInfo std_vector_uint {
     Align 4;
 }; 
 
+TypeInfo vector_ColorParams {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo vector_Point {
     Size 12;
     Align 4;

@@ -404,6 +404,12 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 		EntityRef* source = *(EntityRef**)(ebp + 0x14);
 		int damageCountdown = *(int*)(ebp + 0x18);
 
+		if (isPlayer && source->_type == 33 && source->_variant == 4) {
+			// The white fireplace is a unique case where the game considers the player to have taken "damage"
+			// but no on-damage effets are triggered. Don't run the post-damage callback in this case.
+			return;
+		}
+
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
