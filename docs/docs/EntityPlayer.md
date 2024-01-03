@@ -84,11 +84,7 @@ Returns ``true`` if the trinket was successfully added, otherwise ``false``.
 
 ___
 ### AddUrnSouls () {: aria-label='Functions' }
-#### void AddUrnSouls ( int Count = 0 ) {: .copyable aria-label='Functions' }
-
-___
-### AttachMinecart () {: aria-label='Functions' }
-#### void AttachMinecart ( [EntityNPC](EntityNPC.md) Minecart ) {: .copyable aria-label='Functions' }     
+#### void AddUrnSouls ( int Count = 0 ) {: .copyable aria-label='Functions' }  
 
 ___
 ### CanAddCollectibleToInventory () {: aria-label='Functions' }
