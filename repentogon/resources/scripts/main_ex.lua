@@ -934,7 +934,7 @@ local function NoRepentogonFolderErrRender()
 --	if MenuManager:GetActiveMenu()==MainMenuType.TITLE then
 		curlocale=Options.Language
 		if not reserror_text[curlocale] then curlocale="en" end
-		if loaded_reserror_font~=reserror_fonts[curlocale][1] or (not res_error_font:IsLoaded()) then res_error_font:Load(reserror_fonts[curlocale][1]) end
+		if loaded_reserror_font~=reserror_fonts[curlocale][1] or (not res_error_font:IsLoaded()) then res_error_font:Load(reserror_fonts[curlocale][1]) loaded_reserror_font=reserror_fonts[curlocale][1] end
 		local rendercoords=Isaac.WorldToMenuPosition(MainMenuType.TITLE,Vector(260+reserror_fonts[curlocale][2],180+reserror_fonts[curlocale][3]))
 		for i,line in ipairs(reserror_text[curlocale]) do
 			res_error_font:DrawStringUTF8(line,rendercoords.X,rendercoords.Y + 12*(i-1) ,KColor(0.7,0.1,0.1,1.0),0,false)
