@@ -351,7 +351,7 @@ LUA_FUNCTION(Lua_EntityTeleportToRandomPosition) {
 	return 0;
 }
 
-void CopyStatusEffects(Entity* ent1, Entity* ent2) {
+void CopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor) {
 	ent2->_freezeCountdown = ent1->_freezeCountdown;
 	ent2->_poisonCountdown = ent1->_poisonCountdown;
 	ent2->_slowingCountdown = ent1->_slowingCountdown;
@@ -383,20 +383,25 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2) {
 	ent2->_flags[0] = ent2->_flags[0] & 0xdeffe01f | ent1->_flags[0] & 0x21001fe0;
 	ent2->_flags[1] = ent2->_flags[1] & 0xfea27fff | ent1->_flags[1] & 0x15d8000;
 
-	ent2->_colorParams = ent1->_colorParams;
-	ent2->_sprite._color = ent1->_sprite._color;
+	if (setColor) {
+		ent2->_colorParams = ent1->_colorParams;
+		ent2->_sprite._color = ent1->_sprite._color;
+	}
 }
 
 LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 	Entity* ent1 = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	bool setColor;
 	if (lua_type(L, 2) == LUA_TUSERDATA) {
 		Entity* ent2 = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-		CopyStatusEffects(ent1, ent2);
+		setColor = lua::luaL_optboolean(L, 3, true);
+		CopyStatusEffects(ent1, ent2, setColor);
 	}
 	else
 	{
+		setColor = lua::luaL_optboolean(L, 2, true);
 		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
-			CopyStatusEffects(ent1, child);
+			CopyStatusEffects(ent1, child, setColor);
 		}
 	}
 

@@ -39,8 +39,8 @@ ___
 
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
-#### void CopyStatusEffects ( ) {: .copyable aria-label='Functions' }
-#### void CopyStatusEffects ( [Entity](Entity.md) Target ) {: .copyable aria-label='Functions' }
+#### void CopyStatusEffects ( boolean CopyColor = true ) {: .copyable aria-label='Functions' }
+#### void CopyStatusEffects ( [Entity](Entity.md) Target, boolean CopyColor = true ) {: .copyable aria-label='Functions' }
 If no Entity is specified, this will recursively copy status effects to all [Child](Entity.md#child) Entities.
 
 ___
