@@ -71,7 +71,7 @@ __thiscall Entity_Effect * Entity::MakeGroundPoof(Vector * pos, ColorMod * color
 "558bec83e4f881ec94000000f30f1005":
 __thiscall void Entity::TeleportToRandomPosition(bool unused);
 
-struct Entity depends (AnimationState, ANM2, RNG, Vector, vector_EntityColor) {
+struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
 	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
@@ -201,7 +201,10 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, vector_EntityColor) {
 		
 		skip; // GetForwardVector
 		skip; // HandleCollision
-		skip; // ResetColor
+		
+		"8d81????????81c1e4000000":
+		void ResetColor();
+		
 		skip; // LoadEntityConfig
     };
 } : 0x360;

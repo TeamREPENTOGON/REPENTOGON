@@ -384,6 +384,7 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2) {
 	ent2->_flags[1] = ent2->_flags[1] & 0xfea27fff | ent1->_flags[1] & 0x15d8000;
 
 	ent2->_entityColors = ent1->_entityColors;
+	ent2->_sprite._color = ent1->_sprite._color;
 }
 
 LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
@@ -397,6 +398,50 @@ LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
 			CopyStatusEffects(ent1, child);
 		}
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetEntityColors) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_newtable(L);
+	for (size_t i = 0; i < entity->_entityColors.size(); ++i) {
+		lua_pushinteger(L, i + 1);
+		EntityColor* ud = (EntityColor*)lua_newuserdata(L, sizeof(EntityColor));
+		*ud = entity->_entityColors[i];
+		luaL_setmetatable(L, lua::metatables::EntityColorMT);
+		lua_rawset(L, -3);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetEntityColors) {
+	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	if (!lua_istable(L, 2))
+	{
+		return luaL_argerror(L, 2, "Expected a table as second argument");
+	}
+
+	size_t length = (size_t)lua_rawlen(L, 2);
+
+	if (length == 0)
+	{
+		entity->_entityColors.clear();
+		entity->ResetColor();
+	}
+	else
+	{
+		vector_EntityColor list;
+		list.reserve(length);
+		for (size_t i = 0; i < length; i++)
+		{
+			lua_rawgeti(L, 2, i + 1);
+			list.push_back(*lua::GetUserdata<EntityColor*>(L, -1, lua::metatables::EntityColorMT));
+			lua_pop(L, 1);
+		}
+		entity->_entityColors = list;
 	}
 
 	return 0;
@@ -457,6 +502,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SpawnWaterImpactEffects", Lua_EntitySpawnWaterImpactEffects },
 		{ "TeleportToRandomPosition", Lua_EntityTeleportToRandomPosition },
 		{ "TryThrow", Lua_EntityTryThrow },
+		{ "GetEntityColors", Lua_EntityGetEntityColors },
+		{ "SetEntityColors", Lua_EntitySetEntityColors },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
