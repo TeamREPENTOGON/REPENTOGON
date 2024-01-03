@@ -383,7 +383,7 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2) {
 	ent2->_flags[0] = ent2->_flags[0] & 0xdeffe01f | ent1->_flags[0] & 0x21001fe0;
 	ent2->_flags[1] = ent2->_flags[1] & 0xfea27fff | ent1->_flags[1] & 0x15d8000;
 
-	ent2->_entityColors = ent1->_entityColors;
+	ent2->_colorParams = ent1->_colorParams;
 	ent2->_sprite._color = ent1->_sprite._color;
 }
 
@@ -403,21 +403,21 @@ LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_EntityGetEntityColors) {
+LUA_FUNCTION(Lua_EntityGetColorParams) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	lua_newtable(L);
-	for (size_t i = 0; i < entity->_entityColors.size(); ++i) {
+	for (size_t i = 0; i < entity->_colorParams.size(); ++i) {
 		lua_pushinteger(L, i + 1);
-		EntityColor* ud = (EntityColor*)lua_newuserdata(L, sizeof(EntityColor));
-		*ud = entity->_entityColors[i];
-		luaL_setmetatable(L, lua::metatables::EntityColorMT);
+		ColorParams* ud = (ColorParams*)lua_newuserdata(L, sizeof(ColorParams));
+		*ud = entity->_colorParams[i];
+		luaL_setmetatable(L, lua::metatables::ColorParamsMT);
 		lua_rawset(L, -3);
 	}
 
 	return 1;
 }
 
-LUA_FUNCTION(Lua_EntitySetEntityColors) {
+LUA_FUNCTION(Lua_EntitySetColorParams) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	if (!lua_istable(L, 2))
 	{
@@ -428,20 +428,20 @@ LUA_FUNCTION(Lua_EntitySetEntityColors) {
 
 	if (length == 0)
 	{
-		entity->_entityColors.clear();
+		entity->_colorParams.clear();
 		entity->ResetColor();
 	}
 	else
 	{
-		vector_EntityColor list;
+		vector_ColorParams list;
 		list.reserve(length);
 		for (size_t i = 0; i < length; i++)
 		{
 			lua_rawgeti(L, 2, i + 1);
-			list.push_back(*lua::GetUserdata<EntityColor*>(L, -1, lua::metatables::EntityColorMT));
+			list.push_back(*lua::GetUserdata<ColorParams*>(L, -1, lua::metatables::ColorParamsMT));
 			lua_pop(L, 1);
 		}
-		entity->_entityColors = list;
+		entity->_colorParams = list;
 	}
 
 	return 0;
@@ -502,8 +502,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SpawnWaterImpactEffects", Lua_EntitySpawnWaterImpactEffects },
 		{ "TeleportToRandomPosition", Lua_EntityTeleportToRandomPosition },
 		{ "TryThrow", Lua_EntityTryThrow },
-		{ "GetEntityColors", Lua_EntityGetEntityColors },
-		{ "SetEntityColors", Lua_EntitySetEntityColors },
+		{ "GetColorParams", Lua_EntityGetColorParams },
+		{ "SetColorParams", Lua_EntitySetColorParams },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);

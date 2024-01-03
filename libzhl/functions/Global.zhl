@@ -49,7 +49,7 @@ struct IntPair {
 
 // When adding typedefs, remember to define them in ExtraTypes!
 typedef std::vector<Point> vector_Point;
-typedef std::vector<EntityColor> vector_EntityColor;
+typedef std::vector<ColorParams> vector_ColorParams;
 typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;

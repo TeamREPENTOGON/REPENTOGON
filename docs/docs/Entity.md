@@ -56,6 +56,11 @@ ___
 #### [Capsule](Capsule.md) GetCollisionCapsule ( [Vector](Vector.md) Vector ) {: .copyable aria-label='Functions' }
 
 ___
+### GetColorParams () {: aria-label='Functions' }
+#### [ColorParams](ColorParams.md)[] GetColorParams ( ) {: .copyable aria-label='Functions' }
+Returns a table of all colors currently queued by `SetColor` alongside their parameters.
+
+___
 ### GetDebugShape () {: aria-label='Functions' }
 #### [Shape](renderer/Shape.md) GetDebugShape ( boolean Unknown ) {: .copyable aria-label='Functions' }
 
@@ -138,6 +143,11 @@ ___
 ___
 ### SetBossStatusEffectCooldown () {: aria-label='Functions' }
 #### void SetBossStatusEffectCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
+
+___
+### SetColorParams () {: aria-label='Functions' }
+#### void SetColorParams ( [ColorParams](ColorParams.md)[] Params ) {: .copyable aria-label='Functions' }
+Sets colors to be used alongside their parameters.
 
 ___
 ### SetDead () {: aria-label='Functions' }
