@@ -7,6 +7,8 @@ Additions:
 * EntityPickup :
 	- GetCollectibleCycle
 	- RemoveCollectibleCycle
+* Capsule :
+	- Capsule constructor
 * The luamod command now supports autocomplete
 * Dear ImGui console now has a back button to allow controllers & Steam Deck to exit
 * dsound.dll will log when it's been unloaded to help debug cases of REPENTOGON not loading
