@@ -1,6 +1,7 @@
 v1.0.3 - 
 Additions:
 * ColorParams
+	- Used to store the color and parameters passed by Entity:SetColor (Priority, Duration, Fadeout, Shared)
 * Entity:CopyStatusEffects() now copies the Color over to the target Entity, including the proper duration and other parameters
 	- This can be toggled with the CopyColor argument, default true
 * Isaac.IsInGame
@@ -28,7 +29,7 @@ Fixes:
 * Fix potential issue with XMLData.GetNumEntries
 * Improve paramater validation for MC_PRE_LEVEL_SELECT to prevent possible crashes
 * Modify vanilla function Game():GetPlayer to prevent possible crashes
-* Changelog can now be safely closed using the "menu back" button e.g. Esc
+* Changelog can now be safely closed using the "menu back" button (e.g. Esc) without exiting the game
 * Fixed AnimationData:IsLoopingAnimation returning an integer, now properly returns a boolean
 * Fixed ItemPool:NumAvailableTrinkets returning a boolean, now properly returns an integer
 
@@ -36,7 +37,7 @@ Fixes:
 v1.0.2 - 
 Additions:
 * Added Pickup:GetAlternatePedestal()
-* rREPENTOGON'S logfile (repentogon.log) now shows timestamps
+* REPENTOGON'S logfile (repentogon.log) now shows timestamps
 
 Fixes:
 * Fixed a crash when time is set to 0 in the performance logger
