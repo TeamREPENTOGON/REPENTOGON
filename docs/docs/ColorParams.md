@@ -18,6 +18,7 @@ tags:
 ___
 ### GetDuration () {: aria-label='Functions' }
 #### int GetDuration ( ) {: .copyable aria-label='Functions' }
+Defines the time in update frames that these parameters should last. Has no effect on how many frames are left, but does affect fadeout speed (calculated as `Lifespan / Duration`) if `Fadeout` is enabled.
 
 ___
 ### GetFadeout () {: aria-label='Functions' }
@@ -26,6 +27,7 @@ ___
 ___
 ### GetLifespan () {: aria-label='Functions' }
 #### int GetLifespan ( ) {: .copyable aria-label='Functions' }
+Defines how many update frames are _left_ before this expires. This is decremented by `1` each non-interpolation update at a rate of `30` per second. Altering this will directly effect how many frames are left before these parameters expire.
 
 ___
 ### GetPriority () {: aria-label='Functions' }
