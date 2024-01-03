@@ -943,6 +943,38 @@ local function NoRepentogonFolderErrRender()
 end
 REPENTOGON.Extras.Misc.NoRPTGNFldrErr=NoRepentogonFolderErrRender
 
+local SpriteMT=getmetatable(Sprite)
+local OldSprConstructor=SpriteMT.__call
+
+function SpriteMT.__call(_,ANM2Path,LoadGraphics)
+	local out,isloaded=OldSprConstructor(),false
+	if LoadGraphics==nil then LoadGraphics=true end
+
+	if ANM2Path and type(ANM2Path)=="string" then
+		out:Load(ANM2Path,LoadGraphics)
+		isloaded=out:GetLayerCount()>0
+	end
+
+	return out,isloaded
+end
+
+
+local FontMT=getmetatable(Font)
+local OldFontConstructor=FontMT.__call
+
+function FontMT.__call(_,FontPath)
+	local out,isloaded=OldFontConstructor(),false
+
+	if FontPath and type(FontPath)=="string" then
+		out:Load(FontPath)
+		isloaded=out:IsLoaded()
+	end
+
+	return out,isloaded
+end
+
+
+
 --res load error stuff end
 
 pcall(require("repentogon_extras/changelog"))

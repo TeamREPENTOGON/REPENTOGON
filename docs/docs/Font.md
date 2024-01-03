@@ -4,6 +4,13 @@ tags:
 ---
 # Class "Font"
 
+## Modified Constructors
+
+### Font () {: aria-label='Modified Constructors' }
+#### [Font](Font.md),bool Font ( string FontPath ) {: .copyable aria-label='Modified Constructors' }
+
+Added optional "FontPath" argument, the function now returns two values: [Font](Font.md) object and the bool signifying whether the font was loaded successfully or not.
+___
 ## Modified Functions
 
 ### DrawString () {: aria-label='Modified Functions' }
