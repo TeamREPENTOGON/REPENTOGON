@@ -1212,7 +1212,7 @@ This callback triggers when an active gets rerolled by 'M (trinket id 138) and a
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1190 |MC_PRE_M_MORPH_ACTIVE {: .copyable } | ([CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) | [EntityPlayer](../EntityPlayer.md) Player | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
+|1190 |MC_PRE_M_MORPH_ACTIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible) | - | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) |
 
 ### MC_PRE_NPC_SPLIT
 Called when the game is about to decide whether or not an [EntityNPC](../EntityNPC.md) can be split, ie the Meat Cleaver effect.
