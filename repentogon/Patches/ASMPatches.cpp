@@ -404,6 +404,12 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 		EntityRef* source = *(EntityRef**)(ebp + 0x14);
 		int damageCountdown = *(int*)(ebp + 0x18);
 
+		if (isPlayer && source->_type == 33 && source->_variant == 4) {
+			// The white fireplace is a unique case where the game considers the player to have taken "damage"
+			// but no on-damage effets are triggered. Don't run the post-damage callback in this case.
+			return;
+		}
+
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -1103,13 +1109,28 @@ void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxR
 }
 
 // Condensed that works for majority of cases
-void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, unsigned int jumpOffset, GridEntityType type, unsigned int variant) {
+void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, int jumpOffset, GridEntityType type, unsigned int variant) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(0) // vardata
 		.Push(ASMPatch::Registers::EAX) // seed
 		.Push((int32_t)variant) // variant
+		.Push((int32_t)type) // type
+		.Push(idxReg) // idx
+		.AddInternalCall(SpawnGridEntityTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + jumpOffset);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, int jumpOffset, GridEntityType type, ASMPatch::Registers varReg, int varJumpOffset) {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(0) // vardata
+		.Push(ASMPatch::Registers::EAX) // seed
+		.Push(varReg, varJumpOffset) // variant
 		.Push((int32_t)type) // type
 		.Push(idxReg) // idx
 		.AddInternalCall(SpawnGridEntityTrampoline)
@@ -1210,7 +1231,7 @@ void PatchInlinedSpawnGridEntity()
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[14], ASMPatch::Registers::EDI, 0xa9, GRID_DECORATION, 10); // make_wall (crawlspace ladder)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[15], ASMPatch::Registers::EDI, 0xa9, GRID_GRAVITY, 0); // make_wall (crawlspace gravity)
 	// Possibly will need another, unique patch for the default case of spawning a wall, idk if it's worth it
-	ASMPatchInlinedSpawnGridEntity_Generic(addrs[16], ASMPatch::Registers::EDI, 0xe1, GRID_POOP, 0); // card against humanity
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[16], ASMPatch::Registers::EDI, 0xe1, GRID_POOP, ASMPatch::Registers::EBP, -0x14); // card against humanity
 
 	// This needs special handling bc the code loads g_Game back into EAX near the end of the inline
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[17], ASMPatch::Registers::EDI, 0xd5, GRID_DECORATION, 1000); // PickupGridEntity

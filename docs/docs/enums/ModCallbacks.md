@@ -501,7 +501,7 @@ Accepts an [HealthType](HealthType.md) to change health type for the character.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | [HealthType](HealthType.md) |
+|1067 |MC_PLAYER_GET_HEALTH_TYPE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | [HealthType](HealthType.md) |
 
 ### MC_PRE_FAMILIAR_RENDER
 Accepts a [Vector](../Vector.md) to modify render offset
@@ -1752,3 +1752,26 @@ Accepts no return parameters.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1463 |MC_POST_GRID_ENTITY_WALL_RENDER {: .copyable } | ([GridEntityWall](../GridEntityWall.md) Wall) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+
+### MC_PRE_LEVEL_SELECT
+This callback is fired when the game selects which level (also known as stage) to load, usually when the player enters a trapdoor.
+The callback accepts two parameters:
+
+* Level: the level selected by the game, as defined in the [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) enumeration.
+* Type: the type of the level selected by the game, as defined in the [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) enumeration.
+
+This callback can return either nothing or a table. 
+
+* Nothing: let the game continue with the level stage / stage type pair it selected;
+* Table: must contain two fields (anonymous). The first field is the desired level stage, second field is the desired stage type.
+
+If you return a table, Repentogon will check that the values fall in the allowed ranges for the level stage and the stage type.
+
+???+ warn "Value ranges"
+    Remember that the range of level types is not the same between normal / hard on one side and greed / greedier on the other. 
+
+    Also remember that since Repentance the stage type value 3 is deprecated.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1104 | MC_PRE_LEVEL_SELECT {: .copyable } | ([LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) Level, [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) Type) | - | void 

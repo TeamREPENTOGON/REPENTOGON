@@ -2625,97 +2625,97 @@ LUA_FUNCTION(Lua_GetNumEntries)
 	XMLChilds Childs;
 	switch (nodetype) {
 	case 0:
-		lua_pushinteger(L, XMLStuff.ModData->childs.size());
+		lua_pushinteger(L, XMLStuff.ModData->nodes.size());
 		break;
 	case 1:
-		lua_pushinteger(L, XMLStuff.EntityData->childs.size());
+		lua_pushinteger(L, XMLStuff.EntityData->nodes.size());
 		break;
 	case 2:
-		lua_pushinteger(L, XMLStuff.PlayerData->childs.size());
+		lua_pushinteger(L, XMLStuff.PlayerData->nodes.size());
 		break;
 	case 3:
-		lua_pushinteger(L, XMLStuff.ItemData->childs.size());
+		lua_pushinteger(L, XMLStuff.ItemData->nodes.size());
 		break;
 	case 4:
-		lua_pushinteger(L, XMLStuff.TrinketData->childs.size());
+		lua_pushinteger(L, XMLStuff.TrinketData->nodes.size());
 		break;
 	case 5:
-		lua_pushinteger(L, XMLStuff.PillData->childs.size());
+		lua_pushinteger(L, XMLStuff.PillData->nodes.size());
 		break;
 	case 6:
-		lua_pushinteger(L, XMLStuff.CardData->childs.size());
+		lua_pushinteger(L, XMLStuff.CardData->nodes.size());
 		break;
 	case 7:
-		lua_pushinteger(L, XMLStuff.MusicData->childs.size());
+		lua_pushinteger(L, XMLStuff.MusicData->nodes.size());
 		break;
 	case 8:
-		lua_pushinteger(L, XMLStuff.SoundData->childs.size());
+		lua_pushinteger(L, XMLStuff.SoundData->nodes.size());
 		break;
 	case 9:
-		lua_pushinteger(L, XMLStuff.ChallengeData->childs.size());
+		lua_pushinteger(L, XMLStuff.ChallengeData->nodes.size());
 		break;
 	case 10:
-		lua_pushinteger(L, XMLStuff.PoolData->childs.size());
+		lua_pushinteger(L, XMLStuff.PoolData->nodes.size());
 		break;
 	case 11:
-		lua_pushinteger(L, XMLStuff.NightmareData->childs.size());
+		lua_pushinteger(L, XMLStuff.NightmareData->nodes.size());
 		break;
 	case 12:
-		lua_pushinteger(L, XMLStuff.CostumeData->childs.size());
+		lua_pushinteger(L, XMLStuff.CostumeData->nodes.size());
 		break;
 	case 13:
-		lua_pushinteger(L, XMLStuff.NullCostumeData->childs.size());
+		lua_pushinteger(L, XMLStuff.NullCostumeData->nodes.size());
 		break;
 	case 14:
-		lua_pushinteger(L, XMLStuff.WispData->childs.size());
+		lua_pushinteger(L, XMLStuff.WispData->nodes.size());
 		break;
 	case 15:
-		lua_pushinteger(L, XMLStuff.WispColorData->childs.size());
+		lua_pushinteger(L, XMLStuff.WispColorData->nodes.size());
 		break;
 	case 16:
-		lua_pushinteger(L, XMLStuff.CurseData->childs.size());
+		lua_pushinteger(L, XMLStuff.CurseData->nodes.size());
 		break;
 	case 17:
-		lua_pushinteger(L, XMLStuff.LocustData->childs.size());
+		lua_pushinteger(L, XMLStuff.LocustData->nodes.size());
 		break;
 	case 18:
-		lua_pushinteger(L, XMLStuff.LocustColorData->childs.size());
+		lua_pushinteger(L, XMLStuff.LocustColorData->nodes.size());
 		break;
 	case 19:
-		lua_pushinteger(L, XMLStuff.BombCostumeData->childs.size());
+		lua_pushinteger(L, XMLStuff.BombCostumeData->nodes.size());
 		break;
 	case 20:
-		lua_pushinteger(L, XMLStuff.RecipeData->childs.size());
+		lua_pushinteger(L, XMLStuff.RecipeData->nodes.size());
 		break;
 	case 21:
-		lua_pushinteger(L, XMLStuff.BossPoolData->childs.size());
+		lua_pushinteger(L, XMLStuff.BossPoolData->nodes.size());
 		break;
 	case 22:
-		lua_pushinteger(L, XMLStuff.BossPortraitData->childs.size());
+		lua_pushinteger(L, XMLStuff.BossPortraitData->nodes.size());
 		break;
 	case 23:
-		lua_pushinteger(L, XMLStuff.CutsceneData->childs.size());
+		lua_pushinteger(L, XMLStuff.CutsceneData->nodes.size());
 		break;
 	case 24:
-		lua_pushinteger(L, XMLStuff.StageData->childs.size());
+		lua_pushinteger(L, XMLStuff.StageData->nodes.size());
 		break;
 	case 25:
-		lua_pushinteger(L, XMLStuff.BackdropData->childs.size());
+		lua_pushinteger(L, XMLStuff.BackdropData->nodes.size());
 		break;
 	case 26:
-		lua_pushinteger(L, XMLStuff.AchievementData->childs.size());
+		lua_pushinteger(L, XMLStuff.AchievementData->nodes.size());
 		break;
 	case 27:
-		lua_pushinteger(L, XMLStuff.GiantBookData->childs.size());
+		lua_pushinteger(L, XMLStuff.GiantBookData->nodes.size());
 		break;
 	case 28:
-		lua_pushinteger(L, XMLStuff.BossRushData->childs.size());
+		lua_pushinteger(L, XMLStuff.BossRushData->nodes.size());
 		break;
 	case 29:
-		lua_pushinteger(L, XMLStuff.PlayerFormData->childs.size());;
+		lua_pushinteger(L, XMLStuff.PlayerFormData->nodes.size());;
 		break;
 	case 30:
-		lua_pushinteger(L, XMLStuff.NullItemData->childs.size());;
+		lua_pushinteger(L, XMLStuff.NullItemData->nodes.size());;
 		break;
 	}	
 	return 1;

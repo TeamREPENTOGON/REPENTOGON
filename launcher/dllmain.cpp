@@ -217,6 +217,15 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		if (luaHandle) {
 			FreeLibrary(luaHandle);
 		}
+
+		FILE* f = fopen("repentogon.log", "a");
+		if (f) {
+			fprintf(f, "Unloading dsound.dll\n");
+			fclose(f);
+		}
+		else {
+			MessageBox(0, "Unloading dsound.dll", "Info", MB_ICONINFORMATION);
+		}
 	}
 
 	return TRUE;

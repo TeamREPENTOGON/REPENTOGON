@@ -10,6 +10,7 @@ tags:
 ### GetLastDevilRoomStage () {: aria-label='Modified Functions' }
 #### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastDevilRoomStage ( ) {: .copyable aria-label='Modified Functions' }
 Now returns integer instead of unusable userdata.
+
 ___
 ### GetLastLevelWithDamage () {: aria-label='Modified Functions' }
 #### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastLevelWithDamage ( ) {: .copyable aria-label='Modified Functions' }
@@ -19,6 +20,11 @@ ___
 ### GetLastLevelWithoutHalfHp () {: aria-label='Modified Functions' }
 #### [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) GetLastLevelWithoutHalfHp ( ) {: .copyable aria-label='Modified Functions' }
 Now returns integer instead of unusable userdata.
+
+___
+### GetPlayer ()  {: aria-label='Modified Functions' }
+#### [EntityPlayer](EntityPlayer.md) GetPlayer ( int Index ) {: .copyable aria-label='Modified Functions' }
+If no players exist, this now returns `nil` to prevent a crash. Invalid indexes will return index `0`.
 
 ___
 ### StartStageTransition ()  {: aria-label='Modified Functions' }

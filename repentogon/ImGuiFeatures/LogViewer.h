@@ -27,6 +27,10 @@ static constexpr const size_t LogViewerBufMaxSize = 4 * 1024 * 1024;
 static constexpr const size_t LogViewerReduceSize = size_t(LogViewerBufMaxSize * 0.25f);
 
 struct LogViewer : ImGuiWindowObject {
+    static constexpr const char* Game = "[GAME]";
+    static constexpr const char* Repentogon = "[REPENTOGON]";
+    static constexpr const char* Console = "[CONSOLE]";
+
     bool showGame;
     bool showRepentogon;
     bool showConsole;

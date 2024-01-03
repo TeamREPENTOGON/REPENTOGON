@@ -934,7 +934,7 @@ local function NoRepentogonFolderErrRender()
 --	if MenuManager:GetActiveMenu()==MainMenuType.TITLE then
 		curlocale=Options.Language
 		if not reserror_text[curlocale] then curlocale="en" end
-		if loaded_reserror_font~=reserror_fonts[curlocale][1] or (not res_error_font:IsLoaded()) then res_error_font:Load(reserror_fonts[curlocale][1]) end
+		if loaded_reserror_font~=reserror_fonts[curlocale][1] or (not res_error_font:IsLoaded()) then res_error_font:Load(reserror_fonts[curlocale][1]) loaded_reserror_font=reserror_fonts[curlocale][1] end
 		local rendercoords=Isaac.WorldToMenuPosition(MainMenuType.TITLE,Vector(260+reserror_fonts[curlocale][2],180+reserror_fonts[curlocale][3]))
 		for i,line in ipairs(reserror_text[curlocale]) do
 			res_error_font:DrawStringUTF8(line,rendercoords.X,rendercoords.Y + 12*(i-1) ,KColor(0.7,0.1,0.1,1.0),0,false)
@@ -942,6 +942,38 @@ local function NoRepentogonFolderErrRender()
 --	end
 end
 REPENTOGON.Extras.Misc.NoRPTGNFldrErr=NoRepentogonFolderErrRender
+
+local SpriteMT=getmetatable(Sprite)
+local OldSprConstructor=SpriteMT.__call
+
+function SpriteMT.__call(_,ANM2Path,LoadGraphics)
+	local out,isloaded=OldSprConstructor(),false
+	if LoadGraphics==nil then LoadGraphics=true end
+
+	if ANM2Path and type(ANM2Path)=="string" then
+		out:Load(ANM2Path,LoadGraphics)
+		isloaded=out:GetLayerCount()>0
+	end
+
+	return out,isloaded
+end
+
+
+local FontMT=getmetatable(Font)
+local OldFontConstructor=FontMT.__call
+
+function FontMT.__call(_,FontPath)
+	local out,isloaded=OldFontConstructor(),false
+
+	if FontPath and type(FontPath)=="string" then
+		out:Load(FontPath)
+		isloaded=out:IsLoaded()
+	end
+
+	return out,isloaded
+end
+
+
 
 --res load error stuff end
 
