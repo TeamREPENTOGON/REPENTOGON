@@ -137,18 +137,27 @@ function ChangeLog.MenuRender()
         KColor(0, 0, 0, 0.3), 200) -- shadow
     Cl.VersionFont:DrawStringUTF8(versionString, versionPosition.X, versionPosition.Y,
         KColor(67 / 255, 5 / 255, 5 / 255, 1), 200) -- text
-    if MenuManager:GetActiveMenu() == _MainMenuType.TITLE then
+    local ActiveMenu=MenuManager:GetActiveMenu()
+
+    if ActiveMenu == _MainMenuType.TITLE or ActiveMenu==0 then    --reserve menu id 0 for changelog to prevent inputs, mdoders: please do not use that specific id, you already have almost 2^32 of them!...
         if IsActionTriggeredAll(_ButtonAction.ACTION_MAP) then
             Cl.CurrentState = not Cl.CurrentState
 
             if Cl.CurrentState == true then
                 SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
                 Cl.ChangelogSprite:Play("SwapIn")
+                MenuManager.SetActiveMenu(0)    --block inputs
             else
                 SFXManager():Play(_SoundEffect.SOUND_PAPER_OUT)
                 Cl.ChangelogSprite:Play("SwapOut")
+                MenuManager.SetActiveMenu(1)    --unblock inputs
             end
             ShouldBeRendered = true
+        elseif IsActionTriggeredAll(_ButtonAction.ACTION_MENUBACK) and Cl.CurrentState==true then
+            Cl.CurrentState=false
+            SFXManager():Play(_SoundEffect.SOUND_PAPER_OUT)
+            Cl.ChangelogSprite:Play("SwapOut")
+            MenuManager.SetActiveMenu(1)    --unblock inputs
         end
         if ShouldBeRendered then
             local LogRenderPosition = Isaac.WorldToMenuPosition(_MainMenuType.TITLE, Cl.PaperOffset)
