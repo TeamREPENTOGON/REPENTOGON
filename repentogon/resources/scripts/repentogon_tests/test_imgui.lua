@@ -74,6 +74,7 @@ ImGui.AddDragInteger("catInput", "DragInt", "int Drag", function(val) print(val)
 ImGui.AddDragFloat("catInput", "DragFloat", "float Drag", function(val) print(val) end, 2.5, 1, 0, 100)
 ImGui.AddSliderInteger("catInput", "SliderInt", "int Slider", function(val) print(val) end, 0, 0, 100)
 ImGui.AddSliderFloat("catInput", "SliderFloat", "float Slider", function(val) print(val) end, 0, 0, 100)
+ImGui.AddSliderFloat("catInput", "SliderFloatScience", "float Slider Scientific", function(val) print(val) end, 500000000, 0, 999999999999999, "%e")
 ImGui.AddInputColor("catInput", "inputColorRGB", "RGB input", function(r, g, b) print(r, g, b) end, 1, 0.25, 0.45)
 ImGui.AddInputColor("catInput", "inputColorRGBA", "RGBA input", function(r, g, b, a) print(r, g, b, a) end, 0.5, 0.5, 0.5,
     0.5)
