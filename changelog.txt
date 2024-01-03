@@ -18,6 +18,7 @@ Additions:
 * dsound.dll will log when it's been unloaded to help debug cases of REPENTOGON not loading
 * Improved constructors for Sprite and Font classes
 * Added documentation for the MC_PRE_LEVEL_SELECT callback
+* Added gfxback property to custom achievements xml
 
 Fixes:
 * Fix a crash with weapon-copying familiars and Spirit Sword
@@ -29,10 +30,9 @@ Fixes:
 * Fix potential issue with XMLData.GetNumEntries
 * Improve paramater validation for MC_PRE_LEVEL_SELECT to prevent possible crashes
 * Modify vanilla function Game():GetPlayer to prevent possible crashes
-* Changelog can now be safely closed using the "menu back" button (e.g. Esc) without exiting the game
-* Fixed AnimationData:IsLoopingAnimation returning an integer, now properly returns a boolean
-* Fixed ItemPool:NumAvailableTrinkets returning a boolean, now properly returns an integer
-
+* Changelog can now be safely closed using the "menu back" button e.g. Esc
+* Fixed AnimationData:IsLoopingAnimation returning boolean, instead of integer
+* Fixed a custom cutscene issue that played the Intro on cases where it shouldnt
 
 v1.0.2 - 
 Additions:
