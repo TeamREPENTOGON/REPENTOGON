@@ -90,6 +90,10 @@ void CheckForUpdates() {
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
             curl_easy_setopt(curl, CURLOPT_WRITEDATA, &result);
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+            curl_easy_setopt(curl, CURLOPT_SERVER_RESPONSE_TIMEOUT, 5);
+            curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
+
             res = curl_easy_perform(curl);
             if (res != CURLE_OK)
                 fprintf(stderr, "Failed to check for updates: %s\n",
