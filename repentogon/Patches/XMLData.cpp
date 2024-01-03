@@ -2851,7 +2851,9 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 				if (node.count("id") > 0) {
 					int nodeid = stoi(node["id"]);
 					if (nodeid > 26) {
-						xml_attribute<char>* relativeid = new xml_attribute<char>(); relativeid->name("relativeid"); relativeid->value(IntToChar(stoi(node["id"]))); auxnode->append_attribute(relativeid);
+						if (node.count("relativeid") == 0) {
+							xml_attribute<char>* relativeid = new xml_attribute<char>(); relativeid->name("relativeid"); relativeid->value(IntToChar(stoi(node["id"]))); auxnode->append_attribute(relativeid);
+						}
 						auxnode->remove_attribute(auxnode->first_attribute("id"));
 						id += 1;
 						xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);						
@@ -3113,13 +3115,6 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							root->append_node(clonedNode);
 						}
 					}
-					else if (strcmp(filename.c_str(), "cutscenes.xml") == 0) {
-						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
-							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
-							root->append_node(clonedNode);
-						}
-					}
 					else if (strcmp(filename.c_str(), "achievements.xml") == 0) {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
@@ -3192,7 +3187,9 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								xml_attribute<char>* newid = new xml_attribute<char>(); newid->name("id"); newid->value(IntToChar(xmlmaxnode[filename])); clonedNode->append_attribute(newid);
 							}
 							else {
-								xml_attribute<char>* newid = new xml_attribute<char>(); newid->name("relativeid"); newid->value(clonedNode->first_attribute("id")->value()); clonedNode->append_attribute(newid);
+								if (node.count("relativeid") == 0) {
+									xml_attribute<char>* newid = new xml_attribute<char>(); newid->name("relativeid"); newid->value(clonedNode->first_attribute("id")->value()); clonedNode->append_attribute(newid);
+								}
 								clonedNode->first_attribute("id")->value(IntToChar(xmlmaxnode[filename]));
 							}
 
