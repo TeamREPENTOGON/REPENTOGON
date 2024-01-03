@@ -143,14 +143,37 @@ HOOK_METHOD(AchievementOverlay, Update, () -> void) {
 		pendingachievs.pop();
 		ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
 		XMLAttributes modachiev = XMLStuff.AchievementData->nodes[achieveemntid];
+		//if (modachiev.find("anm2") != modachiev.end()) {
+			//AchievPop->Load(modachiev["gfxroot"] + modachiev["anm2"], true);
+			//AchievPop->LoadGraphics(true);
+		//}
+		//else {
+			//string def = "gfx/ui/achievement/achievement.anm2";
+			//AchievPop->Load(def, true);
+			//AchievPop->LoadGraphics(true);
+		//}
+		if (modachiev.find("gfxback") != modachiev.end()) {
+			AchievPop->ReplaceSpritesheet(2, modachiev["gfxroot"] + modachiev["gfxback"]);
+			AchievPop->LoadGraphics(true);
+		}
 		AchievPop->ReplaceSpritesheet(3, modachiev["gfxroot"] + modachiev["gfx"]);
 		AchievPop->LoadGraphics(true);
 		AchievPop->Update();
+
 		if (pendingachievs.size() == 0) {
 			dummyachiev = -1;
 		}
 	}
 	else if (this->status != 1) { achievdone = false; }
+	/*else {
+		ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
+		if (AchievPop->_filename != "gfx/ui/achievement/achievement.anm2") {
+			printf("filename: %s", AchievPop->_filename.c_str());
+			string def = "gfx/ui/achievement/achievement.anm2";
+			AchievPop->Load(def, true);
+			AchievPop->LoadGraphics(true);
+		}
+	}*/
 
 }
 
