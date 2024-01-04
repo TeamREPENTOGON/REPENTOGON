@@ -55,7 +55,7 @@ Returns the true amount of charge added, which may have been capped by the targe
 
 ___
 ### AddBoneOrbital () {: aria-label='Functions' }
-#### void AddBoneOrbital ( ) {: .copyable aria-label='Functions' }
+#### void AddBoneOrbital ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
 ### AddInnateCollectible () {: aria-label='Functions' }
@@ -65,7 +65,7 @@ ___
 	Currently this function directly modifies the contents of WispCollectiblesList, so if this list was updated on wisp init/delete, or the player exits the run, your added innate items will not be saved.
 	
 ___
-### AddLeprocy () {: aria-label='Functions' }
+### AddLeprosy () {: aria-label='Functions' }
 #### void AddLeprocy ( ) {: .copyable aria-label='Functions' }
 
 ???+ info "Info"
