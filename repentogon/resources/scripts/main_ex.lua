@@ -566,14 +566,14 @@ local function RenderErrHudCB()
 		mouse.Color = Color(1, 0.5, 0.5, err_hud_opacity)
 		if Input.IsMouseBtnPressed(Mouse.MOUSE_BUTTON_1) then
 			ImGui.Show()
-			UnlinkCallbacks()
-		
 		end
 	end
 
 	if mousecontrol_off then
 		mouse:Render(mouse_pos)
 	end
+
+	if ImGui.IsVisible() then UnlinkCallbacks() end
 end
 
 local function RenderErrTextCB()

@@ -1,4 +1,6 @@
 v1.0.4 - 
+Additions:
+* The error dialog now automatically gets dismissed the next time ImGui is opened
 Fixes:
 * Fixed Eden's damage, range, and shot speed stats not properly changing
 
