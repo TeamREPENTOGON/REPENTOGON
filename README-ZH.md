@@ -22,7 +22,7 @@ REPENTOGON对Lua API进行了添加和修改，并添加了大量新功能。你
 2. 可选，删除日志文件`dsound.log`、`repentogon.log`和`zhl.log`。
 3. 删除`resources\rooms`（包括`26.The Void_ex.stb`）和`resources\shaders` （包括`coloroffset_gold_mesafix`）。
 4. 打开`resources\scripts`文件夹，删除`main_ex.lua`和`enums_ex.lua`。
-5. 在`User\Documents\My Games\Binding of Isaac Repentance`（或者是`savedatapath.txt`中的存档目录）文件夹中删除`Repentogon`目录。注意这回完全清除所有自定义的成就和标记！
+5. 在`User\Documents\My Games\Binding of Isaac Repentance`（或者是`savedatapath.txt`中的存档目录）文件夹中删除`Repentogon`目录。注意这会完全清除所有自定义的成就和标记！
 
 # 构建
 （除非您是开发者，我们推荐您从[GitHub Actions](https://github.com/TeamREPENTOGON/REPENTOGON/actions/workflows/ci.yml)获取构建。）
@@ -33,10 +33,10 @@ REPENTOGON对Lua API进行了添加和修改，并添加了大量新功能。你
 * Visual Studio 2019 或更高
 
 ### 步骤
-我们假设在本教程期间使用Git Bash，以及CMake GUI。
+我们假设在本教程期间使用Git Bash以及CMake GUI。
 1. *Recursively*克隆仓库：`git clone --recursive https://github.com/TeamREPENTOGON/REPENTOGON`
 2. 启动CMake。
-3. 在"Where is the source code"中将文件定位为克隆仓库的跟目录（通常命名为REPENTOGON）。
+3. 在"Where is the source code"中将文件定位为克隆仓库的根目录（通常命名为REPENTOGON）。
 4. 在"Where to put the binaries"中选择任意文件夹。这里是生成文件的目录。
 ![cmake1](assets/cmake1.png)
 1. 在CMake GUI的底部，点击"Configure"。
