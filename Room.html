@@ -1000,6 +1000,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#tryspawnspecialquestdoor" class="md-nav__link">
+    <span class="md-ellipsis">
+      TrySpawnSpecialQuestDoor ()
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5440,6 +5449,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#tryspawnspecialquestdoor" class="md-nav__link">
+    <span class="md-ellipsis">
+      TrySpawnSpecialQuestDoor ()
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -6685,6 +6703,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#tryspawnspecialquestdoor" class="md-nav__link">
+    <span class="md-ellipsis">
+      TrySpawnSpecialQuestDoor ()
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -7028,6 +7055,10 @@
 <h4 aria-label="Modified Functions" class="copyable" id="boolean-spawngridentity-int-gridindex-gridentitytype-type-int-variant-0-int-seed-nil-int-vardata-0">boolean SpawnGridEntity ( int GridIndex, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html">GridEntityType</a> Type, int Variant = 0, int Seed = nil, int VarData = 0 )<a class="headerlink" href="#boolean-spawngridentity-int-gridindex-gridentitytype-type-int-variant-0-int-seed-nil-int-vardata-0" title="Permanent link">⚓︎</a></h4>
 <h4 aria-label="Modified Functions" class="copyable" id="boolean-spawngridentity-int-gridindex-gridentitydesc-descriptor">boolean SpawnGridEntity ( int GridIndex, <a href="https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html">GridEntityDesc</a> Descriptor)<a class="headerlink" href="#boolean-spawngridentity-int-gridindex-gridentitydesc-descriptor" title="Permanent link">⚓︎</a></h4>
 <p>No longer crashes if an invalid <code>GridIndex</code> is used. All arguments beyond <code>Type</code> are optional. An overload has been added to allow spawning a new grid entity using an existing <code>GridEntityDesc</code>.</p>
+<hr />
+<h3 aria-label="Modified Functions" id="tryspawnspecialquestdoor">TrySpawnSpecialQuestDoor ()<a class="headerlink" href="#tryspawnspecialquestdoor" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Modified Functions" class="copyable" id="boolean-tryspawnspecialquestdoor-boolean-ignorestagetype-false">boolean TrySpawnSpecialQuestDoor ( boolean IgnoreStageType = false )<a class="headerlink" href="#boolean-tryspawnspecialquestdoor-boolean-ignorestagetype-false" title="Permanent link">⚓︎</a></h4>
+<p>An <code>IgnoreStageType</code> parameter has been added to allow spawning the Mirror &amp; Mineshaft door outside of <code>STAGETYPE_REPENTANCE</code> and <code>STAGETYPE_REPENTANCE_B</code> stages. Note that the <code>KNIFE_PUZZLE</code> <a href="Level.html#dimension-getdimension">dimension</a> must be set up properly for these doors not to crash on entry!</p>
 <hr />
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="canpickupgridentity">CanPickupGridEntity ()<a class="headerlink" href="#canpickupgridentity" title="Permanent link">⚓︎</a></h3>
