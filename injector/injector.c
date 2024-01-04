@@ -67,13 +67,22 @@ int main() {
 	}
 
 	const char* dllName = "launcher.dll";
+	const char* functionName = "LaunchZHL";
+	size_t offset = 0;
 	// 0x0
 	WriteProcessMemory(process, remotePage, &getProcAddress, sizeof(getProcAddress), &bytesWritten);
+	offset += bytesWritten;
 	// 0x4
-	WriteProcessMemory(process, (char*)remotePage + 4, &loadLibraryA, sizeof(loadLibraryA), &bytesWritten);
+	WriteProcessMemory(process, (char*)remotePage + offset, &loadLibraryA, sizeof(loadLibraryA), &bytesWritten);
+	offset += bytesWritten;
 	// 0x8
-	WriteProcessMemory(process, (char*)remotePage + 8, dllName, strlen(dllName), &bytesWritten);
-	/* 0x16 (0x15 is a '\0')
+	WriteProcessMemory(process, (char*)remotePage + offset, dllName, strlen(dllName), &bytesWritten);
+	offset += (bytesWritten + 1);
+	// 0x16 (0x15 is a '\0')
+	WriteProcessMemory(process, (char*)remotePage + offset, functionName, strlen(functionName), &bytesWritten);
+	offset += (bytesWritten + 1);
+	size_t functionOffset = offset;
+	/* 0x21 (0x20 is a '\0')
 	 * Call LoadLibraryA in the remote thread.
 	 * The thread will push the name of the DLL from its stack.
 	 * It will then call LoadLibraryA.
@@ -90,10 +99,16 @@ int main() {
 		"\x56" // push esi
 		"\x57" // push edi
 		"\x3e\x8b\x5d\x08" // mov ebx, dword ptr ds:[ebp+8], put parameter in ebx
-		"\x8b\x73\x04" // mov esi, dword ptr ds:[ebx+4], put load library a in esi
+		"\x8b\x73\x04" // mov esi, dword ptr ds:[ebx+4], put LoadLibraryA in esi
 		"\x8d\x7b\x08" // lea edi, [ebx+8], put dllname in edi
 		"\x57" // push edi, push dllname on stack
-		"\xff\xd6" // call LoadLibraryA
+		"\xff\xd6" // call esi, call LoadLibraryA("launcher.dll")
+		"\x8d\x7b\x15" // lea edi, [ebx + 0x15], put function name in edi
+		"\x57" // push edi, put function name on stack
+		"\x50" // push eax, put library on stack
+		"\x8b\x33" // mov esi, dword ptr ds:[ebx], put GetProcAddress in esi
+		"\xff\xd6" // call esi, call GetProcAddress(lib, "LaunchZHL")
+		"\xff\xd0" // call eax, call LaunchZHL()
 		"\x5f" // pop edi
 		"\x5e" // pop esi
 		"\x5b" // pop ebx
@@ -102,12 +117,31 @@ int main() {
 		"\x5d" // pop ebp
 		"\xc2\x04\x00" // ret 4
 	};
-	WriteProcessMemory(process, (char*)remotePage + 0x15, hook, 128, &bytesWritten);
+	WriteProcessMemory(process, (char*)remotePage + offset, hook, 128, &bytesWritten);
 
-	HANDLE remoteThread = CreateRemoteThread(process, NULL, 0, (char*)remotePage + 0x15, remotePage, 0, NULL);
+	HANDLE remoteThread = CreateRemoteThread(process, NULL, 0, (char*)remotePage + functionOffset, remotePage, 0, NULL);
 	if (!remoteThread) {
 		Log("Error while creating remote thread: %d\n", GetLastError());
 		return -1;
+	}
+
+	result = WaitForSingleObject(remoteThread, 60 * 1000);
+	switch (result) {
+	case WAIT_OBJECT_0:
+		Log("RemoteThread completed\n");
+		break;
+
+	case WAIT_ABANDONED:
+		Log("This shouldn't happened: RemoteThread returned WAIT_ABANDONNED\n");
+		break;
+
+	case WAIT_TIMEOUT:
+		Log("RemoteThread timeout\n");
+		break;
+
+	case WAIT_FAILED:
+		Log("WaitForSingleObject on RemoteThread failed: %d\n", GetLastError());
+		break;
 	}
 
 	result = ResumeThread(processInfo.hThread);

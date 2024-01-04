@@ -18,6 +18,10 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 {
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
 	{
+		FILE* f = fopen("testzhl.log", "w");
+		fprintf(f, "Kill me\n");
+		fclose(f);
+		ZHL::Log("libzhl: entering DllMain\n");
 		InitializeSymbolHandler();
 
 #ifdef ZHL_LOG_FILE
