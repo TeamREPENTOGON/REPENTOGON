@@ -67,6 +67,9 @@ __thiscall int Room::TryGetShopDiscount(int shopItemIdx, int price);
 "558bec8b45??83f82a":
 bool Room::IsPersistentRoomEntity(int type, int variant, int subtype);
 
+"558bec83ec0ca1????????53894d":
+__thiscall bool Room::TrySpawnSpecialQuestDoor();
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
