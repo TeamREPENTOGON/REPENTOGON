@@ -3,6 +3,8 @@
 #include "HookSystem.h"
 #include "Room.h"
 
+RoomASM roomASM;
+
 LUA_FUNCTION(Lua_SpawnGridEntity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	bool ret = false;
@@ -292,7 +294,7 @@ LUA_FUNCTION(Lua_RoomIsPersistentRoomEntity) {
 
 LUA_FUNCTION(Lua_RoomTrySpawnSpecialQuestDoor) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	roomASM.ForceSpecialQuestDoor = lua::luaL_checkboolean(L, 2);
+	roomASM.ForceSpecialQuestDoor = lua::luaL_optboolean(L, 2, false);
 	lua_pushboolean(L, room->TrySpawnSpecialQuestDoor());
 	return 1;
 }

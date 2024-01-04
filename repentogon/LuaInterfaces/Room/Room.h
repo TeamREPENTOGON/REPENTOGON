@@ -1,7 +1,7 @@
 #pragma once
 
 struct RoomASM {
-	bool ForceSpecialQuestDoor;
+	bool ForceSpecialQuestDoor = false;
 };
 
 extern RoomASM roomASM;
