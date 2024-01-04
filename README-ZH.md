@@ -1,3 +1,5 @@
+Language:[English](README.md)|简体中文
+
 ![logo](assets/logo.gif)
 ## 以撒MOD的新时代来临了。
 
