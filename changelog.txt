@@ -6,6 +6,7 @@ Additions:
 Fixes:
 * Fixed Eden's damage, range, and shot speed stats not properly changing
 * The console reimplementation is now more faithful to the original, which fixes some cases where the output color was wrong
+* Pickup:GetCollectibleCycle() length now limited by CycleCollectibleCount
 
 v1.0.3 - 
 Additions:
