@@ -2,12 +2,12 @@ v1.0.4 -
 Additions:
 * The error dialog now automatically gets dismissed the next time ImGui is opened
 * Imgui.IsVisible()
-
+/newline/
 Fixes:
 * Fixed Eden's damage, range, and shot speed stats not properly changing
 * The console reimplementation is now more faithful to the original, which fixes some cases where the output color was wrong
 * Pickup:GetCollectibleCycle() length now limited by CycleCollectibleCount
-
+/newline/
 v1.0.3 - 
 Additions:
 * ColorParams
@@ -29,7 +29,7 @@ Additions:
 * Improved constructors for Sprite and Font classes
 * Added documentation for the MC_PRE_LEVEL_SELECT callback
 * Added gfxback property to custom achievements xml
-
+/newline/
 Fixes:
 * Fix a crash with weapon-copying familiars and Spirit Sword
 * Fixed a possible crash when GetNullFrame is called on a Sprite that is not yet fully loaded
@@ -43,17 +43,17 @@ Fixes:
 * Changelog can now be safely closed using the "menu back" button e.g. Esc
 * Fixed AnimationData:IsLoopingAnimation returning boolean, instead of integer
 * Fixed a custom cutscene issue that played the Intro on cases where it shouldnt
-
+/newline/
 v1.0.2 - 
 Additions:
 * Added Pickup:GetAlternatePedestal()
 * REPENTOGON'S logfile (repentogon.log) now shows timestamps
-
+/newline/
 Fixes:
 * Fixed a crash when time is set to 0 in the performance logger
 * Fixed Dingle always spawning a red poop
 * Fixed achievements not firing in Steam
-
+/newline/
 
 v1.0.1 - 
 Fixed the updater erroneously asking to update, sorry :(
