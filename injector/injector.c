@@ -100,7 +100,7 @@ int main() {
 		"\x89\xec" // mov esp, ebp
 		"\xb8\x01\x00\x00\x00" // mov eax, 1
 		"\x5d" // pop ebp
-		"\xc3" // ret
+		"\xc2\x04\x00" // ret 4
 	};
 	WriteProcessMemory(process, (char*)remotePage + 0x15, hook, 128, &bytesWritten);
 
