@@ -280,9 +280,10 @@ struct ConsoleMega : ImGuiWindowObject {
         else {
             console->GetCommandHistory()->push_front(input);
         }
-        console->Print(printin, 0xFF808080, 0x96u);
-        console->RunCommand(std::string(input), &out, NULL);
-        console->Print(out.c_str(), 0XFFD3D3D3, 0x96u);
+
+        console->_input = input;
+        console->SubmitInput(false);
+
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
         autocompleteBuffer.clear();
@@ -315,17 +316,13 @@ struct ConsoleMega : ImGuiWindowObject {
                 * The vanilla console stores history backwards, so we iterate over it in reverse.
                 */
                 for (auto entry = history->rbegin(); entry != history->rend(); ++entry) {
-                    int colorMap = entry->GetColorMap();
+                    int colorMap = entry->GetColorMap() & 0xFFFFFFFF;
 
-                    /* 
-                    * The vanilla console stores color as a bitwise flag because we can't have nice things.
-                    * g_colorDouble is used for other things but it isn't really evident what those things are yet, so this will have to do.
-                    * Decomp shows it as 0 but it... clearly isn't, so whatever.
-                    */
+                    // The vanilla console stores color as a bitwise flag because we can't have nice things.
 
-                    float red = (float)((colorMap >> 0x10 & 0xFF) + g_colorDouble) / 255.f;
-                    float green = (float)((colorMap >> 8 & 0xFF) + g_colorDouble) / 255.f;
-                    float blue = (float)((colorMap & 0xFF) + g_colorDouble) / 255.f;
+                    float red = (float)(colorMap >> 0x10 & 0xFF) / 255.f;
+                    float green = (float)(colorMap >> 8 & 0xFF) / 255.f;
+                    float blue = (float)(colorMap & 0xFF) / 255.f;
 
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(red, green, blue, 1));
                     ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);

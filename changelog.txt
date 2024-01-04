@@ -5,6 +5,7 @@ Additions:
 
 Fixes:
 * Fixed Eden's damage, range, and shot speed stats not properly changing
+* The console reimplementation is now more faithful to the original, which fixes some cases where the output color was wrong
 
 v1.0.3 - 
 Additions:
