@@ -2530,46 +2530,46 @@ HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, fl
 }
 
 // MC_POST_LEVEL_LAYOUT_GENERATED
-//HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4, unsigned int const& allowedShapes, unsigned int numDeadEnds, LevelGenerator_Room* startRoom) -> void) {
-//	super(unk, unk2, unk3, unk4, allowedShapes, numDeadEnds, startRoom);
-//
-//	const int callbackId = 1099;
-//	if (!CallbackState.test(callbackId - 1000)) {
-//		return;
-//	}
-//
-//	lua_State* L = g_LuaEngine->_state;
-//	lua::LuaStackProtector protector(L);
-//
-//	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-//	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
-//		.push(12)
-//		.push(this, lua::metatables::LevelGeneratorMT)
-//		.call(0);
-//
-//	/* std::ofstream stream("repentogon.log", std::ios::app);
-//	stream << "After the call to Generate: " << std::endl;
-//	stream << " - Dead ends (" << GetDeadEnds()->size() << "): ";
-//	for (int idx : *GetDeadEnds()) {
-//		stream << idx << " ";
-//	}
-//	stream << std::endl;
-//	stream << " - Non dead ends (" << GetNonDeadEnds()->size() << "): ";
-//	for (int idx : *GetNonDeadEnds()) {
-//		stream << idx << " ";
-//	}
-//	stream << std::endl;
-//	stream << " - Rooms are as follows : " << std::endl;
-//	for (LevelGenerator_Room const& room : *allRooms) {
-//		stream << "\tRoom " << room._generationIndex << " at (" << room._gridColIdx << ", " << room._gridLineIdx << ") of shape " << room._shape << " with allowed door slots " << room._doors << " connects to ";
-//		for (auto const& neighbor : room._neighbors) {
-//			stream << neighbor << " ";
-//		}
-//		stream << std::endl;
-//	}
-//
-//	stream.flush(); */
-//}
+HOOK_METHOD(LevelGenerator, Generate, (int unk, bool unk2, bool unk3, bool unk4, unsigned int const& allowedShapes, unsigned int numDeadEnds, LevelGenerator_Room* startRoom) -> void) {
+	super(unk, unk2, unk3, unk4, allowedShapes, numDeadEnds, startRoom);
+
+	const int callbackId = 1099;
+	if (!CallbackState.test(callbackId - 1000)) {
+		return;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+		.push(12)
+		.push(this, lua::metatables::LevelGeneratorMT)
+		.call(0);
+
+	/* std::ofstream stream("repentogon.log", std::ios::app);
+	stream << "After the call to Generate: " << std::endl;
+	stream << " - Dead ends (" << GetDeadEnds()->size() << "): ";
+	for (int idx : *GetDeadEnds()) {
+		stream << idx << " ";
+	}
+	stream << std::endl;
+	stream << " - Non dead ends (" << GetNonDeadEnds()->size() << "): ";
+	for (int idx : *GetNonDeadEnds()) {
+		stream << idx << " ";
+	}
+	stream << std::endl;
+	stream << " - Rooms are as follows : " << std::endl;
+	for (LevelGenerator_Room const& room : *allRooms) {
+		stream << "\tRoom " << room._generationIndex << " at (" << room._gridColIdx << ", " << room._gridLineIdx << ") of shape " << room._shape << " with allowed door slots " << room._doors << " connects to ";
+		for (auto const& neighbor : room._neighbors) {
+			stream << neighbor << " ";
+		}
+		stream << std::endl;
+	}
+
+	stream.flush(); */
+}
 
 //POST_NIGHTMARE_SCENE_RENDER (1102)
 /*HOOK_METHOD(NightmareScene, Render, () -> void) {
