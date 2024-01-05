@@ -39,9 +39,9 @@ LUA_FUNCTION(Lua_PlayerHUDRenderActiveItem) {
 	unsigned int slot = (unsigned int)luaL_checkinteger(L, 2);
 	Vector* pos = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
 	float alpha = (float)luaL_optnumber(L, 4, 1.0);
-	float unk = (float)luaL_optnumber(L, 5, 1.0);
+	float size = (float)luaL_optnumber(L, 5, 1.0);
 
-	playerHUD->RenderActiveItem(slot, *pos, alpha, unk);
+	playerHUD->RenderActiveItem(slot, *pos, alpha, .0f, size);
 	return 0;
 
 }

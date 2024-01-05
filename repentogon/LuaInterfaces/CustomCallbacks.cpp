@@ -2083,8 +2083,8 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int unk) -> void, __stdcall) {
 }
 
 //POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1079)
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk) -> void) {
-	super(slot,pos, alpha, unk);
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk, float size) -> void) {
+	super(slot,pos, alpha, unk, size);
 
 	const int callbackid = 1079;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -2098,6 +2098,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 			.push(slot)
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
 			.push(alpha)
+			.push(size)
 			.call(1);
 	}
 }
