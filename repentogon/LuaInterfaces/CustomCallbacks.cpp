@@ -666,6 +666,8 @@ HOOK_METHOD(Music, DisableLayer, (int id) -> void) {
 
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
 HOOK_METHOD(Level, Init, () -> void) {
+	this->REPENTOGON_ForcedStage = -1;
+	this->REPENTOGON_ForcedStageType = -1;
 	const int callbackid = 1060;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;

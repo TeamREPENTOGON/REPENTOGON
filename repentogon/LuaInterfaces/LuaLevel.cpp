@@ -57,6 +57,30 @@ LUA_FUNCTION(Lua_GetDimension) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetForcedStage) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, level->REPENTOGON_ForcedStage);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetForcedStage) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	level->REPENTOGON_ForcedStage = (byte)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetForcedStageType) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, level->REPENTOGON_ForcedStageType);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetForcedStageType) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	level->REPENTOGON_ForcedStageType = (byte)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 /* HOOK_METHOD(Level, GetName, () -> std::string) {
 	std::string name = super();
 	if (!CustomStageName.empty()) {
@@ -80,12 +104,16 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "CanSpawnDoorOutline", Lua_LevelCanSpawnDoorOutline },
-		{	"HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
-		{	"HasMirrorDimension", Lua_LevelHasMirrorDimension },
-		{	"HasPhotoDoor", Lua_LevelHasPhotoDoor },
-		{	"SetName", lua_LevelSetName },
-		{	"IsStageAvailable", lua_LevelIsStageAvailable },
+		{ "HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
+		{ "HasMirrorDimension", Lua_LevelHasMirrorDimension },
+		{ "HasPhotoDoor", Lua_LevelHasPhotoDoor },
+		{ "SetName", lua_LevelSetName },
+		{ "IsStageAvailable", lua_LevelIsStageAvailable },
 		{ "GetDimension", Lua_GetDimension},
+		{ "GetForcedStage", Lua_GetForcedStage},
+		{ "SetForcedStage", Lua_SetForcedStage},
+		{ "GetForcedStageType", Lua_GetForcedStageType},
+		{ "SetForcedStageType", Lua_SetForcedStageType},
 		{ NULL, NULL }
 	};
 

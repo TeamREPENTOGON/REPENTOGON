@@ -3,7 +3,6 @@
 #include "LuaCore.h"
 #include "../LuaInterfaces/Entities/EntityNPC.h"
 #include "../LuaInterfaces/Entities/EntityPlayer.h"
-#include "../LuaInterfaces/Room/Room.h"
 #include "../LuaInterfaces/LuaRender.h"
 #include "XMLData.h"
 #include "ModReloading.h"
@@ -1406,31 +1405,6 @@ void ASMPatchPlayerStats() {
 	ASMPatchLuck();
 }
 
-bool __stdcall DoSpecialQuestDoorCheck(Game* game) {
-	bool ret = roomASM.ForceSpecialQuestDoor || (game->_stageType == 4 || game->_stageType == 5);
-	roomASM.ForceSpecialQuestDoor = false;
-	return ret;
-}
-
-void ASMPatchTrySpawnSpecialQuestDoor() {
-	
-	SigScan scanner("83f90474??83f9050f85????????83fb02");
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Patching TrySpawnSpecialQuestDoor at %p\n", addr);
-
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::EAX) // Game
-		.AddInternalCall(DoSpecialQuestDoorCheck)
-		.AddBytes("\x84\xC0") // test al, al
-		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0xe)
-		.AddRelativeJump((char*)addr + 0xb7);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
 //////////////////////////////////////////////
 // !!!!! EVALUATEITEMS STATS DONE !!!!!
 //////////////////////////////////////////////
@@ -1464,6 +1438,42 @@ void ASMPatchPostNightmareSceneCallback() {
 		.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 8))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 8);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+int __stdcall OverrideStageType(Level* level) {
+	if (level->REPENTOGON_ForcedStageType >= 0)
+		return level->REPENTOGON_ForcedStageType;
+	return level->_stageType;
+}
+
+int __stdcall OverrideStage(Level* level) {
+	int stage = level->_stage;
+	if (level->REPENTOGON_ForcedStage >= 0)
+		return level->REPENTOGON_ForcedStage;
+	return level->_stage;
+}
+
+void ASMPatchTrySpawnSpecialQuestDoor() {
+
+	SigScan scanner("8b48??8b18");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Patching TrySpawnSpecialQuestDoor at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - (ASMPatch::SavedRegisters::Registers::EBX + ASMPatch::SavedRegisters::Registers::ECX), true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddBytes("\x89\xc7") // mov edi, eax (Level)
+		.Push(ASMPatch::Registers::EAX) // Level
+		.AddInternalCall(OverrideStage)
+		.Push(ASMPatch::Registers::EAX) // to store result
+		.Push(ASMPatch::Registers::EDI) // Level
+		.AddInternalCall(OverrideStageType)
+		.AddBytes("\x89\xc1") // mov ecx, eax (result)
+		.AddBytes("\x5b") // pop ebx
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 

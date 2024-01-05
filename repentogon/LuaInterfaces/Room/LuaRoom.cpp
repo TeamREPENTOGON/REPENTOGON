@@ -1,9 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "Room.h"
-
-RoomASM roomASM;
 
 LUA_FUNCTION(Lua_SpawnGridEntity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
@@ -292,13 +289,6 @@ LUA_FUNCTION(Lua_RoomIsPersistentRoomEntity) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_RoomTrySpawnSpecialQuestDoor) {
-	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	roomASM.ForceSpecialQuestDoor = lua::luaL_optboolean(L, 2, false);
-	lua_pushboolean(L, room->TrySpawnSpecialQuestDoor());
-	return 1;
-}
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -334,7 +324,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetGreedWaveTimer", Lua_RoomGetGreedWaveTimer},
 		{ "SetGreedWaveTimer", Lua_RoomSetGreedWaveTimer},
 		{ "IsPersistentRoomEntity", Lua_RoomIsPersistentRoomEntity},
-		{ "TrySpawnSpecialQuestDoor", Lua_RoomTrySpawnSpecialQuestDoor},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

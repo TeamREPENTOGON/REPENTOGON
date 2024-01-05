@@ -41,5 +41,9 @@ static bool Level::IsStageAvailable(int LevelStage, int StageType);
 bool Level::place_room(LevelGenerator_Room* slot, RoomConfig* data, uint32_t seed, uint32_t unk);
 
 struct Level {
+    uint32_t _stage : 0x0; // 0x0
+    uint32_t _stageType : 0x4; // 0x4
+	char REPENTOGON_ForcedStage : 0xa;
+	char REPENTOGON_ForcedStageType : 0xb;
 	uint32_t _levelStateFlag : 0x1822c;
 } : 0x18230;
