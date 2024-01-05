@@ -1454,6 +1454,56 @@ int __stdcall OverrideStage(Level* level) {
 	return level->_stage;
 }
 
+char* instruction[6] = {
+	"\xF8",
+	"\xFB",
+	"\xF9",
+	"\xFA",
+	"\xFE",
+	"\xFF",
+};
+
+int registerConvert[9] = {
+	0,
+	1 << 0,
+	1 << 1,
+	1 << 2,
+	1 << 3,
+	1 << 4,
+	1 << 5,
+	1 << 6,
+	1 << 7
+};
+
+void ASMPatchGenericAltPathCheck(void* addr, ASMPatch::Registers levelReg, ASMPatch::Registers stageReg, ASMPatch::Registers stageTypeReg, int jumpOffset, bool doFillerCheck) {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS
+		- (static_cast<ASMPatch::SavedRegisters::Registers>(registerConvert[(int)stageReg])
+			+ static_cast<ASMPatch::SavedRegisters::Registers>(registerConvert[(int)stageTypeReg])), false);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.MoveToMemory(levelReg, 0, ASMPatch::Registers::EDI)
+		.Push(levelReg) // Level
+		.AddInternalCall(OverrideStage)
+		.Push(ASMPatch::Registers::EAX) // to store result
+		.Push(levelReg) // Level
+		.AddInternalCall(OverrideStageType)
+		.MoveToMemory(ASMPatch::Registers::EAX, 0, stageTypeReg)
+		.Pop(stageReg);
+	if (doFillerCheck)
+		patch.AddBytes("\x83").AddBytes(instruction[(int)stageTypeReg - 1]).AddBytes("0x4");
+		patch.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + jumpOffset);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void PatchAltPathCheck()
+{
+	SigScan scanner_mirror_shader("8b51??83fa0474??83fa050f85"); // Room::Render
+	scanner_mirror_shader.Scan();
+	void* addr = scanner_mirror_shader.GetAddress();
+	ASMPatchGenericAltPathCheck(addr, ASMPatch::Registers::EAX, ASMPatch::Registers::EDX, ASMPatch::Registers::EAX, 0x6, true);
+}
+
 void ASMPatchTrySpawnSpecialQuestDoor() {
 
 	SigScan scanner("8b48??8b18");
@@ -1509,4 +1559,5 @@ void PerformASMPatches() {
 	ASMPatchPostNightmareSceneCallback();
 	delirium::AddTransformationCallback();
 	delirium::AddPostTransformationCallback();
+	PatchAltPathCheck();
 }
