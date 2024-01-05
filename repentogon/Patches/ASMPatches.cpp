@@ -1454,16 +1454,18 @@ int __stdcall OverrideStage(Level* level) {
 	return level->_stage;
 }
 
-char* instruction[6] = {
+char* instruction[8] = {
 	"\xF8",
 	"\xFB",
 	"\xF9",
 	"\xFA",
 	"\xFE",
 	"\xFF",
+	"\xFC",
+	"\xFD"
 };
 
-int registerConvert[9] = {
+int registerConvert[8] = {
 	0,
 	1 << 0,
 	1 << 1,
@@ -1472,7 +1474,6 @@ int registerConvert[9] = {
 	1 << 4,
 	1 << 5,
 	1 << 6,
-	1 << 7
 };
 
 void ASMPatchGenericAltPathCheck(void* addr, ASMPatch::Registers levelReg, ASMPatch::Registers stageReg, ASMPatch::Registers stageTypeReg, int jumpOffset, bool doFillerCheck) {
@@ -1490,7 +1491,7 @@ void ASMPatchGenericAltPathCheck(void* addr, ASMPatch::Registers levelReg, ASMPa
 		.MoveToMemory(ASMPatch::Registers::EAX, 0, stageTypeReg)
 		.Pop(stageReg);
 	if (doFillerCheck)
-		patch.AddBytes("\x83").AddBytes(instruction[(int)stageTypeReg - 1]).AddBytes("0x4");
+		patch.AddBytes("\x83").AddBytes(instruction[(int)stageTypeReg]).AddBytes("\x04");
 		patch.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + jumpOffset);
 	sASMPatcher.PatchAt(addr, &patch);
