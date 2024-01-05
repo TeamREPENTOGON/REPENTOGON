@@ -1947,16 +1947,16 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(this->GetOverlayID())
+			.push(_overlayID)
 			//.push(this, lua::metatables::ItemOverlayMT)
-			.push(this->GetOverlayID())
+			.push(_overlayID)
 			.push(unk)
 			.call(1);
 	}
 }
 
 //PRE/POST_ITEM_OVERLAY_SHOW (id: 1076, 1134)
-HOOK_METHOD(ItemOverlay, Show, (int overlayID, int delay, Entity_Player* player) -> void) {
+HOOK_METHOD_PRIORITY(ItemOverlay, Show, -100, (int overlayID, int delay, Entity_Player* player) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	const int callbackid1 = 1076;
 	if (CallbackState.test(callbackid1 - 1000)) {
