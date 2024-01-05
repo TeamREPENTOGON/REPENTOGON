@@ -451,6 +451,20 @@ LUA_FUNCTION(Lua_EntitySetColorParams) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityGetDamageCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, *ent->GetDamageCountdown());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetDamageCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	int countdown = (int)luaL_checkinteger(L, 2);
+	if (countdown < 0) countdown = 0;
+	*ent->GetDamageCountdown() = countdown;
+	return 0;
+}
+
 void PatchAddWeakness() {
 	SigScan scanner("576afd"); // this is the first push of args for ComputeStausEffectDuration
 	scanner.Scan();
@@ -508,6 +522,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryThrow", Lua_EntityTryThrow },
 		{ "GetColorParams", Lua_EntityGetColorParams },
 		{ "SetColorParams", Lua_EntitySetColorParams },
+		{ "GetDamageCountdown", Lua_EntityGetDamageCountdown },
+		{ "SetDamageCountdown", Lua_EntitySetDamageCountdown },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);

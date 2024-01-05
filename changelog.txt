@@ -4,6 +4,7 @@ Additions:
 * Imgui.IsVisible()
 * Added function overload for Isaac.GetLocalizedString(), which accepts LanguageCode string as paramater
 * Added Scale param for POST_PLAYERHUD_RENDER_ACTIVE_ITEM callback
+* Added Entity:GetDamageCountdown() and Entity:SetDamageCountdown()
 /newline/
 Fixes:
 * Fixed Eden's damage, range, and shot speed stats not properly changing
