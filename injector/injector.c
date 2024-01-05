@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 void Log(const char* fmt, ...) {
 	va_list va;
@@ -12,11 +13,25 @@ void Log(const char* fmt, ...) {
 		f = stderr;
 	}
 
+	char buffer[4096];
+	time_t now = time(NULL);
+	struct tm* tm = localtime(&now);
+	strftime(buffer, 4095, "%Y-%m-%d %H:%M:%S", tm);
+	fprintf(f, "[%s] ", buffer);
 	vfprintf(f, fmt, va);
 	va_end(va);
 }
 
 int main() {
+	{
+		FILE* f = fopen("injector.log", "w");
+		if (f) {
+			fclose(f);
+		}
+	}
+
+	Log("Starting injector\n");
+
 	STARTUPINFOA startupInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
 
@@ -28,6 +43,9 @@ int main() {
 		Log("Failed to create process: %d\n", GetLastError());
 		return -1;
 	}
+	else {
+		Log("Started isaac-ng.exe in suspended state, processID = %d\n", processInfo.dwProcessId);
+	}
 
 	HANDLE process = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
 		FALSE, processInfo.dwProcessId);
@@ -35,11 +53,17 @@ int main() {
 		Log("Failed to open process: %d\n", GetLastError());
 		return -1;
 	}
+	else {
+		Log("Acquired handle to isaac-ng.exe, process ID = %d\n", processInfo.dwProcessId);
+	}
 
 	void* remotePage = VirtualAllocEx(process, NULL, 4096, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 	if (!remotePage) {
 		Log("Failed to allocate memory in isaac-ng.exe to load the dsound DLL: %d\n", GetLastError());
 		return -1;
+	}
+	else {
+		Log("Allocated memory for remote thread at %p\n", remotePage);
 	}
 
 	size_t bytesWritten = 0;
@@ -51,6 +75,9 @@ int main() {
 	if (!kernel32) {
 		Log("Unable to find kernel32.dll, WTF\n");
 		return -1;
+	}
+	else {
+		Log("Acquired kernel32.dll at %p\n", kernel32);
 	}
 
 	FARPROC getProcAddress = GetProcAddress(kernel32, "GetProcAddress");
@@ -65,6 +92,8 @@ int main() {
 		Log("Unable to find LoadLibraryA\n");
 		return -1;
 	}
+
+	Log("Acquired GetProcAddress at %p, LoadLibraryA at %p\n", getProcAddress, loadLibraryA);
 
 	const char* dllName = "launcher.dll";
 	const char* functionName = "LaunchZHL";
@@ -124,7 +153,11 @@ int main() {
 		Log("Error while creating remote thread: %d\n", GetLastError());
 		return -1;
 	}
+	else {
+		Log("Created remote thread in isaac-ng.exe\n");
+	}
 
+	Log("Waiting for remote thread to complete\n");
 	result = WaitForSingleObject(remoteThread, 60 * 1000);
 	switch (result) {
 	case WAIT_OBJECT_0:
@@ -136,7 +169,7 @@ int main() {
 		break;
 
 	case WAIT_TIMEOUT:
-		Log("RemoteThread timeout\n");
+		Log("RemoteThread timed out\n");
 		break;
 
 	case WAIT_FAILED:
@@ -150,10 +183,13 @@ int main() {
 		return -1;
 	}
 	else {
-		Log("ResumeThread: %d\n", result);
+		Log("Resumed main thread of isaac-ng.exe, previous supend count was %d\n", result);
 	}
 
+	Log("Waiting for isaac-ng.exe main thread to return\n");
 	WaitForSingleObject(processInfo.hProcess, INFINITE);
+	Log("isaac-ng.exe completed, shutting down injector\n");
+
 	CloseHandle(processInfo.hProcess);
 	CloseHandle(processInfo.hThread);
 
