@@ -437,8 +437,8 @@ Returns a table of smelted trinkets and their corresponding amounts. The returne
 
 |Field|Type|Comment|
 |:--|:--|:--|
-| trinketNum | int | |
-| goldenTrinketNum | int | |
+| trinketAmount | int | |
+| goldenTrinketAmount | int | |
 
 ___
 ### GetSpecialGridCollision () {: aria-label='Functions' }
