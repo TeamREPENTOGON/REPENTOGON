@@ -326,7 +326,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(red, green, blue, 1));
                     ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x);
-                    ImGui::TextUnformatted(UpdateFont(entry->_text.c_str())); // needs to be TextUnformatted to prevent unintentional formatting
+                    ImGui::TextUnformatted(entry->_text.c_str()); // needs to be TextUnformatted to prevent unintentional formatting
                     ImGui::PopTextWrapPos();
                     ImGui::PopStyleColor();
                 }
@@ -369,7 +369,7 @@ struct ConsoleMega : ImGuiWindowObject {
                       if (!entry.autocompleteDesc.empty()) {
                         entry.autocompleteDesc = "(" + entry.autocompleteDesc + ")";
                         ImGui::TableNextColumn();
-                        ImGui::TextUnformatted(UpdateFont(entry.autocompleteDesc.c_str()));
+                        ImGui::TextUnformatted(entry.autocompleteDesc.c_str());
                       }
 
                       ImGui::PopStyleColor();
@@ -383,7 +383,7 @@ struct ConsoleMega : ImGuiWindowObject {
               ImVec2 drawPos = ImGui::GetCursorPos();
 
               ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
-              if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", UpdateFont(inputBuf), 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
+              if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
                 Strtrim(s);
                 std::string fixedCommand = FixSpawnCommand(s);
@@ -417,7 +417,6 @@ struct ConsoleMega : ImGuiWindowObject {
             }
         }
         
-        UpdateFont();
         ImGui::End(); // close window element
     }
 
