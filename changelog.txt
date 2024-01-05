@@ -12,6 +12,8 @@ Fixes:
 * Fixed binder for Player:AddBoneOrbital
 * Renamed Player method AddLeprocy -> AddLeprocy
 * Fixed binder for PlayerHUD:RenderActiveItem
+* Fixed a bug where POST_ITEM_OVERLAY_UPDATE callback passed unusable userdata instead of Giantbook ID
+* Fixed PRE_ITEM_OVERLAY_SHOW callback not playing custom giantbook animation, when you replace vanilla one
 /newline/
 v1.0.3 - 
 Additions:
