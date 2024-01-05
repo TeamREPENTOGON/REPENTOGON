@@ -20,7 +20,7 @@ REPENTOGON对Lua API进行了添加和修改，并添加了大量新功能。你
 技术上来说，在启动选项中输入`-repentogonoff`或删除`dsound.dll`即可禁用REPENTOGON，如果想要完全卸载：
 1. 从游戏目录中删除`dsound.dll`、`freetype.dll`、`libzhl.dll`、`Lua5.4.dll`、`resources-repentogon`和`zhlREPENTOGON.dll`.
 2. 可选，删除日志文件`dsound.log`、`repentogon.log`和`zhl.log`。
-3. 删除`resources\rooms`（包括`26.The Void_ex.stb`）和`resources\shaders` （包括`coloroffset_gold_mesafix`）。
+3. 删除`resources\rooms`（其中的`26.The Void_ex.stb`）和`resources\shaders` （其中的`coloroffset_gold_mesafix`）。
 4. 打开`resources\scripts`文件夹，删除`main_ex.lua`和`enums_ex.lua`。
 5. 在`User\Documents\My Games\Binding of Isaac Repentance`（或者是`savedatapath.txt`中的存档目录）文件夹中删除`Repentogon`目录。注意这会完全清除所有自定义的成就和标记！
 
