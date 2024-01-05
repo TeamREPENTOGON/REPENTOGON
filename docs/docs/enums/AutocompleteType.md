@@ -22,5 +22,5 @@ tags:
 |14 |DELIRIOUS {: .copyable } |  |
 |15 |PLAYER {: .copyable } |  |
 |16 |ACHIEVEMENT {: .copyable } |  |
-|17 |LUAMOD {: .copuable} |  |
+|17 |MODFOLDER {: .copuable} |  |
 |18 |CUSTOM {: .copyable } |  |

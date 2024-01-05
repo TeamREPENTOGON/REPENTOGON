@@ -2353,7 +2353,7 @@ AutocompleteType = {
 	DELIRIOUS = 14,
 	PLAYER = 15,
 	ACHIEVEMENT = 16,
-	LUAMOD = 17,
+	MODFOLDER = 17,
 	CUSTOM = 18,
 }
 
