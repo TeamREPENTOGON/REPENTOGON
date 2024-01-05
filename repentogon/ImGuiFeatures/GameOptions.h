@@ -4,6 +4,7 @@
 #include "ImGuiEx.h"
 #include "IsaacRepentance.h"
 #include "imgui.h"
+#include "Lang.h"
 
 extern int handleWindowFlags(int flags);
 extern void HelpMarker(const char* desc);
@@ -60,7 +61,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
             AddWindowContextMenu();
             if (ImGui::BeginTabBar("GameOptionsTabBar", ImGuiTabBarFlags_None)) {
                 int resetCounter = 0;
-                if (ImGui::BeginTabItem("Options")) {
+                if (ImGui::BeginTabItem(LANG.OPTIONS)) {
                     if (ImGui::BeginTable("Options_Table", 2, ImGuiTableFlags_SizingStretchProp)) {
                         AddNewTableRow();
                         ImGui::SliderFloat("SFX Volume", &g_Manager->GetOptions()->_sfxVolume, 0.0f, 1.0f, "%.2f");

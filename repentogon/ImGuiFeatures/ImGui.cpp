@@ -12,6 +12,7 @@
 #include "SigScan.h"
 #include "IconsFontAwesome6.h"
 #include "UnifontSupport.h"
+#include "Lang.h"
 
 #include <Windows.h>
 #include <format>
@@ -499,12 +500,12 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
-			if (ImGui::BeginMenu(ICON_FA_SCREWDRIVER_WRENCH " Tools")) {
-				ImGui::MenuItem(ICON_FA_TERMINAL" Debug Console", NULL, &console.enabled);
-				ImGui::MenuItem(ICON_FA_NEWSPAPER" Log Viewer", NULL, &logViewer.enabled);
-				ImGui::MenuItem(ICON_FA_GEARS" Game Options", NULL, &gameOptionsWindow.enabled);
-				ImGui::MenuItem(ICON_FA_GAUGE_HIGH" Performance", NULL, &performanceWindow.enabled);
-				ImGui::MenuItem(ICON_FA_PENCIL" Style Editor", NULL, &show_app_style_editor);
+			if (ImGui::BeginMenu(LANG.BAR_TOOLS)) {
+				ImGui::MenuItem(LANG.BAR_DEBUG_CONSOLE, NULL, &console.enabled);
+				ImGui::MenuItem(LANG.BAR_LOG_VIEWER, NULL, &logViewer.enabled);
+				ImGui::MenuItem(LANG.BAR_GAME_OPTIONS, NULL, &gameOptionsWindow.enabled);
+				ImGui::MenuItem(LANG.BAR_PERFORMANCE, NULL, &performanceWindow.enabled);
+				ImGui::MenuItem(LANG.BAR_STYLE_EDITOR, NULL, &show_app_style_editor);
 				ImGui::EndMenu();
 			}
 			customImGui.DrawMenu();
