@@ -1390,7 +1390,8 @@ LUA_FUNCTION(Lua_PlayerGetMaxPocketItems) {
 
 LUA_FUNCTION(Lua_PlayerAddBoneOrbital) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->AddBoneOrbital();
+	Vector* position = lua::GetUserdata<Vector*>(L, 3, lua::Metatables::VECTOR, "Vector");
+	player->AddBoneOrbital(position);
 
 	return 0;
 }
@@ -1411,9 +1412,9 @@ LUA_FUNCTION(Lua_PlayerAddItemCard) {
 }
 */
 
-LUA_FUNCTION(Lua_PlayerAddLeprocy) {
+LUA_FUNCTION(Lua_PlayerAddLeprosy) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	player->AddLeprocy();
+	player->AddLeprosy();
 
 	return 0;
 }
@@ -2057,7 +2058,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMaxPocketItems", Lua_PlayerGetMaxPocketItems },
 		{ "AddBoneOrbital", Lua_PlayerAddBoneOrbital },
 		//{ "AddItemCard", Lua_PlayerAddItemCard },
-		{ "AddLeprocy", Lua_PlayerAddLeprocy },
+		{ "AddLeprosy", Lua_PlayerAddLeprosy },
 		{ "AddUrnSouls", Lua_PlayerAddUrnSouls },
 		{ "CanAddCollectibleToInventory", Lua_PlayerCanAddCollectibleToInventory },
 		{ "CanCrushRocks", Lua_PlayerCanCrushRocks },
