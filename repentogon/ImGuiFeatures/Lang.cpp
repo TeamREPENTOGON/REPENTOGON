@@ -72,7 +72,7 @@ void Lang::ResetCurrentDisplayLangInfo() {
 }
 
 void Lang::DrawMenu() {
-    if (ImGui::MenuItem("jp")) {
+    if (ImGui::MenuItem(LANG.TRANS_LANG_JAPANESE)) {
         reportWindowEnabled = true;
         currentDisplayLanguageName = LANG.TRANS_LANG_JAPANESE;
         ResetCurrentDisplayLangInfo();
@@ -80,7 +80,7 @@ void Lang::DrawMenu() {
 #include "Localization/jp.inl"
 #undef I
     }
-    if (ImGui::MenuItem("kr")) {
+    if (ImGui::MenuItem(LANG.TRANS_LANG_KOREAN)) {
         reportWindowEnabled = true;
         currentDisplayLanguageName = LANG.TRANS_LANG_KOREAN;
         ResetCurrentDisplayLangInfo();
@@ -88,7 +88,7 @@ void Lang::DrawMenu() {
 #include "Localization/kr.inl"
 #undef I
     }
-    if (ImGui::MenuItem("zh_cn")) {
+    if (ImGui::MenuItem(LANG.TRANS_LANG_CHINESE_SIMPLE)) {
         reportWindowEnabled = true;
         currentDisplayLanguageName = LANG.TRANS_LANG_CHINESE_SIMPLE;
         ResetCurrentDisplayLangInfo();
@@ -96,7 +96,7 @@ void Lang::DrawMenu() {
 #include "Localization/zh_cn.inl"
 #undef I
     }
-    if (ImGui::MenuItem("ru")) {
+    if (ImGui::MenuItem(LANG.TRANS_LANG_RUSSIAN)) {
         reportWindowEnabled = true;
         currentDisplayLanguageName = LANG.TRANS_LANG_RUSSIAN;
         ResetCurrentDisplayLangInfo();
@@ -104,7 +104,7 @@ void Lang::DrawMenu() {
 #include "Localization/ru.inl"
 #undef I
     }
-    if (ImGui::MenuItem("de")) {
+    if (ImGui::MenuItem(LANG.TRANS_LANG_GERMAN)) {
         reportWindowEnabled = true;
         currentDisplayLanguageName = LANG.TRANS_LANG_GERMAN;
         ResetCurrentDisplayLangInfo();
@@ -112,7 +112,7 @@ void Lang::DrawMenu() {
 #include "Localization/de.inl"
 #undef I
     }
-    if (ImGui::MenuItem("es")) {
+    if (ImGui::MenuItem(LANG.TRANS_LANG_SPANISH)) {
         reportWindowEnabled = true;
         currentDisplayLanguageName = LANG.TRANS_LANG_SPANISH;
         ResetCurrentDisplayLangInfo();
@@ -120,7 +120,7 @@ void Lang::DrawMenu() {
 #include "Localization/es.inl"
 #undef I
     }
-    if (ImGui::MenuItem("fr")) {
+    if (ImGui::MenuItem(LANG.TRANS_LANG_FRENCH)) {
         reportWindowEnabled = true;
         currentDisplayLanguageName = LANG.TRANS_LANG_FRENCH;
         ResetCurrentDisplayLangInfo();
