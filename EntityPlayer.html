@@ -9352,7 +9352,7 @@
 <hr />
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="addactivecharge">AddActiveCharge ()<a class="headerlink" href="#addactivecharge" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="int-addactivecharge-int-charge-activeslot-slot-boolean-flashhud-boolean-overcharge-boolean-force">int AddActiveCharge ( int Charge, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">ActiveSlot</a> Slot, boolean FlashHUD, boolean Overcharge, boolean Force )<a class="headerlink" href="#int-addactivecharge-int-charge-activeslot-slot-boolean-flashhud-boolean-overcharge-boolean-force" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="int-addactivecharge-int-charge-activeslot-slot-boolean-flashhud-true-boolean-overcharge-false-boolean-force-false">int AddActiveCharge ( int Charge, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">ActiveSlot</a> Slot, boolean FlashHUD = true, boolean Overcharge = false, boolean Force = false )<a class="headerlink" href="#int-addactivecharge-int-charge-activeslot-slot-boolean-flashhud-true-boolean-overcharge-false-boolean-force-false" title="Permanent link">⚓︎</a></h4>
 <p>Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.</p>
 <hr />
 <h3 aria-label="Functions" id="addboneorbital">AddBoneOrbital ()<a class="headerlink" href="#addboneorbital" title="Permanent link">⚓︎</a></h3>
@@ -9700,7 +9700,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 </table>
 <hr />
 <h3 aria-label="Functions" id="getspecialgridcollision">GetSpecialGridCollision ()<a class="headerlink" href="#getspecialgridcollision" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="int-getspecialgridcollision-vector-position">int GetSpecialGridCollision ( <a href="Vector.html">Vector</a> Position )<a class="headerlink" href="#int-getspecialgridcollision-vector-position" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="int-getspecialgridcollision-vector-position-selfposition">int GetSpecialGridCollision ( <a href="Vector.html">Vector</a> Position = self.Position )<a class="headerlink" href="#int-getspecialgridcollision-vector-position-selfposition" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="getspeedmodifier">GetSpeedModifier ()<a class="headerlink" href="#getspeedmodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getspeedmodifier">int GetSpeedModifier ( )<a class="headerlink" href="#int-getspeedmodifier" title="Permanent link">⚓︎</a></h4>
@@ -9711,6 +9711,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="getvoidedcollectibleslist">GetVoidedCollectiblesList ()<a class="headerlink" href="#getvoidedcollectibleslist" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="collectibletype-collectibles-getvoidedcollectibleslist"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a>[] Collectibles GetVoidedCollectiblesList ( )<a class="headerlink" href="#collectibletype-collectibles-getvoidedcollectibleslist" title="Permanent link">⚓︎</a></h4>
+<p>Retuns a table containing the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleTypes</a> of all voided Active items.</p>
 <hr />
 <h3 aria-label="Functions" id="getweapon">GetWeapon ()<a class="headerlink" href="#getweapon" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="weapon-getweapon-int-slot"><a href="Weapon.html">Weapon</a> GetWeapon ( int Slot )<a class="headerlink" href="#weapon-getweapon-int-slot" title="Permanent link">⚓︎</a></h4>
@@ -9956,7 +9957,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <h4 aria-label="Functions" class="copyable" id="void-shootbluecandle-vector-direction">void ShootBlueCandle ( <a href="Vector.html">Vector</a> Direction )<a class="headerlink" href="#void-shootbluecandle-vector-direction" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="shufflecostumes">ShuffleCostumes ()<a class="headerlink" href="#shufflecostumes" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-shufflecostumes-int-seed">void ShuffleCostumes ( int Seed )<a class="headerlink" href="#void-shufflecostumes-int-seed" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="void-shufflecostumes-int-seed-random">void ShuffleCostumes ( int Seed = Random() )<a class="headerlink" href="#void-shufflecostumes-int-seed-random" title="Permanent link">⚓︎</a></h4>
 <p>Randomizes the current costumes.</p>
 <hr />
 <h3 aria-label="Functions" id="spawnaquariuscreep">SpawnAquariusCreep ()<a class="headerlink" href="#spawnaquariuscreep" title="Permanent link">⚓︎</a></h3>
