@@ -519,6 +519,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	logViewer.Draw(menuShown);
 	performanceWindow.Draw(menuShown);
 	gameOptionsWindow.Draw(menuShown);
+	LANG.DrawReportWindow(menuShown);
 
 	customImGui.DrawWindows(menuShown);
 

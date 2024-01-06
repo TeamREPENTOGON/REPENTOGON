@@ -466,6 +466,8 @@ I(HELP_MENU_CTRL_SWITCH_TEXT, u8"Controls for Joy-Con controllers")
 I(HELP_MENU_DOC, ICON_U8_FA_BOOK u8" Documentation")
 I(HELP_MENU_DOC_TEXT, u8"The documentation can be found here: ")
 
+I(HELP_MENU_TRANSLATE, ICON_U8_FA_GLOBE u8" Translate Information")
+
 // ============ ImGui ===============
 
 I(IMGUI_WIN_CTX_MENU_PIN_WINDOW, u8"Pin Window")
@@ -491,3 +493,18 @@ I(PERF_WIN_NAME, u8"Performance")
 I(PERF_TIMEFRAME_NAME, u8"Timeframe")
 I(PERF_TIMEFRAME_FORMAT, u8"%.1f Seconds")
 I(PERF_LUA_MEM_USE, u8"Lua Mem Usage")
+
+// =========== Translate Report ============
+
+I(TRANS_LANG_JAPANESE, u8"Japanese")
+I(TRANS_LANG_KOREAN, u8"Korean")
+I(TRANS_LANG_CHINESE_SIMPLE, u8"Chinese(Simple)")
+I(TRANS_LANG_RUSSIAN, u8"Russian")
+I(TRANS_LANG_GERMAN, u8"German")
+I(TRANS_LANG_SPANISH, u8"Spanish")
+I(TRANS_LANG_FRENCH, u8"French")
+
+I(TRANS_REPORT_WIN_NAME, u8"Translate Report")
+I(TRANS_LANGUAGE_HINT, u8"Translate info for language: %s")
+I(TRANS_UNTRANS_ITEMS, u8"Untranslated items:")
+I(TRANS_COUNT_HINT, u8"total count: %d translated: %d")

@@ -290,6 +290,10 @@ struct HelpMenu {
 
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu(LANG.HELP_MENU_TRANSLATE)) {
+                LANG.DrawMenu();
+                ImGui::EndMenu();
+            }
             if (ImGui::BeginMenu(ICON_FA_FLASK_VIAL " Tests")) {
                 ImGui::Text("Some feature tests can be executed here");
                 ImGui::Separator();
