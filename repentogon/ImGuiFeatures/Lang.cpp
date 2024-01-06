@@ -5,6 +5,7 @@
 #include "HookSystem.h"
 #include "ConsoleMega.h"
 #include "GameOptions.h"
+#include "HelpMenu.h"
 
 Lang LANG;
 
@@ -37,4 +38,5 @@ HOOK_METHOD(Manager, LoadConfigs, ()->void)
     //do some language related init
     console.InitAfterLanguageAvaliable();
     gameOptionsWindow.InitAfterLanguageAvaliable();
+    helpMenu.InitAfterLanguageAvaliable();
 }
