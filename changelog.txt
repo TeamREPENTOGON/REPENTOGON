@@ -15,6 +15,8 @@ Fixes:
 * Fixed binder for PlayerHUD:RenderActiveItem
 * Fixed a bug where POST_ITEM_OVERLAY_UPDATE callback passed unusable userdata instead of Giantbook ID
 * Fixed PRE_ITEM_OVERLAY_SHOW callback not playing custom giantbook animation, when you replace vanilla one
+* Fixed PRE_PLANETARIUM_APPLY_X_PENALTY softlocking the game
+* Enabled mods/debug console disable access to enter daily run as before
 /newline/
 v1.0.3 - 
 Additions:
