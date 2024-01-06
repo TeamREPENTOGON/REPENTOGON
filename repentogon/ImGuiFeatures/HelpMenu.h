@@ -239,8 +239,9 @@ struct HelpMenu {
     {
         if (ImGui::BeginMenu(LANG.HELP_MENU)) {
             if (ImGui::BeginMenu(LANG.HELP_MENU_CTRLS)) {
-                if (ImGui::MenuItem(LANG.HELP_MENU_CTRL_MOUSE)) {
+                if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_MOUSE)) {
                     ImGui::Text(LANG.HELP_MENU_CTRL_MOUSE_HINT);
+                    ImGui::EndMenu();
                 }
                 if (ImGui::MenuItem(LANG.HELP_MENU_CTRL_KEYBOARD)) { }
                 if (ImGui::BeginMenu(LANG.HELP_MENU_CTRL_CONTROLLER)) {
