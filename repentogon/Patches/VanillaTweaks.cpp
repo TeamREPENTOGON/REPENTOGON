@@ -43,7 +43,7 @@ HOOK_METHOD(OptionsConfig, Save, () -> void) {
 HOOK_METHOD(Game, Update, () -> void) {
 	super();
 
-	if (GetDailyChallenge()._id != 0) {
+	if (GetDailyChallenge()._id != 0 && !GetDailyChallenge()._isPractice) {
 		if (g_Manager->GetOptions()->_enableDebugConsole || g_Manager->GetOptions()->ModsEnabled()) {
 			if (_leaderboard._displayState < 1 && _frameCount > 0) {
 				End(1); //You shall not pass! (@ wise greybeard dude)
