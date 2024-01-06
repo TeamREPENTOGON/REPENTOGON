@@ -271,18 +271,16 @@ struct ConsoleMega : ImGuiWindowObject {
 
         std::string printin = std::string(">") + input + "\n";
         std::string out;
+        bool clear = false;
 
-        if (!console->GetCommandHistory()->empty()) {
-            std::string lastCommand = console->GetCommandHistory()->front();
-            if (lastCommand != input)
-                console->GetCommandHistory()->push_front(input);
-        }
-        else {
-            console->GetCommandHistory()->push_front(input);
-        }
+        if (!console->GetCommandHistory()->empty() && console->GetCommandHistory()->front() == input)
+            clear = true;
 
         console->_input = input;
         console->SubmitInput(false);
+
+        if (clear)
+            console->GetCommandHistory()->pop_front();
 
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
