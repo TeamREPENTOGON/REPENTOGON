@@ -77,7 +77,7 @@ LUA_FUNCTION(Lua_BeamAdd) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	Point point;
 	if (lua_gettop(L) == 2) {
-		point = *lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+		point = *lua::GetUserdata<Point*>(L, 2, lua::metatables::PointMT);
 	}
 	else
 	{
