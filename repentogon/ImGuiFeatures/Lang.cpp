@@ -6,6 +6,8 @@
 #include "ConsoleMega.h"
 #include "GameOptions.h"
 #include "HelpMenu.h"
+#include "LogViewer.h"
+#include "PerformanceWindow.h"
 
 Lang LANG;
 
@@ -39,4 +41,6 @@ HOOK_METHOD(Manager, LoadConfigs, ()->void)
     console.InitAfterLanguageAvaliable();
     gameOptionsWindow.InitAfterLanguageAvaliable();
     helpMenu.InitAfterLanguageAvaliable();
+    logViewer.InitAfterLanguageAvaliable();
+    performanceWindow.InitAfterLanguageAvaliable();
 }

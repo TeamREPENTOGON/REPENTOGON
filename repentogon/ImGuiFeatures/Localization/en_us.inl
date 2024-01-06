@@ -475,3 +475,19 @@ I(IMGUI_CHANGE_KEY_BTN_NAME, u8"Change")
 I(IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL, u8"Press a button on your controller.")
 I(IMGUI_CHANGE_KEY_BTN_PRESS_KEY_KEYBOARD, u8"Press a key on your keyboard.")
 I(IMGUI_CHANGE_KEY_BTN_PRESS_ESC, u8"Press ESC to cancel input")
+
+// ============= Log Viewer ==============
+
+I(LOGV_WIN_NAME, u8"Lov Viewer")
+I(LOGV_FILTER, u8"Filter")
+I(LOGV_PIN_WINDOW, u8"Pin Window")
+I(LOGV_PIN_WINDOW_HINT, u8"Pinning a window will keep it visible even after closing Dev Tools.")
+I(LOGV_AUTOSCROLL, u8"Autoscroll")
+I(LOGV_SHOW_CATEGORIES, u8"Show categories:")
+
+// ============ Performance Window ==========
+
+I(PERF_WIN_NAME, u8"Performance")
+I(PERF_TIMEFRAME_NAME, u8"Timeframe")
+I(PERF_TIMEFRAME_FORMAT, u8"%.1f Seconds")
+I(PERF_LUA_MEM_USE, u8"Lua Mem Usage")
