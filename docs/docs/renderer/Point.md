@@ -8,7 +8,7 @@ Used for [Beam](Beam.md).
 
 ## Constructors
 ### Beam () {: aria-label='Constructors' }
-#### [Point](Point.md) Point ( [Vector](../Vector.md) float Height, float Width = 1.0, [Color](../Color.md) Color = Default ) {: .copyable aria-label='Constructors' }
+#### [Point](Point.md) Point ( [Vector](../Vector.md) Position, float Height, float Width = 1.0, [Color](../Color.md) PointColor = Default ) {: .copyable aria-label='Constructors' }
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 ___
 ### SetColor () {: aria-label='Functions' }
-#### void SetColor ( [Color](..Color.md) Color ) {: .copyable aria-label='Functions' }   
+#### void SetColor ( [Color](..Color.md) PointColor ) {: .copyable aria-label='Functions' }   
 
 ___
 ### SetHeight () {: aria-label='Functions' }
