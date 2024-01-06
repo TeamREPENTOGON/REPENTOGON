@@ -465,3 +465,13 @@ I(HELP_MENU_CTRL_SWITCH_TEXT, u8"Controls for Joy-Con controllers")
 
 I(HELP_MENU_DOC, ICON_U8_FA_BOOK u8" Documentation")
 I(HELP_MENU_DOC_TEXT, u8"The documentation can be found here: ")
+
+// ============ ImGui ===============
+
+I(IMGUI_WIN_CTX_MENU_PIN_WINDOW, u8"Pin Window")
+I(IMGUI_WIN_CTX_MENU_PIN_WINDOW_DESC, u8"Pinning a window will keep it visible even after closing Dev Tools.")
+
+I(IMGUI_CHANGE_KEY_BTN_NAME, u8"Change")
+I(IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL, u8"Press a button on your controller.")
+I(IMGUI_CHANGE_KEY_BTN_PRESS_KEY_KEYBOARD, u8"Press a key on your keyboard.")
+I(IMGUI_CHANGE_KEY_BTN_PRESS_ESC, u8"Press ESC to cancel input")

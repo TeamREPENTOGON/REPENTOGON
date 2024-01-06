@@ -85,10 +85,10 @@ void AddWindowContextMenu(bool* pinned)
 {
 	if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
 	{
-		ImGui::MenuItem("Pin Window", NULL, pinned);
+		ImGui::MenuItem(LANG.IMGUI_WIN_CTX_MENU_PIN_WINDOW, NULL, pinned);
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) && ImGui::BeginTooltip()) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Pinning a window will keep it visible even after closing Dev Tools.");
+			ImGui::TextUnformatted(LANG.IMGUI_WIN_CTX_MENU_PIN_WINDOW_DESC);
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
 		}
@@ -99,7 +99,7 @@ void AddWindowContextMenu(bool* pinned)
 
 ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 {
-	if (ImGui::Button("Change")) {
+	if (ImGui::Button(LANG.IMGUI_CHANGE_KEY_BTN_NAME)) {
 		wasPressed = true;
 	}
 
@@ -110,12 +110,12 @@ ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 		if (isController) {
 			firstKey = static_cast<int>(ImGuiKey_GamepadStart);
 			lastKey = static_cast<int>(ImGuiKey_GamepadRStickDown);
-			ImGui::Text("Press a button on your controller.");
+			ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL);
 		}
 		else {
-			ImGui::Text("Press a key on your keyboard.");
+			ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_KEYBOARD);
 		}
-		ImGui::Text("Press ESC to cancel input");
+		ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_ESC);
 
 		std::list<ImGuiKey>* keys = GetPressedKeys();
 		for (auto key = keys->begin(); key != keys->end(); ++key) {
