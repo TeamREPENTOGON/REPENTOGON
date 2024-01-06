@@ -523,7 +523,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	customImGui.DrawWindows(menuShown);
 
 	if (show_app_style_editor) {
-		WindowBeginEx("Dear ImGui Style Editor", &show_app_style_editor);
+		WindowBeginEx(LANG.DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, &show_app_style_editor);
 		ImGui::ShowStyleEditor();
 		ImGui::End();
 	}

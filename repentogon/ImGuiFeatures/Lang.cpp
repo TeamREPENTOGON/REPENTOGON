@@ -3,6 +3,8 @@
 #include "IconsFontAwesome6_unicode.h"
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include "ConsoleMega.h"
+#include "GameOptions.h"
 
 Lang LANG;
 
@@ -31,4 +33,8 @@ HOOK_METHOD(Manager, LoadConfigs, ()->void)
 {
     super();
     LANG.Load(this->GetStringTable()->language);
+
+    //do some language related init
+    console.InitAfterLanguageAvaliable();
+    gameOptionsWindow.InitAfterLanguageAvaliable();
 }

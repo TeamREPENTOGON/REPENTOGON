@@ -5,6 +5,7 @@
 #include "natural_sort.hpp"
 #include "LuaCore.h"
 #include "UnifontSupport.h"
+#include "Lang.h"
 
 #include <sstream>
 #include <cctype>
@@ -159,60 +160,6 @@ struct ConsoleMega : ImGuiWindowObject {
         enabled = true;
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
-		
-		RegisterCommand("achievement", "Unlocks achievements", "Unlocks achievements", true, ACHIEVEMENT);
-        RegisterCommand("addplayer", "Spawns a new player", "Spawns a new player entity. On default, it spawns Isaac with controller ID 0.\nPlayer ID -1 lets you take control of a random enemy in the room.\nExample:\n(addplayer 7 1) Spawns Azazel and can be controlled with the second input device (controller 1 in most cases)", false, PLAYER);
-        RegisterCommand("challenge", "Start a challenge run", "Stops the current run and starts a new run on a random seed with the given challenge ID.\nExample:\n(challenge 20) will start a new Purist challenge run.\n", false, CHALLENGE);
-        RegisterCommand("clear", "Clear the debug console", "Clears all text currently displayed in the debug console. Only the line \"Repentance Console\" will remain.", true);
-        RegisterCommand("clearcache", "Clear the sprite cache", "Clears the game's sprite cache. This can be useful for trying to deal with memory issues.\nThis also has the side effect of reloading modded sprites without needing a full game restart.", true);
-        RegisterCommand("clearseeds", "Clear easter egg seeds in the current run", "Clears any \"special\" seed effects in the current run.\nExample:\nThe seed effect GFVE LLLL is applied in a run. Running clearseeds will remove this effect.", false);
-        RegisterCommand("combo", "Give items from a specified pool", "Gives a specified number of items from a specified item pool.\nExample:\n(combo 4.6) will give six random items from the Angel item pool.\nNo, I don't know why they made a bespoke ID system for this one (1) command.", false, COMBO);
-        RegisterCommand("copy", "Copy previous commands to clipboard", "Copies a specified amount of previous console commands to the system clipboard.\nExample:\n(copy 3) will copy the previous three commands.", true);
-        RegisterCommand("costumetest", "Give the player random costumes", "Gives the player a specified amount of random costumes.\nExample:\n(costumetest 34) will give the player 34 random costumes.", false);
-        RegisterCommand("curse", "Add curses to the current run", "Permanently (until overridden) adds curses to the run. This command uses a bitmask- the curse with an ID of 1 is 1, 2 is 2, 3 is 4, 4 is 8, and so on. In this manner, desired curse ID's are tallied up and multiple can be enabled simultaneously.\nExample:\n(curse 96) will enable Curse of the Blind and Curse of the Maze simultaneously.", true, CURSE);
-        RegisterCommand("cutscene", "Play a cutscene", "Immediately plays the specified cutscenne.\nExample:\n(cutscene 1) will immediately play the game's intro.", true, CUTSCENE);
-        RegisterCommand("debug", "Enable a debug flag", "Enables the specified debug flag.\nExample:\n(debug 3) will grant the player infinite HP.", false, DEBUG_FLAG);
-        RegisterCommand("delirious", "Force Delirious to be a certain boss", "Overrides the next boss the Delirious item will become.\nExample:\n(delirious 3) will force Delirious to be a Chub.", false, DELIRIOUS);
-        RegisterCommand("eggs", "Unlock all easter egg seeds", "PERMANENTLY unlocks all easter eggs in this save file.", true);
-        RegisterCommand("forceroom", "Force a room to be used in level generator", "Allows to set any room as \"forced room\". Said room gets weight of 1000, making it more likely to appear on floor with reseed command.", false, GOTO);
-		RegisterCommand("fullrestart", "Closes and reopens the game", "Closes and reopens the game", true);
-        RegisterCommand("giveitem", "Give the character items, trinkets, cards, and pills", "Gives the main player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem c1) will give the player The Sad Onion.\n(giveitem t1) will give the player Gulp!\n(giveitem p1) will give the player a Bad Trip pill.\n(giveitem k1) will give the player 0 - The Fool.", false, ITEM, {"g"});
-        RegisterCommand("giveitem2", "Give player 2 items, trinkets, cards, and pills", "Gives the second player items, trinkets, cards and pills. These can either be by name or by prefix. Prefixes are (c) for items, (t) for trinkets, (p) for pills, and (k) for cards. Most pocket items count as cards.\nThis command also has shorthand which is just (g).\nExamples:\n(giveitem2 c1) will give the player The Sad Onion.\n(giveitem2 t1) will give the player Gulp!\n(giveitem2 p1) will give the player a Bad Trip pill.\n(giveitem2 k1) will give the player 0 - The Fool.", false, ITEM, { "g2" });
-        RegisterCommand("goto", "Teleport to a new room", "Teleports the character to a new room. Use (d) for a standard room, (s) for a special room, or three numbers to teleport to an existing room on the floor.\nExample:\n(goto s.boss.1010) will go to a Monstro fight.", false, GOTO);
-        RegisterCommand("gridspawn", "Spawn a grid entity", "Spawns a new grid entity of the given ID at a random place in the room.", false, GRID);
-        RegisterCommand("help", "Get info about commands", "Retrieve further info about a command and its syntax.", true);
-        RegisterCommand("listcollectibles", "List current items", "Lists the items the player currently has.", false);
-		RegisterCommand("lockachievement", "Locks achievements", "Locks achievements", true,ACHIEVEMENT);
-        RegisterCommand("lua", "Run Lua code", "Runs the given Lua code immediately. Anything which would work in a standard file will work here.\nThis command also has shorthand which is just (l).", true);
-        RegisterCommand("luamem", "Display lua memory usage", "Displays the currently used RAM of LUA.", true);
-        RegisterCommand("luamod", "Reload a Lua mod", "Reloads Lua code for the given mod folder.\nExample:\n(luamod testmod) will reload Lua code for the mod in the folder \"testmod\".", true, MODFOLDER);
-        RegisterCommand("luareset", "[EXPERIMENTAL] Reset the Lua context", "Destroys the current Lua context and recreates it from scratch. This is mostly a backend command meant to help sync up networked play.\nThis has Unforeseen Consequences if done in-game, please only do this on the menu unless you know what you're doing. Please?", true);
-        RegisterCommand("luarun", "Run a Lua file", "Runs a given Lua file immediately.\nExample:\n(luarun mods/test/test.lua) would run \"test.lua\" inside the \"test\" mod folder.", true);
-        RegisterCommand("macro", "Trigger a set of commands", "Run a set of commands in a specified order. These are effectively shortcuts. Refer to autocomplete for a list of macro commands.", false, MACRO, {"m"});
-        RegisterCommand("metro", "Force Metronome to be a certain item", "Overrides the next item Metronome will become.\nExample:\n(metro c1) will force Metronome to become The Sad Onion.", false, METRO);
-        RegisterCommand("netdelay", "Change network delay", "Changes network delay to a specified value. Can be useful if you see stutters during online gameplay.", true);
-        RegisterCommand("netstart", "Initialize online coop", "Connects player(s) with specified Steam ID to your game (online multiplayer). Allows up to 4 players.\nExample:\nnetstart <steam_user_id1> <steam_user_id2>", true);
-        RegisterCommand("playsfx", "Play a sound effect", "Plays a sound effect immediately.\nExample:\n(playsfx 187) will play an incorrect buzzer.", true, SFX);
-        RegisterCommand("prof", "[BROKEN] Start profiling", "Supposed to log information to a CSV. Blame Nicalis!", true);
-        RegisterCommand("profstop", "[BROKEN] Stop profiling", "Supposed to stop profiling but profiling is broken because we can't have nice things.", true);
-        RegisterCommand("remove", "Remove an item", "Removes an item from the player immediately. Accepts the same syntax as give, look at that command's help for more info.", false, ITEM, {"r"});
-        RegisterCommand("remove2", "Remove an item", "Removes an item from the second player immediately. Accepts the same syntax as give, look at that command's help for more info.", false, ITEM, { "r2" });
-        RegisterCommand("reloadfx", "Reload floor overlays", "Reloads the current floor's effects.", false);
-        RegisterCommand("reloadshaders", "Reload in-game shaders", "Reloads any currently loaded shaders.", false);
-        RegisterCommand("reloadwisps", "Reload wisps", "Reloads wisps spawned by Book of Virtues and locusts spawned by Abyss.", false);
-        RegisterCommand("repeat", "Repeat prior commands", "Repeats the previously entered command X amount of times.\nExample:\n(giveitem 1) is used to give the player The Sad Onion. (repeat 5) is then used to give the player The Sad Onion five more times.", true);
-        RegisterCommand("reseed", "Reseed the current floor", "Reseeds the current floor, generating a brand new layout for it.", false);
-        RegisterCommand("restart", "Restart on a new run", "Restarts the game on a new run. Accepts an optional argument which is the character ID.\nExample:\n(restart 3) starts a new run as Judas.", false, PLAYER);
-        RegisterCommand("restock", "Restocks all shops", "Restocks all shops.", false);
-        RegisterCommand("rewind", "Reset game to last room state", "Makes the game forget about the changes in current room and teleports Isaac back to previous room. Can be used to fix desynchronization issues if you use this command in a room where it happened. (Glowing Hourglass-like effect)", false);
-        RegisterCommand("seed", "Start a new run with the given seed", "Starts a new run with the given seed.\nExample:\n(seed N1CA L1SY) will start a new run with the seed N1CA L1SY.", false);
-        RegisterCommand("spawn", "Spawn an entity", "Spawns a new entity. Syntax is (type).(variant).(subtype).(champion).\nExample:\n(spawn 5.40.1) will spawn a bomb.", false, ENTITY);
-        RegisterCommand("stage", "Go to a stage", "Immediately goes to the specified stage. Accepts (a-d) as modifiers, with (a) corresponding to WOTL alts, (b) corresponding to Afterbirth alts, (c) corresponding to Antibirth alts, and (d) corresponding to Repentance alts.\nExample:\n(stage 4d) will take the player to Ashpit II.", false, STAGE);
-        RegisterCommand("time", "Print game time", "Prints the total amount of time passed on the run.", false);
-        RegisterCommand("testbosspool", "Print list of bosses for current floor", "Prints a list of boss names and percentage chance (100%=10000) for current floor.", false);
-		
-        
-
 
         // Note: these are *functionally* identical, but not *literally* identical to the vanilla macros.
         // The vanilla macros reference items by name, which works for vanilla but not in a modded scenario where item names can change.
@@ -230,6 +177,61 @@ struct ConsoleMega : ImGuiWindowObject {
         RegisterMacro("ug", std::vector<std::string>{ "stage 11a", "goto s.boss.6000" });
         RegisterMacro("ugg", std::vector<std::string>{ "stage 11a", "goto s.boss.6000", "g c1", "g c1", "g c341", "g c341", "g c153", "g c51", "g c18", "g c190", "debug 3"});
 
+    }
+
+    void InitAfterLanguageAvaliable() {
+        windowName = LANG.CONSOLE_WINDOW_NAME;
+        
+        RegisterCommand("achievement", LANG.CONSOLE_ACHIEVEMENT_DESC, LANG.CONSOLE_ACHIEVEMENT_HELP, true, ACHIEVEMENT);
+        RegisterCommand("addplayer", LANG.CONSOLE_ADD_PLAYER_DESC, LANG.CONSOLE_ADD_PLAYER_HELP, false, PLAYER);
+        RegisterCommand("challenge", LANG.CONSOLE_CHALLENGE_DESC, LANG.CONSOLE_CHALLENGE_HELP, false, CHALLENGE);
+        RegisterCommand("clear", LANG.CONSOLE_CLEAR_DESC, LANG.CONSOLE_CLEAR_HELP, true);
+        RegisterCommand("clearcache", LANG.CONSOLE_CLEARCACHE_DESC, LANG.CONSOLE_CLEARCACHE_HELP, true);
+        RegisterCommand("clearseeds", LANG.CONSOLE_CLEARSEEDS_DESC, LANG.CONSOLE_CLEARSEEDS_HELP, false);
+        RegisterCommand("combo", LANG.CONSOLE_COMBO_DESC, LANG.CONSOLE_COMBO_HELP, false, COMBO);
+        RegisterCommand("copy", LANG.CONSOLE_COPY_DESC, LANG.CONSOLE_COPY_HELP, true);
+        RegisterCommand("costumetest", LANG.CONSOLE_COSTUMETEST_DESC, LANG.CONSOLE_COSTUMETEST_HELP, false);
+        RegisterCommand("curse", LANG.CONSOLE_CURSE_DESC, LANG.CONSOLE_CURSE_HELP, true, CURSE);
+        RegisterCommand("cutscene", LANG.CONSOLE_CUTSCENE_DESC, LANG.CONSOLE_CUTSCENE_HELP, true, CUTSCENE);
+        RegisterCommand("debug", LANG.CONSOLE_DEBUG_DESC, LANG.CONSOLE_DEBUG_HELP, false, DEBUG_FLAG);
+        RegisterCommand("delirious", LANG.CONSOLE_DELIRIOUS_DESC, LANG.CONSOLE_DELIRIOUS_HELP, false, DELIRIOUS);
+        RegisterCommand("eggs", LANG.CONSOLE_EGGS_DESC, LANG.CONSOLE_EGGS_HELP, true);
+        RegisterCommand("forceroom", LANG.CONSOLE_FORCEROOM_DESC, LANG.CONSOLE_FORCEROOM_HELP, false, GOTO);
+        RegisterCommand("fullrestart", LANG.CONSOLE_FULLRESTART_DESC, LANG.CONSOLE_FULLRESTART_HELP, true);
+        RegisterCommand("giveitem", LANG.CONSOLE_GIVEITEM_DESC, LANG.CONSOLE_GIVEITEM_HELP, false, ITEM, { "g" });
+        RegisterCommand("giveitem2", LANG.CONSOLE_GIVEITEM2_DESC, LANG.CONSOLE_GIVEITEM2_HELP, false, ITEM, { "g2" });
+        RegisterCommand("goto", LANG.CONSOLE_GOTO_DESC, LANG.CONSOLE_GOTO_HELP, false, GOTO);
+        RegisterCommand("gridspawn", LANG.CONSOLE_GRIDSPAWN_DESC, LANG.CONSOLE_GRIDSPAWN_HELP, false, GRID);
+        RegisterCommand("help", LANG.CONSOLE_HELP_DESC, LANG.CONSOLE_HELP_HELP, true);
+        RegisterCommand("listcollectibles", LANG.CONSOLE_LISTCOLLECTIBLES_DESC, LANG.CONSOLE_LISTCOLLECTIBLES_HELP, false);
+        RegisterCommand("lockachievement", LANG.CONSOLE_LOCKACHIEVEMENT_DESC, LANG.CONSOLE_LOCKACHIEVEMENT_HELP, true, ACHIEVEMENT);
+        RegisterCommand("lua", LANG.CONSOLE_LUA_DESC, LANG.CONSOLE_LUA_HELP, true);
+        RegisterCommand("luamem", LANG.CONSOLE_LUAMEM_DESC, LANG.CONSOLE_LUAMEM_HELP, true);
+        RegisterCommand("luamod", LANG.CONSOLE_LUAMOD_DESC, LANG.CONSOLE_LUAMOD_HELP, true, MODFOLDER);
+        RegisterCommand("luareset", LANG.CONSOLE_LUARESET_DESC, LANG.CONSOLE_LUARESET_HELP, true);
+        RegisterCommand("luarun", LANG.CONSOLE_LUARUN_DESC, LANG.CONSOLE_LUARUN_HELP, true);
+        RegisterCommand("macro", LANG.CONSOLE_MACRO_DESC, LANG.CONSOLE_MACRO_HELP, false, MACRO, { "m" });
+        RegisterCommand("metro", LANG.CONSOLE_METRO_DESC, LANG.CONSOLE_METRO_HELP, false, METRO);
+        RegisterCommand("netdelay", LANG.CONSOLE_NETDELAY_DESC, LANG.CONSOLE_NETDELAY_HELP, true);
+        RegisterCommand("netstart", LANG.CONSOLE_NETSTART_DESC, LANG.CONSOLE_NETSTART_HELP, true);
+        RegisterCommand("playsfx", LANG.CONSOLE_PLAYSFX_DESC, LANG.CONSOLE_PLAYSFX_HELP, true, SFX);
+        RegisterCommand("prof", LANG.CONSOLE_PROF_DESC, LANG.CONSOLE_PROF_HELP, true);
+        RegisterCommand("profstop", LANG.CONSOLE_PROFSTOP_DESC, LANG.CONSOLE_PROFSTOP_HELP, true);
+        RegisterCommand("remove", LANG.CONSOLE_REMOVE_DESC, LANG.CONSOLE_REMOVE_HELP, false, ITEM, { "r" });
+        RegisterCommand("remove2", LANG.CONSOLE_REMOVE2_DESC, LANG.CONSOLE_REMOVE2_HELP, false, ITEM, { "r2" });
+        RegisterCommand("reloadfx", LANG.CONSOLE_RELOADFX_DESC, LANG.CONSOLE_RELOADFX_HELP, false);
+        RegisterCommand("reloadshaders", LANG.CONSOLE_RELOADSHADERS_DESC, LANG.CONSOLE_RELOADSHADERS_HELP, false);
+        RegisterCommand("reloadwisps", LANG.CONSOLE_RELOADWISPS_DESC, LANG.CONSOLE_RELOADWISPS_HELP, false);
+        RegisterCommand("repeat", LANG.CONSOLE_REPEAT_DESC, LANG.CONSOLE_REPEAT_HELP, true);
+        RegisterCommand("reseed", LANG.CONSOLE_RESEED_DESC, LANG.CONSOLE_RESEED_HELP, false);
+        RegisterCommand("restart", LANG.CONSOLE_RESTART_DESC, LANG.CONSOLE_RESTART_HELP, false, PLAYER);
+        RegisterCommand("restock", LANG.CONSOLE_RESTOCK_DESC, LANG.CONSOLE_RESTOCK_HELP, false);
+        RegisterCommand("rewind", LANG.CONSOLE_REWIND_DESC, LANG.CONSOLE_REWIND_HELP, false);
+        RegisterCommand("seed", LANG.CONSOLE_SEED_DESC, LANG.CONSOLE_SEED_HELP, false);
+        RegisterCommand("spawn", LANG.CONSOLE_SPAWN_DESC, LANG.CONSOLE_SPAWN_HELP, false, ENTITY);
+        RegisterCommand("stage", LANG.CONSOLE_STAGE_DESC, LANG.CONSOLE_STAGE_HELP, false, STAGE);
+        RegisterCommand("time", LANG.CONSOLE_TIME_DESC, LANG.CONSOLE_TIME_HELP, false);
+        RegisterCommand("testbosspool", LANG.CONSOLE_TESTBOSSPOOL_DESC, LANG.CONSOLE_TESTBOSSPOOL_HELP, false);
     }
 
     const ConsoleCommand* GetCommandByName(std::string& commandName) {
@@ -383,7 +385,7 @@ struct ConsoleMega : ImGuiWindowObject {
               ImVec2 drawPos = ImGui::GetCursorPos();
 
               ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
-              if (ImGui::InputTextWithHint("##", "Type your command here (\"help\" for help)", inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
+              if (ImGui::InputTextWithHint("##", LANG.CONSOLE_CMD_HINT, inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
                 Strtrim(s);
                 std::string fixedCommand = FixSpawnCommand(s);
@@ -514,35 +516,35 @@ struct ConsoleMega : ImGuiWindowObject {
                             RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
                             RoomConfig* config = stage.configs;
                             std::map<int, std::string> specialRoomTypes = {
-                                std::pair<int, std::string>(1, "default"),
-                                std::pair<int, std::string>(2, "shop"),
-                                std::pair<int, std::string>(3, "error"),
-                                std::pair<int, std::string>(4, "treasure"),
-                                std::pair<int, std::string>(5, "boss"),
-                                std::pair<int, std::string>(6, "miniboss"),
-                                std::pair<int, std::string>(7, "secret"),
-                                std::pair<int, std::string>(8, "supersecret"),
-                                std::pair<int, std::string>(9, "arcade"),
-                                std::pair<int, std::string>(10, "curse"),
-                                std::pair<int, std::string>(11, "challenge"),
-                                std::pair<int, std::string>(12, "library"),
-                                std::pair<int, std::string>(13, "sacrifice"),
-                                std::pair<int, std::string>(14, "devil"),
-                                std::pair<int, std::string>(15, "angel"),
-                                std::pair<int, std::string>(16, "itemdungeon"),
-                                std::pair<int, std::string>(17, "bossrush"),
-                                std::pair<int, std::string>(18, "isaacs"),
-                                std::pair<int, std::string>(19, "barren"),
-                                std::pair<int, std::string>(20, "chest"),
-                                std::pair<int, std::string>(21, "dice"),
-                                std::pair<int, std::string>(22, "blackmarket"),
-                                std::pair<int, std::string>(23, "greedexit"),
-                                std::pair<int, std::string>(24, "planetarium"),
-                                std::pair<int, std::string>(25, "teleporter"),
-                                std::pair<int, std::string>(26, "teleporterexit"),
-                                std::pair<int, std::string>(27, "secretexit"),
-                                std::pair<int, std::string>(28, "blue"),
-                                std::pair<int, std::string>(29, "ultrasecret"),
+                                std::pair<int, std::string>(1, LANG.CONSOLE_GOTO_HINT_default),
+                                std::pair<int, std::string>(2, LANG.CONSOLE_GOTO_HINT_shop),
+                                std::pair<int, std::string>(3, LANG.CONSOLE_GOTO_HINT_error),
+                                std::pair<int, std::string>(4, LANG.CONSOLE_GOTO_HINT_treasure),
+                                std::pair<int, std::string>(5, LANG.CONSOLE_GOTO_HINT_boss),
+                                std::pair<int, std::string>(6, LANG.CONSOLE_GOTO_HINT_miniboss),
+                                std::pair<int, std::string>(7, LANG.CONSOLE_GOTO_HINT_secret),
+                                std::pair<int, std::string>(8, LANG.CONSOLE_GOTO_HINT_supersecret),
+                                std::pair<int, std::string>(9, LANG.CONSOLE_GOTO_HINT_arcade),
+                                std::pair<int, std::string>(10, LANG.CONSOLE_GOTO_HINT_curse),
+                                std::pair<int, std::string>(11, LANG.CONSOLE_GOTO_HINT_challenge),
+                                std::pair<int, std::string>(12, LANG.CONSOLE_GOTO_HINT_library),
+                                std::pair<int, std::string>(13, LANG.CONSOLE_GOTO_HINT_sacrifice),
+                                std::pair<int, std::string>(14, LANG.CONSOLE_GOTO_HINT_devil),
+                                std::pair<int, std::string>(15, LANG.CONSOLE_GOTO_HINT_angel),
+                                std::pair<int, std::string>(16, LANG.CONSOLE_GOTO_HINT_itemdungeon),
+                                std::pair<int, std::string>(17, LANG.CONSOLE_GOTO_HINT_bossrush),
+                                std::pair<int, std::string>(18, LANG.CONSOLE_GOTO_HINT_isaacs),
+                                std::pair<int, std::string>(19, LANG.CONSOLE_GOTO_HINT_barren),
+                                std::pair<int, std::string>(20, LANG.CONSOLE_GOTO_HINT_chest),
+                                std::pair<int, std::string>(21, LANG.CONSOLE_GOTO_HINT_dice),
+                                std::pair<int, std::string>(22, LANG.CONSOLE_GOTO_HINT_blackmarket),
+                                std::pair<int, std::string>(23, LANG.CONSOLE_GOTO_HINT_greedexit),
+                                std::pair<int, std::string>(24, LANG.CONSOLE_GOTO_HINT_planetarium),
+                                std::pair<int, std::string>(25, LANG.CONSOLE_GOTO_HINT_teleporter),
+                                std::pair<int, std::string>(26, LANG.CONSOLE_GOTO_HINT_teleporterexit),
+                                std::pair<int, std::string>(27, LANG.CONSOLE_GOTO_HINT_secretexit),
+                                std::pair<int, std::string>(28, LANG.CONSOLE_GOTO_HINT_blue),
+                                std::pair<int, std::string>(29, LANG.CONSOLE_GOTO_HINT_ultrasecret),
                             };
 
                             for (unsigned int i = 0; i < stage.nbRooms; ++i) {       
@@ -749,20 +751,20 @@ struct ConsoleMega : ImGuiWindowObject {
 
                         case DEBUG_FLAG: {
                             entries = {
-                                AutocompleteEntry("1", "Entity Positions"),
-                                AutocompleteEntry("2", "Grid"),
-                                AutocompleteEntry("3", "Infinite HP"),
-                                AutocompleteEntry("4", "High Damage"),
-                                AutocompleteEntry("5", "Show Room Info"),
-                                AutocompleteEntry("6", "Show Hitspheres"),
-                                AutocompleteEntry("7", "Show Damage Values"),
-                                AutocompleteEntry("8", "Infinite Item Charges"),
-                                AutocompleteEntry("9", "High Luck"),
-                                AutocompleteEntry("10", "Quick Kill"),
-                                AutocompleteEntry("11", "Grid Info"),
-                                AutocompleteEntry("12", "Player Item Info"),
-                                AutocompleteEntry("13", "Show Grid Collision Points"),
-                                AutocompleteEntry("14", "Show Lua Memory Usage")
+                                AutocompleteEntry("1", LANG.CONSOLE_DEBUG_HINT_1 ),
+                                AutocompleteEntry("2", LANG.CONSOLE_DEBUG_HINT_2 ),
+                                AutocompleteEntry("3", LANG.CONSOLE_DEBUG_HINT_3 ),
+                                AutocompleteEntry("4", LANG.CONSOLE_DEBUG_HINT_4 ),
+                                AutocompleteEntry("5", LANG.CONSOLE_DEBUG_HINT_5 ),
+                                AutocompleteEntry("6", LANG.CONSOLE_DEBUG_HINT_6 ),
+                                AutocompleteEntry("7", LANG.CONSOLE_DEBUG_HINT_7 ),
+                                AutocompleteEntry("8", LANG.CONSOLE_DEBUG_HINT_8 ),
+                                AutocompleteEntry("9", LANG.CONSOLE_DEBUG_HINT_9 ),
+                                AutocompleteEntry("10", LANG.CONSOLE_DEBUG_HINT_10 ),
+                                AutocompleteEntry("11", LANG.CONSOLE_DEBUG_HINT_11 ),
+                                AutocompleteEntry("12", LANG.CONSOLE_DEBUG_HINT_12 ),
+                                AutocompleteEntry("13", LANG.CONSOLE_DEBUG_HINT_13 ),
+                                AutocompleteEntry("14", LANG.CONSOLE_DEBUG_HINT_14)
                             };
                             break;
                         }
@@ -804,22 +806,22 @@ struct ConsoleMega : ImGuiWindowObject {
 
                         case COMBO: {
                             entries = {
-                                AutocompleteEntry("0.", "Treasure"),
-                                AutocompleteEntry("1.", "Shop"),
-                                AutocompleteEntry("2.", "Boss"),
-                                AutocompleteEntry("3.", "Devil"),
-                                AutocompleteEntry("4.", "Angel"),
-                                AutocompleteEntry("5.", "Secret"),
-                                AutocompleteEntry("6.", "Library"),
-                                AutocompleteEntry("7.", "Challenge"),
-                                AutocompleteEntry("8.", "Golden Chest"),
-                                AutocompleteEntry("9.", "Red Chest"),
-                                AutocompleteEntry("10.", "Beggar"),
-                                AutocompleteEntry("11.", "Demon Beggar"),
-                                AutocompleteEntry("12.", "Curse"),
-                                AutocompleteEntry("13.", "Key Master"),
-                                AutocompleteEntry("14.", "Boss Rush"),
-                                AutocompleteEntry("15.", "Dungeon"),
+                                AutocompleteEntry("0.", LANG.CONSOLE_COMBO_HINT_0 ),
+                                AutocompleteEntry("1.", LANG.CONSOLE_COMBO_HINT_1 ),
+                                AutocompleteEntry("2.", LANG.CONSOLE_COMBO_HINT_2 ),
+                                AutocompleteEntry("3.", LANG.CONSOLE_COMBO_HINT_3 ),
+                                AutocompleteEntry("4.", LANG.CONSOLE_COMBO_HINT_4 ),
+                                AutocompleteEntry("5.", LANG.CONSOLE_COMBO_HINT_5 ),
+                                AutocompleteEntry("6.", LANG.CONSOLE_COMBO_HINT_6 ),
+                                AutocompleteEntry("7.", LANG.CONSOLE_COMBO_HINT_7 ),
+                                AutocompleteEntry("8.", LANG.CONSOLE_COMBO_HINT_8 ),
+                                AutocompleteEntry("9.", LANG.CONSOLE_COMBO_HINT_9 ),
+                                AutocompleteEntry("10.", LANG.CONSOLE_COMBO_HINT_10 ),
+                                AutocompleteEntry("11.", LANG.CONSOLE_COMBO_HINT_11 ),
+                                AutocompleteEntry("12.", LANG.CONSOLE_COMBO_HINT_12 ),
+                                AutocompleteEntry("13.", LANG.CONSOLE_COMBO_HINT_13 ),
+                                AutocompleteEntry("14.", LANG.CONSOLE_COMBO_HINT_14 ),
+                                AutocompleteEntry("15.", LANG.CONSOLE_COMBO_HINT_15 ),
                             };
                             break;
                         }

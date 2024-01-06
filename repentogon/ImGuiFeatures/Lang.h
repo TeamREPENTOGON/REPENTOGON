@@ -1,8 +1,6 @@
 #pragma once
 
 class Lang{
-private:
-    unsigned int currentLang;
 public:
     Lang();
     void Load(unsigned int language);
