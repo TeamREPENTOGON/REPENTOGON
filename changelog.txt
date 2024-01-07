@@ -2,6 +2,12 @@ v1.0.5 -
 Additions:
 * Added localization code support
 * Added settings to change unifont rendering size
+* Add Update callbacks for GridEntityTNT
+* Add Render callbacks for GridEntityLock and GridEntityTeleporter
+/newline/
+Fixes:
+* Fix GridEntity render callbacks being massively broken
+* Fix Beam:Add(Point) override
 /newline/
 v1.0.4 - 
 Additions:
