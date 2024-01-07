@@ -3,3 +3,6 @@
 #define I(ITEM, TRANSLATE)
 #endif
 
+#ifndef V
+#define V(TYPE, VAR, VALUE)
+#endif

@@ -3,6 +3,12 @@
 #define I(ITEM, TRANSLATE)
 #endif
 
+#ifndef V
+#define V(TYPE, VAR, VALUE)
+#endif
+
+V(int, UNIFONT_DEFAULT_SIZE, 16)
+
 //=========== Main Menu Bar ==========
 I(BAR_TOOLS, ICON_U8_FA_SCREWDRIVER_WRENCH u8" 工具")
 I(BAR_DEBUG_CONSOLE, ICON_U8_FA_TERMINAL u8" 调试控制台")
