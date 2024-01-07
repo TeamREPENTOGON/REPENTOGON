@@ -765,7 +765,7 @@ ___
 
 ___
 ### ShuffleCostumes () {: aria-label='Functions' }
-#### void ShuffleCostumes ( int Seed = Random() ) {: .copyable aria-label='Functions' }
+#### void ShuffleCostumes ( int Seed = Random( ) ) {: .copyable aria-label='Functions' }
 Randomizes the current costumes.
 
 ___
