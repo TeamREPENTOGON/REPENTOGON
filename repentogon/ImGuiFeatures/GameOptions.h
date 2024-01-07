@@ -21,6 +21,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
     const char* announcerModes[3] = { "Random", "Off", "Always on" };
     const char* consoleFontModes[3] = { "Default", "Small", "Tiny" };
     const char* offOnModes[2] = { "Off", "On" };
+    const char* unifontRenderMode[5] = { "Normal: 13px, only non-latin chars", "LargePerfect: 16px", "Medium: 14px", "TinyPerfect: 16px and 0.5 scale", "TinyLow: 8px" };
 
     void InitAfterLanguageAvaliable(){
         extraHudModes[0] = LANG.OPT_EXTRA_HUD_MODES_OFF;
@@ -37,6 +38,12 @@ struct GameOptionsWindow : ImGuiWindowObject {
 
         offOnModes[0] = LANG.OPT_OFF_ON_MODES_OFF;
         offOnModes[1] = LANG.OPT_OFF_ON_MODES_ON;
+
+        unifontRenderMode[0] = LANG.OPT_UNIFONT_RENDER_MODE_NORMAL;
+        unifontRenderMode[1] = LANG.OPT_UNIFONT_RENDER_MODE_LARGE;
+        unifontRenderMode[2] = LANG.OPT_UNIFONT_RENDER_MODE_MEDIUM;
+        unifontRenderMode[3] = LANG.OPT_UNIFONT_RENDER_MODE_TINY;
+        unifontRenderMode[4] = LANG.OPT_UNIFONT_RENDER_MODE_TINY_LOW;
     }
 
     template <typename T>
@@ -147,7 +154,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_CONSOLE_ENABLE_UNICODE_FONT_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.enableUnifont, true);
-
+                        AddNewTableRow();
+                        ImGui::SliderInt(LANG.OPT_CONSOLE_UNIFONT_RENDER_MODE, &repentogonOptions.unifontRenderMode, 0, 4, unifontRenderMode[repentogonOptions.unifontRenderMode], ImGuiSliderFlags_NoInput);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_CONSOLE_UNIFONT_RENDER_MODE_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.unifontRenderMode, 0);
                         ImGui::EndTable();
                     }
                     ImGui::EndTabItem();

@@ -12,7 +12,7 @@
  * need also remove all of them in other language files.
  */
 
-V(int, UNIFONT_DEFAULT_SIZE, 13)
+//V(float, UNIFONT_DEFAULT_SIZE, 13)
 
 //=========== Main Menu Bar ==========
 // I(BAR_TOOLS, ICON_FA_SCREWDRIVER_WRENCH " Tools") // non-utf8 version is no problem here for en_us
@@ -278,6 +278,8 @@ I(OPT_CONSOLE_SAVE_COMMAND_HISTORY, u8"Save Command History")
 I(OPT_CONSOLE_CONSOLE_FONT, u8"Console Font")
 I(OPT_CONSOLE_ENABLE_UNICODE_FONT, u8"Enable unicode font")
 I(OPT_CONSOLE_ENABLE_UNICODE_FONT_MARK, u8"For improved non-latin language support. Will somewhat increase memory usage.")
+I(OPT_CONSOLE_UNIFONT_RENDER_MODE, u8"Unifont Render Mode")
+I(OPT_CONSOLE_UNIFONT_RENDER_MODE_MARK, u8"Change font size to make the font display more perfect. Restart needed.")
 
 I(OPT_VIS, u8"Visual Effects")
 I(OPT_VIS_GAMMA, u8"Gamma")
@@ -343,6 +345,12 @@ I(OPT_CONSOLE_FOND_MODES_TINY, u8"Tiny")
 
 I(OPT_OFF_ON_MODES_OFF, u8"Off")
 I(OPT_OFF_ON_MODES_ON, u8"On")
+
+I(OPT_UNIFONT_RENDER_MODE_NORMAL, u8"Normal: 13px, only non-latin chars")
+I(OPT_UNIFONT_RENDER_MODE_LARGE, u8"LargePerfect: 16px")
+I(OPT_UNIFONT_RENDER_MODE_MEDIUM, u8"Medium: 14px")
+I(OPT_UNIFONT_RENDER_MODE_TINY, u8"TinyPerfect: 16px and 0.5 scale")
+I(OPT_UNIFONT_RENDER_MODE_TINY_LOW, u8"TinyLow: 8px")
 
 //============== Help Menu ===============
 

@@ -23,3 +23,11 @@ public:
 		return ranges.Data;
 	}
 };
+
+enum UnifontRenderMode {
+	UNIFONT_RENDER_NORMAL = 0,
+	UNOFONT_RENDER_LARGE = 1,
+	UNIFONT_RENDER_MEDIUM = 2,
+	UNIFONT_RENDER_TINY = 3,
+	UNIFONT_RENDER_TINY_LOW = 4
+};

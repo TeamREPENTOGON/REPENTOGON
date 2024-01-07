@@ -7,7 +7,7 @@
 #define V(TYPE, VAR, VALUE)
 #endif
 
-V(int, UNIFONT_DEFAULT_SIZE, 16)
+//V(float, UNIFONT_DEFAULT_SIZE, 12)
 
 //=========== Main Menu Bar ==========
 I(BAR_TOOLS, ICON_U8_FA_SCREWDRIVER_WRENCH u8" 工具")
