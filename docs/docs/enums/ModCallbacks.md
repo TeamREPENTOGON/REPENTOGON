@@ -1680,6 +1680,34 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1449 |MC_POST_GRID_ENTITY_FIRE_RENDER {: .copyable } | ([GridEntityFire](../GridEntityFire.md) Fire) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
+### MC_PRE_GRID_ENTITY_LOCK_RENDER
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1450 |MC_PRE_GRID_ENTITY_LOCK_RENDER {: .copyable } | ([GridEntityLock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityLock.html) Lock, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
+
+### MC_POST_GRID_ENTITY_LOCK_RENDER
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1451 |MC_POST_GRID_ENTITY_LOCK_RENDER {: .copyable } | ([GridEntityLock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityLock.html) Lock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+
+### MC_PRE_GRID_ENTITY_TELEPORTER_RENDER
+Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1452 |MC_PRE_GRID_ENTITY_TELEPORTER_RENDER {: .copyable } | ([GridEntityTeleporter](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTeleporter.html) Teleporter, [Vector](../Vector.md) Offset) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | [Vector](../Vector.md) or boolean |
+
+### MC_POST_GRID_ENTITY_TELEPORTER_RENDER
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1453 |MC_POST_GRID_ENTITY_TELEPORTER_RENDER {: .copyable } | ([GridEntityTeleporter](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTeleporter.html) Teleporter) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+
 ### MC_PRE_GRID_ENTITY_PIT_RENDER
 Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
 
