@@ -3162,6 +3162,10 @@ lua::LuaResults RunGridRenderCallback(const GridRenderInputs& inputs, const int 
 	else {
 		lua_caller.push(inputs.grid, inputs.vanilla_metatable);
 	}
+	if (pushOffset)
+	{
+		lua_caller.pushUserdataValue(inputs.offset, lua::Metatables::VECTOR);
+	}
 	return lua_caller.call(1);
 }
 
@@ -3218,7 +3222,20 @@ HOOK_METHOD(_type, Render, (Vector& offset) -> void) { \
 	HandleGridRenderCallbacks(inputs, _precallback, _postcallback, _GRIDRENDER_SUPER_LAMBDA()); \
 }
 
+//HOOK_GRIDRENDER_CALLBACKS(GridEntity_Spikes, lua::Metatables::GRID_ENTITY_SPIKES, 1432, 1433);
+//HOOK_GRIDRENDER_CALLBACKS(GridEntity_Web, lua::metatables::GridWebMT, 1434, 1435);
+//HOOK_GRIDRENDER_CALLBACKS(GridEntity_TNT, lua::metatables::GridTNT_MT, 1436, 1437);
+//HOOK_GRIDRENDER_CALLBACKS(GridEntity_TrapDoor, lua::metatables::GridTrapDoorMT, 1438, 1439);
+//HOOK_GRIDRENDER_CALLBACKS(GridEntity_Stairs, lua::metatables::GridStairsMT, 1440, 1441);
+
+HOOK_GRIDRENDER_CALLBACKS(GridEntity_Decoration, lua::metatables::GridDecorationMT, 1444, 1445);
+HOOK_GRIDRENDER_CALLBACKS(GridEntity_Door, lua::Metatables::GRID_ENTITY_DOOR, 1446, 1447);
+HOOK_GRIDRENDER_CALLBACKS(GridEntity_Fire, lua::metatables::GridFireMT, 1448, 1449);
+HOOK_GRIDRENDER_CALLBACKS(GridEntity_Pit, lua::Metatables::GRID_ENTITY_PIT, 1454, 1455);
+HOOK_GRIDRENDER_CALLBACKS(GridEntity_Poop, lua::Metatables::GRID_ENTITY_POOP, 1456, 1457);
 HOOK_GRIDRENDER_CALLBACKS(GridEntity_Rock, lua::Metatables::GRID_ENTITY_ROCK, 1458, 1459);
+HOOK_GRIDRENDER_CALLBACKS(GridEntity_PressurePlate, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE, 1460, 1461);
+HOOK_GRIDRENDER_CALLBACKS(GridEntity_Wall, lua::metatables::GridWallMT, 1462, 1463);
 
 /////////////////////////////////////////////////
 
