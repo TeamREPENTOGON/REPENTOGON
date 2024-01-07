@@ -7,9 +7,8 @@ tags:
 This class provides more streamlined access to the `BeamRenderer` used internally for rendering cords, ie Evis, Gello, Vis Fatty, etc.
 Note that this is a low-level class that strictly handles rendering. We hope to later provide an extension of this class capable of handling the physics calculations and automatic point adjustment required for cords, but this is a complex system that will require a non-trivial amount of effort to implement.
 
-???+ warning "Warning"
-    The params in this class, especially `UnkBool`, `Width`, and `Height`, are largely unknown and for now will require trial and error to effectively use.
-		These documents will be updated with the latest findings.
+???+ Info "Info"
+    A better tutorial on how to use this class is pending.
 
 ## Constructors
 ### Beam () {: aria-label='Constructors' }
@@ -25,13 +24,13 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
     ```lua
 	local sprite = Sprite()
 	sprite:Load("gfx/893.000_ball and chain.anm2", true)
-	chain = Beam(sprite, "chain", true, false)
+	local chain = Beam(sprite, "chain", true, false)
 	
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, function(_, player)
 		chain:GetSprite():PlayOverlay("Chain", false)
-		local center = game:GetLevel():GetCurrentRoom():GetCenterPos()
-		chain:Add(Isaac.WorldToScreen(center))
-		chain:Add(Isaac.WorldToScreen(player.Position))
+		local center = Game():GetRoom():GetCenterPos()
+		chain:Add(Isaac.WorldToScreen(center),0)
+		chain:Add(Isaac.WorldToScreen(player.Position),64)
 		chain:Render()
 	end)
     ```
@@ -39,13 +38,13 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 ## Functions
 
 ### Add () {: aria-label='Functions' }
-#### void Add ( [Vector](../Vector.md) Position, float Height, float Width = 1.0, [Color](../Color.md) PointColor = Default ) {: .copyable aria-label='Functions' }
+#### void Add ( [Vector](../Vector.md) Position, float SpritesheetCoordinate, float Width = 1.0, [Color](../Color.md) PointColor = Default ) {: .copyable aria-label='Functions' }
 #### void Add ( [Point](Point.md) Point ) {: .copyable aria-label='Functions' }   
 Adds a point to the beam. Points are stored in order of adding.
 
 ???+ info "Info"
-    `Height` is, to our current understanding, how much of the sprite will render, ie. a value of `10` would render the sprite up to `10` pixels vertically.
-	`Width` determines how large the beam should be. A larger value will upscale the sprite. This is interpolated between points.
+    `SpritesheetCoordinate` is, to our current understanding, the `Y` position of the spritesheet that should be drawn by the time this Point is reached. For example, two points of `0` and `64` SpritesheetCoordinate will render the spritesheet starting from `y 0` to `y 64`, while an additional third point of `0` will draw it in reverse from `y 64` to `y 0`.
+	`Width` acts as a multiplier for how wide the beam should be. A non-zero value will scale the spritesheet width accordingly. This is interpolated between points.
 
 ___
 ### GetLayer () {: aria-label='Functions' }
