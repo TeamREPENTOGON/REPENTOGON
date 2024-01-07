@@ -127,7 +127,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         for (std::string command : bannedCommands) {
             if (in == command || in.rfind(command + " ", 0) == 0) {
                 char err[256];
-                sprintf(err, "[ERROR] %s can't be used if not in-game!", command.c_str());
+                sprintf(err, LANG.CONSOLE_CANT_BE_USED_IF_NOT_IN_GAME, command.c_str());
                 this->PrintError(err);
                 return;
             }
@@ -151,7 +151,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         std::vector<std::string> cmdlets = ParseCommand(in, 2);
 
         if (!inGame)
-            res.append("(Only commands enabled to show outside of the game will appear right now.)\n");
+            res.append(LANG.CONSOLE_HELP_OUTSIDE_GAME_HINT);
 
         if (cmdlets.size() == 1) {
             for (ConsoleCommand command : console.commands) {
@@ -205,7 +205,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
                 return;
             }
         }
-        this->PrintError("No macro with that name.\n");
+        this->PrintError(LANG.CONSOLE_NO_MACRO_HINT);
         return;
     }
 
