@@ -7,6 +7,10 @@ Additions:
 /newline/
 Fixes:
 * Fix GridEntity render callbacks being massively broken
+* Fix PRE_GRID_ENTITY_SPAWN not accepting a table
+* Fix potential crash with SpawnGridEntity(GridEntityDesc)
+	- main_ex.lua typechecking on this is temporarily disabled
+	- Will silently fail if returning an invalid type to prevent crashes
 * Fix Beam:Add(Point) override
 /newline/
 v1.0.4 - 
