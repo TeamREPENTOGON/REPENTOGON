@@ -6250,7 +6250,7 @@
 <p>Returns a table containing the attributes of the corresponding xml, the matching NodeType(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given unique id.</p>
 <details class="- info">
 <summary>Table usage</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntryByName</span><span class="p">(</span><span class="n">XMLNode</span><span class="p">.</span><span class="n">ITEM</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="n">description</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntryById</span><span class="p">(</span><span class="n">XMLNode</span><span class="p">.</span><span class="n">ITEM</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="n">description</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="note" open="open">
