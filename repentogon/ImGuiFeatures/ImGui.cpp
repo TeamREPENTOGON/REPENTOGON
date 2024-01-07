@@ -406,6 +406,9 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 {
 	static std::map<int, ImFont*> fonts;
 
+	if (!LANG.isLoaded)
+		return super(hdc);
+
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
@@ -442,7 +445,7 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 		static UnifontRange unifont_ranges;
 
-		const int unifont_base_size = 13;
+		const int unifont_base_size = LANG.UNIFONT_DEFAULT_SIZE;
 		cfg.MergeMode = false;
 		cfg.SizePixels = unifont_base_size;
 		imFontUnifont = io.Fonts->AddFontDefault(&cfg); 
