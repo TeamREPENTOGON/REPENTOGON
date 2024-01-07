@@ -3133,9 +3133,9 @@ HOOK_METHOD(Entity_Familiar, FireTechLaser, (const Vector& AimDirection) -> Enti
 
 /////////////////////////////////////////////////
 
-struct GridRenderInputs {
+struct GridEntityRenderInputs {
 	GridEntity* grid;
-	Vector& offset;
+	const Vector& renderOffset;
 
 	lua::Metatables vanilla_metatable = lua::Metatables::GRID_ENTITY;
 	const char* luabridge_metatable = nullptr;
@@ -3148,12 +3148,12 @@ struct GridRenderInputs {
 	}
 };
 
-struct PreGridRenderResult {
+struct PreGridEntityResult {
 	bool skip_internal_code = false;
-	Vector offset;
+	Vector renderOffset;
 };
 
-lua::LuaResults RunGridRenderCallback(const GridRenderInputs& inputs, const int callbackid, bool pushOffset, lua_State* L) {
+lua::LuaResults RunGridRenderCallback(const GridEntityRenderInputs& inputs, const int callbackid, bool pushOffset, lua_State* L) {
 	int discriminator = inputs.grid->GetDesc()->_type;
 	lua::LuaCaller& lua_caller = lua::LuaCaller(L).push(callbackid).push(discriminator);
 	if (inputs.luabridge_metatable != nullptr) {
@@ -3164,14 +3164,13 @@ lua::LuaResults RunGridRenderCallback(const GridRenderInputs& inputs, const int 
 	}
 	if (pushOffset)
 	{
-		lua_caller.pushUserdataValue(inputs.offset, lua::Metatables::VECTOR);
+		lua_caller.pushUserdataValue(inputs.renderOffset, lua::Metatables::VECTOR);
 	}
 	return lua_caller.call(1);
 }
 
-PreGridRenderResult ProcessPreGridRenderCallback(const GridRenderInputs& inputs, const int callbackid) {
-	PreGridRenderResult result{ false, inputs.offset };
-	result.offset = inputs.offset;
+PreGridEntityResult ProcessPreGridRenderCallback(const GridEntityRenderInputs& inputs, const int callbackid) {
+	PreGridEntityResult result{ false, inputs.renderOffset };
 
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -3187,7 +3186,7 @@ PreGridRenderResult ProcessPreGridRenderCallback(const GridRenderInputs& inputs,
 				result.skip_internal_code = true;
 			}
 			else if (lua_isuserdata(L, -1)) {
-				result.offset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				result.renderOffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
 			}
 		}
 	}
@@ -3195,7 +3194,7 @@ PreGridRenderResult ProcessPreGridRenderCallback(const GridRenderInputs& inputs,
 	return result;
 }
 
-void ProcessPostGridRenderCallback(const GridRenderInputs& inputs, const int callbackid) {
+void ProcessPostGridRenderCallback(const GridEntityRenderInputs& inputs, const int callbackid) {
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -3204,11 +3203,11 @@ void ProcessPostGridRenderCallback(const GridRenderInputs& inputs, const int cal
 	}
 }
 
-void HandleGridRenderCallbacks(const GridRenderInputs& inputs, const int precallbackid, const int postcallbackid, std::function<void(Vector&)> super_lambda) {
-	const PreGridRenderResult pre_render_result = ProcessPreGridRenderCallback(inputs, precallbackid);
+void HandleGridRenderCallbacks(const GridEntityRenderInputs& inputs, const int precallbackid, const int postcallbackid, std::function<void(Vector&)> super_lambda) {
+	const PreGridEntityResult pre_render_result = ProcessPreGridRenderCallback(inputs, precallbackid);
 
 	if (!pre_render_result.skip_internal_code) {
-		Vector offset = pre_render_result.offset;
+		Vector offset = pre_render_result.renderOffset;
 		super_lambda(offset);
 		ProcessPostGridRenderCallback(inputs, postcallbackid);
 	}
@@ -3217,7 +3216,7 @@ void HandleGridRenderCallbacks(const GridRenderInputs& inputs, const int precall
 #define _GRIDRENDER_SUPER_LAMBDA() [this](Vector& offset) { super(offset); }
 #define HOOK_GRIDRENDER_CALLBACKS(_type, _metatable, _precallback, _postcallback) \
 HOOK_METHOD(_type, Render, (Vector& offset) -> void) { \
-	GridRenderInputs inputs = {this, offset}; \
+	GridEntityRenderInputs inputs = {this, offset}; \
 	inputs.SetMetatable(_metatable); \
 	HandleGridRenderCallbacks(inputs, _precallback, _postcallback, _GRIDRENDER_SUPER_LAMBDA()); \
 }
@@ -3238,6 +3237,7 @@ struct GridRenderCallback {
 	int precallback, postcallback;
 };
 
+// Statue vtable will need to be patched, it has no Render function at all
 struct GridRenderCallback callbacks[8] = {
 	{GRID_SPIKES, lua::Metatables::GRID_ENTITY_SPIKES, nullptr, 1432, 1433},
 	{GRID_SPIKES_ONOFF, lua::Metatables::GRID_ENTITY_SPIKES, nullptr, 1432, 1433},
@@ -3249,13 +3249,12 @@ struct GridRenderCallback callbacks[8] = {
 	{GRID_TELEPORTER, lua::Metatables::GRID_ENTITY, lua::metatables::GridTeleporterMT, 1452, 1453},
 };
 
-//PRE/POST_GRID_ENTITY_[x]_RENDER(1432-1441)
 HOOK_METHOD(GridEntity_Lock, Render, (Vector& offset) -> void) {
 	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
 	for (int i = 5; i < 7; i++) {
 		if (gridType == callbacks[i].type)
 		{
-			GridRenderInputs inputs = { this, offset };
+			GridEntityRenderInputs inputs = { this, offset };
 			if (callbacks[i].luabridge_metatable != nullptr) {
 				inputs.SetMetatable(callbacks[i].luabridge_metatable);
 			}
@@ -3273,13 +3272,12 @@ HOOK_METHOD(GridEntity_Lock, Render, (Vector& offset) -> void) {
 
 }
 
-//PRE/POST_GRID_ENTITY_[x]_RENDER(1432-1441)
 HOOK_METHOD(GridEntity, Render, (Vector& offset) -> void) {
 	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
 	for (int i = 0; i < 6; i++) {
 		if (gridType == callbacks[i].type)
 		{
-			GridRenderInputs inputs = { this, offset };
+			GridEntityRenderInputs inputs = { this, offset };
 			if (callbacks[i].luabridge_metatable != nullptr) {
 				inputs.SetMetatable(callbacks[i].luabridge_metatable);
 			}
@@ -3297,7 +3295,104 @@ HOOK_METHOD(GridEntity, Render, (Vector& offset) -> void) {
 
 }
 
-/////////////////////////////////////////////////
+/* ////////////////////////
+// Grid Callbacks START!!
+*/ ////////////////////////
+
+struct GridEntityUpdateInputs {
+	GridEntity* grid;
+
+	lua::Metatables vanilla_metatable = lua::Metatables::GRID_ENTITY;
+	const char* luabridge_metatable = nullptr;
+
+	void SetMetatable(const lua::Metatables metatable) {
+		vanilla_metatable = metatable;
+	}
+	void SetMetatable(const char* metatable) {
+		luabridge_metatable = metatable;
+	}
+};
+
+lua::LuaResults RunGridUpdateCallback(const GridEntityUpdateInputs& inputs, const int callbackid, lua_State* L) {
+	int discriminator = inputs.grid->GetDesc()->_type;
+	lua::LuaCaller& lua_caller = lua::LuaCaller(L).push(callbackid).push(discriminator);
+	if (inputs.luabridge_metatable != nullptr) {
+		lua_caller.pushLuabridge(inputs.grid, inputs.luabridge_metatable);
+	}
+	else {
+		lua_caller.push(inputs.grid, inputs.vanilla_metatable);
+	}
+	return lua_caller.call(1);
+}
+
+void ProcessPostGridUpdateCallback(const GridEntityUpdateInputs& inputs, const int callbackid) {
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		RunGridUpdateCallback(inputs, callbackid, L);
+	}
+}
+
+bool ProcessPreGridUpdateCallback(const GridEntityUpdateInputs& inputs, const int callbackid) {
+	bool skipUpdate = false;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults lua_result = RunGridUpdateCallback(inputs, callbackid, L);
+
+		if (!lua_result) {
+			if (lua_isboolean(L, -1)) {
+				// Vanilla boolean returns always skip internal code.
+				skipUpdate = true;
+			}
+		}
+	}
+
+	return skipUpdate;
+}
+
+void HandleGridUpdateCallbacks(const GridEntityUpdateInputs& inputs, const int precallbackid, const int postcallbackid, std::function<void()> super_lambda) {
+	const bool pre_update_result = ProcessPreGridUpdateCallback(inputs, precallbackid);
+
+	if (!pre_update_result) {
+		super_lambda();
+		ProcessPostGridUpdateCallback(inputs, postcallbackid);
+	}
+}
+
+#define _GRIDUPDATE_SUPER_LAMBDA() [this] () { super(); }
+#define HOOK_GRIDUPDATE_CALLBACKS(_type, _metatable, _precallback, _postcallback) \
+HOOK_METHOD(_type, Update, () -> void) { \
+	GridEntityUpdateInputs inputs = {this}; \
+	inputs.SetMetatable(_metatable); \
+	HandleGridUpdateCallbacks(inputs, _precallback, _postcallback, _GRIDUPDATE_SUPER_LAMBDA()); \
+}
+
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Decoration, lua::metatables::GridDecorationMT, 1400, 1401);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Door, lua::Metatables::GRID_ENTITY_DOOR, 1402, 1403);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Fire, lua::metatables::GridFireMT, 1404, 1405);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Gravity, lua::metatables::GridGravityMT, 1406, 1407);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Lock, lua::metatables::GridLockMT, 1408, 1409);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Pit, lua::Metatables::GRID_ENTITY_PIT, 1410, 1411);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Poop, lua::Metatables::GRID_ENTITY_POOP, 1412, 1413);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_PressurePlate, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE, 1414, 1415);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Rock, lua::Metatables::GRID_ENTITY_ROCK, 1416, 1417);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Spikes, lua::Metatables::GRID_ENTITY_SPIKES, 1418, 1419);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Stairs, lua::metatables::GridStairsMT, 1420, 1421);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Statue, lua::metatables::GridStatueMT, 1422, 1423);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Teleporter, lua::metatables::GridTeleporterMT, 1424, 1425);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_TrapDoor, lua::metatables::GridTrapDoorMT, 1426, 1427);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_Web, lua::metatables::GridWebMT, 1428, 1429);
+HOOK_GRIDUPDATE_CALLBACKS(GridEntity_TNT, lua::metatables::GridTNT_MT, 1430, 1431);
+
+/* ////////////////////////
+// Grid Callbacks END!!
+*/ ////////////////////////
 
 //IS_PERSISTENT_ROOM_ENTITY (id: 1263)
 HOOK_METHOD(Room, IsPersistentRoomEntity, (int type, int variant, int subtype) -> bool) {
