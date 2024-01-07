@@ -29,7 +29,6 @@ I(DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, u8"Dear ImGui Style Editor")
 
 I(CONSOLE_WINDOW_NAME, u8"Console")
 
-I(CONSOLE_REPENTOGON_CONSOLE, u8"REPENTOGON Console\n")
 I(CONSOLE_CANT_BE_USED_IF_NOT_IN_GAME, u8"[ERROR] %s can't be used if not in-game!")
 I(CONSOLE_HELP_OUTSIDE_GAME_HINT, u8"(Only commands enabled to show outside of the game will appear right now.)\n")
 I(CONSOLE_NO_MACRO_HINT, u8"No macro with that name.\n")
