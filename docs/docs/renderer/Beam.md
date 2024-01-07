@@ -28,7 +28,7 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 	
 	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, function(_, player)
 		chain:GetSprite():PlayOverlay("Chain", false)
-		local center = Game():Room():GetCenterPos()
+		local center = Game():GetRoom():GetCenterPos()
 		chain:Add(Isaac.WorldToScreen(center),0)
 		chain:Add(Isaac.WorldToScreen(player.Position),64)
 		chain:Render()
