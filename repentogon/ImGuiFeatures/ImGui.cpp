@@ -408,9 +408,6 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
 	static float unifont_global_scale = 1;
 
-	if (!LANG.isLoaded)
-		return super(hdc);
-
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
