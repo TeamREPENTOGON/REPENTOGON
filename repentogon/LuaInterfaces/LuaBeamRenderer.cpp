@@ -64,7 +64,7 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 
 void ConstructPoint(lua_State* L, Point& point, uint8_t offset) {
 	point._pos = *lua::GetUserdata<Vector*>(L, offset, lua::Metatables::VECTOR, "Vector");
-	point._height = (float)luaL_checknumber(L, offset+1);
+	point._spritesheetCoordinate = (float)luaL_checknumber(L, offset+1);
 	point._width = (float)luaL_optnumber(L,	offset+2, 1.0f);
 	ColorMod color;
 	if (lua_type(L, offset+3) == LUA_TUSERDATA) {
@@ -117,7 +117,7 @@ LUA_FUNCTION(Lua_BeamRender) {
 	g_BeamRenderer->Begin(beam->GetANM2(), beam->_layer, beam->_useOverlayData, beam->_unkBool);
 
 	for (auto it = beam->_points.begin(); it != beam->_points.end(); ++it) {
-		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_width, it->_height);
+		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_width, it->_spritesheetCoordinate);
 	}
 
 	g_BeamRenderer->End();
@@ -279,15 +279,15 @@ LUA_FUNCTION(Lua_PointConstructor) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PointGetHeight) {
+LUA_FUNCTION(Lua_PointGetSpritesheetCoordinate) {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	lua_pushnumber(L, point->_height);
+	lua_pushnumber(L, point->_spritesheetCoordinate);
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PointSetHeight) {
+LUA_FUNCTION(Lua_PointSetSpritesheetCoordinate) {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	point->_height = (float)luaL_checknumber(L, 2);
+	point->_spritesheetCoordinate = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -349,8 +349,10 @@ static void RegisterBeamRenderer(lua_State* L) {
 	lua_register(L, lua::metatables::BeamMT, Lua_CreateBeamDummy);
 
 	luaL_Reg pointFunctions[] = {
-		{ "GetHeight", Lua_PointGetHeight},
-		{ "SetHeight", Lua_PointSetHeight},
+		{ "GetSpritesheetCoordinate", Lua_PointGetSpritesheetCoordinate},
+		{ "SetSpritesheetCoordinate", Lua_PointSetSpritesheetCoordinate},
+		{ "GetHeight", Lua_PointGetSpritesheetCoordinate}, // deprecated
+		{ "SetHeight", Lua_PointSetSpritesheetCoordinate}, // deprecated
 		{ "GetWidth", Lua_PointGetWidth},
 		{ "SetWidth", Lua_PointSetWidth},
 		{ "GetPosition", Lua_PointGetPosition},
