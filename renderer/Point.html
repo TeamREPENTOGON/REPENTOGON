@@ -5028,9 +5028,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#getheight" class="md-nav__link">
+  <a href="#getspritesheetcoordinate" class="md-nav__link">
     <span class="md-ellipsis">
-      GetHeight ()
+      GetSpritesheetCoordinate  ()
     </span>
   </a>
   
@@ -5064,9 +5064,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#setheight" class="md-nav__link">
+  <a href="#setspritesheetcoordinate" class="md-nav__link">
     <span class="md-ellipsis">
-      SetHeight ()
+      SetSpritesheetCoordinate ()
     </span>
   </a>
   
@@ -6217,9 +6217,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#getheight" class="md-nav__link">
+  <a href="#getspritesheetcoordinate" class="md-nav__link">
     <span class="md-ellipsis">
-      GetHeight ()
+      GetSpritesheetCoordinate  ()
     </span>
   </a>
   
@@ -6253,9 +6253,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#setheight" class="md-nav__link">
+  <a href="#setspritesheetcoordinate" class="md-nav__link">
     <span class="md-ellipsis">
-      SetHeight ()
+      SetSpritesheetCoordinate ()
     </span>
   </a>
   
@@ -6317,14 +6317,19 @@
 <p>Used for <a href="Beam.html">Beam</a>.</p>
 <h2 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Constructors" id="beam">Beam ()<a class="headerlink" href="#beam" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Constructors" class="copyable" id="point-point-vector-position-float-height-float-width-10-color-pointcolor-default"><a href="Point.html">Point</a> Point ( <a href="../Vector.html">Vector</a> Position, float Height, float Width = 1.0, <a href="../Color.html">Color</a> PointColor = Default )<a class="headerlink" href="#point-point-vector-position-float-height-float-width-10-color-pointcolor-default" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Constructors" class="copyable" id="point-point-vector-position-float-spritesheetcoordinate-float-width-10-color-pointcolor-default"><a href="Point.html">Point</a> Point ( <a href="../Vector.html">Vector</a> Position, float SpritesheetCoordinate, float Width = 1.0, <a href="../Color.html">Color</a> PointColor = Default )<a class="headerlink" href="#point-point-vector-position-float-spritesheetcoordinate-float-width-10-color-pointcolor-default" title="Permanent link">⚓︎</a></h4>
+<details class="info" open="open">
+<summary>Info</summary>
+<p><code>SpritesheetCoordinate</code> is, to our current understanding, the <code>Y</code> position of the spritesheet that should be drawn by the time this Point is reached. For example, two points of <code>0</code> and <code>64</code> SpritesheetCoordinate will render the spritesheet starting from <code>y 0</code> to <code>y 64</code>, while an additional third point of <code>0</code> will draw it in reverse from <code>y 64</code> to <code>y 0</code>.
+<code>Width</code> acts as a multiplier for how wide the beam should be. A non-zero value will scale the spritesheet width accordingly. This is interpolated between points.</p>
+</details>
 <hr />
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="getcolor">GetColor ()<a class="headerlink" href="#getcolor" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="color-getcolor"><a href="..Color.md">Color</a> GetColor ( )<a class="headerlink" href="#color-getcolor" title="Permanent link">⚓︎</a></h4>
 <hr />
-<h3 aria-label="Functions" id="getheight">GetHeight ()<a class="headerlink" href="#getheight" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="float-getheight">float GetHeight ( )<a class="headerlink" href="#float-getheight" title="Permanent link">⚓︎</a></h4>
+<h3 aria-label="Functions" id="getspritesheetcoordinate">GetSpritesheetCoordinate  ()<a class="headerlink" href="#getspritesheetcoordinate" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="float-getspritesheetcoordinate">float GetSpritesheetCoordinate ( )<a class="headerlink" href="#float-getspritesheetcoordinate" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="getwidth">GetWidth ()<a class="headerlink" href="#getwidth" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="float-getwidth">float GetWidth ( )<a class="headerlink" href="#float-getwidth" title="Permanent link">⚓︎</a></h4>
@@ -6335,8 +6340,8 @@
 <h3 aria-label="Functions" id="setcolor">SetColor ()<a class="headerlink" href="#setcolor" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcolor-color-pointcolor">void SetColor ( <a href="..Color.md">Color</a> PointColor )<a class="headerlink" href="#void-setcolor-color-pointcolor" title="Permanent link">⚓︎</a></h4>
 <hr />
-<h3 aria-label="Functions" id="setheight">SetHeight ()<a class="headerlink" href="#setheight" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-setheight-float-height">void SetHeight ( float Height )<a class="headerlink" href="#void-setheight-float-height" title="Permanent link">⚓︎</a></h4>
+<h3 aria-label="Functions" id="setspritesheetcoordinate">SetSpritesheetCoordinate ()<a class="headerlink" href="#setspritesheetcoordinate" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-setspritesheetcoordinate-float-height">void SetSpritesheetCoordinate ( float Height )<a class="headerlink" href="#void-setspritesheetcoordinate-float-height" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="setwidth">SetWidth ()<a class="headerlink" href="#setwidth" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setwidth-float-width">void SetWidth ( float Width )<a class="headerlink" href="#void-setwidth-float-width" title="Permanent link">⚓︎</a></h4>

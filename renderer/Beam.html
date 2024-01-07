@@ -6388,10 +6388,9 @@
 <h1 id="class-beam">Class "Beam"<a class="headerlink" href="#class-beam" title="Permanent link">⚓︎</a></h1>
 <p>This class provides more streamlined access to the <code>BeamRenderer</code> used internally for rendering cords, ie Evis, Gello, Vis Fatty, etc.
 Note that this is a low-level class that strictly handles rendering. We hope to later provide an extension of this class capable of handling the physics calculations and automatic point adjustment required for cords, but this is a complex system that will require a non-trivial amount of effort to implement.</p>
-<details class="warning" open="open">
-<summary>Warning</summary>
-<p>The params in this class, especially <code>UnkBool</code>, <code>Width</code>, and <code>Height</code>, are largely unknown and for now will require trial and error to effectively use.
-    These documents will be updated with the latest findings.</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>A better tutorial on how to use this class is pending.</p>
 </details>
 <h2 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Constructors" id="beam">Beam ()<a class="headerlink" href="#beam" title="Permanent link">⚓︎</a></h3>
@@ -6416,26 +6415,26 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 <span class="normal">10</span>
 <span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">Sprite</span><span class="p">()</span>
 <span class="n">sprite</span><span class="p">:</span><span class="n">Load</span><span class="p">(</span><span class="s2">&quot;gfx/893.000_ball and chain.anm2&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
-<span class="n">chain</span> <span class="o">=</span> <span class="n">Beam</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="s2">&quot;chain&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">chain</span> <span class="o">=</span> <span class="n">Beam</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="s2">&quot;chain&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
 
 <span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_PLAYER_RENDER</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
     <span class="n">chain</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">():</span><span class="n">PlayOverlay</span><span class="p">(</span><span class="s2">&quot;Chain&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">center</span> <span class="o">=</span> <span class="n">game</span><span class="p">:</span><span class="n">GetLevel</span><span class="p">():</span><span class="n">GetCurrentRoom</span><span class="p">():</span><span class="n">GetCenterPos</span><span class="p">()</span>
-    <span class="n">chain</span><span class="p">:</span><span class="n">Add</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">center</span><span class="p">))</span>
-    <span class="n">chain</span><span class="p">:</span><span class="n">Add</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Position</span><span class="p">))</span>
+    <span class="kd">local</span> <span class="n">center</span> <span class="o">=</span> <span class="n">Game</span><span class="p">():</span><span class="n">Room</span><span class="p">():</span><span class="n">GetCenterPos</span><span class="p">()</span>
+    <span class="n">chain</span><span class="p">:</span><span class="n">Add</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">center</span><span class="p">),</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">chain</span><span class="p">:</span><span class="n">Add</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Position</span><span class="p">),</span><span class="mi">64</span><span class="p">)</span>
     <span class="n">chain</span><span class="p">:</span><span class="n">Render</span><span class="p">()</span>
 <span class="kr">end</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="add">Add ()<a class="headerlink" href="#add" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-add-vector-position-float-height-float-width-10-color-pointcolor-default">void Add ( <a href="../Vector.html">Vector</a> Position, float Height, float Width = 1.0, <a href="../Color.html">Color</a> PointColor = Default )<a class="headerlink" href="#void-add-vector-position-float-height-float-width-10-color-pointcolor-default" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="void-add-vector-position-float-spritesheetcoordinate-float-width-10-color-pointcolor-default">void Add ( <a href="../Vector.html">Vector</a> Position, float SpritesheetCoordinate, float Width = 1.0, <a href="../Color.html">Color</a> PointColor = Default )<a class="headerlink" href="#void-add-vector-position-float-spritesheetcoordinate-float-width-10-color-pointcolor-default" title="Permanent link">⚓︎</a></h4>
 <h4 aria-label="Functions" class="copyable" id="void-add-point-point">void Add ( <a href="Point.html">Point</a> Point )<a class="headerlink" href="#void-add-point-point" title="Permanent link">⚓︎</a></h4>
 <p>Adds a point to the beam. Points are stored in order of adding.</p>
 <details class="info" open="open">
 <summary>Info</summary>
-<p><code>Height</code> is, to our current understanding, how much of the sprite will render, ie. a value of <code>10</code> would render the sprite up to <code>10</code> pixels vertically.
-<code>Width</code> determines how large the beam should be. A larger value will upscale the sprite. This is interpolated between points.</p>
+<p><code>SpritesheetCoordinate</code> is, to our current understanding, the <code>Y</code> position of the spritesheet that should be drawn by the time this Point is reached. For example, two points of <code>0</code> and <code>64</code> SpritesheetCoordinate will render the spritesheet starting from <code>y 0</code> to <code>y 64</code>, while an additional third point of <code>0</code> will draw it in reverse from <code>y 64</code> to <code>y 0</code>.
+<code>Width</code> acts as a multiplier for how wide the beam should be. A non-zero value will scale the spritesheet width accordingly. This is interpolated between points.</p>
 </details>
 <hr />
 <h3 aria-label="Functions" id="getlayer">GetLayer ()<a class="headerlink" href="#getlayer" title="Permanent link">⚓︎</a></h3>
