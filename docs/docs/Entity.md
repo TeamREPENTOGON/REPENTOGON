@@ -25,6 +25,9 @@ ___
 ### AddKnockback () {: aria-label='Functions' }
 #### void AddKnockback ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, [Vector](Vector.md) PushDirection, int Duration, boolean TakeImpactDamage ) {: .copyable aria-label='Functions' }
 
+???+ info "Duration info"
+    The Duration has a maximum of 0.5 seconds / 15 frames.
+
 ___
 ### AddMagnetized () {: aria-label='Functions' }
 #### void AddMagnetized ( [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int Duration ) {: .copyable aria-label='Functions' }
