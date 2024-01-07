@@ -114,6 +114,9 @@ luac.out
 *.zip
 *.tar.gz
 
+# Don't ignore docs zip files
+!*docs/docs/examples/zips/*.zip
+
 # Object files
 *.os
 
