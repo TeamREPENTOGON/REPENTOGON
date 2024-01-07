@@ -34,6 +34,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
+			ini["internal"]["UnifontRenderMode"] = "0";
 			iniFile.generate(ini, true);
 		}
 
@@ -45,7 +46,7 @@ struct REPENTOGONOptions {
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
-
+		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
 		printf("Loaded REPENTOGON INI\n");
 	}
 
@@ -66,6 +67,14 @@ struct REPENTOGONOptions {
 		return iniFile.write(ini);
 	}
 
+	bool Write(char* category, char* field, int value) {
+		mINI::INIFile iniFile(optionsPath);
+		char buff[128];
+		sprintf_s(buff, "%d", value);
+		ini[category][field] = buff;
+		return iniFile.write(ini);
+	}
+
 	void Save() {
 		Write("VanillaTweaks", "BetterVoidGeneration", betterVoidGeneration);
 		Write("VanillaTweaks", "HushPanicStateFix",    hushPanicStateFix);
@@ -73,6 +82,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
+		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 	}
 
 	mINI::INIStructure ini;
@@ -82,6 +92,7 @@ struct REPENTOGONOptions {
 	bool quickRoomClear;
 	bool preventModUpdates;
 	bool enableUnifont;
+	int unifontRenderMode;
 	std::string optionsPath;
 };
 

@@ -1,3 +1,8 @@
+v1.0.5 -
+Additions:
+* Added localization code support
+* Added settings to change unifont rendering size
+/newline/
 v1.0.4 - 
 Additions:
 * The error dialog now automatically gets dismissed the next time ImGui is opened

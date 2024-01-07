@@ -51,6 +51,11 @@ struct LogViewer : ImGuiWindowObject {
         autoscroll = true;
     }
 
+    void InitAfterLanguageAvaliable()
+    {
+        windowName = LANG.LOGV_WIN_NAME;
+    }
+
     void AddLog(const char* type, const char* fmt, ...) IM_FMTARGS(2)
     {
         std::stringstream ss(fmt);
@@ -158,19 +163,19 @@ struct LogViewer : ImGuiWindowObject {
             if (ImGui::BeginTable("LogViewer_Table", 2, ImGuiTableFlags_SizingStretchProp)) { // table layout makes it scale nicer
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
-                filter.Draw("Filter");
+                filter.Draw(LANG.LOGV_FILTER);
 
                 ImGui::TableSetColumnIndex(1);
                 if (ImGui::Button(ICON_FA_GEARS)) {
                     ImGui::OpenPopup("LogViewerPopup");
                 }
                 if (ImGui::BeginPopup("LogViewerPopup")) {
-                    ImGui::Checkbox("Pin Window", &pinned);
+                    ImGui::Checkbox(LANG.LOGV_PIN_WINDOW, &pinned);
                     ImGui::SameLine();
-                    HelpMarker("Pinning a window will keep it visible even after closing Dev Tools.");
-                    ImGui::Checkbox("Autoscroll", &autoscroll);
+                    HelpMarker(LANG.LOGV_PIN_WINDOW_HINT);
+                    ImGui::Checkbox(LANG.LOGV_AUTOSCROLL, &autoscroll);
 
-                    ImGui::SeparatorText("Show categories:");
+                    ImGui::SeparatorText(LANG.LOGV_SHOW_CATEGORIES);
                     ImGui::Checkbox("Game", &showGame);
                     ImGui::Checkbox("REPENTOGON", &showRepentogon);
                     ImGui::Checkbox("Console", &showConsole);
