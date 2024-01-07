@@ -3237,6 +3237,46 @@ HOOK_GRIDRENDER_CALLBACKS(GridEntity_Rock, lua::Metatables::GRID_ENTITY_ROCK, 14
 HOOK_GRIDRENDER_CALLBACKS(GridEntity_PressurePlate, lua::Metatables::GRID_ENTITY_PRESSURE_PLATE, 1460, 1461);
 HOOK_GRIDRENDER_CALLBACKS(GridEntity_Wall, lua::metatables::GridWallMT, 1462, 1463);
 
+struct GridRenderCallback {
+	GridEntityType type;
+	lua::Metatables vanilla_metatable;
+	const char* luabridge_metatable;
+	int precallback, postcallback;
+};
+
+struct GridRenderCallback callbacks[6] = {
+	{GRID_SPIKES, lua::Metatables::GRID_ENTITY_SPIKES, nullptr, 1432, 1433},
+	{GRID_SPIKES_ONOFF, lua::Metatables::GRID_ENTITY_SPIKES, nullptr, 1432, 1433},
+	{GRID_SPIDERWEB, lua::Metatables::GRID_ENTITY, lua::metatables::GridWebMT, 1434, 1435},
+	{GRID_TNT, lua::Metatables::GRID_ENTITY, lua::metatables::GridTNT_MT, 1436, 1437},
+	{GRID_TRAPDOOR, lua::Metatables::GRID_ENTITY, lua::metatables::GridTrapDoorMT, 1438, 1439},
+	{GRID_STAIRS, lua::Metatables::GRID_ENTITY, lua::metatables::GridStairsMT, 1440, 1441},
+};
+
+//PRE/POST_GRID_ENTITY_[x]_RENDER(1432-1441)
+HOOK_METHOD(GridEntity, Render, (Vector& offset) -> void) {
+	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
+	for (int i = 0; i < 6; i++) {
+		if (gridType == callbacks[i].type)
+		{
+			GridRenderInputs inputs = { this, offset };
+			if (callbacks[i].luabridge_metatable != nullptr) {
+				inputs.SetMetatable(callbacks[i].luabridge_metatable);
+			}
+			else
+			{
+				inputs.SetMetatable(callbacks[i].vanilla_metatable);
+			}
+			
+			HandleGridRenderCallbacks(inputs, callbacks[i].precallback, callbacks[i].postcallback, _GRIDRENDER_SUPER_LAMBDA());
+			return;
+		}
+	}
+
+	super(offset);
+
+}
+
 /////////////////////////////////////////////////
 
 //IS_PERSISTENT_ROOM_ENTITY (id: 1263)
