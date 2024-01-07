@@ -13592,6 +13592,10 @@ Accepts no return parameters.</p>
 <h3 id="mc_pre_room_grid_entity_spawn">MC_PRE_ROOM_GRID_ENTITY_SPAWN<a class="headerlink" href="#mc_pre_room_grid_entity_spawn" title="Permanent link">⚓︎</a></h3>
 <p>This is called during Room initiization when <a href="../GridEntity.html">GridEntities</a> from the layout are being spawned.</p>
 <p>Accepts <code>false</code> to cancel spawning the grid or a table of <code>{Type, Variant, Vardata, SpawnSeed}</code> to modify it.</p>
+<details class="warning" open="open">
+<summary>Warning</summary>
+<p>This does <em>not</em> fire for random decorations spawned by the game! Use <code>MC_PRE_GRID_ENTITY_SPAWN</code> for these.</p>
+</details>
 <table>
 <thead>
 <tr>
