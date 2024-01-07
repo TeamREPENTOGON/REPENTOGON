@@ -567,73 +567,90 @@ struct ConsoleMega : ImGuiWindowObject {
 
                         case STAGE: {
 
+                            StringTable * stringTable = g_Manager->GetStringTable();
+                            unsigned int language = stringTable->language;
+
+                            auto GetStr = [&](const char* key, const char* postfix = "") {
+                                char buff[256];
+                                uint32_t unk;
+                                const char* en = stringTable->GetString("Stages", 0, key, &unk);
+                                if (language) {
+                                    const char* tr = stringTable->GetString("Stages", language, key, &unk);
+                                    sprintf_s(buff, "%s%s %s%s", en, postfix, tr, postfix);
+                                }
+                                else {
+                                    sprintf_s(buff, "%s%s", en, postfix);
+                                }
+                                return std::string(buff);
+                            };
+
                             if (g_Game->IsGreedMode()) {
                                 entries = {
-                                    AutocompleteEntry("1", "Basement"),
-                                    AutocompleteEntry("1a", "Cellar"),
-                                    AutocompleteEntry("1b", "Burning Basement"),
-                                    AutocompleteEntry("2", "Caves"),
-                                    AutocompleteEntry("2a", "Catacombs"),
-                                    AutocompleteEntry("2b", "Flooded Caves"),
-                                    AutocompleteEntry("3", "Depths"),
-                                    AutocompleteEntry("3a", "Necropolis"),
-                                    AutocompleteEntry("3b", "Dank Depths"),
-                                    AutocompleteEntry("4", "Womb"),
-                                    AutocompleteEntry("4a", "Utero"),
-                                    AutocompleteEntry("4b", "Scarred Womb"),
-                                    AutocompleteEntry("5", "Sheol"),
-                                    AutocompleteEntry("6", "The Shop"),
-                                    AutocompleteEntry("7", "Ultra Greed")
+                                    AutocompleteEntry("1", GetStr("BASEMENT_NAME")),
+                                    AutocompleteEntry("1a", GetStr("CELLAR_NAME")),
+                                    AutocompleteEntry("1b", GetStr("BURNING_BASEMENT_NAME")),
+                                    AutocompleteEntry("2", GetStr("CAVES_NAME")),
+                                    AutocompleteEntry("2a", GetStr("CATACOMBS_NAME")),
+                                    AutocompleteEntry("2b", GetStr("FLOODED_CAVES_NAME")),
+                                    AutocompleteEntry("3", GetStr("DEPTHS_NAME")),
+                                    AutocompleteEntry("3a", GetStr("NECROPOLIS_NAME")),
+                                    AutocompleteEntry("3b", GetStr("DANK_DEPTHS_NAME")),
+                                    AutocompleteEntry("4", GetStr("WOMB_NAME")),
+                                    AutocompleteEntry("4a", GetStr("UTERO_NAME")),
+                                    AutocompleteEntry("4b", GetStr("SCARRED_WOMB_NAME")),
+                                    AutocompleteEntry("5", GetStr("SHEOL_NAME")),
+                                    AutocompleteEntry("6", GetStr("THE_SHOP_NAME")),
+                                    AutocompleteEntry("7", GetStr("ULTRA_GREED_NAME"))
                                 };
                             }
                             else {
                                 entries = {
-                                    AutocompleteEntry("1", "Basement I"),
-                                    AutocompleteEntry("1a", "Cellar I"),
-                                    AutocompleteEntry("1b", "Burning Basement I"),
-                                    AutocompleteEntry("1c", "Downpour I"),
-                                    AutocompleteEntry("1d", "Dross I"),
-                                    AutocompleteEntry("2", "Basement II"),
-                                    AutocompleteEntry("2a", "Cellar II"),
-                                    AutocompleteEntry("2b", "Burning Basement II"),
-                                    AutocompleteEntry("2c", "Downpour II"),
-                                    AutocompleteEntry("2d", "Dross II"),
-                                    AutocompleteEntry("3", "Caves I"),
-                                    AutocompleteEntry("3a", "Catacombs I"),
-                                    AutocompleteEntry("3b", "Flooded Caves I"),
-                                    AutocompleteEntry("3c", "Mines I"),
-                                    AutocompleteEntry("3d", "Ashpit I"),
-                                    AutocompleteEntry("4", "Caves II"),
-                                    AutocompleteEntry("4a", "Catacombs II"),
-                                    AutocompleteEntry("4b", "Flooded Caves II"),
-                                    AutocompleteEntry("4c", "Mines II"),
-                                    AutocompleteEntry("4d", "Ashpit II"),
-                                    AutocompleteEntry("5", "Depths I"),
-                                    AutocompleteEntry("5a", "Necropolis I"),
-                                    AutocompleteEntry("5b", "Dank Depths I"),
-                                    AutocompleteEntry("5c", "Mausoleum I"),
-                                    AutocompleteEntry("5d", "Gehenna I"),
-                                    AutocompleteEntry("6", "Depths II"),
-                                    AutocompleteEntry("6a", "Necropolis II"),
-                                    AutocompleteEntry("6b", "Dank Depths II"),
-                                    AutocompleteEntry("6c", "Mausoleum II"),
-                                    AutocompleteEntry("6d", "Gehenna II"),
-                                    AutocompleteEntry("7", "Womb I"),
-                                    AutocompleteEntry("7a", "Utero I"),
-                                    AutocompleteEntry("7b", "Scarred Womb I"),
-                                    AutocompleteEntry("7c", "Corpse I"),
-                                    AutocompleteEntry("8", "Womb II"),
-                                    AutocompleteEntry("8a", "Utero II"),
-                                    AutocompleteEntry("8b", "Scarred Womb II"),
-                                    AutocompleteEntry("8c", "Corpse II"),
-                                    AutocompleteEntry("9", "??? / Blue Womb"),
-                                    AutocompleteEntry("10", "Sheol"),
-                                    AutocompleteEntry("10a", "Cathedral"),
-                                    AutocompleteEntry("11", "Dark Room"),
-                                    AutocompleteEntry("11a", "Chest"),
-                                    AutocompleteEntry("12", "The Void"),
-                                    AutocompleteEntry("13", "Home (day)"),
-                                    AutocompleteEntry("13a", "Home (night)")
+                                    AutocompleteEntry("1", GetStr("BASEMENT_NAME", " I")),
+                                    AutocompleteEntry("1a", GetStr("CELLAR_NAME", " I")),
+                                    AutocompleteEntry("1b", GetStr("BURNING_BASEMENT_NAME", " I")),
+                                    AutocompleteEntry("1c", GetStr("DOWNPOUR_NAME", " I")),
+                                    AutocompleteEntry("1d", GetStr("DROSS_NAME", " I")),
+                                    AutocompleteEntry("2", GetStr("BASEMENT_NAME", " II")),
+                                    AutocompleteEntry("2a", GetStr("CELLAR_NAME", " II")),
+                                    AutocompleteEntry("2b", GetStr("BURNING_BASEMENT_NAME", " II")),
+                                    AutocompleteEntry("2c", GetStr("DOWNPOUR_NAME", " II")),
+                                    AutocompleteEntry("2d", GetStr("DROSS_NAME", " II")),
+                                    AutocompleteEntry("3", GetStr("CAVES_NAME", " I")),
+                                    AutocompleteEntry("3a", GetStr("CATACOMBS_NAME", " I")),
+                                    AutocompleteEntry("3b", GetStr("FLOODED_CAVES_NAME", " I")),
+                                    AutocompleteEntry("3c", GetStr("MINES_NAME", " I")),
+                                    AutocompleteEntry("3d", GetStr("ASHPIT_NAME", " I")),
+                                    AutocompleteEntry("4", GetStr("CAVES_NAME", " II")),
+                                    AutocompleteEntry("4a", GetStr("CATACOMBS_NAME", " II")),
+                                    AutocompleteEntry("4b", GetStr("FLOODED_CAVES_NAME", " II")),
+                                    AutocompleteEntry("4c", GetStr("MINES_NAME", " II")),
+                                    AutocompleteEntry("4d", GetStr("ASHPIT_NAME", " II")),
+                                    AutocompleteEntry("5", GetStr("DEPTHS_NAME", " I")),
+                                    AutocompleteEntry("5a", GetStr("NECROPOLIS_NAME", " I")),
+                                    AutocompleteEntry("5b", GetStr("DANK_DEPTHS_NAME", " I")),
+                                    AutocompleteEntry("5c", GetStr("MAUSOLEUM_NAME", " I")),
+                                    AutocompleteEntry("5d", GetStr("GEHENNA_NAME", " I")),
+                                    AutocompleteEntry("6", GetStr("DEPTHS_NAME", " II")),
+                                    AutocompleteEntry("6a", GetStr("NECROPOLIS_NAME", " II")),
+                                    AutocompleteEntry("6b", GetStr("DANK_DEPTHS_NAME", " II")),
+                                    AutocompleteEntry("6c", GetStr("MAUSOLEUM_NAME", " II")),
+                                    AutocompleteEntry("6d", GetStr("GEHENNA_NAME", " II")),
+                                    AutocompleteEntry("7", GetStr("WOMB_NAME", " I")),
+                                    AutocompleteEntry("7a", GetStr("UTERO_NAME", " I")),
+                                    AutocompleteEntry("7b", GetStr("SCARRED_WOMB_NAME", " I")),
+                                    AutocompleteEntry("7c", GetStr("CORPSE_NAME", " I")),
+                                    AutocompleteEntry("8", GetStr("WOMB_NAME", " II")),
+                                    AutocompleteEntry("8a", GetStr("UTERO_NAME", " II")),
+                                    AutocompleteEntry("8b", GetStr("SCARRED_WOMB_NAME", " II")),
+                                    AutocompleteEntry("8c", GetStr("CORPSE_NAME", " II")),
+                                    AutocompleteEntry("9", LANG.CONSOLE_STAGE_BLUE_WOMB),
+                                    AutocompleteEntry("10", GetStr("SHEOL_NAME")),
+                                    AutocompleteEntry("10a", GetStr("CATHEDRAL_NAME")),
+                                    AutocompleteEntry("11", GetStr("DARK_ROOM_NAME")),
+                                    AutocompleteEntry("11a", GetStr("CHEST_NAME")),
+                                    AutocompleteEntry("12", GetStr("THE_VOID_NAME")),
+                                    AutocompleteEntry("13", LANG.CONSOLE_STAGE_HOME_DAY),
+                                    AutocompleteEntry("13a", LANG.CONSOLE_STAGE_HOME_NIGHT)
                                 };
                             }
                             break;
@@ -768,20 +785,27 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                         case ITEM: {
-                            std::vector<std::pair<XMLNodes, std::string>> XMLPairs = {
-                                {XMLStuff.ItemData->nodes, "c"},
-                                {XMLStuff.TrinketData->nodes, "t"},
-                                {XMLStuff.CardData->nodes, "k"},
-                                {XMLStuff.PillData->nodes, "p"},
+                            std::vector<std::tuple<XMLNodes, std::string, const char *>> XMLPairs = {
+                                {XMLStuff.ItemData->nodes, "c", "Items"},
+                                {XMLStuff.TrinketData->nodes, "t", "Items"},
+                                {XMLStuff.CardData->nodes, "k", "PocketItems"},
+                                {XMLStuff.PillData->nodes, "p", "PocketItems"},
                             };
 
+                            StringTable * stringTable = g_Manager->GetStringTable();
+                            unsigned int language = stringTable->language;
                             for (auto& XMLPair : XMLPairs) {
-                                for (auto& node : XMLPair.first) {
+                                for (auto& node : std::get<0>(XMLPair)) {
                                     int id = node.first;
                                     if (id == 0) // dont display NULL item and trinket
                                       continue;
                                     std::string name = node.second["name"];
-                                    entries.insert(AutocompleteEntry(XMLPair.second + std::to_string(id), name));
+                                    auto& untranslated_name = node.second["untranslatedname"];
+                                    if (language && untranslated_name.length() != 0 && untranslated_name[0] == '#') {
+                                        uint32_t unk;
+                                        name = name + " " + stringTable->GetString(std::get<2>(XMLPair), language, untranslated_name.substr(1).c_str(), &unk);
+                                    }
+                                    entries.insert(AutocompleteEntry(std::get<1>(XMLPair)+ std::to_string(id), name));
                                 }
                             }
                             break;
