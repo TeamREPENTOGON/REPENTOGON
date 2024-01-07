@@ -171,7 +171,8 @@ Returns a key - value table containing all loaded script files, where the key is
 ___
 ### GetLocalizedString () {: aria-label='Functions' }
 #### string GetLocalizedString ( string Category, string Key, int Language ) {: .copyable aria-label='Functions' }
-Returns the translation string associated with the given key in the given category. The translation is given in the language ID given as parameter.
+#### string GetLocalizedString ( string Category, string Key, string LanguageCode ) {: .copyable aria-label='Functions' }
+Returns the translation string associated with the given key in the given category. The translation is given in the language ID/language code given as parameter.
 
 ___
 ### GetNullItemIdByName () {: aria-label='Functions' }
@@ -191,6 +192,12 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
 
 ___
+### IsInGame () {: aria-label='Functions' }
+#### boolean IsInGame ( ) {: .copyable aria-label='Functions' }
+Returns `true` if `Game` is non-nil and the current state is correct.
+
+___
+
 ### LevelGeneratorEntry () {: aria-label='Functions' }
 #### [LevelGeneratorEntry](LevelGeneratorEntry.md) LevelGeneratorEntry ( ) {: .copyable aria-label='Functions' }
 Creates a new blank [LevelGeneratorEntry](LevelGeneratorEntry.md) object.

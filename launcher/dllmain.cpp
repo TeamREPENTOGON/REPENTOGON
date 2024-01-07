@@ -7,6 +7,7 @@
 #include <vector>
 #include <time.h>
 #include "version.h"
+#include "Logger.h"
 
 #include <string>
 
@@ -120,6 +121,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 {
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
 	{
+		sLogger->SetOutputFile("dsound.log", "w", true);
+		sLogger->SetFlushOnLog(true);
+		sLogger->Info("Loaded REPENTOGON dsound.dll\n");
 		if (HasCommandLineArgument("-repentogonoff")) {
 			FILE* f = fopen("repentogon.log", "a");
 			if (f) {
@@ -130,6 +134,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			}
 			return TRUE;
 		}
+
+		sLogger->Info("dsound: Overriding Lua 5.3.3 with Lua 5.4\n");
 		DWORD redirectResult = RedirectLua(&luaHandle);
 		if (redirectResult == -1) {
 			if (luaHandle) {
@@ -137,18 +143,28 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 				luaHandle = NULL;
 			}
 
-			fprintf(stderr, "dsound: error while redirecting Lua calls, falling back to original Lua 5.3.3 DLL\n");
+			sLogger->Error("dsound: Error while redirecting Lua calls, falling back to original Lua 5.3.3 DLL\n");
 		}
+		else {
+			sLogger->Info("dsound: Successfully overriden Lua 5.3.3 with Lua 5.4\n");
+		}
+
 		// Prevents the module from being unloaded by the game
 		HMODULE hModule_Dupe;
 		GetModuleHandleEx(NULL, "dsound.dll", &hModule_Dupe);
 
 		// Initialize the console
-		if(HasCommandLineArgument("-console"))
+		if (HasCommandLineArgument("-console")) {
+			sLogger->Info("dsound: Initializing console window\n");
 			ConsoleWindow::Init();
+			sLogger->Info("dsound: Initialized console window\n");
+		}
 		
-		if(!HasCommandLineArgument("-skipupdates"))
+		if (!HasCommandLineArgument("-skipupdates")) {
+			sLogger->Info("dsound: Checking for updates\n");
 			CheckForUpdates();
+			sLogger->Info("dsound: Update checking done\n");
+		}
 
 		/*if(GetIsaacVersion() != ISAAC_REBIRTH)
 		{
@@ -161,6 +177,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		// Load all the mods
 		auto startTime = GetTickCount();
 
+		sLogger->Info("dsound: Loading ZHL mods\n");
 		WIN32_FIND_DATA findData;
 		HANDLE hFind = FindFirstFile("*", &findData);
 
@@ -179,15 +196,13 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 						if (!library)
 						{
 							DWORD error = GetLastError();
-							FILE* f = fopen("dsound.log", "a");
-							if (f)
-							{
-								fprintf(f, "[ERROR] Unable to open library %s (error = %d)\n", fileName, error);
-								fclose(f);
-							}
+							sLogger->Error("dsound: Unable to open library %s (error = %d)\n", fileName, error);
 						}
 						else
+						{
+							sLogger->Info("dsound: Loaded ZHL mod %s at %p\n", fileName, library);
 							mods.push_back(std::make_pair(fileName, library));
+						}
 						//printf("loaded mod %s\n", fileName);
 					}
 				}
@@ -195,20 +210,25 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			FindClose(hFind);
 		}
 
+		sLogger->Info("dsound: Initializing ZHL mods\n");
 		// Call all initialization functions once all the mods have been loaded
-		for(auto it = mods.begin() ; it != mods.end() ; ++it)
+		for (auto it = mods.begin() ; it != mods.end() ; ++it)
 		{
 			ModInitFunc init = (ModInitFunc)GetProcAddress(it->second, "ModInit");
-			if(init)
+			if (init)
+			{
+				sLogger->Debug("dsound: Located ModInit function of mod %s at %p\n", it->first.c_str(), init);
 				init(argc, argv);
+			}
 			else
-				printf("failed to find ModInit (%s, %p)\n", it->first.c_str(), it->second);
+				sLogger->Error("dsound: Failed to find ModInit in ZHL mod %s\n", it->first.c_str());
 		}
 
-		printf("Loaded all mods in %d msecs\n", GetTickCount() - startTime);
+		sLogger->Info("dsound: Loaded all ZHL mods in %d msecs\n", GetTickCount() - startTime);
 	}
 	else if(ul_reason_for_call == DLL_PROCESS_DETACH)
 	{
+		sLogger->Info("dsound: Unloading dsound.dll\n");
 		/* printf("unloading libs\n");
 		for(auto it = mods.begin() ; it != mods.end() ; ++it)
 		{
@@ -216,6 +236,15 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		} */
 		if (luaHandle) {
 			FreeLibrary(luaHandle);
+		}
+
+		FILE* f = fopen("repentogon.log", "a");
+		if (f) {
+			fprintf(f, "Unloading dsound.dll\n");
+			fclose(f);
+		}
+		else {
+			MessageBox(0, "Unloading dsound.dll", "Info", MB_ICONINFORMATION);
 		}
 	}
 

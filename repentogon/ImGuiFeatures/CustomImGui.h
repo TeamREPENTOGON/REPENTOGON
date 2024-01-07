@@ -156,7 +156,7 @@ struct ElementData : Data {
     float step = 1;
     float stepFast = 100;
     float speed = 1;
-    const char* formatting = "%.3f";
+    std::string formatting = "%.3f";
     std::list<ColorHandler>* colors = new std::list<ColorHandler>();
 
     const char* DefaultFloatNumberFormatting = "%.3f";
@@ -1113,19 +1113,19 @@ struct CustomImGui {
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::DragInt:
-                ImGui::DragInt(name, &data->currentIntVal, data->speed, (int)data->minVal, (int)data->maxVal, data->formatting);
+                ImGui::DragInt(name, &data->currentIntVal, data->speed, (int)data->minVal, (int)data->maxVal, data->formatting.c_str());
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::DragFloat:
-                ImGui::DragFloat(name, &data->currentFloatVal, data->speed, data->minVal, data->maxVal, data->formatting);
+                ImGui::DragFloat(name, &data->currentFloatVal, data->speed, data->minVal, data->maxVal, data->formatting.c_str());
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SliderInt:
-                ImGui::SliderInt(name, &(int&)data->currentIntVal, (int)data->minVal, (int)data->maxVal, data->formatting);
+                ImGui::SliderInt(name, &(int&)data->currentIntVal, (int)data->minVal, (int)data->maxVal, data->formatting.c_str());
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::SliderFloat:
-                ImGui::SliderFloat(name, &data->currentFloatVal, data->minVal, data->maxVal, data->formatting);
+                ImGui::SliderFloat(name, &data->currentFloatVal, data->minVal, data->maxVal, data->formatting.c_str());
                 RunCallbacks(&(*element));
                 break;
             case IMGUI_ELEMENT::ColorEdit:

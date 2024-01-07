@@ -216,6 +216,6 @@ target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp)
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_target_properties(freetype antlr4_shared imgui Lua5.4 stb stbc Zydis Zycore PROPERTIES FOLDER "External Libs")
+set_target_properties(freetype antlr4_shared imgui Lua5.4 stb stbc Zydis Zycore cryptopp libcurl_object libcurl_static curl_uninstall PROPERTIES FOLDER "External Libs")
 set_target_properties(libzhl zhlparser PROPERTIES FOLDER "libzhl")
 set_target_properties(dsound zhlDelirium zhlREPENTOGON PROPERTIES FOLDER "Repentogon")

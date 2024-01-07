@@ -2353,7 +2353,8 @@ AutocompleteType = {
 	DELIRIOUS = 14,
 	PLAYER = 15,
 	ACHIEVEMENT = 16,
-	CUSTOM = 17,
+	MODFOLDER = 17,
+	CUSTOM = 18,
 }
 
 AnimRenderFlags = { -- bitwise

@@ -183,6 +183,10 @@ Converts ImGui coordinates into World coordinates.
 ???+ bug "Bug"
     This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___
+### IsVisible () {: aria-label='Functions' }
+#### bool IsVisible ( ) {: .copyable aria-label='Functions' }
+Called when the player is actively in ImGui. This isn't triggered by "pinned" windows.
+___
 ### LinkWindowToElement () {: aria-label='Functions' }
 #### void LinkWindowToElement ( string WindowId, string ElementId ) {: .copyable aria-label='Functions' }
 Connects a Window or Popup element to another element, making said element act as a "toggle" for that window.

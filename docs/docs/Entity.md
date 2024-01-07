@@ -39,17 +39,13 @@ ___
 
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
-#### void CopyStatusEffects ( ) {: .copyable aria-label='Functions' }
-#### void CopyStatusEffects ( [Entity](Entity.md) Target ) {: .copyable aria-label='Functions' }
+#### void CopyStatusEffects ( boolean CopyColor = true ) {: .copyable aria-label='Functions' }
+#### void CopyStatusEffects ( [Entity](Entity.md) Target, boolean CopyColor = true ) {: .copyable aria-label='Functions' }
 If no Entity is specified, this will recursively copy status effects to all [Child](Entity.md#child) Entities.
 
 ___
 ### ForceCollide () {: aria-label='Functions' }
 #### boolean ForceCollide ( [Entity](Entity.md) Entity, boolean Low ) {: .copyable aria-label='Functions' }
-
-___
-### GetAnimationState () {: aria-label='Functions' }
-#### [AnimationState](AnimationState.md) GetAnimationState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetBossStatusEffectCooldown () {: aria-label='Functions' }
@@ -58,6 +54,11 @@ ___
 ___
 ### GetCollisionCapsule () {: aria-label='Functions' }
 #### [Capsule](Capsule.md) GetCollisionCapsule ( [Vector](Vector.md) Vector ) {: .copyable aria-label='Functions' }
+
+___
+### GetColorParams () {: aria-label='Functions' }
+#### [ColorParams](ColorParams.md)[] GetColorParams ( ) {: .copyable aria-label='Functions' }
+Returns a table of all colors currently queued by `SetColor` alongside their parameters.
 
 ___
 ### GetDebugShape () {: aria-label='Functions' }
@@ -88,10 +89,6 @@ ___
 ### GetNullOffset () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetNullOffset ( string NullLayerName ) {: .copyable aria-label='Functions' }
 Returns position of null layer mark. Alternatively returns Vector.Zero if the layer is not visible, has no frame available for the current animation, or for other unknown reasons.
-
-___
-### GetOverlayAnimationState () {: aria-label='Functions' }
-#### [AnimationState](AnimationState.md) GetOverlayAnimationState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPauseTime () {: aria-label='Functions' }
@@ -146,6 +143,11 @@ ___
 ___
 ### SetBossStatusEffectCooldown () {: aria-label='Functions' }
 #### void SetBossStatusEffectCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
+
+___
+### SetColorParams () {: aria-label='Functions' }
+#### void SetColorParams ( [ColorParams](ColorParams.md)[] Params ) {: .copyable aria-label='Functions' }
+Sets colors to be used alongside their parameters.
 
 ___
 ### SetDead () {: aria-label='Functions' }

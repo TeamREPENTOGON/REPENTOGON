@@ -269,13 +269,13 @@ __thiscall unsigned int Entity_Player::GetMaxPocketItems();
 __thiscall void Entity_Player::AddPocketItem(unsigned int slot, unsigned int itemID);
 
 "558bec568bf1e8????????8b0d":
-__thiscall void Entity_Player::AddBoneOrbital();
+__thiscall void Entity_Player::AddBoneOrbital(Vector* Position);
 
 "558bec83e4f883ec0c837d??005356578bd9":
 __thiscall unsigned int Entity_Player::AddItemCard(unsigned int itemID);
 
 "0fb781????????6683f803":
-__thiscall void Entity_Player::AddLeprocy();
+__thiscall void Entity_Player::AddLeprosy();
 
 "558bec83ec088b45??8d55??0381????????83f814":
 __thiscall void Entity_Player::AddUrnSouls(unsigned int amount);
@@ -524,7 +524,11 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 		
 		skip; // GetForwardVector
 		skip; // HandleCollision
-		skip; // ResetColor
+		
+		override
+		"558bec0f1081":
+		void ResetColor();
+		
 		skip; // LoadEntityConfig
     };
     

@@ -189,6 +189,7 @@ nav:
   - ChallengeParam: ChallengeParam.md
   - Color: Color.md
   - ColorModifier: ColorModifier.md
+  - ColorParams: ColorParams.md
   - Console: Console.md
   - CostumeSpriteDesc: CostumeSpriteDesc.md
   - DailyChallenge: DailyChallenge.md
@@ -312,7 +313,6 @@ nav:
     - AnimationData: AnimationData.md
     - AnimationFrame: AnimationFrame.md
     - AnimationLayer: AnimationLayer.md
-    - AnimationState: AnimationState.md
     - LayerState: LayerState.md
     - NullFrame: NullFrame.md
     - Sprite: Sprite.md
@@ -338,6 +338,8 @@ nav:
   - players.xml: xml/players.md
 # - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md
+- Example Mods:
+  - Capsules: examples/capsules.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
 - blog:

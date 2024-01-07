@@ -252,7 +252,7 @@ LUA_FUNCTION(Lua_ImGui_AddInputInteger)
 
 	createdElement->AddData(data);
 
-	if (lua_isfunction(L, 5)) {
+	if (lua_isfunction(L, 4)) {
 		customImGui.AddCallback(id, static_cast<int>(IMGUI_CALLBACK::Edited), stackID);
 	}
 	return 1;
@@ -978,6 +978,13 @@ LUA_FUNCTION(Lua_ImGui_SetWindowSize)
 	return 0;
 }
 
+extern bool menuShown;
+LUA_FUNCTION(Lua_ImGui_IsVisible)
+{
+	lua_pushboolean(L, menuShown);
+	return 1;
+}
+
 static void RegisterCustomImGui(lua_State* L)
 {
 	//lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetImGui", Lua_CustomImGui);
@@ -1033,6 +1040,7 @@ static void RegisterCustomImGui(lua_State* L)
 			lua::TableAssoc(L, "Reset", Lua_ImGui_Reset );
 			lua::TableAssoc(L, "Show", Lua_ImGui_Show );
 			lua::TableAssoc(L, "Hide", Lua_ImGui_Hide );
+			lua::TableAssoc(L, "IsVisible", Lua_ImGui_IsVisible);
 			//{ NULL, NULL }
 	//};
 	lua_setglobal(L, "ImGui");

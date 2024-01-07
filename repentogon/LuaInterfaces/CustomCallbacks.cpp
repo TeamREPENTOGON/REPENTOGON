@@ -1947,16 +1947,16 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(this->GetOverlayID())
+			.push(_overlayID)
 			//.push(this, lua::metatables::ItemOverlayMT)
-			.push(this->GetOverlayID())
+			.push(_overlayID)
 			.push(unk)
 			.call(1);
 	}
 }
 
 //PRE/POST_ITEM_OVERLAY_SHOW (id: 1076, 1134)
-HOOK_METHOD(ItemOverlay, Show, (int overlayID, int delay, Entity_Player* player) -> void) {
+HOOK_METHOD_PRIORITY(ItemOverlay, Show, -100, (int overlayID, int delay, Entity_Player* player) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	const int callbackid1 = 1076;
 	if (CallbackState.test(callbackid1 - 1000)) {
@@ -2083,8 +2083,8 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int unk) -> void, __stdcall) {
 }
 
 //POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1079)
-HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk) -> void) {
-	super(slot,pos, alpha, unk);
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk, float size) -> void) {
+	super(slot,pos, alpha, unk, size);
 
 	const int callbackid = 1079;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -2098,6 +2098,7 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 			.push(slot)
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
 			.push(alpha)
+			.push(size)
 			.call(1);
 	}
 }
@@ -2590,18 +2591,51 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 			return;
 		}
 		else {
-			lua_rawgeti(L, -1, 1);
-			int level = (int)lua_tointeger(L, -1);
-			lua_pop(L, 1);
+			if (resTop == startTop + 1) {
+				lua_len(L, -1);
+				int len = lua_tointeger(L, -1);
+				lua_pop(L, 1);
 
-			lua_rawgeti(L, -1, 2);
-			int type = (int)lua_tointeger(L, -1);
-			lua_pop(L, 1);
+				if (len != 2) {
+					logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid return value, table contains %d elements, expected 2\n", len);
+					goto error;
+				}
 
-			logViewer.AddLog("[REPENTOGON]", "MC_PRE_SELECT_LEVEL %d %d", level, type);
-			super(level, type);
-			return;
+				lua_rawgeti(L, -1, 1);
+				int level = lua_tointeger(L, -1);
+				lua_pop(L, 1);
+				if (g_Game->IsGreedMode()) {
+					if (level < 1 || level > 7) {
+						logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 7] (detected greed(ier) mode)\n", level);
+						goto error;
+					}
+				}
+				else {
+					if (level < 1 || level > 14) {
+						logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 14] (detected normal/hard mode)\n", level);
+						goto error;
+					}
+				}
+
+				lua_rawgeti(L, -1, 2);
+				int type = (int)lua_tointeger(L, -1);
+				lua_pop(L, 1);
+				if (type < 0 || type == 3 || type > 5) {
+					logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid stage type, received value %d, expected 0, 1, 2, 4 or 5\n", type);
+					goto error;
+				}
+
+				super(level, type);
+				return;
+			}
+			else {
+				logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid number of return values, got %d, expected 1\n", resTop - startTop);
+				goto error;
+			}
 		}
+
+	error:
+		super(levelType, stageType);
 	}
 	else {
 		super(levelType, stageType);
@@ -3501,12 +3535,16 @@ bool DoGridPreRenderCallback(GridEntity* grid, Vector& offset, lua::Metatables m
 
 	return true;
 }
+
 //PRE/POST_GRID_ENTITY_[x]_RENDER(1432-1441)
 HOOK_METHOD(GridEntity, Render, (Vector& offset) -> void) {
 	int preCallbackId, postCallbackId;
 	GridEntityType gridType = (GridEntityType)this->GetDesc()->_type;
 	if (gridRenderCallbacks[gridType].id == NULL)
+	{
+		super(offset);
 		return;
+	}
 
 	preCallbackId = gridRenderCallbacks[gridType].id;
 	postCallbackId = preCallbackId + 1;

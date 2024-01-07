@@ -293,7 +293,7 @@ LUA_FUNCTION(Lua_PlayCutscene) {
 	int text = (int)luaL_checknumber(L, 1);
 	string out;
 	g_Game->GetConsole()->RunCommand("cutscene " + to_string(text), &out, NULL);
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_GetCutsceneByName) {
@@ -426,7 +426,7 @@ LUA_FUNCTION(Lua_IsaacFindInCapsule)
 LUA_FUNCTION(Lua_TriggerWindowResize)
 {
 	g_Manager->ResizeWindow(g_WindowSizeX, g_WindowSizeY);
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_CenterCursor)
@@ -447,6 +447,12 @@ LUA_FUNCTION(Lua_CenterCursor)
 	if (activeProcessId == currentProcessId) { //so it doesnt do it if Isaac is not the active win
 		SetCursorPos(clientCenter.x, clientCenter.y);
 	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_IsInGame) {
+	lua_pushboolean(L, Isaac::IsInGame());
+
 	return 1;
 }
 
@@ -484,6 +490,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindInCapsule", Lua_IsaacFindInCapsule);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "TriggerWindowResize", Lua_TriggerWindowResize);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CenterCursor", Lua_CenterCursor);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsInGame", Lua_IsInGame);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

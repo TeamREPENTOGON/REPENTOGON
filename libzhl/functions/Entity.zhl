@@ -125,7 +125,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     unsigned int _shadowSize : 0x150; //0x150   
 	unsigned int _flags[2] : 0x160;
     bool _dead : 0x168; 
-    bool _visible : 0x169; // 0x169 
+    bool _visible : 0x169; // 0x169
+	vector_ColorParams _colorParams : 0x1a4;
 	int _fireDamageCountdown : 0x208;
 	int _damageCountdown : 0x20c;
 	int _freezeCountdown : 0x210;
@@ -200,7 +201,10 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		
 		skip; // GetForwardVector
 		skip; // HandleCollision
-		skip; // ResetColor
+		
+		"8d81????????81c1e4000000":
+		void ResetColor();
+		
 		skip; // LoadEntityConfig
     };
 } : 0x360;

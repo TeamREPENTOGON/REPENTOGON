@@ -93,10 +93,13 @@ static bool Game::IsGreedFinalBoss();
 "8b81????????83f80274??83f80374??32c0c3":
 __thiscall bool Game::IsGreedMode();
 
+"558bec8b45??538b1d":
+__thiscall void Game::End(int EndingID);
+
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard) { {{
 	Game()
 	{
 		this->constructor();
@@ -213,6 +216,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
     Console _console : 0x1bb60; // 0x1BB60
     ItemOverlay _itemOverlay : 0x1bcc0; // 0x1BCC0
+	Leaderboard _leaderboard : 0x3d5f0; // 0x3d5f0
 	int _frameCount : 0x1a30dc; // 0x1a30dc
     int _treasureRoomsVisited : 0x1c3178; // 0x1C3178
     int _planetariumsVisited : 0x1c317c; // 0x1C317C

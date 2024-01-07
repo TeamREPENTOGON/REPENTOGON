@@ -3,6 +3,7 @@
 #include "LuaCore.h"
 #include "../LuaInterfaces/Entities/EntityNPC.h"
 #include "../LuaInterfaces/Entities/EntityPlayer.h"
+#include "../LuaInterfaces/Room/Room.h"
 #include "../LuaInterfaces/LuaRender.h"
 #include "XMLData.h"
 #include "ModReloading.h"
@@ -403,6 +404,12 @@ void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlaye
 		int damageHearts = isPlayer ? *(int*)(ebp - 0x100) : 0;
 		EntityRef* source = *(EntityRef**)(ebp + 0x14);
 		int damageCountdown = *(int*)(ebp + 0x18);
+
+		if (isPlayer && source->_type == 33 && source->_variant == 4) {
+			// The white fireplace is a unique case where the game considers the player to have taken "damage"
+			// but no on-damage effets are triggered. Don't run the post-damage callback in this case.
+			return;
+		}
 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -1103,13 +1110,28 @@ void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxR
 }
 
 // Condensed that works for majority of cases
-void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, unsigned int jumpOffset, GridEntityType type, unsigned int variant) {
+void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, int jumpOffset, GridEntityType type, unsigned int variant) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(0) // vardata
 		.Push(ASMPatch::Registers::EAX) // seed
 		.Push((int32_t)variant) // variant
+		.Push((int32_t)type) // type
+		.Push(idxReg) // idx
+		.AddInternalCall(SpawnGridEntityTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + jumpOffset);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchInlinedSpawnGridEntity_Generic(void* addr, ASMPatch::Registers idxReg, int jumpOffset, GridEntityType type, ASMPatch::Registers varReg, int varJumpOffset) {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(0) // vardata
+		.Push(ASMPatch::Registers::EAX) // seed
+		.Push(varReg, varJumpOffset) // variant
 		.Push((int32_t)type) // type
 		.Push(idxReg) // idx
 		.AddInternalCall(SpawnGridEntityTrampoline)
@@ -1210,7 +1232,7 @@ void PatchInlinedSpawnGridEntity()
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[14], ASMPatch::Registers::EDI, 0xa9, GRID_DECORATION, 10); // make_wall (crawlspace ladder)
 	ASMPatchInlinedSpawnGridEntity_Generic(addrs[15], ASMPatch::Registers::EDI, 0xa9, GRID_GRAVITY, 0); // make_wall (crawlspace gravity)
 	// Possibly will need another, unique patch for the default case of spawning a wall, idk if it's worth it
-	ASMPatchInlinedSpawnGridEntity_Generic(addrs[16], ASMPatch::Registers::EDI, 0xe1, GRID_POOP, 0); // card against humanity
+	ASMPatchInlinedSpawnGridEntity_Generic(addrs[16], ASMPatch::Registers::EDI, 0xe1, GRID_POOP, ASMPatch::Registers::EBP, -0x14); // card against humanity
 
 	// This needs special handling bc the code loads g_Game back into EAX near the end of the inline
 	//ASMPatchInlinedSpawnGridEntity_Generic(addrs[17], ASMPatch::Registers::EDI, 0xd5, GRID_DECORATION, 1000); // PickupGridEntity
@@ -1317,7 +1339,7 @@ void ASMPatchDamage() {
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&damagePtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 		.AddBytes("\xF3\x0F\x58\x06") // addss xmm0, dword ptr [esi]
 		.AddBytes("\xF3\x0F\x11\x06") // movss dword ptr [esi], xmm0
-		.AddBytes("\x83\xFA\x09") // cmp edx, 0x9
+		.AddBytes("\x83\xF9\x09") // cmp this, 0x9
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x14) // jz isaac-ng.XXXXXXXX
 		.AddRelativeJump((char*)addr + 0x5);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
@@ -1336,7 +1358,7 @@ void ASMPatchRange() {
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&rangePtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 		.AddBytes("\xF3\x0F\x58\x87\xC8\x13").AddZeroes(2) // addss xmm0, dword ptr [edi + 0x13c8]
 		.AddBytes("\xF3\x0F\x11\x87\xC8\x13").AddZeroes(2) // movss dword ptr [edi + 0x13c8], xmm0
-		.AddBytes("\x83\xFA\x09") // cmp edx, 0x9
+		.AddBytes("\x83\xF8\x09") // cmp eax, 0x9
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x48) // jz isaac-ng.XXXXXXXX
 		.AddRelativeJump((char*)addr + 0x5);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
@@ -1354,7 +1376,7 @@ void ASMPatchShotSpeed() {
 	patch.AddBytes("\xF3\x0F\x10\x05").AddBytes(ByteBuffer().AddAny((char*)&shotSpeedPtr, 4)) // movss xmm0, dword ptr ds:[0xXXXXXXXX]
 		.AddBytes("\xF3\x0F\x58\x07") // addss xmm0, dword ptr [edi]
 		.AddBytes("\xF3\x0F\x11\x07") // movss dword ptr [edi], xmm0
-		.AddBytes("\x83\xFA\x09") // cmp edx, 0x9
+		.AddBytes("\x83\xF9\x09") // cmp this, 0x9
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x30) // jz isaac-ng.XXXXXXXX
 		.AddRelativeJump((char*)addr + 0x5);  // jmp isaac-ng.XXXXXXXX
 	sASMPatcher.PatchAt(addr, &patch);
@@ -1382,6 +1404,31 @@ void ASMPatchPlayerStats() {
 	ASMPatchRange();
 	ASMPatchShotSpeed();
 	ASMPatchLuck();
+}
+
+bool __stdcall DoSpecialQuestDoorCheck(Game* game) {
+	bool ret = roomASM.ForceSpecialQuestDoor || (game->_stageType == 4 || game->_stageType == 5);
+	roomASM.ForceSpecialQuestDoor = false;
+	return ret;
+}
+
+void ASMPatchTrySpawnSpecialQuestDoor() {
+	
+	SigScan scanner("83f90474??83f9050f85????????83fb02");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Patching TrySpawnSpecialQuestDoor at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX) // Game
+		.AddInternalCall(DoSpecialQuestDoorCheck)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0xe)
+		.AddRelativeJump((char*)addr + 0xb7);
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 //////////////////////////////////////////////
@@ -1448,6 +1495,7 @@ void PerformASMPatches() {
 	PatchGridCallbackShit();
 	ASMPatchInputAction();
 	ASMPatchPlayerStats();
+	ASMPatchTrySpawnSpecialQuestDoor();
 	ASMPatchPostNightmareSceneCallback();
 	delirium::AddTransformationCallback();
 	delirium::AddPostTransformationCallback();

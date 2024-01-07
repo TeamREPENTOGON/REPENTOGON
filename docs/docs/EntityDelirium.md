@@ -12,7 +12,7 @@ Return the number of frames before Delirium teleports.
     
 ___
 ### IsRedMode () {: aria-label='Functions' }
-#### bool IsRedMode ( ) {: .copyable aria-label='Functions' }
+#### boolean IsRedMode ( ) {: .copyable aria-label='Functions' }
 Returns a boolean indicating if the red mode is activated or not.
 
 ???+ info "About red mode"

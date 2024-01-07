@@ -195,6 +195,25 @@ LUA_FUNCTION(Lua_MenuSetColorModifier)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_MenuGetViewPosition)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
+	MenuManager* menuManager = g_MenuManager;
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = menuManager->_ViewPosition;
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_MenuSetViewPosition)
+{
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
+	MenuManager* menuManager = g_MenuManager;
+	menuManager->_ViewPosition = *lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+
+	return 0;
+}
+
 static void RegisterMenuManager(lua_State* L)
 {
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "WorldToMenuPosition", Lua_WorldToMenuPosition);
@@ -210,6 +229,9 @@ static void RegisterMenuManager(lua_State* L)
 	lua::TableAssoc(L, "GetTargetColorModifier", Lua_MenuGetTargetColorModifier);
 	lua::TableAssoc(L, "GetColorModifierLerpAmount", Lua_MenuGetLerpColorModifier);
 	lua::TableAssoc(L, "SetColorModifier", Lua_MenuSetColorModifier);
+
+	lua::TableAssoc(L, "GetViewPosition", Lua_MenuGetViewPosition);
+	lua::TableAssoc(L, "SetViewPosition", Lua_MenuSetViewPosition);
 
 	lua_setglobal(L, lua::metatables::MenuManagerMT);
 }
