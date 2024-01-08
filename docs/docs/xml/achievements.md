@@ -17,6 +17,7 @@ The following custom attributes can be defined for achievements in the achieveme
 
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
+|name|string|used for the GetXByName functions (when this is not present, text is used instead)|
 |gfxback|string|path of the png sprite to use as a background paper for the achievement|
 
 ???+ note "More Info"
