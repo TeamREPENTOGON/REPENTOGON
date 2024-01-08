@@ -184,7 +184,7 @@ Converts ImGui coordinates into World coordinates.
     This function does not work correctly when the game's scale factor exceeds MaxRenderScale.
 ___
 ### IsVisible () {: aria-label='Functions' }
-#### bool IsVisible ( ) {: .copyable aria-label='Functions' }
+#### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 Called when the player is actively in ImGui. This isn't triggered by "pinned" windows.
 ___
 ### LinkWindowToElement () {: aria-label='Functions' }

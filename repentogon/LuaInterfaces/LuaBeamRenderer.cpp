@@ -63,12 +63,12 @@ LUA_FUNCTION(Lua_CreateBeamDummy) {
 }
 
 void ConstructPoint(lua_State* L, Point& point, uint8_t offset) {
-	point._pos = *lua::GetUserdata<Vector*>(L, 1+offset, lua::Metatables::VECTOR, "Vector");
-	point._height = (float)luaL_checknumber(L, 2+offset);
-	point._width = (float)luaL_optnumber(L, 3+offset, 1.0f);
+	point._pos = *lua::GetUserdata<Vector*>(L, offset, lua::Metatables::VECTOR, "Vector");
+	point._spritesheetCoordinate = (float)luaL_checknumber(L, offset+1);
+	point._width = (float)luaL_optnumber(L,	offset+2, 1.0f);
 	ColorMod color;
-	if (lua_type(L, 4+offset) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 4+offset, lua::Metatables::COLOR, "Color");
+	if (lua_type(L, offset+3) == LUA_TUSERDATA) {
+		color = *lua::GetUserdata<ColorMod*>(L, offset+3, lua::Metatables::COLOR, "Color");
 	}
 	point._color = color;
 }
@@ -77,11 +77,11 @@ LUA_FUNCTION(Lua_BeamAdd) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	Point point;
 	if (lua_gettop(L) == 2) {
-		point = *lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+		point = *lua::GetUserdata<Point*>(L, 2, lua::metatables::PointMT);
 	}
 	else
 	{
-		ConstructPoint(L, point, 1);
+		ConstructPoint(L, point, 2);
 	}
 	beam->_points.push_back(point);
 
@@ -117,7 +117,7 @@ LUA_FUNCTION(Lua_BeamRender) {
 	g_BeamRenderer->Begin(beam->GetANM2(), beam->_layer, beam->_useOverlayData, beam->_unkBool);
 
 	for (auto it = beam->_points.begin(); it != beam->_points.end(); ++it) {
-		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_height, it->_width);
+		g_BeamRenderer->Add(&it->_pos, &it->_color, it->_width, it->_spritesheetCoordinate);
 	}
 
 	g_BeamRenderer->End();
@@ -248,9 +248,9 @@ LUA_FUNCTION(Lua_BeamSetPoints) {
 	size_t length = (size_t)lua_rawlen(L, 2);
 
 	// if the table is empty, we should pass default item
-	if (length == 0)
+	if (length < 2)
 	{
-		beam->_points.clear();
+		return luaL_argerror(L, 2, "Must have at least two points");
 	}
 	else
 	{
@@ -270,7 +270,7 @@ LUA_FUNCTION(Lua_BeamSetPoints) {
 
 LUA_FUNCTION(Lua_PointConstructor) {
 	Point point;
-	ConstructPoint(L, point, 0);
+	ConstructPoint(L, point, 1);
 
 	Point* toLua = lua::place<Point>(L, lua::metatables::PointMT);
 	*toLua = point;
@@ -279,15 +279,15 @@ LUA_FUNCTION(Lua_PointConstructor) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PointGetHeight) {
+LUA_FUNCTION(Lua_PointGetSpritesheetCoordinate) {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	lua_pushnumber(L, point->_height);
+	lua_pushnumber(L, point->_spritesheetCoordinate);
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PointSetHeight) {
+LUA_FUNCTION(Lua_PointSetSpritesheetCoordinate) {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
-	point->_height = (float)luaL_checknumber(L, 2);
+	point->_spritesheetCoordinate = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -349,8 +349,10 @@ static void RegisterBeamRenderer(lua_State* L) {
 	lua_register(L, lua::metatables::BeamMT, Lua_CreateBeamDummy);
 
 	luaL_Reg pointFunctions[] = {
-		{ "GetHeight", Lua_PointGetHeight},
-		{ "SetHeight", Lua_PointSetHeight},
+		{ "GetSpritesheetCoordinate", Lua_PointGetSpritesheetCoordinate},
+		{ "SetSpritesheetCoordinate", Lua_PointSetSpritesheetCoordinate},
+		{ "GetHeight", Lua_PointGetSpritesheetCoordinate}, // deprecated
+		{ "SetHeight", Lua_PointSetSpritesheetCoordinate}, // deprecated
 		{ "GetWidth", Lua_PointGetWidth},
 		{ "SetWidth", Lua_PointSetWidth},
 		{ "GetPosition", Lua_PointGetPosition},

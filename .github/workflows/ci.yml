@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   schedule:
   - cron: "0 0 * * *"
+  pull_request:
+    branches:
+      - main
 
 env:
   BUILD_TYPE: Release
@@ -46,7 +49,9 @@ jobs:
         mkdir artifact
         mv resources artifact
         mv resources-repentogon artifact
-        mv dsound.dll artifact
+        if (Test-Path dsound.dll) { mv dsound.dll artifact }
+        if (Test-Path launcher.dll) { mv launcher.dll artifact }
+        if (Test-Path injector.exe) { mv injector.exe artifact }
         mv libzhl.dll artifact
         mv zhlREPENTOGON.dll artifact
         mv Lua5.4.dll artifact

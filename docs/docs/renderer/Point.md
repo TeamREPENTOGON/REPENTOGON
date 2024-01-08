@@ -8,7 +8,11 @@ Used for [Beam](Beam.md).
 
 ## Constructors
 ### Beam () {: aria-label='Constructors' }
-#### [Point](Point.md) Point ( [Vector](../Vector.md) float Height, float Width = 1.0, [Color](../Color.md) Color = Default ) {: .copyable aria-label='Constructors' }
+#### [Point](Point.md) Point ( [Vector](../Vector.md) Position, float SpritesheetCoordinate, float Width = 1.0, [Color](../Color.md) PointColor = Default ) {: .copyable aria-label='Constructors' }
+
+???+ info "Info"
+    `SpritesheetCoordinate` is, to our current understanding, the `Y` position of the spritesheet that should be drawn by the time this Point is reached. For example, two points of `0` and `64` SpritesheetCoordinate will render the spritesheet starting from `y 0` to `y 64`, while an additional third point of `0` will draw it in reverse from `y 64` to `y 0`.
+	`Width` acts as a multiplier for how wide the beam should be. A non-zero value will scale the spritesheet width accordingly. This is interpolated between points.
 
 ___
 
@@ -18,8 +22,8 @@ ___
 #### [Color](..Color.md) GetColor ( ) {: .copyable aria-label='Functions' }   
 
 ___
-### GetHeight () {: aria-label='Functions' }
-#### float GetHeight ( ) {: .copyable aria-label='Functions' }   
+### GetSpritesheetCoordinate  () {: aria-label='Functions' }
+#### float GetSpritesheetCoordinate ( ) {: .copyable aria-label='Functions' }   
 
 ___
 ### GetWidth () {: aria-label='Functions' }
@@ -31,11 +35,11 @@ ___
 
 ___
 ### SetColor () {: aria-label='Functions' }
-#### void SetColor ( [Color](..Color.md) Color ) {: .copyable aria-label='Functions' }   
+#### void SetColor ( [Color](..Color.md) PointColor ) {: .copyable aria-label='Functions' }   
 
 ___
-### SetHeight () {: aria-label='Functions' }
-#### void SetHeight ( float Height ) {: .copyable aria-label='Functions' }   
+### SetSpritesheetCoordinate () {: aria-label='Functions' }
+#### void SetSpritesheetCoordinate ( float Height ) {: .copyable aria-label='Functions' }   
 
 ___
 ### SetWidth () {: aria-label='Functions' }

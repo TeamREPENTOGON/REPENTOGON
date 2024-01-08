@@ -227,8 +227,8 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
 
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
     if (CallbackState.test(1110 - 1000)) {
+
         lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-        lua_remove(L, lua_absindex(L, -2));
 
         lua::LuaResults preApplyStageResult = lua::LuaCaller(L).push(1110)
             .call(1);
@@ -249,7 +249,6 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
     if (CallbackState.test(1111 - 1000)) {
         lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-        lua_remove(L, lua_absindex(L, -2));
 
         lua::LuaResults preApplyPlanetariumResult = lua::LuaCaller(L).push(1111)
             .call(1);
@@ -267,7 +266,6 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
         if (CallbackState.test(1112 - 1000)) {
             lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-            lua_remove(L, lua_absindex(L, -2));
 
             lua::LuaResults preApplyTreasureResult = lua::LuaCaller(L).push(1112)
                 .push(treasureRoomsVisited)

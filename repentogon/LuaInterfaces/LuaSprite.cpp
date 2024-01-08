@@ -199,7 +199,6 @@ LUA_FUNCTION(Lua_LayerStateSetVisible)
 	return 0;
 }
 
-
 LUA_FUNCTION(Lua_LayerStateGetSize)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
@@ -307,6 +306,38 @@ LUA_FUNCTION(Lua_LayerStateGetBlendMode) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_LayerStateGetWrapSMode)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	lua_pushinteger(L, layerState->_wrapSMode);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	lua_pushinteger(L, layerState->_wrapTMode);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	layerState->_wrapSMode = luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateSetWrapTMode)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	layerState->_wrapTMode = luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 static void RegisterSpriteFuncs(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetLayer", Lua_SpriteGetLayer},
@@ -347,6 +378,10 @@ static void RegisterLayerState(lua_State* L) {
 		{ "GetRenderFlags", Lua_LayerStateGetRenderFlags},
 		{ "SetRenderFlags", Lua_LayerStateSetRenderFlags},
 		{ "GetBlendMode", Lua_LayerStateGetBlendMode},
+		{ "GetWrapSMode", Lua_LayerStateGetWrapSMode},
+		{ "SetWrapSMode", Lua_LayerStateSetWrapSMode},
+		{ "GetWrapTMode", Lua_LayerStateGetWrapTMode},
+		{ "SetWrapTMode", Lua_LayerStateSetWrapTMode},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::LayerStateMT, lua::metatables::LayerStateMT, functions);

@@ -166,19 +166,38 @@ static void FixLuaDump()
 MOD_EXPORT int ModInit(int argc, char** argv)
 {
 	ZHL::ClearLogFile();
+	ZHL::Logger logger(true);
+	logger.Log("REPENTOGON: ModInit\n");
 
+	logger.Log("REPENTOGON: Initializing options\n");
 	repentogonOptions.Init();
+	logger.Log("REPENTOGON: Initialized options\n");
 
 	REPENTOGON::UpdateProgressDisplay("Perform ASMPatches");
+	logger.Log("REPENTOGON: Performing ASM patches\n");
 	PerformASMPatches();
+	logger.Log("REPENTOGON: Done performing ASM patches\n");
 
 	REPENTOGON::UpdateProgressDisplay("Initialize Shaders");
-	LuaRender::InitShaders();
 
+	logger.Log("REPENTOGON: Initializing shaders\n");
+	LuaRender::InitShaders();
+	logger.Log("REPENTOGON: Initialized shaders\n");
+
+	logger.Log("REPENTOGON: Initializing ZHL definitions\n");
 	Definition::Init();
+	logger.Log("REPENTOGON: Initialized ZHL definitions\n");
+
+	logger.Log("REPENTOGON: Installing ZHL hooks\n");
 	ZHL::Init();
+	logger.Log("REPENTOGON: Installed ZHL hooks\n");
+
 	printf(":REPENTOGON:\n");
+
+	logger.Log("REPENTOGON: Fixing LuaDump for Lua 5.4\n");
 	FixLuaDump();
+	logger.Log("REPENTOGON: Fixed LuaDump for Lua 5.4\n");
 	REPENTOGON::UpdateProgressDisplay("ModInit done");
 	return 0;
 }
+

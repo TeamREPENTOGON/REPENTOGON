@@ -57,3 +57,6 @@ LibZHL is licensed under the MIT license. All contents in the `libzhl` and `libz
 * `libzhl/IsaacRepentance_static.cpp`
 
 Folders in the `libs` folder are *external dependencies* and have their own licensing information. Check those folder (or, in the case of submodules, their respective dependencies) for further information.
+
+# Privacy Notice
+REPENTOGON does not collect or transmit any user data without explicit consent. We have an opt-in update mechanism that will transmit the user's IP address to GitHub on launch to determine if there is a new version available, but otherwise, absolutely zero data is processed or stored.

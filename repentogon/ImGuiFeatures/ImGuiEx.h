@@ -1,5 +1,6 @@
 #pragma once
 #include <imgui_internal.h>
+#include "Lang.h"
 
 struct CustomImGuiWindowSettings : ImGuiWindowSettings {
 	std::string Name = "";
@@ -46,11 +47,11 @@ struct ImGuiWindowObject {
 	{
 		if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
 		{
-			if (ImGui::MenuItem("Pin Window", NULL, &pinned))
+			if (ImGui::MenuItem(LANG.IMGUI_WIN_CTX_MENU_PIN_WINDOW, NULL, &pinned))
 				SetIsDirty();
 			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) && ImGui::BeginTooltip()) {
 				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-				ImGui::TextUnformatted("Pinning a window will keep it visible even after closing Dev Tools.");
+				ImGui::TextUnformatted(LANG.IMGUI_WIN_CTX_MENU_PIN_WINDOW_DESC);
 				ImGui::PopTextWrapPos();
 				ImGui::EndTooltip();
 			}

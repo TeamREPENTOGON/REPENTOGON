@@ -3,10 +3,10 @@ __thiscall void Point::UpdateNormal(Vector* unk);
 
 struct Point depends (Vector, ColorMod) {
 	{{
-		Point() : _pos(Vector()), _height(100.f), _width(1.f), _color(ColorMod()) {}
-		Point(Vector const& pos, float height, float width, ColorMod const& color) : _pos(pos), _height(height), _width(width), _color(color) {}
+		Point() : _pos(Vector()), _spritesheetCoordinate(0.0f), _width(1.0f), _color(ColorMod()) {}
+		Point(Vector const& pos, float spritesheetCoordinate, float width, ColorMod const& color) : _pos(pos), _spritesheetCoordinate(spritesheetCoordinate), _width(width), _color(color) {}
 	}}
 	Vector _pos : 0x0;
-	float _height : 0x8, _width : 0xc;
+	float _width : 0x8, _spritesheetCoordinate : 0xc;
 	ColorMod _color : 0x10;
 } : 0x3c;

@@ -12,6 +12,7 @@
 #include "SigScan.h"
 #include "IconsFontAwesome6.h"
 #include "UnifontSupport.h"
+#include "Lang.h"
 
 #include <Windows.h>
 #include <format>
@@ -84,10 +85,10 @@ void AddWindowContextMenu(bool* pinned)
 {
 	if (ImGui::BeginPopupContextItem()) // <-- use last item id as popup id
 	{
-		ImGui::MenuItem("Pin Window", NULL, pinned);
+		ImGui::MenuItem(LANG.IMGUI_WIN_CTX_MENU_PIN_WINDOW, NULL, pinned);
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) && ImGui::BeginTooltip()) {
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-			ImGui::TextUnformatted("Pinning a window will keep it visible even after closing Dev Tools.");
+			ImGui::TextUnformatted(LANG.IMGUI_WIN_CTX_MENU_PIN_WINDOW_DESC);
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
 		}
@@ -98,7 +99,7 @@ void AddWindowContextMenu(bool* pinned)
 
 ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 {
-	if (ImGui::Button("Change")) {
+	if (ImGui::Button(LANG.IMGUI_CHANGE_KEY_BTN_NAME)) {
 		wasPressed = true;
 	}
 
@@ -109,12 +110,12 @@ ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 		if (isController) {
 			firstKey = static_cast<int>(ImGuiKey_GamepadStart);
 			lastKey = static_cast<int>(ImGuiKey_GamepadRStickDown);
-			ImGui::Text("Press a button on your controller.");
+			ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL);
 		}
 		else {
-			ImGui::Text("Press a key on your keyboard.");
+			ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_KEY_KEYBOARD);
 		}
-		ImGui::Text("Press ESC to cancel input");
+		ImGui::Text(LANG.IMGUI_CHANGE_KEY_BTN_PRESS_ESC);
 
 		std::list<ImGuiKey>* keys = GetPressedKeys();
 		for (auto key = keys->begin(); key != keys->end(); ++key) {
@@ -405,6 +406,8 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 {
 	static std::map<int, ImFont*> fonts;
 
+	static float unifont_global_scale = 1;
+
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
 		windowProc = (WNDPROC)SetWindowLongPtr(window,
@@ -441,20 +444,41 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 		static UnifontRange unifont_ranges;
 
-		const int unifont_base_size = 13;
+		float font_base_size = 13;
 		cfg.MergeMode = false;
-		cfg.SizePixels = unifont_base_size;
-		imFontUnifont = io.Fonts->AddFontDefault(&cfg); 
+		cfg.SizePixels = font_base_size;
+		if (!repentogonOptions.enableUnifont) {
+			imFontUnifont = io.Fonts->AddFontDefault(&cfg);
+			cfg.MergeMode = true;
+		}
+		else {
+			// the pixel perfect size for unifont is 16px
+			float size_config[5][2] = {
+				{13,1},
+				{16,1},
+				{14,1},//12px unifont can't tell 3 and 9, so use 14 here
+				{16,0.5},
+				{8,1}
+			};
+			font_base_size = size_config[repentogonOptions.unifontRenderMode][0];
+			unifont_global_scale = size_config[repentogonOptions.unifontRenderMode][1];
+
+			if (repentogonOptions.unifontRenderMode == UNIFONT_RENDER_NORMAL) {
+				imFontUnifont = io.Fonts->AddFontDefault(&cfg); // this font is better for english word, but only perfect in 13px
+			}
+			else {
+				cfg.SizePixels = font_base_size;
+				imFontUnifont = io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", font_base_size, &cfg, ImGui::GetIO().Fonts->GetGlyphRangesDefault());
+			}
+			cfg.MergeMode = true;
+			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", font_base_size, &cfg, unifont_ranges.Get());
+		}
 		ImGui::GetIO().FontDefault = imFontUnifont;
-		cfg.MergeMode = true;
-		if (repentogonOptions.enableUnifont)
-			io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\unifont-15.1.04.otf", unifont_base_size, &cfg, unifont_ranges.Get());
 		// icon font
 		cfg.GlyphOffset = ImVec2(0, 1.5f); // move icon a bit down to center them in objects
 		cfg.RasterizerDensity = 5; // increase DPI, to make icons look less fucked by the rasterizer
-		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", unifont_base_size, &cfg, icon_ranges);
+		io.Fonts->AddFontFromFileTTF("resources-repentogon\\fonts\\Font Awesome 6 Free-Solid-900.otf", font_base_size, &cfg, icon_ranges);
 	
-
 		imguiInitialized = true;
 		ImGui::GetIO().FontAllowUserScaling = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
@@ -467,9 +491,9 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	UpdateImGuiSettings();
 ;
 	if (g_PointScale > 0) {
-		imFontUnifont->Scale = g_PointScale;
-		ImGui::GetStyle().FramePadding.y = 4 * g_PointScale;
-		ImGui::GetStyle().ItemSpacing.x = 6 * g_PointScale;
+		imFontUnifont->Scale = g_PointScale * unifont_global_scale;
+		ImGui::GetStyle().FramePadding.y = 4 * g_PointScale * unifont_global_scale;
+		ImGui::GetStyle().ItemSpacing.x = 6 * g_PointScale * unifont_global_scale;
 	}
 		
 
@@ -499,12 +523,12 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);
-			if (ImGui::BeginMenu(ICON_FA_SCREWDRIVER_WRENCH " Tools")) {
-				ImGui::MenuItem(ICON_FA_TERMINAL" Debug Console", NULL, &console.enabled);
-				ImGui::MenuItem(ICON_FA_NEWSPAPER" Log Viewer", NULL, &logViewer.enabled);
-				ImGui::MenuItem(ICON_FA_GEARS" Game Options", NULL, &gameOptionsWindow.enabled);
-				ImGui::MenuItem(ICON_FA_GAUGE_HIGH" Performance", NULL, &performanceWindow.enabled);
-				ImGui::MenuItem(ICON_FA_PENCIL" Style Editor", NULL, &show_app_style_editor);
+			if (ImGui::BeginMenu(LANG.BAR_TOOLS)) {
+				ImGui::MenuItem(LANG.BAR_DEBUG_CONSOLE, NULL, &console.enabled);
+				ImGui::MenuItem(LANG.BAR_LOG_VIEWER, NULL, &logViewer.enabled);
+				ImGui::MenuItem(LANG.BAR_GAME_OPTIONS, NULL, &gameOptionsWindow.enabled);
+				ImGui::MenuItem(LANG.BAR_PERFORMANCE, NULL, &performanceWindow.enabled);
+				ImGui::MenuItem(LANG.BAR_STYLE_EDITOR, NULL, &show_app_style_editor);
 				ImGui::EndMenu();
 			}
 			customImGui.DrawMenu();
@@ -518,11 +542,12 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 	logViewer.Draw(menuShown);
 	performanceWindow.Draw(menuShown);
 	gameOptionsWindow.Draw(menuShown);
+	LANG.DrawReportWindow(menuShown);
 
 	customImGui.DrawWindows(menuShown);
 
 	if (show_app_style_editor) {
-		WindowBeginEx("Dear ImGui Style Editor", &show_app_style_editor);
+		WindowBeginEx(LANG.DEAR_IMGUI_STYLE_EDITOR_WIN_NAME, &show_app_style_editor);
 		ImGui::ShowStyleEditor();
 		ImGui::End();
 	}

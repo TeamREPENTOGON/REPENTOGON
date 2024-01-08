@@ -49,13 +49,13 @@ ___
 ## Functions
 
 ### AddActiveCharge () {: aria-label='Functions' }
-#### int AddActiveCharge ( int Charge, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, boolean FlashHUD, boolean Overcharge, boolean Force ) {: .copyable aria-label='Functions' }
+#### int AddActiveCharge ( int Charge, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, boolean FlashHUD = true, boolean Overcharge = false, boolean Force = false ) {: .copyable aria-label='Functions' }
 
 Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.
 
 ___
 ### AddBoneOrbital () {: aria-label='Functions' }
-#### void AddBoneOrbital ( ) {: .copyable aria-label='Functions' }
+#### void AddBoneOrbital ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___
 ### AddInnateCollectible () {: aria-label='Functions' }
@@ -65,7 +65,7 @@ ___
 	Currently this function directly modifies the contents of WispCollectiblesList, so if this list was updated on wisp init/delete, or the player exits the run, your added innate items will not be saved.
 	
 ___
-### AddLeprocy () {: aria-label='Functions' }
+### AddLeprosy () {: aria-label='Functions' }
 #### void AddLeprocy ( ) {: .copyable aria-label='Functions' }
 
 ???+ info "Info"
@@ -437,12 +437,12 @@ Returns a table of smelted trinkets and their corresponding amounts. The returne
 
 |Field|Type|Comment|
 |:--|:--|:--|
-| trinketNum | int | |
-| goldenTrinketNum | int | |
+| trinketAmount | int | |
+| goldenTrinketAmount | int | |
 
 ___
 ### GetSpecialGridCollision () {: aria-label='Functions' }
-#### int GetSpecialGridCollision ( [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }      
+#### int GetSpecialGridCollision ( [Vector](Vector.md) Position = self.Position ) {: .copyable aria-label='Functions' }      
 
 ___
 ### GetSpeedModifier () {: aria-label='Functions' }
@@ -456,6 +456,7 @@ ___
 ___
 ### GetVoidedCollectiblesList () {: aria-label='Functions' }
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] Collectibles GetVoidedCollectiblesList ( ) {: .copyable aria-label='Functions' }
+Retuns a table containing the [CollectibleTypes](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) of all voided Active items.
 
 ___
 ### GetWeapon () {: aria-label='Functions' }
@@ -764,7 +765,7 @@ ___
 
 ___
 ### ShuffleCostumes () {: aria-label='Functions' }
-#### void ShuffleCostumes ( int Seed ) {: .copyable aria-label='Functions' }
+#### void ShuffleCostumes ( int Seed = Random( ) ) {: .copyable aria-label='Functions' }
 Randomizes the current costumes.
 
 ___
