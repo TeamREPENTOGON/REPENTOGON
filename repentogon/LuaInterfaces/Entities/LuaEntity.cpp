@@ -472,7 +472,7 @@ void PatchAddWeakness() {
 
 	ASMPatch patch;
 	patch.Push(ASMPatch::Registers::EDI)  // Push entity
-		.Push(ASMPatch::Registers::EBP, 0x8) // Push duration
+		.Push(ASMPatch::Registers::EBP, 0xc) // Push duration
 		.AddBytes("\x8b\xce") // MOV ECX, ESI
 		// this fits exactly in the 5 bytes uses to push arguments
 		.AddRelativeJump((char*)addr + 0x5);

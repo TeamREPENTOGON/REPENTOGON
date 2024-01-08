@@ -23,14 +23,20 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 
     ```lua
 	local sprite = Sprite()
-	sprite:Load("gfx/893.000_ball and chain.anm2", true)
-	local chain = Beam(sprite, "chain", true, false)
-	
-	mod:AddCallback(ModCallbacks.MC_POST_PLAYER_RENDER, function(_, player)
-		chain:GetSprite():PlayOverlay("Chain", false)
-		local center = Game():GetRoom():GetCenterPos()
-		chain:Add(Isaac.WorldToScreen(center),0)
-		chain:Add(Isaac.WorldToScreen(player.Position),64)
+	sprite:Load("gfx/1000.193_anima chain.anm2", true)
+	local chain = Beam(sprite, "chain", false, false)
+	chain:GetSprite():Play("Idle", false)
+	local layer = chain:GetSprite():GetLayer("chain")
+	layer:SetWrapSMode(1) -- these are critical, otherwise
+	layer:SetWrapTMode(0) -- the beam sprite won't wrap!
+	local spritesheetHeight = 64
+
+	mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, function(_, player)
+		local origin = Isaac.WorldToScreen(Game():GetRoom():GetCenterPos())
+		local target = Isaac.WorldToScreen(player.Position)
+		local coord = target:Distance(origin)
+		chain:Add(origin,0)
+		chain:Add(target,coord)
 		chain:Render()
 	end)
     ```

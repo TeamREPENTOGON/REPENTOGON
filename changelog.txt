@@ -4,9 +4,18 @@ Additions:
 * Added settings to change unifont rendering size
 * Add Update callbacks for GridEntityTNT
 * Add Render callbacks for GridEntityLock and GridEntityTeleporter
+* LayerState:
+	- Get/SetWrapSMode
+	- Get/SetWrapTMode
+	- these play some currently unknown role in allowing sprites to wrap around, and is required for Beam sprites
 /newline/
 Fixes:
 * Fix GridEntity render callbacks being massively broken
+* Fix PRE_GRID_ENTITY_SPAWN not accepting a table
+* Fix potential crash with SpawnGridEntity(GridEntityDesc)
+	- main_ex.lua typechecking on this is temporarily disabled
+	- Will silently fail if returning an invalid type to prevent crashes
+* Fix Entity:AddWeakness duration being incorrect
 * Fix Beam:Add(Point) override
 /newline/
 v1.0.4 - 

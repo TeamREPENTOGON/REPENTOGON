@@ -270,10 +270,14 @@ local typecheckFunctions = {
 		["Vector"] = true,
 		["boolean"] = true
 	},
+--[[
+	// This seems to be eating the callback entirely
 	[ModCallbacks.MC_PRE_GRID_ENTITY_SPAWN] = {
 		["boolean"] = true,
-		["number"] = checkInteger
+		["GridEntityDesc"] = true,
+		["table"] = checkTableTypeFunction({ "integer", "integer", "integer", "integer" })
 	},
+]]--
 	[ModCallbacks.MC_PRE_REPLACE_SPRITESHEET] = {
 		["table"] = checkTableTypeFunction({ "integer", "string" })
 	},

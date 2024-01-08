@@ -1045,15 +1045,15 @@ void __stdcall PostGridSpawnTrampoline(GridEntity* grid) {
 	}
 }
 
-void ASMPatchSpawnGridEntityPost(void* addr, unsigned int overriddenBytes) {
+void ASMPatchSpawnGridEntityPost(void* addr) {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
 	ASMPatch patch;
-	patch.AddBytes(ByteBuffer().AddAny((char*)addr, overriddenBytes))  // Restore the commands we overwrote
-		.PreserveRegisters(savedRegisters)
+	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EDI) // GridEntity
 		.AddInternalCall(PostGridSpawnTrampoline)
 		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + overriddenBytes);
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 5))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
@@ -1065,9 +1065,9 @@ void PatchPostSpawnGridEntity()
 	scanner2.Scan();
 	void* addrs[2] = { scanner1.GetAddress(), scanner2.GetAddress() };
 	
-	printf("[REPENTOGON] Patching SpawnGridEntity POST_GRID_INIT at %p, %p\n", addrs[0], addrs[1]);
-	ASMPatchSpawnGridEntityPost(addrs[0], 5);
-	ASMPatchSpawnGridEntityPost(addrs[1], 8);
+	printf("[REPENTOGON] Patching SpawnGridEntity POST_GRID_ENTITY_SPAWN at %p, %p\n", addrs[0], addrs[1]);
+	ASMPatchSpawnGridEntityPost(addrs[0]);
+	ASMPatchSpawnGridEntityPost(addrs[1]);
 }
 
 /* /////////////////////

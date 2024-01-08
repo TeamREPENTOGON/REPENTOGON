@@ -1510,13 +1510,17 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	}
 }
 
-bool noInfLoop = false;
+int ProtectedCallbackIntAssign(lua_State* L, int var, int pos) {
+	if (lua::callbacks::CheckInteger(L, pos))
+		var = lua::callbacks::ToInteger(L, pos);
+	return var;
+}
 
+bool noInfLoop = false;
 //PRE_GRID_ENTITY_SPAWN (id: 1100)
 HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int variant, unsigned int seed, int vardata) -> bool) {
-	noInfLoop = false;
 	const int callbackid = 1100;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (!noInfLoop && CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -1533,16 +1537,16 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 			.call(1);
 
 		if (!result) {
-			if (lua_isuserdata(L, -1)) {
+			if (lua_istable(L, -1)) {
+				type = (GridEntityType)ProtectedCallbackIntAssign(L, type, 1);
+				variant = ProtectedCallbackIntAssign(L, variant, 2);
+				vardata = ProtectedCallbackIntAssign(L, vardata, 3);
+				seed = ProtectedCallbackIntAssign(L, seed, 4);
+			}
+			else if (lua_isuserdata(L, -1)) {
 				GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
 				noInfLoop = true;
 				return g_Game->_room->SpawnGridEntityDesc(idx, desc);
-			}
-			else if (lua_istable(L, -1)) {
-				type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
-				variant = (unsigned int)lua::callbacks::ToInteger(L, 2);
-				vardata = lua::callbacks::ToInteger(L, 3);
-				seed = (unsigned int)lua::callbacks::ToInteger(L, 4);
 			}
 			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 			{
@@ -1550,43 +1554,45 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 			}
 		}
 	}
+	noInfLoop = false;
 	return super(idx, type, variant, seed, vardata);
 }
 
 //also PRE_GRID_ENTITY_SPAWN (id: 1100), but for the override
 HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) {
 	const int callbackid = 1100;
-	if (!noInfLoop) {
-		if (CallbackState.test(callbackid - 1000)) {
-			lua_State* L = g_LuaEngine->_state;
-			lua::LuaStackProtector protector(L);
+	if (!noInfLoop && CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
 
-			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-				.push(desc->_type)
-				.push(desc->_type)
-				.push(desc->_variant)
-				.push(desc->_varData)
-				.push(idx)
-				.push(desc->_spawnSeed)
-				.push(desc, lua::Metatables::GRID_ENTITY_DESC) // yes GridEntityDesc
-				.call(1);
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(desc->_type)
+			.push(desc->_type)
+			.push(desc->_variant)
+			.push(desc->_varData)
+			.push(idx)
+			.push(desc->_spawnSeed)
+			.push(desc, lua::Metatables::GRID_ENTITY_DESC) // yes GridEntityDesc
+			.call(1);
 
-			if (!result) {
-				if (lua_isuserdata(L, -1)) {
-					desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
-				}
-				else if (lua_istable(L, -1)) {
-					desc->_type = (GridEntityType)lua::callbacks::ToInteger(L, 1);
-					desc->_variant = (unsigned int)lua::callbacks::ToInteger(L, 2);
-					desc->_varData = lua::callbacks::ToInteger(L, 3);
-					desc->_spawnSeed = (unsigned int)lua::callbacks::ToInteger(L, 4);
-				}
-				else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
-				{
-					return false;
-				}
+		if (!result) {
+			if (lua_isuserdata(L, -1)) {
+				desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
+			}
+			else if (lua_istable(L, -1)) {
+				int type = (GridEntityType)ProtectedCallbackIntAssign(L, desc->_type, 1);
+				int variant = ProtectedCallbackIntAssign(L, desc->_variant, 2);
+				int varData = ProtectedCallbackIntAssign(L, desc->_varData, 3);
+				int spawnSeed = ProtectedCallbackIntAssign(L, desc->_spawnSeed, 4);
+
+				noInfLoop = true;
+				return g_Game->_room->SpawnGridEntity(idx, type, variant, varData, spawnSeed);
+			}
+			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
+			{
+				return false;
 			}
 		}
 	}
