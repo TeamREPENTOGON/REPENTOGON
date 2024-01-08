@@ -4,6 +4,10 @@ Additions:
 * Added settings to change unifont rendering size
 * Add Update callbacks for GridEntityTNT
 * Add Render callbacks for GridEntityLock and GridEntityTeleporter
+* LayerState:
+	- Get/SetWrapSMode
+	- Get/SetWrapTMode
+	- these play some currently unknown role in allowing sprites to wrap around, and is required for Beam sprites
 /newline/
 Fixes:
 * Fix GridEntity render callbacks being massively broken
