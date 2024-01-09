@@ -8,6 +8,7 @@ Additions:
 	- Get/SetWrapSMode
 	- Get/SetWrapTMode
 	- these play some currently unknown role in allowing sprites to wrap around, and is required for Beam sprites
+* Added PRE_PLAYERHUD_RENDER_HEARTS(Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown) callback, returning true cancels hearts HUD rendering
 * Add support for custom items in the items attr on players.xml by using their name instead of id.
 /newline/
 Fixes:
