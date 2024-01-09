@@ -2,6 +2,33 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+#include <map>
+#include <string>
+
+std::map<std::string, unsigned int> languageMap = {
+	{"en", 0},
+	{"jp", 2},
+	{"fr", 3},
+	{"es", 4},
+	{"de", 5},
+	{"it", 6},
+	{"nl", 7},
+	{"pt", 8},
+	{"ru", 10},
+	{"kr", 11},
+	{"zh", 12},
+	{"fi", 14},
+	{"sv", 15},
+	{"da", 16},
+	{"nn", 17},
+	{"pl", 18},
+	{"tr", 19}
+};
+
+unsigned int GetLanguageId(std::string langCode) {
+	return languageMap[langCode];
+}
+
 LUA_FUNCTION(Lua_IsaacGetString)
 {
 	Manager* manager = g_Manager;
@@ -29,8 +56,16 @@ LUA_FUNCTION(Lua_IsaacGetLocalizedString) {
 	if (*translateString == '#') {
 		++translateString;
 	}
-	uint32_t language = (uint32_t)luaL_checkinteger(L, 3);
+	uint32_t language;
 	uint32_t unk;
+
+	if ((lua_type(L, 3) == LUA_TSTRING)) {
+		std::string langCode = luaL_checkstring(L, 3);
+		language = GetLanguageId(langCode);
+	}
+	else {
+		language = (uint32_t)luaL_checkinteger(L, 3);
+	}
 
 	const char* retStr = stringTable->GetString(category, language, translateString, &unk);
 	lua_pushstring(L, retStr);

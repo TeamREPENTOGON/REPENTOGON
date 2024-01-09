@@ -50,6 +50,10 @@ ___
 #### [ColorModifier](../ColorModifier.md) GetTargetColorModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetViewPosition () {: aria-label='Functions' }
+#### [Vector](../Vector.md) GetViewPosition ( ) {: .copyable aria-label='Functions' }
+
+___
 ### SetActiveMenu () {: aria-label='Functions' }
 #### int SetActiveMenu ([MainMenuType](../enums/MainMenuType.md) Menu ) {: .copyable aria-label='Functions' }
 Changes the active menu on the main menu to match the input menutype.
@@ -57,5 +61,9 @@ Changes the active menu on the main menu to match the input menutype.
 ___
 ### SetColorModifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](../ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
+
+___
+### SetViewPosition () {: aria-label='Functions' }
+#### void SetViewPosition ( [Vector](../Vector.md) Position ) {: .copyable aria-label='Functions' }
 
 ___

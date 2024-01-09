@@ -37,7 +37,7 @@ ___
 Returns a table containing the attributes of the corresponding xml, the matching NodeType(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given unique id.
 ???- info "Table usage"
 	```lua
-	print("Sad Onion's description:", XMLData.GetEntryByName(XMLNode.ITEM, 1).description)
+	print("Sad Onion's description:", XMLData.GetEntryById(XMLNode.ITEM, 1).description)
 	```
 ???+ note "child nodes"
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can use `soundentry.sample[1]`.

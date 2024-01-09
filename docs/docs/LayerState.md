@@ -50,6 +50,14 @@ ___
 #### string GetSpritesheetPath ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetWrapSMode () {: aria-label='Functions' }
+#### int GetWrapSMode ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetWrapTMode () {: aria-label='Functions' }
+#### int GetWrapTMode ( ) {: .copyable aria-label='Functions' }
+
+___
 ### IsVisible () {: aria-label='Functions' }
 #### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
 
@@ -80,5 +88,13 @@ ___
 ___
 ### SetVisible () {: aria-label='Functions' }
 #### void SetVisible ( boolean Visible ) {: .copyable aria-label='Functions' }
+
+___
+### SetWrapSMode () {: aria-label='Functions' }
+#### void SetWrapSMode ( int Mode ) {: .copyable aria-label='Functions' }
+
+___
+### SetWrapTMode () {: aria-label='Functions' }
+#### void SetWrapTMode ( int Mode ) {: .copyable aria-label='Functions' }
 
 ___

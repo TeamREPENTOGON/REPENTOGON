@@ -468,6 +468,14 @@ namespace lua {
 	}
 
 	namespace callbacks {
+		bool CheckInteger(lua_State* L, int stackPosition) {
+			lua_pushinteger(L, stackPosition);
+			lua_gettable(L, -2);
+			bool res = (int)lua_isinteger(L, -1);
+			lua_pop(L, 1);
+			return res;
+		}
+
 		int ToInteger(lua_State* L, int stackPosition) {
 			lua_pushinteger(L, stackPosition);
 			lua_gettable(L, -2);
@@ -737,6 +745,7 @@ namespace lua {
 		const char* DailyChallengeMenuMT = "DailyChallengeMenu";
 		const char* DebugRendererMT = "DebugRenderer";
 		const char* EntitiesSaveStateVectorMT = "EntitiesSaveStateVector";
+		const char* ColorParamsMT = "ColorParams";
 		const char* EntityConfigMT = "EntityConfig";
 		const char* EntityConfigEntityMT = "EntityConfigEntity";
 		const char* EntityConfigPlayerMT = "EntityConfigPlayer";

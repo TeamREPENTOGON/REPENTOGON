@@ -5,12 +5,10 @@
 LUA_FUNCTION(Lua_CapsuleConstructor) {
 	Vector* position = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* multiplier = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	const float rotation = luaL_optnumber(L, 3, .0f);
+	const float size = luaL_optnumber(L, 4, 1.0f);
 
-	Capsule* capsule = new Capsule(position, multiplier);
-
-	Capsule* toLua = (Capsule*)lua_newuserdata(L, sizeof(Capsule));
-	luaL_setmetatable(L, lua::metatables::CapsuleMT);
-	memcpy(toLua, &capsule, sizeof(Capsule));
+	Capsule* capsule = lua::place<Capsule>(L, lua::metatables::CapsuleMT, position, multiplier, rotation, size);
 	return 1;
 }
 
@@ -95,11 +93,16 @@ LUA_FUNCTION(Lua_CapsuleCollide)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_Capsule__gc) {
+	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
+	capsule->~Capsule();
+
+	return 0;
+}
+
 static void RegisterCapsule(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::ENTITY, "GetNullCapsule", Lua_EntityGetNullCapsule);
 	lua::RegisterFunction(L, lua::Metatables::ENTITY, "GetCollisionCapsule", Lua_EntityGetCollisionCapsule);
-
-	//lua_register(L, lua::metatables::CapsuleMT, Lua_CapsuleConstructor);
 
 	luaL_Reg functions[] = {
 		{ "GetPosition", Lua_CapsuleGetPosition },
@@ -111,7 +114,8 @@ static void RegisterCapsule(lua_State* L) {
 		{ "Collide", Lua_CapsuleCollide },
 		{ NULL, NULL }
 	};
-	lua::RegisterNewClass(L, lua::metatables::CapsuleMT, lua::metatables::CapsuleMT, functions);
+	lua::RegisterNewClass(L, lua::metatables::CapsuleMT, lua::metatables::CapsuleMT, functions, Lua_Capsule__gc);
+	lua_register(L, lua::metatables::CapsuleMT, Lua_CapsuleConstructor);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {

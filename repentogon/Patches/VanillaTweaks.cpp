@@ -23,8 +23,14 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 	super(Stage, Mode);
 }
 
-// Force achievements to be unlockable
+// Force achievements to be unlockable (expect outside of game mode)
 HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
+	if (g_Manager->GetOptions()->ModsEnabled() || g_Manager->GetOptions()->_enableDebugConsole) {
+		if ((unk) || ((g_Manager->GetState() != 2 || g_Game == nullptr) || (g_Game->GetDailyChallenge()._id == 0 && !g_Game->IsDebug() ))) {
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -32,4 +38,17 @@ HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
 HOOK_METHOD(OptionsConfig, Save, () -> void) {
 	repentogonOptions.Save();
 	super();
+}
+
+HOOK_METHOD(Game, Update, () -> void) {
+	super();
+
+	if (GetDailyChallenge()._id != 0 && !GetDailyChallenge()._isPractice) {
+		if (g_Manager->GetOptions()->_enableDebugConsole || g_Manager->GetOptions()->ModsEnabled()) {
+			if (_leaderboard._displayState < 1 && _frameCount > 0) {
+				End(1); //You shall not pass! (@ wise greybeard dude)
+			}
+			
+		}
+	}
 }

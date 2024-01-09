@@ -5,7 +5,7 @@ reference BeamRenderer *g_BeamRenderer;
 static void BeamRenderer::Begin(ANM2 *anm2, unsigned int layer, bool useOverlay, bool unk);
 
 "558bec83e4f883ec588b45":
-static void BeamRenderer::Add(Vector *point, ColorMod * color, float height<xmm2>, float width<xmm3>);
+static void BeamRenderer::Add(Vector *point, ColorMod * color, float spritesheetCoordinate<xmm2>, float width<xmm3>);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0010000a1????????33c58945??5657508d45??64a3????????8b3d":
 static void BeamRenderer::End();

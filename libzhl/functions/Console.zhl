@@ -10,6 +10,9 @@ __thiscall void Console::Print(const std_string &text, unsigned int color, unsig
 "558bec6aff68????????64a1????????5081ec14020000":
 __thiscall void Console::FillOmnicomplete();
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec20a1????????33c58945??5657508d45??64a3????????8bf18b56":
+__thiscall void Console::SubmitInput(bool unk);
+
 "558bec83ec3c535657":
 __thiscall void Console::ProcessInput();
 
@@ -31,4 +34,5 @@ struct Console depends (Console_HistoryEntry) {
 	
 	enum Color: unsigned int {WHITE = 0xFFD3D3D3};
 }} 
+std_string _input : 0x3c;
 } : 0x88;

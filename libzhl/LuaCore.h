@@ -180,6 +180,7 @@ namespace lua {
         extern LIBZHL_API const char* DailyChallengeMenuMT;
         extern LIBZHL_API const char* DebugRendererMT;
         extern LIBZHL_API const char* EntitiesSaveStateVectorMT;
+        extern LIBZHL_API const char* ColorParamsMT;
         extern LIBZHL_API const char* EntityConfigMT;
         extern LIBZHL_API const char* EntityConfigEntityMT;
         extern LIBZHL_API const char* EntityConfigPlayerMT;
@@ -542,6 +543,7 @@ namespace lua {
     LIBZHL_API void TableAssoc(lua_State* L, int key, LuaStackRef dstTable, LuaStackRef srcObj);
 
     namespace callbacks {
+        LIBZHL_API bool CheckInteger(lua_State* L, int stackPosition);
         LIBZHL_API int ToInteger(lua_State* L, int stackPosition);
         LIBZHL_API double ToNumber(lua_State* L, int stackPosition);
         LIBZHL_API bool ToBoolean(lua_State* L, int stackPosition);

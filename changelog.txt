@@ -1,2 +1,90 @@
+v1.0.5 -
+Additions:
+* Added localization code support
+* Added settings to change unifont rendering size
+* Add Update callbacks for GridEntityTNT
+* Add Render callbacks for GridEntityLock and GridEntityTeleporter
+* LayerState:
+	- Get/SetWrapSMode
+	- Get/SetWrapTMode
+	- these play some currently unknown role in allowing sprites to wrap around, and is required for Beam sprites
+* Added PRE_PLAYERHUD_RENDER_HEARTS(Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown) callback, returning true cancels hearts HUD rendering
+/newline/
+Fixes:
+* Fix GridEntity render callbacks being massively broken
+* Fix PRE_GRID_ENTITY_SPAWN not accepting a table
+* Fix potential crash with SpawnGridEntity(GridEntityDesc)
+	- main_ex.lua typechecking on this is temporarily disabled
+	- Will silently fail if returning an invalid type to prevent crashes
+* Fix Entity:AddWeakness duration being incorrect
+* Fix Beam:Add(Point) override
+/newline/
+v1.0.4 - 
+Additions:
+* The error dialog now automatically gets dismissed the next time ImGui is opened
+* Imgui.IsVisible()
+* Added function overload for Isaac.GetLocalizedString(), which accepts LanguageCode string as paramater
+* Added Scale param for POST_PLAYERHUD_RENDER_ACTIVE_ITEM callback
+* Added Entity:GetDamageCountdown() and Entity:SetDamageCountdown()
+/newline/
+Fixes:
+* Fixed Eden's damage, range, and shot speed stats not properly changing
+* The console reimplementation is now more faithful to the original, which fixes some cases where the output color was wrong
+* Pickup:GetCollectibleCycle() length now limited by CycleCollectibleCount
+* Fixed binder for Player:AddBoneOrbital
+* Renamed Player method AddLeprocy -> AddLeprosy
+* Fixed binder for PlayerHUD:RenderActiveItem
+* Fixed a bug where POST_ITEM_OVERLAY_UPDATE callback passed unusable userdata instead of Giantbook ID
+* Fixed PRE_ITEM_OVERLAY_SHOW callback not playing custom giantbook animation, when you replace vanilla one
+* Fixed PRE_PLANETARIUM_APPLY_X_PENALTY softlocking the game
+* Enabled mods/debug console disable access to enter daily run as before
+/newline/
+v1.0.3 - 
+Additions:
+* ColorParams
+	- Used to store the color and parameters passed by Entity:SetColor (Priority, Duration, Fadeout, Shared)
+* Entity:CopyStatusEffects() now copies the Color over to the target Entity, including the proper duration and other parameters
+	- This can be toggled with the CopyColor argument, default true
+* Isaac.IsInGame
+* EntityPickup :
+	- GetCollectibleCycle
+	- RemoveCollectibleCycle
+* Capsule :
+	- Capsule constructor
+* MenuManager :
+	- GetViewPosition
+	- SetViewPosition
+* The luamod command now supports autocomplete
+* Dear ImGui console now has a back button to allow controllers & Steam Deck to exit
+* dsound.dll will log when it's been unloaded to help debug cases of REPENTOGON not loading
+* Improved constructors for Sprite and Font classes
+* Added documentation for the MC_PRE_LEVEL_SELECT callback
+* Added gfxback property to custom achievements xml
+/newline/
+Fixes:
+* Fix a crash with weapon-copying familiars and Spirit Sword
+* Fixed a possible crash when GetNullFrame is called on a Sprite that is not yet fully loaded
+* Fixed MC_POST_ENTITY_TAKE_DMG triggering when the player touches the white fireplace in downpour/dross
+* Fix Card Against Humanity only ever spawning regular poops
+* Fix crawlspace floors (and possibly other unnoticed cases) not rendering
+* Fix Entity:CopyStatusEffects(Entity, Entity) doing nothing
+* Fix potential issue with XMLData.GetNumEntries
+* Improve paramater validation for MC_PRE_LEVEL_SELECT to prevent possible crashes
+* Modify vanilla function Game():GetPlayer to prevent possible crashes
+* Changelog can now be safely closed using the "menu back" button e.g. Esc
+* Fixed AnimationData:IsLoopingAnimation returning boolean, instead of integer
+* Fixed a custom cutscene issue that played the Intro on cases where it shouldnt
+/newline/
+v1.0.2 - 
+Additions:
+* Added Pickup:GetAlternatePedestal()
+* REPENTOGON'S logfile (repentogon.log) now shows timestamps
+/newline/
+Fixes:
+* Fixed a crash when time is set to 0 in the performance logger
+* Fixed Dingle always spawning a red poop
+* Fixed achievements not firing in Steam
+/newline/
+
 v1.0.1 - 
 Fixed the updater erroneously asking to update, sorry :(

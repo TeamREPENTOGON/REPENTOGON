@@ -4,12 +4,18 @@ tags:
 ---
 # Class "Capsule"
 
+An example mod using the Capsule class can be found [here.](./examples/capsules.md)
+
 ???+ info
     You can get this class by using the following functions:
 
     * [Entity:GetCollisionCapsule()](Entity.md#getcollisioncapsule)
     * [Entity:GetNullCapsule()](Entity.md#getnullcapsule)
         
+## Constructors
+### Capsule () {: aria-label='Constructors' }
+#### [Capsule](Capsule.md) Capsule ( [Vector](Vector.md) Position, [Vector](Vector.md) SizeMult, float Direction = 0.0, float Size = 1.0 ) {: .copyable aria-label='Constructors' }
+
 ## Functions
 
 ### Collide () {: aria-label='Functions' }

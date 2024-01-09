@@ -11,7 +11,7 @@ tags:
 
     ???+ example "Example Code"
         ```lua
-        local weapon = Isaac.GetPlayer(0):GetWeapon(WeaponType.WEAPON_TEARS)
+        local weapon = Isaac.GetPlayer(0):GetWeapon(1)
         ```
 
 ## Functions

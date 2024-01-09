@@ -12,5 +12,11 @@ With REPENTOGON, you have the ability to add new giantbook animations in an orga
 Take in mind that, in the same way as other content xmls, ids are automatically assigned and shouldnt be specified. If you do specify an id for a xml node, it will be ignored.    
 To get the Id of a Giant Book animation in lua, you can use Isaac.GetGiantBookIdByName, you can then play modded giant book animations using the ItemOverlay.Show function.
 
+The following custom attributes can be defined for giantbook in the giantbook xml.
+
+| Variable-Name | Possible Values | Description |
+|:--|:--|:--|
+|name|string|used for the GetXByName functions (when this is not present, the filename of the gfx attribute is used instead)|
+
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/giantbook.html).
