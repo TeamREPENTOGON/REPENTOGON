@@ -52,7 +52,7 @@ ___
 #### table[] GetOutcomes ( ) {: .copyable aria-label='Functions' }
 Returns a table containing a list of all outcomes in the picker.
 
-??- info "Table structure & usage"
+???- info "Table structure & usage"
     - The returned table contains a list of outcomes, where each outcome is a table containing the following fields: 
         * Value: value of the outcome
         * Weight: weight of the outcome
