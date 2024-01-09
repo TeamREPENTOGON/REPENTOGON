@@ -4,7 +4,7 @@ tags:
 ---
 # Class "Capsule"
 
-An example mod using the Capsule class can be found [here.](./examples/capsules.md)
+An example mod using the Capsule class can be found [here.](./examples/Capsules.md)
 
 ???+ info
     You can get this class by using the following functions:
