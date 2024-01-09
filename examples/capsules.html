@@ -11,8 +11,6 @@
         <link rel="canonical" href="https://repentogon.com/examples/capsules.html">
       
       
-        <link rel="prev" href="../tags.html">
-      
       
       
       <link rel="icon" href="../img/favicon.ico">
@@ -20,7 +18,7 @@
     
     
       
-        <title>Capsules - BoI: REPENTOGON</title>
+        <title>Capsules Example - BoI: REPENTOGON</title>
       
     
     
@@ -114,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Capsules
+              Capsules Example
             
           </span>
         </div>
@@ -348,13 +346,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="capsules.html" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="Capsules.md" class="md-tabs__link">
           
   
   Example Mods
@@ -5906,8 +5902,6 @@
       
   
   
-    
-  
   
   
     
@@ -5918,12 +5912,12 @@
       
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
@@ -5937,7 +5931,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             Example Mods
@@ -5948,30 +5942,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Capsules
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="capsules.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="Capsules.md" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -5980,35 +5954,27 @@
   
 
       </a>
-      
-        
+    </li>
+  
 
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+              
+            
+              
+                
   
   
   
-    
   
+    <li class="md-nav__item">
+      <a href="WeightedOutcomes.html" class="md-nav__link">
+        
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#code" class="md-nav__link">
-    <span class="md-ellipsis">
-      Code
-    </span>
-  </a>
+  <span class="md-ellipsis">
+    Weighted Outcomes
+  </span>
   
-</li>
-      
-    </ul>
-  
-</nav>
-      
+
+      </a>
     </li>
   
 
@@ -6095,7 +6061,7 @@
 
 
 <h1 id="capsules-example">Capsules Example<a class="headerlink" href="#capsules-example" title="Permanent link">⚓︎</a></h1>
-<p>Capsules are used by the game for collision detection. All entities have a collision capsule whose shape is defined by their XML markup. Additionally, you can use a null layer frame's size and position in a sprite's animation to generate a null capsule.</p>
+<p><a href="../Capsule.html">Capsules</a> are used by the game for collision detection. All entities have a collision capsule whose shape is defined by their XML markup. Additionally, you can use a null layer frame's size and position in a sprite's animation to generate a null capsule.</p>
 <p>Null layers are added in the sprite's .anm2 file by setting the type to "Null" when adding a layer. The size and relative position of the null layer is dependant on the position and scale of the frame.</p>
 <p>You can use <a href="../Entity.html#getnullcapsule">Entity:GetNullCapsule()</a> to generate a capsule of the current frame in a specified null layer.</p>
 <h2 id="code">Code<a class="headerlink" href="#code" title="Permanent link">⚓︎</a></h2>
