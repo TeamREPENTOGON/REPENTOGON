@@ -23,5 +23,5 @@ struct BeamRenderer depends (ANM2) {
 	unsigned int _layer : 0x114;
 	bool _useOverlayData : 0x118;
 	bool _unkBool : 0x119;
-	vector_Point _points : 0x11c;
-} : 0x128;
+	deque_Point _points : 0x11c;
+} : 0x130;
