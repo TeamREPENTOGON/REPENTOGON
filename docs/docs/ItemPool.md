@@ -7,7 +7,12 @@ tags:
 ## Functions
 
 ### CanSpawnCollectible () {: aria-label='Functions' }
-#### boolean CanSpawnCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean UnkFlag ) {: .copyable aria-label='Functions' }
+#### boolean CanSpawnCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean ignoreLocked ) {: .copyable aria-label='Functions' }
+
+???+ info "IgnoreLocked"
+    If `IgnoreLocked` is set to true, this function will return true for items that could appear but are locked behind achievements.
+    
+    It will still return false if the item was removed from the item pool or if it can't appear because other effects (Tainted Lost offensive items mechanic or NO! trinket effect).
 
 ___
 ### GetCardEx () {: aria-label='Functions' }
