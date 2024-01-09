@@ -6304,16 +6304,22 @@
 <h3 aria-label="Functions" id="getoutcomes">GetOutcomes ()<a class="headerlink" href="#getoutcomes" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="table-getoutcomes">table[] GetOutcomes ( )<a class="headerlink" href="#table-getoutcomes" title="Permanent link">⚓︎</a></h4>
 <p>Returns a table containing a list of all outcomes in the picker.</p>
-<p>??- info "Table structure &amp; usage"
-    - The returned table contains a list of outcomes, where each outcome is a table containing the following fields: 
-        * Value: value of the outcome
-        * Weight: weight of the outcome
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<details class="- info">
+<summary>Table structure &amp; usage</summary>
+<ul>
+<li>The returned table contains a list of outcomes, where each outcome is a table containing the following fields: <ul>
+<li>Value: value of the outcome</li>
+<li>Weight: weight of the outcome
+    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">outcome</span> <span class="kr">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">GetOutcomes</span><span class="p">())</span> <span class="kr">do</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">outcome</span><span class="p">.</span><span class="n">Value</span><span class="p">,</span> <span class="n">outcome</span><span class="p">.</span><span class="n">Weight</span><span class="p">)</span>
 <span class="kr">end</span>
-</code></pre></div></td></tr></table></div></p>
+</code></pre></div></td></tr></table></div></li>
+</ul>
+</li>
+</ul>
+</details>
 <hr />
 
 
