@@ -70,7 +70,6 @@ LUA_FUNCTION(Lua_BeamAdd) {
 }
 
 LUA_FUNCTION(Lua_BeamRender) {
-	__debugbreak();
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	int8_t error = -1;
 	bool clearPoints = lua::luaL_optboolean(L, 2, true);
