@@ -1022,6 +1022,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getdamagecountdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetDamageCountdown ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getdebugshape" class="md-nav__link">
     <span class="md-ellipsis">
       GetDebugShape ()
@@ -1178,6 +1187,15 @@
   <a href="#setcolorparams" class="md-nav__link">
     <span class="md-ellipsis">
       SetColorParams ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setdamagecountdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetDamageCountdown ()
     </span>
   </a>
   
@@ -3395,6 +3413,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getdamagecountdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetDamageCountdown ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getdebugshape" class="md-nav__link">
     <span class="md-ellipsis">
       GetDebugShape ()
@@ -3551,6 +3578,15 @@
   <a href="#setcolorparams" class="md-nav__link">
     <span class="md-ellipsis">
       SetColorParams ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setdamagecountdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetDamageCountdown ()
     </span>
   </a>
   
@@ -7035,6 +7071,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getdamagecountdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetDamageCountdown ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getdebugshape" class="md-nav__link">
     <span class="md-ellipsis">
       GetDebugShape ()
@@ -7191,6 +7236,15 @@
   <a href="#setcolorparams" class="md-nav__link">
     <span class="md-ellipsis">
       SetColorParams ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setdamagecountdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetDamageCountdown ()
     </span>
   </a>
   
@@ -7377,6 +7431,11 @@
 <h4 aria-label="Functions" class="copyable" id="colorparams-getcolorparams"><a href="ColorParams.html">ColorParams</a>[] GetColorParams ( )<a class="headerlink" href="#colorparams-getcolorparams" title="Permanent link">⚓︎</a></h4>
 <p>Returns a table of all colors currently queued by <code>SetColor</code> alongside their parameters.</p>
 <hr />
+<h3 aria-label="Functions" id="getdamagecountdown">GetDamageCountdown ()<a class="headerlink" href="#getdamagecountdown" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="int-getdamagecountdown">int GetDamageCountdown ( )<a class="headerlink" href="#int-getdamagecountdown" title="Permanent link">⚓︎</a></h4>
+<p>If the entity recently took damage with the DAMAGE_COUNTDOWN <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlag</a>, this returns how many more frames must pass before they can take damage with the DAMAGE_COUNTDOWN <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlag</a> again.</p>
+<p>Note that this is NOT the same as the player's invincibility frames (<code>EntityPlayer:GetDamageCooldown()</code>). The DAMAGE_COUNTDOWN <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlag</a> and this associated countdown are typically used to control how rapidly an enemy will take damage from the few sources that uses that flag, such as the the collision damage effects from the "My Little Unicorn", "The Nail", and "The Gamekid".</p>
+<hr />
 <h3 aria-label="Functions" id="getdebugshape">GetDebugShape ()<a class="headerlink" href="#getdebugshape" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="shape-getdebugshape-boolean-unknown"><a href="renderer/Shape.html">Shape</a> GetDebugShape ( boolean Unknown )<a class="headerlink" href="#shape-getdebugshape-boolean-unknown" title="Permanent link">⚓︎</a></h4>
 <hr />
@@ -7450,6 +7509,11 @@
 <h3 aria-label="Functions" id="setcolorparams">SetColorParams ()<a class="headerlink" href="#setcolorparams" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcolorparams-colorparams-params">void SetColorParams ( <a href="ColorParams.html">ColorParams</a>[] Params )<a class="headerlink" href="#void-setcolorparams-colorparams-params" title="Permanent link">⚓︎</a></h4>
 <p>Sets colors to be used alongside their parameters.</p>
+<hr />
+<h3 aria-label="Functions" id="setdamagecountdown">SetDamageCountdown ()<a class="headerlink" href="#setdamagecountdown" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-setdamagecountdown-int-countdown">void SetDamageCountdown ( int countdown )<a class="headerlink" href="#void-setdamagecountdown-int-countdown" title="Permanent link">⚓︎</a></h4>
+<p>Sets how many frames must pass before the entity can take damage that has the DAMAGE_COUNTDOWN <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlag</a>.</p>
+<p>Note that this is NOT the same as the player's invincibility frames (<code>EntityPlayer:GetDamageCooldown()</code>). The DAMAGE_COUNTDOWN <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlag</a> and this associated countdown are typically used to control how rapidly an enemy will take damage from the few sources that uses that flag, such as the the collision damage effects from the "My Little Unicorn", "The Nail", and "The Gamekid".</p>
 <hr />
 <h3 aria-label="Functions" id="setdead">SetDead ()<a class="headerlink" href="#setdead" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setdead-boolean-isdead">void SetDead ( boolean IsDead )<a class="headerlink" href="#void-setdead-boolean-isdead" title="Permanent link">⚓︎</a></h4>
