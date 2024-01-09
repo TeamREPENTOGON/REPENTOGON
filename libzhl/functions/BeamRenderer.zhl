@@ -10,7 +10,9 @@ static void BeamRenderer::Add(Vector *point, ColorMod * color, float spritesheet
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0010000a1????????33c58945??5657508d45??64a3????????8b3d":
 static void BeamRenderer::End();
 
-struct BeamRenderer depends (ANM2) {
+// we don't actually use Point here, just a deque, but for some reason
+// the deque insists that Point must be defined before BeamRenderer
+struct BeamRenderer depends (ANM2, Point) {
 	{{
 		BeamRenderer(unsigned int layer, bool useOverlayData, bool unkBool) : _layer(layer), _useOverlayData(useOverlayData), _unkBool(unkBool) {}
 	
