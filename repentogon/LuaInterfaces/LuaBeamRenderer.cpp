@@ -132,9 +132,35 @@ LUA_FUNCTION(Lua_BeamGetSprite) {
 LUA_FUNCTION(Lua_BeamSetSprite) {
 	BeamRenderer* beam = lua::GetUserdata<BeamRenderer*>(L, 1, lua::metatables::BeamMT);
 	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
+	
+	if (lua_gettop(L) > 2) {
+		int layerID = beam->_layer;
+		if (lua_type(L, 3) == LUA_TSTRING) {
+			const char* layerName = luaL_checkstring(L, 3);
+			LayerState* layerState = anm2->GetLayer(layerName);
+			if (layerState != nullptr) {
+				layerID = layerState->GetLayerID();
+			}
+			else
+			{
+				return luaL_error(L, "Invalid layer name %s", layerName);
+			}
+		}
+		else if (lua_isinteger(L, 3)) {
+			layerID = (int)luaL_checkinteger(L, 3);
+			if (!IsValidLayerID(anm2, layerID)) {
+				return luaL_error(L, "Invalid layer ID %d", layerID);
+			}
+		}
+		
+		// hiding the layer set under a stack check to prevent the layer from being changed
+		// if the call would ultimately have errored
+		beam->_useOverlayData = lua::luaL_checkboolean(L, 4);
+		beam->_layer = layerID;
+	}
 	*beam->GetANM2() = *anm2;
-	return 0;
 
+	return 0;
 }
 
 LUA_FUNCTION(Lua_BeamGetLayer)
