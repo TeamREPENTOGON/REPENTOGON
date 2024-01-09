@@ -23,12 +23,91 @@ bool RoomConfig::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
 
 	switch (Shape) {
 	case ROOMSHAPE_1x1: {
-		bool validWall = includeWalls && (index <= 15 || index % 15 == 0 || index % 15 == 14 || (index >= 120 && index <= 134));
-		return validWall || index <= 119;
+		if (includeWalls) {
+			return index <= 134;
+		}
+		else {
+			return index <= 118 && /* Bottom wall */
+				index % 15 != 0 && /* Left wall */
+				index % 15 != 14 && /* Right wall */
+				index >= 16; /* Top wall */
+		}
+
+	case ROOMSHAPE_IH:
+		if (includeWalls) {
+			return index >= 30 && index <= 104;
+		}
+		else {
+			return index >= 46 && /* Top wall */
+				index <= 88 && /* Bottom wall */
+				index % 15 != 0 &&
+				index % 15 != 14; 
+		}
+
+	case ROOMSHAPE_IV:
+	case ROOMSHAPE_1x2:
+	case ROOMSHAPE_IIV:
+	case ROOMSHAPE_2x1:
+		break;
+
+	case ROOMSHAPE_IIH:
+		if (includeWalls) {
+			return index >= 56 && index <= 195;
+		}
+		else {
+			return index >= 85 &&
+				index <= 166 &&
+				index % 28 != 0 &&
+				index % 28 != 27;
+		}
+
+	case ROOMSHAPE_2x2:
+		break;
+
+	case ROOMSHAPE_LTL:
+		if (includeWalls) {
+			/* if (index <= 447) {
+				// Any index in the right half is valid
+				if (index % 28 > 12) {
+					return true;
+				}
+				else {
+					// Otherwise index must be higher than the first valid index
+					return index >= 181;
+				}
+			} 
+			else {
+				return false;
+			} */
+			return index <= 447 && ((index % 28 > 12 || index >= 181));
+		}
+		else {
+			return true;
+		}
 	}
 
 	default:
 		return true;
+	}
+}
+
+bool RoomConfig::IsAllowedGridIndex(lua_Integer index) const {
+	switch (Shape) {
+	case ROOMSHAPE_1x1:
+	case ROOMSHAPE_IH:
+	case ROOMSHAPE_IV:
+		return index >= 0 && index <= 134;
+
+	case ROOMSHAPE_1x2:
+	case ROOMSHAPE_IIV:
+		return index >= 0 && index <= 239;
+
+	case ROOMSHAPE_2x1:
+	case ROOMSHAPE_IIH:
+		return index >= 0 && index <= 251;
+
+	default:
+		return index >= 0 && index <= 447;
 	}
 }
 
