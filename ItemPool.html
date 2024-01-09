@@ -356,7 +356,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="examples/Capsules.md" class="md-tabs__link">
+        <a href="examples/Capsules.html" class="md-tabs__link">
           
   
   Example Mods
@@ -6107,7 +6107,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/Capsules.md" class="md-nav__link">
+      <a href="examples/Capsules.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -6341,7 +6341,12 @@
 <h1 id="class-itempool">Class "ItemPool"<a class="headerlink" href="#class-itempool" title="Permanent link">⚓︎</a></h1>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="canspawncollectible">CanSpawnCollectible ()<a class="headerlink" href="#canspawncollectible" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="boolean-canspawncollectible-collectibletype-collectible-boolean-unkflag">boolean CanSpawnCollectible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, boolean UnkFlag )<a class="headerlink" href="#boolean-canspawncollectible-collectibletype-collectible-boolean-unkflag" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="boolean-canspawncollectible-collectibletype-collectible-boolean-ignorelocked">boolean CanSpawnCollectible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, boolean ignoreLocked )<a class="headerlink" href="#boolean-canspawncollectible-collectibletype-collectible-boolean-ignorelocked" title="Permanent link">⚓︎</a></h4>
+<details class="info" open="open">
+<summary>IgnoreLocked</summary>
+<p>If <code>IgnoreLocked</code> is set to true, this function will return true for items that could appear but are locked behind achievements.</p>
+<p>It will still return false if the item was removed from the item pool or if it can't appear because other effects (Tainted Lost offensive items mechanic or NO! trinket effect).</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getcardex">GetCardEx ()<a class="headerlink" href="#getcardex" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="card-getcardex-int-seed-int-specialchance-int-runechance-int-suitchance-boolean-allownoncards"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html">Card</a> GetCardEx ( int Seed, int SpecialChance, int RuneChance, int SuitChance, boolean AllowNonCards )<a class="headerlink" href="#card-getcardex-int-seed-int-specialchance-int-runechance-int-suitchance-boolean-allownoncards" title="Permanent link">⚓︎</a></h4>
@@ -6400,11 +6405,40 @@
 <p>Currently not applied by pill modifications, such as PHD/False PHD.</p>
 <hr />
 <h3 aria-label="Functions" id="getremovedcollectibles">GetRemovedCollectibles ()<a class="headerlink" href="#getremovedcollectibles" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="collectibletype-getremovedcollectibles"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a>[] GetRemovedCollectibles ( )<a class="headerlink" href="#collectibletype-getremovedcollectibles" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="table-getremovedcollectibles">table GetRemovedCollectibles ( )<a class="headerlink" href="#table-getremovedcollectibles" title="Permanent link">⚓︎</a></h4>
 <p>Returns a table of <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">collectibles</a> removed from all pools.</p>
+<details class="- example">
+<summary>Example Code</summary>
+<p>This code checks if the sad onion has been removed.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">removedCollectibles</span> <span class="o">=</span> <span class="n">itemPool</span><span class="p">:</span><span class="n">GetRemovedCollectibles</span><span class="p">()</span>
+
+<span class="kr">if</span> <span class="n">removedCollectibles</span><span class="p">[</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_SAD_ONION</span><span class="p">]</span> <span class="kr">then</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad onion removed!&quot;</span><span class="p">)</span>
+<span class="kr">end</span>
+</code></pre></div></td></tr></table></div>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getroomblacklistedcollectibles">GetRoomBlacklistedCollectibles ()<a class="headerlink" href="#getroomblacklistedcollectibles" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="collectibletype-getroomblacklistedcollectibles"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a>[] GetRoomBlacklistedCollectibles ( )<a class="headerlink" href="#collectibletype-getroomblacklistedcollectibles" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="table-getroomblacklistedcollectibles">table GetRoomBlacklistedCollectibles ( )<a class="headerlink" href="#table-getroomblacklistedcollectibles" title="Permanent link">⚓︎</a></h4>
+<p>Returns a table of <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">collectibles</a> blacklisted in the current room.</p>
+<details class="- example">
+<summary>Example Code</summary>
+<p>This code checks if the sad onion has been removed.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">blacklistedCollectibles</span> <span class="o">=</span> <span class="n">itemPool</span><span class="p">:</span><span class="n">GetRoomBlacklistedCollectibles</span><span class="p">()</span>
+
+<span class="kr">if</span> <span class="n">blacklistedCollectibles</span><span class="p">[</span><span class="n">CollectibleType</span><span class="p">.</span><span class="n">COLLECTIBLE_SAD_ONION</span><span class="p">]</span> <span class="kr">then</span>
+  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad onion blacklisted!&quot;</span><span class="p">)</span>
+<span class="kr">end</span>
+</code></pre></div></td></tr></table></div>
+</details>
 <hr />
 <h3 aria-label="Functions" id="hascollectible">HasCollectible ()<a class="headerlink" href="#hascollectible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-hascollectible-collectibletype-collectible">boolean HasCollectible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible )<a class="headerlink" href="#boolean-hascollectible-collectibletype-collectible" title="Permanent link">⚓︎</a></h4>
