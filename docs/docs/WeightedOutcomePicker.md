@@ -4,6 +4,8 @@ tags:
 ---
 # Class "WeightedOutcomePicker"
 
+An example mod using the WeightedOutcomePicker class can be found [here.](./examples/WeightedOutcomes.md)
+
 ???+ info
     This class can be obtained using its constructor:
     ???+ example "Example Code"

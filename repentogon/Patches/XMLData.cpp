@@ -3261,6 +3261,36 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 }
 
 
+char* ParseModdedXMLAttributes(char* xml, const string& filename) {
+	//if (no) { return xml; }
+	bool did = false;
+	xml_document<char>* xmldoc = new xml_document<char>();
+	if (XMLParse(xmldoc, xml, filename)) {
+		xml_node<char>* root = xmldoc->first_node();
+			if (strcmp(filename.c_str(), "players.xml") == 0) {
+				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+					xml_attribute<char>* attr = auxnode->first_attribute("items");
+					if (attr) {
+						string parseditemlist = ComaSeparatedNamesToIds(string(auxnode->first_attribute("items")->value()), XMLStuff.ItemData);
+						xml_attribute<char>* newAttr = xmldoc->allocate_attribute("items", xmldoc->allocate_string(parseditemlist.c_str()));
+						auxnode->remove_attribute(attr);
+						auxnode->append_attribute(newAttr);
+						did = true;
+					}
+				}
+			}
+		ostringstream modifiedXmlStream;
+		modifiedXmlStream << *xmldoc;
+		delete xmldoc;
+		string modifiedXml = modifiedXmlStream.str();
+		xml = new char[modifiedXml.length() + 1];
+		std::strcpy(xml, modifiedXml.c_str());
+	}
+	//if (did) {printf("s: %s \n", xml);}
+	return xml;
+}
+
+
 
 bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 	size_t haystackLen = strlen(target);
@@ -3336,6 +3366,8 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 				super(BuildModdedXML(xmldata, "backdrops.xml", false));
 		}else if (charfind(xmldata, "<bosse", 50)) {
 			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
+		}else if (charfind(xmldata, "<playe", 50)) {
+			super(ParseModdedXMLAttributes(xmldata, "players.xml"));
 		}
 		else if (charfind(xmldata, "<ach", 50)) {
 			XMLStuff.AchievementData->Clear();

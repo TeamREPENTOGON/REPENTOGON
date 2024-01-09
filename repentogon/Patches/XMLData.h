@@ -512,6 +512,49 @@ struct XMLData {
 };
 
 
+inline bool isvalidid(const string& str) {
+	if (str.length() > 0) {
+		char* endPtr;
+		int returnval = strtol(str.c_str(), &endPtr, 0);
+		if (endPtr != "\0") {
+			return returnval > 0;
+		}
+	}
+	return false;
+}
+
+inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldata) {
+	size_t start = 0;
+	size_t pos = names.find(',');
+	string item;
+	string parsedlist = "";
+	while (pos != std::string::npos) {
+		item = names.substr(start, pos - start);
+		printf("%s \n", item.c_str());
+		if (!isvalidid(item)) {
+			if (xmldata->byname.find(item) != xmldata->byname.end()) {
+				parsedlist += to_string(xmldata->byname[item]) + ",";
+			}
+		}
+		else {
+			parsedlist += item + ",";
+		}
+		start = pos + 1;
+		pos = names.find(',', start);
+	}
+	std::string lastItem = names.substr(start);
+	if (!isvalidid(lastItem)) {
+		if (xmldata->byname.find(lastItem) != xmldata->byname.end()) {
+			parsedlist += to_string(xmldata->byname[lastItem]);
+		}
+	}
+	else {
+		parsedlist += lastItem;
+	}
+	//printf("itemlist: %s (%s) \n", parsedlist.c_str(),names.c_str());
+	return parsedlist;
+}
+
 extern unordered_map<string, int> xmlnodeenum;
 inline void initxmlnodeenum() {
 	xmlnodeenum["entity"] = 1;
