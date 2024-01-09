@@ -11,7 +11,7 @@ tags:
 
 ???+ info "IgnoreLocked"
     If `IgnoreLocked` is set to true, this function will return true for items that could appear but are locked behind achievements.
-    
+
     It will still return false if the item was removed from the item pool or if it can't appear because other effects (Tainted Lost offensive items mechanic or NO! trinket effect).
 
 ___
@@ -49,12 +49,35 @@ Currently not applied by pill modifications, such as PHD/False PHD.
 
 ___
 ### GetRemovedCollectibles () {: aria-label='Functions' }
-#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
+#### table GetRemovedCollectibles ( ) {: .copyable aria-label='Functions' }
 Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) removed from all pools.
+
+???- example "Example Code"
+    This code checks if the sad onion has been removed.
+
+    ```lua
+    local removedCollectibles = itemPool:GetRemovedCollectibles()
+
+    if removedCollectibles[CollectibleType.COLLECTIBLE_SAD_ONION] then
+      print("Sad onion removed!")
+    end
+    ```
 
 ___
 ### GetRoomBlacklistedCollectibles () {: aria-label='Functions' }
-#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetRoomBlacklistedCollectibles ( ) {: .copyable aria-label='Functions' }
+#### table GetRoomBlacklistedCollectibles ( ) {: .copyable aria-label='Functions' }
+Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) blacklisted in the current room.
+
+???- example "Example Code"
+    This code checks if the sad onion has been removed.
+
+    ```lua
+    local blacklistedCollectibles = itemPool:GetRoomBlacklistedCollectibles()
+
+    if blacklistedCollectibles[CollectibleType.COLLECTIBLE_SAD_ONION] then
+      print("Sad onion blacklisted!")
+    end
+    ```
 
 ___
 ### HasCollectible () {: aria-label='Functions' }
