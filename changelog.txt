@@ -9,7 +9,9 @@ Additions:
 	- Get/SetWrapTMode
 	- these play some currently unknown role in allowing sprites to wrap around, and is required for Beam sprites
 * Added PRE_PLAYERHUD_RENDER_HEARTS(Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown) callback, returning true cancels hearts HUD rendering
-* Add support for custom items in the items attr on players.xml by using their name instead of id.
+* Added support for custom items in the items attr on players.xml by using their name instead of id.
+* Added support for modded startitems,playertype and starttrinkets in challenges.xml.
+* Added support for custom achievements in the achievement attribute for items.xml(locking items now possible?)
 /newline/
 Fixes:
 * Fix GridEntity render callbacks being massively broken
@@ -20,6 +22,7 @@ Fixes:
 * Fix Entity:AddWeakness duration being incorrect
 * Fix Beam:Add(Point) override
 * Fix nomarks players.xml attribute
+* Fix GetAchievementIdByName not working until Slot selection
 /newline/
 v1.0.4 - 
 Additions:

@@ -33,6 +33,9 @@ char* bosspoolsxml; //caching this ffs
 bool itempoolerror = false;
 bool xmlsloaded = false;
 
+char* achieveemntsxmlpreload = "";
+bool achievsloaded = false;
+
 char* lastmodid = "BaseGame";
 bool iscontent = false;
 bool isitemmetadata = false;
@@ -1137,11 +1140,11 @@ void ProcessXmlNode(xml_node<char>* node) {
 				achievement[stringlower(attr->name())] = string(attr->value());
 			}
 			string oldid = achievement["id"];
-			if ((achievement.find("id") != achievement.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+			if ((achievement.find("id") != achievement.end()) && (achievement["id"].length() > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = toint(achievement["id"]);
 			}
 			else {
-				if (achievement.find("id") != achievement.end()) { achievement["relativeid"] = achievement["id"]; }
+				if ((achievement.find("id") != achievement.end()) && (achievement["id"].length() > 0)) { achievement["relativeid"] = achievement["id"]; }
 				XMLStuff.AchievementData->maxid = XMLStuff.AchievementData->maxid + 1;
 				achievement["id"] = to_string(XMLStuff.AchievementData->maxid);
 				id = XMLStuff.AchievementData->maxid;
@@ -3263,28 +3266,36 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 
 char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 	//if (no) { return xml; }
-	bool did = false;
+	int did = 0;
 	xml_document<char>* xmldoc = new xml_document<char>();
 	if (XMLParse(xmldoc, xml, filename)) {
 		xml_node<char>* root = xmldoc->first_node();
 			if (strcmp(filename.c_str(), "players.xml") == 0) {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
-					xml_attribute<char>* attr = auxnode->first_attribute("items");
-					if (attr) {
-						string parseditemlist = ComaSeparatedNamesToIds(string(auxnode->first_attribute("items")->value()), XMLStuff.ItemData);
-						xml_attribute<char>* newAttr = xmldoc->allocate_attribute("items", xmldoc->allocate_string(parseditemlist.c_str()));
-						auxnode->remove_attribute(attr);
-						auxnode->append_attribute(newAttr);
-						did = true;
-					}
+					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "items");
+				}
+			}else if (strcmp(filename.c_str(), "challenges.xml") == 0) {
+				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.PlayerData, "playertype");
+					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "startingitems");
+					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "startingitems2");
+					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "startingtrinkets");
+					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievements");
 				}
 			}
-		ostringstream modifiedXmlStream;
-		modifiedXmlStream << *xmldoc;
-		delete xmldoc;
-		string modifiedXml = modifiedXmlStream.str();
-		xml = new char[modifiedXml.length() + 1];
-		std::strcpy(xml, modifiedXml.c_str());
+			else if (strcmp(filename.c_str(), "items.xml") == 0) {
+				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievement");
+				}
+			}
+			if (did > 0) { //so it doesnt do all this shit if nothing needed to be parsed
+				ostringstream modifiedXmlStream;
+				modifiedXmlStream << *xmldoc;
+				delete xmldoc;
+				string modifiedXml = modifiedXmlStream.str();
+				xml = new char[modifiedXml.length() + 1];
+				std::strcpy(xml, modifiedXml.c_str());
+			}
 	}
 	//if (did) {printf("s: %s \n", xml);}
 	return xml;
@@ -3321,6 +3332,19 @@ bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 	return false;
 }
 
+
+HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
+	bool iscontentax = iscontent;
+	iscontent = true;
+	char* a = BuildModdedXML(achieveemntsxmlpreload, "achievements.xml", false);//cover up the fact that achieveemnts are loaded before mods...
+	xml_document<char>* xmldoc = new xml_document<char>(); 
+	if (XMLParse(xmldoc, a, "achievements.xml")) {
+		ProcessXmlNode(xmldoc->first_node("achievements"));
+	}
+	iscontent = iscontentax;
+	mclear(a);
+	super();
+}
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 	if (xmlsloaded) {
@@ -3369,9 +3393,23 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}else if (charfind(xmldata, "<playe", 50)) {
 			super(ParseModdedXMLAttributes(xmldata, "players.xml"));
 		}
+		else if (charfind(xmldata, "<chal", 50)) {
+			super(ParseModdedXMLAttributes(xmldata, "challenges.xml"));
+		}
+		else if (charfind(xmldata, "<item", 50)) {
+			super(ParseModdedXMLAttributes(xmldata, "items.xml"));
+		}
 		else if (charfind(xmldata, "<ach", 50)) {
 			XMLStuff.AchievementData->Clear();
-			super(BuildModdedXML(xmldata, "achievements.xml", false));
+			if (!achievsloaded) {
+				achievsloaded = true;
+				achieveemntsxmlpreload = new char[strlen(xmldata) + 1];
+				strcpy(achieveemntsxmlpreload, xmldata);
+				super(xmldata);
+			}
+			else {
+				super(BuildModdedXML(xmldata, "achievements.xml", false));
+			}
 		}else if (charfind(xmldata, "<cuts", 50)) {
 			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
 		}

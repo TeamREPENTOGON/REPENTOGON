@@ -512,6 +512,7 @@ struct XMLData {
 };
 
 
+
 inline bool isvalidid(const string& str) {
 	if (str.length() > 0) {
 		char* endPtr;
@@ -530,7 +531,6 @@ inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldat
 	string parsedlist = "";
 	while (pos != std::string::npos) {
 		item = names.substr(start, pos - start);
-		printf("%s \n", item.c_str());
 		if (!isvalidid(item)) {
 			if (xmldata->byname.find(item) != xmldata->byname.end()) {
 				parsedlist += to_string(xmldata->byname[item]) + ",";
@@ -553,6 +553,33 @@ inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldat
 	}
 	//printf("itemlist: %s (%s) \n", parsedlist.c_str(),names.c_str());
 	return parsedlist;
+}
+
+inline bool MultiValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* xmldoc, XMLDataHolder* xmldata, const char* attrname) {
+	xml_attribute<char>* attr = auxnode->first_attribute(attrname);
+	if (attr) {
+		string parseditemlist = ComaSeparatedNamesToIds(string(auxnode->first_attribute(attrname)->value()), xmldata);
+		xml_attribute<char>* newAttr = xmldoc->allocate_attribute(attrname, xmldoc->allocate_string(parseditemlist.c_str()));
+		auxnode->remove_attribute(attr);
+		auxnode->append_attribute(newAttr);
+		return true;
+	}
+	return false;
+}
+
+inline bool SingleValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* xmldoc, XMLDataHolder* xmldata, const char* attrname) {
+	xml_attribute<char>* attr = auxnode->first_attribute(attrname);
+	if (attr && (!isvalidid(attr->value()))) {
+		string val = string(attr->value());
+		if (xmldata->byname.find(val) != xmldata->byname.end()) {
+			string parseditemlist = to_string(xmldata->byname[val]);
+			xml_attribute<char>* newAttr = xmldoc->allocate_attribute(attrname, xmldoc->allocate_string(parseditemlist.c_str()));
+			auxnode->remove_attribute(attr);
+			auxnode->append_attribute(newAttr);
+			return true;
+		}
+	}
+	return false;
 }
 
 extern unordered_map<string, int> xmlnodeenum;
