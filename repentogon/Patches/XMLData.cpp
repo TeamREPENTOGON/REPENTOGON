@@ -1139,8 +1139,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				achievement[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = achievement["id"];
-			if ((achievement.find("id") != achievement.end()) && (achievement["id"].length() > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
+			//string oldid = achievement["id"];
+			if ((achievement.find("id") != achievement.end()) && (achievement["id"].length() > 0) && (XMLStuff.AchievementData->maxid < 637)) {
 				id = toint(achievement["id"]);
 			}
 			else {
@@ -1152,9 +1152,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.AchievementData->maxid) {
 				XMLStuff.AchievementData->maxid = id;
 			}
-			if (oldid.length() > 0) { achievement["id"] = oldid; }
+			//if (oldid.length() > 0) { achievement["id"] = oldid; }
 			if (achievement.find("sourceid") == achievement.end()) {
-				achievement["sourceid"] = lastmodid;
+				achievement["sourceid"] = "BaseGame";
 			}
 			XMLStuff.AchievementData->ProcessChilds(auxnode, id);
 			if (achievement.count("name") == 0){
@@ -1163,14 +1163,15 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (achievement["name"].length() == 0) {
 				achievement["name"] = achievement["steam_name"];
 			}
-			//printf("achievement: %s (%d) \n", achievement["name"].c_str(),id);
-			if (achievement.count("relativeid") > 0) { XMLStuff.AchievementData->byrelativeid[lastmodid + achievement["relativeid"]] = id; }
-			XMLStuff.AchievementData->bynamemod[achievement["name"] + lastmodid] = id;
-			XMLStuff.AchievementData->bymod[lastmodid].push_back(id);
-			XMLStuff.AchievementData->byfilepathmulti.tab[currpath].push_back(id);
-			XMLStuff.AchievementData->byname[achievement["name"]] = id;
-			XMLStuff.AchievementData->nodes[id] = achievement;
-			XMLStuff.ModData->sounds[lastmodid] += 1;
+			//printf("achievement: %s (%d) \n", achievement["name"].c_str(),id);			
+				if (achievement.count("relativeid") > 0) { XMLStuff.AchievementData->byrelativeid[achievement["sourceid"] + achievement["relativeid"]] = id; }
+				XMLStuff.AchievementData->bynamemod[achievement["name"] + achievement["sourceid"]] = id;
+				XMLStuff.AchievementData->bymod[achievement["sourceid"]].push_back(id);
+				//XMLStuff.AchievementData->byfilepathmulti.tab[currpath].push_back(id);
+				XMLStuff.AchievementData->byname[achievement["name"]] = id;
+				XMLStuff.AchievementData->nodes[id] = achievement;
+				XMLStuff.ModData->sounds[achievement["sourceid"]] += 1;
+			
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
 	break;
