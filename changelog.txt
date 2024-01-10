@@ -30,6 +30,7 @@ Fixes:
 * Fix GetAchievementIdByName not working until Slot selection
 * Fix XmlData.GetByName and GetById returning the input instead of nil when not finding anything
 * Fix several XMLData Achievement SourceId clownery when mods set ids for their achievements
+* Fix binder for Familiar:UpdateDirtColor
 /newline/
 v1.0.4 - 
 Additions:
