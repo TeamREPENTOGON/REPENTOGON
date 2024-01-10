@@ -8,6 +8,9 @@ Additions:
 	- Get/SetWrapSMode
 	- Get/SetWrapTMode
 	- these play some currently unknown role in allowing sprites to wrap around, and is required for Beam sprites
+* Beam and Point have recieved some reworks in preparation for a future cord reimplementation
+	- The Sprite used in the Beam must be in the same "scope" as the Beam. For example, a global Sprite and local Beam works, but local Sprite` and global Beam won't. They can also both be global/local or in the same table.
+	- Point no longer has a Color object for the time being to save some space. It should hopefully return later, pending finding a good way to optimize it.
 * Added PRE_PLAYERHUD_RENDER_HEARTS(Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown) callback, returning true cancels hearts HUD rendering
 * Added support for custom items in the items attr on players.xml by using their name instead of id.
 * Added support for modded startitems,playertype and starttrinkets in challenges.xml.

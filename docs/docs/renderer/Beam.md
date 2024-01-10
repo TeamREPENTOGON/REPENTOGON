@@ -47,7 +47,7 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 ## Functions
 
 ### Add () {: aria-label='Functions' }
-#### void Add ( [Vector](../Vector.md) Position, float SpritesheetCoordinate, float Width = 1.0, [Color](../Color.md) PointColor = Default ) {: .copyable aria-label='Functions' }
+#### void Add ( [Vector](../Vector.md) Position, float SpritesheetCoordinate, float Width = 1.0 ) {: .copyable aria-label='Functions' }
 #### void Add ( [Point](Point.md) Point ) {: .copyable aria-label='Functions' }   
 Adds a point to the beam. Points are stored in order of adding.
 
