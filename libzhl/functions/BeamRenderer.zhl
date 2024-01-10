@@ -10,18 +10,20 @@ static void BeamRenderer::Add(Vector *point, ColorMod * color, float spritesheet
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0010000a1????????33c58945??5657508d45??64a3????????8b3d":
 static void BeamRenderer::End();
 
-struct BeamRenderer depends (ANM2) {
+// we don't actually use Point here, just a deque, but for some reason
+// the deque insists that Point must be defined before BeamRenderer
+struct BeamRenderer depends (ANM2, Point) {
 	{{
-		BeamRenderer(unsigned int layer, bool useOverlayData, bool unkBool) : _layer(layer), _useOverlayData(useOverlayData), _unkBool(unkBool) {}
+		BeamRenderer(ANM2& anm2, unsigned int layer, bool useOverlayData, bool unkBool) : _anm2(anm2), _layer(layer), _useOverlayData(useOverlayData), _unkBool(unkBool) {}
 	
 		inline ANM2* GetANM2() { return &this->_anm2; }
 		inline unsigned int* GetLayer() { return &this->_layer; }
 		inline bool* GetUseOverlay() { return &this->_useOverlayData; }
 		inline bool* GetUnkBool() { return &this->_unkBool; } 
 	}}
-	ANM2 _anm2 : 0x0;
-	unsigned int _layer : 0x114;
-	bool _useOverlayData : 0x118;
-	bool _unkBool : 0x119;
-	vector_Point _points : 0x11c;
-} : 0x128;
+	ANM2& _anm2 : 0x0;
+	unsigned int _layer : 0x4;
+	bool _useOverlayData : 0x8;
+	bool _unkBool : 0x9;
+	deque_Point _points : 0xc;
+} : 0x30;
