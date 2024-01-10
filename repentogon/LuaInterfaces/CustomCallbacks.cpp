@@ -134,23 +134,29 @@ HOOK_METHOD(HUD, PostUpdate, () -> void) {
 
 //HUD_POST_UPDATE callback end
 
-//HUD_POST_RENDER (id: 1022)
+//HUD_RENDER (1022) and POST_HUD_RENDER (1024)
 
 HOOK_METHOD(HUD, Render, () -> void) {
-	const int callbackid = 1022;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int precallbackid = 1022;
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
-
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(callbackid).call(1);
-
+		lua::LuaCaller(L).push(precallbackid).call(1);
 	}
+
 	super();
+
+	const int postcallbackid = 1024;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(postcallbackid).call(1);
+	}
 }
 
-//HUD_POST_RENDER callback end
+//(POST_)HUD_RENDER callbacks end
 
 //Character menu render Callback(id:1023)
 HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
