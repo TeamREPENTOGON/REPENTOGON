@@ -6415,11 +6415,11 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 </details>
 <h2 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Constructors" id="beam">Beam ()<a class="headerlink" href="#beam" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Constructors" class="copyable" id="beam-beam-sprite-sprite-int-layer-boolean-useoverlay-boolean-unkbool-int-pointspreallocatesize-8"><a href="Beam.html">Beam</a> Beam ( <a href="../Sprite.html">Sprite</a> Sprite, int Layer, boolean UseOverlay, boolean UnkBool, int PointsPreallocateSize = 8)<a class="headerlink" href="#beam-beam-sprite-sprite-int-layer-boolean-useoverlay-boolean-unkbool-int-pointspreallocatesize-8" title="Permanent link">⚓︎</a></h4>
-<h4 aria-label="Constructors" class="copyable" id="beam-beam-sprite-sprite-string-layername-boolean-useoverlay-boolean-unkbool-int-pointspreallocatesize-8"><a href="Beam.html">Beam</a> Beam ( <a href="../Sprite.html">Sprite</a> Sprite, string LayerName, boolean UseOverlay, boolean UnkBool int PointsPreallocateSize = 8)<a class="headerlink" href="#beam-beam-sprite-sprite-string-layername-boolean-useoverlay-boolean-unkbool-int-pointspreallocatesize-8" title="Permanent link">⚓︎</a></h4>
-<details class="- note">
-<summary>Notes</summary>
-<p><code>PointsPreallocateSize</code> is the amount of space that <code>Beam</code> will reserve to hold points. This is not a hard limit, but going past this amount will incur a performance cost as more memory must be allocated to hold new ones.</p>
+<h4 aria-label="Constructors" class="copyable" id="beam-beam-sprite-sprite-int-layer-boolean-useoverlay-boolean-unkbool"><a href="Beam.html">Beam</a> Beam ( <a href="../Sprite.html">Sprite</a> Sprite, int Layer, boolean UseOverlay, boolean UnkBool )<a class="headerlink" href="#beam-beam-sprite-sprite-int-layer-boolean-useoverlay-boolean-unkbool" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Constructors" class="copyable" id="beam-beam-sprite-sprite-string-layername-boolean-useoverlay-boolean-unkbool"><a href="Beam.html">Beam</a> Beam ( <a href="../Sprite.html">Sprite</a> Sprite, string LayerName, boolean UseOverlay, boolean UnkBool )<a class="headerlink" href="#beam-beam-sprite-sprite-string-layername-boolean-useoverlay-boolean-unkbool" title="Permanent link">⚓︎</a></h4>
+<details class="warning" open="open">
+<summary>Warning</summary>
+<p>The <code>Sprite</code> used in the Beam must be in the same "scope" as the Beam. For example, a global <code>Sprite</code> and <code>local Beam</code> works, but <code>local Sprite</code> and global <code>Beam</code> won't. They can also both be global/local or in the same table.</p>
 </details>
 <details class="- example">
 <summary>Example Code</summary>
@@ -6440,14 +6440,20 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 <span class="normal">14</span>
 <span class="normal">15</span>
 <span class="normal">16</span>
-<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">Sprite</span><span class="p">()</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">spritesheetHeight</span> <span class="o">=</span> <span class="mi">64</span>
+
+<span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">Sprite</span><span class="p">()</span>
 <span class="n">sprite</span><span class="p">:</span><span class="n">Load</span><span class="p">(</span><span class="s2">&quot;gfx/1000.193_anima chain.anm2&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+<span class="n">sprite</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">layer</span> <span class="o">=</span> <span class="n">sprite</span><span class="p">:</span><span class="n">GetLayer</span><span class="p">(</span><span class="s2">&quot;chain&quot;</span><span class="p">)</span>
+<span class="n">layer</span><span class="p">:</span><span class="n">SetWrapSMode</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">layer</span><span class="p">:</span><span class="n">SetWrapTMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
 <span class="kd">local</span> <span class="n">chain</span> <span class="o">=</span> <span class="n">Beam</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="s2">&quot;chain&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
-<span class="n">chain</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">():</span><span class="n">Play</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
-<span class="kd">local</span> <span class="n">layer</span> <span class="o">=</span> <span class="n">chain</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">():</span><span class="n">GetLayer</span><span class="p">(</span><span class="s2">&quot;chain&quot;</span><span class="p">)</span>
-<span class="n">layer</span><span class="p">:</span><span class="n">SetWrapSMode</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">-- these are critical, otherwise</span>
-<span class="n">layer</span><span class="p">:</span><span class="n">SetWrapTMode</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">-- the beam sprite won&#39;t wrap!</span>
-<span class="kd">local</span> <span class="n">spritesheetHeight</span> <span class="o">=</span> <span class="mi">64</span>
 
 <span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_PRE_PLAYER_RENDER</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
     <span class="kd">local</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">Game</span><span class="p">():</span><span class="n">GetRoom</span><span class="p">():</span><span class="n">GetCenterPos</span><span class="p">())</span>
@@ -6499,6 +6505,8 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 <hr />
 <h3 aria-label="Functions" id="setsprite">SetSprite ()<a class="headerlink" href="#setsprite" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setsprite-sprite-sprite">void SetSprite ( <a href="../Sprite.html">Sprite</a> Sprite )<a class="headerlink" href="#void-setsprite-sprite-sprite" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="void-setsprite-sprite-sprite-string-layername-bool-useoverlay">void SetSprite ( <a href="../Sprite.html">Sprite</a> Sprite, string LayerName, bool UseOverlay )<a class="headerlink" href="#void-setsprite-sprite-sprite-string-layername-bool-useoverlay" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="void-setsprite-sprite-sprite-int-layerid-bool-useoverlay">void SetSprite ( <a href="../Sprite.html">Sprite</a> Sprite, int LayerID, bool UseOverlay )<a class="headerlink" href="#void-setsprite-sprite-sprite-int-layerid-bool-useoverlay" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="setunkbool">SetUnkBool ()<a class="headerlink" href="#setunkbool" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setunkbool-boolean-unkbool">void SetUnkBool ( boolean UnkBool )<a class="headerlink" href="#void-setunkbool-boolean-unkbool" title="Permanent link">⚓︎</a></h4>
