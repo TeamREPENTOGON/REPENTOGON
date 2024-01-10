@@ -316,7 +316,22 @@ LUA_FUNCTION(Lua_PointGetPosition) {
 
 LUA_FUNCTION(Lua_PointSetPosition) {
 	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_lastPos = point->_pos;
 	point->_pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PointGetFixed) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	lua_pushboolean(L, point->_fixed);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetFixed) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	point->_fixed = lua::luaL_checkboolean(L, 2);
+	if (point->_fixed)
+		point->_lastPos = point->_pos;
 	return 0;
 }
 
@@ -334,6 +349,8 @@ static void RegisterBeamRenderer(lua_State* L) {
 		{ "SetUnkBool", Lua_BeamSetUnkBool},
 		{ "GetPoints", Lua_BeamGetPoints},
 		{ "SetPoints", Lua_BeamSetPoints},
+		{ "GetFixed", Lua_BeamGetPoints},
+		{ "SetFixed", Lua_BeamSetPoints},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::BeamMT, lua::metatables::BeamMT, functions, Lua_BeamRenderer__gc);
