@@ -20,11 +20,12 @@ unsigned int JAKOBSEN_ITERATIONS = 50; // number of times we will enforce the di
 
 class Rope {
   public:
-    Rope(Vector* start, Vector* end, unsigned int nPoints, float spriteStretchHeight, float spriteStretchWidth) {
-        _origin = *start;
+    Rope(Entity* origin, Vector* end, unsigned int nPoints, float spriteStretchHeight, float spriteStretchWidth) {
+        _originEntity = origin;
         _target = *end;
+        Vector* start = origin->GetPosition();
 
-        float ropeLength = (float)sqrt(pow(_origin.x - _target.x, 2) + pow(_origin.y - _target.y, 2));
+        float ropeLength = (float)sqrt(pow(start->x - _target.x, 2) + pow(start->y - _target.y, 2));
        
         // There is one less segment than there are Points
         unsigned int numSegments = nPoints - 1;
@@ -35,17 +36,17 @@ class Rope {
             // percent distance from start to end, 0.0->1.0
             float w = (float)i / (nPoints - 1);
 
-            Vector pos(w * _target.x + (1 - w) * _origin.x, w * _target.y + (1 - w) * _origin.y);
+            Vector pos(w * _target.x + (1 - w) * start->x, w * _target.y + (1 - w) * start->y);
             float spritesheetCoord = ropeLength * w * spriteStretchHeight;
 
-            Point p(pos, spritesheetCoord, spriteStretchWidth, false);
+            Point p(pos, spritesheetCoord, spriteStretchWidth, i == 0);
 
             _points.push_back(p);
         }
     }
 
-    void Update(Vector * newOrigin, Vector * newTarget) {
-        verletIntegration(newOrigin, newTarget);
+    void Update() {
+        verletIntegration();
         enforceConstraints();
     }
 
@@ -67,22 +68,18 @@ class Rope {
     // Target distance of a single segment
     float _desiredDistance;
 
-    Vector _origin;
+    Entity * _originEntity;
     Vector _target;
 
   private:
-    void verletIntegration(Vector* newOrigin, Vector* newTarget) {
-        for (auto p = _points.begin(); p != _points.end(); ++p) {
+    void verletIntegration() {
+        _points.begin()->_pos = *_originEntity->GetPosition();
+        _points.begin()->_lastPos = _points.begin()->_pos;
+
+        for (auto p = _points.begin()+1; p != _points.end(); ++p) {
             if (p->_fixed)
                 continue; // We do not want to move fixed Points
-            if (p == _points.begin()) {
-                p->_pos = *newOrigin;
-                continue;
-            }
-            if (p == _points.end() - 1) {
-                p->_pos = *newTarget;
-                continue;
-            }
+
             Vector copy = p->_pos;
 
             // Calculating previous velocity
