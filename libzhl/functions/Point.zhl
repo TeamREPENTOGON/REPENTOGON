@@ -7,3 +7,7 @@ struct Point depends (Vector) {
 	float _width : 0x10, _spritesheetCoordinate : 0x14;
 	bool _fixed : 0x18;
 } : 0x1c;
+
+struct PointDeque depends (Point) {
+	deque_Point deque : 0x0;
+} : 0x14;

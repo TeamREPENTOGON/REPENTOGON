@@ -21,6 +21,7 @@ unsigned int JAKOBSEN_ITERATIONS = 50; // number of times we will enforce the di
 class Rope {
   public:
     Rope(Entity* origin, Vector* end, unsigned int nPoints, float spriteStretchHeight, float spriteStretchWidth) {
+        printf("constructing rope: entity %p, start %f %f, end %f %f, nPoints %d, spriteStretchHeight %f, float spriteStretchWidth %f\n", origin, origin->GetPosition()->x, origin->GetPosition()->y, end->x, end->y, nPoints, spriteStretchHeight, spriteStretchWidth);
         _originEntity = origin;
         _target = *end;
         Vector* start = origin->GetPosition();
@@ -32,6 +33,8 @@ class Rope {
 
         _desiredDistance = ropeLength / numSegments;
 
+        printf("length: %f, segments : %d, avg distance: %f\n", ropeLength, numSegments, _desiredDistance);
+
         for (unsigned int i = 0; i < nPoints; i++) {
             // percent distance from start to end, 0.0->1.0
             float w = (float)i / (nPoints - 1);
@@ -40,6 +43,7 @@ class Rope {
             float spritesheetCoord = ropeLength * w * spriteStretchHeight;
 
             Point p(pos, spritesheetCoord, spriteStretchWidth, i == 0);
+            printf("created point at pos %f, %f with coord %f\n", p._pos.x, p._pos.y, p._spritesheetCoordinate);
 
             _points.push_back(p);
         }
@@ -51,12 +55,18 @@ class Rope {
     }
 
     void Render(ANM2* anm2, unsigned int layerID, bool useOverlay, bool unk) {
+        __debugbreak();
+        if (_points.size() < 2)
+            return;
+
         g_BeamRenderer->Begin(anm2, layerID, useOverlay, unk);
 
         #pragma warning(suppress:4533) 
         ColorMod color;
+        Vector buffer;
         for (auto it = _points.begin(); it != _points.end(); ++it) {
-            g_BeamRenderer->Add(&it->_pos, &color, it->_width, it->_spritesheetCoordinate);
+            Isaac::WorldToScreen(&buffer, &it->_pos);
+            g_BeamRenderer->Add(&buffer, &color, it->_width, it->_spritesheetCoordinate);
         }
 
         g_BeamRenderer->End();
@@ -73,12 +83,15 @@ class Rope {
 
   private:
     void verletIntegration() {
-        _points.begin()->_pos = *_originEntity->GetPosition();
-        _points.begin()->_lastPos = _points.begin()->_pos;
+        if (_originEntity != nullptr) {
+            _points.begin()->_pos = *_originEntity->GetPosition();
+            _points.begin()->_lastPos = _points.begin()->_pos;
+        }
 
         for (auto p = _points.begin()+1; p != _points.end(); ++p) {
+            // We do not want to move fixed Points
             if (p->_fixed)
-                continue; // We do not want to move fixed Points
+                continue; 
 
             Vector copy = p->_pos;
 
