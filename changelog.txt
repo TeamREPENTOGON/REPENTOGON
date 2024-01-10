@@ -11,7 +11,7 @@ Additions:
 * Added PRE_PLAYERHUD_RENDER_HEARTS(Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown) callback, returning true cancels hearts HUD rendering
 * Added support for custom items in the items attr on players.xml by using their name instead of id.
 * Added support for modded startitems,playertype and starttrinkets in challenges.xml.
-* Added support for custom achievements in the achievement attribute for items.xml(locking items now possible?)
+* Added support for custom achievements in the achievement attribute for items.xml(cant lock items yet tho...)
 * Added MC_POST_HUD_RENDER callback (good for rendering on top of the HUD)
 /newline/
 Fixes:
