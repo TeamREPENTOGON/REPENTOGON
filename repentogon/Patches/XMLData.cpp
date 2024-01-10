@@ -2259,7 +2259,7 @@ bool Lua_PushXMLSubNodes(lua_State* L, vector<XMLAttributes> node)
 
 bool Lua_PushXMLNode(lua_State* L, XMLAttributes node, unordered_map<string, vector <XMLAttributes>> childs)
 {
-	if (node.end() == node.begin()) { return false; }
+	if (node.end() == node.begin()) { lua_pushnil(L); return false; }
 	lua_newtable(L);
 	for each (const auto & att in node)
 	{
@@ -2340,8 +2340,10 @@ LUA_FUNCTION(Lua_GetFromEntity)
 		Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict);
 		Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
 	}
-	Lua_PushXMLNode(L, Node,Childs);
-	return 1;
+	if (Lua_PushXMLNode(L, Node, Childs)) {
+		return 1;
+	}
+	else { return 0; }
 }
 
 
@@ -2479,8 +2481,10 @@ LUA_FUNCTION(Lua_GetEntryByIdXML)
 		Childs = XMLStuff.NullItemData->childs[id];
 		break;
 	}
-	Lua_PushXMLNode(L, Node, Childs);
-	return 1;
+	if (Lua_PushXMLNode(L, Node, Childs)) {
+		return 1;
+	}
+	else { return 0; }
 }
 
 LUA_FUNCTION(Lua_GetEntryByNameXML)

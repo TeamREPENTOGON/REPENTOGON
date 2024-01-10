@@ -24,6 +24,7 @@ Fixes:
 * Fix Beam:Add(Point) override
 * Fix nomarks players.xml attribute
 * Fix GetAchievementIdByName not working until Slot selection
+* Fix XmlData.GetByName and GetById returning the input instead of nil when not finding anything
 /newline/
 v1.0.4 - 
 Additions:
