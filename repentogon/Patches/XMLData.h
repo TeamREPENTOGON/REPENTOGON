@@ -125,17 +125,22 @@ public:
 		}
 	}
 
+	XMLAttributes  GetNodeById(int name) {
+		if (this->nodes.find(name) == this->nodes.end()) { return XMLAttributes(); }
+		return this->nodes[name];
+	}
+
 	XMLAttributes GetNodeByName(const string &name) {
 		if (this->byname.find(name) == this->byname.end()) { return XMLAttributes(); }
-		return this->nodes[this->byname[name]];
+		return this->GetNodeById(this->byname[name]);
 	}
 	XMLAttributes GetNodeByNameMod(const string &name) {
 		if (this->bynamemod.find(name) == this->bynamemod.end()) { return XMLAttributes(); }
-		return this->nodes[this->bynamemod[name]];
+		return this->GetNodeById(this->bynamemod[name]);
 	}
 	XMLAttributes GetNodesByMod(const string &name) {
 		if (this->bynamemod.find(name) == this->bynamemod.end()) { return XMLAttributes(); }
-		return this->nodes[this->bynamemod[name]];
+		return this->GetNodeById(this->bynamemod[name]);
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, int id) {
@@ -408,28 +413,34 @@ public:
 		maxid = 0;
 	}
 
+	XMLAttributes GetNodeById(tuple<int, int, int> name) {
+		if (this->nodes.find(name) == this->nodes.end()) { return XMLAttributes(); }
+		return this->GetNodeById(name);
+	}
+
 	XMLAttributes GetNodeByName(const string &name) {
-		return this->nodes[this->byname[name]];
+		return this->GetNodeById(this->byname[name]);
 	}
 	XMLAttributes GetNodeByNameMod(const string &name) {
-		return this->nodes[this->bynamemod[name]];
+		return this->GetNodeById(this->bynamemod[name]);
 	}
 	XMLAttributes GetNodesByMod(const string &name) {
-		return this->nodes[this->bynamemod[name]];
+		return this->GetNodeById(this->bynamemod[name]);
 	}
+
 	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub,bool strict ) {
 		tuple idx = { type, var, sub };
 		XMLAttributes none;
-		if (this->nodes.count({ type, var, sub }) > 0) {
+		if (this->nodes.find({ type, var, sub }) != this->nodes.end()) {
 			return this->nodes[{ type, var, sub }];
 		}
 		else if (strict) {
 			return none;
 		}
-		else if (this->nodes.count({ type, var, 0 }) > 0) {
+		else if (this->nodes.find({ type, var, 0 }) != this->nodes.end()) {
 			return this->nodes[{ type, var, 0 }];
 		}
-		else if (this->nodes.count({ type, 0, 0 }) > 0) {
+		else if (this->nodes.find({ type, 0, 0 }) != this->nodes.end()) {
 			return this->nodes[{ type, 0, 0 }];
 		}
 		return none;

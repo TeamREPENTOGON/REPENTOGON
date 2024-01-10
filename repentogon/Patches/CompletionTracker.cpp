@@ -718,16 +718,16 @@ int ischartainted = false;
 int hidemarks = false;
 
 XMLAttributes GetPlayerDataForMarks(int playerid) {
-	XMLAttributes playerdata = XMLStuff.PlayerData->nodes[playerid];
+	XMLAttributes playerdata = XMLStuff.PlayerData->GetNodeById(playerid);
 	if (playerdata.count("completionparent") > 0) {
 		string aidx = playerdata["sourceid"] + "-" + playerdata["completionparent"];
 		if (XMLStuff.PlayerData->bynamemod.count(aidx) == 0) {
 			if (XMLStuff.PlayerData->byname.count(playerdata["completionparent"]) > 0) {
-				return XMLStuff.PlayerData->nodes[XMLStuff.PlayerData->byname[playerdata["completionparent"]]];
+				return XMLStuff.PlayerData->GetNodeById(XMLStuff.PlayerData->byname[playerdata["completionparent"]]);
 			}
 		}
 		else {
-			return XMLStuff.PlayerData->nodes[XMLStuff.PlayerData->bynamemod[aidx]];
+			return XMLStuff.PlayerData->GetNodeById(XMLStuff.PlayerData->bynamemod[aidx]);
 		}
 	}
 	return playerdata;

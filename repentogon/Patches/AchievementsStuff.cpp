@@ -95,7 +95,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 		return super(achieveemntid);
 	}
 	ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
-	XMLAttributes modachiev = XMLStuff.AchievementData->nodes[achieveemntid];
+	XMLAttributes modachiev = XMLStuff.AchievementData->GetNodeById(achieveemntid);
 	string achievid = modachiev["name"] + modachiev["sourceid"];
 	if (Achievements[achievid] <= 1) {
 		Achievements[achievid] = 2; //2 is for notified, 1 is accomplished, <1 is in progress
@@ -142,7 +142,7 @@ HOOK_METHOD(AchievementOverlay, Update, () -> void) {
 		int achieveemntid = pendingachievs.front();
 		pendingachievs.pop();
 		ANM2* AchievPop = g_Manager->GetAchievementOverlay()->GetANM2();
-		XMLAttributes modachiev = XMLStuff.AchievementData->nodes[achieveemntid];
+		XMLAttributes modachiev = XMLStuff.AchievementData->GetNodeById(achieveemntid);
 		//if (modachiev.find("anm2") != modachiev.end()) {
 			//AchievPop->Load(modachiev["gfxroot"] + modachiev["anm2"], true);
 			//AchievPop->LoadGraphics(true);
@@ -181,7 +181,7 @@ HOOK_METHOD(PersistentGameData, Unlocked, (int achieveemntid) -> bool) {
 	if (achieveemntid < 638) {
 		return super(achieveemntid);
 	}
-	XMLAttributes modachiev = XMLStuff.AchievementData->nodes[achieveemntid];
+	XMLAttributes modachiev = XMLStuff.AchievementData->GetNodeById(achieveemntid);
 	string achievid = modachiev["name"] + modachiev["sourceid"];
 	return Achievements[achievid] > 0;
 }
@@ -215,7 +215,7 @@ bool LockAchievement(int achievementid) {
 		return had != ps->achievements[achievementid];
 	}
 	else {
-		XMLAttributes node = XMLStuff.AchievementData->nodes[achievementid];
+		XMLAttributes node = XMLStuff.AchievementData->GetNodeById(achievementid);
 		string idx = node["name"] + node["sourceid"];
 		bool had = Achievements[idx] > 0;
 		Achievements[idx] = -9999;
