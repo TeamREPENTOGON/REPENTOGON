@@ -32,6 +32,7 @@ Fixes:
 * Fix several XMLData Achievement SourceId clownery when mods set ids for their achievements
 * Fix XMLData GetNumEntries being inconsistent
 * Fix binder for Familiar:UpdateDirtColor
+* Fix FlatPatch spam in repentogon.log by reworking Quick Room Clear patch
 /newline/
 v1.0.4 - 
 Additions:
