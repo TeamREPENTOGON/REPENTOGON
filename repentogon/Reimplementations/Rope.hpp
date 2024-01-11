@@ -15,15 +15,15 @@
 #include <stdlib.h>
 #include <vector>
 
-float TIMESTEP = 0.01f;             // Δt in our equations
-unsigned int JAKOBSEN_ITERATIONS = 10; // number of times we will enforce the distance constraint
-
 class Rope {
   public:
-    Rope(Entity* origin, Vector* end, unsigned int nPoints, float spriteStretchHeight, float spriteStretchWidth) {
+    Rope(Entity* origin, Vector* end, unsigned int nPoints, float timestep, unsigned int iterations, float spriteStretchHeight, float spriteStretchWidth) {
         printf("constructing rope: entity %p, start %f %f, end %f %f, nPoints %d, spriteStretchHeight %f, float spriteStretchWidth %f\n", origin, origin->GetPosition()->x, origin->GetPosition()->y, end->x, end->y, nPoints, spriteStretchHeight, spriteStretchWidth);
         _originEntity = origin;
         _target = *end;
+        _timestep = timestep;
+        _iterations = iterations;
+
         Vector* start = origin->GetPosition();
 
         float ropeLength = (float)sqrt(pow(start->x - _target.x, 2) + pow(start->y - _target.y, 2));
@@ -79,6 +79,9 @@ class Rope {
 
     Entity * _originEntity;
     Vector _target;
+   
+    float _timestep;
+    unsigned int _iterations;
 
   private:
     void verletIntegration() {
@@ -95,10 +98,10 @@ class Rope {
             Vector copy = p._pos;
 
             // Calculating previous velocity
-            Vector velocity((p._pos.x - p._lastPos.x) / TIMESTEP, (p._pos.y - p._lastPos.y) / TIMESTEP);
+            Vector velocity((p._pos.x - p._lastPos.x) / _timestep, (p._pos.y - p._lastPos.y) / _timestep);
 
             // Updating Point's position
-            p._pos += velocity * TIMESTEP;
+            p._pos += velocity * _timestep;
 
             p._lastPos = copy;
         }
@@ -106,8 +109,8 @@ class Rope {
 
     void enforceConstraints() {
         // We perform the enforcement multiple times
-        for (unsigned int iteration = 0; iteration < JAKOBSEN_ITERATIONS; iteration++) {
-            printf("iteration %d: ", iteration);
+        for (unsigned int iteration = 0; iteration < _iterations; iteration++) {
+            //printf("iteration %d: ", iteration);
             // We iterate over each pair of points
             for (size_t i = 1; i < _points.deque.size(); i++) {
                 Point &p1 = _points.deque[i - 1];
@@ -117,34 +120,34 @@ class Rope {
                 float distance = (float)sqrt(pow(p1._pos.x - p2._pos.x, 2) + pow(p1._pos.y - p2._pos.y, 2));
                 float distanceError = distance - _desiredDistance;
 
-                printf("distance %f, error %f, ", distance, distanceError);
+                //printf("distance %f, error %f, ", distance, distanceError);
 
                  // The direction in which Points should be pulled or pushed
                 Vector difference(p2._pos.x - p1._pos.x, p2._pos.y - p1._pos.y);
-                printf("difference %f, %f, ", difference.x, difference.y);
+                //printf("difference %f, %f, ", difference.x, difference.y);
 
                 // We need to make it a unit vector
                 // This will allow us to easily scale the impact we have
                 // on each Point's position.
                 Vector direction(difference.x / (float)sqrt(pow(difference.x, 2) + pow(difference.y, 2)), difference.y / (float)sqrt(pow(difference.x, 2) + pow(difference.y, 2)));
-                printf("direction %f, %f\n", difference.x, difference.y);
+                //printf("direction %f, %f\n", difference.x, difference.y);
 
                 // Finally, we can update Points' positions
                 // We need to remember that fixed Points should stay in place
                 if (p1._fixed && !p2._fixed) {
                     p2._pos -= direction * distanceError;
-                    printf("moved p2, now %f, %f\n", p2._pos.x, p2._pos.y);
+                    //printf("moved p2, now %f, %f\n", p2._pos.x, p2._pos.y);
                 } else if (p2._fixed && !p1._fixed) {
                     p1._pos += direction * distanceError;
-                    printf("moved p1, now %f, %f\n", p1._pos.x, p1._pos.y);
+                    //printf("moved p1, now %f, %f\n", p1._pos.x, p1._pos.y);
                 // keeping this comparison in case both points are fixed
                 } else if (!p1._fixed && !p2._fixed) {
                     p2._pos -= direction * distanceError * 0.5;
-                    printf("moved p2 halfway, now %f, %f\n", p2._pos.x, p2._pos.y);
+                    //printf("moved p2 halfway, now %f, %f\n", p2._pos.x, p2._pos.y);
                     p1._pos += direction * distanceError * 0.5;
-                    printf("moved p1 halfway, now %f, %f\n", p1._pos.x, p1._pos.y);
+                    //printf("moved p1 halfway, now %f, %f\n", p1._pos.x, p1._pos.y);
                 }
-                __debugbreak();
+                //__debugbreak();
             }
         }
     }

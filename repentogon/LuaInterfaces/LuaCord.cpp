@@ -8,9 +8,11 @@ LUA_FUNCTION(Lua_CreateCord) {
 	Entity* parent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	int numPoints = (int)luaL_checkinteger(L, 3);
-	float stretchHeight = (float)luaL_optnumber(L, 4, 1.0);
-	float stretchWidth = (float)luaL_optnumber(L, 5, 1.0);
-	Rope* toLua = lua::place<Rope>(L, lua::metatables::CordMT, parent, pos, numPoints, stretchHeight, stretchWidth);
+	float timestep = (float)luaL_optnumber(L, 4, 0.01);
+	int iterations = (int)luaL_optinteger(L, 5, 50);
+	float stretchHeight = (float)luaL_optnumber(L, 6, 1.0);
+	float stretchWidth = (float)luaL_optnumber(L, 7, 1.0);
+	Rope* toLua = lua::place<Rope>(L, lua::metatables::CordMT, parent, pos, numPoints, timestep, iterations, stretchHeight, stretchWidth);
 	luaL_setmetatable(L, lua::metatables::CordMT);
 	return 1;
 }
@@ -39,6 +41,30 @@ LUA_FUNCTION(Lua_CordGetPoints) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_CordGetTimestep) {
+	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
+	lua_pushnumber(L, rope->_timestep);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_CordSetTimestep) {
+	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
+	rope->_timestep = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_CordGetIterations) {
+	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
+	lua_pushinteger(L, rope->_iterations);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_CordSetIterations) {
+	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
+	rope->_iterations = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_Cord__gc) {
 	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
 	rope->~Rope();
@@ -49,6 +75,10 @@ static void RegisterCord(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "Render", Lua_CordRender},
 		{ "Update", Lua_CordUpdate},
+		{ "GetTimestep", Lua_CordGetTimestep},
+		{ "SetTimestep", Lua_CordSetTimestep},
+		{ "GetIterations", Lua_CordGetIterations},
+		{ "SetIterations", Lua_CordSetIterations},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::CordMT, lua::metatables::CordMT, functions, Lua_Cord__gc);
