@@ -70,7 +70,7 @@ ___
 ### BossType {: aria-label='Variables' }
 [ ](#){: .const .tooltip .badge }
 #### int BossType {: .copyable aria-label='Variables' }
-(EntityType)(https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the boss Delirium is currently transformed as.
+[EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) of the boss Delirium is currently transformed as.
 
 ___
 ### BossVariant {: aria-label='Variables' }

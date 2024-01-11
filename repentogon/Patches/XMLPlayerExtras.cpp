@@ -10,7 +10,7 @@
 HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsigned int subtype, unsigned int initSeed) -> void) {
 
 	super(type, variant, subtype, initSeed);
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[subtype];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(subtype);
 	std::map<std::string, int*> intValues = {
 		std::pair<std::string, int*> {"heartcontainers", this->GetMaxHearts()},
 		std::pair<std::string, int*> {"redhearts", this->GetRedHearts()},
@@ -44,7 +44,7 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 }
 
 HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[this->GetPlayerType()];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 
 	int orig = super();
 
@@ -67,7 +67,7 @@ float modCharacterLuck = 0;
 
 HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[this->GetPlayerType()];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 
 	std::tuple<std::string, float*, float> statValues[] = {
 	std::tuple<std::string, float*, float> {"speedmodifier", &modCharacterSpeed, 1},
@@ -88,7 +88,7 @@ HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
 }
 
 HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[this->GetPlayerType()];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 
 	int orig = super(keeper);
 
@@ -101,7 +101,8 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthLimit, 100, (bool keeper) -> int) {
 
 
 bool characterUnlocked(int id) {
-	std::string const& achievement = XMLStuff.PlayerData->nodes[id]["achievement"];
+	XMLAttributes att = XMLStuff.PlayerData->GetNodeById(id);
+	std::string const& achievement = att["achievement"];
 
 	if (!achievement.empty()) {
 		char* end = NULL;
@@ -115,7 +116,7 @@ bool characterUnlocked(int id) {
 }
 
 HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, ColorMod* color, Vector* scale) -> void) {
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[id];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(id);
 
 	ANM2** portrait = g_Manager->GetPlayerConfig()->at(id).GetModdedMenuPortraitANM2();
 	if ((*portrait) != nullptr) {
@@ -129,7 +130,7 @@ HOOK_METHOD(ModManager, RenderCustomCharacterPortraits, (int id, Vector* pos, Co
 
 HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(CharacterId);
 	bool disableState;
 	std::vector<const char*> layersToDisable = {
 		"Item Name",
@@ -175,7 +176,7 @@ HOOK_STATIC_PRIORITY(ModManager, RenderCustomCharacterMenu, -100, (int Character
 HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* RenderPos, ANM2* DefaultSprite) -> void, __stdcall) {
 	super(CharacterId, RenderPos, DefaultSprite);
 
-	XMLAttributes playerXML = XMLStuff.PlayerData->nodes[CharacterId];
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(CharacterId);
 
 	if (!characterUnlocked(CharacterId))
 		g_MenuManager->GetMenuCharacter()->IsCharacterUnlocked = false;
@@ -191,7 +192,7 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 
 	// First, for modded characters, build a list of all bSkinParents
 	for (unsigned int i = 41; i < g_Manager->GetPlayerConfig()->size(); ++i) {
-		XMLAttributes playerXML = XMLStuff.PlayerData->nodes[g_Manager->GetPlayerConfig()->at(i)._id];
+		XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(g_Manager->GetPlayerConfig()->at(i)._id);
 		if (!playerXML["bskinparent"].empty()) {
 			logViewer.AddLog("[REPENTOGON]", "Pushing back %s as a b-skin parent\n", playerXML["bskinparent"].c_str());
 			bSkinParents.push_back(playerXML["bskinparent"]);
@@ -239,7 +240,7 @@ HOOK_METHOD(Menu_Character, SelectRandomChar, () -> void) {
 			offset++;
 		}
 		else {
-			XMLAttributes playerXML = XMLStuff.PlayerData->nodes[player._id];
+			XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(player._id);
 
 			// This character is invalid for the current menu, skip
 			if ((GetSelectedCharacterMenu() == 0 && !playerXML["bskinparent"].empty()) ||

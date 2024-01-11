@@ -157,11 +157,18 @@ LUA_FUNCTION(lua_RoomGetRail) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	lua_Integer index = luaL_checkinteger(L, 2);
 
-	if (!room->IsValidGridIndex(index, false)) {
-		return luaL_error(L, "Invalid grind index %lld\n", index);
+	if (!room->_descriptor->Data->IsAllowedGridIndex(index)) {
+		// return luaL_error(L, "Invalid grid index %I\n", index);
+		lua_pushnil(L);
+	} else {
+		uint8_t railType = room->GetRailType((uint8_t)index);
+		if (railType == 255) {
+			lua_pushnil(L);
+		}
+		else {
+			lua_pushinteger(L, railType);
+		}
 	}
-
-	lua_pushinteger(L, room->GetRailType((uint8_t)index));
 
 	return 1;
 }

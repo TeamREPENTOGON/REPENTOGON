@@ -125,17 +125,22 @@ public:
 		}
 	}
 
+	XMLAttributes  GetNodeById(int name) {
+		if (this->nodes.find(name) == this->nodes.end()) { return XMLAttributes(); }
+		return this->nodes[name];
+	}
+
 	XMLAttributes GetNodeByName(const string &name) {
 		if (this->byname.find(name) == this->byname.end()) { return XMLAttributes(); }
-		return this->nodes[this->byname[name]];
+		return this->GetNodeById(this->byname[name]);
 	}
 	XMLAttributes GetNodeByNameMod(const string &name) {
 		if (this->bynamemod.find(name) == this->bynamemod.end()) { return XMLAttributes(); }
-		return this->nodes[this->bynamemod[name]];
+		return this->GetNodeById(this->bynamemod[name]);
 	}
 	XMLAttributes GetNodesByMod(const string &name) {
 		if (this->bynamemod.find(name) == this->bynamemod.end()) { return XMLAttributes(); }
-		return this->nodes[this->bynamemod[name]];
+		return this->GetNodeById(this->bynamemod[name]);
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, int id) {
@@ -408,28 +413,34 @@ public:
 		maxid = 0;
 	}
 
+	XMLAttributes GetNodeById(tuple<int, int, int> name) {
+		if (this->nodes.find(name) == this->nodes.end()) { return XMLAttributes(); }
+		return this->GetNodeById(name);
+	}
+
 	XMLAttributes GetNodeByName(const string &name) {
-		return this->nodes[this->byname[name]];
+		return this->GetNodeById(this->byname[name]);
 	}
 	XMLAttributes GetNodeByNameMod(const string &name) {
-		return this->nodes[this->bynamemod[name]];
+		return this->GetNodeById(this->bynamemod[name]);
 	}
 	XMLAttributes GetNodesByMod(const string &name) {
-		return this->nodes[this->bynamemod[name]];
+		return this->GetNodeById(this->bynamemod[name]);
 	}
+
 	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub,bool strict ) {
 		tuple idx = { type, var, sub };
 		XMLAttributes none;
-		if (this->nodes.count({ type, var, sub }) > 0) {
+		if (this->nodes.find({ type, var, sub }) != this->nodes.end()) {
 			return this->nodes[{ type, var, sub }];
 		}
 		else if (strict) {
 			return none;
 		}
-		else if (this->nodes.count({ type, var, 0 }) > 0) {
+		else if (this->nodes.find({ type, var, 0 }) != this->nodes.end()) {
 			return this->nodes[{ type, var, 0 }];
 		}
-		else if (this->nodes.count({ type, 0, 0 }) > 0) {
+		else if (this->nodes.find({ type, 0, 0 }) != this->nodes.end()) {
 			return this->nodes[{ type, 0, 0 }];
 		}
 		return none;
@@ -511,6 +522,76 @@ struct XMLData {
 	
 };
 
+
+
+inline bool isvalidid(const string& str) {
+	if (str.length() > 0) {
+		char* endPtr;
+		int returnval = strtol(str.c_str(), &endPtr, 0);
+		if (endPtr != "\0") {
+			return returnval > 0;
+		}
+	}
+	return false;
+}
+
+inline string ComaSeparatedNamesToIds(const string& names, XMLDataHolder* xmldata) {
+	size_t start = 0;
+	size_t pos = names.find(',');
+	string item;
+	string parsedlist = "";
+	while (pos != std::string::npos) {
+		item = names.substr(start, pos - start);
+		if (!isvalidid(item)) {
+			if (xmldata->byname.find(item) != xmldata->byname.end()) {
+				parsedlist += to_string(xmldata->byname[item]) + ",";
+			}
+		}
+		else {
+			parsedlist += item + ",";
+		}
+		start = pos + 1;
+		pos = names.find(',', start);
+	}
+	std::string lastItem = names.substr(start);
+	if (!isvalidid(lastItem)) {
+		if (xmldata->byname.find(lastItem) != xmldata->byname.end()) {
+			parsedlist += to_string(xmldata->byname[lastItem]);
+		}
+	}
+	else {
+		parsedlist += lastItem;
+	}
+	//printf("itemlist: %s (%s) \n", parsedlist.c_str(),names.c_str());
+	return parsedlist;
+}
+
+inline bool MultiValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* xmldoc, XMLDataHolder* xmldata, const char* attrname) {
+	xml_attribute<char>* attr = auxnode->first_attribute(attrname);
+	if (attr) {
+		string parseditemlist = ComaSeparatedNamesToIds(string(auxnode->first_attribute(attrname)->value()), xmldata);
+		xml_attribute<char>* newAttr = xmldoc->allocate_attribute(attrname, xmldoc->allocate_string(parseditemlist.c_str()));
+		auxnode->remove_attribute(attr);
+		auxnode->append_attribute(newAttr);
+		return true;
+	}
+	return false;
+}
+
+inline bool SingleValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* xmldoc, XMLDataHolder* xmldata, const char* attrname) {
+	xml_attribute<char>* attr = auxnode->first_attribute(attrname);
+	if (attr && (!isvalidid(attr->value()))) {
+		string val = string(attr->value());
+		if (xmldata->byname.find(val) != xmldata->byname.end()) {
+			string parseditemlist = to_string(xmldata->byname[val]);
+			xml_attribute<char>* newAttr = xmldoc->allocate_attribute(attrname, xmldoc->allocate_string(parseditemlist.c_str()));
+			auxnode->remove_attribute(attr);
+			auxnode->append_attribute(newAttr);
+			return true;
+		}
+	}
+	return false;
+}
 
 extern unordered_map<string, int> xmlnodeenum;
 inline void initxmlnodeenum() {

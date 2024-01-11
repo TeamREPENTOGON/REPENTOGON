@@ -12,24 +12,27 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 
 ## Constructors
 ### Beam () {: aria-label='Constructors' }
-#### [Beam](Beam.md) Beam ( [Sprite](../Sprite.md) Sprite, int Layer, boolean UseOverlay, boolean UnkBool, int PointsPreallocateSize = 8) {: .copyable aria-label='Constructors' }
-#### [Beam](Beam.md) Beam ( [Sprite](../Sprite.md) Sprite, string LayerName, boolean UseOverlay, boolean UnkBool int PointsPreallocateSize = 8) {: .copyable aria-label='Constructors' }
+#### [Beam](Beam.md) Beam ( [Sprite](../Sprite.md) Sprite, int Layer, boolean UseOverlay, boolean UnkBool ) {: .copyable aria-label='Constructors' }
+#### [Beam](Beam.md) Beam ( [Sprite](../Sprite.md) Sprite, string LayerName, boolean UseOverlay, boolean UnkBool ) {: .copyable aria-label='Constructors' }
 
-???- note "Notes"
-	`PointsPreallocateSize` is the amount of space that `Beam` will reserve to hold points. This is not a hard limit, but going past this amount will incur a performance cost as more memory must be allocated to hold new ones.
+???+ warning "Warning"
+	The `Sprite` used in the Beam must be in the same "scope" as the Beam. For example, a global `Sprite` and `local Beam` works, but `local Sprite` and global `Beam` won't. They can also both be global/local or in the same table.
 
 ???- example "Example Code"
 	Here is an example of how you would use this class:
 
     ```lua
+	local spritesheetHeight = 64
+	
 	local sprite = Sprite()
 	sprite:Load("gfx/1000.193_anima chain.anm2", true)
+	sprite:Play("Idle", false)
+	
+	local layer = sprite:GetLayer("chain")
+	layer:SetWrapSMode(1)
+	layer:SetWrapTMode(0)
+	
 	local chain = Beam(sprite, "chain", false, false)
-	chain:GetSprite():Play("Idle", false)
-	local layer = chain:GetSprite():GetLayer("chain")
-	layer:SetWrapSMode(1) -- these are critical, otherwise
-	layer:SetWrapTMode(0) -- the beam sprite won't wrap!
-	local spritesheetHeight = 64
 
 	mod:AddCallback(ModCallbacks.MC_PRE_PLAYER_RENDER, function(_, player)
 		local origin = Isaac.WorldToScreen(Game():GetRoom():GetCenterPos())
@@ -44,7 +47,7 @@ Note that this is a low-level class that strictly handles rendering. We hope to 
 ## Functions
 
 ### Add () {: aria-label='Functions' }
-#### void Add ( [Vector](../Vector.md) Position, float SpritesheetCoordinate, float Width = 1.0, [Color](../Color.md) PointColor = Default ) {: .copyable aria-label='Functions' }
+#### void Add ( [Vector](../Vector.md) Position, float SpritesheetCoordinate, float Width = 1.0 ) {: .copyable aria-label='Functions' }
 #### void Add ( [Point](Point.md) Point ) {: .copyable aria-label='Functions' }   
 Adds a point to the beam. Points are stored in order of adding.
 
@@ -65,7 +68,7 @@ Returns a table of the [Points](Point.md) currently stored.
 ___
 
 ### GetSprite () {: aria-label='Functions' }
-#### [Sprite](../Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }   
+#### [Sprite](../Sprite.md) GetSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetUnkBool () {: aria-label='Functions' }
@@ -91,7 +94,9 @@ Sets the [Points](Point.md) used by this.
 
 ___
 ### SetSprite () {: aria-label='Functions' }
-#### void SetSprite ( [Sprite](../Sprite.md) Sprite ) {: .copyable aria-label='Functions' }   
+#### void SetSprite ( [Sprite](../Sprite.md) Sprite ) {: .copyable aria-label='Functions' }
+#### void SetSprite ( [Sprite](../Sprite.md) Sprite, string LayerName, bool UseOverlay ) {: .copyable aria-label='Functions' }
+#### void SetSprite ( [Sprite](../Sprite.md) Sprite, int LayerID, bool UseOverlay ) {: .copyable aria-label='Functions' } 
 
 ___
 ### SetUnkBool () {: aria-label='Functions' }

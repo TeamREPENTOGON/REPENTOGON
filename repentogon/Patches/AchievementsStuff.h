@@ -531,7 +531,8 @@ extern string achivjsonpath;
 extern int toint(const string &str);
 
 inline void IncreaseAchievementCounter(int achievementid) {
-	string achievement = XMLStuff.AchievementData->nodes[achievementid]["name"] +  XMLStuff.AchievementData->nodes[achievementid]["sourceid"];
+	XMLAttributes node = XMLStuff.AchievementData->GetNodeById(achievementid);
+	string achievement = node["name"] + node["sourceid"];
 	if (Achievements[achievement] != 1) {
 		Achievements[achievement] += 1;
 		if (Achievements[achievement] == 1) {
@@ -592,7 +593,7 @@ inline void RunTrackersForEventCounter(int eventid, int charaid = -1) {
 
 
 inline int GetAchievementIdByName(const std::string &name) {
-	if (XMLStuff.AchievementData->byname.count(name) > 0) {
+	if (XMLStuff.AchievementData->byname.find(name) != XMLStuff.AchievementData->byname.end()) {
 		XMLAttributes ent = XMLStuff.AchievementData->GetNodeByName(name);
 		if ((ent.end() != ent.begin()) &&  (ent.count("id") > 0) && (ent["id"].length() > 0)) {
 			return stoi(ent["id"]);
@@ -659,7 +660,7 @@ inline void AddTrackers4Achiev(string idx,int i, XMLAttributes node) {
 
 inline void AccomplishCondition(int condid) {
 	int achievementid = Conditionals[condid];
-	XMLAttributes node = XMLStuff.AchievementData->nodes[achievementid];
+	XMLAttributes node = XMLStuff.AchievementData->GetNodeById(achievementid);
 	string idx = node["name"] + node["sourceid"];
 	Achievements[idx] += 1;
 	if (Achievements[idx] == 1) {
@@ -678,7 +679,7 @@ inline void InitAchievs() {
 	int condid = 0;
 	for (int i = 638; i <= XMLStuff.AchievementData->maxid; i++)
 	{
-		XMLAttributes node = XMLStuff.AchievementData->nodes[i];
+		XMLAttributes node = XMLStuff.AchievementData->GetNodeById(i);
 		if (node["name"].length() > 0) {
 			string idx = node["name"] + node["sourceid"];
 			Achievements[idx] = 0;

@@ -325,7 +325,7 @@ LUA_FUNCTION(Lua_LayerStateGetWrapTMode)
 LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	layerState->_wrapSMode = luaL_checkinteger(L, 2);
+	layerState->_wrapSMode = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }
@@ -333,7 +333,7 @@ LUA_FUNCTION(Lua_LayerStateSetWrapSMode)
 LUA_FUNCTION(Lua_LayerStateSetWrapTMode)
 {
 	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
-	layerState->_wrapTMode = luaL_checkinteger(L, 2);
+	layerState->_wrapTMode = (int)luaL_checkinteger(L, 2);
 
 	return 0;
 }

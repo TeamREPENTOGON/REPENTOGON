@@ -718,16 +718,16 @@ int ischartainted = false;
 int hidemarks = false;
 
 XMLAttributes GetPlayerDataForMarks(int playerid) {
-	XMLAttributes playerdata = XMLStuff.PlayerData->nodes[playerid];
+	XMLAttributes playerdata = XMLStuff.PlayerData->GetNodeById(playerid);
 	if (playerdata.count("completionparent") > 0) {
 		string aidx = playerdata["sourceid"] + "-" + playerdata["completionparent"];
 		if (XMLStuff.PlayerData->bynamemod.count(aidx) == 0) {
 			if (XMLStuff.PlayerData->byname.count(playerdata["completionparent"]) > 0) {
-				return XMLStuff.PlayerData->nodes[XMLStuff.PlayerData->byname[playerdata["completionparent"]]];
+				return XMLStuff.PlayerData->GetNodeById(XMLStuff.PlayerData->byname[playerdata["completionparent"]]);
 			}
 		}
 		else {
-			return XMLStuff.PlayerData->nodes[XMLStuff.PlayerData->bynamemod[aidx]];
+			return XMLStuff.PlayerData->GetNodeById(XMLStuff.PlayerData->bynamemod[aidx]);
 		}
 	}
 	return playerdata;
@@ -753,15 +753,17 @@ string GetMarksIdx(int playerid) {
 	return idx;
 }
 
-array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL) {
+array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL,bool forrender = false) {
 	array<int, 15> marks;
 	if (XMLStuff.PlayerData->nodes.count(playerid) > 0) {
 		XMLAttributes playerdata = GetPlayerDataForMarks(playerid);
 		string idx = GetMarksIdx(playerid);
-		hidemarks = false;
-		if (playerdata.count("nomarks") > 0) {
-			if (strcmp(stolower((char*)playerdata["sourceid"].c_str()).c_str(), "false") == 0) {
-				hidemarks = true;
+		if (forrender) {
+			hidemarks = false;
+			if (playerdata.count("nomarks") > 0) {
+				if (playerdata["nomarks"] != "false") {
+					hidemarks = true;
+				}
 			}
 		}
 		if (marks[CompletionType::ULTRA_GREED] == 2) {
@@ -886,7 +888,7 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 
 		ANM2* anm = cmpl->GetANM2();
 
-		array marks = GetMarksForPlayer(playertype, anm);
+		array marks = GetMarksForPlayer(playertype, anm,true);
 		if (!hidemarks) {
 			cmpl->CharacterId = playertype;
 			cmpl->Render(new Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
@@ -908,7 +910,7 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
 		ANM2* anm = cmpl->GetANM2();
 
-		array marks = GetMarksForPlayer(selectedchar, anm);
+		array marks = GetMarksForPlayer(selectedchar, anm,true);
 		if (!hidemarks) {
 			cmpl->CharacterId = selectedchar;
 			cmpl->Render(new Vector(ref->x + 80, ref->y + 860), new Vector(1, 1));

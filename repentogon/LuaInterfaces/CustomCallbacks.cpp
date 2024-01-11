@@ -134,23 +134,29 @@ HOOK_METHOD(HUD, PostUpdate, () -> void) {
 
 //HUD_POST_UPDATE callback end
 
-//HUD_POST_RENDER (id: 1022)
+//HUD_RENDER (1022) and POST_HUD_RENDER (1024)
 
 HOOK_METHOD(HUD, Render, () -> void) {
-	const int callbackid = 1022;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int precallbackid = 1022;
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
-
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaCaller(L).push(callbackid).call(1);
-
+		lua::LuaCaller(L).push(precallbackid).call(1);
 	}
+
 	super();
+
+	const int postcallbackid = 1024;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(postcallbackid).call(1);
+	}
 }
 
-//HUD_POST_RENDER callback end
+//(POST_)HUD_RENDER callbacks end
 
 //Character menu render Callback(id:1023)
 HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
@@ -2109,17 +2115,41 @@ HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, 
 	}
 }
 
-//POST_PLAYERHUD_RENDER_HEARTS (1091)
+//PRE/POST_PLAYERHUD_RENDER_HEARTS (1118/1091)
 HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &pos, float unk2) -> void) {
-	super(unk1, sprite, pos, unk2);
+	lua_State* L = g_LuaEngine->_state;
 
-	const int callbackid = 1091;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
+	const int callbackid1 = 1118;
+	if (CallbackState.test(callbackid1 - 1000)) {
+
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-		lua::LuaCaller(L).push(callbackid)
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
+			.pushnil()
+			.push(unk1, lua::Metatables::VECTOR)
+			.push(sprite, lua::Metatables::SPRITE)
+			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.push(unk2)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+	super(unk1, sprite, pos, unk2);
+
+	const int callbackid2 = 1091;
+	if (CallbackState.test(callbackid2 - 1000)) {
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid2)
 			.pushnil()
 			.push(unk1, lua::Metatables::VECTOR)
 			.push(sprite, lua::Metatables::SPRITE)

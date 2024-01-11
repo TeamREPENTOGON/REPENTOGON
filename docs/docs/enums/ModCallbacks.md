@@ -1012,6 +1012,13 @@ Alternatively accepts `true` to cancel item overlay show
 |:--|:--|:--|:--|:--|
 |1079 |MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, [Vector](../Vector.md) Offset, float Alpha, float Scale) | - | - |
 
+### MC_PRE_PLAYERHUD_RENDER_HEARTS
+Return `true` to cancel hearts HUD rendering.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1118 |MC_PRE_PLAYERHUD_RENDER_HEARTS {: .copyable } | ([Vector](../Vector.md) Offset(?), [Sprite](../Sprite.md) HeartsSprite, [Vector](../Vector.md) Position, float Unknown) | - | boolean |
+
 ### MC_POST_PLAYERHUD_RENDER_HEARTS
 
 |ID|Name|Function Args|Optional Args|Return Type|

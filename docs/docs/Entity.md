@@ -64,6 +64,13 @@ ___
 Returns a table of all colors currently queued by `SetColor` alongside their parameters.
 
 ___
+### GetDamageCountdown () {: aria-label='Functions' }
+#### int GetDamageCountdown ( ) {: .copyable aria-label='Functions' }
+If the entity recently took damage with the DAMAGE_COUNTDOWN [DamageFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html), this returns how many more frames must pass before they can take damage with the DAMAGE_COUNTDOWN [DamageFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) again.
+
+Note that this is NOT the same as the player's invincibility frames (`EntityPlayer:GetDamageCooldown()`). The DAMAGE_COUNTDOWN [DamageFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) and this associated countdown are typically used to control how rapidly an enemy will take damage from the few sources that uses that flag, such as the the collision damage effects from the "My Little Unicorn", "The Nail", and "The Gamekid".
+
+___
 ### GetDebugShape () {: aria-label='Functions' }
 #### [Shape](renderer/Shape.md) GetDebugShape ( boolean Unknown ) {: .copyable aria-label='Functions' }
 
@@ -151,6 +158,13 @@ ___
 ### SetColorParams () {: aria-label='Functions' }
 #### void SetColorParams ( [ColorParams](ColorParams.md)[] Params ) {: .copyable aria-label='Functions' }
 Sets colors to be used alongside their parameters.
+
+___
+### SetDamageCountdown () {: aria-label='Functions' }
+#### void SetDamageCountdown ( int countdown ) {: .copyable aria-label='Functions' }
+Sets how many frames must pass before the entity can take damage that has the DAMAGE_COUNTDOWN [DamageFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html).
+
+Note that this is NOT the same as the player's invincibility frames (`EntityPlayer:GetDamageCooldown()`). The DAMAGE_COUNTDOWN [DamageFlag](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) and this associated countdown are typically used to control how rapidly an enemy will take damage from the few sources that uses that flag, such as the the collision damage effects from the "My Little Unicorn", "The Nail", and "The Gamekid".
 
 ___
 ### SetDead () {: aria-label='Functions' }

@@ -34,6 +34,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 HWND window;
 WNDPROC windowProc;
 bool menuShown = false;
+bool disableCloseWithESC = false;
 bool leftMouseClicked = false;
 bool settingsLoaded = false;
 std::string iniFilePath;
@@ -101,8 +102,10 @@ ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 {
 	if (ImGui::Button(LANG.IMGUI_CHANGE_KEY_BTN_NAME)) {
 		wasPressed = true;
+		disableCloseWithESC = true;
 	}
 
+	ImGuiKey returnValue = ImGuiKey_None;
 	if (wasPressed && ImGui::BeginTooltip()) {
 		ImGui::SetWindowFocus();
 		int firstKey = static_cast<int>(ImGuiKey_Tab);
@@ -121,16 +124,17 @@ ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed)
 		for (auto key = keys->begin(); key != keys->end(); ++key) {
 			if (*key == static_cast<int>(ImGuiKey_Escape)) {
 				wasPressed = false;
-				return ImGuiKey_None;
+				disableCloseWithESC = false;
 			}
-			if (*key >= firstKey && *key <= lastKey) {
+			else if (*key >= firstKey && *key <= lastKey) {
 				wasPressed = false;
-				return *key;
+				disableCloseWithESC = false;
+				returnValue = *key;
 			}
 		}
 		ImGui::EndTooltip();
 	}
-	return ImGuiKey_None;
+	return returnValue;
 }
 
 // extended ImGui::Begin function to allow for custom savedata loading
@@ -274,7 +278,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 
 	// Enable the overlay using the grave key, disable using ESC
-	if (uMsg == WM_KEYDOWN) {
+	if (uMsg == WM_KEYDOWN && !disableCloseWithESC) {
 		ImGui::CloseCurrentPopup();
 
 		switch (wParam) {

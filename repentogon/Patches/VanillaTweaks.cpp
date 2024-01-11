@@ -52,3 +52,12 @@ HOOK_METHOD(Game, Update, () -> void) {
 		}
 	}
 }
+
+HOOK_METHOD(Console, SubmitInput, (bool unk) -> void) {
+	super(unk);
+	Game* game = g_Game;
+	if (game->GetDailyChallenge()._id != 0 && !game->GetDailyChallenge()._isPractice) {
+		if (game->_leaderboard._displayState < 1 && game->_frameCount > 0)
+			game->End(1);
+	}
+}

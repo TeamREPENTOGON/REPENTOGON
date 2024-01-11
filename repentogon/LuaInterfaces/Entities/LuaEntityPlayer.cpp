@@ -727,7 +727,7 @@ LUA_FUNCTION(Lua_PlayerGetCollectiblesList)
 	for (size_t i = 1; i < collectibleInv.size(); i++) {
 		lua_pushinteger(L, i);
 		lua_pushinteger(L, collectibleInv[i]);
-		lua_settable(L, -3);
+		lua_rawset(L, -3);
 	}
 
 	return 1;

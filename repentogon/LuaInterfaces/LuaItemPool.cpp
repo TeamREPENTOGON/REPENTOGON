@@ -96,12 +96,10 @@ LUA_FUNCTION(Lua_ItemPoolGetRemovedCollectibles) {
 	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 
 	lua_newtable(L);
-	int idx = 1;
-	for (auto collectible : removedCollectibles) {
-		lua_pushnumber(L, idx);
-		lua_pushboolean(L, collectible);
-		lua_settable(L, -3);
-		idx++;
+	for (size_t i = 1; i < removedCollectibles.size(); i++) {
+		lua_pushinteger(L, i);
+		lua_pushboolean(L, removedCollectibles[i]);
+		lua_rawset(L, -3);
 	}
 	return 1;
 }
@@ -111,12 +109,10 @@ LUA_FUNCTION(Lua_ItemPoolGetRoomBlacklistedCollectibles) {
 	std::vector<bool>& blacklistedCollectibles = *itemPool->GetRoomBlacklistedCollectibles();
 
 	lua_newtable(L);
-	int idx = 1;
-	for (auto collectible : blacklistedCollectibles) {
-		lua_pushnumber(L, idx);
-		lua_pushboolean(L, collectible);
-		lua_settable(L, -3);
-		idx++;
+	for (size_t i = 1; i < blacklistedCollectibles.size(); i++) {
+		lua_pushinteger(L, i);
+		lua_pushboolean(L, blacklistedCollectibles[i]);
+		lua_rawset(L, -3);
 	}
 	return 1;
 }
@@ -136,27 +132,27 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 
 			lua_pushstring(L, "itemID");
 			lua_pushinteger(L, item._itemID);
-			lua_settable(L, -3);
+			lua_rawset(L, -3);
 
 			lua_pushstring(L, "initialWeight");
 			lua_pushnumber(L, item._initialWeight);
-			lua_settable(L, -3);
+			lua_rawset(L, -3);
 
 			lua_pushstring(L, "weight");
 			lua_pushnumber(L, item._weight);
-			lua_settable(L, -3);
+			lua_rawset(L, -3);
 
 			lua_pushstring(L, "decreaseBy");
 			lua_pushnumber(L, item._decreaseBy);
-			lua_settable(L, -3);
+			lua_rawset(L, -3);
 
 			lua_pushstring(L, "removeOn");
 			lua_pushnumber(L, item._removeOn);
-			lua_settable(L, -3);
+			lua_rawset(L, -3);
 
 			lua_pushinteger(L, item._itemID);
 			lua_insert(L, -2);
-			lua_settable(L, -3);
+			lua_rawset(L, -3);
 
 		}
 	}

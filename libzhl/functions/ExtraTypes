@@ -60,8 +60,8 @@ TypeInfo vector_ColorParams {
     Align 4;
 };
 
-TypeInfo vector_Point {
-    Size 12;
+TypeInfo deque_Point {
+    Size 20;
     Align 4;
 };
 

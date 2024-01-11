@@ -46,7 +46,7 @@ LUA_FUNCTION(Lua_FamiliarTriggerRoomClear)
 LUA_FUNCTION(Lua_FamiliarUpdateDirtColor)
 {
 	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
-	fam->UpdateDirtColor();
+	fam->UpdateDirtColor(true);
 	return 0;
 }
 
