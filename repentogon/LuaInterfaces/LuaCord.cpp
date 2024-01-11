@@ -11,7 +11,7 @@ LUA_FUNCTION(Lua_CreateCord) {
 	float stretchHeight = (float)luaL_optnumber(L, 4, 1.0);
 	float stretchWidth = (float)luaL_optnumber(L, 5, 1.0);
 	Rope* toLua = lua::place<Rope>(L, lua::metatables::CordMT, parent, pos, numPoints, stretchHeight, stretchWidth);
-	luaL_setmetatable(L, lua::metatables::BeamMT);
+	luaL_setmetatable(L, lua::metatables::CordMT);
 	return 1;
 }
 
@@ -29,6 +29,14 @@ LUA_FUNCTION(Lua_CordRender) {
 	bool unk = lua::luaL_optboolean(L, 5, false);
 	rope->Render(anm2, layerID, useOverlay, unk);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_CordGetPoints) {
+	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
+	PointDeque** luaDeque = (PointDeque**)lua_newuserdata(L, sizeof(PointDeque*));
+	*luaDeque = &rope->_points;
+	luaL_setmetatable(L, lua::metatables::PointDequeMT);
+	return 1;
 }
 
 LUA_FUNCTION(Lua_Cord__gc) {

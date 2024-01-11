@@ -16,7 +16,7 @@
 #include <vector>
 
 float TIMESTEP = 0.01f;             // Δt in our equations
-unsigned int JAKOBSEN_ITERATIONS = 50; // number of times we will enforce the distance constraint
+unsigned int JAKOBSEN_ITERATIONS = 10; // number of times we will enforce the distance constraint
 
 class Rope {
   public:
@@ -43,9 +43,9 @@ class Rope {
             float spritesheetCoord = ropeLength * w * spriteStretchHeight;
 
             Point p(pos, spritesheetCoord, spriteStretchWidth, i == 0);
-            printf("created point at pos %f, %f with coord %f\n", p._pos.x, p._pos.y, p._spritesheetCoordinate);
+            printf("created point at pos %f, %f with coord %f and fixed %d\n", p._pos.x, p._pos.y, p._spritesheetCoordinate, p._fixed);
 
-            _points.push_back(p);
+            _points.deque.push_back(p);
         }
     }
 
@@ -55,8 +55,7 @@ class Rope {
     }
 
     void Render(ANM2* anm2, unsigned int layerID, bool useOverlay, bool unk) {
-        __debugbreak();
-        if (_points.size() < 2)
+        if (_points.deque.size() < 2)
             return;
 
         g_BeamRenderer->Begin(anm2, layerID, useOverlay, unk);
@@ -64,7 +63,7 @@ class Rope {
         #pragma warning(suppress:4533) 
         ColorMod color;
         Vector buffer;
-        for (auto it = _points.begin(); it != _points.end(); ++it) {
+        for (auto it = _points.deque.begin(); it != _points.deque.end(); ++it) {
             Isaac::WorldToScreen(&buffer, &it->_pos);
             g_BeamRenderer->Add(&buffer, &color, it->_width, it->_spritesheetCoordinate);
         }
@@ -73,7 +72,7 @@ class Rope {
     }
 
     // We need to store our Points somewhere
-    std::deque<Point> _points;
+    PointDeque _points;
 
     // Target distance of a single segment
     float _desiredDistance;
@@ -84,58 +83,68 @@ class Rope {
   private:
     void verletIntegration() {
         if (_originEntity != nullptr) {
-            _points.begin()->_pos = *_originEntity->GetPosition();
-            _points.begin()->_lastPos = _points.begin()->_pos;
+            _points.deque.begin()->_pos = *_originEntity->GetPosition();
+            _points.deque.begin()->_lastPos = _points.deque.begin()->_pos;
         }
 
-        for (auto p = _points.begin()+1; p != _points.end(); ++p) {
+        for (Point& p : _points.deque) {
             // We do not want to move fixed Points
-            if (p->_fixed)
+            if (p._fixed)
                 continue; 
 
-            Vector copy = p->_pos;
+            Vector copy = p._pos;
 
             // Calculating previous velocity
-            Vector velocity((p->_pos.x - p->_lastPos.x) / TIMESTEP, (p->_pos.y - p->_lastPos.y) / TIMESTEP);
+            Vector velocity((p._pos.x - p._lastPos.x) / TIMESTEP, (p._pos.y - p._lastPos.y) / TIMESTEP);
 
             // Updating Point's position
-            p->_pos += velocity * TIMESTEP;
+            p._pos += velocity * TIMESTEP;
 
-            p->_lastPos = copy;
+            p._lastPos = copy;
         }
     }
 
     void enforceConstraints() {
         // We perform the enforcement multiple times
         for (unsigned int iteration = 0; iteration < JAKOBSEN_ITERATIONS; iteration++) {
+            printf("iteration %d: ", iteration);
             // We iterate over each pair of points
-            for (size_t i = 1; i < _points.size(); i++) {
-                Point &p1 = _points[i - 1];
-                Point &p2 = _points[i];
+            for (size_t i = 1; i < _points.deque.size(); i++) {
+                Point &p1 = _points.deque[i - 1];
+                Point &p2 = _points.deque[i];
 
                 // Calculating distance between the Points
                 float distance = (float)sqrt(pow(p1._pos.x - p2._pos.x, 2) + pow(p1._pos.y - p2._pos.y, 2));
                 float distanceError = distance - _desiredDistance;
 
+                printf("distance %f, error %f, ", distance, distanceError);
+
                  // The direction in which Points should be pulled or pushed
                 Vector difference(p2._pos.x - p1._pos.x, p2._pos.y - p1._pos.y);
+                printf("difference %f, %f, ", difference.x, difference.y);
 
                 // We need to make it a unit vector
                 // This will allow us to easily scale the impact we have
                 // on each Point's position.
                 Vector direction(difference.x / (float)sqrt(pow(difference.x, 2) + pow(difference.y, 2)), difference.y / (float)sqrt(pow(difference.x, 2) + pow(difference.y, 2)));
+                printf("direction %f, %f\n", difference.x, difference.y);
 
                 // Finally, we can update Points' positions
                 // We need to remember that fixed Points should stay in place
                 if (p1._fixed && !p2._fixed) {
                     p2._pos -= direction * distanceError;
+                    printf("moved p2, now %f, %f\n", p2._pos.x, p2._pos.y);
                 } else if (p2._fixed && !p1._fixed) {
                     p1._pos += direction * distanceError;
+                    printf("moved p1, now %f, %f\n", p1._pos.x, p1._pos.y);
                 // keeping this comparison in case both points are fixed
-                } else if (!p1._fixed && !p2._fixed) {  
+                } else if (!p1._fixed && !p2._fixed) {
                     p2._pos -= direction * distanceError * 0.5;
-                    p2._pos += direction * distanceError * 0.5;
+                    printf("moved p2 halfway, now %f, %f\n", p2._pos.x, p2._pos.y);
+                    p1._pos += direction * distanceError * 0.5;
+                    printf("moved p1 halfway, now %f, %f\n", p1._pos.x, p1._pos.y);
                 }
+                __debugbreak();
             }
         }
     }
