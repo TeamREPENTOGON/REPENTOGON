@@ -173,6 +173,7 @@ namespace lua {
         extern LIBZHL_API const char* ConsoleMT;
         extern LIBZHL_API const char* ControllerSelectMenuMT;
         extern LIBZHL_API const char* ColorModifierMT;
+        extern LIBZHL_API const char* CordMT;
         extern LIBZHL_API const char* CustomChallengeMenuMT;
         extern LIBZHL_API const char* CutscenesMenuMT;
         extern LIBZHL_API const char* GridEntitiesSaveStateVectorMT;
@@ -221,6 +222,7 @@ namespace lua {
         extern LIBZHL_API const char* PlayerManagerMT;
         extern LIBZHL_API const char* PocketItemMT;
         extern LIBZHL_API const char* PointMT;
+        extern LIBZHL_API const char* PointDequeMT;
         extern LIBZHL_API const char* ProceduralEffectMT;
         extern LIBZHL_API const char* ProceduralItemMT;
         extern LIBZHL_API const char* ProceduralItemManagerMT;

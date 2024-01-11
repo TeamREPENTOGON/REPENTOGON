@@ -70,7 +70,7 @@ bool Room::IsPersistentRoomEntity(int type, int variant, int subtype);
 "558bec83ec0ca1????????53894d":
 __thiscall bool Room::TrySpawnSpecialQuestDoor();
 
-struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, Vector) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }
@@ -106,6 +106,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     uint32_t _doorGridPositions[8] : 0x744; // 0x744
 	int _roomClearDelay : 0x11ec;
     Camera *_Camera : 0x11f8; //0x11F8
+	Vector _renderScrollOffset : 0x1204;
     bool _redHeartDamage : 0x120c; //0x120C
     EntityList _entityList : 0x1218; //0x1218
 	int _greedWaveTimer : 0x7130;

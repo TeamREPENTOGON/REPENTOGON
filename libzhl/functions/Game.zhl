@@ -99,7 +99,7 @@ __thiscall void Game::End(int EndingID);
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, Vector) { {{
 	Game()
 	{
 		this->constructor();
@@ -189,7 +189,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 
     bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
-	//Level _level : 0x0;
+	//Level _level : 0x0; // we've gotta fix this, it sucks
     uint32_t _stage : 0x0; // 0x0
     uint32_t _stageType : 0x4; // 0x4
     bool _bossChallenge : 0x8; //0x8
@@ -212,6 +212,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     unsigned int _stateFlags : 0x1822c; // 0x1822C
     uint32_t _greedModeTreasureRoomIdx : 0x18200; // 0x18200
     RoomConfigHolder _roomConfigs : 0x1879c; // 0x1879C
+	Vector _screenShakeOffset : 0x1a30f0;
 	ItemPool _itemPool : 0x1A5CC;
     PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
     Console _console : 0x1bb60; // 0x1BB60

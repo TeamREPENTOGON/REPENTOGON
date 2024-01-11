@@ -737,6 +737,7 @@ namespace lua {
 		const char* CollectionMenuMT = "CollectionMenu";
 		const char* ConsoleMT = "Console";
 		const char* ControllerSelectMenuMT = "ControllerSelectMenu";
+		const char* CordMT = "Cord";
 		const char* ColorModifierMT = "ColorModifier";
 		const char* CustomChallengeMenuMT = "CustomChallengeMenu";
 		const char* CutscenesMenuMT = "CutscenesMenu";
@@ -786,6 +787,7 @@ namespace lua {
 		const char* PlayerManagerMT = "PlayerManager";
 		const char* PocketItemMT = "PocketItem";
 		const char* PointMT = "Point";
+		const char* PointDequeMT = "PointDeque";
 		const char* ProceduralEffectMT = "ProceduralEffect";
 		const char* ProceduralItemMT = "ProceduralItem";
 		const char* ProceduralItemManagerMT = "ProceduralItemManager";
