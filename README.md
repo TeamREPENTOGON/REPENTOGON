@@ -1,3 +1,5 @@
+Language:English|[简体中文](README-ZH.md)
+
 ![logo](assets/logo.gif)
 ## A new era for Isaac modding begins now.
 
