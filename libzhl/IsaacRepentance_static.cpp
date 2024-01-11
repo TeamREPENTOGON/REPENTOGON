@@ -199,3 +199,34 @@ bool ItemConfig::IsValidTrinket(unsigned int TrinketType) {
 bool Isaac::IsInGame() {
 	return g_Manager->GetState() == 2 && g_Game;
 }
+
+bool Entity_Player::AddSmeltedTrinket(int trinketID, bool firstTime) {
+	bool trinketAdded = false;
+
+	if (ItemConfig::IsValidTrinket(trinketID)) {
+		const int actualTrinketID = trinketID & 0x7fff;
+		if (trinketID != actualTrinketID) {
+			_smeltedTrinkets[actualTrinketID]._goldenTrinketNum++;
+		}
+		else {
+			_smeltedTrinkets[actualTrinketID]._trinketNum++;
+		}
+
+		TriggerTrinketAdded(trinketID, firstTime);
+
+		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
+		GetHistory()->AddHistoryItem(historyItem);
+
+		delete(historyItem);
+
+		InvalidateCoPlayerItems();
+
+		ItemConfig_Item* config = g_Manager->GetItemConfig()->GetTrinket(actualTrinketID);
+		if (config && config->addCostumeOnPickup) {
+			AddCostume(config, false);
+		}
+
+		trinketAdded = true;
+	}
+	return trinketAdded;
+};

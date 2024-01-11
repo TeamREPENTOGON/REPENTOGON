@@ -1580,14 +1580,14 @@ Accepts `false` to cancel the update.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1430 |MC_PRE_GRID_ENTITY_TNT_UPDATE {: .copyable } | ([GridEntityTNT](../GridEntityTNT.md) TNT) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1430 |MC_PRE_GRID_ENTITY_TNT_UPDATE {: .copyable } | ([GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) TNT) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_POST_GRID_ENTITY_TNT_UPDATE
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1431 |MC_POST_GRID_ENTITY_TNT_UPDATE {: .copyable } | ([GridEntityTNT](../GridEntityTNT.md) TNT) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
+|1431 |MC_POST_GRID_ENTITY_TNT_UPDATE {: .copyable } | ([GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) TNT) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
 
 ### MC_PRE_GRID_ENTITY_SPIKES_RENDER
 Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
