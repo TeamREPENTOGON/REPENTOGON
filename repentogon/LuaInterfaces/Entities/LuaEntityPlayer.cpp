@@ -1125,35 +1125,7 @@ LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 	const int trinketID = (int)luaL_checkinteger(L, 2);
 	const bool firstTime = lua::luaL_optboolean(L, 3, true);
 
-	bool trinketAdded = false;
-
-	if (ItemConfig::IsValidTrinket(trinketID)) {
-		const int actualTrinketID = trinketID & 0x7fff;
-		if (trinketID != actualTrinketID) {
-			player->_smeltedTrinkets[actualTrinketID]._goldenTrinketNum++;
-		}
-		else {
-			player->_smeltedTrinkets[actualTrinketID]._trinketNum++;
-		}
-
-		player->TriggerTrinketAdded(trinketID, firstTime);
-
-		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
-		player->GetHistory()->AddHistoryItem(historyItem);
-
-		delete(historyItem);
-
-		player->InvalidateCoPlayerItems();
-
-		ItemConfig_Item* config = g_Manager->GetItemConfig()->GetTrinket(actualTrinketID);
-		if (config && config->addCostumeOnPickup) {
-			player->AddCostume(config,false);
-		}
-
-		trinketAdded = true;
-	}
-
-	lua_pushboolean(L, trinketAdded);
+	lua_pushboolean(L, player->AddSmeltedTrinket(trinketID, firstTime));
 	return 1;
 }
 

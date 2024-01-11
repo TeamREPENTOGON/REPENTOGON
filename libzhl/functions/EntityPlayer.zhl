@@ -540,6 +540,8 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	inline uint8_t* GetWildCardItemType() { return (uint8_t*)((char*)this + 0x1f70); }
 	inline int* GetWildCardItem() { return (int*)((char*)this + 0x1f74); }
 	inline Entity_Player* GetBackupPlayer() { return *(Entity_Player**)((char*)this + 0x1d84); }
+	
+	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
     }}
 
 	ANM2 _heldSprite : 0xf48;
