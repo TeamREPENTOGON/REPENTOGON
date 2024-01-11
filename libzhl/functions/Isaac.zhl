@@ -55,6 +55,6 @@ static __x86_64_output Vector Isaac::GetCollectibleSpawnPosition(Vector* target)
 struct Isaac {
     {{
     LIBZHL_API static bool IsInGame();
-	LIBZHL_API static Vector WorldToScreen(Vector * buffer, Vector * pos);
+	LIBZHL_API static Vector * WorldToScreen(Vector * buffer, Vector * pos);
     }}
 } : 0;
