@@ -770,10 +770,9 @@ void __stdcall SetRoomClearDelay(Room* room) {
 	room->_roomClearDelay = repentogonOptions.quickRoomClear ? 3 : 10;
 }
 
-void __stdcall CheckSaveStateClearDelay(void * addr) {
-	ASMPatch flat;
-	flat.AddBytes(ByteBuffer().AddByte(repentogonOptions.quickRoomClear ? 0x1 : 0x8));
-	sASMPatcher.FlatPatch(addr, &flat);
+int roomSaveStateDelay = 0x7;
+void __stdcall SetRoomSaveStateDelay() {
+	roomSaveStateDelay = repentogonOptions.quickRoomClear ? 0x1 : 0x7;
 }
 
 bool __stdcall CheckDeepGaperClearDelay(Room* room) {
@@ -799,11 +798,12 @@ void ASMPatchRoomSaveState(void* addr) {
 	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS - ASMPatch::SavedRegisters::EAX, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(reg)
-		.Push((int)((char*)addr + 0x9)) // push address of number to compare
-		.AddInternalCall(CheckSaveStateClearDelay) // call CheckSaveStateClearDelay()
+		.AddInternalCall(SetRoomSaveStateDelay) // call SetRoomClearDelay()
 		.RestoreRegisters(reg)
 		.MoveFromMemory(ASMPatch::Registers::ESI, 0x11ec, ASMPatch::Registers::EAX)
-		.AddRelativeJump((char*)addr + 0x6); // jump to DEC
+		.AddBytes("\x48") // dec eax
+		.AddBytes("\x3b\x05").AddBytes(ByteBuffer().AddPointer(&roomSaveStateDelay))  // cmp eax, dword ptr ds:[roomSaveStateDelay]
+		.AddRelativeJump((char*)addr + 0xa); // jump to ja
 	sASMPatcher.PatchAt(addr, &patch);
 }
 

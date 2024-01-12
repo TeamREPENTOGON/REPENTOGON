@@ -1,5 +1,7 @@
 struct GridEntity_Door depends (ANM2) : public GridEntity {
     ANM2 _extraSprite : 0x164;
+	uint32_t _previousState :0x280;
+	uint32_t _previousVariant: 0x284;
 	
 	__vtable {
 		skip; // Free
