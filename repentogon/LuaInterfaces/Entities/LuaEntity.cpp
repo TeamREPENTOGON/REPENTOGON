@@ -683,8 +683,6 @@ LUA_FUNCTION(Lua_EntitySetBrimstoneMarkCountdown) {
 	return 0;
 }
 
-
-
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
