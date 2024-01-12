@@ -8,11 +8,11 @@
 #endif
 
 /*
- * note: Remove items inside "en_us.inl" may cause compile error, and you 
+ * note: Remove items inside "en_us.inl" may cause compile error, and you
  * need also remove all of them in other language files.
  */
 
-//V(float, UNIFONT_DEFAULT_SIZE, 13)
+// V(float, UNIFONT_DEFAULT_SIZE, 13)
 
 //=========== Main Menu Bar ==========
 // I(BAR_TOOLS, ICON_FA_SCREWDRIVER_WRENCH " Tools") // non-utf8 version is no problem here for en_us
@@ -246,7 +246,7 @@ I(OPT_HUD_EXTRA_HUD_MARKER, u8"Displays collected items of the player on the rig
 
 I(OPT_CONSOLE, u8"Console")
 I(OPT_CONSOLE_ENABLE_DEBUG_CONSOLE, u8"Enable Debug Console")
-I(OPT_CONSOLE_FADED_CONSOLE_DISPLAY,"Faded Console Display")
+I(OPT_CONSOLE_FADED_CONSOLE_DISPLAY, "Faded Console Display")
 I(OPT_CONSOLE_SAVE_COMMAND_HISTORY, u8"Save Command History")
 I(OPT_CONSOLE_CONSOLE_FONT, u8"Console Font")
 I(OPT_CONSOLE_ENABLE_UNICODE_FONT, u8"Enable unicode font")
@@ -287,7 +287,7 @@ I(OPT_ACC_TOUCH_MODE, u8"Touch Mode")
 
 I(OPT_MISC, u8"Misc")
 I(OPT_MISC_ENABLE_MODS, u8"Enable Mods")
-I(OPT_MISC_ENABLE_CTRL_HOTPLUG,"Enable Control Hotplug")
+I(OPT_MISC_ENABLE_CTRL_HOTPLUG, "Enable Control Hotplug")
 I(OPT_MISC_USE_STEAM_CLOUD, u8"Use Steam Cloud")
 I(OPT_MISC_PAUSE_ON_FOCUS_LOST, u8"Pause on focus lost")
 
@@ -302,7 +302,6 @@ I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR, u8"Quicker Room Clear")
 I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR_MARK, u8"Rooms will open their doors and spawn rewards quicker. Bosses still require their death animation to play out.")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES, u8"Prevent mod updates")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK, u8"The game will skip updating your mods folder to match your current workshop folder. Useful for temporarily emptying your mods folder during mod development.")
-
 
 I(OPT_EXTRA_HUD_MODES_OFF, u8"Off")
 I(OPT_EXTRA_HUD_MODES_NORMAL, u8"Normal")
@@ -410,7 +409,6 @@ I(HELP_CTRL_PS_CIRCLE_DESC, u8"Cancel / Close / Exit")
 I(HELP_CTRL_PS_CROSS, u8"Cross")
 I(HELP_CTRL_PS_CROSS_DESC, u8"Activate / Open / Toggle\nTweak value with D-Pad\n(+L1/R1 to tweak slower/faster)")
 
-
 I(HELP_CTRL_XB_DPAD, u8"D-PAD")
 I(HELP_CTRL_XB_DPAD_DESC, u8"Move, Tweak values (when input active)")
 I(HELP_CTRL_XB_STICK, u8"L Stick")
@@ -472,7 +470,7 @@ I(IMGUI_CHANGE_KEY_BTN_PRESS_ESC, u8"Press ESC to cancel input")
 
 // ============= Log Viewer ==============
 
-I(LOGV_WIN_NAME, u8"Lov Viewer")
+I(LOGV_WIN_NAME, u8"Log Viewer")
 I(LOGV_FILTER, u8"Filter")
 I(LOGV_PIN_WINDOW, u8"Pin Window")
 I(LOGV_PIN_WINDOW_HINT, u8"Pinning a window will keep it visible even after closing Dev Tools.")
