@@ -17,46 +17,84 @@
 
 class Rope {
   public:
-    Rope(Entity* origin, Vector* end, unsigned int nPoints, float timestep, unsigned int iterations, float spriteStretchHeight, float spriteStretchWidth) {
-        printf("constructing rope: entity %p, start %f %f, end %f %f, nPoints %d, spriteStretchHeight %f, float spriteStretchWidth %f\n", origin, origin->GetPosition()->x, origin->GetPosition()->y, end->x, end->y, nPoints, spriteStretchHeight, spriteStretchWidth);
-        _originEntity = origin;
-        _target = *end;
+    Rope(unsigned int nPoints, float timestep, unsigned int iterations, float spriteStretchHeight, float spriteStretchWidth) {
+        printf("Rope: constructing");
+        _numPoints = nPoints;
         _timestep = timestep;
         _iterations = iterations;
+        _spriteStretch = spriteStretchHeight;
+        _spriteWidth = spriteStretchWidth;
+        _desiredDistance = 0.0f;
+        Vector const zero;
 
-        Vector* start = origin->GetPosition();
+        for (unsigned int i = 0; i < 2; i++) {
+            printf("Rope: making point #%d\n", i);
+            Point p(zero, (Entity*)nullptr, 0.0f, spriteStretchWidth, false);
+            printf("Rope: pushing point #%d\n", i);
+            _points.deque.push_back(p);
+        }
 
-        float ropeLength = (float)sqrt(pow(start->x - _target.x, 2) + pow(start->y - _target.y, 2));
-       
+        printf("Rope: done constructing\n");
+    }
+
+    void Init() {
+        printf("Rope::Init starting\n");
+        Point* startPoint = &_points.deque.at(0);
+        Point endPoint = _points.deque.at(_points.deque.size());
+        Vector* startPos = startPoint->_target != nullptr ? startPoint->_target->GetPosition() : &startPoint->_pos;
+        Vector* endPos = endPoint._target ? endPoint._target->GetPosition() : &endPoint._pos;
+
+        float ropeLength = (float)sqrt(pow(startPos->x - endPos->x, 2) + pow(startPos->y - endPos->y, 2));
+
         // There is one less segment than there are Points
-        unsigned int numSegments = nPoints - 1;
+        unsigned int numSegments = _numPoints - 1;
 
         _desiredDistance = ropeLength / numSegments;
 
         printf("length: %f, segments : %d, avg distance: %f\n", ropeLength, numSegments, _desiredDistance);
 
-        for (unsigned int i = 0; i < nPoints; i++) {
+        _points.deque.erase(_points.deque.end());
+        for (unsigned int i = 1; i < _numPoints; i++) {
             // percent distance from start to end, 0.0->1.0
-            float w = (float)i / (nPoints - 1);
+            float w = (float)i / (_numPoints - 1);
 
-            Vector pos(w * _target.x + (1 - w) * start->x, w * _target.y + (1 - w) * start->y);
-            float spritesheetCoord = ropeLength * w * spriteStretchHeight;
+            Vector pos(w * endPos->x + (1 - w) * startPos->x, w * endPos->y + (1 - w) * startPos->y);
+            float spritesheetCoord = ropeLength * w * _spriteStretch;
 
-            Point p(pos, spritesheetCoord, spriteStretchWidth, i == 0);
-            printf("created point at pos %f, %f with coord %f and fixed %d\n", p._pos.x, p._pos.y, p._spritesheetCoordinate, p._fixed);
-
-            _points.deque.push_back(p);
+            if (i == _numPoints - 1) {
+                endPoint._pos = pos;
+                endPoint._spritesheetCoordinate = spritesheetCoord;
+                _points.deque.push_back(endPoint);
+                printf("readded end point at pos %f, %f with coord %f and fixed %d\n", endPoint._pos.x, endPoint._pos.y, endPoint._spritesheetCoordinate, endPoint._target != nullptr);
+            }
+            else
+            {
+                Point p(pos, nullptr, spritesheetCoord, _spriteWidth, false);
+                _points.deque.push_back(p);
+                printf("created point at pos %f, %f with coord %f and fixed %d\n", p._pos.x, p._pos.y, p._spritesheetCoordinate, p._fixed);
+            }
         }
+        _initialized = true;
     }
 
     void Update() {
+        if (!_initialized) {
+            printf("Cord::Update: not initialzed");
+            return;
+        }
         verletIntegration();
         enforceConstraints();
     }
 
     void Render(ANM2* anm2, unsigned int layerID, bool useOverlay, bool unk) {
-        if (_points.deque.size() < 2)
+        if (_points.deque.size() < 2) {
+            printf("Cord::Render: < 2 points");
             return;
+        }
+        if (!_initialized) {
+            printf("Cord::Render: not initialzed");
+            return;
+        }  
 
         g_BeamRenderer->Begin(anm2, layerID, useOverlay, unk);
 
@@ -76,21 +114,20 @@ class Rope {
 
     // Target distance of a single segment
     float _desiredDistance;
-
-    Entity * _originEntity;
-    Vector _target;
-   
-    float _timestep;
-    unsigned int _iterations;
+    float _timestep = 0.01f;
+    float _spriteStretch, _spriteWidth = 1;
+    unsigned int _numPoints = 2;
+    unsigned int _iterations = 10;
+    bool _initialized = false;
 
   private:
     void verletIntegration() {
-        if (_originEntity != nullptr) {
-            _points.deque.begin()->_pos = *_originEntity->GetPosition();
-            _points.deque.begin()->_lastPos = _points.deque.begin()->_pos;
-        }
-
         for (Point& p : _points.deque) {
+            if (p._target) {
+                p._pos = *p._target->GetPosition();
+                p._lastPos = p._pos;
+                continue;
+            }
             // We do not want to move fixed Points
             if (p._fixed)
                 continue; 

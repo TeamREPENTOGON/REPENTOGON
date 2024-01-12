@@ -1,12 +1,13 @@
 struct Point depends (Vector) {
 	{{
-		Point() : _pos(Vector()), _lastPos(_pos), _spritesheetCoordinate(0.0f), _width(1.0f), _fixed(false) {}
-		Point(Vector const& pos, float spritesheetCoordinate, float width, bool fixed) : _pos(pos), _lastPos(pos), _spritesheetCoordinate(spritesheetCoordinate), _width(width) , _fixed(fixed) {}
+		Point() : _pos(Vector()), _lastPos(_pos), _target(nullptr), _spritesheetCoordinate(0.0f), _width(1.0f), _fixed(false) {}
+		Point(Vector pos, Entity* target, float spritesheetCoordinate, float width, bool fixed) : _pos(pos), _lastPos(pos), _target(target), _spritesheetCoordinate(spritesheetCoordinate), _width(width) , _fixed(fixed) {}
 	}}
 	Vector _pos : 0x0, _lastPos : 0x8;
-	float _width : 0x10, _spritesheetCoordinate : 0x14;
-	bool _fixed : 0x18;
-} : 0x1c;
+	Entity * _target : 0x10;
+	float _width : 0x14, _spritesheetCoordinate : 0x18;
+	bool _fixed : 0x1c;
+} : 0x20;
 
 struct PointDeque depends (Point) {
 	deque_Point deque : 0x0;

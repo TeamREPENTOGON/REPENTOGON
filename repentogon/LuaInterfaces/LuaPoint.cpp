@@ -7,6 +7,11 @@ LUA_FUNCTION(Lua_PointConstructor) {
 	point._pos = *lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	point._spritesheetCoordinate = (float)luaL_checknumber(L, 2);
 	point._width = (float)luaL_optnumber(L, 3, 1.0f);
+	Entity* target = nullptr;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		target = lua::GetUserdata<Entity*>(L, 4, lua::Metatables::ENTITY, "Entity");
+	}
+	point._target = target;
 
 	Point* toLua = lua::place<Point>(L, lua::metatables::PointMT);
 	*toLua = point;
@@ -67,6 +72,30 @@ LUA_FUNCTION(Lua_PointSetFixed) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PointGetTarget) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	if (!point->_target) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		lua::luabridge::UserdataPtr::push(L, point->_target, lua::GetMetatableKey(lua::Metatables::ENTITY));
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointSetTarget) {
+	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	if (lua_isnil(L, 2)) {
+		point->_target = nullptr;
+	}
+	else
+	{
+		point->_target = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+	}
+	return 0;
+}
+
 /*////////////////////
 //// Deque time
 */////////////////////
@@ -101,6 +130,29 @@ LUA_FUNCTION(Lua_PointDequePopFront) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PointDequeGet) {
+	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	Point* p = &d->deque.at((int)luaL_checkinteger(L, 2)-1);
+	if (!p) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		Point** toLua = (Point**)lua_newuserdata(L, sizeof(Point*));
+		*toLua = p;
+		luaL_setmetatable(L, lua::metatables::PointMT);
+	}
+	
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PointDeque__len) {
+	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	lua_pushinteger(L, d->deque.size());
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PointDeque__gc) {
 	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
 	d->~PointDeque();
@@ -117,6 +169,8 @@ static void RegisterPoint(lua_State* L) {
 		{ "SetWidth", Lua_PointSetWidth},
 		{ "GetPosition", Lua_PointGetPosition},
 		{ "SetPosition", Lua_PointSetPosition},
+		{ "GetTarget", Lua_PointGetTarget},
+		{ "SetTarget", Lua_PointSetTarget},
 		{ NULL, NULL }
 	};
 
@@ -128,6 +182,8 @@ static void RegisterPoint(lua_State* L) {
 		{ "PushFront", Lua_PointDequePushFront },
 		{ "PopBack", Lua_PointDequePopBack },
 		{ "PopFront", Lua_PointDequePopFront },
+		{ "Get", Lua_PointDequeGet },
+		{ "__len", Lua_PointDeque__len },
 		{ NULL, NULL }
 	};
 
