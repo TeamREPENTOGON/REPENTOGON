@@ -479,6 +479,212 @@ void PatchAddWeakness() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+LUA_FUNCTION(Lua_EntityGetFireDamageCooldown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_fireDamageCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetFireDamageCooldown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_fireDamageCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetFreezeCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_freezeCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetFreezeCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_freezeCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetPoisonCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_poisonCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetPoisonCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_poisonCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetSlowingCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_slowingCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetSlowingCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_slowingCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetCharmedCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_charmedCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetCharmedCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_charmedCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetConfusionCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_confusionCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetConfusionCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_confusionCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetMidasFreezeCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_midasFreezeCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetMidasFreezeCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_midasFreezeCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetFearCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_fearCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetFearCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_fearCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetBurnCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_burnCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetBurnCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_burnCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetShrinkCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_shrinkCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetShrinkCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_shrinkCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetBleedingCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_bleedingCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetBleedingCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_bleedingCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetMagnetizedCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_magnetizedCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetMagnetizedCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_magnetizedCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetBaitedCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_baitedCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetBaitedCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_baitedCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetKnockbackCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_knockbackCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetKnockbackCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_knockbackCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetWeaknessCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_weaknessCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetWeaknessCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_weaknessCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetIceCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_iceCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetIceCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_iceCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetBrimstoneMarkCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_brimstoneMarkCountdown);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetBrimstoneMarkCountdown) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_brimstoneMarkCountdown = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -524,6 +730,42 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetColorParams", Lua_EntitySetColorParams },
 		{ "GetDamageCountdown", Lua_EntityGetDamageCountdown },
 		{ "SetDamageCountdown", Lua_EntitySetDamageCountdown },
+
+		{ "GetFireDamageCooldown", Lua_EntityGetFireDamageCooldown },
+		{ "SetFireDamageCooldown", Lua_EntitySetFireDamageCooldown },
+		{ "GetFreezeCountdown", Lua_EntityGetFreezeCountdown },
+		{ "SetFreezeCountdown", Lua_EntitySetFreezeCountdown },
+		{ "GetPoisonCountdown", Lua_EntityGetPoisonCountdown },
+		{ "SetPoisonCountdown", Lua_EntitySetPoisonCountdown },
+		{ "GetSlowingCountdown", Lua_EntityGetSlowingCountdown },
+		{ "SetSlowingCountdown", Lua_EntitySetSlowingCountdown },
+		{ "GetCharmedCountdown", Lua_EntityGetCharmedCountdown },
+		{ "SetCharmedCountdown", Lua_EntitySetCharmedCountdown },
+		{ "GetConfusionCountdown", Lua_EntityGetConfusionCountdown },
+		{ "SetConfusionCountdown", Lua_EntitySetConfusionCountdown },
+		{ "GetMidasFreezeCountdown", Lua_EntityGetMidasFreezeCountdown },
+		{ "SetMidasFreezeCountdown", Lua_EntitySetMidasFreezeCountdown },
+		{ "GetFearCountdown", Lua_EntityGetFearCountdown },
+		{ "SetFearCountdown", Lua_EntitySetFearCountdown },
+		{ "GetBurnCountdown", Lua_EntityGetBurnCountdown },
+		{ "SetBurnCountdown", Lua_EntitySetBurnCountdown },
+		{ "GetShrinkCountdown", Lua_EntityGetShrinkCountdown },
+		{ "SetShrinkCountdown", Lua_EntitySetShrinkCountdown },
+		{ "GetBleedingCountdown", Lua_EntityGetBleedingCountdown },
+		{ "SetBleedingCountdown", Lua_EntitySetBleedingCountdown },
+		{ "GetMagnetizedCountdown", Lua_EntityGetMagnetizedCountdown },
+		{ "SetMagnetizedCountdown", Lua_EntitySetMagnetizedCountdown },
+		{ "GetBaitedCountdown", Lua_EntityGetBaitedCountdown },
+		{ "SetBaitedCountdown", Lua_EntitySetBaitedCountdown },
+		{ "GetKnockbackCountdown", Lua_EntityGetKnockbackCountdown },
+		{ "SetKnockbackCountdown", Lua_EntitySetKnockbackCountdown },
+		{ "GetWeaknessCountdown", Lua_EntityGetWeaknessCountdown },
+		{ "SetWeaknessCountdown", Lua_EntitySetWeaknessCountdown },
+		{ "GetIceCountdown", Lua_EntityGetIceCountdown },
+		{ "SetIceCountdown", Lua_EntitySetIceCountdown },
+		{ "GetBrimstoneMarkCountdown", Lua_EntityGetBrimstoneMarkCountdown },
+		{ "SetBrimstoneMarkCountdown", Lua_EntitySetBrimstoneMarkCountdown },
+
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
