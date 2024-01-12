@@ -18,7 +18,7 @@
 class Rope {
   public:
     Rope(unsigned int nPoints, float timestep, unsigned int iterations, float spriteStretchHeight, float spriteStretchWidth) {
-        printf("Rope: constructing\n");
+        printf("Rope: constructing, this %p\n", this);
         _numPoints = nPoints;
         _timestep = timestep;
         _iterations = iterations;
@@ -38,7 +38,7 @@ class Rope {
     }
 
     void Init() {
-        printf("Rope::Init starting, using deque %p\n", &_points);
+        printf("Rope::Init starting, this %p, deque %p\n", this, &_points);
         if (_points.deque.size() < 2) {
             printf("not enough points\n");
             return;
@@ -59,6 +59,7 @@ class Rope {
 
         printf("length: %f, segments : %d, avg distance: %f\n", ropeLength, numSegments, _desiredDistance);
 
+        printf("point #0: %p\n", &_points.deque.front());
         _points.deque.pop_back();
         for (unsigned int i = 1; i < _numPoints; i++) {
             // percent distance from start to end, 0.0->1.0
@@ -71,23 +72,24 @@ class Rope {
                 endPoint._pos = pos;
                 endPoint._spritesheetCoordinate = spritesheetCoord;
                 _points.deque.push_back(endPoint);
-                printf("readded end point at pos %f, %f with coord %f and fixed %d\n", endPoint._pos.x, endPoint._pos.y, endPoint._spritesheetCoordinate, endPoint._target != nullptr);
+                printf("end point #%d, addr %p, deque addr %p, pos %f, %f with coord %f and fixed %d\n", i, &endPoint, &_points.deque.back(), endPoint._pos.x, endPoint._pos.y, endPoint._spritesheetCoordinate, endPoint._target != nullptr);
             }
             else
             {
                 Point p(pos, nullptr, spritesheetCoord, _spriteWidth, false);
                 _points.deque.push_back(p);
-                printf("created point at pos %f, %f with coord %f and fixed %d\n", p._pos.x, p._pos.y, p._spritesheetCoordinate, p._fixed);
+                printf("point #%d, addr %p, deque addr %p, pos %f, %f with coord %f and fixed %d\n", i, &p, &_points.deque.back(), p._pos.x, p._pos.y, p._spritesheetCoordinate, p._fixed);
             }
         }
         _initialized = true;
         printf("Rope::Init ending, size %d\n", _points.deque.size());
+        __debugbreak();
     }
 
     void Update() {
-        //printf("Rope::Update starting, using deque %p\n", &_points);
+        printf("Rope::Update starting, this %p, deque %p, size %d\n", this, &_points, _points.deque.size());
         if (!_initialized) {
-            printf("Cord::Update: not initialzed\n");
+            printf("Rope::Update: not initialzed\n");
             return;
         }
         verletIntegration();
@@ -98,11 +100,11 @@ class Rope {
     void Render(ANM2* anm2, unsigned int layerID, bool useOverlay, bool unk) {
         //printf("Rope::Render starting, using deque %p\n", &_points);
         if (_points.deque.size() < 2) {
-            printf("Rope::Render: < 2 points, size is %d\n", _points.deque.size());
+            //printf("Rope::Render: < 2 points, size is %d\n", _points.deque.size());
             return;
         }
         if (!_initialized) {
-            printf("Rope::Render: not initialzed\n");
+            //printf("Rope::Render: not initialzed\n");
             return;
         }  
 
@@ -132,7 +134,7 @@ class Rope {
 
   private:
     void verletIntegration() {
-        printf("verletIntegration: deque size %d\n", _points.deque.size());
+        //printf("verletIntegration: deque %p, size %d\n", &_points, _points.deque.size());
         int i = 0;
         for (Point& p : _points.deque) {
             if (p._target) {
@@ -155,11 +157,11 @@ class Rope {
             p._lastPos = copy;
             i++;
         }
-        printf("verletIntegration: ran %d times, deque size %d\n", i, _points.deque.size());
+        //printf("verletIntegration: ran %d times, deque size %d\n", i, _points.deque.size());
     }
 
     void enforceConstraints() {
-        printf("enforceConstraints: iterations %d, deque size %d\n", _iterations, _points.deque.size());
+        //printf("enforceConstraints: deque %p, iterations %d, size %d\n", &_points, _iterations, _points.deque.size());
         // We perform the enforcement multiple times
         for (unsigned int iteration = 0; iteration < _iterations; iteration++) {
             //printf("iteration %d: ", iteration);

@@ -73,6 +73,7 @@ LUA_FUNCTION(Lua_CordSetIterations) {
 }
 
 LUA_FUNCTION(Lua_Cord__gc) {
+	printf("cord gc\n");
 	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
 	rope->~Rope();
 	return 0;
