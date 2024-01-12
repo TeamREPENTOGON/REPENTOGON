@@ -683,6 +683,70 @@ LUA_FUNCTION(Lua_EntitySetBrimstoneMarkCountdown) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityGetPoisonDamageTimer) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_poisonDamageTimer);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetPoisonDamageTimer) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_poisonDamageTimer = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetBurnDamageTimer) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushinteger(L, ent->_burnDamageTimer);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetBurnDamageTimer) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_burnDamageTimer = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetPoisonDamage) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushnumber(L, ent->_poisonDamage);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetPoisonDamage) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_poisonDamage = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetBurnDamage) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	lua_pushnumber(L, ent->_burnDamage);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetBurnDamage) {
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_burnDamage = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityGetKnockbackDirection)
+{
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = ent->_knockbackDirection;
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntitySetKnockbackDirection)
+{
+	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
+	ent->_knockbackDirection = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	return 0;
+}
+
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -764,6 +828,16 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBrimstoneMarkCountdown", Lua_EntityGetBrimstoneMarkCountdown },
 		{ "SetBrimstoneMarkCountdown", Lua_EntitySetBrimstoneMarkCountdown },
 
+		{ "GetPoisonDamageTimer", Lua_EntityGetPoisonDamageTimer },
+		{ "SetPoisonDamageTimer", Lua_EntitySetPoisonDamageTimer },
+		{ "GetBurnDamageTimer", Lua_EntityGetBurnDamageTimer },
+		{ "SetBurnDamageTimer", Lua_EntitySetBurnDamageTimer },
+		{ "GetPoisonDamage", Lua_EntityGetPoisonDamage },
+		{ "SetPoisonDamage", Lua_EntitySetPoisonDamage },
+		{ "GetBurnDamage", Lua_EntityGetBurnDamage },
+		{ "SetBurnDamage", Lua_EntitySetBurnDamage },
+		{ "GetKnockbackDirection", Lua_EntityGetKnockbackDirection },
+		{ "SetKnockbackDirection", Lua_EntitySetKnockbackDirection },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
