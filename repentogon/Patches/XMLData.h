@@ -413,9 +413,9 @@ public:
 		maxid = 0;
 	}
 
-	XMLAttributes GetNodeById(tuple<int, int, int> name) {
+	XMLAttributes GetNodeById(const tuple<int, int, int> &name) {
 		if (this->nodes.find(name) == this->nodes.end()) { return XMLAttributes(); }
-		return this->GetNodeById(name);
+		return this->nodes[name];
 	}
 
 	XMLAttributes GetNodeByName(const string &name) {
