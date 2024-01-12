@@ -49,7 +49,7 @@ LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, b
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int loopIndex = (int)luaL_checkinteger(L, 2);
 	int weaponType = (int)luaL_checkinteger(L, 3);
-	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::ENTITY, "Vector");
+	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	float shotSpeed = (float)luaL_checknumber(L, 5);
 
 	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, lua::metatables::MultiShotParamsMT);
