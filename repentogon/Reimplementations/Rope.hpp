@@ -18,7 +18,7 @@
 class Rope {
   public:
     Rope(unsigned int nPoints, float timestep, unsigned int iterations, float spriteStretchHeight, float spriteStretchWidth) {
-        printf("Rope: constructing");
+        printf("Rope: constructing\n");
         _numPoints = nPoints;
         _timestep = timestep;
         _iterations = iterations;
@@ -33,16 +33,22 @@ class Rope {
             printf("Rope: pushing point #%d\n", i);
             _points.deque.push_back(p);
         }
-
+        printf("Rope: points %p, %p\n", &_points.deque.front(), &_points.deque.back());
         printf("Rope: done constructing\n");
     }
 
     void Init() {
-        printf("Rope::Init starting\n");
-        Point* startPoint = &_points.deque.at(0);
-        Point endPoint = _points.deque.at(_points.deque.size());
-        Vector* startPos = startPoint->_target != nullptr ? startPoint->_target->GetPosition() : &startPoint->_pos;
+        printf("Rope::Init starting, using deque %p\n", &_points);
+        if (_points.deque.size() < 2) {
+            printf("not enough points\n");
+            return;
+        }
+        Point* startPoint = &_points.deque.front();
+        Point endPoint = _points.deque.back();
+        Vector* startPos = startPoint->_target ? startPoint->_target->GetPosition() : &startPoint->_pos;
         Vector* endPos = endPoint._target ? endPoint._target->GetPosition() : &endPoint._pos;
+
+        printf("startPos: %f %f, endPos: %f %f\n", startPos->x, startPos->y, endPos->x, endPos->y);
 
         float ropeLength = (float)sqrt(pow(startPos->x - endPos->x, 2) + pow(startPos->y - endPos->y, 2));
 
@@ -53,7 +59,7 @@ class Rope {
 
         printf("length: %f, segments : %d, avg distance: %f\n", ropeLength, numSegments, _desiredDistance);
 
-        _points.deque.erase(_points.deque.end());
+        _points.deque.pop_back();
         for (unsigned int i = 1; i < _numPoints; i++) {
             // percent distance from start to end, 0.0->1.0
             float w = (float)i / (_numPoints - 1);

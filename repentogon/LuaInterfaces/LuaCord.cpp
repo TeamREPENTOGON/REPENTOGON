@@ -42,7 +42,8 @@ LUA_FUNCTION(Lua_CordGetPoints) {
 	printf("lua: cord getting pointdeque\n");
 	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
 	PointDeque** luaDeque = (PointDeque**)lua_newuserdata(L, sizeof(PointDeque*));
-	*luaDeque = rope->GetPointDeque();
+	printf("lua: cord setting luaDeque to %p\n", &rope->_points);
+	*luaDeque = &rope->_points;
 	luaL_setmetatable(L, lua::metatables::PointDequeMT);
 	return 1;
 }
@@ -70,8 +71,6 @@ LUA_FUNCTION(Lua_CordSetIterations) {
 	rope->_iterations = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
-
-
 
 LUA_FUNCTION(Lua_Cord__gc) {
 	Rope* rope = lua::GetUserdata<Rope*>(L, 1, lua::metatables::CordMT);
