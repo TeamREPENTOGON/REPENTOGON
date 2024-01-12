@@ -81,24 +81,28 @@ class Rope {
             }
         }
         _initialized = true;
+        printf("Rope::Init ending, size %d\n", _points.deque.size());
     }
 
     void Update() {
+        //printf("Rope::Update starting, using deque %p\n", &_points);
         if (!_initialized) {
-            printf("Cord::Update: not initialzed");
+            printf("Cord::Update: not initialzed\n");
             return;
         }
         verletIntegration();
         enforceConstraints();
+        //printf("Rope::Update finished\n");
     }
 
     void Render(ANM2* anm2, unsigned int layerID, bool useOverlay, bool unk) {
+        //printf("Rope::Render starting, using deque %p\n", &_points);
         if (_points.deque.size() < 2) {
-            printf("Cord::Render: < 2 points");
+            printf("Rope::Render: < 2 points, size is %d\n", _points.deque.size());
             return;
         }
         if (!_initialized) {
-            printf("Cord::Render: not initialzed");
+            printf("Rope::Render: not initialzed\n");
             return;
         }  
 
@@ -128,6 +132,8 @@ class Rope {
 
   private:
     void verletIntegration() {
+        printf("verletIntegration: deque size %d\n", _points.deque.size());
+        int i = 0;
         for (Point& p : _points.deque) {
             if (p._target) {
                 p._pos = *p._target->GetPosition();
@@ -147,10 +153,13 @@ class Rope {
             p._pos += velocity * _timestep;
 
             p._lastPos = copy;
+            i++;
         }
+        printf("verletIntegration: ran %d times, deque size %d\n", i, _points.deque.size());
     }
 
     void enforceConstraints() {
+        printf("enforceConstraints: iterations %d, deque size %d\n", _iterations, _points.deque.size());
         // We perform the enforcement multiple times
         for (unsigned int iteration = 0; iteration < _iterations; iteration++) {
             //printf("iteration %d: ", iteration);

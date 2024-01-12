@@ -21,51 +21,51 @@ LUA_FUNCTION(Lua_PointConstructor) {
 }
 
 LUA_FUNCTION(Lua_PointGetSpritesheetCoordinate) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	lua_pushnumber(L, point->_spritesheetCoordinate);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PointSetSpritesheetCoordinate) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	point->_spritesheetCoordinate = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PointGetWidth) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	lua_pushnumber(L, point->_width);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PointSetWidth) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	point->_width = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PointGetPosition) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
 	*toLua = point->_pos;
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PointSetPosition) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	point->_lastPos = point->_pos;
 	point->_pos = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PointGetFixed) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	lua_pushboolean(L, point->_fixed);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PointSetFixed) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	point->_fixed = lua::luaL_checkboolean(L, 2);
 	if (point->_fixed)
 		point->_lastPos = point->_pos;
@@ -73,7 +73,7 @@ LUA_FUNCTION(Lua_PointSetFixed) {
 }
 
 LUA_FUNCTION(Lua_PointGetTarget) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	if (!point->_target) {
 		lua_pushnil(L);
 	}
@@ -85,7 +85,7 @@ LUA_FUNCTION(Lua_PointGetTarget) {
 }
 
 LUA_FUNCTION(Lua_PointSetTarget) {
-	Point* point = lua::GetUserdata<Point*>(L, 1, lua::metatables::PointMT);
+	Point* point = *lua::GetUserdata<Point**>(L, 1, lua::metatables::PointMT);
 	if (lua_isnil(L, 2)) {
 		point->_target = nullptr;
 	}
@@ -101,7 +101,7 @@ LUA_FUNCTION(Lua_PointSetTarget) {
 */////////////////////
 
 LUA_FUNCTION(Lua_PointDequePushBack) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
 	Point* point = lua::GetUserdata<Point*>(L, 2, lua::metatables::PointMT);
 	d->deque.push_back(*point);
 
@@ -109,7 +109,7 @@ LUA_FUNCTION(Lua_PointDequePushBack) {
 }
 
 LUA_FUNCTION(Lua_PointDequePushFront) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
 	Point* point = lua::GetUserdata<Point*>(L, 2, lua::metatables::PointMT);
 	d->deque.push_front(*point);
 
@@ -117,22 +117,22 @@ LUA_FUNCTION(Lua_PointDequePushFront) {
 }
 
 LUA_FUNCTION(Lua_PointDequePopBack) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
-	printf("PointDeque::PopBack: address %p (or %p)\n", d, &d);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
+	printf("PointDeque::PopBack: address %p, size %d\n", d, d->deque.size());
 	d->deque.pop_back();
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PointDequePopFront) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
 	d->deque.pop_front();
 
 	return 0;
 }
 
 LUA_FUNCTION(Lua_PointDequeGet) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
 	printf("PointDeque::Get: size %d\n", d->deque.size());
 	Point* p = &d->deque.at((int)luaL_checkinteger(L, 2));
 	printf("PointDeque::Get: p = %p\n", p);
@@ -152,7 +152,7 @@ LUA_FUNCTION(Lua_PointDequeGet) {
 }
 
 LUA_FUNCTION(Lua_PointDequeGetFront) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
 	printf("PointDeque::GetFront: deque %p, size %d\n", d, d->deque.size());
 	Point* p = &d->deque.front();
 	printf("PointDeque::GetFront: p = %p\n", p);
@@ -172,7 +172,7 @@ LUA_FUNCTION(Lua_PointDequeGetFront) {
 }
 
 LUA_FUNCTION(Lua_PointDequeGetBack) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
 	printf("PointDeque::GetBack: deque %p, size %d\n", d, d->deque.size());
 	Point* p = &d->deque.back();
 	printf("PointDeque::GetBack: p = %p\n", p);
@@ -192,14 +192,14 @@ LUA_FUNCTION(Lua_PointDequeGetBack) {
 }
 
 LUA_FUNCTION(Lua_PointDeque__len) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
 	lua_pushinteger(L, d->deque.size());
 
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PointDeque__gc) {
-	PointDeque* d = lua::GetUserdata<PointDeque*>(L, 1, lua::metatables::PointDequeMT);
+	PointDeque* d = *lua::GetUserdata<PointDeque**>(L, 1, lua::metatables::PointDequeMT);
 	d->~PointDeque();
 	return 0;
 }
