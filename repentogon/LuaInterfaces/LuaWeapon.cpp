@@ -83,7 +83,7 @@ LUA_FUNCTION(Lua_WeaponGetFireDelay) {
 LUA_FUNCTION(Lua_WeaponSetFireDelay) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
 	float delay = (float)luaL_checknumber(L, 2);
-	*weapon->GetCharge() = delay;
+	*weapon->GetFireDelay() = delay;
 	return 0;
 }
 

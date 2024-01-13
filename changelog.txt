@@ -36,6 +36,7 @@ Fixes:
 * Fix binder for Familiar:UpdateDirtColor
 * Fix FlatPatch spam in repentogon.log by reworking Quick Room Clear patch
 * Fix GridEntityDoor vanilla variables PreviousState/PreviousVaraint returning unusable userdata instead of integer
+* Fix Weapon:SetFireDelay() not working
 /newline/
 v1.0.4 - 
 Additions:
