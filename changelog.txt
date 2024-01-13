@@ -18,6 +18,7 @@ Additions:
 * Added MC_POST_HUD_RENDER callback (good for rendering on top of the HUD)
 * Added WeightedOutcomePicker:RemoveOutcome(int Value) and WeightedOutcomePicker:GetOutcomes()
 * Added Entity Get/Set methods related to status effects countdown
+* Entity:ForceCollide() now works for EntityLasers
 /newline/
 Fixes:
 * Fix GridEntity render callbacks being massively broken
