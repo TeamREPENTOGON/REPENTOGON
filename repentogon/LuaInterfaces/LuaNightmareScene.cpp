@@ -2,13 +2,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetNightmareScene) {
+/*LUA_FUNCTION(Lua_GetNightmareScene) {
 	Manager* manager = g_Manager;
 	NightmareScene** ud = (NightmareScene**)lua_newuserdata(L, sizeof(NightmareScene*));
 	*ud = manager->GetNightmareScene();
 	luaL_setmetatable(L, lua::metatables::NightmareSceneMT);
 	return 1;
 }
+*/
 
 /*LUA_FUNCTION(Lua_NightmareSceneShow)
 {

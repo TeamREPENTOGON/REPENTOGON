@@ -2,7 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetItemOverlay)
+/*LUA_FUNCTION(Lua_GetItemOverlay)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	ItemOverlay** ud = (ItemOverlay**)lua_newuserdata(L, sizeof(ItemOverlay*));
@@ -10,6 +10,7 @@ LUA_FUNCTION(Lua_GetItemOverlay)
 	luaL_setmetatable(L, lua::metatables::ItemOverlayMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_ItemOverlayShow)
 {

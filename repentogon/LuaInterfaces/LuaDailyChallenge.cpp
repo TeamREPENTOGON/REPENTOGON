@@ -2,13 +2,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetDailyChallenge) {
+/*LUA_FUNCTION(Lua_GetDailyChallenge) {
 	Manager* manager = g_Manager;
 	DailyChallenge** ud = (DailyChallenge**)lua_newuserdata(L, sizeof(DailyChallenge*));
 	*ud = manager->GetDailyChallenge();
 	luaL_setmetatable(L, lua::metatables::DailyChallengeMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_DailyChallengeGetChallengeParams)
 {

@@ -2,13 +2,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetScoreSheet) {
+/*LUA_FUNCTION(Lua_GetScoreSheet) {
 	Game* game = g_Game;
 	ScoreSheet** ud = (ScoreSheet**)lua_newuserdata(L, sizeof(ScoreSheet*));
 	*ud = game->GetScoreSheet();
 	luaL_setmetatable(L, lua::metatables::ScoreSheetMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_ScoreSheetCalculate)
 {

@@ -66,7 +66,7 @@ ___
 	
 ___
 ### AddLeprosy () {: aria-label='Functions' }
-#### void AddLeprocy ( ) {: .copyable aria-label='Functions' }
+#### void AddLeprosy ( ) {: .copyable aria-label='Functions' }
 
 ???+ info "Info"
     This is currently still capped at a max of three familiars, and would require further modification to change this.

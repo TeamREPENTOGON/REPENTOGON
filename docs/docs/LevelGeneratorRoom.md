@@ -39,6 +39,10 @@ ___
 Index of the room during generation: `0` if the room was the first to be generated, `1` if it was the second etc.
 
 ___
+### IsDeadEnd () {: aria-label='Functions' }
+#### boolean IsDeadEnd ( ) {: .copyable aria-label='Functions' }
+
+___
 ### Neighbors () {: aria-label='Functions' }
 #### int[] Neighbors ( ) {: .copyable aria-label='Functions' }
 Returns a table of the generation indices of the neighboring rooms.

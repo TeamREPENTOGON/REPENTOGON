@@ -2,7 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GameGetMinimap)
+/*LUA_FUNCTION(Lua_GameGetMinimap)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Minimap** toLua = (Minimap**)lua_newuserdata(L, sizeof(Minimap*));
@@ -10,6 +10,7 @@ LUA_FUNCTION(Lua_GameGetMinimap)
 	luaL_setmetatable(L, lua::metatables::MinimapMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
 {

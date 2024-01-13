@@ -2,13 +2,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetPlayerManager) {
+/*LUA_FUNCTION(Lua_GetPlayerManager) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
 	*ud = game->GetPlayerManager();
 	luaL_setmetatable(L, lua::metatables::PlayerManagerMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_FirstCollectibleOwner)
 {
