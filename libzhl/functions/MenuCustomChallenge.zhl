@@ -1,3 +1,6 @@
+"558bec81ec8c000000a1":
+__thiscall void Menu_CustomChallenge::Render();
+
 struct Menu_CustomChallenge depends (ANM2) {
 {{
 	inline ANM2* GetCustomChallengeSprite() { return &this->CustomChallengeSprite; }

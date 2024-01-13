@@ -88,7 +88,8 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline EntityConfig* GetEntityConfig() { return &this->_entityConfig; }
 	inline std::vector<EntityConfig_Player>* GetPlayerConfig() { return this->GetEntityConfig()->GetPlayers(); }
 }} 
-
+	
+	int _state : 0x8;
     PersistentGameData _persistentGameData : 0x14;
     StringTable _stringTable : 0x4a234;
 	SoundEffects _sfxManager : 0x29de0;
