@@ -3990,6 +3990,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#clearchallenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      ClearChallenge ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#createtimer" class="md-nav__link">
     <span class="md-ellipsis">
       CreateTimer ()
@@ -4152,6 +4161,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getmodchallengeclearcount" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetModChallengeClearCount ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getnullitemidbyname" class="md-nav__link">
     <span class="md-ellipsis">
       GetNullItemIdByName ()
@@ -4191,6 +4209,24 @@
   <a href="#isingame" class="md-nav__link">
     <span class="md-ellipsis">
       IsInGame ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ischallengedone" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsChallengeDone ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#markchallengeasnotdone" class="md-nav__link">
+    <span class="md-ellipsis">
+      MarkChallengeAsNotDone ()
     </span>
   </a>
   
@@ -6620,6 +6656,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#clearchallenge" class="md-nav__link">
+    <span class="md-ellipsis">
+      ClearChallenge ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#createtimer" class="md-nav__link">
     <span class="md-ellipsis">
       CreateTimer ()
@@ -6782,6 +6827,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getmodchallengeclearcount" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetModChallengeClearCount ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getnullitemidbyname" class="md-nav__link">
     <span class="md-ellipsis">
       GetNullItemIdByName ()
@@ -6821,6 +6875,24 @@
   <a href="#isingame" class="md-nav__link">
     <span class="md-ellipsis">
       IsInGame ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ischallengedone" class="md-nav__link">
+    <span class="md-ellipsis">
+      IsChallengeDone ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#markchallengeasnotdone" class="md-nav__link">
+    <span class="md-ellipsis">
+      MarkChallengeAsNotDone ()
     </span>
   </a>
   
@@ -6980,6 +7052,10 @@
 <h4 aria-label="Functions" class="copyable" id="void-clearcompletionmarks-playertype-character">void ClearCompletionMarks ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> Character)<a class="headerlink" href="#void-clearcompletionmarks-playertype-character" title="Permanent link">⚓︎</a></h4>
 <p>Deletes all completion marks for a given character. Supports both modded and vanilla characters. </p>
 <hr />
+<h3 aria-label="Functions" id="clearchallenge">ClearChallenge ()<a class="headerlink" href="#clearchallenge" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-clearchallenge-int-challengeid">void ClearChallenge ( int challengeid)<a class="headerlink" href="#void-clearchallenge-int-challengeid" title="Permanent link">⚓︎</a></h4>
+<p>Sets the challenge of the corresponding challengeid to completed. Should work with both custom and vanilla challenges. </p>
+<hr />
 <h3 aria-label="Functions" id="createtimer">CreateTimer ()<a class="headerlink" href="#createtimer" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="entityeffect-createtimer-function-function-int-interval-int-times-boolean-persistent"><a href="https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html">EntityEffect</a> CreateTimer ( function Function, int Interval, int Times, boolean Persistent )<a class="headerlink" href="#entityeffect-createtimer-function-function-int-interval-int-times-boolean-persistent" title="Permanent link">⚓︎</a></h4>
 <p>Spawns a timer EntityEffect. This entity will starting running <code>Function</code> function after <code>Interval</code> frames, and will repeat it <code>Times</code> amount of times. <code>Persistent</code> controls whether or not this timer "dies" in the current room, or persists across rooms.</p>
@@ -7101,6 +7177,10 @@
 <h4 aria-label="Functions" class="copyable" id="string-getlocalizedstring-string-category-string-key-string-languagecode">string GetLocalizedString ( string Category, string Key, string LanguageCode )<a class="headerlink" href="#string-getlocalizedstring-string-category-string-key-string-languagecode" title="Permanent link">⚓︎</a></h4>
 <p>Returns the translation string associated with the given key in the given category. The translation is given in the language ID/language code given as parameter.</p>
 <hr />
+<h3 aria-label="Functions" id="getmodchallengeclearcount">GetModChallengeClearCount ()<a class="headerlink" href="#getmodchallengeclearcount" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="int-getmodchallengeclearcount">int GetModChallengeClearCount ( )<a class="headerlink" href="#int-getmodchallengeclearcount" title="Permanent link">⚓︎</a></h4>
+<p>Returns the number of times a custom challenge was cleared.</p>
+<hr />
 <h3 aria-label="Functions" id="getnullitemidbyname">GetNullItemIdByName ()<a class="headerlink" href="#getnullitemidbyname" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getnullitemidbyname">int GetNullItemIdByName ( )<a class="headerlink" href="#int-getnullitemidbyname" title="Permanent link">⚓︎</a></h4>
 <hr />
@@ -7117,6 +7197,14 @@
 <h3 aria-label="Functions" id="isingame">IsInGame ()<a class="headerlink" href="#isingame" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isingame">boolean IsInGame ( )<a class="headerlink" href="#boolean-isingame" title="Permanent link">⚓︎</a></h4>
 <p>Returns <code>true</code> if <code>Game</code> is non-nil and the current state is correct.</p>
+<hr />
+<h3 aria-label="Functions" id="ischallengedone">IsChallengeDone ()<a class="headerlink" href="#ischallengedone" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="boolean-ischallengedone-int-challengeid">boolean IsChallengeDone (int challengeid )<a class="headerlink" href="#boolean-ischallengedone-int-challengeid" title="Permanent link">⚓︎</a></h4>
+<p>Returns <code>true</code> if the challenge of the corresponding challengeid is completed.</p>
+<hr />
+<h3 aria-label="Functions" id="markchallengeasnotdone">MarkChallengeAsNotDone ()<a class="headerlink" href="#markchallengeasnotdone" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-markchallengeasnotdone-int-challengeid">void MarkChallengeAsNotDone (int challengeid )<a class="headerlink" href="#void-markchallengeasnotdone-int-challengeid" title="Permanent link">⚓︎</a></h4>
+<p>Sets the challenge as not done.</p>
 <hr />
 <h3 aria-label="Functions" id="levelgeneratorentry">LevelGeneratorEntry ()<a class="headerlink" href="#levelgeneratorentry" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="levelgeneratorentry-levelgeneratorentry"><a href="LevelGeneratorEntry.html">LevelGeneratorEntry</a> LevelGeneratorEntry ( )<a class="headerlink" href="#levelgeneratorentry-levelgeneratorentry" title="Permanent link">⚓︎</a></h4>
