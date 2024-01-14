@@ -1,3 +1,9 @@
+"8b15????????535657f682????????01":
+__thiscall void Menu_Stats::Update();
+
+"558bec83ec5ca1????????33c58945??a1":
+__thiscall void Menu_Stats::Render();
+
 struct Menu_Stats depends (ANM2, AchievementOverlay_Entry) { {{
 }} 
     int _countTotalAchievements : 0x0;

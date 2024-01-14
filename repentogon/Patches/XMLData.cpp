@@ -1170,7 +1170,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				//XMLStuff.AchievementData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.AchievementData->byname[achievement["name"]] = id;
 				XMLStuff.AchievementData->nodes[id] = achievement;
-				XMLStuff.ModData->sounds[achievement["sourceid"]] += 1;
+				XMLStuff.ModData->achievements[achievement["sourceid"]] += 1;
 			
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -3360,7 +3360,21 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 	}
 	iscontent = iscontentax;
 	mclear(a);
+
 	super();
+
+
+	//retroactively patch playertype for challenges because the game sucks ass and loads modded challenges before players
+	for (int i = 46; i<=XMLStuff.ChallengeData->maxid; i++) {
+		ChallengeParam* chalpram = g_Manager->GetChallengeParams(i);
+		if (chalpram->_playerType <= 0) {
+			XMLAttributes chal = XMLStuff.ChallengeData->GetNodeById(i);
+			string val = string(chal["playertype"]);
+			if (XMLStuff.PlayerData->byname.find(val) != XMLStuff.PlayerData->byname.end()) {
+				chalpram->_playerType = XMLStuff.PlayerData->byname[val];
+			}
+		}
+	}
 }
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
