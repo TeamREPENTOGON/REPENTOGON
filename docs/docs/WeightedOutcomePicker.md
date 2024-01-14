@@ -21,6 +21,21 @@ ___
     
 ## Functions
 
+### AddOutcomeFloat () {: aria-label='Functions' }
+#### void AddOutcomeFloat ( int Value, float Weight, int ScaleFactor = 100 ) {: .copyable aria-label='Functions' }
+Adds an outcome to the outcome selector with the specified `Weight`. The internal weight is still an integer calculated like this: `fWeight * scaleFactor`, where `ScaleFactor` is the maximum weight (equivalent to 1.0).
+
+???+ example "Example Code"
+    ```lua
+    local picker = WeightedOutcomePicker()
+
+    picker:AddOutcomeFloat(1, 1.0) -- ~45%
+    picker:AddOutcomeFloat(2, 1.0) -- ~45%
+    picker:AddOutcomeFloat(3, 0.2) -- ~9%
+    ```
+
+___
+
 ### AddOutcomeWeight () {: aria-label='Functions' }
 #### void AddOutcomeWeight ( int Value, int Weight ) {: .copyable aria-label='Functions' }
 Adds an outcome to the outcome selector with the specified `Weight`.
@@ -36,21 +51,21 @@ Adds an outcome to the outcome selector with the specified `Weight`.
 
 ___
 
-### PickOutcome () {: aria-label='Functions' }
-#### int PickOutcome ( [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) RNG ) {: .copyable aria-label='Functions' }
-Returns a random outcome from the list in WeightedOutcomePicker. Accepts [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html).
+### ClearOutcomes () {: aria-label='Functions' }
+#### void ClearOutcomes ( ) {: .copyable aria-label='Functions' }
+Clears all outcomes from the outcome picker.
 
 ___
 
-### RemoveOutcome () {: aria-label='Functions' }
-#### void RemoveOutcome ( int Value ) {: .copyable aria-label='Functions' }
-Removes an outcome from the outcome picker with the given `Value`.
+### GetNumOutcomes () {: aria-label='Functions' }
+#### int GetNumOutcomes ( ) {: .copyable aria-label='Functions' }
+Returns the number of outcomes in the outcome picker.
 
 ___
 
 ### GetOutcomes () {: aria-label='Functions' }
 #### table[] GetOutcomes ( ) {: .copyable aria-label='Functions' }
-Returns a table containing a list of all outcomes in the picker.
+Returns a table containing a list of all outcomes in the outcome picker.
 
 ???- info "Table structure & usage"
     - The returned table contains a list of outcomes, where each outcome is a table containing the following fields: 
@@ -61,4 +76,17 @@ Returns a table containing a list of all outcomes in the picker.
                 print(outcome.Value, outcome.Weight)
             end
             ```
+
+___
+
+### PickOutcome () {: aria-label='Functions' }
+#### int PickOutcome ( [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html) RNG ) {: .copyable aria-label='Functions' }
+Returns a random outcome from the list in WeightedOutcomePicker. Accepts [RNG](https://wofsauge.github.io/IsaacDocs/rep/RNG.html).
+
+___
+
+### RemoveOutcome () {: aria-label='Functions' }
+#### void RemoveOutcome ( int Value ) {: .copyable aria-label='Functions' }
+Removes an outcome from the outcome picker with the given `Value`.
+
 ___

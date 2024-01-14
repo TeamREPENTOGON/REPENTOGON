@@ -24,6 +24,7 @@ Additions:
 * Added the challenge functions Isaac.GetModChallengeClearCount, Isaac.ClearChallenge, Isaac.MarkChallengeAsNotDone and Isaac.IsChallengeDone.
 * Changed the PRESS E FOR CHALLENGES MENU note, on the challenges menu, to follow you around and not be left at the top.
 * Entity:ForceCollide() now works for EntityLasers
+* Added WeightedOutcomePicker:AddOutcomeFloat(), WeightedOutcomePicker:Clear() and WeightedOutcomePicker:GetNumOutcomes()
 /newline/
 
 Fixes:
