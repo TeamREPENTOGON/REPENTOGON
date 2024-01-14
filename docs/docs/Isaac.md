@@ -54,6 +54,11 @@ ___
 Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
 
 ___
+### ClearChallenge () {: aria-label='Functions' }
+#### void ClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
+Sets the challenge of the corresponding challengeid to completed. Should work with both custom and vanilla challenges. 
+
+___
 ### CreateTimer () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) CreateTimer ( function Function, int Interval, int Times, boolean Persistent ) {: .copyable aria-label='Functions' }
 Spawns a timer EntityEffect. This entity will starting running `Function` function after `Interval` frames, and will repeat it `Times` amount of times. `Persistent` controls whether or not this timer "dies" in the current room, or persists across rooms.
@@ -175,6 +180,10 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the language ID/language code given as parameter.
 
 ___
+### GetModChallengeClearCount () {: aria-label='Functions' }
+#### int GetModChallengeClearCount ( ) {: .copyable aria-label='Functions' }
+Returns the number of times a custom challenge was cleared.
+___
 ### GetNullItemIdByName () {: aria-label='Functions' }
 #### int GetNullItemIdByName ( ) {: .copyable aria-label='Functions' }
 
@@ -197,7 +206,16 @@ ___
 Returns `true` if `Game` is non-nil and the current state is correct.
 
 ___
+### IsChallengeDone () {: aria-label='Functions' }
+#### boolean IsChallengeDone (int challengeid ) {: .copyable aria-label='Functions' }
+Returns `true` if the challenge of the corresponding challengeid is completed.
 
+___
+### MarkChallengeAsNotDone () {: aria-label='Functions' }
+#### void MarkChallengeAsNotDone (int challengeid ) {: .copyable aria-label='Functions' }
+Sets the challenge as not done.
+
+___
 ### LevelGeneratorEntry () {: aria-label='Functions' }
 #### [LevelGeneratorEntry](LevelGeneratorEntry.md) LevelGeneratorEntry ( ) {: .copyable aria-label='Functions' }
 Creates a new blank [LevelGeneratorEntry](LevelGeneratorEntry.md) object.
