@@ -19,6 +19,7 @@ Additions:
 * Added WeightedOutcomePicker:RemoveOutcome(int Value) and WeightedOutcomePicker:GetOutcomes()
 * Added Entity Get/Set methods related to status effects countdown
 * Entity:ForceCollide() now works for EntityLasers
+* Added WeightedOutcomePicker:AddOutcomeFloat(), WeightedOutcomePicker:Clear() and WeightedOutcomePicker:GetNumOutcomes()
 /newline/
 Fixes:
 * Fix GridEntity render callbacks being massively broken
