@@ -1066,6 +1066,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://repentogon.com/xml/challenges.html</loc>
+         <lastmod>2024-01-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://repentogon.com/xml/costumes.html</loc>
          <lastmod>2024-01-14</lastmod>
          <changefreq>daily</changefreq>
