@@ -472,7 +472,7 @@ I(IMGUI_CHANGE_KEY_BTN_PRESS_ESC, u8"Press ESC to cancel input")
 
 // ============= Log Viewer ==============
 
-I(LOGV_WIN_NAME, u8"Lov Viewer")
+I(LOGV_WIN_NAME, u8"Log Viewer")
 I(LOGV_FILTER, u8"Filter")
 I(LOGV_PIN_WINDOW, u8"Pin Window")
 I(LOGV_PIN_WINDOW_HINT, u8"Pinning a window will keep it visible even after closing Dev Tools.")
