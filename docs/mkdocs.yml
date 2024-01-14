@@ -341,6 +341,7 @@ nav:
 - Example Mods:
   - Capsules: examples/Capsules.md
   - Weighted Outcomes: examples/WeightedOutcomes.md
+  - Beams: examples/Beams.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
 - blog:
