@@ -1,62 +1,95 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <Windows.h>
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
-void Log(const char* fmt, ...) {
-	va_list va;
-	va_start(va, fmt);
+struct IsaacOptions {
+	// Repentogon options
+	int updates;
+	int console;
+	
+	// Game options
+	int lua_debug;
+	int level_stage;
+	int stage_type;
+	const char* lua_heap_size;
+};
 
-	FILE* f = fopen("injector.log", "a");
-	if (!f) {
-		f = stderr;
+/* Perform the early setup for the injection: create the Isaac process, 
+ * allocate memory for the remote thread function etc. 
+ * 
+ * No extra thread is created in the process. ImGui should be initialized
+ * afterwards to setup the injector, and then the remote thread can be
+ * created.
+ * 
+ * Return true of the initialization was sucessful, false otherwise.
+ */
+static int FirstStageInit(struct IsaacOptions const* options, HANDLE* process, void** page, size_t* functionOffset, PROCESS_INFORMATION* processInfo);
+
+static void Log(const char* fmt, ...);
+
+static void GenerateCLI(const struct IsaacOptions* options, char cli[256]);
+
+void GenerateCLI(const struct IsaacOptions* options, char cli[256]) {
+	memset(cli, 0, sizeof(cli));
+	if (options->console) {
+		strcat(cli, "--console ");
 	}
 
-	char buffer[4096];
-	time_t now = time(NULL);
-	struct tm* tm = localtime(&now);
-	strftime(buffer, 4095, "%Y-%m-%d %H:%M:%S", tm);
-	fprintf(f, "[%s] ", buffer);
-	vfprintf(f, fmt, va);
-	va_end(va);
+	if (!options->updates) {
+		strcat(cli, "--skipupdates ");
+	}
+
+	if (options->lua_debug) {
+		strcat(cli, "--luadebug ");
+	}
+
+	if (options->level_stage) {
+		strcat(cli, "--set-stage=");
+		char buffer[13]; // 11 chars for a max int (including sign) + 1 char for space + 1 char for '\0'
+		sprintf(buffer, "%d ", options->level_stage);
+		strcat(cli, buffer);
+	}
+
+	if (options->stage_type) {
+		strcat(cli, "--set-stage-type=");
+		char buffer[13]; // 11 chars for a max int (including sign) + 1 char for space + 1 char for '\0'
+		sprintf(buffer, "%d ", options->stage_type);
+		strcat(cli, buffer);
+	}
+
+	if (options->lua_heap_size) {
+		strcat(cli, "--luaheapsize=");
+		strcat(cli, options->lua_heap_size);
+	}
 }
 
-int main() {
-	{
-		FILE* f = fopen("injector.log", "w");
-		if (f) {
-			fclose(f);
-		}
-	}
-
-	Log("Starting injector\n");
-
+DWORD CreateIsaac(struct IsaacOptions const* options, PROCESS_INFORMATION* processInfo) {
 	STARTUPINFOA startupInfo;
 	memset(&startupInfo, 0, sizeof(startupInfo));
 
-	PROCESS_INFORMATION processInfo;
-	memset(&processInfo, 0, sizeof(processInfo));
+	memset(processInfo, 0, sizeof(*processInfo));
 
-	DWORD result = CreateProcess("isaac-ng.exe", NULL, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startupInfo, &processInfo);
+	char cli[256];
+	GenerateCLI(options, cli);
+
+	DWORD result = CreateProcess("isaac-ng.exe", cli, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startupInfo, processInfo);
 	if (result == 0) {
 		Log("Failed to create process: %d\n", GetLastError());
 		return -1;
 	}
 	else {
-		Log("Started isaac-ng.exe in suspended state, processID = %d\n", processInfo.dwProcessId);
+		Log("Started isaac-ng.exe in suspended state, processID = %d\n", processInfo->dwProcessId);
 	}
 
-	HANDLE process = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
-		FALSE, processInfo.dwProcessId);
-	if (!process) {
-		Log("Failed to open process: %d\n", GetLastError());
-		return -1;
-	}
-	else {
-		Log("Acquired handle to isaac-ng.exe, process ID = %d\n", processInfo.dwProcessId);
-	}
+	return result;
+}
 
+int UpdateMemory(HANDLE process, PROCESS_INFORMATION const* processInfo, void** page, size_t* functionOffset) {
 	void* remotePage = VirtualAllocEx(process, NULL, 4096, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 	if (!remotePage) {
 		Log("Failed to allocate memory in isaac-ng.exe to load the dsound DLL: %d\n", GetLastError());
@@ -66,7 +99,7 @@ int main() {
 		Log("Allocated memory for remote thread at %p\n", remotePage);
 	}
 
-	size_t bytesWritten = 0;
+	SIZE_T bytesWritten = 0;
 	char zeroBuffer[4096];
 	memset(zeroBuffer, 0, sizeof(zeroBuffer));
 	WriteProcessMemory(process, remotePage, zeroBuffer, 4096, &bytesWritten);
@@ -110,15 +143,17 @@ int main() {
 	// 0x16 (0x15 is a '\0')
 	WriteProcessMemory(process, (char*)remotePage + offset, functionName, strlen(functionName), &bytesWritten);
 	offset += (bytesWritten + 1);
-	size_t functionOffset = offset;
+
+	*functionOffset = offset;
+
 	/* 0x21 (0x20 is a '\0')
 	 * Call LoadLibraryA in the remote thread.
 	 * The thread will push the name of the DLL from its stack.
 	 * It will then call LoadLibraryA.
-	 * 
+	 *
 	 * This function is a THREAD_START_ROUTINE, with the following signature :
 	 * DWORD WINAPI(LPVOID);
-	 * 
+	 *
 	 * WINAPI is __stdcall: arguments are pushed in reverse order on the stack and callee cleans the stack.
 	 */
 	char hook[128] = {
@@ -148,7 +183,42 @@ int main() {
 	};
 	WriteProcessMemory(process, (char*)remotePage + offset, hook, 128, &bytesWritten);
 
-	HANDLE remoteThread = CreateRemoteThread(process, NULL, 0, (char*)remotePage + functionOffset, remotePage, 0, NULL);
+	*page = remotePage;
+	return 0;
+}
+
+int FirstStageInit(struct IsaacOptions const* options, HANDLE* outProcess, void** page, size_t* functionOffset, PROCESS_INFORMATION* processInfo) {
+	{
+		FILE* f = fopen("injector.log", "w");
+		if (f) {
+			fclose(f);
+		}
+	}
+
+	Log("Starting injector\n");
+	DWORD processId = CreateIsaac(options, processInfo);
+	
+	HANDLE process = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
+		FALSE, processInfo->dwProcessId);
+	if (!process) {
+		Log("Failed to open process: %d\n", GetLastError());
+		return -1;
+	}
+	else {
+		Log("Acquired handle to isaac-ng.exe, process ID = %d\n", processInfo->dwProcessId);
+	}
+
+	if (UpdateMemory(process, processInfo, page, functionOffset)) {
+		return -1;
+	}
+
+	*outProcess = process;
+	
+	return 0;
+}
+
+int CreateAndWait(HANDLE process, void* remotePage, size_t functionOffset) {
+	HANDLE remoteThread = CreateRemoteThread(process, NULL, 0, (LPTHREAD_START_ROUTINE)((char*)remotePage + functionOffset), remotePage, 0, NULL);
 	if (!remoteThread) {
 		Log("Error while creating remote thread: %d\n", GetLastError());
 		return -1;
@@ -158,7 +228,7 @@ int main() {
 	}
 
 	Log("Waiting for remote thread to complete\n");
-	result = WaitForSingleObject(remoteThread, 60 * 1000);
+	DWORD result = WaitForSingleObject(remoteThread, 60 * 1000);
 	switch (result) {
 	case WAIT_OBJECT_0:
 		Log("RemoteThread completed\n");
@@ -166,18 +236,61 @@ int main() {
 
 	case WAIT_ABANDONED:
 		Log("This shouldn't happened: RemoteThread returned WAIT_ABANDONNED\n");
-		break;
+		return -1;
 
 	case WAIT_TIMEOUT:
 		Log("RemoteThread timed out\n");
-		break;
+		return -1;
 
 	case WAIT_FAILED:
 		Log("WaitForSingleObject on RemoteThread failed: %d\n", GetLastError());
-		break;
+		return -1;
 	}
 
-	result = ResumeThread(processInfo.hThread);
+	return 0;
+}
+
+void Log(const char* fmt, ...) {
+	va_list va;
+	va_start(va, fmt);
+
+	FILE* f = fopen("injector.log", "a");
+	if (!f) {
+		f = stderr;
+	}
+
+	char buffer[4096];
+	time_t now = time(NULL);
+	struct tm* tm = localtime(&now);
+	strftime(buffer, 4095, "%Y-%m-%d %H:%M:%S", tm);
+	fprintf(f, "[%s] ", buffer);
+	vfprintf(f, fmt, va);
+	va_end(va);
+}
+
+int __declspec(dllexport) InjectIsaac(int updates, int console, int lua_debug, int level_stage, int stage_type, const char* lua_heap_size) {
+	HANDLE process;
+	void* remotePage;
+	size_t functionOffset;
+	PROCESS_INFORMATION processInfo;
+
+	struct IsaacOptions options;
+	options.updates = updates;
+	options.console = console;
+	options.lua_debug = lua_debug;
+	options.level_stage = level_stage;
+	options.stage_type = stage_type;
+	options.lua_heap_size = lua_heap_size;
+
+	if (FirstStageInit(&options, &process, &remotePage, &functionOffset, &processInfo)) {
+		return -1;
+	}
+
+	if (CreateAndWait(process, remotePage, functionOffset)) {
+		return -1;
+	}
+
+	DWORD result = ResumeThread(processInfo.hThread);
 	if (result == -1) {
 		Log("Failed to resume isaac-ng.exe main thread: %d\n", GetLastError());
 		return -1;
@@ -193,5 +306,10 @@ int main() {
 	CloseHandle(processInfo.hProcess);
 	CloseHandle(processInfo.hThread);
 
+	return 0;
+}
+
+int main(int argc, char** argv) {
+	InjectIsaac(1, 1, 0, 0, 0, NULL);
 	return 0;
 }

@@ -161,11 +161,6 @@ extern "C" {
 		
 		if (!HasCommandLineArgument("-skipupdates")) {
 			sLogger->Info("dsound: Checking for updates\n");
-
-		if (HasCommandLineArgument("-console"))
-			ConsoleWindow::Init();
-
-		if (!HasCommandLineArgument("-skipupdates"))
 			CheckForUpdates();
 			sLogger->Info("dsound: Update checking done\n");
 		}
