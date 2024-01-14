@@ -5,10 +5,17 @@
 LUA_FUNCTION(Lua_CapsuleConstructor) {
 	Vector* position = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* multiplier = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	const float rotation = (float)luaL_optnumber(L, 3, .0f);
-	const float size = (float)luaL_optnumber(L, 4, 1.0f);
+	const float f1 = (float)luaL_checknumber(L, 3);
 
-	Capsule* capsule = lua::place<Capsule>(L, lua::metatables::CapsuleMT, position, multiplier, rotation, size);
+	Capsule* capsule = nullptr;
+	if (lua_type(L, 4) == LUA_TNUMBER) {
+		const float f2 = (float)luaL_checknumber(L, 4);
+		capsule = lua::place<Capsule>(L, lua::metatables::CapsuleMT, position, multiplier, f1, f2);
+	}
+	else {
+		capsule = lua::place<Capsule>(L, lua::metatables::CapsuleMT, position, multiplier, f1);
+	}
+
 	return 1;
 }
 
