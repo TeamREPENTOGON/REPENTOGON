@@ -58,16 +58,32 @@ ___
 #### void SetShieldStrength ( float Strength ) {: .copyable aria-label='Functions' }
 
 ___
+### ShootMaggotProjectile () {: aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Target, float Velocity = -24.0, float YOffset = -8.0 ) {: .copyable aria-label='Functions' }
+
+___
 ### SpawnBloodCloud () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](Vector.md) position, [Color](Color.md) Color ) {: .copyable aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) SpawnBloodCloud ( [Vector](Vector.md) Position, [Color](Color.md) Color ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodSplash () {: aria-label='Functions' }
 #### void SpawnBloodSplash ( ) {: .copyable aria-label='Functions' }
 
 ___
+### ThrowLeech () {: aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) ThrowLeech ( [Entity](Entity.md) Source, [Vector](Vector.md) Target, float YPosOffset = -10.0, boolean Big = false ) {: .copyable aria-label='Functions' }
+
+___
 ### ThrowMaggotAtPos () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) Origin, float Velocity = -8.0, float yOffset = 0.0 ) {: .copyable aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) Origin, float Velocity = -8.0, float YOffset = 0.0 ) {: .copyable aria-label='Functions' }
+
+___
+### ThrowRockSpider () {: aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) ThrowRockSpider ( [Entity](Entity.md) Source, [Vector](Vector.md) Target, int Variant = 0, float YPosOffset = -10.0 ) {: .copyable aria-label='Functions' }
+
+___
+### ThrowStrider () {: aria-label='Functions' }
+#### [EntityNPC](EntityNPC.md) ThrowStrider ( [Entity](Entity.md) Source, [Vector](Vector.md) Target ) {: .copyable aria-label='Functions' }
 
 ___
 ### TryForceTarget () {: aria-label='Functions' }

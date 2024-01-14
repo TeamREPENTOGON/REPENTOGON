@@ -3,6 +3,7 @@
 #include "ASMPatcher.hpp"
 #include "SigScan.h"
 #include "HookSystem.h"
+#include "../../Patches/ASMPatches.h"
 
 LUA_FUNCTION(Lua_EntityAddBleeding)
 {
@@ -137,11 +138,23 @@ LUA_FUNCTION(Lua_EntitySetBossStatusEffectCooldown)
 	return 0;
 }
 
+void ForceCollideLaser(Entity_Laser* laser, Entity* entity) {
+	if (laser->CanDamageEntity(entity) && !RunPreLaserCollisionCallback(laser, entity)) {
+		laser->DoDamage(entity, laser->_collisionDamage);
+	}
+}
+
 LUA_FUNCTION(Lua_EntityForceCollide)
 {
 	Entity* first = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	Entity* second = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
 	bool low = lua::luaL_checkboolean(L, 3);
+	if (*first->GetType() == 7) {
+		ForceCollideLaser((Entity_Laser*)first, second);
+	}
+	if (*second->GetType() == 7) {
+		ForceCollideLaser((Entity_Laser*)second, first);
+	}
 	lua_pushboolean(L, first->ForceCollide(first, second, low));
 	return 1;
 }

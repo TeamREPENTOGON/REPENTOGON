@@ -20,6 +20,11 @@ ___
 #### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathFinder ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetWeapon () {: aria-label='Functions' }
+#### [Weapon](Weapon.md) GetWeapon ( ) {: .copyable aria-label='Functions' }
+Returns nil for familiars that don't mimic the player's attacks (Incubus, etc).
+
+___
 ### TriggerRoomClear () {: aria-label='Functions' }
 #### void TriggerRoomClear ( ) {: .copyable aria-label='Functions' }
 

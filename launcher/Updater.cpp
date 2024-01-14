@@ -1,4 +1,5 @@
 #include "Updater.h"
+#include "Logger.h"
 #include "document.h"
 #include "utils.h"
 
@@ -40,7 +41,7 @@ mINI::INIStructure ini;
 mINI::INIFile iniFile("dsound.ini");
 
 void CheckForUpdates() {
-
+    bool ok = true;
     if (!std::filesystem::exists("dsound.ini")) {
         printf("dsound.ini doesn't exist, creating\n");
         if (MessageBoxA(NULL, "Would you like REPENTOGON to automatically check for updates on game start?\n(We highly recommend saying yes here, we're probably gonna have a lot of them.)", "REPENTOGON", MB_YESNO) == IDYES)
@@ -49,10 +50,19 @@ void CheckForUpdates() {
             ini["Options"]["CheckForUpdates"] = "0";
 
         ini["internal"]["RanUpdater"] = "0";
-        iniFile.generate(ini, true);
+        ok = iniFile.generate(ini, true);
     }
 
-    iniFile.read(ini);
+    if (!ok) {
+        sLogger->Error("dsound: CheckForUpdates: Error while generating initial dsound.ini file, skipping\n");
+        return;
+    }
+
+    ok = iniFile.read(ini);
+    if (!ok) {
+        sLogger->Error("dsound: CheckForUpdates: Error while reading dsound.ini, skipping\n");
+        return;
+    }
 
     if (ini["Options"]["CheckForUpdates"] == "0")
         return;
@@ -95,14 +105,18 @@ void CheckForUpdates() {
             curl_easy_setopt(curl, CURLOPT_TIMEOUT, 30);
 
             res = curl_easy_perform(curl);
-            if (res != CURLE_OK)
-                fprintf(stderr, "Failed to check for updates: %s\n",
-                    curl_easy_strerror(res));
+            if (res != CURLE_OK) {
+                const char* strError = curl_easy_strerror(res);
+                sLogger->Error("dsound: CheckForUpdates: Failed to check for updates: %s\n", strError);
+                fprintf(stderr, "Failed to check for updates: %s\n", strError);
+            }
 
             doc.Parse(result.c_str());
 
             if (!doc.HasMember("name")) {
-                fprintf(stderr, "Failed to fetch latest release from the GitHub API. Returned JSON: %s\n", result.c_str());
+                const char* returnedJson = result.c_str();
+                sLogger->Error("dsound: CheckForUpdates: Failed to fetch latest release from the GitHub API. Returned JSON: %s\n", returnedJson);
+                fprintf(stderr, "Failed to fetch latest release from the GitHub API. Returned JSON: %s\n", returnedJson);
             }
 
             // If the release name is different from our version name, we are out of date!
@@ -114,13 +128,16 @@ void CheckForUpdates() {
                     result.clear();
                     curl_easy_setopt(curl, CURLOPT_URL, "https://api.github.com/repos/TeamREPENTOGON/Installer/releases/latest");
                     res = curl_easy_perform(curl);
-                    if (res != CURLE_OK)
-                        fprintf(stderr, "Failed to check for updates: %s\n",
-                            curl_easy_strerror(res));
+                    if (res != CURLE_OK) {
+                        const char* err = curl_easy_strerror(res);
+                        fprintf(stderr, "Failed to check for updates: %s\n", err);
+                        sLogger->Error("dsound: CheckForUpdates: Failed to check for updates: %s\n", err);
+                    }
 
                     updater_doc.Parse(result.c_str());
                     if (!updater_doc.HasMember("name")) {
                         fprintf(stderr, "Failed to fetch latest release from the GitHub API. Returned JSON: %s\n", result.c_str());
+                        sLogger->Error("dsound: CheckForUpdates: Failed to fetch latest release from GitHub. Returned JSON: %s\n", result.c_str());
                         curl_easy_cleanup(curl);
                         return;
                     }
@@ -142,11 +159,13 @@ void CheckForUpdates() {
 
                     if (hash_url.empty() || updater_url.empty()) {
                         printf("Unable to fetch URL of updater or hash, update cannot continue.\nHash URL: %s\nUpdater URL: %s", hash_url.c_str(), updater_url.c_str());
+                        sLogger->Error("dsound: CheckForUpdates: Unable to fetch URL of updater or hash, update cannot continue.\nHash URL: %s\nUpdater URL: %s", hash_url.c_str(), updater_url.c_str());
                         curl_easy_cleanup(curl);
                         return;
                     }
 
                     printf("Fetching hash from %s...\n", hash_url.c_str());
+                    sLogger->Info("dsound: CheckForUpdates: Fetching hash from %s\n", hash_url.c_str());
                     curl_easy_setopt(curl, CURLOPT_URL, hash_url.c_str());
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &updater_hash);
 
@@ -159,6 +178,7 @@ void CheckForUpdates() {
                     }
 
                     printf("Downloading updater...\n");
+                    sLogger->Info("dsound: CheckForUpdates: Downloading updater\n");
                     FILE* exe = fopen("REPENTOGONUpdater.exe", "wb");
                     curl_easy_setopt(curl, CURLOPT_URL, updater_url.c_str());
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &exe_content);
@@ -209,6 +229,7 @@ void CheckForUpdates() {
                     }
 
                     curl_easy_cleanup(curl);
+                    sLogger->Info("dsound: CheckForUpdates: Finished downloading, launching updater\n");
                     printf("Finished, launching updater\n");
                     // chnage da world,
                     ini["internal"]["RanUpdater"] = "1";

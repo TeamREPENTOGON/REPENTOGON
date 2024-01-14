@@ -2,13 +2,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GameGetRoomConfigHolder) {
+/*LUA_FUNCTION(Lua_GameGetRoomConfigHolder) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	RoomConfigHolder** ud = (RoomConfigHolder**)lua_newuserdata(L, sizeof(RoomConfigHolder*));
 	*ud = game->GetRoomConfigHolder();
 	luaL_setmetatable(L, lua::metatables::RoomConfigHolderMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_RoomConfigHolderGetRoomByStageTypeAndVariant) {
 	int n = lua_gettop(L);

@@ -4,13 +4,14 @@
 #include "HookSystem.h"
 #include "../ImGuiFeatures/ConsoleMega.h"
 
-LUA_FUNCTION(Lua_GetConsole) {
+/*LUA_FUNCTION(Lua_GetConsole) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Console** ud = (Console**)lua_newuserdata(L, sizeof(Console*));
 	*ud = game->GetConsole();
 	luaL_setmetatable(L, lua::metatables::ConsoleMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_ConsolePrintError)
 {

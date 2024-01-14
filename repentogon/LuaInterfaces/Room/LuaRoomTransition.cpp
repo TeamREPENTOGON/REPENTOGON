@@ -2,13 +2,14 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetRoomTransition) {
+/*LUA_FUNCTION(Lua_GetRoomTransition) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	RoomTransition** ud = (RoomTransition**)lua_newuserdata(L, sizeof(RoomTransition*));
 	*ud = game->GetRoomTransition();
 	luaL_setmetatable(L, lua::metatables::RoomTransitionMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_RoomTransitionGetVersusScreenSprite) {
 	RoomTransition* roomTransition = g_Game->GetRoomTransition();
