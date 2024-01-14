@@ -1,11 +1,13 @@
 #include "SigScan.h"
 #include "IsaacRepentance.h"
+#include "../ImGuiFeatures/ConsoleMega.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
 
 #include "Windows.h"
 #include <string>
+#include "../Patches/ChallengesStuff.h"
 
 static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
@@ -360,6 +362,26 @@ LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
 	return 1;
 }
 
+bool apipause = false;
+HOOK_STATIC(Manager, Update, () -> void, __stdcall) {
+	if (apipause) {
+		g_Manager->_state = 2;
+	}
+	super();
+	
+}
+LUA_FUNCTION(Lua_IsaacPause) {
+	apipause = true;
+	return 1;
+}
+LUA_FUNCTION(Lua_IsaacResume) {
+	if (apipause && !console.enabled) {
+		*g_Game->GetConsole()->GetState() = 0;
+	}
+	apipause = false;
+	return 1;
+}
+
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	bool scale = lua::luaL_optboolean(L, 2, true);
@@ -456,6 +478,42 @@ LUA_FUNCTION(Lua_IsInGame) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsChallengeDone) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	if (challengeid <= 45) {
+		lua_pushboolean(L, g_Manager->GetPersistentGameData()->challenges[challengeid]);
+	}
+	else {
+		XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
+		lua_pushboolean(L, Challenges[node["name"] + node["sourceid"]] > 0);
+	}
+	return 1;
+}
+
+
+LUA_FUNCTION(Lua_UnDoChallenge) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	UndoChallenge(challengeid);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ClearChallenge) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	g_Manager->GetPersistentGameData()->AddChallenge(challengeid);
+	if (challengeid <= 45) {
+		g_Manager->GetPersistentGameData()->Save(); //if the challenges are already unlocked for the challenge then it wont fucking save otherwise!
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetModChallengeClearCount) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
+	lua_pushinteger(L, Challenges[node["name"] + node["sourceid"]]);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -491,6 +549,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "TriggerWindowResize", Lua_TriggerWindowResize);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CenterCursor", Lua_CenterCursor);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsInGame", Lua_IsInGame);
+	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Pause", Lua_IsaacPause); 
+	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Resume", Lua_IsaacResume); //not done, feel free to pick these up they suck
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsChallengeDone", Lua_IsChallengeDone);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearChallenge", Lua_ClearChallenge);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
