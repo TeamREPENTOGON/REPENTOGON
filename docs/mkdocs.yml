@@ -332,6 +332,7 @@ nav:
   - ambush.xml: xml/ambush.md
   - costumes.xml: xml/costumes.md
   - cutscenes.xml: xml/cutscenes.md
+  - challenges.xml: xml/challenges.md
   - entities2.xml: xml/entities.md
   - giantbook.xml: xml/giantbook.md
   - items.xml: xml/items.md

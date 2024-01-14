@@ -12,6 +12,7 @@ With REPENTOGON, the vanilla HP variables can be omitted and fully replaced by o
 
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
+|items|string|This now supports modded items by using the names of the items instead of the ids. Same format as in vanilla, a comma separated list of values|
 |heartcontainers|int|The amount of empty heart containers the character should start with. 1 unit = 1/2 a heart|
 |redhearts|int|The amount of red hearts the character should start with. 1 unit = 1/2 a heart|
 |soulhearts|int|The amount of soul hearts the character should start with. 1 unit = 1/2 a heart|
