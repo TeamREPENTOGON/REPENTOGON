@@ -3296,6 +3296,7 @@ char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "startingitems2");
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.TrinketData, "startingtrinkets");
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievements");
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "unlockachievement");
 				}
 			}
 			else if (strcmp(filename.c_str(), "items.xml") == 0) {

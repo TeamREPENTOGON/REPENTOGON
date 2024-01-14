@@ -228,6 +228,9 @@ ModCallbacks.MC_MENU_INPUT_ACTION = 1464
 
 ModCallbacks.MC_POST_SAVESLOT_LOAD = 1470
 
+ModCallbacks.MC_PRE_CHALLENGE_DONE = 1471
+ModCallbacks.MC_POST_CHALLENGE_DONE = 1472
+
 DeliriumCallbacks = {
     PRE_TRANSFORMATION = "DeliriumPreTransformation",
     TRANSFORMATION = "DeliriumTransformation",

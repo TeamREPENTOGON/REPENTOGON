@@ -1,5 +1,6 @@
 v1.0.5 -
 Additions:
+* Added Challenge completion tracking tot he mod challenges menu
 * Added localization code support
 * Added settings to change unifont rendering size
 * Add Update callbacks for GridEntityTNT
@@ -18,7 +19,12 @@ Additions:
 * Added MC_POST_HUD_RENDER callback (good for rendering on top of the HUD)
 * Added WeightedOutcomePicker:RemoveOutcome(int Value) and WeightedOutcomePicker:GetOutcomes()
 * Added Entity Get/Set methods related to status effects countdown
+* Added challenges.xml param unlocksachievement attribute, which tells which achievement is unlocked on the modded challenge completion.
+* Added MC_POST_PRE_CHALLENGE_DONE to do stuff when a challenge is completed, on POST, or prevent its completion on PRE.
+* Added the challenge functions Isaac.GetModChallengeClearCount, Isaac.ClearChallenge, Isaac.MarkChallengeAsNotDone and Isaac.IsChallengeDone.
+* Changed the PRESS E FOR CHALLENGES MENU note, on the challenges menu, to follow you around and not be left at the top.
 /newline/
+
 Fixes:
 * Fix GridEntity render callbacks being massively broken
 * Fix PRE_GRID_ENTITY_SPAWN not accepting a table
