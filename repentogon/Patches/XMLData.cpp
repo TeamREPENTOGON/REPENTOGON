@@ -3350,17 +3350,18 @@ bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 
 
 HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
-	bool iscontentax = iscontent;
-	iscontent = true;
-	XMLStuff.AchievementData->Clear();
-	char* a = BuildModdedXML(achieveemntsxmlpreload, "achievements.xml", false);//cover up the fact that achieveemnts are loaded before mods...
-	xml_document<char>* xmldoc = new xml_document<char>(); 
-	if (XMLParse(xmldoc, a, "achievements.xml")) {
-		ProcessXmlNode(xmldoc->first_node("achievements"));
+	if (g_Manager->GetOptions()->ModsEnabled()) {
+		bool iscontentax = iscontent;
+		iscontent = true;
+		XMLStuff.AchievementData->Clear();
+		char* a = BuildModdedXML(achieveemntsxmlpreload, "achievements.xml", false);//cover up the fact that achieveemnts are loaded before mods...
+		xml_document<char>* xmldoc = new xml_document<char>(); 
+		if (XMLParse(xmldoc, a, "achievements.xml")) {
+			ProcessXmlNode(xmldoc->first_node("achievements"));
+		}
+		iscontent = iscontentax;
+		mclear(a);
 	}
-	iscontent = iscontentax;
-	mclear(a);
-
 	super();
 
 
