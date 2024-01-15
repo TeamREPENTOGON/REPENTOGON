@@ -1049,6 +1049,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getforcespecialquest" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetForceSpecialQuest ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hasabandonedmineshaft" class="md-nav__link">
     <span class="md-ellipsis">
       HasAbandonedMineshaft ()
@@ -1088,6 +1097,15 @@
   <a href="#placeroom" class="md-nav__link">
     <span class="md-ellipsis">
       PlaceRoom ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setforcespecialquest" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetForceSpecialQuest ()
     </span>
   </a>
   
@@ -4187,6 +4205,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getforcespecialquest" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetForceSpecialQuest ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hasabandonedmineshaft" class="md-nav__link">
     <span class="md-ellipsis">
       HasAbandonedMineshaft ()
@@ -4226,6 +4253,15 @@
   <a href="#placeroom" class="md-nav__link">
     <span class="md-ellipsis">
       PlaceRoom ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setforcespecialquest" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetForceSpecialQuest ()
     </span>
   </a>
   
@@ -6385,6 +6421,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getforcespecialquest" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetForceSpecialQuest ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hasabandonedmineshaft" class="md-nav__link">
     <span class="md-ellipsis">
       HasAbandonedMineshaft ()
@@ -6424,6 +6469,15 @@
   <a href="#placeroom" class="md-nav__link">
     <span class="md-ellipsis">
       PlaceRoom ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setforcespecialquest" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetForceSpecialQuest ()
     </span>
   </a>
   
@@ -6480,6 +6534,14 @@
 <h3 aria-label="Functions" id="getdimension">GetDimension ()<a class="headerlink" href="#getdimension" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="dimension-getdimension"><a href="enums/Dimension.html">Dimension</a> GetDimension ( )<a class="headerlink" href="#dimension-getdimension" title="Permanent link">⚓︎</a></h4>
 <hr />
+<h3 aria-label="Functions" id="getforcespecialquest">GetForceSpecialQuest ()<a class="headerlink" href="#getforcespecialquest" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="specialquest-getforcespecialquest"><a href="enums/SpecialQuest.html">SpecialQuest</a> GetForceSpecialQuest ( )<a class="headerlink" href="#specialquest-getforcespecialquest" title="Permanent link">⚓︎</a></h4>
+<p>If set, the level will automatically attempt to place the Knife Piece puzzle door for this <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html">LevelStage</a>.</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>This is set to <code>SpecialQuest.DEFAULT</code> immediately before calling <code>MC_PRE_LEVEL_INIT</code>.</p>
+</details>
+<hr />
 <h3 aria-label="Functions" id="hasabandonedmineshaft">HasAbandonedMineshaft ()<a class="headerlink" href="#hasabandonedmineshaft" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-hasabandonedmineshaft">boolean HasAbandonedMineshaft ( )<a class="headerlink" href="#boolean-hasabandonedmineshaft" title="Permanent link">⚓︎</a></h4>
 <p>Returns <code>true</code> if the floor has the mineshaft room used for the second Knife Piece puzzle.</p>
@@ -6498,6 +6560,14 @@
 <h3 aria-label="Functions" id="placeroom">PlaceRoom ()<a class="headerlink" href="#placeroom" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-placeroom-levelgeneratorentry-room-roomconfigroom-roomconfig-int-seed">boolean PlaceRoom ( <a href="LevelGeneratorEntry.html">LevelGeneratorEntry</a> Room, <a href="https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html">RoomConfigRoom</a> RoomConfig, int Seed )<a class="headerlink" href="#boolean-placeroom-levelgeneratorentry-room-roomconfigroom-roomconfig-int-seed" title="Permanent link">⚓︎</a></h4>
 <p>Places a room into the game. Returns <code>true</code> if successful.</p>
+<hr />
+<h3 aria-label="Functions" id="setforcespecialquest">SetForceSpecialQuest ()<a class="headerlink" href="#setforcespecialquest" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-setforcespecialquest-specialquest-quest">void SetForceSpecialQuest ( <a href="enums/SpecialQuest.html">SpecialQuest</a> Quest )<a class="headerlink" href="#void-setforcespecialquest-specialquest-quest" title="Permanent link">⚓︎</a></h4>
+<p>Sets whether the level should attempt to place the Knife Piece puzzle door for this <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html">LevelStage</a>.</p>
+<details class="info" open="open">
+<summary>Info</summary>
+<p>This is set to <code>SpecialQuest.DEFAULT</code> immediately before calling <code>MC_PRE_LEVEL_INIT</code>.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="setname">SetName ()<a class="headerlink" href="#setname" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setname-string-name">void SetName ( string Name )<a class="headerlink" href="#void-setname-string-name" title="Permanent link">⚓︎</a></h4>
