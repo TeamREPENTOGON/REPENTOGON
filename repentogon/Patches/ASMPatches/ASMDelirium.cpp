@@ -5,7 +5,7 @@
 #include "LuaCore.h"
 #include "SigScan.h"
 #include "ASMDelirium.h"
-#include "../REPENTOGONDelirium.h"
+#include "../../REPENTOGONDelirium.h"
 #include "Log.h"
 
 namespace delirium {
