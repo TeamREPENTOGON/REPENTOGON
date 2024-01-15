@@ -1,14 +1,9 @@
-#include "IsaacRepentance.h"
-#include "SigScan.h"
-#include "LuaCore.h"
-
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 
 #include "ASMLevel.h"
 #include "../../LuaInterfaces/Level.h"
 #include "../../LuaInterfaces/Room/Room.h"
-#include "../../REPENTOGONOptions.h"
 
 // Prevents Curse of the Lost in Blue Womb in addition to Curse of Darkness (Vanilla)
 // changes evaluated bitmask from 0xfe to 0xfa

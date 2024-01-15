@@ -1,12 +1,11 @@
 #include <sstream>
 
 #include "ASMPatcher.hpp"
-#include "IsaacRepentance.h"
-#include "LuaCore.h"
-#include "SigScan.h"
+#include "../ASMPatches.h"
+
 #include "ASMDelirium.h"
 #include "../../REPENTOGONDelirium.h"
-#include "Log.h"
+
 
 namespace delirium {
 	std::map<Entity_NPC*, std::tuple<int, int, bool>> ForcedTransformations;

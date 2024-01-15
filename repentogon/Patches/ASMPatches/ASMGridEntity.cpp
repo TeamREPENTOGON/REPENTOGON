@@ -1,7 +1,3 @@
-#include "IsaacRepentance.h"
-#include "SigScan.h"
-#include "LuaCore.h"
-
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 
