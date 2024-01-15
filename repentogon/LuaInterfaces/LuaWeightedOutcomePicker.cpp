@@ -44,7 +44,7 @@ LUA_FUNCTION(Lua_WeightedOutcomePicker_RemoveOutcome) {
 LUA_FUNCTION(Lua_WeigtedOutcomePicker_GetOutcomes) {
 	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 
-	auto outcomes = *picker->GetOutcomes();
+	auto& outcomes = *picker->GetOutcomes();
 
 	lua_newtable(L);
 
@@ -67,6 +67,37 @@ LUA_FUNCTION(Lua_WeigtedOutcomePicker_GetOutcomes) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_WeightedOutcomePicker_AddOutcomeFloat) {
+	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+
+	uint32_t value = (uint32_t)luaL_checkinteger(L, 2);
+	float weight = (float)luaL_checknumber(L, 3);
+	uint32_t scaleFactor = (uint32_t)luaL_optinteger(L, 4, 100);
+	
+	WeightedOutcomePicker_Outcome outcome{ value, (uint32_t)(weight * scaleFactor) };
+	picker->AddOutcomeWeight(outcome, false);
+	
+	return 0;
+}
+
+LUA_FUNCTION(Lua_WeightedOutcomePicker_ClearOutcomes) {
+	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	auto& outcomes = *picker->GetOutcomes();
+
+	outcomes.clear();
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_WeightedOutcomePicker_GetNumOutcomes) {
+	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
+	auto& outcomes = *picker->GetOutcomes();
+
+	lua_pushinteger(L, outcomes.size());
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_WeightedOutcomePicker_gc) {
 	WeightedOutcomePicker* picker = lua::GetUserdata<WeightedOutcomePicker*>(L, 1, lua::metatables::WeightedOutcomePickerMT);
 	picker->~WeightedOutcomePicker();
@@ -77,10 +108,13 @@ static void RegisterWeightedOutcomePicker(lua_State* L) {
 	lua_register(L, lua::metatables::WeightedOutcomePickerMT, Lua_WeightedOutcomePicker_Constructor);
 
 	luaL_Reg functions[] = {
+		{ "AddOutcomeFloat", Lua_WeightedOutcomePicker_AddOutcomeFloat },
 		{ "AddOutcomeWeight", Lua_WeightedOutcomePicker_AddOutcomeWeight },
+		{ "ClearOutcomes", Lua_WeightedOutcomePicker_ClearOutcomes },
+		{ "GetNumOutcomes", Lua_WeightedOutcomePicker_GetNumOutcomes },
+		{ "GetOutcomes", Lua_WeigtedOutcomePicker_GetOutcomes },
 		{ "PickOutcome", Lua_WeightedOutcomePicker_PickOutcome },
 		{ "RemoveOutcome", Lua_WeightedOutcomePicker_RemoveOutcome },
-		{ "GetOutcomes", Lua_WeigtedOutcomePicker_GetOutcomes },
 		{ NULL, NULL }
 	};
 

@@ -70,7 +70,7 @@ __thiscall void Manager::SetFullscreenRendering(bool value);
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2) { {{
+struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
@@ -87,6 +87,8 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline ItemConfig* GetItemConfig() { return &this->_itemConfig; }
 	inline EntityConfig* GetEntityConfig() { return &this->_entityConfig; }
 	inline std::vector<EntityConfig_Player>* GetPlayerConfig() { return this->GetEntityConfig()->GetPlayers(); }
+	inline std::vector<ChallengeParam>* GetChallenges() { return (std::vector<ChallengeParam>*)((char*)this + 0x29f7c); }
+	
 }} 
 	
 	int _state : 0x8;
@@ -96,6 +98,7 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	ItemConfig _itemConfig : 0x29e84;
 	EntityConfig _entityConfig : 0x29f88;
 	ANM2 _cursorSprite : 0x1ea840;
+	Font _font8_TeamMeat_12 : 0x12a550;	
 } : 0x20a9d8;
 
 "e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":

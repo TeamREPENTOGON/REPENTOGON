@@ -3494,6 +3494,55 @@ HOOK_METHOD_PRIORITY(Manager, SetSaveSlot,-9999, (unsigned int slot) -> void) {
 
 }
 
+//MC_POST_PRE_CHALLENGE_DONE (1471-1472)
+HOOK_METHOD_PRIORITY(PersistentGameData, AddChallenge, -9999, (int challengeid) -> void) {
+	int callbackid1 = 1471;
+	if (CallbackState.test(callbackid1 - 1000)) {
+
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua::LuaCaller caller(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = caller.push(callbackid1)
+			.push(challengeid)
+			.push(challengeid)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+
+	}
+
+
+	super(challengeid);
+
+	callbackid1 = 1472;
+	lua_State* L = g_LuaEngine->_state;
+	if (CallbackState.test(callbackid1 - 1000)) {
+
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
+			.push(challengeid)
+			.push(challengeid)
+			.call(1);
+
+	}
+
+
+}
+
+
 HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float scale) -> void) {
 	const int callbackid = 1264;
 	if (CallbackState.test(callbackid - 1000)) {
