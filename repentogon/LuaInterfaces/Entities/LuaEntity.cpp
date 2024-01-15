@@ -1,9 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
-#include "ASMPatcher.hpp"
-#include "SigScan.h"
 #include "HookSystem.h"
-#include "../../Patches/ASMPatches.h"
+#include "../../Patches/ASMPatches/ASMCallbacks.h"
 
 LUA_FUNCTION(Lua_EntityAddBleeding)
 {
@@ -478,20 +476,6 @@ LUA_FUNCTION(Lua_EntitySetDamageCountdown) {
 	return 0;
 }
 
-void PatchAddWeakness() {
-	SigScan scanner("576afd"); // this is the first push of args for ComputeStausEffectDuration
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ASMPatch patch;
-	patch.Push(ASMPatch::Registers::EDI)  // Push entity
-		.Push(ASMPatch::Registers::EBP, 0xc) // Push duration
-		.AddBytes("\x8b\xce") // MOV ECX, ESI
-		// this fits exactly in the 5 bytes uses to push arguments
-		.AddRelativeJump((char*)addr + 0x5);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
 LUA_FUNCTION(Lua_EntityGetFireDamageCooldown) {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	lua_pushinteger(L, ent->_fireDamageCountdown);
@@ -854,6 +838,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY, functions);
-
-	PatchAddWeakness();
 }
