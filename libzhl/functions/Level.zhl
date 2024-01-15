@@ -43,9 +43,6 @@ bool Level::place_room(LevelGenerator_Room* slot, RoomConfig* data, uint32_t see
 "558bec515356578b3d????????8bd9":
 __thiscall bool Level::IsNextStageAvailable();
 
-"8b41??83f80474??83f80574??32c0":
-__thiscall bool Level::IsAltPath();
-
 struct Level {
 	uint32_t _levelStateFlag : 0x1822c;
 } : 0x18230;
