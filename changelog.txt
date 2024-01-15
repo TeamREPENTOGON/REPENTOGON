@@ -21,6 +21,7 @@ Additions:
 * Entity:ForceCollide() now works for EntityLasers
 * ModsMenu.GetSelectedElement() and ModsMenu.SetSelectedElement() now start at 1 to be more intuitive
 * ModsMenu.SetSelectedElement() clamps values below and above the amount of mods the player has
+* The mods menu can now be scrubbed through! Left/Right will scroll three mods at a time. Page Up/PageDown on keyboard and Left/Right Trigger on controller will scroll ten mods at a time.
 /newline/
 Fixes:
 * Fix GridEntity render callbacks being massively broken

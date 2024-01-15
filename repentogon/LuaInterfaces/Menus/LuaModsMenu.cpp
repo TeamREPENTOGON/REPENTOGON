@@ -34,8 +34,6 @@ LUA_FUNCTION(Lua_ModsMenu_SetSelectedElement)
 	if (newPosition < 0)
 		newPosition = 0;
 
-	printf("%d %d\n", menu->SelectedElement, newPosition);
-
 	menu->_pointerToSelectedMod = *(ModEntry**)g_Manager->GetModManager() + (newPosition * 4);
 	menu->SelectedElement = newPosition;
 
