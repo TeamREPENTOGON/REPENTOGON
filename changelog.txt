@@ -1,6 +1,6 @@
 v1.0.5 -
 Additions:
-* Added Challenge completion tracking tot he mod challenges menu
+* Added Challenge completion tracking to the mod challenges menu
 * Added localization code support
 * Added settings to change unifont rendering size
 * Add Update callbacks for GridEntityTNT
@@ -29,7 +29,6 @@ Additions:
 * The mods menu can now be scrubbed through! Left/Right will scroll three mods at a time. Page Up/PageDown on keyboard and Left/Right Trigger on controller will scroll ten mods at a time.
 * Added WeightedOutcomePicker:AddOutcomeFloat(), WeightedOutcomePicker:Clear() and WeightedOutcomePicker:GetNumOutcomes()
 /newline/
-
 Fixes:
 * Fix GridEntity render callbacks being massively broken
 * Fix PRE_GRID_ENTITY_SPAWN not accepting a table
@@ -48,6 +47,7 @@ Fixes:
 * Fix GridEntityDoor vanilla variables PreviousState/PreviousVaraint returning unusable userdata instead of integer
 * Fix Weapon:SetFireDelay() not working
 * Fix ModsMenu.SetSelectedElement() only having a cosmetic effect
+/newline/
 /newline/
 v1.0.4 - 
 Additions:
@@ -68,6 +68,7 @@ Fixes:
 * Fixed PRE_ITEM_OVERLAY_SHOW callback not playing custom giantbook animation, when you replace vanilla one
 * Fixed PRE_PLANETARIUM_APPLY_X_PENALTY softlocking the game
 * Enabled mods/debug console disable access to enter daily run as before
+/newline/
 /newline/
 v1.0.3 - 
 Additions:
@@ -105,6 +106,7 @@ Fixes:
 * Fixed AnimationData:IsLoopingAnimation returning boolean, instead of integer
 * Fixed a custom cutscene issue that played the Intro on cases where it shouldnt
 /newline/
+/newline/
 v1.0.2 - 
 Additions:
 * Added Pickup:GetAlternatePedestal()
@@ -115,6 +117,6 @@ Fixes:
 * Fixed Dingle always spawning a red poop
 * Fixed achievements not firing in Steam
 /newline/
-
+/newline/
 v1.0.1 - 
 Fixed the updater erroneously asking to update, sorry :(
