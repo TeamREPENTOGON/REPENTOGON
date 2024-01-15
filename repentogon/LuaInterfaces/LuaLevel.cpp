@@ -2,6 +2,10 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+#include "Level.h"
+
+LevelASM levelASM;
+
 LUA_FUNCTION(Lua_LevelCanSpawnDoorOutline) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int roomIDX = (int)luaL_checkinteger(L, 2);
@@ -57,6 +61,18 @@ LUA_FUNCTION(Lua_GetDimension) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetForceSpecialQuest) {
+	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, (int)levelASM.ForceSpecialQuest);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetForceSpecialQuest) {
+	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	levelASM.ForceSpecialQuest = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 /* HOOK_METHOD(Level, GetName, () -> std::string) {
 	std::string name = super();
 	if (!CustomStageName.empty()) {
@@ -80,12 +96,14 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "CanSpawnDoorOutline", Lua_LevelCanSpawnDoorOutline },
-		{	"HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
-		{	"HasMirrorDimension", Lua_LevelHasMirrorDimension },
-		{	"HasPhotoDoor", Lua_LevelHasPhotoDoor },
-		{	"SetName", lua_LevelSetName },
-		{	"IsStageAvailable", lua_LevelIsStageAvailable },
+		{ "HasAbandonedMineshaft", Lua_LevelHasAbandonedMineshaft },
+		{ "HasMirrorDimension", Lua_LevelHasMirrorDimension },
+		{ "HasPhotoDoor", Lua_LevelHasPhotoDoor },
+		{ "SetName", lua_LevelSetName },
+		{ "IsStageAvailable", lua_LevelIsStageAvailable },
 		{ "GetDimension", Lua_GetDimension},
+		{ "GetForceSpecialQuest", Lua_GetForceSpecialQuest },
+		{ "SetForceSpecialQuest", Lua_SetForceSpecialQuest },
 		{ NULL, NULL }
 	};
 

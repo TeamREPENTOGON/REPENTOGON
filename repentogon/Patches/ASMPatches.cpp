@@ -4,6 +4,7 @@
 #include "../LuaInterfaces/Entities/EntityNPC.h"
 #include "../LuaInterfaces/Entities/EntityPlayer.h"
 #include "../LuaInterfaces/Room/Room.h"
+#include "../LuaInterfaces/Level.h"
 #include "../LuaInterfaces/LuaRender.h"
 #include "XMLData.h"
 #include "ModReloading.h"
@@ -1406,8 +1407,14 @@ void ASMPatchPlayerStats() {
 	ASMPatchLuck();
 }
 
-bool __stdcall DoSpecialQuestDoorCheck(Game* game) {
-	bool ret = roomASM.ForceSpecialQuestDoor || (game->_stageType == 4 || game->_stageType == 5);
+bool __stdcall DoSpecialQuestDoorValidStageTypeCheck(Game* game) {
+	// Always return true if we forced it via Room:TrySpawnSpecialQuestDoor
+	bool ret = roomASM.ForceSpecialQuestDoor;
+	// If ForceSpecialQuest is -1, quest doors are disabled
+	if (!ret && levelASM.ForceSpecialQuest > -1) {
+		// ForceSpecialQuest 0 defaults to vanilla behavior
+		ret =  levelASM.ForceSpecialQuest > 0 || (game->_stageType == 4 || game->_stageType == 5);
+	}
 	roomASM.ForceSpecialQuestDoor = false;
 	return ret;
 }
@@ -1423,7 +1430,7 @@ void ASMPatchTrySpawnSpecialQuestDoor() {
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(ASMPatch::Registers::EAX) // Game
-		.AddInternalCall(DoSpecialQuestDoorCheck)
+		.AddInternalCall(DoSpecialQuestDoorValidStageTypeCheck)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0xe)
