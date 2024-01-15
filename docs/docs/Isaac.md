@@ -181,8 +181,8 @@ Returns the translation string associated with the given key in the given catego
 
 ___
 ### GetModChallengeClearCount () {: aria-label='Functions' }
-#### int GetModChallengeClearCount ( ) {: .copyable aria-label='Functions' }
-Returns the number of times a custom challenge was cleared.
+#### int GetModChallengeClearCount (int challengeid) {: .copyable aria-label='Functions' }
+Returns the number of times a custom challenge was cleared. It resets if its ever set as not Done.
 ___
 ### GetNullItemIdByName () {: aria-label='Functions' }
 #### int GetNullItemIdByName ( ) {: .copyable aria-label='Functions' }

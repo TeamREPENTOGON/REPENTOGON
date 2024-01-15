@@ -328,6 +328,7 @@ nav:
   - UI: changes/UI.md
 - XML:
   - XML Overview: xml/overview.md
+  - XMLData: XMLData.md
   - achievements.xml: xml/achievements.md
   - ambush.xml: xml/ambush.md
   - costumes.xml: xml/costumes.md
