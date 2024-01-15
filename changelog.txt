@@ -1,3 +1,8 @@
+v1.0.5a -
+Fixes:
+- Hot-Fixed a crash that happened when no mods were enabled in 1.0.5
+/newline/
+/newline/
 v1.0.5 -
 Additions:
 * Added Challenge completion tracking to the mod challenges menu
