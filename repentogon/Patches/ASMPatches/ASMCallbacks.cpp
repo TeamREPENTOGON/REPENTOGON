@@ -1,10 +1,6 @@
-#include "IsaacRepentance.h"
-#include "SigScan.h"
-#include "LuaCore.h"
-
 #include "ASMPatcher.hpp"
-
 #include "../ASMPatches.h"
+
 #include "../XMLData.h"
 
 /* * MC_PRE_LASER_COLLISION * *

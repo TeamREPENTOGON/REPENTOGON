@@ -1,10 +1,8 @@
-#include "IsaacRepentance.h"
-#include "SigScan.h"
-#include "LuaCore.h"
-
-#include "../ASMPatches.h"
-#include "ASMEntityNPC.h"
 #include "ASMPatcher.hpp"
+#include "../ASMPatches.h"
+
+#include "ASMEntityNPC.h"
+
 
 thread_local FireProjectilesStorage projectilesStorage;
 

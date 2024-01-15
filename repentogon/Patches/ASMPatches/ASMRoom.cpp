@@ -1,11 +1,5 @@
-#include "IsaacRepentance.h"
-#include "SigScan.h"
-#include "LuaCore.h"
-
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
-
-#include "../../REPENTOGONOptions.h"
 
 /* Ambush waves have a hardcoded amount. This patch works around it by feeding the game a pointer to an int we control instead of the hardcoded 3.
 *  Boss rooms can't be changed in this manner as they have more setup, and will crash if forced above 2.
