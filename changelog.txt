@@ -19,6 +19,8 @@ Additions:
 * Added WeightedOutcomePicker:RemoveOutcome(int Value) and WeightedOutcomePicker:GetOutcomes()
 * Added Entity Get/Set methods related to status effects countdown
 * Entity:ForceCollide() now works for EntityLasers
+* ModsMenu.GetSelectedElement() and ModsMenu.SetSelectedElement() now start at 1 to be more intuitive
+* ModsMenu.SetSelectedElement() clamps values below and above the amount of mods the player has
 /newline/
 Fixes:
 * Fix GridEntity render callbacks being massively broken
@@ -37,6 +39,7 @@ Fixes:
 * Fix FlatPatch spam in repentogon.log by reworking Quick Room Clear patch
 * Fix GridEntityDoor vanilla variables PreviousState/PreviousVaraint returning unusable userdata instead of integer
 * Fix Weapon:SetFireDelay() not working
+* Fix ModsMenu.SetSelectedElement() only having a cosmetic effect
 /newline/
 v1.0.4 - 
 Additions:
