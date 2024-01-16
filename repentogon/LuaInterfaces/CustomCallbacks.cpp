@@ -2222,7 +2222,7 @@ HOOK_METHOD(Room, RenderEntityLight, (Entity* ent, Vector& offset) -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(ent->GetType())
+			.push(*ent->GetType())
 			.push(ent, lua::Metatables::ENTITY)
 			.pushUserdataValue(offset, lua::Metatables::VECTOR)
 			.call(1);
