@@ -197,6 +197,13 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1022 |MC_HUD_RENDER {: .copyable } | - | - | void |
 
+### MC_POST_HUD_RENDER {: .copyable }
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1024 |MC_POST_HUD_RENDER {: .copyable } | - | - | void |
+
 ### MC_MAIN_MENU_RENDER {: .copyable }
 Accepts no return parameters.
 
