@@ -212,6 +212,17 @@ Accepts no return parameters.
 |1023 |MC_MAIN_MENU_RENDER {: .copyable } | - | - | void |
 
 
+### MC_PRE_RENDER_CUSTOM_CHARACTER_MENU {: .copyable }
+Accepts no return parameters.
+
+???- info "Execution informations"
+    This callback only triggers when a custom character is selected, it doesn't trigger on regular characters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1333 |MC_PRE_RENDER_CUSTOM_CHARACTER_MENU {: .copyable } | int CharacterID,[Vector](../Vector.md) RenderPos,[Sprite](../Sprite.md) DefaultSprite | int CharacterID | void |
+
+
 ### MC_PRE_PAUSE_SCREEN_RENDER {: .copyable }
 Can return `false` to prevent the pause screen from rendering. Doing so will also prevent the screen from darkening.
 
