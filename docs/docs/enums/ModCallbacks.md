@@ -438,6 +438,15 @@ Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
 |:--|:--|:--|:--|:--|
 |1061 |MC_PRE_CHANGE_ROOM {: .copyable } | (int TargetRoomIdx, int Dimension) | - | table |
 
+
+### MC_PICKUP_GET_COIN_VALUE
+Accepts `int` CoinValue to modify the amount of coins a coin can give you on pickup.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1250 |MC_PICKUP_GET_COIN_VALUE {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup) | [CoinSubType](https://wofsauge.github.io/IsaacDocs/rep/enums/CoinSubType.html) | int CoinValue |
+
+
 ### MC_POST_PICKUP_SHOP_PURCHASE
 Accepts no return parameters.
 
