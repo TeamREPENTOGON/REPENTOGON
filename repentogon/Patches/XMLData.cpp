@@ -695,7 +695,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				player[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = player["id"];
+			//string oldid = player["id"];
 			if ((player.find("id") != player.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = toint(player["id"]);
 			}
@@ -708,7 +708,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.PlayerData->maxid) {
 				XMLStuff.PlayerData->maxid = id;
 			}
-			if (oldid.length() > 0) { player["id"] = oldid; }
+			//if (oldid.length() > 0) { player["id"] = oldid; }
 
 			if (player["name"].find("#") != string::npos) {
 				player["untranslatedname"] = player["name"];
@@ -858,7 +858,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					}
 				}
 				else { 
-					string oldid =  item["id"];
+					//string oldid =  item["id"];
 					if ((item.find("id") != item.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 						id = toint(item["id"]);
 					}
@@ -871,9 +871,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 					if (id > XMLStuff.ItemData->maxid) {
 						XMLStuff.ItemData->maxid = id;
 					}
-					if (oldid.length() > 0) {
-						item["id"] = oldid;
-					}
+					//if (oldid.length() > 0) {
+						//item["id"] = oldid;
+					//}
 
 					item["sourceid"] = lastmodid;
 					item["type"] = auxnodename;
@@ -909,7 +909,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				{
 					trinket[stringlower(attr->name())] = string(attr->value());
 				}
-				string oldid = trinket["id"];
+				//string oldid = trinket["id"];
 				if (isitemmetadata) { //items_metadata lazy bypass
 					if (trinket.find("id") != trinket.end()) {
 						if (strcmp(lastmodid, "BaseGame") != 0) {
@@ -935,7 +935,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					if (id > XMLStuff.TrinketData->maxid) {
 						XMLStuff.TrinketData->maxid = id;
 					}
-					if (oldid.length() > 0) { trinket["id"] = oldid; }
+					//if (oldid.length() > 0) { trinket["id"] = oldid; }
 
 					trinket["sourceid"] = lastmodid;
 					trinket["type"] = auxnode->name();
@@ -1014,7 +1014,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				bombcostume[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = bombcostume["variant"];
+			//string oldid = bombcostume["variant"];
 			if ((bombcostume.find("variant") != bombcostume.end())){ // && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = toint(bombcostume["variant"]);
 			}
@@ -1027,7 +1027,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.BombCostumeData->maxid) {
 				XMLStuff.BombCostumeData->maxid = id;
 			}
-			if (oldid.length() > 0) { bombcostume["variant"] = oldid; }
+			//if (oldid.length() > 0) { bombcostume["variant"] = oldid; }
 			if (bombcostume.find("name") == bombcostume.end()) { bombcostume["name"] = bombcostume["variant"]; }
 			bombcostume["sourceid"] = lastmodid;
 			XMLStuff.BombCostumeData->ProcessChilds(auxnode, id);
@@ -1055,7 +1055,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				music[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid =music["id"];
+			//string oldid =music["id"];
 			if ((music.find("id") != music.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = toint(music["id"]);
 			}
@@ -1068,7 +1068,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.MusicData->maxid) {
 				XMLStuff.MusicData->maxid = id;
 			}
-			if (oldid.length() > 0) { music["id"] = oldid; }
+			//if (oldid.length() > 0) { music["id"] = oldid; }
 			music["sourceid"] = lastmodid;
 			XMLStuff.MusicData->ProcessChilds(auxnode, id);
 			if (music.find("relativeid") != music.end()) { XMLStuff.MusicData->byrelativeid[lastmodid + music["relativeid"]] = id; }
@@ -1095,7 +1095,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				sound[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = sound["id"];
+			//string oldid = sound["id"];
 			if ((sound.find("id") != sound.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = toint(sound["id"]);
 			}
@@ -1108,7 +1108,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.SoundData->maxid) {
 				XMLStuff.SoundData->maxid = id;
 			}
-			if (oldid.length() > 0) { sound["id"] = oldid; }
+			//if (oldid.length() > 0) { sound["id"] = oldid; }
 			sound["sourceid"] = lastmodid;
 			XMLStuff.SoundData->ProcessChilds(auxnode, id);
 			if ((sound.find("name") == sound.end()) && (XMLStuff.SoundData->childs[id]["sample"].size() > 0) && (XMLStuff.SoundData->childs[id]["sample"][0].count("path") != 0)) {
@@ -1185,7 +1185,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				challenge[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = challenge["id"];
+			//string oldid = challenge["id"];
 			if ((challenge.find("id") != challenge.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = toint(challenge["id"]);
 			}
@@ -1198,7 +1198,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.ChallengeData->maxid) {
 				XMLStuff.ChallengeData->maxid = id;
 			}
-			if (oldid.length() > 0) { challenge["id"] = oldid; }
+			//if (oldid.length() > 0) { challenge["id"] = oldid; }
 			challenge["sourceid"] = lastmodid;
 			if (challenge.find("relativeid") != challenge.end()) { XMLStuff.ChallengeData->byrelativeid[lastmodid + challenge["relativeid"]] = id; }
 			XMLStuff.ChallengeData->ProcessChilds(auxnode, id);
@@ -1224,7 +1224,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				backdrop[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = backdrop["id"];
+			//string oldid = backdrop["id"];
 			if ((backdrop.count("id") > 0)) {
 				id = toint(backdrop["id"]);
 			}
@@ -1237,7 +1237,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.BackdropData->maxid) {
 				XMLStuff.BackdropData->maxid = id;
 			}
-			if (oldid.length() > 0) { backdrop["id"] = oldid; }
+			//if (oldid.length() > 0) { backdrop["id"] = oldid; }
 			if (backdrop.find("name") != backdrop.end()) {
 				backdrop["name"] = backdrop["gfx"].substr(0, backdrop["gfx"].length() - 4);
 				int pos = backdrop["name"].find("_");
@@ -1275,7 +1275,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//This one is prechecked before even loading so id stuff is already resolved
 			//if ((cutscene.count("id") > 0) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = toint(cutscene["id"]);
-				int oldid = id;
+				//int oldid = id;
 				if (cutscene.count("realid") > 0) {
 					id = toint(cutscene["realid"]);
 					cutscene["id"] = cutscene["realid"];
@@ -1292,7 +1292,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.ChallengeData->maxid = id;
 			}
 			*/
-				if (oldid > 0) { cutscene["id"] = oldid; }
+				//if (oldid > 0) { cutscene["id"] = oldid; }
 
 			if (cutscene.find("id") == cutscene.end()) { cutscene["sourceid"] = "BaseGame"; };
 			if (cutscene.find("relativeid") != cutscene.end()) { XMLStuff.CutsceneData->byrelativeid[cutscene["sourceid"] + cutscene["relativeid"]] = id; }
@@ -1319,14 +1319,14 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				stage[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = stage["id"];
+			//string oldid = stage["id"];
 			id = toint(stage["id"]);
 			
 			if (stage.find("realid") != stage.end()) {
 				id = toint(stage["realid"]);
 				stage["id"] = stage["realid"];
 			}
-			if (oldid.length() > 0) { stage["id"] = oldid; }
+			//if (oldid.length() > 0) { stage["id"] = oldid; }
 
 			if (stage.find("sourceid") == stage.end()) { stage["sourceid"] = "BaseGame"; };
 			if (stage.find("relativeid") != stage.end()) { XMLStuff.StageData->byrelativeid[stage["sourceid"] + stage["relativeid"]] = id; }
@@ -1366,7 +1366,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				//id = toint(challenge["id"]);
 			//}
 			//else {
-			int oldid = toint(recipe["id"]);
+			//int oldid = toint(recipe["id"]);
 				//if (challenge.count("id") > 0) { challenge["relativeid"] = challenge["id"]; }
 				XMLStuff.RecipeData->maxid = XMLStuff.RecipeData->maxid + 1;
 				recipe["id"] = to_string(XMLStuff.RecipeData->maxid);
@@ -1375,9 +1375,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.RecipeData->maxid) {
 				XMLStuff.RecipeData->maxid = id;
 			}
-			if (oldid > 0) {
-				recipe["id"] = oldid;
-			}
+			//if (oldid > 0) {
+				//recipe["id"] = oldid;
+			//}
 			if ((recipe.find("input") != recipe.end()) && (recipe.find("name") == recipe.end())) { recipe["name"] = recipe["input"]; };
 			recipe["sourceid"] = lastmodid;
 			if (recipe.find("relativeid") != recipe.end()) { XMLStuff.RecipeData->byrelativeid[lastmodid + recipe["relativeid"]] = id; }
@@ -1406,7 +1406,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				{
 					color[stringlower(attr->name())] = string(attr->value());
 				}
-				int oldid = toint(color["id"]);
+				//int oldid = toint(color["id"]);
 				if ((color.find("id") != color.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 					id = toint(color["id"]);
 				}
@@ -1419,9 +1419,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 				if (id > XMLStuff.WispColorData->maxid) {
 					XMLStuff.WispColorData->maxid = id;
 				}
-				if (oldid > 0) {
-					color["id"] = oldid;
-				}
+				//if (oldid > 0) {
+					//color["id"] = oldid;
+				//}
 				color["sourceid"] = lastmodid;
 				if (color.find("relativeid") != color.end()) { XMLStuff.WispColorData->byrelativeid[lastmodid + color["relativeid"]] = id; }
 				XMLStuff.WispColorData->ProcessChilds(auxnode, id);
@@ -1442,7 +1442,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					{
 						wisp[stringlower(attr->name())] = string(attr->value());
 					}
-					int oldid = toint(wisp["id"]);
+					//int oldid = toint(wisp["id"]);
 					if ((wisp.find("id") != wisp.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 						id = toint(wisp["id"]);
 					}
@@ -1455,9 +1455,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 					if (id > XMLStuff.WispData->maxid) {
 						XMLStuff.WispData->maxid = id;
 					}
-					if (oldid > 0) {
-						wisp["id"] = oldid;
-					}
+					//if (oldid > 0) {
+						//wisp["id"] = oldid;
+					//}
 					wisp["sourceid"] = lastmodid;
 					if (wisp.find("relativeid") != wisp.end()) {
 						XMLAttributes wnode = XMLStuff.ItemData->GetNodeById(XMLStuff.ItemData->byrelativeid[lastmodid + wisp["relativeid"]]);
@@ -1503,7 +1503,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				{
 					color[stringlower(attr->name())] = string(attr->value());
 				}
-				int oldid = toint(color["id"]);
+				//int oldid = toint(color["id"]);
 				if ((color.find("id") != color.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 					id = toint(color["id"]);
 				}
@@ -1516,9 +1516,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 				if (id > XMLStuff.LocustColorData->maxid) {
 					XMLStuff.LocustColorData->maxid = id;
 				}
-				if (oldid > 0) {
-					color["id"] = oldid;
-				}
+				//if (oldid > 0) {
+					//color["id"] = oldid;
+				//}
 				color["sourceid"] = lastmodid;
 				if (color.find("relativeid") != color.end()) { XMLStuff.LocustColorData->byrelativeid[lastmodid + color["relativeid"]] = id; }
 				XMLStuff.LocustColorData->ProcessChilds(auxnode, id);
@@ -1539,7 +1539,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				{
 					locust[stringlower(attr->name())] = string(attr->value());
 				}
-				int oldid = toint(locust["id"]);
+				//int oldid = toint(locust["id"]);
 				if ((locust.find("id") != locust.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 					id = toint(locust["id"]);
 				}
@@ -1552,9 +1552,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 				if (id > XMLStuff.LocustData->maxid) {
 					XMLStuff.LocustData->maxid = id;
 				}
-				if (oldid > 0) {
-					locust["id"] = oldid;
-				}
+				//if (oldid > 0) {
+					//locust["id"] = oldid;
+				//}
 				locust["sourceid"] = lastmodid;
 				if (locust.find("relativeid") != locust.end()) {
 					XMLAttributes lnode = XMLStuff.ItemData->GetNodeById(XMLStuff.ItemData->byrelativeid[lastmodid + locust["relativeid"]]);
@@ -1598,7 +1598,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				nightmare[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid= nightmare["id"];
+			//string oldid= nightmare["id"];
 			if ((nightmare.find("id") != nightmare.end()) && ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent)) {
 				id = toint(nightmare["id"]);
 			}
@@ -1611,9 +1611,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 			if (id > XMLStuff.NightmareData->maxid) {
 				XMLStuff.NightmareData->maxid = id;
 			}
-			if (oldid.length() > 0) {
-				nightmare["id"] = oldid;
-			}
+			//if (oldid.length() > 0) {
+				//nightmare["id"] = oldid;
+			//}
 			if ((nightmare.find("name") == nightmare.end()) && (nightmare.count("anm2") != 0)) {
 				nightmare["name"] = getFileName(nightmare["anm2"]);
 			}
@@ -1894,7 +1894,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				attributes[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = attributes["id"];
+			//string oldid = attributes["id"];
 			if ((attributes.find("id") != attributes.end()) && ((attributes.find("sourceid") == attributes.end()) || !iscontent)) {
 				id = toint(attributes["id"]);
 			}
@@ -1976,7 +1976,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			{
 				attributes[stringlower(attr->name())] = string(attr->value());
 			}
-			string oldid = attributes["id"];
+			//string oldid = attributes["id"];
 			if ((attributes.find("id") != attributes.end()) && ((attributes.find("sourceid") == attributes.end()) || !iscontent)) {
 				id = toint(attributes["id"]);
 			}
@@ -3362,6 +3362,7 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 		iscontent = iscontentax;
 		mclear(a);
 	}
+
 	super();
 
 
