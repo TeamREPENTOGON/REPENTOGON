@@ -1156,7 +1156,7 @@ The first parameter is the slot you should care about, the 2nd parameter (isslot
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1140 |MC_POST_SAVESLOT_LOAD {: .copyable } | ( int saveslot, boolean isslotselected, int rawslot ) |  |  |
+|1470 |MC_POST_SAVESLOT_LOAD {: .copyable } | ( int saveslot, boolean isslotselected, int rawslot ) |  |  |
 
 ### MC_PRE_NEW_ROOM
 Accepts no return parameters.
