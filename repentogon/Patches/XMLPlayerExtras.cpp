@@ -58,24 +58,26 @@ HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {
 	return orig;
 }
 
-float modCharacterSpeed = 0;
-float modCharacterFireDelay = 0;
-float modCharacterDamage = 0;
-float modCharacterRange = 0;
-float modCharacterShotSpeed = 0;
-float modCharacterLuck = 0;
+namespace PlayerStats {
+	float modCharacterSpeed = 0;
+	float modCharacterFireDelay = 0;
+	float modCharacterDamage = 0;
+	float modCharacterRange = 0;
+	float modCharacterShotSpeed = 0;
+	float modCharacterLuck = 0;
+}
 
 HOOK_METHOD(Entity_Player, EvaluateItems, () -> void) {
 
 	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(this->GetPlayerType());
 
 	std::tuple<std::string, float*, float> statValues[] = {
-	std::tuple<std::string, float*, float> {"speedmodifier", &modCharacterSpeed, 1},
-	std::tuple<std::string, float*, float> {"firedelaymodifier", &modCharacterFireDelay, 1},
-	std::tuple<std::string, float*, float> {"damagemodifier", &modCharacterDamage, 1},
-	std::tuple<std::string, float*, float> {"rangemodifier", &modCharacterRange, 40},
-	std::tuple<std::string, float*, float> {"shotspeedmodifier", &modCharacterShotSpeed, 1},
-	std::tuple<std::string, float*, float> {"luckmodifier", &modCharacterLuck, 1},
+	std::tuple<std::string, float*, float> {"speedmodifier", &PlayerStats::modCharacterSpeed, 1},
+	std::tuple<std::string, float*, float> {"firedelaymodifier", &PlayerStats::modCharacterFireDelay, 1},
+	std::tuple<std::string, float*, float> {"damagemodifier", &PlayerStats::modCharacterDamage, 1},
+	std::tuple<std::string, float*, float> {"rangemodifier", &PlayerStats::modCharacterRange, 40},
+	std::tuple<std::string, float*, float> {"shotspeedmodifier", &PlayerStats::modCharacterShotSpeed, 1},
+	std::tuple<std::string, float*, float> {"luckmodifier", &PlayerStats::modCharacterLuck, 1},
 	};
 
 	for (std::tuple<std::string, float*, float> value : statValues) {

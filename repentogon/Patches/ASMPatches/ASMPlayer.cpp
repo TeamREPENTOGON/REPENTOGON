@@ -2,6 +2,7 @@
 #include "../ASMPatches.h"
 
 #include "ASMPlayer.h"
+#include "../XMLData.h"
 
 thread_local CheckFamiliarStorage familiarsStorage;
 
@@ -35,13 +36,11 @@ void ASMPatchCheckFamiliar() {
 // !!!!! EVALUATEITEMS STATS HERE !!!!!
 //////////////////////////////////////////////
 
-extern float modCharacterFireDelay;
-
 void ASMPatchFireDelay() {
 	SigScan scanner("83fa0974??83fa1e");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	void* fireDelayPtr = &modCharacterFireDelay;
+	void* fireDelayPtr = &PlayerStats::modCharacterFireDelay;
 	printf("[REPENTOGON] Patching EvaluateCache FireDelay at %p\n", addr);
 	ASMPatch patch;
 
@@ -55,12 +54,11 @@ void ASMPatchFireDelay() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-extern float modCharacterSpeed;
 void ASMPatchSpeed() {
 	SigScan scanner("f30f1187????????8b87????????83f829");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	void* speedPtr = &modCharacterSpeed;
+	void* speedPtr = &PlayerStats::modCharacterSpeed;
 	printf("[REPENTOGON] Patching EvaluateCache Speed at %p\n", addr);
 	ASMPatch patch;
 
@@ -70,13 +68,11 @@ void ASMPatchSpeed() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-extern float modCharacterDamage;
-
 void ASMPatchDamage() {
 	SigScan scanner("83f90974??83f91e74??f30f1080");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	void* damagePtr = &modCharacterDamage;
+	void* damagePtr = &PlayerStats::modCharacterDamage;
 	printf("[REPENTOGON] Patching EvaluateCache Damage at %p\n", addr);
 	ASMPatch patch;
 
@@ -89,13 +85,11 @@ void ASMPatchDamage() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-extern float modCharacterRange;
-
 void ASMPatchRange() {
 	SigScan scanner("83f80974??83f81e74");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	void* rangePtr = &modCharacterRange;
+	void* rangePtr = &PlayerStats::modCharacterRange;
 	printf("[REPENTOGON] Patching EvaluateCache Range at %p\n", addr);
 	ASMPatch patch;
 
@@ -108,12 +102,11 @@ void ASMPatchRange() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-extern float modCharacterShotSpeed;
 void ASMPatchShotSpeed() {
 	SigScan scanner("83f90974??83f91e74??83f913");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	void* shotSpeedPtr = &modCharacterShotSpeed;
+	void* shotSpeedPtr = &PlayerStats::modCharacterShotSpeed;
 	printf("[REPENTOGON] Patching EvaluateCache Shot Speed at %p\n", addr);
 	ASMPatch patch;
 
@@ -126,12 +119,11 @@ void ASMPatchShotSpeed() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-extern float modCharacterLuck;
 void ASMPatchLuck() {
 	SigScan scanner("f30f5897????????f30f58d1");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	void* luckPtr = &modCharacterLuck;
+	void* luckPtr = &PlayerStats::modCharacterLuck;
 	printf("[REPENTOGON] Patching EvaluateCache Luck at %p\n", addr);
 	ASMPatch patch;
 
