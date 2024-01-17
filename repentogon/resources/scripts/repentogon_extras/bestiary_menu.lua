@@ -20,11 +20,16 @@ local MaxPollCIdx = 3
 local function IsActionTriggeredAll(action)
     for i = 0, MaxPollCIdx do
         if Input.IsActionTriggered(action, i) then
-            return true
+            return true,i
         end
     end
-    return false
+    return false,-1
 end
+
+local function BoolToNum(value)
+  return value and 1 or 0
+end
+
 local function LoadAssets()
     if #BestiaryMenuRep.BestiarySheetSprite:GetDefaultAnimation() <= 0 then
         BestiaryMenuRep.BestiarySheetSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/bestiary_tabs.anm2", true)
@@ -48,7 +53,16 @@ local function RenderBestiaryMenu()
     local lastEnemyPage = BestiaryMenu.GetNumMonsterPages()
     local totalPages = BestiaryMenu.GetNumPages()
     local isEnemyPage = selectedPage <= lastEnemyPage
+    local inputController=-1
     if MenuManager:GetActiveMenu() == _MainMenuType.BESTIARY then
+	local scrollBy=0
+	local leftInputIdx,rightInputIdx
+	local scrollLeft,scrollRight
+	scrollLeft,leftInputIdx=IsActionTriggeredAll(_ButtonAction.ACTION_PILLCARD)
+	scrollRight,rightInputIdx=IsActionTriggeredAll(_ButtonAction.ACTION_BOMB)
+	inputController = leftInputIdx or rightInputIdx
+	scrollBy=BoolToNum(scrollRight)-BoolToNum(scrollLeft)
+	if inputController>0 then scrollBy=scrollBy*-1.0 end	--flip gamepad inputs
         if IsActionTriggeredAll(_ButtonAction.ACTION_MENUTAB) then
             SFXManager():Play(_SoundEffect.SOUND_PAPER_IN)
 			if isEnemyPage then
