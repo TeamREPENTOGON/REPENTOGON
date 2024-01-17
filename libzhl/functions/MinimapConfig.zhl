@@ -1,0 +1,13 @@
+struct MinimapConfig depends (ANM2, Vector) {
+	ANM2 _anm2 : 0x0;
+	Vector _vec1: 0x11c;
+	Vector _vec2: 0x124;
+	float _f1: 0x12c;
+	float _f2: 0x130;
+	int _i1: 0x134;
+	int _i2: 0x138;
+	int _i3: 0x13c;
+	Vector _size1 : 0x148;
+	Vector _size2: 0x150;
+	float _alpha: 0x158;
+} : 0x160;

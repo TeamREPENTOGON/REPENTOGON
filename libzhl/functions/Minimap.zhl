@@ -7,6 +7,10 @@ __thiscall void Minimap::Render();
 "558bec568b75??578bf98b0d":
 __thiscall Vector* Minimap::GetDisplayedSize(Vector &buffer);
 
-struct Minimap {
-
+struct Minimap depends (MinimapConfig, ANM2, Vector) {
+	MinimapConfig _config[2] : 0x18;
+	ANM2 _anm1 : 0x2d8;
+	ANM2 _anm2 : 0x3ec;
+	ANM2 _anm3 : 0x500;
+	Vector _vec : 0x620;
 } : 0x628;
