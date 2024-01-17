@@ -23,7 +23,7 @@ local function IsActionTriggeredAll(action)
             return true,i
         end
     end
-    return false,-1
+    return false
 end
 
 local function BoolToNum(value)
@@ -60,7 +60,7 @@ local function RenderBestiaryMenu()
 	local scrollLeft,scrollRight
 	scrollLeft,leftInputIdx=IsActionTriggeredAll(_ButtonAction.ACTION_PILLCARD)
 	scrollRight,rightInputIdx=IsActionTriggeredAll(_ButtonAction.ACTION_BOMB)
-	inputController = leftInputIdx or rightInputIdx
+	inputController = leftInputIdx or rightInputIdx or -1
 	scrollBy=BoolToNum(scrollRight)-BoolToNum(scrollLeft)
 	if inputController>0 then scrollBy=scrollBy*-1.0 end	--flip gamepad inputs
         if IsActionTriggeredAll(_ButtonAction.ACTION_MENUTAB) then
