@@ -22,11 +22,27 @@ LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_MinimapGetItemIconsSprite)
+{
+	Minimap* minimap = g_Game->GetMinimap();
+	lua::luabridge::UserdataPtr::push(L, &minimap->_itemIconsSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_MinimapGetIconsSprite)
+{
+	Minimap* minimap = g_Game->GetMinimap();
+	lua::luabridge::UserdataPtr::push(L, &minimap->_iconsSprite, lua::GetMetatableKey(lua::Metatables::SPRITE));;
+	return 1;
+}
+
 static void RegisterMinimap(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetMinimap", Lua_GameGetMinimap);
 	lua_newtable(L);
 	//luaL_Reg functions[] = {
 	lua::TableAssoc(L, "GetDisplayedSize", Lua_MinimapGetDisplayedSize);
+	lua::TableAssoc(L, "GetItemIconsSprite", Lua_MinimapGetItemIconsSprite);
+	lua::TableAssoc(L, "GetIconsSprite", Lua_MinimapGetIconsSprite);
 	//};
 	lua_setglobal(L, "Minimap");
 	//lua::RegisterNewClass(L, lua::metatables::MinimapMT, lua::metatables::MinimapMT, functions);
