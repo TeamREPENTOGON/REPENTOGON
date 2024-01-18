@@ -4,9 +4,9 @@ __thiscall void MinimapConfig::Render();
 struct MinimapConfig depends (ANM2, Vector) {
 	ANM2 _mapSprite : 0x0;
 	Vector _vec1: 0x11c;
-	Vector _iconPadding: 0x124;
-	float _f1: 0x12c;
-	float _f2: 0x130;
+	Vector _borderPadding: 0x124;
+	float _posOffsetX: 0x12c;
+	float _borderScale: 0x130;
 	int _i1: 0x134;
 	int _i2: 0x138;
 	int _minimapIconNum: 0x13c;

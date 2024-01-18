@@ -30,15 +30,39 @@ LUA_FUNCTION(Lua_MinimapConfigSetVec1) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_MinimapConfigGetIconPadding) {
+LUA_FUNCTION(Lua_MinimapConfigGetBorderPadding) {
 	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), config->_iconPadding);
+	lua::luabridge::UserdataValue<Vector>::push(L, lua::GetMetatableKey(lua::Metatables::VECTOR), config->_borderPadding);
 	return 1;
 }
 
-LUA_FUNCTION(Lua_MinimapConfigSetIconPadding) {
+LUA_FUNCTION(Lua_MinimapConfigSetBorderPadding) {
 	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
-	config->_iconPadding = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	config->_borderPadding = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	return 0;
+}
+
+LUA_FUNCTION(Lua_MinimapConfigGetPosOffsetX) {
+	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	lua_pushnumber(L, config->_posOffsetX);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_MinimapConfigSetPosOffsetX) {
+	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	config->_posOffsetX = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_MinimapConfigGetBorderScale) {
+	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	lua_pushnumber(L, config->_borderScale);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_MinimapConfigSetBorderScale) {
+	MinimapConfig* config = *lua::GetUserdata<MinimapConfig**>(L, 1, lua::metatables::MinimapConfigMT);
+	config->_borderScale = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -85,8 +109,12 @@ static void RegisterMinimapConfig(lua_State* L) {
 		{ "GetSprite", Lua_MinimapConfigGetSprite },
 		{ "GetVec1", Lua_MininmapConfigGetVec1 },
 		{ "SetVec1", Lua_MinimapConfigSetVec1 },
-		{ "GetIconPadding", Lua_MinimapConfigGetIconPadding },
-		{ "SetIconPadding", Lua_MinimapConfigSetIconPadding },
+		{ "GetBorderPadding", Lua_MinimapConfigGetBorderPadding },
+		{ "SetBorderPadding", Lua_MinimapConfigSetBorderPadding },
+		{ "GetPosOffsetX", Lua_MinimapConfigGetPosOffsetX },
+		{ "SetPosOffsetX", Lua_MinimapConfigSetPosOffsetX },
+		{ "GetBorderScale", Lua_MinimapConfigGetBorderScale },
+		{ "SetBorderScale", Lua_MinimapConfigSetBorderScale },
 		{ "GetI1", Lua_MinimapConfigGetI1 },
 		{ "SetI1", Lua_MinimapConfigSetI1 },
 		{ "GetI2", Lua_MinimapConfigGetI2 },
