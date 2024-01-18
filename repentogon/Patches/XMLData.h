@@ -126,21 +126,25 @@ public:
 	}
 
 	XMLAttributes  GetNodeById(int name) {
-		if (this->nodes.find(name) == this->nodes.end()) { return XMLAttributes(); }
-		return this->nodes[name];
+		auto iter = this->nodes.find(name);
+		if (iter == this->nodes.end()) { return XMLAttributes(); }
+		else { return iter->second; }
 	}
 
 	XMLAttributes GetNodeByName(const string &name) {
-		if (this->byname.find(name) == this->byname.end()) { return XMLAttributes(); }
-		return this->GetNodeById(this->byname[name]);
+		auto iter = this->byname.find(name);
+		if (iter == this->byname.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
 	}
 	XMLAttributes GetNodeByNameMod(const string &name) {
-		if (this->bynamemod.find(name) == this->bynamemod.end()) { return XMLAttributes(); }
-		return this->GetNodeById(this->bynamemod[name]);
+		auto iter = this->bynamemod.find(name);
+		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
 	}
 	XMLAttributes GetNodesByMod(const string &name) {
-		if (this->bynamemod.find(name) == this->bynamemod.end()) { return XMLAttributes(); }
-		return this->GetNodeById(this->bynamemod[name]);
+		auto iter = this->bynamemod.find(name);
+		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, int id) {
@@ -414,44 +418,54 @@ public:
 	}
 
 	XMLAttributes GetNodeById(const tuple<int, int, int> &name) {
-		if (this->nodes.find(name) == this->nodes.end()) { return XMLAttributes(); }
-		return this->nodes[name];
+		auto iter = this->nodes.find(name);
+		if (iter == this->nodes.end()) { return XMLAttributes(); }
+		else { return iter->second; }
 	}
 
 	XMLAttributes GetNodeByName(const string &name) {
-		return this->GetNodeById(this->byname[name]);
+		auto iter = this->byname.find(name);
+		if (iter == this->byname.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
 	}
 	XMLAttributes GetNodeByNameMod(const string &name) {
-		return this->GetNodeById(this->bynamemod[name]);
+		auto iter = this->bynamemod.find(name);
+		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
 	}
-	XMLAttributes GetNodesByMod(const string &name) {
-		return this->GetNodeById(this->bynamemod[name]);
-	}
+	//XMLAttributes GetNodesByMod(const string &name) { //not set up for now (unused anyway)
+		//auto iter = this->bymod.find(name);
+		//if (iter == this->bymod.end()) { return XMLAttributes(); }
+		//return this->GetNodeById(iter->second);
+	//}
 
 	XMLAttributes GetNodesByTypeVarSub(int type,int var, int sub,bool strict ) {
-		tuple idx = { type, var, sub };
-		XMLAttributes none;
-		if (this->nodes.find({ type, var, sub }) != this->nodes.end()) {
-			return this->nodes[{ type, var, sub }];
+		auto iter = this->nodes.find({ type, var, sub });
+		if (iter != this->nodes.end()) {
+			return iter->second;
 		}
-		else if (strict) {
-			return none;
+		if (strict) {
+			return XMLAttributes();
 		}
-		else if (this->nodes.find({ type, var, 0 }) != this->nodes.end()) {
-			return this->nodes[{ type, var, 0 }];
+		iter = this->nodes.find({ type, var, 0 });
+		if (iter != this->nodes.end()) {
+			return iter->second;
 		}
-		else if (this->nodes.find({ type, 0, 0 }) != this->nodes.end()) {
-			return this->nodes[{ type, 0, 0 }];
+		iter = this->nodes.find({ type, 0, 0 });
+		if (iter != this->nodes.end()) {
+			return iter->second;
 		}
-		return none;
+		return XMLAttributes();
 	}
 
 	const set<string>& GetCustomTags(int type, int var, int sub) {
-		if (this->nodes.count({ type, var, sub }) > 0) {
-			return this->customtags[{ type, var, sub }];
+		auto iter = this->customtags.find({ type, var, sub });
+		if (iter != this->customtags.end()) {
+			return iter->second;
 		}
-		else if (this->customtags.count({ type, var, 0 }) > 0) {
-			return this->customtags[{ type, var, 0 }];
+		iter = this->customtags.find({ type, var, 0 });
+		if (iter != this->customtags.end()) {
+			return iter->second;
 		}
 		return this->customtags[{ type, 0, 0 }];
 	}
