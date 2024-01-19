@@ -6507,7 +6507,7 @@
 <p><strong>Note that to call these functions, you must use a <code>.</code> (period) instead of a <code>:</code> (colon)!</strong></p>
 <details class="example" open="open">
 <summary>Example Code</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">PlayerManager</span><span class="p">.</span><span class="n">AnyoneHasTrinket</span><span class="p">(</span><span class="n">TrinketType</span><span class="p">.</span><span class="n">TRINKET_SWALLOWED_PENNY</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">hasTrinket</span> <span class="o">=</span> <span class="n">PlayerManager</span><span class="p">.</span><span class="n">AnyoneHasTrinket</span><span class="p">(</span><span class="n">TrinketType</span><span class="p">.</span><span class="n">TRINKET_SWALLOWED_PENNY</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 </details>
@@ -6530,14 +6530,14 @@
 <h4 aria-label="Functions" class="copyable" id="entityplayer-firstbirthrightowner-playertype-playertype"><a href="EntityPlayer.html">EntityPlayer</a> FirstBirthrightOwner ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> PlayerType )<a class="headerlink" href="#entityplayer-firstbirthrightowner-playertype-playertype" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="firstcollectibleowner">FirstCollectibleOwner ()<a class="headerlink" href="#firstcollectibleowner" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="entityplayer-firstcollectibleowner-collectibletype-collectible-boolean-lazsharedglobaltag"><a href="EntityPlayer.html">EntityPlayer</a> FirstCollectibleOwner ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, boolean LazSharedGlobalTag )<a class="headerlink" href="#entityplayer-firstcollectibleowner-collectibletype-collectible-boolean-lazsharedglobaltag" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="entityplayer-firstcollectibleowner-collectibletype-collectible-boolean-lazsharedglobaltag-true"><a href="EntityPlayer.html">EntityPlayer</a> FirstCollectibleOwner ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, boolean LazSharedGlobalTag = true )<a class="headerlink" href="#entityplayer-firstcollectibleowner-collectibletype-collectible-boolean-lazsharedglobaltag-true" title="Permanent link">⚓︎</a></h4>
 <p>Returns <code>nil</code> if the specified collectible has never been picked up.</p>
 <hr />
 <h3 aria-label="Functions" id="firstplayerbytype">FirstPlayerByType ()<a class="headerlink" href="#firstplayerbytype" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="entityplayer-firstplayerbytype-playertype-playertype"><a href="EntityPlayer.html">EntityPlayer</a> FirstPlayerByType ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> PlayerType )<a class="headerlink" href="#entityplayer-firstplayerbytype-playertype-playertype" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="firsttrinketowner">FirstTrinketOwner ()<a class="headerlink" href="#firsttrinketowner" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="entityplayer-firsttrinketowner-trinkettype-trinket-rng-rng-boolean-lazsharedglobaltag"><a href="EntityPlayer.html">EntityPlayer</a> FirstTrinketOwner ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html">TrinketType</a> Trinket, <a href="RNG.html">RNG</a> RNG, boolean LazSharedGlobalTag )<a class="headerlink" href="#entityplayer-firsttrinketowner-trinkettype-trinket-rng-rng-boolean-lazsharedglobaltag" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="entityplayer-firsttrinketowner-trinkettype-trinket-rng-rng-nil-boolean-lazsharedglobaltag-true"><a href="EntityPlayer.html">EntityPlayer</a> FirstTrinketOwner ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html">TrinketType</a> Trinket, <a href="RNG.html">RNG</a> RNG = nil, boolean LazSharedGlobalTag = true )<a class="headerlink" href="#entityplayer-firsttrinketowner-trinkettype-trinket-rng-rng-nil-boolean-lazsharedglobaltag-true" title="Permanent link">⚓︎</a></h4>
 <p>Returns <code>nil</code> if the specified trinket has never been picked up.</p>
 <hr />
 <h3 aria-label="Functions" id="getesaujrstate">GetEsauJrState ()<a class="headerlink" href="#getesaujrstate" title="Permanent link">⚓︎</a></h3>
