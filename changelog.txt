@@ -6,6 +6,7 @@ Additions:
 Fixes:
 * Fixed relative ids being displayed as actual ids on xmldata tables. 
 * Fix GridEntity:ToFire/ToTNT/ToWall functions
+* Fixed binder for Entity:ComputeStatusEffectDuration
 /newline/
 /newline/
 v1.0.5a -
