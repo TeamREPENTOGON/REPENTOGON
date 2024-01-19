@@ -15,8 +15,8 @@ LUA_FUNCTION(Lua_FirstCollectibleOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int collectible = (int)luaL_checkinteger(L, 1);
-	bool unk = lua::luaL_checkboolean(L, 2);
-	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, unk);
+	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 2, true);
+	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, lazSharedGlobalTag);
 	if (!player) {
 		lua_pushnil(L);
 	}
@@ -84,9 +84,13 @@ LUA_FUNCTION(Lua_FirstTrinketOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int trinket = (int)luaL_checkinteger(L, 1);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
-	bool unk = lua::luaL_checkboolean(L, 3);
-	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, unk);
+	RNG* rng = nullptr;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	}
+
+	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 3, true);
+	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, lazSharedGlobalTag);
 	if (!player) {
 		lua_pushnil(L);
 	}
