@@ -1,4 +1,4 @@
-﻿/* This is saved as UTF-8 with BOM(code page 65001) */
+/* This is saved as UTF-8 with BOM(code page 65001) */
 #ifndef I
 #define I(ITEM, TRANSLATE)
 #endif
@@ -13,7 +13,7 @@
 I(BAR_TOOLS, ICON_U8_FA_SCREWDRIVER_WRENCH u8"工具")
 I(BAR_DEBUG_CONSOLE, ICON_U8_FA_TERMINAL u8"控制台")
 I(BAR_LOG_VIEWER, ICON_U8_FA_NEWSPAPER u8"日志查看器")
-I(BAR_GAME_OPTIONS, ICON_U8_FA_GEARS u8" 游戏选项")
+I(BAR_GAME_OPTIONS, ICON_U8_FA_GEARS u8"游戏选项")
 I(BAR_PERFORMANCE, ICON_U8_FA_GAUGE_HIGH u8"性能")
 I(BAR_STYLE_EDITOR, ICON_U8_FA_PENCIL u8"样式编辑器")
 
@@ -101,7 +101,7 @@ I(CONSOLE_DEBUG_HELP, u8"启用选定的调试标记。\n例如：\n（debug 3�
 I(CONSOLE_DELIRIOUS_DESC, u8"强制设定精神错乱为某个头目")
 I(CONSOLE_DELIRIOUS_HELP, u8"规定精神错乱（主动道具）所生成的下个跟班为所选值。\n例如：\n（delirious 3）会强制将精神错乱变形为胖蛆。")
 
-I(CONSOLE_EGGS_DESC, u8"解锁所有菜单种子")
+I(CONSOLE_EGGS_DESC, u8"解锁所有彩蛋种子")
 I(CONSOLE_EGGS_HELP, u8" 永久 解锁此存档文件的所有彩蛋种子。")
 
 I(CONSOLE_FORCEROOM_DESC, u8"强制在楼层生成时使用房间布局")
@@ -111,10 +111,10 @@ I(CONSOLE_FULLRESTART_DESC, u8"关闭并重新打开游戏")
 I(CONSOLE_FULLRESTART_HELP, u8"关闭并重新打开游戏")
 
 I(CONSOLE_GIVEITEM_DESC, u8"给予角色道具、饰品、卡牌或胶囊")
-I(CONSOLE_GIVEITEM_HELP, u8"给予主角色道具、饰品、卡牌或胶囊。变量可以输入名称或类型。类型（c）代表道具，（t）代表饰品，（k）代表卡牌，（p）代表胶囊。大多数消耗品均被视为卡牌。\n这个命令的缩写是（g）。\n例如\n（giveitem c1）会给予角色悲伤洋葱。\n（giveitem t1）会给予角色被吞下的硬币。\n（giveitem p1）会给予角色过激幻觉胶囊。\n（giveitem k1）会给予玩家0-愚者。")
+I(CONSOLE_GIVEITEM_HELP, u8"给予主角色道具、饰品、卡牌或胶囊。变量可以输入名称或类型。类型（c）代表道具，（t）代表饰品，（k）代表卡牌，（p）代表胶囊。大多数消耗品均被视为卡牌。\n这个命令的缩写是（g）。\n例如\n（giveitem c1）会给予角色悲伤洋葱。\n（giveitem t1）会给予角色被吞下的硬币。\n（giveitem p1）会给予角色过激幻觉胶囊。\n（giveitem k1）会给予角色0-愚者。")
 
 I(CONSOLE_GIVEITEM2_DESC, u8"给予第二角色道具、饰品、卡牌或胶囊")
-I(CONSOLE_GIVEITEM2_HELP, u8"给予第二角色道具、饰品、卡牌或胶囊。类型（c）代表道具，（t）代表饰品，（k）代表卡牌，（p）代表胶囊。大多数消耗品均被视为卡牌。\n这个命令的缩写是（g）。\n例如\n（giveitem2 c1）会给予角色悲伤洋葱。\n（giveitem2 t1）会给予角色被吞下的硬币。\n（giveitem2 p1）会给予角色过激幻觉胶囊。\n（giveitem2 k1）会给予玩家0-愚者。")
+I(CONSOLE_GIVEITEM2_HELP, u8"给予第二角色道具、饰品、卡牌或胶囊。类型（c）代表道具，（t）代表饰品，（k）代表卡牌，（p）代表胶囊。大多数消耗品均被视为卡牌。\n这个命令的缩写是（g）。\n例如\n（giveitem2 c1）会给予角色悲伤洋葱。\n（giveitem2 t1）会给予角色被吞下的硬币。\n（giveitem2 p1）会给予角色过激幻觉胶囊。\n（giveitem2 k1）会给予角色0-愚者。")
 
 I(CONSOLE_GOTO_DESC, u8"传送到新房间")
 I(CONSOLE_GOTO_HELP, u8"将角色传送到当前层特定地形的房间中。（d）代表普通房间，（s）代表特殊房间，（x）代表特定楼层的某些特殊房间布局\n例如：\n（goto s.boss.1010）将传送至萌死戳头目战房间。")
@@ -161,11 +161,11 @@ I(CONSOLE_NETSTART_HELP, u8"与选定Steam ID的玩家进行链接（在线多�
 I(CONSOLE_PLAYSFX_DESC, u8"播放音效")
 I(CONSOLE_PLAYSFX_HELP, u8"立即播放游戏内的音效。\n例如：\n（playsfx 187）会播放错误提示。")
 
-I(CONSOLE_PROF_DESC, u8"[损坏]开始分析")
-I(CONSOLE_PROF_HELP, u8"应将数据写入csv文件。都怪Nicalis！")
+I(CONSOLE_PROF_DESC, u8"[损坏]启动采集")
+I(CONSOLE_PROF_HELP, u8"本应收集数据并写入csv文件的，但无法使用。都怪Nicalis！")
 
-I(CONSOLE_PROFSTOP_DESC, u8"[损坏]停止分析")
-I(CONSOLE_PROFSTOP_HELP, u8"应停止分析，但是prof无法使用。我们总没好事.")
+I(CONSOLE_PROFSTOP_DESC, u8"[损坏]停止采集")
+I(CONSOLE_PROFSTOP_HELP, u8"本应停止收集数据的，但采集功能是坏的，全都是因为Nicalis太粗心了！")
 
 I(CONSOLE_REMOVE_DESC, u8"移除一个物品")
 I(CONSOLE_REMOVE_HELP, u8"立即移除角色的物品。输入规则与give相同，查看give命令的帮助以获取更多信息。")
@@ -281,7 +281,7 @@ I(OPT_ACC_TOUCH_MODE, u8"触屏模式")
 
 I(OPT_MISC, u8"杂项")
 I(OPT_MISC_ENABLE_MODS, u8"启用模组")
-I(OPT_MISC_ENABLE_CTRL_HOTPLUG, u8"启用控制器热插拔")
+I(OPT_MISC_ENABLE_CTRL_HOTPLUG, u8"启用手柄热插拔")
 I(OPT_MISC_USE_STEAM_CLOUD, u8"使用Steam云存档")
 I(OPT_MISC_PAUSE_ON_FOCUS_LOST, u8"失去焦点时暂停")
 
@@ -313,11 +313,11 @@ I(OPT_CONSOLE_FOND_MODES_TINY, u8"非常小")
 I(OPT_OFF_ON_MODES_OFF, u8"关闭")
 I(OPT_OFF_ON_MODES_ON, u8"打开")
 
-I(OPT_UNIFONT_RENDER_MODE_NORMAL, u8"普通：13px，仅非拉丁字符")
-I(OPT_UNIFONT_RENDER_MODE_LARGE, u8"LargePerfect: 16px")
-I(OPT_UNIFONT_RENDER_MODE_MEDIUM, u8"Medium: 14px")
-I(OPT_UNIFONT_RENDER_MODE_TINY, u8"TinyPerfect: 16px and 0.5 scale")
-I(OPT_UNIFONT_RENDER_MODE_TINY_LOW, u8"TinyLow: 8px")
+I(OPT_UNIFONT_RENDER_MODE_NORMAL, u8"正常：13px，仅非拉丁字符")
+I(OPT_UNIFONT_RENDER_MODE_LARGE, u8"大（像素完美）: 16px")
+I(OPT_UNIFONT_RENDER_MODE_MEDIUM, u8"中: 14px")
+I(OPT_UNIFONT_RENDER_MODE_TINY, u8"小（像素完美）: 16px，0.5倍缩放")
+I(OPT_UNIFONT_RENDER_MODE_TINY_LOW, u8"小（低画质）: 8px")
 
 //============== Help Menu ===============
 
@@ -333,22 +333,22 @@ I(HELP_EGG_PIECE_OF_SHIT, u8"一坨普通的屎……\n尝起来不太有营养�
 
 I(HELP_EGG_TOILET, u8"你把屎从马桶冲走！")
 I(HELP_EGG_PRESENT_BEHIND_TOILET, u8"你看了看厕所后面，发现了一件漂亮的礼物。")
-I(HELP_EGG_ANCIENT_EGG, u8"看起来很古老的蛋。感觉有点温度……")
-I(HELP_EGG_DRAGON_FROM_EGG, u8"一只龙从蛋里孵出来了!")
-I(HELP_EGG_HUNGRY_DRAGON, u8"你的龙看起来很饿而且被忽视了。")
+I(HELP_EGG_ANCIENT_EGG, u8"一枚看起来很古老的蛋。感觉暖暖的……")
+I(HELP_EGG_DRAGON_FROM_EGG, u8"蛋里孵出来一只龙!")
+I(HELP_EGG_HUNGRY_DRAGON, u8"你的龙饥饿、寂寞。")
 I(HELP_EGG_FEED_DRAGON, u8"你试着喂这条龙……")
 I(HELP_EGG_LEMON, u8"你喂给这条龙一个柠檬。\n它疑惑地看着你……")
 I(HELP_EGG_CARROT, u8"你喂给这条龙一根胡萝卜。\n它似乎不喜欢这个……")
 I(HELP_EGG_BACON, u8"你喂给这条龙一些培根。\n它吃得很开心！")
 I(HELP_EGG_ATTENTION, u8"你的龙希望得到关注！")
-I(HELP_EGG_PET_AND_LOVE, u8"你经常抚摸这条龙，并把你的爱给他。")
+I(HELP_EGG_PET_AND_LOVE, u8"你经常抚摸这只龙，并把你的爱给他。")
 I(HELP_EGG_DRAGON_HAPPY, u8"你的龙看起来很快乐！")
 
-I(HELP_EGG_RIDEABLE, u8"你开始思考能不能骑龙。")
+I(HELP_EGG_RIDEABLE, u8"你开始思考龙能不能骑。")
 I(HELP_EGG_TAKE_OFF, u8"你和你的龙飞上了天空！")
 I(HELP_EGG_INSEPARABLE, u8"你感觉好像你和你的龙不可分离。")
 I(HELP_EGG_REACH_THE_HEAVEN, u8"你继续上升!\n你已经到达了天堂。")
-I(HELP_EGG_GOD_SMITES_DRAGON, u8"不幸的是，上帝并不在乎你滑稽的行为。\n当你坠入未知的深渊时，他当场击杀了你的龙。")
+I(HELP_EGG_GOD_SMITES_DRAGON, u8"不幸的是，上帝并不在乎你滑稽的行为。\n他当场打了你的龙，而你也坠入未知的深渊。")
 I(HELP_EGG_YOU_SURVIVE, u8"你幸存下来，但你的龙死于撞击……")
 
 I(HELP_EGG_REVENGE, u8"你会报仇的。\n但是如何报仇？")
@@ -460,7 +460,7 @@ I(IMGUI_WIN_CTX_MENU_PIN_WINDOW, u8"固定窗口")
 I(IMGUI_WIN_CTX_MENU_PIN_WINDOW_DESC, u8"被固定的窗口在关闭开发工具后依旧可见。")
 
 I(IMGUI_CHANGE_KEY_BTN_NAME, u8"更改")
-I(IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL, u8"按下控制器上的按键。")
+I(IMGUI_CHANGE_KEY_BTN_PRESS_KEY_CTRL, u8"按下手柄上的按键。")
 I(IMGUI_CHANGE_KEY_BTN_PRESS_KEY_KEYBOARD, u8"按下键盘上的按键。")
 I(IMGUI_CHANGE_KEY_BTN_PRESS_ESC, u8"按下ESC取消输入")
 
