@@ -2165,18 +2165,20 @@ BagOfCraftingPickup = {
     BOC_POOP = 29,
 }
 
-WeaponModifier = {
-	CHOCOLATE_MILK = 1,
-	CURSED_EYE = 2,
-	BRIMSTONE = 4,
-	MONSTROS_LUNG = 8,
-	LUDOVICO_TECHNIQUE = 16,
-	ANTI_GRAVITY = 32,
-	TRACTOR_BEAM = 64,
-	SOY_MILK = 128, ALMOND_MILK = 128,
-	NEPTUNUS = 256,
-	AZAZELS_SNEEZE = 512,
-	C_SECTION = 2048,
+WeaponModifier = { --bitwise
+	CHOCOLATE_MILK = 1 << 0,
+	CURSED_EYE = 1 << 1,
+	BRIMSTONE = 1 << 2,
+	MONSTROS_LUNG = 1 << 3,
+	LUDOVICO_TECHNIQUE = 1 << 4,
+	ANTI_GRAVITY = 1 << 5,
+	TRACTOR_BEAM = 1 << 6,
+	SOY_MILK = 1 << 7, ALMOND_MILK = 1 << 7,
+	NEPTUNUS = 1 << 8,
+	AZAZELS_SNEEZE = 1 << 9,
+	C_SECTION = 1 << 11,
+	FAMILIAR = 1 << 30,
+	BONE = 1 << 31,
 }
 
 ImGuiElement = {

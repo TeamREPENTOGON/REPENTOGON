@@ -32,7 +32,7 @@ struct Weapon { {{
 	inline float* GetCharge() { return (float*)((char*)this + 0x14); }
 	inline Vector* GetDirection() {return (Vector*)((char*)this + 0x1c); }
 	inline int GetWeaponType() { return *(int*)((char*)this + 0x2c); }
-	inline int GetModifiers() { return *(int*)((char*)this + 0x30); }
+	inline uint32_t* GetModifiers() { return &this->_modifiers; }
 	inline int GetNumFired() { return *(int*)((char*)this + 0x34); }
 }}
     __vtable {
@@ -57,6 +57,8 @@ struct Weapon { {{
 		skip; // CanTriggerKidneyStone
 		skip; // CanOverrideForgottenThrow
     };
+	
+	uint32_t _modifiers : 0x30;
 } : 0x40;
 
 /* For convenience's sake:

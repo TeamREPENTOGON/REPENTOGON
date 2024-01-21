@@ -1,7 +1,18 @@
 v1.0.6 -
+Additions:
+* Weapon :
+	- SetModifiers
+* Added Chinese translation text, thanks @502y
+/newline/
+Modified:
+* PlayerManager :
+	- FirstCollectibleOwner(CollectibleType Collectible, boolean LazSharedGlobalTag = true)
+	- FirstTrinketOwner(TrinketType Trinket, RNG RNG = nil, boolean LazSharedGlobalTag = true)
+/newline/
 Fixes:
 * Fixed relative ids being displayed as actual ids on xmldata tables. 
 * Fix GridEntity:ToFire/ToTNT/ToWall functions
+* Fixed binder for Entity:ComputeStatusEffectDuration
 /newline/
 /newline/
 v1.0.5a -

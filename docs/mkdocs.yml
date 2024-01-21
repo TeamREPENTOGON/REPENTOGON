@@ -171,6 +171,7 @@ nav:
     - RoomSubType: enums/RoomSubType.md
     - ShaderType: enums/ShaderType.md
     - SlotVariant: enums/SlotVariant.md
+    - SpecialQuest: enums/SpecialQuest.md
     - StbGridType: enums/StbGridType.md
     - StbPoopSubType: enums/StbPoopSubType.md
     - StbRailVariant: enums/StbRailVariant.md

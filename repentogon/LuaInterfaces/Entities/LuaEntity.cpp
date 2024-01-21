@@ -89,7 +89,7 @@ LUA_FUNCTION(Lua_EntityComputeStatusEffectDuration)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
 	unsigned int initial = max((int)luaL_checkinteger(L, 2), 0);
-	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 2, lua::Metatables::ENTITY_REF, "EntityRef");
+	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
 	lua_pushinteger(L, ent->ComputeStatusEffectDuration(initial, ref));
 
 	return 1;
