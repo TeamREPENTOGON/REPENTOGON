@@ -27,7 +27,7 @@ local StatsMenuRep = {
                 local itemconfig = Isaac.GetItemConfig()
                 local sum = 0
                 local unlocked = 0
-                for id = 1, _CollectibleType.NUM_COLLECTIBLES - 1 do
+                for id = 1, 732 do --this wont work for modded items for now so hardcoded 732 it is
                     local configEntry = itemconfig:GetCollectible(id)
                     if configEntry and not configEntry.Hidden then
                         sum = sum + 1
