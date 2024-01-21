@@ -203,6 +203,7 @@ public:
 	XMLNodeIdxLookup stages;
 	XMLNodeIdxLookup backdrops;
 	XMLNodeIdxLookup achievements;
+	XMLChilds achievlistpermod;
 
 	void Clear() {
 		nodes.clear();
@@ -236,6 +237,7 @@ public:
 		stages.clear();
 		backdrops.clear();
 		achievements.clear();
+		achievlistpermod.clear();
 		maxid = 0;
 	
 	}
