@@ -4,6 +4,12 @@ tags:
 ---
 # Class "GridEntity"
 
+## Modified Functions
+### ToTNT () {: aria-label='Modified Functions' }
+#### [GridEntityTNT](https://wofsauge.github.io/IsaacDocs/rep/GridEntityTNT.html) ToTNT ( ) {: .copyable aria-label='Modified Functions' }
+Altered function to improve GridEntity Update callback behavior.
+___
+
 ## Functions
 
 ### GetAltRockType () {: aria-label='Functions' }
@@ -68,6 +74,14 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityGravity](GridE
     If the conversion is not successful, this function returns `nil`.
 	
 ___
+### ToLock () {: aria-label='Functions' }
+#### [GridLock](GridLock.md) ToLock ( ) {: .copyable aria-label='Functions' }
+
+Used to cast a [GridEntity](GridEntity.md) object to a [GridLock](GridLock.md) object.
+
+???+ note "Return behavior"
+    If the conversion is not successful, this function returns `nil`.
+___
 
 ### ToStairs () {: aria-label='Functions' }
 #### [GridEntityStairs](GridEntityStairs.md) ToStairs ( ) {: .copyable aria-label='Functions' }
@@ -87,6 +101,13 @@ Used to cast a [GridEntity](GridEntity.md) object to a [GridEntityStatue](GridEn
 ???+ note "Return behavior"
     If the conversion is not successful, this function returns `nil`.
 	
+___
+### ToTeleporter () {: aria-label='Functions' }
+#### [GridTeleporter](GridTeleporter.md) ToTeleporter ( ) {: .copyable aria-label='Functions' }   
+Used to cast a [GridEntity](GridEntity.md) object to a [GridTeleporter](GridTeleporter.md) object.
+
+???+ note "Return behavior"
+    If the conversion is not successful, this function returns `nil`.
 ___
 
 ### ToTrapDoor () {: aria-label='Functions' }

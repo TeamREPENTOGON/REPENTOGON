@@ -455,7 +455,7 @@ ___
 
 ___
 ### GetVoidedCollectiblesList () {: aria-label='Functions' }
-#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] Collectibles GetVoidedCollectiblesList ( ) {: .copyable aria-label='Functions' }
+#### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] GetVoidedCollectiblesList ( ) {: .copyable aria-label='Functions' }
 Retuns a table containing the [CollectibleTypes](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) of all voided Active items.
 
 ___
@@ -545,6 +545,11 @@ ___
 ___
 ### IsLocalPlayer () {: aria-label='Functions' }
 #### boolean IsLocalPlayer ( ) {: .copyable aria-label='Functions' }
+
+___
+### IsNullItemCostumeVisible () {: aria-label='Functions' }
+#### boolean IsNullItemCostumeVisible ( int nullItem, int layerID = 0 ) {: .copyable aria-label='Functions' }
+#### boolean IsNullItemCostumeVisible ( int nullItem, string layerName ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsPacifist () {: aria-label='Functions' }
