@@ -2135,6 +2135,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 			.push(sprite, lua::Metatables::SPRITE)
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
 			.push(unk2)
+			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 
 		if (!result) {
@@ -2158,6 +2159,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 			.push(sprite, lua::Metatables::SPRITE)
 			.pushUserdataValue(pos, lua::Metatables::VECTOR)
 			.push(unk2)
+			.push(_player, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
 }

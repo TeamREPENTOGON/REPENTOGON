@@ -9,6 +9,7 @@ Modified:
 * PlayerManager :
 	- FirstCollectibleOwner(CollectibleType Collectible, boolean LazSharedGlobalTag = true)
 	- FirstTrinketOwner(TrinketType Trinket, RNG RNG = nil, boolean LazSharedGlobalTag = true)
+* PRE/POST_PLAYERHUD_RENDER_HEARTS callback now passes EntityPlayer (Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown, EntityPlayer Player)
 /newline/
 Fixes:
 * Fixed relative ids being displayed as actual ids on xmldata tables. 
