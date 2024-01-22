@@ -14,6 +14,7 @@ Fixes:
 * Fixed relative ids being displayed as actual ids on xmldata tables. 
 * Fix GridEntity:ToFire/ToTNT/ToWall functions
 * Fixed binder for Entity:ComputeStatusEffectDuration
+* Fixed pause menu modded marks rendering over the controller disconected popup
 /newline/
 /newline/
 v1.0.5a -
