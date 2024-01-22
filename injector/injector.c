@@ -7,6 +7,12 @@
 #include <string.h>
 #include <time.h>
 
+#undef BUILD_tcl
+
+#include "tcl.h"
+#include "tk.h"
+#include "tkWin.h"
+
 struct IsaacOptions {
 	// Repentogon options
 	int updates;
@@ -310,6 +316,10 @@ int __declspec(dllexport) InjectIsaac(int updates, int console, int lua_debug, i
 }
 
 int main(int argc, char** argv) {
+	Tcl_Interp* interp = Tcl_CreateInterp();
+	Tcl_AppInit(interp);
+	Tk_Window mainWindow = Tk_MainWindow(interp);
+	Tk_MainLoop();
 	InjectIsaac(1, 1, 0, 0, 0, NULL);
 	return 0;
 }
