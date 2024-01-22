@@ -1594,7 +1594,7 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 				int spawnSeed = ProtectedCallbackIntAssign(L, desc->_spawnSeed, 4);
 
 				noInfLoop = true;
-				return g_Game->_room->SpawnGridEntity(idx, type, variant, varData, spawnSeed);
+				return g_Game->_room->SpawnGridEntity(idx, type, variant, spawnSeed, varData);
 			}
 			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 			{
