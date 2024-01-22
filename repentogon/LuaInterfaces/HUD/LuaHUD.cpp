@@ -92,20 +92,6 @@ LUA_FUNCTION(Lua_HUDGetPoopSpellSprite) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_HUDGetIsVisible) {
-	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	lua_pushboolean(L, hud->_isVisible);
-
-	return 1;
-}
-
-LUA_FUNCTION(Lua_HUDSetIsVisible) {
-	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
-	hud->_isVisible = lua::luaL_checkboolean(L, 2);
-
-	return 0;
-}
-
 LUA_FUNCTION(Lua_HUDGetBossHPBarFill) {
 	HUD* hud = lua::GetUserdata<HUD*>(L, 1, lua::Metatables::HUD, "HUD");
 	lua_pushnumber(L, hud->_bossHPBarFill);
@@ -136,8 +122,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetInventorySprite", Lua_HUDGetInventorySprite },
 		{ "GetCraftingSprite", Lua_HUDGetCraftingSprite },
 		{ "GetPoopSpellSprite", Lua_HUDGetPoopSpellSprite },
-		{ "IsVisible", Lua_HUDGetIsVisible },
-		{ "SetIsVisible", Lua_HUDSetIsVisible },
 		{ "GetBossHPBarFill", Lua_HUDGetBossHPBarFill },
 		{ "SetBossHPBarFill", Lua_HUDSetBossHPBarFill },
 		{ NULL, NULL }

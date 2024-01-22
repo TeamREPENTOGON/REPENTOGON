@@ -69,15 +69,7 @@ ___
 #### [Sprite](Sprite.md) GetStreakSprite ( ) {: .copyable aria-label='Functions' }
 Sprite object used for text streak popups. For example: picking up items, displaying floor name, etc.
 ___
-### IsVisible () {: aria-label='Functions' }
-#### boolean IsVisible ( ) {: .copyable aria-label='Functions' }
-Is hud visible
-___
 ### SetBossHPBarFill () {: aria-label='Functions' }
 #### void SetBossHPBarFill ( float percent ) {: .copyable aria-label='Functions' }
 Sets the fill of the boss hp bar. Accepts values between 0 and 1. Numbers below 0 cause the boss hp bar to not be rendered.
-___
-### SetIsVisible () {: aria-label='Functions' }
-#### void SetIsVisible ( float isVisible ) {: .copyable aria-label='Functions' }  
-Set hud visible /invisible.
 ___
