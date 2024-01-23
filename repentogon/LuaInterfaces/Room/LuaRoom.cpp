@@ -306,6 +306,12 @@ LUA_FUNCTION(Lua_RoomTrySpawnSpecialQuestDoor) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomSetLavaIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->_lavaIntensity = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -342,6 +348,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetGreedWaveTimer", Lua_RoomSetGreedWaveTimer},
 		{ "IsPersistentRoomEntity", Lua_RoomIsPersistentRoomEntity},
 		{ "TrySpawnSpecialQuestDoor", Lua_RoomTrySpawnSpecialQuestDoor},
+		{ "SetLavaIntensity", Lua_RoomSetLavaIntensity},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

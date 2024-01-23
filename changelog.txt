@@ -4,6 +4,8 @@ Additions:
 	- SetModifiers
 * Added Chinese translation text, thanks @502y
 * Added support for the pocketActive param in players.xml(I forgor)
+* Room :
+	- SetLavaIntensity
 /newline/
 Modified:
 * PlayerManager :

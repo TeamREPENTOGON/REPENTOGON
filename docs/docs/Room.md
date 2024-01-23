@@ -122,6 +122,11 @@ ___
 #### void SetGreedWaveTimer ( int Time ) {: .copyable aria-label='Functions' }
 
 ___
+### SetLavaIntensity () {: aria-label='Functions' }
+#### void SetLavaIntensity ( float Intensity ) {: .copyable aria-label='Functions' }
+This primarily affects [UpdateColorModifier](Room.md#updatecolormodifier) (if `Process` is true, an orange glow is added based on the number of pits and lava intensity).
+
+___
 ### SetPauseTimer () {: aria-label='Functions' }
 #### void SetPauseTimer ( int Duration ) {: .copyable aria-label='Functions' }
 

@@ -113,6 +113,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
 	bool _pacifist : 0x7185;
     TemporaryEffects _temporaryEffects : 0x71f4; //0x71F4
 	RailManager _railManager : 0x734c; //0x734c
+	float _lavaIntensity : 0x7624;
 
     "558bec6aff68????????64a1000000005083ec305657a1????????33c550":
     bool save_entity(Entity* entity, EntitySaveState* data, bool unk);
