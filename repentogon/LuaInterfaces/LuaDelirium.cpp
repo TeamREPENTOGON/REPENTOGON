@@ -5,7 +5,7 @@
 
 #include "../REPENTOGONDelirium.h"
 
-static int lua_EntityToDelirium(lua_State* L) {
+LUA_FUNCTION(lua_EntityToDelirium) {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "EntityNPC");
 	if (entity->_type == delirium::ENTITY_DELIRIUM) {
 		Entity_NPC* npc = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
@@ -27,106 +27,106 @@ static int lua_EntityToDelirium(lua_State* L) {
 	return 1;
 }
 
-static int lua_DeliriumGetBossType(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumGetBossType) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *delirium->GetDeliriumBossType());
 	return 1;
 }
 
-static int lua_DeliriumGetBossVariant(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumGetBossVariant) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *delirium->GetDeliriumBossVariant());
 	return 1;
 }
 
-static int lua_DeliriumGetTransformationTimer(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumGetTransformationTimer) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *delirium->GetDeliriumTransformationTimer());
 	return 1;
 }
 
-static int lua_DeliriumGetRemainingAttacks(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumGetRemainingAttacks) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *delirium->GetDeliriumRemainingAttacks());
 	return 1;
 }
 
-static int lua_DeliriumGetAttackID(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumGetAttackID) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *delirium->GetDeliriumAttackID());
 	return 1;
 }
 
-static int lua_DeliriumGetCycle(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumGetCycle) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *delirium->GetDeliriumCycleID());
 	return 1;
 }
 
-static int lua_DeliriumGetState(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumGetState) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *delirium->GetDeliriumState());
 	return 1;
 }
 
-static int lua_DeliriumGetAngle(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumGetAngle) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
 	lua_pushinteger(L, *delirium->GetDeliriumAttackAngle());
 	return 1;
 }
 
-static int lua_DeliriumSetTransformationTimer(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumSetTransformationTimer) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
-	uint16_t timer = luaL_checkinteger(L, 2);
+	uint16_t timer = (uint16_t)luaL_checkinteger(L, 2);
 	*delirium->GetDeliriumTransformationTimer() = timer;
 	return 0;
 }
 
-static int lua_DeliriumSetRemainingAttacks(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumSetRemainingAttacks) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
-	uint8_t remainingAttacks = luaL_checkinteger(L, 2);
+	uint8_t remainingAttacks = (uint8_t)luaL_checkinteger(L, 2);
 	*delirium->GetDeliriumRemainingAttacks() = remainingAttacks;
 	return 0;
 }
 
-static int lua_DeliriumSetAttackID(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumSetAttackID) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
-	uint32_t attackId = luaL_checkinteger(L, 2);
+	uint32_t attackId = (uint32_t)luaL_checkinteger(L, 2);
 	*delirium->GetDeliriumAttackID() = attackId;
 	return 0;
 }
 
-static int lua_DeliriumSetCycle(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumSetCycle) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
-	uint32_t cycle = luaL_checkinteger(L, 2);
+	uint32_t cycle = (uint32_t)luaL_checkinteger(L, 2);
 	*delirium->GetDeliriumCycleID() = cycle;
 	return 0;
 }
 
-static int lua_DeliriumSetState(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumSetState) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
-	uint8_t state = luaL_checkinteger(L, 2);
+	uint8_t state = (uint8_t)luaL_checkinteger(L, 2);
 	*delirium->GetDeliriumState() = state;
 	return 0;
 }
 
-static int lua_DeliriumSetAngle(lua_State* L) {
+LUA_FUNCTION(lua_DeliriumSetAngle) {
 	luaL_checkudata(L, 1, delirium::DeliriumMetatable);
 	Entity_NPC* delirium = lua::UserdataToData<Entity_NPC*>(lua_touserdata(L, 1));
-	uint8_t angle = luaL_checkinteger(L, 2);
+	uint8_t angle = (uint8_t)luaL_checkinteger(L, 2);
 	*delirium->GetDeliriumAttackAngle() = angle;
 	return 0;
 }
@@ -172,11 +172,11 @@ namespace delirium {
 
 	LUA_FUNCTION(Lua_Delirium_Transform) {
 		Entity_NPC* delirium = GetDelirium(L);
-		int type = luaL_checkinteger(L, 2);
+		int type = (int)luaL_checkinteger(L, 2);
 		if (type < 10) { // ENTITY_GAPER
 			return luaL_error(L, "Invalid EntityType %d for Delirium\n", type);
 		}
-		int variant = luaL_optinteger(L, 3, 0);
+		int variant = (int)luaL_optinteger(L, 3, 0);
 		bool callback = lua::luaL_optboolean(L, 4, false);
 
 		delirium::ForcedTransformations[delirium] = std::make_tuple(type, variant, callback);

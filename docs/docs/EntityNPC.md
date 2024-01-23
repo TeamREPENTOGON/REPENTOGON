@@ -9,7 +9,7 @@ tags:
 
 ## Modified Functions
 
-### PlaySound () {: aria-label='Functions' }
+### PlaySound () {: aria-label='Modified Functions' }
 #### void PlaySound ( int ID, float Volume = 1.0, int FrameDelay = 2, boolean Loop = true, float Pitch = 1.0 ) {: .copyable aria-label='Modified Functions' }
 All arguments besides `ID` are now optional.
 

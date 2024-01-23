@@ -542,7 +542,6 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		}
 	}
 
-	console.Draw(menuShown);
 	logViewer.Draw(menuShown);
 	performanceWindow.Draw(menuShown);
 	gameOptionsWindow.Draw(menuShown);
@@ -556,6 +555,10 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 		ImGui::End();
 	}
 
+	// render console very late to make auto-focus work properly
+	console.Draw(menuShown);
+
+	// notifications last, to force them to overlap everything
 	notificationHandler.Draw(menuShown);
 
 	ImGui::Render();

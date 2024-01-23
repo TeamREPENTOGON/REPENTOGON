@@ -1,6 +1,8 @@
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec105657a1????????33c5508d45??64a3????????8bf9897d":
 __thiscall void Game::constructor();
 
+"558bec6aff68????????64a1????????5083ec40a1????????33c58945??535657508d45??64a3????????c745??00000000":
+__thiscall void Game::StartDebug(int levelStage,int stageType,int difficulty,std_string* unk); 
 
 /*
 FuncSignature Signature_GameIsPaused = {
@@ -99,7 +101,7 @@ __thiscall void Game::End(int EndingID);
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt) { {{
 	Game()
 	{
 		this->constructor();
@@ -173,6 +175,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     inline StageTransition* GetStageTransition() { return (StageTransition*)((char*)this + 0x1ba0c); }
 	
 	inline DebugRenderer* GetDebugRenderer() { return (DebugRenderer*)((char*)this + 0x283bf8); }
+	
+	inline GenericPrompt* GetGenericPrompt() { return (GenericPrompt*)((char*)this + 0x1c33fc); }
 
 	inline GameOver* GetGameOver() { return (GameOver*)((char*)this + 0x1d154); }
 	
@@ -229,4 +233,5 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     ProceduralItemManager _proceduralItemManager : 0x283c20; // 0x283c20 
     vector_ErasedEntities _erasedEntities : 0x283c14; 
 	bool  _triggerWindowResize : 0x1c3154;
+	float _lightningIntensity : 0x283c00;
 } : 0x285238;

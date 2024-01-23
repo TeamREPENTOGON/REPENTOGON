@@ -14,6 +14,18 @@
 #include "rapidxml.hpp"
 using namespace std;
 
+/* Modifiers for character stats, allow to override the computation of Eden's stats, 
+ * which we use in order to define stats for modded characters.
+ */
+namespace PlayerStats {
+	extern float modCharacterFireDelay;
+	extern float modCharacterSpeed;
+	extern float modCharacterDamage;
+	extern float modCharacterRange;
+	extern float modCharacterShotSpeed;
+	extern float modCharacterLuck;
+}
+
 //hashing thingy for tuples by whoever fed ChatGPT + some edits from me, lol
 template<>
 struct hash<tuple<int, int, int>> {
@@ -203,6 +215,7 @@ public:
 	XMLNodeIdxLookup stages;
 	XMLNodeIdxLookup backdrops;
 	XMLNodeIdxLookup achievements;
+	XMLChilds achievlistpermod;
 
 	void Clear() {
 		nodes.clear();
@@ -236,6 +249,7 @@ public:
 		stages.clear();
 		backdrops.clear();
 		achievements.clear();
+		achievlistpermod.clear();
 		maxid = 0;
 	
 	}

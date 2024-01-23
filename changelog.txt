@@ -1,7 +1,24 @@
 v1.0.6 -
+Additions:
+* Weapon :
+	- SetModifiers
+* Added Chinese translation text, thanks @502y
+* Added support for the pocketActive param in players.xml(I forgor)
+* Room :
+	- SetLavaIntensity
+/newline/
+Modified:
+* PlayerManager :
+	- FirstCollectibleOwner(CollectibleType Collectible, boolean LazSharedGlobalTag = true)
+	- FirstTrinketOwner(TrinketType Trinket, RNG RNG = nil, boolean LazSharedGlobalTag = true)
+* PRE/POST_PLAYERHUD_RENDER_HEARTS callback now passes EntityPlayer (Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown, EntityPlayer Player)
+/newline/
 Fixes:
 * Fixed relative ids being displayed as actual ids on xmldata tables. 
 * Fix GridEntity:ToFire/ToTNT/ToWall functions
+* Fixed binder for Entity:ComputeStatusEffectDuration
+* Fixed pause menu modded marks rendering over the controller disconected popup
+* Fixed DamageFlag.DAMAGE_RED_HEARTS / .DAMAGE_NO_PENALTIES / .DAMAGE_FAKE not working when adding them via MC_ENTITY_TAKE_DMG's return table.
 /newline/
 /newline/
 v1.0.5a -

@@ -1171,6 +1171,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.AchievementData->byname[achievement["name"]] = id;
 				XMLStuff.AchievementData->nodes[id] = achievement;
 				XMLStuff.ModData->achievements[achievement["sourceid"]] += 1;
+				XMLStuff.ModData->achievlistpermod[achievement["sourceid"]].push_back(achievement);
 			
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -3288,6 +3289,7 @@ char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 			if (strcmp(filename.c_str(), "players.xml") == 0) {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 					did += MultiValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "items");
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.ItemData, "pocketActive");
 				}
 			}else if (strcmp(filename.c_str(), "challenges.xml") == 0) {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
@@ -3354,6 +3356,8 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 		bool iscontentax = iscontent;
 		iscontent = true;
 		XMLStuff.AchievementData->Clear();
+		XMLStuff.ModData->achievements.clear();
+		XMLStuff.ModData->achievlistpermod.clear();
 		char* a = BuildModdedXML(achieveemntsxmlpreload, "achievements.xml", false);//cover up the fact that achieveemnts are loaded before mods...
 		xml_document<char>* xmldoc = new xml_document<char>(); 
 		if (XMLParse(xmldoc, a, "achievements.xml")) {
@@ -3434,6 +3438,8 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<ach", 50)) {
 			XMLStuff.AchievementData->Clear();
+			XMLStuff.ModData->achievements.clear();
+			XMLStuff.ModData->achievlistpermod.clear();
 			if (!achievsloaded) {
 				achievsloaded = true;
 				achieveemntsxmlpreload = new char[strlen(xmldata) + 1];

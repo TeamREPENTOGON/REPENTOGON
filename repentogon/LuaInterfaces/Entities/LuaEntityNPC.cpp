@@ -1,26 +1,8 @@
-#include <vector>
-#include <stdexcept>
-
-#include "ASMPatcher.hpp"
-#include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-
-struct FireProjectilesStorage {
-	std::vector<Entity_Projectile*> projectiles;
-	bool inUse = false;
-};
-
-thread_local FireProjectilesStorage projectilesStorage;
-
-static std::vector<Entity_Projectile*>& InitProjectileStorage() {
-	std::vector<Entity_Projectile*>& projectiles = projectilesStorage.projectiles;
-	projectiles.clear();
-	projectilesStorage.inUse = true;
-	return projectiles;
-}
+#include "../../Patches/ASMPatches/ASMEntityNPC.h"
 
 LUA_FUNCTION(Lua_EntityNPC_UpdateDirtColor)
 {
@@ -359,67 +341,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowStrider", Lua_EntityNPC_ThrowStrider);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowRockSpider", Lua_EntityNPC_ThrowRockSpider);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowLeech", Lua_EntityNPC_ThrowLeech);
-}
-
-void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
-	if (!projectilesStorage.inUse) {
-		return;
-	}
-
-	for (Entity_Projectile* projectile : projectiles) {
-		projectilesStorage.projectiles.push_back(projectile);
-	}
-}
-
-void __stdcall FireBossProjectilesEx_Internal(Entity_Projectile* projectile) {
-	if (!projectilesStorage.inUse) {
-		return;
-	}
-
-	projectilesStorage.projectiles.push_back(projectile);
-}
-
-void PatchFireProjectiles() {
-	const char* signature = "33c92b55b4c1fa02894ddc8955e4";
-	SigScan scanner(signature);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	using Reg = ASMPatch::SavedRegisters::Registers;
-	using GPReg = ASMPatch::Registers;
-
-	ASMPatch patch;
-	ASMPatch::SavedRegisters registers(Reg::EAX | Reg::EBX | Reg::ECX | Reg::EDX | Reg::EDI | Reg::ESI |
-		Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3 | Reg::XMM4 | Reg::XMM5, true);
-	patch.PreserveRegisters(registers);
-	// patch.MoveFromMemory(GPReg::EBP, -0x4C, GPReg::ESI, true);
-	patch.LoadEffectiveAddress(GPReg::EBP, -0x4C, GPReg::ESI);
-	patch.Push(GPReg::ESI);
-	patch.AddInternalCall(FireProjectilesEx_Internal);
-	patch.RestoreRegisters(registers);
-	patch.AddBytes("\x33\xc9\x2b\x55\xb4");
-	patch.AddRelativeJump((char*)addr + 0x5);
-
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-void PatchFireBossProjectiles() {
-	const char* signature = "f30f104424388bf883c414";
-	SigScan scanner(signature);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	using Reg = ASMPatch::SavedRegisters::Registers;
-	using GPReg = ASMPatch::Registers;
-
-	ASMPatch patch;
-	ASMPatch::SavedRegisters registers(Reg::GP_REGISTERS_STACKLESS | Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3, true);
-	patch.PreserveRegisters(registers);
-	patch.Push(GPReg::EAX);
-	patch.AddInternalCall(FireBossProjectilesEx_Internal);
-	patch.RestoreRegisters(registers);
-	patch.AddBytes("\xF3\x0f\x10\x44\x24\x38");
-	patch.AddRelativeJump((char*)addr + 0x6);
-
-	sASMPatcher.PatchAt(addr, &patch);
 }

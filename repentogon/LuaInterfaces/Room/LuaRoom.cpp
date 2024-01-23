@@ -306,6 +306,42 @@ LUA_FUNCTION(Lua_RoomTrySpawnSpecialQuestDoor) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomSetLavaIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->_lavaIntensity = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomGetLightningIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushnumber(L, g_Game->_lightningIntensity);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetLightningIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	g_Game->_lightningIntensity = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomGetRainIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushnumber(L, room->_rainIntensity);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomSetRainIntensity) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->_rainIntensity = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomGetNumRainSpawners) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushinteger(L, room->_numRainSpawners);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -342,6 +378,12 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetGreedWaveTimer", Lua_RoomSetGreedWaveTimer},
 		{ "IsPersistentRoomEntity", Lua_RoomIsPersistentRoomEntity},
 		{ "TrySpawnSpecialQuestDoor", Lua_RoomTrySpawnSpecialQuestDoor},
+		{ "SetLavaIntensity", Lua_RoomSetLavaIntensity},
+		{ "GetLightningIntensity", Lua_RoomGetLightningIntensity},
+		{ "SetLightningIntensity", Lua_RoomSetLightningIntensity},
+		{ "GetRainIntensity", Lua_RoomGetRainIntensity},
+		{ "SetRainIntensity", Lua_RoomSetRainIntensity},
+		{ "GetNumRainSpawners", Lua_RoomGetNumRainSpawners},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);
