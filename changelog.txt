@@ -6,6 +6,10 @@ Additions:
 * Added support for the pocketActive param in players.xml(I forgor)
 * Room :
 	- SetLavaIntensity
+	- [Get/Set]RainIntensity
+	- [Get/Set]LightningIntensity
+	- DoLightningStrike
+	- GetNumRainSpawners
 /newline/
 Modified:
 * PlayerManager :

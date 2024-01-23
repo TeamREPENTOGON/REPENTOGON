@@ -324,6 +324,18 @@ LUA_FUNCTION(Lua_RoomSetLightningIntensity) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RoomDoLightningStrike) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	unsigned int seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
+	RNG rng; // oppa tyrone style
+	rng.game_constructor(seed, 35);
+	float intensity = 1.3f + rng.RandomFloat()*.6f;
+	
+	g_Game->_lightningIntensity = intensity;
+	g_Manager->_sfxManager.Play(472, 1.0, 90, false, 0.9f + rng.RandomFloat() * 0.2f, 0);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_RoomGetRainIntensity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	lua_pushnumber(L, room->_rainIntensity);
@@ -381,6 +393,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetLavaIntensity", Lua_RoomSetLavaIntensity},
 		{ "GetLightningIntensity", Lua_RoomGetLightningIntensity},
 		{ "SetLightningIntensity", Lua_RoomSetLightningIntensity},
+		{ "DoLightningStrike", Lua_RoomDoLightningStrike},
 		{ "GetRainIntensity", Lua_RoomGetRainIntensity},
 		{ "SetRainIntensity", Lua_RoomSetRainIntensity},
 		{ "GetNumRainSpawners", Lua_RoomGetNumRainSpawners},
