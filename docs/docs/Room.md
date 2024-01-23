@@ -63,12 +63,32 @@ ___
 #### int GetGridIndexByTile ( int GridRow, int GridColumn ) {: .copyable aria-label='Functions' }
 
 ___
+### GetLightningIntensity () {: aria-label='Functions' }
+#### float GetLightningIntensity ( ) {: .copyable aria-label='Functions' }
+Gets the intensity of the lightning effect used in Downpour. This variable will affect the visibility of Wraiths.
+
+This is set by the game in a random range between `1.3` and `2.1`, and decays by `value * .75` per render.
+
+___
+### GetNumRainSpawners () {: aria-label='Functions' }
+#### int GetNumRainSpawners ( ) {: .copyable aria-label='Functions' }
+The number of areas in a room that spawn rain effects in a tight radius.
+
+???+ info
+    There's more to this than just the number of them, but I'm having trouble identifying how this works.
+
+___
 ### GetRail () {: aria-label='Functions' }
 #### [StbRailVariant](enums/StbRailVariant.md) GetRail ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRailManager () {: aria-label='Functions' }
 #### [RailManager](RailManager.md) GetRailManager ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRainIntensity () {: aria-label='Functions' }
+#### float GetRainIntensity ( ) {: .copyable aria-label='Functions' }
+Used by the positional rain effect spawners in Downpour. No noticable effect beyond `1.0`.
 
 ___
 ### GetRoomClearDelay () {: aria-label='Functions' }
@@ -127,12 +147,24 @@ ___
 This primarily affects [UpdateColorModifier](Room.md#updatecolormodifier) (if `Process` is true, an orange glow is added based on the number of pits and lava intensity).
 
 ___
+### SetLightningIntensity () {: aria-label='Functions' }
+#### void SetLightningIntensity ( float Intensity ) {: .copyable aria-label='Functions' }
+Sets the intensity of the lightning effect used in Downpour. This variable will affect the visibility of Wraiths.
+
+This is set by the game in a random range between `1.3` and `2.1`, and decays by `value * .75` per render.
+
+___
 ### SetPauseTimer () {: aria-label='Functions' }
 #### void SetPauseTimer ( int Duration ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetRail () {: aria-label='Functions' }
 #### void SetRail ( int GridIndex, [StbRailVariant](enums/StbRailVariant.md) RailVariant ) {: .copyable aria-label='Functions' }
+
+___
+### SetRainIntensity () {: aria-label='Functions' }
+#### void SetRainIntensity ( float Intensity ) {: .copyable aria-label='Functions' }
+Used by the positional rain effect spawners in Downpour. No noticable effect beyond `1.0`.
 
 ___
 ### SetRoomClearDelay () {: aria-label='Functions' }
