@@ -90,7 +90,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 	if (CallbackState.test(callbackid - 1000)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
 		// As pointers so we can modify them :)
-		unsigned __int64* damageFlags = (unsigned __int64*)(ebp + 0x0C);
+		uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
 		float* damage = (float*)(ebp + 0x08);
 		int* damageHearts = isPlayer ? (int*)(ebp - 0x100) : nullptr;
 		EntityRef** source = (EntityRef**)(ebp + 0x14);
@@ -122,7 +122,8 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 				return lua_toboolean(L, -1);
 			}
 			else if (lua_istable(L, -1)) {
-				unsigned __int64 originalDamageFlags = *damageFlags;
+				const uint64_t originalDamageFlags = *damageFlags;
+
 				// New table return format for overriding values.
 				lua_pushnil(L);
 				while (lua_next(L, -2) != 0) {
@@ -141,37 +142,48 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 						else if (key == "DamageFlags" && lua_isinteger(L, -1)) {
 							*damageFlags = lua_tointeger(L, -1);
 						}
-						// Couldn't get this to work. Maybe garbage collection related?
-						/*else if (key == "Source" && lua_isuserdata(L, -1)) {
-							*source = &lua::GetUserdata<EntityRef>(L, -1, lua::Metatables::ENTITY_REF, "EntityRef");
-							void* newSource = lua::CheckUserdata(L, -1, lua::Metatables::ENTITY_REF, "EntityRef");
-							if (newSource != nullptr) {
-								*source = (EntityRef*)newSource;
-							}
-						}*/
 						else if (key == "DamageCountdown" && lua_isnumber(L, -1)) {
 							*damageCountdown = (int)lua_tonumber(L, -1);
 						}
 					}
 					lua_pop(L, 1);
 				}
+				
+				// Retroactively fix the behaviour of certain DamageFlags.
+				// For example, ones that the game normally checks for BEFORE this callback runs.
+				const uint64_t flagsAdded = (*damageFlags) & ~originalDamageFlags;
+				const uint64_t flagsRemoved = originalDamageFlags & ~(*damageFlags);
+				const uint64_t flagsModified = flagsAdded | flagsRemoved;
 
-				if (!isPlayer) {
-					// If certain DamageFlags were added/present, retroactively obey their behaviour.
-					// (Normally these are handled prior to when this callback runs.)
+				if (isPlayer) {
+					// The game previously set a boolean to decide whether or not LevelStateFlag.STATE_REDHEART_DAMAGED
+					// should be set upon taking red heart damage, incurring devil deal penalties, etc.
+					// It's FALSE if either the DAMAGE_RED_HEARTS or DAMAGE_NO_PENALTIES is present, TRUE otherwise.
+					// I retroactively update the boolean again here in case either of these flags are added or removed.
+					// Relevant signature: 81e120000010
+					if ((flagsModified & (1 << 5 | 1 << 28)) != 0) {
+						*(bool*)(ebp - 0x105) = (*damageFlags & (1 << 5 | 1 << 28)) == 0;
+					}
 
-					// Check if DamageFlag.DAMAGE_FIRE was added
-					if ((originalDamageFlags & (1 << 1)) < (*damageFlags & (1 << 1))) {
+					// DamageFlag.DAMAGE_FAKE
+					if ((flagsAdded & (1 << 21)) != 0) {
+						*damageHearts = 0;
+					}
+
+					// DamageFlag.DAMAGE_NO_MODIFIERS affects the damage value before the callback runs, but
+					// IDK if I want to bother trying to fix that retroactively. Just change the damage yourself.
+				}
+				else {
+					// DamageFlag.DAMAGE_FIRE
+					if ((flagsAdded & (1 << 1)) != 0) {
 						if (*entity->GetFireDamageCountdown() > 0) {
 							return false;
 						}
 						*entity->GetFireDamageCountdown() = 10;
 					}
-					// Check if DamageFlag.DAMAGE_COUNTDOWN was added
-					if ((originalDamageFlags & (1 << 6)) < (*damageFlags & (1 << 6))) {
-						if (*entity->GetDamageCountdown() > 0) {
-							return false;
-						}
+					// DamageFlag.DAMAGE_COUNTDOWN
+					if ((flagsAdded & (1 << 6)) != 0 && *entity->GetDamageCountdown() > 0) {
+						return false;
 					}
 					// If the DAMAGE_COUNTDOWN flag is currently present, set the entity's
 					// DamageCountdown to the now potentially-modified value.

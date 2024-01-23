@@ -16,6 +16,7 @@ Fixes:
 * Fix GridEntity:ToFire/ToTNT/ToWall functions
 * Fixed binder for Entity:ComputeStatusEffectDuration
 * Fixed pause menu modded marks rendering over the controller disconected popup
+* Fixed DamageFlag.DAMAGE_RED_HEARTS / .DAMAGE_NO_PENALTIES / .DAMAGE_FAKE not working when adding them via MC_ENTITY_TAKE_DMG's return table.
 /newline/
 /newline/
 v1.0.5a -
