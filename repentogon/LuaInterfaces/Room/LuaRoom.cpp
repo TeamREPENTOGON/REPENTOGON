@@ -314,7 +314,7 @@ LUA_FUNCTION(Lua_RoomSetLavaIntensity) {
 
 LUA_FUNCTION(Lua_RoomGetLightningIntensity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushnumber(g_Game->_lightningIntensity);
+	lua_pushnumber(L, g_Game->_lightningIntensity);
 	return 1;
 }
 
@@ -326,7 +326,7 @@ LUA_FUNCTION(Lua_RoomSetLightningIntensity) {
 
 LUA_FUNCTION(Lua_RoomGetRainIntensity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushnumber(room->_rainIntensity);
+	lua_pushnumber(L, room->_rainIntensity);
 	return 1;
 }
 
@@ -338,7 +338,7 @@ LUA_FUNCTION(Lua_RoomSetRainIntensity) {
 
 LUA_FUNCTION(Lua_RoomGetNumRainSpawners) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_pushinteger(room->_numRainSpawners);
+	lua_pushinteger(L, room->_numRainSpawners);
 	return 1;
 }
 
