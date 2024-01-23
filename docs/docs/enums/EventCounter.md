@@ -24,6 +24,7 @@ tags:
 |16 |DEVIL_DEALS_TAKEN {: .copyable } |  |
 |17 |BLOOD_DONATION_MACHINE_USED {: .copyable } |  |
 |18 |SLOT_MACHINES_BROKEN {: .copyable } |  |
+|19 |UNKNOWN_EVENT_19 {: .copyable } |  |
 |20 |DONATE_MACHINE_COUNTER {: .copyable } |  |
 |20 |DONATION_MACHINE_COUNTER {: .copyable } |  |
 |21 |EDEN_TOKENS {: .copyable } |  |
@@ -405,9 +406,10 @@ tags:
 |397 |GREED_MODE_COINS_DONATED_WITH_T_THE_LOST {: .copyable } |  |
 |398 |GREED_MODE_COINS_DONATED_WITH_T_LILITH {: .copyable } |  |
 |399 |GREED_MODE_COINS_DONATED_WITH_T_KEEPER {: .copyable } |  |
-|400 |GREED_MODE_COINS_DONATED_WITH_T_THE_FORGOTTEN {: .copyable } |  |
-|401 |GREED_MODE_COINS_DONATED_WITH_T_BETHANY {: .copyable } |  |
-|402 |GREED_MODE_COINS_DONATED_WITH_T_JACOB_AND_ESAU {: .copyable } |  |
+|400 |GREED_MODE_COINS_DONATED_WITH_T_APOLLYON {: .copyable } |  |
+|401 |GREED_MODE_COINS_DONATED_WITH_T_THE_FORGOTTEN {: .copyable } |  |
+|402 |GREED_MODE_COINS_DONATED_WITH_T_BETHANY {: .copyable } |  |
+|403 |GREED_MODE_COINS_DONATED_WITH_T_JACOB_AND_ESAU {: .copyable } |  |
 |404 |PROGRESSION_KILL_DELIRIUM_WITH_BETHANY {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |405 |PROGRESSION_KILL_DELIRIUM_WITH_JACOB_AND_ESAU {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
 |406 |PROGRESSION_KILL_DELIRIUM_WITH_T_ISAAC {: .copyable } | (0 for not done. 1 for normal difficulty, 2 for hard) |
