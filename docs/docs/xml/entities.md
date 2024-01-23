@@ -12,7 +12,7 @@ tags:
 |:--|:--|:--|
 | coinvalue | int | How much this coin pickup is worth when using GetCoinValue (either by the game or a lua call). |
 | customtags | string | Space-separated list of strings. See "CustomTags" section below. |
-| nosplit | boolean | Toggles whether this NPC can by split by Meat Cleaver. |
+| nosplit | boolean | Allows preventing this NPC from being split by Meat Cleaver. |
 
 ## CustomTags
 
