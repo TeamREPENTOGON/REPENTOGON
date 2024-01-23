@@ -4,6 +4,10 @@ __thiscall void Entity_Effect::Render(Vector *offset);
 "558bec83e4f856578bfa":
 static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);
 
+
+"558bec83e4f85153568b75??8bd9578bfa":
+static cleanup Entity_Effect* Entity_Effect::CreateLootPreview(LootList* lootlist<ecx>, Vector* pos<edx>, Entity* owner, Entity_Effect* effect);
+
 struct Entity_Effect depends (BitSet128) : public Entity {
     __vtable {
 		skip; // Free

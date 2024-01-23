@@ -36,6 +36,7 @@ extern "C" {
 struct Console_HistoryEntry;
 struct History_HistoryItem;
 struct EntitySaveState;
+struct LootListEntry;
 
 struct EntityId {
     int type;
@@ -95,6 +96,7 @@ struct SmeltedTrinketDesc {
 };
 typedef std::vector<SmeltedTrinketDesc> vector_SmeltedTrinketDesc;
 typedef std::vector<CostumeSpriteDesc> vector_CostumeSpriteDesc;
+typedef std::deque<LootListEntry> deque_LootListEntry;
 
 }}
 

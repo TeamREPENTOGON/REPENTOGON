@@ -1,0 +1,10 @@
+"578bf98b4f??85c974??660f1f44??008d41??8947??8bc885c075??8947??568b77??85f674??8b47??4e8b04??85c074??6a14":
+__thiscall void LootList::destructor();
+
+struct LootList depends (LootListEntry) { {{
+	~LootList() {
+		this->destructor();
+	}
+}}
+	deque_LootListEntry _entries : 0x0;
+} : 0x14;
