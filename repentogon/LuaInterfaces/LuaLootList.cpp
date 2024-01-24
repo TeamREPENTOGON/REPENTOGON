@@ -5,18 +5,17 @@
 LUA_FUNCTION(Lua_PickupGetLootList) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	bool unk = lua::luaL_optboolean(L, 2, false);
-	LootList ret = pickup->GetLootList(unk);
-	LootList** ud = (LootList**)lua_newuserdata(L, sizeof(LootList*));
+	LootList* ud = (LootList*)lua_newuserdata(L, sizeof(LootList));
 
-	*ud = &ret;
+	*ud = pickup->GetLootList(unk);
 	luaL_setmetatable(L, lua::metatables::LootListMT);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_LootListGetEntries)
 {
-	LootList* lootList = *lua::GetUserdata<LootList**>(L, 1, lua::metatables::LootListMT);
-	std::deque<LootListEntry>& entries = lootList->_entries;
+	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	std::deque<LootListEntry>& entries = lootList->_lootentries;
 
 	
 	lua_newtable(L);
@@ -33,8 +32,8 @@ LUA_FUNCTION(Lua_LootListGetEntries)
 }
 
 LUA_FUNCTION(Lua_LootListFirstEntry) {
-	LootList* lootList = *lua::GetUserdata<LootList**>(L, 1, lua::metatables::LootListMT);
-	lua_pushinteger(L, lootList->_entries.size());
+	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	lua_pushinteger(L, lootList->_lootentries.size());
 	return 1;
 }
 

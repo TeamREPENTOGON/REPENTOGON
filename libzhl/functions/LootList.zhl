@@ -8,5 +8,5 @@ struct LootList depends (LootListEntry) { {{
 	}
 	*/
 }}
-	deque_LootListEntry _entries : 0x0;
+	deque_LootListEntry _lootentries : 0x0;
 } : 0x14;
