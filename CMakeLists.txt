@@ -14,7 +14,10 @@ include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua"
     "${CMAKE_SOURCE_DIR}/libs/LuaBridge/Source/LuaBridge" 
     "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" 
     "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 
-    "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini")
+    "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini"
+    "${CMAKE_SOURCE_DIR}/libs/LuaJIT/src"
+    "${CMAKE_SOURCE_DIR}/libs"
+)
 
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
@@ -76,6 +79,42 @@ FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua/*.c)
 list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua/onelua.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
 add_library(Lua5.4 SHARED ${LUA_SRC})
+
+# LuaJIT
+set(LUAJIT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/LuaJIT")
+set(LUAJIT_SOURCE_DIR "${LUAJIT_DIR}/src")
+set(DASM_DIR "${LUAJIT_DIR}/dynasm")
+
+set(LJ_FLAGS "/nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline")
+
+add_executable(minilua "${LUAJIT_SOURCE_DIR}/host/minilua.c")
+target_compile_options(minilua PUBLIC ${LJ_FLAGS})
+
+set(DASM_FLAGS -D WIN -D JIT -D FFI -D ENDIAN_LE -D FPU)
+add_custom_command(OUTPUT "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h" COMMAND minilua ${DASM_DIR}/dynasm.lua ${DASM_FLAGS} -o "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h" "${LUAJIT_SOURCE_DIR}/vm_x86.dasc" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h" minilua)
+
+FILE(GLOB BUILDVM_SRC "${LUAJIT_SOURCE_DIR}/host/buildvm*.c")
+LIST(APPEND BUILDVM_SRC "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h")
+add_executable(buildvm ${BUILDVM_SRC})
+target_compile_options(minilua PUBLIC ${LJ_FLAGS})
+
+FILE(GLOB ALL_LIB "${LUAJIT_SOURCE_DIR}/lib_*.c")
+list(REMOVE_ITEM LUA_SRC "${LUAJIT_SOURCE_DIR}/lib_aux.c" "${LUAJIT_SOURCE_DIR}/lib_init.c")
+
+add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_vm.obj COMMAND buildvm -m peobj -o "${LUAJIT_SOURCE_DIR}/lj_vm.obj" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_bcdef.h COMMAND buildvm -m bcdef -o "${LUAJIT_SOURCE_DIR}/lj_bcdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_ffdef.h COMMAND buildvm -m ffdef -o "${LUAJIT_SOURCE_DIR}/lj_ffdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_libdef.h COMMAND buildvm -m libdef -o "${LUAJIT_SOURCE_DIR}/lj_libdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_recdef.h COMMAND buildvm -m recdef -o "${LUAJIT_SOURCE_DIR}/lj_recdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_vmdef.h COMMAND buildvm -m vmdef -o "${LUAJIT_SOURCE_DIR}/lj_vmdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+# add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_folddef.h COMMAND buildvm -m folddef -o "${LUAJIT_SOURCE_DIR}/lj_folddef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm) # TODO: fix this file not getting generated properly (see https://ptb.discord.com/channels/1069368602156863610/1069368602597273630/1199818009162817659)
+
+set(LJ_GEN ${LUAJIT_SOURCE_DIR}/lj_vm.obj ${LUAJIT_SOURCE_DIR}/lj_bcdef.h ${LUAJIT_SOURCE_DIR}/lj_ffdef.h ${LUAJIT_SOURCE_DIR}/lj_libdef.h ${LUAJIT_SOURCE_DIR}/lj_recdef.h ${LUAJIT_SOURCE_DIR}/lj_vmdef.h ${LUAJIT_SOURCE_DIR}/lj_folddef.h)
+
+FILE(GLOB LUA51_SRC "${LUAJIT_SOURCE_DIR}/lj_*.c" "${LUAJIT_SOURCE_DIR}/lib_*.c")
+LIST(APPEND LUA51_SRC ${LJ_GEN})
+add_library(lua51 SHARED ${LUA51_SRC})
+target_compile_options(lua51 PUBLIC "/MD")
 
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
@@ -214,8 +253,21 @@ target_link_libraries(stbc stb)
 target_link_libraries(zhlREPENTOGON Lua5.4 libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
 target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp)
 
+# luajit testmod
+FILE(GLOB_RECURSE LJMODTEST_SRC ${CMAKE_SOURCE_DIR}/luajit-test/*.*)
+foreach(_source IN ITEMS ${LJMODTEST_SRC})
+    get_filename_component(_source_path "${_source}" PATH)
+    string(REPLACE "${CMAKE_SOURCE_DIR}" "" _group_path "${_source_path}")
+    string(REPLACE "/" "\\" _group_path "${_group_path}")
+    source_group("${_group_path}" FILES "${_source}")
+endforeach()
+add_library(zhlLJModTest SHARED ${LJMODTEST_SRC})
+target_link_libraries(zhlLJModTest libzhl lua51)
+target_compile_options(zhlLJModTest PUBLIC "/MD")
+
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_target_properties(freetype antlr4_shared imgui Lua5.4 stb stbc Zydis Zycore cryptopp libcurl_object libcurl_static curl_uninstall PROPERTIES FOLDER "External Libs")
 set_target_properties(libzhl zhlparser PROPERTIES FOLDER "libzhl")
-set_target_properties(dsound zhlDelirium zhlREPENTOGON PROPERTIES FOLDER "Repentogon")
+set_target_properties(dsound zhlDelirium zhlREPENTOGON zhlLJModTest PROPERTIES FOLDER "Repentogon")
+set_target_properties(minilua buildvm lua51 PROPERTIES FOLDER "luajit")

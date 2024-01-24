@@ -38,3 +38,6 @@
 [submodule "libs/cryptopp-cmake"]
 	path = libs/cryptopp-cmake
 	url = https://github.com/abdes/cryptopp-cmake
+[submodule "libs/LuaJIT"]
+	path = libs/LuaJIT
+	url = git@github.com:TeamREPENTOGON/LuaJIT.git
