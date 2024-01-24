@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.4">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.5">
     
     
       
@@ -3019,6 +3019,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mc_pre_pickup_voided" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_PICKUP_VOIDED
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -5945,6 +5954,15 @@
   <a href="#mc_pre_level_select" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_LEVEL_SELECT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_pre_pickup_voided" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_PICKUP_VOIDED
     </span>
   </a>
   
@@ -12170,6 +12188,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#mc_pre_pickup_voided" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_PICKUP_VOIDED
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -17255,6 +17282,30 @@ The callback accepts two parameters:</p>
 </tr>
 </tbody>
 </table>
+<h3 id="mc_pre_pickup_voided">MC_PRE_PICKUP_VOIDED<a class="headerlink" href="#mc_pre_pickup_voided" title="Permanent link">⚓︎</a></h3>
+<p>This callback is called when a pickup is consumed with the void active or black rune. The <code>IsBlackRune</code> parameter indicates the source.
+If black rune is used, the callback gets fired both for pedestal items and for small pickups that turn into flies.
+Accepts <code>false</code> to cancel the pickup getting consumed.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1265</td>
+<td class="copyable" style="text-align: left;">MC_PRE_PICKUP_VOIDED</td>
+<td style="text-align: left;">(<a href="https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html">EntityPickup</a> Pickup, boolean IsBlackRune)</td>
+<td style="text-align: left;"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html">PickupVariant</a></td>
+<td style="text-align: left;">boolean</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -17323,10 +17374,10 @@ The callback accepts two parameters:</p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "search.share", "navigation.tabs", "navigation.instant", "navigation.top"], "search": "../assets/javascripts/workers/search.c011b7c0.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "rep", "provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["search.suggest", "search.highlight", "search.share", "navigation.tabs", "navigation.instant", "navigation.top"], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "rep", "provider": "mike"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.7389ff0e.min.js"></script>
+      <script src="../assets/javascripts/bundle.c18c5fb9.min.js"></script>
       
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       
