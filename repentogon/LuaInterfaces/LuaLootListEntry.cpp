@@ -3,7 +3,7 @@
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_LootListEntryGetType) {
-	LootListEntry* entry = (LootListEntry*)lua_touserdata(L, 1);
+	LootListEntry* entry = lua::GetUserdata<LootListEntry*>(L, 1, lua::metatables::LootListEntryMT);
 	lua_pushinteger(L, entry->_type);
 	return 1;
 }

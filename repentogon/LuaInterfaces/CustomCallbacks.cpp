@@ -3606,4 +3606,5 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool unk) -> LootList) {
 			//.pushUd<LootList>(lua::metatables::LootListMT)
 			.call(1);
 	}
+	return list;
 }
