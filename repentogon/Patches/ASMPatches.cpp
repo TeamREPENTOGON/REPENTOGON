@@ -78,6 +78,8 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	ASMPatchInputAction();
 	ASMPatchPostNightmareSceneCallback();
+	ASMPatchPreItemVoided();
+	ASMPatchPreItemVoidedBlackRune();
 
 	// Delirium
 	delirium::AddTransformationCallback();

@@ -11,3 +11,5 @@ void ASMPatchPreMMorphActiveCallback();
 void ASMPatchTrySplit();
 void ASMPatchInputAction();
 void ASMPatchPostNightmareSceneCallback();
+void ASMPatchPreItemVoided();
+void ASMPatchPreItemVoidedBlackRune();
