@@ -12,6 +12,10 @@ extern "C" {
         g_Game->GetConsole()->Print(std::string(str), 0xffd3d3d3, 0x96);
     }
 
+    unsigned int L_GetTime() {
+        return timeGetTime();
+    };
+
     unsigned int L_Random(unsigned int max) {
         return Isaac::Random(max);
     }

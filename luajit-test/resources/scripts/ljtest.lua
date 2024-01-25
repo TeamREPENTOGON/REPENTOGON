@@ -6,16 +6,17 @@ struct Vector {
 	float y;
 };
 
-void help();
 void L_Console_Print(const char*);
 void L_Spawn(int, int, unsigned int, void*);
 unsigned int L_Random(unsigned int max);
+unsigned int L_GetTime();
 ]]
 
 local libzhl = ffi.load("libzhl")
 
 function getName()
 	libzhl.L_Console_Print("hello from FFI!\n")
+	print(libzhl.L_GetTime())
 	return "Hello from luajit again!"
 end
 

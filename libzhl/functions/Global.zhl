@@ -20,7 +20,7 @@
 #include <cstdint>
 #include <bitset>
 #include <rttidata.h>
-#include <lua.hpp>
+#include <LuaJIT/src/lua.hpp>
 #undef LoadImage
 
 using namespace rapidxml;
@@ -29,9 +29,9 @@ using namespace rapidxml;
         #define M_PI 3.14159265358979323846
 #endif
 
-extern "C" {
-    #include "lstate.h"
-}
+// extern "C" {
+//     #include "lstate.h"
+// }
 
 struct Console_HistoryEntry;
 struct History_HistoryItem;
