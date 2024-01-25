@@ -175,12 +175,14 @@ LUA_FUNCTION(Lua_PickupRemoveCollectibleCycle) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_PickupIsChest) {
+/*LUA_FUNCTION(Lua_PickupIsChest) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	unsigned int variant = (unsigned int)luaL_optinteger(L, 2, pickup->_variant);
 	lua_pushboolean(L, pickup->IsChest(variant));
 	return 1;
 }
+*/
+
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -209,6 +211,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetCollectibleCycle", Lua_PickupGetCollectibleCycle },
 		{ "RemoveCollectibleCycle", Lua_PickupRemoveCollectibleCycle },
 		{ "IsChest", Lua_PickupIsChest },
+		//{ "IsChest", Lua_PickupIsChest },
 		{ NULL, NULL }
 	};
 
