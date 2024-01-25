@@ -108,7 +108,7 @@ add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_recdef.h COMMAND buildvm -m re
 add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_vmdef.h COMMAND buildvm -m vmdef -o "${LUAJIT_SOURCE_DIR}/lj_vmdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
 # add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_folddef.h COMMAND buildvm -m folddef -o "${LUAJIT_SOURCE_DIR}/lj_folddef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm) # TODO: fix this file not getting generated properly (see https://ptb.discord.com/channels/1069368602156863610/1069368602597273630/1199818009162817659)
 
-set(LJ_GEN ${LUAJIT_SOURCE_DIR}/lj_vm.obj ${LUAJIT_SOURCE_DIR}/lj_bcdef.h ${LUAJIT_SOURCE_DIR}/lj_ffdef.h ${LUAJIT_SOURCE_DIR}/lj_libdef.h ${LUAJIT_SOURCE_DIR}/lj_recdef.h ${LUAJIT_SOURCE_DIR}/lj_vmdef.h ${LUAJIT_SOURCE_DIR}/lj_folddef.h)
+set(LJ_GEN ${LUAJIT_SOURCE_DIR}/lj_vm.obj ${LUAJIT_SOURCE_DIR}/lj_bcdef.h ${LUAJIT_SOURCE_DIR}/lj_ffdef.h ${LUAJIT_SOURCE_DIR}/lj_libdef.h ${LUAJIT_SOURCE_DIR}/lj_recdef.h ${LUAJIT_SOURCE_DIR}/lj_vmdef.h)
 
 FILE(GLOB LUA51_SRC "${LUAJIT_SOURCE_DIR}/lj_*.c" "${LUAJIT_SOURCE_DIR}/lib_*.c")
 LIST(APPEND LUA51_SRC ${LJ_GEN})
