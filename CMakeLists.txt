@@ -15,7 +15,6 @@ include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua"
     "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" 
     "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 
     "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini"
-    "${CMAKE_SOURCE_DIR}/libs/LuaJIT/src"
     "${CMAKE_SOURCE_DIR}/libs"
 )
 
@@ -251,7 +250,7 @@ add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
 target_link_libraries(zhlREPENTOGON Lua5.4 libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
-target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp)
+target_link_libraries(libzhl lua51 "Zydis" dbghelp)
 
 # luajit testmod
 FILE(GLOB_RECURSE LJMODTEST_SRC ${CMAKE_SOURCE_DIR}/luajit-test/*.*)

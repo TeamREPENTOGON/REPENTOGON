@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lua.hpp>
+#include <LuaJIT/src/lua.hpp>
 
 #include "libzhl.h"
 #include "ByteBuffer.h"
