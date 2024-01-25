@@ -210,7 +210,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetAlternatePedestal", Lua_PickupGetAlternatePedestal },
 		{ "GetCollectibleCycle", Lua_PickupGetCollectibleCycle },
 		{ "RemoveCollectibleCycle", Lua_PickupRemoveCollectibleCycle },
-		{ "IsChest", Lua_PickupIsChest },
 		//{ "IsChest", Lua_PickupIsChest },
 		{ NULL, NULL }
 	};
