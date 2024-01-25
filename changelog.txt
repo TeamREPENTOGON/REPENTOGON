@@ -6,6 +6,12 @@ Additions:
 * Added support for the pocketActive param in players.xml(I forgor)
 * Room :
 	- SetLavaIntensity
+	- [Get/Set]RainIntensity
+	- [Get/Set]LightningIntensity
+	- DoLightningStrike
+	- GetNumRainSpawners
+* Added MC_PRE_PICKUP_VOIDED(EntityPickup Pickup, boolean IsBlackRune) callback, returning false cancels the pickup getting consumed.
+* Added MC_PRE_PICKUP_VOIDED_ABYSS(EntityPickup Pickup) callback, returning false cancels the pickup getting consumed.
 /newline/
 Modified:
 * PlayerManager :
