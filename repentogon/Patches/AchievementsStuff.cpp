@@ -258,7 +258,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 }
 
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
-	if (in.rfind("lj ", 0) == 0) {
+	if (in.rfind("lockachievement", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
 		int id = toint(cmdlets[1]);
 		if (id == 0) {
@@ -269,6 +269,21 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 		}
 		else {
 			g_Game->GetConsole()->PrintError("Achievement already locked.");
+		}
+	}
+	if (in.rfind("achievement", 0) == 0) {
+		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
+		if (cmdlets.size() < 2) { g_Game->GetConsole()->PrintError("No achievement Id Provided. \n"); super(in, out, player); return; }
+		int id = toint(cmdlets[1]);
+		PersistentGameData* ps = g_Manager->GetPersistentGameData();
+		if (id == 0) {
+			g_Game->GetConsole()->PrintError("No achievement Id Provided. \n");
+		}
+		else if (ps->TryUnlock(id)) {
+			g_Game->GetConsole()->Print("Unlocked achievement. \n", Console::Color::WHITE, 0x96U);
+		}
+		else {
+			g_Game->GetConsole()->PrintError("Achievement already unlocked. \n");
 		}
 	}
 	super(in, out, player);
