@@ -86,7 +86,7 @@ void PatchPreLaserCollision() {
 * We need to patch into both Entity::TakeDamage AND EntityPlayer::TakeDamage.
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
-	int callbackid = 1007;
+	const int callbackid = 1007;
 	if (CallbackState.test(callbackid - 1000)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
 		// As pointers so we can modify them :)
@@ -248,7 +248,7 @@ void PatchPreEntityTakeDamageCallbacks() {
 */
 
 void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
-	int callbackid = 1006;
+	const int callbackid = 1006;
 	if (CallbackState.test(callbackid - 1000)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
 		unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
@@ -326,7 +326,7 @@ void PatchPostEntityTakeDamageCallbacks() {
 
 // MC_PRE_PLAYER_USE_BOMB
 bool __stdcall ProcessPrePlayerUseBombCallback(Entity_Player* player) {
-	int callbackid = 1220;
+	const int callbackid = 1220;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -364,7 +364,7 @@ void ASMPatchPrePlayerUseBomb() {
 
 // MC_POST_PLAYER_USE_BOMB
 void __stdcall ProcessPostPlayerUseBombCallback(Entity_Player* player, Entity_Bomb* bomb) {
-	int callbackid = 1221;
+	const int callbackid = 1221;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -396,7 +396,7 @@ void ASMPatchPostPlayerUseBomb() {
 
 // MC_PRE_M_MORPH_ACTIVE
 int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleId) {
-	int callbackId = 1190;
+	const int callbackId = 1190;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -453,7 +453,7 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 	resSplit = result;
 
 	if (npc != nullptr) {
-		int callbackid = 1191;
+		const int callbackid = 1191;
 
 		if (CallbackState.test(callbackid - 1000)) {
 			lua_State* L = g_LuaEngine->_state;

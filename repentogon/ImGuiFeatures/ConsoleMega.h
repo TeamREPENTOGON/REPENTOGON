@@ -1057,7 +1057,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
                             extern std::bitset<500> CallbackState;
 
-                            int callbackId = 1120;
+                            const int callbackId = 1120;
                             if (CallbackState.test(callbackId - 1000)) {
                                 lua_State* L = g_LuaEngine->_state;
                                 lua::LuaStackProtector protector(L);

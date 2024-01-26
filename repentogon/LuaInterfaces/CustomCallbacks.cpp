@@ -3457,7 +3457,7 @@ HOOK_METHOD(Room, IsPersistentRoomEntity, (int type, int variant, int subtype) -
 
 
 HOOK_METHOD(LuaCallbackCaller, CallInputAction, (LuaEngine* engine, Entity* entity, int hook, int action) -> LuaCallbackCallerResult) {
-	int repentogonCallbackId = 1464;
+	const int repentogonCallbackId = 1464;
 	if (!Isaac::IsInGame()) {
 		callbackId = repentogonCallbackId;
 	}
@@ -3498,7 +3498,7 @@ HOOK_METHOD_PRIORITY(Manager, SetSaveSlot,-9999, (unsigned int slot) -> void) {
 
 //MC_POST_PRE_CHALLENGE_DONE (1471-1472)
 HOOK_METHOD_PRIORITY(PersistentGameData, AddChallenge, -9999, (int challengeid) -> void) {
-	int callbackid1 = 1471;
+	const int callbackid1 = 1471;
 	if (CallbackState.test(callbackid1 - 1000)) {
 
 		lua_State* L = g_LuaEngine->_state;
@@ -3526,15 +3526,15 @@ HOOK_METHOD_PRIORITY(PersistentGameData, AddChallenge, -9999, (int challengeid) 
 
 	super(challengeid);
 
-	callbackid1 = 1472;
+	const int callbackid2 = 1472;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid2 - 1000)) {
 
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid2)
 			.push(challengeid)
 			.push(challengeid)
 			.call(1);
