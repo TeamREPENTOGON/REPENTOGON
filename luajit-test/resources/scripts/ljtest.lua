@@ -7,12 +7,24 @@ struct Vector {
 };
 
 void L_Console_Print(const char*);
-void L_Spawn(int, int, unsigned int, void*);
-unsigned int L_Random(unsigned int max);
 unsigned int L_GetTime();
+void L_Game_ClearDonationModGreed();
+unsigned int L_Random(unsigned int max);
+void L_Spawn(int, int, unsigned int, void*);
 ]]
 
-local libzhl = ffi.load("libzhl")
+libzhl = ffi.load("libzhl")
+
+print = function(...)
+	str = ""
+
+	for i,v in ipairs({ ... }) do
+       str = str .. tostring(v) .. " "
+    end
+    str = str .. "\n"
+
+	libzhl.L_Console_Print(str)
+end
 
 function getName()
 	libzhl.L_Console_Print("hello from FFI!\n")

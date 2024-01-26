@@ -9,7 +9,11 @@ extern "C" {
     }
 
     void L_Console_Print(const char* str) {
-        g_Game->GetConsole()->Print(std::string(str), 0xffd3d3d3, 0x96);
+        g_Game->GetConsole()->Print(std::string(str), Console::Color::WHITE, 0x96U);
+    }
+
+    void L_Game_ClearDonationModGreed() {
+        g_Game->ClearDonationModGreed();
     }
 
     unsigned int L_GetTime() {

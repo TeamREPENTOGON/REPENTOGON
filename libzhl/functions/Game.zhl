@@ -98,6 +98,9 @@ __thiscall bool Game::IsGreedMode();
 "558bec8b45??538b1d":
 __thiscall void Game::End(int EndingID);
 
+"c7818c311c0000000000c3ccccccccccc78190311c0000000000c3cccccccccca1????????8a8047362400c3":
+__thiscall void Game::ClearDonationModGreed();
+
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
