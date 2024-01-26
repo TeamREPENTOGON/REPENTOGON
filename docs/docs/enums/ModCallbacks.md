@@ -148,13 +148,6 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1006 |MC_POST_ENTITY_TAKE_DMG {: .copyable } | ([Entity](../Entity.md) Entity, float Damage, [DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, [EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, int DamageCountdown) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
 
-### MC_GRID_ROCK_UPDATE {: .copyable }
-Accepts no return parameters.
-
-|ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|
-|1010 |MC_GRID_ROCK_UPDATE {: .copyable } | ([GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, [GridEntityRock](https://wofsauge.github.io/IsaacDocs/rep/GridEntityRock.html) Rock) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | void |
-
 ### MC_POST_GRID_ROCK_DESTROY {: .copyable }
 Accepts no return parameters.
 
@@ -1083,16 +1076,6 @@ Alternatively accepts `false` to stop the rendering.
 |:--|:--|:--|:--|:--|
 |1092 |MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM {: .copyable } | int ModCount, [EntityPlayer](../EntityPlayer.md) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems) | - | int |
 
-### MC_PRE_PLAYER_HAS_COLLECTIBLE
-
-Return a boolean to indicate whether a player should be counted as having an item or not.
-???+ bug
-    This callback doesn't work right now since it cause massive lag issues!
-
-|ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|
-|1093 |MC_PRE_PLAYER_HAS_COLLECTIBLE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type, boolean OnlyCountTrueItems) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | boolean |
-
 ### MC_PRE_MUSIC_PLAY_JINGLE
 Accepts a [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) to change the track
 
@@ -1871,3 +1854,70 @@ Accepts `false` to cancel the pickup getting consumed.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1266 |MC_PRE_PICKUP_VOIDED_ABYSS {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+
+### MC_PRE_BACKDROP_RENDER_WALLS
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1106 | MC_PRE_BACKDROP_RENDER_WALLS {: .copyable } | ([ColorModifier](../ColorModifier.md) ColorModifier) | - | void |
+
+### MC_PRE_BACKDROP_RENDER_FLOOR
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1107 | MC_PRE_BACKDROP_RENDER_FLOOR {: .copyable } | ([ColorModifier](../ColorModifier.md) ColorModifier) | - | void |
+
+### MC_PRE_BACKDROP_RENDER_WATER
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1108 | MC_PRE_BACKDROP_RENDER_WATER {: .copyable } | - | - | void |
+
+### MC_POST_BACKDROP_PRE_RENDER_WALLS
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1109 | MC_POST_BACKDROP_PRE_RENDER_WALLS {: .copyable } | - | - | void |
+
+### MC_POST_TAKE_DMG
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1006 | MC_POST_TAKE_DMG {: .copyable } | (Entity [[Entity](../Entity.md)],<br>Amount [float],<br>[DamageFlags](DamageFlag.md) [int],<br>Source [[EntityRef](../EntityRef.md)],<br>CountdownFrames [int]) | [EntityType](EntityType.md) | void |
+
+### MC_PRE_RENDER
+Gets called right before the Manager::Render() function gets called.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1135 | MC_PRE_RENDER {: .copyable } | - | - | void |
+
+### MC_PRE_OPENGL_RENDER
+Gets called right before the Manager::Render() function gets called.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1136 | MC_PRE_OPENGL_RENDER {: .copyable } | (VertexBuffer, int shaderId, RenderContext) | - | ? |
+
+### MC_MENU_INPUT_ACTION
+Same as MC_INPUT_ACTION, but only works in the main menu.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1464 | MC_MENU_INPUT_ACTION {: .copyable } | ([Entity](../Entity.md),<br>[InputHook](InputHook.md),<br>[ButtonAction](ButtonAction.md))|[InputHook](InputHook.md) | boolean or float |
+
+### MC_PRE_CHALLENGE_DONE
+Executed before a challenge is marked as completed.
+
+Returning `false` will prevent further execution of the challenge completion-tracking function.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1471 | MC_PRE_CHALLENGE_DONE {: .copyable } | (challengeid [int], EntityPlayer [[EntityPlayer](../EntityPlayer.md)]) | challengeid [int] | boolean |
+
+### MC_POST_CHALLENGE_DONE
+Executed after a challenge is marked as completed.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1472 | MC_POST_CHALLENGE_DONE {: .copyable } | (challengeid [int]) | challengeid [int] | void |
