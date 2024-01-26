@@ -176,12 +176,12 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1020 |MC_HUD_UPDATE {: .copyable } | - | - | void |
 
-### MC_HUD_POST_UPDATE {: .copyable }
+### MC_POST_HUD_UPDATE {: .copyable }
 Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1021 |MC_HUD_POST_UPDATE {: .copyable } | - | - | void |
+|1021 |MC_POST_HUD_UPDATE {: .copyable } | - | - | void |
 
 ### MC_HUD_RENDER {: .copyable }
 Accepts no return parameters.
