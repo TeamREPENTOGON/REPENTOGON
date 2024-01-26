@@ -1879,12 +1879,6 @@ Accepts `false` to cancel the pickup getting consumed.
 |:--|:--|:--|:--|:--|
 |1109 | MC_POST_BACKDROP_PRE_RENDER_WALLS {: .copyable } | - | - | void |
 
-### MC_POST_TAKE_DMG
-
-|ID|Name|Function Args|Optional Args|Return Type|
-|:--|:--|:--|:--|:--|
-|1006 | MC_POST_TAKE_DMG {: .copyable } | (Entity [[Entity](../Entity.md)],<br>Amount [float],<br>[DamageFlags](DamageFlag.md) [int],<br>Source [[EntityRef](../EntityRef.md)],<br>CountdownFrames [int]) | [EntityType](EntityType.md) | void |
-
 ### MC_PRE_RENDER
 Gets called right before the Manager::Render() function gets called.
 
