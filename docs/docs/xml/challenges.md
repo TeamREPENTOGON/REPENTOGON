@@ -6,7 +6,7 @@ tags:
 
 **Resource-Folder**{: .xmlInfo .red}: Using this file in a resource folder of a mod will replace the original file.
 
-**Content-Folder**{: .xmlInfo .green }: Using this file in a content folder will add new characters.
+**Content-Folder**{: .xmlInfo .green }: Using this file in a content folder will add new challenges.
 
 With REPENTOGON, some attributes have specially mod support capatibilites added to them, see below:
 

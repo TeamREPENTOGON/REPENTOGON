@@ -49,14 +49,14 @@ ___
 Kills all projectiles and, if `IgnoreNPCs` is false, all non-friendly NPCs capable of keeping doors closed. 
 
 ___
-### ClearCompletionMarks () {: aria-label='Functions' }
-#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
-Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
-
-___
 ### ClearChallenge () {: aria-label='Functions' }
 #### void ClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
 Sets the challenge of the corresponding challengeid to completed. Should work with both custom and vanilla challenges. 
+
+___
+### ClearCompletionMarks () {: aria-label='Functions' }
+#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
+Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
 
 ___
 ### CreateTimer () {: aria-label='Functions' }
@@ -181,7 +181,7 @@ Returns the translation string associated with the given key in the given catego
 
 ___
 ### GetModChallengeClearCount () {: aria-label='Functions' }
-#### int GetModChallengeClearCount (int challengeid) {: .copyable aria-label='Functions' }
+#### int GetModChallengeClearCount ( int challengeid ) {: .copyable aria-label='Functions' }
 Returns the number of times a custom challenge was cleared. It resets if its ever set as not Done.
 ___
 ### GetNullItemIdByName () {: aria-label='Functions' }
@@ -201,24 +201,24 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
 
 ___
+### IsChallengeDone () {: aria-label='Functions' }
+#### boolean IsChallengeDone ( int challengeid ) {: .copyable aria-label='Functions' }
+Returns `true` if the challenge of the corresponding challengeid is completed.
+
+___
 ### IsInGame () {: aria-label='Functions' }
 #### boolean IsInGame ( ) {: .copyable aria-label='Functions' }
 Returns `true` if `Game` is non-nil and the current state is correct.
 
 ___
-### IsChallengeDone () {: aria-label='Functions' }
-#### boolean IsChallengeDone (int challengeid ) {: .copyable aria-label='Functions' }
-Returns `true` if the challenge of the corresponding challengeid is completed.
-
-___
-### MarkChallengeAsNotDone () {: aria-label='Functions' }
-#### void MarkChallengeAsNotDone (int challengeid ) {: .copyable aria-label='Functions' }
-Sets the challenge as not done.
-
-___
 ### LevelGeneratorEntry () {: aria-label='Functions' }
 #### [LevelGeneratorEntry](LevelGeneratorEntry.md) LevelGeneratorEntry ( ) {: .copyable aria-label='Functions' }
 Creates a new blank [LevelGeneratorEntry](LevelGeneratorEntry.md) object.
+
+___
+### MarkChallengeAsNotDone () {: aria-label='Functions' }
+#### void MarkChallengeAsNotDone ( int challengeid ) {: .copyable aria-label='Functions' }
+Sets the challenge as not done.
 
 ___
 ### PlayCutscene () {: aria-label='Functions' }
@@ -267,11 +267,11 @@ ___
 #### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
 ___
-### WorldToMenuPosition () {: aria-label='Functions' }
-#### [Vector](Vector.md) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
-Converts the World position from input to a pinned main menu position that varies depending on the enum selected. It's important to reconvert this every frame, in a similar fashion to WorldToRender, in order to properly render when menus are changed or the window is resized.
-___
 ### TriggerWindowResize () {: aria-label='Functions' }
 #### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }
 Simulates a window resize, useful to refresh some option changes like `maxrender`.
+___
+### WorldToMenuPosition () {: aria-label='Functions' }
+#### [Vector](Vector.md) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
+Converts the World position from input to a pinned main menu position that varies depending on the enum selected. It's important to reconvert this every frame, in a similar fashion to WorldToRender, in order to properly render when menus are changed or the window is resized.
 ___

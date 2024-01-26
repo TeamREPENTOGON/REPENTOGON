@@ -480,6 +480,9 @@ LUA_FUNCTION(Lua_IsInGame) {
 
 LUA_FUNCTION(Lua_IsChallengeDone) {
 	int challengeid = (int)luaL_checkinteger(L, 1);
+	if (challengeid < 1) {
+		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
+	}
 	if (challengeid <= 45) {
 		lua_pushboolean(L, g_Manager->GetPersistentGameData()->challenges[challengeid]);
 	}
@@ -499,6 +502,9 @@ LUA_FUNCTION(Lua_UnDoChallenge) {
 
 LUA_FUNCTION(Lua_ClearChallenge) {
 	int challengeid = (int)luaL_checkinteger(L, 1);
+	if (challengeid < 1) {
+		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
+	}
 	g_Manager->GetPersistentGameData()->AddChallenge(challengeid);
 	if (challengeid <= 45) {
 		g_Manager->GetPersistentGameData()->Save(); //if the challenges are already unlocked for the challenge then it wont fucking save otherwise!

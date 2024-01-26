@@ -12,5 +12,7 @@ struct AchievementOverlay depends (ANM2) { {{
 } : 0x82d0;
 
 struct AchievementOverlay_Entry {
-
+	uint32_t id: 0x0;
+	std_string name : 0x4;
+	std_string gfx : 0x1c;
 } : 0x34;

@@ -4,6 +4,8 @@ tags:
 ---
 # Class "ColorModifier"
 
+An example mod using the ColorModifier class can be found [here.](./examples/ColorModifiers.md)
+
 ???+ info
     This class can be accessed by using its constructor:
     ???+ example "Example Code"

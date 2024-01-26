@@ -123,7 +123,14 @@ LUA_FUNCTION(Lua_WeaponGetWeaponType) {
 
 LUA_FUNCTION(Lua_WeaponGetModifiers) {
 	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
-	lua_pushinteger(L, weapon->GetModifiers());
+	lua_pushinteger(L, *weapon->GetModifiers());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_WeaponSetModifiers) {
+	Weapon* weapon = WeaponData::GetWeaponFromLua(L, 1);
+	const unsigned int modifiers = (unsigned int)luaL_checkinteger(L, 2);
+	*weapon->GetModifiers() |= modifiers;
 	return 1;
 }
 
@@ -187,6 +194,7 @@ static void RegisterWeapon(lua_State* L) {
 		{ "GetDirection", Lua_WeaponGetDirection },
 		{ "GetWeaponType", Lua_WeaponGetWeaponType },
 		{ "GetModifiers", Lua_WeaponGetModifiers },
+		{ "SetModifiers", Lua_WeaponSetModifiers },
 		{ "GetNumFired", Lua_WeaponGetNumFired },
 		{ "PlayItemAnim", Lua_WeaponPlayItemAnim },
 		{ "IsAxisAligned", Lua_WeaponIsAxisAligned },

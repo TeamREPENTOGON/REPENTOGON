@@ -11,7 +11,15 @@ tags:
         local fiveSecondRedColor = ColorParams(Color(1,0,0,1),255,150,false,false)
         ```
 
+## Constructors
+
+### ColorParams () {: aria-label='Constructors' }
+#### [ColorParams](ColorParams.md) ColorParams ( [Color](Color.md) color, int priority, int duration1, int duration2, boolean fadeout, boolean shared ) {: .copyable aria-label='Constructors' }
+
+___
+
 ## Functions
+
 ### GetColor () {: aria-label='Functions' }
 #### [Color](Color.md) GetColor ( ) {: .copyable aria-label='Functions' }
 
@@ -59,6 +67,6 @@ ___
 
 ___
 ### SetShared () {: aria-label='Functions' }
-#### void SetFadeout ( boolean Value ) {: .copyable aria-label='Functions' }
+#### void SetShared ( boolean Value ) {: .copyable aria-label='Functions' }
 
 ___

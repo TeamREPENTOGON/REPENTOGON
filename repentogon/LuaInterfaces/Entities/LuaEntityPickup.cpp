@@ -127,6 +127,7 @@ LUA_FUNCTION(Lua_PickupAddCycleCollectible) {
 	if (pickup->_cycleCollectibleCount < 8) {
 		pickup->_cycleCollectibleList[pickup->_cycleCollectibleCount] = id;
 		pickup->_cycleCollectibleCount += 1;
+		res = true;
 	}
 
 	lua_pushboolean(L, res);

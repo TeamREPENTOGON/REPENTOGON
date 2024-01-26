@@ -1,3 +1,6 @@
+"558bec83ec2c53568bf157":
+__thiscall void GenericPrompt::Render();
+
 struct GenericPrompt {
 
 } : 0x80218;

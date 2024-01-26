@@ -76,3 +76,7 @@ ___
 #### void SetHeadLockTime ( int Time ) {: .copyable aria-label='Functions' }
 
 ___
+### SetModifiers () {: aria-label='Functions' }
+#### void SetModifiers ( int modifiers ) {: .copyable aria-label='Functions' }
+
+___
