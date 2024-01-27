@@ -159,6 +159,34 @@ public:
 		return this->GetNodeById(iter->second);
 	}
 
+	XMLChilds GetChildsById(int name) {
+		auto iter = this->childs.find(name);
+		if (iter == this->childs.end()) { return XMLChilds(); }
+		return iter->second;
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByName(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byname[name]];
+		}
+		else {Childs = XMLChilds();}
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsById(int name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeById(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[name];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
 	void ProcessChilds(xml_node<char>* parentnode, int id) {
 		ProcessChilds(parentnode, id, "");
 	}
@@ -447,6 +475,35 @@ public:
 		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
 		return this->GetNodeById(iter->second);
 	}
+
+	XMLChilds GetChildsById(const tuple<int, int, int>& name) {
+		auto iter = this->childs.find(name);
+		if (iter == this->childs.end()) { return XMLChilds(); }
+		return iter->second;
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByName(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byname[name]];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsById(const tuple<int, int, int>& name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeById(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[name];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
 	//XMLAttributes GetNodesByMod(const string &name) { //not set up for now (unused anyway)
 		//auto iter = this->bymod.find(name);
 		//if (iter == this->bymod.end()) { return XMLAttributes(); }
@@ -663,6 +720,7 @@ inline void initxmlfullmergelist() {
 
 }
 
+extern XMLDataHolder* xmlnodetypetodata[31];
 extern XMLData XMLStuff;
 
 #endif

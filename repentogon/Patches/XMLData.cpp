@@ -48,6 +48,40 @@ unordered_map<string, int> xmlmaxnode;
 unordered_map<string, int> xmlfullmerge;
 XMLData XMLStuff;
 
+XMLDataHolder* xmlnodetypetodata[31] = {
+	XMLStuff.ModData,             // 0
+	NULL,//XMLStuff.EntityData,          // 1
+	XMLStuff.PlayerData,          // 2
+	XMLStuff.ItemData,            // 3
+	XMLStuff.TrinketData,         // 4
+	XMLStuff.PillData,            // 5
+	XMLStuff.CardData,            // 6
+	XMLStuff.MusicData,           // 7
+	XMLStuff.SoundData,           // 8
+	XMLStuff.ChallengeData,       // 9
+	XMLStuff.PoolData,            // 10
+	XMLStuff.NightmareData,       // 11
+	XMLStuff.CostumeData,         // 12
+	XMLStuff.NullCostumeData,     // 13
+	XMLStuff.WispData,            // 14
+	XMLStuff.WispColorData,       // 15
+	XMLStuff.CurseData,           // 16
+	XMLStuff.LocustData,          // 17
+	XMLStuff.LocustColorData,     // 18
+	XMLStuff.BombCostumeData,     // 19
+	XMLStuff.RecipeData,          // 20
+	XMLStuff.BossPoolData,        // 21
+	XMLStuff.BossPortraitData,    // 22
+	XMLStuff.CutsceneData,        // 23
+	XMLStuff.StageData,           // 24
+	XMLStuff.BackdropData,        // 25
+	XMLStuff.AchievementData,     // 26
+	XMLStuff.GiantBookData,       // 27
+	XMLStuff.BossRushData,        // 28
+	XMLStuff.PlayerFormData,      // 29
+	XMLStuff.NullItemData         // 30
+};
+
 
 void ClearXMLData() {
 	XMLStuff.PlayerData->Clear();
@@ -2293,13 +2327,17 @@ LUA_FUNCTION(Lua_FromTypeVarSub)
 	int esub = (int)luaL_optnumber(L, 3, 0);
 	bool strict = lua::luaL_optboolean(L,4, false);
 	XMLAttributes Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict);
+	XMLChilds Childs;
 	tuple idx = { toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) };
 	if (Node.empty() || (Node["type"].length() == 0)) {
 		lua_pushnil(L);
 		return 0;
 	}
 	else{
-	Lua_PushXMLNode(L, Node, XMLStuff.EntityData->childs[idx]);
+		if (Node.end() != Node.begin()) {
+			Childs = XMLStuff.EntityData->childs[idx];
+		}
+	Lua_PushXMLNode(L, Node, Childs);
 	return 1;
 	}
 }
@@ -2322,35 +2360,56 @@ LUA_FUNCTION(Lua_GetFromEntity)
 	switch (etype) {
 		case 1:
 			Node = XMLStuff.PlayerData->GetNodeById(esub);
-			Childs = XMLStuff.PlayerData->childs[esub];
+			if (Node.end() != Node.begin()) {
+				Childs = XMLStuff.PlayerData->childs[esub];
+			}
+			else { Childs = XMLChilds(); }
 			break;
 		case 5:
 			if ((evar == 100) && (esub > 0)) {
 				Node = XMLStuff.ItemData->GetNodeById(esub);
-				Childs = XMLStuff.ItemData->childs[esub];
+				if (Node.end() != Node.begin()) {
+					Childs = XMLStuff.ItemData->childs[esub];
+				}
+				else { Childs = XMLChilds(); }
 			}
 			else if ((evar == 300) && (esub > 0)) {
 				Node = XMLStuff.CardData->GetNodeById(esub);
-				Childs = XMLStuff.CardData->childs[esub];
+				if (Node.end() != Node.begin()) {
+					Childs = XMLStuff.CardData->childs[esub];
+				}
+				else { Childs = XMLChilds(); }
 			}
 			else if ((evar == 350) && (esub > 0)) { 
 				Node = XMLStuff.TrinketData->GetNodeById(esub);
-				Childs = XMLStuff.TrinketData->childs[esub];
+				if (Node.end() != Node.begin()) {
+					Childs = XMLStuff.TrinketData->childs[esub];
+				}
+				else { Childs = XMLChilds(); }
 			}
 			else{ 
-				Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict); 
-				Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
+				Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict);
+				if (Node.end() != Node.begin()) {
+					Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
+				}
+				else { Childs = XMLChilds(); }
 			}
 			break;
 		default:
 			Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict); 
-			Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
+			if (Node.end() != Node.begin()) {
+				Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
+			}
+			else { Childs = XMLChilds(); }
 			break;
 		}
 	}
 	else {
 		Node = XMLStuff.EntityData->GetNodesByTypeVarSub(etype, evar, esub, strict);
-		Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
+		if (Node.end() != Node.begin()) {
+			Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
+		}
+		else { Childs = XMLChilds(); }
 	}
 	if (Lua_PushXMLNode(L, Node, Childs)) {
 		return 1;
@@ -2365,135 +2424,20 @@ LUA_FUNCTION(Lua_GetEntryByIdXML)
 	if (!lua_isnumber(L, 2)) { return luaL_error(L, "Expected number as parameter #2, got %s", lua_typename(L, lua_type(L, 2))); }
 	int nodetype = (int)luaL_checknumber(L, 1);
 	int id = (int)luaL_checknumber(L, 2);
-	XMLAttributes Node;
-	XMLChilds Childs;
-	switch (nodetype) {
-	case 0:
-		Node = XMLStuff.ModData->GetNodeById(id);
-		Childs = XMLStuff.ModData->childs[id];
-		break;
-	case 1:
-		Node = XMLStuff.EntityData->GetNodeById(XMLStuff.EntityData->byorder[id]);
-		Childs = XMLStuff.EntityData->childs[XMLStuff.EntityData->byorder[id]];
-		break;
-	case 2:
-		Node = XMLStuff.PlayerData->GetNodeById(id);
-		Childs = XMLStuff.PlayerData->childs[id];
-		break;
-	case 3:
-		Node = XMLStuff.ItemData->GetNodeById(id);
-		Childs = XMLStuff.ItemData->childs[id];
-		break;
-	case 4:
-		Node = XMLStuff.TrinketData->GetNodeById(id);
-		Childs = XMLStuff.TrinketData->childs[id];
-		break;
-	case 5:
-		Node = XMLStuff.PillData->GetNodeById(id);
-		Childs = XMLStuff.PillData->childs[id];
-		break;
-	case 6:
-		Node = XMLStuff.CardData->GetNodeById(id);
-		Childs = XMLStuff.CardData->childs[id];
-		break;
-	case 7:
-		Node = XMLStuff.MusicData->GetNodeById(id);
-		Childs = XMLStuff.MusicData->childs[id];
-		break;
-	case 8:
-		Node = XMLStuff.SoundData->GetNodeById(id);
-		Childs = XMLStuff.SoundData->childs[id];
-		break;
-	case 9:
-		Node = XMLStuff.ChallengeData->GetNodeById(id);
-		Childs = XMLStuff.ChallengeData->childs[id];
-		break;
-	case 10:
-		Node = XMLStuff.PoolData->GetNodeById(id);
-		Childs = XMLStuff.PoolData->childs[id];
-		break;
-	case 11:
-		Node = XMLStuff.NightmareData->GetNodeById(id);
-		Childs = XMLStuff.NightmareData->childs[id];
-		break;
-	case 12:
-		Node = XMLStuff.CostumeData->GetNodeById(id);
-		Childs = XMLStuff.CostumeData->childs[id];
-		break;
-	case 13:
-		Node = XMLStuff.NullCostumeData->GetNodeById(id);
-		Childs = XMLStuff.CostumeData->childs[id];
-		break;
-	case 14:
-		Node = XMLStuff.WispData->GetNodeById(id);
-		Childs = XMLStuff.WispData->childs[id];
-		break;
-	case 15:
-		Node = XMLStuff.WispColorData->GetNodeById(id);
-		Childs = XMLStuff.WispColorData->childs[id];
-		break;
-	case 16:
-		Node = XMLStuff.CurseData->GetNodeById(id);
-		Childs = XMLStuff.CurseData->childs[id];
-		break;
-	case 17:
-		Node = XMLStuff.LocustData->GetNodeById(id);
-		Childs = XMLStuff.LocustData->childs[id];
-		break;
-	case 18:
-		Node = XMLStuff.LocustColorData->GetNodeById(id);
-		Childs = XMLStuff.LocustColorData->childs[id];
-		break;
-	case 19:
-		Node = XMLStuff.BombCostumeData->GetNodeById(id);
-		Childs = XMLStuff.BombCostumeData->childs[id];
-		break;
-	case 20:
-		Node = XMLStuff.RecipeData->GetNodeById(id);
-		Childs = XMLStuff.RecipeData->childs[id];
-		break;
-	case 21:
-		Node = XMLStuff.BossPoolData->GetNodeById(id);
-		Childs = XMLStuff.BossPoolData->childs[id];
-		break;
-	case 22:
-		Node = XMLStuff.BossPortraitData->GetNodeById(id);
-		Childs = XMLStuff.BossPortraitData->childs[id];
-		break;
-	case 23:
-		Node = XMLStuff.CutsceneData->GetNodeById(id);
-		Childs = XMLStuff.CutsceneData->childs[id];
-		break;
-	case 24:
-		Node = XMLStuff.StageData->GetNodeById(id);
-		Childs = XMLStuff.StageData->childs[id];
-		break;
-	case 25:
-		Node = XMLStuff.BackdropData->GetNodeById(id);
-		Childs = XMLStuff.BackdropData->childs[id];
-		break;
-	case 26:
-		Node = XMLStuff.AchievementData->GetNodeById(id);
-		Childs = XMLStuff.AchievementData->childs[id];
-		break;
-	case 27:
-		Node = XMLStuff.GiantBookData->GetNodeById(id);
-		Childs = XMLStuff.GiantBookData->childs[id];
-		break;
-	case 28:
-		Node = XMLStuff.BossRushData->GetNodeById(id);
-		Childs = XMLStuff.BossRushData->childs[id];
-		break;
-	case 29:
-		Node = XMLStuff.PlayerFormData->GetNodeById(id);
-		Childs = XMLStuff.PlayerFormData->childs[id];
-		break;
-	case 30:
-		Node = XMLStuff.NullItemData->GetNodeById(id);
-		Childs = XMLStuff.NullItemData->childs[id];
-		break;
+	tuple<XMLAttributes, XMLChilds> daddychild;
+	if (nodetype == 1) {
+		XMLAttributes Node = XMLStuff.EntityData->GetNodesByTypeVarSub(id, 0, 0, false);
+		XMLChilds Childs;
+			if (Node.end() != Node.begin()) {
+				Childs = XMLStuff.EntityData->childs[{ toint(Node["type"]), toint(Node["variant"]), toint(Node["subtype"]) }];
+			}
+			else { Childs = XMLChilds(); }
+			daddychild = tuple<XMLAttributes, XMLChilds>(Node, Childs);
 	}
-	if (Lua_PushXMLNode(L, Node, Childs)) {
+	else {
+		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsById(id);
+	}
+	if (Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild))) {
 		return 1;
 	}
 	else { return 0; }
@@ -2505,135 +2449,14 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 	if (!lua_isstring(L, 2)) { return luaL_error(L, "Expected string as parameter #2, got %s", lua_typename(L, lua_type(L, 2))); }
 	int nodetype = (int)luaL_checknumber(L, 1);
 	string entityname = string(luaL_checkstring(L, 2));
-	XMLAttributes Node;
-	XMLChilds Childs;
-	switch (nodetype) {
-	case 0:
-		Node = XMLStuff.ModData->GetNodeByName(entityname);
-		Childs = XMLStuff.ModData->childs[XMLStuff.ModData->byname[entityname]];
-		break;
-	case 1:
-		Node = XMLStuff.EntityData->GetNodeByName(entityname);
-		Childs = XMLStuff.EntityData->childs[XMLStuff.EntityData->byname[entityname]];
-		break;
-	case 2:
-		Node = XMLStuff.PlayerData->GetNodeByName(entityname);
-		Childs = XMLStuff.PlayerData->childs[XMLStuff.PlayerData->byname[entityname]];
-		break;
-	case 3:
-		Node = XMLStuff.ItemData->GetNodeByName(entityname);
-		Childs = XMLStuff.ItemData->childs[XMLStuff.ItemData->byname[entityname]];
-		break;
-	case 4:
-		Node = XMLStuff.TrinketData->GetNodeByName(entityname);
-		Childs = XMLStuff.TrinketData->childs[XMLStuff.TrinketData->byname[entityname]];
-		break;
-	case 5:
-		Node = XMLStuff.PillData->GetNodeByName(entityname);
-		Childs = XMLStuff.PillData->childs[XMLStuff.PillData->byname[entityname]];
-		break;
-	case 6:
-		Node = XMLStuff.CardData->GetNodeByName(entityname);
-		Childs = XMLStuff.CardData->childs[XMLStuff.CardData->byname[entityname]];
-		break;
-	case 7:
-		Node = XMLStuff.MusicData->GetNodeByName(entityname);
-		Childs = XMLStuff.MusicData->childs[XMLStuff.MusicData->byname[entityname]];
-		break;
-	case 8:
-		Node = XMLStuff.SoundData->GetNodeByName(entityname);
-		Childs = XMLStuff.SoundData->childs[XMLStuff.SoundData->byname[entityname]];
-		break;
-	case 9:
-		Node = XMLStuff.ChallengeData->GetNodeByName(entityname);
-		Childs = XMLStuff.ChallengeData->childs[XMLStuff.ChallengeData->byname[entityname]];
-		break;
-	case 10:
-		Node = XMLStuff.PoolData->GetNodeByName(entityname);
-		Childs = XMLStuff.PoolData->childs[XMLStuff.PoolData->byname[entityname]];
-		break;
-	case 11:
-		Node = XMLStuff.NightmareData->GetNodeByName(entityname);
-		Childs = XMLStuff.NightmareData->childs[XMLStuff.NightmareData->byname[entityname]];
-		break;
-	case 12:
-		Node = XMLStuff.CostumeData->GetNodeByName(entityname);
-		Childs = XMLStuff.CostumeData->childs[XMLStuff.CostumeData->byname[entityname]];
-		break;
-	case 13:
-		Node = XMLStuff.NullCostumeData->GetNodeByName(entityname);
-		Childs = XMLStuff.CostumeData->childs[XMLStuff.NullCostumeData->byname[entityname]];
-		break;
-	case 14:
-		Node = XMLStuff.WispData->GetNodeByName(entityname);
-		Childs = XMLStuff.WispData->childs[XMLStuff.WispData->byname[entityname]];
-		break;
-	case 15:
-		Node = XMLStuff.WispColorData->GetNodeByName(entityname);
-		Childs = XMLStuff.WispColorData->childs[XMLStuff.WispColorData->byname[entityname]];
-		break;
-	case 16:
-		Node = XMLStuff.CurseData->GetNodeByName(entityname);
-		Childs = XMLStuff.CurseData->childs[XMLStuff.CurseData->byname[entityname]];
-		break;
-	case 17:
-		Node = XMLStuff.LocustData->GetNodeByName(entityname);
-		Childs = XMLStuff.LocustData->childs[XMLStuff.LocustData->byname[entityname]];
-		break;
-	case 18:
-		Node = XMLStuff.LocustColorData->GetNodeByName(entityname);
-		Childs = XMLStuff.LocustColorData->childs[XMLStuff.LocustColorData->byname[entityname]];
-		break;
-	case 19:
-		Node = XMLStuff.BombCostumeData->GetNodeByName(entityname);
-		Childs = XMLStuff.BombCostumeData->childs[XMLStuff.BombCostumeData->byname[entityname]];
-		break;
-	case 20:
-		Node = XMLStuff.RecipeData->GetNodeByName(entityname);
-		Childs = XMLStuff.RecipeData->childs[XMLStuff.RecipeData->byname[entityname]];
-		break;
-	case 21:
-		Node = XMLStuff.BossPoolData->GetNodeByName(entityname);
-		Childs = XMLStuff.BossPoolData->childs[XMLStuff.BossPoolData->byname[entityname]];
-		break;
-	case 22:
-		Node = XMLStuff.BossPortraitData->GetNodeByName(entityname);
-		Childs = XMLStuff.BossPortraitData->childs[XMLStuff.BossPortraitData->byname[entityname]];
-		break;
-	case 23:
-		Node = XMLStuff.CutsceneData->GetNodeByName(entityname);
-		Childs = XMLStuff.CutsceneData->childs[XMLStuff.CutsceneData->byname[entityname]];
-		break;
-	case 24:
-		Node = XMLStuff.StageData->GetNodeByName(entityname);
-		Childs = XMLStuff.StageData->childs[XMLStuff.StageData->byname[entityname]];
-		break;
-	case 25:
-		Node = XMLStuff.BackdropData->GetNodeByName(entityname);
-		Childs = XMLStuff.BackdropData->childs[XMLStuff.BackdropData->byname[entityname]];
-		break;
-	case 26:
-		Node = XMLStuff.AchievementData->GetNodeByName(entityname);
-		Childs = XMLStuff.AchievementData->childs[XMLStuff.AchievementData->byname[entityname]];
-		break;
-	case 27:
-		Node = XMLStuff.GiantBookData->GetNodeByName(entityname);
-		Childs = XMLStuff.GiantBookData->childs[XMLStuff.GiantBookData->byname[entityname]];
-		break;
-	case 28:
-		Node = XMLStuff.BossRushData->GetNodeByName(entityname);
-		Childs = XMLStuff.BossRushData->childs[XMLStuff.BossRushData->byname[entityname]];
-		break;
-	case 29:
-		Node = XMLStuff.PlayerFormData->GetNodeByName(entityname);
-		Childs = XMLStuff.PlayerFormData->childs[XMLStuff.PlayerFormData->byname[entityname]];
-		break;
-	case 30:
-		Node = XMLStuff.NullItemData->GetNodeByName(entityname);
-		Childs = XMLStuff.NullItemData->childs[XMLStuff.NullItemData->byname[entityname]];
-		break;
-	}	
-	Lua_PushXMLNode(L, Node,Childs);
+	tuple<XMLAttributes, XMLChilds> daddychild;
+	if (nodetype == 1) {
+		daddychild = XMLStuff.EntityData->GetXMLNodeNChildsByName(entityname);
+	}
+	else {
+		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsByName(entityname);
+	}
+	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
 	return 1;
 }
 LUA_FUNCTION(Lua_GetNumEntries)
