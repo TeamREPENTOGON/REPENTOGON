@@ -2417,6 +2417,17 @@ LUA_FUNCTION(Lua_GetFromEntity)
 	else { return 0; }
 }
 
+LUA_FUNCTION(Lua_GetModByIdXML)
+{
+	string id = luaL_checkstring(L, 1);
+	if (XMLStuff.ModData->byid.find(id) != XMLStuff.ModData->byid.end()) {
+		Lua_PushXMLNode(L, XMLStuff.ModData->nodes[XMLStuff.ModData->byid[id]], XMLChilds());
+		return 1;
+	}
+	lua_pushnil(L);
+	return 0;
+}
+
 
 LUA_FUNCTION(Lua_GetEntryByIdXML)
 {
@@ -2435,6 +2446,7 @@ LUA_FUNCTION(Lua_GetEntryByIdXML)
 			daddychild = tuple<XMLAttributes, XMLChilds>(Node, Childs);
 	}
 	else {
+
 		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsById(id);
 	}
 	if (Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild))) {
@@ -2574,6 +2586,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::TableAssoc(_state, "GetNumEntries", Lua_GetNumEntries);
 	lua::TableAssoc(_state, "GetEntityByTypeVarSub", Lua_FromTypeVarSub);
 	lua::TableAssoc(_state, "GetEntryFromEntity", Lua_GetFromEntity);
+	lua::TableAssoc(_state, "GetModById", Lua_GetModByIdXML);
 	lua_setglobal(_state, "XMLData");
 }
 
