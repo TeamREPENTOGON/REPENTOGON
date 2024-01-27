@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 #include "LuaCore.h"
+#include <LuaJIT/src/lua.hpp>
+#include "LuaJIT/src/lj_obj.h"
 
 extern int handleWindowFlags(int flags);
 
@@ -27,7 +29,7 @@ struct PerformanceWindow : ImGuiWindowObject {
 		if (!enabled || !isImGuiActive && !pinned) {
 			return;
 		}
-		ImGui::SetNextWindowSize(ImVec2(450, 200), ImGuiCond_FirstUseEver);
+		/*ImGui::SetNextWindowSize(ImVec2(450, 200), ImGuiCond_FirstUseEver);
 
 		if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
 			if (imguiResized) {
@@ -60,7 +62,7 @@ struct PerformanceWindow : ImGuiWindowObject {
 
 			ImGui::PlotLines(LANG.PERF_LUA_MEM_USE, &values[0], memUsages->size(), NULL, hintText, minMemUsage - 1, maxMemUsage + 2, ImVec2(0, 100));
 		}
-		ImGui::End(); // close window element
+		ImGui::End(); // close window element*/
 
 	}
 };

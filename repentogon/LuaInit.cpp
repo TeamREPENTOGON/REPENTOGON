@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <chrono>
 
-#include <lua.hpp>
+#include <LuaJIT/src/lua.hpp>
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
@@ -80,7 +80,7 @@ static int LuaExtractFunctions(lua_State* L) {
 }
 
 static void ExtractGameFunctions(lua_State* L, std::vector<std::pair<std::string, void*>>& functions, FILE* f) {
-	lua_pushnil(L);
+	/*lua_pushnil(L);
 	while (lua_next(L, -3)) {
 		if (lua_type(L, -2) == LUA_TSTRING && lua_tostring(L, -2)[0] != '_') {
 			const char* name = lua_tostring(L, -2);
@@ -100,7 +100,7 @@ static void ExtractGameFunctions(lua_State* L, std::vector<std::pair<std::string
 			}
 		}
 		lua_pop(L, 1);
-	}
+	}*/
 }
 
 static void RegisterMetatables(lua_State* L) {
@@ -114,7 +114,9 @@ static void RegisterMetatables(lua_State* L) {
 		if (lua_type(L, -2) == LUA_TLIGHTUSERDATA) {
 			if (lua_type(L, -1) == LUA_TTABLE) {
 				lua_pushstring(L, "__type");
-				int __type = lua_rawget(L, -2);
+				lua_rawget(L, -2);
+				int __type = lua_type(L, -1);
+				lua_pop(L, 1);
 
 				if (__type == LUA_TSTRING) {
 					std::string type(lua_tostring(L, -1));
@@ -122,7 +124,9 @@ static void RegisterMetatables(lua_State* L) {
 
 					if (type == "Room" || type == "const Room") {
 						lua_pushstring(L, "GetBossID");
-						int bossID = lua_rawget(L, -3);
+						lua_rawget(L, -3);
+						int bossID = lua_type(L, -1);
+						lua_pop(L, 1);
 
 						if (bossID == LUA_TNIL) {
 							if (type.find("const") != std::string::npos) {
@@ -137,7 +141,9 @@ static void RegisterMetatables(lua_State* L) {
 					}
 					else if (type == "RoomDescriptor" || type == "const RoomDescriptor") {
 						lua_pushstring(L, "Get");
-						int get = lua_rawget(L, -3);
+						lua_rawget(L, -3);
+						int get = lua_type(L, -1);
+						lua_pop(L, 1);
 
 						if (get != LUA_TNIL) {
 							if (type.find("const") != std::string::npos) {
@@ -297,7 +303,7 @@ HOOK_METHOD_PRIORITY(LuaEngine, RegisterClasses, 100, () -> void) {
 	printf("[REPENTOGON] Registering Lua functions and metatables\n");
 	lua_State *state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
-	// luaL_openlibs(state);
+	luaL_openlibs(state);
 	lua_register(state, "DumpRegistry", LuaDumpRegistry);
 	lua::UnloadMetatables();
 	RegisterMetatables(state);

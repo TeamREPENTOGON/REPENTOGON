@@ -1,12 +1,30 @@
 #pragma once
 
-#include "LuaJIT/src/lua.hpp"
+#include <LuaJIT/src/lua.hpp>
+
+extern "C" {
+    #include "lua53compat/lua53compat.h"
+}
+
 #include "libzhl.h"
 
 #include <string>
 #include <optional>
 
 struct lua_State;
+
+// Some of these are taken from https://github.com/lunarmodules/lua-compat-5.3/, licensed under MIT.
+#define LUA_LOADED_TABLE	"_LOADED"
+#define lua_getfield(L, i, k) \
+  (lua_getfield((L), (i), (k)), lua_type((L), -1))
+
+static int lua_isinteger(lua_State* L, int index) {
+    if (lua_isnumber(L, index)) {
+        double value = lua_tonumber(L, index);
+        return (value == (lua_Integer)value);
+    }
+    return 0;
+}
 
 namespace lua {
     enum class Metatables {

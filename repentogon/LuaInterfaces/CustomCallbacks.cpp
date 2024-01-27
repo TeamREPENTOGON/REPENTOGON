@@ -1,4 +1,4 @@
-#include <lua.hpp>
+#include <LuaJIT/src/lua.hpp>
 #include <optional>
 #include <cstring>
 
@@ -214,7 +214,7 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 			.call(1);
 	if (!result) {
 		if (lua_istable(L, -1)) {
-			if (lua_rawlen(L, -1) == 6) {
+			if (lua_objlen(L, -1) == 6) {
 				ID = lua::callbacks::ToInteger(L, 1);
 				Volume = (float) lua::callbacks::ToNumber(L, 2);
 				FrameDelay = lua::callbacks::ToInteger(L, 3);
@@ -551,7 +551,7 @@ HOOK_METHOD(Music, Play, (int musicid, float volume) -> void) {
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
+				int tablesize = (int)lua_objlen(L, -1);
 				if (tablesize == 2) {
 					super(lua::callbacks::ToInteger(L, 1), (float) lua::callbacks::ToNumber(L, 2));
 					return;
@@ -588,7 +588,7 @@ HOOK_METHOD(Music, Crossfade, (int musicid, float faderate) -> void) {
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
+				int tablesize = (int)lua_objlen(L, -1);
 				if (tablesize == 2) {
 					super(lua::callbacks::ToInteger(L, 1), (float) lua::callbacks::ToNumber(L, 2));
 					return;
@@ -788,7 +788,7 @@ HOOK_METHOD(Level, ChangeRoom, (int roomId, int dimension) -> void) {
 
 	if (!result) {
 		if (lua_istable(L, -1)) {
-			if (lua_rawlen(L, -1) == 2) {
+			if (lua_objlen(L, -1) == 2) {
 				super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2));
 			}
 		}
@@ -837,7 +837,7 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
+				int tablesize = (int)lua_objlen(L, -1);
 				if (tablesize == 4) {
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
@@ -914,7 +914,7 @@ HOOK_METHOD(Entity_Pickup, Morph, (int EntityType, int Variant, int SubType, boo
 
 		if (!result) {
 			if (lua_istable(L, -1)) {
-				int tablesize = (int)lua_rawlen(L, -1);
+				int tablesize = (int)lua_objlen(L, -1);
 				if (tablesize == 6) {
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());

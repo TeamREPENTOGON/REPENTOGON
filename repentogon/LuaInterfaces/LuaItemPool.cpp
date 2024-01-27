@@ -22,7 +22,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleFromList) {
 		return 0;
 	}
 
-	size_t length = (size_t)lua_rawlen(L, 2);
+	size_t length = (size_t)lua_objlen(L, 2);
 
 	// if the table is empty, we should pass default item
 	if (length == 0)

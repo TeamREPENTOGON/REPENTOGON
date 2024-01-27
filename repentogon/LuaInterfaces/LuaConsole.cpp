@@ -106,7 +106,7 @@ LUA_FUNCTION(Lua_RegisterMacro) {
 
 	std::vector<std::string> commands;
 	// Get the number of vertices we received.
-	unsigned int len = (unsigned int)lua_rawlen(L, 2);
+	unsigned int len = (unsigned int)lua_objlen(L, 2);
 
 	for (unsigned int i = 1; i <= len; ++i) {
 		lua_pushinteger(L, i);

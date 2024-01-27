@@ -95,7 +95,7 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 			data->variant = *delirium->GetDeliriumBossVariant();
 		}
 		else if (lua_istable(L, -1)) {
-			lua_len(L, -1);
+			lua_objlen(L, -1);
 			int length = lua_tointeger(L, -1);
 			lua_pop(L, 1);
 			
@@ -104,7 +104,8 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 				return;
 			}
 			else {
-				int luaType = lua_rawgeti(L, -1, 1);
+				lua_rawgeti(L, -1, 1);
+				int luaType = lua_tonumber(L, -1);
 				// Unreadable content
 				if (luaType != LUA_TNUMBER) {
 					return;
@@ -117,7 +118,8 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 
 				// >= because people may return more data than necessary
 				if (length >= 2) {
-					luaType = lua_rawgeti(L, -1, 2);
+					lua_rawgeti(L, -1, 2);
+					luaType = lua_tonumber(L, -1);
 					// Unreadable content
 					if (luaType != LUA_TNUMBER) {
 						return;

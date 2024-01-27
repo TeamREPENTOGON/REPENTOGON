@@ -1278,7 +1278,8 @@ namespace GL {
 				// return luaL_error(L, "Invalid attribute name %s", name);
 				luaL_getmetatable(L, LuaRender::VertexMT);
 				lua_pushstring(L, name);
-				int type = lua_rawget(L, -2);
+				lua_rawget(L, -2);
+				int type = lua_tonumber(L, -1);
 				
 				if (type == LUA_TNIL) {
 					luaL_error(L, "No field or method with name %s\n", name);

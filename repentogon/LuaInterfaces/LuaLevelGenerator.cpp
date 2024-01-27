@@ -179,7 +179,7 @@ bool ValidateRoomPlacement(LevelGenerator_Room const& source, int col, int line,
 }
 
 LuaLevelGeneratorRoom* CreateLGR(lua_State* L) {
-	LuaLevelGeneratorRoom* data = (LuaLevelGeneratorRoom*)lua_newuserdatauv(L, sizeof(LuaLevelGeneratorRoom), 0);
+	LuaLevelGeneratorRoom* data = (LuaLevelGeneratorRoom*)lua_newuserdata(L, sizeof(LuaLevelGeneratorRoom));
 	luaL_setmetatable(L, lua::metatables::LevelGeneratorRoomMT);
 	return data;
 }

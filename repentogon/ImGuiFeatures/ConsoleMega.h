@@ -1079,7 +1079,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
                                 if (!results) {
                                     if (lua_istable(L, -1)) {
-                                        for (unsigned int i = 1; i <= (unsigned int)lua_rawlen(L, -1); ++i) {
+                                        for (unsigned int i = 1; i <= (unsigned int)lua_objlen(L, -1); ++i) {
                                             AutocompleteEntry entry;
                                             lua_pushinteger(L, i);
                                             lua_gettable(L, -2);
@@ -1090,7 +1090,7 @@ struct ConsoleMega : ImGuiWindowObject {
                                                 entry.autocompleteText = lua_tostring(L, -1);
                                                 lua_pop(L, 1);
 
-                                                if (lua_rawlen(L, -1) == (unsigned int)2) {
+                                                if (lua_objlen(L, -1) == (unsigned int)2) {
                                                     lua_pushinteger(L, 2);
                                                     lua_gettable(L, -2);
                                                     entry.autocompleteDesc = lua_tostring(L, -1);

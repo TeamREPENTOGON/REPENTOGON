@@ -28,9 +28,9 @@ DWORD RedirectLua(HMODULE* outLua) {
 		return -1;
 	}
 
-	HMODULE lua = LoadLibrary("Lua5.4.dll");
+	HMODULE lua = LoadLibrary("lua51.dll");
 	if (!lua) {
-		fprintf(stderr, "RedirectLua: unable to load Lua 5.4 DLL %d\n", GetLastError());
+		fprintf(stderr, "RedirectLua: unable to load LuaJIT DLL %d\n", GetLastError());
 		return -1;
 	}
 
@@ -75,7 +75,7 @@ DWORD RedirectLua(HMODULE* outLua) {
 
 		void* newFunction = GetProcAddress(lua, symbolName);
 		if (!newFunction) {
-			fprintf(stderr, "RedirectLua: unable to find symbol %s in Lua 5.4\n", symbolName);
+			fprintf(stderr, "RedirectLua: unable to find symbol %s in Lua 5.1\n", symbolName);
 			return -1;
 		}
 
@@ -135,7 +135,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			return TRUE;
 		}
 
-		sLogger->Info("dsound: Overriding Lua 5.3.3 with Lua 5.4\n");
+		sLogger->Info("dsound: Overriding Lua 5.3.3 with LuaJIT\n");
 		DWORD redirectResult = RedirectLua(&luaHandle);
 		if (redirectResult == -1) {
 			if (luaHandle) {
@@ -146,7 +146,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			sLogger->Error("dsound: Error while redirecting Lua calls, falling back to original Lua 5.3.3 DLL\n");
 		}
 		else {
-			sLogger->Info("dsound: Successfully overriden Lua 5.3.3 with Lua 5.4\n");
+			sLogger->Info("dsound: Successfully overriden Lua 5.3.3 with LuaJIT\n");
 		}
 
 		// Prevents the module from being unloaded by the game

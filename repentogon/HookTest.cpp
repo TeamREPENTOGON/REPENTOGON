@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-#include <lua.hpp>
+#include <LuaJIT/src/lua.hpp>
 #include "LuaCore.h"
 #include "Log.h"
 

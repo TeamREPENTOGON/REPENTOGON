@@ -298,7 +298,7 @@ LUA_FUNCTION(Lua_PlayerSetBoCContent) {
 	}
 
 	BagOfCraftingPickup list[8]{};
-	size_t length = (size_t)lua_rawlen(L, 2);
+	size_t length = (size_t)lua_objlen(L, 2);
 	if (length > 0)
 	{
 		if (length > 8) {

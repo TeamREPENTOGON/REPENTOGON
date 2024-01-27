@@ -25,7 +25,7 @@
 
 #include "../ImGuiFeatures/LogViewer.h"
 #include "../MiscFunctions.h"
-#include <lua.hpp>
+#include <LuaJIT/src/lua.hpp>
 #include "LuaCore.h"
 #include "JsonSavedata.h"
 #include <filesystem>

@@ -462,7 +462,7 @@ LUA_FUNCTION(Lua_ImGui_AddRadioButtons)
 	data.sameLine = lua::luaL_optboolean(L, 6, true);
 
 	// get table input
-	auto tableLength = lua_rawlen(L, 4);
+	auto tableLength = lua_objlen(L, 4);
 	for (auto i = 1; i <= tableLength; ++i) {
 		lua_pushinteger(L, i);
 		lua_gettable(L, 4);
@@ -534,7 +534,7 @@ LUA_FUNCTION(Lua_ImGui_AddCombobox)
 	data.isSlider = lua::luaL_optboolean(L, 7, false);
 
 	// get table input
-	auto tableLength = lua_rawlen(L, 5);
+	auto tableLength = lua_objlen(L, 5);
 	for (auto i = 1; i <= tableLength; ++i) {
 		lua_pushinteger(L, i);
 		lua_gettable(L, 5);
@@ -723,7 +723,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotLines)
 	EvalIDAndParent(L, id, parentId);
 
 	// get table input
-	auto tableLength = lua_rawlen(L, 4);
+	auto tableLength = lua_objlen(L, 4);
 	for (auto i = 1; i <= tableLength; ++i) {
 		lua_pushinteger(L, i);
 		lua_gettable(L, 4);
@@ -760,7 +760,7 @@ LUA_FUNCTION(Lua_ImGui_AddPlotHistogram)
 	EvalIDAndParent(L, id, parentId);
 
 	// get table input
-	auto tableLength = lua_rawlen(L, 4);
+	auto tableLength = lua_objlen(L, 4);
 	for (auto i = 1; i <= tableLength; ++i) {
 		lua_pushinteger(L, i);
 		lua_gettable(L, 4);

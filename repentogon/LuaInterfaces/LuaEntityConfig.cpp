@@ -1,4 +1,4 @@
-#include <lua.hpp>
+#include <LuaJIT/src/lua.hpp>
 
 #include "IsaacRepentance.h"
 #include "LuaCore.h"

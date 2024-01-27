@@ -130,7 +130,9 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 
 LUA_FUNCTION(Lua_GetLoadedModules) {
 	lua_pushstring(L, "_LOADED");
-	int t = lua_rawget(L, LUA_REGISTRYINDEX);
+	lua_rawget(L, LUA_REGISTRYINDEX);
+	int t = lua_type(L, -1);
+	lua_pop(L, 1);
 	if (t != LUA_TNIL) {
 		return 1;
 	}

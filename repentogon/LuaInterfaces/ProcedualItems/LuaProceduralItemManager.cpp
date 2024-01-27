@@ -32,7 +32,7 @@ LUA_FUNCTION(Lua_PIMGetProceduralItem)
 	ProceduralItemManager* pim = g_Game->GetProceduralItemManager();
 	std::vector<ProceduralItem*>* items = pim->GetProceduralItems();
 	int index = (int)luaL_checkinteger(L, 1);
-	if (l_likely(index >= 0 && (unsigned int)index < items->size())) {
+	if (index >= 0 && (unsigned int)index < items->size()) [[likely]] {
 		ProceduralItem** ud = (ProceduralItem**)lua_newuserdata(L, sizeof(void*));
 		*ud = (*items)[index];
 		luaL_setmetatable(L, lua::metatables::ProceduralItemMT);

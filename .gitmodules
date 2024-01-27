@@ -26,9 +26,6 @@
 [submodule "libs/rapidjson"]
 	path = libs/rapidjson
 	url = https://github.com/Tencent/rapidjson
-[submodule "libs/lua"]
-	path = libs/lua
-	url = https://github.com/IsaacZHL/lua
 [submodule "libs/mINI"]
 	path = libs/mINI
 	url = https://github.com/pulzed/mINI

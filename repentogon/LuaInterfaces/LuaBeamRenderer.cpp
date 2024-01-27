@@ -252,7 +252,7 @@ LUA_FUNCTION(Lua_BeamSetPoints) {
 		return luaL_argerror(L, 2, "Expected a table as second argument");
 	}
 
-	size_t length = (size_t)lua_rawlen(L, 2);
+	size_t length = (size_t)lua_objlen(L, 2);
 	if (length < 2)
 	{
 		return luaL_argerror(L, 2, "Must have at least two points");

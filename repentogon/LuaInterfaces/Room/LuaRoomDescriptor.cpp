@@ -94,7 +94,8 @@ LUA_FUNCTION(Lua_RoomDescriptorDoorsSet) {
 static void FixRoomDescriptorProperties(lua_State* L) {
 	lua::PushMetatable(L, lua::Metatables::ROOM_DESCRIPTOR);
 	lua_pushstring(L, "__propget");
-	int type = lua_rawget(L, -2);
+	lua_rawget(L, -2);
+	int type = lua_tonumber(L, -1);
 
 	if (type != LUA_TTABLE) {
 		lua_pop(L, 2);
@@ -114,7 +115,8 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 
 	lua::PushMetatable(L, lua::Metatables::CONST_ROOM_DESCRIPTOR);
 	lua_pushstring(L, "__propget");
-	type = lua_rawget(L, -2);
+	lua_rawget(L, -2);
+	type = lua_tonumber(L, -1);
 
 	if (type != LUA_TTABLE) {
 		lua_pop(L, 2);
@@ -134,7 +136,8 @@ static void FixRoomDescriptorProperties(lua_State* L) {
 
 	lua::PushMetatable(L, lua::Metatables::ROOM_DESCRIPTOR);
 	lua_pushstring(L, "__propset");
-	type = lua_rawget(L, -2);
+	lua_rawget(L, -2);
+	type = lua_tonumber(L, -1);
 
 	if (type != LUA_TTABLE) {
 		lua_pop(L, 2);

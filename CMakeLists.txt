@@ -9,7 +9,7 @@ project(RepExtender)
 
 find_package(OpenGL REQUIRED)
 
-include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua" 
+include_directories(${CMAKE_SOURCE_DIR}/include
     "${CMAKE_SOURCE_DIR}/libs/rapidxml" "${CMAKE_SOURCE_DIR}/libs/rapidjson/include/rapidjson" 
     "${CMAKE_SOURCE_DIR}/libs/LuaBridge/Source/LuaBridge" 
     "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" 
@@ -73,13 +73,8 @@ target_compile_options(antlr4_shared PUBLIC "/wd4100" "/wd4244" "/wd4251" "/wd42
 
 add_custom_command(TARGET zhlparser POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:antlr4_shared>/antlr4-runtime.dll" "$<TARGET_FILE_DIR:zhlparser>")
 
-# Lua
-FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua/*.c)
-list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua/onelua.c")
-add_compile_definitions(LUA_BUILD_AS_DLL)
-add_library(Lua5.4 SHARED ${LUA_SRC})
-
 # LuaJIT
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(LUAJIT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/LuaJIT")
 set(LUAJIT_SOURCE_DIR "${LUAJIT_DIR}/src")
 set(DASM_DIR "${LUAJIT_DIR}/dynasm")
@@ -110,7 +105,7 @@ add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_vmdef.h COMMAND buildvm -m vmd
 
 set(LJ_GEN ${LUAJIT_SOURCE_DIR}/lj_vm.obj ${LUAJIT_SOURCE_DIR}/lj_bcdef.h ${LUAJIT_SOURCE_DIR}/lj_ffdef.h ${LUAJIT_SOURCE_DIR}/lj_libdef.h ${LUAJIT_SOURCE_DIR}/lj_recdef.h ${LUAJIT_SOURCE_DIR}/lj_vmdef.h)
 
-FILE(GLOB LUA51_SRC "${LUAJIT_SOURCE_DIR}/lj_*.c" "${LUAJIT_SOURCE_DIR}/lib_*.c")
+FILE(GLOB LUA51_SRC "${LUAJIT_SOURCE_DIR}/lj_*.c" "${LUAJIT_SOURCE_DIR}/lib_*.c" "${CMAKE_SOURCE_DIR}/libs/lua53compat/*.c")
 LIST(APPEND LUA51_SRC ${LJ_GEN})
 add_library(lua51 SHARED ${LUA51_SRC})
 target_compile_options(lua51 PUBLIC "/MD")
@@ -198,6 +193,7 @@ target_include_directories(imgui PUBLIC "${CMAKE_SOURCE_DIR}/libs/freetype/inclu
 target_compile_options(imgui PUBLIC "/MD")
 target_compile_definitions(imgui PUBLIC IMGUI_ENABLE_FREETYPE)
 
+
 # Repentogon
 file(GLOB_RECURSE REPENTOGON_SRC ${CMAKE_SOURCE_DIR}/repentogon/*.*)
 # Display folder structure inside of VS solution - https://stackoverflow.com/a/54531576
@@ -228,7 +224,7 @@ add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E c
 
 if(NOT ISAAC_DIRECTORY STREQUAL "")
     message (STATUS "Files will be installed to " ${ISAAC_DIRECTORY})
-    add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/Lua5.4.dll" "${ISAAC_DIRECTORY}")
+    add_custom_command(TARGET lua51 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/lua51.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET dsound POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/dsound.dll" "${ISAAC_DIRECTORY}")
     add_custom_command(TARGET libzhl POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:libzhl>/libzhl.dll" "${ISAAC_DIRECTORY}")
 	add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:freetype>/freetype.dll" "${ISAAC_DIRECTORY}")
@@ -244,12 +240,13 @@ if (NOT ZHL_LOG_FILE STREQUAL "")
 endif()
 
 add_dependencies(zhlREPENTOGON libzhl)
+add_dependencies(libzhl lua51)
 
 # STB parser
 add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
-target_link_libraries(zhlREPENTOGON Lua5.4 libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
+target_link_libraries(zhlREPENTOGON libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
 target_link_libraries(libzhl lua51 "Zydis" dbghelp winmm)
 
 # luajit testmod
@@ -266,7 +263,7 @@ target_compile_options(zhlLJModTest PUBLIC "/MD")
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_target_properties(freetype antlr4_shared imgui Lua5.4 stb stbc Zydis Zycore cryptopp libcurl_object libcurl_static curl_uninstall PROPERTIES FOLDER "External Libs")
+set_target_properties(freetype antlr4_shared imgui lua51 stb stbc Zydis Zycore cryptopp libcurl_object libcurl_static curl_uninstall PROPERTIES FOLDER "External Libs")
 set_target_properties(libzhl zhlparser PROPERTIES FOLDER "libzhl")
 set_target_properties(dsound zhlDelirium zhlREPENTOGON zhlLJModTest PROPERTIES FOLDER "Repentogon")
 set_target_properties(minilua buildvm lua51 PROPERTIES FOLDER "luajit")

@@ -7,7 +7,7 @@
 #include <fstream>
 #include <array>
 
-#include <lua.hpp>
+#include <LuaJIT/src/lua.hpp>
 #include "LuaCore.h"
 
 #include "document.h"

@@ -763,7 +763,7 @@ struct CustomImGui {
 
             element->elementData.plotValues->clear();
             element->elementData.values->clear();
-            for (auto i = 1; i <= lua_rawlen(L, 3); ++i) {
+            for (auto i = 1; i <= lua_objlen(L, 3); ++i) {
                 lua_pushinteger(L, i);
                 lua_gettable(L, 3);
                 if (lua_type(L, -1) == LUA_TNIL)
@@ -823,7 +823,7 @@ struct CustomImGui {
                 return luaL_error(L, "Argument 4 needs to be a table!");
 
             // get table input
-            for (auto i = 1; i <= lua_rawlen(L, 3); ++i) {
+            for (auto i = 1; i <= lua_objlen(L, 3); ++i) {
                 lua_pushinteger(L, i);
                 lua_gettable(L, 3);
                 if (lua_type(L, -1) == LUA_TNIL)
