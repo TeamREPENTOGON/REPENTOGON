@@ -120,6 +120,10 @@ ___
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
 
 ___
+### ShowGenericLeaderboard () {: aria-label='Functions' }
+#### void ShowGenericLeaderboard ( ) {: .copyable aria-label='Functions' }
+
+___
 ### SpawnBombCrater () {: aria-label='Functions' }
 #### [Entity](Entity.md) SpawnBombCrater ( [Vector](Vector.md) Position, float Radius = 1.0 ) {: .copyable aria-label='Functions' }
 

@@ -230,3 +230,12 @@ bool Entity_Player::AddSmeltedTrinket(int trinketID, bool firstTime) {
 	}
 	return trinketAdded;
 };
+
+void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time) {
+	if ((_runTimeLevel < stage) && g_Game->GetDailyChallenge()._id == 0) {
+		_runTimeLevel = stage;
+		_runTimeLevelType = stageType;
+		_runTime = time;
+	}
+	return;
+}

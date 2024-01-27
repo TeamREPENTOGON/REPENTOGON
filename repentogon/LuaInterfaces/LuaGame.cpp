@@ -226,6 +226,13 @@ LUA_FUNCTION(Lua_GameGetPlayer) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ShowGenericLeaderboard) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+
+	game->_leaderboard.Show(1, &game->_scoreSheet, false);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -254,6 +261,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetColorModifier", Lua_GameSetColorModifier},
 		{ "IsRerun", Lua_GameIsRerun},
 		{ "GetPlayer", Lua_GameGetPlayer},
+		{ "ShowGenericLeaderboard", Lua_ShowGenericLeaderboard},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

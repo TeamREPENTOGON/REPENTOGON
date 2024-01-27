@@ -11,6 +11,10 @@ Additions:
 	- DoLightningStrike
 	- GetNumRainSpawners
 * Added MC_PRE_PICKUP_VOIDED(EntityPickup Pickup, boolean IsBlackRune), MC_PRE_PICKUP_VOIDED_ABYSS(EntityPickup Pickup) and MC_PRE_PICKUP_COMPOSTED(EntityPickup Pickup) callbacks, returning false cancels the pickup getting consumed.
+* Game :
+	- ShowGenericLeaderboard
+* ScoreSheet :
+	- AddFinishedStage
 /newline/
 Modified:
 * PlayerManager :
