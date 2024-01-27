@@ -710,7 +710,7 @@ void ASMPatchPrePickupVoidedAbyss() {
 }
 
 bool __stdcall RunPrePickupComposted(Entity_Pickup* pickup) {
-	const int callbackid = 1266;
+	const int callbackid = 1267;
 
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
