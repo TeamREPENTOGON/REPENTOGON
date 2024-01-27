@@ -181,7 +181,7 @@ void NukeConstMetatables(lua_State* L) {
 }
 
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
-	super(Debug);
+super(Debug);
 	luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
 	lua_pop(g_LuaEngine->_state, 1);
 	luaL_requiref(g_LuaEngine->_state, "os", luaopen_os, 1);
@@ -203,7 +203,7 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua_getglobal(state, "_RunEntityTakeDmgCallback");
 	LuaKeys::entityTakeDmgCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
 
-	NukeConstMetatables(_state);
+	//NukeConstMetatables(_state);
 	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");
 }
 

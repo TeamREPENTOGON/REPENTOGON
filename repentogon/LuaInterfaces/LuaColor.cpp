@@ -174,6 +174,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunctions(_state, lua::Metatables::CONST_COLOR, functions);
 }
 
+/*
 HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 	super(debug);
 
@@ -187,3 +188,4 @@ HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 	lua_rawset(L, -3);
 	lua_pop(L, 2);
 }
+*/

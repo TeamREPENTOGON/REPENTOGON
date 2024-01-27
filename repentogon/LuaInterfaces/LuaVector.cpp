@@ -121,7 +121,7 @@ LUA_FUNCTION(Lua_VectorUD_metasub) {
 	return 1;
 }
 
-HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
+/*HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 	super(debug);
 
 	VectorKey = lua::GetMetatableKey(lua::Metatables::VECTOR);
@@ -168,4 +168,4 @@ HOOK_METHOD(LuaEngine, Init, (bool debug) -> void) {
 		lua_rawset(L, -3);
 		lua_pop(L, 1);
 	}
-}
+}*/

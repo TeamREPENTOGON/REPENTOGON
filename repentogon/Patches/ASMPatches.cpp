@@ -63,9 +63,23 @@ void ASMPatchConsoleRunCommand() {
 	sASMPatcher.FlatPatch(addr, &patch);
 }
 
+// Rest in piss, forever miss.
+void ASMPatchRegisterClasses() {
+	SigScan scanner("e8????????68????????8bcfe8????????68????????8bcf");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Performing orbital strike on LuaBridge at %p\n", addr);
+	
+	ASMPatch patch;
+	patch.AddBytes("\x90\x90\x90\x90\x90");
+	sASMPatcher.FlatPatch(addr, &patch, false);
+}
+
 void PerformASMPatches() {
 	ASMPatchLogMessage();
 	ASMPatchConsoleRunCommand();
+	ASMPatchRegisterClasses();
 
 	// Callbacks
 	PatchPreSampleLaserCollision();

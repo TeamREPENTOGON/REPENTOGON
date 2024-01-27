@@ -28,6 +28,9 @@ __thiscall void LuaEngine::EvaluateItems(Entity_Player *player, int cacheFlag);
 "558bec83e4c083ec34538b1d":
 static __stdcall void LuaEngine::Isaac_WorldToScreen(Vector *buffer, Vector* pos);
 
+"a1(????????)8957":
+reference void *luaMimallocPtr;
+
 "8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;
 

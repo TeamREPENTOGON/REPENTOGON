@@ -1380,6 +1380,12 @@ cleanup void RepCaughtException(int x); // Cant hook to this shit no matter what
 "a1(????????)83ec10803d????????00":
 reference char* g_KAGEInputController; // This is very likely not correct, but I need this offset for Lua, so whatever.
 
+"558bec8b45??85c075??ff75":
+__cdecl int l_alloc(void *ud, void *ptr, unsigned int osize, unsigned int nsize);
+
+"558bec516a006aff":
+__cdecl int l_panic(lua_State* state);
+
 struct GlobalPost {
 {{
 }} };

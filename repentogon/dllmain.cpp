@@ -189,7 +189,7 @@ MOD_EXPORT int ModInit(int argc, char** argv)
 	printf(":REPENTOGON:\n");
 
 	logger.Log("REPENTOGON: Fixing LuaDump for Lua 5.4\n");
-	FixLuaDump();
+	//FixLuaDump();
 	logger.Log("REPENTOGON: Fixed LuaDump for Lua 5.4\n");
 	REPENTOGON::UpdateProgressDisplay("ModInit done");
 	return 0;
