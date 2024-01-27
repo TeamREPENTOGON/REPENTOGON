@@ -640,6 +640,7 @@ bool __stdcall RunPrePickupVoidedBlackRune(Entity_Pickup* pickup) {
 	return true;
 }
 
+// this is so repetitive, might restructure it later
 void ASMPatchPrePickupVoidedBlackRune() {
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
 	ASMPatch patch;
@@ -704,6 +705,51 @@ void ASMPatchPrePickupVoidedAbyss() {
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x1)) // restore push eax
 		.AddInternalCall(((char*)addr + 0x6) + *(ptrdiff_t*)((char*)addr + 0x2)) // restore the function call
 		.AddRelativeJump((char*)addr + 0x6);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+bool __stdcall RunPrePickupComposted(Entity_Pickup* pickup) {
+	const int callbackid = 1266;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*pickup->GetVariant())
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return true;
+}
+
+void ASMPatchPrePickupComposted() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan scanner("8b4028ffd0ff8570faffff8d8e981600006a0268e0010000e8????????8bc8e8????????8bcf85c075168d8538f3ffff50e8????????508bce");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX) // push the pickup
+		.AddInternalCall(RunPrePickupComposted)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x58) // jump for false
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5)) // restore mov eax, dword[eax + 0x28]
+		.AddRelativeJump((char*)addr + 0x5);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }

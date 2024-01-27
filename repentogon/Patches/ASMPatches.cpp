@@ -81,6 +81,7 @@ void PerformASMPatches() {
 	ASMPatchPrePickupVoided();
 	ASMPatchPrePickupVoidedBlackRune();
 	ASMPatchPrePickupVoidedAbyss();
+	ASMPatchPrePickupComposted();
 
 	// Delirium
 	delirium::AddTransformationCallback();

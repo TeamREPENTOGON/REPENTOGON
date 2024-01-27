@@ -1285,6 +1285,14 @@ Runs after the on-collision code of this entity, assuming it wasn't skipped.
 |:--|:--|:--|:--|:--|
 |1239 |MC_POST_PICKUP_COLLISION {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup, <br>[Entity](../Entity.md) Collider, <br>boolean Low) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | void |
 
+### MC_PRE_PICKUP_COMPOSTED {: .copyable }
+This callback is called when a pickup is consumed with the compost active. 
+Accepts `false` to cancel the pickup getting consumed.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1267 |MC_PRE_PICKUP_VOIDED {: .copyable } | ([EntityPickup](https://wofsauge.github.io/IsaacDocs/rep/EntityPickup.html) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
+
 ### MC_PICKUP_GET_COIN_VALUE {: .copyable }
 Accepts `int` CoinValue to modify the amount of coins a coin can give you on pickup.
 
