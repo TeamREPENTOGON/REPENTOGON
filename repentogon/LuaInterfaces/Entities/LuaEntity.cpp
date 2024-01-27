@@ -1,5 +1,3 @@
-#include <sstream>
-
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
@@ -366,7 +364,7 @@ LUA_FUNCTION(Lua_EntityTeleportToRandomPosition) {
 
 #define nonzero(a,b)	((a == 0) ? (b) : (a))
 
-inline void SlowTrackCopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor) {
+inline void SlowTrackCopyStatusEffects(Entity* ent1, Entity* ent2) {
 	UINT64 statusFlags[2] = { ent1->_flags ^ EntityFlag::FLAG_NON_STATUS_EFFECTS, ent2->_flags ^ EntityFlag::FLAG_NON_STATUS_EFFECTS };
 	UINT64 resFlags = statusFlags[0] ^ statusFlags[1]; // get difference in status flags between ent1 and ent2
 	ent2->_flags |= resFlags; // apply difference in flags to ent2
@@ -400,19 +398,17 @@ inline void SlowTrackCopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor
 		}
 	}
 
-	if (setColor) {
-		for (ColorParams& p : ent1->_colorParams) {
-			// try to automatically determine what colors should be shared
-			if (p._priority == 255 && !p._fadeout && p._shared) {
-				ent2->_colorParams.push_back(p);
-			}
+	for (ColorParams& p : ent1->_colorParams) {
+		// try to automatically determine what colors should be shared
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			ent2->_colorParams.push_back(p);
 		}
 	}
 }
 
 #undef nonzero
 
-inline void FastTrackCopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor) {
+inline void FastTrackCopyStatusEffects(Entity* ent1, Entity* ent2) {
 	UINT64 statusFlags = ent1->_flags & EntityFlag::FLAG_STATUS_EFFECTS;
 	ent2->_flags &= EntityFlag::FLAG_NON_STATUS_EFFECTS; // remove ent2 status effect flags
 	ent2->_flags |= statusFlags; // add ent1 status effect flags
@@ -443,42 +439,45 @@ inline void FastTrackCopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor
 		Entity_NPC* npc = static_cast<Entity_NPC*>(ent2);
 		if (npc->_isBoss) {
 			ent2->_bossStatusEffectCooldown = ent1->_bossStatusEffectCooldown;
-			ent2->_sprite._color = ent1->_sprite._color;
 		}
 	}
 
-	if (setColor) {
-		ent2->_colorParams = ent1->_colorParams;
+	for (ColorParams& p : ent2->_colorParams) {
+		// try to automatically determine what colors should be removed
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			p._duration2 = 1; // make it go away while still properly handling other colors
+		}
+	}
+	for (ColorParams& p : ent1->_colorParams) {
+		// try to automatically determine what colors should be shared
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			ent2->_colorParams.push_back(p);
+		}
 	}
 }
 
-void CopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor, bool overwrite) {
-	if (!overwrite) {
-		SlowTrackCopyStatusEffects(ent1, ent2, setColor);
+void CopyStatusEffects(Entity* ent1, Entity* ent2, bool overwrite) {
+	if (overwrite) {
+		FastTrackCopyStatusEffects(ent1, ent2);
 	}
 	else
 	{
-		FastTrackCopyStatusEffects(ent1, ent2, setColor);
+		SlowTrackCopyStatusEffects(ent1, ent2);
 	}
 }
 
 LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 	Entity* ent1 = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	bool setColor, overwrite;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		Entity* ent2 = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-		setColor = lua::luaL_optboolean(L, 3, true);
-		overwrite = lua::luaL_optboolean(L, 4, true);
-		CopyStatusEffects(ent1, ent2, setColor, overwrite);
-
+	bool overwrite = lua::luaL_optboolean(L, 3, false);
+	if (lua_isnil(L, 2)) {
+		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
+			CopyStatusEffects(ent1, child, overwrite);
+		}
 	}
 	else
 	{
-		setColor = lua::luaL_optboolean(L, 2, true);
-		overwrite = lua::luaL_optboolean(L, 3, true);
-		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
-			CopyStatusEffects(ent1, child, setColor, overwrite);
-		}
+		Entity* ent2 = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		CopyStatusEffects(ent1, ent2, overwrite);
 	}
 
 	return 0;

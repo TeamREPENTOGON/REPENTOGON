@@ -42,9 +42,8 @@ ___
 
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
-#### void CopyStatusEffects ( boolean CopyColor = true ) {: .copyable aria-label='Functions' }
-#### void CopyStatusEffects ( [Entity](Entity.md) Target, boolean CopyColor = true ) {: .copyable aria-label='Functions' }
-If no Entity is specified, this will recursively copy status effects to all [Child](Entity.md#child) Entities.
+#### void CopyStatusEffects ( [Entity](Entity.md) Target, boolean Overwrite = false ) {: .copyable aria-label='Functions' }
+If `Target` is `nil`, this will recursively copy status effects to all [Child](Entity.md#child) Entities. `Overwrite` will additionally remove all other status effects from the target and set the properties of existing ones to match `self`.
 
 ___
 ### ForceCollide () {: aria-label='Functions' }
