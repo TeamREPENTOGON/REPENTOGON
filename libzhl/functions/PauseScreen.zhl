@@ -12,4 +12,5 @@ struct PauseScreen depends(ANM2, GenericPopup) {
 	ANM2 statssprite : 0x140; 
 	ANM2 mystuffminispritebase : 0x254;
 	GenericPopup _controllerconnectionpopup : 0x368;
+	Menu_Options menuoptions : 0x806a8;
 } : 0x80a38;
