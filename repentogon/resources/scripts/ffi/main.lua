@@ -16,14 +16,17 @@ ffichecks.checkstring = function(idx, var) ffichecks.checktype(idx, var, "string
 ffichecks.checkboolean = function(idx, var) ffichecks.checktype(idx, var, "boolean") end
 
 pcall(require("Isaac"))
-pcall(require("Console"))
-pcall(require("Game"))
 
 print = function(str) 
 	str = tostring(str)
 	Isaac.DebugString(str)
 	Isaac.ConsoleOutput(str .. "\n")
 end
+
+pcall(require("Console"))
+pcall(require("Game"))
+pcall(require("Color"))
+
 
 package = nil
 ffi = nil
