@@ -1,97 +1,8 @@
-#include "Log.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
-#include "HookSystem.h"
 #include "../ImGuiFeatures/ConsoleMega.h"
 
-LUA_FUNCTION(Lua_ConsoleGetCommandHistory)
-{
-	Console* console = g_Game->GetConsole();
-	std::deque<std::string> commandHistory = *console->GetCommandHistory();
-
-	lua_newtable(L);
-	unsigned int idx = 1;
-
-	std::reverse(commandHistory.begin(), commandHistory.end());
-
-	for (const std::string entry : commandHistory) {
-		lua_pushnumber(L, idx);
-		lua_pushstring(L, entry.c_str());
-		lua_settable(L, -3);
-		idx++;
-
-	}
-	return 1;
-}
-
-LUA_FUNCTION(Lua_ConsolePopHistory) {
-	Console* console = g_Game->GetConsole();
-	int amount = (int)luaL_optinteger(L, 1, 1);
-	std::deque<Console_HistoryEntry>* history = console->GetHistory();
-	amount++;
-
-	for (int i = 0; i < amount; ++i) {
-		if (history->size() > 0)
-			history->pop_front();
-	}
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RegisterCommand) {
-	const char* name = luaL_checkstring(L, 1);
-	const char* desc = luaL_checkstring(L, 2);
-	const char* helpText = luaL_checkstring(L, 3);
-	bool showOnMenu = lua::luaL_optboolean(L, 4, false);
-	ConsoleMega::AutocompleteType autocompleteType = (ConsoleMega::AutocompleteType)luaL_optnumber(L, 5, 0);
-
-	console.RegisterCommand(name, desc, helpText, showOnMenu, autocompleteType);
-
-	return 0;
-}
-
-LUA_FUNCTION(Lua_RegisterMacro) {
-	lua::LuaStackProtector protector(L);
-	const char* name = luaL_checkstring(L, 1);
-	if (!lua_istable(L, 2)) {
-
-		std::string err = "Expected a table of strings, got ";
-		err.append(lua_typename(L, lua_type(L, 2)));
-		luaL_argerror(L, 2, err.c_str());
-
-		return 0;
-	}
-
-	std::vector<std::string> commands;
-	// Get the number of vertices we received.
-	unsigned int len = (unsigned int)lua_objlen(L, 2);
-
-	for (unsigned int i = 1; i <= len; ++i) {
-		lua_pushinteger(L, i);
-		lua_gettable(L, 2);
-		if (lua_type(L, -1) == LUA_TNIL) break;
-		commands.push_back(luaL_checkstring(L, -1));
-		lua_pop(L, 1);
-	}
-
-	console.RegisterMacro(name, commands);
-	return 0;
-}
-
-static void RegisterConsole(lua_State* L) {
-	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetConsole", Lua_GetConsole);
-	lua_newtable(L);
-
-		lua::TableAssoc(L, "GetCommandHistory", Lua_ConsoleGetCommandHistory );
-		lua::TableAssoc(L, "PopHistory", Lua_ConsolePopHistory );
-		lua::TableAssoc(L, "RegisterCommand", Lua_RegisterCommand );
-		lua::TableAssoc(L, "RegisterMacro", Lua_RegisterMacro );
-
-	lua_setglobal(L, "Console");
-}
-
 extern "C" {
-
-	// CONSOLE
 	void L_Console_Print(const char* str, unsigned int color) {
 		g_Game->GetConsole()->Print(std::string(str), color, 0x96U);
 	}
@@ -103,7 +14,6 @@ extern "C" {
 	void L_KAGE_LogMessage(const char* str) {
 		KAGE::LogMessage(0, str);
 	}
-
 
 	FFI_StringTable L_Console_GetHistory() {
 		Console* console = g_Game->GetConsole();
@@ -119,5 +29,55 @@ extern "C" {
 			++idx;
 		}
 		return table;
+	}
+
+	FFI_StringTable L_Console_GetCommandHistory() {
+		Console* console = g_Game->GetConsole();
+		std::deque<std::string> history = *console->GetCommandHistory();
+		std::reverse(history.begin(), history.end());
+
+		FFI_StringTable table;
+		table.strings = (char**)malloc(history.size() * sizeof(char*));
+		table.length = history.size();
+		unsigned int idx = 0;
+		for (const std::string entry : history) {
+			table.strings[idx] = strdup(entry.c_str());
+			++idx;
+		}
+		return table;
+	}
+
+	void L_Console_PopHistory(int amount) {
+		Console* console = g_Game->GetConsole();
+		std::deque<Console_HistoryEntry>* history = console->GetHistory();
+		amount++;
+
+		for (int i = 0; i < amount; ++i) {
+			if (history->size() > 0)
+				history->pop_front();
+		}
+	}
+	
+	// This is so I can just pass a pointer to and from Lua. Passing 4 bytes on the stack should be quicker than 17.
+	typedef struct {
+		const char* name;
+		const char* desc;
+		const char* helpText;
+		bool showOnMenu;
+		int autocompleteType;
+	} L_RegisterCommandHolder;
+
+	void L_Console_RegisterCommand(L_RegisterCommandHolder* holder) {
+		console.RegisterCommand(holder->name, holder->desc, holder->helpText, holder->showOnMenu, (ConsoleMega::AutocompleteType)holder->autocompleteType);
+	}
+	
+	void L_Console_RegisterMacro(const char* name, FFI_StringTable mdata) {
+		std::vector<std::string> macro;
+		
+		for (int i = 0; i < mdata.length; ++i) {
+			macro.push_back(mdata.strings[i]);
+		}
+
+		console.RegisterMacro(name, macro);
 	}
 }

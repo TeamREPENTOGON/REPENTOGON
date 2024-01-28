@@ -13,6 +13,7 @@ end
 
 ffichecks.checknumber = function(idx, var) ffichecks.checktype(idx, var, "number") end
 ffichecks.checkstring = function(idx, var) ffichecks.checktype(idx, var, "string") end
+ffichecks.checkboolean = function(idx, var) ffichecks.checktype(idx, var, "boolean") end
 
 pcall(require("Isaac"))
 pcall(require("Console"))
@@ -21,7 +22,7 @@ pcall(require("Game"))
 print = function(str) 
 	str = tostring(str)
 	Isaac.DebugString(str)
-	Isaac.ConsoleOutput(str)
+	Isaac.ConsoleOutput(str .. "\n")
 end
 
 package = nil

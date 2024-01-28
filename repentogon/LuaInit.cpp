@@ -24,6 +24,10 @@ extern "C" {
 		}
 		free(strings.strings);
 	}
+
+	void createPointer(void* cdata, void** pointer) {
+		*pointer = cdata;
+	}
 }
 
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
