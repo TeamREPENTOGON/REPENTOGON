@@ -259,3 +259,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);
 
 }
+
+extern "C" {
+	void L_Game_ClearDonationModGreed() {
+		g_Game->ClearDonationModGreed();
+	}
+}

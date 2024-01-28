@@ -16,6 +16,7 @@ ffichecks.checkstring = function(idx, var) ffichecks.checktype(idx, var, "string
 
 pcall(require("Isaac"))
 pcall(require("Console"))
+pcall(require("Game"))
 
 print = function(str) 
 	str = tostring(str)
