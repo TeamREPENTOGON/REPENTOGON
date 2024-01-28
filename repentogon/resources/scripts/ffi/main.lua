@@ -18,6 +18,7 @@ pcall(require("Isaac"))
 pcall(require("Console"))
 
 print = function(str) 
+	str = tostring(str)
 	Isaac.DebugString(str)
 	Isaac.ConsoleOutput(str)
 end

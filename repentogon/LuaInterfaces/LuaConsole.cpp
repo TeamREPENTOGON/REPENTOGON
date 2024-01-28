@@ -4,24 +4,6 @@
 #include "HookSystem.h"
 #include "../ImGuiFeatures/ConsoleMega.h"
 
-
-LUA_FUNCTION(Lua_ConsoleGetHistory)
-{
-	Console* console = g_Game->GetConsole();
-	std::deque<Console_HistoryEntry>* history = console->GetHistory();
-
-	lua_newtable(L);
-	unsigned int idx = 1;
-	for (const Console_HistoryEntry entry : *history) {
-		lua_pushnumber(L, idx);
-		lua_pushstring(L, entry._text.c_str());
-		lua_settable(L, -3);
-		idx++;
-	}
-
-	return 1;
-}
-
 LUA_FUNCTION(Lua_ConsoleGetCommandHistory)
 {
 	Console* console = g_Game->GetConsole();
@@ -100,7 +82,6 @@ static void RegisterConsole(lua_State* L) {
 	lua_newtable(L);
 
 		lua::TableAssoc(L, "GetCommandHistory", Lua_ConsoleGetCommandHistory );
-		lua::TableAssoc(L, "GetHistory", Lua_ConsoleGetHistory );
 		lua::TableAssoc(L, "PopHistory", Lua_ConsolePopHistory );
 		lua::TableAssoc(L, "RegisterCommand", Lua_RegisterCommand );
 		lua::TableAssoc(L, "RegisterMacro", Lua_RegisterMacro );
@@ -109,6 +90,7 @@ static void RegisterConsole(lua_State* L) {
 }
 
 extern "C" {
+
 	// CONSOLE
 	void L_Console_Print(const char* str, unsigned int color) {
 		g_Game->GetConsole()->Print(std::string(str), color, 0x96U);
@@ -120,5 +102,22 @@ extern "C" {
 
 	void L_KAGE_LogMessage(const char* str) {
 		KAGE::LogMessage(0, str);
+	}
+
+
+	FFI_StringTable L_Console_GetHistory() {
+		Console* console = g_Game->GetConsole();
+		std::deque<Console_HistoryEntry>* history = console->GetHistory();
+
+		FFI_StringTable table;
+		table.strings = (char**)malloc(history->size() * sizeof(char*));
+		table.length = history->size();
+
+		unsigned int idx = 0;
+		for (const Console_HistoryEntry entry : *history) {
+			table.strings[idx] = strdup(entry._text.c_str());
+			++idx;
+		}
+		return table;
 	}
 }

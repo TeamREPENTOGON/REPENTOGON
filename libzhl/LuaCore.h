@@ -6,6 +6,14 @@ extern "C" {
     #include "lua53compat/lua53compat.h"
 }
 
+
+extern "C" {
+    typedef struct {
+        char** strings;
+        int length;
+    } FFI_StringTable;
+}
+
 #include "libzhl.h"
 
 #include <string>

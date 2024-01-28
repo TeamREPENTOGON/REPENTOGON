@@ -259,7 +259,7 @@ foreach(_source IN ITEMS ${LJMODTEST_SRC})
 endforeach()
 add_library(zhlLJModTest SHARED ${LJMODTEST_SRC})
 target_link_libraries(zhlLJModTest libzhl lua51)
-target_compile_options(zhlLJModTest PUBLIC "/MD")
+target_compile_options(zhlLJModTest PUBLIC "/MD" "/MP")
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

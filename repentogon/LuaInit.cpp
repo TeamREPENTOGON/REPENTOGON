@@ -16,6 +16,16 @@
 
 #include "LuaInit.h"
 
+
+extern "C" {
+	void FreeStringTable(FFI_StringTable strings) {
+		for (int i = 0; i < strings.length; ++i) {
+			free(strings.strings[i]);
+		}
+		free(strings.strings);
+	}
+}
+
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
 int LuaKeys::preRenderCallbackKey = LUA_NOREF;
 int LuaKeys::additiveCallbackKey = LUA_NOREF;

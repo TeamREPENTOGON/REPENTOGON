@@ -574,3 +574,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	}
 	QueryRadiusRef = luaL_ref(_state, LUA_REGISTRYINDEX);
 }
+
+extern "C" {
+	unsigned int L_Isaac_GetTime() {
+		return timeGetTime();
+	};
+}
