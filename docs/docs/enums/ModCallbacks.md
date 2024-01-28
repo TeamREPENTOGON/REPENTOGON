@@ -1889,7 +1889,7 @@ Accepts no return parameters.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1098 |MC_POST_TRIGGER_WEAPON_FIRED {: .copyable } | ([Vector](../Vector.md) FireDirection, <br>int FireAmount, <br>[Entity](../Entity.md) Owner) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
+|1098 |MC_POST_TRIGGER_WEAPON_FIRED {: .copyable } | ([Vector](../Vector.md) FireDirection, <br>int FireAmount, <br>[Entity](../Entity.md) Owner, <br>[Weapon](../Weapon.md) Weapon) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
 
 ### MC_PRE_USE_CARD {: .copyable }
 Accepts `true` to cancel card use.

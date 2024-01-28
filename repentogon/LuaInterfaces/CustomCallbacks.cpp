@@ -2390,7 +2390,7 @@ HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& dir, int FireAmount) -> voi
 
 		lua::LuaCaller caller(L);
 		caller.push(callbackid)
-			.push(this->GetWeaponType())
+			.push(GetWeaponType())
 			.pushUserdataValue(dir, lua::Metatables::VECTOR)
 			.push(FireAmount)
 			.push(ent, lua::Metatables::ENTITY);
