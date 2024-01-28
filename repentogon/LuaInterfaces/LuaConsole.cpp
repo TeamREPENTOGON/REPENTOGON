@@ -4,22 +4,6 @@
 #include "HookSystem.h"
 #include "../ImGuiFeatures/ConsoleMega.h"
 
-/*LUA_FUNCTION(Lua_GetConsole) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	Console** ud = (Console**)lua_newuserdata(L, sizeof(Console*));
-	*ud = game->GetConsole();
-	luaL_setmetatable(L, lua::metatables::ConsoleMT);
-	return 1;
-}
-*/
-
-LUA_FUNCTION(Lua_ConsolePrintError)
-{
-	Console* console = g_Game->GetConsole();
-	const char* err = luaL_checkstring(L, 1);
-	console->PrintError(err);
-	return 0;
-}
 
 LUA_FUNCTION(Lua_ConsoleGetHistory)
 {
@@ -56,15 +40,6 @@ LUA_FUNCTION(Lua_ConsoleGetCommandHistory)
 
 	}
 	return 1;
-}
-
-LUA_FUNCTION(Lua_ConsolePrintWarning)
-{
-	Console* console = g_Game->GetConsole();
-	std::string err = luaL_checkstring(L, 1) + std::string("\n");
-
-	console->Print(err, 0xFFFCCA03, 0x96u);
-	return 0;
 }
 
 LUA_FUNCTION(Lua_ConsolePopHistory) {
@@ -124,11 +99,9 @@ static void RegisterConsole(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetConsole", Lua_GetConsole);
 	lua_newtable(L);
 
-		lua::TableAssoc(L, "PrintError", Lua_ConsolePrintError );
 		lua::TableAssoc(L, "GetCommandHistory", Lua_ConsoleGetCommandHistory );
 		lua::TableAssoc(L, "GetHistory", Lua_ConsoleGetHistory );
 		lua::TableAssoc(L, "PopHistory", Lua_ConsolePopHistory );
-		lua::TableAssoc(L, "PrintWarning", Lua_ConsolePrintWarning );
 		lua::TableAssoc(L, "RegisterCommand", Lua_RegisterCommand );
 		lua::TableAssoc(L, "RegisterMacro", Lua_RegisterMacro );
 

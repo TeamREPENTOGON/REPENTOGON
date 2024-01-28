@@ -181,8 +181,37 @@ void NukeConstMetatables(lua_State* L) {
 }
 
 HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
-super(Debug);
-	luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
+	
+	// Vanilla use mimalloc for Lua so it has custom functions for this.
+
+	if (luaMimallocPtr) {
+		this->_state = lua_newstate((lua_Alloc)l_alloc, luaMimallocPtr);
+		if (this->_state)
+			lua_atpanic(this->_state, l_panic);
+	}
+	else {
+		this->_state = luaL_newstate();
+	}
+	
+	lua_State* L = this->_state;
+
+	if (Debug) {
+		//TODO Implement debug mode. Not particularly high priority since this can't be done by normal means AFAIK
+	}
+
+	luaL_requiref(L, "debug", luaopen_debug, 1);
+	lua_pop(L, 1);
+	luaL_requiref(L, "os", luaopen_os, 1);
+	lua_pop(L, 1);
+	luaL_requiref(L, "ffi", luaopen_ffi, 1);
+	lua_pop(L, 1);
+	luaL_requiref(L, "package", luaopen_package, 1);
+	lua_pop(L, 1);
+	luaL_openlibs(L);
+
+	this->RunBundledScript("resources/scripts/ffi/main.lua");
+
+	/*luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
 	lua_pop(g_LuaEngine->_state, 1);
 	luaL_requiref(g_LuaEngine->_state, "os", luaopen_os, 1);
 	lua_pop(g_LuaEngine->_state, 1);
@@ -201,7 +230,7 @@ super(Debug);
 	LuaKeys::preRenderCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
 
 	lua_getglobal(state, "_RunEntityTakeDmgCallback");
-	LuaKeys::entityTakeDmgCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
+	LuaKeys::entityTakeDmgCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);*/
 
 	//NukeConstMetatables(_state);
 	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");

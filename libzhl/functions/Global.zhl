@@ -1386,6 +1386,9 @@ __cdecl int l_alloc(void *ud, void *ptr, unsigned int osize, unsigned int nsize)
 "558bec516a006aff":
 __cdecl int l_panic(lua_State* state);
 
+"558bec6aff68????????64a1????????5083ec20a1????????33c58945??535657508d45??64a3????????8bf2":
+cleanup __fastcall void AddLuaPath(lua_State* state, const char* path, bool cpath);
+
 struct GlobalPost {
 {{
 }} };
