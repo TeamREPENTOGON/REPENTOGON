@@ -4,11 +4,12 @@ __thiscall void PauseScreen::Render();
 struct PauseScreen depends(ANM2, GenericPopup) {
 {{
 	inline CompletionWidget* GetCompletionWidget() { return (CompletionWidget*)((char*)this + 526620); } 
-	inline ANM2* GetANM2() { return (ANM2*)((char*)this + 44); }
-	//inline ANM2* GetANM22() { return (ANM2*)((char*)this + 92); } // ?? another sprite, it can be rendered but I suspect its the same one loaded at a different offset?
-	inline ANM2* GetStatsANM2() { return (ANM2*)((char*)this + 368); }	
 }} 
     int status : 0x0;
 	bool notinfocus: 0x4;
+	int selectedelement: 0x8;
+	ANM2 mainsprite : 0x2c;
+	ANM2 statssprite : 0x140; 
+	ANM2 mystuffminispritebase : 0x254;
 	GenericPopup _controllerconnectionpopup : 0x368;
 } : 0x80a38;

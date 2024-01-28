@@ -76,7 +76,7 @@ ___
 
 ___
 ### GetPauseMenuState () {: aria-label='Functions' }
-#### int GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
+#### [PauseMenuStates](enums/PauseMenuStates.md) GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPlanetariumsVisited () {: aria-label='Functions' }
@@ -118,6 +118,10 @@ ___
 ___
 ### SetColorModifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
+
+___
+### ShowGenericLeaderboard () {: aria-label='Functions' }
+#### void ShowGenericLeaderboard ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBombCrater () {: aria-label='Functions' }

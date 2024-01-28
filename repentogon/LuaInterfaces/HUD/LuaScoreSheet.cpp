@@ -147,6 +147,17 @@ LUA_FUNCTION(Lua_ScoreSheetSetRunEnding)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_ScoreSheetAddFinishedStage)
+{
+	ScoreSheet* scoreSheet = g_Game->GetScoreSheet();
+	const int stage = luaL_checkinteger(L, 1);
+	const int stageType = luaL_checkinteger(L, 2);
+	CONST int time = luaL_checkinteger(L, 3);
+	scoreSheet->AddFinishedStage(stage, stageType, time);
+
+	return 0;
+}
+
 static void RegisterScoreSheet(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetScoreSheet", Lua_GetScoreSheet);
 	lua_newtable(L);
@@ -168,6 +179,7 @@ static void RegisterScoreSheet(lua_State* L) {
 		lua::TableAssoc(L, "GetRunTime", Lua_ScoreSheetGetRunTime );
 		lua::TableAssoc(L, "GetRunEnding", Lua_ScoreSheetGetRunEnding );
 		lua::TableAssoc(L, "SetRunEnding", Lua_ScoreSheetSetRunEnding );
+		lua::TableAssoc(L, "AddFinishedStage", Lua_ScoreSheetAddFinishedStage);
 		//{ NULL, NULL }
 	//};
 	//lua::RegisterNewClass(L, lua::metatables::ScoreSheetMT, lua::metatables::ScoreSheetMT, functions);

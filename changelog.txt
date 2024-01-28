@@ -13,8 +13,13 @@ Additions:
 	- [Get/Set]LightningIntensity
 	- DoLightningStrike
 	- GetNumRainSpawners
-* Added MC_PRE_PICKUP_VOIDED(EntityPickup Pickup, boolean IsBlackRune) callback, returning false cancels the pickup getting consumed.
-* Added MC_PRE_PICKUP_VOIDED_ABYSS(EntityPickup Pickup) callback, returning false cancels the pickup getting consumed.
+* Added MC_PRE_PICKUP_VOIDED(EntityPickup Pickup, boolean IsBlackRune), MC_PRE_PICKUP_VOIDED_ABYSS(EntityPickup Pickup) and MC_PRE_PICKUP_COMPOSTED(EntityPickup Pickup) callbacks, returning false cancels the pickup getting consumed.
+* Game :
+	- ShowGenericLeaderboard
+* ScoreSheet :
+	- AddFinishedStage
+* XMLData:
+	- Added GetModById since the normal GetEntryById wont give the expected result when you want to use actual mod ids
 /newline/
 Modified:
 * PlayerManager :
@@ -28,6 +33,7 @@ Fixes:
 * Fixed binder for Entity:ComputeStatusEffectDuration
 * Fixed pause menu modded marks rendering over the controller disconected popup
 * Fixed DamageFlag.DAMAGE_RED_HEARTS / .DAMAGE_NO_PENALTIES / .DAMAGE_FAKE not working when adding them via MC_ENTITY_TAKE_DMG's return table.
+* Fixed an issue on xmldata that created extra ghost entries on some nodetypes when asking for stuff that isnt there
 /newline/
 /newline/
 v1.0.5a -
