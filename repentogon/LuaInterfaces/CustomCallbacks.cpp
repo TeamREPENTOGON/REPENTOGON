@@ -1008,8 +1008,8 @@ void PostPauseScreenRender(PauseScreen* paws) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(paws->GetANM2(), lua::Metatables::SPRITE)
-			.push(paws->GetStatsANM2(), lua::Metatables::SPRITE)
+			.push(&paws->mainsprite, lua::Metatables::SPRITE)
+			.push(&paws->statssprite, lua::Metatables::SPRITE)
 			.call(1);
 	}
 
@@ -1025,8 +1025,8 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 
 	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 		.pushnil()
-		.push(this->GetANM2(), lua::Metatables::SPRITE)
-		.push(this->GetStatsANM2(), lua::Metatables::SPRITE)
+		.push(&this->mainsprite, lua::Metatables::SPRITE)
+		.push(&this->statssprite, lua::Metatables::SPRITE)
 		.call(1);
 
 	if (!result) {

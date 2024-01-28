@@ -904,7 +904,7 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 		super();
 		postponepromptrender = false;
 
-		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget");
+		NullFrame* nul = this->mainsprite.GetNullFrame("CompletionWidget");
 		Vector* widgtpos = nul->GetPos();
 		Vector* widgtscale = nul->GetScale();
 		CompletionWidget* cmpl = this->GetCompletionWidget();
