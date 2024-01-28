@@ -108,10 +108,17 @@ static void RegisterConsole(lua_State* L) {
 	lua_setglobal(L, "Console");
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+extern "C" {
+	// CONSOLE
+	void L_Console_Print(const char* str, unsigned int color) {
+		g_Game->GetConsole()->Print(std::string(str), color, 0x96U);
+	}
 
-	lua::LuaStackProtector protector(_state);
-	RegisterConsole(_state);
+	void L_Console_PrintError(const char* str) {
+		g_Game->GetConsole()->PrintError(str);
+	}
+
+	void L_KAGE_LogMessage(const char* str) {
+		KAGE::LogMessage(0, str);
+	}
 }
-

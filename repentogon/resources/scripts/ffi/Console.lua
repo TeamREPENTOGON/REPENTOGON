@@ -3,14 +3,17 @@ void L_Console_Print(const char*, unsigned int);
 void L_Console_PrintError(const char*);
 ]]
 
+local repentogon = ffidll
+
 Console = {}
 
---TODO: add typechecking. These are DIRECT C++ CALLS so we need to be careful.
 function Console.PrintError(err)
-	libzhl.L_Console_PrintError(err)
+	ffichecks.checkstring(1, err)
+	repentogon.L_Console_PrintError(err)
 end
 
 function Console.PrintWarning(warn)
-	libzhl.L_Console_Print(warn, 0xFFFCCA03)
+	ffichecks.checkstring(1, warn)
+	repentogon.L_Console_Print(warn, 0xFFFCCA03)
 end
 
