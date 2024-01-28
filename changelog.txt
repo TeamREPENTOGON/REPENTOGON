@@ -4,6 +4,9 @@ Additions:
 	- SetModifiers
 * Added Chinese translation text, thanks @502y
 * Added support for the pocketActive param in players.xml(I forgor)
+* Entity:CopyStatusEffects has been modified to better suit actual use cases
+	- SetColor has been removed, will now always copy ColorParams
+	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior 
 * Room :
 	- SetLavaIntensity
 	- [Get/Set]RainIntensity

@@ -76,7 +76,7 @@ ___
 
 ___
 ### GetPauseMenuState () {: aria-label='Functions' }
-#### int GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
+#### [PauseMenuStates](enums/PauseMenuStates.md) GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPlanetariumsVisited () {: aria-label='Functions' }
