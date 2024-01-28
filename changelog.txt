@@ -15,6 +15,11 @@ Additions:
 	- ShowGenericLeaderboard
 * ScoreSheet :
 	- AddFinishedStage
+* PauseMenu:
+	- Added a PauseMenu Global that holds all its related stuff
+	- Added a GetMyStuffSprite that returns the sprite used for the MyStuff items
+	- Added a GetSelectedElement/SetSelectedElement similar to the one seen in other menus
+	- Added GetState/SetState 
 * XMLData:
 	- Added GetModById since the normal GetEntryById wont give the expected result when you want to use actual mod ids
 /newline/
@@ -31,6 +36,7 @@ Fixes:
 * Fixed pause menu modded marks rendering over the controller disconected popup
 * Fixed DamageFlag.DAMAGE_RED_HEARTS / .DAMAGE_NO_PENALTIES / .DAMAGE_FAKE not working when adding them via MC_ENTITY_TAKE_DMG's return table.
 * Fixed an issue on xmldata that created extra ghost entries on some nodetypes when asking for stuff that isnt there
+* Fixed an issue with the stats sprite for the pause menu callbacks where it ended up holding garbage data
 /newline/
 /newline/
 v1.0.5a -
