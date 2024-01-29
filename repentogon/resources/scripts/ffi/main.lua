@@ -23,6 +23,7 @@ print = function(str)
 	Isaac.ConsoleOutput(str .. "\n")
 end
 
+pcall(require("Options"))
 pcall(require("Console"))
 pcall(require("Game"))
 pcall(require("Color"))

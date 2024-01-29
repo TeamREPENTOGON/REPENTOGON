@@ -69,6 +69,8 @@ __thiscall void Manager::SetFullscreenRendering(bool value);
 "558bec81ec18040000":
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
+"a1????????8b80????????83f813":
+static const char* Manager::GetLanguage();
 
 struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }

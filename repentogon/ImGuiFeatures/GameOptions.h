@@ -184,7 +184,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::InputInt(LANG.OPT_VIS_MAX_RENDER_SCALE, &g_Manager->GetOptions()->_maxRenderScale, 1);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_maxRenderScale, 2);
                         AddNewTableRow();
-                        ImGui::SliderInt(LANG.OPT_VIS_ACTIVE_CAMERA, &g_Manager->GetOptions()->_cameraStyle, 0, 1, offOnModes[g_Manager->GetOptions()->_cameraStyle], ImGuiSliderFlags_NoInput);
+                        ImGui::SliderInt(LANG.OPT_VIS_ACTIVE_CAMERA, &g_Manager->GetOptions()->_cameraStyle, 1, 2, offOnModes[g_Manager->GetOptions()->_cameraStyle], ImGuiSliderFlags_NoInput);
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_cameraStyle, 1);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_VIS_VSYNC, &g_Manager->GetOptions()->_enableVSync);

@@ -1,0 +1,5 @@
+"558bec51803d????????00a1":
+static __cdecl void LuaEngine_Options::SetMouseControl(bool Value);
+
+struct LuaEngine_Options {
+};
