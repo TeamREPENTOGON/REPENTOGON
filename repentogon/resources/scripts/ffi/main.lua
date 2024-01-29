@@ -36,6 +36,7 @@ pcall(require("Console"))
 pcall(require("Game"))
 pcall(require("Color"))
 pcall(require("Vector"))
+pcall(require("SFXManager"))
 
 
 package = nil

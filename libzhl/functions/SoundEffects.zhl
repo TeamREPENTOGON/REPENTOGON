@@ -1,8 +1,33 @@
+"558bec53568b75??5785f60f88????????8b39":
+__thiscall void SoundEffects::AdjustPitch(unsigned int id, float pitch);
+
+"558bec5153568b75??8bc18945":
+__thiscall void SoundEffects::AdjustVolume(unsigned int id, float volume);
+
+
 "558bec83ec0c8bc133c9":
 __thiscall void SoundEffects::ClearVolumeModifier();
 
+"558bec56578b7d??85ff":
+__thiscall float SoundEffects::GetAmbientSoundVolume(unsigned int id);
+
+"558bec515356578b7d??8bc1":
+__thiscall bool SoundEffects::IsPlaying(unsigned int id);
+
+"558bec518b45??5669f0b8010000":
+__thiscall void SoundEffects::Preload(unsigned int id);
+
 "558bec6aff68????????64a1????????5083ec0c535657a1????????33c5508d45??64a3????????8bd964a1":
-__thiscall void SoundEffects::Play(int ID,float Volume,int FrameDelay,bool Loop,float Pitch,float Pan);
+__thiscall void SoundEffects::Play(unsigned int ID,float Volume,int FrameDelay,bool Loop,float Pitch,float Pan);
+
+"558bec51f30f1005????????0f2f45":
+__thiscall void SoundEffects::SetAmbientSound(unsigned int ID, float Volume, float Pitch);
+
+"558bec53568b75??5785f60f88????????8b19":
+__thiscall void SoundEffects::Stop(unsigned int ID);
+
+"558bec83ec0c8bc1538945":
+__thiscall void SoundEffects::StopLoopingSounds();
 
 struct SoundEffects {
 } : 0x18;
