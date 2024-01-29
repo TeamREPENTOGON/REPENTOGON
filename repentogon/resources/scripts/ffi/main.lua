@@ -29,7 +29,6 @@ ffichecks.checkcdata = function(idx, var, ctype)
 	end
 end
 
-
 ffichecks.isnumber = function(idx, var) return ffichecks.istype(idx, var, "number") end
 ffichecks.isstring = function(idx, var) return ffichecks.istype(idx, var, "string") end
 ffichecks.isboolean = function(idx, var) return ffichecks.istype(idx, var, "boolean") end
@@ -37,7 +36,7 @@ ffichecks.isboolean = function(idx, var) return ffichecks.istype(idx, var, "bool
 
 pcall(require("Isaac"))
 
-print = function(str) 
+print = function(str)
 	str = tostring(str)
 	Isaac.DebugString(str)
 	Isaac.ConsoleOutput(str .. "\n")
@@ -50,6 +49,7 @@ pcall(require("Color"))
 pcall(require("Vector"))
 pcall(require("SFXManager"))
 pcall(require("RNG"))
+pcall(require("MusicManager"))
 
 
 package = nil

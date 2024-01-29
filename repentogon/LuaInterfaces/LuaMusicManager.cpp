@@ -1,85 +1,105 @@
-#include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
-static bool ValidateMusicID(Music* music, int id, int& max) {
-	void* ecx = *(void**)((char*)music + 0x320);
-	void* edi = *(void**)((char*)music + 0x31C);
+// not as if this is going to change midgame
+int maxId = -1;
 
-	ptrdiff_t length = (ptrdiff_t)ecx - (ptrdiff_t)edi;
-	max = length / 96; // Size of the content of the array
+extern "C" {
+	unsigned int L_MusicManager_GetMaxID() {
+		if (maxId != -1)
+			return maxId;
 
-	return id >= 0 && id < max;
-}
+		Music* music = &g_Manager->_musicManager;
+		void* ecx = *(void**)((char*)music + 0x320);
+		void* edi = *(void**)((char*)music + 0x31C);
 
-LUA_FUNCTION(Lua_MusicManager_Play) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = (int)luaL_checkinteger(L, 2);
-	int max;
+		ptrdiff_t length = (ptrdiff_t)ecx - (ptrdiff_t)edi;
+		maxId = length / 96; // Size of the content of the array
 
-	if (!ValidateMusicID(music, musicId, max)) {
-		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = %d", musicId, max - 1);
+		return maxId;
 	}
 
-	float volume = (float)luaL_optnumber(L, 3, -1);
-	music->Play(musicId, volume);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_MusicManager_Crossfade) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = (int)luaL_checkinteger(L, 2);
-	int max;
-
-	if (!ValidateMusicID(music, musicId, max)) {
-		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = %d", musicId, max - 1);
+	void L_MusicManager_Crossfade(unsigned int id, float faderate) {
+		g_Manager->_musicManager.Crossfade(id, faderate);
 	}
 
-	float faderate = (float)luaL_optnumber(L, 3, 0.08);
-	music->Crossfade(musicId, faderate);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_MusicManager_Fadein) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	unsigned int musicId = (unsigned int)luaL_checkinteger(L, 2);
-	int max;
-
-	if (!ValidateMusicID(music, musicId, max)) {
-		return luaL_error(L, "Invalid music ID %d. Min = 0, Max = %d", musicId, max - 1);
+	void L_MusicManager_Disable() {
+		g_Manager->_musicManager._enabled = false;
 	}
 
-	float volume = (float)luaL_optnumber(L, 3, 1);
-	float faderate = (float)luaL_optnumber(L, 4, 0.08);
-	music->Fadein(musicId, volume, faderate);
-	return 0;
-}
+	void L_MusicManager_DisableLayer(unsigned int id) {
+		g_Manager->_musicManager.DisableLayer(id);
+	}
 
-LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	int musicId = (int)luaL_checkinteger(L, 2);
-	music->PlayJingle(musicId, 140, false);
+	void L_MusicManager_Enable() {
+		g_Manager->_musicManager._enabled = true;
+	}
 
-	return 0;
-}
+	void L_MusicManager_EnableLayer(unsigned int id, bool instant) {
+		g_Manager->_musicManager.EnableLayer(id, instant);
+	}
 
-LUA_FUNCTION(Lua_MusicManager_StopJingle) {
-	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	music->StopJingle();
+	void L_MusicManager_Fadein(unsigned int id, float volume, float faderate) {
+		g_Manager->_musicManager.Fadein(id, volume, faderate);
+	}
 
-	return 0;
-}
+	void L_MusicManager_Fadeout(float faderate) {
+		g_Manager->_musicManager.Fadeout(faderate);
+	}
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
-	lua::LuaStackProtector protector(_state);
+	unsigned int L_MusicManager_GetCurrentMusicID() {
+		return g_Manager->_musicManager._currentId;
+	}
 
-	// Fix existing functions
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Play", Lua_MusicManager_Play);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Crossfade", Lua_MusicManager_Crossfade);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "Fadein", Lua_MusicManager_Fadein);
+	unsigned int L_MusicManager_GetQueuedMusicID() {
+		return g_Manager->_musicManager._queuedId == 0 ? g_Manager->_musicManager._currentId : g_Manager->_musicManager._queuedId;
+	}
 
-	// New Functions
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "PlayJingle", Lua_MusicManager_PlayJingle);
-	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "StopJingle", Lua_MusicManager_StopJingle);
+	bool L_MusicManager_IsEnabled() {
+		return g_Manager->_musicManager._enabled;
+	}
+
+	bool L_MusicManager_IsLayerEnabled(unsigned int id) {
+		return g_Manager->_musicManager.IsLayerEnabled(id);
+	}
+
+	void L_MusicManager_Pause() {
+		g_Manager->_musicManager.Pause();
+	}
+
+	void L_MusicManager_PitchSlide(float TargetPitch) {
+		g_Manager->_musicManager._targetPitch = TargetPitch;
+	}
+
+	void L_MusicManager_Play(unsigned int id, float volume) {
+		g_Manager->_musicManager.Play(id, volume);
+	}
+
+	void L_MusicManager_PlayJingle(unsigned int id) {
+		g_Manager->_musicManager.PlayJingle(id, 140, false);
+	}
+
+	void L_MusicManager_Queue(unsigned int id) {
+		g_Manager->_musicManager._queuedId = id;
+	}
+
+	void L_MusicManager_ResetPitch() {
+		g_Manager->_musicManager.ResetPitch();
+	}
+
+	void L_MusicManager_Resume() {
+		g_Manager->_musicManager.Resume();
+	}
+
+	void L_MusicManager_StopJingle() {
+		g_Manager->_musicManager.StopJingle();
+	}
+
+	void L_MusicManager_UpdateVolume() {
+		g_Manager->_musicManager.UpdateVolume();
+	}
+
+	void L_MusicManager_VolumeSlide(float volume, float faderate) {
+		g_Manager->_musicManager.VolumeSlide(volume, faderate);
+	}
 }
