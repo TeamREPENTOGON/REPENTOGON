@@ -11,6 +11,23 @@ local lffi = ffi
 
 local VectorFuncs = {}
 
+local function ParseVectorString(str, mt)
+	return string.format(str, mt.X, mt.Y)
+end
+
+function VectorFuncs:__tostring()
+	return ParseVectorString("%g %g", self)
+end
+
+local VectorMT
+VectorMT = lffi.metatype("Vector", {
+	__tostring = function(a)
+		return ParseVectorString("%g %g", a)
+	end;
+
+	__index = VectorFuncs;
+})
+
 function VectorFuncs:Clamp(MinX, MinY, MaxX, MaxY) 
 	ffichecks.checknumber(1, MinX)
 	ffichecks.checknumber(2, MinY)
@@ -141,63 +158,6 @@ function VectorFuncs:Rotated(Angle)
 	return VectorMT(self.X * cos - self.Y * sin, self.Y * cos - self.X * sin)
 end
 
-function VectorFuncs:__add(second)
-	ffichecks.checktype(1, second, "Vector")
-
-	return VectorMT(self.X + second.X, self.Y + second.Y)
-end
-
-function VectorFuncs:__sub(second)
-	ffichecks.checktype(1, second, "Vector")
-
-	return VectorMT(self.X - second.X, self.Y - second.Y)
-end
-
-function VectorFuncs:__mul(second)
-	if ffichecks.isnumber(1, second) then
-		return VectorMT(self.X * second, self.Y * second)
-	else
-		ffichecks.checktype(1, second, "Vector")
-		return VectorMT(self.X * second.X, self.Y * second.Y)
-	end
-end
-
-function VectorFuncs:__div(second)
-	if ffichecks.isnumber(1, second) then
-		if second == 0 then
-			error("Divide by zero")
-		end
-		return VectorMT(self.X / second, self.Y / second)
-	else
-		ffichecks.checktype(1, second, "Vector")
-		if second.X == 0 or second.Y == 0 then
-			error("Divide by zero")
-		end
-		return VectorMT(self.X / second.X, self.Y / second.Y)
-	end
-end
-
-function VectorFuncs:__unm()
-	return VectorMT(self.X * -1, self.Y * -1)
-end
-
-local function ParseVectorString(str, mt)
-	return string.format(str, mt.X, mt.Y)
-end
-
-function VectorFuncs:__tostring()
-	return ParseVectorString("%g %g", self))
-end
-
-local VectorMT
-VectorMT = lffi.metatype("Vector", {
-	__tostring = function(a)
-		return ParseVectorString("%g %g", a)
-	end;
-
-	__index = VectorFuncs;
-})
-
 Vector = setmetatable({
 
 	FromAngle = function(angle)
@@ -216,5 +176,46 @@ Vector = setmetatable({
 			X or 0,
 			Y or 0
 		)
-	end
+	end,
+	
+	__add = function(second)
+		ffichecks.checktype(1, second, "Vector")
+
+		return VectorMT(self.X + second.X, self.Y + second.Y)
+	end,
+	
+	__sub = function(second)
+		ffichecks.checktype(1, second, "Vector")
+
+		return VectorMT(self.X - second.X, self.Y - second.Y)
+	end,
+	
+	__mul = function(second)
+		if ffichecks.isnumber(1, second) then
+			return VectorMT(self.X * second, self.Y * second)
+		else
+			ffichecks.checktype(1, second, "Vector")
+			return VectorMT(self.X * second.X, self.Y * second.Y)
+		end
+	end,
+
+	__div = function(second)
+		if ffichecks.isnumber(1, second) then
+			if second == 0 then
+				error("Divide by zero")
+			end
+			return VectorMT(self.X / second, self.Y / second)
+		else
+			ffichecks.checktype(1, second, "Vector")
+			if second.X == 0 or second.Y == 0 then
+				error("Divide by zero")
+			end
+			return VectorMT(self.X / second.X, self.Y / second.Y)
+		end
+	end,
+	
+	__unm = function()
+		return VectorMT(self.X * -1, self.Y * -1)
+	end,
+
 })
