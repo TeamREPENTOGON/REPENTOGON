@@ -117,6 +117,51 @@ Color = setmetatable({
 	end;
 
 	Default = ColorMT(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+
+	EmberFade = ColorMT(1, 1, 1, 1, 0, 0, 0, 0, 1, 131/255, 1/255);
+
+	TearIpecac = ColorMT(0.5, 0.9, 0.4, 1, 0, 0, 0, 0, 0, 0, 0);
+	TearHoming = ColorMT(0.4, 0.15, 0.38, 1, 0, 0, 0, 0, 71/255, 0, 116/255);
+	TearTar = ColorMT(0.95, 0.8, 0.6, 1, 0, 0, 0, 0, -150/255, -150/255, -150/255);
+	TearSoy = ColorMT(1.5, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0);
+	TearChocolate = ColorMT(0.33, 0.18, 0.18, 1, 0, 0, 0, 0, 66/255, 40/255, 40/255);
+	TearAlmond = ColorMT(1.8, 1.7, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+	TearScorpio = ColorMT(50/255, 1, 50/255, 1, 0, 0, 0, 0, 0, 0, 0);
+	TearSerpentsKiss = ColorMT(0.5, 0.97, 0.5, 1, 0, 0, 0, 0, 0, 0, 0);
+	TearCommonCold = ColorMT(0.4, 0.97, 0.5, 1, 0, 0, 0, 0, 0, 0, 0);
+	TearCoal = ColorMT(0.2, 0.09, 0.065, 1, 0, 0, 0, 0, 0, 0, 0);
+	TearNumberOne = ColorMT(1, 1, 0, 1, 0, 0, 0, 0, 45/255, 15/255, 0);
+
+	ProjectileIpecac = ColorMT(1, 1, 1, 1, 0.4, 2, 0.5, 1, 0, 0, 0);
+	ProjectileHoming = ColorMT(1, 1, 1, 1, 0.8, 0.15, 1, 1, 0.26, 0.05, 0.4);
+	ProjectileTar = ColorMT(1, 1, 1, 1, 0.5, 0.5, 0.5, 1, 0, 0, 0);
+	ProjectileSoy = ColorMT(1, 1, 1, 1, 1, 1, 1, 1, 0.8, 0.7, 0.5);
+	ProjectileFireWave = ColorMT(1, 1, 1, 1, 0, 0, 0, 0, 1, 0.3, 0);
+
+	ProjectileCageBlue = ColorMT(1, 1, 1, 1, 0.8, 1, 0.85, 1, 0, 0, 0);
+	ProjectileMegaSatanBlack = ColorMT(1, 1, 1, 1, 0.6, 0.6, 0.6, 1, 0, 0, 0);
+	ProjectileMegaSatanWhite = ColorMT(1, 1, 1, 1, 2, 2, 2, 1, 0, 0, 0);
+	ProjectileHushBlue = ColorMT(1, 1, 1, 1, 0, 0, 0, 0, 0, 0.2, 0.4);
+	ProjectileHushYellow = ColorMT(1, 1, 1, 1, 0, 0, 0, 0, 0.4, 0.2, 0);
+	ProjectileHushGreen = ColorMT(1, 1, 1, 1, 0, 0, 0, 0, 0.2, 0.2, 0);
+
+	LaserIpecac = ColorMT(1, 1, 1, 1, 1.8, 3, 1, 1, 0, 0, 0);
+	LaserHoming = ColorMT(1, 1, 1, 1, 3, 1, 3.5, 1, 0, 0, 0);
+	LaserSoy = ColorMT(1, 1, 1, 1, 5.6, 5, 4.2, 1, 0, 0, 0);
+	LaserChocolate = ColorMT(1, 1, 1, 1, 3, 1.7, 1.7, 1, 0, 0, 0);
+	LaserAlmond = ColorMT(1, 1, 1, 1, 5.6, 5.2, 3.8, 1, 0, 0, 0);
+	LaserPoison = ColorMT(1, 1, 1, 1, 1.8, 4, 1, 1, 0, 0, 0);
+	LaserCoal = ColorMT(3, 3, 3, 1, 1.3, 1.2, 1.2, 1, -0.5, -0.5, -0.5);
+	LaserFireMind = ColorMT(1, 1, 1, 1, 5, 3, 1, 1, 0, 0, 0);
+	LaserNumberOne = ColorMT(1, 1, 1, 1, 5, 4.9, 1, 1, 0, 0, 0);
+	LaserMother = ColorMT(1, 1, 1, 1, 2, 2.2, 1, 1, 0, 0, 0);
+
+	ProjectileCorpsePink = ColorMT(1, 1, 1, 1, 4, 3.5, 3.2, 1, 0, 0, 0);
+	ProjectileCorpseWhite = ColorMT(1, 1, 1, 1, 2.7, 3, 2, 1, 0, 0, 0);
+	ProjectileCorpseGreen = ColorMT(1, 1, 1, 1, 1.5, 2, 1, 1, 0, 0, 0);
+	ProjectileCorpseYellow = ColorMT(1, 1, 1, 1, 3.5, 2.5, 1, 1, 0, 0, 0);
+	ProjectileCorpseClusterLight = ColorMT(4, 4, 4, 1, 0.63, 0.85, 0.32, 1, 0, 0, 0);
+	ProjectileCorpseClusterDark = ColorMT(1, 1, 1, 1, 0.63, 0.85, 0.32, 1, 0, 0, 0);	
 },
 {
 	__call = function(_, R, G, B, A, RO, GO, BO)
