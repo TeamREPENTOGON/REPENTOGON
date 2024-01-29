@@ -23,6 +23,11 @@ Additions:
 	- Added a GetMyStuffSprite that returns the sprite used for the MyStuff items
 	- Added a GetSelectedElement/SetSelectedElement similar to the one seen in other menus
 	- Added GetState/SetState 
+* Unlocks
+	- Added support for unlockable items using the xml achievement attribute
+	- Added support for unlockable trinkets using the xml achievement attribute
+	- Added support for unlockable cards using the xml achievement attribute
+	- Added support for unlockable pilleffects using the xml achievement attribute?
 * Secrets Screen
 	- This screen will now display modded achievements
 	- Made it so the achievement attribute 'hidden' hides achievements from this menu

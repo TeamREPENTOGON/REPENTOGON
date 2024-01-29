@@ -333,7 +333,8 @@ class XMLLocustColor : public XMLDataHolder {
 };
 
 class XMLItem : public XMLDataHolder {
-	
+public:
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLItemPools : public XMLDataHolder {
@@ -410,16 +411,19 @@ public:
 class XMLTrinket : public XMLDataHolder {
 public:
 	unordered_map<string, int> bypickup;
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLCard : public XMLDataHolder {
 public:
 	unordered_map<string, int> bypickup;
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLPill : public XMLDataHolder {
 public:
 	unordered_map<string, int> bypickup;
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLStage : public XMLDataHolder {

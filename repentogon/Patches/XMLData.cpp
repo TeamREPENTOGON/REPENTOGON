@@ -326,6 +326,60 @@ HOOK_METHOD(ItemOverlay, Show, (int eOverlayID, int delay, Entity_Player* player
 
 //Custom BigBook Anims
 
+//Item lock
+HOOK_METHOD(ItemPool, Init, (unsigned int seed, char* filename)-> void) {
+	PersistentGameData* pgd = g_Manager->GetPersistentGameData();
+	ItemConfig* itmcfg = g_Manager->GetItemConfig();
+	for each (XMLAttributes xml in XMLStuff.ItemData->customachievitems) {
+		int id = toint(xml["id"]);
+		int achid = toint(xml["achievement"]);
+		ItemConfig_Item* entry = itmcfg->GetCollectible(id);
+		if (pgd->Unlocked(achid)) {
+			entry->achievementId = -1;
+		}
+		else {
+			entry->achievementId = achid;
+		}
+	}
+	for each (XMLAttributes xml in XMLStuff.TrinketData->customachievitems) {
+		int id = toint(xml["id"]);
+		int achid = toint(xml["achievement"]);
+		ItemConfig_Item* entry = itmcfg->GetTrinket(id);
+		if (pgd->Unlocked(achid)) {
+			entry->achievementId = -1;
+		}
+		else {
+			entry->achievementId = achid;
+		}
+	}
+	for each (XMLAttributes xml in XMLStuff.CardData->customachievitems) {
+		int id = toint(xml["id"]);
+		int achid = toint(xml["achievement"]);
+		ItemConfig_Card* entry = itmcfg->GetCard(id);
+		if (pgd->Unlocked(achid)) {
+			entry->achievementId = -1;
+		}
+		else {
+			entry->achievementId = achid;
+		}
+	}
+	for each (XMLAttributes xml in XMLStuff.PillData->customachievitems) {
+		int id = toint(xml["id"]);
+		int achid = toint(xml["achievement"]);
+		ItemConfig_Pill* entry = itmcfg->GetPillEffects()->at(id); //whatever, not getting GetPill's sig, its pointless
+		if (pgd->Unlocked(achid)) {
+			entry->achievementId = -1;
+		}
+		else {
+			entry->achievementId = achid;
+		}
+	}
+	super(seed, filename);
+}
+
+//item lock
+
+
 //Cutscene XML hijack
 string ogcutscenespath;
 int queuedhackyxmlvalue = 0;
@@ -824,6 +878,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.CardData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.CardData->byname[card["name"]] = id;
 				XMLStuff.ModData->cards[lastmodid] += 1;
+				if (toint(card["achievement"]) > 637) {
+					XMLStuff.CardData->customachievitems.push_back(card);
+				}
 			}
 			else if ((strcmp(auxnode->name(), "pilleffect") == 0)) {
 
@@ -865,6 +922,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.PillData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.PillData->nodes[id] = pill;
 				XMLStuff.ModData->pills[lastmodid] += 1;
+				if (toint(pill["achievement"]) > 637) {
+					XMLStuff.PillData->customachievitems.push_back(pill);
+				}
 			}
 		}
 	break;
@@ -936,6 +996,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 					XMLStuff.ItemData->byname[item["name"]] = id;
 					XMLStuff.ItemData->nodes[id] = item;
 					XMLStuff.ModData->items[lastmodid] += 1;
+					if (toint(item["achievement"]) > 637) {
+						XMLStuff.ItemData->customachievitems.push_back(item);
+					}
 				}
 			}
 			else if ((strcmp(auxnodename, "trinket") == 0)) {
@@ -998,6 +1061,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 					XMLStuff.TrinketData->byname[trinket["name"]] = id;
 					XMLStuff.TrinketData->nodes[id] = trinket;
 					XMLStuff.ModData->trinkets[lastmodid] += 1;
+					if (toint(trinket["achievement"]) > 637) {
+						XMLStuff.TrinketData->customachievitems.push_back(trinket);
+					}
 				}
 			} else if (!isitemmetadata && (strcmp(auxnodename, "null") == 0)) {
 				XMLAttributes item;
@@ -3144,6 +3210,11 @@ char* ParseModdedXMLAttributes(char* xml, const string& filename) {
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "unlockachievement");
 				}
 			}
+			else if (strcmp(filename.c_str(), "pocketitems.xml") == 0) {
+				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievement");
+				}
+			}
 			else if (strcmp(filename.c_str(), "items.xml") == 0) {
 				for (xml_node<char>* auxnode = root->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
 					did += SingleValXMLParamParse(auxnode, xmldoc, XMLStuff.AchievementData, "achievement");
@@ -3278,6 +3349,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		}
 		else if (charfind(xmldata, "<item", 50)) {
 			super(ParseModdedXMLAttributes(xmldata, "items.xml"));
+		}
+		else if (charfind(xmldata, "<pock", 50)) {
+			super(ParseModdedXMLAttributes(xmldata, "pocketitems.xml"));
 		}
 		else if (charfind(xmldata, "<ach", 50)) {
 			XMLStuff.AchievementData->Clear();
