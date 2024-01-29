@@ -19,7 +19,7 @@ extern "C" {
     bool L_SFXManager_IsPlaying(unsigned int id) {
         return g_Manager->_sfxManager.IsPlaying(id);
     }
-
+    
     void L_SFXManager_Play(unsigned int id, float volume, int frameDelay, bool loop, float pitch, float pan) {
         g_Manager->_sfxManager.Play(id, volume, frameDelay, loop, pitch, pan);
     }
@@ -35,7 +35,7 @@ extern "C" {
     void L_SFXManager_Stop(unsigned int id) {
         g_Manager->_sfxManager.Stop(id);
     }
-
+    
     void L_SFXManager_StopLoopingSounds() {
         g_Manager->_sfxManager.StopLoopingSounds();
     }

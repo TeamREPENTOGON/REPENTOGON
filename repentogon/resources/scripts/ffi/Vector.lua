@@ -24,6 +24,46 @@ VectorMT = lffi.metatype("Vector", {
 	__tostring = function(a)
 		return ParseVectorString("%g %g", a)
 	end;
+		
+	__add = function(self, second)
+		ffichecks.checkcdata(1, second, "Vector")
+
+		return VectorMT(self.X + second.X, self.Y + second.Y)
+	end;
+
+	__sub = function(self, second)
+		ffichecks.checkcdata(1, second, "Vector")
+
+		return VectorMT(self.X - second.X, self.Y - second.Y)
+	end;
+	
+	__mul = function(self, second)
+		if ffichecks.isnumber(1, second) then
+			return VectorMT(self.X * second, self.Y * second)
+		else
+			ffichecks.checkcdata(1, second, "Vector")
+			return VectorMT(self.X * second.X, self.Y * second.Y)
+		end
+	end;
+
+	__div = function(self, second)
+		if ffichecks.isnumber(1, second) then
+			if second == 0 then
+				error("Divide by zero")
+			end
+			return VectorMT(self.X / second, self.Y / second)
+		else
+			ffichecks.checkcdata(1, second, "Vector")
+			if second.X == 0 or second.Y == 0 then
+				error("Divide by zero")
+			end
+			return VectorMT(self.X / second.X, self.Y / second.Y)
+		end
+	end;
+	
+	__unm = function(self)
+		return VectorMT(self.X * -1, self.Y * -1)
+	end;
 
 	__index = VectorFuncs;
 })
@@ -51,13 +91,13 @@ function VectorFuncs:Clamped(MinX, MinY, MaxX, MaxY)
 end
 
 function VectorFuncs:Cross(second)
-	ffichecks.checktype(1, second, "Vector")
+	ffichecks.checkcdata(1, second, "Vector")
 	
 	return second.Y * self.X - self.Y * second.X;
 end
 
 local function DistanceSquared(second)
-	ffichecks.checktype(1, second, "Vector")
+	ffichecks.checkcdata(1, second, "Vector")
 	
 	local fVar1 = self.Y - second.Y
 	local fVar2 = self.X - second.X
@@ -76,7 +116,7 @@ function VectorFuncs:DistanceSquared(second)
 end
 
 function VectorFuncs:Dot(second)
-	ffichecks.checktype(1, second, "Vector")
+	ffichecks.checkcdata(1, second, "Vector")
 	
 	return second.X * self.X + second.Y * self.Y;
 end
@@ -97,7 +137,7 @@ function VectorFuncs:LengthSquared()
 end
 
 function VectorFuncs:Lerp(m2, t)
-	ffichecks.checktype(1, m2, "Vector")
+	ffichecks.checkcdata(1, m2, "Vector")
 	ffichecks.checknumber(2, t)
 	
 	local it = 1-t
@@ -177,45 +217,4 @@ Vector = setmetatable({
 			Y or 0
 		)
 	end,
-	
-	__add = function(second)
-		ffichecks.checktype(1, second, "Vector")
-
-		return VectorMT(self.X + second.X, self.Y + second.Y)
-	end,
-	
-	__sub = function(second)
-		ffichecks.checktype(1, second, "Vector")
-
-		return VectorMT(self.X - second.X, self.Y - second.Y)
-	end,
-	
-	__mul = function(second)
-		if ffichecks.isnumber(1, second) then
-			return VectorMT(self.X * second, self.Y * second)
-		else
-			ffichecks.checktype(1, second, "Vector")
-			return VectorMT(self.X * second.X, self.Y * second.Y)
-		end
-	end,
-
-	__div = function(second)
-		if ffichecks.isnumber(1, second) then
-			if second == 0 then
-				error("Divide by zero")
-			end
-			return VectorMT(self.X / second, self.Y / second)
-		else
-			ffichecks.checktype(1, second, "Vector")
-			if second.X == 0 or second.Y == 0 then
-				error("Divide by zero")
-			end
-			return VectorMT(self.X / second.X, self.Y / second.Y)
-		end
-	end,
-	
-	__unm = function()
-		return VectorMT(self.X * -1, self.Y * -1)
-	end,
-
 })
