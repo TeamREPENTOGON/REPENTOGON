@@ -11,9 +11,17 @@ ffichecks.checktype = function(idx, var, typ)
 	end
 end
 
+ffichecks.istype = function(idx, var, typ)
+	return type(var) == typ
+end
+
 ffichecks.checknumber = function(idx, var) ffichecks.checktype(idx, var, "number") end
 ffichecks.checkstring = function(idx, var) ffichecks.checktype(idx, var, "string") end
 ffichecks.checkboolean = function(idx, var) ffichecks.checktype(idx, var, "boolean") end
+
+ffichecks.isnumber = function(idx, var) return ffichecks.istype(idx, var, "number") end
+ffichecks.isstring = function(idx, var) return ffichecks.istype(idx, var, "string") end
+ffichecks.isboolean = function(idx, var) return ffichecks.istype(idx, var, "boolean") end
 
 pcall(require("Isaac"))
 
@@ -27,6 +35,7 @@ pcall(require("Options"))
 pcall(require("Console"))
 pcall(require("Game"))
 pcall(require("Color"))
+pcall(require("Vector"))
 
 
 package = nil
