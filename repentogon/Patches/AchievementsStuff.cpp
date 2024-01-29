@@ -295,6 +295,61 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	super(in, out, player);
 }
 
+//Unlocks
+HOOK_METHOD(ItemPool, Init, (unsigned int seed, char* filename)-> void) {
+	PersistentGameData* pgd = g_Manager->GetPersistentGameData();
+	ItemConfig* itmcfg = g_Manager->GetItemConfig();
+	for each (XMLAttributes xml in XMLStuff.ItemData->customachievitems) {
+		int id = toint(xml["id"]);
+		int achid = toint(xml["achievement"]);
+		ItemConfig_Item* entry = itmcfg->GetCollectible(id);
+		if (pgd->Unlocked(achid)) {
+			entry->achievementId = -1;
+		}
+		else {
+			entry->achievementId = achid;
+		}
+	}
+	for each (XMLAttributes xml in XMLStuff.TrinketData->customachievitems) {
+		int id = toint(xml["id"]);
+		int achid = toint(xml["achievement"]);
+		ItemConfig_Item* entry = itmcfg->GetTrinket(id);
+		if (pgd->Unlocked(achid)) {
+			entry->achievementId = -1;
+		}
+		else {
+			entry->achievementId = achid;
+		}
+	}
+	for each (XMLAttributes xml in XMLStuff.CardData->customachievitems) {
+		int id = toint(xml["id"]);
+		int achid = toint(xml["achievement"]);
+		ItemConfig_Card* entry = itmcfg->GetCard(id);
+		if (pgd->Unlocked(achid)) {
+			entry->achievementId = -1;
+		}
+		else {
+			entry->achievementId = achid;
+		}
+	}
+	for each (XMLAttributes xml in XMLStuff.PillData->customachievitems) {
+		int id = toint(xml["id"]);
+		int achid = toint(xml["achievement"]);
+		ItemConfig_Pill* entry = itmcfg->GetPillEffects()->at(id); //whatever, not getting GetPill's sig, its pointless
+		if (pgd->Unlocked(achid)) {
+			entry->achievementId = -1;
+		}
+		else {
+			entry->achievementId = achid;
+		}
+	}
+	super(seed, filename);
+}
+
+//Unlocks
+
+
+
 bool modsecrets = false;
 bool secretneedsupdate = false;
 string secretssource = "BaseGame";
