@@ -1169,6 +1169,7 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 
 //GET_SHOP_ITEM_PRICE (id: 1066)
 HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSubtype, int shopItemID) -> int) {
+	int price = super(entVariant, entSubtype, shopItemID);
 	const int callbackid = 1066;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -1181,15 +1182,16 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 			.push(entVariant)
 			.push(entSubtype)
 			.push(shopItemID)
+			.push(price)
 			.call(1);
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
+				price = (int)lua_tointeger(L, -1);
 			}
 		}
 	}
-	return super(entVariant, entSubtype, shopItemID);
+	return price;
 }
 
 //PLAYER_GET_HEALTH_TYPE (id: 1067)

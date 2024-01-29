@@ -469,11 +469,12 @@ Accepts a `float` to modify the lighting alpha. Generally this is between 0 and 
 |1150 |MC_PRE_GET_LIGHTING_ALPHA {: .copyable } | (float OriginalAlpha) | - | float |
 
 ### MC_GET_SHOP_ITEM_PRICE {: .copyable }
-Accepts an integer to change the price of the item.
+Called after the price for a shop item was calculated.
+Return an integer or [PickupPrice](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupPrice.html) to change the price of the item.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1066 |MC_GET_SHOP_ITEM_PRICE {: .copyable } | (int EntityVariant, <br>int EntitySubType, <br>int ShopItemID) | int | int |
+|1066 |MC_GET_SHOP_ITEM_PRICE {: .copyable } | (int [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html), <br>int PickupSubType, <br>int ShopItemID, <br>int Price) | int | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) |
 
 ### MC_PRE_GRID_ENTITY_DECORATION_RENDER {: .copyable }
 Accepts a [Vector](../Vector.md) to modify render offset or `false` to cancel rendering.
