@@ -1,5 +1,25 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+
+extern "C" {
+	void L_RNG_SetSeed(RNG* rng, unsigned int seed, unsigned int shiftidx) {
+		return rng->SetSeed(seed, shiftidx);
+	}
+
+	unsigned int L_RNG_RandomInt(RNG* rng, unsigned int max) {
+		return rng->RandomInt(max);
+	}
+
+	float L_RNG_RandomFloat(RNG* rng) {
+		return rng->RandomFloat();
+	}
+
+	unsigned int L_RNG_Next(RNG* rng) {
+		return rng->Next();
+	}
+}
+
+/*
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_RNGSetSeed) {
@@ -125,3 +145,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua::RegisterFunctions(_state, lua::Metatables::RNG, functions);
 }
+*/

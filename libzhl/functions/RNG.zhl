@@ -19,7 +19,5 @@ __thiscall void RNG::game_constructor(unsigned int seed, unsigned int shiftidx);
 struct RNG
 {
     unsigned int _seed : 0x0; //0x0
-    unsigned int _shift1 : 0x4;
-    unsigned int _shift2 : 0x8;
-    unsigned int _shift3 : 0xC;
+    unsigned int _shift[3] : 0x4;
 } : 0x10; //0x10

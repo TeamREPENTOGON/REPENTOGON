@@ -178,9 +178,9 @@ float Room::GetChampionBossChance() const {
 bool Room::IsChampionBossSeed() const {
 	RNG rng;
 	rng._seed = _descriptor->SpawnSeed;
-	rng._shift1 = 0x1;
-	rng._shift2 = 0xb;
-	rng._shift3 = 0x10;
+	rng._shift[0] = 0x1;
+	rng._shift[1] = 0xb;
+	rng._shift[2] = 0x10;
 
 	float random = rng.RandomFloat();
 	return random <= GetChampionBossChance();
