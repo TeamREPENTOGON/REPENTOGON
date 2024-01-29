@@ -239,6 +239,11 @@ void UpdateXMLModEntryData() {
 		else { idx = XMLStuff.ModData->byname[entry->GetName()];}
 		mod = XMLStuff.ModData->GetNodeById(idx);
 		mod["realdirectory"] = entry->GetDir();
+		if ((mod["id"] == mod["directory"]) && (mod["realdirectory"] != mod["directory"])) {
+			XMLStuff.ModData->byid[mod["realdirectory"]] = idx;
+		}
+		XMLStuff.ModData->bydirectory[mod["realdirectory"]] = idx;
+
 		mod["fulldirectory"] = std::filesystem::current_path().string() + "/mods/" + entry->GetDir();
 		
 		if (entry->IsEnabled()) { mod["enabled"] = "true";}
@@ -1205,7 +1210,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.AchievementData->byname[achievement["name"]] = id;
 				XMLStuff.AchievementData->nodes[id] = achievement;
 				XMLStuff.ModData->achievements[achievement["sourceid"]] += 1;
-				XMLStuff.ModData->achievlistpermod[achievement["sourceid"]].push_back(achievement);
+				if ((achievement.find("hidden") == achievement.end()) || (achievement["hidden"] == "false")) {
+					XMLStuff.ModData->achievlistpermod[achievement["sourceid"]].push_back(achievement);
+				}
 			
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -2069,7 +2076,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 		}
 		int idx;
-		if (mod.count("id") <= 0) { mod["id"] = mod["name"];  }
+		if (mod.count("id") <= 0) { mod["id"] = mod["directory"];  }
 
 		if (XMLStuff.ModData->byid.find(mod["id"]) != XMLStuff.ModData->byid.end()) {
 			idx = XMLStuff.ModData->byid[mod["id"]];
