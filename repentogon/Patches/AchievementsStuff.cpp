@@ -442,7 +442,7 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			//printf("%f %f", a->x, a->y);
 			DrawStringEntry* sourcename = new DrawStringEntry();
 			if (secretssource == "BaseGame") {
-				sourcename->_text = "Base Game";
+				sourcename->_text = "Repentance";
 			}
 			else {
 				sourcename->_text = XMLStuff.ModData->nodes[XMLStuff.ModData->byid[secretssource]]["name"].c_str();
