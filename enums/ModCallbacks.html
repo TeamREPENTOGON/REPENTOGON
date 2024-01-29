@@ -13666,7 +13666,8 @@ Accepts no return parameters.</p>
 </tbody>
 </table>
 <h3 class="copyable" id="mc_get_shop_item_price">MC_GET_SHOP_ITEM_PRICE<a class="headerlink" href="#mc_get_shop_item_price" title="Permanent link">⚓︎</a></h3>
-<p>Accepts an integer to change the price of the item.</p>
+<p>Called after the price for a shop item was calculated.
+Return an integer or <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PickupPrice.html">PickupPrice</a> to change the price of the item.</p>
 <table>
 <thead>
 <tr>
@@ -13681,9 +13682,9 @@ Accepts no return parameters.</p>
 <tr>
 <td style="text-align: left;">1066</td>
 <td class="copyable" style="text-align: left;">MC_GET_SHOP_ITEM_PRICE</td>
-<td style="text-align: left;">(int EntityVariant, <br>int EntitySubType, <br>int ShopItemID)</td>
+<td style="text-align: left;">(int <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html">PickupVariant</a>, <br>int PickupSubType, <br>int ShopItemID, <br>int Price)</td>
 <td style="text-align: left;">int</td>
-<td style="text-align: left;">int</td>
+<td style="text-align: left;"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html">PickupVariant</a></td>
 </tr>
 </tbody>
 </table>
