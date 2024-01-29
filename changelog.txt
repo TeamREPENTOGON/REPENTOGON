@@ -4,7 +4,9 @@ Additions:
 	- SetModifiers
 * Added Chinese translation text, thanks @502y
 * Added support for the pocketActive param in players.xml(I forgor)
-* Entity:CopyStatusEffects has been modified to better suit actual use cases
+* Added MC_PRE_PICKUP_VOIDED(EntityPickup Pickup, boolean IsBlackRune), MC_PRE_PICKUP_VOIDED_ABYSS(EntityPickup Pickup) and MC_PRE_PICKUP_COMPOSTED(EntityPickup Pickup) callbacks, returning false cancels the pickup getting consumed.
+* Entity:
+	- CopyStatusEffects has been modified to better suit actual use cases
 	- SetColor has been removed, will now always copy ColorParams
 	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior 
 * Room :
@@ -13,9 +15,18 @@ Additions:
 	- [Get/Set]LightningIntensity
 	- DoLightningStrike
 	- GetNumRainSpawners
-* Added MC_PRE_PICKUP_VOIDED(EntityPickup Pickup, boolean IsBlackRune), MC_PRE_PICKUP_VOIDED_ABYSS(EntityPickup Pickup) and MC_PRE_PICKUP_COMPOSTED(EntityPickup Pickup) callbacks, returning false cancels the pickup getting consumed.
 * Game :
 	- ShowGenericLeaderboard
+* HUD:
+	- [Get/Set]BossHPBarFill
+	- GetCardsPillsSprite
+	- GetCoopMenuSprite
+	- GetCraftingSprite
+	- GetFortuneSprite
+	- GetHeartsSprite
+	- GetInventorySprite
+	- GetPoopSpellSprite
+	- GetStreakSprite
 * ScoreSheet :
 	- AddFinishedStage
 * PauseMenu:
@@ -33,6 +44,10 @@ Additions:
 	- Made it so the achievement attribute 'hidden' hides achievements from this menu
 * XMLData :
 	- Added GetModById since the normal GetEntryById wont give the expected result when you want to use actual mod ids
+* ImGui:
+	- Pressing enter in an empty console input will now close the console and imgui, to mimic the behavior of the vanilla console
+	- Fixed notifications being behind the menu bar
+	- Fixed debug console loosing focus when other windows are present
 /newline/
 Modified:
 * PlayerManager :
@@ -41,6 +56,7 @@ Modified:
 * OptionsMenu :
 	- Its functions can now be called ingame and point to the pause menu options submenu when appropiate
 * PRE/POST_PLAYERHUD_RENDER_HEARTS callback now passes EntityPlayer (Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown, EntityPlayer Player)
+* Rename "MC_HUD_POST_UPDATE" into "MC_POST_HUD_UPDATE" for consistency
 /newline/
 Fixes:
 * Fixed relative ids being displayed as actual ids on xmldata tables. 
@@ -50,6 +66,7 @@ Fixes:
 * Fixed DamageFlag.DAMAGE_RED_HEARTS / .DAMAGE_NO_PENALTIES / .DAMAGE_FAKE not working when adding them via MC_ENTITY_TAKE_DMG's return table.
 * Fixed an issue on xmldata that created extra ghost entries on some nodetypes when asking for stuff that isnt there
 * Fixed an issue with the stats sprite for the pause menu callbacks where it ended up holding garbage data
+* Fixed some broken EventCounter enums
 /newline/
 /newline/
 v1.0.5a -
