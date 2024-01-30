@@ -69,6 +69,7 @@ Fixes:
 * Fixed an issue on xmldata that created extra ghost entries on some nodetypes when asking for stuff that isnt there
 * Fixed an issue with the stats sprite for the pause menu callbacks where it ended up holding garbage data
 * Fixed some broken EventCounter enums
+* Fixed PRE/POST_ENTITY_THROW EntityPlayer argument being pushed as optional parameter
 /newline/
 /newline/
 v1.0.5a -
