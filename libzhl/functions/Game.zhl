@@ -27,7 +27,7 @@ __thiscall void Game::ShakeScreen(int timeout);
 __thiscall void Game::MakeShockwave(const Vector& pos, float amplitude, float speed, int duration);
 
 "558bec5156578bf98b97":
-__thiscall Entity_Player* Game::GetPlayer(unsigned int Index);
+__thiscall Entity_Player* Game::GetPlayer(int Index);
 
 "8b81????????2b81????????c1f802c3":
 __thiscall int Game::GetNumPlayers();
@@ -180,7 +180,10 @@ __thiscall bool Game::RerollEnemy(Entity* e, bool unk);
 __thiscall void Game::RerollLevelCollectibles();
 
 "558bec83ec488bc1":
-__thiscall void Game::RerollLevelPickups();
+__thiscall void Game::RerollLevelPickups(unsigned int Seed);
+
+"558bec8b45??83f831":
+__thiscall void Game::SetStateFlag(unsigned int Flag, bool Value);
 
 "558bec6aff68????????64a1????????5083ec48a1????????33c58945??535657508d45??64a3????????894d":
 static void Game::ShowFortuneRandom(char* key);
@@ -189,7 +192,7 @@ static void Game::ShowFortuneRandom(char* key);
 __thiscall void Game::ShowHallucination(int FrameCount, unsigned int BackdropId); 
 
 "558bec5657e8":
-__thiscall Entity* Game::SpawnEntityDesc(EntityDesc* Desc, Vector* Position, Entity* Spawner);
+__thiscall Entity_NPC* Game::SpawnEntityDesc(EntityDesc* Desc, Vector* Position, Entity* Spawner);
 
 "558bec83e4f883ec0c5356578b7d??8bd9":
 __thiscall void Game::SpawnParticles(Vector* Pos, unsigned int ParticleType, unsigned int NumParticles, float Speed, ColorMod * Color, float Height, int SubType);
@@ -307,6 +310,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     uint32_t _greedModeTreasureRoomIdx : 0x18200; // 0x18200
     RoomConfigHolder _roomConfigs : 0x1879c; // 0x1879C
 	ItemPool _itemPool : 0x1A5CC;
+	Seeds _seedEffects : 0x1bb04;
     PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
     Console _console : 0x1bb60; // 0x1BB60
 	int _bossRushParTime : 0x1a30e4;
@@ -317,6 +321,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	int _screenShakeCountdown : 0x1a30ec; // 0x1a30ec
 	int _screenShakeOffset : 0x1a30f0; // 0x1a30f0
 	float _darknessModifier : 0x1a30fc;
+	float _targetDarkness : 0x1a3100;
 	Font _font_Droid : 0x1a3104;
 	bool  _triggerWindowResize : 0x1c3154;
 	int _hallucinationTimeout : 0x1c3158;

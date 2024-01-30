@@ -1,6 +1,6 @@
 struct EntityDesc
 {
-  unsigned int _type : 0x0; //TODO: EntityType enum
+  unsigned int _type : 0x0;
   unsigned int _variant : 0x4;
   unsigned int _subType : 0x8;
   int _championID : 0xc;
