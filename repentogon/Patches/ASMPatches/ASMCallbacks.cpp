@@ -14,7 +14,7 @@
 
 bool __stdcall RunPreLaserCollisionCallback(Entity_Laser* laser, Entity* entity) {
 	const int callbackid = 1248;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -87,7 +87,7 @@ void PatchPreLaserCollision() {
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
 	int callbackid = 1007;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
 		// As pointers so we can modify them :)
 		uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
@@ -249,7 +249,7 @@ void PatchPreEntityTakeDamageCallbacks() {
 
 void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
 	int callbackid = 1006;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
 		unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
 		float damage = *(float*)(ebp + 0x08);
@@ -327,7 +327,7 @@ void PatchPostEntityTakeDamageCallbacks() {
 // MC_PRE_PLAYER_USE_BOMB
 bool __stdcall ProcessPrePlayerUseBombCallback(Entity_Player* player) {
 	int callbackid = 1220;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -365,7 +365,7 @@ void ASMPatchPrePlayerUseBomb() {
 // MC_POST_PLAYER_USE_BOMB
 void __stdcall ProcessPostPlayerUseBombCallback(Entity_Player* player, Entity_Bomb* bomb) {
 	int callbackid = 1221;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -397,7 +397,7 @@ void ASMPatchPostPlayerUseBomb() {
 // MC_PRE_M_MORPH_ACTIVE
 int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleId) {
 	int callbackId = 1190;
-	if (CallbackState.test(callbackId - 1000)) {
+	if (CallbackState.test(callbackId)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -455,7 +455,7 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 	if (npc != nullptr) {
 		int callbackid = 1191;
 
-		if (CallbackState.test(callbackid - 1000)) {
+		if (CallbackState.test(callbackid)) {
 			lua_State* L = g_LuaEngine->_state;
 			lua::LuaStackProtector protector(L);
 
@@ -540,7 +540,7 @@ void ASMPatchInputAction()
 void __stdcall RunPostNightmareSceneRender(NightmareScene* ns) {
 	const int callbackid = 1102;
 
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -573,7 +573,7 @@ void __stdcall RunPrePickupVoided(std::vector<Entity_Pickup*>* voidedItems, Enti
 	Entity_Pickup* pickup = *pPickup;
 	const int callbackid = 1265;
 
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -619,7 +619,7 @@ void ASMPatchPrePickupVoided() {
 bool __stdcall RunPrePickupVoidedBlackRune(Entity_Pickup* pickup) {
 	const int callbackid = 1265;
 
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -665,7 +665,7 @@ void ASMPatchPrePickupVoidedBlackRune() {
 bool __stdcall RunPrePickupVoidedAbyss(Entity_Pickup* pickup) {
 	const int callbackid = 1266;
 
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);

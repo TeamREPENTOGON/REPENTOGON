@@ -26,16 +26,16 @@ extern "C" {
 		g_Game->_treasureRoomsVisited += 1;
 	}
 
-	void L_Game_BombDamage(Vector* Position, float Damage, float Radius, bool LineCheck, Entity* Source, BitSet128 TearFlags, unsigned int DamageFlagsL, unsigned int DamageFlagsH, bool DamageSource) {
-		g_Game->BombDamage(Position, Damage, Radius, LineCheck, Source, TearFlags, DamageFlagsL, DamageFlagsH, DamageSource);
+	void L_Game_BombDamage(Vector* Position, float Damage, float Radius, bool LineCheck, Entity* Source, BitSet128* TearFlags, unsigned int DamageFlagsL, unsigned int DamageFlagsH, bool DamageSource) {
+		g_Game->BombDamage(Position, Damage, Radius, LineCheck, Source, *TearFlags, DamageFlagsL, DamageFlagsH, DamageSource);
 	}
 
-	void L_Game_BombExplosionEffects(Vector* Position, float Damage, BitSet128 TearFlags, ColorMod* Color, Entity* Source, float RadiusMult, bool LineCheck, unsigned int DamageFlagsL, unsigned int DamageFlagsH, bool DamageSource) {
-		g_Game->BombExplosionEffects(Position, Damage, TearFlags, Color, Source, RadiusMult, LineCheck, DamageFlagsL, DamageFlagsH, DamageSource);
+	void L_Game_BombExplosionEffects(Vector* Position, float Damage, BitSet128* TearFlags, ColorMod* Color, Entity* Source, float RadiusMult, bool LineCheck, unsigned int DamageFlagsL, unsigned int DamageFlagsH, bool DamageSource) {
+		g_Game->BombExplosionEffects(Position, Damage, *TearFlags, Color, Source, RadiusMult, LineCheck, DamageFlagsL, DamageFlagsH, DamageSource);
 	}
 
-	void L_Game_BombTearflagEffects(Vector* Position, float Radius, BitSet128 TearFlags, Entity* Source, float RadiusMult) {
-		g_Game->BombTearflagEffects(Position, Radius, TearFlags, Source, RadiusMult);
+	void L_Game_BombTearflagEffects(Vector* Position, float Radius, BitSet128* TearFlags, Entity* Source, float RadiusMult) {
+		g_Game->BombTearflagEffects(Position, Radius, *TearFlags, Source, RadiusMult);
 	}
 
 	void L_Game_ButterBeanFart(Vector* Position, float Radius, Entity* Source, bool ShowEffect, bool DoSuperKnockback) {
@@ -86,7 +86,7 @@ extern "C" {
 		g_Game->Fadein(Speed);
 	}
 
-	void L_Game_Fadeout(float Speed, int FadeoutTarget) {
+	void L_Game_Fadeout(float Speed, unsigned int FadeoutTarget) {
 		g_Game->Fadeout(Speed, FadeoutTarget);
 	}
 
@@ -169,6 +169,10 @@ extern "C" {
 
 	unsigned int L_Game_GetNumEncounteredBosses() {
 		return g_Game->GetNumEncounteredBosses();
+	}
+
+	unsigned int L_Game_GetNumPlayers() {
+		return g_Game->GetNumPlayers();
 	}
 
 	Entity_Player* L_Game_GetPlayer(int Index) {
@@ -317,5 +321,53 @@ extern "C" {
 
 	void L_Game_UpdateStrangeAttractor(Vector* Position, float Force, float Radius) {
 		g_Game->UpdateStrangeAttractor(Position, Force, Radius);
+	}
+
+	int L_Game_GetBlueWombParTime() {
+		return g_Game->_blueWombParTime;
+	}
+
+	void L_Game_SetBlueWombParTime(int value) {
+		g_Game->_blueWombParTime = value;
+	}
+
+	int L_Game_GetBossRushParTime() {
+		return g_Game->_bossRushParTime;
+	}
+
+	void L_Game_SetBossRushParTime(int value) {
+		g_Game->_bossRushParTime = value;
+	}
+
+	int L_Game_GetChallenge() {
+		return g_Game->_challenge;
+	}
+
+	void L_Game_SetChallenge(int value) {
+		g_Game->_challenge = value;
+	}
+
+	int L_Game_GetDifficulty() {
+		return g_Game->_difficulty;
+	}
+
+	void L_Game_SetDifficulty(int value) {
+		g_Game->_difficulty = value;
+	}
+
+	Vector*  L_Game_GetScreenShakeOffset() {
+		return &g_Game->_screenShakeOffset;
+	}
+
+	void L_Game_SetScreenShakeOffset(Vector* offset) {
+		g_Game->_screenShakeOffset = *offset;
+	}
+
+	int L_Game_GetTimeCounter() {
+		return g_Game->_timeCounter;
+	}
+
+	void L_Game_SetTimeCounter(int value) {
+		g_Game->_timeCounter = value;
 	}
 }

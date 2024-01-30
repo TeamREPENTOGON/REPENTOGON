@@ -135,7 +135,7 @@ __thiscall void Game::Darken(float Darkness, int Timeout);
 __thiscall void Game::Fadein(float Speed);
 
 "558becf30f1045??8b45??f30f1181????????f30f5881":
-__thiscall void Game::Fadeout(float Speed, int FadeoutTarget);
+__thiscall void Game::Fadeout(float Speed, unsigned int FadeoutTarget);
 
 "558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf18b0d":
 __thiscall void Game::Fart(Vector* Position, float Radius, Entity* Source, float FartScale, int FartSubType, ColorMod* FartColor);
@@ -206,7 +206,7 @@ __thiscall void Game::UpdateStrangeAttractor(Vector* Position, float Force, floa
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, Font, HUD) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, Font, HUD, Vector) { {{
 	Game()
 	{
 		this->constructor();
@@ -313,13 +313,16 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	Seeds _seedEffects : 0x1bb04;
     PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
     Console _console : 0x1bb60; // 0x1BB60
-	int _bossRushParTime : 0x1a30e4;
     ItemOverlay _itemOverlay : 0x1bcc0; // 0x1BCC0
 	Leaderboard _leaderboard : 0x3d5f0; // 0x3d5f0
 	HUD _hud : 0x3da4c;
 	int _frameCount : 0x1a30dc; // 0x1a30dc
+	int _timeCounter : 0x1a30e0; // 0x1a30dc
+	int _bossRushParTime : 0x1a30e4;
+	int _blueWombParTime : 0x1a30e8;
 	int _screenShakeCountdown : 0x1a30ec; // 0x1a30ec
-	int _screenShakeOffset : 0x1a30f0; // 0x1a30f0
+	Vector _screenShakeOffset : 0x1a30f0; // 0x1a30f0
+	int _darknessTimeout : 0x1a30f8;
 	float _darknessModifier : 0x1a30fc;
 	float _targetDarkness : 0x1a3100;
 	Font _font_Droid : 0x1a3104;

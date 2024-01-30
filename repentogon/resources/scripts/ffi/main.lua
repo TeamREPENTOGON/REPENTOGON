@@ -13,15 +13,20 @@ ffichecks.checktype = function(idx, var, typ)
 	end
 end
 
-ffichecks.istype = function(idx, var, typ)
+ffichecks.istype = function(var, typ)
 	return type(var) == typ
 end
+
+ffichecks.isnumber = function(var) return ffichecks.istype(var, "number") end
+ffichecks.isstring = function(var) return ffichecks.istype(var, "string") end
+ffichecks.isboolean = function(var) return ffichecks.istype(var, "boolean") end
+ffichecks.iscdata = function(var, ctype) return var and lffi.istype(ctype, var) end
 
 ffichecks.checknumber = function(idx, var) ffichecks.checktype(idx, var, "number") end
 ffichecks.checkstring = function(idx, var) ffichecks.checktype(idx, var, "string") end
 ffichecks.checkboolean = function(idx, var) ffichecks.checktype(idx, var, "boolean") end
 ffichecks.checkcdata = function(idx, var, ctype)
-	if not var or not lffi.istype(ctype, var) then
+	if not ffichecks.iscdata(var, ctype) then
 		local t = type(var)
 		if t == "cdata" then t = tostring(lffi.typeof(var)) end
 
@@ -29,9 +34,18 @@ ffichecks.checkcdata = function(idx, var, ctype)
 	end
 end
 
-ffichecks.isnumber = function(idx, var) return ffichecks.istype(idx, var, "number") end
-ffichecks.isstring = function(idx, var) return ffichecks.istype(idx, var, "string") end
-ffichecks.isboolean = function(idx, var) return ffichecks.istype(idx, var, "boolean") end
+ffichecks.optnumber = function(var, opt)
+	if ffichecks.isnumber(var) then
+		return var
+	end
+	return opt
+end
+ffichecks.optboolean = function(idx, var, opt)
+	if ffichecks.isboolean(var) then
+		return var
+	end
+	return opt
+end
 
 
 pcall(require("Isaac"))
@@ -44,12 +58,12 @@ end
 
 pcall(require("Options"))
 pcall(require("Console"))
-pcall(require("Game"))
 pcall(require("Color"))
 pcall(require("Vector"))
 pcall(require("SFXManager"))
 pcall(require("RNG"))
 pcall(require("MusicManager"))
+pcall(require("Game"))
 
 
 package = nil

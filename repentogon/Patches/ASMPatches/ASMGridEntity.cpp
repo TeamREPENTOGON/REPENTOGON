@@ -11,7 +11,7 @@
 
 GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int variant, int vardata, unsigned int seed, unsigned int idx, unsigned short entrySubtype, unsigned int teleState) {
 	const int callbackid = 1192;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -89,7 +89,7 @@ void ASMPatchRoomSpawnEntity() {
 void __stdcall PostGridSpawnTrampoline(GridEntity* grid) {
 	const int callbackid = 1101;
 
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
