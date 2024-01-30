@@ -102,7 +102,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
 
         chance += (0.1f * list->CountWisps(COLLECTIBLE_SATANIC_BIBLE));
 
-        unsigned int lastDevilRoomStage = g_Game->GetLastDevilRoomStage();
+        unsigned int lastDevilRoomStage = g_Game->_lastDevilRoomStage;
         bool shouldApplyStagePenalty = true;
 
         //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
@@ -260,9 +260,9 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     }
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
 
-    if (!g_Game->GetPlanetariumsVisited() || shouldBypassPlanetariumRestriction) {
+    if (!g_Game->_planetariumsVisited || shouldBypassPlanetariumRestriction) {
         bool shouldBypassTreasureRestriction = false;
-        int treasureRoomsVisited = g_Game->GetTreasureRoomsVisited();
+        int treasureRoomsVisited = g_Game->_treasureRoomsVisited;
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
         if (CallbackState.test(1112 - 1000)) {
             lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);

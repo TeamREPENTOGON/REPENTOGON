@@ -18,11 +18,11 @@ extern "C" {
 		g_Game->_stagesWithoutDamage += 1;
 	}
 
-	void L_Game_AddStageWithoutDamage() {
+	void L_Game_AddStagesWithoutHeartsPicked() {
 		g_Game->_stagesWithoutHeartsPicked += 1;
 	}
 
-	void L_Game_AddStageWithoutDamage() {
+	void L_Game_AddTreasureRoomsVisited() {
 		g_Game->_treasureRoomsVisited += 1;
 	}
 
@@ -50,7 +50,7 @@ extern "C" {
 		g_Game->CharmFart(Position, Radius, Source);
 	}
 
-	void L_Game_ClearDonationModGreed() {
+	void L_Game_ClearDonationModAngel() {
 		g_Game->_donationModAngel = 0;
 	}
 
@@ -78,7 +78,7 @@ extern "C" {
 		g_Game->_donationModGreed += Donate;
 	}
 
-	void L_Game_DonateGreed(unsigned int Ending) {
+	void L_Game_End(unsigned int Ending) {
 		g_Game->End(Ending);
 	}
 
