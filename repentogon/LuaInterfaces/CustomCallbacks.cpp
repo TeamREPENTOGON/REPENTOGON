@@ -450,6 +450,7 @@ void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent
 
 		lua::LuaCaller(L).push(callbackid)
 			//.push(ent->GetType())
+			.pushnil()
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.push(ent, lua::Metatables::ENTITY)
 			.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
@@ -469,6 +470,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 
 	lua::LuaResults results = lua::LuaCaller(L).push(1040)
 		//.push((*heldEntity)->GetType())
+		.pushnil()
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.push(*heldEntity, lua::Metatables::ENTITY)
 		.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
