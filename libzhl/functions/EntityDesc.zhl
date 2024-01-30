@@ -1,0 +1,10 @@
+struct EntityDesc
+{
+  unsigned int _type : 0x0; //TODO: EntityType enum
+  unsigned int _variant : 0x4;
+  unsigned int _subType : 0x8;
+  int _championID : 0xc;
+  float _health : 0x10;
+  float _maxHealth : 0x14;
+  bool _unk : 0x18;
+} : 0x1c;

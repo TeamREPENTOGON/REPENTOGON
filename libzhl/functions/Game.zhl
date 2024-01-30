@@ -101,10 +101,109 @@ __thiscall void Game::End(int EndingID);
 "c7818c311c0000000000c3ccccccccccc78190311c0000000000c3cccccccccca1????????8a8047362400c3":
 __thiscall void Game::ClearDonationModGreed();
 
+"ff81????????83b9????????03":
+__thiscall void Game::AddDevilRoomDeal();
+
+"558bec8b91????????83ec0c33c0":
+__thiscall void Game::AddEncounteredBoss(unsigned int Boss, unsigned int Variant);
+
+"558bec8b81????????8d55":
+__thiscall void Game::AddPixelation(int Duration);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec100100005657a1????????33c5508d45??64a3????????8bf9":
+__thiscall void Game::BombDamage(Vector * Position, float Damage, float Radius, bool LineCheck, Entity* Source, BitSet128 TearFlags, unsigned int DamageFlagsL, unsigned int DamageFlagsH, bool DamageSource);
+
+"558bec83e4f081ecd8000000a1":
+__thiscall void Game::BombExplosionEffects(Vector* Position, float Damage, BitSet128 TearFlags, ColorMod* Color, Entity* Source, float RadiusMult, bool LineCheck, unsigned int DamageFlagsL, unsigned int DamageFlagsH, bool DamageSource);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecb0000000a1????????33c58945??5657508d45??64a3????????894d":
+__thiscall void Game::BombTearflagEffects(Vector* Position, float Radius, BitSet128 TearFlags, Entity* Source, float RadiusMult);
+
+"558bec6aff68????????64a1????????5081ec80000000a1????????33c58945??535657508d45??64a3????????8bd98b0d":
+__thiscall void Game::ButterBeanFart(Vector* Position, float Radius, Entity* Source, bool ShowEffect, bool DoSuperKnockback);
+
+"558bec568bf15733ff":
+__thiscall void Game::ChangeRoom(int RoomIndex, unsigned int Dimension);
+
+"558bec6aff68????????64a1????????5083ec78a1????????33c58945??535657508d45??64a3????????8b0d":
+__thiscall void Game::CharmFart(Vector* Position, float Radius, Entity* Source);
+
+"558becf30f1045??8b45??f30f1181????????8981":
+__thiscall void Game::Darken(float Darkness, int Timeout);
+
+"558bec8bd180ba????????00":
+__thiscall void Game::Fadein(float Speed);
+
+"558becf30f1045??8b45??f30f1181????????f30f5881":
+__thiscall void Game::Fadeout(float Speed, int FadeoutTarget);
+
+"558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf18b0d":
+__thiscall void Game::Fart(Vector* Position, float Radius, Entity* Source, float FartScale, int FartSubType, ColorMod* FartColor);
+
+"5356578bf90f57c00f2f87":
+__thiscall void Game::FinishChallenge();
+
+"a1????????8b80????????83f80174??83f80374??33c0c3":
+__thiscall unsigned int Game::GetDifficulty();
+
+"33c083b9????????030f94c083c009":
+__thiscall unsigned int Game::GetGreedBossWaveNum();
+
+"33c083b9????????030f94c083c00b":
+__thiscall unsigned int Game::GetGreedWavesNum();
+
+"558bec83e4f883ec0c538bd956578bb3":
+__thiscall Entity_Player* Game::GetNearestPlayer(Vector* Pos);
+
+"8b81????????2b81????????c1f803":
+__thiscall unsigned int Game::GetNumEncounteredBosses();
+
+"558bec83e4f883ec1453568d81":
+__thiscall Entity_Player* Game::GetRandomPlayer(Vector * Pos, float Radius);
+
+"558bec568b75??33d25733ff":
+__thiscall bool Game::GetStateFlag(unsigned int GameStateFlag);
+
+"558bec8b91????????33c0":
+__thiscall bool Game::HasEncounteredBoss(int Boss, int Variant);
+
+"558bec83e4f851a1????????566aff":
+__thiscall void Game::MoveToRandomRoom(bool IAmErrorRoom, int Seed, Entity_Player* Player);
+
+"558bec6aff68????????64a1????????5083ec54a1????????33c58945??535657508d45??64a3????????8bf98b35":
+__thiscall void Game::NextVictoryLap();
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????894d??8b73":
+__thiscall bool Game::RerollEnemy(Entity* e, bool unk);
+
+"558bec83ec108bc15633f6":
+__thiscall void Game::RerollLevelCollectibles();
+
+"558bec83ec488bc1":
+__thiscall void Game::RerollLevelPickups();
+
+"558bec6aff68????????64a1????????5083ec48a1????????33c58945??535657508d45??64a3????????894d":
+static void Game::ShowFortuneRandom(char* key);
+
+"558bec83e4f883ec0c8b45??53568b35":
+__thiscall void Game::ShowHallucination(int FrameCount, unsigned int BackdropId); 
+
+"558bec5657e8":
+__thiscall Entity* Game::SpawnEntityDesc(EntityDesc* Desc, Vector* Position, Entity* Spawner);
+
+"558bec83e4f883ec0c5356578b7d??8bd9":
+__thiscall void Game::SpawnParticles(Vector* Pos, unsigned int ParticleType, unsigned int NumParticles, float Speed, ColorMod * Color, float Height, int SubType);
+
+"558bec83e4f883ec5453568b75??8bd1":
+__thiscall void Game::StartRoomTransition(int RoomIdx, int Direction, unsigned int Animation, Entity_Player* Player, int Dimension);
+
+"558becf30f105d??f30f1055":
+__thiscall void Game::UpdateStrangeAttractor(Vector* Position, float Force, float Radius);
+
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, Font, HUD) { {{
 	Game()
 	{
 		this->constructor();
@@ -139,16 +238,6 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	
 	inline PlayerManager* GetPlayerManager() { return (PlayerManager*)((char*)this + 0x1BA40); }
 	
-	inline int GetLastDevilRoomStage() { return *(int*)((char*)this + 0x1C3174); }
-	
-	inline int GetLastLevelWithDamage() { return *(int*)((char*)this + 0x243628); }
-	
-	inline int GetLastLevelWithoutHalfHp() { return *(int*)((char*)this + 0x24361c); }
-
-	inline int GetTreasureRoomsVisited() { return *(int*)((char*)this + 0x1C3178); }
-	
-	inline int GetPlanetariumsVisited() { return *(int*)((char*)this + 0x1C317C); }
-	
 	inline int IsPauseMenuOpen() { return (bool)*(int*)((char*)this + 0x10203C); } //in reality this gets the pause menu itself, but the first att is if its opened or not
 	
 	inline PauseScreen* GetPauseMenu() { return (PauseScreen*)((char*)this + 0x10203C); } 
@@ -163,11 +252,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	
 	inline ScoreSheet* GetScoreSheet() { return (ScoreSheet*)((char*)this + 0x1c32b8); }
 	
-	inline int GetDifficulty() {return *(int*)((char*) this + 0x243624); }
-	
 	inline ProceduralItemManager* GetProceduralItemManager() {return (ProceduralItemManager*)((char*) this + 0x283c20); }
-    
-	inline HUD* GetHUD() { return (HUD*)((char*)this + 0x3DA4C); }
 
 	inline PlayerHUD* GetPlayerHUD(uint32_t playerId) { return (PlayerHUD*)((char*)this + 0x3DA4C + playerId * 0x6B0); }
 	
@@ -183,6 +268,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 
 	inline GameOver* GetGameOver() { return (GameOver*)((char*)this + 0x1d154); }
 	
+	// this is part of ScoreSheet, shh
+	inline int* GetVictoryLap() { return (int*)((char*)this + 0x1c33f8); }
 	
 	// Wack
 	inline ColorModState* GetCurrentColorModifier() { return (ColorModState*)((char*)this + 0x283b84); }
@@ -222,19 +309,39 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	ItemPool _itemPool : 0x1A5CC;
     PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
     Console _console : 0x1bb60; // 0x1BB60
+	int _bossRushParTime : 0x1a30e4;
     ItemOverlay _itemOverlay : 0x1bcc0; // 0x1BCC0
 	Leaderboard _leaderboard : 0x3d5f0; // 0x3d5f0
+	HUD _hud : 0x3da4c;
 	int _frameCount : 0x1a30dc; // 0x1a30dc
+	int _screenShakeCountdown : 0x1a30ec; // 0x1a30ec
+	int _screenShakeOffset : 0x1a30f0; // 0x1a30f0
+	float _darknessModifier : 0x1a30fc;
+	Font _font_Droid : 0x1a3104;
+	bool  _triggerWindowResize : 0x1c3154;
+	int _hallucinationTimeout : 0x1c3158;
+	unsigned int _gameStateFlagsL : 0x1c3168;
+	unsigned int _gameStateFlagsH : 0x1c316c;
+    int _lastDevilRoomStage : 0x1c3174; // 0x1C3174
     int _treasureRoomsVisited : 0x1c3178; // 0x1C3178
     int _planetariumsVisited : 0x1c317c; // 0x1C317C
+	int _stagesWithoutHeartsPicked : 0x1c3180;
+	int _stagesWithoutDamage : 0x1c3184;
+	int _devilRoomDeals : 0x1c3188;
+	int _donationModGreed : 0x1c318c;
+	int _donationModAngel : 0x1c3190;
+	int _challenge : 0x1c319c;
 	bool _isRerun : 0x1c31a0;
 	bool _isDebug : 0x1c31a1;
     Ambush _ambush : 0x1c31b8; // 0x1c31b8
-	ScoreSheet _scoreSheet : 0x1c32b8; //
-    uint32_t _difficulty : 0x243624; // 0x243624
+	ScoreSheet _scoreSheet : 0x1c32b8;
+	int _lastLevelWithoutHalfHp : 0x24361c; // 0x24361C
+	uint32_t _difficulty : 0x243624; // 0x243624
+	int _lastLevelWithDamage : 0x243628; // 0x243628
 	bool _shouldLerpColorModState : 0x283b80; // 0x283b80
-    ProceduralItemManager _proceduralItemManager : 0x283c20; // 0x283c20 
-    vector_ErasedEntities _erasedEntities : 0x283c14; 
-	bool  _triggerWindowResize : 0x1c3154;
 	float _lightningIntensity : 0x283c00;
+	vector_ErasedEntities _erasedEntities : 0x283c14; 
+    ProceduralItemManager _proceduralItemManager : 0x283c20; // 0x283c20 
+	
+	
 } : 0x285238;
