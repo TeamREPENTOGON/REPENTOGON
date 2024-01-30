@@ -27,6 +27,10 @@ ___
 If no players exist, this now returns `nil` to prevent a crash. Invalid indexes will return index `0`.
 
 ___
+### Move·To·Random·Room () {: aria-label='Modified Functions' }
+#### void MoveToRandomRoom ( boolean IAmErrorRoom, int Seed, [EntityPlayer](EntityPlayer.md) Player ) {: .copyable aria-label='Modified Functions' }
+Now no longer crashes the game when given a seed equal `0`.
+___
 ### StartStageTransition ()  {: aria-label='Modified Functions' }
 #### void StartStageTransition ( boolean SameStage, int TransitionOverride, [EntityPlayer](EntityPlayer.md) Player = nil ) {: .copyable aria-label='Modified Functions' }
 Fixed the crash that sometimes occured due to an incorrect call on the C++ side.

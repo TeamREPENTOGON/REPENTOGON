@@ -87,7 +87,7 @@ LUA_FUNCTION(Lua_GameSpawnBombCrater) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 	const float radius = (const float)luaL_optnumber(L, 3, 1.0f);
 	Entity* crater = game->SpawnBombCrater(pos, radius);
-	
+
 	lua::luabridge::UserdataPtr::push(L, crater, lua::GetMetatableKey(lua::Metatables::ENTITY));
 
 	return 1;
@@ -233,6 +233,26 @@ LUA_FUNCTION(Lua_ShowGenericLeaderboard) {
 	return 0;
 }
 
+// Reimplementation
+// Fix for original MoveToRandomRoom function, that prevents crashes caused by a seed = 0
+LUA_FUNCTION(Lua_MoveToRandomRoom) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	bool iAmErrorRoom = lua_toboolean(L, 2);
+	int seed = (int)luaL_checkinteger(L, 3);
+	if (seed == 0)
+	{
+		return luaL_error(L, "The given seed is not valid");
+	}
+
+	Entity_Player* player = nullptr;
+	if (lua_type(L, 4) == LUA_TUSERDATA) {
+		player = lua::GetUserdata<Entity_Player*>(L, 4, lua::Metatables::ENTITY_PLAYER, "Player");
+	}
+
+	game->MoveToRandomRoom(iAmErrorRoom, seed, player);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -262,6 +282,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsRerun", Lua_GameIsRerun},
 		{ "GetPlayer", Lua_GameGetPlayer},
 		{ "ShowGenericLeaderboard", Lua_ShowGenericLeaderboard},
+		{ "MoveToRandomRoom", Lua_MoveToRandomRoom},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);
