@@ -3333,6 +3333,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#movetorandomroom" class="md-nav__link">
+    <span class="md-ellipsis">
+      Move·To·Random·Room ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#startstagetransition" class="md-nav__link">
     <span class="md-ellipsis">
       StartStageTransition ()
@@ -6488,6 +6497,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#movetorandomroom" class="md-nav__link">
+    <span class="md-ellipsis">
+      Move·To·Random·Room ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#startstagetransition" class="md-nav__link">
     <span class="md-ellipsis">
       StartStageTransition ()
@@ -6742,6 +6760,10 @@
 <h3 aria-label="Modified Functions" id="getplayer">GetPlayer ()<a class="headerlink" href="#getplayer" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="entityplayer-getplayer-int-index"><a href="EntityPlayer.html">EntityPlayer</a> GetPlayer ( int Index )<a class="headerlink" href="#entityplayer-getplayer-int-index" title="Permanent link">⚓︎</a></h4>
 <p>If no players exist, this now returns <code>nil</code> to prevent a crash. Invalid indexes will return index <code>0</code>.</p>
+<hr />
+<h3 aria-label="Modified Functions" id="movetorandomroom">Move·To·Random·Room ()<a class="headerlink" href="#movetorandomroom" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Modified Functions" class="copyable" id="void-movetorandomroom-boolean-iamerrorroom-int-seed-entityplayer-player">void MoveToRandomRoom ( boolean IAmErrorRoom, int Seed, <a href="EntityPlayer.html">EntityPlayer</a> Player )<a class="headerlink" href="#void-movetorandomroom-boolean-iamerrorroom-int-seed-entityplayer-player" title="Permanent link">⚓︎</a></h4>
+<p>Now no longer crashes the game when given a seed equal <code>0</code>.</p>
 <hr />
 <h3 aria-label="Modified Functions" id="startstagetransition">StartStageTransition ()<a class="headerlink" href="#startstagetransition" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="void-startstagetransition-boolean-samestage-int-transitionoverride-entityplayer-player-nil">void StartStageTransition ( boolean SameStage, int TransitionOverride, <a href="EntityPlayer.html">EntityPlayer</a> Player = nil )<a class="headerlink" href="#void-startstagetransition-boolean-samestage-int-transitionoverride-entityplayer-player-nil" title="Permanent link">⚓︎</a></h4>
