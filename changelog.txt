@@ -36,6 +36,8 @@ Additions:
 	- Added a GetMyStuffSprite that returns the sprite used for the MyStuff items
 	- Added a GetSelectedElement/SetSelectedElement similar to the one seen in other menus
 	- Added GetState/SetState 
+* MusicManager:
+	- Get/SetCurrentPitch
 * Unlocks
 	- Added support for unlockable items using the xml achievement attribute
 	- Added support for unlockable trinkets using the xml achievement attribute
