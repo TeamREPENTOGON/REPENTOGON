@@ -568,8 +568,12 @@ function GameFuncs:Update()
 	repentogon.L_Game_Update()
 end
 
-function GameFuncs:UpdateStrangeAttractor()
-	repentogon.L_Game_UpdateStrangeAttractor()
+function GameFuncs:UpdateStrangeAttractor(pos, force, radius)
+	ffichecks.checkcdata(1, pos, "Vector")
+	local fForce = ffichecks.optnumber(force, 10)
+	local fRadius = ffichecks.optnumber(radius, 250)
+	
+	repentogon.L_Game_UpdateStrangeAttractor(pos, force, radius)
 end
 
 local getkeys = {
