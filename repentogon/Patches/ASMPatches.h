@@ -8,7 +8,7 @@
 #include "Log.h"
 #include "../REPENTOGONOptions.h"
 
-extern std::bitset<500> CallbackState;
+extern std::bitset<1500> CallbackState;
 extern int ambushWaves;
 extern bool overrideMegaSatanEnding;
 

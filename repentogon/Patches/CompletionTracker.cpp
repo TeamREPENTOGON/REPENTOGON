@@ -25,7 +25,7 @@
 using namespace std;
 
 extern XMLData XMLStuff;
-extern std::bitset<500> CallbackState;
+extern std::bitset<1500> CallbackState;
 
 unordered_map <int, int> CompletionTypeRender;
 bool initializedrendercmpl = false;
@@ -663,7 +663,7 @@ void LoadCompletionMarksFromJson() {
 
 bool PreMarksCallbackTrigger(int markid, int playertpe) {
 	int callbackid = 1047;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 

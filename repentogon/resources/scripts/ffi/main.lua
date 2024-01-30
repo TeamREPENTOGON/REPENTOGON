@@ -55,3 +55,43 @@ pcall(require("MusicManager"))
 package = nil
 ffi = nil
 ffidll = nil
+
+---------------------------------------------------------------------------
+
+pcall(require("callbacks"))
+
+function RegisterMod(modname, apiversion)
+	local mod = {
+		Name = modname,
+		AddCallback = function(self, callbackId, fn, param)
+			Isaac.AddCallback(self, callbackId, fn, param)
+		end,
+		AddPriorityCallback = function(self, callbackId, priority, fn, param)
+			Isaac.AddPriorityCallback(self, callbackId, priority, fn, param)
+		end,
+		-- TODO
+		RemoveCallback = function(self, callbackId, fn)
+			Isaac.RemoveCallback(self, callbackId, fn)
+		end,
+		-- TODO
+		SaveData = function(self, data)
+			Isaac.SaveModData(self, data)
+		end,
+		-- TODO
+		LoadData = function(self)
+			return Isaac.LoadModData(self)
+		end,
+		-- TODO
+		HasData = function(self)
+			return Isaac.HasModData(self)
+		end,
+		-- TODO
+		RemoveData = function(self)
+			Isaac.RemoveModData(self)
+		end
+	}
+	-- In the old API this also called Isaac.RegisterMod.
+	-- I don't think that needs to exist anymore.
+	--Isaac.RegisterMod(mod, modname, apiversion)
+	return mod
+end

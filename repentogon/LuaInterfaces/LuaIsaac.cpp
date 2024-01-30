@@ -579,4 +579,8 @@ extern "C" {
 	unsigned int L_Isaac_GetTime() {
 		return timeGetTime();
 	};
+
+	void L_Isaac_SetBuiltInCallbackState(int callback, bool state) {
+		Isaac::SetBuiltInCallbackState(callback, state);
+	}
 }

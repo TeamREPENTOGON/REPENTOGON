@@ -1055,10 +1055,10 @@ struct ConsoleMega : ImGuiWindowObject {
                             // This is a Lua command with the CUSTOM AutocompleteType defined. It wants to add its own autocomplete.
                             // Register the callback MC_CONSOLE_AUTOCOMPLETE with the command as an optional param.
 
-                            extern std::bitset<500> CallbackState;
+                            extern std::bitset<1500> CallbackState;
 
                             int callbackId = 1120;
-                            if (CallbackState.test(callbackId - 1000)) {
+                            if (CallbackState.test(callbackId)) {
                                 lua_State* L = g_LuaEngine->_state;
                                 lua::LuaStackProtector protector(L);
                                 lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);

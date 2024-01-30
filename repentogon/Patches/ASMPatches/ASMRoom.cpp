@@ -43,7 +43,7 @@ void __stdcall MegaSatanCallbackTrampoline() {
 	overrideMegaSatanEnding = false;
 
 	int callbackid = 1201;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (CallbackState.test(callbackid)) {
 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);

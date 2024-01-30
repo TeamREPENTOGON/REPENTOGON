@@ -31,6 +31,7 @@ extern "C" {
 }
 
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
+int LuaKeys::runCallbackKey = LUA_NOREF;
 int LuaKeys::preRenderCallbackKey = LUA_NOREF;
 int LuaKeys::additiveCallbackKey = LUA_NOREF;
 int LuaKeys::entityTakeDmgCallbackKey = LUA_NOREF;
@@ -224,6 +225,11 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	luaL_openlibs(L);
 
 	this->RunBundledScript("resources/scripts/ffi/main.lua");
+
+	// I would genuinely rather reimplement the vanilla callbacks than entertain any LuaBridge idiocy.
+	// Sorry not sorry.
+	lua_getglobal(L, "_RunCallback");
+	LuaKeys::runCallbackKey = luaL_ref(L, LUA_REGISTRYINDEX);
 
 	/*luaL_requiref(g_LuaEngine->_state, "debug", luaopen_debug, 1);
 	lua_pop(g_LuaEngine->_state, 1);

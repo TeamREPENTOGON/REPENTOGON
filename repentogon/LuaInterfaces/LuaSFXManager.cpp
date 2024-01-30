@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 
 // I suppose calling these files "Lua interfaces" isn't necessarily accurate anymore, is it?
+
 extern "C" {
 
     void L_SFXManager_AdjustPitch(unsigned int id, float pitch) {

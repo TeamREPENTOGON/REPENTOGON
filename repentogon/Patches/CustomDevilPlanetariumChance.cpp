@@ -5,13 +5,13 @@
 #include "LuaCore.h"
 #include "../LuaInit.h"
 
-extern std::bitset<500> CallbackState;
+extern std::bitset<1500> CallbackState;
 
 bool modsChangingDevilChance(lua_State* L) {
     int callbacks[4] = { 1130, 1131, 1132, 1133 };
 
     for (int callback : callbacks) {
-        if (CallbackState.test(callback - 1000)) {
+        if (CallbackState.test(callback)) {
             return true;
         }
     }
@@ -48,7 +48,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         chance += 0.01f;
 
         //MC_PRE_DEVIL_APPLY_ITEMS
-        if (CallbackState.test(1130 - 1000)) {
+        if (CallbackState.test(1130)) {
 
             lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
@@ -106,7 +106,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         bool shouldApplyStagePenalty = true;
 
         //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
-        if (CallbackState.test(1131 - 1000)) {
+        if (CallbackState.test(1131)) {
             lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
             lua::LuaResults preApplyStagePenaltyResult = lua::LuaCaller(L).push(1131)
@@ -139,7 +139,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     }
 
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
-    if (CallbackState.test(1132 - 1000)) {
+    if (CallbackState.test(1132)) {
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
@@ -168,7 +168,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         chance = 1;
 
     //MC_POST_DEVIL_CALCULATE
-    if (CallbackState.test(1133 - 1000)) {
+    if (CallbackState.test(1133)) {
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
@@ -196,7 +196,7 @@ bool modsChangingPlanetariumChance(lua_State *L) {
     int callbacks[6] = { 1110, 1111, 1112, 1113, 1114, 1115 };
 
     for (int callback : callbacks) {
-        if (CallbackState.test(callback - 1000)) {
+        if (CallbackState.test(callback)) {
             return true;
         }
     }
@@ -226,7 +226,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     float chance = 0.01f;
 
     //MC_PRE_PLANETARIUM_APPLY_STAGE_PENALTY
-    if (CallbackState.test(1110 - 1000)) {
+    if (CallbackState.test(1110)) {
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
@@ -247,7 +247,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         return 0.f;
 
     //MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY
-    if (CallbackState.test(1111 - 1000)) {
+    if (CallbackState.test(1111)) {
         lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
         lua::LuaResults preApplyPlanetariumResult = lua::LuaCaller(L).push(1111)
@@ -264,7 +264,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         bool shouldBypassTreasureRestriction = false;
         int treasureRoomsVisited = g_Game->_treasureRoomsVisited;
         //MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY
-        if (CallbackState.test(1112 - 1000)) {
+        if (CallbackState.test(1112)) {
             lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
             lua::LuaResults preApplyTreasureResult = lua::LuaCaller(L).push(1112)
@@ -294,7 +294,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         }
 
         //MC_PRE_PLANETARIUM_APPLY_ITEMS
-        if (CallbackState.test(1113 - 1000)) {
+        if (CallbackState.test(1113)) {
 
             lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
@@ -322,7 +322,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
             chance += 0.15f;
     }
     //MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
-    if (CallbackState.test(1114 - 1000)) {
+    if (CallbackState.test(1114)) {
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
@@ -341,7 +341,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         chance += 0.09f;
 
     //MC_POST_PLANETARIUM_CALCULATE
-    if (CallbackState.test(1115 - 1000)) {
+    if (CallbackState.test(1115)) {
 
         lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
