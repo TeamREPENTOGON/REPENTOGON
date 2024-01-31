@@ -3,6 +3,7 @@ void L_KAGE_LogMessage(const char*);
 void L_Console_Print(const char*, unsigned int);
 unsigned int L_Isaac_GetTime();
 void L_Isaac_SetBuiltInCallbackState(int, bool);
+unsigned int L_Random();
 ]]
 
 local repentogon = ffidll
@@ -32,3 +33,5 @@ Isaac.SetBuiltInCallbackState = function(callback, state)
 	ffichecks.checkboolean(2, state)
 	repentogon.L_Isaac_SetBuiltInCallbackState(callback, state)
 end
+
+Random = function() return repentogon.L_Random() end

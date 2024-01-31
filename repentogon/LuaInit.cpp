@@ -28,6 +28,14 @@ extern "C" {
 	void createPointer(void* cdata, void** pointer) {
 		*pointer = cdata;
 	}
+
+	void FreeOutcomeList(FFI_OutcomeList list) {
+		free(list.outcomes);
+	}
+	
+	unsigned int L_Random() {
+		return Isaac::genrand_int32();
+	}
 }
 
 static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;

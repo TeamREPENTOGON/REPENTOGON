@@ -50,8 +50,13 @@ end
 
 pcall(require("Isaac"))
 
-print = function(str)
-	str = tostring(str)
+print = function(...)
+	local str = ""
+
+	for i, v in ipairs({ ... }) do
+		str = str .. tostring(v) .. " "
+	end
+
 	Isaac.DebugString(str)
 	Isaac.ConsoleOutput(str .. "\n")
 end
@@ -63,6 +68,7 @@ pcall(require("Vector"))
 pcall(require("SFXManager"))
 pcall(require("RNG"))
 pcall(require("MusicManager"))
+pcall(require("WeightedOutcomePicker"))
 pcall(require("Game"))
 
 

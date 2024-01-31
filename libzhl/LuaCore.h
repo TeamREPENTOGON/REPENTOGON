@@ -2,6 +2,8 @@
 
 #include <LuaJIT/src/lua.hpp>
 
+#include "IsaacRepentance.h"
+
 extern "C" {
     #include "lua53compat/lua53compat.h"
 }
@@ -12,6 +14,11 @@ extern "C" {
         char** strings;
         int length;
     } FFI_StringTable;
+
+    typedef struct {
+        WeightedOutcomePicker_Outcome** outcomes;
+        int length;
+    } FFI_OutcomeList;
 }
 
 #include "libzhl.h"
