@@ -550,6 +550,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	ANM2 _heldSprite : 0xf48;
 	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1170;
 	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
+	int _gnawedLeafTimer : 0x12c4;
 	float _damage : 0x13b8;
 	ColorMod _laserColor : 0x140c;
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;

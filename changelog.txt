@@ -10,7 +10,9 @@ Additions:
 * Entity:
 	- CopyStatusEffects has been modified to better suit actual use cases
 	- SetColor has been removed, will now always copy ColorParams
-	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior 
+	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior
+* EntityPlayer:
+	- Get/SetGnawedLeafTimer
 * Room :
 	- SetLavaIntensity
 	- [Get/Set]RainIntensity
@@ -35,7 +37,7 @@ Additions:
 	- Added a PauseMenu Global that holds all its related stuff
 	- Added a GetMyStuffSprite that returns the sprite used for the MyStuff items
 	- Added a GetSelectedElement/SetSelectedElement similar to the one seen in other menus
-	- Added GetState/SetState 
+	- Added GetState/SetState
 * MusicManager:
 	- Get/SetCurrentPitch
 * Unlocks
@@ -64,7 +66,7 @@ Modified:
 * MC_GET_SHOP_ITEM_PRICE now provides a price argument
 /newline/
 Fixes:
-* Fixed relative ids being displayed as actual ids on xmldata tables. 
+* Fixed relative ids being displayed as actual ids on xmldata tables.
 * Fix GridEntity:ToFire/ToTNT/ToWall functions
 * Fixed binder for Entity:ComputeStatusEffectDuration
 * Fixed pause menu modded marks rendering over the controller disconected popup
