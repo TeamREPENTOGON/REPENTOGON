@@ -325,6 +325,10 @@ ___
 #### table GetGlyphOfBalanceDrop ( int Variant = -1, int SubType = -1 ) {: .copyable aria-label='Functions' }
 Returns a table containing the variant and subtype of the possible [Glyph of Balance](https://bindingofisaacrebirth.fandom.com/wiki/Glyph_of_Balance) drop.
 ___
+### GetGnawedLeafTimer () {: aria-label='Functions' }
+#### int GetGnawedLeafTimer ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetGreedsGulletHearts () {: aria-label='Functions' }
 #### int GetGreedsGulletHearts ( ) {: .copyable aria-label='Functions' }
 
@@ -683,6 +687,10 @@ ___
 ___
 ### SetFootprintColor () {: aria-label='Functions' }
 #### void SetFootprintColor ( [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) color, boolean RightFoot = false ) {: .copyable aria-label='Functions' }
+
+___
+### SetGnawedLeafTimer () {: aria-label='Functions' }
+#### void SetGnawedLeafTimer ( int Timer ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetImmaculateConceptionState () {: aria-label='Functions' }
