@@ -70,6 +70,7 @@ pcall(require("RNG"))
 pcall(require("MusicManager"))
 pcall(require("WeightedOutcomePicker"))
 pcall(require("Game"))
+pcall(require("Ambush"))
 
 
 package = nil
