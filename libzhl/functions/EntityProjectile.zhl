@@ -1,14 +1,46 @@
-"558bec83ec2ca1????????5356f30f7e05":
-__thiscall void Entity_Projectile::Render(Vector *offset);
 
-"558bec83e4f881ec94000000a1????????33c4898424????????538b5d":
-__thiscall bool Entity_Projectile::HandleCollision(Entity* collider, bool low);
+
+
 
 "558bec83e4f883ec08568bf1578b8e":
 __thiscall void Entity_Projectile::Reflect(Entity* unused, Vector* newVelocity);
 
 struct Entity_Projectile : public Entity {
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		skip; // Update
+		skip; // Interpolate
+		
+		override
+		"558bec83ec2ca1????????5356f30f7e05":
+		void Render(Vector *offset);
+		
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		
+		//override
+		"558bec83e4f881ec94000000a1????????33c4898424????????538b5d":
+		bool HandleCollision(Entity* collider, bool low);
 
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+	};
 } : 0x3c0;
 
 "6A0068(????????)68????????6A00506A00578D85D0FEFFFF508D85F0FEFFFF":

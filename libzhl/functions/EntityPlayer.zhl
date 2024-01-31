@@ -5,7 +5,6 @@
 __thiscall void Entity_Player::AnimatePickup(ANM2 *param_1,bool param_2,char *param_3);
 */
 
-
 //AddCollectible - 
 "558bec6aff68????????64a1????????5081ec88000000a1????????33c58945??5657508d45??64a3????????8bf1":
 __thiscall void Entity_Player::AddCollectible(int type, int charge, bool firsttime,int slot,int vardata);
@@ -70,9 +69,6 @@ __thiscall void Entity_Player::UseCard(int cardType, unsigned int useFlag);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec78010000a1????????33c58945??5657508d45??64a3????????8bf989bd????????8b43":
 __thiscall void Entity_Player::UsePill(int ePillEffect, int ePillColor, unsigned int useFlag);
-
-"558bec83e4c081ecb4000000a1????????33c4898424????????538bd9568b75":
-__thiscall void Entity_Player::Render(Vector *offset);
 
 "8b81????????83c0fc83f824":
 __thiscall int Entity_Player::GetHealthType();
@@ -185,9 +181,6 @@ __thiscall PocketItem* Entity_Player::GetPocketItem(int SlotID);
 
 "a1????????568b90????????8bb0":
 __thiscall bool Entity_Player::IsLocalPlayer();
-
-"558bec83e4f881ecc8000000a1????????33c4898424????????5657ff75":
-__thiscall bool Entity_Player::HandleCollision(Entity* collider, bool low);
 
 "558bec6aff68????????64a1????????5083ec38a1????????33c58945??5657508d45??64a3????????8bf98b87":
 __thiscall void Entity_Player::InitPreLevelInitStats();
@@ -498,7 +491,11 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
+		
+		override
+		"558bec83e4c081ecb4000000a1????????33c4898424????????538bd9568b75":
+		void Render(Vector *offset);
+		
 		skip; // RenderShadowLayer
 		skip; // PostRender
 		
@@ -523,7 +520,10 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 		bool TryThrow(const EntityRef& Source, Vector* pos, float unk);
 		
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		//override
+		"558bec83e4f881ecc8000000a1????????33c4898424????????5657ff75":
+		bool HandleCollision(Entity* collider, bool low);
 		
 		override
 		"558bec0f1081":

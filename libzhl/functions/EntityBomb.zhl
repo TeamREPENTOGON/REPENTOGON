@@ -1,9 +1,3 @@
-"558bec83e4c081ecb400000053":
-__thiscall void Entity_Bomb::Render(Vector *offset);
-
-"558bec83e4f883ec58568b75??57ff75":
-__thiscall bool Entity_Bomb::HandleCollision(Entity* collider, bool low);
-
 "558bec83ec5ca1????????33c58945??538bd9":
 __thiscall void Entity_Bomb::UpdateDirtColor();
 
@@ -17,4 +11,40 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 	bool _loadCostumes : 0x3b3;
 	ANM2 _bombCostumesSprites[5] : 0x3b4;
 	std_vector_uint _hitList : 0x918;
+	
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		skip; // Update
+		skip; // Interpolate
+		
+		override
+		"558bec83e4c081ecb400000053":
+		void Render(Vector *offset);
+		
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		
+		//override
+		"558bec83e4f883ec58568b75??57ff75":
+		bool HandleCollision(Entity* collider, bool low);
+		
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+	};
 } : 0x928;

@@ -1,12 +1,6 @@
 "8b41??483dea000000":
 __thiscall int Entity_Familiar::GetFollowerPriority();
 
-"558bec83e4c083ec745356578bf9e8":
-__thiscall void Entity_Familiar::Render(Vector *offset);
-
-"558bec83e4f081ec48010000a1":
-__thiscall bool Entity_Familiar::HandleCollision(Entity* collider, bool low);
-
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec305657a1????????33c5508d45??64a3????????8bf1":
 __thiscall void Entity_Familiar::Shoot();
 
@@ -56,7 +50,11 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
+		
+		override
+		"558bec83e4c083ec745356578bf9e8":
+		void Render(Vector *offset);
+		
 		skip; // RenderShadowLayer
 		skip; // PostRender
 		skip; // TakeDamage
@@ -73,7 +71,11 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
 		skip; // IsValidTarget
 		skip; // TryThrow
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		//override
+		"558bec83e4f081ec48010000a1":
+		bool HandleCollision(Entity* collider, bool low);
+		
 		skip; // ResetColor
 		skip; // LoadEntityConfig
     };

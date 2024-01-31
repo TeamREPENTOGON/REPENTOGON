@@ -1,12 +1,40 @@
-"558bec83e4f881ece000000056":
-__thiscall void Entity_Knife::Render(Vector *offset);
-
-"558bec83e4f081ece8000000a1????????33c4898424????????56":
-__thiscall bool Entity_Knife::HandleCollision(Entity* collider, bool low);
-
 "80b9????????0074??0f1f8000000000":
 __thiscall std_vector_uint * Entity_Knife::GetHitEntities();
 
 struct Entity_Knife : public Entity {
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		skip; // Update
+		skip; // Interpolate
+		
+		override
+		"558bec83e4f881ece000000056":
+		void Render(Vector *offset);
 
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		
+		//override
+		"558bec83e4f081ece8000000a1????????33c4898424????????56":
+		bool HandleCollision(Entity* collider, bool low);
+		
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+	};
 } : 0xe70;

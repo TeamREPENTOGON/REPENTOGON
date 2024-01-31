@@ -8,11 +8,9 @@ static void Entity::PlaySound(int ID, float Volume, int FrameDelay, bool Loop, f
 
 "558bec83e4f8515356578bd9e8????????84c0":
 __thiscall void Entity::CopyStatusEffects();
+
 "558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????57":
 __thiscall void Entity::AddBleeding(const EntityRef& ref, int duration);
-
-"558bec83e4f883ec10568b75??5756":
-__thiscall void Entity::AddShrink(const EntityRef& ref, int duration);
 
 "558bec83e4f883ec38a1????????33c4894424??56578b7d??8bf1":
 __thiscall void Entity::AddMagnetized(const EntityRef& ref, int duration);
@@ -41,9 +39,6 @@ __thiscall Vector Entity::GetNullOffset(const char* nullLayerName);
 "558bec83e4f883ec24568bf1837e7000":
 __thiscall Capsule Entity::GetNullCapsule(const char* nullLayerName);
 
-"558bec83e4c081ecb4000000f30f1005":
-__thiscall bool Entity::RenderShadowLayer(Vector *offset);
-
 "558becff05":
 static cleanup bool Entity::ForceCollide(Entity* boom<ecx>, Entity *collider<edx>, bool low);
 
@@ -71,7 +66,70 @@ __thiscall Entity_Effect * Entity::MakeGroundPoof(Vector * pos, ColorMod * color
 "558bec83e4f881ec94000000f30f1005":
 __thiscall void Entity::TeleportToRandomPosition(bool unused);
 
-struct Entity depends (AnimationState, ANM2, RNG, Vector) {
+"558bec83e4f8515356578b7d??8bf157e8????????84c00f85????????837e??01":
+__thiscall void Entity::AddBurn(const EntityRef& ref, int duration, float damage);
+
+"558bec83e4f883ec3ca1????????33c4894424??5356578bf98b4d":
+__thiscall void Entity::AddCharmed(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec3ca1????????33c4894424??5356578b7d":
+__thiscall void Entity::AddConfusion(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec3ca1????????33c4894424??538b5d":
+__thiscall void Entity::AddFear(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????57":
+__thiscall void Entity::AddFreeze(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec30a1????????33c4894424??56578b7d??8bf157e8????????84c00f85????????57ff75??8bcee8????????8bce8bf8":
+__thiscall void Entity::AddMidasFreeze(const EntityRef& ref, int duration);
+
+"558bec83e4f883ec34a1????????33c4894424??5356578b7d??8bf157e8????????84c00f85????????837e??01":
+__thiscall void Entity::AddPoison(const EntityRef& ref, int duration, float damage);
+
+"558bec83e4f883ec10568b75??5756":
+__thiscall void Entity::AddShrink(const EntityRef& ref, int duration);
+
+"558bec83e4f856578b7d??8bf1":
+__thiscall void Entity::AddSlowing(const EntityRef& ref, int duration, unsigned int unk, ColorMod* color);
+
+"558becf30f1099":
+__thiscall void Entity::AddVelocity(Vector * velocity, bool useSpeedModifier);
+
+"558bec83e4f881ec80000000a1????????33c4894424??56578bf933c0":
+__thiscall void Entity::BloodExplode();
+
+"558bec8b55??8b45??f7d2":
+__thiscall void Entity::ClearEntityFlags(unsigned long long flags);
+
+"558bec8b45??8bd185c0":
+__thiscall bool Entity::HasCommonParentWithEntity(Entity* right);
+
+"558bec8b51??8d42":
+__thiscall bool Entity::IsActiveEnemy(bool includeDead);
+
+"8b81????????85c074??83f80374??83f80174??83f80274??32c0":
+__thiscall bool Entity::IsFlying();
+
+"558bec83e4f8518b81????????2500400000":
+__thiscall bool Entity::IsFrame(int frame, int offset);
+
+"558bec83e4f8568bf1578b7e":
+__thiscall bool Entity::IsVulnerableEnemy(Entity* unk);
+
+"558bec83e4f883ec0c568bf16aff":
+__thiscall void Entity::RemoveStatusEffects();
+
+"558bec83e4f8f30f1055":
+__thiscall void Entity::SetSize(float size, Vector sizeMulti, int numGridCollisionPoints);
+
+"558bec518b45??568d71??8378??1072??8b006a01508bcee8????????84c074??8b46":
+__thiscall void Entity::SetSpriteFrame(std_string * name, int frame); 
+
+"558bec518b45??568d71??8378??1072??8b006a01508bcee8????????84c074??837e??00":
+__thiscall void Entity::SetSpriteOverlayFrame(std_string * name, int frame); 
+
+struct Entity depends (AnimationState, ANM2, RNG, Vector, ColorMod) {
 {{
 	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
 	inline unsigned int* GetType() { return (unsigned int*)((char*)this + 0x28); }
@@ -116,17 +174,27 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		this->constructor();
 	}
 }} 
+	float _mortalHealth : 0x14;
     unsigned int _index : 0x20; //0x20
     unsigned int _collisionIndex : 0x24; //0x24
     unsigned int _type : 0x28; //0x28
     unsigned int _variant : 0x2c; //0x2c
     unsigned int _subtype : 0x30; //0x30
+	unsigned int _spawnerType : 0x34;
+	unsigned int _spawnerVariant : 0x38;
 	ANM2 _sprite : 0x3c;
     unsigned int _shadowSize : 0x150; //0x150   
-	unsigned int _flags[2] : 0x160;
+	unsigned long long _flags : 0x160;
     bool _dead : 0x168; 
     bool _visible : 0x169; // 0x169
+	bool _exists : 0x16a;
+	bool _isDead : 0x16b;
+	unsigned int _gridCollisionClass : 0x17c;
+	unsigned int _entityCollisionClass : 0x180;
+	bool _collidesWithGrid : 0x188;
 	vector_ColorParams _colorParams : 0x1a4;
+	ColorMod _color : 0x1b0;
+	ColorMod _splatColor : 0x1dc;
 	int _fireDamageCountdown : 0x208;
 	int _damageCountdown : 0x20c;
 	int _freezeCountdown : 0x210;
@@ -151,13 +219,32 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	Vector _knockbackDirection : 0x260;
 	float _poisonDamage : 0x278;
 	float _burnDamage : 0x27c;
+	unsigned int _frameCount : 0x280;
+	unsigned int _spawnGridIdx : 0x284;
+	EntityConfig_Entity* _entityConfig : 0x288;
+	Vector _targetPosition : 0x28c;
+	Vector _position : 0x294;
+	Vector _positionOffset : 0x2a4;
+	int _renderZOffset : 0x2ac;
 	float _depthOffset : 0x2b0;
+	int _sortingLayer : 0x2b4;
+	Vector _velocity : 0x2b8;
+	float _friction : 0x2c4;
+	float _size : 0x2c8;
+	Vector _sizeMulti : 0x2cc;
+	float _mass : 0x2d4;
+	float _health : 0x2d8;
+	float _maxHealth : 0x2dc;
 	float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
 	float _shrinkStatus1 : 0x30c;
 	float _shrinkStatus2 : 0x310;
+	Entity * _parent : 0x314;
 	Entity * _child : 0x318;
+	Entity * _target : 0x31c;
+	Entity* _spawnerEntity : 0x320;
 	RNG _dropRNG : 0x334;
+	unsigned int _initSeed: 0x344;
 
     __vtable {
 		skip; // Free
@@ -171,14 +258,21 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
-		skip; // RenderShadowLayer
-		skip; // PostRender
+		
+		"558bec83e4c083ec38568bf1":
+		void Render(Vector *offset);
+		
+		"558bec83e4c081ecb4000000f30f1005":
+		bool RenderShadowLayer(Vector *offset);
+		
+		"558bec83e4f881ec9000000056":
+		void PostRender();
 		
         "558bec83e4f883ec3c5356578bf9837f??01":
         bool TakeDamage(float Damage, unsigned long long DamageFlags, EntityRef *Source, int DamageCountdown);
 		
-		skip; // Kill
+		"558bec83e4f851568bf180be????????0075":
+		void Kill();
 		
         "51568bf15780be????????00c686????????007507":
         void Remove(); 

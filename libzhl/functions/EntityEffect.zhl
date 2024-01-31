@@ -1,6 +1,3 @@
-"558bec81ecc0010000":
-__thiscall void Entity_Effect::Render(Vector *offset);
-
 "558bec83e4f856578bfa":
 static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);
 
@@ -15,7 +12,11 @@ struct Entity_Effect depends (BitSet128) : public Entity {
         void Update();
 		
 		skip; // Interpolate
-		skip; // Render
+		
+		override
+		"558bec81ecc0010000":
+		void Render(Vector *offset);
+
 		skip; // RenderShadowLayer
 		skip; // PostRender
 		skip; // TakeDamage

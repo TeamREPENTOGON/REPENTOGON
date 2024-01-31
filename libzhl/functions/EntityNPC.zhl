@@ -2,9 +2,6 @@
 "558bec83e4f883ec30a1????????33c4894424??8b45": 
 __thiscall void Entity_NPC::Morph(int EntityType,int Variant,int SubType,int Championid);
 
-"558bec6aff68????????64a1????????5081ece8000000":
-__thiscall void Entity_NPC::Render(Vector *offset);
-
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec88000000a1????????33c58945ec5657508d45f464a3000000008bf18975a833c08945b88945a4384308":
 __thiscall void Entity_NPC::UpdateDirtColor(bool unk);
 
@@ -13,9 +10,6 @@ static cleanup bool Entity_NPC::Redirect(int* EntityType<ecx>,int* Variant<edx>)
 
 "558bec83e4f851538bd9565783bb????????007c":
 __thiscall bool Entity_NPC::TryForceTarget(Entity* Target, int Duration);
-
-"558bec6aff68????????64a1????????5081ec60010000":
-__thiscall bool Entity_NPC::HandleCollision(Entity* collider, bool low);
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec405657a1????????33c5508d45??64a3????????894d??33f6":
 __thiscall void Entity_NPC::FireProjectiles(Vector* position, Vector* velocity, uint32_t mode, ProjectileParams* params);
@@ -111,7 +105,11 @@ struct Entity_NPC depends (Vector) : public Entity {
 		skip; // PreUpdate
 		skip; // Update
 		skip; // Interpolate
-		skip; // Render
+		
+		override
+		"558bec6aff68????????64a1????????5081ece8000000":
+		void Render(Vector *offset);
+		
 		skip; // RenderShadowLayer
 		skip; // PostRender
 		skip; // TakeDamage
@@ -132,7 +130,10 @@ struct Entity_NPC depends (Vector) : public Entity {
         bool TryThrow(const EntityRef& Source, Vector* pos, float unk);
 
 		skip; // GetForwardVector
-		skip; // HandleCollision
+		
+		//override
+		"558bec6aff68????????64a1????????5081ec60010000":
+		bool HandleCollision(Entity* collider, bool low);
 		
 		override
 		"558bec81ecdc000000":
