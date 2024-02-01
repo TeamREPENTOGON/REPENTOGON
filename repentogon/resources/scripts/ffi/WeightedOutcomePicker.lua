@@ -91,14 +91,11 @@ local WeightedOutcomePickerMT = lffi.metatype("WeightedOutcomePicker", {
     __tostring = function(self) 
         return "WeightedOutcomePicker[" .. repentogon.L_WeightedOutcomePicker_GetNumOutcomes(self) .. "]" 
     end,
-    __call = function() 
-        return lffi.gc(repentogon.L_WeightedOutcomePicker_Constructor(), repentogon.L_WeightedOutcomePicker_Free) 
-    end,
     __index = WeightedOutcomePickerFuncs
 })
 
 WeightedOutcomePicker = setmetatable({}, {
     __call = function()
-        return WeightedOutcomePickerMT()
+        return lffi.gc(repentogon.L_WeightedOutcomePicker_Constructor(), repentogon.L_WeightedOutcomePicker_Free) 
     end
 })

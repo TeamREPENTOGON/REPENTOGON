@@ -69,7 +69,8 @@ pcall(require("SFXManager"))
 pcall(require("RNG"))
 pcall(require("MusicManager"))
 pcall(require("WeightedOutcomePicker"))
-pcall(require("Game"))
+-- pcall(require("Game"))
+pcall(require("Sprite"))
 
 
 package = nil

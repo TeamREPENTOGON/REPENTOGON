@@ -11,7 +11,7 @@ __thiscall void ANM2::SetLayerFrame(int layerid,int frame);
 __thiscall void ANM2::ReplaceSpritesheet(int LayerId, std_string &PngFilename);
 
 "558bec6aff68????????64a1????????5083ec28535657a1????????33c5508d45??64a3????????8bf933c9":
-__thiscall void ANM2::LoadGraphics(bool unk);
+__thiscall void ANM2::LoadGraphics();
 
 "558bec6aff68????????64a1????????505657a1????????33c5508d45??64a3????????8bf9837f??00":
 __thiscall void ANM2::Reset();
@@ -26,7 +26,16 @@ __thiscall LayerState* ANM2::GetLayer(int layer);
 __thiscall void ANM2::RenderLayer(int param_1,Vector *param_2,Vector *param_3,Vector *param_4);
 
 "558bec8b41??85c074??8079??0074??8b4d??80390074??8378??1072??8b008a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c075??b0015dc2040032c05dc20400??????????????????????":
-__thiscall bool ANM2::IsPlaying(std_string* name);
+__thiscall bool ANM2::IsPlaying(const char* name);
+
+"558bec8b413485c075088b4508803800eb3d80794400753f8b4d0880390074318378141072028b008a103a11751a84d274128a50013a5101750e83c00283c10284d275e433c0eb051bc083c80185c07506b0015dc2040032c05dc20400":
+__thiscall bool ANM2::IsFinished(const char* name);
+
+"558bec8b415485c075088b4508803800eb3d80796400753f8b4d0880390074318378141072028b008a103a11751a84d274128a50013a5101750e83c00283c10284d275e433c0eb051bc083c80185c07506b0015dc2040032c05dc20400":
+__thiscall bool ANM2::IsOverlayFinished(const char* name);
+
+"558bec8b415485c0744580796400743f8b4d0880390074318378141072028b008a103a11751a84d274128a50013a5101750e83c00283c10284d275e433c0eb051bc083c80185c07506b0015dc2040032c05dc20400":
+__thiscall bool ANM2::IsOverlayPlaying(const char* name);
 
 "558bec518379??0075??83c8ff":
 __thiscall int ANM2::GetFrame();
@@ -40,11 +49,17 @@ __thiscall void ANM2::Load(std_string &ANM2Path, bool loadgraphics);
 "568bf1837e??0074??56":
 __thiscall void ANM2::Reload();
 
+"558bec83e4f883ec10f30f1055":
+__thiscall KColor ANM2::GetTexel(Vector samplePos, Vector renderPos, float alphaThreshold, int layerID);
+
 "558bec83ec08538bc18b4d??565733ff8945??8b58??85db74??8b40??8bf08945??837e??108bc672??8b060f1f40008a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c074??8b4d??4781c63c0100003bfb72??5168????????6a00e8????????83c40c32c05f5e5b8be55dc208008b4d??69c73c01000083c130":
 __thiscall bool ANM2::SetAnimation(const char* anim, bool reset);
 
 "558bec83ec08538bc18b4d??565733ff8945??8b58??85db74??8b40??8bf08945??837e??108bc672??8b060f1f40008a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c074??8b4d??4781c63c0100003bfb72??5168????????6a00e8????????83c40c32c05f5e5b8be55dc208008b4d??69c73c01000083c150":
 __thiscall bool ANM2::SetOverlayAnimation(const char* anim, bool reset);
+
+"8379??0075??83c8ffc3":
+__thiscall int ANM2::GetOverlayFrame();
 
 "558bec518379??0074??660f6e4d??83c150":
 __thiscall void ANM2::SetOverlayFrame(int frame);
@@ -52,8 +67,29 @@ __thiscall void ANM2::SetOverlayFrame(int frame);
 "558bec51566a01ff75??8bf1e8????????84c074??837e??00":
 __thiscall void ANM2::SetOverlayFrame(const char* anim, int frame);
 
+"558bec8a45088841705dc20400cccccc558bec83e4f88b550883ec0c53568bf15785d274258b422889068b422c8946048b4234894608":
+__thiscall void ANM2::SetOverlayRenderPriority(bool renderFirst);
+
+"518379??0074??8b41":
+__thiscall void ANM2::SetLastFrame();
+
+"837934007404c6414400c3":
+__thiscall void ANM2::Stop();
+
+"558bec51538bd95657895dfc837b0400750f68????????6a03e8????????83c4088b3333ff8b9e9000000085db74448bb68c000000837e14108bc672028b068b4d088a103a11751a84d274128a50013a5101750e83c00283c10284d275e433c0eb051bc083c80185c074134783c6183bfb72c232c05f5e5b8be55dc2040085ff78f18bcfb801000000d3e08b4dfc5f5e5b8541180f95c08be55dc20400":
+__thiscall void ANM2::WasEventTriggered(const char* event);
+
 "558bec807d??0056578bf975??8b77??85f674??837e??108bc672??8b068b4d??8a103a1175??84d274??8a50??3a51??75??83c00283c10284d275??33c0eb??1bc083c80185c075??3846??74??3847??75??6a01ff75??8bcfe8????????84c074??8d4f??e8????????c647??015f5e5dc20800????????????????????":
 __thiscall void ANM2::Play(const char* anim, bool reset);
+
+"558bec807d0c0056578bf975478b775485f67440837e14108bc672028b068b4d088a103a11751a84d274128a50013a5101750e83c00283c10284d275e433c0eb051bc083c80185c0750a3846347421384764751c6a01ff75088bcfe8????????84c0740c8d4f50e8????????c64764015f5e5dc20800":
+__thiscall void ANM2::PlayOverlay(const char* anim, bool reset);
+
+"558bec53568bf1578b4e??85c975??68????????51":
+__thiscall void ANM2::PlayRandom(int seed);
+
+"6a0083c150":
+__thiscall void ANM2::RemoveOverlay();
 
 "558bec83ec0880b9????????00":
 __thiscall void ANM2::Render_Wrapper(Vector* Position, Vector* topleftclamp, Vector* bottomrightclamp);
