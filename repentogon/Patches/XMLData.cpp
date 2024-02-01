@@ -48,7 +48,7 @@ unordered_map<string, int> xmlmaxnode;
 unordered_map<string, int> xmlfullmerge;
 XMLData XMLStuff;
 
-XMLDataHolder* xmlnodetypetodata[31] = {
+XMLDataHolder* xmlnodetypetodata[32] = {
 	XMLStuff.ModData,             // 0
 	NULL,//XMLStuff.EntityData,          // 1
 	XMLStuff.PlayerData,          // 2
@@ -79,7 +79,8 @@ XMLDataHolder* xmlnodetypetodata[31] = {
 	XMLStuff.GiantBookData,       // 27
 	XMLStuff.BossRushData,        // 28
 	XMLStuff.PlayerFormData,      // 29
-	XMLStuff.NullItemData         // 30
+	XMLStuff.NullItemData,         // 30
+	XMLStuff.BossColorData         // 31
 };
 
 
@@ -713,6 +714,15 @@ void ProcessXmlNode(xml_node<char>* node) {
 					}
 				}
 			}
+			if (iscontent && (entity["boss"] == "1")) {
+				tuple<int, int> clridx = { toint(entity["id"]), toint(entity["variant"]) };
+				if (XMLStuff.BossColorData->bytypevar.find(clridx) != XMLStuff.BossColorData->bytypevar.end()) {
+					XMLStuff.BossColorData->nodes[XMLStuff.BossColorData->bytypevar[clridx]]["name"] = entity["name"];
+					XMLStuff.BossColorData->nodes[XMLStuff.BossColorData->bytypevar[clridx]]["sourceid"] = entity["sourceid"];
+					XMLStuff.BossColorData->byname[entity["name"]] = XMLStuff.BossColorData->bytypevar[clridx];
+				}
+			}
+
 			XMLStuff.EntityData->ProcessChilds(auxnode, idx);
 			XMLStuff.EntityData->nodes[idx] = entity;
 			XMLStuff.EntityData->byorder[XMLStuff.EntityData->nodes.size()] = idx;
@@ -2059,7 +2069,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				attributes["name"] = string(stringTable->GetString("Default", 0, attributes["name"].substr(1, attributes["name"].length()).c_str(), &unk));
 				if (attributes["name"].compare("StringTable::InvalidKey") == 0) { attributes["name"] = attributes["untranslatedname"]; }
 			}
-			
+
 			//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
 			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.PlayerFormData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
 			XMLStuff.PlayerFormData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
@@ -2067,6 +2077,49 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.PlayerFormData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.PlayerFormData->byname[attributes["name"]] = id;
 			XMLStuff.PlayerFormData->nodes[id] = attributes;
+			//XMLStuff.ModData->sounds[lastmodid] += 1;
+			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+			break;
+		}
+	case 25: //bosscolors
+		id = 1;
+		daddy = node;
+		babee = node->first_node();
+		for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+			XMLAttributes attributes;
+			for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				attributes[stringlower(attr->name())] = string(attr->value());
+			}
+			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+			{
+				attributes[stringlower(attr->name())] = string(attr->value());
+			}
+			if (id > XMLStuff.BossColorData->maxid) {
+				XMLStuff.BossColorData->maxid = id;
+			}
+			//if (attributes.find("sourceid") == attributes.end()) {
+				//lastmodid = "BaseGame";
+				//attributes["sourceid"] = lastmodid;
+			//}
+			XMLAttributes ent = XMLStuff.EntityData->GetNodesByTypeVarSub(toint(attributes["id"]), toint(attributes["variant"]), 0, true);
+			if (ent.end() != ent.begin()) {
+				attributes["name"] = ent["name"];
+			}
+
+			attributes["sourceid"] = "BaseGame"; //I replace this later, because modded entities load after bosscolors...
+
+			XMLStuff.BossColorData->ProcessChilds(auxnode, id);
+			
+			if (attributes.find("relativeid") != attributes.end()) { XMLStuff.BossColorData->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
+			//XMLStuff.BossColorData->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+			//XMLStuff.BossColorData->bymod[attributes["sourceid"]].push_back(id);
+			XMLStuff.BossColorData->byfilepathmulti.tab[currpath].push_back(id);
+			XMLStuff.BossColorData->byname[attributes["name"]] = id;
+			XMLStuff.BossColorData->nodes[id] = attributes;
+			tuple idx = { toint(attributes["id"]), toint(attributes["variant"])};
+			XMLStuff.BossColorData->bytypevar[idx] = id;
+			id++;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -2362,6 +2415,25 @@ LUA_FUNCTION(Lua_FromTypeVarSub)
 	}
 }
 
+LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
+{
+	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected EntityType as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
+	int etype = (int)luaL_checknumber(L, 1);
+	int evar = (int)luaL_optnumber(L ,2 ,0);
+	int esub = (int)luaL_optnumber(L, 3, 0);
+	tuple idx = { etype,evar };
+		if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
+			vector<XMLAttributes> vecnodes =  XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
+			if ((esub > 0) && (vecnodes.size() > (esub-1))) {
+				Lua_PushXMLNode(L, vecnodes[esub-1], XMLChilds());
+				return 1;
+			}
+		}
+			lua_pushnil(L);
+			return 0;
+	
+}
+
 LUA_FUNCTION(Lua_GetFromEntity)
 {
 	Entity* entity = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
@@ -2605,6 +2677,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::TableAssoc(_state, "GetEntryById", Lua_GetEntryByIdXML);
 	lua::TableAssoc(_state, "GetNumEntries", Lua_GetNumEntries);
 	lua::TableAssoc(_state, "GetEntityByTypeVarSub", Lua_FromTypeVarSub);
+	lua::TableAssoc(_state, "GetBossColorByTypeVarSub", Lua_GetBossColorByTypeVarSub);
 	lua::TableAssoc(_state, "GetEntryFromEntity", Lua_GetFromEntity);
 	lua::TableAssoc(_state, "GetModById", Lua_GetModByIdXML);
 	lua_setglobal(_state, "XMLData");
@@ -2916,6 +2989,58 @@ bool NodeHasSameAttrs(xml_node<>* node1, xml_node<>* node2) {
 	return true;
 }
 
+
+
+
+// Recursive function to merge XML nodes
+void mergeXmlNodes(xml_document<>* destDoc, xml_node<>* destNode, xml_node<>* sourceNode) {
+	if ((!sourceNode) || (!destNode)) { return; }
+	// Check if a similar node exists in the destination document
+	xml_node<>* existingNode = nullptr;
+	for (xml_node<>* found = destNode->first_node(sourceNode->name()); found; found = found->next_sibling(sourceNode->name())) {
+		if (NodeHasSameAttrs(found, sourceNode)) {
+			existingNode = found;
+			break;
+		}
+	}
+
+
+	// If node doesn't exist in the destination, add a copy of the node from the source
+	if (!existingNode) {
+		xml_node<>* newNode = destDoc->clone_node(sourceNode);
+		destNode->append_node(newNode);
+	}
+	else {
+		// Node with the same name and type exists, merge attributes and children
+			for (xml_attribute<>* attrSource = sourceNode->first_attribute(); attrSource; attrSource = attrSource->next_attribute()) {
+				xml_attribute<>* existingAttrDest = existingNode->first_attribute(attrSource->name(), attrSource->name_size());
+
+				// If attribute doesn't exist in the destination, add it
+				if (!existingAttrDest) {
+					xml_attribute<>* newAttr = destDoc->allocate_attribute(attrSource->name(), attrSource->value(), attrSource->name_size(), attrSource->value_size());
+					existingNode->append_attribute(newAttr);
+				}
+			}
+
+			// Merge node children
+			for (xml_node<>* childSource = sourceNode->first_node(); childSource; childSource = childSource->next_sibling()) {
+				mergeXmlNodes(destDoc, existingNode, childSource);
+			}
+		
+	}
+
+	// Recursively process the next sibling in the source document
+	mergeXmlNodes(destDoc, destNode, sourceNode->next_sibling());
+}
+
+// Function to merge two XML documents
+void DoFullMerge(xml_document<>* a, xml_document<>* b) {
+	xml_node<>* root = b->first_node();
+	xml_node<>* rootsrc = a->first_node();
+	mergeXmlNodes(a, rootsrc, root->first_node());
+}
+
+
 int maxnodebackdrop = 60;
 
 char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch) {
@@ -3045,7 +3170,8 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							root->append_node(clonedNode);
 						}
 					}
-					else if (xmlfullmerge.find(filename) != xmlfullmerge.end()) { //generic fullmerge (a.k.a too complex to be minimalistic about it)
+					else if (xmlfullmerge.find(filename) != xmlfullmerge.end()) { //generic fullmerge (a.k.a too complex or too lazy to be minimalistic about it, likely the latter)
+						DoFullMerge(xmldoc, resourcesdoc);
 					}
 					else if(xmlmaxnode.find(filename) != xmlmaxnode.end()){ //generic
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
@@ -3129,7 +3255,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 		//printf("hackies done");
 		//printf("s: %s",xml); 
 	}
-	if (xmlfullmerge.find(filename) != xmlfullmerge.end()) { printf("s: %s", xml); }
+	//if (xmlfullmerge.find(filename) != xmlfullmerge.end()) { printf("s: %s", xml); }
 	//if (strcmp(filename.c_str(), "ambush.xml") == 0) { printf("s: %s", xml); }
 	//content
 	return xml;
@@ -3288,6 +3414,9 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 				super(BuildModdedXML(xmldata, "backdrops.xml", false));
 		}else if (charfind(xmldata, "<bosse", 50)) {
 			super(BuildModdedXML(xmldata, "bossportraits.xml", false));
+		}
+		else if (charfind(xmldata, "<bossc", 50)) {
+			super(BuildModdedXML(xmldata, "bosscolors.xml", false));
 		}else if (charfind(xmldata, "<playe", 50)) {
 			super(ParseModdedXMLAttributes(xmldata, "players.xml"));
 		}

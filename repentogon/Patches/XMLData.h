@@ -385,6 +385,11 @@ class XMLChallenge : public XMLDataHolder {
 
 };
 
+class XMLBossColor : public XMLDataHolder {
+public:
+	unordered_map<tuple<int,int>, int> bytypevar;
+};
+
 class XMLCurse : public XMLDataHolder {
 public:
 	XMLCurse(int m) {
@@ -605,6 +610,7 @@ struct XMLData {
 	XMLGeneric* GiantBookData = new XMLGeneric(46);
 	XMLGeneric* BossRushData = new XMLGeneric(0);
 	XMLGeneric* PlayerFormData = new XMLGeneric(14);
+	XMLBossColor* BossColorData = new XMLBossColor();
 
 	XMLMod* ModData = new XMLMod();
 
@@ -708,6 +714,7 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["giantbook"] = 22;
 	xmlnodeenum["bossrush"] = 23;
 	xmlnodeenum["playerforms"] = 24;
+	xmlnodeenum["bosscolors"] = 25;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 
@@ -721,10 +728,10 @@ inline void initxmlmaxnodeenum() {
 
 extern unordered_map<string, int> xmlfullmerge;
 inline void initxmlfullmergelist() {
-
+	xmlfullmerge["bosscolors.xml"] = 1;
 }
 
-extern XMLDataHolder* xmlnodetypetodata[31];
+extern XMLDataHolder* xmlnodetypetodata[32];
 extern XMLData XMLStuff;
 
 #endif

@@ -2346,6 +2346,7 @@ XMLNode = {
 	BOSSRUSHWAVE = 28,
 	PLAYERFORM = 29,
 	NULLITEM = 30,
+	BOSSCOLOR = 31,
 }
 
 AutocompleteType = {
