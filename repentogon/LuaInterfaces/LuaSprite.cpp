@@ -10,6 +10,64 @@
 */
 
 extern "C" {
+	// Getters
+	ColorMod* L_Sprite_GetColor(ANM2* anm2) {
+		return &anm2->_color;
+	}
+
+	bool L_Sprite_GetFlipX(ANM2* anm2) {
+		return anm2->_flipX;
+	}
+
+	bool L_Sprite_GetFlipY(ANM2* anm2) {
+		return anm2->_flipY;
+	}
+
+	Vector* L_Sprite_GetOffset(ANM2* anm2) {
+		return &anm2->_offset;
+	}
+
+	float L_Sprite_GetPlaybackSpeed(ANM2* anm2) {
+		return anm2->_playbackSpeed;
+	}
+
+	float L_Sprite_GetRotation(ANM2* anm2) {
+		return anm2->_rotation;
+	}
+
+	Vector* L_Sprite_GetScale(ANM2* anm2) {
+		return &anm2->_scale;
+	}
+
+	// Setters
+	void L_Sprite_SetColor(ANM2* anm2, ColorMod color) {
+		anm2->_color = color;
+	}
+
+	void L_Sprite_SetFlipX(ANM2* anm2, bool flipX) {
+		anm2->_flipX = flipX;
+	}
+
+	void L_Sprite_SetFlipY(ANM2* anm2, bool flipY) {
+		anm2->_flipY = flipY;
+	}
+
+	void L_Sprite_SetOffset(ANM2* anm2, Vector offset) {
+		anm2->_offset = offset;
+	}
+
+	void L_Sprite_SetPlaybackSpeed(ANM2* anm2, float playbackSpeed) {
+		anm2->_playbackSpeed = playbackSpeed;
+	}
+
+	void L_Sprite_SetRotation(ANM2* anm2, float rotation) {
+		anm2->_rotation = rotation;
+	}
+
+	void L_Sprite_SetScale(ANM2* anm2, Vector scale) {
+		anm2->_scale = scale;
+	}
+
 	const char* L_Sprite_GetAnimation(ANM2* anm2) {
 		return anm2->GetAnimationState()->GetAnimationData()->_name.c_str();
 	}
@@ -113,12 +171,16 @@ extern "C" {
 		anm2->Reset();
 	}
 
-	void L_Sprite_SetAnimation(ANM2* anm2, const char* animationName, bool force) {
-		anm2->SetAnimation(animationName, force);
+	bool L_Sprite_SetAnimation(ANM2* anm2, const char* animationName, bool force) {
+		return anm2->SetAnimation(animationName, force);
 	}
 
-	void L_Sprite_SetFrame(ANM2* anm2, const char* animationName, int frame) {
+	void L_Sprite_SetFrame(ANM2* anm2, const char* animationName, float frame) {
 		anm2->SetFrame(&std::string(animationName), frame);
+	}
+
+	void L_Sprite_SetFramePrecise(ANM2* anm2, int frame) {
+		anm2->SetFramePrecise(frame);
 	}
 
 	void L_Sprite_SetLastFrame(ANM2* anm2) {
@@ -129,8 +191,8 @@ extern "C" {
 		anm2->SetLayerFrame(layer, frame);
 	}
 
-	void L_Sprite_SetOverlayAnimation(ANM2* anm2, const char* animationName, bool force) {
-		anm2->SetOverlayAnimation(animationName, force);
+	bool L_Sprite_SetOverlayAnimation(ANM2* anm2, const char* animationName, bool force) {
+		return anm2->SetOverlayAnimation(animationName, force);
 	}
 
 	void L_Sprite_SetOverlayFrame(ANM2* anm2, const char* animationName, int frame) {

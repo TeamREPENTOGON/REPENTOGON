@@ -63,6 +63,7 @@ end
 
 pcall(require("Options"))
 pcall(require("Console"))
+pcall(require("KColor"))
 pcall(require("Color"))
 pcall(require("Vector"))
 pcall(require("Sprite"))
