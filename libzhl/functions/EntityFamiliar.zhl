@@ -29,16 +29,83 @@ __thiscall bool Entity_Familiar::CanBeDamagedByEnemy();
 "558bec83e4f88b41??83ec10":
 __thiscall bool Entity_Familiar::CanBlockProjectiles();
 
+"558bec83e4f851538b5d??568bf1":
+__thiscall void Entity_Familiar::AddCoins(int value);
 
-struct Entity_Familiar depends (ColorMod) : public Entity {
+"558bec6aff68????????64a1????????5083ec34535657a1????????33c5508d45??64a3????????8bd98b83":
+__thiscall void Entity_Familiar::AddToDelayed();
+
+"558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf98b87":
+__thiscall void Entity_Familiar::AddToFollowers();
+
+"558bec83e4f851568bf18b86????????85c0":
+__thiscall void Entity_Familiar::AddToOrbit(int layer);
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec385657a1????????33c5508d45??64a3????????8bf1":
+__thiscall void Entity_Familiar::FollowParent();
+
+"558bec8b81????????85c074":
+__thiscall void Entity_Familiar::FollowPosition(Vector* pos);
+
+"558bec8b45??8d04??8b0c85":
+static __stdcall Vector* Entity_Familiar::GetOrbitDistance(int layer);
+
+"558bec83e4f851538bd956578b83":
+__thiscall Vector* Entity_Familiar::GetOrbitPosition(Vector* buffer, Vector* pos);
+
+"558bec83e4f85153568bf1578b7d??8b86":
+__thiscall void Entity_Familiar::MoveDelayed(int delay);
+
+"558bec83e4f883ec345356578bf9897c24":
+__thiscall void Entity_Familiar::MoveDiagonally(float speed);
+
+"558bec83e4f8a1????????83ec4c":
+__thiscall void Entity_Familiar::PickEnemyTarget(float MaxDistance, int FrameInterval, unsigned int Flags, Vector * ConeDir, float ConeAngle);
+
+"558bec83e4f883ec3ca1????????33c4894424??53568bf1":
+__thiscall void Entity_Familiar::PlayChargeAnim(unsigned int dir);
+
+"558bec6aff68????????64a1????????5083ec1056a1????????33c5508d45??64a3????????8b41":
+__thiscall void Entity_Familiar::PlayFloatAnim(unsigned int dir);
+
+"558bec6aff68????????64a1????????5083ec0c5657a1????????33c5508d45??64a3????????8bf98b47":
+__thiscall void Entity_Familiar::PlayShootAnim(unsigned int dir);
+
+"558bec6aff68????????64a1????????5083ec44535657a1????????33c5508d45??64a3????????894d":
+__thiscall unsigned int Entity_Familiar::RecalculateOrbitOffset(int layer);
+
+"558bec83ec0c53568bf15780be????????00":
+__thiscall void Entity_Familiar::RemoveFromDelayed();
+
+"558bec83ec1453568bf157":
+__thiscall void Entity_Familiar::RemoveFromFollowers();
+
+"568bf18b86????????85c078??6a0050e8????????c786????????ffffffff":
+__thiscall void Entity_Familiar::RemoveFromOffset();
+
+struct Entity_Familiar depends (ColorMod, Vector) : public Entity {
 {{
-	inline Entity_Player** GetPlayer() { return (Entity_Player**)((char*)this + 0x360); }
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
 	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); }
 }}
-	
-	ColorMod* _dirtColor : 0xe28;
+	Entity_Player* _player : 0x360;
+	int _fireDelay : 0xc9c;
+	int _headFrameDelay : 0xca0;
+	int _moveDirection : 0xca4;
+	int _shootDirection : 0xca8;
+	int _lastDirection : 0xcac;
+	float _orbitAngleOffset : 0xcb0;
+	Vector _orbitDistance : 0xcb4;
+	float _orbitSpeed : 0xcbc;
+	int _orbitLayer : 0xcc0;
+	bool _isFollower : 0xcc4;
+	bool _isDelayed : 0xcc5;
+	int _coins : 0xcc8;
+	int _hearts : 0xccc;
+	int _keys : 0xcd0;
 	int _state : 0xcd4;
+	int _roomClearCount : 0xcd8;
+	ColorMod _dirtColor : 0xe28;
 	
     __vtable {
 		skip; // Free
@@ -79,7 +146,6 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
 		skip; // ResetColor
 		skip; // LoadEntityConfig
     };
-
  } : 0xe70;
 
 "6a0068(????????)68????????6a0050e8????????8b8d0cffffff83c4148985fcfeffff":
