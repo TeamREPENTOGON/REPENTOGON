@@ -9,6 +9,17 @@
 * I've named this file "LuaSprite" for consistency with the existing API metatable.
 */
 
+//std::vector<std::pair<ANM2*, Vector*>> anm2s;
+//
+//HOOK_METHOD(Game, Render, () -> void) {
+//	super();
+//
+//	for (auto sprite : anm2s) {
+//		sprite.first->Render(sprite.second, &Vector(0, 0), &Vector(0, 0));
+//		sprite.first->Update();
+//	}
+//}
+
 extern "C" {
 	// Getters
 	ColorMod* L_Sprite_GetColor(ANM2* anm2) {
@@ -131,7 +142,7 @@ extern "C" {
 		anm2->Load(std::string(anm2Path), loadGraphics);
 	}
 
-	void L_Sprite_loadGraphics(ANM2* anm2) {
+	void L_Sprite_LoadGraphics(ANM2* anm2) {
 		anm2->LoadGraphics(true);
 	}
 
@@ -156,7 +167,10 @@ extern "C" {
 	}
 
 	void L_Sprite_Render(ANM2* anm2, Vector* position, Vector* topLeftClamp, Vector* bottomRightClamp) {
+		/*printf("%p\n", anm2);*/
 		anm2->Render(position, topLeftClamp, bottomRightClamp);
+
+		// anm2s.push_back(std::make_pair(anm2, position));
 	}
 
 	void L_Sprite_RenderLayer(ANM2* anm2, int layerId, Vector* position, Vector* topLeftClamp, Vector* bottomRightClamp) {
@@ -213,6 +227,10 @@ extern "C" {
 
 	bool L_Sprite_WasEventTriggered(ANM2* anm2, const char* event) {
 		return anm2->WasEventTriggered(event);
+	}
+
+	ANM2* L_Sprite_Constructor(ANM2* anm2) {
+		return anm2->constructor();
 	}
 
 	// temporary solution

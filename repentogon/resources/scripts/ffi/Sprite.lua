@@ -1,6 +1,6 @@
 ffi.cdef[[
 typedef struct {
-    void* _;
+    char _[276];
 } ANM2;
 
 const char* L_Sprite_GetAnimation(ANM2*);
@@ -18,7 +18,7 @@ bool L_Sprite_IsOverlayFinished(ANM2*, const char*);
 bool L_Sprite_IsOverlayPlaying(ANM2*, const char*);
 bool L_Sprite_IsPlaying(ANM2*, const char*);
 void L_Sprite_Load(ANM2*, const char*, bool);
-void L_Sprite_loadGraphics(ANM2*);
+void L_Sprite_LoadGraphics(ANM2*);
 void L_Sprite_Play(ANM2*, const char*, bool);
 void L_Sprite_PlayOverlay(ANM2*, const char*, bool);
 void L_Sprite_PlayRandom(ANM2*, int);
@@ -56,6 +56,7 @@ void L_Sprite_SetPlaybackSpeed(ANM2*, float);
 void L_Sprite_SetRotation(ANM2*, float);
 void L_Sprite_SetScale(ANM2*, Vector);
 
+ANM2* L_Sprite_Constructor(ANM2*);
 ANM2* L_Sprite_GetPlayerAnim();
 ]]
 
@@ -312,13 +313,13 @@ local setkeys = {
 
 local SpriteMT = lffi.metatype("ANM2", {
     __tostring = function(self)
-        return "Sprite(" .. repentogon.L_Sprite_GetFilename(self) .. ")"
+        return "Sprite(" .. lffi.string(repentogon.L_Sprite_GetFilename(self)) .. ")"
     end,
     __index = function(self, key)
         if getkeys[key] ~= nil then
             return getkeys[key](self)
         end
-		return SpriteFuncs;
+		return SpriteFuncs[key]
     end,
     __newindex = function(self, key, value)
         if setkeys[key] ~= nil then
@@ -329,8 +330,14 @@ local SpriteMT = lffi.metatype("ANM2", {
     end
 })
 
-Sprite = setmetatable({}, {
+Sprite = setmetatable({
+    GetPlayerSprite = function() 
+        return repentogon.L_Sprite_GetPlayerAnim()
+    end
+}, {
     __call = function() 
-        return repentogon.L_Sprite_GetPlayerAnim() 
+        local sprite = SpriteMT()
+        repentogon.L_Sprite_Constructor(sprite)
+        return sprite
     end
 })
