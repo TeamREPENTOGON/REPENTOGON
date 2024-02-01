@@ -310,6 +310,7 @@ reference void* EntityRTTI;
 __thiscall Entity_NPC* Entity::GiveMinecart(Vector* position, Vector* velocity);
 
 /* For convenience's sake:
+	__vtable {
 		skip; // Free
 		skip; // Init
 		skip; // PreUpdate
@@ -335,4 +336,5 @@ __thiscall Entity_NPC* Entity::GiveMinecart(Vector* position, Vector* velocity);
 		skip; // HandleCollision
 		skip; // ResetColor
 		skip; // LoadEntityConfig
+	};
 */

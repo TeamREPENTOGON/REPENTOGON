@@ -1,134 +1,55 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
-#include "HookSystem.h"
 
-LUA_FUNCTION(Lua_BombGetHitList) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-	std::vector<unsigned int> hitList = bomb->_hitList;
+const BitSet128 zero(0, 0, 0, 0);
 
-	lua_newtable(L);
-	int idx = 1;
-	for (int index : hitList) {
-		lua_pushnumber(L, idx);
-		lua_pushinteger(L, index);
-		lua_settable(L, -3);
-		idx++;
+extern "C" {
+	BitSet128* L_EntityBomb_GetTearFlags(Entity_Bomb* bomb) {
+		return &bomb->_tearFlags;
 	}
 
-	return 1;
-}
-
-LUA_FUNCTION(Lua_BombUpdateDirtColor)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	bomb->UpdateDirtColor();
-	return 0;
-}
-
-LUA_FUNCTION(Lua_BombGetScale)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	lua_pushnumber(L, bomb->_scale);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_BombSetScale)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	bomb->_scale = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_BombGetExplosionCountdown)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	lua_pushinteger(L, *bomb->GetExplosionCountdown());
-	return 1;
-}
-
-LUA_FUNCTION(Lua_BombGetHeight)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	lua_pushnumber(L, bomb->_height);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_BombSetHeight)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	bomb->_height = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_BombGetFallingSpeed)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	lua_pushnumber(L, bomb->_fallingSpeed);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_BombSetFallingSpeed)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	bomb->_fallingSpeed = (float)luaL_checknumber(L, 2);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_BombIsLoadingCostumes) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	lua_pushboolean(L, bomb->_loadCostumes);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_BombSetLoadCostumes)
-{
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-
-	bomb->_loadCostumes = lua::luaL_optboolean(L, 2, true);
-	return 0;
-}
-
-LUA_FUNCTION(Lua_BombGetCostumeLayerSprite) {
-	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-	const int index = (int)luaL_checkinteger(L, 2);
-	if (index >= 0 && index <= 5) {
-		lua::luabridge::UserdataPtr::push(L, &bomb->_bombCostumesSprites[index], lua::Metatables::SPRITE);
-	}
-	else {
-		return luaL_error(L, "Invalid index %d, value must be between 0 and 4", index);
+	void L_EntityBomb_SetTearFlags(Entity_Bomb* bomb, BitSet128 flags) {
+		bomb->_tearFlags = flags;
 	}
 
-	return 1;
-}
+	void L_EntityBomb_AddTearFlags(Entity_Bomb* bomb, BitSet128 flags) {
+		bomb->_tearFlags &= flags;
+	}
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+	void L_EntityBomb_ClearTearFlags(Entity_Bomb* bomb, BitSet128 flags) {
+		bomb->_tearFlags &= ~flags;
+	}
 
-	lua::LuaStackProtector protector(_state);
+	bool L_EntityBomb_HasTearFlags(Entity_Bomb* bomb, BitSet128 flags) {
+		return (bomb->_tearFlags & flags) != zero;
+	}
 
-	luaL_Reg functions[] = {
-		{ "GetHitList", Lua_BombGetHitList },
-		{ "UpdateDirtColor", Lua_BombUpdateDirtColor },
-		{ "GetScale", Lua_BombGetScale },
-		{ "SetScale", Lua_BombSetScale },
-		{ "GetExplosionCountdown", Lua_BombGetExplosionCountdown },
-		{ "GetHeight", Lua_BombGetHeight },
-		{ "SetHeight", Lua_BombSetHeight },
-		{ "GetFallingSpeed", Lua_BombGetFallingSpeed },
-		{ "SetFallingSpeed", Lua_BombSetFallingSpeed },
-		{ "IsLoadingCostumes", Lua_BombIsLoadingCostumes },
-		{ "SetLoadCostumes", Lua_BombSetLoadCostumes },
-		{ "GetCostumeLayerSprite", Lua_BombGetCostumeLayerSprite },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);
+	int L_EntityBomb_SetExplosionCountdown(Entity_Bomb* bomb, int value) {
+		bomb->_explosionCountdown1 = value;
+		bomb->_explosionCountdown2 = value;
+	}
+
+	float L_EntityBomb_GetExplosionDamage(Entity_Bomb* bomb) {
+		return bomb->_explosionDamage;
+	}
+
+	void L_EntityBomb_SetExplosionDamage(Entity_Bomb* bomb, float damage) {
+		bomb->_explosionDamage = damage;
+	}
+
+	bool L_EntityBomb_GetIsFetus(Entity_Bomb* bomb) {
+		return bomb->_isFetus;
+	}
+
+	void L_EntityBomb_SetIsFetus(Entity_Bomb* bomb, bool value) {
+		bomb->_isFetus = value;
+	}
+
+	float L_EntityBomb_GetRadiusMultiplier(Entity_Bomb* bomb) {
+		return bomb->_radiusMultiplier;
+	}
+
+	void L_EntityBomb_SetRadiusMultiplier(Entity_Bomb* bomb, float value) {
+		bomb->_radiusMultiplier = value;
+	}
 }
