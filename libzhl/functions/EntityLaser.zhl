@@ -10,7 +10,8 @@ __thiscall bool Entity_Laser::CanDamageEntity(Entity* entity);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec5156":
 __thiscall void Entity_Laser::RotateToAngle(float angle, float speed);
 
-struct Entity_Laser : public Entity { {{
+struct Entity_Laser : public Entity {
+{{
 	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x420); }
 	inline float* GetScale() { return (float*)((char*)this + 0x430); }
 	
@@ -19,4 +20,38 @@ struct Entity_Laser : public Entity { {{
 	inline bool* GetDisableFollowParent() { return (bool*)((char*)this + 0x434); }
 	inline bool* GetOneHit() { return (bool*)((char*)this + 0x465); }
 	inline std_vector_uint* GetHitList() { return (std_vector_uint*)((char*)this + 0x470); }
-}} } : 0x4b8;
+
+	
+}} 
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		skip; // Update
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		
+		//override
+		"558BEC51F30F1081????????83EC08F30F5881????????F30F5905????????F30F5805????????F30F5805????????F30F1145??D945??DD1C24E8????????D95D??D945??83C408D95D??F30F1045??F30F5F05????????E8????????8BE55DC3??????????????????????????????8B91":
+		float GetRenderZ();
+		
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+	};
+} : 0x4b8;

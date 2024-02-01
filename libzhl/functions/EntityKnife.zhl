@@ -1,7 +1,25 @@
 "80b9????????0074??0f1f8000000000":
 __thiscall std_vector_uint * Entity_Knife::GetHitEntities();
 
-struct Entity_Knife : public Entity {
+"558becf30f1005":
+__thiscall void Entity_Knife::Reset();
+
+"558bec83e4f883ec08f30f1055":
+__thiscall void Entity_Knife::Shoot(float charge, float range);
+
+struct Entity_Knife depends (BitSet128) : public Entity {
+	BitSet128 _tearFlags : 0x360;
+	float _scale: 0x380;
+	float _rotation : 0x388;
+	float _rotationOffset : 0x38c;
+	float _distance : 0x394;
+	float _velocity : 0x398;
+	float _maxDistance : 0x3ac;
+	float _charge : 0x3b0;
+	bool _isFlying : 0x3b4;
+	float _pathOffset : 0x414;
+	float _pathFollowSpeed : 0x418;
+	
 	__vtable {
 		skip; // Free
 		skip; // Init
@@ -19,7 +37,11 @@ struct Entity_Knife : public Entity {
 		skip; // Kill
 		skip; // Remove
 		skip; // TriggerGlowingHourglass
-		skip; // GetRenderZ
+		
+		//override
+		"558BEC51F30F1081????????83EC08F30F5881????????F30F5905????????F30F5805????????F30F5805????????F30F1145??D945??DD1C24E8????????D95D??D945??83C408D95D??F30F1045??F30F5F05????????E8????????8BE55DC3??????????????????????????????8B81":
+		float GetRenderZ();
+		
 		skip; // CanOverwrite
 		skip; // SetColor
 		skip; // SetCollisionDamage
