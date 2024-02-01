@@ -74,7 +74,7 @@ extern "C" {
 	}
 
 	void L_Sprite_loadGraphics(ANM2* anm2) {
-		anm2->LoadGraphics();
+		anm2->LoadGraphics(true);
 	}
 
 	void L_Sprite_Play(ANM2* anm2, const char* animationName, bool force) {
@@ -150,7 +150,7 @@ extern "C" {
 	}
 
 	bool L_Sprite_WasEventTriggered(ANM2* anm2, const char* event) {
-		anm2->WasEventTriggered(event);
+		return anm2->WasEventTriggered(event);
 	}
 
 	// temporary solution

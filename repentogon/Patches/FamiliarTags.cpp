@@ -157,7 +157,7 @@ bool __stdcall FamiliarGetMultiplierTrampoline(Entity_Familiar* fam) {
 	}
 
 	// Default behaviour: Return true if the familiar's player has BFFs.
-	Entity_Player* plr = *fam->GetPlayer();
+	Entity_Player* plr = fam->_player;
 	return plr && plr->HasCollectible(0xF7, false);
 }
 
