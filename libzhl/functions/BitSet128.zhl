@@ -3,7 +3,7 @@ struct BitSet128 {
 	BitSet128() : ll(0), lh(0), hl(0), hh(0) {}
 	BitSet128(unsigned int _ll, unsigned int _lh, unsigned int _hl, unsigned int _hh) : ll(_ll), lh(_lh), hl(_hl), hh(_hh) {}
 
-	BitSet128& operator&(const BitSet128& other)
+	BitSet128 operator&(const BitSet128& other)
 	{
 		return BitSet128(ll & other.ll, lh & other.lh, hl & other.hl, hh & other.hh);
 	}
@@ -17,7 +17,7 @@ struct BitSet128 {
 		return *this;
 	}
 	
-	BitSet128& operator|(const BitSet128& other)
+	BitSet128 operator|(const BitSet128& other)
 	{
 		return BitSet128(ll | other.ll, lh | other.lh, hl | other.hl, hh | other.hh);
 	}
@@ -31,12 +31,12 @@ struct BitSet128 {
 		return *this;
 	}
 	
-	BitSet128& operator~()
+	BitSet128 operator~()
 	{
 		return BitSet128(~ll, ~lh, ~hl, ~hh);
 	}
-	
-	BitSet128& operator^(const BitSet128& other)
+		
+	BitSet128 operator^(const BitSet128& other)
 	{
 		return BitSet128(ll ^ other.ll, lh ^ other.lh, hl ^ other.hl, hh ^ other.hh);
 	}
