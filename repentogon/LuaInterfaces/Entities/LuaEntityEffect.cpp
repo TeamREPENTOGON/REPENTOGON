@@ -1,54 +1,128 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
-#include "HookSystem.h"
 
-LUA_FUNCTION(Lua_EffectCreateLight)
-{
-	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
-	float scale = (float)luaL_optnumber(L, 2, (static_cast <float> (rand()) / static_cast <float> (RAND_MAX)));
-	int lifespan = (int)luaL_optinteger(L, 3, -1);
-	int state = (int)luaL_optinteger(L, 4, 6);
-	ColorMod color;
-	if (lua_type(L, 5) == LUA_TUSERDATA) {
-		color = *lua::GetUserdata<ColorMod*>(L, 5, lua::Metatables::COLOR, "Color");
+extern "C" {
+	void L_EntityEffect_FollowParent(Entity_Effect* effect, Entity* parent) {
+		effect->FollowParent(parent);
 	}
 
-	if (lifespan < 1) {
-		lifespan = -1;
-	}
-	if (state < 1) {
-		state = 6;
+	bool L_EntityEffect_IsPlayerCreep(Entity_Effect* effect, unsigned int variant) {
+		return effect->IsPlayerCreep(variant);
 	}
 
-	Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 121, *pos, Vector(0, 0), nullptr, 0, Isaac::genrand_int32(), 0);
-	if (!effect) {
-		lua_pushnil(L);
-	}
-	else {
-		effect->_state = state;
-		effect->_timeout = lifespan;
-		effect->_lifespan = lifespan;
-		effect->SetColor(&color, -1, 255, false, false);
-		effect->_sprite._scale *= scale;
+	// the SetDamageSource func is identical to setting the DamageSource variable
 
-		lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+	void L_EntityEffect_SetRadii(Entity_Effect* effect, float min, float max) {
+		effect->_radiusMin = min;
+		effect->_radiusMax = max;
 	}
 
-	return 1;
-}
+	void L_EntityEffect_SetTimeoutFunc(Entity_Effect* effect, int timeout) {
+		effect->_timeout = timeout;
+		effect->_lifespan = timeout;
+	}
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+	unsigned int L_EntityEffect_GetDamageSource(Entity_Effect* effect) {
+		return effect->_damageSource;
+	}
 
-	lua::LuaStackProtector protector(_state);
+	void L_EntityEffect_SetDamageSource(Entity_Effect* effect, unsigned int type) {
+		effect->_damageSource = type;
+	}
 
-	/*
-	luaL_Reg functions[] = {
-		{ "CreateLight", Lua_EffectCreateLight },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_EFFECT, functions);
-	*/
+	float L_EntityEffect_GetFallingAcceleration(Entity_Effect* effect) {
+		return effect->_fallingAcceleration;
+	}
 
-	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLight", Lua_EffectCreateLight);
+	void L_EntityEffect_SetFallingAcceleration(Entity_Effect* effect, float value) {
+		effect->_fallingAcceleration = value;
+	}
+
+	float L_EntityEffect_GetFallingSpeed(Entity_Effect* effect) {
+		return effect->_fallingSpeed;
+	}
+
+	void L_EntityEffect_SetFallingSpeed(Entity_Effect* effect, float value) {
+		effect->_fallingSpeed = value;
+	}
+
+	bool L_EntityEffect_GetIsFollowing(Entity_Effect* effect) {
+		return effect->_isFollowing;
+	}
+
+	void L_EntityEffect_SetIsFollowing(Entity_Effect* effect, bool value) {
+		effect->_isFollowing = value;
+	}
+
+	int L_EntityEffect_GetLifespan(Entity_Effect* effect) {
+		return effect->_lifespan;
+	}
+
+	void L_EntityEffect_SetLifespan(Entity_Effect* effect, int value) {
+		effect->_lifespan = value;
+	}
+
+	float L_EntityEffect_GetHeight(Entity_Effect* effect) {
+		return effect->_height;
+	}
+
+	void L_EntityEffect_SetHeight(Entity_Effect* effect, float value) {
+		effect->_height = value;
+	}
+
+	float L_EntityEffect_GetMinRadius(Entity_Effect* effect) {
+		return effect->_radiusMin;
+	}
+
+	void L_EntityEffect_SetMinRadius(Entity_Effect* effect, float min) {
+		effect->_radiusMin = min;
+	}
+
+	float L_EntityEffect_GetMaxnRadius(Entity_Effect* effect) {
+		return effect->_radiusMax;
+	}
+
+	void L_EntityEffect_SetMaxRadius(Entity_Effect* effect, float max) {
+		effect->_radiusMax = max;
+	}
+
+	Vector * L_EntityEffect_GetParentOffset(Entity_Effect* effect) {
+		return &effect->_parentOffset;
+	}
+
+	void L_EntityEffect_SetParentOffset(Entity_Effect* effect, Vector* value) {
+		effect->_parentOffset = *value;
+	}
+
+	float L_EntityEffect_GetRotation(Entity_Effect* effect) {
+		return effect->_rotation;
+	}
+
+	void L_EntityEffect_SetRotation(Entity_Effect* effect, float min) {
+		effect->_rotation = min;
+	}
+
+	float L_EntityEffect_GetScale(Entity_Effect* effect) {
+		return effect->_scale;
+	}
+
+	void L_EntityEffect_SetScale(Entity_Effect* effect, float value) {
+		effect->_scale = value;
+	}
+
+	int L_EntityEffect_GetState(Entity_Effect* effect) {
+		return effect->_state;
+	}
+
+	void L_EntityEffect_SetState(Entity_Effect* effect, int value) {
+		effect->_state = value;
+	}
+
+	int L_EntityEffect_GetTimeout(Entity_Effect* effect) {
+		return effect->_timeout;
+	}
+
+	void L_EntityEffect_SetTimeout(Entity_Effect* effect, int value) {
+		effect->_timeout = value;
+	}
 }

@@ -65,12 +65,13 @@ pcall(require("Options"))
 pcall(require("Console"))
 pcall(require("Color"))
 pcall(require("Vector"))
+pcall(require("Sprite"))
 pcall(require("SFXManager"))
 pcall(require("RNG"))
 pcall(require("MusicManager"))
 pcall(require("WeightedOutcomePicker"))
--- pcall(require("Game"))
-pcall(require("Sprite"))
+pcall(require("Game"))
+pcall(require("Ambush"))
 
 
 package = nil

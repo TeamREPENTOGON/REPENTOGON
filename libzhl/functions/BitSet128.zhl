@@ -1,8 +1,72 @@
-struct BitSet128 { {{
+struct BitSet128 {
+{{
 	BitSet128() : ll(0), lh(0), hl(0), hh(0) {}
 	BitSet128(unsigned int _ll, unsigned int _lh, unsigned int _hl, unsigned int _hh) : ll(_ll), lh(_lh), hl(_hl), hh(_hh) {}
 
+	BitSet128 operator&(const BitSet128& other)
+	{
+		return BitSet128(ll & other.ll, lh & other.lh, hl & other.hl, hh & other.hh);
+	}
 
-}} 
+	BitSet128& operator&=(const BitSet128& other)
+	{
+		ll &= other.ll;
+		lh &= other.lh;
+		hl &= other.hl;
+		hh &= other.hh;
+		return *this;
+	}
+	
+	BitSet128 operator|(const BitSet128& other)
+	{
+		return BitSet128(ll | other.ll, lh | other.lh, hl | other.hl, hh | other.hh);
+	}
+
+	BitSet128& operator|=(const BitSet128& other)
+	{
+		ll |= other.ll;
+		lh |= other.lh;
+		hl |= other.hl;
+		hh |= other.hh;
+		return *this;
+	}
+	
+	BitSet128 operator~()
+	{
+		return BitSet128(~ll, ~lh, ~hl, ~hh);
+	}
+		
+	BitSet128 operator^(const BitSet128& other)
+	{
+		return BitSet128(ll ^ other.ll, lh ^ other.lh, hl ^ other.hl, hh ^ other.hh);
+	}
+
+	BitSet128& operator^=(const BitSet128& other)
+	{
+		ll ^= other.ll;
+		lh ^= other.lh;
+		hl ^= other.hl;
+		hh ^= other.hh;
+		return *this;
+	}
+	
+	bool operator==(const BitSet128& other)
+	{
+		return
+		ll == other.ll &&
+		lh == other.lh &&
+		hl == other.hl &&
+		hh == other.hh;
+	}
+	
+	bool operator!=(const BitSet128& other)
+	{
+		return
+		ll != other.ll ||
+		lh != other.lh ||
+		hl != other.hl ||
+		hh != other.hh;
+	}
+}}
     unsigned int ll : 0x0, lh : 0x4, hl : 0x8, hh : 0xc;
 } : 0x10;

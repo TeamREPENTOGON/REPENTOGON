@@ -1,7 +1,13 @@
 "558bec83e4f856578bfa":
 static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t delay<edx>, uint32_t times, bool persistent);
 
-struct Entity_Effect depends (BitSet128) : public Entity {
+"558bec83e4f851538bd98b8b????????5657":
+__thiscall void Entity_Effect::FollowParent(Entity* Parent);
+
+"558bec8b45??83f836":
+static __stdcall bool Entity_Effect::IsPlayerCreep(unsigned int variant);
+
+struct Entity_Effect depends (BitSet128, Vector) : public Entity {
     __vtable {
 		skip; // Free
 		skip; // Init
@@ -39,9 +45,19 @@ struct Entity_Effect depends (BitSet128) : public Entity {
 
     };
 
+	float _height : 0x360;
+	float _fallingSpeed : 0x364;
+	float _fallingAcceleration : 0x368;
 	BitSet128 _varData : 0x370; // this can be any data type, the game uses it arbitrarily based on effect variant
 	int _state : 0x3a0;
+	float _radiusMin : 0x3a4;
+	float _radiusMax : 0x3a8;
 	int _timeout : 0x3ac;
 	int _lifespan : 0x3b0;
+	bool _isFollowing : 0x3b4;
+	Vector _parentOffset : 0x3b8;
+	unsigned int _damageSource : 0x3c0;
+	float _rotation : 0x3c4;
+	float _scale : 0x3c8;
 
 } : 0x3e0;
