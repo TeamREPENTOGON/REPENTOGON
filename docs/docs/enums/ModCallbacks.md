@@ -148,6 +148,7 @@ Accepts no return parameters.
 |1109 | MC_POST_BACKDROP_PRE_RENDER_WALLS {: .copyable } | - | - | void |
 
 ### MC_PRE_BACKDROP_CHANGE {: .copyable }
+Accepts an `integer` to change [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html).
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
