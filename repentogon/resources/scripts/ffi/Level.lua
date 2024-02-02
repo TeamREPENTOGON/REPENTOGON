@@ -133,7 +133,7 @@ end
 
 function LevelFuncs:ChangeRoom(roomIndex, dimension)
     ffichecks.checknumber(1, roomIndex)
-    ffichecks.optnumber(dimension, -1)
+    dimension = ffichecks.optnumber(dimension, -1)
 
     return repentogon.L_Level_ChangeRoom(roomIndex, dimension)
 end
@@ -187,7 +187,7 @@ function LevelFuncs:GetEnterPosition()
     return repentogon.L_Level_GetEnterPosition()
 end
 
-function LevelFuncs:L_Level_GetHeartPicked()
+function LevelFuncs:GetHeartPicked()
     return repentogon.L_Level_GetHeartPicked()
 end
 
@@ -287,7 +287,7 @@ end
 
 function LevelFuncs:MakeRedRoomDoor(roomIdx, doorSlot)
     ffichecks.checknumber(1, roomIdx)
-    ffichecks.checknumber(doorSlot)
+    ffichecks.checknumber(2, doorSlot)
 
     return repentogon.L_Level_MakeRedRoomDoor(roomIdx, doorSlot)
 end
