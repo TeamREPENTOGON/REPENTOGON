@@ -381,9 +381,9 @@ local getkeys = {
 	Visible = repentogon.L_Entity_GetVisible,
 }
 
-local function doCDataFunc(entity, cdata, ctype, cfunc)
+local function doCDataFunc(this, cdata, ctype, cfunc)
 	ffichecks.checkcdata(2, cdata, ctype)
-	cfunc(self, cdata)
+	cfunc(this, cdata)
 end
 
 local setkeys = {
@@ -406,7 +406,7 @@ local setkeys = {
 	Size = repentogon.L_Entity_SetSizeField,
 	SizeMulti = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetSizeMulti) end,
 	SortingLayer = repentogon.L_Entity_SetSortingLayer,
-	SpawnerEntity = function(self, cdata) doCDataFunc(self, cdata, "Entity", repentogon.L_Entity_SetSpawnerEntity) end
+	SpawnerEntity = function(self, cdata) doCDataFunc(self, cdata, "Entity", repentogon.L_Entity_SetSpawnerEntity) end,
 	SpawnerType = repentogon.L_Entity_SetSpawnerType,
 	SpawnerVariant = repentogon.L_Entity_SetSpawnerVariant,
 	SpawnGridIndex = repentogon.L_Entity_SetSpawnGridIndex,

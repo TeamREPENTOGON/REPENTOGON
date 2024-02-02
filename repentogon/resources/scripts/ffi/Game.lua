@@ -619,7 +619,7 @@ GameMT = {
         if getkeys[key] ~= nil then
             return getkeys[key]()
         end
-		return GameFuncs;
+		return GameFuncs[key];
     end,
     
     __newindex = function(tbl, key, value)

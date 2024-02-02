@@ -332,7 +332,7 @@ extern "C" {
 		return ent->_mass;
 	}
 
-	void L_Entity_SetMasss(Entity* ent, float value) {
+	void L_Entity_SetMass(Entity* ent, float value) {
 		ent->_mass = value;
 	}
 
