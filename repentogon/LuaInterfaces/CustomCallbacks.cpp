@@ -36,7 +36,7 @@ HOOK_STATIC(LuaCallbacks, PostUpdate, () -> void, __stdcall) {
 		// This will probably be abstracted in the future, but for now these must always be malloc'd by hand.
 		void** ret = (void**)malloc(sizeof(void*)); 
 		int* returnType = (int*)malloc(sizeof(int*));
-		L_RunCallback(callbackid, NULL, NULL, 0, nullptr, nullptr);
+		L_RunCallback(callbackid, NULL, NULL, 0, returnType, ret);
 
 
 		// Obviously POST_UPDATE doesn't take a return value, this is just an example
