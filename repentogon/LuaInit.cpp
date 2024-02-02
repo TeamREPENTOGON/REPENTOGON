@@ -16,6 +16,13 @@
 
 #include "LuaInit.h"
 
+static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
+int LuaKeys::runCallbackKey = LUA_NOREF;
+int LuaKeys::preRenderCallbackKey = LUA_NOREF;
+int LuaKeys::additiveCallbackKey = LUA_NOREF;
+int LuaKeys::entityTakeDmgCallbackKey = LUA_NOREF;
+
+LuaCallback L_RunCallback;
 
 extern "C" {
 	void FreeStringTable(FFI_StringTable strings) {
@@ -25,8 +32,8 @@ extern "C" {
 		free(strings.strings);
 	}
 
-	void createPointer(void* cdata, void** pointer) {
-		*pointer = cdata;
+	void RegisterCallback(LuaCallback cb) {
+		L_RunCallback = cb;
 	}
 
 	void FreeOutcomeList(FFI_OutcomeList list) {
@@ -37,12 +44,6 @@ extern "C" {
 		return Isaac::genrand_int32();
 	}
 }
-
-static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functions;
-int LuaKeys::runCallbackKey = LUA_NOREF;
-int LuaKeys::preRenderCallbackKey = LUA_NOREF;
-int LuaKeys::additiveCallbackKey = LUA_NOREF;
-int LuaKeys::entityTakeDmgCallbackKey = LUA_NOREF;
 
 static int LuaDumpRegistry(lua_State* L) {
 	int top = lua_gettop(L);

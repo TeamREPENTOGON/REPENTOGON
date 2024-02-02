@@ -1,18 +1,8 @@
 local debug_getinfo = debug.getinfo
+local repentogon = ffidll
+local lffi = ffi
 
 local Callbacks = {}
-
-local function checktype(index, val, typ, level)
-	local t = type(val)
-	if t ~= typ then
-		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level).name, typ, t), level+1)
-	end
-end
-
-local function checknumber(index, val, level) checktype(index, val, "number", (level or 2)+1) end
-local function checkfunction(index, val, level) checktype(index, val, "function", (level or 2)+1) end
-local function checkstring(index, val, level) checktype(index, val, "string", (level or 2)+1) end
-local function checktable(index, val, level) checktype(index, val, "table", (level or 2)+1) end
 
 local defaultCallbackMeta = {
 	__matchParams = function(a, b)
@@ -29,8 +19,8 @@ rawset(Isaac, "GetCallbacks", function(callbackId, createIfMissing)
 end)
 
 rawset(Isaac, "AddPriorityCallback", function(mod, callbackId, priority, fn, param)
-	checknumber(3, priority)
-	checkfunction(4, fn)
+	ffichecks.checknumber(3, priority)
+	ffichecks.checkfunction(4, fn)
 	
 	local callbacks = Isaac.GetCallbacks(callbackId, true)
 	local wasEmpty = #callbacks == 0
@@ -55,7 +45,8 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackId, priority, fn, par
 end)
 
 rawset(Isaac, "AddCallback", function(mod, callbackId, fn, param)
-	checkfunction(3, fn)
+	ffichecks.checkfunction(3, fn)
+	--TODO enum
 	--Isaac.AddPriorityCallback(mod, callbackId, CallbackPriority.DEFAULT, fn, param)
 	Isaac.AddPriorityCallback(mod, callbackId, 0, fn, param)
 end)
@@ -67,7 +58,8 @@ function _RunCallback(callbackID, Param, ...)
 			local matchFunc = getmetatable(callbacks).__matchParams or defaultCallbackMeta.__matchParams
 			if matchFunc(Param, callback.Param) then
 				local status, ret = xpcall(callback.Function, function(msg)
-					return msg .. "\n" .. cleanTraceback(2)
+					--return msg .. "\n" .. cleanTraceback(2)
+					return msg
 				end, callback.Mod, ...)
 				if status then
 					if ret ~= nil then
@@ -86,3 +78,45 @@ end
 
 rawset(Isaac, "RunCallbackWithParam", RunCallback)
 rawset(Isaac, "RunCallback", function(callbackID, ...) return RunCallback(callbackID, nil, ...) end)
+
+local ReturnType = {
+	string = 1,
+	number = 2,
+	boolean = 3,
+}
+
+local ffiReturns = {
+	string = function(ret) 
+		local str = lffi.new("char[?]", #ret + 1)
+        lffi.copy(str, ret)
+		return str
+	end,
+	number = function(ret)
+		return lffi.new("double[1]", ret)
+	end, 
+	boolean = function(ret)
+		local bool = lffi.new("bool[1]", ret)
+		return bool
+	end
+}
+function CallbackWrapper(id, param, args, numArgs, retType, ret)
+	local argtable = {}
+	for i = 1, numArgs do
+		table.insert(argtable, args[i])
+        local argType = type(args[i])
+    end
+
+	local retValue = _RunCallback(id, param, unpack(argtable))
+	local typ = type(retValue)
+	if retValue ~= nil and ReturnType[typ] ~= nil then
+		retType[0] = ReturnType[typ]
+		ret[0] = lffi.cast("void*", ffiReturns[typ](retValue)) 
+		return
+	end
+	retType[0] = 0
+end
+
+repentogon.RegisterCallback(lffi.cast("LuaCallback", function(id, param, args, numArgs, retType, ret)
+	--- The less time spent here the better- callback aren't compiled.
+	CallbackWrapper(id, param, args, numArgs, retType, ret)
+end))

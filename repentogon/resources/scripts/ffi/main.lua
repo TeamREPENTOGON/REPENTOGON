@@ -6,10 +6,25 @@ ffichecks = {}
 
 local lffi = ffi
 
-ffichecks.checktype = function(idx, var, typ)
+local debug_getinfo = debug.getinfo
+
+ffi.cdef[[
+	typedef void (*LuaCallback)(int, int, void**, int, int*, void**);
+	void RegisterCallback(LuaCallback);
+	LuaCallback L_RunCallback;
+
+]]
+
+ffichecks.gettype = function(var)
 	local t = type(var)
+	if t == "cdata" then t = tostring(lffi.typeof(var)) end
+	return t
+end
+
+ffichecks.checktype = function(index, val, typ, level)
+	local t = type(val)
 	if t ~= typ then
-		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", idx, debug.getinfo(2).name, typ, t))
+		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level).name, typ, t), level+1)
 	end
 end
 
@@ -17,6 +32,7 @@ ffichecks.istype = function(var, typ)
 	return type(var) == typ
 end
 
+<<<<<<< HEAD
 ffichecks.isnumber = function(var) return ffichecks.istype(var, "number") end
 ffichecks.isstring = function(var) return ffichecks.istype(var, "string") end
 ffichecks.isboolean = function(var) return ffichecks.istype(var, "boolean") end
@@ -27,10 +43,19 @@ ffichecks.checkstring = function(idx, var) ffichecks.checktype(idx, var, "string
 ffichecks.checkboolean = function(idx, var) ffichecks.checktype(idx, var, "boolean") end
 ffichecks.checkcdata = function(idx, var, ctype)
 	if not ffichecks.iscdata(var, ctype) then
+=======
+ffichecks.checknumber = function(index, val, level) ffichecks.checktype(index, val, "number", (level or 2)+1) end
+ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index, val, "function", (level or 2)+1) end
+ffichecks.checkstring = function(index, val, level) ffichecks.checktype(index, val, "string", (level or 2)+1) end
+ffichecks.checkboolean = function(index, val, level) ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
+
+ffichecks.checkcdata = function(idx, var, ctype, level)
+	if not var or not lffi.istype(ctype, var) then
+>>>>>>> 459c4607 (callbacks TWO!!!!!!!!)
 		local t = type(var)
 		if t == "cdata" then t = tostring(lffi.typeof(var)) end
 
-		error(string.format("bad argument #%d to '%s' (%s expected, got %s)"), idx, debug.getinfo(2).name, tostring(ctype), t)
+		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level).name, tostring(ctype), t), level+1)
 	end
 end
 
@@ -76,10 +101,9 @@ pcall(require("WeightedOutcomePicker"))
 pcall(require("Game"))
 pcall(require("Ambush"))
 
-
-package = nil
-ffi = nil
-ffidll = nil
+local ReturnTypes = {
+	VECTOR = 0
+}
 
 ---------------------------------------------------------------------------
 
@@ -120,3 +144,9 @@ function RegisterMod(modname, apiversion)
 	--Isaac.RegisterMod(mod, modname, apiversion)
 	return mod
 end
+
+---------------------------------------------------------------------------
+
+package = nil
+ffi = nil
+ffidll = nil

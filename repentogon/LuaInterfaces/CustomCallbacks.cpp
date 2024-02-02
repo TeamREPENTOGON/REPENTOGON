@@ -1,6 +1,7 @@
 #include <LuaJIT/src/lua.hpp>
 #include <optional>
 #include <cstring>
+#include <iostream>
 
 #include "IsaacRepentance.h"
 #include "../ImGuiFeatures/LogViewer.h"
@@ -14,7 +15,9 @@
 #include "../LuaInit.h"
 
 //Callback tracking for optimizations
-std::bitset<1500> CallbackState; //I dont think we will add 500 callbacks but lets set it there for now
+// In RGON V1 we had this set to 500 to account for callbacks we made.
+// In V2 we're reimplementing all callbacks. I've set to 1500 for now and will trim once we're done.
+std::bitset<1500> CallbackState;
 HOOK_STATIC(Isaac,SetBuiltInCallbackState, (const int callbackid, bool enable)-> void, __cdecl){
 	CallbackState.set(callbackid, enable);
 }
@@ -26,17 +29,41 @@ HOOK_STATIC(Isaac,SetBuiltInCallbackState, (const int callbackid, bool enable)->
 //MC_POST_UPDATE
 HOOK_STATIC(LuaCallbacks, PostUpdate, () -> void, __stdcall) {
 	const int callbackid = 1;
-
+	
+	
 	if (CallbackState.test(callbackid)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::runCallbackKey);
+		
+		// This will probably be abstracted in the future, but for now these must always be malloc'd by hand.
+		void** ret = (void**)malloc(sizeof(void*)); 
+		int* returnType = (int*)malloc(sizeof(int*));
+		L_RunCallback(callbackid, NULL, NULL, 0, nullptr, nullptr);
 
-		lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.pushnil()
-			.call(0);
-	}
+
+		// Obviously POST_UPDATE doesn't take a return value, this is just an example
+		/*
+		switch(*returnType){
+			case ReturnType::TYPE_STRING: {
+					char* str = reinterpret_cast<char*>(*ret);
+					printf("%s\n", str);
+				}
+				break;
+				
+			case ReturnType::TYPE_NUMBER: {
+					double* num = reinterpret_cast<double*>(*ret);
+					printf("%g\n", *num);
+				}
+				break;
+
+			case ReturnType::TYPE_BOOLEAN: {
+				bool* boolean = reinterpret_cast<bool*>(*ret);
+				printf("%s\n", *boolean ? "true" : "false");
+			}
+				break;
+		}*/
+
+		free(ret);
+		free(returnType);
+	} 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +227,7 @@ void ProcessPostSFXPlay(int ID, float Volume, int FrameDelay, bool Loop, float P
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
+		
 		lua::LuaCaller(L).push(callbackid)
 			.push(ID)
 			.push(ID)
