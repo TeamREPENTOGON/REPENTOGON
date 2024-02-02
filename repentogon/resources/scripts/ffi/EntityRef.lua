@@ -50,7 +50,7 @@ EntityRefMT = lffi.metatype("EntityRef", {
 })
 
 EntityRef = setmetatable({}, {
-	__call = function(_, entity )
+	__call = function(_, entity)
 		ffichecks.checkcdata(2, entity, "EntityRef")
 		local ref = EntityRefMT()
 		L_EntityRef_game_constructor(ref, entity)
