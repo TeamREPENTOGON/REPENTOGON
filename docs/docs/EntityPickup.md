@@ -47,7 +47,7 @@ ___
 ___
 ### IsBlind () {: aria-label='Functions' }
 #### boolean IsBlind ( ) {: .copyable aria-label='Functions' }
-Returns `true` if the pickup is a collectible pedestal and is hidden (such as when Curse of the Blind is active). Always returns `false` for non-collectible EntityPickups.
+Returns `true` if the pickup is a collectible pedestal and is hidden. Always returns `false` for non-collectible EntityPickups.
 
 ???+ warning "Warning"
     This value does not account for curse of the blind, it only reflects the blind state of pickups that are normally blind without curses involved. Ex: alt path's extra item.
