@@ -43,7 +43,7 @@ ___
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
 #### void CopyStatusEffects ( [Entity](Entity.md) Target, boolean Overwrite = false ) {: .copyable aria-label='Functions' }
-If `Target` is `nil`, this will recursively copy status effects to all [Child](Entity.md#child) Entities. `Overwrite` will additionally remove all other status effects from the target and set the properties of existing ones to match `self`.
+If `Target` is `nil`, this will recursively copy status effects to all [Child](Entity.md#child) Entities. `Overwrite` will additionally remove all other status effects from the target and set the properties of existing effects to match the entity.
 
 ___
 ### ForceCollide () {: aria-label='Functions' }
@@ -218,16 +218,12 @@ Used to determine if this entity should ignore any status effect coming from `So
 ___
 ### MakeBloodPoof () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) MakeBloodPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
-
-???+ info "Info"
-    This function spawns two effects; the second will be the the Child of the one returned.
+This function spawns two blood poof effects of subtypes 3 and 4; the second of which will be the the Child of the one returned.
 
 ___
 ### MakeGroundPoof () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) MakeGroundPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
-
-???+ info "Info"
-    This function spawns two effects; the second will be the the Child of the one returned.
+This function spawns two dust poof effects of subtypes 1 and 2; the second of which will be the the Child of the one returned.
 
 ___
 ### SetBaitedCountdown () {: aria-label='Functions' }

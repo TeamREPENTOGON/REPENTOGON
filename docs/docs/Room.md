@@ -130,6 +130,7 @@ ___
 ___
 ### PickupGridEntity () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) PickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
+Tries to pick up the grid entity at the provided index and returns an [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) of the picked up grid entity.
 
 ___
 ### RemoveGridEntityImmediate () {: aria-label='Functions' }

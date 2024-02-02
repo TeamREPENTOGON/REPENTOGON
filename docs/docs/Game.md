@@ -52,6 +52,7 @@ Adds a debug flag to the game. Multiple can be added simultaneously with bitwise
 ___
 ### DevolveEnemy () {: aria-label='Functions' }
 #### void DevolveEnemy ( [Entity](Entity.md) ) {: .copyable aria-label='Functions' }
+Devolves an enemy, as if the item D10 was used on it.
 
 ___
 ### GetChallengeParams () {: aria-label='Functions' }
@@ -68,15 +69,9 @@ ___
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
-### GetDimension () {: aria-label='Functions' }
-#### int GetDimension ( ) {: .copyable aria-label='Functions' }
-
-___
 ### GetLerpColorModifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetLerpColorModifier ( ) {: .copyable aria-label='Functions' }
-
-???+ info "Info"
-    This is formatted as the absolute rate of change (ie, all values are positive).
+Returns the lerped color modifier. This is formatted as the absolute rate of change (ie, all values are positive).
 
 ___
 ### GetPauseMenuState () {: aria-label='Functions' }
@@ -90,20 +85,23 @@ Returns the amount of planetariums the player has entered this run.
 ___
 ### GetTargetColorModifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetTargetColorModifier ( ) {: .copyable aria-label='Functions' }
-If currently lerping between two [ColorModifier](ColorModifier.md) states, returns the target state. Is otherwise the same as [GetCurrentColorModifier](Game.md#getcurrentcolormodifier). 
+Returns the target ColorModifier. If currently lerping between two [ColorModifier](ColorModifier.md) states, returns the target state. It is otherwise the same as [GetCurrentColorModifier](Game.md#getcurrentcolormodifier).
 
 ___
 ### IsErased () {: aria-label='Functions' }
 #### boolean IsErased ( [Entity](Entity.md) Entity ) {: .copyable aria-label='Functions' }
 #### boolean IsErased ( int Type, int Variant = -1, int SubType = -1 ) {: .copyable aria-label='Functions' }
 Checks if an entity was erased.
+
 ___
 ### IsGreedBoss () {: aria-label='Functions' }
 #### boolean IsGreedBoss ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the next or current wave is a boss wave. Returns `false` otherwise or if not in Greed Mode.
 
 ___
 ### IsGreedFinalBoss () {: aria-label='Functions' }
 #### boolean IsGreedFinalBoss ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the next or current wave is the optional "nightmare" wave. Returns `false` otherwise or if not in Greed Mode.
 
 ___
 ### IsHardMode () {: aria-label='Functions' }
@@ -118,6 +116,7 @@ Returns `true` if the pause menu is open.
 ___
 ### IsRerun () {: aria-label='Functions' }
 #### boolean IsRerun ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the current run is a rerun.
 
 ___
 ### SetColorModifier () {: aria-label='Functions' }
