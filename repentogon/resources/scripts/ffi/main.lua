@@ -32,26 +32,18 @@ ffichecks.istype = function(var, typ)
 	return type(var) == typ
 end
 
-<<<<<<< HEAD
 ffichecks.isnumber = function(var) return ffichecks.istype(var, "number") end
 ffichecks.isstring = function(var) return ffichecks.istype(var, "string") end
 ffichecks.isboolean = function(var) return ffichecks.istype(var, "boolean") end
 ffichecks.iscdata = function(var, ctype) return var and lffi.istype(ctype, var) end
 
-ffichecks.checknumber = function(idx, var) ffichecks.checktype(idx, var, "number") end
-ffichecks.checkstring = function(idx, var) ffichecks.checktype(idx, var, "string") end
-ffichecks.checkboolean = function(idx, var) ffichecks.checktype(idx, var, "boolean") end
-ffichecks.checkcdata = function(idx, var, ctype)
-	if not ffichecks.iscdata(var, ctype) then
-=======
 ffichecks.checknumber = function(index, val, level) ffichecks.checktype(index, val, "number", (level or 2)+1) end
 ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index, val, "function", (level or 2)+1) end
 ffichecks.checkstring = function(index, val, level) ffichecks.checktype(index, val, "string", (level or 2)+1) end
 ffichecks.checkboolean = function(index, val, level) ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
 
 ffichecks.checkcdata = function(idx, var, ctype, level)
-	if not var or not lffi.istype(ctype, var) then
->>>>>>> 459c4607 (callbacks TWO!!!!!!!!)
+	if not ffichecks.iscdata(var, ctype) then
 		local t = type(var)
 		if t == "cdata" then t = tostring(lffi.typeof(var)) end
 
