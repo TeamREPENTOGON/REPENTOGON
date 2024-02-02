@@ -6,7 +6,7 @@ typedef struct {
 	unsigned int SpawnerVariant;
 	Vector Position;
 	Vector Velocity;
-	unsigned int Flags
+	unsigned int Flags;
     Entity* Entity;
 }  EntityRef;
 
@@ -22,12 +22,12 @@ local repentogon = ffidll
 local lffi = ffi
 
 local getkeys = {
-	IsCharmed = repentogon.L_EntityRef_GetIsCharmed.
+	IsCharmed = repentogon.L_EntityRef_GetIsCharmed,
     IsFriendly = repentogon.L_EntityRef_GetIsFriendly,
 }
 
 local setkeys = {
-	IsCharmed = repentogon.L_EntityRef_SetIsCharmed.
+	IsCharmed = repentogon.L_EntityRef_SetIsCharmed,
     IsFriendly = repentogon.L_EntityRef_SetIsFriendly,
 }
 
@@ -49,7 +49,7 @@ EntityRefMT = lffi.metatype("EntityRef", {
 
 EntityRef = setmetatable({
 	__call = function(_, entity )
-		ffichecks.checkcdata(2, entity, "Entity")
+		ffichecks.checkcdata(2, entity, "EntityRef")
 		local ref = EntityRefMT()
 		L_EntityRef_game_constructor(ref, entity)
 		return ref
