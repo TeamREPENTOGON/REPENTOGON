@@ -116,8 +116,8 @@ end
 
 function GameFuncs:AddEncounteredBoss(id, variant)
 	ffichecks.checknumber(1, id)
-	local finalVariant = ffichecks.optnumber(2, variant, 0)
-    repentogon.L_Game_AddEncounteredBoss(id, finalVariant)
+	variant = ffichecks.optnumber(2, variant, 0)
+    repentogon.L_Game_AddEncounteredBoss(id, variant)
 end
 
 function GameFuncs:AddPixelation(duration)
@@ -137,95 +137,66 @@ function GameFuncs:AddTreasureRoomsVisited()
     repentogon.L_Game_AddTreasureRoomsVisited()
 end
 
-function GameFuncs:BombDamage(pos, damage, radius, linecheck, source, tearflags, damageflagsl, damageflagsh, damagesource)
+function GameFuncs:BombDamage(pos, damage, radius, linecheck, source, tearflags, damageflags, damagesource)
 	ffichecks.checkcdata(1, pos, "Vector")
 	ffichecks.checknumber(2, damage)
 	ffichecks.checknumber(3, radius)
-	local fLineCheck = ffichecks.optboolean(linecheck, true)
-	local fSource = nil
-	if ffichecks.iscdata(source, "Entity") then
-		fSource = source
-	end
-	local fTearflags = BitSet128.Default
-	if ffichecks.iscdata(source, "BitSet128") then
-		fTearflags = tearflags
-	end
-	local fDamageFlagsL = ffichecks.optnumber(damageflagsl, 0)
-	local fDamageFlagsH = ffichecks.optnumber(damageflagsh, 0)
-	local fDamageSource = ffichecks.optboolean(damagesource, false)
+	linecheck = ffichecks.optboolean(linecheck, true)
+	source = ffichecks.optcdata(source, "Entity", nil)
+	tearflags = ffichecks.optcdata(tearflags, "BitSet128", BitSet128.Default)
+	damageflags = ffichecks.optnumber(damageflags, 0)
+	damagesource = ffichecks.optboolean(damagesource, false)
 	
-    repentogon.L_Game_BombDamage(pos, damage, radius, fLineCheck, fSource, fTearflags, fDamageFlagsL, fDamageFlagsH, fDamageSource);
+    repentogon.L_Game_BombDamage(pos, damage, radius, linecheck, source, tearflags, damageflags, damagesource);
 end
 
-function GameFuncs:BombExplosionEffects(pos, damage, tearflags, color, source, radiusmult, linecheck, damagesource, damageflagsl, damageflagsh)
+function GameFuncs:BombExplosionEffects(pos, damage, tearflags, color, source, radiusmult, linecheck, damagesource, damageflags)
 	ffichecks.checkcdata(1, pos, "Vector")
 	ffichecks.checknumber(2, damage)
-	local fTearflags = BitSet128.Default
-	if ffichecks.iscdata(tearflags, "BitSet128") then
-		fTearflags = tearflags
-	end
-	local fColor = Color.Default
-	if ffichecks.iscdata(source, "Color") then
-		fColor = color
-	end
-	local fSource = nil
-	if ffichecks.iscdata(source, "Entity") then
-		fSource = source
-	end
-	local fRadiusMult = ffichecks.optnumber(radiusmult, 1)
-	local fLineCheck = ffichecks.optboolean(linecheck, true)
-	local fDamageSource = ffichecks.optboolean(damagesource, false)
-	local fDamageFlagsL = ffichecks.optnumber(damageflagsl, 0)
-	local fDamageFlagsH = ffichecks.optnumber(damageflagsh, 0)
+	tearflags = ffichecks.optcdata(tearflags, "BitSet128", BitSet128.Default)
+	color = ffichecks.optcdata(color, "ColorMod", Color.Default)
+	source = ffichecks.optcdata(source, "Entity", nil)
+	radiusmult = ffichecks.optnumber(radiusmult, 1)
+	linecheck = ffichecks.optboolean(linecheck, true)
+	damagesource = ffichecks.optboolean(damagesource, false)
+	damageflags = ffichecks.optnumber(damageflags, 0)
 	
-    repentogon.L_Game_BombExplosionEffects(pos, damage, fTearflags, fColor, fSource, fRadiusMult, fLineCheck, fDamageSource, fDamageFlagsL, fDamageFlagsH)
+    repentogon.L_Game_BombExplosionEffects(pos, damage, tearflags, color, source, radiusmult, linecheck, damagesource, damageflags)
 end
 
 function GameFuncs:BombTearflagEffects(pos, radius, tearflags, source, radiusmult)
 	ffichecks.checkcdata(1, pos, "Vector")
 	ffichecks.checknumber(2, radius)
-	local fTearflags = BitSet128.Default
-	if ffichecks.iscdata(tearflags, "BitSet128") then
-		fTearflags = tearflags
-	end
-	local fSource = nil
-	if ffichecks.iscdata(source, "Entity") then
-		fSource = source
-	end
-	local fRadiusMult = ffichecks.optnumber(radiusmult, 1)
+	tearflags = ffichecks.optcdata(tearflags, "BitSet128", BitSet128.Default)
+	source = ffichecks.optcdata(source, "Entity", nil)
+	radiusmult = ffichecks.optnumber(radiusmult, 1)
 	
-    repentogon.L_Game_BombTearflagEffects(pos, radius, fTearflags, fSource, fRadiusMult)
+    repentogon.L_Game_BombTearflagEffects(pos, radius, tearflags, source, radiusmult)
 end
 
 function GameFuncs:ButterBeanFart(pos, radius, source, showeffect, dosuperknockback)
 	ffichecks.checkcdata(1, pos, "Vector")
 	ffichecks.checknumber(2, radius)
-	local fSource = nil
-	if ffichecks.iscdata(source, "Entity") then
-		fSource = source
-	end
-	local fShowEffect = ffichecks.optboolean(showeffect, true)
-	local fDoSuperKnockback = ffichecks.optboolean(dosuperknockback, false)
+	source = ffichecks.optcdata(source, "Entity", nil)
+	showeffect = ffichecks.optboolean(showeffect, true)
+	dosuperknockback = ffichecks.optboolean(dosuperknockback, false)
 	
-    repentogon.L_Game_ButterBeanFart(pos, radius, fSource, fShowEffect, fDoSuperKnockback)
+    repentogon.L_Game_ButterBeanFart(pos, radius, source, showeffect, dosuperknockback)
 end
 
 function GameFuncs:ChangeRoom(idx, dimension)
 	ffichecks.checknumber(1, idx)
-	local fDimension = ffichecks.optnumber(dimension, -1)
+	dimension = ffichecks.optnumber(dimension, -1)
 	
-    repentogon.L_Game_ChangeRoom(idx, fDimension);
+    repentogon.L_Game_ChangeRoom(idx, dimension)
 end
 
 function GameFuncs:CharmFart(pos, radius, source)
 	ffichecks.checkcdata(1, pos, "Vector")
 	ffichecks.checknumber(2, radius)
-	local fSource = nil
-	if ffichecks.iscdata(source, "Entity") then
-		fSource = source
-	end
+	source = ffichecks.optcdata(source, "Entity", nil)
 	
-    repentogon.L_Game_ButterBeanFart(pos, radius, fSource)
+    repentogon.L_Game_ButterBeanFart(pos, radius, source)
 end
 
 function GameFuncs:ClearDonationModAngel() 
@@ -284,19 +255,13 @@ end
 
 function GameFuncs:Fart(pos, radius, source, scale, subtype, color)
 	ffichecks.checkcdata(1, pos, "Vector")
-	local fRadius = ffichecks.optnumber(radus, 85)
-	local fSource = nil
-	if ffichecks.iscdata(source, "Entity") then
-		fSource = source
-	end
-	local fScale = ffichecks.optnumber(scale, 1)
-	local fSubType = ffichecks.optnumber(subtype, 0)
-	local fColor = Color.Default
-	if ffichecks.iscdata(source, "Color") then
-		fColor = color
-	end
+	radius = ffichecks.optnumber(radius, 85)
+	source = ffichecks.optcdata(source, "Entity", nil)
+	scale = ffichecks.optnumber(scale, 1)
+	subtype = ffichecks.optnumber(subtype, 0)
+	color = ffichecks.optcdata(color, "ColorMod", Color.Default)
 
-    repentogon.L_Game_Fart(pos, fRadius, fSource, fScale, fSubType, fColor)
+    repentogon.L_Game_Fart(pos, radius, source, scale, subtype, color)
 end
 
 function GameFuncs:FinishChallenge()
@@ -532,7 +497,7 @@ function GameFuncs:Spawn(id, variant, pos, velocity, spawner, subtype, seed)
 	ffichecks.checknumber(2, variant)
 	ffichecks.checkcdata(3, pos, "Vector")
 	ffichecks.checkcdata(4, velocity, "Vector")
-	ffichecks.checkcdata(5, spawner, "Entity")
+	ffichecks.checkcdata(5, spawner, "Entity", true)
 	ffichecks.checknumber(6, subtype)
 	ffichecks.checknumber(7, seed)
 	
@@ -544,38 +509,29 @@ function GameFuncs:SpawnParticles(pos, variant, count, speed, color, height, sub
 	ffichecks.checknumber(2, variant)
 	ffichecks.checknumber(3, count)
 	ffichecks.checknumber(4, speed)
-	local fColor = nil
-	if ffichecks.iscdata(source, "Color") then
-		fColor = color
-	end
-	local fHeight = ffichecks.optnumber(height, 100000)
-	local fSubType = ffichecks.optnumber(subtype, 0)
+	color = ffichecks.optcdata(color, "ColorMod", Color.Default)
+	height = ffichecks.optnumber(height, 100000)
+	subtype = ffichecks.optnumber(subtype, 0)
 	
-    repentogon.L_Game_SpawnParticles(pos, variant, count, speed, fColor, fHeight, fSubType)
+    repentogon.L_Game_SpawnParticles(pos, variant, count, speed, color, height, subtype)
 end
 
 function GameFuncs:StartRoomTransition(idx, direction, animation, player, dimension)
 	ffichecks.checknumber(1, idx)
 	ffichecks.checknumber(2, direction)
-	local fAnimation = ffichecks.optnumber(animation, 0)
-	local fPlayer = nil
-	if ffichecks.iscdata(source, "EntityPlayer") then
-		fPlayer = player
-	end
-	local fDimension = ffichecks.optnumber(dimension, -1)
+	animation = ffichecks.optnumber(animation, 0)
+	player = ffichecks.optcdata(player, "EntityPlayer", nil)
+	dimension = ffichecks.optnumber(dimension, -1)
 	
-    repentogon.L_Game_StartRoomTransition(idx, direction, fAnimation, fPlayer, fDimension)
+    repentogon.L_Game_StartRoomTransition(idx, direction, animation, player, dimension)
 end
 
 function GameFuncs:StartStageTransition(samestage, transitionoverride, player)
-	local fSameStage = ffichecks.optboolean(samestage, false)
-	local fTransitionOverride = ffichecks.optnumber(transitionoverride, 0)
-	local fPlayer = nil
-	if ffichecks.iscdata(source, "EntityPlayer") then
-		fPlayer = player
-	end
+	samestage = ffichecks.optboolean(samestage, false)
+	transitionoverride = ffichecks.optnumber(transitionoverride, 0)
+	player = ffichecks.optcdata(player, "EntityPlayer", nil)
 	
-	repentogon.L_Game_StartStageTransition(idx, direction, fAnimation, fPlayer, fDimension)
+	repentogon.L_Game_StartStageTransition(animation, transitionoverride, player)
 end
 
 function GameFuncs:Update()
@@ -584,8 +540,8 @@ end
 
 function GameFuncs:UpdateStrangeAttractor(pos, force, radius)
 	ffichecks.checkcdata(1, pos, "Vector")
-	local fForce = ffichecks.optnumber(force, 10)
-	local fRadius = ffichecks.optnumber(radius, 250)
+	force = ffichecks.optnumber(force, 10)
+	radius = ffichecks.optnumber(radius, 250)
 	
 	repentogon.L_Game_UpdateStrangeAttractor(pos, force, radius)
 end

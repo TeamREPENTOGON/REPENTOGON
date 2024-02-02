@@ -2,41 +2,45 @@
 #include "LuaCore.h"
 
 extern "C" {
-	void L_Entity_AddBurn(Entity* ent, const EntityRef &ref, int duration, float damage) {
-		ent->AddBurn(ref, duration, damage);
+	void L_Entity_AddBurn(Entity* ent, EntityRef* ref, int duration, float damage) {
+		ent->AddBurn(*ref, duration, damage);
 	}
 
-	void L_Entity_AddCharm(Entity* ent, const EntityRef& ref, int duration) {
-		ent->AddCharmed(ref, duration);
+	void L_Entity_AddCharm(Entity* ent, EntityRef* ref, int duration) {
+		ent->AddCharmed(*ref, duration);
 	}
 
-	void L_Entity_AddConfusion(Entity* ent, const EntityRef& ref, int duration) {
-		ent->AddConfusion(ref, duration);
+	void L_Entity_AddConfusion(Entity* ent, EntityRef* ref, int duration) {
+		ent->AddConfusion(*ref, duration);
 	}
 
-	void L_Entity_AddFreeze(Entity* ent, const EntityRef& ref, int duration) {
-		ent->AddFreeze(ref, duration);
+	void L_Entity_AddEntityFlags(Entity* ent, lua_Integer flags) {
+		ent->_flags &= flags;
+	}
+
+	void L_Entity_AddFreeze(Entity* ent, EntityRef* ref, int duration) {
+		ent->AddFreeze(*ref, duration);
 	}
 
 	void L_Entity_AddHealth(Entity* ent, float health) {
 		ent->_health = min(ent->_health + health, ent->_maxHealth);
 	}
 
-	void L_Entity_AddMidasFreeze(Entity* ent, const EntityRef& ref, int duration) {
-		ent->AddMidasFreeze(ref, duration);
+	void L_Entity_AddMidasFreeze(Entity* ent, EntityRef* ref, int duration) {
+		ent->AddMidasFreeze(*ref, duration);
 	}
 
-	void L_Entity_AddPoison(Entity* ent, const EntityRef& ref, int duration, float damage) {
-		ent->AddPoison(ref, duration, damage);
+	void L_Entity_AddPoison(Entity* ent, EntityRef* ref, int duration, float damage) {
+		ent->AddPoison(*ref, duration, damage);
 	}
 
-	void L_Entity_AddShrink(Entity* ent, const EntityRef& ref, int duration) {
-		ent->AddShrink(ref, duration);
+	void L_Entity_AddShrink(Entity* ent, EntityRef* ref, int duration) {
+		ent->AddShrink(*ref, duration);
 	}
 
 	//todo: investigate AddSlowing unk value
-	void L_Entity_AddSlowing(Entity* ent, const EntityRef& ref, int duration, ColorMod* color) {
-		ent->AddSlowing(ref, duration, 0, color);
+	void L_Entity_AddSlowing(Entity* ent, EntityRef* ref, int duration, ColorMod* color) {
+		ent->AddSlowing(*ref, duration, 0, color);
 	}
 
 	//todo: investigate useSpeedModifer default value
@@ -56,8 +60,8 @@ extern "C" {
 	*/
 
 
-	void L_Entity_ClearFlags(Entity* ent, unsigned long long* flags) {
-		ent->ClearEntityFlags(*flags);
+	void L_Entity_ClearEntityFlags(Entity* ent, lua_Integer flags) {
+		ent->_flags &= ~flags;
 	}
 
 	bool L_Entity_CollidesWithGrid(Entity* ent) {
@@ -89,8 +93,8 @@ extern "C" {
 		return &ent->_dropRNG;
 	}
 
-	unsigned long long* L_Entity_GetFlags(Entity* ent) {
-		return &ent->_flags;
+	lua_Integer L_Entity_GetEntityFlags(Entity* ent) {
+		return ent->_flags;
 	}
 
 	Entity* L_Entity_GetLastChild(Entity* ent) {
@@ -117,12 +121,12 @@ extern "C" {
 		return ent->HasCommonParentWithEntity(right);
 	}
 
-	bool L_Entity_HasEntityFlags(Entity* ent, unsigned long long* flags) {
-		return (ent->_flags | *flags) != 0;
+	bool L_Entity_HasEntityFlags(Entity* ent, lua_Integer flags) {
+		return (ent->_flags | flags) != 0;
 	}
 
 	bool L_Entity_HasFullHealth(Entity* ent) {
-		return ent->_maxHealth >= ent->_health;
+		return ent->_health >= ent->_maxHealth;
 	}
 
 	bool L_Entity_HasMortalDamage(Entity* ent) {
@@ -154,6 +158,10 @@ extern "C" {
 
 	bool L_Entity_IsFrame(Entity* ent, int frame, int offset) {
 		return ent->IsFrame(frame, offset);
+	}
+
+	bool L_Entity_IsInvincible(Entity* ent) {
+		return ent->_invincible;
 	}
 
 	bool L_Entity_IsVisible(Entity* ent) {
@@ -201,13 +209,13 @@ extern "C" {
 		ent->SetSize(size, *sizeMulti, numGridPoints);
 	}
 
-	void L_Entity_SetSpriteFrame(Entity* ent, char* name, int frame) {
+	void L_Entity_SetSpriteFrame(Entity* ent, const char* name, int frame) {
 		std::string namestr = name;
 		ent->SetSpriteFrame(&namestr, frame);
 	}
 
-	bool L_Entity_TakeDamage(Entity* ent, float damage, unsigned long long* flags, EntityRef* source, int countdown) {
-		return ent->TakeDamage(damage, *flags, source, countdown);
+	bool L_Entity_TakeDamage(Entity* ent, float damage, lua_Integer flags, EntityRef* source, int countdown) {
+		return ent->TakeDamage(damage, flags, source, countdown);
 	}
 
 	void L_Entity_Update(Entity* ent) {
@@ -232,6 +240,14 @@ extern "C" {
 
 	void L_Entity_SetParent(Entity* ent, Entity* parent) {
 		ent->_parent = parent;
+	}
+
+	float L_Entity_GetCollisionDamage(Entity* ent) {
+		return ent->_collisionDamage;
+	}
+
+	void L_Entity_SetCollisionDamage(Entity* ent, float value) {
+		ent->_collisionDamage = value;
 	}
 
 	ColorMod* L_Entity_GetColorField(Entity* ent) {
@@ -283,7 +299,7 @@ extern "C" {
 	}
 
 	unsigned int L_Entity_GetFrameCount(Entity* ent) {
-		return ent->_frameCount;
+		return g_Game->_frameCount - ent->_frameCount;
 	}
 
 	void L_Entity_SetFrameCount(Entity* ent, unsigned int frame) {
@@ -408,7 +424,7 @@ extern "C" {
 		ent->_spawnerVariant = variant;
 	}
 
-	unsigned int L_Entity_GetSpawnGridIndex(Entity* ent) {
+	int L_Entity_GetSpawnGridIndex(Entity* ent) {
 		return ent->_spawnGridIdx;
 	}
 

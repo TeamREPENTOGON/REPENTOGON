@@ -1,28 +1,29 @@
 ffi.cdef[[
-	void L_Entity_AddBurn(Entity*, const EntityRef&, int, float);
-	void L_Entity_AddCharm(Entity*, const EntityRef&, int);
-	void L_Entity_AddConfustion(Entity*, const EntityRef&, int);
-	void L_Entity_AddFreeze(Entity*, const EntityRef&, int);
+	void L_Entity_AddBurn(Entity*, EntityRef*, int, float);
+	void L_Entity_AddCharm(Entity*, EntityRef*, int);
+	void L_Entity_AddConfusion(Entity*, EntityRef*, int);
+	void L_Entity_AddEntityFlags(Entity*, long long int*);
+	void L_Entity_AddFreeze(Entity*, EntityRef*, int);
 	void L_Entity_AddHealth(Entity*, float);
-	void L_Entity_AddMidasFreeze(Entity*, const EntityRef&, int);
-	void L_Entity_AddPoison(Entity*, const EntityRef&, int, float);
-	void L_Entity_AddShrink(Entity*, const EntityRef&, int);
-	void L_Entity_AddSlowing(Entity*, const EntityRef&, int, ColorMod*);
+	void L_Entity_AddMidasFreeze(Entity*, EntityRef*, int);
+	void L_Entity_AddPoison(Entity*, EntityRef*, int, float);
+	void L_Entity_AddShrink(Entity*, EntityRef*, int);
+	void L_Entity_AddSlowing(Entity*, EntityRef*, int, ColorMod*);
 	void L_Entity_AddVelocity(Entity*, Vector*);
 	void L_Entity_BloodExplode(Entity*);
-	void L_Entity_ClearFlags(Entity*, unsigned long long*);
+	void L_Entity_ClearEntityFlags(Entity*, long long int*);
 	bool L_Entity_CollidesWithGrid(Entity*);
 	void L_Entity_Die(Entity*);
 	bool L_Entity_Exists(Entity*);
 	int L_Entity_GetBossID(Entity*);
 	ColorMod* L_Entity_GetColorFunc(Entity*);
 	RNG* L_Entity_GetDropRNG(Entity*);
-	unsigned long long* L_Entity_GetFlags(Entity*);
+	long long int* L_Entity_GetEntityFlags(Entity*);
 	Entity* L_Entity_GetLastChild(Entity*);
 	Entity* L_Entity_GetLastParent(Entity*);
 	ANM2* L_Entity_GetSprite(Entity*);
 	bool L_Entity_HasCommonParentWithEntity(Entity*, Entity*);
-	bool L_Entity_HasEntityFlags(Entity*, unsigned long long*);
+	bool L_Entity_HasEntityFlags(Entity*, long long int*);
 	bool L_Entity_HasFullHealth(Entity*);
 	bool L_Entity_HasMortalDamage(Entity*);
 	bool L_Entity_IsActiveEnemy(Entity*, bool);
@@ -30,10 +31,11 @@ ffi.cdef[[
 	bool L_Entity_IsEnemy(Entity*);
 	bool L_Entity_IsFlying(Entity*);
 	bool L_Entity_IsFrame(Entity*, int);
+	bool L_Entity_IsInvincible(Entity*);
 	bool L_Entity_IsVisible(Entity*);
 	bool L_Entity_IsVulnerableEnemy(Entity*);
 	void L_Entity_Kill(Entity*);
-	void L_Entity_MultiplyFriction(Entity*);
+	void L_Entity_MultiplyFriction(Entity*, float);
 	void L_Entity_PostRender(Entity*);
 	void L_Entity_Remove(Entity*);
 	void L_Entity_RemoveStatusEffects(Entity*);
@@ -41,13 +43,15 @@ ffi.cdef[[
 	bool L_Entity_RenderShadowLayer(Entity*, Vector*);
 	void L_Entity_SetColorFunc(Entity*, ColorMod*, int, int, bool, bool);
 	void L_Entity_SetSizeFunc(Entity*, float, Vector*, int);
-	void L_Entity_SetSpriteFrame(Entity*, char*, int);
-	bool L_Entity_TakeDamage(Entity*, float, unsigned long long*, EntityRef*, int);
+	void L_Entity_SetSpriteFrame(Entity*, const char*, int);
+	bool L_Entity_TakeDamage(Entity*, float, long long int*, EntityRef*, int);
 	void L_Entity_Update(Entity*);
 	Entity* L_Entity_GetChild(Entity*);
 	void L_Entity_SetChild(Entity*, Entity*);
 	Entity* L_Entity_GetParent(Entity*);
 	void L_Entity_SetParent(Entity*, Entity*);
+	float L_Entity_GetCollisionDamage(Entity*);
+	void L_Entity_SetCollisionDamage(Entity*, float);
 	ColorMod* L_Entity_GetColorField(Entity*);
 	void L_Entity_SetColorField(Entity*, ColorMod*);
 	float L_Entity_GetDepthOffset(Entity*);
@@ -138,7 +142,12 @@ end
 function EntityFuncs:AddConfusion(ref, duration)
 	ffichecks.checkcdata(2, ref, "EntityRef")
 	ffichecks.checknumber(3, duration)
-	repentogon.L_Entity_AddConfustion(self, ref, duration)
+	repentogon.L_Entity_AddConfusion(self, ref, duration)
+end
+
+function EntityFuncs:AddEntityFlags(value)
+	ffichecks.checknumber(2, value)
+	repentogon.L_Entity_AddEntityFlags(self, value)
 end
 
 function EntityFuncs:AddFreeze(ref, duration)
@@ -186,9 +195,9 @@ function EntityFuncs:BloodExplode()
 	repentogon.L_Entity_BloodExplode(self)
 end
 
-function EntityFuncs:ClearFlags(flags)
+function EntityFuncs:ClearEntityFlags(flags)
 	ffichecks.checknumber(2, flags)
-	repentogon.L_Entity_ClearFlags(self, flags)
+	repentogon.L_Entity_ClearEntityFlags(self, flags)
 end
 
 function EntityFuncs:CollidesWithGrid()
@@ -215,15 +224,15 @@ function EntityFuncs:GetDropRNG()
 	return repentogon.L_Entity_GetDropRNG(self)
 end
 
-function EntityFuncs:GetFlags()
-	return repentogon.L_Entity_GetFlags(self)
+function EntityFuncs:GetEntityFlags()
+	return repentogon.L_Entity_GetEntityFlags(self)
 end
 
 function EntityFuncs:GetLastChild()
 	return repentogon.L_Entity_GetLastChild(self)
 end
 
-function EntityFuncs:GetLastParnt()
+function EntityFuncs:GetLastParent()
 	return repentogon.L_Entity_GetLastParent(self)
 end
 
@@ -249,8 +258,9 @@ function EntityFuncs:HasMortalDamage()
 	return repentogon.L_Entity_HasMortalDamage(self)
 end
 
-function EntityFuncs:IsActiveEnemy()
-	return repentogon.L_Entity_IsActiveEnemy(self)
+function EntityFuncs:IsActiveEnemy(includedead)
+	includedead = ffichecks.optboolean(includedead, false)
+	return repentogon.L_Entity_IsActiveEnemy(self, includedead)
 end
 
 function EntityFuncs:IsDead()
@@ -346,6 +356,7 @@ end
 local getkeys = {
     Child = repentogon.L_Entity_GetChild,
 	Parent = repentogon.L_Entity_GetParent,
+	CollisionDamage = repentogon.L_Entity_GetCollisionDamage,
 	Color = repentogon.L_Entity_GetColorField,
 	DepthOffset = repentogon.L_Entity_GetDepthOffset,
 	DropSeed = repentogon.L_Entity_GetDropSeed,
@@ -358,6 +369,7 @@ local getkeys = {
 	Index = repentogon.L_Entity_GetIndex,
 	InitSeed = repentogon.L_Entity_GetInitSeed,
 	Mass = repentogon.L_Entity_GetMass,
+	MaxHitPoints = repentogon.L_Entity_GetMaxHitPoints,
 	Position = repentogon.L_Entity_GetPosition,
 	PositionOffset = repentogon.L_Entity_GetPositionOffset,
 	RenderZOffset = repentogon.L_Entity_GetRenderZOffset,
@@ -389,6 +401,7 @@ end
 local setkeys = {
     Child = function(self, cdata) doCDataFunc(self, cdata, "Entity", repentogon.L_Entity_SetChild) end,
 	Parent = function(self, cdata) doCDataFunc(self, cdata, "Entity", repentogon.L_Entity_SetParent) end,
+	CollisionDamage = repentogon.L_Entity_SetCollisionDamage,
 	Color = function(self, cdata) doCDataFunc(self, cdata, "ColorMod", repentogon.L_Entity_SetColorField) end,
 	DepthOffset = repentogon.L_Entity_SetDepthOffset,
 	DropSeed = repentogon.L_Entity_SetDropSeed,
@@ -400,6 +413,7 @@ local setkeys = {
 	HitPoints = repentogon.L_Entity_SetHitPoints,
 	InitSeed = repentogon.L_Entity_SetInitSeed,
 	Mass = repentogon.L_Entity_SetMass,
+	MaxHitPoints = repentogon.L_Entity_SetMaxHitPoints,
 	Position = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetPosition) end,
 	PositionOffset = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetPositionOffset) end,
 	RenderZOffset = repentogon.L_Entity_SetRenderZOffset,
@@ -423,7 +437,8 @@ local setkeys = {
 	Visible = repentogon.L_Entity_SetVisible,
 }
 
-local EntityMT = lffi.metatype("Entity", {
+local EntityMT
+EntityMT  = lffi.metatype("Entity", {
     __index = function(self, key)
         if getkeys[key] ~= nil then
             return getkeys[key](self)
@@ -438,5 +453,3 @@ local EntityMT = lffi.metatype("Entity", {
         end
     end
 })
-
-Entity = setmetatable({}, EntityMT)

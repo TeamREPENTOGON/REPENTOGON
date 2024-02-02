@@ -32,6 +32,7 @@ ffichecks.istype = function(var, typ)
 	return type(var) == typ
 end
 
+ffichecks.isnil = function(var) return ffichecks.istype(var, "nil") end
 ffichecks.isnumber = function(var) return ffichecks.istype(var, "number") end
 ffichecks.isstring = function(var) return ffichecks.istype(var, "string") end
 ffichecks.isboolean = function(var) return ffichecks.istype(var, "boolean") end
@@ -42,12 +43,12 @@ ffichecks.checkfunction = function(index, val, level) ffichecks.checktype(index,
 ffichecks.checkstring = function(index, val, level) ffichecks.checktype(index, val, "string", (level or 2)+1) end
 ffichecks.checkboolean = function(index, val, level) ffichecks.checktype(index, val, "boolean", (level or 2)+1) end
 
-ffichecks.checkcdata = function(idx, var, ctype, level)
-	if not ffichecks.iscdata(var, ctype) then
+ffichecks.checkcdata = function(idx, var, ctype, allownil, level)
+	if not (ffichecks.iscdata(var, ctype) or (allownil and ffichecks.isnil(var))) then
 		local t = type(var)
 		if t == "cdata" then t = tostring(lffi.typeof(var)) end
 
-		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level or 2).name, tostring(ctype), t), (level or 2)+1)
+		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", idx, debug_getinfo(level or 2).name, tostring(ctype), t), (level or 2)+1)
 	end
 end
 
@@ -57,8 +58,20 @@ ffichecks.optnumber = function(var, opt)
 	end
 	return opt
 end
-ffichecks.optboolean = function(idx, var, opt)
+ffichecks.optboolean = function(var, opt)
 	if ffichecks.isboolean(var) then
+		return var
+	end
+	return opt
+end
+ffichecks.optstring = function(var, opt)
+	if ffichecks.isstring(var) then
+		return var
+	end
+	return opt
+end
+ffichecks.optcdata = function(var, ctype, opt)
+	if ffichecks.isscdata(var, cdata) then
 		return var
 	end
 	return opt

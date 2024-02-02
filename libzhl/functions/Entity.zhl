@@ -220,7 +220,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, ColorMod) {
 	float _poisonDamage : 0x278;
 	float _burnDamage : 0x27c;
 	unsigned int _frameCount : 0x280;
-	unsigned int _spawnGridIdx : 0x284;
+	int _spawnGridIdx : 0x284;
 	EntityConfig_Entity* _entityConfig : 0x288;
 	Vector _targetPosition : 0x28c;
 	Vector _position : 0x294;
@@ -237,6 +237,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, ColorMod) {
 	float _maxHealth : 0x2dc;
 	float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
+	bool _invincible : 0x308;
 	float _shrinkStatus1 : 0x30c;
 	float _shrinkStatus2 : 0x310;
 	Entity * _parent : 0x314;
