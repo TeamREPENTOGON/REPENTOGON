@@ -1612,7 +1612,7 @@ HOOK_METHOD(Room, SpawnGridEntity, (int idx, unsigned int type, unsigned int var
 			else if (lua_isuserdata(L, -1)) {
 				GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, -1, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
 				noInfLoop = true;
-				return g_Game->_room->SpawnGridEntityDesc(idx, desc);
+				return g_Game->_level._room->SpawnGridEntityDesc(idx, desc);
 			}
 			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 			{
@@ -1654,7 +1654,7 @@ HOOK_METHOD(Room, SpawnGridEntityDesc, (int idx, GridEntityDesc* desc) -> bool) 
 				int spawnSeed = ProtectedCallbackIntAssign(L, desc->_spawnSeed, 4);
 
 				noInfLoop = true;
-				return g_Game->_room->SpawnGridEntity(idx, type, variant, spawnSeed, varData);
+				return g_Game->_level._room->SpawnGridEntity(idx, type, variant, spawnSeed, varData);
 			}
 			else if (lua_isboolean(L, -1) && !lua_toboolean(L, -1))
 			{

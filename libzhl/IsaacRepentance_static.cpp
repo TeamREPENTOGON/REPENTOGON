@@ -214,7 +214,7 @@ bool Entity_Player::AddSmeltedTrinket(int trinketID, bool firstTime) {
 
 		TriggerTrinketAdded(trinketID, firstTime);
 
-		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
+		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_level._stage, g_Game->_level._stageType, g_Game->_level._room->_roomType, 0);
 		GetHistory()->AddHistoryItem(historyItem);
 
 		delete(historyItem);

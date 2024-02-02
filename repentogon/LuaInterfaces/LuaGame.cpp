@@ -184,7 +184,7 @@ extern "C" {
 	}
 
 	Room* L_Game_GetRoom() {
-		return g_Game->_room;
+		return g_Game->_level._room;
 	}
 
 	int L_Game_GetScreenShakeCountdown() {

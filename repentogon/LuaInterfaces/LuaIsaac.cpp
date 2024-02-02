@@ -406,7 +406,7 @@ LUA_FUNCTION(Lua_IsaacGetCollectibleSpawnPosition) {
 }
 
 LUA_FUNCTION(Lua_IsaacClearBossHazards) {
-	if (g_Game == nullptr || g_Game->_room == nullptr) {
+	if (g_Game == nullptr || g_Game->_level._room == nullptr) {
 		return luaL_error(L, "Must be in a room to use this!");
 	}
 	bool ignoreNPCs = lua::luaL_optboolean(L, 1, false);

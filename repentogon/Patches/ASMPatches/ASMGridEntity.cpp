@@ -42,7 +42,7 @@ GridEntity* __stdcall RoomSpawnTrampoline(GridEntityType type, unsigned int vari
 
 	GridEntity* ent = Isaac::CreateGridEntity(type, idx);
 	if (ent != nullptr) {
-		g_Game->_room->_gridEntities[idx] = ent;
+		g_Game->_level._room->_gridEntities[idx] = ent;
 		GridEntityDesc* desc = ent->GetDesc();
 		desc->_variant = variant;
 		desc->_varData = vardata;
@@ -132,7 +132,7 @@ void PatchPostSpawnGridEntity()
 */ /////////////////////
 
 bool __stdcall SpawnGridEntityTrampoline(int idx, unsigned int type, unsigned int variant, unsigned int seed, int vardata) {
-	return g_Game->_room->SpawnGridEntity(idx, type, variant, seed, vardata);
+	return g_Game->_level._room->SpawnGridEntity(idx, type, variant, seed, vardata);
 }
 
 /* /////////////////////

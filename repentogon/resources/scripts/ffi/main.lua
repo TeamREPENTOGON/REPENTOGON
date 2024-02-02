@@ -12,7 +12,7 @@ ffi.cdef[[
 	typedef void (*LuaCallback)(int, int, void**, int, int*, void**);
 	void RegisterCallback(LuaCallback);
 	LuaCallback L_RunCallback;
-
+	void L_Free(void* ptr);
 ]]
 
 ffichecks.gettype = function(var)
@@ -87,6 +87,7 @@ pcall(require("EntityRef"))
 pcall(require("Sprite"))
 pcall(require("SFXManager"))
 pcall(require("RNG"))
+pcall(require("Level"))
 pcall(require("Entity"))
 pcall(require("MusicManager"))
 pcall(require("WeightedOutcomePicker"))

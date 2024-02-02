@@ -513,7 +513,7 @@ struct ConsoleMega : ImGuiWindowObject {
                         }
 
                         case GOTO: {
-                            unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+                            unsigned int stbID = RoomConfig::GetStageID(g_Game->_level._stage, g_Game->_level._stageType, -1);
                             RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
                             RoomConfig* config = stage.configs;
                             std::map<int, std::string> specialRoomTypes = {

@@ -88,7 +88,7 @@ bool __stdcall SpawnSpecialQuestDoorValidStageTypeCheck() {
 	// If ForceSpecialQuest is -1, quest doors are disabled
 	if (!ret && levelASM.ForceSpecialQuest > -1) {
 		// ForceSpecialQuest 0 defaults to vanilla behavior
-		ret = levelASM.ForceSpecialQuest > 0 || (g_Game->_stageType == 4 || g_Game->_stageType == 5);
+		ret = levelASM.ForceSpecialQuest > 0 || (g_Game->_level._stageType == 4 || g_Game->_level._stageType == 5);
 	}
 	roomASM.ForceSpecialQuestDoor = false;
 	return ret;

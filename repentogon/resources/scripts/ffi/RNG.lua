@@ -89,6 +89,3 @@ RNG = setmetatable({},
 		return rng
 	end
 })
-
-
-

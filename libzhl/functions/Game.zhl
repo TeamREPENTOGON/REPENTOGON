@@ -216,6 +216,8 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     { 
         return *(uint32_t*)((char*)this + 0x1815C); 
     }
+
+	inline Level* GetLevel() { return (Level*)this; }
     
 	inline Console* GetConsole() { return (Console*)((char*)this + 0x1BB60); } // Cast to appropriate type
 	
@@ -286,28 +288,28 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 
     bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
-	//Level _level : 0x0;
-    uint32_t _stage : 0x0; // 0x0
-    uint32_t _stageType : 0x4; // 0x4
-    bool _bossChallenge : 0x8; //0x8
-    bool _devilRoomDisabled : 0x9; //0x9
-    uint32_t _curses : 0xC; // 0xC
-    RoomDescriptor _gridRooms[507] : 0x14; // 0x14
-    RoomDescriptor _negativeGridRooms[18] : 0x16c7c; // 0x16c7c
-    uint32_t _roomOffset[507] : 0x1796c; // 0x1796c
-    uint32_t _nbRooms : 0x1815c; // 0x1815C
-    uint32_t _startingRoomIdx : 0x18160; // 0x18160
-    Room* _room : 0x18190; // 0x18190
-    uint32_t _currentRoomIdx : 0x18194; // 0x18194;
-    uint32_t _lastRoomIdx : 0x18198; // 0x18198
-    uint32_t _currentDimensionIdx : 0x1819c; // 0x1819C
-    uint32_t _lastRoomDimensionIdx : 0x181a0; // 0x181A0
-    uint32_t _lastBossRoomListIdx : 0x181a4; //0X181A4
-    uint32_t _leaveDoor : 0x181a8; // 0x181A8
-    uint32_t _enterDoor : 0x181ac; // 0x181AC
-    uint32_t _greedModeWave : 0x181c4; // 0x181C4
-    unsigned int _stateFlags : 0x1822c; // 0x1822C
-    uint32_t _greedModeTreasureRoomIdx : 0x18200; // 0x18200
+	Level _level : 0x0;
+    // uint32_t _stage : 0x0; // 0x0
+    // uint32_t _stageType : 0x4; // 0x4
+    // bool _bossChallenge : 0x8; //0x8
+    // bool _devilRoomDisabled : 0x9; //0x9
+    // uint32_t _curses : 0xC; // 0xC
+    // RoomDescriptor _gridRooms[507] : 0x14; // 0x14
+    // RoomDescriptor _negativeGridRooms[18] : 0x16c7c; // 0x16c7c
+    // uint32_t _roomOffset[507] : 0x1796c; // 0x1796c
+    // uint32_t _nbRooms : 0x1815c; // 0x1815C
+    // uint32_t _startingRoomIdx : 0x18160; // 0x18160
+    // Room* _room : 0x18190; // 0x18190
+    // uint32_t _currentRoomIdx : 0x18194; // 0x18194;
+    // uint32_t _lastRoomIdx : 0x18198; // 0x18198
+    // uint32_t _currentDimensionIdx : 0x1819c; // 0x1819C
+    // uint32_t _lastRoomDimensionIdx : 0x181a0; // 0x181A0
+    // uint32_t _lastBossRoomListIdx : 0x181a4; //0X181A4
+    // uint32_t _leaveDoor : 0x181a8; // 0x181A8
+    // uint32_t _enterDoor : 0x181ac; // 0x181AC
+    // uint32_t _greedModeWave : 0x181c4; // 0x181C4
+    // unsigned int _stateFlags : 0x1822c; // 0x1822C
+    // uint32_t _greedModeTreasureRoomIdx : 0x18200; // 0x18200
     RoomConfigHolder _roomConfigs : 0x1879c; // 0x1879C
 	ItemPool _itemPool : 0x1A5CC;
 	Seeds _seedEffects : 0x1bb04;

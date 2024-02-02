@@ -397,8 +397,8 @@ void initstagetotuple() {
 }
 
 bool IsOnSecondFloor() {
-	int stageid = g_Game->_stage;
-	return (stageid == 2) || (stageid == 4) || (stageid == 6) || (stageid == 8) || (g_Game->_curses & (1 << 1)); //has curse XL
+	int stageid = g_Game->_level._stage;
+	return (stageid == 2) || (stageid == 4) || (stageid == 6) || (stageid == 8) || (g_Game->_level._curses & (1 << 1)); //has curse XL
 }
 
 tuple<int, int> GetSetStage(int stageid,bool secondfloor) {

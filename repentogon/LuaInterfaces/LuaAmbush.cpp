@@ -91,7 +91,7 @@ static int AmbushDifficulty[4] = { 1, 5, 10, 15 };
 #undef max
 
 void SetupAmbushData(lua_State* L, Ambush* ambush, RNG* rng, int* index, int* subtype) {
-	RoomDescriptor* descriptor = g_Game->_room->_descriptor;
+	RoomDescriptor* descriptor = g_Game->_level._room->_descriptor;
 	RoomConfig* config = descriptor->Data;
 
 	if (config->Type != 11) {
@@ -119,7 +119,7 @@ void SetupAmbushData(lua_State* L, Ambush* ambush, RNG* rng, int* index, int* su
 
 LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 	Ambush* ambush = g_Game->GetAmbush();
-	RoomConfig* currentRoom = g_Game->_room->_descriptor->Data;
+	RoomConfig* currentRoom = g_Game->_level._room->_descriptor->Data;
 	RNG rng;
 	int index;
 	int subtype;
@@ -134,7 +134,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 		unsigned int requiredDoors = 0;
 		rng.Next();
 		config = g_Game->GetRoomConfigHolder()->GetRandomRoom(rng._seed, false,
-			g_Game->GetRoomConfig()->GetStageID(g_Game->_stage, g_Game->_stageType, -1),
+			g_Game->GetRoomConfig()->GetStageID(g_Game->_level._stage, g_Game->_level._stageType, -1),
 			11 /* Challenge room */, currentRoom->Shape, 0, -1, AmbushDifficulty[index] /* ebp - 60 */,
 			AmbushDifficulty[index] /* ebp - 60 */, &requiredDoors/* ebp - 4C */, subtype /* ebp - 64 */, -1);
 
@@ -159,7 +159,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 
 LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 	Ambush* ambush = g_Game->GetAmbush();
-	RoomDescriptor* descriptor = g_Game->_room->_descriptor;
+	RoomDescriptor* descriptor = g_Game->_level._room->_descriptor;
 	RoomConfig* currentRoom = descriptor->Data;
 
 	RNG rng;
@@ -182,7 +182,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 		do {
 			rng.Next();
 
-			int stage = g_Game->GetRoomConfig()->GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+			int stage = g_Game->GetRoomConfig()->GetStageID(g_Game->_level._stage, g_Game->_level._stageType, -1);
 			// Draw the room a first time without reducing its weight.
 			// We need to determine what its current weight is in order to reduce it during 
 			// a second draw. 

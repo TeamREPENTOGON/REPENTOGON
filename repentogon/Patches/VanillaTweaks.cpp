@@ -9,7 +9,7 @@ HOOK_METHOD(Entity_Slot, TakeDamage, (float Damage, unsigned long long DamageFla
 
 	if (result && repentogonOptions.keyMasterDealChance) {
 		if (g_Game->GetDailyChallenge()._id == 0 && _variant == 7) //KEY_MASTER
-			g_Game->_stateFlags |= 1;
+			g_Game->_level._stateFlags |= 1;
 	}
 	return result;
 }

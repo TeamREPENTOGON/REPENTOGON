@@ -44,7 +44,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
 
     float chance = 0;
 
-    if (!g_Game->_devilRoomDisabled) { 
+    if (!g_Game->_level._devilRoomDisabled) { 
         chance += 0.01f;
 
         //MC_PRE_DEVIL_APPLY_ITEMS
@@ -121,8 +121,8 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         //MC_PRE_DEVIL_APPLY_STAGE_PENALTY
 
         if (lastDevilRoomStage && shouldApplyStagePenalty) {
-            unsigned int stageType = g_Game->_stageType;
-            unsigned int stage = g_Game->_stage;
+            unsigned int stageType = g_Game->_level._stageType;
+            unsigned int stage = g_Game->_level._stage;
 
             if (stageType == STAGETYPE_REPENTANCE || stageType == STAGETYPE_REPENTANCE_B)
                 stage++;
@@ -217,8 +217,8 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         return originalChance;
  
     lua::LuaStackProtector protector(L);
-    int stageType = this->_stageType;
-    int stage = this->_stage;
+    int stageType = this->_level._stageType;
+    int stage = this->_level._stage;
     PlayerManager* manager = g_Game->GetPlayerManager();
     bool hasTelescopeLens = manager->FirstTrinketOwner(TRINKET_TELESCOPE_LENS, 0, true);
     bool shouldBypassPlanetariumRestriction = false;

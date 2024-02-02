@@ -39,6 +39,10 @@ extern "C" {
 	void FreeOutcomeList(FFI_OutcomeList list) {
 		free(list.outcomes);
 	}
+
+	void L_Free(void* ptr) {
+		free(ptr);
+	}
 	
 	unsigned int L_Random() {
 		return Isaac::genrand_int32();

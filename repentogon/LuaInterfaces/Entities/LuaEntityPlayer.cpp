@@ -1638,7 +1638,7 @@ LUA_FUNCTION(Lua_PlayerIsInvisible) {
 
 LUA_FUNCTION(Lua_PlayerIsPacifist) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	lua_pushboolean(L, g_Game->_room->_pacifist);
+	lua_pushboolean(L, g_Game->_level._room->_pacifist);
 
 	return 1;
 }

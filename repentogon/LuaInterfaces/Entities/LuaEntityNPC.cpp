@@ -165,7 +165,7 @@ LUA_FUNCTION(Lua_EntityNPC_FireGridEntity) {
 	ANM2* sprite = lua::GetUserdata<ANM2*>(L, 2, lua::Metatables::SPRITE, "Sprite");
 	GridEntityDesc* desc = lua::GetUserdata<GridEntityDesc*>(L, 3, lua::Metatables::GRID_ENTITY_DESC, "GridEntityDesc");
 	Vector* velocity = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
-	int backdrop = min((int)luaL_optinteger(L, 5, g_Game->_room->GetBackdrop()->backdropId), 1);
+	int backdrop = min((int)luaL_optinteger(L, 5, g_Game->_level._room->GetBackdrop()->backdropId), 1);
 
 	lua::luabridge::UserdataPtr::push(L, npc->FireGridEntity(sprite, desc, velocity, backdrop), lua::Metatables::ENTITY_PROJECTILE);
 
