@@ -7090,11 +7090,29 @@
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="allmarksfilled">AllMarksFilled ()<a class="headerlink" href="#allmarksfilled" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-allmarksfilled-playertype-character">int AllMarksFilled ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> Character)<a class="headerlink" href="#int-allmarksfilled-playertype-character" title="Permanent link">⚓︎</a></h4>
-<p>Checks if a given character has completed all marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. </p>
+<p>Checks if a given character has completed all marks and returns an integer representing the highest difficulty it was accomplished in.</p>
+<details class="- info">
+<summary>Note</summary>
+<p>The difficulties are as follows:</p>
+<ul>
+<li><code>0</code> - None</li>
+<li><code>1</code> - Normal</li>
+<li><code>2</code> - Hard</li>
+</ul>
+</details>
 <hr />
 <h3 aria-label="Functions" id="alltaintedcompletion">AllTaintedCompletion ()<a class="headerlink" href="#alltaintedcompletion" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-alltaintedcompletion-playertype-character-taintedmarksgroup-group">int AllTaintedCompletion ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> Character, <a href="enums/TaintedMarksGroup.html">TaintedMarksGroup</a> Group)<a class="headerlink" href="#int-alltaintedcompletion-playertype-character-taintedmarksgroup-group" title="Permanent link">⚓︎</a></h4>
-<p>Checks if a given character has completed all the tainted unlock-related marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. </p>
+<p>Checks if a given character has completed all the tainted unlock-related marks and returns an integer representing the highest difficulty it was accomplished in.</p>
+<details class="- info">
+<summary>Note</summary>
+<p>The difficulties are as follows:</p>
+<ul>
+<li><code>0</code> - None</li>
+<li><code>1</code> - Normal</li>
+<li><code>2</code> - Hard</li>
+</ul>
+</details>
 <hr />
 <h3 aria-label="Functions" id="canstarttruecoop">CanStartTrueCoop ()<a class="headerlink" href="#canstarttruecoop" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-canstarttruecoop">boolean CanStartTrueCoop ( )<a class="headerlink" href="#boolean-canstarttruecoop" title="Permanent link">⚓︎</a></h4>
@@ -7109,15 +7127,15 @@
 <hr />
 <h3 aria-label="Functions" id="clearbosshazards">ClearBossHazards ()<a class="headerlink" href="#clearbosshazards" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-clearbosshazards-boolean-ignorenpcs-false">void ClearBossHazards ( boolean IgnoreNPCs = false )<a class="headerlink" href="#void-clearbosshazards-boolean-ignorenpcs-false" title="Permanent link">⚓︎</a></h4>
-<p>Kills all projectiles and, if <code>IgnoreNPCs</code> is false, all non-friendly NPCs capable of keeping doors closed. </p>
+<p>Kills all projectiles. Kills all non-friendly NPCs capable of keeping doors closed as well if <code>IgnoreNPCs</code> is false.</p>
 <hr />
 <h3 aria-label="Functions" id="clearchallenge">ClearChallenge ()<a class="headerlink" href="#clearchallenge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-clearchallenge-int-challengeid">void ClearChallenge ( int challengeid)<a class="headerlink" href="#void-clearchallenge-int-challengeid" title="Permanent link">⚓︎</a></h4>
-<p>Sets the challenge of the corresponding challengeid to completed. Should work with both custom and vanilla challenges. </p>
+<p>Sets the challenge of the corresponding <code>challengeid</code> to completed.</p>
 <hr />
 <h3 aria-label="Functions" id="clearcompletionmarks">ClearCompletionMarks ()<a class="headerlink" href="#clearcompletionmarks" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-clearcompletionmarks-playertype-character">void ClearCompletionMarks ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> Character)<a class="headerlink" href="#void-clearcompletionmarks-playertype-character" title="Permanent link">⚓︎</a></h4>
-<p>Deletes all completion marks for a given character. Supports both modded and vanilla characters. </p>
+<p>Deletes all completion marks for a given character.</p>
 <hr />
 <h3 aria-label="Functions" id="createtimer">CreateTimer ()<a class="headerlink" href="#createtimer" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="entityeffect-createtimer-function-function-int-interval-int-times-boolean-persistent"><a href="https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html">EntityEffect</a> CreateTimer ( function Function, int Interval, int Times, boolean Persistent )<a class="headerlink" href="#entityeffect-createtimer-function-function-int-interval-int-times-boolean-persistent" title="Permanent link">⚓︎</a></h4>
@@ -7130,9 +7148,11 @@
 <hr />
 <h3 aria-label="Functions" id="createweapon">CreateWeapon ()<a class="headerlink" href="#createweapon" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="weapon-createweapon-weapontype-type-entity-owner"><a href="Weapon.html">Weapon</a> CreateWeapon ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html">WeaponType</a> Type, <a href="Entity.html">Entity</a> Owner )<a class="headerlink" href="#weapon-createweapon-weapontype-type-entity-owner" title="Permanent link">⚓︎</a></h4>
+<p>Creates and returns a <a href="Weapon.html">Weapon</a> object. It is not automatically useable by <code>owner</code> and <code>Isaac.SetWeaponType</code> must be used in tandem.</p>
 <hr />
 <h3 aria-label="Functions" id="destroyweapon">DestroyWeapon ()<a class="headerlink" href="#destroyweapon" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-destroyweapon-weapon-weapon">void DestroyWeapon ( <a href="Weapon.html">Weapon</a> Weapon )<a class="headerlink" href="#void-destroyweapon-weapon-weapon" title="Permanent link">⚓︎</a></h4>
+<p>Destroys the provided <a href="Weapon.html">Weapon</a> object.</p>
 <hr />
 <h3 aria-label="Functions" id="drawline">DrawLine ()<a class="headerlink" href="#drawline" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-drawline-vector-startpos-vector-endpos-kcolor-startcolor-kcolor-endcolor-int-thickness">void DrawLine ( <a href="Vector.html">Vector</a> StartPos, <a href="Vector.html">Vector</a> EndPos, <a href="https://wofsauge.github.io/IsaacDocs/rep/KColor">KColor</a> StartColor, <a href="https://wofsauge.github.io/IsaacDocs/rep/KColor">KColor</a> EndColor, int Thickness )<a class="headerlink" href="#void-drawline-vector-startpos-vector-endpos-kcolor-startcolor-kcolor-endcolor-int-thickness" title="Permanent link">⚓︎</a></h4>
@@ -7144,7 +7164,7 @@
 <hr />
 <h3 aria-label="Functions" id="fillcompletionmarks">FillCompletionMarks ()<a class="headerlink" href="#fillcompletionmarks" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-fillcompletionmarks-playertype-character">void FillCompletionMarks ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> Character)<a class="headerlink" href="#void-fillcompletionmarks-playertype-character" title="Permanent link">⚓︎</a></h4>
-<p>Completes all completion marks for a given character. Supports both modded and vanilla characters. </p>
+<p>Completes all completion marks for a given character.</p>
 <hr />
 <h3 aria-label="Functions" id="findincapsule">FindInCapsule ()<a class="headerlink" href="#findincapsule" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="entity-findincapsule-capsule-capsule-entitypartitions-partitions-1"><a href="Entity.html">Entity</a>[] FindInCapsule ( <a href="Capsule.html">Capsule</a> Capsule, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/EntityPartition.html">EntityPartitions</a> Partitions = -1 )<a class="headerlink" href="#entity-findincapsule-capsule-capsule-entitypartitions-partitions-1" title="Permanent link">⚓︎</a></h4>
@@ -7163,11 +7183,11 @@
 <hr />
 <h3 aria-label="Functions" id="getcompletionmark">GetCompletionMark ()<a class="headerlink" href="#getcompletionmark" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getcompletionmark-playertype-character-completiontype-mark">int GetCompletionMark ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> Character, <a href="enums/CompletionType.html">CompletionType</a> Mark)<a class="headerlink" href="#int-getcompletionmark-playertype-character-completiontype-mark" title="Permanent link">⚓︎</a></h4>
-<p>Gets a completion mark value for a specific character. Supports both modded and vanilla characters. </p>
+<p>Gets a completion mark value for a specific character.</p>
 <hr />
 <h3 aria-label="Functions" id="getcompletionmarks">GetCompletionMarks ()<a class="headerlink" href="#getcompletionmarks" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="table-getcompletionmarks-playertype-character">table GetCompletionMarks ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> Character)<a class="headerlink" href="#table-getcompletionmarks-playertype-character" title="Permanent link">⚓︎</a></h4>
-<p>Returns a table containing all the marks for the character. Supports both modded and vanilla characters.</p>
+<p>Returns a table containing all the marks for the character.</p>
 <details class="- info">
 <summary>Table structure &amp; usage</summary>
 <ul>
@@ -7279,11 +7299,11 @@
 <hr />
 <h3 aria-label="Functions" id="setcompletionmark">SetCompletionMark ()<a class="headerlink" href="#setcompletionmark" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcompletionmark-playertype-character-completiontype-mark-int-value">void SetCompletionMark ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> Character, <a href="enums/CompletionType.html">CompletionType</a> Mark, int Value)<a class="headerlink" href="#void-setcompletionmark-playertype-character-completiontype-mark-int-value" title="Permanent link">⚓︎</a></h4>
-<p>Sets a completion mark of a character to match a specific value from <code>0</code> to <code>2</code>. Supports both modded and vanilla characters. </p>
+<p>Sets a completion mark of a character to match a specific value from <code>0</code> to <code>2</code>.</p>
 <hr />
 <h3 aria-label="Functions" id="setcompletionmarks">SetCompletionMarks ()<a class="headerlink" href="#setcompletionmarks" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcompletionmarks-table-marks">void SetCompletionMarks ( table Marks )<a class="headerlink" href="#void-setcompletionmarks-table-marks" title="Permanent link">⚓︎</a></h4>
-<p>Sets the completion marks of a character to match an input table. Supports both modded and vanilla characters. Requires a table containing all the marks for the character, getting it from <a href="Isaac.html#GetCompletionMarks">GetCompletionMarks</a> is adviced for convenience.</p>
+<p>Sets the completion marks of a character to match an input table. Requires a table containing all the marks for the character, getting it from <a href="Isaac.html#GetCompletionMarks">GetCompletionMarks</a> is advised for convenience.</p>
 <details class="- info">
 <summary>Table structure &amp; usage</summary>
 <ul>
@@ -7323,7 +7343,7 @@
 <hr />
 <h3 aria-label="Functions" id="triggerwindowresize">TriggerWindowResize ()<a class="headerlink" href="#triggerwindowresize" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-triggerwindowresize">void TriggerWindowResize ( )<a class="headerlink" href="#void-triggerwindowresize" title="Permanent link">⚓︎</a></h4>
-<p>Simulates a window resize, useful to refresh some option changes like <code>maxrender</code>.</p>
+<p>Simulates a window resize, useful to refresh some option changes like <code>MaxRenderScale</code>.</p>
 <hr />
 <h3 aria-label="Functions" id="worldtomenuposition">WorldToMenuPosition ()<a class="headerlink" href="#worldtomenuposition" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="vector-worldtomenuposition-mainmenu-menuid-vector-position"><a href="Vector.html">Vector</a> WorldToMenuPosition ( <a href="enums/MainMenuType.html">MainMenu</a> MenuId, <a href="Vector.html">Vector</a> Position )<a class="headerlink" href="#vector-worldtomenuposition-mainmenu-menuid-vector-position" title="Permanent link">⚓︎</a></h4>

@@ -3420,15 +3420,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#getdimension" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetDimension ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#getlerpcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       GetLerpColorModifier ()
@@ -6584,15 +6575,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#getdimension" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetDimension ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#getlerpcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       GetLerpColorModifier ()
@@ -6781,6 +6763,7 @@
 <hr />
 <h3 aria-label="Functions" id="devolveenemy">DevolveEnemy ()<a class="headerlink" href="#devolveenemy" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-devolveenemy-entity">void DevolveEnemy ( <a href="Entity.html">Entity</a> )<a class="headerlink" href="#void-devolveenemy-entity" title="Permanent link">⚓︎</a></h4>
+<p>Devolves an enemy, as if the item D10 was used on it.</p>
 <hr />
 <h3 aria-label="Functions" id="getchallengeparams">GetChallengeParams ()<a class="headerlink" href="#getchallengeparams" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="challengeparam-getchallengeparams"><a href="ChallengeParam.html">ChallengeParam</a> GetChallengeParams ( )<a class="headerlink" href="#challengeparam-getchallengeparams" title="Permanent link">⚓︎</a></h4>
@@ -6793,15 +6776,9 @@
 <h4 aria-label="Functions" class="copyable" id="int-getdebugflags">int GetDebugFlags ( )<a class="headerlink" href="#int-getdebugflags" title="Permanent link">⚓︎</a></h4>
 <p>Returns a <a href="enums/DebugFlag.html">DebugFlag</a> bitmask.</p>
 <hr />
-<h3 aria-label="Functions" id="getdimension">GetDimension ()<a class="headerlink" href="#getdimension" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="int-getdimension">int GetDimension ( )<a class="headerlink" href="#int-getdimension" title="Permanent link">⚓︎</a></h4>
-<hr />
 <h3 aria-label="Functions" id="getlerpcolormodifier">GetLerpColorModifier ()<a class="headerlink" href="#getlerpcolormodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="colormodifier-getlerpcolormodifier"><a href="ColorModifier.html">ColorModifier</a> GetLerpColorModifier ( )<a class="headerlink" href="#colormodifier-getlerpcolormodifier" title="Permanent link">⚓︎</a></h4>
-<details class="info" open="open">
-<summary>Info</summary>
-<p>This is formatted as the absolute rate of change (ie, all values are positive).</p>
-</details>
+<p>Returns the lerped color modifier. This is formatted as the absolute rate of change (ie, all values are positive).</p>
 <hr />
 <h3 aria-label="Functions" id="getpausemenustate">GetPauseMenuState ()<a class="headerlink" href="#getpausemenustate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="pausemenustates-getpausemenustate"><a href="enums/PauseMenuStates.html">PauseMenuStates</a> GetPauseMenuState ( )<a class="headerlink" href="#pausemenustates-getpausemenustate" title="Permanent link">⚓︎</a></h4>
@@ -6812,7 +6789,7 @@
 <hr />
 <h3 aria-label="Functions" id="gettargetcolormodifier">GetTargetColorModifier ()<a class="headerlink" href="#gettargetcolormodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="colormodifier-gettargetcolormodifier"><a href="ColorModifier.html">ColorModifier</a> GetTargetColorModifier ( )<a class="headerlink" href="#colormodifier-gettargetcolormodifier" title="Permanent link">⚓︎</a></h4>
-<p>If currently lerping between two <a href="ColorModifier.html">ColorModifier</a> states, returns the target state. Is otherwise the same as <a href="Game.html#getcurrentcolormodifier">GetCurrentColorModifier</a>. </p>
+<p>Returns the target ColorModifier. If currently lerping between two <a href="ColorModifier.html">ColorModifier</a> states, returns the target state. It is otherwise the same as <a href="Game.html#getcurrentcolormodifier">GetCurrentColorModifier</a>.</p>
 <hr />
 <h3 aria-label="Functions" id="iserased">IsErased ()<a class="headerlink" href="#iserased" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-iserased-entity-entity">boolean IsErased ( <a href="Entity.html">Entity</a> Entity )<a class="headerlink" href="#boolean-iserased-entity-entity" title="Permanent link">⚓︎</a></h4>
@@ -6821,9 +6798,11 @@
 <hr />
 <h3 aria-label="Functions" id="isgreedboss">IsGreedBoss ()<a class="headerlink" href="#isgreedboss" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isgreedboss">boolean IsGreedBoss ( )<a class="headerlink" href="#boolean-isgreedboss" title="Permanent link">⚓︎</a></h4>
+<p>Returns <code>true</code> if the next or current wave is a boss wave. Returns <code>false</code> otherwise or if not in Greed Mode.</p>
 <hr />
 <h3 aria-label="Functions" id="isgreedfinalboss">IsGreedFinalBoss ()<a class="headerlink" href="#isgreedfinalboss" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isgreedfinalboss">boolean IsGreedFinalBoss ( )<a class="headerlink" href="#boolean-isgreedfinalboss" title="Permanent link">⚓︎</a></h4>
+<p>Returns <code>true</code> if the next or current wave is the optional "nightmare" wave. Returns <code>false</code> otherwise or if not in Greed Mode.</p>
 <hr />
 <h3 aria-label="Functions" id="ishardmode">IsHardMode ()<a class="headerlink" href="#ishardmode" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-ishardmode">boolean IsHardMode ( )<a class="headerlink" href="#boolean-ishardmode" title="Permanent link">⚓︎</a></h4>
@@ -6835,6 +6814,7 @@
 <hr />
 <h3 aria-label="Functions" id="isrerun">IsRerun ()<a class="headerlink" href="#isrerun" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isrerun">boolean IsRerun ( )<a class="headerlink" href="#boolean-isrerun" title="Permanent link">⚓︎</a></h4>
+<p>Returns <code>true</code> if the current run is a rerun.</p>
 <hr />
 <h3 aria-label="Functions" id="setcolormodifier">SetColorModifier ()<a class="headerlink" href="#setcolormodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcolormodifier-colormodifier-colormodifier-boolean-lerp-true-float-rate-0015">void SetColorModifier ( <a href="ColorModifier.html">ColorModifier</a> ColorModifier, boolean Lerp = true, float Rate = 0.015 )<a class="headerlink" href="#void-setcolormodifier-colormodifier-colormodifier-boolean-lerp-true-float-rate-0015" title="Permanent link">⚓︎</a></h4>

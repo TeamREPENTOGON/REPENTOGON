@@ -9620,6 +9620,10 @@
 <h3 aria-label="Functions" id="addactivecharge">AddActiveCharge ()<a class="headerlink" href="#addactivecharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-addactivecharge-int-charge-activeslot-slot-boolean-flashhud-true-boolean-overcharge-false-boolean-force-false">int AddActiveCharge ( int Charge, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">ActiveSlot</a> Slot, boolean FlashHUD = true, boolean Overcharge = false, boolean Force = false )<a class="headerlink" href="#int-addactivecharge-int-charge-activeslot-slot-boolean-flashhud-true-boolean-overcharge-false-boolean-force-false" title="Permanent link">⚓︎</a></h4>
 <p>Returns the true amount of charge added, which may have been capped by the targeted item's MaxCharge.</p>
+<details class="- info">
+<summary>Info</summary>
+<p><code>FlashHUD</code> appears to be redundant. Chargebar flashes regardless of using <code>true</code> or <code>false</code>.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="addboneorbital">AddBoneOrbital ()<a class="headerlink" href="#addboneorbital" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-addboneorbital-vector-position">void AddBoneOrbital ( <a href="Vector.html">Vector</a> Position )<a class="headerlink" href="#void-addboneorbital-vector-position" title="Permanent link">⚓︎</a></h4>
@@ -9716,23 +9720,25 @@
 <hr />
 <h3 aria-label="Functions" id="getbagofcraftingslot">GetBagOfCraftingSlot ()<a class="headerlink" href="#getbagofcraftingslot" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="bagofcraftingpickup-getbagofcraftingslot-int-slotid"><a href="enums/BagOfCraftingPickup.html">BagOfCraftingPickup</a> GetBagOfCraftingSlot ( int SlotID )<a class="headerlink" href="#bagofcraftingpickup-getbagofcraftingslot-int-slotid" title="Permanent link">⚓︎</a></h4>
-<p>Gets the current content of the bag in the given Slot ID.</p>
+<p>Gets the current content of the bag in the given <code>SlotID</code>.</p>
 <hr />
 <h3 aria-label="Functions" id="getbladdercharge">GetBladderCharge ()<a class="headerlink" href="#getbladdercharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getbladdercharge">int GetBladderCharge ( )<a class="headerlink" href="#int-getbladdercharge" title="Permanent link">⚓︎</a></h4>
+<p>Returns the current charge for when the player stops shooting and charges the Kidney Stone item.</p>
 <hr />
 <h3 aria-label="Functions" id="getbodymovedirection">GetBodyMoveDirection ()<a class="headerlink" href="#getbodymovedirection" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="vector-getbodymovedirection"><a href="Vector.html">Vector</a> GetBodyMoveDirection ( )<a class="headerlink" href="#vector-getbodymovedirection" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="getcambionconceptionstate">GetCambionConceptionState ()<a class="headerlink" href="#getcambionconceptionstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getcambionconceptionstate">int GetCambionConceptionState ( )<a class="headerlink" href="#int-getcambionconceptionstate" title="Permanent link">⚓︎</a></h4>
+<p>Returns how many times the player has taken damage with the Cambion Conception item.</p>
 <hr />
 <h3 aria-label="Functions" id="getcambionpregnancylevel">GetCambionPregnancyLevel ()<a class="headerlink" href="#getcambionpregnancylevel" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getcambionpregnancylevel">int GetCambionPregnancyLevel ( )<a class="headerlink" href="#int-getcambionpregnancylevel" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="getcollectibleslist">GetCollectiblesList ()<a class="headerlink" href="#getcollectibleslist" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="table-getcollectibleslist">table GetCollectiblesList ( )<a class="headerlink" href="#table-getcollectibleslist" title="Permanent link">⚓︎</a></h4>
-<p>Returns a table with the amount of each collectible the player has without counting innate items.</p>
+<p>Returns a table with the amount of each collectible the player has, without counting innate items.</p>
 <details class="- example">
 <summary>Example Code</summary>
 <p>This code prints how many sad onions the player has.</p>
@@ -9804,24 +9810,39 @@
 <hr />
 <h3 aria-label="Functions" id="getdeathanimname">GetDeathAnimName ()<a class="headerlink" href="#getdeathanimname" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="string-getdeathanimname">string GetDeathAnimName ( )<a class="headerlink" href="#string-getdeathanimname" title="Permanent link">⚓︎</a></h4>
+<p>Returns the name of the player's death animation.</p>
+<details class="info" open="open">
+<summary>Return info</summary>
+<p>This can return the following strings:</p>
+<ul>
+<li><code>Death</code> - The regular death animation name.</li>
+<li><code>LostDeath</code> - When playing as the Lost, under the Lost Curse, playing as Forgotten's Soul, or in Tainted Jacob's Ghost form.</li>
+</ul>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getedendamage">GetEdenDamage ()<a class="headerlink" href="#getedendamage" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="float-getedendamage">float GetEdenDamage ( )<a class="headerlink" href="#float-getedendamage" title="Permanent link">⚓︎</a></h4>
+<p>Returns the offset of the player's damage stat for Eden's random stats.</p>
 <hr />
 <h3 aria-label="Functions" id="getedenfiredelay">GetEdenFireDelay ()<a class="headerlink" href="#getedenfiredelay" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="float-getedenfiredelay">float GetEdenFireDelay ( )<a class="headerlink" href="#float-getedenfiredelay" title="Permanent link">⚓︎</a></h4>
+<p>Returns the offset of the player's fire delay stat for Eden's random stats.</p>
 <hr />
 <h3 aria-label="Functions" id="getedenluck">GetEdenLuck ()<a class="headerlink" href="#getedenluck" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="float-getedenluck">float GetEdenLuck ( )<a class="headerlink" href="#float-getedenluck" title="Permanent link">⚓︎</a></h4>
+<p>Returns the offset of the player's luck stat for Eden's random stats.</p>
 <hr />
 <h3 aria-label="Functions" id="getedenrange">GetEdenRange ()<a class="headerlink" href="#getedenrange" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="float-getedenrange">float GetEdenRange ( )<a class="headerlink" href="#float-getedenrange" title="Permanent link">⚓︎</a></h4>
+<p>Returns the offset of the player's range stat for Eden's random stats.</p>
 <hr />
 <h3 aria-label="Functions" id="getedenshotspeed">GetEdenShotSpeed ()<a class="headerlink" href="#getedenshotspeed" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="float-getedenshotspeed">float GetEdenShotSpeed ( )<a class="headerlink" href="#float-getedenshotspeed" title="Permanent link">⚓︎</a></h4>
+<p>Returns the offset of the player's shot speed stat for Eden's random stats.</p>
 <hr />
 <h3 aria-label="Functions" id="getedenspeed">GetEdenSpeed ()<a class="headerlink" href="#getedenspeed" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="float-getedenspeed">float GetEdenSpeed ( )<a class="headerlink" href="#float-getedenspeed" title="Permanent link">⚓︎</a></h4>
+<p>Returns the offset of the player's speed stat for Eden's random stats.</p>
 <hr />
 <h3 aria-label="Functions" id="getenterposition">GetEnterPosition ()<a class="headerlink" href="#getenterposition" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="vector-getenterposition"><a href="Vector.html">Vector</a> GetEnterPosition ( )<a class="headerlink" href="#vector-getenterposition" title="Permanent link">⚓︎</a></h4>
@@ -9834,6 +9855,7 @@
 <hr />
 <h3 aria-label="Functions" id="getevesumptoriumcharge">GetEveSumptoriumCharge ()<a class="headerlink" href="#getevesumptoriumcharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getevesumptoriumcharge">int GetEveSumptoriumCharge ( )<a class="headerlink" href="#int-getevesumptoriumcharge" title="Permanent link">⚓︎</a></h4>
+<p>Returns the current charge of Tainted Eve's innate Sumptorium ability.</p>
 <hr />
 <h3 aria-label="Functions" id="getfiredelaymodifier">GetFireDelayModifier ()<a class="headerlink" href="#getfiredelaymodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getfiredelaymodifier">int GetFireDelayModifier ( )<a class="headerlink" href="#int-getfiredelaymodifier" title="Permanent link">⚓︎</a></h4>
@@ -9875,13 +9897,14 @@ Returns <code>nil</code> if no entity is currently being held.</p>
 <hr />
 <h3 aria-label="Functions" id="getheldsprite">GetHeldSprite ()<a class="headerlink" href="#getheldsprite" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="sprite-getheldsprite"><a href="Sprite.html">Sprite</a> GetHeldSprite ( )<a class="headerlink" href="#sprite-getheldsprite" title="Permanent link">⚓︎</a></h4>
-<p>Gets the Sprite object used for when the player is doing an animation that involves holding a sprite over their head, such as active item usage.</p>
+<p>Gets the <a href="Sprite.html">Sprite</a> object used for when the player is doing an animation that involves holding a sprite over their head, such as active item usage.</p>
 <hr />
 <h3 aria-label="Functions" id="gethistory">GetHistory ()<a class="headerlink" href="#gethistory" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="history-gethistory"><a href="History.html">History</a> GetHistory ( )<a class="headerlink" href="#history-gethistory" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="getimmaculateconceptionstate">GetImmaculateConceptionState ()<a class="headerlink" href="#getimmaculateconceptionstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getimmaculateconceptionstate">int GetImmaculateConceptionState ( )<a class="headerlink" href="#int-getimmaculateconceptionstate" title="Permanent link">⚓︎</a></h4>
+<p>Returns how many hearts have been collected with the Immaculate Conception item.</p>
 <hr />
 <h3 aria-label="Functions" id="getkeeperssackbonus">GetKeepersSackBonus ()<a class="headerlink" href="#getkeeperssackbonus" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getkeeperssackbonus">int GetKeepersSackBonus ( )<a class="headerlink" href="#int-getkeeperssackbonus" title="Permanent link">⚓︎</a></h4>
@@ -9896,18 +9919,20 @@ Returns <code>nil</code> if no entity is currently being held.</p>
 <hr />
 <h3 aria-label="Functions" id="getmaggyswingcooldown">GetMaggySwingCooldown ()<a class="headerlink" href="#getmaggyswingcooldown" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getmaggyswingcooldown">int GetMaggySwingCooldown ( )<a class="headerlink" href="#int-getmaggyswingcooldown" title="Permanent link">⚓︎</a></h4>
-<p>Used for Tainted Magdalene's hugging attack.</p>
+<p>Returns the amount of frames left until Tainted Magdalene's swing attack from being damaged can be used again. Returns <code>0</code> if the player is not Tainted Magdalene.</p>
 <hr />
 <h3 aria-label="Functions" id="getmarkedtarget">GetMarkedTarget ()<a class="headerlink" href="#getmarkedtarget" title="Permanent link">⚓︎</a></h3>
 <h4 :=":" aria-label="Functions" class="copyable" id="entityeffect-getmarkedtarget"><a href="https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html">EntityEffect</a> GetMarkedTarget ( )<a class="headerlink" href="#entityeffect-getmarkedtarget" title="Permanent link">⚓︎</a></h4>
 <p>Returns the entity effect representing the target of the <a href="https://bindingofisaacrebirth.fandom.com/wiki/Marked">Marked</a> item. 
-If the target is not displayed on the ground, this function returns nil.</p>
+If the target is not displayed on the ground, this function returns <code>nil</code>.</p>
 <hr />
 <h3 aria-label="Functions" id="getmaxbladdercharge">GetMaxBladderCharge ()<a class="headerlink" href="#getmaxbladdercharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getmaxbladdercharge">int GetMaxBladderCharge ( )<a class="headerlink" href="#int-getmaxbladdercharge" title="Permanent link">⚓︎</a></h4>
+<p>Returns the maximum charge for when the player stops shooting and charges the Kidney Stone item.</p>
 <hr />
 <h3 aria-label="Functions" id="getmaxpeeburstcooldown">GetMaxPeeBurstCooldown ()<a class="headerlink" href="#getmaxpeeburstcooldown" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getmaxpeeburstcooldown">int GetMaxPeeBurstCooldown ( )<a class="headerlink" href="#int-getmaxpeeburstcooldown" title="Permanent link">⚓︎</a></h4>
+<p>Returns the maximum attack duration of the Kidney Stone item.</p>
 <hr />
 <h3 aria-label="Functions" id="getmaxpocketitems">GetMaxPocketItems ()<a class="headerlink" href="#getmaxpocketitems" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getmaxpocketitems">int GetMaxPocketItems ( )<a class="headerlink" href="#int-getmaxpocketitems" title="Permanent link">⚓︎</a></h4>
@@ -9928,16 +9953,19 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="getplayerformcounter">GetPlayerFormCounter ()<a class="headerlink" href="#getplayerformcounter" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getplayerformcounter-playerform-playerformid">int GetPlayerFormCounter ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerForm.html">PlayerForm</a> PlayerFormID )<a class="headerlink" href="#int-getplayerformcounter-playerform-playerformid" title="Permanent link">⚓︎</a></h4>
+<p>Returns the amount of collectibles the player has tied to the specified transformation.</p>
 <hr />
 <h3 aria-label="Functions" id="getponycharge">GetPonyCharge ()<a class="headerlink" href="#getponycharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getponycharge">int GetPonyCharge ( )<a class="headerlink" href="#int-getponycharge" title="Permanent link">⚓︎</a></h4>
+<p>Returns the amount of frames left until the charging effect from the A Pony or White Pony item deactivates.</p>
 <hr />
 <h3 aria-label="Functions" id="getpuritystate">GetPurityState ()<a class="headerlink" href="#getpuritystate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="puritystate-getpuritystate"><a href="enums/PurityState.html">PurityState</a> GetPurityState ( )<a class="headerlink" href="#puritystate-getpuritystate" title="Permanent link">⚓︎</a></h4>
-<p>Returns the state in which the <a href="https://bindingofisaacrebirth.fandom.com/wiki/Purity">Purity</a> item effect currently is. </p>
+<p>Returns the state in which the <a href="https://bindingofisaacrebirth.fandom.com/wiki/Purity">Purity</a> item effect currently is. Returns <code>PurityState.BLUE</code> if the player does not have the Purity collectible.</p>
 <hr />
 <h3 aria-label="Functions" id="getredstewbonusduration">GetRedStewBonusDuration ()<a class="headerlink" href="#getredstewbonusduration" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getredstewbonusduration">int GetRedStewBonusDuration ( )<a class="headerlink" href="#int-getredstewbonusduration" title="Permanent link">⚓︎</a></h4>
+<p>Returns the frames left until the damage bonus from Red Stew expires.</p>
 <hr />
 <h3 aria-label="Functions" id="getshotspeedmodifier">GetShotSpeedModifier ()<a class="headerlink" href="#getshotspeedmodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getshotspeedmodifier">int GetShotSpeedModifier ( )<a class="headerlink" href="#int-getshotspeedmodifier" title="Permanent link">⚓︎</a></h4>
@@ -9984,19 +10012,37 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="getweapon">GetWeapon ()<a class="headerlink" href="#getweapon" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="weapon-getweapon-int-slot"><a href="Weapon.html">Weapon</a> GetWeapon ( int Slot )<a class="headerlink" href="#weapon-getweapon-int-slot" title="Permanent link">⚓︎</a></h4>
-<p>Slot needs to be between <code>0</code> and <code>4</code>.</p>
+<p>Returns the Weapon object in the corresponding slot, or <code>nil</code> if no Weapon can be found. Slot needs to be between <code>0</code> and <code>4</code>.</p>
+<details class="- info">
+<summary>Info</summary>
+<p>Weapon slots and their descriptions:</p>
+<ul>
+<li><code>0</code> - Backup Weapon such as Notched Axe and Urn of Souls.</li>
+<li><code>1</code> - Primary Weapon.</li>
+<li><code>2</code> - Additional Weapon. Few instances of this exist in the vanilla game, but it can be populated by mods.</li>
+<li><code>3</code> - Additional Weapon.</li>
+<li><code>4</code> - Additional Weapon.</li>
+</ul>
+<p>Always check for <code>nil</code>, even for slot <code>1</code> as it can be deleted by mods via <a href="Isaac.html#destroyweapon">Isaac.DestroyWeapon()</a>.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getweaponmodifiers">GetWeaponModifiers ()<a class="headerlink" href="#getweaponmodifiers" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getweaponmodifiers">int GetWeaponModifiers ( )<a class="headerlink" href="#int-getweaponmodifiers" title="Permanent link">⚓︎</a></h4>
+<p>Returns a bitmask of <a href="enums/WeaponModifier.html">WeaponModifiers</a>.</p>
 <hr />
 <h3 aria-label="Functions" id="getwildcarditem">GetWildCardItem ()<a class="headerlink" href="#getwildcarditem" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getwildcarditem">int GetWildCardItem ( )<a class="headerlink" href="#int-getwildcarditem" title="Permanent link">⚓︎</a></h4>
+<p>Returns the item that was last used by the player and would be activated again upon using Wild Card.</p>
+<p>If the player used an active item, its <code>CollectibleType</code> is returned. If the player used a consumable, its variant is returned. If the player used ? Mark Card, returns <code>1</code>. If no active item had ever been used by the player before, turns <code>0</code>.</p>
 <hr />
 <h3 aria-label="Functions" id="getwildcarditemtype">GetWildCardItemType ()<a class="headerlink" href="#getwildcarditemtype" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="pocketitemtype-getwildcarditemtype"><a href="enums/PocketItemType.html">PocketItemType</a> GetWildCardItemType ( )<a class="headerlink" href="#pocketitemtype-getwildcarditemtype" title="Permanent link">⚓︎</a></h4>
+<p>Returns the type of item that was last used by the player and would be activated again upon using Wild Card.</p>
+<p>If the player used a consumable (including ? Mark Card), returns <code>ItemType.ITEM_PASSIVE</code>. If no active item had been used by the player before, returns <code>255</code>.</p>
 <hr />
 <h3 aria-label="Functions" id="getwispcollectibleslist">GetWispCollectiblesList ()<a class="headerlink" href="#getwispcollectibleslist" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="table-getwispcollectibleslist">table GetWispCollectiblesList ( )<a class="headerlink" href="#table-getwispcollectibleslist" title="Permanent link">⚓︎</a></h4>
+<p>Returns a table of <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleTypes</a> corresponding to the item wisps the player has.</p>
 <hr />
 <h3 aria-label="Functions" id="hasinstantdeathcurse">HasInstantDeathCurse ()<a class="headerlink" href="#hasinstantdeathcurse" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-hasinstantdeathcurse">boolean HasInstantDeathCurse ( )<a class="headerlink" href="#boolean-hasinstantdeathcurse" title="Permanent link">⚓︎</a></h4>
@@ -10007,10 +10053,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="incrementplayerformcounter">IncrementPlayerFormCounter ()<a class="headerlink" href="#incrementplayerformcounter" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-incrementplayerformcounter-playerform-form-int-count">void IncrementPlayerFormCounter ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerForm.html">PlayerForm</a> Form, int Count )<a class="headerlink" href="#void-incrementplayerformcounter-playerform-form-int-count" title="Permanent link">⚓︎</a></h4>
-<details class="info" open="open">
-<summary>Info</summary>
-<p><code>Count</code> can be negative to decrement the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerForm.html">PlayerForm</a>.</p>
-</details>
+<p>Increases or decreases the counter towards one of the player's transformations. <code>Count</code> can be negative to decrement the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerForm.html">PlayerForm</a>.</p>
 <hr />
 <h3 aria-label="Functions" id="initpostlevelinitstats">InitPostLevelInitStats ()<a class="headerlink" href="#initpostlevelinitstats" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-initpostlevelinitstats">void InitPostLevelInitStats ( )<a class="headerlink" href="#void-initpostlevelinitstats" title="Permanent link">⚓︎</a></h4>
@@ -10018,7 +10061,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="inittwin">InitTwin ()<a class="headerlink" href="#inittwin" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="entityplayer-inittwin-playertype-playertype"><a href="EntityPlayer.html">EntityPlayer</a> InitTwin ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html">PlayerType</a> PlayerType )<a class="headerlink" href="#entityplayer-inittwin-playertype-playertype" title="Permanent link">⚓︎</a></h4>
-<p>I believe this is used by J&amp;E, Strawman etc.</p>
+<p>Initializes a new player that is controlled by the player's same controller.</p>
 <details class="bug" open="open">
 <summary>Bug</summary>
 <p>The twin player will desync from its main twin on save and continue. This softlocks the game in singleplayer, as the game prompts for a controller.</p>
@@ -10027,22 +10070,34 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="iscollectibleanimfinished">IsCollectibleAnimFinished ()<a class="headerlink" href="#iscollectibleanimfinished" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-iscollectibleanimfinished-collectibletype-collectible-string-animation">boolean IsCollectibleAnimFinished ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, string Animation )<a class="headerlink" href="#boolean-iscollectibleanimfinished-collectibletype-collectible-string-animation" title="Permanent link">⚓︎</a></h4>
+<p>Returns true if the animation associated with the collectible is visible.</p>
 <hr />
 <h3 aria-label="Functions" id="iscollectiblecostumevisible">IsCollectibleCostumeVisible ()<a class="headerlink" href="#iscollectiblecostumevisible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-iscollectiblecostumevisible-collectibletype-collectible-int-playerspritelayerid">boolean IsCollectibleCostumeVisible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, int PlayerSpriteLayerID )<a class="headerlink" href="#boolean-iscollectiblecostumevisible-collectibletype-collectible-int-playerspritelayerid" title="Permanent link">⚓︎</a></h4>
 <h4 aria-label="Functions" class="copyable" id="boolean-iscollectiblecostumevisible-collectibletype-collectible-string-playerspritelayername">boolean IsCollectibleCostumeVisible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, string PlayerSpriteLayerName )<a class="headerlink" href="#boolean-iscollectiblecostumevisible-collectibletype-collectible-string-playerspritelayername" title="Permanent link">⚓︎</a></h4>
+<p>Returns <code>true</code> if the costume associated with the collectible is visible.</p>
 <hr />
 <h3 aria-label="Functions" id="isentityvalidtarget">IsEntityValidTarget ()<a class="headerlink" href="#isentityvalidtarget" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isentityvalidtarget-entity-entity">boolean IsEntityValidTarget ( <a href="Entity.html">Entity</a> Entity )<a class="headerlink" href="#boolean-isentityvalidtarget-entity-entity" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="isfootstepframe">IsFootstepFrame ()<a class="headerlink" href="#isfootstepframe" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isfootstepframe-int-foot-1">boolean IsFootstepFrame ( int Foot = -1 )<a class="headerlink" href="#boolean-isfootstepframe-int-foot-1" title="Permanent link">⚓︎</a></h4>
+<details class="info" open="open">
+<summary>Info</summary>
+<ul>
+<li><code>-1</code> - Returns true every 12 frames.</li>
+<li><code>0</code> - Returns true every 24 frames.</li>
+<li><code>1</code> - Always false.</li>
+</ul>
+</details>
 <hr />
 <h3 aria-label="Functions" id="isheadless">IsHeadless ()<a class="headerlink" href="#isheadless" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isheadless">boolean IsHeadless ( )<a class="headerlink" href="#boolean-isheadless" title="Permanent link">⚓︎</a></h4>
+<p>Returns <code>true</code> is the player is headless due to collectibles such as Guillotine, The Intruder, Scissors, and Decap Attack.</p>
 <hr />
 <h3 aria-label="Functions" id="ishologram">IsHologram ()<a class="headerlink" href="#ishologram" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-ishologram">boolean IsHologram ( )<a class="headerlink" href="#boolean-ishologram" title="Permanent link">⚓︎</a></h4>
+<p>Returns <code>true</code> if the player is the non-active form of Tainted Lazarus with Birthright.</p>
 <hr />
 <h3 aria-label="Functions" id="isinvisible">IsInvisible ()<a class="headerlink" href="#isinvisible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isinvisible">boolean IsInvisible ( )<a class="headerlink" href="#boolean-isinvisible" title="Permanent link">⚓︎</a></h4>
@@ -10053,6 +10108,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="islocalplayer">IsLocalPlayer ()<a class="headerlink" href="#islocalplayer" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-islocalplayer">boolean IsLocalPlayer ( )<a class="headerlink" href="#boolean-islocalplayer" title="Permanent link">⚓︎</a></h4>
+<p>For online play. Returns <code>true</code> if you're a local player, <code>false</code> otherwise.</p>
 <hr />
 <h3 aria-label="Functions" id="isnullitemcostumevisible">IsNullItemCostumeVisible ()<a class="headerlink" href="#isnullitemcostumevisible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isnullitemcostumevisible-int-nullitem-int-layerid-0">boolean IsNullItemCostumeVisible ( int nullItem, int layerID = 0 )<a class="headerlink" href="#boolean-isnullitemcostumevisible-int-nullitem-int-layerid-0" title="Permanent link">⚓︎</a></h4>
@@ -10067,25 +10123,30 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="morphtocoopghost">MorphToCoopGhost ()<a class="headerlink" href="#morphtocoopghost" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-morphtocoopghost">void MorphToCoopGhost ( )<a class="headerlink" href="#void-morphtocoopghost" title="Permanent link">⚓︎</a></h4>
+<p>Turns the player into a co-op ghost.</p>
 <hr />
 <h3 aria-label="Functions" id="playcollectibleanim">PlayCollectibleAnim ()<a class="headerlink" href="#playcollectibleanim" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-playcollectibleanim-collectibletype-collectible-boolean-checkbodylayers-string-animationname-int-frame-1">void PlayCollectibleAnim ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, boolean CheckBodyLayers, string AnimationName, int Frame = -1 )<a class="headerlink" href="#void-playcollectibleanim-collectibletype-collectible-boolean-checkbodylayers-string-animationname-int-frame-1" title="Permanent link">⚓︎</a></h4>
+<p>Plays an animation tied to the provided collectible.</p>
 <hr />
 <h3 aria-label="Functions" id="playdelayedsfx">PlayDelayedSFX ()<a class="headerlink" href="#playdelayedsfx" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-playdelayedsfx-soundeffect-id-int-sounddelay-0-int-framedelay-2-float-volume-10">void PlayDelayedSFX ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">SoundEffect</a> ID, int SoundDelay = 0, int FrameDelay = 2, float Volume = 1.0 )<a class="headerlink" href="#void-playdelayedsfx-soundeffect-id-int-sounddelay-0-int-framedelay-2-float-volume-10" title="Permanent link">⚓︎</a></h4>
+<p>Plays a sound effect after a delay.</p>
 <hr />
 <h3 aria-label="Functions" id="removecollectiblebyhistoryindex">RemoveCollectibleByHistoryIndex ()<a class="headerlink" href="#removecollectiblebyhistoryindex" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-removecollectiblebyhistoryindex-int-index">void RemoveCollectibleByHistoryIndex ( int Index )<a class="headerlink" href="#void-removecollectiblebyhistoryindex-int-index" title="Permanent link">⚓︎</a></h4>
+<p>Removes the collectible from the player associated with the specified history index.</p>
 <hr />
 <h3 aria-label="Functions" id="removepocketitem">RemovePocketItem ()<a class="headerlink" href="#removepocketitem" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-removepocketitem-activeslot-slot">void RemovePocketItem ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">ActiveSlot</a> Slot )<a class="headerlink" href="#void-removepocketitem-activeslot-slot" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="removepoopspell">RemovePoopSpell ()<a class="headerlink" href="#removepoopspell" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-removepoopspell-int-position-0">void RemovePoopSpell ( int Position = 0 )<a class="headerlink" href="#void-removepoopspell-int-position-0" title="Permanent link">⚓︎</a></h4>
-<p>Removes the poop spell from the specified queue position and shifts all spells after it forward to fill the space. A new spell is randomly picked to fill the last position.</p>
+<p>Removes the poop spell from the specified queue position and shifts all spells after it forward to fill the space. A new spell is randomly picked to fill the last position. Poop spells are only used by Tainted ???.</p>
 <hr />
 <h3 aria-label="Functions" id="rerollallcollectibles">RerollAllCollectibles ()<a class="headerlink" href="#rerollallcollectibles" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-rerollallcollectibles-rng-rng-boolean-includeactiveitems">void RerollAllCollectibles ( <a href="RNG.html">RNG</a> rng, boolean includeActiveItems )<a class="headerlink" href="#void-rerollallcollectibles-rng-rng-boolean-includeactiveitems" title="Permanent link">⚓︎</a></h4>
+<p>Rerolls all of the player's collectibles.</p>
 <hr />
 <h3 aria-label="Functions" id="resetplayer">ResetPlayer ()<a class="headerlink" href="#resetplayer" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-resetplayer">void ResetPlayer ( )<a class="headerlink" href="#void-resetplayer" title="Permanent link">⚓︎</a></h4>
@@ -10100,6 +10161,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <h3 aria-label="Functions" id="salvagecollectible">SalvageCollectible ()<a class="headerlink" href="#salvagecollectible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-salvagecollectible-entitypickup-pickup-rng-rng-pickupdroprng-itempooltype-pool-itempooltypepool_null">void SalvageCollectible ( <a href="EntityPickup.html">EntityPickup</a> Pickup, <a href="RNG.html">RNG</a> rng = PickupDropRNG, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html">ItemPoolType</a> Pool = ItemPoolType.POOL_NULL)<a class="headerlink" href="#void-salvagecollectible-entitypickup-pickup-rng-rng-pickupdroprng-itempooltype-pool-itempooltypepool_null" title="Permanent link">⚓︎</a></h4>
 <h4 aria-label="Functions" class="copyable" id="void-salvagecollectible-collectibletype-collectible-vector-position-playerposition-rng-rng-playerdroprng-itempooltype-pool-itempooltypepool_null">void SalvageCollectible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, <a href="Vector.html">Vector</a> position = playerPosition, <a href="RNG.html">RNG</a> rng = PlayerDropRNG, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html">ItemPoolType</a> Pool = ItemPoolType.POOL_NULL )<a class="headerlink" href="#void-salvagecollectible-collectibletype-collectible-vector-position-playerposition-rng-rng-playerdroprng-itempooltype-pool-itempooltypepool_null" title="Permanent link">⚓︎</a></h4>
+<p>Produces a random quantity of various pickups, similar to Tainted Cain's ability.</p>
 <details class="info" open="open">
 <summary>Info</summary>
 <p>The provided <a href="EntityPickup.html">EntityPickup</a> will be removed by this function. Use the override to avoid this.</p>
@@ -10114,9 +10176,11 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="setbagofcraftingoutput">SetBagOfCraftingOutput ()<a class="headerlink" href="#setbagofcraftingoutput" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setbagofcraftingoutput-collectibletype-collectible">void SetBagOfCraftingOutput ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible )<a class="headerlink" href="#void-setbagofcraftingoutput-collectibletype-collectible" title="Permanent link">⚓︎</a></h4>
+<p>Sets the output of the player's Bag of Crafting to the specified collectible.</p>
 <hr />
 <h3 aria-label="Functions" id="setbagofcraftingslot">SetBagOfCraftingSlot ()<a class="headerlink" href="#setbagofcraftingslot" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-setbagofcraftingslot-int-slotid-int-pickupid">void SetBagOfCraftingSlot ( int SlotID, int PickupID )<a class="headerlink" href="#void-setbagofcraftingslot-int-slotid-int-pickupid" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="void-setbagofcraftingslot-int-slotid-bagofcraftingpickup-pickupid">void SetBagOfCraftingSlot ( int SlotID, <a href="enums/BagOfCraftingPickup.html">BagOfCraftingPickup</a> PickupID )<a class="headerlink" href="#void-setbagofcraftingslot-int-slotid-bagofcraftingpickup-pickupid" title="Permanent link">⚓︎</a></h4>
+<p>Sets the specified slot in the player's Bag of Crafting to the specified pickup.</p>
 <hr />
 <h3 aria-label="Functions" id="setbladdercharge">SetBladderCharge ()<a class="headerlink" href="#setbladdercharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setbladdercharge-int-charge">void SetBladderCharge ( int Charge )<a class="headerlink" href="#void-setbladdercharge-int-charge" title="Permanent link">⚓︎</a></h4>
@@ -10128,6 +10192,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="setcambionconceptionstate">SetCambionConceptionState ()<a class="headerlink" href="#setcambionconceptionstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcambionconceptionstate-int-state">void SetCambionConceptionState ( int State )<a class="headerlink" href="#void-setcambionconceptionstate-int-state" title="Permanent link">⚓︎</a></h4>
+<p>Sets how much damage has been taken for the Cambion Conception item.</p>
 <hr />
 <h3 aria-label="Functions" id="setcanshoot">SetCanShoot ()<a class="headerlink" href="#setcanshoot" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-setcanshoot-boolean-canshoot">boolean SetCanShoot ( boolean CanShoot )<a class="headerlink" href="#boolean-setcanshoot-boolean-canshoot" title="Permanent link">⚓︎</a></h4>
@@ -10135,74 +10200,98 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="setcontrollerindex">SetControllerIndex ()<a class="headerlink" href="#setcontrollerindex" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcontrollerindex-int-idx">void SetControllerIndex ( int Idx )<a class="headerlink" href="#void-setcontrollerindex-int-idx" title="Permanent link">⚓︎</a></h4>
+<p>Changes the player's controller index.</p>
 <hr />
 <h3 aria-label="Functions" id="setdamagemodifier">SetDamageModifier ()<a class="headerlink" href="#setdamagemodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setdamagemodifier-int-modifier">void SetDamageModifier ( int Modifier )<a class="headerlink" href="#void-setdamagemodifier-int-modifier" title="Permanent link">⚓︎</a></h4>
+<p>For Experimental Treatement, set to <code>-1</code>, <code>0</code> or <code>1</code> to adjust the multiplier applied to the stat.</p>
 <hr />
 <h3 aria-label="Functions" id="setedendamage">SetEdenDamage ()<a class="headerlink" href="#setedendamage" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setedendamage-float-value">void SetEdenDamage ( float Value )<a class="headerlink" href="#void-setedendamage-float-value" title="Permanent link">⚓︎</a></h4>
+<p>Sets the offset of the player's damage stat for Eden's random stats. Has no effect on players that aren't Eden or Tainted Eden.</p>
 <hr />
 <h3 aria-label="Functions" id="setedenfiredelay">SetEdenFireDelay ()<a class="headerlink" href="#setedenfiredelay" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setedenfiredelay-float-value">void SetEdenFireDelay ( float Value )<a class="headerlink" href="#void-setedenfiredelay-float-value" title="Permanent link">⚓︎</a></h4>
+<p>Sets the offset of the player's fire delay stat for Eden's random stats. Has no effect on players that aren't Eden or Tainted Eden.</p>
 <hr />
 <h3 aria-label="Functions" id="setedenluck">SetEdenLuck ()<a class="headerlink" href="#setedenluck" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setedenluck-float-value">void SetEdenLuck ( float Value )<a class="headerlink" href="#void-setedenluck-float-value" title="Permanent link">⚓︎</a></h4>
+<p>Sets the offset of the player's luck stat for Eden's random stats. Has no effect on players that aren't Eden or Tainted Eden.</p>
 <hr />
 <h3 aria-label="Functions" id="setedenrange">SetEdenRange ()<a class="headerlink" href="#setedenrange" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setedenrange-float-value">void SetEdenRange ( float Value )<a class="headerlink" href="#void-setedenrange-float-value" title="Permanent link">⚓︎</a></h4>
+<p>Sets the offset of the player's range stat for Eden's random stats. Has no effect on players that aren't Eden or Tainted Eden.</p>
 <hr />
 <h3 aria-label="Functions" id="setedenshotspeed">SetEdenShotSpeed ()<a class="headerlink" href="#setedenshotspeed" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setedenshotspeed-float-value">void SetEdenShotSpeed ( float Value )<a class="headerlink" href="#void-setedenshotspeed-float-value" title="Permanent link">⚓︎</a></h4>
+<p>Sets the offset of the player's shot speed stat for Eden's random stats. Has no effect on players that aren't Eden or Tainted Eden.</p>
 <hr />
 <h3 aria-label="Functions" id="setedenspeed">SetEdenSpeed ()<a class="headerlink" href="#setedenspeed" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setedenspeed-float-value">void SetEdenSpeed ( float Value )<a class="headerlink" href="#void-setedenspeed-float-value" title="Permanent link">⚓︎</a></h4>
+<p>Sets the offset of the player's speed stat for Eden's random stats. Has no effect on players that aren't Eden or Tainted Eden.</p>
 <hr />
 <h3 aria-label="Functions" id="setevesumptoriumcharge">SetEveSumptoriumCharge ()<a class="headerlink" href="#setevesumptoriumcharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setevesumptoriumcharge-int-chargenum">void SetEveSumptoriumCharge ( int ChargeNum )<a class="headerlink" href="#void-setevesumptoriumcharge-int-chargenum" title="Permanent link">⚓︎</a></h4>
+<p>Sets the current charge of Tainted Eve's innate Sumptorium ability.</p>
 <hr />
 <h3 aria-label="Functions" id="setfiredelaymodifier">SetFireDelayModifier ()<a class="headerlink" href="#setfiredelaymodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setfiredelaymodifier-int-modifier">void SetFireDelayModifier ( int Modifier )<a class="headerlink" href="#void-setfiredelaymodifier-int-modifier" title="Permanent link">⚓︎</a></h4>
+<p>For Experimental Treatement, set to <code>-1</code>, <code>0</code> or <code>1</code> to adjust the multiplier applied to the stat.</p>
 <hr />
 <h3 aria-label="Functions" id="setfootprintcolor">SetFootprintColor ()<a class="headerlink" href="#setfootprintcolor" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setfootprintcolor-kcolor-color-boolean-rightfoot-false">void SetFootprintColor ( <a href="https://wofsauge.github.io/IsaacDocs/rep/KColor.html">KColor</a> color, boolean RightFoot = false )<a class="headerlink" href="#void-setfootprintcolor-kcolor-color-boolean-rightfoot-false" title="Permanent link">⚓︎</a></h4>
+<p>Sets the player's footprint color.</p>
 <hr />
 <h3 aria-label="Functions" id="setgnawedleaftimer">SetGnawedLeafTimer ()<a class="headerlink" href="#setgnawedleaftimer" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setgnawedleaftimer-int-timer">void SetGnawedLeafTimer ( int Timer )<a class="headerlink" href="#void-setgnawedleaftimer-int-timer" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="setimmaculateconceptionstate">SetImmaculateConceptionState ()<a class="headerlink" href="#setimmaculateconceptionstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setimmaculateconceptionstate-int-state">void SetImmaculateConceptionState ( int State )<a class="headerlink" href="#void-setimmaculateconceptionstate-int-state" title="Permanent link">⚓︎</a></h4>
+<p>Sets how many hearts have been collected for the Immaculate Conception item.</p>
 <hr />
 <h3 aria-label="Functions" id="setitemstate">SetItemState ()<a class="headerlink" href="#setitemstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setitemstate-collectibletype-collectible">void SetItemState ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible )<a class="headerlink" href="#void-setitemstate-collectibletype-collectible" title="Permanent link">⚓︎</a></h4>
-<p>This is used for thrown/2-input items (e.g. Bob's Rotten Head).</p>
+<p>Changes the player's item state to the specified collectible. This is usually used for collectibles that the player holds above their head before activating (i.e: Bob's Rotten Head, Glass Cannon).</p>
 <hr />
 <h3 aria-label="Functions" id="setkeeperssackbonus">SetKeepersSackBonus ()<a class="headerlink" href="#setkeeperssackbonus" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setkeeperssackbonus-int-bonus">void SetKeepersSackBonus ( int Bonus )<a class="headerlink" href="#void-setkeeperssackbonus-int-bonus" title="Permanent link">⚓︎</a></h4>
-<p>This is the number of coins spent while possessing <a href="https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack">Keeper's Sack</a>.</p>
+<p>Sets the current coin bonus for the player's <a href="https://bindingofisaacrebirth.fandom.com/wiki/Keeper's_Sack">Keeper's Sack</a> collectible.</p>
 <hr />
 <h3 aria-label="Functions" id="setlasercolor">SetLaserColor ()<a class="headerlink" href="#setlasercolor" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setlasercolor-color-color">void SetLaserColor ( <a href="Color.html">Color</a> color )<a class="headerlink" href="#void-setlasercolor-color-color" title="Permanent link">⚓︎</a></h4>
+<p>Sets the player's laser color.</p>
 <hr />
 <h3 aria-label="Functions" id="setluckmodifier">SetLuckModifier ()<a class="headerlink" href="#setluckmodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setluckmodifier-int-modifier">void SetLuckModifier ( int Modifier )<a class="headerlink" href="#void-setluckmodifier-int-modifier" title="Permanent link">⚓︎</a></h4>
+<p>For Experimental Treatement, set to <code>-1</code>, <code>0</code> or <code>1</code> to adjust the multiplier applied to the stat.</p>
 <hr />
 <h3 aria-label="Functions" id="setmaggyswingcooldown">SetMaggySwingCooldown ()<a class="headerlink" href="#setmaggyswingcooldown" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setmaggyswingcooldown-int-cooldown">void SetMaggySwingCooldown ( int Cooldown )<a class="headerlink" href="#void-setmaggyswingcooldown-int-cooldown" title="Permanent link">⚓︎</a></h4>
+<p>Sets the cooldown of Tainted Magdalene's swing attack to the specified amount of frames.</p>
 <hr />
 <h3 aria-label="Functions" id="setmaxbladdercharge">SetMaxBladderCharge ()<a class="headerlink" href="#setmaxbladdercharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setmaxbladdercharge-int-charge">void SetMaxBladderCharge ( int Charge )<a class="headerlink" href="#void-setmaxbladdercharge-int-charge" title="Permanent link">⚓︎</a></h4>
+<p>Sets the maximum charge for when the player stops shooting and charges the Kidney Stone item.</p>
 <hr />
 <h3 aria-label="Functions" id="setmegablastduration">SetMegaBlastDuration ()<a class="headerlink" href="#setmegablastduration" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setmegablastduration-int-duration">void SetMegaBlastDuration ( int Duration )<a class="headerlink" href="#void-setmegablastduration-int-duration" title="Permanent link">⚓︎</a></h4>
+<p>Sets the duration of the Mega Blast laser to the specified amount of frames. Setting the duration above zero will activate the effect if it wasn't already active.</p>
+<details class="bug" open="open">
+<summary>Bug</summary>
+<p>If the Mega Blast laser is active and you call the function again with a lower duration, the laser will persist even after the amount of frames has passed until the player leaves the room.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="setnexturethrablockframe">SetNextUrethraBlockFrame ()<a class="headerlink" href="#setnexturethrablockframe" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setnexturethrablockframe-int-frame">void SetNextUrethraBlockFrame ( int Frame )<a class="headerlink" href="#void-setnexturethrablockframe-int-frame" title="Permanent link">⚓︎</a></h4>
+<p>Sets the frame at which the player stops shooting and starts charging the Kidney Stone item.</p>
 <hr />
 <h3 aria-label="Functions" id="setponycharge">SetPonyCharge ()<a class="headerlink" href="#setponycharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setponycharge-int-time">void SetPonyCharge ( int Time )<a class="headerlink" href="#void-setponycharge-int-time" title="Permanent link">⚓︎</a></h4>
+<p>Sets the duration of the charge effect from the A Pony and White Pony to the specified amount of frames.</p>
 <hr />
 <h3 aria-label="Functions" id="setpoopspell">SetPoopSpell ()<a class="headerlink" href="#setpoopspell" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setpoopspell-int-slot-poopspelltype-poopspelltype">void SetPoopSpell ( int Slot, <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PoopSpellType.html">PoopSpellType</a> PoopSpellType )<a class="headerlink" href="#void-setpoopspell-int-slot-poopspelltype-poopspelltype" title="Permanent link">⚓︎</a></h4>
+<p>Sets the specified slot in the poop list to a type of poop. This is only used by Tainted ???.</p>
 <hr />
 <h3 aria-label="Functions" id="setpuritystate">SetPurityState ()<a class="headerlink" href="#setpuritystate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setpuritystate-puritystate-state">void SetPurityState ( <a href="enums/PurityState.html">PurityState</a> State )<a class="headerlink" href="#void-setpuritystate-puritystate-state" title="Permanent link">⚓︎</a></h4>
@@ -10210,27 +10299,50 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="setredstewbonusduration">SetRedStewBonusDuration ()<a class="headerlink" href="#setredstewbonusduration" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setredstewbonusduration-int-duration">void SetRedStewBonusDuration ( int Duration )<a class="headerlink" href="#void-setredstewbonusduration-int-duration" title="Permanent link">⚓︎</a></h4>
+<p>Sets the duration of the damage bonus given by the Red Stew collectible to the specified amount of frames. Setting the duration above 0 will activate the effect if it wasn't active already.</p>
 <hr />
 <h3 aria-label="Functions" id="setshotspeedmodifier">SetShotSpeedModifier ()<a class="headerlink" href="#setshotspeedmodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setshotspeedmodifier-int-modifier">void SetShotSpeedModifier ( int Modifier )<a class="headerlink" href="#void-setshotspeedmodifier-int-modifier" title="Permanent link">⚓︎</a></h4>
+<p>For Experimental Treatement, set to <code>-1</code>, <code>0</code> or <code>1</code> to adjust the multiplier applied to the stat.</p>
 <hr />
 <h3 aria-label="Functions" id="setspeedmodifier">SetSpeedModifier ()<a class="headerlink" href="#setspeedmodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setspeedmodifier-int-modifier">void SetSpeedModifier ( int Modifier )<a class="headerlink" href="#void-setspeedmodifier-int-modifier" title="Permanent link">⚓︎</a></h4>
+<p>For Experimental Treatement, set to <code>-1</code>, <code>0</code> or <code>1</code> to adjust the multiplier applied to the stat.</p>
 <hr />
 <h3 aria-label="Functions" id="settearpoisondamage">SetTearPoisonDamage ()<a class="headerlink" href="#settearpoisondamage" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-settearpoisondamage-float-damage">void SetTearPoisonDamage ( float Damage )<a class="headerlink" href="#void-settearpoisondamage-float-damage" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="settearrangemodifier">SetTearRangeModifier ()<a class="headerlink" href="#settearrangemodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-settearrangemodifier-int-modifier">void SetTearRangeModifier ( int Modifier )<a class="headerlink" href="#void-settearrangemodifier-int-modifier" title="Permanent link">⚓︎</a></h4>
+<p>For Experimental Treatement, set to <code>-1</code>, <code>0</code> or <code>1</code> to adjust the multiplier applied to the stat.</p>
 <hr />
 <h3 aria-label="Functions" id="seturethrablock">SetUrethraBlock ()<a class="headerlink" href="#seturethrablock" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-seturethrablock-boolean-blocked">void SetUrethraBlock ( boolean Blocked )<a class="headerlink" href="#void-seturethrablock-boolean-blocked" title="Permanent link">⚓︎</a></h4>
+<p>Sets whether the tear spam attack from the Kidney Stone collectible is about to activate. If the player does not have the Kidney Stone collectible, the effect is immediately activated.</p>
+<details class="bug" open="open">
+<summary>Bug</summary>
+<p>Setting the <code>Blocked</code> argument to <code>false</code> seems to do nothing at all.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="setweapon">SetWeapon ()<a class="headerlink" href="#setweapon" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setweapon-weapon-weapon-int-weaponslot">void SetWeapon ( <a href="Weapon.html">Weapon</a> Weapon, int WeaponSlot )<a class="headerlink" href="#void-setweapon-weapon-weapon-int-weaponslot" title="Permanent link">⚓︎</a></h4>
+<p>Sets the active Weapon in the assigned <code>WeaponSlot</code>.</p>
+<details class="- info">
+<summary>Info</summary>
+<p>Weapon slots and their descriptions:</p>
+<ul>
+<li><code>0</code> - Backup Weapon such as Notched Axe and Urn of Souls.</li>
+<li><code>1</code> - Primary Weapon.</li>
+<li><code>2</code> - Additional Weapon. Few instances of this exist in the vanilla game, but it can be populated by mods.</li>
+<li><code>3</code> - Additional Weapon.</li>
+<li><code>4</code> - Additional Weapon.</li>
+</ul>
+<p>Always check for <code>nil</code>, even for slot <code>1</code> as it can be deleted by mods via <a href="Isaac.html#destroyweapon">Isaac.DestroyWeapon()</a>.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="shootbluecandle">ShootBlueCandle ()<a class="headerlink" href="#shootbluecandle" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-shootbluecandle-vector-direction">void ShootBlueCandle ( <a href="Vector.html">Vector</a> Direction )<a class="headerlink" href="#void-shootbluecandle-vector-direction" title="Permanent link">⚓︎</a></h4>
+<p>Makes the player shoot a blue flame from the Candle collectible.</p>
 <hr />
 <h3 aria-label="Functions" id="shufflecostumes">ShuffleCostumes ()<a class="headerlink" href="#shufflecostumes" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-shufflecostumes-int-seed-random">void ShuffleCostumes ( int Seed = Random( ) )<a class="headerlink" href="#void-shufflecostumes-int-seed-random" title="Permanent link">⚓︎</a></h4>
@@ -10251,14 +10363,12 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="spawnsaturnustears">SpawnSaturnusTears ()<a class="headerlink" href="#spawnsaturnustears" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-spawnsaturnustears">int SpawnSaturnusTears ( )<a class="headerlink" href="#int-spawnsaturnustears" title="Permanent link">⚓︎</a></h4>
+<p>Spawns a ring of tears that orbit around the player akin to the Saturnus collectible.</p>
 <hr />
 <h3 aria-label="Functions" id="swapforgottenform">SwapForgottenForm ()<a class="headerlink" href="#swapforgottenform" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-swapforgottenform-boolean-force-false-boolean-noeffects-false">void SwapForgottenForm ( boolean Force = false, boolean NoEffects = false)<a class="headerlink" href="#void-swapforgottenform-boolean-force-false-boolean-noeffects-false" title="Permanent link">⚓︎</a></h4>
-<p>If the player has a <a href="EntityPlayer.html#getsubplayer">SubPlayer</a>, swaps between them. <code>Force</code> will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. <code>NoEffects</code> will disable the dust effect &amp; fade from white when switching from The Soul to The Forgotten.</p>
-<details class="warning" open="open">
-<summary>Warning</summary>
-<p>This function currently only has an effect for The Forgotten and The Soul.</p>
-</details>
+<p>If the player is The Forgotten/The Soul, the two will swap forms. Otherwise, this function does nothing.</p>
+<p><code>Force</code> will swap even if the subplayer doesn't have any health, or while a room/stage transition is active. <code>NoEffects</code> will disable the dust effect &amp; fade from white when switching from The Soul to The Forgotten.</p>
 <hr />
 <h3 aria-label="Functions" id="syncconsumablecounts">SyncConsumableCounts ()<a class="headerlink" href="#syncconsumablecounts" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-syncconsumablecounts-entityplayer-player-int-collectibleflags">void SyncConsumableCounts ( <a href="EntityPlayer.html">EntityPlayer</a> Player, int CollectibleFlags )<a class="headerlink" href="#void-syncconsumablecounts-entityplayer-player-int-collectibleflags" title="Permanent link">⚓︎</a></h4>
@@ -10270,13 +10380,15 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="triggerroomclear">TriggerRoomClear ()<a class="headerlink" href="#triggerroomclear" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-triggerroomclear">void TriggerRoomClear ( )<a class="headerlink" href="#void-triggerroomclear" title="Permanent link">⚓︎</a></h4>
+<p>Triggers effects on the player as if a room was cleared (i.e. Charging actives).</p>
 <hr />
 <h3 aria-label="Functions" id="tryaddtobagofcrafting">TryAddToBagOfCrafting ()<a class="headerlink" href="#tryaddtobagofcrafting" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-tryaddtobagofcrafting-entitypickup-pickup">void TryAddToBagOfCrafting ( <a href="EntityPickup.html">EntityPickup</a> Pickup )<a class="headerlink" href="#void-tryaddtobagofcrafting-entitypickup-pickup" title="Permanent link">⚓︎</a></h4>
+<p>Tries to add the specified pickup to the player's Bag of Crafting.</p>
 <hr />
 <h3 aria-label="Functions" id="trydecreaseglowinghourglassuses">TryDecreaseGlowingHourglassUses ()<a class="headerlink" href="#trydecreaseglowinghourglassuses" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-trydecreaseglowinghourglassuses-int-uses-boolean-forcehourglass-false">void TryDecreaseGlowingHourglassUses ( int Uses, boolean ForceHourglass = false )<a class="headerlink" href="#void-trydecreaseglowinghourglassuses-int-uses-boolean-forcehourglass-false" title="Permanent link">⚓︎</a></h4>
-<p><code>ForceHourglass</code> instantly removes all the charges and turns Glowing Hourglass into it's regular Hourglass form.</p>
+<p>Attempts to decrease the uses left for the Glowing Hourglass collectible, if the player has it. <code>ForceHourglass</code> instantly removes all the charges and turns Glowing Hourglass into it's regular Hourglass form.</p>
 <details class="bug" open="open">
 <summary>Bug</summary>
 <p><code>Uses</code> are only decreased by 1 regardless of how large of a number you tell it to remove.</p>
@@ -10284,17 +10396,20 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="tryfakedeath">TryFakeDeath ()<a class="headerlink" href="#tryfakedeath" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-tryfakedeath">boolean TryFakeDeath ( )<a class="headerlink" href="#boolean-tryfakedeath" title="Permanent link">⚓︎</a></h4>
+<p>Spawns a copy of the player at its current position and plays the death animation and sound.</p>
 <hr />
 <h3 aria-label="Functions" id="tryforgottenthrow">TryForgottenThrow ()<a class="headerlink" href="#tryforgottenthrow" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-tryforgottenthrow-vector-direction">boolean TryForgottenThrow ( <a href="Vector.html">Vector</a> Direction )<a class="headerlink" href="#boolean-tryforgottenthrow-vector-direction" title="Permanent link">⚓︎</a></h4>
+<p>If the player is holding Tainted Forgotten, he is thrown towards the specified direction.</p>
 <hr />
 <h3 aria-label="Functions" id="trypreventdeath">TryPreventDeath ()<a class="headerlink" href="#trypreventdeath" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-trypreventdeath">boolean TryPreventDeath ( )<a class="headerlink" href="#boolean-trypreventdeath" title="Permanent link">⚓︎</a></h4>
-<p>Adds a heart container to a character if there are none left, depending on its <a href="enums/HealthType.html">HealthType</a>.</p>
+<p>Adds a heart container to a character if there are none left to prevent death, depending on its <a href="enums/HealthType.html">HealthType</a>.</p>
 <p>Returns <code>true</code> on success, otherwise <code>false</code>.</p>
 <hr />
 <h3 aria-label="Functions" id="tryremovesmeltedtrinket">TryRemoveSmeltedTrinket ()<a class="headerlink" href="#tryremovesmeltedtrinket" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-tryremovesmeltedtrinket-trinkettype-id">void TryRemoveSmeltedTrinket ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html">TrinketType</a> ID )<a class="headerlink" href="#void-tryremovesmeltedtrinket-trinkettype-id" title="Permanent link">⚓︎</a></h4>
+<p>Tries to remove the specified smelted trinket from the player.</p>
 <hr />
 <h3 aria-label="Functions" id="updateisaacpregnancy">UpdateIsaacPregnancy ()<a class="headerlink" href="#updateisaacpregnancy" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-updateisaacpregnancy-boolean-updatecambion">void UpdateIsaacPregnancy ( boolean UpdateCambion )<a class="headerlink" href="#void-updateisaacpregnancy-boolean-updatecambion" title="Permanent link">⚓︎</a></h4>
@@ -10302,6 +10417,7 @@ If the target is not displayed on the ground, this function returns nil.</p>
 <hr />
 <h3 aria-label="Functions" id="voidhascollectible">VoidHasCollectible ()<a class="headerlink" href="#voidhascollectible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-voidhascollectible-collectibletype-id">boolean VoidHasCollectible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> ID )<a class="headerlink" href="#boolean-voidhascollectible-collectibletype-id" title="Permanent link">⚓︎</a></h4>
+<p>Returns true if the specified collectible has been consumed by the Void collectible.</p>
 <hr />
 
 

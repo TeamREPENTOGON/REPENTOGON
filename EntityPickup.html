@@ -6659,6 +6659,7 @@
 <hr />
 <h3 aria-label="Functions" id="getcollectiblecycle">GetCollectibleCycle ()<a class="headerlink" href="#getcollectiblecycle" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="collectibletype-getcollectiblecycle"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a>[] GetCollectibleCycle ( )<a class="headerlink" href="#collectibletype-getcollectiblecycle" title="Permanent link">⚓︎</a></h4>
+<p>Returns a table of all <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleTypes</a> being used inside its collectible cycle (i.e. Cracked Crown).</p>
 <hr />
 <h3 aria-label="Functions" id="getdropdelay">GetDropDelay ()<a class="headerlink" href="#getdropdelay" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getdropdelay">int GetDropDelay ( )<a class="headerlink" href="#int-getdropdelay" title="Permanent link">⚓︎</a></h4>
@@ -6679,7 +6680,7 @@
 <hr />
 <h3 aria-label="Functions" id="isblind">IsBlind ()<a class="headerlink" href="#isblind" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-isblind">boolean IsBlind ( )<a class="headerlink" href="#boolean-isblind" title="Permanent link">⚓︎</a></h4>
-<p>Returns whether a collectible is being hidden. Always returns false for non-collectible EntityPickups.</p>
+<p>Returns <code>true</code> if the pickup is a collectible pedestal and is hidden (such as when Curse of the Blind is active). Always returns <code>false</code> for non-collectible EntityPickups.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
 <p>This value does not account for curse of the blind, it only reflects the blind state of pickups that are normally blind without curses involved. Ex: alt path's extra item.</p>
@@ -6711,14 +6712,16 @@
 <hr />
 <h3 aria-label="Functions" id="tryflip">TryFlip ()<a class="headerlink" href="#tryflip" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-tryflip">boolean TryFlip ( )<a class="headerlink" href="#boolean-tryflip" title="Permanent link">⚓︎</a></h4>
+<p>Will try to flip the collectible, such as when using the Flip item on a collectible pedestal with a second, holographic collectible present behind the first one. Returns <code>true</code> if successful, <code>false</code> otherwise or if used on non-collectible EntityPickups.</p>
 <hr />
 <h3 aria-label="Functions" id="tryinitoptioncycle">TryInitOptionCycle ()<a class="headerlink" href="#tryinitoptioncycle" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-tryinitoptioncycle-int-numcycle">boolean TryInitOptionCycle ( int NumCycle )<a class="headerlink" href="#boolean-tryinitoptioncycle-int-numcycle" title="Permanent link">⚓︎</a></h4>
+<p>Causes the collectible pedestal to start cycling through the specified amount of collectibles, including its own collectible type.</p>
 <hr />
 <h3 aria-label="Functions" id="tryremovecollectible">TryRemoveCollectible ()<a class="headerlink" href="#tryremovecollectible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-tryremovecollectible">boolean TryRemoveCollectible ( )<a class="headerlink" href="#boolean-tryremovecollectible" title="Permanent link">⚓︎</a></h4>
 <p>Attempts to remove the collectible from an item pedestal.</p>
-<p>Returns true if a collectible was successfully removed from the pedestal. Returns false if the pedestal was already empty, or if called on a non-collectible EntityPickup.</p>
+<p>Returns <code>true</code> if a collectible was successfully removed from the pedestal. Returns <code>false</code> if the pedestal was already empty, or if called on a non-collectible EntityPickup.</p>
 <hr />
 
 
