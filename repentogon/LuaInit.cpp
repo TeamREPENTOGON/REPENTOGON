@@ -233,6 +233,8 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 	lua_pop(L, 1);
 	luaL_openlibs(L);
 
+	this->RunBundledScript("resources/scripts/enums.lua");
+
 	this->RunBundledScript("resources/scripts/ffi/main.lua");
 
 	// I would genuinely rather reimplement the vanilla callbacks than entertain any LuaBridge idiocy.
