@@ -37,7 +37,7 @@ ffi.cdef[[
 	bool L_Entity_RenderShadowLayer(Entity*, Vector*);
 	void L_Entity_SetColorFunc(Entity*, ColorMod*, int, int, bool, bool);
 	void L_Entity_SetSizeFunc(Entity*, float, Vector*, int);
-	void L_Entity_setSpriteFrame(Entity*, std::string*, int);
+	void L_Entity_setSpriteFrame(Entity*, char*, int);
 	bool L_Entity_TakeDamage(Entity*, float, unsigned long long*, EntityRef*, int);
 	void L_Entity_Update(Entity*);
 	Entity* L_Entity_GetChild(Entity*);
@@ -111,7 +111,6 @@ ffi.cdef[[
 	void L_Entity_SetVelocity(Entity*, Vector*);
 	bool L_Entity_GetVisible(Entity*);
 	void L_Entity_SetVisible(Entity*, bool);
-]]
 ]]
 
 local repentogon = ffidll

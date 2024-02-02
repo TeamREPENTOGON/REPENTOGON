@@ -201,8 +201,9 @@ extern "C" {
 		ent->SetSize(size, *sizeMulti, numGridPoints);
 	}
 
-	void L_Entity_SetSpriteFrame(Entity* ent, std::string* name, int frame) {
-		ent->SetSpriteFrame(name, frame);
+	void L_Entity_SetSpriteFrame(Entity* ent, char* name, int frame) {
+		std::string namestr = name;
+		ent->SetSpriteFrame(&namestr, frame);
 	}
 
 	bool L_Entity_TakeDamage(Entity* ent, float damage, unsigned long long* flags, EntityRef* source, int countdown) {

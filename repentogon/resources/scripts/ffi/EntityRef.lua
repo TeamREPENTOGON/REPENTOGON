@@ -1,4 +1,6 @@
 ffi.cdef[[
+typedef struct {void *_;} Entity;
+
 typedef struct {
 	unsigned int Type;
 	unsigned int Variant;
@@ -10,7 +12,7 @@ typedef struct {
     Entity* Entity;
 }  EntityRef;
 
-EntitRef* L_EntityRef_game_constructor(EntityRef*, Entity*);
+EntityRef* L_EntityRef_game_constructor(EntityRef*, Entity*);
 bool L_EntityRef_GetIsCharmed(EntityRef*);
 bool L_EntityRef_GetIsFriendly(EntityRef*);
 void L_EntityRef_SetIsCharmed(EntityRef*, bool);
@@ -47,7 +49,7 @@ EntityRefMT = lffi.metatype("EntityRef", {
     end
 })
 
-EntityRef = setmetatable({
+EntityRef = setmetatable({}, {
 	__call = function(_, entity )
 		ffichecks.checkcdata(2, entity, "EntityRef")
 		local ref = EntityRefMT()
