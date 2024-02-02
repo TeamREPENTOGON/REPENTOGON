@@ -1,3 +1,6 @@
+"558bec83e4f88b55??83ec0c53":
+__thiscall void EntityRef::game_constructor(Entity* entity);
+
 struct EntityRef depends (Vector)
 {
   int  _type : 0x0; //TODO: EntityType enum
@@ -7,5 +10,5 @@ struct EntityRef depends (Vector)
   Vector _position : 0x10;
   Vector _velocity : 0x18;
   unsigned int _flags : 0x20;
-  Entity *_entity : 0x24;
+  Entity* _entity : 0x24;
 } : 0x28;

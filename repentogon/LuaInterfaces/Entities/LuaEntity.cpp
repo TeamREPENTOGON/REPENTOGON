@@ -14,6 +14,10 @@ extern "C" {
 		ent->AddConfusion(ref, duration);
 	}
 
+	void L_Entity_AddFreeze(Entity* ent, const EntityRef& ref, int duration) {
+		ent->AddFreeze(ref, duration);
+	}
+
 	void L_Entity_AddHealth(Entity* ent, float health) {
 		ent->_health = min(ent->_health + health, ent->_maxHealth);
 	}
@@ -229,7 +233,7 @@ extern "C" {
 		ent->_parent = parent;
 	}
 
-	ColorMod* L_Entity_GetColor(Entity* ent) {
+	ColorMod* L_Entity_GetColorField(Entity* ent) {
 		return &ent->_color;
 	}
 
@@ -355,7 +359,7 @@ extern "C" {
 		ent->_renderZOffset = offset;
 	}
 
-	float L_Entity_GetSize(Entity* ent) {
+	float L_Entity_GetSizeField(Entity* ent) {
 		return ent->_size;
 	}
 
@@ -415,16 +419,16 @@ extern "C" {
 		return &ent->_sprite._offset;
 	}
 
+	void L_Entity_SetSpriteOffset(Entity* ent, Vector* offset) {
+		ent->_sprite._offset = *offset;
+	}
+
 	ColorMod* L_Entity_GetSplatColor(Entity* ent) {
 		return &ent->_splatColor;
 	}
 
 	void L_Entity_SetSplatColor(Entity* ent, ColorMod* color) {
 		ent->_splatColor = *color;
-	}
-
-	void L_Entity_SetSpriteOffset(Entity* ent, Vector* value) {
-		ent->_sprite._offset = *value;
 	}
 
 	Vector* L_Entity_GetSpriteScale(Entity* ent) {
