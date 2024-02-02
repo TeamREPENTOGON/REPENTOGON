@@ -24,7 +24,7 @@ end
 ffichecks.checktype = function(index, val, typ, level)
 	local t = type(val)
 	if t ~= typ then
-		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level).name, typ, t), level+1)
+		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level or 2).name, typ, t), (level or 2)+1)
 	end
 end
 
@@ -47,7 +47,7 @@ ffichecks.checkcdata = function(idx, var, ctype, level)
 		local t = type(var)
 		if t == "cdata" then t = tostring(lffi.typeof(var)) end
 
-		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level).name, tostring(ctype), t), level+1)
+		error(string.format("bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level or 2).name, tostring(ctype), t), (level or 2)+1)
 	end
 end
 
