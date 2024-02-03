@@ -204,7 +204,7 @@ foreach(_source IN ITEMS ${REPENTOGON_SRC})
     source_group("${_group_path}" FILES "${_source}")
 endforeach()
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
-target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/wd4251" "/wd4996")
+target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/wd4251" "/wd4996" "/MP")
 
 # Delirium
 FILE(GLOB_RECURSE DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.*)
