@@ -4,14 +4,6 @@
 BitSet128 zero(0, 0, 0, 0);
 
 extern "C" {
-	BitSet128* L_EntityBomb_GetTearFlags(Entity_Bomb* bomb) {
-		return &bomb->_tearFlags;
-	}
-
-	void L_EntityBomb_SetTearFlags(Entity_Bomb* bomb, BitSet128* flags) {
-		bomb->_tearFlags = *flags;
-	}
-
 	void L_EntityBomb_AddTearFlags(Entity_Bomb* bomb, BitSet128* flags) {
 		bomb->_tearFlags &= *flags;
 	}
@@ -51,5 +43,13 @@ extern "C" {
 
 	void L_EntityBomb_SetRadiusMultiplier(Entity_Bomb* bomb, float value) {
 		bomb->_radiusMultiplier = value;
+	}
+
+	BitSet128* L_EntityBomb_GetFlags(Entity_Bomb* bomb) {
+		return &bomb->_tearFlags;
+	}
+
+	void L_EntityBomb_SetFlags(Entity_Bomb* bomb, BitSet128* flags) {
+		bomb->_tearFlags = *flags;
 	}
 }

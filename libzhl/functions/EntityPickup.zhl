@@ -88,3 +88,6 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 	unsigned int _cycleCollectibleCount : 0x50c;
 	
 } : 0x638;
+
+"0f1f006a0068(????????)":
+reference void* EntityPickupRTTI;

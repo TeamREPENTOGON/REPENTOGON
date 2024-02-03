@@ -133,7 +133,7 @@ __thiscall void Level::UncoverHiddenDoor(int roomIdx, int doorSlot);
 "558bec83e4f8515356578bf96aff":
 __thiscall void Level::UpdateVisibility();
 
-struct Level {
+struct Level depends (RNG, Vector) {
 	uint32_t _stage : 0x0; // 0x0
     uint32_t _stageType : 0x4; // 0x4
     bool _bossChallenge : 0x8; //0x8

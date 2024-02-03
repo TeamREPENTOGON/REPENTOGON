@@ -40,3 +40,6 @@ struct Entity_Tear : public Entity {
 		skip; // LoadEntityConfig
 	};
 } : 0x778;
+
+"833e020f85????????6a0068(????????)":
+reference void* EntityTearRTTI;

@@ -1,4 +1,15 @@
 ffi.cdef[[
+	// stubs
+	typedef struct {void *_;} Entity_Effect;
+	typedef struct {void *_;} Entity_Familiar;
+	typedef struct {void *_;} Entity_Knife;
+	typedef struct {void *_;} Entity_Laser;
+	typedef struct {void *_;} Entity_NPC;
+	typedef struct {void *_;} Entity_Pickup;
+	typedef struct {void *_;} Entity_Projectile;
+	typedef struct {void *_;} Entity_Slot;
+	typedef struct {void *_;} Entity_Tear;
+
 	void L_Entity_AddBurn(Entity*, EntityRef*, int, float);
 	void L_Entity_AddCharm(Entity*, EntityRef*, int);
 	void L_Entity_AddConfusion(Entity*, EntityRef*, int);
@@ -45,6 +56,16 @@ ffi.cdef[[
 	void L_Entity_SetSizeFunc(Entity*, float, Vector*, int);
 	void L_Entity_SetSpriteFrame(Entity*, const char*, int);
 	bool L_Entity_TakeDamage(Entity*, float, long long int*, EntityRef*, int);
+	Entity_Bomb* L_Entity_ToBomb(Entity*);
+	Entity_Effect* L_Entity_ToEffect(Entity*);
+	Entity_Familiar* L_Entity_ToFamiliar(Entity*);
+	Entity_Knife* L_Entity_ToKnife(Entity*);
+	Entity_Laser* L_Entity_ToLaser(Entity*);
+	Entity_NPC* L_Entity_ToNPC(Entity*);
+	Entity_Pickup* L_Entity_ToPickup(Entity*);
+	Entity_Player* L_Entity_TopPlayer(Entity*);
+	Entity_Projectile* L_Entity_ToProjectile(Entity*);
+	Entity_Tear* L_Entity_ToTear(Entity*);
 	void L_Entity_Update(Entity*);
 	Entity* L_Entity_GetChild(Entity*);
 	void L_Entity_SetChild(Entity*, Entity*);
@@ -349,6 +370,10 @@ function EntityFuncs:TakeDamage(damage, flags, source, countdown)
 	return repentogon.L_Entity_TakeDamage(self, damage, flags, source, countdown)
 end
 
+function EntityFuncs:ToBomb()
+	return repentogon.L_Entity_ToBomb(self)
+end
+
 function EntityFuncs:Update()
 	repentogon.L_Entity_Update(self)
 end
@@ -437,13 +462,15 @@ local setkeys = {
 	Visible = repentogon.L_Entity_SetVisible,
 }
 
-local EntityMT
-EntityMT  = lffi.metatype("Entity", {
+EntityMT = lffi.metatype("Entity", {
     __index = function(self, key)
         if getkeys[key] ~= nil then
             return getkeys[key](self)
-        end
-		return EntityFuncs[key]
+        elseif EntityFuncs[key] ~= nil then
+			return EntityFuncs[key]
+		else
+			error(string.format("attempted to access nil value '%s'", key))
+		end
     end,
     __newindex = function(self, key, value)
         if setkeys[key] ~= nil then

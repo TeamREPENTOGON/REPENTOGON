@@ -60,3 +60,6 @@ struct Entity_Knife depends (BitSet128) : public Entity {
 		skip; // LoadEntityConfig
 	};
 } : 0xe70;
+
+"84c075??6a0068????????68(????????)":
+reference void* EntityKnifeRTTI;

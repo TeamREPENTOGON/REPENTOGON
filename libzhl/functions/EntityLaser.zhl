@@ -55,3 +55,6 @@ struct Entity_Laser : public Entity {
 		skip; // LoadEntityConfig
 	};
 } : 0x4b8;
+
+"8b7d??6a0068(????????)68????????6a0050":
+reference void* EntityLaserRTTI;

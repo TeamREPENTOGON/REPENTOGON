@@ -53,3 +53,6 @@ struct Entity_Bomb depends (ANM2, BitSet128) : public Entity { {{
 		skip; // LoadEntityConfig
 	};
 } : 0x928;
+
+"837e??0475??6a0068(????????)":
+reference void* EntityBombRTTI;

@@ -93,6 +93,7 @@ extern "C" {
 		return &ent->_dropRNG;
 	}
 
+	// lua_Integer needs to become 64 bit
 	lua_Integer L_Entity_GetEntityFlags(Entity* ent) {
 		return ent->_flags;
 	}
@@ -222,9 +223,52 @@ extern "C" {
 		ent->Update();
 	}
 
-	//////////
-	// TODO: Cast functions
-	//////////
+	Entity_Bomb* L_Entity_ToBomb(Entity* ent) {
+		return (Entity_Bomb*)__RTDynamicCast(ent, 0, EntityRTTI, EntityBombRTTI, 0);
+	}
+
+	Entity_Effect* L_Entity_ToEffect(Entity* ent) {
+		return (Entity_Effect*)__RTDynamicCast(ent, 0, EntityRTTI, EntityEffectRTTI, 0);
+	}
+
+	Entity_Familiar* L_Entity_ToFamiliar(Entity* ent) {
+		return (Entity_Familiar*)__RTDynamicCast(ent, 0, EntityRTTI, EntityFamiliarRTTI, 0);
+	}
+
+	Entity_Knife* L_Entity_ToKnife(Entity* ent) {
+		return (Entity_Knife*)__RTDynamicCast(ent, 0, EntityRTTI, EntityKnifeRTTI, 0);
+	}
+
+	Entity_Laser* L_Entity_ToLaser(Entity* ent) {
+		return (Entity_Laser*)__RTDynamicCast(ent, 0, EntityRTTI, EntityLaserRTTI, 0);
+	}
+
+	Entity_NPC* L_Entity_ToNPC(Entity* ent) {
+		return (Entity_NPC*)__RTDynamicCast(ent, 0, EntityRTTI, EntityNPCRTTI, 0);
+	}
+
+	Entity_Pickup* L_Entity_ToPickup(Entity* ent) {
+		return (Entity_Pickup*)__RTDynamicCast(ent, 0, EntityRTTI, EntityPickupRTTI, 0);
+	}
+
+	Entity_Player* L_Entity_ToPlayer(Entity* ent) {
+		return (Entity_Player*)__RTDynamicCast(ent, 0, EntityRTTI, EntityPlayerRTTI, 0);
+	}
+
+	Entity_Projectile* L_Entity_ToProjectile(Entity* ent) {
+		return (Entity_Projectile*)__RTDynamicCast(ent, 0, EntityRTTI, EntityProjectileRTTI, 0);
+	}
+
+	/*
+	// not sure how to get a clean reference to Entity_Slot rtti type descriptor
+	Entity_Slot* L_Entity_ToSlot(Entity* ent) {
+		return (Entity_Slot*)__RTDynamicCast(ent, 0, EntityRTTI, EntitySlotRTTI, 0);
+	}
+	*/
+
+	Entity_Tear* L_Entity_ToTear(Entity* ent) {
+		return (Entity_Tear*)__RTDynamicCast(ent, 0, EntityRTTI, EntityTearRTTI, 0);
+	}
 
 	Entity* L_Entity_GetChild(Entity* ent) {
 		return ent->_child;
