@@ -108,10 +108,6 @@ pcall(require("WeightedOutcomePicker"))
 pcall(require("Game"))
 pcall(require("Ambush"))
 
-local ReturnTypes = {
-	VECTOR = 0
-}
-
 ---------------------------------------------------------------------------
 
 pcall(require("callbacks"))
@@ -125,7 +121,6 @@ function RegisterMod(modname, apiversion)
 		AddPriorityCallback = function(self, callbackId, priority, fn, param)
 			Isaac.AddPriorityCallback(self, callbackId, priority, fn, param)
 		end,
-		-- TODO
 		RemoveCallback = function(self, callbackId, fn)
 			Isaac.RemoveCallback(self, callbackId, fn)
 		end,

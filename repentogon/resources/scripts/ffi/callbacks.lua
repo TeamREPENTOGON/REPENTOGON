@@ -79,6 +79,26 @@ end
 rawset(Isaac, "RunCallbackWithParam", RunCallback)
 rawset(Isaac, "RunCallback", function(callbackID, ...) return RunCallback(callbackID, nil, ...) end)
 
+rawset(Isaac, "RemoveCallback", function(mod, callbackId, fn)
+	ffichecks.checkfunction(3, fn)
+	
+	local callbacks = Callbacks[callbackId]
+	if callbacks then
+		for i=#callbacks,1,-1 do
+			if callbacks[i].Function == fn then
+				table.remove(callbacks, i)
+			end
+		end
+		
+		-- No more functions left, disable this callback
+		if not next(callbacks) then
+			if type(callbackId) == "number" then
+				Isaac.SetBuiltInCallbackState(callbackId, false)
+			end
+		end
+	end
+end)
+
 local ReturnType = {
 	string = 1,
 	number = 2,
