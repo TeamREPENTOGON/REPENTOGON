@@ -329,7 +329,7 @@ function GameFuncs:GetLastLevelWithoutHalfHp()
 end
 
 function GameFuncs:GetLevel()
-	return repentogon.L_Game_GetLevel()
+	return Level
 end
 
 function GameFuncs:GetNearestPlayer()
@@ -357,7 +357,7 @@ function GameFuncs:GetRandomPlayer(pos, radius)
 end
 
 function GameFuncs:GetRoom()
-	return repentogon.L_Game_GetRoom()
+	return Room
 end
 
 function GameFuncs:GetScreenShakeCountdown()
@@ -584,11 +584,11 @@ GameMT = {
         else
             error(string.format("no writable variable '%s'", key))
         end
-    end
+    end,
+	-- is there a better way to do this? i want both Game and Game() to work here
+	__call = function(a)
+		return a
+	end
 }
 
-Game = setmetatable({}, {
-	__call = function()
-        return setmetatable({}, GameMT)
-    end
-})
+Game = setmetatable({}, GameMT)

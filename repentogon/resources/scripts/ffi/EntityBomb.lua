@@ -1,4 +1,6 @@
 ffi.cdef[[
+	typedef struct {void *_;} BitSet128;
+	
 	void L_EntityBomb_AddTearFlags(Entity_Bomb*, BitSet128*);
 	bool L_EntityBomb_HasTearFlags(Entity_Bomb*, BitSet128*);
 	void L_EntityBomb_SetExplosionCountdown(Entity_Bomb*, int);

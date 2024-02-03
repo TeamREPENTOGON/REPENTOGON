@@ -1,11 +1,13 @@
 ffi.cdef[[
 	// stubs
+	typedef struct {void *_;} Entity_Bomb;
 	typedef struct {void *_;} Entity_Effect;
 	typedef struct {void *_;} Entity_Familiar;
 	typedef struct {void *_;} Entity_Knife;
 	typedef struct {void *_;} Entity_Laser;
 	typedef struct {void *_;} Entity_NPC;
 	typedef struct {void *_;} Entity_Pickup;
+	typedef struct {void *_;} Entity_Player;
 	typedef struct {void *_;} Entity_Projectile;
 	typedef struct {void *_;} Entity_Slot;
 	typedef struct {void *_;} Entity_Tear;
@@ -63,7 +65,7 @@ ffi.cdef[[
 	Entity_Laser* L_Entity_ToLaser(Entity*);
 	Entity_NPC* L_Entity_ToNPC(Entity*);
 	Entity_Pickup* L_Entity_ToPickup(Entity*);
-	Entity_Player* L_Entity_TopPlayer(Entity*);
+	Entity_Player* L_Entity_ToPlayer(Entity*);
 	Entity_Projectile* L_Entity_ToProjectile(Entity*);
 	Entity_Tear* L_Entity_ToTear(Entity*);
 	void L_Entity_Update(Entity*);

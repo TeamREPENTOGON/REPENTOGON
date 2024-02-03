@@ -40,4 +40,4 @@ struct EntityList depends (Entity, EntityList_EL) {
 	}
 }} 
 
-} : 0x580;
+} : 0xa4;

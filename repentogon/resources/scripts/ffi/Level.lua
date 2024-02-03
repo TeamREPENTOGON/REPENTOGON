@@ -160,7 +160,7 @@ function LevelFuncs:GetCanSeeEverything()
 end
 
 function LevelFuncs:GetCurrentRoom()
-    return repentogon.L_Level_GetCurrentRoom()
+    return Room
 end
 
 function LevelFuncs:GetCurrentRoomDesc()
@@ -399,8 +399,4 @@ local LevelMT = {
     end
 }
 
-Level = setmetatable({}, {
-    __call = function()
-        return setmetatable({}, LevelMT)
-    end
-})
+Level = setmetatable({}, LevelMT)
