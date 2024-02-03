@@ -520,6 +520,17 @@ LUA_FUNCTION(Lua_GetModChallengeClearCount) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetBossColorIdxByName) {
+	string bosscolorname = luaL_checkstring(L, 1);
+	auto iter = XMLStuff.BossColorData->childbyname.find(bosscolorname);
+	if (iter == XMLStuff.BossColorData->childbyname.end()) { lua_pushinteger(L, -1); }
+	else {
+		lua_pushinteger(L, iter->second);
+	}
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -561,6 +572,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearChallenge", Lua_ClearChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

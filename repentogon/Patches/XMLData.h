@@ -102,6 +102,7 @@ class XMLDataHolder {
 public:
 	XMLNodes nodes;
 	XMLKinder childs;
+	unordered_map<string, int> childbyname;
 	XMLNodeIdxLookup byname;
 	XMLNodeIdxLookup bynamemod;
 	XMLNodeIdxLookupMultiple bymod;
@@ -203,6 +204,9 @@ public:
 				child["sourceid"] = lastmodid;
 			}
 			this->childs[id][stringlower(auxnodebabe->name())].push_back(child);
+			if (child.find("name") != child.end()) { //this wont be used too much but it's needed for some cases
+				this->childbyname[child["name"]] = this->childs[id][stringlower(auxnodebabe->name())].size();
+			}
 		}
 	}
 
@@ -387,7 +391,7 @@ class XMLChallenge : public XMLDataHolder {
 
 class XMLBossColor : public XMLDataHolder {
 public:
-	unordered_map<tuple<int,int>, int> bytypevar;
+	unordered_map<tuple<int,int>, int> bytypevar;	
 };
 
 class XMLCurse : public XMLDataHolder {

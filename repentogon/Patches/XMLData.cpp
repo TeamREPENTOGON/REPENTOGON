@@ -2079,8 +2079,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.PlayerFormData->nodes[id] = attributes;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
-			break;
 		}
+		break;
 	case 25: //bosscolors
 		id = 1;
 		daddy = node;
