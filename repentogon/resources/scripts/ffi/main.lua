@@ -110,6 +110,9 @@ pcall(require("MusicManager"))
 pcall(require("WeightedOutcomePicker"))
 pcall(require("Game"))
 pcall(require("Ambush"))
+pcall(require("ItemConfigCostume"))
+pcall(require("ItemConfigItem"))
+pcall(require("ItemConfig"))
 
 ---------------------------------------------------------------------------
 

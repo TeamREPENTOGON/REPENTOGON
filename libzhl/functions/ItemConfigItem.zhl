@@ -1,6 +1,9 @@
 "558bec6aff68????????64a1????????5083ec24535657a1????????33c5508d45??64a3????????8bd980bb????????00":
 __thiscall bool ItemConfig_Item::IsAvailableEx(unsigned int flags);
 
+"558bec0fb645":
+__thiscall bool ItemConfig_Item::IsAvailable(int unk);
+
 struct ItemConfig_Item depends (ItemConfig_Costume)
 {
     int type : 0x00;
@@ -30,4 +33,7 @@ struct ItemConfig_Item depends (ItemConfig_Costume)
     bool persistentEffect : 0xB4;
     bool clearEffectsOnRemove : 0xB5;
     uint64_t tags : 0xB8;
+    unsigned int quality : 0xC0;
+    unsigned int craftingQuality : 0xC4;
+    int initCharge : 0xC8;
 } : 0xCC;
