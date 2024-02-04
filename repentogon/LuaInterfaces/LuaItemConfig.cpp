@@ -7,6 +7,13 @@ extern "C" {
 	ItemConfig_Item* L_ItemConfig_GetCollectible(const int id) {
 		return g_Manager->GetItemConfig()->GetCollectible(id);
 	}
+	ItemConfig_Card* L_ItemConfig_GetCard(const int id) {
+		auto* cards = g_Manager->GetItemConfig()->GetCards();
+		if (id <= 0 || id >= cards->size()) {
+			return nullptr;
+		}
+		return cards->at(id);
+	}
 	bool L_ItemConfig_IsValidCollectible(const int id) {
 		return g_Manager->GetItemConfig()->IsValidCollectible(id);
 	}
@@ -46,5 +53,28 @@ extern "C" {
 	}
 	void L_ItemConfigCostume_SetAnm2Path(ItemConfig_Costume* self, const char* str) {
 		self->anm2Path = std::string(str);
+	}
+
+	// ItemConfig_Card
+	bool L_ItemConfigCard_IsAvailable(ItemConfig_Card* self) {
+		return self->IsAvailable();
+	}
+	const char* L_ItemConfigCard_GetName(ItemConfig_Card* self) {
+		return self->name.c_str();
+	}
+	void L_ItemConfigCard_SetName(ItemConfig_Card* self, const char* str) {
+		self->name = std::string(str);
+	}
+	const char* L_ItemConfigCard_GetDescription(ItemConfig_Card* self) {
+		return self->desc.c_str();
+	}
+	void L_ItemConfigCard_SetDescription(ItemConfig_Card* self, const char* str) {
+		self->desc = std::string(str);
+	}
+	const char* L_ItemConfigCard_GetHudAnim(ItemConfig_Card* self) {
+		return self->hudAnim.c_str();
+	}
+	void L_ItemConfigCard_SetHudAnim(ItemConfig_Card* self, const char* str) {
+		self->hudAnim = std::string(str);
 	}
 }

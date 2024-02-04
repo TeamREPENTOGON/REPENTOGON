@@ -124,6 +124,7 @@ pcall(require("Game"))
 pcall(require("Ambush"))
 pcall(require("ItemConfigCostume"))
 pcall(require("ItemConfigItem"))
+pcall(require("ItemConfigCard"))
 pcall(require("ItemConfig"))
 
 ---------------------------------------------------------------------------
