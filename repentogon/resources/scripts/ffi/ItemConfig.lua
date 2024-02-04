@@ -1,5 +1,6 @@
 ffi.cdef[[
 ItemConfig_Item* L_ItemConfig_GetCollectible(const int);
+bool L_ItemConfig_IsValidCollectible(const int);
 ]]
 
 local repentogon = ffidll
@@ -25,4 +26,14 @@ ItemConfig.GetCollectible = function(selfOrID, id)
 		return nil
 	end
 	return item
+end
+
+ItemConfig.ShouldAddCostumeOnPickup = function(item)
+	ffichecks.checkcdata(1, item, "ItemConfig_Item")
+	return item.AddCostumeOnPickup
+end
+
+ItemConfig.IsValidCollectible = function(id)
+	ffichecks.checknumber(1, id)
+	return repentogon.L_ItemConfig_IsValidCollectible(id)
 end

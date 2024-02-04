@@ -32,15 +32,15 @@ typedef struct {
 	int InitCharge;
 } ItemConfig_Item;
 
-bool L_ItemConfigItem_HasTags(ItemConfig_Item* self, const uint64_t tags);
-bool L_ItemConfigItem_IsAvailable(ItemConfig_Item* self);
+bool L_ItemConfigItem_HasTags(ItemConfig_Item*, const uint64_t);
+bool L_ItemConfigItem_IsAvailable(ItemConfig_Item*);
 
-const char* L_ItemConfigItem_GetName(ItemConfig_Item* self);
-void L_ItemConfigItem_SetName(ItemConfig_Item* self, const char* str);
-const char* L_ItemConfigItem_GetDescription(ItemConfig_Item* self);
-void L_ItemConfigItem_SetDescription(ItemConfig_Item* self, const char* str);
-const char* L_ItemConfigItem_GetGfxFileName(ItemConfig_Item* self);
-void L_ItemConfigItem_SetGfxFileName(ItemConfig_Item* self, const char* str);
+const char* L_ItemConfigItem_GetName(ItemConfig_Item*);
+void L_ItemConfigItem_SetName(ItemConfig_Item*, const char*);
+const char* L_ItemConfigItem_GetDescription(ItemConfig_Item*);
+void L_ItemConfigItem_SetDescription(ItemConfig_Item*, const char*);
+const char* L_ItemConfigItem_GetGfxFileName(ItemConfig_Item*);
+void L_ItemConfigItem_SetGfxFileName(ItemConfig_Item*, const char*);
 ]]
 
 local repentogon = ffidll

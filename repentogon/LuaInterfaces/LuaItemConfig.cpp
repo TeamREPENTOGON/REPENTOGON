@@ -7,6 +7,9 @@ extern "C" {
 	ItemConfig_Item* L_ItemConfig_GetCollectible(const int id) {
 		return g_Manager->GetItemConfig()->GetCollectible(id);
 	}
+	bool L_ItemConfig_IsValidCollectible(const int id) {
+		return g_Manager->GetItemConfig()->IsValidCollectible(id);
+	}
 
 	// ItemConfig_Item
 	bool L_ItemConfigItem_HasTags(ItemConfig_Item* self, const uint64_t tags) {

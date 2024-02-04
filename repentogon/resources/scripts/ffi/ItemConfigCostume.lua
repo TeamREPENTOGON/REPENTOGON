@@ -10,8 +10,8 @@ typedef struct {
 	unsigned int OverwriteColor;
 } ItemConfig_Costume;
 
-const char* L_ItemConfigCostume_GetAnm2Path(ItemConfig_Costume* self);
-const char* L_ItemConfigCostume_SetAnm2Path(ItemConfig_Costume* self, const char* str);
+const char* L_ItemConfigCostume_GetAnm2Path(ItemConfig_Costume*);
+const char* L_ItemConfigCostume_SetAnm2Path(ItemConfig_Costume*, const char*);
 ]]
 
 local repentogon = ffidll
