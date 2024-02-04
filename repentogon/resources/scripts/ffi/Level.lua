@@ -18,7 +18,7 @@ bool L_Level_GetCanSeeEverything();
 // Room
 void* L_Level_GetCurrentRoom();
 // RoomDescriptor
-void* L_Level_GetCurrentRoomDesc();
+RoomDescriptor* L_Level_GetCurrentRoomDesc();
 int L_Level_GetCurrentRoomIndex();
 const char* L_Level_GetCurseName();
 int L_Level_GetCurses();
@@ -28,17 +28,17 @@ Vector* L_Level_GetEnterPosition();
 bool L_Level_GetHeartPicked();
 int L_Level_GetLastBossRoomListIndex();
 // RoomDescriptor
-void* L_Level_GetLastRoomDesc();
+RoomDescriptor* L_Level_GetLastRoomDesc();
 const char* L_Level_GetName();
 int L_Level_GetNonCompleteRoomIndex();
 float L_Level_GetPlanetariumChance();
 int L_Level_GetPreviousRoomIndex();
 int L_Level_GetRandomRoomIndex(bool, int);
 // RoomDescriptor
-void* L_Level_GetRoomByIdx(int, int);
+RoomDescriptor* L_Level_GetRoomByIdx(int, int);
 int L_Level_GetRoomCount();
 // RoomDescriptor[]
-void* L_Level_GetRooms();
+RoomDescriptor_List* L_Level_GetRooms();
 // LevelStage
 int L_Level_GetStage();
 // StageType
@@ -172,7 +172,7 @@ function LevelFuncs:GetCurrentRoomIndex()
 end
 
 function LevelFuncs:GetCurseName()
-    return lffi.string(lffi.gc(repentogon.L_Level_GetCurseName(), repentogon.L_Free))
+    return GCString(repentogon.L_Level_GetCurseName())
 end
 
 function LevelFuncs:GetCurses()
@@ -200,7 +200,7 @@ function LevelFuncs:GetLastRoomDesc()
 end
 
 function LevelFuncs:GetName()
-    return lffi.string(lffi.gc(repentogon.L_Level_GetName(), repentogon.L_Free))
+    return GCString(repentogon.L_Level_GetName())
 end
 
 function LevelFuncs:GetNonCompleteRoomIndex()
@@ -234,7 +234,7 @@ function LevelFuncs:GetRoomCount()
 end
 
 function LevelFuncs:GetRooms()
-    return repentogon.L_Level_GetRooms()
+    return GC(repentogon.L_Level_GetRooms())
 end
 
 function LevelFuncs:GetStage()

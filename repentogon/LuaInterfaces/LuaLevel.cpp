@@ -66,13 +66,11 @@ extern "C" {
 
 	// Room
 	Room* L_Level_GetCurrentRoom() {
-		g_Game->GetConsole()->PrintError("L_Level_GetCurrentRoom: Room unimplemented!");
 		return g_Game->_level._room;
 	}
 
 	// RoomDescriptor
 	RoomDescriptor* L_Level_GetCurrentRoomDesc() {
-		g_Game->GetConsole()->PrintError("L_Level_GetCurrentRoomDesc: RoomDescriptor unimplemented!");
 		return g_Game->GetRoomByIdx(g_Game->_level._currentRoomIdx, g_Game->_level._currentDimensionIdx);
 	}
 
@@ -110,7 +108,6 @@ extern "C" {
 
 	// RoomDescriptor
 	RoomDescriptor* L_Level_GetLastRoomDesc() {
-		g_Game->GetConsole()->PrintError("L_Level_GetLastRoomDesc: RoomDescriptor unimplemented!");
 		return g_Game->GetRoomByIdx(g_Game->_level._lastRoomIdx, g_Game->_level._lastRoomDimensionIdx);
 	}
 
@@ -137,7 +134,6 @@ extern "C" {
 
 	// RoomDescriptor
 	RoomDescriptor* L_Level_GetRoomByIdx(int idx, int dimension) {
-		g_Game->GetConsole()->PrintError("L_Level_GetRoomByIdx: RoomDescriptor unimplemented!");
 		return g_Game->GetRoomByIdx(idx, dimension);
 	}
 
@@ -145,10 +141,9 @@ extern "C" {
 		return g_Game->_level._nbRooms;
 	}
 
-	// RoomDescriptor[]: { i32 roomCount : 0x0; RoomDescriptor* rooms : 0x4; }
-	void* L_Level_GetRooms() {
-		g_Game->GetConsole()->PrintError("L_Level_GetRoomByIdx: RoomDescriptor unimplemented!");
-		return nullptr;
+	// RoomDescriptor[]: { u32 roomCount : 0x0; RoomDescriptor* rooms : 0x4; }
+	RoomDescriptor_List* L_Level_GetRooms() {
+		return new auto(g_Game->_level.GetRooms());
 	}
 
 	// LevelStage

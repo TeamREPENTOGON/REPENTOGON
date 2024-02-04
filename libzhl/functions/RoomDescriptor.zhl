@@ -28,3 +28,8 @@ struct RoomDescriptor depends (RoomConfig)
     int32_t DeliriumDistance : 0xb0; // 0xB0
     int32_t unk29 : 0xb4; // 0xB4
 } : 0xb8; // 0xB8 (Checked in assembly)
+
+struct RoomDescriptor_List {
+    uint32_t size : 0x0; // 0x00
+    RoomDescriptor* rooms : 0x4; // 0x04
+} : 0x8; // 0x08

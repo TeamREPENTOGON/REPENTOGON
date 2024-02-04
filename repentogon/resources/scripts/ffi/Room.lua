@@ -18,7 +18,7 @@ Vector* L_Room_GetClampedPosition(Vector* pos, float margin);
 int L_Room_GetDecorationSeed();
 int L_Room_GetDeliriumDistance();
 float L_Room_GetDevilRoomChance();
-GridEntityDoor* L_Room_GetDoor(int doorSlot);
+GridEntity_Door* L_Room_GetDoor(int doorSlot);
 Vector* L_Room_GetDoorSlotPosition(int doorSlot);
 int L_Room_GetDungeonRockIdx();
 float L_Room_GetEnemyDamageInflicted();
@@ -163,14 +163,14 @@ function RoomFuncs:FindFreePickupSpawnPosition(pos, initialStep, avoidActiveEnti
     avoidActiveEntities = ffichecks.optboolean(avoidActiveEntities, false)
     allowPits = ffichecks.optboolean(allowPits, false)
 
-    return lffi.gc(repentogon.L_Room_FindFreePickupSpawnPosition(pos, initialStep, avoidActiveEntities, allowPits), repentogon.L_Free)
+    return GC(repentogon.L_Room_FindFreePickupSpawnPosition(pos, initialStep, avoidActiveEntities, allowPits))
 end
 
 function RoomFuncs:FindFreeTilePosition(pos, distanceThreshold)
     ffichecks.checkcdata(1, pos, "Vector")
     ffichecks.checknumber(2, distanceThreshold)
 
-    return lffi.gc(repentogon.L_Room_FindFreeTilePosition(pos, distanceThreshold), repentogon.L_Free)
+    return GC(repentogon.L_Room_FindFreeTilePosition(pos, distanceThreshold))
 end 
 
 function RoomFuncs:GetAliveBossesCount()
@@ -194,7 +194,7 @@ function RoomFuncs:GetBossID()
 end
 
 function RoomFuncs:GetBottomRightPos()
-    return lffi.gc(repentogon.L_Room_GetBottomRightPos(), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetBottomRightPos())
 end
 
 function RoomFuncs:GetBrokenWatchState()
@@ -202,7 +202,7 @@ function RoomFuncs:GetBrokenWatchState()
 end 
 
 function RoomFuncs:GetCenterPos()
-    return lffi.gc(repentogon.L_Room_GetCenterPos(), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetCenterPos())
 end
 
 function RoomFuncs:GetClampedGridIndex(pos)
@@ -214,7 +214,7 @@ function RoomFuncs:GetClampedPosition(pos, margin)
     ffichecks.checkcdata(1, pos, "Vector")
     ffichecks.checknumber(2, margin)
 
-    return lffi.gc(repentogon.L_Room_GetClampedPosition(pos, margin), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetClampedPosition(pos, margin))
 end
 
 function RoomFuncs:GetDecorationSeed()
@@ -238,7 +238,7 @@ end
 function RoomFuncs:GetDoorSlotPosition(doorSlot)
     ffichecks.checknumber(1, doorSlot)
 
-    return lffi.gc(repentogon.L_Room_GetDoorSlotPosition(doorSlot), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetDoorSlotPosition(doorSlot))
 end
 
 function RoomFuncs:GetDungeonRockIdx()
@@ -306,7 +306,7 @@ end
 function RoomFuncs:GetGridPosition(index)
     ffichecks.checknumber(1, index)
 
-    return lffi.gc(repentogon.L_Room_GetGridPosition(), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetGridPosition())
 end
 
 function RoomFuncs:GetGridSize()
@@ -321,7 +321,7 @@ function RoomFuncs:GetLaserTarget(pos, dir)
     ffichecks.checkcdata(1, pos, "Vector")
     ffichecks.checkcdata(2, dir, "Vector")
 
-    return lffi.gc(repentogon.L_Room_GetLaserTarget(pos, dir), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetLaserTarget(pos, dir))
 end
 
 function RoomFuncs:GetLavaIntensity()
@@ -333,23 +333,23 @@ function RoomFuncs:GetLightingAlpha()
 end 
 
 function RoomFuncs:GetLRoomAreaDesc()
-    return lffi.gc(repentogon.L_Room_GetLRoomAreaDesc(), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetLRoomAreaDesc())
 end
 
 function RoomFuncs:GetLRoomTileDesc()
-    return lffi.gc(repentogon.L_Room_GetLRoomTileDesc(), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetLRoomTileDesc())
 end
 
 function RoomFuncs:GetRandomPosition(margin)
     ffichecks.checknumber(1, margin)
 
-    return lffi.gc(repentogon.GetRandomPosition(margin), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetRandomPosition(margin))
 end
 
 function RoomFuncs:GetRandomTileIndex(seed)
     ffichecks.checknumber(1, seed)
 
-    return repentogon.GetRandomTileIndex(seed)
+    return repentogon.L_Room_GetRandomTileIndex(seed)
 end
 
 function RoomFuncs:GetRedHeartDamage()
@@ -361,11 +361,11 @@ function RoomFuncs:GetRenderMode()
 end
 
 function RoomFuncs:GetRenderScrollOffset()
-    return lffi.gc(repentogon.L_Room_GetRenderScrollOffset(), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetRenderScrollOffset())
 end
 
 function RoomFuncs:GetRenderSurfaceTopLeft()
-    return lffi.gc(repentogon.L_Room_GetRenderSurfaceTopLeft(), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetRenderSurfaceTopLeft())
 end
 
 function RoomFuncs:GetRoomConfigStage()
@@ -400,7 +400,7 @@ function RoomFuncs:GetTintedRockIdx()
 end
 
 function RoomFuncs:GetTopLeftPos()
-    return lffi.gc(repentogon.L_Room_GetTopLeftPos(), repentogon.L_Free)
+    return GC(repentogon.L_Room_GetTopLeftPos())
 end
 
 function RoomFuncs:GetType()
@@ -408,7 +408,7 @@ function RoomFuncs:GetType()
 end
 
 function RoomFuncs:GetWaterCurrent()
-    return lffi.gc(repentogon.L_Room_GetWaterCurrent(), repentogon.L_Free)
+    return repentogon.L_Room_GetWaterCurrent()
 end
 
 function RoomFuncs:HasCurseMist()
@@ -532,7 +532,7 @@ function RoomFuncs:ScreenWrapPosition(pos, margin)
     ffichecks.checkcdata(1, pos, "Vector")
     ffichecks.checknumber(2, margin)
 
-    return lffi.gc(repentogon.L_Room_ScreenWrapPosition(pos, margin), repentogon.L_Free)
+    return GC(repentogon.L_Room_ScreenWrapPosition(pos, margin))
 end
 
 function RoomFuncs:SetAmbushDone(value)
@@ -710,7 +710,7 @@ end
 function RoomFuncs:WorldToScreenPosition(worldPos)
     ffichecks.checkcdata(1, worldPos, "Vector")
 
-    return lffi.gc(repentogon.L_Room_WorldToScreenPosition(worldPos), repentogon.L_Free)
+    return GC(repentogon.L_Room_WorldToScreenPosition(worldPos))
 end
 
 local RoomMT = {

@@ -77,6 +77,16 @@ ffichecks.optcdata = function(var, ctype, opt)
 	return opt
 end
 
+local free = ffidll.L_Free
+
+function GC(obj)
+	return lffi.gc(obj, free)
+end
+
+function GCString(str)
+	return lffi.string(GC(str))
+end
+
 
 pcall(require("Isaac"))
 
@@ -96,6 +106,8 @@ pcall(require("Console"))
 pcall(require("KColor"))
 pcall(require("Color"))
 pcall(require("Vector"))
+pcall(require("RoomConfig"))
+pcall(require("RoomDescriptor"))
 pcall(require("EntityList"))
 pcall(require("GridEntity"))
 pcall(require("EntityRef"))

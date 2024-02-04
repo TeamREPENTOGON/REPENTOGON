@@ -2,6 +2,99 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+extern "C" {
+	bool L_RoomDescriptor_GetChallengeDone(RoomDescriptor* self) {
+		return ((self->Flags >> 3) & 1) != 0;
+	}
+
+	bool L_RoomDescriptor_GetClear(RoomDescriptor* self) {
+		return (self->Flags & 1) != 0;
+	}
+
+	bool L_RoomDescriptor_GetHasWater(RoomDescriptor* self) {
+		return ((self->Flags >> 5) & 1) != 0;
+	}
+
+	bool L_RoomDescriptor_GetNoReward(RoomDescriptor* self) {
+		return ((self->Flags >> 7) & 1) != 0;
+	}
+
+	bool L_RoomDescriptor_GetPressurePlatesTriggered(RoomDescriptor* self) {
+		return ((self->Flags >> 1) & 1) != 0;
+	}
+
+	bool L_RoomDescriptor_GetSacrificeDone(RoomDescriptor* self) {
+		return ((self->Flags >> 2) & 1) != 0;
+	}
+
+	bool L_RoomDescriptor_GetSurpriseMiniboss(RoomDescriptor* self) {
+		return ((self->Flags >> 4) & 1) != 0;
+	}
+
+	void L_RoomDescriptor_SetChallengeDone(RoomDescriptor* self, bool value) {
+		if (value) {
+			self->Flags |= (1 << 3);
+		}
+		else {
+			self->Flags &= ~(1 << 3);
+		}
+	}
+
+	void L_RoomDescriptor_SetClear(RoomDescriptor* self, bool value) {
+		if (value) {
+			self->Flags |= 1;
+		}
+		else {
+			self->Flags &= ~1;
+		}
+	}
+
+	void L_RoomDescriptor_SetHasWater(RoomDescriptor* self, bool value) {
+		if (value) {
+			self->Flags |= (1 << 5);
+		}
+		else {
+			self->Flags &= ~(1 << 5);
+		}
+	}
+
+	void L_RoomDescriptor_SetNoReward(RoomDescriptor* self, bool value) {
+		if (value) {
+			self->Flags |= (1 << 7);
+		}
+		else {
+			self->Flags &= ~(1 << 7);
+		}
+	}
+
+	void L_RoomDescriptor_SetPressurePlatesTriggered(RoomDescriptor* self, bool value) {
+		if (value) {
+			self->Flags |= (1 << 1);
+		}
+		else {
+			self->Flags &= ~(1 << 1);
+		}
+	}
+
+	void L_RoomDescriptor_SetSacrificeDone(RoomDescriptor* self, bool value) {
+		if (value) {
+			self->Flags |= (1 << 2);
+		}
+		else {
+			self->Flags &= ~(1 << 2);
+		}
+	}
+
+	void L_RoomDescriptor_SetSurpriseMiniboss(RoomDescriptor* self, bool value) {
+		if (value) {
+			self->Flags |= (1 << 4);
+		}
+		else {
+			self->Flags &= ~(1 << 4);
+		}
+	}
+}
+
 static RoomDescriptor* GetLeftRoom(RoomDescriptor* source) {
 	return nullptr;
 }
