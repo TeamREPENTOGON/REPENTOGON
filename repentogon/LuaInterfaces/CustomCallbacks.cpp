@@ -518,7 +518,7 @@ void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent
 }
 
 HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
-	if (!CallbackState.test(1040 - 1000) && !CallbackState.test(1041 - 1000)) { 
+	if (!CallbackState.test(1040) && !CallbackState.test(1041)) { 
 		return super(Velocity);
 	}
 	lua_State* L = g_LuaEngine->_state;
@@ -1030,7 +1030,7 @@ void PostMarksRender(CompletionWidget* cmp, Vector* pos, Vector* scale) {
 }
 HOOK_METHOD(CompletionWidget, Render, (Vector* pos, Vector* scale) -> void) {
 	const int callbackid = 1216;
-	if (!(CallbackState.test(callbackid)|| CallbackState.test((callbackid + 1) - 1000))) { super(pos, scale); return; }
+	if (!(CallbackState.test(callbackid)|| CallbackState.test((callbackid + 1)))) { super(pos, scale); return; }
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
@@ -1077,7 +1077,7 @@ void PostPauseScreenRender(PauseScreen* paws) {
 }
 HOOK_METHOD(PauseScreen, Render, () -> void) {
 	const int callbackid = 1218;
-	if (!(CallbackState.test(callbackid) || CallbackState.test((callbackid + 1) - 1000))) { super(); return; }
+	if (!(CallbackState.test(callbackid) || CallbackState.test((callbackid + 1)))) { super(); return; }
 	lua_State* L = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(L);
 
@@ -1190,7 +1190,7 @@ HOOK_METHOD(Entity_Player, UseCard, (int cardType, unsigned int useFlag) -> void
 HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int useFlag) -> void) {
 	const int callbackid1 = 1065;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 		
 		lua::LuaStackProtector protector(L);
 
@@ -1214,7 +1214,7 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 	}
 	super(pillEffect, pillColor, useFlag);
 	const int callbackid2 = 1001;
-	if (CallbackState.test(callbackid2 - 1000)) {
+	if (CallbackState.test(callbackid2)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
 			.push(pillEffect)
@@ -1540,7 +1540,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	const int callbackid1 = 1089;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 		
 		lua::LuaStackProtector protector(L);
 
@@ -1565,7 +1565,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 	}
 	super(offset);
 	const int callbackid2 = 1090;
-	if (CallbackState.test(callbackid2 - 1000)) {
+	if (CallbackState.test(callbackid2)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
@@ -1841,7 +1841,7 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) -> void) {
 	const int callbackid1 = 1116;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 		
 		lua::LuaStackProtector protector(L);
 
@@ -1863,7 +1863,7 @@ HOOK_METHOD(ANM2, ReplaceSpritesheet, (int LayerID, std::string& PngFilename) ->
 	}
 	super(LayerID, PngFilename);
 	const int callbackid2 = 1117;
-	if (CallbackState.test(callbackid2 - 1000)) {
+	if (CallbackState.test(callbackid2)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
@@ -1937,7 +1937,7 @@ HOOK_METHOD(Entity_Slot, Update, () -> void) {
 HOOK_METHOD(Entity_Slot, CreateDropsFromExplosion, () -> void) {
 	const int callbackid1 = 1123;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 		
 		lua::LuaStackProtector protector(L);
 
@@ -1958,7 +1958,7 @@ HOOK_METHOD(Entity_Slot, CreateDropsFromExplosion, () -> void) {
 	}
 	super();
 	const int callbackid2 = 1124;
-	if (CallbackState.test(callbackid2 - 1000)) {
+	if (CallbackState.test(callbackid2)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
@@ -1972,7 +1972,7 @@ HOOK_METHOD(Entity_Slot, CreateDropsFromExplosion, () -> void) {
 HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 	const int callbackid1 = 1125;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 		
 		lua::LuaStackProtector protector(L);
 
@@ -1997,7 +1997,7 @@ HOOK_METHOD(Entity_Slot, SetPrizeCollectible, (int id) -> void) {
 	}
 	super(id);
 	const int callbackid2 = 1126;
-	if (CallbackState.test(callbackid2 - 1000)) {
+	if (CallbackState.test(callbackid2)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
@@ -2031,7 +2031,7 @@ HOOK_METHOD(ItemOverlay, Update, (bool unk) -> void) {
 HOOK_METHOD_PRIORITY(ItemOverlay, Show, -100, (int overlayID, int delay, Entity_Player* player) -> void) {
 	lua_State* L = g_LuaEngine->_state;
 	const int callbackid1 = 1076;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 		
 		lua::LuaStackProtector protector(L);
 
@@ -2058,7 +2058,7 @@ HOOK_METHOD_PRIORITY(ItemOverlay, Show, -100, (int overlayID, int delay, Entity_
 	}
 	super(overlayID, delay, player);
 	const int callbackid2 = 1134;
-	if (CallbackState.test(callbackid2 - 1000)) {
+	if (CallbackState.test(callbackid2)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
@@ -2180,7 +2180,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 	lua_State* L = g_LuaEngine->_state;
 
 	const int callbackid1 = 1118;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 
 		lua::LuaStackProtector protector(L);
 
@@ -2206,7 +2206,7 @@ HOOK_METHOD(PlayerHUD, RenderHearts, (Vector* unk1, ANM2 *sprite, const Vector &
 	super(unk1, sprite, pos, unk2);
 
 	const int callbackid2 = 1091;
-	if (CallbackState.test(callbackid2 - 1000)) {
+	if (CallbackState.test(callbackid2)) {
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
@@ -2560,7 +2560,7 @@ void ProcessPostGridHurtDamage(GridEntity* gridEnt, int type, Entity* ent, int D
 
 HOOK_METHOD(GridEntity, hurt_func, (Entity* ent, int Damage, int DamageFlags, float unk3, bool unk4) -> void) {
 	const int callbackid = 1012;
-	if (!(CallbackState.test(callbackid) || CallbackState.test((callbackid + 1) - 1000))) { super(ent, Damage, DamageFlags, unk3, unk4); return; }
+	if (!(CallbackState.test(callbackid) || CallbackState.test((callbackid + 1)))) { super(ent, Damage, DamageFlags, unk3, unk4); return; }
 	int gridType = this->GetDesc()->_type;
 
 	lua_State* L = g_LuaEngine->_state;
@@ -3538,7 +3538,7 @@ HOOK_METHOD_PRIORITY(Manager, SetSaveSlot,-9999, (unsigned int slot) -> void) {
 
 	const int callbackid1 = 1470;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 
 		lua::LuaStackProtector protector(L);
 
@@ -3559,7 +3559,7 @@ HOOK_METHOD_PRIORITY(Manager, SetSaveSlot,-9999, (unsigned int slot) -> void) {
 //MC_POST_PRE_CHALLENGE_DONE (1471-1472)
 HOOK_METHOD_PRIORITY(PersistentGameData, AddChallenge, -9999, (int challengeid) -> void) {
 	int callbackid1 = 1471;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -3588,7 +3588,7 @@ HOOK_METHOD_PRIORITY(PersistentGameData, AddChallenge, -9999, (int challengeid) 
 
 	callbackid1 = 1472;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid1)) {
 
 		lua::LuaStackProtector protector(L);
 
