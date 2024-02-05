@@ -22,6 +22,10 @@ extern "C" {
 		}
 		return cards->at(id);
 	}
+	ItemConfig_Pill* L_ItemConfig_GetPillEffect(const int id) {
+		if (id < 0) return nullptr;
+		return g_Manager->GetItemConfig()->GetPillEffect(id);
+	}
 	bool L_ItemConfig_IsValidCollectible(const int id) {
 		return g_Manager->GetItemConfig()->IsValidCollectible(id);
 	}
@@ -84,5 +88,22 @@ extern "C" {
 	}
 	void L_ItemConfigCard_SetHudAnim(ItemConfig_Card* self, const char* str) {
 		self->hudAnim = std::string(str);
+	}
+
+	// ItemConfig_Pill
+	bool L_ItemConfigPill_IsAvailable(ItemConfig_Pill* self) {
+		return self->IsAvailable(self);
+	}
+	const char* L_ItemConfigPill_GetName(ItemConfig_Pill* self) {
+		return self->name.c_str();
+	}
+	void L_ItemConfigPill_SetName(ItemConfig_Pill* self, const char* str) {
+		self->name = std::string(str);
+	}
+	const char* L_ItemConfigPill_GetDescription(ItemConfig_Pill* self) {
+		return self->desc.c_str();
+	}
+	void L_ItemConfigPill_SetDescription(ItemConfig_Pill* self, const char* str) {
+		self->desc = std::string(str);
 	}
 }

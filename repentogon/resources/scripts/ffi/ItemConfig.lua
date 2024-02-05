@@ -3,6 +3,7 @@ ItemConfig_Item* L_ItemConfig_GetCollectible(const int);
 ItemConfig_Item* L_ItemConfig_GetNullItem(const int);
 ItemConfig_Item* L_ItemConfig_GetTrinket(const int);
 ItemConfig_Card* L_ItemConfig_GetCard(const int);
+ItemConfig_Pill* L_ItemConfig_GetPillEffect(const int);
 bool L_ItemConfig_IsValidCollectible(const int);
 ]]
 
@@ -39,6 +40,7 @@ ItemConfig.GetCollectible = ItemConfigGetFunc(repentogon.L_ItemConfig_GetCollect
 ItemConfig.GetNullItem = ItemConfigGetFunc(repentogon.L_ItemConfig_GetNullItem)
 ItemConfig.GetTrinket = ItemConfigGetFunc(repentogon.L_ItemConfig_GetTrinket)
 ItemConfig.GetCard = ItemConfigGetFunc(repentogon.L_ItemConfig_GetCard)
+ItemConfig.GetPillEffect = ItemConfigGetFunc(repentogon.L_ItemConfig_GetPillEffect)
 
 ItemConfig.ShouldAddCostumeOnPickup = function(item)
 	ffichecks.checkcdata(1, item, "ItemConfig_Item")

@@ -55,6 +55,13 @@ struct ItemConfig depends (ItemConfig_Item, ItemConfig_Card, ItemConfig_Pill, It
 			}
 			return nullptr;
 		}
+		inline ItemConfig_Pill* GetPillEffect(const unsigned int id) {
+			const auto* pillEffects = this->GetPillEffects();
+			if (id < pillEffects->size()) {
+				return pillEffects->at(id);
+			}
+			return nullptr;
+		}
 		
 		static bool LIBZHL_API IsValidTrinket(unsigned int TrinketType);
 	}}
