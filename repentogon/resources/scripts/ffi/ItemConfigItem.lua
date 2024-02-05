@@ -48,16 +48,20 @@ local lffi = ffi
 
 local ItemConfigItemFuncs = {}
 
+-- enums broke
 function ItemConfigItemFuncs:IsCollectible()
-	return self.Type == ItemType.ITEM_PASSIVE or self.Type == ItemType.ITEM_ACTIVE or self.Type == ItemType.ITEM_FAMILIAR
+	return self.Type == 1 or self.Type == 3 or self.Type == 4
+	--return self.Type == ItemType.ITEM_PASSIVE or self.Type == ItemType.ITEM_ACTIVE or self.Type == ItemType.ITEM_FAMILIAR
 end
 
 function ItemConfigItemFuncs:IsNull()
-	return self.Type == ItemType.ITEM_NULL
+	return self.Type == 0
+	--return self.Type == ItemType.ITEM_NULL
 end
 
 function ItemConfigItemFuncs:IsTrinket()
-	return self.Type == ItemType.ITEM_TRINKET
+	return self.Type == 2
+	--return self.Type == ItemType.ITEM_TRINKET
 end
 
 -- Maybe update this to just do the bitwise operation luaside when possible.
@@ -97,7 +101,15 @@ local setkeys = {
 
 local ItemConfigItemMT = lffi.metatype("ItemConfig_Item", {
 	__tostring = function(self)
-		return "ItemConfigItem(#" .. self.ID .. ": " .. self.Name .. ")"
+		local itemType
+		if self:IsCollectible() then
+			itemType = "Collectible"
+		elseif self:IsTrinket() then
+			itemType = "Trinket"
+		else
+			itemType = "Null"
+		end
+		return "ItemConfigItem(" .. itemType .. " #" .. self.ID .. ": \"" .. self.Name .. "\")"
 	end,
 	__index = function(self, key)
 		if getkeys[key] ~= nil then

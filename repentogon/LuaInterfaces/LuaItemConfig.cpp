@@ -7,6 +7,14 @@ extern "C" {
 	ItemConfig_Item* L_ItemConfig_GetCollectible(const int id) {
 		return g_Manager->GetItemConfig()->GetCollectible(id);
 	}
+	ItemConfig_Item* L_ItemConfig_GetNullItem(const int id) {
+		if (id <= 0) return nullptr;
+		return g_Manager->GetItemConfig()->GetNullItem(id);
+	}
+	ItemConfig_Item* L_ItemConfig_GetTrinket(const int id) {
+		if (id <= 0) return nullptr;
+		return g_Manager->GetItemConfig()->GetTrinket(id);
+	}
 	ItemConfig_Card* L_ItemConfig_GetCard(const int id) {
 		auto* cards = g_Manager->GetItemConfig()->GetCards();
 		if (id <= 0 || id >= cards->size()) {

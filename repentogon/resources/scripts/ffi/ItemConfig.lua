@@ -1,5 +1,7 @@
 ffi.cdef[[
 ItemConfig_Item* L_ItemConfig_GetCollectible(const int);
+ItemConfig_Item* L_ItemConfig_GetNullItem(const int);
+ItemConfig_Item* L_ItemConfig_GetTrinket(const int);
 ItemConfig_Card* L_ItemConfig_GetCard(const int);
 bool L_ItemConfig_IsValidCollectible(const int);
 ]]
@@ -34,6 +36,8 @@ local function ItemConfigGetFunc(func)
 end
 
 ItemConfig.GetCollectible = ItemConfigGetFunc(repentogon.L_ItemConfig_GetCollectible)
+ItemConfig.GetNullItem = ItemConfigGetFunc(repentogon.L_ItemConfig_GetNullItem)
+ItemConfig.GetTrinket = ItemConfigGetFunc(repentogon.L_ItemConfig_GetTrinket)
 ItemConfig.GetCard = ItemConfigGetFunc(repentogon.L_ItemConfig_GetCard)
 
 ItemConfig.ShouldAddCostumeOnPickup = function(item)
