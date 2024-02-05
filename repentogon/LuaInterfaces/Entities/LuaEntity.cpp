@@ -255,12 +255,10 @@ extern "C" {
 		return ent->ToProjectile();
 	}
 
-	/*
-	// not sure how to get a clean reference to Entity_Slot rtti type descriptor
+	// TODO: this doesn't actually use the Entity_Slot RTTI, there's currently no good way to get a reference for it
 	Entity_Slot* L_Entity_ToSlot(Entity* ent) {
 		return ent->ToSlot();
 	}
-	*/
 
 	Entity_Tear* L_Entity_ToTear(Entity* ent) {
 		return ent->ToTear();

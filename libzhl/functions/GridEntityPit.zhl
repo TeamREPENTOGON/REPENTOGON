@@ -19,3 +19,6 @@ struct GridEntity_Pit : public GridEntity {
 		skip; // InitSubclass
     };
 } : 0x158;
+
+"74??6a0068????????68(????????)6a00ff75":
+reference void* GridEntityPitRTTI;

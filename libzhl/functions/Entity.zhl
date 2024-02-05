@@ -159,11 +159,15 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, ColorMod) {
     inline T Downcast(void* target) {
         return (T)__RTDynamicCast(this, 0, (void*)__ptr_EntityRTTI, target, false); 
     }
+	template<typename T>
+	inline T FakeDowncast(unsigned int type) {
+		return *this->GetType() == type ? (T)static_cast<T>(this) : nullptr;
+	}
+
 
     inline Entity_NPC* GetMinecart() { return *(Entity_NPC**)((char*)this + 0x32C); }
 	
 	inline LuaBridgeRef** GetLuaRef() { return (LuaBridgeRef**)((char*)this + 0x35C); }
-	
 	
 	inline Entity_Bomb* ToBomb() { return Downcast<Entity_Bomb*>(__ptr_EntityBombRTTI); } 
 	inline Entity_Effect* ToEffect() { return Downcast<Entity_Effect*>(__ptr_EntityEffectRTTI); } 
@@ -176,6 +180,9 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, ColorMod) {
     inline Entity_Projectile* ToProjectile() { return Downcast<Entity_Projectile*>(__ptr_EntityProjectileRTTI); }
 	// inline Entity_Slot* ToSlot() { return Downcast<Entity_Slot*>(__ptr_EntitySlotRTTI); }
 	inline Entity_Tear* ToTear() { return Downcast<Entity_Tear*>(__ptr_EntityTearRTTI); }
+	
+	// TODO: Slot RTTI has no viable signature currently
+	inline Entity_Slot* ToSlot() { return FakeDowncast<Entity_Slot*>(6); }
 	
 	Entity() 
 	{

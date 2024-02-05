@@ -22,6 +22,39 @@ struct GridEntity depends (GridEntityDesc) {
 	inline int GetType() {return *(int*)((char*)this + 0x4); }
 	inline GridCollisionClass* GetCollisionClass() { return (GridCollisionClass*)((char*)this + 0x3C); }
 	inline unsigned int* GetGridIndex() { return (unsigned int*)((char*)this + 0x24); }
+	
+	template<typename T>
+    inline T Downcast(void* target) {
+        return (T)__RTDynamicCast(this, 0, (void*)__ptr_GridEntityRTTI, target, false); 
+    }
+	template<typename T>
+	inline T FakeDowncast(unsigned int type) {
+		return this->GetType() == type ? (T)static_cast<T>(this) : nullptr;
+	}
+	template<typename T>
+	inline T FakeDowncast(unsigned int type1, unsigned int type2) {
+		return (this->GetType() == type1 || this->GetType() == type2) ? (T)static_cast<T>(this) : nullptr;
+	}
+
+	inline GridEntity_Door* ToDoor() { return Downcast<GridEntity_Door*>(__ptr_GridEntityDoorRTTI); }
+	inline GridEntity_Pit* ToPit() { return Downcast<GridEntity_Pit*>(__ptr_GridEntityPitRTTI); } 
+	inline GridEntity_Poop* ToPoop() { return Downcast<GridEntity_Poop*>(__ptr_GridEntityPoopRTTI); } 
+	inline GridEntity_Rock* ToRock() { return Downcast<GridEntity_Rock*>(__ptr_GridEntityRockRTTI); } 
+	
+	// TODO: the RTTIs on these have no viable signature currently
+	inline GridEntity_Decoration* ToDecoration() { return FakeDowncast<GridEntity_Decoration*>(1); }
+	inline GridEntity_Fire* ToFire() { return FakeDowncast<GridEntity_Fire*>(13); }
+	inline GridEntity_Gravity* ToGravity() { return FakeDowncast<GridEntity_Gravity*>(19); }
+	inline GridEntity_Lock* ToLock() { return FakeDowncast<GridEntity_Lock*>(11); }
+	inline GridEntity_PressurePlate* ToPressurePlate() { return FakeDowncast<GridEntity_PressurePlate*>(20); }
+	inline GridEntity_Spikes* ToSpikes() { return FakeDowncast<GridEntity_Spikes*>(8,9); }
+	inline GridEntity_Stairs* ToStairs() { return FakeDowncast<GridEntity_Stairs*>(18); }
+	inline GridEntity_Statue* ToStatue() { return FakeDowncast<GridEntity_Statue*>(21); }
+	inline GridEntity_Teleporter* ToTeleporter() { return FakeDowncast<GridEntity_Teleporter*>(23); }
+	inline GridEntity_TNT* ToTNT() { return FakeDowncast<GridEntity_TNT*>(12); }
+	inline GridEntity_TrapDoor* ToTrapDoor() { return FakeDowncast<GridEntity_TrapDoor*>(17); }
+	inline GridEntity_Wall* ToWall() { return FakeDowncast<GridEntity_Wall*>(15); }
+	inline GridEntity_Web* ToWeb() { return FakeDowncast<GridEntity_Web*>(10); }
 }} 
 	
 	__vtable {
@@ -44,6 +77,9 @@ struct GridEntity depends (GridEntityDesc) {
 		skip; // InitSubclass
     };
 } : 0x154;
+
+"74??6a0068(????????)68????????6a00ff75":
+reference void* GridEntityRTTI;
 
 /* For convenience's sake:
 		skip; // Free

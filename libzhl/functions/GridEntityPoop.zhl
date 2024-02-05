@@ -19,3 +19,6 @@ struct GridEntity_Poop : public GridEntity {
 		skip; // InitSubclass
     };
 } : 0x174;
+
+"8378??0175??6a0068(????????)68":
+reference void* GridEntityPoopRTTI;
