@@ -164,10 +164,18 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector, ColorMod) {
 	
 	inline LuaBridgeRef** GetLuaRef() { return (LuaBridgeRef**)((char*)this + 0x35C); }
 	
-    inline Entity_NPC* ToNPC() { return Downcast<Entity_NPC*>(__ptr_EntityNPCRTTI); } 
+	
+	inline Entity_Bomb* ToBomb() { return Downcast<Entity_Bomb*>(__ptr_EntityBombRTTI); } 
+	inline Entity_Effect* ToEffect() { return Downcast<Entity_Effect*>(__ptr_EntityEffectRTTI); } 
+	inline Entity_Familiar* ToFamiliar() { return Downcast<Entity_Familiar*>(__ptr_EntityFamiliarRTTI); }
+	inline Entity_Knife* ToKnife() { return Downcast<Entity_Knife*>(__ptr_EntityKnifeRTTI); }
+	inline Entity_Laser* ToLaser() { return Downcast<Entity_Laser*>(__ptr_EntityLaserRTTI); }
+    inline Entity_NPC* ToNPC() { return Downcast<Entity_NPC*>(__ptr_EntityNPCRTTI); }
+	inline Entity_Pickup* ToPickup() { return Downcast<Entity_Pickup*>(__ptr_EntityPickupRTTI); }
     inline Entity_Player* ToPlayer() { return Downcast<Entity_Player*>(__ptr_EntityPlayerRTTI); }
-    inline Entity_Familiar* ToFamiliar() { return Downcast<Entity_Familiar*>(__ptr_EntityFamiliarRTTI); }
     inline Entity_Projectile* ToProjectile() { return Downcast<Entity_Projectile*>(__ptr_EntityProjectileRTTI); }
+	// inline Entity_Slot* ToSlot() { return Downcast<Entity_Slot*>(__ptr_EntitySlotRTTI); }
+	inline Entity_Tear* ToTear() { return Downcast<Entity_Tear*>(__ptr_EntityTearRTTI); }
 	
 	Entity() 
 	{

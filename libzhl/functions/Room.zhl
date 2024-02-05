@@ -286,7 +286,7 @@ __thiscall void Room::Update();
 "558bec83ec08f30f100d":
 __thiscall Vector Room::WorldToScreenPosition(Vector* worldPos);
 
-struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, Vector, ColorMod, Backdrop) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }

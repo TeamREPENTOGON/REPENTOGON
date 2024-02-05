@@ -52,13 +52,11 @@ extern "C" {
 		ent->BloodExplode();
 	}
 	
-	/*
-		//todo: will need to handle entities with an empty function in their vtable here
+	//todo: i'd like to be able to properly call the vtable for this,
+	//but there's no chance of getting a unique signature for "return false"
 	bool L_Entity_CanShutDoors(Entity* ent) {
-		return ent->CanShutDoors();
+		return false;
 	}
-	*/
-
 
 	void L_Entity_ClearEntityFlags(Entity* ent, lua_Integer flags) {
 		ent->_flags &= ~flags;
@@ -139,12 +137,10 @@ extern "C" {
 	}
 
 	//todo: vtable func
-	/*
-		bool L_Entity_IsBoss(Entity* ent) {
-		return ent->IsBoss();
+	bool L_Entity_IsBoss(Entity* ent) {
+		return false;
 	}
-	*/
-
+	
 	bool L_Entity_IsDead(Entity* ent) {
 		return ent->_isDead;
 	}
@@ -224,50 +220,50 @@ extern "C" {
 	}
 
 	Entity_Bomb* L_Entity_ToBomb(Entity* ent) {
-		return (Entity_Bomb*)__RTDynamicCast(ent, 0, EntityRTTI, EntityBombRTTI, 0);
+		return ent->ToBomb();
 	}
 
 	Entity_Effect* L_Entity_ToEffect(Entity* ent) {
-		return (Entity_Effect*)__RTDynamicCast(ent, 0, EntityRTTI, EntityEffectRTTI, 0);
+		return ent->ToEffect();
 	}
 
 	Entity_Familiar* L_Entity_ToFamiliar(Entity* ent) {
-		return (Entity_Familiar*)__RTDynamicCast(ent, 0, EntityRTTI, EntityFamiliarRTTI, 0);
+		return ent->ToFamiliar();
 	}
 
 	Entity_Knife* L_Entity_ToKnife(Entity* ent) {
-		return (Entity_Knife*)__RTDynamicCast(ent, 0, EntityRTTI, EntityKnifeRTTI, 0);
+		return ent->ToKnife();
 	}
 
 	Entity_Laser* L_Entity_ToLaser(Entity* ent) {
-		return (Entity_Laser*)__RTDynamicCast(ent, 0, EntityRTTI, EntityLaserRTTI, 0);
+		return ent->ToLaser();
 	}
 
 	Entity_NPC* L_Entity_ToNPC(Entity* ent) {
-		return (Entity_NPC*)__RTDynamicCast(ent, 0, EntityRTTI, EntityNPCRTTI, 0);
+		return ent->ToNPC();
 	}
 
 	Entity_Pickup* L_Entity_ToPickup(Entity* ent) {
-		return (Entity_Pickup*)__RTDynamicCast(ent, 0, EntityRTTI, EntityPickupRTTI, 0);
+		return ent->ToPickup();
 	}
 
 	Entity_Player* L_Entity_ToPlayer(Entity* ent) {
-		return (Entity_Player*)__RTDynamicCast(ent, 0, EntityRTTI, EntityPlayerRTTI, 0);
+		return ent->ToPlayer();
 	}
 
 	Entity_Projectile* L_Entity_ToProjectile(Entity* ent) {
-		return (Entity_Projectile*)__RTDynamicCast(ent, 0, EntityRTTI, EntityProjectileRTTI, 0);
+		return ent->ToProjectile();
 	}
 
 	/*
 	// not sure how to get a clean reference to Entity_Slot rtti type descriptor
 	Entity_Slot* L_Entity_ToSlot(Entity* ent) {
-		return (Entity_Slot*)__RTDynamicCast(ent, 0, EntityRTTI, EntitySlotRTTI, 0);
+		return ent->ToSlot();
 	}
 	*/
 
 	Entity_Tear* L_Entity_ToTear(Entity* ent) {
-		return (Entity_Tear*)__RTDynamicCast(ent, 0, EntityRTTI, EntityTearRTTI, 0);
+		return ent->ToTear();
 	}
 
 	Entity* L_Entity_GetChild(Entity* ent) {

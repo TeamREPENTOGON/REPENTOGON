@@ -24,6 +24,7 @@ ffi.cdef[[
 	void L_Entity_AddSlowing(Entity*, EntityRef*, int, ColorMod*);
 	void L_Entity_AddVelocity(Entity*, Vector*);
 	void L_Entity_BloodExplode(Entity*);
+	bool L_Entity_CanShutDoors(Entity*);
 	void L_Entity_ClearEntityFlags(Entity*, long long int*);
 	bool L_Entity_CollidesWithGrid(Entity*);
 	void L_Entity_Die(Entity*);
@@ -40,6 +41,7 @@ ffi.cdef[[
 	bool L_Entity_HasFullHealth(Entity*);
 	bool L_Entity_HasMortalDamage(Entity*);
 	bool L_Entity_IsActiveEnemy(Entity*, bool);
+	bool L_Entity_IsBoss(Entity*);
 	bool L_Entity_IsDead(Entity*);
 	bool L_Entity_IsEnemy(Entity*);
 	bool L_Entity_IsFlying(Entity*);

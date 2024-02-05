@@ -1,17 +1,14 @@
 ffi.cdef[[
 // stubs
 typedef struct {void *_;} Ambush; 
-typedef struct {void *_;} BitSet128; 
 typedef struct {void *_;} Font; 
-typedef struct {void *_;} EntityDesc; 
-typedef struct {void *_;} Entity_NPC; 
-typedef struct {void *_;} Entity_Player; 
 typedef struct {void *_;} HUD; 
 typedef struct {void *_;} ItemOverlay;
 typedef struct {void *_;} ItemPool;
 typedef struct {void *_;} Level;
 typedef struct {void *_;} Room;
 typedef struct {void *_;} Seeds;
+typedef struct {void *_;} EntityDesc;
 
 void L_Game_AddDevilRoomDeal();
 void L_Game_AddEncounteredBoss(unsigned int, unsigned int);
