@@ -106,7 +106,7 @@ EntityEffectMT = lffi.metatype("Entity_Effect", {
     end
 })
 
-EntityFamiliar = {
+EntityEffect = {
 	IsPlayerCreep = function(variant)
 		ffichecks.checknumber(1, variant)
 		return L_EntityEffect_IsPlayerCreep(variant)
