@@ -375,7 +375,15 @@ function EntityFuncs:TakeDamage(damage, flags, source, countdown)
 end
 
 function EntityFuncs:ToBomb()
-	local ret repentogon.L_Entity_ToBomb(self)
+	return ffichecks.fixreturn(repentogon.L_Entity_ToBomb(self))
+end
+
+function EntityFuncs:ToEffect()
+	return ffichecks.fixreturn(repentogon.L_Entity_ToEffect(self))
+end
+
+function EntityFuncs:ToFamiliar()
+	return ffichecks.fixreturn(repentogon.L_Entity_ToFamiliar(self))
 end
 
 function EntityFuncs:Update()

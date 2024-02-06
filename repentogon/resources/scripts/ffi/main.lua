@@ -57,6 +57,9 @@ ffichecks.callcdatafunc = function(this, cdata, ctype, cfunc)
 	cfunc(this, cdata)
 end
 
+-- if a function returns a null pointer, it's still cdata as far as ffi is concerned.
+-- however, it will interpret nil as a null pointer if compared to a cdata pointer,
+-- so do that comparison and replace the result with an actual nil if it's null
 ffichecks.fixreturn = function(cdata)
 	if cdata ~= nil then
 		return cdata
