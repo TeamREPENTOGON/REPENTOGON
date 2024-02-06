@@ -5,7 +5,7 @@ static cleanup Entity_Effect* Entity_Effect::CreateTimer(void* fn<ecx>, uint32_t
 __thiscall void Entity_Effect::FollowParent(Entity* Parent);
 
 "558bec8b45??83f836":
-static __stdcall bool Entity_Effect::IsPlayerCreep(unsigned int variant);
+static __stdcall bool Entity_Effect::IsPlayerCreep(int variant);
 
 struct Entity_Effect depends (BitSet128, Vector) : public Entity {
     __vtable {

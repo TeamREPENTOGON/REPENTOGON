@@ -221,3 +221,10 @@ EntityFamiliarMT = lffi.metatype("Entity_Familiar", {
         end
     end
 })
+
+EntityFamiliar = {
+	GetOrbitDistance = function(layer)
+		ffichecks.checknumber(1, layer)
+		return L_EntityFamiliar_StaticGetOrbitDistance(layer)
+	end
+}

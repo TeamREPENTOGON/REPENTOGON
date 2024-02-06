@@ -1,6 +1,6 @@
 ffi.cdef[[
 	void L_EntityEffect_FollowParent(Entity_Effect*, Entity*);
-	bool L_EntityEffect_IsPlayerCreep(Entity_Effect*);
+	bool L_EntityEffect_StaticIsPlayerCreep(int);
 	void L_EntityEffect_SetRadii(Entity_Effect*, float, float);
 	void L_EntityEffect_SetTimeoutFunc(Entity_Effect*, int);
 	unsigned int L_EntityEffect_GetDamageSource(Entity_Effect*);
@@ -41,14 +41,10 @@ function EntityEffectFuncs:FollowParent(parent)
 	L_EntityEffect_FollowParent(self, parent)
 end
 
-function EntityEffectFuncs:IsPlayerCreep()
-	return L_EntityEffect_IsPlayerCreep(self)
-end
-
 function EntityEffectFuncs:SetRadii(minR, maxR)
 	ffichecks.checknumber(2, minR)
 	ffichecks.checknumber(3, maxR)
-	return L_EntityEffect_SetRadii(self, minR, maxR)
+	L_EntityEffect_SetRadii(self, minR, maxR)
 end
 
 function EntityEffectFuncs:SetTimeout(timeout)
@@ -109,3 +105,10 @@ EntityEffectMT = lffi.metatype("Entity_Effect", {
         end
     end
 })
+
+EntityFamiliar = {
+	IsPlayerCreep = function(variant)
+		ffichecks.checknumber(1, variant)
+		return L_EntityEffect_IsPlayerCreep(variant)
+	end
+}
