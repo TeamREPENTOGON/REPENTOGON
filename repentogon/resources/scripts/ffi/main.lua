@@ -52,6 +52,18 @@ ffichecks.checkcdata = function(idx, var, ctype, allownil, level)
 	end
 end
 
+ffichecks.callcdatafunc = function(this, cdata, ctype, cfunc)
+	ffichecks.checkcdata(2, cdata, ctype)
+	cfunc(this, cdata)
+end
+
+ffichecks.fixreturn = function(cdata)
+	if cdata ~= nil then
+		return cdata
+	end
+	return nil
+end
+
 ffichecks.optnumber = function(var, opt)
 	if ffichecks.isnumber(var) then
 		return var
@@ -118,6 +130,8 @@ pcall(require("Room"))
 pcall(require("Level"))
 pcall(require("Entity"))
 pcall(require("EntityBomb"))
+pcall(require("EntityEffect"))
+pcall(require("EntityFamiliar"))
 pcall(require("MusicManager"))
 pcall(require("WeightedOutcomePicker"))
 pcall(require("Game"))

@@ -50,14 +50,9 @@ local getkeys = {
 	RadiusMultiplier = repentogon.L_EntityBomb_GetRadiusMultiplier,
 }
 
-local function doCDataFunc(this, cdata, ctype, cfunc)
-	ffichecks.checkcdata(2, cdata, ctype)
-	cfunc(this, cdata)
-end
-
 local setkeys = {
 	ExplosionDamage = repentogon.L_EntityBomb_SetExplosionDamage,
-    Flags = function(self, cdata) doCDataFunc(self, cdata, "BitSet128", repentogon.L_EntityBomb_SetFlags) end,
+    Flags = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "BitSet128", repentogon.L_EntityBomb_SetFlags) end,
 	IsFetus = repentogon.L_EntityBomb_SetIsFetus,
 	RadiusMultiplier = repentogon.L_EntityBomb_SetRadiusMultiplier,
 }

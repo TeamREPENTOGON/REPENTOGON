@@ -28,11 +28,7 @@ local function ItemConfigGetFunc(func)
 		else
 			ffichecks.checknumber(2, id)
 		end
-		local conf = func(id)
-		if conf == nil then
-			return nil
-		end
-		return conf
+		return ffichecks.fixreturn(func(id))
 	end
 end
 
