@@ -386,6 +386,10 @@ function EntityFuncs:ToFamiliar()
 	return ffichecks.fixreturn(repentogon.L_Entity_ToFamiliar(self))
 end
 
+function EntityFuncs:ToKnife()
+	return ffichecks.fixreturn(repentogon.L_Entity_ToKnife(self))
+end
+
 function EntityFuncs:Update()
 	repentogon.L_Entity_Update(self)
 end
