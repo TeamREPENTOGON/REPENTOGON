@@ -1,0 +1,5 @@
+struct HomingLaser {
+	Entity_Laser * _laser : 0x0;
+	std_vector_vector2 _samples : 0x1c;
+	std_vector_vector2 _nonOptimizedSamples : 0x28;
+} : 0x54;

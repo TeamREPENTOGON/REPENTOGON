@@ -1,3 +1,6 @@
+"8b010b41??75??8b41??0b41??75??32c0":
+__thiscall bool BitSet128::AnyFlagsSet();
+
 struct BitSet128 {
 {{
 	BitSet128() : ll(0), lh(0), hl(0), hh(0) {}

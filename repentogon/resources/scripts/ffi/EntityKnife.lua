@@ -120,10 +120,3 @@ EntityKnifeMT = lffi.metatype("Entity_Knife", {
         end
     end
 })
-
-EntityKnife = {
-	IsPlayerCreep = function(variant)
-		ffichecks.checknumber(1, variant)
-		return L_EntityKnife_IsPlayerCreep(variant)
-	end
-}

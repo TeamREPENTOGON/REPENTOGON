@@ -1,8 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
-BitSet128 zero(0, 0, 0, 0);
-
 extern "C" {
 	void L_EntityBomb_AddTearFlags(Entity_Bomb* bomb, BitSet128* flags) {
 		bomb->_tearFlags &= *flags;
@@ -13,7 +11,7 @@ extern "C" {
 	}
 
 	bool L_EntityBomb_HasTearFlags(Entity_Bomb* bomb, BitSet128* flags) {
-		return (bomb->_tearFlags & *flags) != zero;
+		return (bomb->_tearFlags & *flags).AnyFlagsSet();
 	}
 
 	void L_EntityBomb_SetExplosionCountdown(Entity_Bomb* bomb, int value) {

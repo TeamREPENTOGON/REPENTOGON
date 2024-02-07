@@ -10,19 +10,24 @@ __thiscall bool Entity_Laser::CanDamageEntity(Entity* entity);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec5156":
 __thiscall void Entity_Laser::RotateToAngle(float angle, float speed);
 
-struct Entity_Laser : public Entity {
+"558bec83e4f883ec408b45":
+static __stdcall Vector* Entity_Laser::CalculateEndPosition(Vector* buffer, Vector* Start, Vector* Dir, Vector* PositionOffset, Entity* Parent, float Margin);
+
+"558bec807d??00f30f1045":
+__thiscall void Entity_Laser::SetActiveRotation(int Delay, float AngleDegrees, float RotationSpd, bool TimeoutComplete);
+
+"558bec83e4f851535657e8":
+static __stdcall Entity_Laser* Entity_Laser::ShootAngle(unsigned int Variant, Vector* SourcePos, float AngleDegrees, int Timeout, Vector* PosOffset, Entity* Source, bool unk_Force);
+
+struct Entity_Laser depends (BitSet128, Vector, HomingLaser) : public Entity {
 {{
-	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x420); }
 	inline float* GetScale() { return (float*)((char*)this + 0x430); }
 	
-	inline int* GetTimeout() { return (int*)((char*)this + 0x3a8); }
-	inline bool* GetShrink() { return (bool*)((char*)this + 0x3ae); }
-	inline bool* GetDisableFollowParent() { return (bool*)((char*)this + 0x434); }
 	inline bool* GetOneHit() { return (bool*)((char*)this + 0x465); }
 	inline std_vector_uint* GetHitList() { return (std_vector_uint*)((char*)this + 0x470); }
 
 	
-}} 
+}}
 	__vtable {
 		skip; // Free
 		skip; // Init
@@ -54,6 +59,34 @@ struct Entity_Laser : public Entity {
 		skip; // ResetColor
 		skip; // LoadEntityConfig
 	};
+	
+	Vector _parentOffset : 0x360;
+	float _startAngleDegrees: 0x368;
+	float _angleDegrees : 0x36c;
+	float _lastAngleDegrees : 0x370;
+	BitSet128 _tearFlags : 0x378;
+	int _timeout : 0x3a8;
+	bool _firstUpdate : 0x3ac;
+	bool _sampleLaser : 0x3ad;
+	bool _shrink : 0x3ae;
+	float _laserLength : 0x3b0;
+	HomingLaser _homingLaser : 0x3b4;
+	float _curveStrength : 0x408;
+	float _radius : 0x40c;
+	bool _isActiveRotating : 0x410;
+	int _rotationDelay : 0x414;
+	float _rotationDegrees : 0x418;
+	float _rotationSpeed : 0x41c;
+	float _maxDistance : 0x420;
+	unsigned int _homingType: 0x424;
+	Vector _endPoint : 0x428;
+	float _scale : 0x430;
+	bool _disableFollowParent : 0x434;
+	Entity* _bounceLaser : 0x438;
+	float _blackHpDropChance : 0x444;
+	bool _multidimensionalTouched : 0x450;
+	bool _oneHit : 0x465;
+	bool _gridHit : 0x466;
 } : 0x4b8;
 
 "8b7d??6a0068(????????)68????????6a0050":

@@ -1,9 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 
-// just here until i store this a better way
-BitSet128 zero = BitSet128(0, 0, 0, 0);
-
 extern "C" {
 	void L_EntityKnife_AddTearFlags(Entity_Knife* knife, BitSet128* flags) {
 		knife->_tearFlags &= *flags;
@@ -26,7 +23,7 @@ extern "C" {
 	}
 
 	bool L_EntityKnife_HasTearFlags(Entity_Knife* knife, BitSet128* flags) {
-		return (knife->_tearFlags & *flags) != zero;
+		return (knife->_tearFlags & *flags).AnyFlagsSet();
 	}
 
 	bool L_EntityKnife_IsFlying(Entity_Knife* knife) {
@@ -35,10 +32,6 @@ extern "C" {
 
 	void L_EntityKnife_Reset(Entity_Knife* knife) {
 		knife->Reset();
-	}
-
-	void L_EntityKnife_SetPathFollowSpeed(Entity_Knife* knife, float value) {
-		knife->_pathFollowSpeed = value;
 	}
 
 	void L_EntityKnife_Shoot(Entity_Knife* knife, float charge, float range) {

@@ -5,7 +5,7 @@
 LUA_FUNCTION(Lua_EntityLaserGetDisableFollowParent)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, *laser->GetDisableFollowParent());
+	lua_pushboolean(L, laser->_disableFollowParent);
 
 	return 1;
 }
@@ -13,7 +13,7 @@ LUA_FUNCTION(Lua_EntityLaserGetDisableFollowParent)
 LUA_FUNCTION(Lua_EntityLaserSetDisableFollowParent)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetDisableFollowParent() = lua::luaL_checkboolean(L, 2);
+	laser->_disableFollowParent = lua::luaL_checkboolean(L, 2);
 
 	return 0;
 }
@@ -21,7 +21,7 @@ LUA_FUNCTION(Lua_EntityLaserSetDisableFollowParent)
 LUA_FUNCTION(Lua_EntityLaserGetOneHit)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, *laser->GetOneHit());
+	lua_pushboolean(L, laser->_oneHit);
 
 	return 1;
 }
@@ -29,7 +29,7 @@ LUA_FUNCTION(Lua_EntityLaserGetOneHit)
 LUA_FUNCTION(Lua_EntityLaserGetShrink)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushboolean(L, *laser->GetShrink());
+	lua_pushboolean(L, laser->_shrink);
 
 	return 1;
 }
@@ -37,7 +37,7 @@ LUA_FUNCTION(Lua_EntityLaserGetShrink)
 LUA_FUNCTION(Lua_EntityLaserSetShrink)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetShrink() = lua::luaL_checkboolean(L, 2);
+	laser->_shrink = lua::luaL_checkboolean(L, 2);
 
 	return 0;
 }
@@ -45,7 +45,7 @@ LUA_FUNCTION(Lua_EntityLaserSetShrink)
 LUA_FUNCTION(Lua_EntityLaserGetTimeout)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushinteger(L, *laser->GetTimeout());
+	lua_pushinteger(L, laser->_timeout);
 
 	return 1;
 }
@@ -78,7 +78,7 @@ LUA_FUNCTION(Lua_EntityLaserResetSpriteScale)
 LUA_FUNCTION(Lua_EntityLaserGetHomingType)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	lua_pushinteger(L, *laser->GetHomingType());
+	lua_pushinteger(L, laser->_homingType);
 
 	return 1;
 }
@@ -86,7 +86,7 @@ LUA_FUNCTION(Lua_EntityLaserGetHomingType)
 LUA_FUNCTION(Lua_EntityLaserSetHomingType)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	*laser->GetHomingType() = (uint32_t)luaL_checkinteger(L, 2);
+	laser->_homingType = (uint32_t)luaL_checkinteger(L, 2);
 
 	return 0;
 }
