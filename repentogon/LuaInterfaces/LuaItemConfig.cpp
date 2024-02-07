@@ -26,6 +26,21 @@ extern "C" {
 		if (id < 0) return nullptr;
 		return g_Manager->GetItemConfig()->GetPillEffect(id);
 	}
+	int L_ItemConfig_GetNumCollectibles() {
+		return g_Manager->GetItemConfig()->GetCollectibles()->size();
+	}
+	int L_ItemConfig_GetNumNullItems() {
+		return g_Manager->GetItemConfig()->GetNullItems()->size();
+	}
+	int L_ItemConfig_GetNumTrinkets() {
+		return g_Manager->GetItemConfig()->GetTrinkets()->size();
+	}
+	int L_ItemConfig_GetNumCards() {
+		return g_Manager->GetItemConfig()->GetCards()->size();
+	}
+	int L_ItemConfig_GetNumPillEffects() {
+		return g_Manager->GetItemConfig()->GetPillEffects()->size();
+	}
 	bool L_ItemConfig_IsValidCollectible(const int id) {
 		return g_Manager->GetItemConfig()->IsValidCollectible(id);
 	}
