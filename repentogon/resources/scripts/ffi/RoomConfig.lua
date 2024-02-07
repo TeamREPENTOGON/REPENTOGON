@@ -56,7 +56,7 @@ local getkeys = {
 }
 
 local RoomConfigMT = lffi.metatype("RoomConfig", {
-    __tostring = function(self) return "RoomConfig(" .. self.Name .. ")" end,
+    __tostring = function(self) return "RoomConfig('" .. self.Name .. "')" end,
     __index = function(self, key)
 		if getkeys[key] ~= nil then
 			return getkeys[key](self)

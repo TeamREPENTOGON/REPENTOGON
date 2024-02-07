@@ -33,7 +33,7 @@ typedef struct {
 
 typedef struct {
     uint32_t Size;
-    RoomDescriptor* Rooms;
+    RoomDescriptor* _items;
 } RoomDescriptor_List;
 
 bool L_RoomDescriptor_GetChallengeDone(RoomDescriptor* self);
@@ -86,7 +86,7 @@ local setkeys = {
 }
 
 local RoomDescriptorMT = lffi.metatype("RoomDescriptor", {
-    __tostring = function(self) return "RoomDescriptor(" .. self.Data.Name .. ")" end,
+    __tostring = function(self) return "RoomDescriptor('" .. self.Data.Name .. "')" end,
     __index = function(self, key)
         if getkeys[key] ~= nil then
 			return getkeys[key](self)
@@ -102,16 +102,4 @@ local RoomDescriptorMT = lffi.metatype("RoomDescriptor", {
 	end,
 })
 
-local RoomDescriptorListFuncs = {}
-
-function RoomDescriptorListFuncs:Get(index)
-    ffichecks.checknumber(1, index)
-
-    return self.Rooms[index]
-end
-
-local RoomDescriptorListMT = lffi.metatype("RoomDescriptor_List", {
-    __tostring = function(self) return "RoomDescriptor[" .. self.Size .. "]" end,
-    __len = function(self) return self.Size end,
-    __index = RoomDescriptorListFuncs
-})
+local RoomDescriptorListMT = CppContainer.ArrayProxyMT("RoomDescriptor")
