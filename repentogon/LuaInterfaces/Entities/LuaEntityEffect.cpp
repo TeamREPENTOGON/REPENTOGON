@@ -78,7 +78,7 @@ extern "C" {
 		effect->_radiusMin = min;
 	}
 
-	float L_EntityEffect_GetMaxnRadius(Entity_Effect* effect) {
+	float L_EntityEffect_GetMaxRadius(Entity_Effect* effect) {
 		return effect->_radiusMax;
 	}
 
