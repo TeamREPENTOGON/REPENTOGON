@@ -23,7 +23,7 @@ ffi.cdef[[
 	float L_EntityKnife_GetScale(Entity_Knife*);
 	void L_EntityKnife_SetScale(Entity_Knife*, float);
 	BitSet128* L_EntityKnife_GetTearFlags(Entity_Knife*);
-	void L_EntityKnife_SetFlags(Entity_Knife*, BitSet128*)
+	void L_EntityKnife_SetFlags(Entity_Knife*, BitSet128*);
 ]]
 
 local repentogon = ffidll
