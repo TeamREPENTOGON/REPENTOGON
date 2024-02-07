@@ -5,3 +5,8 @@ struct RoomEntry
     uint16_t subtype : 0x6; // 0x6
     float weight : 0x8; // 0x8
 } : 0xc; // 0xC
+
+struct RoomEntry_List {
+    uint32_t size : 0x0; // 0x00
+    RoomEntry* CountEntries : 0x4; // 0x04
+} : 0x8; // 0x08

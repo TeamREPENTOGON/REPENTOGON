@@ -86,8 +86,7 @@ local setkeys = {
 }
 
 local RoomDescriptorMT = lffi.metatype("RoomDescriptor", {
-    -- todo: add roomconfig name to __tostring
-    __tostring = function(self) return "RoomDescriptor" end,
+    __tostring = function(self) return "RoomDescriptor(" .. self.Data.Name .. ")" end,
     __index = function(self, key)
         if getkeys[key] ~= nil then
 			return getkeys[key](self)
@@ -105,7 +104,7 @@ local RoomDescriptorMT = lffi.metatype("RoomDescriptor", {
 
 local RoomDescriptorListFuncs = {}
 
-function RoomDescriptorFuncs:Get(index)
+function RoomDescriptorListFuncs:Get(index)
     ffichecks.checknumber(1, index)
 
     return self.Rooms[index]
@@ -114,5 +113,5 @@ end
 local RoomDescriptorListMT = lffi.metatype("RoomDescriptor_List", {
     __tostring = function(self) return "RoomDescriptor[" .. self.Size .. "]" end,
     __len = function(self) return self.Size end,
-    __index = RoomDescriptorFuncs
+    __index = RoomDescriptorListFuncs
 })

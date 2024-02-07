@@ -1,3 +1,6 @@
+"558bec83e4c0f30f104d":
+__thiscall RoomEntry* RoomSpawn::PickEntry(float r);
+
 struct RoomSpawn
 {
     uint16_t X : 0x0; // 0x0
@@ -6,3 +9,8 @@ struct RoomSpawn
     uint16_t CountEntries : 0x8; // 0x8
     float SumWeights : 0xC; // 0xC
 } : 0x10; // 0x10 (absolutely sure)
+
+struct RoomSpawn_List {
+    uint32_t size : 0x0; // 0x00
+    RoomSpawn* spawns : 0x4; // 0x04
+} : 0x8; // 0x08

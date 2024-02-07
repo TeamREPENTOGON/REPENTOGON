@@ -38,7 +38,7 @@ struct RoomConfig
     int32_t unk9 : 0x4c; // 0x4C
     int32_t unk10 : 0x50; // 0x50
     int32_t unk11 : 0x54; // 0x54
-    int32_t unk12 : 0x58; // 0x58
+    int32_t OriginalVariant : 0x58; // 0x58
 
     {{
     bool LIBZHL_API IsValidGridIndex(lua_Integer index, bool includeWalls = true) const;
