@@ -375,7 +375,15 @@ function EntityFuncs:TakeDamage(damage, flags, source, countdown)
 end
 
 function EntityFuncs:ToBomb()
-	return repentogon.L_Entity_ToBomb(self)
+	return ffichecks.fixreturn(repentogon.L_Entity_ToBomb(self))
+end
+
+function EntityFuncs:ToEffect()
+	return ffichecks.fixreturn(repentogon.L_Entity_ToEffect(self))
+end
+
+function EntityFuncs:ToFamiliar()
+	return ffichecks.fixreturn(repentogon.L_Entity_ToFamiliar(self))
 end
 
 function EntityFuncs:Update()
@@ -422,16 +430,11 @@ local getkeys = {
 	Visible = repentogon.L_Entity_GetVisible,
 }
 
-local function doCDataFunc(this, cdata, ctype, cfunc)
-	ffichecks.checkcdata(2, cdata, ctype)
-	cfunc(this, cdata)
-end
-
 local setkeys = {
-    Child = function(self, cdata) doCDataFunc(self, cdata, "Entity", repentogon.L_Entity_SetChild) end,
-	Parent = function(self, cdata) doCDataFunc(self, cdata, "Entity", repentogon.L_Entity_SetParent) end,
+    Child = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Entity", repentogon.L_Entity_SetChild) end,
+	Parent = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Entity", repentogon.L_Entity_SetParent) end,
 	CollisionDamage = repentogon.L_Entity_SetCollisionDamage,
-	Color = function(self, cdata) doCDataFunc(self, cdata, "ColorMod", repentogon.L_Entity_SetColorField) end,
+	Color = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "ColorMod", repentogon.L_Entity_SetColorField) end,
 	DepthOffset = repentogon.L_Entity_SetDepthOffset,
 	DropSeed = repentogon.L_Entity_SetDropSeed,
 	EntityCollisionClass = repentogon.L_Entity_SetEntityCollisionClass,
@@ -443,26 +446,26 @@ local setkeys = {
 	InitSeed = repentogon.L_Entity_SetInitSeed,
 	Mass = repentogon.L_Entity_SetMass,
 	MaxHitPoints = repentogon.L_Entity_SetMaxHitPoints,
-	Position = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetPosition) end,
-	PositionOffset = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetPositionOffset) end,
+	Position = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Vector", repentogon.L_Entity_SetPosition) end,
+	PositionOffset = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Vector", repentogon.L_Entity_SetPositionOffset) end,
 	RenderZOffset = repentogon.L_Entity_SetRenderZOffset,
 	Size = repentogon.L_Entity_SetSizeField,
-	SizeMulti = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetSizeMulti) end,
+	SizeMulti = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Vector", repentogon.L_Entity_SetSizeMulti) end,
 	SortingLayer = repentogon.L_Entity_SetSortingLayer,
-	SpawnerEntity = function(self, cdata) doCDataFunc(self, cdata, "Entity", repentogon.L_Entity_SetSpawnerEntity) end,
+	SpawnerEntity = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Entity", repentogon.L_Entity_SetSpawnerEntity) end,
 	SpawnerType = repentogon.L_Entity_SetSpawnerType,
 	SpawnerVariant = repentogon.L_Entity_SetSpawnerVariant,
 	SpawnGridIndex = repentogon.L_Entity_SetSpawnGridIndex,
-	SpriteOffset = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetSpriteOffset) end,
+	SpriteOffset = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Vector", repentogon.L_Entity_SetSpriteOffset) end,
 	SplatColor = repentogon.L_Entity_SetSplatColor,
 	SpriteRotation = repentogon.L_Entity_SetSpriteRotation,
-	SpriteScale = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetSpriteScale) end,
-	Target = function(self, cdata) doCDataFunc(self, cdata, "Entity", repentogon.L_Entity_SetTarget) end,
-	TargetPosition = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetTargetPosition) end,
+	SpriteScale = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Vector", repentogon.L_Entity_SetSpriteScale) end,
+	Target = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Entity", repentogon.L_Entity_SetTarget) end,
+	TargetPosition = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Vector", repentogon.L_Entity_SetTargetPosition) end,
 	Type = repentogon.L_Entity_SetType,
 	Variant = repentogon.L_Entity_SetVariant,
 	SubType = repentogon.L_Entity_SetSubType,
-	Velocity = function(self, cdata) doCDataFunc(self, cdata, "Vector", repentogon.L_Entity_SetVelocity) end,
+	Velocity = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Vector", repentogon.L_Entity_SetVelocity) end,
 	Visible = repentogon.L_Entity_SetVisible,
 }
 

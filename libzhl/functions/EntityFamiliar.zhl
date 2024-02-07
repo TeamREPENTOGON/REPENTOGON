@@ -72,7 +72,7 @@ __thiscall void Entity_Familiar::PlayFloatAnim(unsigned int dir);
 __thiscall void Entity_Familiar::PlayShootAnim(unsigned int dir);
 
 "558bec6aff68????????64a1????????5083ec44535657a1????????33c5508d45??64a3????????894d":
-__thiscall unsigned int Entity_Familiar::RecalculateOrbitOffset(int layer);
+__thiscall unsigned int Entity_Familiar::RecalculateOrbitOffset(int layer, bool add);
 
 "558bec83ec0c53568bf15780be????????00":
 __thiscall void Entity_Familiar::RemoveFromDelayed();
@@ -81,7 +81,7 @@ __thiscall void Entity_Familiar::RemoveFromDelayed();
 __thiscall void Entity_Familiar::RemoveFromFollowers();
 
 "568bf18b86????????85c078??6a0050e8????????c786????????ffffffff":
-__thiscall void Entity_Familiar::RemoveFromOffset();
+__thiscall void Entity_Familiar::RemoveFromOrbit();
 
 struct Entity_Familiar depends (ColorMod, Vector) : public Entity {
 {{
@@ -89,7 +89,7 @@ struct Entity_Familiar depends (ColorMod, Vector) : public Entity {
 	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); }
 }}
 	Entity_Player* _player : 0x360;
-	int _fireDelay : 0xc9c;
+	int _fireCooldown : 0xc9c;
 	int _headFrameDelay : 0xca0;
 	int _moveDirection : 0xca4;
 	int _shootDirection : 0xca8;

@@ -4,6 +4,13 @@ ItemConfig_Item* L_ItemConfig_GetNullItem(const int);
 ItemConfig_Item* L_ItemConfig_GetTrinket(const int);
 ItemConfig_Card* L_ItemConfig_GetCard(const int);
 ItemConfig_Pill* L_ItemConfig_GetPillEffect(const int);
+
+int L_ItemConfig_GetNumCollectibles();
+int L_ItemConfig_GetNumNullItems();
+int L_ItemConfig_GetNumTrinkets();
+int L_ItemConfig_GetNumCards();
+int L_ItemConfig_GetNumPillEffects();
+
 bool L_ItemConfig_IsValidCollectible(const int);
 ]]
 
@@ -23,16 +30,14 @@ end
 local function ItemConfigGetFunc(func)
 	return function(selfOrID, id)
 		if selfOrID ~= ItemConfig then
+			-- Called with `.`
 			ffichecks.checknumber(1, selfOrID)
 			id = selfOrID
 		else
+			-- Called with `:`
 			ffichecks.checknumber(2, id)
 		end
-		local conf = func(id)
-		if conf == nil then
-			return nil
-		end
-		return conf
+		return ffichecks.fixreturn(func(id))
 	end
 end
 
@@ -41,6 +46,12 @@ ItemConfig.GetNullItem = ItemConfigGetFunc(repentogon.L_ItemConfig_GetNullItem)
 ItemConfig.GetTrinket = ItemConfigGetFunc(repentogon.L_ItemConfig_GetTrinket)
 ItemConfig.GetCard = ItemConfigGetFunc(repentogon.L_ItemConfig_GetCard)
 ItemConfig.GetPillEffect = ItemConfigGetFunc(repentogon.L_ItemConfig_GetPillEffect)
+
+ItemConfig.GetNumCollectibles = repentogon.L_ItemConfig_GetNumCollectibles
+ItemConfig.GetNumNullItems = repentogon.L_ItemConfig_GetNumNullItems
+ItemConfig.GetNumTrinkets = repentogon.L_ItemConfig_GetNumTrinkets
+ItemConfig.GetNumCards = repentogon.L_ItemConfig_GetNumCards
+ItemConfig.GetNumPillEffects = repentogon.L_ItemConfig_GetNumPillEffects
 
 ItemConfig.ShouldAddCostumeOnPickup = function(item)
 	ffichecks.checkcdata(1, item, "ItemConfig_Item")
@@ -51,6 +62,51 @@ ItemConfig.IsValidCollectible = function(id)
 	ffichecks.checknumber(1, id)
 	return repentogon.L_ItemConfig_IsValidCollectible(id)
 end
+
+-- Helper to set up a lua metatable to mimic the behaviour of the vanilla API's
+-- ItemConfig cppcontainer thingies like GetCollectibles()
+local function MakeItemConfigList(typeName, sizeFunc, getFunc)
+	-- The "Get" function in the vanilla API's cppcontainer-like lists were called with `:`
+	local getFuncWrapper = function(self, idx)
+		return getFunc(idx)
+	end
+	return setmetatable({}, {
+		__len = function(self)  -- This doesn't work natively in lua 5.1 but can hopefully be fixed somehow
+			return self.Size
+		end,
+		__tostring = function(self)
+			return typeName
+		end,
+		__index = function(self, key)
+			if key == "Size" then
+				return sizeFunc()
+			elseif key == "Get" then
+				return getFuncWrapper
+			elseif type(key) == "number" then
+				return getFunc(key)
+			end
+		end,
+		__newindex = function(self, key, value)
+			error(typeName .. " cannot be modified")
+		end,
+	})
+end
+
+-- Set up all the list thingies like ItemConfig.GetCollectibles()
+ItemConfig.CollectibleList = MakeItemConfigList("ItemConfigList", ItemConfig.GetNumCollectibles, ItemConfig.GetCollectible)
+ItemConfig.GetCollectibles = function() return ItemConfig.CollectibleList end
+
+ItemConfig.NullItemList = MakeItemConfigList("ItemConfigList", ItemConfig.GetNumNullItems, ItemConfig.GetNullItem)
+ItemConfig.GetNullItems = function() return ItemConfig.NullItemList end
+
+ItemConfig.TrinketList = MakeItemConfigList("ItemConfigList", ItemConfig.GetNumTrinkets, ItemConfig.GetTrinket)
+ItemConfig.GetTrinkets = function() return ItemConfig.TrinketList end
+
+ItemConfig.CardList = MakeItemConfigList("CardConfigList", ItemConfig.GetNumCards, ItemConfig.GetCard)
+ItemConfig.GetCards = function() return ItemConfig.CardList end
+
+ItemConfig.PillEffectList = MakeItemConfigList("PillConfigList", ItemConfig.GetNumPillEffects, ItemConfig.GetPillEffect)
+ItemConfig.GetPillEffects = function() return ItemConfig.PillEffectList end
 
 local function AddItemConfigEnums(enums)
 	for k,v in pairs(enums) do

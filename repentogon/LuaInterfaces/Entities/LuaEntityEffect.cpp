@@ -6,8 +6,8 @@ extern "C" {
 		effect->FollowParent(parent);
 	}
 
-	bool L_EntityEffect_IsPlayerCreep(Entity_Effect* effect, unsigned int variant) {
-		return effect->IsPlayerCreep(variant);
+	bool L_EntityEffect_StaticIsPlayerCreep(int variant) {
+		return Entity_Effect::IsPlayerCreep(variant);
 	}
 
 	// the SetDamageSource func is identical to setting the DamageSource variable
@@ -78,7 +78,7 @@ extern "C" {
 		effect->_radiusMin = min;
 	}
 
-	float L_EntityEffect_GetMaxnRadius(Entity_Effect* effect) {
+	float L_EntityEffect_GetMaxRadius(Entity_Effect* effect) {
 		return effect->_radiusMax;
 	}
 
