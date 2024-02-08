@@ -53,7 +53,7 @@ HOOK_METHOD(MenuManager, Update, () -> void) {
 
 HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	if (g_InputManagerBase->GetActualInput()->IsButtonTriggered(14, -1, 0)) {
-		if ((!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(GetKeyState(opensearchkey) & 0x8000))) {
+		if ((lastvalid > -1) && (!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(GetKeyState(opensearchkey) & 0x8000))) {
 			this->_pointerToSelectedMod->SetEnabled(!this->_pointerToSelectedMod->IsEnabled());
 			string disablepath = std::filesystem::current_path().string() + "\\mods\\" + this->_pointerToSelectedMod->GetDir().c_str() + "\\disable.it";
 			if (this->_pointerToSelectedMod->IsEnabled()) {
@@ -105,7 +105,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	int actualpos = -1;
 
 	bool did = false;
-	lastvalid = 0;
+	lastvalid = -1;
 	int currentTime = GetTickCount64();
 	if (g_MenuManager->_selectedMenuID != 16) { issearching = false; }
 	if (modman->_mods.size() > minmods) { //no point in search when all your mods fit in 1 screen
