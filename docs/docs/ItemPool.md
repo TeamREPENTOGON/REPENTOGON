@@ -82,12 +82,12 @@ Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums
 ___
 ### HasCollectible () {: aria-label='Functions' }
 #### boolean HasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
-Returns ``true`` if collectible is available in item pools, ``false`` otherwise.
+Returns `true` if collectible is available in item pools, `false` otherwise.
 
 ___
 ### HasTrinket () {: aria-label='Functions' }
 #### boolean HasTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
-Returns ``true`` if trinket is currently available in trinket pool, ``false`` otherwise.
+Returns `true` if trinket is currently available in trinket pool, `false` otherwise.
 
 ___
 ### UnidentifyPill () {: aria-label='Functions' }

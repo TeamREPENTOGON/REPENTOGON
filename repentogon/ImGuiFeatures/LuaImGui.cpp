@@ -978,7 +978,6 @@ LUA_FUNCTION(Lua_ImGui_SetWindowSize)
 	return 0;
 }
 
-extern bool menuShown;
 LUA_FUNCTION(Lua_ImGui_IsVisible)
 {
 	lua_pushboolean(L, menuShown);

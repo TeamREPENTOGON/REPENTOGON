@@ -14,6 +14,7 @@
 extern int handleWindowFlags(int flags);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
 extern bool imguiResized;
+extern bool menuShown;
 extern ImVec2 imguiSizeModifier;
 
 struct ConsoleCommand {
@@ -390,6 +391,8 @@ struct ConsoleMega : ImGuiWindowObject {
                 s = (char*)fixedCommand.c_str();
                 if (s[0])
                   ExecuteCommand(s);
+                else // close console when nothing is in the textbox
+                  menuShown = false;
                 reclaimFocus = true;
               }
               ImGui::PopItemWidth();
@@ -1054,7 +1057,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
                             extern std::bitset<500> CallbackState;
 
-                            int callbackId = 1120;
+                            const int callbackId = 1120;
                             if (CallbackState.test(callbackId - 1000)) {
                                 lua_State* L = g_LuaEngine->_state;
                                 lua::LuaStackProtector protector(L);

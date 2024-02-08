@@ -20,6 +20,8 @@ struct ScoreSheet
 	int _runEnding : 0x40;
 	
 	{{
+		void LIBZHL_API AddFinishedStage(int stage, int stageType, unsigned int time);
+	
 		/*inline void AddFinishedStage(int stage, int stageType, uint32_t time) {
 			if ((this->_runTimeLevel < stage) && g_Game->GetDailyChallenge()._id == 0) {
 				this->_runTimeLevel = stage;

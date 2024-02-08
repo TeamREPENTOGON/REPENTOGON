@@ -123,7 +123,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     unsigned int _subtype : 0x30; //0x30
 	ANM2 _sprite : 0x3c;
     unsigned int _shadowSize : 0x150; //0x150   
-	unsigned int _flags[2] : 0x160;
+	unsigned long long _flags : 0x160;
     bool _dead : 0x168; 
     bool _visible : 0x169; // 0x169
 	vector_ColorParams _colorParams : 0x1a4;

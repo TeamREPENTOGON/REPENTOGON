@@ -70,6 +70,18 @@ LUA_FUNCTION(Lua_MusicManager_StopJingle) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_MusicManager_GetCurrentPitch) {
+	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	lua_pushnumber(L, music->_pitch);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_MusicManager_SetCurrentPitch) {
+	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
+	music->_pitch = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua::LuaStackProtector protector(_state);
@@ -82,4 +94,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	// New Functions
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "PlayJingle", Lua_MusicManager_PlayJingle);
 	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "StopJingle", Lua_MusicManager_StopJingle);
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "GetCurrentPitch", Lua_MusicManager_GetCurrentPitch);
+	lua::RegisterFunction(_state, lua::Metatables::MUSIC_MANAGER, "SetCurrentPitch", Lua_MusicManager_SetCurrentPitch);
 }

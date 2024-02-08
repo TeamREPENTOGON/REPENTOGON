@@ -1,6 +1,7 @@
 #pragma once
 #include "imgui.h"
 #include "IconsFontAwesome6.h"
+#include <imgui_internal.h>
 
 #include <chrono>
 #include <string>
@@ -80,6 +81,7 @@ struct NotificationHandler {
 
 			// window element
 			if (ImGui::Begin(id.c_str(), &enabled, windowFlags)) {
+				ImGui::BringWindowToDisplayFront(ImGui::GetCurrentWindow()); // force object to be in front of all other objects
 				ImGui::SetWindowSize(ImVec2(0, 0), ImGuiCond_Always);
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 4); // move text up a bit  to center it correctly in window
 				ImGui::TextColored(textColor, severityIcons[notification->_severity]);

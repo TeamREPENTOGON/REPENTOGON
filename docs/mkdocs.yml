@@ -171,6 +171,7 @@ nav:
     - RoomSubType: enums/RoomSubType.md
     - ShaderType: enums/ShaderType.md
     - SlotVariant: enums/SlotVariant.md
+    - SpecialQuest: enums/SpecialQuest.md
     - StbGridType: enums/StbGridType.md
     - StbPoopSubType: enums/StbPoopSubType.md
     - StbRailVariant: enums/StbRailVariant.md
@@ -344,6 +345,7 @@ nav:
   - Capsules: examples/Capsules.md
   - Weighted Outcomes: examples/WeightedOutcomes.md
   - Beams: examples/Beams.md
+  - Color Modifiers: examples/ColorModifiers.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
 - blog:

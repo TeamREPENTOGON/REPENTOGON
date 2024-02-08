@@ -480,6 +480,9 @@ LUA_FUNCTION(Lua_IsInGame) {
 
 LUA_FUNCTION(Lua_IsChallengeDone) {
 	int challengeid = (int)luaL_checkinteger(L, 1);
+	if (challengeid < 1) {
+		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
+	}
 	if (challengeid <= 45) {
 		lua_pushboolean(L, g_Manager->GetPersistentGameData()->challenges[challengeid]);
 	}
@@ -499,6 +502,9 @@ LUA_FUNCTION(Lua_UnDoChallenge) {
 
 LUA_FUNCTION(Lua_ClearChallenge) {
 	int challengeid = (int)luaL_checkinteger(L, 1);
+	if (challengeid < 1) {
+		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
+	}
 	g_Manager->GetPersistentGameData()->AddChallenge(challengeid);
 	if (challengeid <= 45) {
 		g_Manager->GetPersistentGameData()->Save(); //if the challenges are already unlocked for the challenge then it wont fucking save otherwise!
@@ -510,6 +516,17 @@ LUA_FUNCTION(Lua_GetModChallengeClearCount) {
 	int challengeid = (int)luaL_checkinteger(L, 1);
 	XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
 	lua_pushinteger(L, Challenges[node["name"] + node["sourceid"]]);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetBossColorIdxByName) {
+	string bosscolorname = luaL_checkstring(L, 1);
+	auto iter = XMLStuff.BossColorData->childbyname.find(bosscolorname);
+	if (iter == XMLStuff.BossColorData->childbyname.end()) { lua_pushinteger(L, -1); }
+	else {
+		lua_pushinteger(L, iter->second);
+	}
 
 	return 1;
 }
@@ -555,6 +572,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearChallenge", Lua_ClearChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

@@ -23,12 +23,26 @@ ___
 
 ### AllMarksFilled () {: aria-label='Functions' }
 #### int AllMarksFilled ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
-Checks if a given character has completed all marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
+Checks if a given character has completed all marks and returns an integer representing the highest difficulty it was accomplished in.
+
+???- info "Note"
+	The difficulties are as follows:
+
+	- `0` - None
+	- `1` - Normal
+	- `2` - Hard
 
 ___
 ### AllTaintedCompletion () {: aria-label='Functions' }
 #### int AllTaintedCompletion ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [TaintedMarksGroup](enums/TaintedMarksGroup.md) Group) {: .copyable aria-label='Functions' }
-Checks if a given character has completed all the tainted unlock-related marks and returns the highest difficulty it was accomplished in if it applies(1-normal/2-hard/0-none). Supports both modded and vanilla characters. 
+Checks if a given character has completed all the tainted unlock-related marks and returns an integer representing the highest difficulty it was accomplished in.
+
+???- info "Note"
+	The difficulties are as follows:
+
+	- `0` - None
+	- `1` - Normal
+	- `2` - Hard
 
 ___
 ### CanStartTrueCoop () {: aria-label='Functions' }
@@ -45,18 +59,17 @@ Moves the windows mouse cursor to the center of the game's window. This is incre
 ___
 ### ClearBossHazards () {: aria-label='Functions' }
 #### void ClearBossHazards ( boolean IgnoreNPCs = false ) {: .copyable aria-label='Functions' }
-
-Kills all projectiles and, if `IgnoreNPCs` is false, all non-friendly NPCs capable of keeping doors closed. 
-
-___
-### ClearCompletionMarks () {: aria-label='Functions' }
-#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
-Deletes all completion marks for a given character. Supports both modded and vanilla characters. 
+Kills all projectiles. Kills all non-friendly NPCs capable of keeping doors closed as well if `IgnoreNPCs` is false.
 
 ___
 ### ClearChallenge () {: aria-label='Functions' }
 #### void ClearChallenge ( int challengeid) {: .copyable aria-label='Functions' }
-Sets the challenge of the corresponding challengeid to completed. Should work with both custom and vanilla challenges. 
+Sets the challenge of the corresponding `challengeid` to completed.
+
+___
+### ClearCompletionMarks () {: aria-label='Functions' }
+#### void ClearCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
+Deletes all completion marks for a given character.
 
 ___
 ### CreateTimer () {: aria-label='Functions' }
@@ -71,10 +84,11 @@ Spawns a timer EntityEffect. This entity will starting running `Function` functi
 ___
 ### CreateWeapon () {: aria-label='Functions' }
 #### [Weapon](Weapon.md) CreateWeapon ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) Type, [Entity](Entity.md) Owner ) {: .copyable aria-label='Functions' }
-
+Creates and returns a [Weapon](Weapon.md) object. It is not automatically useable by `owner` and `Isaac.SetWeaponType` must be used in tandem.
 ___
 ### DestroyWeapon () {: aria-label='Functions' }
 #### void DestroyWeapon ( [Weapon](Weapon.md) Weapon ) {: .copyable aria-label='Functions' }
+Destroys the provided [Weapon](Weapon.md) object.
 
 ___
 ### DrawLine () {: aria-label='Functions' }
@@ -89,7 +103,7 @@ Draws a line between the two given positions this render frame. Internally the g
 ___
 ### FillCompletionMarks () {: aria-label='Functions' }
 #### void FillCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
-Completes all completion marks for a given character. Supports both modded and vanilla characters. 
+Completes all completion marks for a given character.
 ___
 ### FindInCapsule () {: aria-label='Functions' }
 #### [Entity](Entity.md)[] FindInCapsule ( [Capsule](Capsule.md) Capsule, [EntityPartitions](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityPartition.html) Partitions = -1 ) {: .copyable aria-label='Functions' }
@@ -98,9 +112,6 @@ ___
 ### GetAchievementIdByName () {: aria-label='Functions' }
 #### table GetAchievementIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
-
-???+ warning "Warning"
-    Modded achievements are not loaded until past the main menu is initialized, so dont use this function on modload to get your ids. A suggested place to do so is the MC_POST_SAVESLOT_LOAD callback.
 ___
 ### GetClipboard () {: aria-label='Functions' }
 #### string GetClipboard ( ) {: .copyable aria-label='Functions' }
@@ -112,12 +123,12 @@ ___
 ___
 ### GetCompletionMark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [CompletionType](enums/CompletionType.md) Mark) {: .copyable aria-label='Functions' }
-Gets a completion mark value for a specific character. Supports both modded and vanilla characters. 
+Gets a completion mark value for a specific character.
 
 ___
 ### GetCompletionMarks () {: aria-label='Functions' }
 #### table GetCompletionMarks ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character) {: .copyable aria-label='Functions' }
-Returns a table containing all the marks for the character. Supports both modded and vanilla characters.
+Returns a table containing all the marks for the character.
 
 ???- info "Table structure & usage"
 	- The table has the following fields: 
@@ -181,7 +192,7 @@ Returns the translation string associated with the given key in the given catego
 
 ___
 ### GetModChallengeClearCount () {: aria-label='Functions' }
-#### int GetModChallengeClearCount (int challengeid) {: .copyable aria-label='Functions' }
+#### int GetModChallengeClearCount ( int challengeid ) {: .copyable aria-label='Functions' }
 Returns the number of times a custom challenge was cleared. It resets if its ever set as not Done.
 ___
 ### GetNullItemIdByName () {: aria-label='Functions' }
@@ -201,24 +212,24 @@ ___
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
 
 ___
+### IsChallengeDone () {: aria-label='Functions' }
+#### boolean IsChallengeDone ( int challengeid ) {: .copyable aria-label='Functions' }
+Returns `true` if the challenge of the corresponding challengeid is completed.
+
+___
 ### IsInGame () {: aria-label='Functions' }
 #### boolean IsInGame ( ) {: .copyable aria-label='Functions' }
 Returns `true` if `Game` is non-nil and the current state is correct.
 
 ___
-### IsChallengeDone () {: aria-label='Functions' }
-#### boolean IsChallengeDone (int challengeid ) {: .copyable aria-label='Functions' }
-Returns `true` if the challenge of the corresponding challengeid is completed.
-
-___
-### MarkChallengeAsNotDone () {: aria-label='Functions' }
-#### void MarkChallengeAsNotDone (int challengeid ) {: .copyable aria-label='Functions' }
-Sets the challenge as not done.
-
-___
 ### LevelGeneratorEntry () {: aria-label='Functions' }
 #### [LevelGeneratorEntry](LevelGeneratorEntry.md) LevelGeneratorEntry ( ) {: .copyable aria-label='Functions' }
 Creates a new blank [LevelGeneratorEntry](LevelGeneratorEntry.md) object.
+
+___
+### MarkChallengeAsNotDone () {: aria-label='Functions' }
+#### void MarkChallengeAsNotDone ( int challengeid ) {: .copyable aria-label='Functions' }
+Sets the challenge as not done.
 
 ___
 ### PlayCutscene () {: aria-label='Functions' }
@@ -232,12 +243,12 @@ Sets the contents of the clipboard to the provided string.
 ___
 ### SetCompletionMark () {: aria-label='Functions' }
 #### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [CompletionType](enums/CompletionType.md) Mark, int Value) {: .copyable aria-label='Functions' }
-Sets a completion mark of a character to match a specific value from `0` to `2`. Supports both modded and vanilla characters. 
+Sets a completion mark of a character to match a specific value from `0` to `2`.
 
 ___
 ### SetCompletionMarks () {: aria-label='Functions' }
 #### void SetCompletionMarks ( table Marks ) {: .copyable aria-label='Functions' }
-Sets the completion marks of a character to match an input table. Supports both modded and vanilla characters. Requires a table containing all the marks for the character, getting it from [GetCompletionMarks](Isaac.md#GetCompletionMarks) is adviced for convenience.
+Sets the completion marks of a character to match an input table. Requires a table containing all the marks for the character, getting it from [GetCompletionMarks](Isaac.md#GetCompletionMarks) is advised for convenience.
 
 ???- info "Table structure & usage"
 	- The table needs the following fields: 
@@ -267,11 +278,11 @@ ___
 #### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
 ___
+### TriggerWindowResize () {: aria-label='Functions' }
+#### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }
+Simulates a window resize, useful to refresh some option changes like `MaxRenderScale`.
+___
 ### WorldToMenuPosition () {: aria-label='Functions' }
 #### [Vector](Vector.md) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 Converts the World position from input to a pinned main menu position that varies depending on the enum selected. It's important to reconvert this every frame, in a similar fashion to WorldToRender, in order to properly render when menus are changed or the window is resized.
-___
-### TriggerWindowResize () {: aria-label='Functions' }
-#### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }
-Simulates a window resize, useful to refresh some option changes like `maxrender`.
 ___

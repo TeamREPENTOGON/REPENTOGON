@@ -662,7 +662,7 @@ void LoadCompletionMarksFromJson() {
 
 
 bool PreMarksCallbackTrigger(int markid, int playertpe) {
-	int callbackid = 1047;
+	const int callbackid = 1047;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -686,7 +686,7 @@ bool PreMarksCallbackTrigger(int markid, int playertpe) {
 	return true;
 }
 void PostMarksCallbackTrigger(int markid, int playertpe) {
-	int callbackid = 1048;
+	const int callbackid = 1048;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -798,7 +798,14 @@ array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL,bool forrender =
 	return { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 }
 
-
+/*
+HOOK_METHOD(Game,StartDebug, (int levelStage, int stageType, int difficulty, std_string* unk)->void) {
+	//callsaveslot when instantstart is ran
+	printf("[REPENTOGON] It's instant launch mode! %d %d %d %s \n", levelStage, stageType, difficulty, unk->c_str());
+	g_Manager->SetSaveSlot(0); //normally the game does this as soon as it enters the main menu but since it never does here, it never does
+	super(levelStage, stageType, difficulty, unk);
+}
+*/
 HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 	super(slot);
 	int saveslot = 1;
@@ -877,11 +884,27 @@ HOOK_STATIC_PRIORITY(Manager, RecordPlayerCompletion, 100, (int eEvent) -> void,
 	super(eEvent);
 }
 
+bool postponepromptrender = false;
+HOOK_METHOD_PRIORITY(GenericPrompt, Render,100, () -> void) {
+	if (!postponepromptrender) {
+		super();
+	}
+}
+
+HOOK_METHOD_PRIORITY(GenericPopup, Render, 100, () -> void) {
+	if (!postponepromptrender) {
+		super();
+	}
+}
+
 HOOK_METHOD(PauseScreen, Render, () -> void) {
-	super();
 	int playertype = g_Game->GetPlayer(0)->GetPlayerType();
 	if ((playertype > 40) && (this->status != 2)) {
-		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget");
+		postponepromptrender = true;
+		super();
+		postponepromptrender = false;
+
+		NullFrame* nul = this->mainsprite.GetNullFrame("CompletionWidget");
 		Vector* widgtpos = nul->GetPos();
 		Vector* widgtscale = nul->GetScale();
 		CompletionWidget* cmpl = this->GetCompletionWidget();
@@ -893,6 +916,13 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 			cmpl->CharacterId = playertype;
 			cmpl->Render(new Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
 		}
+		if (this->notinfocus){
+			this->_controllerconnectionpopup.Render();
+		}
+		g_Game->GetGenericPrompt()->Render();
+	}
+	else {
+		super();
 	}
 }
 

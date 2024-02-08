@@ -9,7 +9,7 @@ tags:
 
 ## Modified Functions
 
-### PlaySound () {: aria-label='Functions' }
+### PlaySound () {: aria-label='Modified Functions' }
 #### void PlaySound ( int ID, float Volume = 1.0, int FrameDelay = 2, boolean Loop = true, float Pitch = 1.0 ) {: .copyable aria-label='Modified Functions' }
 All arguments besides `ID` are now optional.
 
@@ -51,7 +51,7 @@ ___
 ___
 ### SetControllerId () {: aria-label='Functions' }
 #### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
-Sets the ControllerId for the NPC, which indicates which player will control it. Set it to `-1` for no player controls(back to normal behaviour).
+Sets the ControllerId for the NPC, which indicates which player will control it. Set it to `-1` for no player controls (back to normal behaviour).
 
 ___
 ### SetShieldStrength () {: aria-label='Functions' }
@@ -100,7 +100,7 @@ ___
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( boolean Immediate ) {: .copyable aria-label='Functions' }
-Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
+Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this regard.
 
 If `Immediate` is set, the dirt color will be set to exactly what is beneath the entity. Otherwise, it will be updated smoothly over the course of multiple frames.
 
