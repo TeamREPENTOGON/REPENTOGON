@@ -36,6 +36,9 @@ Additions:
 	- GetStreakSprite
 * ScoreSheet :
 	- AddFinishedStage
+* ModsMenu:
+	- Added barebones search functionality to filter mods
+	- Changed the order in which mods are displayed, mods are now paired by their enabled status.
 * PauseMenu:
 	- Added a PauseMenu Global that holds all its related stuff
 	- Added a GetMyStuffSprite that returns the sprite used for the MyStuff items
