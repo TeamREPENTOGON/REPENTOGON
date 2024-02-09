@@ -180,7 +180,7 @@ LUA_FUNCTION(Lua_WeaponSetHeadLockTime) {
 static void RegisterWeapon(lua_State* L) {
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "CreateWeapon", Lua_CreateWeapon);
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "DestroyWeapon", Lua_DestoryWeapon);
-
+		
 	lua::RegisterFunction(L, lua::Metatables::ENTITY_PLAYER, "GetWeapon", Lua_PlayerGetWeapon);
 	lua::RegisterFunction(L, lua::Metatables::ENTITY_FAMILIAR, "GetWeapon", Lua_FanGetWeapon);
 

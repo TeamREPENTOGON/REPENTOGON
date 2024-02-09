@@ -1,0 +1,3 @@
+ffi.cdef[[
+void
+]]

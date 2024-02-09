@@ -6,7 +6,7 @@ LUA_FUNCTION(Lua_GetMultiShotParams) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int weaponType = (int)luaL_checkinteger(L, 2);
 	Weapon_MultiShotParams* ud = (Weapon_MultiShotParams*)lua_newuserdata(L, sizeof(Weapon_MultiShotParams));
-	ud = player->GetMultiShotParams(ud, (WeaponType)weaponType);
+	*ud = player->GetMultiShotParams((WeaponType)weaponType);
 	luaL_setmetatable(L, lua::metatables::MultiShotParamsMT);
 	return 1;
 }

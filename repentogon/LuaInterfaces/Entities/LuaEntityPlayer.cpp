@@ -7,17 +7,1856 @@
 
 /*
 
-		 .___.
-	 / /\ /\ \
-	||●  `\ ●||
-	 \   ⌓   /
-		/  ᴥ  \
-	 ||  _  ||
-		|_| |_|
+         .___.
+       / /\ /\ \
+      ||●  `\ ●||
+       \   ⌓   /
+        /  ᴥ  \
+       ||  _  ||
+        |_| |_|
 
 	 "code"
  (copycat of kilburn's ascii art of Isaac)
 */
+
+extern "C" {
+	int L_EntityPlayer_AddActiveCharge(Entity_Player* self, int charge, int slot, bool flashHUD, bool overcharge, bool force) {
+		return self->AddActiveCharge(charge, slot, flashHUD, overcharge, force);
+	}
+
+	void L_EntityPlayer_AddBoneOrbital(Entity_Player* self, Vector* pos) {
+		self->AddBoneOrbital(pos);
+	}
+
+	void L_EntityPlayer_AddBlackHearts(Entity_Player* self, int blackHearts) {
+		self->AddBlackHearts(blackHearts);
+	}
+
+	void L_EntityPlayer_AddBloodCharge(Entity_Player* self, int amount) {
+		self->AddBloodCharge(amount);
+	}
+
+	Entity* L_EntityPlayer_AddBlueFlies(Entity_Player* self, int amount, Vector* pos, Entity* target) {
+		return self->AddBlueFlies(amount, pos, target);
+	}
+
+	Entity* L_EntityPlayer_AddBlueSpider(Entity_Player* self, Vector* pos) {
+		return self->AddBlueSpider(pos);
+	}
+
+	void L_EntityPlayer_AddBombs(Entity_Player* self, int amount) {
+		self->AddBombs(amount);
+	}
+
+	void L_EntityPlayer_AddBoneHearts(Entity_Player* self, int hearts) {
+		self->AddBoneHearts(hearts);
+	}
+
+	void L_EntityPlayer_AddBrokenHearts(Entity_Player* self, int brokenHearts) {
+		self->AddBrokenHearts(brokenHearts);
+	}
+
+	void L_EntityPlayer_AddCacheFlags(Entity_Player* self, int cacheFlag, bool evaluateItems) {
+		self->AddCacheFlags(cacheFlag);
+	}
+
+	void L_EntityPlayer_AddCard(Entity_Player* self, int id) {
+		self->AddPocketItem(id, 1);
+	}
+
+	void L_EntityPlayer_AddCoins(Entity_Player* self, int amount) {
+		self->AddCoins(amount);
+	}
+
+	void L_EntityPlayer_AddCollectible(Entity_Player* self, int type, int charge, bool firstTimePickingUp, int slot, int varData) {
+		self->AddCollectible(type, charge, firstTimePickingUp, slot, varData);
+	}
+
+	void L_EntityPlayer_AddControlsCooldown(Entity_Player* self, int cooldown) {
+		self->_controlsCooldown += cooldown;
+	}
+
+	void L_EntityPlayer_AddCostume(Entity_Player* self, ItemConfig_Item* item, bool itemStateOnly) {
+		self->AddCostume(item, itemStateOnly);
+	}
+
+	void L_EntityPlayer_AddCurseMistEffect(Entity_Player* self) {
+		self->AddCurseMistEffect();
+	}
+
+	void L_EntityPlayer_AddDeadEyeCharge(Entity_Player* self) {
+		self->AddDeadEyeCharge();
+	}
+
+	void L_EntityPlayer_AddDollarBillEffect(Entity_Player* self) {
+		self->AddDollarBillEffect();
+	}
+
+	void L_EntityPlayer_AddEternalHearts(Entity_Player* self, int eternalHearts) {
+		self->AddEternalHearts(eternalHearts);
+	}
+
+	void L_EntityPlayer_AddFriendlyDip(Entity_Player* self, int subtype, Vector* pos) {
+		Entity_Familiar::SpawnDip(subtype, *pos, self);
+	}
+
+	void L_EntityPlayer_AddGigaBombs(Entity_Player* self, int gigaBombs) {
+		self->AddGigaBombs(gigaBombs);
+	}
+
+	void L_EntityPlayer_AddGoldenBomb(Entity_Player* self) {
+		self->AddGoldenBomb();
+	}
+
+	void L_EntityPlayer_AddGoldenHearts(Entity_Player* self, int hearts) {
+		self->AddGoldenHearts(hearts);
+	}
+
+	void L_EntityPlayer_AddGoldenKey(Entity_Player* self) {
+		self->AddGoldenKey();
+	}
+
+	void L_EntityPlayer_AddHearts(Entity_Player* self, int hearts) {
+		self->AddHearts(hearts, false);
+	}
+
+	void L_EntityPlayer_AddInnateCollectible(Entity_Player* self, int itemId, uint32_t amount) {
+		/*std::set<uint32_t>& itemWispList = *plr->GetItemWispsList();
+		itemWispList.insert(luaL_checkinteger(L,2));
+		*/
+
+		ItemConfig itemConfig = g_Manager->_itemConfig;
+		ItemConfig_Item* item = itemConfig.GetCollectibles()[0][itemId];
+
+		//ItemConfig_Item* item_ptr = item;
+
+		std::map<int, int>& wispMap = *self->GetItemWispsList();
+		wispMap[itemId] += amount;
+
+		if (amount > 0 && item->addCostumeOnPickup) {
+			self->AddCostume(item, false);
+		}
+
+		self->AddCacheFlags(item->cacheFlags);
+		self->EvaluateItems();
+	}
+
+	Entity_Familiar* L_EntityPlayer_AddItemWisp(Entity_Player* self, CollectibleType collectible, Vector* pos, bool adjustOrbitLayer) {
+		return self->AddItemWisp(collectible, pos, adjustOrbitLayer);
+	}
+
+	void L_EntityPlayer_AddJarFlies(Entity_Player* self, int flies) {
+		self->AddJarFlies(flies);
+	}
+
+	void L_EntityPlayer_AddJarHearts(Entity_Player* self, int hearts) {
+		self->AddJarHearts(hearts);
+	}
+
+	void L_EntityPlayer_AddKeys(Entity_Player* self, int amount) {
+		self->AddKeys(amount);
+	}
+
+	void L_EntityPlayer_AddLeprosy(Entity_Player* self) {
+		self->AddLeprosy();
+	}
+
+	void L_EntityPlayer_AddLocust(Entity_Player* self, int itemType, Vector* pos) {
+		Isaac::SpawnLocust(self, itemType, pos);
+	}
+
+	void L_EntityPlayer_AddMaxHearts(Entity_Player* self, int maxHearts, bool ignoreKeeper) {
+		self->AddMaxHearts(maxHearts, ignoreKeeper);
+	}
+
+	Entity_Familiar* L_EntityPlayer_AddMinisaac(Entity_Player* self, Vector* pos, bool playAnim) {
+		return self->AddMinisaac(pos, playAnim);
+	}
+
+	void L_EntityPlayer_AddNullCostume(Entity_Player* self, int nullId) {
+		self->AddNullCostume(nullId);
+	}
+
+	void L_EntityPlayer_AddPill(Entity_Player* self, uint32_t pill) {
+		self->AddPocketItem(pill, 0);
+	}
+
+	void L_EntityPlayer_AddPlayerFormCostume(Entity_Player* self, int form) {
+		self->AddPlayerFormCostume(form);
+	}
+
+	void L_EntityPlayer_AddPoopMana(Entity_Player* self, int num) {
+		self->AddPoopMana(num);
+	}
+
+	void L_EntityPlayer_AddPrettyFly(Entity_Player* self) {
+		self->AddPrettyFly();
+	}
+
+	void L_EntityPlayer_AddRottenHearts(Entity_Player* self, int rottenHearts) {
+		self->AddRottenHearts(rottenHearts, false);
+	}
+
+	void L_EntityPlayer_AddSmeltedTrinket(Entity_Player* self, int trinketType, bool firstTimePickingUp) {
+		self->AddSmeltedTrinket(trinketType, firstTimePickingUp);
+	}
+
+	void L_EntityPlayer_AddSoulCharge(Entity_Player* self, int amount) {
+		self->AddSoulCharge(amount);
+	}
+
+	void L_EntityPlayer_AddSoulHearts(Entity_Player* self, int soulHearts) {
+		self->AddSoulHearts(soulHearts);
+	}
+
+	Entity_Familiar* L_EntityPlayer_AddSwarmFlyOrbital(Entity_Player* self, Vector* pos) {
+		return self->AddSwarmFlyOrbital(pos);
+	}
+
+	void L_EntityPlayer_AddTrinket(Entity_Player* self, TrinketType type, bool firstTimePickingUp) {
+		self->AddTrinket(type, firstTimePickingUp);
+	}
+
+	void L_EntityPlayer_AddUrnSouls(Entity_Player* self, int amount) {
+		self->AddUrnSouls(amount);
+	}
+
+	Entity_Familiar* L_EntityPlayer_AddWisp(Entity_Player* self, int collectible, Vector* pos, bool adjustOrbitLayer, bool dontUpdate) {
+		return self->AddWisp(collectible, pos, adjustOrbitLayer, dontUpdate);
+	}
+	void L_EntityPlayer_AnimateAppear(Entity_Player* self) {
+		self->PlayExtraAnimation("Appear");
+	}
+
+	void L_EntityPlayer_AnimateCard(Entity_Player* self, int card, const char* animName) {
+		self->AnimateCard(card, animName);
+	}
+
+	void L_EntityPlayer_AnimateCollectible(Entity_Player* self, int collectible, const char* animName, const char* spriteAnimName) {
+		self->AnimateCollectible(collectible, animName, spriteAnimName);
+	}
+
+	void L_EntityPlayer_AnimateHappy(Entity_Player* self) {
+		self->AnimateHappy();
+	}
+
+	void L_EntityPlayer_AnimateLightTravel(Entity_Player* self) {
+		self->PlayExtraAnimation("LightTravel");
+	}
+
+	void L_EntityPlayer_AnimatePickup(Entity_Player* self, ANM2* anm2, bool hideShadow, const char* animName) {
+		self->AnimatePickup(anm2, hideShadow, animName);
+	}
+
+	void L_EntityPlayer_AnimatePill(Entity_Player* self, int pill, const char* animName) {
+		self->AnimatePill(pill, animName);
+	}
+
+	void L_EntityPlayer_AnimatePitfallIn(Entity_Player* self, bool force) {
+		self->AnimatePitfallIn(force);
+	}
+
+	void L_EntityPlayer_AnimatePitfallOut(Entity_Player* self) {
+		self->AnimatePitfallOut();
+	}
+
+	void L_EntityPlayer_AnimateSad(Entity_Player* self) {
+		self->AnimateSad();
+	}
+
+	void L_EntityPlayer_AnimateTeleport(Entity_Player* self, bool up) {
+		self->AnimateTeleport(up);
+	}
+
+	void L_EntityPlayer_AnimateTrapdoor(Entity_Player* self) {
+		self->PlayExtraAnimation("Trapdoor");
+	}
+
+	void L_EntityPlayer_AnimateTrinket(Entity_Player* self, TrinketType trinket, const char* animName, const char* spriteAnimName) {
+		self->AnimateTrinket(trinket, animName, spriteAnimName);
+	}
+
+	bool L_EntityPlayer_AreControlsEnabled(Entity_Player* self) {
+		return self->AreControlsEnabled();
+	}
+
+	bool L_EntityPlayer_AreOpposingShootDirectionsPressed(Entity_Player* self) {
+		return self->_opposingShootDirectionsPressed;
+	}
+
+	bool L_EntityPlayer_CanAddCollectible(Entity_Player* self, int type) {
+		return self->CanAddCollectible(type);
+	}
+
+	bool L_EntityPlayer_CanAddCollectibleToInventory(Entity_Player* self, int type) {
+		return self->CanAddCollectibleToInventory(type);
+	}
+
+	bool L_EntityPlayer_CanCrushRocks(Entity_Player* self) {
+		return self->CanCrushRocks();
+	}
+
+	bool L_EntityPlayer_CanOverrideActiveItem(Entity_Player* self, uint32_t slot) {
+		return self->CanOverrideActiveItem(slot);
+	}
+
+	bool L_EntityPlayer_CanPickBlackHearts(Entity_Player* self) {
+		return self->CanPickBlackHearts();
+	}
+
+	bool L_EntityPlayer_CanPickBoneHearts(Entity_Player* self) {
+		return self->CanPickBoneHearts();
+	}
+
+	bool L_EntityPlayer_CanPickGoldenHearts(Entity_Player* self) {
+		return self->CanPickGoldenHearts();
+	}
+
+	bool L_EntityPlayer_CanPickRedHearts(Entity_Player* self) {
+		return self->CanPickRedHearts();
+	}
+
+	bool L_EntityPlayer_CanPickRottenHearts(Entity_Player* self) {
+		return self->CanPickRottenHearts();
+	}
+
+	bool L_EntityPlayer_CanPickSoulHearts(Entity_Player* self) {
+		return self->CanPickSoulHearts();
+	}
+
+	bool L_EntityPlayer_CanPickupItem(Entity_Player* self) {
+		return self->CanPickupItem();
+	}
+
+	bool L_EntityPlayer_CanShoot(Entity_Player* self) {
+		return *self->GetCanShoot();
+	}
+
+	bool L_EntityPlayer_CanUsePill(Entity_Player* self, int pillEffect) {
+		return self->CanUsePill(pillEffect);
+	}
+
+	bool L_EntityPlayer_CanTurnHead(Entity_Player* self) {
+		return self->CanTurnHead();
+	}
+
+	void L_EntityPlayer_ChangePlayerType(Entity_Player* self, int playerType, bool force) {
+		self->ChangePlayerType(playerType, force);
+	}
+
+	void L_EntityPlayer_CheckFamiliar(Entity_Player* self, int familiarVariant, int targetCount, RNG* rng, ItemConfig_Item* sourceItemConfigItem, int familiarSubType) {
+		self->CheckFamiliar(familiarVariant, targetCount, rng, sourceItemConfigItem, familiarSubType);
+	}
+	// !!!TODO!!!
+	void* L_EntityPlayer_CheckFamiliarEx(Entity_Player* self, int familiarVariant, int targetCount, RNG* rng, ItemConfig_Item* sourceItemConfigItem, int familiarSubType) {
+		std::vector<Entity_Familiar*>& familiars = InitFamiliarStorage();
+		self->CheckFamiliar(familiarVariant, targetCount, rng, sourceItemConfigItem, familiarSubType);
+		return &familiars;
+	}
+
+	void L_EntityPlayer_ClearCollectibleAnim(Entity_Player* self, CollectibleType item) {
+		self->ClearCollectibleAnim(item);
+	}
+
+	void L_EntityPlayer_ClearItemAnimCollectible(Entity_Player* self, CollectibleType item) {
+		self->ClearItemAnimCollectible(item);
+	}
+
+	void L_EntityPlayer_ClearItemAnimNullItems(Entity_Player* self) {
+		self->ClearItemAnimNullItems();
+	}
+
+	void L_EntityPlayer_ClearCostumes(Entity_Player* self) {
+		self->ClearCostumes();
+	}
+
+	void L_EntityPlayer_ClearDeadEyeCharge(Entity_Player* self, bool force) {
+		if (force) {
+			self->_deadEyeCharges = 0;
+			self->_deadEyeMisses = 0;
+			self->_cacheFlags |= 1;
+			self->EvaluateItems();
+		}
+		else {
+			self->ClearDeadEyeCharge();
+		}
+	}
+
+	void L_EntityPlayer_ClearTemporaryEffects(Entity_Player* self) {
+		self->ClearTemporaryEffects();
+	}
+
+	void L_EntityPlayer_DischargeActiveItem(Entity_Player* self, int activeSlot) {
+		self->DischargeActiveItem(activeSlot, 0);
+	}
+
+	void L_EntityPlayer_DonateLuck(Entity_Player* self, int luck) {
+		self->DonateLuck(luck);
+	}
+
+	void L_EntityPlayer_DoZitEffect(Entity_Player* self, Vector* dir) {
+		self->do_zit_effect(dir);
+	}
+
+	Entity_Pickup* L_EntityPlayer_DropCollectible(Entity_Player* self, int collectible, Entity_Pickup* existingPedestal, bool removeFromPlayerForm) {
+		return self->DropCollectible(collectible, existingPedestal, removeFromPlayerForm);
+	}
+
+	Entity_Pickup* L_EntityPlayer_DropCollectibleByHistoryIndex(Entity_Player* self, int idx, Entity_Pickup* existingPedestal) {
+		return self->DropCollectibleByHistoryIndex(idx, existingPedestal);
+	}
+
+	void L_EntityPlayer_DropPocketItem(Entity_Player* self, int pocketNum, Vector* pos) {
+		self->DropPocketItem(pocketNum, pos);
+	}
+
+	Entity_Pickup* L_EntityPlayer_DropTrinket(Entity_Player* self, Vector* dropPos, bool replaceTick) {
+		return self->DropTrinket(dropPos, replaceTick);
+	}
+
+	void L_EntityPlayer_EnableWeaponType(Entity_Player* self, WeaponType weaponType, bool set) {
+		self->EnableWeaponType(weaponType, set);
+	}
+
+	void L_EntityPlayer_EvaluateItems(Entity_Player* self) {
+		self->EvaluateItems();
+	}
+
+	Entity_Bomb* L_EntityPlayer_FireBomb(Entity_Player* self, Vector* pos, Vector* vel, Entity* source) {
+		return self->FireBomb(pos, vel, source);
+	}
+
+	Entity_Laser* L_EntityPlayer_FireBrimstone(Entity_Player* self, Vector* dir, Entity* source, float damageMultiplier) {
+		return self->FireBrimstone(dir, source, damageMultiplier);
+	}
+
+	Entity_Effect* L_EntityPlayer_FireBrimstoneBall(Entity_Player* self, Vector* pos, Vector* vel, Vector* offset) {
+		return self->FireBrimstoneBall(*pos, *vel, *offset, 0, 0, nullptr);
+	}
+
+	Entity_Laser* L_EntityPlayer_FireDelayedBrimstone(Entity_Player* self, float angle, Entity* source) {
+		return self->FireDelayedBrimstone(angle, source);
+	}
+
+	Entity_Knife* L_EntityPlayer_FireKnife(Entity_Player* self, Entity* parent, float rotationOffset, bool cantOverwrite, int subtype, int variant) {
+		return self->FireKnife(parent, variant, rotationOffset, cantOverwrite, subtype);
+	}
+
+	// i'll need some help with this one
+	Entity_Tear* L_EntityPlayer_FireTear(Entity_Player* self, Vector* pos, Vector* vel, bool canBeEye, bool noTractorBeam, bool canTriggerStreakEnd, Entity* source, float damageMultiplier) {
+		// return self->FireTear(self, pos, vel, can);
+		return nullptr;
+	}
+
+	Entity_Laser* L_EntityPlayer_FireTechLaser(Entity_Player* self, Vector* pos, int offsetID, Vector* dir, bool leftEye, bool oneHit, Entity* source, float damageMultiplier) {
+		return self->FireTechLaser(*pos, offsetID, *dir, leftEye, oneHit, source, damageMultiplier);
+	}
+	Entity_Laser* L_EntityPlayer_FireTechXLaser(Entity_Player* self, Vector* pos, Vector* dir, float radius, Entity* source, float damageMultiplier) {
+		return self->FireTechXLaser(*pos, *dir, radius, source, damageMultiplier);
+	}
+
+	bool L_EntityPlayer_FlushQueueItem(Entity_Player* self) {
+		return self->FlushQueueItem();
+	}
+
+	bool L_EntityPlayer_FullCharge(Entity_Player* self, int activeSlot, bool force) {
+		return self->FullCharge(activeSlot, force);
+	}
+
+	int L_EntityPlayer_GetActiveCharge(Entity_Player* self, int activeSlot) {
+		return self->GetActiveCharge(activeSlot);
+	}
+
+	CollectibleType L_EntityPlayer_GetActiveItem(Entity_Player* self, int activeSlot) {
+		return static_cast<CollectibleType>(self->GetActiveItemDesc(activeSlot)->_item);
+	}
+
+	ActiveItemDesc* L_EntityPlayer_GetActiveItemDesc(Entity_Player* self, int activeSlot) {
+		return self->GetActiveItemDesc(activeSlot);
+	}
+
+	int L_EntityPlayer_GetActiveItemSlot(Entity_Player* self, int id) {
+		return self->GetActiveItemSlot(id);
+	}
+
+	int L_EntityPlayer_GetActiveMaxCharge(Entity_Player* self, int activeSlot) {
+		return self->GetActiveMaxCharge(activeSlot);
+	}
+
+	int L_EntityPlayer_GetActiveMinUsableCharge(Entity_Player* self, int activeSlot) {
+		return self->GetActiveMinUsableCharge(activeSlot);
+	}
+
+	int L_EntityPlayer_GetActiveSubCharge(Entity_Player* self, int activeSlot) {
+		return self->GetActiveItemDesc(activeSlot)->_subCharge;
+	}
+
+	Entity* L_EntityPlayer_GetActiveWeaponEntity(Entity_Player* self) {
+		return self->GetActiveWeaponEntity();
+	}
+
+	int L_EntityPlayer_GetActiveWeaponNumFired(Entity_Player* self) {
+		Weapon* wep = *self->GetWeapon(0);
+		if (wep == nullptr) {
+			wep = *self->GetWeapon(1);
+			if (wep == nullptr) return 0;
+		}
+
+		return wep->GetNumFired();
+	}
+
+	Vector* L_EntityPlayer_GetAimDirection(Entity_Player* self) {
+		return &self->_aimDirection;
+	}
+
+	int L_EntityPlayer_GetBabySkin(Entity_Player* self) {
+		return self->_babySkin;
+	}
+	BagOfCraftingPickup* L_EntityPlayer_GetBagOfCraftingContent(Entity_Player* self) {
+		return self->GetBagOfCraftingContent();
+	}
+
+	int* L_EntityPlayer_GetBagOfCraftingOutput(Entity_Player* self) {
+		return self->GetBagOfCraftingOutput();
+	}
+
+	BagOfCraftingPickup L_EntityPlayer_GetBagOfCraftingSlot(Entity_Player* self, int slot) {
+		return self->GetBagOfCraftingContent()[slot];
+	}
+
+	int L_EntityPlayer_GetBatteryCharge(Entity_Player* self, int activeSlot) {
+		return self->GetActiveItemDesc(activeSlot)->_batteryCharge;
+	}
+
+	int L_EntityPlayer_GetBlackHearts(Entity_Player* self) {
+		return self->_blackHearts;
+	}
+	int L_EntityPlayer_GetBladderCharge(Entity_Player* self) {
+		return *self->GetBladderCharge();
+	}
+	int L_EntityPlayer_GetBloodCharge(Entity_Player* self) {
+		return self->_bloodCharges;
+	}
+
+	int L_EntityPlayer_GetBodyColor(Entity_Player* self) {
+		return self->_bodyColor;
+	}
+	Vector* L_EntityPlayer_GetBodyMoveDirection(Entity_Player* self) {
+		return new auto(self->GetBodyMoveDirection());
+	}
+
+	// !!!TODO!!!
+	int L_EntityPlayer_GetBombFlags(Entity_Player* self);
+
+	int L_EntityPlayer_GetBombVariant(Entity_Player* self, int tearFlags, bool ForceSmallBomb) {
+		return 0;
+	}
+
+	int L_EntityPlayer_GetBoneHearts(Entity_Player* self) {
+		return *self->GetBoneHearts();
+	}
+
+	int L_EntityPlayer_GetBrokenHearts(Entity_Player* self) {
+		return *self->GetBrokenHearts();
+	}
+
+	int L_EntityPlayer_GetCambionConceptionState(Entity_Player* self) {
+		return *self->GetCambionConceptionState();
+	}
+
+	int L_EntityPlayer_GetCambionPregnancyLevel(Entity_Player* self) {
+		return self->GetCambionPregnancyLevel();
+	}
+
+	int L_EntityPlayer_GetCard(Entity_Player* self, int slotId) {
+		return self->GetCard(slotId);
+	}
+
+	RNG* L_EntityPlayer_GetCardRNG(Entity_Player* self, int id) {
+		return self->GetCardRNG(id);
+	}
+
+	int L_EntityPlayer_GetCollectibleCount(Entity_Player* self) {
+		return self->GetCollectibleCount();
+	}
+
+	int L_EntityPlayer_GetCollectibleNum(Entity_Player* self, CollectibleType type, bool onlyCountTrueItems) {
+		return self->GetCollectibleNum(type, onlyCountTrueItems);
+	}
+
+	RNG* L_EntityPlayer_GetCollectibleRNG(Entity_Player* self, CollectibleType id) {
+		return self->GetCollectibleRNG(id);
+	}
+
+	// !!!TODO!!!
+	int* L_EntityPlayer_GetCollectiblesList(Entity_Player* self) {
+		return &self->GetCollectiblesList().at(0);
+	}
+
+	// !!!TODO!!!
+	void* L_EntityPlayer_GetCostumeLayerMap(Entity_Player* self) {
+		PlayerCostumeMap* costumeLayerMap = self->_playerCostumeMap;
+		/*for (int idx = 0; idx < 15; idx++) {
+			lua_pushinteger(L, idx + 1);
+
+			lua_newtable(L);
+
+			lua_pushstring(L, "costumeIndex");
+			lua_pushinteger(L, costumeLayerMap[idx]._index);
+			lua_settable(L, -3);
+
+			lua_pushstring(L, "layerID");
+			lua_pushinteger(L, costumeLayerMap[idx]._layerID);
+			lua_settable(L, -3);
+
+			lua_pushstring(L, "priority");
+			lua_pushinteger(L, costumeLayerMap[idx]._priority);
+			lua_settable(L, -3);
+
+			lua_pushstring(L, "isBodyLayer");
+			lua_pushboolean(L, costumeLayerMap[idx]._isBodyLayer);
+			lua_settable(L, -3);
+
+			lua_settable(L, -3);
+		}*/
+
+		return costumeLayerMap;
+	}
+
+	// !!!TODO!!!
+	void* L_EntityPlayer_GetCostumeSpriteDescs(Entity_Player* self) {
+		return nullptr;
+	}
+
+	Vector* L_EntityPlayer_GetCostumeNullPos(Entity_Player* self, const char* nullFrameName, bool headScale, Vector* dir) {
+		return new auto(self->GetCostumeNullPos(std::string(nullFrameName), headScale, *dir));
+	}
+
+	float L_EntityPlayer_GetD8DamageModifier(Entity_Player* self) {
+		return *self->GetD8DamageModifier();
+	}
+
+	float L_EntityPlayer_GetD8FireDelayModifier(Entity_Player* self) {
+		return *self->GetD8FireDelayModifier();
+	}
+
+	float L_EntityPlayer_GetD8RangeModifier(Entity_Player* self) {
+		return *self->GetD8RangeModifier();
+	}
+
+	float L_EntityPlayer_GetD8SpeedModifier(Entity_Player* self) {
+		return *self->GetD8DamageModifier();
+	}
+
+	int L_EntityPlayer_GetDamageCooldown(Entity_Player* self) {
+		return self->_damageCooldown;
+	}
+
+	int L_EntityPlayer_GetDamageModifier(Entity_Player* self) {
+		return *self->GetDamageModifier();
+	}
+
+	int L_EntityPlayer_GetDeadEyeCharge(Entity_Player* self) {
+		return self->GetDeadEyeCharge();
+	}
+
+	const char* L_EntityPlayer_GetDeathAnimName(Entity_Player* self) {
+		return self->GetDeathAnimName();
+	}
+
+	float L_EntityPlayer_GetEdenDamage(Entity_Player* self) {
+		return *self->GetEdenDamage();
+	}
+
+	float L_EntityPlayer_GetEdenFireDelay(Entity_Player* self) {
+		return *self->GetEdenFireDelay();
+	}
+
+	float L_EntityPlayer_GetEdenLuck(Entity_Player* self) {
+		return *self->GetEdenLuck();
+	}
+
+	float L_EntityPlayer_GetEdenRange(Entity_Player* self) {
+		return *self->GetEdenRange();
+	}
+
+	float L_EntityPlayer_GetEdenShotSpeed(Entity_Player* self) {
+		return *self->GetEdenShotSpeed();
+	}
+
+	float L_EntityPlayer_GetEdenSpeed(Entity_Player* self) {
+		return *self->GetEdenSpeed();
+	}
+
+	int L_EntityPlayer_GetEffectiveBloodCharge(Entity_Player* self) {
+		if (self->_type == 0x24) return self->_bloodCharges;
+		return 0;
+	}
+
+	int L_EntityPlayer_GetEffectiveMaxHearts(Entity_Player* self) {
+		return self->GetEffectiveMaxHearts();
+	}
+
+	int L_EntityPlayer_GetEffectiveSoulCharge(Entity_Player* self) {
+		if (self->_type == 0x12) return self->_soulCharges;
+		return 0;
+	}
+
+	TemporaryEffects* L_EntityPlayer_GetEffects(Entity_Player* self) {
+		return &self->_temporaryEffects;
+	}
+
+	Vector* L_EntityPlayer_GetEnterPosition(Entity_Player* self) {
+		return new auto(self->GetEnterPosition());
+	}
+
+	EntityConfig_Player* L_EntityPlayer_GetEntityConfigPlayer(Entity_Player* self) {
+		return g_Manager->GetEntityConfig()->GetPlayer(self->GetPlayerType());
+	}
+
+	int L_EntityPlayer_GetEpiphoraCharge(Entity_Player* self) {
+		return *self->GetEpiphoraCharge();
+	}
+
+	int L_EntityPlayer_GetEternalHearts(Entity_Player* self) {
+		return *self->GetEternalHearts();
+	}
+	int L_EntityPlayer_GetEveSumptoriumCharge(Entity_Player* self) {
+		return self->_eveSumptoriumCharge;
+	}
+
+	int L_EntityPlayer_GetExtraLives(Entity_Player* self) {
+		return self->GetExtraLives();
+	}
+
+	int L_EntityPlayer_GetFireDelayModifier(Entity_Player* self) {
+		return *self->GetFireDelayModifier();
+	}
+
+	int L_EntityPlayer_GetFireDirection(Entity_Player* self) {
+		return self->_fireDirection;
+	}
+
+	Entity_Player* L_EntityPlayer_GetFlippedForm(Entity_Player* self) {
+		return self->_backupPlayer;
+	}
+
+	Entity* L_EntityPlayer_GetFocusEntity(Entity_Player* self) {
+		return self->GetFocusEntity();
+	}
+
+	KColor* L_EntityPlayer_GetFootprintColor(Entity_Player* self, bool leftFootPrint) {
+		if (leftFootPrint) return &self->_footprintColor2;
+		return &self->_footprintColor1;
+	}
+
+	Vector* L_EntityPlayer_GetFlyingOffset(Entity_Player* self) {
+		return new auto(self->GetFlyingOffset());
+	}
+
+	int L_EntityPlayer_GetGlitchBabySubType(Entity_Player* self) {
+		return self->GetGlitchBabySubType();
+	}
+
+	// TODO
+	void* L_EntityPlayer_GetGlyphOfBalanceDrop(Entity_Player* self) {
+		int* variant, *subtype;
+		self->GetGlyphOfBalanceDrop(variant, subtype);
+		return nullptr;
+	}
+
+	// ?????? https://repentogon.com/EntityPlayer.html#getgnawedleaftimer
+	int L_EntityPlayer_GetGnawedLeafTimer(Entity_Player* self) {
+		return self->_gnawedLeafCooldown;
+	}
+
+	int L_EntityPlayer_GetGoldenHearts(Entity_Player* self) {
+		return *self->GetGoldenHearts();
+	}
+
+	float L_EntityPlayer_GetGreedDonationBreakChance(Entity_Player* self) {
+		return self->GetGreedDonationBreakChance();
+	}
+
+	int L_EntityPlayer_GetGreedsGulletHearts(Entity_Player* self) {
+		return self->GetGreedsGulletHearts();
+	}
+
+	int L_EntityPlayer_GetHeadColor(Entity_Player* self) {
+		return self->_headColor;
+	}
+
+	int L_EntityPlayer_GetHeadDirection(Entity_Player* self) {
+		return self->_headDirection;
+	}
+
+	int L_EntityPlayer_GetHealthType(Entity_Player* self) {
+		return self->GetHealthType();
+	}
+
+	int L_EntityPlayer_GetHeartLimit(Entity_Player* self, bool keeper) {
+		return self->GetHealthLimit(keeper);
+	}
+
+	int L_EntityPlayer_GetHearts(Entity_Player* self) {
+		return *self->GetRedHearts();
+	}
+
+	Entity* L_EntityPlayer_GetHeldEntity(Entity_Player* self) {
+		return *self->GetHeldEntity();
+	}
+
+	ANM2* L_EntityPlayer_GetHeldSprite(Entity_Player* self) {
+		return self->GetHeldSprite();
+	}
+
+	History* L_EntityPlayer_GetHistory(Entity_Player* self) {
+		return self->GetHistory();
+	}
+
+	int L_EntityPlayer_GetImmaculateConceptionState(Entity_Player* self) {
+		return *self->GetImmaculateConceptionState();
+	}
+
+	CollectibleType L_EntityPlayer_GetItemState(Entity_Player* self) {
+		return (CollectibleType)self->_itemState;
+	}
+
+	int L_EntityPlayer_GetJarFlies(Entity_Player* self) {
+		return self->_jarFlies;
+	}
+
+	int L_EntityPlayer_GetJarHearts(Entity_Player* self) {
+		return self->_jarHearts;
+	}
+
+	int L_EntityPlayer_GetKeepersSackBonus(Entity_Player* self) {
+		return self->_keepersSackBonus;
+	}
+
+	ColorMod* L_EntityPlayer_GetLaserColor(Entity_Player* self) {
+		return &self->_laserColor;
+	}
+
+	Vector* L_EntityPlayer_GetLaserOffset(Entity_Player* self, int id, Vector* dir) {
+		return new auto(self->GetLaserOffset(id, *dir));
+	}
+
+	int L_EntityPlayer_GetLuckModifier(Entity_Player* self) {
+		return self->_luckModifier;
+	}
+
+	int L_EntityPlayer_GetLastActionTriggers(Entity_Player* self) {
+		return self->_lastActionTriggers;
+	}
+
+	int L_EntityPlayer_GetLastDamageFlags(Entity_Player* self) {
+		return self->_lastDamageFlags;
+	}
+
+	const EntityRef* L_EntityPlayer_GetLastDamageSource(Entity_Player* self) {
+		return &self->_lastDamageSource;
+	}
+
+	const Vector* L_EntityPlayer_GetLastDirection(Entity_Player* self) {
+		return &self->_lastDirection;
+	}
+	int L_EntityPlayer_GetMaggySwingCooldown(Entity_Player* self) {
+		return self->_maggySwingCooldown;
+	}
+
+	Entity_Player* L_EntityPlayer_GetMainTwin(Entity_Player* self) {
+		return self->GetMainTwin();
+	}
+
+	Entity_Effect* L_EntityPlayer_GetMarkedTarget(Entity_Player* self) {
+		return self->GetMarkedTarget();
+	}
+
+	int L_EntityPlayer_GetMaxBladderCharge(Entity_Player* self) {
+		return *self->GetMaxBladderCharge();
+	}
+
+	int L_EntityPlayer_GetMaxPeeBurstCooldown(Entity_Player* self) {
+		return *self->GetMaxPeeBurstCooldown();
+	}
+
+	int L_EntityPlayer_GetMaxHearts(Entity_Player* self) {
+		return *self->GetMaxHearts();
+	}
+
+	int L_EntityPlayer_GetMaxPocketItems(Entity_Player* self) {
+		return self->GetMaxPocketItems();
+	}
+
+	int L_EntityPlayer_GetMaxPoopMana(Entity_Player* self) {
+		return self->GetMaxPoopMana();
+	}
+
+	int L_EntityPlayer_GetMaxTrinkets(Entity_Player* self) {
+		return self->GetMaxTrinkets();
+	}
+
+	int L_EntityPlayer_GetMegaBlastDuration(Entity_Player* self) {
+		return *self->GetMegaBlastDuration();
+	}
+
+	int L_EntityPlayer_GetMetronomeCollectibleID(Entity_Player* self) {
+		return *self->GetMetronomeCollectibleID();
+	}
+
+	CollectibleType L_EntityPlayer_GetModelingClayEffect(Entity_Player* self) {
+		return static_cast<CollectibleType>(self->_modelingClayEffect);
+	}
+
+	Direction L_EntityPlayer_GetMovementDirection(Entity_Player* self) {
+		return static_cast<Direction>(self->_movementDirection);
+	}
+
+	const Vector* L_EntityPlayer_GetMovementInput(Entity_Player* self, float moveSpeed) {
+		return new auto(self->GetMovementInput(moveSpeed));
+	}
+
+	Vector* L_EntityPlayer_GetMovementJoystick(Entity_Player* self) {
+		return new auto(self->GetMovementInput(0.0f));
+	}
+
+	Vector* L_EntityPlayer_GetMovementVector(Entity_Player* self) {
+		return &self->_movementVector;
+	}
+
+	Weapon_MultiShotParams* L_EntityPlayer_GetMultiShotParams(Entity_Player* self, int weaponType) {
+		return new auto(self->GetMultiShotParams(weaponType));
+	}
+
+	PosVel* L_EntityPlayer_GetMultiShotPositionVelocity(Entity_Player* self, int loopIndex, WeaponType weapon, Vector* shotDirection, float shotSpeed, Weapon_MultiShotParams* params) {
+		return new auto(self->GetMultiShotPositionVelocity(loopIndex, weapon, * shotDirection, shotSpeed, *params));
+	}
+
+	const char* L_EntityPlayer_GetName(Entity_Player* self) {
+		return self->GetName();
+	}
+	int L_EntityPlayer_GetNextUrethraBlockFrame(Entity_Player* self) {
+		return *self->GetNextUrethraBlockFrame();
+	}
+	Entity* L_EntityPlayer_GetNPCTarget(Entity_Player* self) {
+		return self->GetNPCTarget();
+	}
+
+	int L_EntityPlayer_GetNumBlueFlies(Entity_Player* self) {
+		return self->_blueFlies;
+	}
+
+	int L_EntityPlayer_GetNumBlueSpiders(Entity_Player* self) {
+		return self->_blueSpiders;
+	}
+
+	int L_EntityPlayer_GetNumBombs(Entity_Player* self) {
+		return self->_numBombs;
+	}
+
+	int L_EntityPlayer_GetNumCoins(Entity_Player* self) {
+		return self->_numCoins;
+	}
+
+	int L_EntityPlayer_GetNumGigaBombs(Entity_Player* self) {
+		return self->_numGigaBombs;
+	}
+
+	int L_EntityPlayer_GetNumKeys(Entity_Player* self) {
+		return self->_numKeys;
+	}
+
+	Entity_Player* L_EntityPlayer_GetOtherTwin(Entity_Player* self) {
+		return self->_twinPlayer;
+	}
+
+	int L_EntityPlayer_GetPeeBurstCooldown(Entity_Player* self) {
+		return *self->GetPeeBurstCooldown();
+	}
+
+	int L_EntityPlayer_GetPill(Entity_Player* self, int slotId) {
+		return self->GetPill(slotId);
+	}
+
+	RNG* L_EntityPlayer_GetPillRNG(Entity_Player* self, int id) {
+		return self->GetPillRNG(id);
+	}
+
+	int L_EntityPlayer_GetPlayerFormCounter(Entity_Player* self, int form) {
+		if (form < 0 || form > 14) return 0;
+		return self->_playerForms[form];
+	}
+
+	int L_EntityPlayer_GetPlayerType(Entity_Player* self) {
+		return self->_type;
+	}
+	PocketItem L_EntityPlayer_GetPocketItem(Entity_Player* self, int slotId) {
+		return *self->GetPocketItem(slotId);
+	}
+
+	int L_EntityPlayer_GetPonyCharge(Entity_Player* self) {
+		return *self->GetPonyCharge();
+	}
+
+	int L_EntityPlayer_GetPurityState(Entity_Player* self) {
+		return *self->GetPurityState();
+	}
+
+	int L_EntityPlayer_GetPoopMana(Entity_Player* self) {
+		return self->_poopMana;
+	}
+
+	int L_EntityPlayer_GetPoopSpell(Entity_Player* self, int position) {
+		return self->_poopSpellQueue[position];
+	}
+
+	Vector* L_EntityPlayer_GetRecentMovementVector(Entity_Player* self) {
+		return new auto(self->_recentMovementVector);
+	}
+	int L_EntityPlayer_GetRedStewBonusDuration(Entity_Player* self) {
+		return *self->GetRedStewBonusDuration();
+	}
+
+	int L_EntityPlayer_GetRottenHearts(Entity_Player* self) {
+		return *self->GetRottenHearts();
+	}
+
+	Vector* L_EntityPlayer_GetShootingInput(Entity_Player* self) {
+		return new auto(self->GetShootingInput(0.0f));
+	}
+
+	int L_EntityPlayer_GetShotSpeedModifier(Entity_Player* self) {
+		return self->_shotSpeedModifier;
+	}
+
+	// !!!TODO!!!
+	void* L_EntityPlayer_GetSmeltedTrinkets(Entity_Player* self) {
+		return &self->_smeltedTrinkets;
+	}
+
+	int L_EntityPlayer_GetSpecialGridCollision(Entity_Player* self, Vector* pos) {
+		return self->GetSpecialGridCollision(pos);
+	}
+
+	int L_EntityPlayer_GetSpeedModifier(Entity_Player* self) {
+		return self->_speedModifier;
+	}
+
+	int L_EntityPlayer_GetTotalActiveCharge(Entity_Player* self, int activeSlot) {
+		return self->GetTotalActiveCharge(activeSlot);
+	}
+
+	void* L_EntityPlayer_GetVoidedCollectiblesList(Entity_Player* self) {
+		return &self->GetVoidedCollectiblesList().at(0);
+	}
+
+	Weapon* L_EntityPlayer_GetWeapon(Entity_Player* self, int index) {
+		if (index < 0 || index > 4) return nullptr;
+		return *self->GetWeapon(index);
+	}
+	
+	int L_EntityPlayer_GetWeaponModifiers(Entity_Player* self) {
+		return self->GetWeaponModifiers();
+	}
+
+	int L_EntityPlayer_GetWildCardItem(Entity_Player* self) {
+		return *self->GetWildCardItem();
+	}
+
+	uint8_t L_EntityPlayer_GetWildCardItemType(Entity_Player* self) {
+		return *self->GetWildCardItemType();
+	}
+
+	// !!!TODO!!!
+	void* L_EntityPlayer_GetWispCollectiblesList(Entity_Player* self) {
+		return self->GetItemWispsList();
+	}
+
+	float L_EntityPlayer_GetSmoothBodyRotation(Entity_Player* self) {
+		return self->_smoothBodyRotation;
+	}
+
+	int L_EntityPlayer_GetSoulCharge(Entity_Player* self) {
+		return self->_soulCharges;
+	}
+
+	int L_EntityPlayer_GetSoulHearts(Entity_Player* self) {
+		return *self->GetSoulHearts();
+	}
+
+	Entity_Player* L_EntityPlayer_GetSubPlayer(Entity_Player* self) {
+		return self->_subPlayer;
+	}
+
+	TearParams* L_EntityPlayer_GetTearHitParams(Entity_Player* self, int weaponType, float damageScale, int tearDisplacement, Entity* source) {
+		return new auto(self->GetTearHitParams(weaponType, damageScale, tearDisplacement, source));
+	}
+
+	Vector* L_EntityPlayer_GetTearMovementInheritance(Entity_Player* self, Vector* shotDirection) {
+		return new auto(self->GetTearMovementInheritance(shotDirection, false));
+	}
+
+	float L_EntityPlayer_GetTearPoisonDamage(Entity_Player* self) {
+		return *self->GetTearPoisonDamage();
+	}
+
+	int L_EntityPlayer_GetTearRangeModifier(Entity_Player* self) {
+		return self->_tearRangeModifier;
+	}
+
+	int L_EntityPlayer_GetTotalDamageTaken(Entity_Player* self) {
+		return self->_totalDamageTaken;
+	}
+
+	Entity* L_EntityPlayer_GetTractorBeam(Entity_Player* self) {
+		return self->_tractorBeam;
+	}
+
+	// TODO: return ItemConfig::Item here
+	int L_EntityPlayer_GetTrinket(Entity_Player* self, int trinketIndex) {
+		return self->GetTrinket(trinketIndex)->id;
+	}
+
+	int L_EntityPlayer_GetTrinketMultiplier(Entity_Player* self, TrinketType trinketID) {
+		return self->GetTrinketMultiplier(trinketID);
+	}
+
+	RNG* L_EntityPlayer_GetTrinketRNG(Entity_Player* self, TrinketType trinketID) {
+		return self->GetTrinketRNG(trinketID);
+	}
+
+	Vector* L_EntityPlayer_GetVelocityBeforeUpdate(Entity_Player* self) {
+		return &self->_velocityBeforeUpdate;
+	}
+
+	int L_EntityPlayer_GetZodiacEffect(Entity_Player* self) {
+		return self->GetZodiacEffect();
+	}
+
+	bool L_EntityPlayer_HasCollectible(Entity_Player* self, CollectibleType type, bool ignoreModifiers) {
+		return self->HasCollectible(type, ignoreModifiers);
+	}
+
+	bool L_EntityPlayer_HasCurseMistEffect(Entity_Player* self) {
+		return self->_hasCurseMistEffect;
+	}
+
+	bool L_EntityPlayer_HasFullHearts(Entity_Player* self) {
+		return self->HasFullHearts();
+	}
+
+	bool L_EntityPlayer_HasFullHeartsAndSoulHearts(Entity_Player* self) {
+		return self->HasFullHeartsAndSoulHearts();
+	}
+
+	bool L_EntityPlayer_HasGoldenBomb(Entity_Player* self) {
+		return self->_hasGoldenBomb;
+	}
+
+	bool L_EntityPlayer_HasGoldenKey(Entity_Player* self) {
+		return self->_hasGoldenKey;
+	}
+
+	bool L_EntityPlayer_HasInstantDeathCurse(Entity_Player* self) {
+		return self->HasInstantDeathCurse();
+	}
+
+	bool L_EntityPlayer_HasInvincibility(Entity_Player* self, int dmgFlags) {
+		return self->HasInvincibility(dmgFlags);
+	}
+
+	bool L_EntityPlayer_HasPoisonImmunity(Entity_Player* self) {
+		return self->HasPoisonImmunity();
+	}
+
+	bool L_EntityPlayer_HasPlayerForm(Entity_Player* self, int form) {
+		return self->HasPlayerForm(form);
+	}
+
+	bool L_EntityPlayer_HasTimedItem(Entity_Player* self) {
+		return self->HasTimedItem();
+	}
+
+	bool L_EntityPlayer_HasTrinket(Entity_Player* self, TrinketType type, bool ignoreModifiers) {
+		return self->HasTrinket(type, ignoreModifiers);
+	}
+
+	bool L_EntityPlayer_HasWeaponType(Entity_Player* self, WeaponType weaponType) {
+		return self->_weaponTypeBool[weaponType];
+	}
+
+	void L_EntityPlayer_IncrementPlayerFormCounter(Entity_Player* self, int ePlayerForm, int count) {
+		self->IncrementPlayerFormCounter(ePlayerForm, count);
+	}
+
+	void L_EntityPlayer_InitBabySkin(Entity_Player* self) {
+		return self->InitBabySkin();
+	}
+
+	void L_EntityPlayer_InitPostLevelInitStats(Entity_Player* self) {
+		self->InitPostLevelInitStats();
+	}
+
+	void L_EntityPlayer_InitTwin(Entity_Player* self, int playerType) {
+		self->InitTwin(playerType);
+	}
+
+	bool L_EntityPlayer_IsBlackHeart(Entity_Player* self, int heart) {
+		return self->IsBlackHeart(heart);
+	}
+
+	bool L_EntityPlayer_IsBoneHeart(Entity_Player* self, int heart) {
+		return self->IsBoneHeart(heart);
+	}
+
+	bool L_EntityPlayer_IsCollectibleAnimFinished(Entity_Player* self, CollectibleType type, const char* anim) {
+		return self->IsCollectibleAnimFinished(type, std::string(anim));
+	}
+
+	bool L_EntityPlayer_IsCollectibleCostumeVisibleLayerID(Entity_Player* self, CollectibleType type, int playerSpriteLayerID) {
+		return self->IsCollectibleCostumeVisible(type, playerSpriteLayerID);
+	}
+
+	bool L_EntityPlayer_IsCollectibleCostumeVisibleLayerName(Entity_Player* self, CollectibleType type, const char* layer) {
+		LayerState* layerState = self->_sprite.GetLayer(layer);
+		if (layerState != nullptr) {
+			return self->IsCollectibleCostumeVisible(type, layerState->GetLayerID());
+		}
+		return false;
+	}
+
+	bool L_EntityPlayer_IsCoopGhost(Entity_Player* self) {
+		return self->_isCoopGhost;
+	}
+
+	bool L_EntityPlayer_IsEntityValidTarget(Entity_Player* self, Entity* ent) {
+		return self->IsEntityValidTarget(ent);
+	}
+
+	bool L_EntityPlayer_IsExtraAnimationFinished(Entity_Player* self) {
+		return self->IsExtraAnimationFinished();
+	}
+
+	bool L_EntityPlayer_IsFootstepFrame(Entity_Player* self, int foot) {
+		return self->IsFootstepFrame(foot);
+	}
+
+	bool L_EntityPlayer_IsFullSpriteRendering(Entity_Player* self) {
+		return self->IsFullSpriteRendering();
+	}
+
+	bool L_EntityPlayer_IsHeadless(Entity_Player* self) {
+		return self->IsHeadless();
+	}
+
+	bool L_EntityPlayer_IsHeldItemVisible(Entity_Player* self) {
+		return self->IsHeldItemVisible();
+	}
+
+	bool L_EntityPlayer_IsHoldingItem(Entity_Player* self) {
+		return self->IsHoldingItem();
+	}
+
+	bool L_EntityPlayer_IsHologram(Entity_Player* self) {
+		return self->IsHologram();
+	}
+
+	bool L_EntityPlayer_IsInvisible(Entity_Player* self) {
+		return self->IsInvisible();
+	}
+
+	bool L_EntityPlayer_IsItemCostumeVisible(Entity_Player* self, ItemConfig_Item* item, int playerSpriteLayerID) {
+		return self->IsItemCostumeVisible(item, playerSpriteLayerID);
+	}
+
+	bool L_EntityPlayer_IsItemCostumeVisibleLayerName(Entity_Player* self, ItemConfig_Item* item, const char* playerSpriteLayerName) {
+		LayerState* layerState = self->_sprite.GetLayer(playerSpriteLayerName);
+		if (layerState != nullptr) {
+			return self->IsItemCostumeVisible(item, layerState->GetLayerID());
+		}
+		return false;
+	}
+
+	bool L_EntityPlayer_IsItemQueueEmpty(Entity_Player* self) {
+		return self->IsItemQueueEmpty();
+	}
+
+	bool L_EntityPlayer_IsLocalPlayer(Entity_Player* self) {
+		return self->IsLocalPlayer();
+	}
+
+	bool L_EntityPlayer_IsNullItemCostumeVisible(Entity_Player* self, int nullItem, int layerID) {
+		return self->IsNullItemCostumeVisible(nullItem, layerID);
+	}
+
+	bool L_EntityPlayer_IsNullItemCostumeVisibleLayerName(Entity_Player* self, int nullItem, const char* playerSpriteLayerName) {
+		LayerState* layerState = self->_sprite.GetLayer(playerSpriteLayerName);
+		if (layerState != nullptr) {
+			return self->IsNullItemCostumeVisible(nullItem, layerState->GetLayerID());
+		}
+		return false;
+	}
+
+	bool L_EntityPlayer_IsP2Appearing(Entity_Player* self) {
+		return self->IsP2Appearing();
+	}
+
+	bool L_EntityPlayer_IsPacifist(Entity_Player* self) {
+		return g_Game->_level._room->_pacifist;
+	}
+
+	bool L_EntityPlayer_IsPosInSpotLight(Entity_Player* self, Vector* position) {
+		return self->IsPosInSpotLight(position);
+	}
+
+	bool L_EntityPlayer_IsSubPlayer(Entity_Player* self) {
+		return self->IsSubPlayer();
+	}
+
+	bool L_EntityPlayer_IsUrethraBlocked(Entity_Player* self) {
+		return *self->IsUrethraBlocked();
+	}
+
+	void L_EntityPlayer_MorphToCoopGhost(Entity_Player* self) {
+		self->MorphToCoopGhost();
+	}
+
+	bool L_EntityPlayer_NeedsCharge(Entity_Player* self, int activeSlot) {
+		return self->NeedsCharge(activeSlot);
+	}
+
+	void L_EntityPlayer_PlayCollectibleAnim(Entity_Player* self, CollectibleType item, bool checkBodyLayers, const char* anim, int frame) {
+		self->PlayCollectibleAnim(item, checkBodyLayers, std::string(anim), frame, false);
+	}
+	
+	void L_EntityPlayer_PlayDelayedSFX(Entity_Player* self, int soundID, int soundDelay, int frameDelay, float volume) {
+		self->PlayDelayedSFX(soundID, soundDelay, frameDelay, volume);
+	}
+
+	void L_EntityPlayer_PlayExtraAnimation(Entity_Player* self, const char* animation) {
+		self->PlayExtraAnimation(animation);
+	}
+
+	void L_EntityPlayer_QueueExtraAnimation(Entity_Player* self, const char* animation) {
+		self->QueueExtraAnimation(animation);
+	}
+
+	// need some help on this one too
+	void L_EntityPlayer_QueueItem(Entity_Player* self, ItemConfig_Item* item, int charge, bool touched, bool golden, int varData) {
+		self->QueueItem(item, charge, touched, varData);
+	}
+
+	void L_EntityPlayer_RemoveBlackHeart(Entity_Player* self, int blackHeart) {
+		self->RemoveBlackHeart(blackHeart);
+	}
+
+	void L_EntityPlayer_RemoveBlueFly(Entity_Player* self) {
+		self->RemoveBlueFly();
+	}
+
+	void L_EntityPlayer_RemoveBlueSpider(Entity_Player* self) {
+		self->RemoveBlueSpider();
+	}
+
+	void L_EntityPlayer_RemoveCollectible(Entity_Player* self, CollectibleType type, bool ignoreModifiers, int activeSlot, bool removeFromPlayerForm) {
+		self->RemoveCollectible(type, ignoreModifiers, activeSlot, removeFromPlayerForm);
+	}
+
+	void L_EntityPlayer_RemoveCollectibleByHistoryIndex(Entity_Player* self, int idx) {
+		self->RemoveCollectibleByHistoryIndex(idx, true);
+	}
+
+	void L_EntityPlayer_RemoveCostume(Entity_Player* self, ItemConfig_Item* item) {
+		self->RemoveCostume(item);
+	}
+
+	void L_EntityPlayer_RemoveCurseMistEffect(Entity_Player* self) {
+		self->RemoveCurseMistEffect();
+	}
+
+	void L_EntityPlayer_RemoveGoldenBomb(Entity_Player* self) {
+		self->RemoveGoldenBomb();
+	}
+
+	void L_EntityPlayer_RemoveGoldenKey(Entity_Player* self) {
+		self->RemoveGoldenKey();
+	}
+
+	void L_EntityPlayer_RemovePocketItem(Entity_Player* self, int activeSlot) {
+		self->RemovePocketItem(activeSlot);
+	}
+
+	void L_EntityPlayer_RemovePoopSpell(Entity_Player* self, int pos) {
+		if (pos < 0 || pos > 5) {
+			return;
+		}
+
+		for (int i = pos; i < 5; i++) {
+			self->_poopSpellQueue[i] = self->_poopSpellQueue[i + 1];
+		}
+		self->_poopSpellQueue[5] = 0;
+		self->CheckPoopSpellQueue();
+	}
+
+	void L_EntityPlayer_RemoveSkinCostume(Entity_Player* self) {
+		self->RemoveSkinCostume();
+	}
+
+	void L_EntityPlayer_RenderBody(Entity_Player* self, Vector* position) {
+		self->RenderBody(position);
+	}
+
+	void L_EntityPlayer_RenderDebugInfo(Entity_Player* self, Vector* position) {
+		self->RenderDebugInfo(position);
+	}
+
+	void L_EntityPlayer_RenderGlow(Entity_Player* self, Vector* position) {
+		self->RenderGlow(position);
+	}
+
+	void L_EntityPlayer_RenderHead(Entity_Player* self, Vector* position) {
+		self->RenderHead(position);
+	}
+
+	void L_EntityPlayer_RenderHeadBack(Entity_Player* self, Vector* position) {
+		self->RenderHeadBack(position);
+	}
+
+	bool L_EntityPlayer_RenderShadowLayer(Entity_Player* self, Vector* position) {
+		return self->RenderShadowLayer(position);
+	}
+
+	void L_EntityPlayer_RenderTop(Entity_Player* self, Vector* position) {
+		self->RenderTop(position);
+	}
+
+	void L_EntityPlayer_ReplaceCostumeSprite(Entity_Player* self, ItemConfig_Item* item, const char* spritePath, int spriteId) {
+		self->ReplaceCostumeSprite(item, std::string(spritePath), spriteId);
+	}
+
+	void L_EntityPlayer_RerollAllCollectibles(Entity_Player* self, RNG* rng, bool includeActiveItems) {
+		self->RerollAllCollectibles(rng, includeActiveItems);
+	}
+
+	void L_EntityPlayer_ResetDamageCooldown(Entity_Player* self) {
+		self->_damageCooldown = 0;
+	}
+
+	void L_EntityPlayer_ResetItemState(Entity_Player* self) {
+		self->ResetItemState();
+	}
+
+	void L_EntityPlayer_ResetPlayer(Entity_Player* self) {
+		self->ResetPlayer();
+	}
+
+	void L_EntityPlayer_RespawnFamiliars(Entity_Player* self) {
+		self->RespawnFamiliars();
+	}
+
+	void L_EntityPlayer_Revive(Entity_Player* self) {
+		self->Revive();
+	}
+
+	bool L_EntityPlayer_ReviveCoopGhost(Entity_Player* self) {
+		if (self->_isCoopGhost) {
+			self->RevivePlayerGhost();
+			return true;
+		}
+
+		return false;
+	}
+
+	void L_EntityPlayer_SalvageCollectiblePickup(Entity_Player* self, Entity_Pickup* pickup, RNG* rng, eItemPoolType pool, bool removePickup) {
+		if (rng == nullptr) {
+			rng = &pickup->_dropRNG;
+		}
+
+		if (removePickup) pickup->Remove();
+		self->SalvageCollectible(pickup->GetPosition(), pickup->_subtype, rng->Next(), pool);
+	}
+
+	void L_EntityPlayer_SalvageCollectibleID(Entity_Player* self, CollectibleType collectible, Vector* pos, RNG* rng, eItemPoolType pool) {
+		if (pos == nullptr) {
+			pos = self->GetPosition();
+		}
+		if (rng == nullptr) {
+			rng = &self->_dropRNG;
+		}
+		self->SalvageCollectible(pos, collectible, rng->Next(), pool);
+	}
+
+	void L_EntityPlayer_SetActiveCharge(Entity_Player* self, int charge, int activeSlot) {
+		self->SetActiveCharge(charge, activeSlot);
+	}
+
+	void L_EntityPlayer_SetActiveVarData(Entity_Player* self, int vardata, int slot) {
+		self->SetActiveVarData(vardata, slot);
+	}
+
+	void L_EntityPlayer_SetBagOfCraftingContent(Entity_Player* self, BagOfCraftingPickup* pickups) {
+		memcpy(&self->_bagOfCraftingContent, pickups, sizeof(int) * 8);
+	}
+
+	void L_EntityPlayer_SetBagOfCraftingOutput(Entity_Player* self, CollectibleType output) {
+		*self->GetBagOfCraftingOutput() = output;
+	}
+
+	void L_EntityPlayer_SetBagOfCraftingSlot(Entity_Player* self, int slot, BagOfCraftingPickup pickup) {
+		self->_bagOfCraftingContent[slot] = pickup;
+	}
+
+	void L_EntityPlayer_SetBladderCharge(Entity_Player* self, int charge) {
+		*self->GetBladderCharge() = charge;
+	}
+
+	void L_EntityPlayer_SetBloodCharge(Entity_Player* self, int amount) {
+		self->_bloodCharges = amount;
+	}
+	
+	void L_EntityPlayer_SetCambionConceptionState(Entity_Player* self, int state) {
+		*self->GetCambionConceptionState() = state;
+	}
+
+	void L_EntityPlayer_SetCanShoot(Entity_Player* self, bool canShoot) {
+		*self->GetCanShoot() = canShoot;
+	}
+
+	void L_EntityPlayer_SetCard(Entity_Player* self, int slotId, int card) {
+		self->SetCard(slotId, card);
+	}
+
+	void L_EntityPlayer_SetControllerIndex(Entity_Player* self, int idx) {
+		self->SetControllerIndex(idx);
+	}
+
+	void L_EntityPlayer_SetDamageModifier(Entity_Player* self, int modifier) {
+		self->_damageModifier = modifier;
+	}
+
+	void L_EntityPlayer_SetEdenDamage(Entity_Player* self, float value) {
+		*self->GetEdenDamage() = value;
+	}
+
+	void L_EntityPlayer_SetEdenFireDelay(Entity_Player* self, float value) {
+		*self->GetEdenFireDelay() = value;
+	}
+
+	void L_EntityPlayer_SetEdenLuck(Entity_Player* self, float value) {
+		*self->GetEdenLuck() = value;
+	}
+
+	void L_EntityPlayer_SetEdenRange(Entity_Player* self, float value) {
+		*self->GetEdenRange() = value;
+	}
+
+	void L_EntityPlayer_SetEdenShotSpeed(Entity_Player* self, float value) {
+		*self->GetEdenShotSpeed() = value;
+	}
+
+	void L_EntityPlayer_SetEdenSpeed(Entity_Player* self, float value) {
+		*self->GetEdenSpeed() = value;
+	}
+
+	void L_EntityPlayer_SetEveSumptoriumCharge(Entity_Player* self, int charge) {
+		self->_eveSumptoriumCharge = charge;
+	}
+
+	void L_EntityPlayer_SetFireDelayModifier(Entity_Player* self, int modifier) {
+		self->_fireDelayModifier = modifier;
+	}
+
+	void L_EntityPlayer_SetFootprintColor(Entity_Player* self, KColor* color, bool rightFoot) {
+		self->SetFootprintColor(color, rightFoot);
+	}
+
+	void L_EntityPlayer_SetFullHearts(Entity_Player* self) {
+		self->SetFullHearts();
+	}
+
+	void L_EntityPlayer_SetGnawedLeafTimer(Entity_Player* self, int timer) {
+		self->_gnawedLeafCooldown = timer;
+	}
+
+	void L_EntityPlayer_SetImmaculateConceptionState(Entity_Player* self, int state) {
+		*self->GetImmaculateConceptionState() = state;
+	}
+
+	void L_EntityPlayer_SetItemState(Entity_Player* self, CollectibleType item) {
+		self->SetItemState(item);
+	}
+
+	void L_EntityPlayer_SetKeepersSackBonus(Entity_Player* self, int bonus) {
+		self->_keepersSackBonus = bonus;
+	}
+
+	void L_EntityPlayer_SetLaserColor(Entity_Player* self, ColorMod* colorMod) {
+		self->_laserColor = *colorMod;
+	}
+
+	void L_EntityPlayer_SetLuckModifier(Entity_Player* self, int modifier) {
+		self->_luckModifier = modifier;
+	}
+
+	void L_EntityPlayer_SetMaggySwingCooldown(Entity_Player* self, int cooldown) {
+		self->_maggySwingCooldown = cooldown;
+	}
+
+	void L_EntityPlayer_SetMaxBladderCharge(Entity_Player* self, int charge) {
+		*self->GetMaxBladderCharge() = charge;
+	}
+
+	void L_EntityPlayer_SetMegaBlastDuration(Entity_Player* self, int duration) {
+		*self->GetMegaBlastDuration() = duration;
+	}
+
+	void L_EntityPlayer_SetMinDamageCooldown(Entity_Player* self, int damageCooldown) {
+		self->SetMinDamageCooldown(damageCooldown);
+	}
+
+	void L_EntityPlayer_SetNextUrethraBlockFrame(Entity_Player* self, int frame) {
+		*self->GetNextUrethraBlockFrame() = frame;
+	}
+
+	void L_EntityPlayer_SetPill(Entity_Player* self, int slotId, int pill) {
+		self->SetPill(slotId, pill);
+	}
+
+	void L_EntityPlayer_SetPocketActiveItem(Entity_Player* self, CollectibleType type, int slot, bool keepInPools) {
+		self->SetPocketActiveItem(type, slot, keepInPools);
+	}
+
+	void L_EntityPlayer_SetPonyCharge(Entity_Player* self, int time) {
+		*self->GetPonyCharge() = time;
+	}
+
+	void L_EntityPlayer_SetPoopSpell(Entity_Player* self, int slot, int spell) {
+		if (slot < 0 || slot > 5) {
+			return;
+		}
+		if (spell < 1 || spell > 11) {
+			// At least until we decide to add custom PoopSpellType support :^)
+			return;
+		}
+		self->_poopSpellQueue[slot] = spell;
+	}
+
+	void L_EntityPlayer_SetPurityState(Entity_Player* self, int state) {
+		*self->GetPurityState() = state;
+	}
+
+	void L_EntityPlayer_SetRedStewBonusDuration(Entity_Player* self, int duration) {
+		*self->GetRedStewBonusDuration() = duration;
+	}
+
+	void L_EntityPlayer_SetShootingCooldown(Entity_Player* self, int cooldown) {
+		self->SetShootingCooldown(cooldown);
+	}
+
+	void L_EntityPlayer_SetShotSpeedModifier(Entity_Player* self, int modifier) {
+		self->_shotSpeedModifier = modifier;
+	}
+
+	void L_EntityPlayer_SetSoulCharge(Entity_Player* self, int amount) {
+		self->_soulCharges = amount;
+	}
+
+	void L_EntityPlayer_SetSpeedModifier(Entity_Player* self, int modifier) {
+		self->_speedModifier = modifier;
+	}
+
+	void L_EntityPlayer_SetTearPoisonDamage(Entity_Player* self, float poisonDamage) {
+		*self->GetTearPoisonDamage() = poisonDamage;
+	}
+
+	void L_EntityPlayer_SetTearRangeModifier(Entity_Player* self, int modifier) {
+		self->_tearRangeModifier = modifier;
+	}
+
+	void L_EntityPlayer_SetUrethraBlock(Entity_Player* self, bool blocked) {
+		*self->IsUrethraBlocked() = blocked;
+	}
+
+	void L_EntityPlayer_SetWeapon(Entity_Player* self, Weapon* weapon, int slot) {
+		if (slot < 0 || slot > 4) return;
+		*self->GetWeapon(slot) = weapon;
+	}
+
+	void L_EntityPlayer_ShootBlueCandle(Entity_Player* self, Vector* dir) {
+		self->ShootBlueCandle(dir);
+	}
+	void L_EntityPlayer_ShootRedCandle(Entity_Player* self, Vector* dir) {
+		self->ShootRedCandle(dir);
+	}
+
+	void L_EntityPlayer_ShuffleCostumes(Entity_Player* self, int seed) {
+		if (seed == 0) seed = Isaac::genrand_int32();
+		self->ShuffleCostumes(seed);
+	}
+
+	Entity_Effect* L_EntityPlayer_SpawnAquariusCreep(Entity_Player* self, TearParams* tearParams) {
+		TearParams params;
+
+		if (tearParams == nullptr) {
+			params = self->GetTearHitParams((int)WeaponType::WEAPON_TEARS, (*self->GetTearPoisonDamage() * 0.666f) / self->_damage, (-(int)(Isaac::Random(2) != 0) & 2) - 1, 0);
+		}
+		else {
+			params = *tearParams;
+		}
+
+		Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 54, *self->GetPosition(), Vector(0.0, 0.0), self, 0, Random(), 0);
+		float random = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+		effect->_sprite._scale *= ((random * 0.5f) + 0.2f);
+		effect->_collisionDamage = params._tearDamage;
+		effect->SetColor(&params._tearColor, 0, -1, true, false);
+
+		effect->_varData = params._flags;
+		effect->Update();
+
+		return effect;
+	}
+
+	void L_EntityPlayer_SpawnClot(Entity_Player* self, Vector* pos, bool allowPlayerDeath) {
+		self->SpawnClot(pos, allowPlayerDeath);
+	}
+
+	Entity_Laser* L_EntityPlayer_SpawnMawOfVoid(Entity_Player* self, int timeout) {
+		return self->SpawnMawOfVoid(timeout);
+	}
+
+	int L_EntityPlayer_SpawnSaturnusTears(Entity_Player* self) {
+		return self->SpawnSaturnusTears();
+	}
+
+	void L_EntityPlayer_StopExtraAnimation(Entity_Player* self) {
+		self->StopExtraAnimation();
+	}
+
+	void L_EntityPlayer_SwapActiveItems(Entity_Player* self) {
+		self->SwapActiveItems();
+	}
+
+	void L_EntityPlayer_SwapForgottenForm(Entity_Player* self, bool force, bool noEffects) {
+		self->SwapForgottenForm(force, noEffects);
+	}
+
+	void L_EntityPlayer_SyncConsumableCounts(Entity_Player* self, Entity_Player* player2, int flags) {
+		self->SyncConsumableCounts(player2, flags);
+	}
+
+	void L_EntityPlayer_Teleport(Entity_Player* self, Vector* pos, bool doEffects, bool teleportTwinPlayers) {
+		self->Teleport(pos, doEffects, teleportTwinPlayers);
+	}
+	Entity* L_EntityPlayer_ThrowBlueSpider(Entity_Player* self, Vector* pos, Vector* target) {
+		return self->ThrowBlueSpider(pos, target);
+	}
+
+	Entity_Familiar* L_EntityPlayer_ThrowFriendlyDip(Entity_Player* self, int subtype, Vector* pos, Vector* target) {
+		return self->ThrowFriendlyDip(subtype, pos, self, target);
+	}
+
+	Entity* L_EntityPlayer_ThrowHeldEntity(Entity_Player* self, Vector* vel) {
+		return self->ThrowHeldEntity(vel);
+	}
+
+	void L_EntityPlayer_TriggerBookOfVirtues(Entity_Player* self, CollectibleType type, int charge) {
+		self->TriggerBookOfVirtues(type, charge);
+	}
+
+	void L_EntityPlayer_TriggerRoomClear(Entity_Player* self) {
+		self->TriggerRoomClear();
+	}
+
+	void L_EntityPlayer_TryAddToBagOfCrafting(Entity_Player* self, Entity_Pickup* pickup) {
+		self->TryAddToBagOfCrafting(pickup);
+	}
+
+	void L_EntityPlayer_TryDecreaseGlowingHourglassUses(Entity_Player* self, int uses, bool forceHourglass) {
+		self->TryDecreaseGlowingHourglassUses(uses, forceHourglass);
+	}
+
+	bool L_EntityPlayer_TryFakeDeath(Entity_Player* self) {
+		return self->TryFakeDeath();
+	}
+
+	bool L_EntityPlayer_TryForgottenThrow(Entity_Player* self, Vector* dir) {
+		return self->TryForgottenThrow(dir);
+	}
+
+	bool L_EntityPlayer_TryHoldEntity(Entity_Player* self, Entity* entity) {
+		return self->TryHoldEntity(entity);
+	}
+
+	bool L_EntityPlayer_TryHoldTrinket(Entity_Player* self, TrinketType type) {
+		return self->TryHoldTrinket(type);
+	}
+
+	bool L_EntityPlayer_TryPreventDeath(Entity_Player* self) {
+		return self->TryPreventDeath();
+	}
+
+	void L_EntityPlayer_TryRemoveCollectibleCostume(Entity_Player* self, CollectibleType collectible, bool keepPersistent) {
+		self->TryRemoveCollectibleCostume(collectible, keepPersistent);
+	}
+
+	void L_EntityPlayer_TryRemoveNullCostume(Entity_Player* self, int nullId) {
+		self->TryRemoveNullCostume(nullId);
+	}
+
+	bool L_EntityPlayer_TryRemoveTrinket(Entity_Player* self, int type) {
+		return self->TryRemoveTrinket(type);
+	}
+
+	void L_EntityPlayer_TryRemoveTrinketCostume(Entity_Player* self, int trinket) {
+		self->TryRemoveTrinketCostume(trinket);
+	}
+
+	void L_EntityPlayer_TryRemoveSmeltedTrinket(Entity_Player* self, int id) {
+		self->TryRemoveSmeltedTrinket(id);
+	}
+
+	bool L_EntityPlayer_TryUseKey(Entity_Player* self) {
+		return self->TryUseKey();
+	}
+
+	void L_EntityPlayer_UpdateCanShoot(Entity_Player* self) {
+		self->UpdateCanShoot();
+	}
+
+	void L_EntityPlayer_UpdateIsaacPregnancy(Entity_Player* self, bool updateCambion) {
+		self->UpdateIsaacPregnancy(updateCambion);
+	}
+
+	void L_EntityPlayer_UseActiveItem(Entity_Player* self, CollectibleType item, int flags, int slot, int customVarData) {
+		self->UseActiveItem(item, flags, slot, customVarData);
+	}
+
+	void L_EntityPlayer_UseActiveItemAbp(Entity_Player* self, CollectibleType item, bool showAnim, bool keepActiveItem, bool allowNonMainPlayer, bool toAddCostume, int slot, int customVarData) {
+		int flags = !showAnim | !keepActiveItem << 4 | allowNonMainPlayer << 3 | !toAddCostume << 1;
+		self->UseActiveItem(item, flags, slot, customVarData);
+	}
+
+	void L_EntityPlayer_UseCard(Entity_Player* self, int id, int useFlags) {
+		self->UseCard(id, useFlags);
+	}
+
+	void L_EntityPlayer_UsePill(Entity_Player* self, int id, int pillColor, int useFlags) {
+		self->UsePill(id, pillColor, useFlags);
+	}
+
+	void L_EntityPlayer_UsePoopSpell(Entity_Player* self, int type) {
+		self->UsePoopSpell(type);
+	}
+
+	bool L_EntityPlayer_VoidHasCollectible(Entity_Player* self, CollectibleType type) {
+		return self->VoidHasCollectible(type);
+	}
+
+	bool L_EntityPlayer_WillPlayerRevive(Entity_Player* self) {
+		return self->WillRevive();
+	}
+}
 
 std::map<int, int> fakeItems;
 
@@ -1019,37 +2858,37 @@ LUA_FUNCTION(Lua_SwapForgottenForm) {
 	return 0;
 }
 
-LUA_FUNCTION(Lua_SpawnAquariusCreep) {
-	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	TearParams params;
-
-	if (lua_gettop(L) >= 2) {
-		params = *lua::GetUserdata<TearParams*>(L, 2, lua::Metatables::TEAR_PARAMS, "TearParams");
-	}
-	else {
-		player->GetTearHitParams(&params, (int)WeaponType::WEAPON_TEARS, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)(Isaac::Random(2) != 0) & 2) - 1, 0);
-	}
-
-	Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 54, *player->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
-
-	if (!effect) {
-		lua_pushnil(L);
-	}
-	else
-	{
-		float random = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
-		effect->_sprite._scale *= ((random * 0.5f) + 0.2f);
-		effect->_collisionDamage = params._tearDamage;
-		effect->SetColor(&params._tearColor, 0, -1, true, false);
-
-		effect->_varData = params._flags;
-		effect->Update();
-
-		lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
-	}
-
-	return 1;
-}
+//LUA_FUNCTION(Lua_SpawnAquariusCreep) {
+//	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+//	TearParams params;
+//
+//	if (lua_gettop(L) >= 2) {
+//		params = *lua::GetUserdata<TearParams*>(L, 2, lua::Metatables::TEAR_PARAMS, "TearParams");
+//	}
+//	else {
+//		player->GetTearHitParams(params, (int)WeaponType::WEAPON_TEARS, (*player->GetTearPoisonDamage() * 0.666f) / player->_damage, (-(int)(Isaac::Random(2) != 0) & 2) - 1, 0);
+//	}
+//
+//	Entity_Effect* effect = (Entity_Effect*)g_Game->Spawn(1000, 54, *player->GetPosition(), Vector(0.0, 0.0), player, 0, Random(), 0);
+//
+//	if (!effect) {
+//		lua_pushnil(L);
+//	}
+//	else
+//	{
+//		float random = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+//		effect->_sprite._scale *= ((random * 0.5f) + 0.2f);
+//		effect->_collisionDamage = params._tearDamage;
+//		effect->SetColor(&params._tearColor, 0, -1, true, false);
+//
+//		effect->_varData = params._flags;
+//		effect->Update();
+//
+//		lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+//	}
+//
+//	return 1;
+//}
 
 LUA_FUNCTION(Lua_PlayerGetBabySkin) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1454,8 +3293,7 @@ LUA_FUNCTION(Lua_PlayerFireBrimstoneBall) {
 LUA_FUNCTION(Lua_PlayerGetBodyMoveDirection) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
-	Vector dir;
-	player->GetBodyMoveDirection(&dir);
+	Vector dir = player->GetBodyMoveDirection();
 	lua::luabridge::UserdataPtr::push(L, &dir, lua::Metatables::VECTOR);
 
 	return 1;
@@ -1498,8 +3336,7 @@ LUA_FUNCTION(Lua_PlayerCanCrushRocks) {
 
 LUA_FUNCTION(Lua_PlayerGetEnterPosition) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	Vector dir;
-	player->GetEnterPosition(&dir);
+	Vector dir = player->GetEnterPosition();
 	lua::luabridge::UserdataPtr::push(L, &dir, lua::Metatables::VECTOR);
 	return 1;
 }
@@ -2001,7 +3838,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "RemovePoopSpell", Lua_PlayerRemovePoopSpell },
 		{ "GetFlippedForm", Lua_PlayerGetBackupPlayer },
 		{ "SwapForgottenForm", Lua_SwapForgottenForm },
-		{ "SpawnAquariusCreep", Lua_SpawnAquariusCreep },
+		// { "SpawnAquariusCreep", Lua_SpawnAquariusCreep },
 		{ "GetMaggySwingCooldown", Lua_PlayerGetMaggySwingCooldown },
 		{ "SetMaggySwingCooldown", Lua_PlayerSetMaggySwingCooldown },
 		{ "PlayDelayedSFX", Lua_PlayerPlayDelayedSFX },

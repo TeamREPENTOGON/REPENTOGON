@@ -2964,13 +2964,13 @@ HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
 
 //MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)
 static bool isMultiShotParamsEvaluating = false;
-HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, int weaponType) -> Weapon_MultiShotParams*) {
+HOOK_METHOD(Entity_Player, GetMultiShotParams, (int weaponType) -> Weapon_MultiShotParams) {
 	if (isMultiShotParamsEvaluating) // Prevent infinite loop when number of shots was altered
 	{
-		return super(params, weaponType);
+		return super(weaponType);
 	}
 
-	params = super(params, weaponType);
+	Weapon_MultiShotParams params = super(weaponType);
 
 	isMultiShotParamsEvaluating = true;
 	const int callbackid = 1251;
@@ -2995,7 +2995,7 @@ HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, 
 				KAGE::LogMessage(2, "Invalid userdata returned in MC_POST_GET_MULTI_SHOT_PARAMS");
 			}
 			else {
-				*params = *opt;
+				params = *opt;
 			}
 		}
 	}
