@@ -1,5 +1,6 @@
 ModCallbacks.MC_PRE_ADD_COLLECTIBLE = 1004
 ModCallbacks.MC_POST_ADD_COLLECTIBLE = 1005
+ModCallbacks.MC_POST_TAKE_DMG = 1006 -- deprecated but still in here for backwards compatibility
 ModCallbacks.MC_POST_ENTITY_TAKE_DMG = 1006
 ModCallbacks.MC_ENTITY_TAKE_DMG = 1007
 ModCallbacks.MC_PRE_PLAYER_TAKE_DMG = 1008
@@ -8,7 +9,7 @@ ModCallbacks.MC_POST_GRID_ROCK_DESTROY = 1011
 ModCallbacks.MC_GRID_HURT_DAMAGE = 1012
 ModCallbacks.MC_POST_GRID_HURT_DAMAGE = 1013
 ModCallbacks.MC_HUD_UPDATE = 1020
-ModCallbacks.MC_HUD_POST_UPDATE = 1021 -- depricated but still in here for backwards compatibility
+ModCallbacks.MC_HUD_POST_UPDATE = 1021 -- deprecated but still in here for backwards compatibility
 ModCallbacks.MC_POST_HUD_UPDATE = 1021
 ModCallbacks.MC_HUD_RENDER = 1022
 ModCallbacks.MC_POST_HUD_RENDER = 1024
