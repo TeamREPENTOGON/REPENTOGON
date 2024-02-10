@@ -1,6 +1,6 @@
 // BUG: this is a bool but zhl will not recognize it as one!
 "558bec83e4f883ec30a1????????33c4894424??8b45": 
-__thiscall void Entity_NPC::Morph(int EntityType, int Variant, int SubType, int Championid);
+__thiscall bool Entity_NPC::Morph(int EntityType, int Variant, int SubType, int Championid);
 
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec88000000a1????????33c58945ec5657508d45f464a3000000008bf18975a833c08945b88945a4384308":
 __thiscall void Entity_NPC::UpdateDirtColor(bool unk);

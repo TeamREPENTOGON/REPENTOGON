@@ -878,7 +878,7 @@ void PostNPCMorph(Entity_NPC* npc, int EntityType, int Variant, int SubType) {
 	}
 }
 
-HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Championid) -> void) {
+HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Championid) -> bool) {
 	const int callbackid = 1212;
 	if (CallbackState.test(callbackid)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -902,22 +902,23 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
 					int presub = *(this->GetSubType());
-					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2), lua::callbacks::ToInteger(L, 3), lua::callbacks::ToInteger(L, 4));
+					bool result = super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2), lua::callbacks::ToInteger(L, 3), lua::callbacks::ToInteger(L, 4));
 					PostNPCMorph(this, pretype, prevar, presub);
-					return;
+					return result;
 				}
 				else if (tablesize == 3) {
 					int pretype = *(this->GetType());
 					int prevar = *(this->GetVariant());
 					int presub = *(this->GetSubType());
-					super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2), lua::callbacks::ToInteger(L, 3), Championid);
+					bool result = super(lua::callbacks::ToInteger(L, 1), lua::callbacks::ToInteger(L, 2), lua::callbacks::ToInteger(L, 3), Championid);
 					PostNPCMorph(this, pretype, prevar, presub);
-					return;
+					return result;
 				}
 			}
 			else if (lua_isboolean(L, -1)) {
+				bool result = lua_toboolean(L, -1);
 				if (!lua_toboolean(L, -1)) {
-					return;
+					return result;
 				}
 			}
 		}
@@ -925,8 +926,9 @@ HOOK_METHOD(Entity_NPC, Morph, (int EntityType, int Variant, int SubType, int Ch
 	int pretype = *(this->GetType());
 	int prevar = *(this->GetVariant());
 	int presub = *(this->GetSubType());
-	super(EntityType, Variant, SubType, Championid);
+	bool result = super(EntityType, Variant, SubType, Championid);
 	PostNPCMorph(this, pretype, prevar, presub);
+	return result;
 }
 
 
