@@ -63,8 +63,9 @@ extern "C" {
 		return npc->MakeSplat(splatSize);
 	}
 
-	bool L_EntityNPC_Morph(Entity_NPC* npc, int type, int variant, int subtype, int championColorIdx) {
-		return npc->Morph(type, variant, subtype, championColorIdx);
+	// BUG: this is a bool but zhl will not recognize it as one!
+	void L_EntityNPC_Morph(Entity_NPC* npc, int type, int variant, int subtype, int championColorIdx) {
+		npc->Morph(type, variant, subtype, championColorIdx);
 	}
 
 	void L_EntityNPC_PlaySound(Entity_NPC* npc, int id, float volume, int delay, bool loop, float pitch) {
