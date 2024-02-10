@@ -254,11 +254,11 @@ function EntityFuncs:GetEntityFlags()
 end
 
 function EntityFuncs:GetLastChild()
-	return repentogon.L_Entity_GetLastChild(self)
+	return ffichecks.fixreturn(repentogon.L_Entity_GetLastChild(self))
 end
 
 function EntityFuncs:GetLastParent()
-	return repentogon.L_Entity_GetLastParent(self)
+	return ffichecks.fixreturn(repentogon.L_Entity_GetLastParent(self))
 end
 
 function EntityFuncs:GetSprite()
@@ -395,8 +395,8 @@ function EntityFuncs:Update()
 end
 
 local getkeys = {
-    Child = repentogon.L_Entity_GetChild,
-	Parent = repentogon.L_Entity_GetParent,
+    Child = ffichecks.fixreturn(repentogon.L_Entity_GetChild),
+	Parent = ffichecks.fixreturn(repentogon.L_Entity_GetParent),
 	CollisionDamage = repentogon.L_Entity_GetCollisionDamage,
 	Color = repentogon.L_Entity_GetColorField,
 	DepthOffset = repentogon.L_Entity_GetDepthOffset,
@@ -417,7 +417,7 @@ local getkeys = {
 	Size = repentogon.L_Entity_GetSizeField,
 	SizeMulti = repentogon.L_Entity_GetSizeMulti,
 	SortingLayer = repentogon.L_Entity_GetSortingLayer,
-	SpawnerEntity = repentogon.L_Entity_GetSpawnerEntity,
+	SpawnerEntity = ffichecks.fixreturn(repentogon.L_Entity_GetSpawnerEntity),
 	SpawnerType = repentogon.L_Entity_GetSpawnerType,
 	SpawnerVariant = repentogon.L_Entity_GetSpawnerVariant,
 	SpawnGridIndex = repentogon.L_Entity_GetSpawnGridIndex,
