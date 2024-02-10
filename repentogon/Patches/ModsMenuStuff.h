@@ -22,7 +22,8 @@
 
 using namespace std;
 
-extern const int opensearchkey;
+extern int opensearchkey;
+extern int undomodchangeskey;
 extern bool issearching;
 extern unordered_map<int, int> lastKeyPressTimeMap;
 extern int minmods;

@@ -34,17 +34,50 @@
 #include <queue>
 
 ANM2* searchbar = new ANM2();
+ANM2* undopop = new ANM2();
 string searchstr = "";
 bool issearching= false;
 const int keydelay = 300;
 int lastvalid = 0;
-const int opensearchkey = VK_CONTROL;
+int opensearchkey = VK_CONTROL;
+int undomodchangeskey = VK_BACK;
+int undomodchangesbtn = 24; //left bumber
 unordered_map<int, int> lastKeyPressTimeMap;
 bool cursorblink = false;
 float prevscroll = 0;
+int prevselect = 0;
 int minmods = 15;
 float paperedge = 0;
 
+vector<bool> enabledtstates;
+bool enabledstatesset = false;
+
+void SetupEnabledStates() {
+	if (!enabledstatesset) {
+		ModManager* modman = g_Manager->GetModManager();
+		for each (ModEntry * mod in modman->_mods) {
+			enabledtstates.push_back(mod->IsEnabled());
+		}
+	}
+}
+
+void RestoreEnabledStates() {
+	ModManager* modman = g_Manager->GetModManager();
+	int i = 0;
+	for each (ModEntry * mod in modman->_mods) {
+		if (mod->IsEnabled() != enabledtstates[i]) {
+			mod->SetEnabled(enabledtstates[i]);
+			string disablepath = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir().c_str() + "\\disable.it";
+			if (mod->IsEnabled()) {
+				std::remove(disablepath.c_str());
+			}
+			else {
+				ofstream outFile(disablepath);
+			}
+		}
+		i++;
+	}
+}
 
 HOOK_METHOD(MenuManager, Update, () -> void) {
 	prevscroll = g_MenuManager->_scrollinterpolationY;
@@ -65,10 +98,16 @@ HOOK_METHOD(Menu_Mods, Update, () -> void) {
 			this->State = 1;
 		}
 	}else{
+		prevselect = this->SelectedElement;
 		super();
 	}
 	if (this->SelectedElement > lastvalid) {
-		this->SelectedElement = lastvalid;
+		if (prevselect <= 0) {
+			this->SelectedElement = lastvalid;
+		}
+		else {
+			this->SelectedElement = 0;
+		}
 	}
 }
 
@@ -80,11 +119,24 @@ HOOK_METHOD(InputBase, IsButtonTriggered, (int btnaction, int controllerid, int 
 }
 
 HOOK_METHOD(Menu_Mods, Render, () -> void) {
+	LayerState* frame = this->ModsMenuSprite.GetLayer(13);
+	LayerState* frame2 = this->ModsMenuSprite.GetLayer(12);
+	LayerState* frame3 = this->ModsMenuSprite.GetLayer(11);
+	LayerState* framemain = this->ModsMenuSprite.GetLayer(0);
+	frame->_visible = false;
+	frame2->_visible = false;
+	frame3->_visible = false;
 	super();
+	frame->_visible = true;
+	frame2->_visible = true;
+	frame3->_visible = true;
+	SetupEnabledStates();
 	Vector* ref = &g_MenuManager->_ViewPosition;
 	ref = new Vector(ref->x + 39, ref->y + 15);
 	Vector* offset = new Vector(ref->x - 1440, ref->y + 216);
 	Vector initialpos = Vector(70 + offset->x, offset->y + 35);
+	Vector* undopos = new Vector(310 + offset->x, offset->y + 63);
+	Vector* tabbtnpos = new Vector(307 + offset->x, offset->y + 18);
 	Vector pos = Vector(70 + offset->x, offset->y + 35);
 	Vector* barpos = new Vector(pos.x + 90, (g_HEIGHT- 30));
 	Vector z = Vector(0, 0);
@@ -109,47 +161,53 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	int currentTime = GetTickCount64();
 	if (g_MenuManager->_selectedMenuID != 16) { issearching = false; }
 	if (modman->_mods.size() > minmods) { //no point in search when all your mods fit in 1 screen
-		if (issearching && (GetCurrentProcessId() == activeProcessId)) {
-			for (int i = 8; i < 256; ++i) {
-				if (GetKeyState(i) & 0x8000) {
-					if ((currentTime - lastKeyPressTimeMap[i]) < keydelay) {
-						continue;
-					}
+		if (GetCurrentProcessId() == activeProcessId) {
+			if (issearching) {
+				for (int i = 8; i < 256; ++i) {
+					if (GetKeyState(i) & 0x8000) {
+						if ((currentTime - lastKeyPressTimeMap[i]) < keydelay) {
+							continue;
+						}
 
-					if ((i == opensearchkey) || (i == VK_RETURN) || (i == VK_ESCAPE)) {
-						issearching = false;
-						lastKeyPressTimeMap[i] = currentTime;
-						break;
-					}
-					else if (i == VK_BACK) {
-						if (!searchstr.empty()) {
-							searchstr.pop_back();
+						if ((i == opensearchkey) || (i == VK_RETURN) || (i == VK_ESCAPE)) {
+							issearching = false;
+							lastKeyPressTimeMap[i] = currentTime;
+							break;
+						}
+						else if (i == VK_BACK) {
+							if (!searchstr.empty()) {
+								searchstr.pop_back();
+								did = true;
+							}
+						}
+						else if ((g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str()) < 225) && ((i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i == ' '))) {
+							char ch = static_cast<char>(i);
+							searchstr += tolower(ch);
 							did = true;
 						}
-					}
-					else if ((g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str()) < 225) && ((i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i == ' '))) {
-						char ch = static_cast<char>(i);
-						searchstr += tolower(ch);
-						did = true;
-					}
-					if (did) {
-						if (lastKeyPressTimeMap[i] > 0) {
-							lastKeyPressTimeMap[i] = currentTime - 250;
-						}
-						else {
-							lastKeyPressTimeMap[i] = currentTime;
+						if (did) {
+							if (lastKeyPressTimeMap[i] > 0) {
+								lastKeyPressTimeMap[i] = currentTime - 250;
+							}
+							else {
+								lastKeyPressTimeMap[i] = currentTime;
+							}
 						}
 					}
-				}
-				else {
-					lastKeyPressTimeMap[i] = 0;
+					else {
+						lastKeyPressTimeMap[i] = 0;
+					}
 				}
 			}
-		}
-		else if ((g_MenuManager->_selectedMenuID == 16) && (GetKeyState(opensearchkey) & 0x8000) && ((currentTime - lastKeyPressTimeMap[opensearchkey]) > keydelay)) {
+			else if ((g_MenuManager->_selectedMenuID == 16) && (GetKeyState(opensearchkey) & 0x8000) && ((currentTime - lastKeyPressTimeMap[opensearchkey]) > keydelay)) {
 
-			issearching = true;
-			lastKeyPressTimeMap[opensearchkey] = currentTime;
+				issearching = true;
+				lastKeyPressTimeMap[opensearchkey] = currentTime;
+			}
+			else if ((g_MenuManager->_selectedMenuID == 16) && (((GetKeyState(undomodchangeskey) & 0x8000) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuManager->_controllerIndex > 0) && g_InputManagerBase->GetActualInput()->IsButtonTriggered(undomodchangesbtn, -1, 0))) {
+				RestoreEnabledStates();
+				this->State = 0; //resets the change tracker
+			}
 		}
 		if (did) { this->SelectedElement = 0; }
 	}
@@ -210,6 +268,18 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			searchbar->LoadGraphics(true);
 			searchbar->Play("SearchBar", true);
 			searchbar->Update();
+			
+			undopop->construct_from_copy(s);
+			undopop->Load(dir, true);
+			undopop->LoadGraphics(true);
+		}
+		if (g_MenuManager->_controllerIndex > 0) {
+			undopop->SetFrame(&string("UndoPop"), 1);
+			undopop->Update();
+		}
+		else {
+			undopop->SetFrame(&string("UndoPop"), 0);
+			undopop->Update();
 		}
 
 		entry->_text = searchstr.c_str();
@@ -238,6 +308,27 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		else {
 			entry->_y = barpos->y;
 			searchbar->Render(barpos, &z, &z);
+		}
+		undopop->Render(undopos, &z, &z);
+		
+		//this->ModsMenuSprite.RenderLayer(11, &frame3->_pos, &z, &z); //cant get this ones to work :(
+		//this->ModsMenuSprite.RenderLayer(12, &frame2->_pos, &z, &z);
+		//this->ModsMenuSprite.RenderLayer(13, &frame->_pos, &z, &z);
+		for (int c = 0; c < 11; c++) { 
+			this->ModsMenuSprite.GetLayer(c)->_visible = false;
+		}
+		if (g_MenuManager->_controllerIndex > 0) {
+			this->ModsMenuSprite.GetLayer(13)->_visible = false;
+		}
+		super(); //sorry!
+		if (g_MenuManager->_controllerIndex > 0) {
+			g_Manager->_buttonsSprite.SetFrame(&string("XboxOne"), 3);//you cant be fucking serious, i keep forgetting frame is a fucking float!
+			g_Manager->_buttonsSprite.SetLayerFrame(0, 3);
+			g_Manager->_buttonsSprite.Update();
+			g_Manager->_buttonsSprite.Render(tabbtnpos, &z, &z);
+		}
+		for (int c = 0; c < 11; c++) {
+			this->ModsMenuSprite.GetLayer(c)->_visible = true;
 		}
 		entry->_scaleX = 1;
 		entry->_scaleY = 1;

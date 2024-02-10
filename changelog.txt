@@ -16,7 +16,6 @@ Additions:
 	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior
 * EntityPlayer:
 	- Get/SetGnawedLeafTimer
-	- ClearQueueItem
 * Room :
 	- SetLavaIntensity
 	- [Get/Set]RainIntensity
@@ -39,6 +38,7 @@ Additions:
 	- AddFinishedStage
 * ModsMenu:
 	- Added barebones search functionality to filter mods
+	- Added the ability to undo pending changes and avoid a restart if you messed up
 	- Changed the order in which mods are displayed, mods are now paired by their enabled status.
 * PauseMenu:
 	- Added a PauseMenu Global that holds all its related stuff
