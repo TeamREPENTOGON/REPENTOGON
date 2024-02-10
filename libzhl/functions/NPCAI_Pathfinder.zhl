@@ -1,3 +1,4 @@
-struct NPCAI_Pathfinder {
-
+struct NPCAI_Pathfinder depends (Vector){
+	Vector _targetRelated1 : 0x4;
+	Vector _targetRelated2 : 0xc;
 } : 0x750;

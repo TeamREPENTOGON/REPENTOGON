@@ -1,6 +1,6 @@
 
 "558bec83e4f883ec30a1????????33c4894424??8b45": 
-__thiscall void Entity_NPC::Morph(int EntityType,int Variant,int SubType,int Championid);
+__thiscall bool Entity_NPC::Morph(int EntityType,int Variant,int SubType,int Championid);
 
 "538bdc83ec0883e4f883c404558b6b04896c24048bec6aff68????????64a100000000505381ec88000000a1????????33c58945ec5657508d45f464a3000000008bf18975a833c08945b88945a4384308":
 __thiscall void Entity_NPC::UpdateDirtColor(bool unk);
@@ -21,7 +21,7 @@ __thiscall Entity_Projectile* Entity_NPC::FireBossProjectiles(int32_t numProject
 __thiscall Entity_Projectile* Entity_NPC::FireGridEntity(ANM2 * anm2, GridEntityDesc * desc, Vector * velocity, unsigned int backdrop);
 
 "558bec8b81????????f30f1045":
-__thiscall void Entity_NPC::PlaySound(int id, float volume, int framedelay, bool loop, float pitch);
+__thiscall void Entity_NPC::PlaySoundNPC(int id, float volume, int framedelay, bool loop, float pitch);
 
 "558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf1837e??35":
 __thiscall Entity* Entity_NPC::GetPlayerTarget();
@@ -61,6 +61,49 @@ static cleanup Entity_NPC* Entity_NPC::ThrowRockSpider(Vector* pos<ecx>, Vector*
 "558bec83e4f883ec0c538b1d????????5657f30f115424":
 static cleanup Entity_NPC* Entity_NPC::ThrowLeech(Vector* pos<ecx>, Entity* spanwer<edx>, float yPosOffset<xmm2>, Vector* targetPos, bool big);
 
+"558bec83e4f883ec0856578bf980bf????????00":
+__thiscall void Entity_NPC::AnimWalkFrame(std_string* HorizontalAnim, std_string* VerticalAnim, float SpeedThreshold);
+
+"558bec83e4f883ec1c53568bf1578b86":
+__thiscall Vector* Entity_NPC::CalcTargetPosition(Vector* buffer, float DistanceLimit);
+
+// yes, not a Vector pointer
+"558bec6aff68????????64a1????????5083ec2ca1????????33c58945??535657508d45??64a3????????8bf98b47??83f829":
+__thiscall bool Entity_NPC::CanBeDamagedFromVelocity(Vector Velocity);
+
+"568bf18b86????????8b80":
+__thiscall bool Entity_NPC::CanReroll();
+
+"558bec83e4f8518b81????????2500000020":
+__thiscall int Entity_NPC::GetAliveEnemyCount();
+
+"558bec83ec58a1????????33c58945??535657":
+__thiscall void Entity_NPC::MakeChampion(unsigned int Seed, int ChampionColorIdx, bool Init);
+
+"558bec83e4f851568bf1e8????????8b0d":
+__thiscall Entity_Effect* Entity_NPC::MakeSplat(float splatSize);
+
+"558bec518b0d????????33d2":
+static __stdcall EntityList_EL* Entity_NPC::QueryNPCsGroup(EntityList_EL* buffer, int GroupIdx);
+
+"558bec51a1????????33c9":
+static __stdcall EntityList_EL* Entity_NPC::QueryNPCsSpawnerType(EntityList_EL* buffer, int SpawnerType, int Type, bool OnlyEnemies);
+
+"558bec518b0d????????6a00":
+static __stdcall EntityList_EL* Entity_NPC::QueryNPCsType(EntityList_EL* buffer, int Type, int Variant);
+
+"558bec83e4f8f30f105d":
+static __stdcall Entity_NPC* Entity_NPC::ThrowSpider(Vector* Position, Entity* Spawner, Vector* TargetPos, float YOffset, bool Big, float unk);
+
+"558bec83e4f8807d??00":
+__thiscall void Entity_NPC::SetCanShutDoors(bool Value);
+
+"568BF18B86????????85C074??6A0068????????68????????6A0050E8????????83C41485C075??68????????6A03E8????????83C4088B86????????5EC3??????????????????????????????????55":
+__thiscall Entity_NPC* Entity_NPC::GetParentNPC();
+
+"568BF18B86????????85C074??6A0068????????68????????6A0050E8????????83C41485C075??68????????6A03E8????????83C4088B86????????5EC3??F3":
+__thiscall Entity_NPC* Entity_NPC::GetChildNPC();
+
 /*
 // Minecart functions
 "558bec51538bd98b8b":
@@ -73,7 +116,7 @@ __thiscall void Entity_NPC::MinecartBreak();
 __thiscall void Entity_NPC::SetMinecartPosVel(Vector * pos, Vector * vel);
 */
 
-struct Entity_NPC depends (Vector) : public Entity {
+struct Entity_NPC depends (Vector, NPCAI_Pathfinder) : public Entity {
 {{
 	inline ColorMod* GetDirtColor() { return (ColorMod*)((char*)this + 0xBFC); }
     inline uint32_t* GetDeliriumBossType() { return (uint32_t*)((char*)this + 0xB18); }
@@ -90,6 +133,7 @@ struct Entity_NPC depends (Vector) : public Entity {
 	inline void SetControllerId(int32_t  x) { *(int32_t *)((char*)this + 0xE6C) = x; }
 }} 
     int _stateFrame : 0x360;
+	NPCAI_Pathfinder _pathfinder : 0x364;
     int _state : 0xAB4;
     int _projectileCooldown : 0xAF0;
     int _projectileDelay : 0xAF4;
@@ -97,7 +141,14 @@ struct Entity_NPC depends (Vector) : public Entity {
     Vector _v2 : 0xB08;
     int _i1 : 0xB10;
     int _i2 : 0xB14;
+	Entity* _entityRef : 0xb3c;
+	float _npcScale :0xb88;
+	bool _canShutDoors : 0xb8c;
 	bool _isBoss : 0xb8d;
+	bool _isChampion : 0xbb3;
+	int _championId : 0xbb4;
+	int _bossColorIdx : 0xbc8;
+	int _groupIdx : 0xbcc;
 	
     __vtable {
 		skip; // Free
@@ -121,7 +172,10 @@ struct Entity_NPC depends (Vector) : public Entity {
 		skip; // SetColor
 		skip; // SetCollisionDamage
 		skip; // ClearReferences
-		skip; // CanShutDoors
+		
+		"80b9????????0074??8b81????????2500000020":
+		bool CanShutDoors();
+		
 		skip; // IsBoss
 		skip; // IsValidTarget
 

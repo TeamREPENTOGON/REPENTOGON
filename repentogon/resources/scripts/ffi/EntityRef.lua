@@ -17,6 +17,7 @@ bool L_EntityRef_GetIsCharmed(EntityRef*);
 bool L_EntityRef_GetIsFriendly(EntityRef*);
 void L_EntityRef_SetIsCharmed(EntityRef*, bool);
 void L_EntityRef_SetIsFriendly(EntityRef*, bool);
+Entity* L_EntityRef_GetEntity(EntityRef*);
 
 ]]
 
@@ -24,6 +25,7 @@ local repentogon = ffidll
 local lffi = ffi
 
 local getkeys = {
+	Entity = ffichecks.fixreturn(L_EntityRef_GetEntity),
 	IsCharmed = repentogon.L_EntityRef_GetIsCharmed,
     IsFriendly = repentogon.L_EntityRef_GetIsFriendly,
 }

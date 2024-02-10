@@ -22,4 +22,8 @@ extern "C" {
 	void L_EntityRef_SetIsFriendly(EntityRef* ref, bool value) {
 		ref->_flags = value ? ref->_flags | 2 : ref->_flags & 0xfffffffd;
 	}
+
+	Entity* L_EntityRef_GetEntity(EntityRef* ref) {
+		return ref->_entity;
+	}
 }

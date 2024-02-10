@@ -498,7 +498,7 @@ function GameFuncs:Spawn(id, variant, pos, velocity, spawner, subtype, seed)
 	ffichecks.checknumber(6, subtype)
 	ffichecks.checknumber(7, seed)
 	
-    return repentogon.L_Game_Spawn(id, variant, pos, velocity, spawner, subtype, seed)
+    return ffichecks.fixreturn(repentogon.L_Game_Spawn(id, variant, pos, velocity, spawner, subtype, seed))
 end
 
 function GameFuncs:SpawnParticles(pos, variant, count, speed, color, height, subtype)

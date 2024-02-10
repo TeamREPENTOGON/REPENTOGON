@@ -847,7 +847,7 @@ __thiscall void Entity_Player::UsePoopSpell(int type);
 "6a01e8????????c3":
 __thiscall bool Entity_Player::WillRevive();
 
-struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public Entity { {{
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, BitSet128, Vector, EntityRef, TemporaryEffects) : public Entity { {{
 	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
