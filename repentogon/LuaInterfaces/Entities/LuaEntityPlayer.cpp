@@ -1903,6 +1903,12 @@ LUA_FUNCTION(Lua_PlayerSetGnawedLeafTimer) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerClearQueueItem) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->ClearQueueItem();
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2088,6 +2094,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetKeepersSackBonus", Lua_PlayerSetKeepersSackBonus },
 		{ "GetGnawedLeafTimer", Lua_PlayerGetGnawedLeafTimer },
 		{ "SetGnawedLeafTimer", Lua_PlayerSetGnawedLeafTimer },
+		{ "ClearQueueItem", Lua_PlayerClearQueueItem },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

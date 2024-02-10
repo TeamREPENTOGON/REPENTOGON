@@ -431,6 +431,9 @@ __thiscall void Entity_Player::AttachMinecart(Entity_NPC * minecart);
 "558bec8b81????????83ec08":
 __thiscall float Entity_Player::GetGreedDonationBreakChance();
 
+"568bf1e8????????84c074??8d8e":
+__thiscall void Entity_Player::ClearQueueItem();
+
 
 struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public Entity { {{
 	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }

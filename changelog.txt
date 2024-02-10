@@ -16,6 +16,7 @@ Additions:
 	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior
 * EntityPlayer:
 	- Get/SetGnawedLeafTimer
+	- ClearQueueItem
 * Room :
 	- SetLavaIntensity
 	- [Get/Set]RainIntensity
