@@ -580,6 +580,9 @@ __thiscall Entity_Laser* Entity_Player::FireDelayedBrimstone(float angle, Entity
 "558bec83e4f881ec90000000a1????????33c4898424????????8b45??568b75":
 __thiscall Entity_Tear* Entity_Player::FireTear(Vector* position, Vector velocity, uint32_t flags, Entity* source, float damageMultiplier);
 
+"568bf1e8????????84c074??8d8e":
+__thiscall void Entity_Player::ClearQueueItem();
+
 "558bec83ec20568bf183be????????00":
 __thiscall bool Entity_Player::FlushQueueItem();
 

@@ -455,6 +455,10 @@ extern "C" {
 		return self->FireTechXLaser(*pos, *dir, radius, source, damageMultiplier);
 	}
 
+	void L_EntityPlayer_ClearQueueItem(Entity_Player* self) {
+		self->ClearQueueItem();
+	}
+
 	bool L_EntityPlayer_FlushQueueItem(Entity_Player* self) {
 		return self->FlushQueueItem();
 	}
