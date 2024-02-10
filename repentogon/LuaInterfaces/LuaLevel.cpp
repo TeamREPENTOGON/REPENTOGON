@@ -62,17 +62,27 @@ LUA_FUNCTION(Lua_GetDimension) {
 }
 
 LUA_FUNCTION(Lua_GetForceSpecialQuest) {
-	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
 	lua_pushinteger(L, (int)levelASM.ForceSpecialQuest);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_SetForceSpecialQuest) {
-	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
 	levelASM.ForceSpecialQuest = (int)luaL_checkinteger(L, 2);
 	return 0;
 }
 
+LUA_FUNCTION(Lua_LevelIsAltPath) {
+	bool ret = false;
+	// If ForceSpecialQuest is -1, quest doors are disabled
+	if (levelASM.ForceSpecialQuest > -1) {
+		// ForceSpecialQuest 0 defaults to vanilla behavior
+		ret = levelASM.ForceSpecialQuest > 0 || (g_Game->_stageType == 4 || g_Game->_stageType == 5);
+	}
+	lua_pushboolean(L, ret);
+	return 1;
+}
+
+/*
 HOOK_METHOD(Level, IsAltPath, () -> bool) {
 	bool ret = false;
 	// If ForceSpecialQuest is -1, quest doors are disabled
@@ -82,6 +92,7 @@ HOOK_METHOD(Level, IsAltPath, () -> bool) {
 	}
 	return ret;
 }
+*/
 
 bool CheckQuest(Level* level, const int levelStage, const int expected, const int quest) {
 	unsigned int stage;
