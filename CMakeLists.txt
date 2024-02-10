@@ -9,6 +9,8 @@ project(RepExtender)
 
 find_package(OpenGL REQUIRED)
 
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
+
 include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua" 
     "${CMAKE_SOURCE_DIR}/libs/rapidxml" "${CMAKE_SOURCE_DIR}/libs/rapidjson/include/rapidjson" 
     "${CMAKE_SOURCE_DIR}/libs/LuaBridge/Source/LuaBridge" 
@@ -23,11 +25,18 @@ option(ZYDIS_BUILD_DOXYGEN "" OFF)
 add_subdirectory("libs/zydis")
 target_compile_options("Zydis" PUBLIC "/MD")
 
-# Tcl/Tk
-add_subdirectory ("libs/tcl8.6.13")
-set (TCL_MAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/tcl8.6.13")
-add_subdirectory ("libs/tk8.6.13")
-set (TK_MAIN_DIR "${CMAKE_CURRENT_SOURCE_DIR}/libs/tk8.6.13")
+# wxWidgets
+set(wxBUILD_CXX_STANDARD 17)
+option(wxBUILD_INSTALL "" OFF)
+option(wxBUILD_OPTIMISE "" ON)
+option(wxBUILD_PIC "" OFF)
+option(wxBUILD_SHARED "" OFF)
+option(wxBUILD_STRIPPED_RELEASE "" ON)
+option(wxBUILD_VENDOR "" "repentogon")
+add_subdirectory ("libs/wxWidgets")
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/libs/wxWidgets/" "${CMAKE_CURRENT_SOURCE_DIR}/libs/wxWidgets/include")
+target_compile_options(wxbase PUBLIC "/MD")
+target_compile_options(wxcore PUBLIC "/MD")
 
 # ANTLR
 option(WITH_STATIC_CRT "" OFF)
@@ -195,10 +204,10 @@ add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E c
 # add_custom_command(TARGET zhlDelirium POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/delirium/resources-delirium" "$<TARGET_FILE_DIR:zhlDelirium>/resources-delirium")
 
 # Injector
-include_directories("${TCL_MAIN_DIR}/generic" "${TCL_MAIN_DIR}/win" "${TK_MAIN_DIR}/generic" "${TK_MAIN_DIR}/win" "${TK_MAIN_DIR}/xlib")
-add_executable(injector injector/injector.c)
-target_compile_definitions(injector PRIVATE STATIC_BUILD)
-target_link_libraries(injector tk tcl)
+add_executable(injector WIN32 injector/injector.cpp injector/window.cpp injector/window.h)
+target_compile_options(injector PUBLIC "/MD")
+target_link_libraries(injector wxbase wxcore cryptopp bcrypt)
+
 if(NOT ISAAC_DIRECTORY STREQUAL "")
     message (STATUS "Files will be installed to " ${ISAAC_DIRECTORY})
     add_custom_command(TARGET Lua5.4 POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:launcher>/Lua5.4.dll" "${ISAAC_DIRECTORY}")

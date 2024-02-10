@@ -38,3 +38,9 @@
 [submodule "libs/cryptopp-cmake"]
 	path = libs/cryptopp-cmake
 	url = https://github.com/abdes/cryptopp-cmake
+[submodule "libs/libui-ng"]
+	path = libs/libui-ng
+	url = git@github.com:libui-ng/libui-ng.git
+[submodule "libs/wxWidgets"]
+	path = libs/wxWidgets
+	url = git@github.com:wxWidgets/wxWidgets.git

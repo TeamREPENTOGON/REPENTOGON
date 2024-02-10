@@ -1,29 +1,13 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <Windows.h>
+#include <cstdio>
+#include <cstring>
+#include <ctime>
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
+#include <chrono>
 
-#undef BUILD_tcl
-
-#include "tcl.h"
-#include "tk.h"
-#include "tkWin.h"
-
-struct IsaacOptions {
-	// Repentogon options
-	int updates;
-	int console;
-	
-	// Game options
-	int lua_debug;
-	int level_stage;
-	int stage_type;
-	const char* lua_heap_size;
-};
+#include <wx/wx.h>
+#include "injector/window.h"
 
 /* Perform the early setup for the injection: create the Isaac process, 
  * allocate memory for the remote thread function etc. 
@@ -83,7 +67,7 @@ DWORD CreateIsaac(struct IsaacOptions const* options, PROCESS_INFORMATION* proce
 	char cli[256];
 	GenerateCLI(options, cli);
 
-	DWORD result = CreateProcess("isaac-ng.exe", cli, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startupInfo, processInfo);
+	DWORD result = CreateProcessA("isaac-ng.exe", cli, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &startupInfo, processInfo);
 	if (result == 0) {
 		Log("Failed to create process: %d\n", GetLastError());
 		return -1;
@@ -110,7 +94,7 @@ int UpdateMemory(HANDLE process, PROCESS_INFORMATION const* processInfo, void** 
 	memset(zeroBuffer, 0, sizeof(zeroBuffer));
 	WriteProcessMemory(process, remotePage, zeroBuffer, 4096, &bytesWritten);
 
-	HMODULE kernel32 = GetModuleHandle("kernel32.dll");
+	HMODULE kernel32 = GetModuleHandleA("kernel32.dll");
 	if (!kernel32) {
 		Log("Unable to find kernel32.dll, WTF\n");
 		return -1;
@@ -274,7 +258,7 @@ void Log(const char* fmt, ...) {
 	va_end(va);
 }
 
-int __declspec(dllexport) InjectIsaac(int updates, int console, int lua_debug, int level_stage, int stage_type, const char* lua_heap_size) {
+int InjectIsaac(int updates, int console, int lua_debug, int level_stage, int stage_type, const char* lua_heap_size) {
 	HANDLE process;
 	void* remotePage;
 	size_t functionOffset;
@@ -315,11 +299,11 @@ int __declspec(dllexport) InjectIsaac(int updates, int console, int lua_debug, i
 	return 0;
 }
 
-int main(int argc, char** argv) {
-	Tcl_Interp* interp = Tcl_CreateInterp();
-	Tcl_AppInit(interp);
-	Tk_Window mainWindow = Tk_MainWindow(interp);
-	Tk_MainLoop();
-	InjectIsaac(1, 1, 0, 0, 0, NULL);
-	return 0;
+bool IsaacLauncher::App::OnInit() {
+	MainFrame* frame = new MainFrame();
+	frame->Show();
+	frame->PostInit();
+	return true;
 }
+
+wxIMPLEMENT_APP(IsaacLauncher::App);
