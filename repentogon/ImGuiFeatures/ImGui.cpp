@@ -1,4 +1,5 @@
 #include "ASMPatcher.hpp"
+#include "../Patches/ASMPatches.h"
 #include "ConsoleMega.h"
 #include "CustomImGui.h"
 #include "GameOptions.h"
@@ -406,8 +407,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 ImFont* imFontUnifont = NULL;
 
-HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
-{
+void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
 
 	static float unifont_global_scale = 1;
@@ -565,8 +565,28 @@ HOOK_GLOBAL(OpenGL::wglSwapBuffers, (HDC hdc)->bool, __stdcall)
 
 	// Draw the overlay
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
-	return super(hdc);
+
+/*
+* Initially, we were hooking wglSwapBuffers directly for ImGui. This worked, but wouldn't appear in screen sharing in Discord and streaming in OBS.
+* The only solution for this is to inject ImGui earlier than Discord and OBS do, and we need an assembly patch for that.
+* Manager::Render calls SwapBuffers three times- this call was the one that seemed to actually fire for me, but this might need more testing.
+* We push HWND to the stack twice. The first push will be taken as an argument for ImGui, and the second for SwapBuffers.
+*/
+void HookImGui() {
+	SigScan scanner("ffb0????????ffd75f");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Injecting Dear ImGui at %p\n", addr);
+	void* imguiAddr = &RunImGui;
+	ASMPatch patch;
+	patch.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
+		.AddBytes("\xFF\xB0\x34\x02").AddZeroes(2) // push dword ptr ds:[eax+234]
+		.AddInternalCall(imguiAddr)
+		.AddRelativeJump((char*)addr + 0x5);
+
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 HOOK_METHOD(Console, Render, ()->void)

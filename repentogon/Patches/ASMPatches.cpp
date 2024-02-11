@@ -120,4 +120,5 @@ void PerformASMPatches() {
 	// External
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
+	HookImGui();
 }
