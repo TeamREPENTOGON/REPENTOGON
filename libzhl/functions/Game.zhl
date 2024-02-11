@@ -98,6 +98,13 @@ __thiscall bool Game::IsGreedMode();
 "558bec8b45??538b1d":
 __thiscall void Game::End(int EndingID);
 
+"558becf30f1045??8b45??f30f1181????????f30f5881": //lua binder version
+__thiscall void Game::FadeOut(float Speed, int FadeoutTarget);
+
+"558bec83e4f851a1????????566aff":
+__thiscall void Game::MoveToRandomRoom(bool iAmErrorRoom, int Seed, Entity_Player* player);
+
+
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 

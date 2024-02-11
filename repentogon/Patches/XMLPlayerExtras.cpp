@@ -3,6 +3,7 @@
 #include "XMLData.h"
 #include "LuaCore.h"
 #include "AchievementsStuff.h"
+#include "PlayerFeatures.h"
 #include "../ImGuiFeatures/LogViewer.h"
 
 #include <tuple>

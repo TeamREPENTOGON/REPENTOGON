@@ -42,7 +42,7 @@ bool overrideMegaSatanEnding = false;
 void __stdcall MegaSatanCallbackTrampoline() {
 	overrideMegaSatanEnding = false;
 
-	int callbackid = 1201;
+	const int callbackid = 1201;
 	if (CallbackState.test(callbackid - 1000)) {
 
 		lua_State* L = g_LuaEngine->_state;

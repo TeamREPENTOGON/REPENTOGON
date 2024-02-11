@@ -450,6 +450,7 @@ void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent
 
 		lua::LuaCaller(L).push(callbackid)
 			//.push(ent->GetType())
+			.pushnil()
 			.push(player, lua::Metatables::ENTITY_PLAYER)
 			.push(ent, lua::Metatables::ENTITY)
 			.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
@@ -469,6 +470,7 @@ HOOK_METHOD(Entity_Player, ThrowHeldEntity, (Vector* Velocity) -> Entity*) {
 
 	lua::LuaResults results = lua::LuaCaller(L).push(1040)
 		//.push((*heldEntity)->GetType())
+		.pushnil()
 		.push(this, lua::Metatables::ENTITY_PLAYER)
 		.push(*heldEntity, lua::Metatables::ENTITY)
 		.pushUserdataValue(*Velocity, lua::Metatables::VECTOR)
@@ -1008,8 +1010,8 @@ void PostPauseScreenRender(PauseScreen* paws) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			.push(paws->GetANM2(), lua::Metatables::SPRITE)
-			.push(paws->GetStatsANM2(), lua::Metatables::SPRITE)
+			.push(&paws->mainsprite, lua::Metatables::SPRITE)
+			.push(&paws->statssprite, lua::Metatables::SPRITE)
 			.call(1);
 	}
 
@@ -1025,8 +1027,8 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 
 	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 		.pushnil()
-		.push(this->GetANM2(), lua::Metatables::SPRITE)
-		.push(this->GetStatsANM2(), lua::Metatables::SPRITE)
+		.push(&this->mainsprite, lua::Metatables::SPRITE)
+		.push(&this->statssprite, lua::Metatables::SPRITE)
 		.call(1);
 
 	if (!result) {
@@ -1169,6 +1171,7 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 
 //GET_SHOP_ITEM_PRICE (id: 1066)
 HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSubtype, int shopItemID) -> int) {
+	int price = super(entVariant, entSubtype, shopItemID);
 	const int callbackid = 1066;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -1181,15 +1184,16 @@ HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSu
 			.push(entVariant)
 			.push(entSubtype)
 			.push(shopItemID)
+			.push(price)
 			.call(1);
 
 		if (!result) {
 			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
+				price = (int)lua_tointeger(L, -1);
 			}
 		}
 	}
-	return super(entVariant, entSubtype, shopItemID);
+	return price;
 }
 
 //PLAYER_GET_HEALTH_TYPE (id: 1067)
@@ -2390,7 +2394,7 @@ HOOK_METHOD(Weapon, TriggerTearFired, (const Vector& dir, int FireAmount) -> voi
 
 		lua::LuaCaller caller(L);
 		caller.push(callbackid)
-			.push(this->GetWeaponType())
+			.push(GetWeaponType())
 			.pushUserdataValue(dir, lua::Metatables::VECTOR)
 			.push(FireAmount)
 			.push(ent, lua::Metatables::ENTITY);
@@ -2740,6 +2744,30 @@ HOOK_METHOD(Backdrop, pre_render_walls, () -> void) {
 			.pushnil()
 			.call(0);
 	}
+}
+
+//PRE_BACKDROP_CHANGE (1141)
+HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
+	const int callbackId = 1141;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(bcktype)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				uint32_t backdropid = (uint32_t)lua_tointeger(L, -1);
+				super(backdropid, loadgraphics);
+				return;
+			}
+		}
+	}
+	super(bcktype, loadgraphics);
 }
 
 //PLAYER_INIT_PRE_LEVEL_INIT_STATS (1127)
@@ -3457,7 +3485,7 @@ HOOK_METHOD(Room, IsPersistentRoomEntity, (int type, int variant, int subtype) -
 
 
 HOOK_METHOD(LuaCallbackCaller, CallInputAction, (LuaEngine* engine, Entity* entity, int hook, int action) -> LuaCallbackCallerResult) {
-	int repentogonCallbackId = 1464;
+	const int repentogonCallbackId = 1464;
 	if (!Isaac::IsInGame()) {
 		callbackId = repentogonCallbackId;
 	}
@@ -3498,7 +3526,7 @@ HOOK_METHOD_PRIORITY(Manager, SetSaveSlot,-9999, (unsigned int slot) -> void) {
 
 //MC_POST_PRE_CHALLENGE_DONE (1471-1472)
 HOOK_METHOD_PRIORITY(PersistentGameData, AddChallenge, -9999, (int challengeid) -> void) {
-	int callbackid1 = 1471;
+	const int callbackid1 = 1471;
 	if (CallbackState.test(callbackid1 - 1000)) {
 
 		lua_State* L = g_LuaEngine->_state;
@@ -3526,15 +3554,15 @@ HOOK_METHOD_PRIORITY(PersistentGameData, AddChallenge, -9999, (int challengeid) 
 
 	super(challengeid);
 
-	callbackid1 = 1472;
+	const int callbackid2 = 1472;
 	lua_State* L = g_LuaEngine->_state;
-	if (CallbackState.test(callbackid1 - 1000)) {
+	if (CallbackState.test(callbackid2 - 1000)) {
 
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid2)
 			.push(challengeid)
 			.push(challengeid)
 			.call(1);

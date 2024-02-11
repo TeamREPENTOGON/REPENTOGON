@@ -215,6 +215,7 @@ namespace lua {
         extern LIBZHL_API const char* NightmareSceneMT;
         extern LIBZHL_API const char* NullFrameMT;
         extern LIBZHL_API const char* OptionsMenuMT;
+        extern LIBZHL_API const char* PauseMenuMT;
         extern LIBZHL_API const char* PersistentGameDataMT;
         extern LIBZHL_API const char* PlayerHUDMT;
         extern LIBZHL_API const char* PlayerHUDHeartMT;

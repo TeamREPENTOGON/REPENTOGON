@@ -107,6 +107,7 @@ struct Entity_NPC depends (Vector) : public Entity {
     int _i1 : 0xB10;
     int _i2 : 0xB14;
 	bool _isBoss : 0xb8d;
+	int _bosscoloridx : 0xbc8;
 	
     __vtable {
 		skip; // Free

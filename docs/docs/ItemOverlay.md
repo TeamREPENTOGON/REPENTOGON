@@ -23,7 +23,11 @@ ___
 
 ___
 ### GetOverlayID () {: aria-label='Functions' }
-#### int GetOverlayID ( ) {: .copyable aria-label='Functions' }
+#### [Giantbook](enums/Giantbook.md) GetOverlayID ( ) {: .copyable aria-label='Functions' }
+
+???+ info "Info"
+    Returns the last Giantbook animation that played. This is the current Giantbook if one is currently playing.
+    If none have played yet, returns 0.
 
 ___
 ### GetPlayer () {: aria-label='Functions' }

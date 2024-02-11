@@ -662,7 +662,7 @@ void LoadCompletionMarksFromJson() {
 
 
 bool PreMarksCallbackTrigger(int markid, int playertpe) {
-	int callbackid = 1047;
+	const int callbackid = 1047;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -686,7 +686,7 @@ bool PreMarksCallbackTrigger(int markid, int playertpe) {
 	return true;
 }
 void PostMarksCallbackTrigger(int markid, int playertpe) {
-	int callbackid = 1048;
+	const int callbackid = 1048;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -904,7 +904,7 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 		super();
 		postponepromptrender = false;
 
-		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget");
+		NullFrame* nul = this->mainsprite.GetNullFrame("CompletionWidget");
 		Vector* widgtpos = nul->GetPos();
 		Vector* widgtscale = nul->GetScale();
 		CompletionWidget* cmpl = this->GetCompletionWidget();

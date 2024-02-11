@@ -362,7 +362,57 @@ LUA_FUNCTION(Lua_EntityTeleportToRandomPosition) {
 	return 0;
 }
 
-void CopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor) {
+#define nonzero(a,b)	((a == 0) ? (b) : (a))
+
+inline void SlowTrackCopyStatusEffects(Entity* ent1, Entity* ent2) {
+	UINT64 statusFlags[2] = { ent1->_flags ^ EntityFlag::FLAG_NON_STATUS_EFFECTS, ent2->_flags ^ EntityFlag::FLAG_NON_STATUS_EFFECTS };
+	UINT64 resFlags = statusFlags[0] ^ statusFlags[1]; // get difference in status flags between ent1 and ent2
+	ent2->_flags |= resFlags; // apply difference in flags to ent2
+
+	ent2->_freezeCountdown = nonzero(ent1->_freezeCountdown, ent2->_freezeCountdown);
+	ent2->_poisonCountdown = nonzero(ent1->_poisonCountdown, ent2->_poisonCountdown);
+	ent2->_slowingCountdown = nonzero(ent1->_slowingCountdown, ent2->_slowingCountdown);
+	ent2->_charmedCountdown = nonzero(ent1->_charmedCountdown, ent2->_charmedCountdown);
+	ent2->_confusionCountdown = nonzero(ent1->_confusionCountdown, ent2->_confusionCountdown);
+	ent2->_midasFreezeCountdown = nonzero(ent1->_midasFreezeCountdown, ent2->_midasFreezeCountdown);
+	ent2->_fearCountdown = nonzero(ent1->_fearCountdown, ent2->_fearCountdown);
+	ent2->_burnCountdown = nonzero(ent1->_burnCountdown, ent2->_burnCountdown);
+	ent2->_bleedingCountdown = nonzero(ent1->_bleedingCountdown, ent2->_bleedingCountdown);
+	ent2->_shrinkCountdown = nonzero(ent1->_shrinkCountdown, ent2->_shrinkCountdown);
+	ent2->_poisonDamage = nonzero(ent1->_poisonDamage, ent2->_poisonDamage);
+	ent2->_burnDamage = nonzero(ent1->_burnDamage, ent2->_burnDamage);
+	ent2->_magnetizedCountdown = nonzero(ent1->_magnetizedCountdown, ent2->_magnetizedCountdown);
+	ent2->_baitedCountdown = nonzero(ent1->_baitedCountdown, ent2->_baitedCountdown);
+	ent2->_knockbackCountdown = nonzero(ent1->_knockbackCountdown, ent2->_knockbackCountdown);
+	ent2->_knockbackDirection = (ent1->_knockbackDirection.x != 0 || ent1->_knockbackDirection.y != 0) ? ent1->_knockbackDirection : ent2->_knockbackDirection;
+	ent2->_iceCountdown = nonzero(ent1->_iceCountdown, ent2->_iceCountdown);
+	ent2->_weaknessCountdown = nonzero(ent1->_weaknessCountdown, ent2->_weaknessCountdown);
+	ent2->_brimstoneMarkCountdown = nonzero(ent1->_brimstoneMarkCountdown, ent2->_brimstoneMarkCountdown);
+	ent2->_shrinkStatus1 = nonzero(ent1->_shrinkStatus1, ent2->_shrinkStatus1);
+	ent2->_shrinkStatus2 = nonzero(ent1->_shrinkStatus2, ent2->_shrinkStatus2);
+
+	if (ent1->_type >= 10 && ent1->_type < 1000) {
+		Entity_NPC* npc = static_cast<Entity_NPC*>(ent2);
+		if (npc->_isBoss) {
+			ent2->_bossStatusEffectCooldown = max(ent1->_bossStatusEffectCooldown, ent2->_bossStatusEffectCooldown);
+		}
+	}
+
+	for (ColorParams& p : ent1->_colorParams) {
+		// try to automatically determine what colors should be shared
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			ent2->_colorParams.push_back(p);
+		}
+	}
+}
+
+#undef nonzero
+
+inline void FastTrackCopyStatusEffects(Entity* ent1, Entity* ent2) {
+	UINT64 statusFlags = ent1->_flags & EntityFlag::FLAG_STATUS_EFFECTS;
+	ent2->_flags &= EntityFlag::FLAG_NON_STATUS_EFFECTS; // remove ent2 status effect flags
+	ent2->_flags |= statusFlags; // add ent1 status effect flags
+
 	ent2->_freezeCountdown = ent1->_freezeCountdown;
 	ent2->_poisonCountdown = ent1->_poisonCountdown;
 	ent2->_slowingCountdown = ent1->_slowingCountdown;
@@ -384,36 +434,50 @@ void CopyStatusEffects(Entity* ent1, Entity* ent2, bool setColor) {
 	ent2->_brimstoneMarkCountdown = ent1->_brimstoneMarkCountdown;
 	ent2->_shrinkStatus1 = ent1->_shrinkStatus1;
 	ent2->_shrinkStatus2 = ent1->_shrinkStatus2;
+
 	if (ent1->_type >= 10 && ent1->_type < 1000) {
 		Entity_NPC* npc = static_cast<Entity_NPC*>(ent2);
 		if (npc->_isBoss) {
 			ent2->_bossStatusEffectCooldown = ent1->_bossStatusEffectCooldown;
 		}
 	}
-	// don't ask me what this does
-	ent2->_flags[0] = ent2->_flags[0] & 0xdeffe01f | ent1->_flags[0] & 0x21001fe0;
-	ent2->_flags[1] = ent2->_flags[1] & 0xfea27fff | ent1->_flags[1] & 0x15d8000;
 
-	if (setColor) {
-		ent2->_colorParams = ent1->_colorParams;
-		ent2->_sprite._color = ent1->_sprite._color;
+	for (ColorParams& p : ent2->_colorParams) {
+		// try to automatically determine what colors should be removed
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			p._duration2 = 1; // make it go away while still properly handling other colors
+		}
+	}
+	for (ColorParams& p : ent1->_colorParams) {
+		// try to automatically determine what colors should be shared
+		if (p._priority == 255 && !p._fadeout && p._shared) {
+			ent2->_colorParams.push_back(p);
+		}
+	}
+}
+
+void CopyStatusEffects(Entity* ent1, Entity* ent2, bool overwrite) {
+	if (overwrite) {
+		FastTrackCopyStatusEffects(ent1, ent2);
+	}
+	else
+	{
+		SlowTrackCopyStatusEffects(ent1, ent2);
 	}
 }
 
 LUA_FUNCTION(Lua_EntityCopyStatusEffects) {
 	Entity* ent1 = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	bool setColor;
-	if (lua_type(L, 2) == LUA_TUSERDATA) {
-		Entity* ent2 = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-		setColor = lua::luaL_optboolean(L, 3, true);
-		CopyStatusEffects(ent1, ent2, setColor);
+	bool overwrite = lua::luaL_optboolean(L, 3, false);
+	if (lua_isnil(L, 2)) {
+		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
+			CopyStatusEffects(ent1, child, overwrite);
+		}
 	}
 	else
 	{
-		setColor = lua::luaL_optboolean(L, 2, true);
-		for (Entity* child = ent1->_child; child != (Entity*)0x0; child = child->_child) {
-			CopyStatusEffects(ent1, child, setColor);
-		}
+		Entity* ent2 = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
+		CopyStatusEffects(ent1, ent2, overwrite);
 	}
 
 	return 0;

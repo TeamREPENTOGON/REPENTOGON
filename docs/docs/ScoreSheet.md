@@ -17,6 +17,10 @@ tags:
        
 ## Functions
 
+### AddFinishedStage () {: aria-label='Functions' }
+#### void AddFinishedStage ( int Stage, int StageType, int Time ) {: .copyable aria-label='Functions' }
+
+___
 ### Calculate () {: aria-label='Functions' }
 #### void Calculate ( ) {: .copyable aria-label='Functions' }
 

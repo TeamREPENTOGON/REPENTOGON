@@ -19,6 +19,7 @@ The following custom attributes can be defined for achievements in the achieveme
 |:--|:--|:--|
 |name|string|used for the GetXByName functions (when this is not present, text is used instead)|
 |gfxback|string|path of the png sprite to use as a background paper for the achievement|
+|hidden|bool|any value other than 'false', preferably 'true', will make it not show the achievement popup on unlock nor display the achievement in the secrets menu|
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/achievements.html).

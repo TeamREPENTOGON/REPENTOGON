@@ -780,6 +780,7 @@ namespace lua {
 		const char* NightmareSceneMT = "NightmareScene";
 		const char* NullFrameMT = "NullFrame";
 		const char* OptionsMenuMT = "OptionsMenu";
+		const char* PauseMenuMT = "PauseMenu";
 		const char* PersistentGameDataMT = "PersistentGameData";
 		const char* PlayerHUDMT = "PlayerHUD";
 		const char* PlayerHUDHeartMT = "PlayerHUDHeart";

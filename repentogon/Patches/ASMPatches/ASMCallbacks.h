@@ -14,3 +14,4 @@ void ASMPatchPostNightmareSceneCallback();
 void ASMPatchPrePickupVoided();
 void ASMPatchPrePickupVoidedBlackRune();
 void ASMPatchPrePickupVoidedAbyss();
+void ASMPatchPrePickupComposted();

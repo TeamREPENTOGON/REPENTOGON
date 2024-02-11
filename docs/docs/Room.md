@@ -30,7 +30,7 @@ ___
 
 ___
 ### DoLightningStrike () {: aria-label='Functions' }
-#### void DoLightningStrike ( int Seed = Random() ) {: .copyable aria-label='Functions' }
+#### void DoLightningStrike ( int Seed = RandomSeed ) {: .copyable aria-label='Functions' }
 Creates a lightning effect as seen in Downpour. `Seed` determines [intensity](Room.md#getlightningintensity) (`1.3 + RandomFloat()*.6`) and sound pitch (`0.9 + RandomFloat()*0.2`).
 
 ___
@@ -130,6 +130,7 @@ ___
 ___
 ### PickupGridEntity () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) PickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
+Tries to pick up the grid entity at the provided index and returns an [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) of the picked up grid entity.
 
 ___
 ### RemoveGridEntityImmediate () {: aria-label='Functions' }

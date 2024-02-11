@@ -8,6 +8,38 @@ REPENTOGON = {
 
 collectgarbage("generational")
 
+
+
+local function MeetsVersion(targetVersion)
+	if (REPENTOGON.Version == "dev build") then return true end
+    local version = {}
+    local target = {}
+    
+    for num in REPENTOGON.Version:gmatch("%d+") do
+        table.insert(version, tonumber(num))
+    end
+    
+    for num in targetVersion:gmatch("%d+") do
+        table.insert(target, tonumber(num))
+    end
+    
+    -- Compare each component of the version strings
+    for i = 1, math.max(#version, #target) do
+        local v = version[i] or 0
+        local t = target[i] or 0
+        
+        if v < t then
+            return false
+        elseif v > t then
+            return true
+        end
+    end
+    
+    return true
+end
+
+REPENTOGON.MeetsVersion = MeetsVersion;
+
 local defaultCallbackMeta = {
 	__matchParams = function(a, b)
 		return not a or not b or a == -1 or b == -1 or a == b
@@ -389,7 +421,6 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY,
 	ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS,
 	ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY,
-	ModCallbacks.MC_CUSTOM_CHARACTER_UNLOCKED,
 	ModCallbacks.MC_PRE_MEGA_SATAN_ENDING,
 	ModCallbacks.MC_PRE_PLAYER_USE_BOMB,
 	ModCallbacks.MC_PRE_PLAYER_TAKE_DMG,
