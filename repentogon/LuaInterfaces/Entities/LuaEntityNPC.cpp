@@ -25,6 +25,10 @@ extern "C" {
 		return npc->FireBossProjectiles(num, *target, trajectoryMod, *params);
 	}
 
+	void L_EntityNPC_FireProjectiles(Entity_NPC* npc, Vector* pos, Vector* velocity, unsigned int mode, ProjectileParams* params) {
+		npc->FireProjectiles(pos, velocity, mode, params);
+	}
+
 	int L_EntityNPC_GetAliveEnemyCount(Entity_NPC* npc) {
 		return npc->GetAliveEnemyCount();
 	}
@@ -63,9 +67,8 @@ extern "C" {
 		return npc->MakeSplat(splatSize);
 	}
 
-	// BUG: this is a bool but zhl will not recognize it as one!
-	void L_EntityNPC_Morph(Entity_NPC* npc, int type, int variant, int subtype, int championColorIdx) {
-		npc->Morph(type, variant, subtype, championColorIdx);
+	bool L_EntityNPC_Morph(Entity_NPC* npc, int type, int variant, int subtype, int championColorIdx) {
+		return npc->Morph(type, variant, subtype, championColorIdx);
 	}
 
 	void L_EntityNPC_PlaySound(Entity_NPC* npc, int id, float volume, int delay, bool loop, float pitch) {
@@ -198,5 +201,9 @@ extern "C" {
 
 	void L_EntityNPC_SetStateFrame(Entity_NPC* npc, int value) {
 		npc->_stateFrame = value;
+	}
+
+	ProjectileParams* L_ProjectileParams_constructor(ProjectileParams* params) {
+		return params->game_constructor();
 	}
 }

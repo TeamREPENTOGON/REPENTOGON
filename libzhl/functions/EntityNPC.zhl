@@ -1,4 +1,3 @@
-// BUG: this is a bool but zhl will not recognize it as one!
 "558bec83e4f883ec30a1????????33c4894424??8b45": 
 __thiscall bool Entity_NPC::Morph(int EntityType, int Variant, int SubType, int Championid);
 

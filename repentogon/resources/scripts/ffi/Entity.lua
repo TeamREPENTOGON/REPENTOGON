@@ -390,6 +390,10 @@ function EntityFuncs:ToKnife()
 	return ffichecks.fixreturn(repentogon.L_Entity_ToKnife(self))
 end
 
+function EntityFuncs:ToNPC()
+	return ffichecks.fixreturn(repentogon.L_Entity_ToNPC(self))
+end
+
 function EntityFuncs:Update()
 	repentogon.L_Entity_Update(self)
 end

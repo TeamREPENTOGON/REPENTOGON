@@ -33,6 +33,7 @@ ffichecks.istype = function(var, typ)
 end
 
 ffichecks.isnil = function(var) return ffichecks.istype(var, "nil") end
+ffichecks.isnullptr = function(cdata) return cdata == nil end
 ffichecks.isnumber = function(var) return ffichecks.istype(var, "number") end
 ffichecks.isstring = function(var) return ffichecks.istype(var, "string") end
 ffichecks.isboolean = function(var) return ffichecks.istype(var, "boolean") end
@@ -61,7 +62,7 @@ end
 -- however, it will interpret nil as a null pointer if compared to a cdata pointer,
 -- so do that comparison and replace the result with an actual nil if it's null
 ffichecks.fixreturn = function(cdata)
-	if cdata ~= nil then
+	if not ffichecks.isnullptr(cdata) then
 		return cdata
 	end
 	return nil
@@ -139,6 +140,8 @@ pcall(require("EntityBomb"))
 pcall(require("EntityEffect"))
 pcall(require("EntityFamiliar"))
 pcall(require("EntityKnife"))
+pcall(require("ProjectileParams"))
+pcall(require("EntityNPC"))
 pcall(require("MusicManager"))
 pcall(require("WeightedOutcomePicker"))
 pcall(require("NightmareScene"))

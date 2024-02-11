@@ -1,3 +1,6 @@
+"568bf1c60601":
+__thiscall ProjectileParams* ProjectileParams::game_constructor();
+
 struct ProjectileParams depends (ColorMod, Vector) {
     bool GridCollision : 0x0; // 0x0
     float HeightModifier : 0x4, FallingSpeedModifier : 0x8, FallingAccelModifier : 0xc, VelocityMulti : 0x10, Scale : 0x14, CircleAngle : 0x18, HomingStrength : 0x1c, CurvingStrength : 0x20, Acceleration : 0x24, Spread : 0x28; // 0x4
