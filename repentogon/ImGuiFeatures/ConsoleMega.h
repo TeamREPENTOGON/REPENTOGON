@@ -456,7 +456,7 @@ struct ConsoleMega : ImGuiWindowObject {
                 std::string strBuf = data->Buf;
                 std::vector<std::string> cmdlets = ParseCommand(strBuf);
                 autocompleteBuffer.clear();
-                autocompletePos = 0;
+                autocompletePos = -1;
 
                 if (cmdlets.size() == 1) {
                     bool inGame = !(g_Manager->GetState() != 2 || !g_Game);
@@ -467,7 +467,7 @@ struct ConsoleMega : ImGuiWindowObject {
                             }
                     }
                 }
-
+                
                 if (cmdlets.size() >= 2 || (cmdlets.size() < 3 && std::isspace(static_cast<unsigned char>(strBuf.back())))) {
                     std::string commandName = cmdlets.front();
                     commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());

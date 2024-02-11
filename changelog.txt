@@ -62,6 +62,8 @@ Additions:
 	- Pressing enter in an empty console input will now close the console and imgui, to mimic the behavior of the vanilla console
 	- Fixed notifications being behind the menu bar
 	- Fixed debug console loosing focus when other windows are present
+	- Fixed ImGui not appearing in OBS's Game Capture mode, Discord streaming, and possibly more
+	- Fixed the first console autocomplete entry not being selectable with the keyboard
 /newline/
 Modified:
 * PlayerManager :
@@ -83,7 +85,7 @@ Fixes:
 * Fixed an issue with the stats sprite for the pause menu callbacks where it ended up holding garbage data
 * Fixed some broken EventCounter enums
 * Fixed PRE/POST_ENTITY_THROW EntityPlayer argument being pushed as optional parameter
-* Fixed crash when calling Game():MoveToRandomRoom() with seed 0
+* Fixed crash when calling Game():MoveToRandomRoom() with seed 0	
 /newline/
 /newline/
 v1.0.5a -
