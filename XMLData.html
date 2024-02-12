@@ -5592,9 +5592,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getbosscolorbytypevarsub" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetBossColorByTypeVarSub ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getentrybyid" class="md-nav__link">
     <span class="md-ellipsis">
       GetEntryById ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getmodbyid" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetModById ()
     </span>
   </a>
   
@@ -5914,9 +5932,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getbosscolorbytypevarsub" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetBossColorByTypeVarSub ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getentrybyid" class="md-nav__link">
     <span class="md-ellipsis">
       GetEntryById ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getmodbyid" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetModById ()
     </span>
   </a>
   
@@ -6374,9 +6410,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getbosscolorbytypevarsub" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetBossColorByTypeVarSub ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getentrybyid" class="md-nav__link">
     <span class="md-ellipsis">
       GetEntryById ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getmodbyid" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetModById ()
     </span>
   </a>
   
@@ -6479,6 +6533,15 @@
 <p>Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can use <code>soundentry.sample[1]</code>.</p>
 </details>
 <hr />
+<h3 aria-label="Functions" id="getbosscolorbytypevarsub">GetBossColorByTypeVarSub ()<a class="headerlink" href="#getbosscolorbytypevarsub" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="table-getbosscolorbytypevarsub-entitytype-type-int-variant-int-subtype">table GetBossColorByTypeVarSub ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html">EntityType</a> Type, int Variant , int SubType)<a class="headerlink" href="#table-getbosscolorbytypevarsub-entitytype-type-int-variant-int-subtype" title="Permanent link">⚓︎</a></h4>
+<p>Returns a table containing the attributes of the bosscolor on bosscolors.xml that match the given type variant and subtype. </p>
+<details class="- info">
+<summary>Table usage</summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Red Monstro&#39;s suffix:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetBossColorByTypeVarSub</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">).</span><span class="n">suffix</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<hr />
 <h3 aria-label="Functions" id="getentrybyid">GetEntryById ()<a class="headerlink" href="#getentrybyid" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="table-getentrybyid-xmlnode-nodetype-int-idx">table GetEntryById ( <a href="enums/XMLNode.html">XMLNode</a> NodeType, int Idx )<a class="headerlink" href="#table-getentrybyid-xmlnode-nodetype-int-idx" title="Permanent link">⚓︎</a></h4>
 <p>Returns a table containing the attributes of the corresponding xml, the matching NodeType(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given unique id.</p>
@@ -6494,6 +6557,19 @@
 <details class="note" open="open">
 <summary>id?</summary>
 <p>The Id usually matches the actual id of the node in question, with the exception of cases like the entities.xml where ids are not unique, on those cases, the id is the order of the node and wont correspond with the actual id. On the cases of XMLs without ids, its just the order again.</p>
+</details>
+<hr />
+<h3 aria-label="Functions" id="getmodbyid">GetModById ()<a class="headerlink" href="#getmodbyid" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="table-getmodbyid-string-modid">table GetModById ( string modId )<a class="headerlink" href="#table-getmodbyid-string-modid" title="Permanent link">⚓︎</a></h4>
+<p>Returns a table containing the attributes of the metdata xml of the matching mod id.</p>
+<details class="- info">
+<summary>Table usage</summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Car&#39;s mod name:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetModById</span><span class="p">(</span><span class="s2">&quot;2788006730&quot;</span><span class="p">).</span><span class="n">name</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<details class="note" open="open">
+<summary>id?</summary>
+<p>The Id usually matches the actual id of the mod in the workshop, with the exception of cases where the mod was downloaded illegally and tampered with or if its an indev mod. If the mod doesnt have an id, then the directory is used as an id.</p>
 </details>
 <hr />
 <h3 aria-label="Functions" id="getentrybyname">GetEntryByName ()<a class="headerlink" href="#getentrybyname" title="Permanent link">⚓︎</a></h3>

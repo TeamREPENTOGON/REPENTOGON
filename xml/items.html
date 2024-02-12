@@ -5965,6 +5965,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#items-n-trinkets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Items n Trinkets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#null-items" class="md-nav__link">
     <span class="md-ellipsis">
       "Null" Items
@@ -6206,6 +6215,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#items-n-trinkets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Items n Trinkets
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#null-items" class="md-nav__link">
     <span class="md-ellipsis">
       "Null" Items
@@ -6246,6 +6264,24 @@
 <h1 id="file-itemsxml">File "items.xml"<a class="headerlink" href="#file-itemsxml" title="Permanent link">⚓︎</a></h1>
 <p><strong class="xmlInfo red">Resource-Folder</strong>: Using this file in a resource folder of a mod will replace the original file.</p>
 <p><strong class="xmlInfo green">Content-Folder</strong>: Using this file in a content folder will add new items.</p>
+<h2 id="items-n-trinkets">Items n Trinkets<a class="headerlink" href="#items-n-trinkets" title="Permanent link">⚓︎</a></h2>
+<p>With REPENTOGON, the following xml attributes have changed functionality for regular items and trinkets:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Variable-Name</th>
+<th style="text-align: left;">Possible Values</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">achievement</td>
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">Ties the item/trinket to be unlocked by anachievement. For modded ones, use the provided achievement name xml attribute(define one if it doesnt have one already).</td>
+</tr>
+</tbody>
+</table>
 <h2 id="null-items">"Null" Items<a class="headerlink" href="#null-items" title="Permanent link">⚓︎</a></h2>
 <p>With REPENTOGON, you can now define custom "null" items. "Null" items are not typical items that can be spawned or visually seen in-game. They are typically used by the game to handle various costumes, buffs and effects (both temporary and persistent).</p>
 <p>For example, touching the white fire in downpour/dross actually grants a null item effect to you that applies the costume/flight/effects (<a href="https://wofsauge.github.io/IsaacDocs/rep/enums/NullItemID.html">NullItemID</a>.ID_LOST_CURSE) and removes itself when exiting the mirror dimension. Obtaining a transformation adds a null item effect to the player that grants the actual costume/effects of the transformation (such as <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/NullItemID.html">NullItemID</a>.ID_GUPPY) which may remove itself if the transformation's requirements are lost.</p>

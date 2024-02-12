@@ -1116,6 +1116,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://repentogon.com/xml/pocketitems.html</loc>
+         <lastmod>2024-02-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://repentogon.com/blog/archive/2023.html</loc>
          <lastmod>2024-02-12</lastmod>
          <changefreq>daily</changefreq>
