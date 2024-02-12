@@ -15,7 +15,7 @@ tags:
         ```
  
 ???+ warning "Warning"
-    Largely undocumented. The `Flag` variables are likely OpenGL enums, but they are currently unknown.  
+    Largely undocumented. I believe the `Flag` variables correspond to RGBA, with `Flag1` being `A`, though i'm not sure about the order of others. I also suspect that these flags correspond with the enums used for [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml).
 
 ## Functions
 
