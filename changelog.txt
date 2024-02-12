@@ -130,6 +130,7 @@ Additions:
 * Added WeightedOutcomePicker:AddOutcomeFloat(), WeightedOutcomePicker:Clear() and WeightedOutcomePicker:GetNumOutcomes()
 /newline/
 Fixes:
+* Fix Repentogon Resources not being loaded when mods are off
 * Fix GridEntity render callbacks being massively broken
 * Fix PRE_GRID_ENTITY_SPAWN not accepting a table
 * Fix potential crash with SpawnGridEntity(GridEntityDesc)
