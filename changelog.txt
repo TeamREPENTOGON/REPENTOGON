@@ -16,6 +16,10 @@ Additions:
 	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior
 * EntityPlayer:
 	- Get/SetGnawedLeafTimer
+* Level:
+	- Started work on Level:Get/SetForceSpecialQuest
+		- Allows forcing the Mirror or Mineshaft quest to be enabled or disabled
+		- Not currently complete; will require some bulk patches
 * Room :
 	- SetLavaIntensity
 	- [Get/Set]RainIntensity
