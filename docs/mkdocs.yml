@@ -338,6 +338,7 @@ nav:
   - entities2.xml: xml/entities.md
   - giantbook.xml: xml/giantbook.md
   - items.xml: xml/items.md
+  - pocketitems.xml: xml/pocketitems.md
   - players.xml: xml/players.md
 # - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md
