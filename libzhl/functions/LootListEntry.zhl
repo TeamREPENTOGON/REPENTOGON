@@ -3,5 +3,5 @@ struct LootListEntry depends (RNG) {
 	uint32_t _variant : 0x4;
 	uint32_t _subType : 0x8;
 	uint32_t _seed : 0xc;
-	RNG _rng : 0x10;
-} : 0x20;
+	RNG* _rng : 0x10;
+} : 0x14;
