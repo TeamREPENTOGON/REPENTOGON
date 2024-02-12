@@ -31,6 +31,11 @@ ___
 Same as [FireProjectiles](EntityNPC.md#fireprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
+### GetBossColorIdx () {: aria-label='Functions' }
+#### int GetBossColorIdx ( ) {: .copyable aria-label='Functions' }
+Returns the returns the bosscoloridx(which is usually just the subtype) or -1 if its not a bosscolor (or bosscolor doesnt apply).
+
+___
 ### GetControllerId () {: aria-label='Functions' }
 #### int GetControllerId ( ) {: .copyable aria-label='Functions' }
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return `-1` when not being controlled by any player.
