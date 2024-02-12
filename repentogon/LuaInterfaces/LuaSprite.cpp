@@ -3,6 +3,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../MiscFunctions.h"
 
 /*
 * While internally, this is the ANM2 class, it is exposed to Lua as "Sprite".
@@ -34,6 +35,16 @@ LUA_FUNCTION(Lua_SpriteIsOverlayEventTriggered)
 	lua_pushboolean(L, anm2->GetOverlayAnimationState()->IsEventTriggered(eventName));
 
 	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteLoadRgonSprite)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const char* path = luaL_checkstring(L, 2);
+	bool loadg = lua::luaL_checkboolean(L, 3);
+	anm2->Load(REPENTOGON::GetRGONGfxAbsolutePath(path), loadg);
+
+	return 0;
 }
 
 LUA_FUNCTION(Lua_SpriteWasOverlayEventTriggered)
@@ -352,6 +363,7 @@ static void RegisterSpriteFuncs(lua_State* L) {
 		{ "ContinueOverlay", Lua_SpriteContinueOverlay},
 		{ "GetRenderFlags", Lua_SpriteGetRenderFlags},
 		{ "SetRenderFlags", Lua_SpriteSetRenderFlags},
+		{ "LoadRGON", Lua_SpriteLoadRgonSprite},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::SPRITE, functions);

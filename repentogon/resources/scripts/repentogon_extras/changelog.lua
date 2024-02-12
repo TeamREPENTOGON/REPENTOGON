@@ -238,11 +238,11 @@ REPENTOGON.Extras.ChangeLog = ChangeLog
 local curattempt=0
 function ChangeLog.LoadAssets()
     if #Cl.ChangelogSprite:GetDefaultAnimation() <= 0 then
-        Cl.ChangelogSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog.anm2", true)
+        Cl.ChangelogSprite:LoadRGON("gfx/ui/changelog.anm2", true)
         Cl.ChangelogSprite:Play("SwapOut")
         Cl.ChangelogSprite.PlaybackSpeed = 0.5 --correct speed for doing Update() inside of xxx_RENDER callback
 
-        Cl.NoteSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/changelog_tab_paper.anm2", true)
+        Cl.NoteSprite:LoadRGON("gfx/ui/changelog_tab_paper.anm2", true)
         Cl.NoteSprite:Play("Idle")
         curattempt=curattempt+1
         if curattempt>5 then
