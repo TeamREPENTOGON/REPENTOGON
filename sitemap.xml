@@ -1076,6 +1076,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://repentogon.com/xml/bosscolors.html</loc>
+         <lastmod>2024-02-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://repentogon.com/xml/challenges.html</loc>
          <lastmod>2024-02-12</lastmod>
          <changefreq>daily</changefreq>
