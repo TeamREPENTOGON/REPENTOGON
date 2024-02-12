@@ -51,13 +51,16 @@ float paperedge = 0;
 
 vector<bool> enabledtstates;
 bool enabledstatesset = false;
+bool modswereenabled = true;
 
 void SetupEnabledStates() {
 	if (!enabledstatesset) {
+		enabledstatesset = true;
 		ModManager* modman = g_Manager->GetModManager();
 		for each (ModEntry * mod in modman->_mods) {
 			enabledtstates.push_back(mod->IsEnabled());
 		}
+		modswereenabled = g_Manager->GetOptions()->ModsEnabled();
 	}
 }
 
@@ -77,6 +80,7 @@ void RestoreEnabledStates() {
 		}
 		i++;
 	}
+	g_Manager->GetOptions()->_enableMods = modswereenabled;
 }
 
 HOOK_METHOD(MenuManager, Update, () -> void) {
@@ -157,6 +161,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	int actualpos = -1;
 
 	bool did = false;
+	bool modsenabled = g_Manager->GetOptions()->ModsEnabled();
 	lastvalid = -1;
 	int currentTime = GetTickCount64();
 	if (g_MenuManager->_selectedMenuID != 16) { issearching = false; }
@@ -227,6 +232,9 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			}
 			entry->_x = pos.x;
 			entry->_y = pos.y;
+			if (!modsenabled) {
+				entry->_color._alpha = entry->_color._alpha * 0.3;
+			}
 			g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
 			if (actualpos == this->SelectedElement) {
 				this->_pointerToSelectedMod = mod;
@@ -249,6 +257,9 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		}
 		entry->_x = pos.x;
 		entry->_y = pos.y;
+		if (!modsenabled) {
+			entry->_color._alpha = entry->_color._alpha * 0.3;
+		}
 		g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
 		if (actualpos == this->SelectedElement) {
 			this->_pointerToSelectedMod = mod;
