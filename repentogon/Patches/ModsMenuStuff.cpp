@@ -274,7 +274,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		if (!searchbar->_loaded) {
 			ANM2* s = this->GetModsMenuSprite();
 			searchbar->construct_from_copy(s);
-			string dir = string("../../../resources-repentogon/gfx/ui/modsmenupentogon.anm2");
+			string dir = string(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/modsmenupentogon.anm2"));
 			searchbar->Load(dir, true);
 			searchbar->LoadGraphics(true);
 			searchbar->Play("SearchBar", true);

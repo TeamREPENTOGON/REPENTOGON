@@ -32,7 +32,7 @@ end
 
 local function LoadAssets()
     if #BestiaryMenuRep.BestiarySheetSprite:GetDefaultAnimation() <= 0 then
-        BestiaryMenuRep.BestiarySheetSprite:Load(REPENTOGON.RESOURCEPATH .. "/gfx/ui/bestiary_tabs.anm2", true)
+        BestiaryMenuRep.BestiarySheetSprite:LoadRGON("gfx/ui/bestiary_tabs.anm2", true)
         BestiaryMenuRep.BestiarySheetSprite:SetFrame("Tabs", 0)
         
         BestiaryMenuRep.ArrowSprite:Load("gfx/ui/leaderboardmenu.anm2", true)
