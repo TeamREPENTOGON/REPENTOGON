@@ -47,6 +47,8 @@ unordered_map<tuple<int, int, int>, unordered_map<int, vector<int>>> BossDeathLi
 unordered_map<string, int> simplifiedeventsenum;
 string achivjsonpath;
 
+bool sourceswithachievset = false;
+
 int dummyachiev = -1;
 bool achievdone = false;
 bool blocksteam = false;
@@ -54,7 +56,11 @@ int lastdummyachievframe = 10;
 queue<int> pendingachievs;
 
 
+bool achdebugmode = false;
+
 void SaveAchieveemntsToJson() {
+	if (!achdebugmode && !sourceswithachievset) { achdebugmode = true; }
+	if (achdebugmode) { return; }
 	rapidjson::Document doc;
 	doc.SetObject();
 
@@ -213,6 +219,8 @@ HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 }
 
 bool LockAchievement(int achievementid) {
+	if (!achdebugmode && !sourceswithachievset) { achdebugmode = true; }
+	if (achdebugmode) { return false; }
 	if (achievementid < 638) {
 		PersistentGameData* ps = g_Manager->GetPersistentGameData();
 		bool had = ps->achievements[achievementid];
@@ -354,7 +362,6 @@ bool modsecrets = false;
 bool secretneedsupdate = false;
 string secretssource = "BaseGame";
 
-bool sourceswithachievset = false;
 vector <string> SourcesWithAchiev;
 int curridx = 0;
 int currmax = 0;
@@ -523,6 +530,7 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			this->_cursorLeftSprite._scale = Vector(1, 1);
 		}
 }
+
 
 HOOK_METHOD(Menu_Stats, Update, () -> void) {
 	super();

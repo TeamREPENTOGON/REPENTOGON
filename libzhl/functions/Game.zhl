@@ -240,5 +240,6 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     ProceduralItemManager _proceduralItemManager : 0x283c20; // 0x283c20 
     vector_ErasedEntities _erasedEntities : 0x283c14; 
 	bool  _triggerWindowResize : 0x1c3154;
+	unsigned int _gameStateFlags : 0x1c316c;
 	float _lightningIntensity : 0x283c00;
 } : 0x285238;

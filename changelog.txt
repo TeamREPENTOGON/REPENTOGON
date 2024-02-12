@@ -16,6 +16,10 @@ Additions:
 	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior
 * EntityPlayer:
 	- Get/SetGnawedLeafTimer
+* Level:
+	- Started work on Level:Get/SetForceSpecialQuest
+		- Allows forcing the Mirror or Mineshaft quest to be enabled or disabled
+		- Not currently complete; will require some bulk patches
 * Room :
 	- SetLavaIntensity
 	- [Get/Set]RainIntensity
@@ -62,6 +66,8 @@ Additions:
 	- Pressing enter in an empty console input will now close the console and imgui, to mimic the behavior of the vanilla console
 	- Fixed notifications being behind the menu bar
 	- Fixed debug console loosing focus when other windows are present
+	- Fixed ImGui not appearing in OBS's Game Capture mode, Discord streaming, and possibly more
+	- Fixed the first console autocomplete entry not being selectable with the keyboard
 /newline/
 Modified:
 * PlayerManager :
@@ -75,6 +81,7 @@ Modified:
 /newline/
 Fixes:
 * Fixed relative ids being displayed as actual ids on xmldata tables.
+* Fixed SetCompletionMarks functions when launching the game from the room editor or BR.
 * Fix GridEntity:ToFire/ToTNT/ToWall functions
 * Fixed binder for Entity:ComputeStatusEffectDuration
 * Fixed pause menu modded marks rendering over the controller disconected popup
