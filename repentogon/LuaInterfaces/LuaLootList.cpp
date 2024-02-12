@@ -2,6 +2,30 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+LUA_FUNCTION(Lua_LootListConstructor) {
+	LootList* loot = nullptr;
+	loot = lua::place<LootList>(L, lua::metatables::LootListMT);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LootListPushEntry) {
+	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	const unsigned int type = (unsigned int)luaL_checkinteger(L, 2);
+	const unsigned int variant = (unsigned int)luaL_checkinteger(L, 3);
+	const unsigned int subType = (unsigned int)luaL_checkinteger(L, 4);
+	const unsigned int seed = (unsigned int)luaL_optinteger(L, 5, Random());
+	RNG* rng = nullptr;
+
+	if (lua_type(L, 6) == LUA_TUSERDATA) {
+		rng = lua::GetUserdata<RNG*>(L, 6, lua::Metatables::RNG, "RNG");
+	}
+
+	lootList->_lootentries.push_back({ type, variant, subType, seed, rng });
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_PickupGetLootList) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	bool unk = lua::luaL_optboolean(L, 2, false);
@@ -33,12 +57,6 @@ LUA_FUNCTION(Lua_LootListGetEntries)
 	return 1;
 }
 
-LUA_FUNCTION(Lua_LootListFirstEntry) {
-	LootList* lootList = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
-	lua_pushinteger(L, lootList->_lootentries.size());
-	return 1;
-}
-
 /*LUA_FUNCTION(Lua_LootList__gc) {
 	LootList* lootlist = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
 	lootlist->~LootList();
@@ -53,11 +71,11 @@ static void RegisterLootList(lua_State* L) {
 
 	luaL_Reg functions[] = {
 		{ "GetEntries", Lua_LootListGetEntries },
-		{ "FirstEntry", Lua_LootListFirstEntry },
+		{ "PushEntry", Lua_LootListPushEntry },
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::LootListMT, lua::metatables::LootListMT, functions);
-	//lua_register(L, lua::metatables::CapsuleMT, Lua_CapsuleConstructor);
+	lua_register(L, lua::metatables::LootListMT, Lua_LootListConstructor);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
