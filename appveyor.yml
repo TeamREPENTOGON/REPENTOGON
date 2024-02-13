@@ -3,7 +3,9 @@ image: Visual Studio 2022
 build_script:
 - ps: >-
     git submodule init
+
     git submodule update
+
 
     echo "return [[" > repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
             git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
@@ -18,7 +20,9 @@ build_script:
 
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release
 
+
     cmake --build build --config Release
+
 
     cd build/Release
             mkdir artifact
@@ -34,12 +38,15 @@ build_script:
 
     cd artifact
 
+
     & "C:\Program Files\7-Zip\7z.exe" a -tzip -o"..\" "REPENTOGON.zip" ".\" -aoa
 
-    Push-AppveyorArtifact REPENTOGON.zip
 
+    Push-AppveyorArtifact REPENTOGON.zip
+    
 deploy:
 - provider: Webhook
   url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=b3b61b76-b26e-4cfd-9b51-bb56d66476fa&SigningPolicySlug=test-signing
   authorization:
+     secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==
      secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==
