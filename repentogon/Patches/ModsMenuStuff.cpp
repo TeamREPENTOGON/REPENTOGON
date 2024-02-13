@@ -37,7 +37,7 @@ ANM2* searchbar = new ANM2();
 ANM2* undopop = new ANM2();
 string searchstr = "";
 bool issearching= false;
-const int keydelay = 300;
+const int keydelay = 20;
 int lastvalid = 0;
 int opensearchkey = (int)KeyboardKey::KEY_LEFT_CONTROL;
 int undomodchangeskey = (int)KeyboardKey::KEY_BACKSPACE;
@@ -168,7 +168,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	bool did = false;
 	bool modsenabled = g_Manager->GetOptions()->ModsEnabled();
 	lastvalid = -1;
-	int currentTime = GetTickCount64();
+	int currentTime = g_Manager->_framecount;
 	if (g_MenuManager->_selectedMenuID != 16) { issearching = false; }
 			if (issearching) {
 				if (modman->_mods.size() > minmods) { //no point in search when all your mods fit in 1 screen
@@ -196,7 +196,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 							}
 							if (did) {
 								if (lastKeyPressTimeMap[i] > 0) {
-									lastKeyPressTimeMap[i] = currentTime - 250;
+									lastKeyPressTimeMap[i] = currentTime - (keydelay * 0.7);
 								}
 								else {
 									lastKeyPressTimeMap[i] = currentTime;
@@ -214,7 +214,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 				issearching = true;
 				lastKeyPressTimeMap[opensearchkey] = currentTime;
 			}
-			else if ((g_MenuManager->_selectedMenuID == 16) && (((IsKeytriggered(undomodchangeskey)) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuManager->_controllerIndex > 0) && IsKeytriggered(undomodchangesbtn))) {
+			else if ((g_MenuManager->_selectedMenuID == 16) && (((g_MenuManager->_controllerIndex <= 0) && (IsKeytriggered(undomodchangeskey)) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuManager->_controllerIndex > 0) && g_InputManagerBase.IsActionTriggered(undomodchangesbtn, g_MenuManager->_controllerIndex,0))) {
 				RestoreEnabledStates();
 				this->State = 0; //resets the change tracker
 			}
@@ -354,7 +354,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 				entry->_text = "|";
 				entry->_color._alpha = 0.8;
 				if (cursorblink) { entry->_color._alpha = 0.3; }
-				if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 200; }
+				if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 10; }
 				//entry->_x += 2;
 				entry->_x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
 				entry->_scaleY = 1.2;
