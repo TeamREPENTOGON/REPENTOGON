@@ -84,10 +84,10 @@ void RestoreEnabledStates() {
 }
 
 bool IsKeytriggered(int key) {
-	return g_InputManagerBase->GetActualInput()->IsButtonTriggered(key, g_MenuManager->_controllerIndex, 0);
+	return g_InputManagerBase.IsButtonTriggered(key, g_MenuManager->_controllerIndex, 0);
 }
 bool IsKeyPressed(int key) {
-	return g_InputManagerBase->GetActualInput()->IsButtonPressed(key, g_MenuManager->_controllerIndex, 0);
+	return g_InputManagerBase.IsButtonPressed(key, g_MenuManager->_controllerIndex, 0);
 }
 
 HOOK_METHOD(MenuManager, Update, () -> void) {
@@ -97,7 +97,7 @@ HOOK_METHOD(MenuManager, Update, () -> void) {
 
 HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	
-	if (g_InputManagerBase->GetActualInput()->IsActionTriggered(14,g_MenuManager->_controllerIndex,0)) {
+	if (g_InputManagerBase.IsActionTriggered(14,g_MenuManager->_controllerIndex,0)) {
 		if ((lastvalid > -1) && (!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(IsKeytriggered(opensearchkey)))) {
 			this->_pointerToSelectedMod->SetEnabled(!this->_pointerToSelectedMod->IsEnabled());
 			string disablepath = std::filesystem::current_path().string() + "\\mods\\" + this->_pointerToSelectedMod->GetDir().c_str() + "\\disable.it";
@@ -123,7 +123,7 @@ HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	}
 }
 
-HOOK_METHOD(InputBase, IsActionTriggered, (int btnaction, int controllerid, int unk) -> bool) {
+HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, int unk) -> bool) {
 	if (issearching){// && ((btnaction == 17) || (btnaction == 18))) {
 		return false;
 	}
@@ -274,7 +274,6 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 
 	if (paperedge == 0) { paperedge = (modman->_mods.size() *25)+40; } // this is to prevent the searchbar from busting into the unknown depths below
 
-	if (modman->_mods.size() > minmods) {
 		if (!searchbar->_loaded) {
 			ANM2* s = this->GetModsMenuSprite();
 			searchbar->construct_from_copy(s);
@@ -310,19 +309,21 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		entry->_x = pos.x - 20;
 		
 		int egde = initialpos.y + paperedge;
-		if (barpos->y >= egde) {
-			Vector* vdif = new Vector(barpos->x, egde);
-			entry->_y = egde;
-			searchbar->Render(vdif, &z, &z);
-		}
-		else if (((barpos->y - pos.y) < 22) && (prevscroll > 161.9) && (g_MenuManager->_scrollinterpolationY == prevscroll) && (this->SelectedElement == lastvalid)) { // this is for when the searchbar would obstruct the last element on the list
-			Vector* vdif = new Vector(barpos->x, barpos->y + 20);
-			entry->_y = barpos->y + 20;
-			searchbar->Render(vdif, &z, &z);
-		}
-		else {
-			entry->_y = barpos->y;
-			searchbar->Render(barpos, &z, &z);
+		if (modman->_mods.size() > minmods) {
+			if (barpos->y >= egde) {
+				Vector* vdif = new Vector(barpos->x, egde);
+				entry->_y = egde;
+				searchbar->Render(vdif, &z, &z);
+			}
+			else if (((barpos->y - pos.y) < 22) && (prevscroll > 161.9) && (g_MenuManager->_scrollinterpolationY == prevscroll) && (this->SelectedElement == lastvalid)) { // this is for when the searchbar would obstruct the last element on the list
+				Vector* vdif = new Vector(barpos->x, barpos->y + 20);
+				entry->_y = barpos->y + 20;
+				searchbar->Render(vdif, &z, &z);
+			}
+			else {
+				entry->_y = barpos->y;
+				searchbar->Render(barpos, &z, &z);
+			}
 		}
 		undopop->Render(undopos, &z, &z);
 		
@@ -345,18 +346,19 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		for (int c = 0; c < 11; c++) {
 			this->ModsMenuSprite.GetLayer(c)->_visible = true;
 		}
-		entry->_scaleX = 1;
-		entry->_scaleY = 1;
-		g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
-		if (issearching) {
-			entry->_text = "|";
-			entry->_color._alpha = 0.8;
-			if (cursorblink) { entry->_color._alpha = 0.3; }
-			if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 200; }
-			//entry->_x += 2;
-			entry->_x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
-			entry->_scaleY = 1.2;
+		if (modman->_mods.size() > minmods) {
+			entry->_scaleX = 1;
+			entry->_scaleY = 1;
 			g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
+			if (issearching) {
+				entry->_text = "|";
+				entry->_color._alpha = 0.8;
+				if (cursorblink) { entry->_color._alpha = 0.3; }
+				if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 200; }
+				//entry->_x += 2;
+				entry->_x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
+				entry->_scaleY = 1.2;
+				g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
+			}
 		}
-	}
 }
