@@ -2,6 +2,8 @@ v1.0.6b -
 Fixes:
 * Fixed an issue that caused gamepad to be calling undo mods when going down on the mods menu
 * Fixed an issue that made search and undo mods not work if you didnt restart your machine for 24 days (blame microsoft)
+/newline/
+/newline/
 v1.0.6a -
 Additions:
 * Minimap :
@@ -14,6 +16,7 @@ Additions:
 /newline/
 Fixes:
 * Fixed an issue that made it so custom completion marks and achievements are not properly loaded locked or unlocked on a session(big oof, I know).
+/newline/
 /newline/
 v1.0.6 -
 Additions:
