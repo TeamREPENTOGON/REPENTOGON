@@ -286,7 +286,7 @@ HOOK_METHOD(Leaderboard, ProcessInput, () -> void) {
 	super();
 
 	if (_dailyChallenge._id == 1 && _isLeaderboardClosing == 0) {
-		if (g_InputManagerBase->GetActualInput()->IsButtonTriggered(14, -1, 0)) {
+		if (g_InputManagerBase.IsActionTriggered(14, -1, 0)) {
 			g_Game->FadeOut(.08f, 2);
 		}
 	}

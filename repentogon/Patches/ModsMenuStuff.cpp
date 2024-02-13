@@ -39,8 +39,8 @@ string searchstr = "";
 bool issearching= false;
 const int keydelay = 300;
 int lastvalid = 0;
-int opensearchkey = VK_CONTROL;
-int undomodchangeskey = VK_BACK;
+int opensearchkey = (int)KeyboardKey::KEY_LEFT_CONTROL;
+int undomodchangeskey = (int)KeyboardKey::KEY_BACKSPACE;
 int undomodchangesbtn = 24; //left bumber
 unordered_map<int, int> lastKeyPressTimeMap;
 bool cursorblink = false;
@@ -83,14 +83,22 @@ void RestoreEnabledStates() {
 	g_Manager->GetOptions()->_enableMods = modswereenabled;
 }
 
+bool IsKeytriggered(int key) {
+	return g_InputManagerBase.IsButtonTriggered(key, g_MenuManager->_controllerIndex, 0);
+}
+bool IsKeyPressed(int key) {
+	return g_InputManagerBase.IsButtonPressed(key, g_MenuManager->_controllerIndex, 0);
+}
+
 HOOK_METHOD(MenuManager, Update, () -> void) {
 	prevscroll = g_MenuManager->_scrollinterpolationY;
 	super();
 }
 
 HOOK_METHOD(Menu_Mods, Update, () -> void) {
-	if (g_InputManagerBase->GetActualInput()->IsButtonTriggered(14, -1, 0)) {
-		if ((lastvalid > -1) && (!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(GetKeyState(opensearchkey) & 0x8000))) {
+	
+	if (g_InputManagerBase.IsActionTriggered(14,g_MenuManager->_controllerIndex,0)) {
+		if ((lastvalid > -1) && (!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(IsKeytriggered(opensearchkey)))) {
 			this->_pointerToSelectedMod->SetEnabled(!this->_pointerToSelectedMod->IsEnabled());
 			string disablepath = std::filesystem::current_path().string() + "\\mods\\" + this->_pointerToSelectedMod->GetDir().c_str() + "\\disable.it";
 			if (this->_pointerToSelectedMod->IsEnabled()) {
@@ -115,7 +123,7 @@ HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	}
 }
 
-HOOK_METHOD(InputBase, IsButtonTriggered, (int btnaction, int controllerid, int unk) -> bool) {
+HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, int unk) -> bool) {
 	if (issearching){// && ((btnaction == 17) || (btnaction == 18))) {
 		return false;
 	}
@@ -146,9 +154,6 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	Vector z = Vector(0, 0);
 	ModManager* modman = g_Manager->GetModManager();
 	DrawStringScaledEntry* entry = new DrawStringScaledEntry();
-	HWND hwnd = GetActiveWindow();
-	DWORD activeProcessId;
-	GetWindowThreadProcessId(hwnd, &activeProcessId);
 
 	entry->_boxWidth = 0;
 	entry->_center = false;
@@ -165,57 +170,56 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	lastvalid = -1;
 	int currentTime = GetTickCount64();
 	if (g_MenuManager->_selectedMenuID != 16) { issearching = false; }
-	if (modman->_mods.size() > minmods) { //no point in search when all your mods fit in 1 screen
-		if (GetCurrentProcessId() == activeProcessId) {
 			if (issearching) {
-				for (int i = 8; i < 256; ++i) {
-					if (GetKeyState(i) & 0x8000) {
-						if ((currentTime - lastKeyPressTimeMap[i]) < keydelay) {
-							continue;
-						}
+				if (modman->_mods.size() > minmods) { //no point in search when all your mods fit in 1 screen
+					for (int i = 32; i < 348; ++i) {
+						if (IsKeyPressed(i)) {
+							if ((currentTime - lastKeyPressTimeMap[i]) < keydelay) {
+								continue;
+							}
 
-						if ((i == opensearchkey) || (i == VK_RETURN) || (i == VK_ESCAPE)) {
-							issearching = false;
-							lastKeyPressTimeMap[i] = currentTime;
-							break;
-						}
-						else if (i == VK_BACK) {
-							if (!searchstr.empty()) {
-								searchstr.pop_back();
+							if ((i == opensearchkey) || (i == (int)KeyboardKey::KEY_ENTER) || (i == (int)KeyboardKey::KEY_ESCAPE)) {
+								issearching = false;
+								lastKeyPressTimeMap[i] = currentTime;
+								break;
+							}
+							else if (i == (int)KeyboardKey::KEY_BACKSPACE) {
+								if (!searchstr.empty()) {
+									searchstr.pop_back();
+									did = true;
+								}
+							}
+							else if ((g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str()) < 225) && ((i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i == ' '))) {
+								char ch = static_cast<char>(i);
+								searchstr += tolower(ch);
 								did = true;
 							}
-						}
-						else if ((g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str()) < 225) && ((i >= '0' && i <= '9') || (i >= 'A' && i <= 'Z') || (i >= 'a' && i <= 'z') || (i == ' '))) {
-							char ch = static_cast<char>(i);
-							searchstr += tolower(ch);
-							did = true;
-						}
-						if (did) {
-							if (lastKeyPressTimeMap[i] > 0) {
-								lastKeyPressTimeMap[i] = currentTime - 250;
-							}
-							else {
-								lastKeyPressTimeMap[i] = currentTime;
+							if (did) {
+								if (lastKeyPressTimeMap[i] > 0) {
+									lastKeyPressTimeMap[i] = currentTime - 250;
+								}
+								else {
+									lastKeyPressTimeMap[i] = currentTime;
+								}
 							}
 						}
-					}
-					else {
-						lastKeyPressTimeMap[i] = 0;
+						else {
+							lastKeyPressTimeMap[i] = 0;
+						}
 					}
 				}
 			}
-			else if ((g_MenuManager->_selectedMenuID == 16) && (GetKeyState(opensearchkey) & 0x8000) && ((currentTime - lastKeyPressTimeMap[opensearchkey]) > keydelay)) {
+			else if ((modman->_mods.size() > minmods) && (g_MenuManager->_selectedMenuID == 16) && (IsKeytriggered(opensearchkey)) && ((currentTime - lastKeyPressTimeMap[opensearchkey]) > keydelay)) {
 
 				issearching = true;
 				lastKeyPressTimeMap[opensearchkey] = currentTime;
 			}
-			else if ((g_MenuManager->_selectedMenuID == 16) && (((GetKeyState(undomodchangeskey) & 0x8000) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuManager->_controllerIndex > 0) && g_InputManagerBase->GetActualInput()->IsButtonTriggered(undomodchangesbtn, -1, 0))) {
+			else if ((g_MenuManager->_selectedMenuID == 16) && (((IsKeytriggered(undomodchangeskey)) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuManager->_controllerIndex > 0) && IsKeytriggered(undomodchangesbtn))) {
 				RestoreEnabledStates();
 				this->State = 0; //resets the change tracker
 			}
-		}
 		if (did) { this->SelectedElement = 0; }
-	}
+	
 	for each (ModEntry* mod in modman->_mods) {	
 			string order = to_string(i) + ".";
 			string modname = order + mod->GetName();
@@ -270,7 +274,6 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 
 	if (paperedge == 0) { paperedge = (modman->_mods.size() *25)+40; } // this is to prevent the searchbar from busting into the unknown depths below
 
-	if (modman->_mods.size() > minmods) {
 		if (!searchbar->_loaded) {
 			ANM2* s = this->GetModsMenuSprite();
 			searchbar->construct_from_copy(s);
@@ -306,19 +309,21 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		entry->_x = pos.x - 20;
 		
 		int egde = initialpos.y + paperedge;
-		if (barpos->y >= egde) {
-			Vector* vdif = new Vector(barpos->x, egde);
-			entry->_y = egde;
-			searchbar->Render(vdif, &z, &z);
-		}
-		else if (((barpos->y - pos.y) < 22) && (prevscroll > 161.9) && (g_MenuManager->_scrollinterpolationY == prevscroll) && (this->SelectedElement == lastvalid)) { // this is for when the searchbar would obstruct the last element on the list
-			Vector* vdif = new Vector(barpos->x, barpos->y + 20);
-			entry->_y = barpos->y + 20;
-			searchbar->Render(vdif, &z, &z);
-		}
-		else {
-			entry->_y = barpos->y;
-			searchbar->Render(barpos, &z, &z);
+		if (modman->_mods.size() > minmods) {
+			if (barpos->y >= egde) {
+				Vector* vdif = new Vector(barpos->x, egde);
+				entry->_y = egde;
+				searchbar->Render(vdif, &z, &z);
+			}
+			else if (((barpos->y - pos.y) < 22) && (prevscroll > 161.9) && (g_MenuManager->_scrollinterpolationY == prevscroll) && (this->SelectedElement == lastvalid)) { // this is for when the searchbar would obstruct the last element on the list
+				Vector* vdif = new Vector(barpos->x, barpos->y + 20);
+				entry->_y = barpos->y + 20;
+				searchbar->Render(vdif, &z, &z);
+			}
+			else {
+				entry->_y = barpos->y;
+				searchbar->Render(barpos, &z, &z);
+			}
 		}
 		undopop->Render(undopos, &z, &z);
 		
@@ -341,18 +346,19 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		for (int c = 0; c < 11; c++) {
 			this->ModsMenuSprite.GetLayer(c)->_visible = true;
 		}
-		entry->_scaleX = 1;
-		entry->_scaleY = 1;
-		g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
-		if (issearching) {
-			entry->_text = "|";
-			entry->_color._alpha = 0.8;
-			if (cursorblink) { entry->_color._alpha = 0.3; }
-			if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 200; }
-			//entry->_x += 2;
-			entry->_x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
-			entry->_scaleY = 1.2;
+		if (modman->_mods.size() > minmods) {
+			entry->_scaleX = 1;
+			entry->_scaleY = 1;
 			g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
+			if (issearching) {
+				entry->_text = "|";
+				entry->_color._alpha = 0.8;
+				if (cursorblink) { entry->_color._alpha = 0.3; }
+				if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 200; }
+				//entry->_x += 2;
+				entry->_x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
+				entry->_scaleY = 1.2;
+				g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
+			}
 		}
-	}
 }

@@ -113,6 +113,10 @@ ___
 #### table GetAchievementIdByName ( string name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
 ___
+### GetBossColorIdxByName () {: aria-label='Functions' }
+#### int GetBossColorIdxByName ( string name ) {: .copyable aria-label='Functions' }
+Gets the boss color idx By Name, the idx is usually the subtype the boss needs to become the desired color. Granted, you actually need to give your color entry a name on the xml for this to work (suffix wont work usually, since its not mandatory).
+___
 ### GetClipboard () {: aria-label='Functions' }
 #### string GetClipboard ( ) {: .copyable aria-label='Functions' }
 Gets the contents of the clipboard as long as they are in text form, otherwise it will just return nil.

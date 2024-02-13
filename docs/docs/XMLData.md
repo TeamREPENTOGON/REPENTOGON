@@ -32,6 +32,14 @@ Returns a table containing the attributes of the entity on entities2.xml that ma
 ???+ note "child nodes"
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can use `soundentry.sample[1]`.
 ___
+### GetBossColorByTypeVarSub () {: aria-label='Functions' }
+#### table GetBossColorByTypeVarSub ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant , int SubType) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the bosscolor on bosscolors.xml that match the given type variant and subtype. 
+???- info "Table usage"
+	```lua
+	print("Red Monstro's suffix:", XMLData.GetBossColorByTypeVarSub(20,0,1).suffix)
+	```
+___
 ### GetEntryById () {: aria-label='Functions' }
 #### table GetEntryById ( [XMLNode](enums/XMLNode.md) NodeType, int Idx ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the corresponding xml, the matching NodeType(Ex: XMLNode.TRINKET returns trinket nodes from pocketitems.xml) and match the given unique id.
@@ -43,6 +51,16 @@ Returns a table containing the attributes of the corresponding xml, the matching
     Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can use `soundentry.sample[1]`.
 ???+ note "id?"
     The Id usually matches the actual id of the node in question, with the exception of cases like the entities.xml where ids are not unique, on those cases, the id is the order of the node and wont correspond with the actual id. On the cases of XMLs without ids, its just the order again.
+___
+### GetModById () {: aria-label='Functions' }
+#### table GetModById ( string modId ) {: .copyable aria-label='Functions' }
+Returns a table containing the attributes of the metdata xml of the matching mod id.
+???- info "Table usage"
+	```lua
+	print("Car's mod name:", XMLData.GetModById("2788006730").name)
+	```
+???+ note "id?"
+    The Id usually matches the actual id of the mod in the workshop, with the exception of cases where the mod was downloaded illegally and tampered with or if its an indev mod. If the mod doesnt have an id, then the directory is used as an id.
 ___
 ### GetEntryByName () {: aria-label='Functions' }
 #### table GetEntryByName ( [XMLNode](enums/XMLNode.md) NodeType, string Name ) {: .copyable aria-label='Functions' }
