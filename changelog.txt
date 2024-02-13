@@ -1,4 +1,4 @@
-v1.0.x -
+v1.0.6a -
 Additions:
 * Minimap :
 	- GetState
@@ -8,6 +8,8 @@ Additions:
 	- [Get/Set]ShakeDuration
 	- [Get/Set]ShakeOffset
 /newline/
+Fixes:
+* Fixed an issue that made it so custom completion marks and achievements are not properly loaded locked or unlocked on a session(big oof, I know).
 /newline/
 v1.0.6 -
 Additions:

@@ -56,11 +56,10 @@ int lastdummyachievframe = 10;
 queue<int> pendingachievs;
 
 
-bool achdebugmode = false;
+bool achset = false;
 
 void SaveAchieveemntsToJson() {
-	if (!achdebugmode && !sourceswithachievset) { achdebugmode = true; }
-	if (achdebugmode) { return; }
+	if (!achset) { return; }
 	rapidjson::Document doc;
 	doc.SetObject();
 
@@ -77,6 +76,7 @@ void SaveAchieveemntsToJson() {
 }
 
 void LoadAchievementsFromJson() {
+	if (!achset) { return; }
 	InitAchievs();
 	rapidjson::Document doc = GetJsonDoc(&achivjsonpath);
 	if (!doc.IsObject()) {
@@ -214,13 +214,12 @@ HOOK_METHOD(Manager, SetSaveSlot, (unsigned int slot) -> void) {
 	if (slot > 0) { saveslot = slot; }
 	achivjsonpath = std::string(REPENTOGON::GetRepentogonDataPath());
 	achivjsonpath.append("achievements").append(to_string(saveslot)).append(".json");
-
+	achset = true;
 	LoadAchievementsFromJson();
 }
 
 bool LockAchievement(int achievementid) {
-	if (!achdebugmode && !sourceswithachievset) { achdebugmode = true; }
-	if (achdebugmode) { return false; }
+	if (!achset) { return false; }
 	if (achievementid < 638) {
 		PersistentGameData* ps = g_Manager->GetPersistentGameData();
 		bool had = ps->achievements[achievementid];
@@ -537,9 +536,9 @@ HOOK_METHOD(Menu_Stats, Update, () -> void) {
 	if (this->_isAchievementScreenVisible && g_Manager->GetOptions()->ModsEnabled()) {
 		SetUpReverseSourcesVec();
 		
-		if (g_InputManagerBase.IsActionTriggered(22, -1, 0)) {
+		if (g_InputManagerBase.IsActionTriggered(22, g_MenuManager->_controllerIndex, 0)) {
 			ChangeCurrentSecrets(1);
-		}else if (g_InputManagerBase.IsActionTriggered(23, -1, 0)) {
+		}else if (g_InputManagerBase.IsActionTriggered(23, g_MenuManager->_controllerIndex, 0)) {
 			ChangeCurrentSecrets(-1);
 		}
 		Menu_Stats* menstats = g_MenuManager->GetMenuStats();
