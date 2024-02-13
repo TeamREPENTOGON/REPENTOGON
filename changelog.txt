@@ -1,3 +1,14 @@
+v1.0.x -
+Additions:
+* Minimap :
+	- GetState
+	- GetHoldTime
+	- GetItemIconsSprite
+	- GetIconsSprite
+	- [Get/Set]ShakeDuration
+	- [Get/Set]ShakeOffset
+/newline/
+/newline/
 v1.0.6 -
 Additions:
 * Weapon :
@@ -16,6 +27,7 @@ Additions:
 	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior
 * EntityPlayer:
 	- Get/SetGnawedLeafTimer
+	- ClearQueueItem
 * Level:
 	- Started work on Level:Get/SetForceSpecialQuest
 		- Allows forcing the Mirror or Mineshaft quest to be enabled or disabled
