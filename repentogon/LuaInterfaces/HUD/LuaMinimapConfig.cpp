@@ -103,7 +103,7 @@ LUA_FUNCTION(Lua_MinimapConfigSetIconNum) {
 }
 
 static void RegisterMinimapConfig(lua_State* L) {
-	lua::RegisterGlobalClassFunction(L, "Minimap", "GetConfig", Lua_MinimapGetConfig);
+	//lua::RegisterGlobalClassFunction(L, "Minimap", "GetConfig", Lua_MinimapGetConfig);
 
 	luaL_Reg functions[] = {
 		{ "GetSprite", Lua_MinimapConfigGetSprite },
