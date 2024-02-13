@@ -1,3 +1,7 @@
+v1.0.6b -
+Fixes:
+* Fixed an issue that caused gamepad to be calling undo mods when going down on the mods menu
+* Fixed an issue that made search and undo mods not work if you didnt restart your machine for 24 days (blame microsoft)
 v1.0.6a -
 Additions:
 * Minimap :
