@@ -78,6 +78,10 @@ void PerformASMPatches() {
 	ASMPatchTrySplit();
 	ASMPatchInputAction();
 	ASMPatchPostNightmareSceneCallback();
+	ASMPatchPrePickupVoided();
+	ASMPatchPrePickupVoidedBlackRune();
+	ASMPatchPrePickupVoidedAbyss();
+	ASMPatchPrePickupComposted();
 
 	// Delirium
 	delirium::AddTransformationCallback();
@@ -116,4 +120,5 @@ void PerformASMPatches() {
 	// External
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
+	HookImGui();
 }

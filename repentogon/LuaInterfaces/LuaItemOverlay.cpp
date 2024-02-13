@@ -79,8 +79,8 @@ static void RegisterItemOverlay(lua_State* L) {
 	lua::TableAssoc(L, "GetOverlayID", Lua_ItemOverlayGetOverlayID );
 		lua::TableAssoc(L, "Show", Lua_ItemOverlayShow );
 		lua::TableAssoc(L, "GetSprite", Lua_ItemOverlayGetSprite );
-		//{ "GetDelay", Lua_ItemOverlayGetDelay );
-		//{ "GetPlayer", Lua_ItemOverlayGetPlayer );
+		lua::TableAssoc(L, "GetDelay", Lua_ItemOverlayGetDelay);
+		lua::TableAssoc(L, "GetPlayer", Lua_ItemOverlayGetPlayer);
 			lua::TableAssoc(L, "GetMegaMushPlayerSprite", Lua_ItemOverlayGetMegaMushPlayerSprite );
 
 			lua_setglobal(L, "ItemOverlay");

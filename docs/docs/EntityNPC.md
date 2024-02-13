@@ -31,6 +31,11 @@ ___
 Same as [FireProjectiles](EntityNPC.md#fireprojectiles), but returns a table containing the list of spawned projectiles.
 
 ___
+### GetBossColorIdx () {: aria-label='Functions' }
+#### int GetBossColorIdx ( ) {: .copyable aria-label='Functions' }
+Returns the returns the bosscoloridx(which is usually just the subtype) or -1 if its not a bosscolor (or bosscolor doesnt apply).
+
+___
 ### GetControllerId () {: aria-label='Functions' }
 #### int GetControllerId ( ) {: .copyable aria-label='Functions' }
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return `-1` when not being controlled by any player.
@@ -51,7 +56,7 @@ ___
 ___
 ### SetControllerId () {: aria-label='Functions' }
 #### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
-Sets the ControllerId for the NPC, which indicates which player will control it. Set it to `-1` for no player controls(back to normal behaviour).
+Sets the ControllerId for the NPC, which indicates which player will control it. Set it to `-1` for no player controls (back to normal behaviour).
 
 ___
 ### SetShieldStrength () {: aria-label='Functions' }
@@ -100,7 +105,7 @@ ___
 ___
 ### UpdateDirtColor () {: aria-label='Functions' }
 #### void UpdateDirtColor ( boolean Immediate ) {: .copyable aria-label='Functions' }
-Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this reagard.
+Instructs the entity to update its dirt color. This is generally done automatically on vanilla entities, but up until now, modded ones have been quite limited in this regard.
 
 If `Immediate` is set, the dirt color will be set to exactly what is beneath the entity. Otherwise, it will be updated smoothly over the course of multiple frames.
 

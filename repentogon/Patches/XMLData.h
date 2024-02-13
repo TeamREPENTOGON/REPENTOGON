@@ -102,6 +102,7 @@ class XMLDataHolder {
 public:
 	XMLNodes nodes;
 	XMLKinder childs;
+	unordered_map<string, int> childbyname;
 	XMLNodeIdxLookup byname;
 	XMLNodeIdxLookup bynamemod;
 	XMLNodeIdxLookupMultiple bymod;
@@ -159,6 +160,34 @@ public:
 		return this->GetNodeById(iter->second);
 	}
 
+	XMLChilds GetChildsById(int name) {
+		auto iter = this->childs.find(name);
+		if (iter == this->childs.end()) { return XMLChilds(); }
+		return iter->second;
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByName(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byname[name]];
+		}
+		else {Childs = XMLChilds();}
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsById(int name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeById(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[name];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
 	void ProcessChilds(xml_node<char>* parentnode, int id) {
 		ProcessChilds(parentnode, id, "");
 	}
@@ -175,6 +204,9 @@ public:
 				child["sourceid"] = lastmodid;
 			}
 			this->childs[id][stringlower(auxnodebabe->name())].push_back(child);
+			if (child.find("name") != child.end()) { //this wont be used too much but it's needed for some cases
+				this->childbyname[child["name"]] = this->childs[id][stringlower(auxnodebabe->name())].size();
+			}
 		}
 	}
 
@@ -305,7 +337,8 @@ class XMLLocustColor : public XMLDataHolder {
 };
 
 class XMLItem : public XMLDataHolder {
-	
+public:
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLItemPools : public XMLDataHolder {
@@ -356,6 +389,11 @@ class XMLChallenge : public XMLDataHolder {
 
 };
 
+class XMLBossColor : public XMLDataHolder {
+public:
+	unordered_map<tuple<int,int>, int> bytypevar;	
+};
+
 class XMLCurse : public XMLDataHolder {
 public:
 	XMLCurse(int m) {
@@ -382,16 +420,19 @@ public:
 class XMLTrinket : public XMLDataHolder {
 public:
 	unordered_map<string, int> bypickup;
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLCard : public XMLDataHolder {
 public:
 	unordered_map<string, int> bypickup;
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLPill : public XMLDataHolder {
 public:
 	unordered_map<string, int> bypickup;
+	vector<XMLAttributes> customachievitems;
 };
 
 class XMLStage : public XMLDataHolder {
@@ -447,6 +488,35 @@ public:
 		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
 		return this->GetNodeById(iter->second);
 	}
+
+	XMLChilds GetChildsById(const tuple<int, int, int>& name) {
+		auto iter = this->childs.find(name);
+		if (iter == this->childs.end()) { return XMLChilds(); }
+		return iter->second;
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByName(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byname[name]];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsById(const tuple<int, int, int>& name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeById(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[name];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
 	//XMLAttributes GetNodesByMod(const string &name) { //not set up for now (unused anyway)
 		//auto iter = this->bymod.find(name);
 		//if (iter == this->bymod.end()) { return XMLAttributes(); }
@@ -544,6 +614,7 @@ struct XMLData {
 	XMLGeneric* GiantBookData = new XMLGeneric(46);
 	XMLGeneric* BossRushData = new XMLGeneric(0);
 	XMLGeneric* PlayerFormData = new XMLGeneric(14);
+	XMLBossColor* BossColorData = new XMLBossColor();
 
 	XMLMod* ModData = new XMLMod();
 
@@ -647,6 +718,7 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["giantbook"] = 22;
 	xmlnodeenum["bossrush"] = 23;
 	xmlnodeenum["playerforms"] = 24;
+	xmlnodeenum["bosscolors"] = 25;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 
@@ -660,9 +732,10 @@ inline void initxmlmaxnodeenum() {
 
 extern unordered_map<string, int> xmlfullmerge;
 inline void initxmlfullmergelist() {
-
+	xmlfullmerge["bosscolors.xml"] = 1;
 }
 
+extern XMLDataHolder* xmlnodetypetodata[32];
 extern XMLData XMLStuff;
 
 #endif

@@ -14,6 +14,7 @@ struct ModEntry {
 	inline char* GetId() { return (char*)(this + 144); } //these last 2 are consistent (this is the one I needed anyway)
 	
 	inline bool IsEnabled() { return *(bool*)((char*)this + 0xFC); }
+	inline void SetEnabled(bool  x) { *(bool*)((char*)this + 0xFC) = x; }
 
 	inline ANM2* GetDeathEnemiesAnm2() { return (ANM2*)((char*)this + 0xDF0); }
 	

@@ -23,9 +23,15 @@ ___
 ### CanPickupGridEntity () {: aria-label='Functions' }
 #### boolean CanPickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
 Returns true if the gridentity at the given position can be picked up.
+
 ___
 ### CanSpawnObstacleAtPosition () {: aria-label='Functions' }
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
+
+___
+### DoLightningStrike () {: aria-label='Functions' }
+#### void DoLightningStrike ( int Seed = RandomSeed ) {: .copyable aria-label='Functions' }
+Creates a lightning effect as seen in Downpour. `Seed` determines [intensity](Room.md#getlightningintensity) (`1.3 + RandomFloat()*.6`) and sound pitch (`0.9 + RandomFloat()*0.2`).
 
 ___
 ### GetBackdrop () {: aria-label='Functions' }
@@ -124,6 +130,7 @@ ___
 ___
 ### PickupGridEntity () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) PickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
+Tries to pick up the grid entity at the provided index and returns an [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) of the picked up grid entity.
 
 ___
 ### RemoveGridEntityImmediate () {: aria-label='Functions' }

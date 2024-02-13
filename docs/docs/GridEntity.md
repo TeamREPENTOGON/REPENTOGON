@@ -154,5 +154,6 @@ ___
 ___
 ### UpdateNeighbors () {: aria-label='Functions' }
 #### void UpdateNeighbors ( ) {: .copyable aria-label='Functions' }
+Updates the GridEntity's neighbors.
 
 ___

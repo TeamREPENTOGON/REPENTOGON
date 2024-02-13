@@ -332,12 +332,14 @@ nav:
   - XMLData: XMLData.md
   - achievements.xml: xml/achievements.md
   - ambush.xml: xml/ambush.md
+  - bosscolors.xml: xml/bosscolors.md
   - costumes.xml: xml/costumes.md
   - cutscenes.xml: xml/cutscenes.md
   - challenges.xml: xml/challenges.md
   - entities2.xml: xml/entities.md
   - giantbook.xml: xml/giantbook.md
   - items.xml: xml/items.md
+  - pocketitems.xml: xml/pocketitems.md
   - players.xml: xml/players.md
 # - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md

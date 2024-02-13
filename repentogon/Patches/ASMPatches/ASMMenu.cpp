@@ -3,21 +3,21 @@
 
 #include "../ModReloading.h"
 
-// Render mod names with a smaller font
+// Skip Render Names entirely 
 void PatchModMenu_Font(const char* sig) {
 	SigScan scanner(sig);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	printf("[REPENTOGON] Patching Menu_Mods::Render() for a smaller font at %p \n", addr);
+	printf("[REPENTOGON] Patching Menu_Mods::Render() to skip font rendering at %p \n", addr);
 
 	ASMPatch patch;
-	patch.AddBytes("\x8D\x89\x14\xA5\x10").AddZeroes(1);
+	patch.AddRelativeJump((char*)addr + 5);
 	sASMPatcher.FlatPatch(addr, &patch);
 }
 
 void ASMPatchModsMenu() {
-	PatchModMenu_Font("8d89????????f30f1140");
-	PatchModMenu_Font("8d89????????f30f1100");
+	PatchModMenu_Font("e8????????393b");
+	PatchModMenu_Font("e8????????8b95????????8bfb");
 }
 void ASMPatchMenuOptionsLanguageChange() {
 	// before lua reset in MenuOptions::Update

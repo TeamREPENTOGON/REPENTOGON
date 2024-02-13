@@ -22,7 +22,7 @@ ___
 ___
 ### GetWeapon () {: aria-label='Functions' }
 #### [Weapon](Weapon.md) GetWeapon ( ) {: .copyable aria-label='Functions' }
-Returns nil for familiars that don't mimic the player's attacks (Incubus, etc).
+Returns `nil` for familiars that don't mimic the player's attacks (Incubus, etc).
 
 ___
 ### TriggerRoomClear () {: aria-label='Functions' }

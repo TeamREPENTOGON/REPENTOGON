@@ -100,6 +100,13 @@ float lerp(float a, float b, float t)
 	return a + t * (b - a);
 }
 
+/*
+HOOK_METHOD(Manager, StartNewGame, (int playerType, int challenge, Seeds unk, int difficulty) -> void) {
+	super(playerType, challenge, unk, difficulty);
+
+}
+*/
+
 HOOK_METHOD(Menu_Challenge, Render, () -> void) {
 	LayerState* frame = this->ChallengeMenuSprite.GetLayer(26);
 	LayerState* frame2 = this->ChallengeMenuSprite.GetLayer(27);

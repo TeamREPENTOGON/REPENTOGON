@@ -27,6 +27,8 @@ using namespace std;
 extern XMLData XMLStuff;
 extern std::bitset<500> CallbackState;
 
+bool debugmode = false;
+
 unordered_map <int, int> CompletionTypeRender;
 bool initializedrendercmpl = false;
 void InitMarkRenderTypes() {
@@ -633,6 +635,8 @@ unordered_map<string, std::array<int, 15> > CompletionMarks;
 string jsonpath;
 
 void SaveCompletionMarksToJson() {
+	if (!debugmode && !initializedrendercmpl) { debugmode = true; }
+	if (debugmode) { return ; }
 	rapidjson::Document doc;
 	doc.SetObject();
 
@@ -662,7 +666,7 @@ void LoadCompletionMarksFromJson() {
 
 
 bool PreMarksCallbackTrigger(int markid, int playertpe) {
-	int callbackid = 1047;
+	const int callbackid = 1047;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -686,7 +690,7 @@ bool PreMarksCallbackTrigger(int markid, int playertpe) {
 	return true;
 }
 void PostMarksCallbackTrigger(int markid, int playertpe) {
-	int callbackid = 1048;
+	const int callbackid = 1048;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -755,7 +759,7 @@ string GetMarksIdx(int playerid) {
 
 array<int, 15> GetMarksForPlayer(int playerid, ANM2* anm = NULL,bool forrender = false) {
 	array<int, 15> marks;
-	if (XMLStuff.PlayerData->nodes.count(playerid) > 0) {
+	if ((XMLStuff.PlayerData->nodes.count(playerid) > 0) || debugmode) {
 		XMLAttributes playerdata = GetPlayerDataForMarks(playerid);
 		string idx = GetMarksIdx(playerid);
 		if (forrender) {
@@ -904,7 +908,7 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 		super();
 		postponepromptrender = false;
 
-		NullFrame* nul = this->GetANM2()->GetNullFrame("CompletionWidget");
+		NullFrame* nul = this->mainsprite.GetNullFrame("CompletionWidget");
 		Vector* widgtpos = nul->GetPos();
 		Vector* widgtscale = nul->GetScale();
 		CompletionWidget* cmpl = this->GetCompletionWidget();
@@ -955,6 +959,8 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 array<int, 12> actualmarks = { CompletionType::MOMS_HEART,CompletionType::SATAN,CompletionType::MEGA_SATAN,CompletionType::HUSH,CompletionType::ISAAC,CompletionType::BLUE_BABY,CompletionType::MOTHER,CompletionType::DELIRIUM,CompletionType::BEAST,CompletionType::ULTRA_GREED,CompletionType::BOSS_RUSH,CompletionType::LAMB };
 LUA_FUNCTION(Lua_IsaacSetCharacterMarks)
 {
+	if (!debugmode && !initializedrendercmpl) { debugmode = true; }
+	if (debugmode) { return 0; }
 	int playertype = 0;
 	int length = 0;
 	array<int, 15> marks = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
@@ -1027,6 +1033,8 @@ LUA_FUNCTION(Lua_IsaacSetCharacterMarks)
 
 LUA_FUNCTION(Lua_IsaacGetCharacterMark)
 {
+	if (!debugmode && !initializedrendercmpl) { debugmode = true; }
+	if (debugmode) { lua_pushnumber(L, 2); return 0; }
 	int completiontype = (int)luaL_checkinteger(L, 2);
 	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
@@ -1042,6 +1050,8 @@ LUA_FUNCTION(Lua_IsaacGetCharacterMark)
 
 LUA_FUNCTION(Lua_IsaacClearCompletionMarks)
 {
+	if (!debugmode && !initializedrendercmpl) { debugmode = true; }
+	if (debugmode) { return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	if (playertype > 40) {
 		string idx = GetMarksIdx(playertype);
@@ -1062,6 +1072,8 @@ LUA_FUNCTION(Lua_IsaacClearCompletionMarks)
 
 LUA_FUNCTION(Lua_IsaacFillCompletionMarks)
 {
+	if (!debugmode && !initializedrendercmpl) { debugmode = true; }
+	if (debugmode) { lua_pushnumber(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
 	if (playertype > 40) {
@@ -1097,6 +1109,8 @@ array<int, 6> tquartet = { CompletionType::ISAAC,CompletionType::SATAN,Completio
 array<int, 6> tboth = { CompletionType::ISAAC,CompletionType::SATAN,CompletionType::LAMB,CompletionType::BLUE_BABY,CompletionType::HUSH,CompletionType::BOSS_RUSH };
 LUA_FUNCTION(Lua_IsaacGetTaintedFullCompletion)
 {
+	if (!debugmode && !initializedrendercmpl) { debugmode = true; }
+	if (debugmode) { lua_pushnumber(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int group = (int)luaL_checkinteger(L, 2);
 	array g = tboth;
@@ -1130,6 +1144,8 @@ LUA_FUNCTION(Lua_IsaacGetTaintedFullCompletion)
 
 LUA_FUNCTION(Lua_IsaacGetFullCompletion)
 {
+	if (!debugmode && !initializedrendercmpl) { debugmode = true; }
+	if (debugmode) { lua_pushnumber(L, 2); return 0; }
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int cmpldif = 2;
 	if (playertype > 40) {
@@ -1158,6 +1174,8 @@ LUA_FUNCTION(Lua_IsaacGetFullCompletion)
 
 LUA_FUNCTION(Lua_IsaacSetCharacterMark)
 {
+	if (!debugmode && !initializedrendercmpl) { debugmode = true; }
+	if (debugmode) {  return 0; }
 	int completiontype = (int)luaL_checkinteger(L, 2);
 	int playertype = (int)luaL_checkinteger(L, 1);
 	int value = (int)luaL_checkinteger(L, 3);

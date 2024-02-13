@@ -12,6 +12,7 @@ tags:
 ___
 ### GetDimension () {: aria-label='Functions' }
 #### [Dimension](enums/Dimension.md) GetDimension ( ) {: .copyable aria-label='Functions' }
+Get's the current [Dimension](enums/Dimension.md) the player is in.
 
 ___
 ### GetForceSpecialQuest () {: aria-label='Functions' }
@@ -38,6 +39,7 @@ Returns `true` if the floor has the photo door used to enter Mausoleum/Gehenna l
 ___
 ### IsStageAvailable () {: aria-label='Functions' }
 #### void IsStageAvailable ( [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html) Level, [StageType](https://wofsauge.github.io/IsaacDocs/rep/enums/StageType.html) Stage ) {: .copyable aria-label='Functions' }
+Returns `true` if the provided `Level` and `Stage` combination is available to be generated in any given run. Returns `false` if locked behind an achievement.
 
 ___
 ### PlaceRoom () {: aria-label='Functions' }

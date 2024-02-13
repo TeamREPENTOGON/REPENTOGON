@@ -2140,7 +2140,7 @@ void __stdcall LuaPreDrawElements(KAGE_Graphics_RenderDescriptor* descriptor, GL
 		throw std::runtime_error("Bad.");
 	}
 
-	int callbackId = 1136;
+	const int callbackId = 1136;
 	if (CallbackState.test(callbackId - 1000) && __ptr_g_KAGE_Graphics_Manager->currentRenderTarget != 0) {
 		GL::InitProjectionMatrix();
 

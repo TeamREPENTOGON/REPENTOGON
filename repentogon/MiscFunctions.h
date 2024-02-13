@@ -44,6 +44,13 @@ namespace REPENTOGON {
 		ChangeWindowTitle(newText);
 	}
 
+	static std::string GetRGONGfxAbsolutePath(const char* relpath) {
+		char buffer[MAX_PATH];
+		DWORD length = GetCurrentDirectoryA(MAX_PATH, buffer);
+		std::string base = std::string(buffer);
+		return base + "/resources-repentogon/" + std::string(relpath);
+	}
+
 	static const char* GetRepentogonDataPath() {
 		if (!CreateDirectory(optionsPath.c_str(), NULL)) {
 			if (GetLastError() != ERROR_ALREADY_EXISTS) {

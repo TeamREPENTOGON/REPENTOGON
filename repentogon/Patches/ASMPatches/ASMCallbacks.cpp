@@ -86,7 +86,7 @@ void PatchPreLaserCollision() {
 * We need to patch into both Entity::TakeDamage AND EntityPlayer::TakeDamage.
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
-	int callbackid = 1007;
+	const int callbackid = 1007;
 	if (CallbackState.test(callbackid - 1000)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
 		// As pointers so we can modify them :)
@@ -248,7 +248,7 @@ void PatchPreEntityTakeDamageCallbacks() {
 */
 
 void __stdcall ProcessPostDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
-	int callbackid = 1006;
+	const int callbackid = 1006;
 	if (CallbackState.test(callbackid - 1000)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
 		unsigned __int64 damageFlags = *(unsigned __int64*)(ebp + 0x0C);
@@ -326,7 +326,7 @@ void PatchPostEntityTakeDamageCallbacks() {
 
 // MC_PRE_PLAYER_USE_BOMB
 bool __stdcall ProcessPrePlayerUseBombCallback(Entity_Player* player) {
-	int callbackid = 1220;
+	const int callbackid = 1220;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -364,7 +364,7 @@ void ASMPatchPrePlayerUseBomb() {
 
 // MC_POST_PLAYER_USE_BOMB
 void __stdcall ProcessPostPlayerUseBombCallback(Entity_Player* player, Entity_Bomb* bomb) {
-	int callbackid = 1221;
+	const int callbackid = 1221;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -396,7 +396,7 @@ void ASMPatchPostPlayerUseBomb() {
 
 // MC_PRE_M_MORPH_ACTIVE
 int __stdcall RunPreMMorphActiveCallback(Entity_Player* player, int collectibleId) {
-	int callbackId = 1190;
+	const int callbackId = 1190;
 	if (CallbackState.test(callbackId - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -453,7 +453,7 @@ void __stdcall TrySplitTrampoline(Entity_NPC* npc, bool result) {
 	resSplit = result;
 
 	if (npc != nullptr) {
-		int callbackid = 1191;
+		const int callbackid = 1191;
 
 		if (CallbackState.test(callbackid - 1000)) {
 			lua_State* L = g_LuaEngine->_state;
@@ -566,5 +566,190 @@ void ASMPatchPostNightmareSceneCallback() {
 		.RestoreRegisters(savedRegisters)
 		.AddBytes(ByteBuffer().AddAny((char*)addr, 8))  // Restore the commands we overwrote
 		.AddRelativeJump((char*)addr + 8);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void __stdcall RunPrePickupVoided(std::vector<Entity_Pickup*>* voidedItems, Entity_Pickup** pPickup) {
+	Entity_Pickup* pickup = *pPickup;
+	const int callbackid = 1265;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*pickup->GetVariant())
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.push(false)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+
+	voidedItems->push_back(pickup);
+}
+
+void ASMPatchPrePickupVoided() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan scanner("e8????????8bcf46e8????????3bf00f82????????8bbd78faffff33c9");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX) // push the pickup
+		.Push(ASMPatch::Registers::ECX) // push the vector
+		.AddInternalCall(RunPrePickupVoided)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes("\x83\xC4\x04") // add esp, 4
+		.AddRelativeJump((char*)addr + 5); 
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+bool __stdcall RunPrePickupVoidedBlackRune(Entity_Pickup* pickup) {
+	const int callbackid = 1265;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*pickup->GetVariant())
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.push(true)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return true;
+}
+
+// this is so repetitive, might restructure it later
+void ASMPatchPrePickupVoidedBlackRune() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan scanner("e8????????83f8640f85????????8bcee8????????85c00f84????????8bcee8????????85c00f8f????????8d8768140000c6859bfdffff01");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::UseCard at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX) // push the pickup
+		.AddInternalCall(RunPrePickupVoidedBlackRune)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x14c) // jump for false
+		.AddInternalCall(((char*)addr + 0x5) + *(ptrdiff_t*)((char*)addr + 0x1)) // restore the commands we overwrote (god this is ugly)
+		.AddRelativeJump((char*)addr + 0x5);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+bool __stdcall RunPrePickupVoidedAbyss(Entity_Pickup* pickup) {
+	const int callbackid = 1266;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*pickup->GetVariant())
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return true;
+}
+
+void ASMPatchPrePickupVoidedAbyss() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan scanner("50e8????????508bcfe8????????8bd08bcee8????????83c4048bcf6a04e8????????8bcfe8????????c68553faffff01");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX) // push the pickup
+		.AddInternalCall(RunPrePickupVoidedAbyss)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x31) // jump for false
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x1)) // restore push eax
+		.AddInternalCall(((char*)addr + 0x6) + *(ptrdiff_t*)((char*)addr + 0x2)) // restore the function call
+		.AddRelativeJump((char*)addr + 0x6);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+bool __stdcall RunPrePickupComposted(Entity_Pickup* pickup) {
+	const int callbackid = 1267;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(*pickup->GetVariant())
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return true;
+}
+
+void ASMPatchPrePickupComposted() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan scanner("8b4028ffd0ff8570faffff8d8e981600006a0268e0010000e8????????8bc8e8????????8bcf85c075168d8538f3ffff50e8????????508bce");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Player::UseActiveItem at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ECX) // push the pickup
+		.AddInternalCall(RunPrePickupComposted)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x58) // jump for false
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5)) // restore mov eax, dword[eax + 0x28]
+		.AddRelativeJump((char*)addr + 0x5);
+
 	sASMPatcher.PatchAt(addr, &patch);
 }

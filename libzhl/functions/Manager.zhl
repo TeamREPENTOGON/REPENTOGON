@@ -37,7 +37,7 @@ __stdcall void Manager::RestartGame() //v1.7.9b maybe
 __thiscall ChallengeParam* Manager::GetChallengeParams(int challengeID);
 
 "558BEC6AFF68????????64a1000000005083EC60A1????????33C58945F05650":
-__thiscall void Manager::StartNewGame(int playerType, int challenge,  UnknownGameStartStruct unk, int difficulty);
+__thiscall void Manager::StartNewGame(int playerType, int challenge,  Seeds unk, int difficulty);
 
 "558bec51568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(bool unk);
@@ -98,6 +98,7 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	ItemConfig _itemConfig : 0x29e84;
 	EntityConfig _entityConfig : 0x29f88;
 	ANM2 _cursorSprite : 0x1ea840;
+	ANM2 _buttonsSprite : 0x4a284;
 	Font _font7_TeamMeat_10 : 0x10a514;
 	Font _font8_TeamMeat_12 : 0x12a550;	
 } : 0x20a9d8;
