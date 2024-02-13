@@ -807,6 +807,7 @@ namespace lua {
 		const char* WeightedOutcomePickerMT = "WeightedOutcomePicker";
 		const char* CostumeSpriteDescMT = "CostumeSpriteDesc";
 		const char* RailManagerMT = "RailManager";
+		const char* MinimapConfigMT = "MinimapConfig";
 	}
 
 	void TableAssoc(lua_State* L, std::string const& name, int value) {
