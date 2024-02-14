@@ -1,4 +1,6 @@
 version: 1.0.{build}
+only_commits:
+  message: chore: release
 image: Visual Studio 2022
 build_script:
 - ps: >-
