@@ -29,8 +29,18 @@ LUA_FUNCTION(Lua_PickupSetForceBlind) {
 
 LUA_FUNCTION(Lua_PickupIsBlind) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	bool checkForcedBlindOnly = lua::luaL_optboolean(L, 2, false);
 
-	bool isBlind = pickup->IsBlind() || !pickup->_sprite._layerState[1]._spriteSheetPath.compare("gfx/Items/Collectibles/questionmark.png");
+	bool isBlind = false;
+	if (pickup->_variant == 100) {
+		if (checkForcedBlindOnly) {
+			isBlind = pickup->IsBlind();
+		}
+		else if (pickup->IsBlind() || !pickup->_sprite._layerState[1]._spriteSheetPath.compare("gfx/Items/Collectibles/questionmark.png")) {
+			isBlind = true;
+		}
+	}
+	
 
 	lua_pushboolean(L, isBlind);
 	return 1;

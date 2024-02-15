@@ -5,7 +5,7 @@ Additions:
 /newline/
 Modified:
 * Pickup :
-	- Pickup:IsBlind method now checks natural blind effect
+	- Pickup:IsBlind method now checks natural blind effect (also added "CheckForcedBlindOnly" optional argument)
 /newline/
 /newline/
 v1.0.6b -
