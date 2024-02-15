@@ -126,7 +126,7 @@ LUA_FUNCTION(Lua_AnyoneHasTrinket)
 LUA_FUNCTION(Lua_GetPlayers) {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 
-	std::vector<Entity_Player*> players = playerManager->_playerList;
+	std::vector<Entity_Player*>& players = playerManager->_playerList;
 
 	lua_newtable(L);
 
