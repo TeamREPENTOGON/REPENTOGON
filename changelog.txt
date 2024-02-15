@@ -1,3 +1,9 @@
+v1.0.x -
+Additions:
+* Familiar :
+	- RemoveFromPlayer
+/newline/
+/newline/
 v1.0.6b -
 Fixes:
 * Fixed an issue that caused gamepad to be calling undo mods when going down on the mods menu
