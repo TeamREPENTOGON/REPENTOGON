@@ -3,6 +3,10 @@ Additions:
 * Familiar :
 	- RemoveFromPlayer
 /newline/
+Modified:
+* Pickup :
+	- Pickup:IsBlind method now checks natural blind effect
+/newline/
 /newline/
 v1.0.6b -
 Fixes:
