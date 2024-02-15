@@ -91,6 +91,10 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 
 	ANM2 _priceANM2 : 0x360 ;
 	unsigned int _cycleCollectibleList[8] : 0x4ec;
+	Entity_Effect* _pickupGhost : 0x4dc;
 	unsigned int _cycleCollectibleCount : 0x50c;
 	
 } : 0x638;
+
+"e8????????6a0068(????????)68????????6a00":
+reference void* EntityPickupRTTI;
