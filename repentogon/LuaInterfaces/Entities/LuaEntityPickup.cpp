@@ -29,7 +29,7 @@ LUA_FUNCTION(Lua_PickupSetForceBlind) {
 
 LUA_FUNCTION(Lua_PickupIsBlind) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	bool checkForcedBlindOnly = lua::luaL_optboolean(L, 2, false);
+	bool checkForcedBlindOnly = lua::luaL_optboolean(L, 2, true); // wish I implemented that method properly before...
 
 	bool isBlind = false;
 	if (pickup->_variant == 100) {
