@@ -60,6 +60,13 @@ LUA_FUNCTION(Lua_FamiliarGetDirtColor)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FamiliarRemoveFromPlayer)
+{
+	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	fam->RemoveFromPlayer(true);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -72,6 +79,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TriggerRoomClear", Lua_FamiliarTriggerRoomClear },
 		{ "UpdateDirtColor", Lua_FamiliarUpdateDirtColor },
 		{ "GetDirtColor", Lua_FamiliarGetDirtColor },
+		{ "RemoveFromPlayer", Lua_FamiliarRemoveFromPlayer },
 		{ NULL, NULL }
 	};
 
