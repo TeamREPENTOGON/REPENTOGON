@@ -555,6 +555,14 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
 	int _gnawedLeafTimer : 0x12c4;
 	float _damage : 0x13b8;
+	float _movespeed : 0x14ac;
+	float _luck : 0x14b0;
+	float _shotspeed : 0x13ac;
+	float _tearheight : 0x13bc;
+	float _tearfallspeed : 0x13c0;
+	float _tearfallaccel : 0x13c4;
+	float _tearrange : 0x13c8;
+	float _maxfiredelay : 0x13a8;
 	ColorMod _laserColor : 0x140c;
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
 	uint32_t _cacheFlags : 0x14b8;
@@ -574,6 +582,8 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	std_map_int_int _itemWispsList : 0x1e7c;
 	int _keepersSackBonus : 0x1eb4;
 	bool _isCoopGhost : 0x1f88;
+	bool _canShoot : 0x1745;
+	bool _canFly : 0x14b4;
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":
