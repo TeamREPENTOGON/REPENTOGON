@@ -131,17 +131,17 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 }
 
 HOOK_METHOD(Menu_Mods, Render, () -> void) {
-	LayerState* frame = this->ModsMenuSprite.GetLayer(13);
-	LayerState* frame2 = this->ModsMenuSprite.GetLayer(12);
-	LayerState* frame3 = this->ModsMenuSprite.GetLayer(11);
+	LayerState* frame_widgetprompt = this->ModsMenuSprite.GetLayer(13);
+	LayerState* frame_widgettext = this->ModsMenuSprite.GetLayer(12);
+	LayerState* frame_widgetbg = this->ModsMenuSprite.GetLayer(11);
 	LayerState* framemain = this->ModsMenuSprite.GetLayer(0);
-	frame->_visible = false;
-	frame2->_visible = false;
-	frame3->_visible = false;
+	frame_widgetprompt->_visible = false;
+	frame_widgettext->_visible = false;
+	frame_widgetbg->_visible = false;
 	super();
-	frame->_visible = true;
-	frame2->_visible = true;
-	frame3->_visible = true;
+	frame_widgetprompt->_visible = true;
+	frame_widgettext->_visible = true;
+	frame_widgetbg->_visible = true;
 	SetupEnabledStates();
 	Vector* ref = &g_MenuManager->_ViewPosition;
 	ref = new Vector(ref->x + 39, ref->y + 15);
@@ -169,6 +169,11 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	bool modsenabled = g_Manager->GetOptions()->ModsEnabled();
 	lastvalid = -1;
 	int currentTime = g_Manager->_framecount;
+
+	if (g_MenuManager->_selectedMenuID == 16) {				//i am a newbie so here's a question:
+		frame_widgettext->_cropOffset.y = 64*modsenabled;	//is it worth keeping the if check here? (perf question)
+	}
+
 	if (g_MenuManager->_selectedMenuID != 16) { issearching = false; }
 			if (issearching) {
 				if (modman->_mods.size() > minmods) { //no point in search when all your mods fit in 1 screen
@@ -327,9 +332,9 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		}
 		undopop->Render(undopos, &z, &z);
 		
-		//this->ModsMenuSprite.RenderLayer(11, &frame3->_pos, &z, &z); //cant get this ones to work :(
-		//this->ModsMenuSprite.RenderLayer(12, &frame2->_pos, &z, &z);
-		//this->ModsMenuSprite.RenderLayer(13, &frame->_pos, &z, &z);
+		//this->ModsMenuSprite.RenderLayer(11, &frame_widgetbg->_pos, &z, &z); //cant get this ones to work :(
+		//this->ModsMenuSprite.RenderLayer(12, &frame_widgettext->_pos, &z, &z);
+		//this->ModsMenuSprite.RenderLayer(13, &frame_widgetprompt->_pos, &z, &z);
 		for (int c = 0; c < 11; c++) { 
 			this->ModsMenuSprite.GetLayer(c)->_visible = false;
 		}

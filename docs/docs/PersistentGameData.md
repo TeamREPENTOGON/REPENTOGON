@@ -19,19 +19,19 @@ tags:
 ## Functions
 
 ### GetBestiaryDeathCount () {: aria-label='Functions' }
-#### void GetBestiaryDeathCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
+#### int GetBestiaryDeathCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetBestiaryEncounterCount () {: aria-label='Functions' }
-#### void GetBestiaryEncounterCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
+#### int GetBestiaryEncounterCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetBestiaryKillCount () {: aria-label='Functions' }
-#### void GetBestiaryKillCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
+#### int GetBestiaryKillCount ( int Type, int Variant ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetEventCounter () {: aria-label='Functions' }
-#### void GetEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter ) {: .copyable aria-label='Functions' }
+#### int GetEventCounter ( [EventCounter](enums/EventCounter.md) EventCounter ) {: .copyable aria-label='Functions' }
 
 ___
 ### IncreaseEventCounter () {: aria-label='Functions' }
