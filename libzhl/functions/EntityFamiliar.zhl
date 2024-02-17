@@ -35,6 +35,9 @@ __thiscall bool Entity_Familiar::CanBeDamagedByEnemy();
 "558bec83e4f88b41??83ec10":
 __thiscall bool Entity_Familiar::CanBlockProjectiles();
 
+"558bec83e4f883ec3ca1????????33c4894424??538bd95657895c24":
+__thiscall void Entity_Familiar::RemoveFromPlayer(bool UnusedRemoveFamiliar);
+
 
 struct Entity_Familiar depends (ColorMod) : public Entity {
 {{

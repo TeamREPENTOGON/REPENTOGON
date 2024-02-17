@@ -1,3 +1,13 @@
+v1.0.x -
+Additions:
+* Familiar :
+	- RemoveFromPlayer
+/newline/
+Modified:
+* Pickup :
+	- Pickup:IsBlind method now checks natural blind effect (also added "CheckForcedBlindOnly" optional argument)
+/newline/
+/newline/
 v1.0.6b -
 Fixes:
 * Fixed an issue that caused gamepad to be calling undo mods when going down on the mods menu
