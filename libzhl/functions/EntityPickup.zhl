@@ -37,11 +37,33 @@ static cleanup Vector * Entity_Pickup::GetRandomPickupVelocity(const Vector& buf
 "558bec83ec24a1????????33c58945??538bd9":
 __thiscall int Entity_Pickup::GetAlternatePedestal();
 
+"8379??1456":
+__thiscall void Entity_Pickup::AppearFast();
+
+"558bec518bc156":
+__thiscall void Entity_Pickup::PlayDropSound();
+
+"558bec83ec145356578bf98b47":
+__thiscall void Entity_Pickup::PlayPickupSound();
+
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ecd8000000a1":
+__thiscall bool Entity_Pickup::TryOpenChest(Entity_Player* player);
+
 struct Entity_Pickup depends (ANM2) : public Entity { {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
 	inline int* GetDropDelay() { return (int*)((char*)this + 0x4a0); }
 	inline int* GetVarData() { return (int*)((char*)this + 0x4e8); }
 }} 
+	int _charge : 0x474;
+	int _optionsPickupIndex : 0x478;
+	bool _touched : 0x47c;
+	bool _isBlind : 0x47e;
+	int _price : 0x480;
+	bool _autoUpdatePrice: 0x484;
+	int _shopItemId : 0x488;
+	int _timeout : 0x48c;
+	int _wait : 0x490;
+	int _state : 0x4d0;
 
 	__vtable {
 		skip; // Free

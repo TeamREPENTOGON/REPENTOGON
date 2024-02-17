@@ -142,6 +142,8 @@ pcall(require("EntityFamiliar"))
 pcall(require("EntityKnife"))
 pcall(require("ProjectileParams"))
 pcall(require("EntityNPC"))
+pcall(require("EntityPickup"))
+-- Entity_Player has a stub in EntityPickup
 pcall(require("MusicManager"))
 pcall(require("WeightedOutcomePicker"))
 pcall(require("NightmareScene"))
