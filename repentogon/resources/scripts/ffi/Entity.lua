@@ -394,6 +394,14 @@ function EntityFuncs:ToNPC()
 	return ffichecks.fixreturn(repentogon.L_Entity_ToNPC(self))
 end
 
+function EntityFuncs:ToPickup()
+	return ffichecks.fixreturn(repentogon.L_Entity_ToPickup(self))
+end
+
+function EntityFuncs:ToProjectile()
+	return ffichecks.fixreturn(repentogon.L_Entity_ToProjectile(self))
+end
+
 function EntityFuncs:Update()
 	repentogon.L_Entity_Update(self)
 end

@@ -1,7 +1,6 @@
 ffi.cdef[[
 typedef struct {
-    bool GridCollision;
-	char[3] _pad1;
+	int GridCollision;
 	float HeightModifier;
 	float FallingSpeedModifier;
 	float FallingAccelModifier;
@@ -24,11 +23,10 @@ typedef struct {
 	unsigned int ChangeTimeout;
 	float DepthOffset;
 	unsigned int Variant;
-	bool _unkFallSpeedAccelMod;
-	char[3] _pad2;
+	int _pad2;
 	float Damage;
 	void* _interpFunc;
-	void* _unk
+	void* _unk;
 } ProjectileParams;
 	
 	ProjectileParams* L_ProjectileParams_constructor(ProjectileParams*);

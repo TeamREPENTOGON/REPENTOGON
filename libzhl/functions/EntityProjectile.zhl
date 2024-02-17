@@ -1,11 +1,21 @@
-
-
-
-
 "558bec83e4f883ec08568bf1578b8e":
 __thiscall void Entity_Projectile::Reflect(Entity* unused, Vector* newVelocity);
 
 struct Entity_Projectile : public Entity {
+	float _height : 0x360;
+	float _fallingSpeed : 0x364;
+	float _fallingAccel : 0x368;
+	float _damage : 0x36c;
+	float _projectileScale : 0x370;
+	float _homingStrength : 0x374;
+	float _curvingStrength : 0x378;
+	float _accel : 0x37c;
+	unsigned long long _projectileFlags : 0x388;
+	int _wiggleFrameOffset : 0x394;
+	unsigned long long _changeFlags : 0x398;
+	float _changeVelocity : 0x3a0;
+	int _changeTimeout : 0x3a4;
+
 	__vtable {
 		skip; // Free
 		skip; // Init

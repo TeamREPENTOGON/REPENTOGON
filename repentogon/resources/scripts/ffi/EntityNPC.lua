@@ -1,4 +1,6 @@
 ffi.cdef[[
+	typedef struct {void *_;} NPCAI_Pathfinder;
+
 	void L_EntityNPC_AnimWalkFrame(Entity_NPC*, const char*, const char*);
 	Vector* L_EntityNPC_CalculateTargetPosition(Entity_NPC*, float);
 	bool L_EntityNPC_CanBeDamagedFromVelocity(Entity_NPC*, Vector*);
@@ -82,7 +84,7 @@ function EntityNPCFuncs:FireBossProjectiles(num, target, trajectoryMod, params)
 	ffichecks.checkcdata(target, "Vector")
 	ffichecks.checknumber(4, trajectoryMod)
 	ffichecks.checkcdata(params, "ProjectileParams")
-	return ffichecks.fixreturn(repentogon.L_EntityNPC_FireBossProjectiles(self, num, target, trajectoryMod, params)
+	return ffichecks.fixreturn(repentogon.L_EntityNPC_FireBossProjectiles(self, num, target, trajectoryMod, params))
 end
 
 function EntityNPCFuncs:FireProjectiles(pos, velocity, mode, params)

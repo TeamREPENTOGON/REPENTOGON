@@ -87,6 +87,14 @@ extern "C" {
 		pickup->_state = value;
 	}
 
+	int L_EntityPickup_GetTimeout(Entity_Pickup* pickup) {
+		return pickup->_state;
+	}
+
+	void L_EntityPickup_SetTimeout(Entity_Pickup* pickup, int value) {
+		pickup->_timeout = value;
+	}
+
 	bool L_EntityPickup_GetTouched(Entity_Pickup* pickup) {
 		return pickup->_touched;
 	}
