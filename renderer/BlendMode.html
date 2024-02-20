@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.9">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.10">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.f2e4d321.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e359304.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -6420,6 +6420,7 @@
 
 
 <h1 id="class-blendmode">Class "BlendMode"<a class="headerlink" href="#class-blendmode" title="Permanent link">⚓︎</a></h1>
+<p>Determines how an image (either a <a href="../Sprite.html">Sprite</a> as a whole or one of its <a href="../LayerState.html">LayerStates</a>)should blend with the elements rendered behind it. Used by <a href="https://wofsauge.github.io/IsaacDocs/rep/xml/fxlayers.html?h=blendMode">fxlayers.xml</a> and various effects for multiplicative blending, but potentially has other uses. </p>
 <details class="info" open="open">
 <summary>Info</summary>
 <p>You can get this class by using the following functions:</p>
@@ -6439,24 +6440,28 @@
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="setmode">SetMode ()<a class="headerlink" href="#setmode" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setmode-int-mode">void SetMode ( int mode )<a class="headerlink" href="#void-setmode-int-mode" title="Permanent link">⚓︎</a></h4>
-<p>Ranges from 0-2. Invalid modes are ignored. The game generally uses <code>1</code>, but uses <code>2</code> for multiplicative blending.</p>
+<p>Ranges from 0-2. Invalid modes are ignored. The game uses <code>1</code> as a default value, <code>0</code> for the blue base of the Planetarium backdrop, and <code>2</code> for multiplicative blending (Planetarium backdrop starfield layers, <code>8bitclouds_utero</code> backdrop layer, Beast death spotlight, and various other misc effects.</p>
 <details class="info" open="open">
 <summary>Info</summary>
-<p>TODO: The game manually sets blend modes other than what's provided here. Document and add to this function.</p>
+<p>TODO: The game manually sets blend modes other than what's provided here. Find them again, then document and add to this function.</p>
 </details>
 <hr />
 <h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Variables" id="flag1">Flag1<a class="headerlink" href="#flag1" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="int-flag1">int Flag1<a class="headerlink" href="#int-flag1" title="Permanent link">⚓︎</a></h4>
+<p>Used for alpha blending. In most cases this is <code>1</code>.</p>
 <hr />
 <h3 aria-label="Variables" id="flag2">Flag2<a class="headerlink" href="#flag2" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="int-flag2">int Flag2<a class="headerlink" href="#int-flag2" title="Permanent link">⚓︎</a></h4>
+<p><code>0</code> in "Mode 0", <code>7</code> in "Mode 1", and <code>1</code> in "Mode 2".</p>
 <hr />
 <h3 aria-label="Variables" id="flag3">Flag3<a class="headerlink" href="#flag3" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="int-flag3">int Flag3<a class="headerlink" href="#int-flag3" title="Permanent link">⚓︎</a></h4>
+<p>Set to <code>1</code> in all modes.</p>
 <hr />
 <h3 aria-label="Variables" id="flag4">Flag4<a class="headerlink" href="#flag4" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="int-flag4">int Flag4<a class="headerlink" href="#int-flag4" title="Permanent link">⚓︎</a></h4>
+<p><code>0</code> in "Mode 0", <code>7</code> in "Mode 1", and <code>1</code> in "Mode 2".</p>
 <hr />
 
 
