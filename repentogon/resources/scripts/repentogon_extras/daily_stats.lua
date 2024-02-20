@@ -16,7 +16,7 @@ local ScheduleRefresh = true
 local StreakSheet = Sprite()
 local TotalSheet = Sprite()
 --local GoalDestinationIcon = Sprite()
-local HardModeIcon = Sprite()
+--local HardModeIcon = Sprite()
 
 local LeaderboardSprite = Sprite()
 
@@ -72,9 +72,9 @@ local function LoadAssets()
         --GoalDestinationIcon:SetAnimation("Destination", true)
         --GoalDestinationIcon:SetFrame(7)
 
-        HardModeIcon:Load("gfx/ui/hudpickups.anm2", true)
-        HardModeIcon:SetAnimation("Idle", true)
-        HardModeIcon:SetFrame(4)
+        --HardModeIcon:Load("gfx/ui/hudpickups.anm2", true)
+        --HardModeIcon:SetAnimation("Idle", true)
+        --HardModeIcon:SetFrame(4)
 		
 		LeaderboardSprite:LoadRGON("gfx/ui/daily_destinations.anm2", true)
 		LeaderboardSprite:SetAnimation("Destination", true)
