@@ -7,6 +7,9 @@ Modified:
 * Pickup :
 	- Pickup:IsBlind method now checks natural blind effect (also added "CheckForcedBlindOnly" optional argument)
 /newline/
+Fixes:
+	* Fixed an issue that prevented custom parsed attributes from working on xmls with hugeass comments at the beginning of the file
+/newline/
 /newline/
 v1.0.6b -
 Fixes:

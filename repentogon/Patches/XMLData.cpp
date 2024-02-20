@@ -3312,7 +3312,7 @@ bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 	size_t haystackLen = strlen(target);
 	size_t needleLen = strlen(lookup);
 	if (maxOffset >= haystackLen) {
-		return nullptr; // Offset exceeds the haystack length, no match possible.
+		return false; // Offset exceeds the haystack length, no match possible.
 	}
 	if (maxOffset + needleLen > haystackLen) {
 		maxOffset = haystackLen - needleLen; // Adjust the offset to avoid overflows.
@@ -3320,12 +3320,27 @@ bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 
 
 	for (size_t i = 0; i <= maxOffset; i++) {
+		if (((i + 6) < maxOffset) && (target[i] == '<' && target[i + 1] == '!' && target[i + 2] == '-' && target[i + 3] == '-')) { //skip xml comments and do not count them
+			size_t commentEnd = i + 3;
+			size_t commentstart = commentEnd;
+			while (!(target[commentEnd - 2] == '-' && target[commentEnd - 1] == '-' && target[commentEnd] == '>')) {
+				++commentEnd;
+				if (commentEnd >= haystackLen) { return false; }
+			}
+			maxOffset = maxOffset + (commentEnd - commentstart);
+			if (maxOffset >= haystackLen) {
+				return false;
+			}
+			i = commentEnd;
+		}
+
+
 		// Compare characters one by one in lowercase
 		bool match = true;
 		for (size_t j = 0; j < needleLen; j++) {
 			if (std::tolower(target[i + j]) != std::tolower(lookup[j])) {
 				match = false;
-				return match;
+				break;
 			}
 		}
 
