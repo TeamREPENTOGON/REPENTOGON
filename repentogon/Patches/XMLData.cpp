@@ -789,6 +789,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			//printf("playa: %d (%s) \n", id, player["name"].c_str());
 			XMLStuff.PlayerData->ProcessChilds(auxnode, id);
 			XMLStuff.PlayerData->nodes[id] = player;
+			XMLStuff.PlayerData->byorder[XMLStuff.PlayerData->nodes.size()] = id;
 			XMLStuff.PlayerData->bymod[lastmodid].push_back(id);
 			XMLStuff.ModData->players[lastmodid] += 1;
 			}
@@ -833,6 +834,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.CardData->bynamemod[card["name"] + lastmodid] = id;
 				XMLStuff.CardData->bymod[lastmodid].push_back(id);
 				XMLStuff.CardData->byfilepathmulti.tab[currpath].push_back(id);
+				XMLStuff.CardData->byorder[XMLStuff.CardData->nodes.size()] = id;
 				XMLStuff.CardData->byname[card["name"]] = id;
 				XMLStuff.ModData->cards[lastmodid] += 1;
 				if (toint(card["achievement"]) > 637) {
@@ -878,6 +880,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.PillData->bymod[lastmodid].push_back(id);
 				XMLStuff.PillData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.PillData->nodes[id] = pill;
+				XMLStuff.PillData->byorder[XMLStuff.PillData->nodes.size()] = id;
 				XMLStuff.ModData->pills[lastmodid] += 1;
 				if (toint(pill["achievement"]) > 637) {
 					XMLStuff.PillData->customachievitems.push_back(pill);
@@ -952,6 +955,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					XMLStuff.ItemData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.ItemData->byname[item["name"]] = id;
 					XMLStuff.ItemData->nodes[id] = item;
+					XMLStuff.ItemData->byorder[XMLStuff.ItemData->nodes.size()] = id;
 					XMLStuff.ModData->items[lastmodid] += 1;
 					if (toint(item["achievement"]) > 637) {
 						XMLStuff.ItemData->customachievitems.push_back(item);
@@ -1017,6 +1021,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					XMLStuff.TrinketData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.TrinketData->byname[trinket["name"]] = id;
 					XMLStuff.TrinketData->nodes[id] = trinket;
+					XMLStuff.TrinketData->byorder[XMLStuff.TrinketData->nodes.size()] = id;
 					XMLStuff.ModData->trinkets[lastmodid] += 1;
 					if (toint(trinket["achievement"]) > 637) {
 						XMLStuff.TrinketData->customachievitems.push_back(trinket);
@@ -1058,6 +1063,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.NullItemData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.NullItemData->byname[item["name"]] = id;
 				XMLStuff.NullItemData->nodes[id] = item;
+				XMLStuff.NullItemData->byorder[XMLStuff.NullItemData->nodes.size()] = id;
 				XMLStuff.ModData->nullitems[lastmodid] += 1;
 			}
 		}
@@ -1099,6 +1105,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.BombCostumeData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.BombCostumeData->byname[bombcostume["name"]] = id;
 			XMLStuff.BombCostumeData->nodes[id] = bombcostume;
+			XMLStuff.BombCostumeData->byorder[XMLStuff.BombCostumeData->nodes.size()] = id;
 			XMLStuff.ModData->bombcostumes[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -1139,6 +1146,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.MusicData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.MusicData->byname[music["name"]] = id;
 			XMLStuff.MusicData->nodes[id] = music;
+			XMLStuff.MusicData->byorder[XMLStuff.MusicData->nodes.size()] = id;
 			XMLStuff.ModData->musictracks[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -1183,6 +1191,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.SoundData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.SoundData->byname[sound["name"]] = id;
 			XMLStuff.SoundData->nodes[id] = sound;
+			XMLStuff.SoundData->byorder[XMLStuff.SoundData->nodes.size()] = id;
 			XMLStuff.ModData->sounds[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -1232,6 +1241,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				//XMLStuff.AchievementData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.AchievementData->byname[achievement["name"]] = id;
 				XMLStuff.AchievementData->nodes[id] = achievement;
+				XMLStuff.AchievementData->byorder[XMLStuff.AchievementData->nodes.size()] = id;
 				XMLStuff.ModData->achievements[achievement["sourceid"]] += 1;
 				if ((achievement.find("hidden") == achievement.end()) || (achievement["hidden"] == "false")) {
 					XMLStuff.ModData->achievlistpermod[achievement["sourceid"]].push_back(achievement);
@@ -1272,6 +1282,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.ChallengeData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.ChallengeData->byname[challenge["name"]] = id;
 			XMLStuff.ChallengeData->nodes[id] = challenge;
+			XMLStuff.ChallengeData->byorder[XMLStuff.ChallengeData->nodes.size()] = id;
 			XMLStuff.ModData->challenges[lastmodid] += 1;
 		}
 	break;
@@ -1320,6 +1331,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.BackdropData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.BackdropData->byname[backdrop["name"]] = id;
 			XMLStuff.BackdropData->nodes[id] = backdrop;
+			XMLStuff.BackdropData->byorder[XMLStuff.BackdropData->nodes.size()] = id;
 			XMLStuff.ModData->backdrops[lastmodid] += 1;
 		}
 	break;
@@ -1367,6 +1379,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.CutsceneData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.CutsceneData->byname[cutscene["name"]] = id;
 			XMLStuff.CutsceneData->nodes[id] = cutscene;
+			XMLStuff.CutsceneData->byorder[XMLStuff.CutsceneData->nodes.size()] = id;
 			XMLStuff.ModData->cutscenes[cutscene["sourceid"]] += 1;
 		}
 	break;
@@ -1413,6 +1426,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 			//XMLStuff.StageData->bybasestage[toint(stage["basestage"])] = id;
 			XMLStuff.StageData->nodes[id] = stage;
+			XMLStuff.StageData->byorder[XMLStuff.StageData->nodes.size()] = id;
 			XMLStuff.ModData->stages[stage["sourceid"]] += 1;
 			
 		}
@@ -1452,6 +1466,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.RecipeData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.RecipeData->byname[recipe["name"]] = id;
 			XMLStuff.RecipeData->nodes[id] = recipe;
+			XMLStuff.RecipeData->byorder[XMLStuff.RecipeData->nodes.size()] = id;
 			XMLStuff.ModData->recipes[lastmodid] += 1;
 		}
 	break;
@@ -1495,6 +1510,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.WispColorData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.WispColorData->byname[color["name"]] = id;
 				XMLStuff.WispColorData->nodes[id] = color;
+				XMLStuff.WispColorData->byorder[XMLStuff.WispColorData->nodes.size()] = id;
 				XMLStuff.ModData->wispcolors[lastmodid] += 1;
 			}
 			else if ((strcmp(nodename, "wisp") == 0)) {
@@ -1546,6 +1562,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 					XMLStuff.WispData->byfilepathmulti.tab[currpath].push_back(id);
 					XMLStuff.WispData->byname[wisp["name"]] = id;
 					XMLStuff.WispData->nodes[id] = wisp;
+					XMLStuff.WispData->byorder[XMLStuff.WispData->nodes.size()] = id;
 					XMLStuff.ModData->wisps[lastmodid] += 1;
 
 				}
@@ -1592,6 +1609,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.LocustColorData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.LocustColorData->byname[color["name"]] = id;
 				XMLStuff.LocustColorData->nodes[id] = color;
+				XMLStuff.LocustColorData->byorder[XMLStuff.LocustColorData->nodes.size()] = id;
 				XMLStuff.ModData->locustcolors[lastmodid] += 1;
 			}
 			else if ((strcmp(nodename, "locust") == 0)) {
@@ -1643,6 +1661,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.LocustData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.LocustData->byname[locust["name"]] = id;
 				XMLStuff.LocustData->nodes[id] = locust;
+				XMLStuff.LocustData->byorder[XMLStuff.LocustData->nodes.size()] = id;
 				XMLStuff.ModData->locusts[lastmodid] += 1;
 
 			}
@@ -1691,6 +1710,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.NightmareData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.NightmareData->byname[nightmare["name"]] = id;
 			XMLStuff.NightmareData->nodes[id] = nightmare;
+			XMLStuff.NightmareData->byorder[XMLStuff.NightmareData->nodes.size()] = id;
 			XMLStuff.ModData->nightmares[lastmodid] += 1;
 		}
 		break;
@@ -1738,6 +1758,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.CurseData->byname[curse["name"]] = id;
 			}
 			XMLStuff.CurseData->nodes[id] = curse;
+			if (!XMLStuff.CurseData->stuffset) {XMLStuff.CurseData->byorder[XMLStuff.CurseData->nodes.size()] = id;}
 			XMLStuff.ModData->curses[lastmodid] += 1;
 		}
 		break;
@@ -1775,6 +1796,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.BossPortraitData->byname[boss["name"]] = id;
 			}
 			XMLStuff.BossPortraitData->nodes[id] = boss;
+			XMLStuff.BossPortraitData->byorder[XMLStuff.BossPortraitData->nodes.size()] = id;
 			XMLStuff.ModData->bossportraits[lastmodid] += 1;
 		}
 	break;
@@ -1831,6 +1853,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.CostumeData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.CostumeData->byname[costume["name"]] = id;
 				XMLStuff.CostumeData->nodes[id] = costume;
+				XMLStuff.CostumeData->byorder[XMLStuff.CostumeData->nodes.size()] = id;
 				XMLStuff.ModData->costumes[lastmodid] += 1;
 			}
 			else {
@@ -1871,6 +1894,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.NullCostumeData->byfilepathmulti.tab[currpath].push_back(idnull);
 				XMLStuff.NullCostumeData->byname[costume["name"]] = idnull;
 				XMLStuff.NullCostumeData->nodes[idnull] = costume;
+				XMLStuff.NullCostumeData->byorder[XMLStuff.NullCostumeData->nodes.size()] = id;
 				XMLStuff.ModData->nullcostumes[lastmodid] += 1;
 			
 			}
@@ -1903,6 +1927,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.PoolData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.PoolData->byname[itempool["name"]] = id;
 				XMLStuff.PoolData->nodes[id] = itempool;
+				XMLStuff.PoolData->byorder[XMLStuff.PoolData->nodes.size()] = id;
 			}
 			XMLStuff.ModData->itempools[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
@@ -1939,6 +1964,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.BossPoolData->byfilepathmulti.tab[currpath].push_back(id);
 				XMLStuff.BossPoolData->byname[bosspool["name"]] = id;
 				XMLStuff.BossPoolData->nodes[id] = bosspool;
+				XMLStuff.BossPoolData->byorder[XMLStuff.BossPoolData->nodes.size()] = id;
 			}
 			//XMLStuff.ModData->bosspools[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
@@ -1988,6 +2014,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.GiantBookData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.GiantBookData->byname[attributes["name"]] = id;
 			XMLStuff.GiantBookData->nodes[id] = attributes;
+			XMLStuff.GiantBookData->byorder[XMLStuff.GiantBookData->nodes.size()] = id;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -2022,6 +2049,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.BossRushData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.BossRushData->byname[attributes["name"]] = id;
 			XMLStuff.BossRushData->nodes[id] = attributes;
+			XMLStuff.BossRushData->byorder[XMLStuff.BossRushData->nodes.size()] = id;
 			id++;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
@@ -2077,6 +2105,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.PlayerFormData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.PlayerFormData->byname[attributes["name"]] = id;
 			XMLStuff.PlayerFormData->nodes[id] = attributes;
+			XMLStuff.PlayerFormData->byorder[XMLStuff.PlayerFormData->nodes.size()] = id;
 			//XMLStuff.ModData->sounds[lastmodid] += 1;
 			//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
 		}
@@ -2117,6 +2146,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 			XMLStuff.BossColorData->byfilepathmulti.tab[currpath].push_back(id);
 			XMLStuff.BossColorData->byname[attributes["name"]] = id;
 			XMLStuff.BossColorData->nodes[id] = attributes;
+			XMLStuff.BossColorData->byorder[XMLStuff.BossColorData->nodes.size()] = id;
 			tuple idx = { toint(attributes["id"]), toint(attributes["variant"])};
 			XMLStuff.BossColorData->bytypevar[idx] = id;
 			id++;
@@ -2157,6 +2187,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 		XMLStuff.ModData->byid[mod["id"]] = idx;
 		XMLStuff.ModData->bydirectory[mod["directory"]] = idx;
 		XMLStuff.ModData->byname[mod["name"]] = idx;
+		XMLStuff.ModData->byorder[XMLStuff.ModData->nodes.size()] = id;
 	}
 	break;
 	}
@@ -2563,107 +2594,38 @@ LUA_FUNCTION(Lua_GetEntryByNameXML)
 	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
 	return 1;
 }
+
+LUA_FUNCTION(Lua_GetEntryByOrderXML)
+{
+	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
+	if (!lua_isnumber(L, 2)) { return luaL_error(L, "Expected int as parameter #2, got %s", lua_typename(L, lua_type(L, 2))); }
+	int nodetype = (int)luaL_checknumber(L, 1);
+	int order = luaL_checknumber(L, 2);
+	tuple<XMLAttributes, XMLChilds> daddychild;
+	if (nodetype == 1) {
+		daddychild = XMLStuff.EntityData->GetXMLNodeNChildsByOrder(order);
+	}
+	else {
+		daddychild = xmlnodetypetodata[nodetype]->GetXMLNodeNChildsByOrder(order);
+	}
+	Lua_PushXMLNode(L, get<0>(daddychild), get<1>(daddychild));
+	return 1;
+}
+
+
 LUA_FUNCTION(Lua_GetNumEntries)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	int nodetype = (int)luaL_checknumber(L, 1);
 	XMLAttributes Node;
 	XMLChilds Childs;
-	switch (nodetype) {
-	case 0:
-		lua_pushinteger(L, XMLStuff.ModData->nodes.size());
-		break;
-	case 1:
+
+	if (nodetype == 1) {
 		lua_pushinteger(L, XMLStuff.EntityData->nodes.size());
-		break;
-	case 2:
-		lua_pushinteger(L, XMLStuff.PlayerData->nodes.size());
-		break;
-	case 3:
-		lua_pushinteger(L, XMLStuff.ItemData->nodes.size());
-		break;
-	case 4:
-		lua_pushinteger(L, XMLStuff.TrinketData->nodes.size());
-		break;
-	case 5:
-		lua_pushinteger(L, XMLStuff.PillData->nodes.size());
-		break;
-	case 6:
-		lua_pushinteger(L, XMLStuff.CardData->nodes.size());
-		break;
-	case 7:
-		lua_pushinteger(L, XMLStuff.MusicData->nodes.size());
-		break;
-	case 8:
-		lua_pushinteger(L, XMLStuff.SoundData->nodes.size());
-		break;
-	case 9:
-		lua_pushinteger(L, XMLStuff.ChallengeData->nodes.size());
-		break;
-	case 10:
-		lua_pushinteger(L, XMLStuff.PoolData->nodes.size());
-		break;
-	case 11:
-		lua_pushinteger(L, XMLStuff.NightmareData->nodes.size());
-		break;
-	case 12:
-		lua_pushinteger(L, XMLStuff.CostumeData->nodes.size());
-		break;
-	case 13:
-		lua_pushinteger(L, XMLStuff.NullCostumeData->nodes.size());
-		break;
-	case 14:
-		lua_pushinteger(L, XMLStuff.WispData->nodes.size());
-		break;
-	case 15:
-		lua_pushinteger(L, XMLStuff.WispColorData->nodes.size());
-		break;
-	case 16:
-		lua_pushinteger(L, XMLStuff.CurseData->nodes.size());
-		break;
-	case 17:
-		lua_pushinteger(L, XMLStuff.LocustData->nodes.size());
-		break;
-	case 18:
-		lua_pushinteger(L, XMLStuff.LocustColorData->nodes.size());
-		break;
-	case 19:
-		lua_pushinteger(L, XMLStuff.BombCostumeData->nodes.size());
-		break;
-	case 20:
-		lua_pushinteger(L, XMLStuff.RecipeData->nodes.size());
-		break;
-	case 21:
-		lua_pushinteger(L, XMLStuff.BossPoolData->nodes.size());
-		break;
-	case 22:
-		lua_pushinteger(L, XMLStuff.BossPortraitData->nodes.size());
-		break;
-	case 23:
-		lua_pushinteger(L, XMLStuff.CutsceneData->nodes.size());
-		break;
-	case 24:
-		lua_pushinteger(L, XMLStuff.StageData->nodes.size());
-		break;
-	case 25:
-		lua_pushinteger(L, XMLStuff.BackdropData->nodes.size());
-		break;
-	case 26:
-		lua_pushinteger(L, XMLStuff.AchievementData->nodes.size());
-		break;
-	case 27:
-		lua_pushinteger(L, XMLStuff.GiantBookData->nodes.size());
-		break;
-	case 28:
-		lua_pushinteger(L, XMLStuff.BossRushData->nodes.size());
-		break;
-	case 29:
-		lua_pushinteger(L, XMLStuff.PlayerFormData->nodes.size());;
-		break;
-	case 30:
-		lua_pushinteger(L, XMLStuff.NullItemData->nodes.size());;
-		break;
-	}	
+	}
+	else {
+		lua_pushinteger(L, xmlnodetypetodata[nodetype]->nodes.size());
+	}
 	return 1;
 }
 
@@ -2675,6 +2637,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua_newtable(_state);
 	lua::TableAssoc(_state, "GetEntryByName", Lua_GetEntryByNameXML);
 	lua::TableAssoc(_state, "GetEntryById", Lua_GetEntryByIdXML);
+	lua::TableAssoc(_state, "GetEntryByOrder", Lua_GetEntryByOrderXML);
 	lua::TableAssoc(_state, "GetNumEntries", Lua_GetNumEntries);
 	lua::TableAssoc(_state, "GetEntityByTypeVarSub", Lua_FromTypeVarSub);
 	lua::TableAssoc(_state, "GetBossColorByTypeVarSub", Lua_GetBossColorByTypeVarSub);
@@ -3312,7 +3275,7 @@ bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 	size_t haystackLen = strlen(target);
 	size_t needleLen = strlen(lookup);
 	if (maxOffset >= haystackLen) {
-		return nullptr; // Offset exceeds the haystack length, no match possible.
+		return false; // Offset exceeds the haystack length, no match possible.
 	}
 	if (maxOffset + needleLen > haystackLen) {
 		maxOffset = haystackLen - needleLen; // Adjust the offset to avoid overflows.
@@ -3320,12 +3283,27 @@ bool charfind(const char* target, const char* lookup, size_t maxOffset) {
 
 
 	for (size_t i = 0; i <= maxOffset; i++) {
+		if (((i + 6) < maxOffset) && (target[i] == '<' && target[i + 1] == '!' && target[i + 2] == '-' && target[i + 3] == '-')) { //skip xml comments and do not count them
+			size_t commentEnd = i + 3;
+			size_t commentstart = commentEnd;
+			while (!(target[commentEnd - 2] == '-' && target[commentEnd - 1] == '-' && target[commentEnd] == '>')) {
+				++commentEnd;
+				if (commentEnd >= haystackLen) { return false; }
+			}
+			maxOffset = maxOffset + (commentEnd - commentstart);
+			if (maxOffset >= haystackLen) {
+				return false;
+			}
+			i = commentEnd;
+		}
+
+
 		// Compare characters one by one in lowercase
 		bool match = true;
 		for (size_t j = 0; j < needleLen; j++) {
 			if (std::tolower(target[i + j]) != std::tolower(lookup[j])) {
 				match = false;
-				return match;
+				break;
 			}
 		}
 
