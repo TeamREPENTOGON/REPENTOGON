@@ -440,6 +440,87 @@ HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned long long damageF
 	return super(damage, damageFlags, source, damageCountdown);
 }
 
+// PRE/POST_PLAYER_ADD_HEARTS
+std::optional<int> PreAddHeartsCallbacks(Entity_Player* player,int hearts, int heartcallbackid, std::optional<bool> boolval) {
+	const int callbackid = 1009;
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+
+	lua::LuaCaller caller = lua::LuaCaller(L).push(callbackid)
+		.push(player, lua::Metatables::ENTITY_PLAYER)
+		.push(hearts)
+		.push(heartcallbackid);
+
+	if (boolval == std::nullopt) {
+		caller = caller.pushnil();
+	}
+	else {
+		caller = caller.push(boolval.value());
+	}
+
+	lua::LuaResults result=caller.call(1);
+
+	if (!result) {
+		if (lua_isinteger(L, -1)) {
+			 return (int)lua_tointeger(L, -1);
+		}
+	}
+	return std::nullopt;
+}
+
+HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool isvampire) -> void) {	//addhearts
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(hearts, isvampire);
+	}
+	
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, hearts, 0, isvampire);
+		if (heartcount!=std::nullopt) {
+			super(heartcount.value(), isvampire);
+		}
+		else {
+			super(hearts, isvampire);
+		}
+	}
+}
+
+HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount) -> Entity_Player*) {	//soulhearts
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount);
+	}
+
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1,std::nullopt);
+		if (heartcount != std::nullopt) {
+			super(heartcount.value());
+		}
+		else {
+			super(amount);
+		}
+	}
+	return this;
+}
+
+HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void) {	//maxhearts
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount, ignoreKeeper);
+	}
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 2, ignoreKeeper);
+		if (heartcount != std::nullopt) {
+			super(heartcount.value(), ignoreKeeper);
+		}
+		else {
+			super(amount, ignoreKeeper);
+		}
+	}
+}
+
+//todo: max, black, eternal, golden, broken, rotten, bone
+
 //PRE/POST_ENTITY_THROW (1040/1041)
 void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {
 	const int callbackid = 1041;
