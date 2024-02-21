@@ -105,11 +105,13 @@ public:
 	unordered_map<string, int> childbyname;
 	XMLNodeIdxLookup byname;
 	XMLNodeIdxLookup bynamemod;
+	unordered_map<int, int> byorder;
 	XMLNodeIdxLookupMultiple bymod;
 	XMLNodeIdxLookup byrelativeid;
 	XMLNodeTable byfilepathmulti;
 	int maxid;
 	int defmaxid;
+	bool stuffset = false;
 
 	void Clear() {
 		nodes.clear();
@@ -144,6 +146,12 @@ public:
 		else { return iter->second; }
 	}
 
+	XMLAttributes  GetNodeByOrder(int name) {
+		auto iter = this->byorder.find(name);
+		if (iter == this->byorder.end()) { return XMLAttributes(); }
+		else { return this->GetNodeById(iter->second); }
+	}
+
 	XMLAttributes GetNodeByName(const string &name) {
 		auto iter = this->byname.find(name);
 		if (iter == this->byname.end()) { return XMLAttributes(); }
@@ -174,6 +182,17 @@ public:
 			Childs = this->childs[this->byname[name]];
 		}
 		else {Childs = XMLChilds();}
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByOrder(int name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByOrder(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byorder[name]];
+		}
+		else { Childs = XMLChilds(); }
 		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
 	}
 
@@ -282,6 +301,7 @@ public:
 		backdrops.clear();
 		achievements.clear();
 		achievlistpermod.clear();
+		byorder.clear();
 		maxid = 0;
 	
 	}
@@ -412,6 +432,7 @@ public:
 					nodes.erase(idx);
 					childs.erase(idx);
 					maxid = maxid / 2 ;
+					stuffset = true; //this is to set the thing as a 2ndpass is going to be made
 				}
 			}
 		}
@@ -483,6 +504,12 @@ public:
 		if (iter == this->byname.end()) { return XMLAttributes(); }
 		return this->GetNodeById(iter->second);
 	}
+
+	XMLAttributes GetNodeByOrder(int name) {
+		auto iter = this->byorder.find(name);
+		if (iter == this->byorder.end()) { return XMLAttributes(); }
+		return this->GetNodeById(iter->second);
+	}
 	XMLAttributes GetNodeByNameMod(const string &name) {
 		auto iter = this->bynamemod.find(name);
 		if (iter == this->bynamemod.end()) { return XMLAttributes(); }
@@ -493,6 +520,17 @@ public:
 		auto iter = this->childs.find(name);
 		if (iter == this->childs.end()) { return XMLChilds(); }
 		return iter->second;
+	}
+
+	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByOrder(int name) {
+		XMLAttributes Node;
+		XMLChilds Childs;
+		Node = this->GetNodeByOrder(name);
+		if (Node.end() != Node.begin()) {
+			Childs = this->childs[this->byorder[name]];
+		}
+		else { Childs = XMLChilds(); }
+		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
 	}
 
 	tuple<XMLAttributes, XMLChilds> GetXMLNodeNChildsByName(string name) {
