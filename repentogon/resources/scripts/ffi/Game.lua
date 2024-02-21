@@ -9,6 +9,7 @@ typedef struct {void *_;} Level;
 typedef struct {void *_;} Room;
 typedef struct {void *_;} Seeds;
 typedef struct {void *_;} EntityDesc;
+typedef struct {void *_;} Entity_Player;
 
 void L_Game_AddDevilRoomDeal();
 void L_Game_AddEncounteredBoss(unsigned int, unsigned int);

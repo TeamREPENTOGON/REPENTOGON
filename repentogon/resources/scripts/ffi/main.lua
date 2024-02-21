@@ -96,11 +96,19 @@ end
 local free = ffidll.L_Free
 
 function GC(obj)
-	return lffi.gc(obj, free)
+	if obj ~= nil then
+		return lffi.gc(obj, free)
+	else 
+		return nil
+	end
 end
 
 function GCString(str)
-	return lffi.string(GC(str))
+	if str ~= nil then
+		return lffi.string(GC(str))
+	else 
+		return nil
+	end
 end
 
 
@@ -157,6 +165,7 @@ pcall(require("ItemConfigItem"))
 pcall(require("ItemConfigCard"))
 pcall(require("ItemConfigPillEffect"))
 pcall(require("ItemConfig"))
+pcall(require("EntityPlayer"))
 
 ---------------------------------------------------------------------------
 

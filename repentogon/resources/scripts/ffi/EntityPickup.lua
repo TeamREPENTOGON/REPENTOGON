@@ -1,7 +1,4 @@
 ffi.cdef[[
-	//STUB
-	typedef struct {void *_;} Entity_Player;
-
 	void L_EntityPickup_AppearFast(Entity_Pickup*);
 	bool L_EntityPickup_CanReroll(Entity_Pickup*);
 	int L_EntityPickup_GetCoinValue(Entity_Pickup*);

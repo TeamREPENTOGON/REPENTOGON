@@ -58,6 +58,10 @@ extern "C" {
 
 	void L_EntityPlayer_AddCacheFlags(Entity_Player* self, int cacheFlag, bool evaluateItems) {
 		self->AddCacheFlags(cacheFlag);
+
+		if (evaluateItems) {
+			self->EvaluateItems();
+		}
 	}
 
 	void L_EntityPlayer_AddCard(Entity_Player* self, int id) {
@@ -455,10 +459,6 @@ extern "C" {
 		return self->FireTechXLaser(*pos, *dir, radius, source, damageMultiplier);
 	}
 
-	void L_EntityPlayer_ClearQueueItem(Entity_Player* self) {
-		self->ClearQueueItem();
-	}
-
 	bool L_EntityPlayer_FlushQueueItem(Entity_Player* self) {
 		return self->FlushQueueItem();
 	}
@@ -549,8 +549,9 @@ extern "C" {
 		return new auto(self->GetBodyMoveDirection());
 	}
 
-	// !!!TODO!!!
-	int L_EntityPlayer_GetBombFlags(Entity_Player* self);
+	BitSet128* L_EntityPlayer_GetBombFlags(Entity_Player* self) {
+		return new auto(self->GetBombFlags(false));
+	}
 
 	int L_EntityPlayer_GetBombVariant(Entity_Player* self, int tearFlags, bool ForceSmallBomb) {
 		return 0;
@@ -763,10 +764,8 @@ extern "C" {
 	}
 
 	// TODO
-	void* L_EntityPlayer_GetGlyphOfBalanceDrop(Entity_Player* self) {
-		int* variant, *subtype;
+	void L_EntityPlayer_GetGlyphOfBalanceDrop(Entity_Player* self, int* variant, int* subtype) {
 		self->GetGlyphOfBalanceDrop(variant, subtype);
-		return nullptr;
 	}
 
 	// ?????? https://repentogon.com/EntityPlayer.html#getgnawedleaftimer
@@ -1118,8 +1117,8 @@ extern "C" {
 	}
 
 	// TODO: return ItemConfig::Item here
-	int L_EntityPlayer_GetTrinket(Entity_Player* self, int trinketIndex) {
-		return self->GetTrinket(trinketIndex)->id;
+	ItemConfig_Item* L_EntityPlayer_GetTrinket(Entity_Player* self, int trinketIndex) {
+		return self->GetTrinket(trinketIndex);
 	}
 
 	int L_EntityPlayer_GetTrinketMultiplier(Entity_Player* self, TrinketType trinketID) {
