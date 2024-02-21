@@ -18,7 +18,7 @@ struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG, Vector
     uint32_t seed : 0x4cc0;
     ANM2 _wallDetailANM2 : 0x4cc4;
     ANM2 _controlsANM2 : 0x4dd8;
-    ANM2 _controlsButtonsANM2 : 0x4eec
+    ANM2 _controlsButtonsANM2 : 0x4eec;
 };
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b86c030100":
