@@ -2746,30 +2746,6 @@ HOOK_METHOD(Backdrop, pre_render_walls, () -> void) {
 	}
 }
 
-//PRE_BACKDROP_CHANGE (1141)
-HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
-	const int callbackId = 1141;
-	if (CallbackState.test(callbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
-			.pushnil()
-			.push(bcktype)
-			.call(1);
-
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				uint32_t backdropid = (uint32_t)lua_tointeger(L, -1);
-				super(backdropid, loadgraphics);
-				return;
-			}
-		}
-	}
-	super(bcktype, loadgraphics);
-}
-
 //PLAYER_INIT_PRE_LEVEL_INIT_STATS (1127)
 HOOK_METHOD(Entity_Player, InitPreLevelInitStats, () -> void) {
 	const int callbackid = 1127;
