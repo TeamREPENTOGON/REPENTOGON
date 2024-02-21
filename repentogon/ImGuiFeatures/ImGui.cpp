@@ -288,6 +288,14 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			break;
 		}
 
+		case VK_RETURN: {
+			if (menuShown && !console.inputBuf[0]) {
+				menuShown = false;
+				return true;
+			}
+			break;
+		}
+
 		case VK_ESCAPE: {
 			if (menuShown) {
 				menuShown = false;
