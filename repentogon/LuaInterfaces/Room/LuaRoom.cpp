@@ -4,6 +4,7 @@
 #include "Room.h"
 
 RoomASM roomASM;
+extern uint32_t hookedbackdroptype;
 
 LUA_FUNCTION(Lua_SpawnGridEntity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
