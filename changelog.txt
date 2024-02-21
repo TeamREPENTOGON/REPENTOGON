@@ -11,6 +11,7 @@ Modified:
 /newline/
 Fixes:
 	* Fixed an issue that prevented custom parsed attributes from working on xmls with hugeass comments at the beginning of the file
+	* Fixed an issue where the console would behave sporadically when closed with numpad enter
 /newline/
 /newline/
 v1.0.6b -
