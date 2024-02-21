@@ -11,7 +11,10 @@ __thiscall bool LuaEngine::RunBundledScript(const char *path);
 static __stdcall void LuaEngine::PostGameStart(unsigned int state);
 
 "558bec83e4f8a1????????83ec10803d????????00":
-static __stdcall Vector* LuaEngine::GetMousePosition(Vector* buffer,bool gamecoords);
+static __cdecl Vector* LuaEngine::GetMousePosition(Vector* buffer,bool gamecoords);
+
+"558bec518b55??8b0d":
+static __cdecl bool LuaEngine::IsMouseButtonPressed(uint32_t button); //untested
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec90000000a1????????33c58945??5657508d45??64a3????????8bf989bd????????8b43??50":
 __thiscall void LuaEngine::RunScript(const char *path);
