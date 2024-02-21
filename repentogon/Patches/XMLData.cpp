@@ -620,6 +620,7 @@ void SwapBackdrop(int source, int target) {
 }
 */
 
+//dirty AI things
 bool endsWithPNG(const std::string& str) {
     if (str.length() >= 4) {
         return str.substr(str.length() -  4) == ".png";
@@ -635,7 +636,7 @@ bool endsWithANM(const std::string& str) {
 }
 
 bool toboolnode(const std::string& str) {
-	if (str.length() >= 4) {
+    if (str.length() >= 4) {
         return str == "true";
     }
     return false;
