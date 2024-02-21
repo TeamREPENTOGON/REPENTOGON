@@ -531,6 +531,20 @@ LUA_FUNCTION(Lua_GetBossColorIdxByName) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetBackdropTypeByName) {
+	string text = string(luaL_checkstring(L, 1));
+	if (XMLStuff.BackdropData->byname.count(text) > 0)
+	{
+		XMLAttributes ent = XMLStuff.BackdropData->GetNodeByName(text);
+		if ((ent.end() != ent.begin()) && (ent.count("id") > 0) && (ent["id"].length() > 0)) {
+			lua_pushinteger(L, stoi(ent["id"]));
+			return 1;
+		}
+	};
+	lua_pushinteger(L, -1);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -573,6 +587,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropTypeByName", Lua_GetBackdropTypeByName);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
