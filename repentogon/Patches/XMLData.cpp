@@ -673,12 +673,15 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 		XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
 
 		uint32_t refbackdrop = toint(node["reftype"]);
-		if ((refbackdrop <0) || (refbackdrop > 60)) {
+		if (refbackdrop > 60) {
 			//luaL_error(L, "field 'referenceType' should be between 1 and 60 ", refbackdrop);
 			g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60 \n");
 			return;
 		}
-		if (bcktype > 60 && refbackdrop < 1) refbackdrop = 1;
+		if (bcktype > 60 && refbackdrop < 1) {
+			if (toboolnode(node["reversewatergfx"])) refbackdrop = 3;
+			else refbackdrop = 1;
+		}
 		else if (bcktype < 61) refbackdrop = bcktype;
 		
 		if (refbackdrop == bcktype) changedbackdrops.reset(refbackdrop);
@@ -1490,7 +1493,11 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
 			{
-				backdrop[stringlower(attr->name())] = string(attr->value());
+				//temporary solution
+				if (backdrop.find(attr->name()) == backdrop.end()) {
+				//
+					backdrop[stringlower(attr->name())] = string(attr->value());
+				}
 			}
 			//string oldid = backdrop["id"];
 			if ((backdrop.count("id") > 0)) {
@@ -1506,7 +1513,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.BackdropData->maxid = id;
 			}
 			//if (oldid.length() > 0) { backdrop["id"] = oldid; }
-			if (backdrop.find("name") != backdrop.end()) {
+			if (backdrop.find("name") == backdrop.end()) {
 				backdrop["name"] = backdrop["gfx"].substr(0, backdrop["gfx"].length() - 4);
 				int pos = backdrop["name"].find("_");
 				if ((pos < 4) && (pos > 0)) {
@@ -3286,6 +3293,15 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 							{
 								node[stringlower(attr->name())] = string(attr->value());
+							}
+							//temporary solution, I hope
+							xml_node<char>* daddy = auxnode->parent();
+							for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+							{
+								xml_attribute<char>* newatt = new xml_attribute<char>(); 
+								newatt->name(attr->name()); 
+								newatt->value(attr->value()); 
+								clonedNode->append_attribute(newatt);
 							}
 							if (node.count("id") == 0) {
 								maxnodebackdrop += 1;
