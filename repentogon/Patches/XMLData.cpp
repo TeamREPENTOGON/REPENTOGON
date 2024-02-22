@@ -673,7 +673,7 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 		XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
 
 		uint32_t refbackdrop = toint(node["reftype"]);
-		if (refbackdrop > 60) {
+		if ((refbackdrop <0) || (refbackdrop > 60)) {
 			//luaL_error(L, "field 'referenceType' should be between 1 and 60 ", refbackdrop);
 			g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60 \n");
 			return;
@@ -691,7 +691,7 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 		
 		string gfxpath = node["gfxroot"] + node["gfx"];
 		bool correctPath = false;
-		if (isAnm2Gfx) {  //file path check
+		if (isAnm2Gfx && (endsWithANM(gfxpath))) {  //file path check // added safe-check for anm2 otherwise it would spriteload a png and have a stroke if the param is wrong
 			if (!pathCheckanm2->_loaded) {
 				ANM2* s = &this->floorANM2;
 				pathCheckanm2->construct_from_copy(s);
