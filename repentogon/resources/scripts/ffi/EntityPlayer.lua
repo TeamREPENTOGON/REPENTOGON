@@ -543,7 +543,7 @@ end
 
 function EntityPlayerFuncs:AddCacheFlags(cacheFlag, evaluateItems)
     ffichecks.checknumber(2, cacheFlag)
-    ffichecks.optboolean(3, evaluateItems, false)
+    evaluateItems = ffichecks.optboolean(evaluateItems, false)
     repentogon.L_EntityPlayer_AddCacheFlags(self, cacheFlag, evaluateItems)
 end
 
@@ -589,7 +589,7 @@ function EntityPlayerFuncs:AddEternalHearts(eternalHearts)
 end
 
 function EntityPlayerFuncs:AddFriendlyDip(subtype, pos)
-    ffichecks.checknumber(2, eternalHearts)
+    ffichecks.checknumber(2, subtype)
     ffichecks.checkcdata(3, pos, "Vector")
     repentogon.L_EntityPlayer_AddFriendlyDip(self, subtype, pos)
 end
@@ -621,7 +621,7 @@ function EntityPlayerFuncs:AddInnateCollectible(itemId, amount)
 end
 
 function EntityPlayerFuncs:AddItemWisp(collectible, pos, adjustOrbitLayer)
-    ffichecks.checknumber(2, itemId)
+    ffichecks.checknumber(2, collectible)
     ffichecks.checkcdata(3, pos, "Vector")
     adjustOrbitLayer = ffichecks.optboolean(adjustOrbitLayer, false)
 
@@ -776,7 +776,7 @@ EntityPlayerFuncs.AnimatePitfallOut = repentogon.L_EntityPlayer_AnimatePitfallOu
 EntityPlayerFuncs.AnimateSad = repentogon.L_EntityPlayer_AnimateSad
 
 function EntityPlayerFuncs:AnimateTeleport(up)
-    force = ffichecks.optboolean(up, false)
+    up = ffichecks.optboolean(up, false)
 
     repentogon.L_EntityPlayer_AnimateTeleport(self, up)
 end
@@ -1026,17 +1026,19 @@ end
 function EntityPlayerFuncs:GetActiveMaxCharge(activeSlot)
     activeSlot = ffichecks.optnumber(activeSlot, ActiveSlot.SLOT_PRIMARY)
 
-    return repentogon.L_EntityPlayer_GetActiveMaxCharge(self, id)
+    return repentogon.L_EntityPlayer_GetActiveMaxCharge(self, activeSlot)
 end
 
 function EntityPlayerFuncs:GetActiveMinUsableCharge(activeSlot)
     activeSlot = ffichecks.optnumber(activeSlot, ActiveSlot.SLOT_PRIMARY)
+
+    return repentogon.L_EntityPlayer_GetActiveMinUsableCharge(self, activeSlot)
 end
 
 function EntityPlayerFuncs:GetActiveSubCharge(activeSlot)
     activeSlot = ffichecks.optnumber(activeSlot, ActiveSlot.SLOT_PRIMARY)
 
-    return repentogon.L_EntityPlayer_GetActiveSubCharge(self, id)
+    return repentogon.L_EntityPlayer_GetActiveSubCharge(self, activeSlot)
 end
 
 function EntityPlayerFuncs:GetActiveWeaponEntity()
@@ -1100,7 +1102,7 @@ end
 EntityPlayerFuncs.GetCollectibleCount = repentogon.L_EntityPlayer_GetCollectibleCount
 
 function EntityPlayerFuncs:GetCollectibleNum(type, onlyCountTrueItems)
-    ffichecks.checknumber(2, id)
+    ffichecks.checknumber(2, type)
     onlyCountTrueItems = ffichecks.optboolean(onlyCountTrueItems, false)
 
     return repentogon.L_EntityPlayer_GetCollectibleNum(self, type, onlyCountTrueItems)
@@ -1281,7 +1283,7 @@ EntityPlayerFuncs.GetMetronomeCollectibleID = repentogon.L_EntityPlayer_GetMetro
 EntityPlayerFuncs.GetModelingClayEffect = repentogon.L_EntityPlayer_GetModelingClayEffect
 EntityPlayerFuncs.GetMovementDirection = repentogon.L_EntityPlayer_GetMovementDirection
 
-function L_EntityPlayer_GetMovementInput(moveSpeed)
+function EntityPlayerFuncs:GetMovementInput(moveSpeed)
     ffichecks.optnumber(moveSpeed, 0)
     return GC(ffichecks.fixreturn(repentogon.L_EntityPlayer_GetMovementInput(self, moveSpeed)))
 end
@@ -1587,13 +1589,13 @@ EntityPlayerFuncs.IsItemQueueEmpty = repentogon.L_EntityPlayer_IsItemQueueEmpty
 EntityPlayerFuncs.IsLocalPlayer = repentogon.L_EntityPlayer_IsLocalPlayer
 
 function EntityPlayerFuncs:IsNullItemCostumeVisible(nullItem, layerIDOrName)
-    ffichecks.checkcdata(2, item, "ItemConfig_Item")
+    ffichecks.checknumber(2, nullItem)
     if ffichecks.isnumber(layerIDOrName) then
-        return repentogon.L_EntityPlayer_IsNullItemCostumeVisible(self, item, layerIDOrName)
+        return repentogon.L_EntityPlayer_IsNullItemCostumeVisible(self, nullItem, layerIDOrName)
     end
 
     ffichecks.checkstring(3, layerIDOrName)
-    return repentogon.L_EntityPlayer_IsNullItemCostumeVisibleLayerName(self, item, layerIDOrName)
+    return repentogon.L_EntityPlayer_IsNullItemCostumeVisibleLayerName(self, nullItem, layerIDOrName)
 end
 
 EntityPlayerFuncs.IsP2Appearing = repentogon.L_EntityPlayer_IsP2Appearing
@@ -1804,11 +1806,11 @@ function EntityPlayerFuncs:SetBagOfCraftingContent(pickups)
 
     local list = lffi.new("int[8]")
 
-    for i, v in ipairs(pickups) do
+    for i, pickup in ipairs(pickups) do
         if pickup < 0 or pickup > 29 then
             error(string.format("EntityPlayer:SetBagOfCraftingContent: Invalid pickup %d at index %d", pickup))
         end
-        list[i-1] = v
+        list[i-1] = pickup
     end
 
     repentogon.L_EntityPlayer_SetBagOfCraftingContent(self, list)
@@ -1997,15 +1999,15 @@ function EntityPlayerFuncs:SetPill(slotId, pill)
     ffichecks.checknumber(2, slotId)
     ffichecks.checknumber(3, pill)
 
-    repentogon.L_EntityPlayer_SetPill(self, frame)
+    repentogon.L_EntityPlayer_SetPill(self, slotId, pill)
 end
 
 function EntityPlayerFuncs:SetPocketActiveItem(type, slot, keepInPools)
     ffichecks.checknumber(2, type)
     ffichecks.checknumber(3, slot)
-    ffichecks.checknumber(4, keepInPools)
+    keepInPools = ffichecks.optboolean(keepInPools, false)
 
-    repentogon.L_EntityPlayer_SetPocketActiveItem(self, slot, keepInPools)
+    repentogon.L_EntityPlayer_SetPocketActiveItem(self, type, slot, keepInPools)
 end
 
 function EntityPlayerFuncs:SetPonyCharge(time)
@@ -2031,7 +2033,7 @@ function EntityPlayerFuncs:SetPoopSpell(slot, spell)
 end
 
 function EntityPlayerFuncs:SetPurityState(state)
-    ffichecks.checknumber(2, slot)
+    ffichecks.checknumber(2, state)
 
     repentogon.L_EntityPlayer_SetPurityState(self, state)
 end
@@ -2049,9 +2051,9 @@ function EntityPlayerFuncs:SetShootingCooldown(cooldown)
 end
 
 function EntityPlayerFuncs:SetShotSpeedModifier(modifier)
-    ffichecks.checknumber(2, cooldown)
+    ffichecks.checknumber(2, modifier)
     
-    repentogon.L_EntityPlayer_SetShotSpeedModifier(self, cooldown)
+    repentogon.L_EntityPlayer_SetShotSpeedModifier(self, modifier)
 end
 
 function EntityPlayerFuncs:SetSoulCharge(amount)
@@ -2319,14 +2321,14 @@ end
 local function SetTypeFunc(func, typ)
     return function(self, value)
         ffichecks.checktype(2, value, typ)
-        func(value)
+        func(self, value)
     end
 end
 
 local function SetCDataFunc(func, ctype)
     return function(self, value)
         ffichecks.checkcdata(2, value, ctype)
-        func(value)
+        func(self, value)
     end
 end
 
@@ -2342,7 +2344,7 @@ local getkeys = {
 	HeadFrameDelay = repentogon.L_EntityPlayer_GetHeadFrameDelay,
 	IBSCharge = repentogon.L_EntityPlayer_GetIBSCharge,
 	ItemHoldCooldown = repentogon.L_EntityPlayer_GetItemHoldCooldown,
-	LaserColor = EntityPlayerFuncs.GetLaserColor,
+	LaserColor = GetCDataFunc(EntityPlayerFuncs.GetLaserColor),
 	Luck = repentogon.L_EntityPlayer_GetLuck,
 	MaxFireDelay = repentogon.L_EntityPlayer_GetMaxFireDelay,
 	MoveSpeed = repentogon.L_EntityPlayer_GetMoveSpeed,
@@ -2392,7 +2394,7 @@ local EntityPlayerMT = lffi.metatype("Entity_Player", {
         if getkeys[key] ~= nil then
             return getkeys[key](self)
         elseif Entity_getkeys[key] ~= nil then
-            return Entity_getkeys[key](self)
+            return Entity_getkeys[key](lffi.cast("Entity*", self))
         elseif EntityPlayerFuncs[key] ~= nil then
 			return EntityPlayerFuncs[key]
 		elseif EntityFuncs[key] ~= nil then
