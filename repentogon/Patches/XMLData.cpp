@@ -568,58 +568,6 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 }
 //Stages XML Hijack
 
-
-//backdrop hijack (commented until we figure out backdropconfig stucture)
-/*
-int lasthackybackid = -1;
-HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
-	if ((XMLStuff.BackdropData->nodes.count(bcktype) > 0) && ((bcktype == 1) || (bcktype > 60))) {
-		if (lasthackybackid != bcktype) {
-			XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
-			super(1, true);
-			//for (int i = 1; i <= 60; i++) {
-				//printf("dasfdsaf %s \n", this->configurations[i].gfx.c_str());
-			//}
-			
-			//for (int i = 0; i <= 60; i++) {
-			/*
-			this->configurations[1].gfx = node["gfx"];
-			
-			this->configurations[1].walls = toint(node["walls"]);
-			this->configurations[1].wallVariants = toint(node["wallvariants"]);
-			this->configurations[1].floors = toint(node["floors"]);
-			this->configurations[1].floorVariants = toint(node["floorvariants"]);
-			this->configurations[1].lFloorGfx = node["lfloorgfx"];
-			this->configurations[1].nFloorGfx = node["nfloorgfx"];
-			this->configurations[1].waterGfx = node["watergfx"];
-			//this->configurations[1].reversewatergfx = node["reversewatergfx"]; //missing
-			this->configurations[1].props = node["props"];
-			this->configurations[1].rocks = node["rocks"];
-			this->configurations[1].pit = node["pit"];
-			this->configurations[1].waterPit = node["waterpit"];
-			this->configurations[1].bridge = node["bridge"];
-			this->configurations[1].door = node["door"];
-			this->configurations[1].holeInWall = node["holeinwall"];
-			this->configurations[1].waterPitsMode = toint(node["waterpitsmode"]);
-			*/
-/*
-			super(1, true);
-			//}
-			lasthackybackid = bcktype;
-		}
-		else {
-			super(1, loadgraphics);
-		}
-	}
-	else {
-	super(bcktype, loadgraphics);
-	}
-}
-void SwapBackdrop(int source, int target) {
-	
-}
-*/
-
 //dirty AI things
 bool endsWithPNG(const std::string& str) {
     if (str.length() >= 4) {
