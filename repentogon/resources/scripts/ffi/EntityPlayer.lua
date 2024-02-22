@@ -1,4 +1,5 @@
 ffi.cdef[[
+    // stubs
     typedef struct {void *_;} ActiveItemDesc;
     typedef struct {void *_;} TemporaryEffects;
     typedef struct {void *_;} EntityConfig_Player;
@@ -7,6 +8,8 @@ ffi.cdef[[
     typedef struct {void *_;} Weapon;
     typedef struct {void *_;} Weapon_MultiShotParams;
     typedef struct {void *_;} TearParams;
+    typedef struct {void *_;} EntityDesc;
+    typedef struct {void *_;} QueueItemData;
 
     int L_EntityPlayer_AddActiveCharge(Entity_Player*, int, int, bool, bool, bool);
     void L_EntityPlayer_AddBoneOrbital(Entity_Player*, Vector*);
@@ -431,6 +434,54 @@ ffi.cdef[[
     void L_EntityPlayer_UsePoopSpell(Entity_Player*, int);
     bool L_EntityPlayer_VoidHasCollectible(Entity_Player*, int);
     bool L_EntityPlayer_WillPlayerRevive(Entity_Player*);
+
+    int L_EntityPlayer_GetBabySkin(Entity_Player*);
+    void L_EntityPlayer_SetBabySkin(Entity_Player*, int);
+    bool L_EntityPlayer_GetCanFly(Entity_Player*);
+    void L_EntityPlayer_SetCanFly(Entity_Player*, bool);
+    int L_EntityPlayer_GetControllerIndex(Entity_Player*);
+    int L_EntityPlayer_GetControlsCooldown(Entity_Player*);
+    void L_EntityPlayer_SetControlsCooldown(Entity_Player*, int);
+    bool L_EntityPlayer_GetControlsEnabled(Entity_Player*);
+    void L_EntityPlayer_SetControlsEnabled(Entity_Player*, bool);
+    float L_EntityPlayer_GetDamage(Entity_Player*);
+    void L_EntityPlayer_SetDamage(Entity_Player*, float);
+    float L_EntityPlayer_GetFireDelay(Entity_Player*);
+    void L_EntityPlayer_SetFireDelay(Entity_Player*, float);
+    EntityDesc* L_EntityPlayer_GetFriendBallEnemy(Entity_Player*);
+    void L_EntityPlayer_SetFriendBallEnemy(Entity_Player*, EntityDesc*);
+    int L_EntityPlayer_GetHeadFrameDelay(Entity_Player*);
+    void L_EntityPlayer_SetHeadFrameDelay(Entity_Player*, int);
+    float L_EntityPlayer_GetIBSCharge(Entity_Player*);
+    void L_EntityPlayer_SetIBSCharge(Entity_Player*, float);
+    int L_EntityPlayer_GetItemHoldCooldown(Entity_Player*);
+    void L_EntityPlayer_SetItemHoldCooldown(Entity_Player*, int);
+    float L_EntityPlayer_GetLuck(Entity_Player*);
+    void L_EntityPlayer_SetLuck(Entity_Player*, float);
+    float L_EntityPlayer_GetMaxFireDelay(Entity_Player*);
+    void L_EntityPlayer_SetMaxFireDelay(Entity_Player*, float);
+    float L_EntityPlayer_GetMoveSpeed(Entity_Player*);
+    void L_EntityPlayer_SetMoveSpeed(Entity_Player*, float);
+    QueueItemData* L_EntityPlayer_GetQueuedItem(Entity_Player*);
+    void L_EntityPlayer_SetQueuedItem(Entity_Player*, QueueItemData*);
+    float L_EntityPlayer_GetSamsonBerserkCharge(Entity_Player*);
+    void L_EntityPlayer_SetSamsonBerserkCharge(Entity_Player*, float);
+    float L_EntityPlayer_GetShotSpeed(Entity_Player*);
+    void L_EntityPlayer_SetShotSpeed(Entity_Player*, float);
+    ColorMod* L_EntityPlayer_GetTearColor(Entity_Player*);
+    void L_EntityPlayer_SetTearColor(Entity_Player*, ColorMod*);
+    float L_EntityPlayer_GetTearFallingAcceleration(Entity_Player*);
+    void L_EntityPlayer_SetTearFallingAcceleration(Entity_Player*, float);
+    float L_EntityPlayer_GetTearFallingSpeed(Entity_Player*);
+    void L_EntityPlayer_SetTearFallingSpeed(Entity_Player*, float);
+    BitSet128* L_EntityPlayer_GetTearFlags(Entity_Player*);
+    void L_EntityPlayer_SetTearFlags(Entity_Player*, BitSet128*);
+    float L_EntityPlayer_GetTearHeight(Entity_Player*);
+    void L_EntityPlayer_SetTearHeight(Entity_Player*, float);
+    float L_EntityPlayer_GetTearRange(Entity_Player*);
+    void L_EntityPlayer_SetTearRange(Entity_Player*, float);
+    Vector* L_EntityPlayer_GetTearsOffset(Entity_Player*);
+    void L_EntityPlayer_SetTearsOffset(Entity_Player*, Vector*);
 ]]
 
 local repentogon = ffidll
@@ -2259,7 +2310,102 @@ end
 
 EntityPlayerFuncs.WillPlayerRevive = repentogon.L_EntityPlayer_WillPlayerRevive
 
+local function GetCDataFunc(func)
+    return function(self)
+        return ffichecks.fixreturn(func(self))
+    end
+end
+
+local function SetTypeFunc(func, typ)
+    return function(self, value)
+        ffichecks.checktype(2, value, typ)
+        func(value)
+    end
+end
+
+local function SetCDataFunc(func, ctype)
+    return function(self, value)
+        ffichecks.checkcdata(2, value, ctype)
+        func(value)
+    end
+end
+
+local getkeys = {
+    BabySkin = repentogon.L_EntityPlayer_GetBabySkin,
+	CanFly = repentogon.L_EntityPlayer_GetCanFly,
+	ControllerIndex = repentogon.L_EntityPlayer_GetControllerIndex,
+	ControlsCooldown = repentogon.L_EntityPlayer_GetControlsCooldown,
+	ControlsEnabled = repentogon.L_EntityPlayer_GetControlsEnabled,
+	Damage = repentogon.L_EntityPlayer_GetDamage,
+	FireDelay = repentogon.L_EntityPlayer_GetFireDelay,
+	FriendBallEnemy = GetCDataFunc(repentogon.L_EntityPlayer_GetFriendBallEnemy),
+	HeadFrameDelay = repentogon.L_EntityPlayer_GetHeadFrameDelay,
+	IBSCharge = repentogon.L_EntityPlayer_GetIBSCharge,
+	ItemHoldCooldown = repentogon.L_EntityPlayer_GetItemHoldCooldown,
+	LaserColor = EntityPlayerFuncs.GetLaserColor,
+	Luck = repentogon.L_EntityPlayer_GetLuck,
+	MaxFireDelay = repentogon.L_EntityPlayer_GetMaxFireDelay,
+	MoveSpeed = repentogon.L_EntityPlayer_GetMoveSpeed,
+	QueuedItem = GetCDataFunc(repentogon.L_EntityPlayer_GetQueuedItem),
+	SamsonBerserkCharge = repentogon.L_EntityPlayer_GetSamsonBerserkCharge,
+	ShotSpeed = repentogon.L_EntityPlayer_GetShotSpeed,
+	TearColor = GetCDataFunc(repentogon.L_EntityPlayer_GetTearColor),
+	TearFallingAcceleration = repentogon.L_EntityPlayer_GetTearFallingAcceleration,
+	TearFallingSpeed = repentogon.L_EntityPlayer_GetTearFallingSpeed,
+	TearFlags = GetCDataFunc(repentogon.L_EntityPlayer_GetTearFlags),
+	TearHeight = repentogon.L_EntityPlayer_GetTearHeight,
+	TearRange = repentogon.L_EntityPlayer_GetTearRange,
+	TearsOffset = GetCDataFunc(repentogon.L_EntityPlayer_GetTearsOffset)
+}
+
+local setkeys = {
+    BabySkin = SetTypeFunc(repentogon.L_EntityPlayer_SetBabySkin, "number"),
+	CanFly = SetTypeFunc(repentogon.L_EntityPlayer_SetCanFly, "boolean"),
+	ControllerIndex = SetTypeFunc(repentogon.L_EntityPlayer_SetControllerIndex, "number"),
+	ControlsCooldown = SetTypeFunc(repentogon.L_EntityPlayer_SetControlsCooldown, "number"),
+	ControlsEnabled = SetTypeFunc(repentogon.L_EntityPlayer_SetControlsEnabled, "boolean"),
+	Damage = SetTypeFunc(repentogon.L_EntityPlayer_SetDamage, "number"),
+	FireDelay = SetTypeFunc(repentogon.L_EntityPlayer_SetFireDelay, "number"),
+	FriendBallEnemy = SetCDataFunc(repentogon.L_EntityPlayer_SetFriendBallEnemy, "EntityDesc"),
+	HeadFrameDelay = SetTypeFunc(repentogon.L_EntityPlayer_SetHeadFrameDelay, "number"),
+	IBSCharge = SetTypeFunc(repentogon.L_EntityPlayer_SetIBSCharge, "number"),
+	ItemHoldCooldown = SetTypeFunc(repentogon.L_EntityPlayer_SetItemHoldCooldown, "number"),
+	LaserColor = SetCDataFunc(repentogon.L_EntityPlayer_SetLaserColor, "ColorMod"),
+	Luck = SetTypeFunc(repentogon.L_EntityPlayer_SetLuck, "number"),
+	MaxFireDelay = SetTypeFunc(repentogon.L_EntityPlayer_SetMaxFireDelay, "number"),
+	MoveSpeed = SetTypeFunc(repentogon.L_EntityPlayer_SetMoveSpeed, "number"),
+	QueuedItem = SetCDataFunc(repentogon.L_EntityPlayer_SetQueuedItem, "QueueItemData"),
+	SamsonBerserkCharge = SetTypeFunc(repentogon.L_EntityPlayer_SetSamsonBerserkCharge, "number"),
+	ShotSpeed = SetTypeFunc(repentogon.L_EntityPlayer_SetShotSpeed, "number"),
+	TearColor = SetCDataFunc(repentogon.L_EntityPlayer_SetTearColor, "ColorMod"),
+	TearFallingAcceleration = SetTypeFunc(repentogon.L_EntityPlayer_SetTearFallingAcceleration, "number"),
+	TearFallingSpeed = SetTypeFunc(repentogon.L_EntityPlayer_SetTearFallingSpeed, "number"),
+	TearFlags = SetCDataFunc(repentogon.L_EntityPlayer_SetTearFlags, "BitSet128"),
+	TearHeight = SetTypeFunc(repentogon.L_EntityPlayer_SetTearHeight, "number"),
+	TearRange = SetTypeFunc(repentogon.L_EntityPlayer_SetTearRange, "number"),
+	TearsOffset = SetCDataFunc(repentogon.L_EntityPlayer_SetTearsOffset, "Vector")
+}
+
 local EntityPlayerMT = lffi.metatype("Entity_Player", {
     __tostring = function(self) return string.format("EntityPlayer(%s)", self:GetName()) end,
-    __index = EntityPlayerFuncs
+    __index = function(self, key) 
+        if getkeys[key] ~= nil then
+            return getkeys[key](self)
+        elseif Entity_getkeys[key] ~= nil then
+            return Entity_getkeys[key](self)
+        elseif EntityPlayerFuncs[key] ~= nil then
+			return EntityPlayerFuncs[key]
+		elseif EntityFuncs[key] ~= nil then
+			return EntityFuncs[key]
+		else
+			error(string.format("attempted to access nil value '%s'", key))
+		end
+    end,
+    __newindex = function(self, key, value)
+        if setkeys[key] ~= nil then
+            return setkeys[key](self, value)
+        else
+            error(string.format("no writable variable '%s'", key))
+        end
+    end
 })

@@ -850,7 +850,13 @@ __thiscall void Entity_Player::UsePoopSpell(int type);
 "6a01e8????????c3":
 __thiscall bool Entity_Player::WillRevive();
 
-struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, BitSet128, Vector, EntityRef, TemporaryEffects) : public Entity { {{
+"558bec518b81????????85c0":
+__thiscall float Entity_Player::GetFireDelay();
+
+"558bec8b81????????85c075":
+__thiscall void Entity_Player::SetFireDelay(float delay);
+
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, BitSet128, Vector, EntityRef, TemporaryEffects, QueueItemData) : public Entity { {{
 	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }
     inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
 	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
@@ -971,11 +977,13 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, BitSet12
 	
 	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
     }}
+	bool _controlsEnabled : 0x360; // 0x360
 	int _controlsCooldown: 0x364; // 0x364
 	int _shootingCooldown : 0x368; // 0x368
 	ANM2 _heldSprite: 0xf48; // 0xf48
 	vector_CostumeSpriteDesc _costumeSpriteDescs: 0x1170; // 0x1170
 	PlayerCostumeMap _playerCostumeMap[15]: 0x117c; // 0x117c
+	uint32_t _headFrameDelay : 0x1288; // 0x1288
 	uint32_t _blackHearts : 0x12a0; // 0x12a0
 	uint32_t _jarHearts : 0x12a4; // 0x12a4
 	uint32_t _jarFlies : 0x12a8; // 0x12a8
@@ -1020,6 +1028,9 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, BitSet12
 	float _edenRange : 0x149c; // 0x149c
 	float _edenShotSpeed : 0x14a0; // 0x14a0
 	float _edenLuck : 0x14a4; // 0x14a4
+	float _moveSpeed : 0x14ac; // 0x14ac
+	float _luck : 0x14b0; // 0x14b0
+	bool _canFly : 0x14b4; // 0x14b4
 	uint32_t _cacheFlags : 0x14b8; // 0x14b8
 	uint32_t _itemState : 0x1534; // 0x1534
 	uint32_t _controllerIndex : 0x154c; // 0x154c
@@ -1031,18 +1042,22 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, BitSet12
 	vector_SmeltedTrinketDesc _smeltedTrinkets: 0x1670; // 0x1670
 	Vector _lastDirection : 0x1570; // 0x1570
 	Vector _movementVector : 0x1578; // 0x1578
+	Vector _tearsOffset : 0x1580; // 0x1580
 	Vector _recentMovementVector : 0x1588; // 0x1588
 	Vector _velocityBeforeUpdate : 0x1594; // 0x1594
 	EntityRef _lastDamageSource : 0x15b0; // 0x15b0
 	int _lastDamageFlags : 0x15d8; // 0x15d8
 	int _totalDamageTaken : 0x15e4; // 0x15e4
+	QueueItemData _queuedItem : 0x16ec; // 0x16ec
 	int _playerForms[15]: 0x1700; // 0x1700
 	KColor _footprintColor1 : 0x1768; // 0x1768
 	KColor _footprintColor2 : 0x1794; // 0x1794
+	uint32_t _itemHoldCooldown : 0x17a4; // 0x17a4
 	uint32_t _headColor : 0x17b4; // 0x17b4
 	uint32_t _bodyColor : 0x17b8; // 0x17b8
 	uint32_t _deadEyeCharges : 0x17d0; // 0x17d0
 	uint32_t _deadEyeMisses : 0x17d4; // 0x17d4
+	EntityDesc _friendBallEnemy : 0x1830; // 0x1830
 	float _smoothBodyRotation : 0x1a04; // 0x1a04
 	int _babySkin : 0x1a0c; // 0x1a0c
 	Entity_Player* _subPlayer : 0x1cb8; // 0x1cb8
@@ -1060,8 +1075,10 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, BitSet12
 	std_map_int_int _itemWispsList : 0x1e7c; // 0x1e7c
 	int _modelingClayEffect : 0x1eb0; // 0x1eb0
 	int _keepersSackBonus : 0x1eb4; // 0x1eb4
+	float _ibsCharge : 0x1f80; // 0x1f80
 	bool _isCoopGhost : 0x1f88; // 0x1f88
 	bool _hasCurseMistEffect : 0x1f1c; // 0x1f1c
+	float _samsonBerserkCharge : 0x1f7c; // 0x1f7c
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":

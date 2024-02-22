@@ -149,7 +149,7 @@ ffi.cdef[[
 local repentogon = ffidll
 local lffi = ffi
 
-local EntityFuncs = {}
+EntityFuncs = {}
 
 function EntityFuncs:AddBurn(ref, duration, damage)
 	ffichecks.checkcdata(2, ref, "EntityRef")
@@ -484,6 +484,9 @@ local setkeys = {
 	Velocity = function(self, cdata) ffichecks.callcdatafunc(self, cdata, "Vector", repentogon.L_Entity_SetVelocity) end,
 	Visible = repentogon.L_Entity_SetVisible,
 }
+
+Entity_getkeys = getkeys
+Entity_setkeys = setkeys
 
 EntityMT = lffi.metatype("Entity", {
     __index = function(self, key)

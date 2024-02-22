@@ -151,6 +151,9 @@ pcall(require("EntityNPC"))
 pcall(require("EntityPickup"))
 -- Entity_Player has a stub in EntityPickup
 pcall(require("EntityProjectile"))
+pcall(require("ItemConfigCostume"))
+pcall(require("ItemConfigItem"))
+pcall(require("EntityPlayer"))
 pcall(require("Room"))
 pcall(require("Level"))
 pcall(require("MusicManager"))
@@ -160,12 +163,9 @@ pcall(require("Game"))
 pcall(require("Ambush"))
 pcall(require("RoomTransition"))
 pcall(require("StageTransition"))
-pcall(require("ItemConfigCostume"))
-pcall(require("ItemConfigItem"))
 pcall(require("ItemConfigCard"))
 pcall(require("ItemConfigPillEffect"))
 pcall(require("ItemConfig"))
-pcall(require("EntityPlayer"))
 
 ---------------------------------------------------------------------------
 

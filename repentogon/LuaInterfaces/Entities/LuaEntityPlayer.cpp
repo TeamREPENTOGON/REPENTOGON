@@ -459,6 +459,10 @@ extern "C" {
 		return self->FireTechXLaser(*pos, *dir, radius, source, damageMultiplier);
 	}
 
+	void L_EntityPlayer_ClearQueueItem(Entity_Player* self) {
+		self->ClearQueueItem();
+	}
+
 	bool L_EntityPlayer_FlushQueueItem(Entity_Player* self) {
 		return self->FlushQueueItem();
 	}
@@ -513,9 +517,6 @@ extern "C" {
 		return &self->_aimDirection;
 	}
 
-	int L_EntityPlayer_GetBabySkin(Entity_Player* self) {
-		return self->_babySkin;
-	}
 	BagOfCraftingPickup* L_EntityPlayer_GetBagOfCraftingContent(Entity_Player* self) {
 		return self->GetBagOfCraftingContent();
 	}
@@ -1858,6 +1859,195 @@ extern "C" {
 
 	bool L_EntityPlayer_WillPlayerRevive(Entity_Player* self) {
 		return self->WillRevive();
+	}
+
+	// getters and setters
+	int L_EntityPlayer_GetBabySkin(Entity_Player* self) {
+		return self->_babySkin;
+	}
+
+	void L_EntityPlayer_SetBabySkin(Entity_Player* self, int babySkin) {
+		self->_babySkin = babySkin;
+	}
+
+	bool L_EntityPlayer_GetCanFly(Entity_Player* self) {
+		return self->_canFly;
+	}
+
+	void L_EntityPlayer_SetCanFly(Entity_Player* self, bool canFly) {
+		self->_canFly = canFly;
+	}
+
+	int L_EntityPlayer_GetControllerIndex(Entity_Player* self) {
+		return self->_controllerIndex;
+	}
+
+	int L_EntityPlayer_GetControlsCooldown(Entity_Player* self) {
+		return self->_controlsCooldown;
+	}
+
+	void L_EntityPlayer_SetControlsCooldown(Entity_Player* self, int controlsCooldown) {
+		self->_controlsCooldown = controlsCooldown;
+	}
+
+	bool L_EntityPlayer_GetControlsEnabled(Entity_Player* self) {
+		return self->_controlsEnabled;
+	}
+
+	void L_EntityPlayer_SetControlsEnabled(Entity_Player* self, bool controlsEnabled) {
+		self->_controlsEnabled = controlsEnabled;
+	}
+
+	float L_EntityPlayer_GetDamage(Entity_Player* self) {
+		return self->_damage;
+	}
+
+	void L_EntityPlayer_SetDamage(Entity_Player* self, float damage) {
+		self->_damage = damage;
+	}
+
+	float L_EntityPlayer_GetFireDelay(Entity_Player* self) {
+		return self->GetFireDelay();
+	}
+
+	void L_EntityPlayer_SetFireDelay(Entity_Player* self, float fireDelay) {
+		self->SetFireDelay(fireDelay);
+	}
+
+	EntityDesc* L_EntityPlayer_GetFriendBallEnemy(Entity_Player* self) {
+		return &self->_friendBallEnemy;
+	}
+
+	void L_EntityPlayer_SetFriendBallEnemy(Entity_Player* self, EntityDesc* friendBallEnemy) {
+		self->_friendBallEnemy = *friendBallEnemy;
+	}
+
+	int L_EntityPlayer_GetHeadFrameDelay(Entity_Player* self) {
+		return self->_headFrameDelay;
+	}
+
+	void L_EntityPlayer_SetHeadFrameDelay(Entity_Player* self, int headFrameDelay) {
+		self->_headFrameDelay = headFrameDelay;
+	}
+
+	float L_EntityPlayer_GetIBSCharge(Entity_Player* self) {
+		return self->_ibsCharge;
+	}
+
+	void L_EntityPlayer_SetIBSCharge(Entity_Player* self, float ibsCharge) {
+		self->_ibsCharge = ibsCharge;
+	}
+
+	int L_EntityPlayer_GetItemHoldCooldown(Entity_Player* self) {
+		return self->_itemHoldCooldown;
+	}
+
+	void L_EntityPlayer_SetItemHoldCooldown(Entity_Player* self, int itemHoldCooldown) {
+		self->_itemHoldCooldown = itemHoldCooldown;
+	}
+
+	float L_EntityPlayer_GetLuck(Entity_Player* self) {
+		return self->_luck;
+	}
+
+	void L_EntityPlayer_SetLuck(Entity_Player* self, float luck) {
+		self->_luck = luck;
+	}
+
+	float L_EntityPlayer_GetMaxFireDelay(Entity_Player* self) {
+		return self->_maxFireDelay;
+	}
+
+	void L_EntityPlayer_SetMaxFireDelay(Entity_Player* self, float maxFireDelay) {
+		self->_maxFireDelay = maxFireDelay;
+	}
+
+	float L_EntityPlayer_GetMoveSpeed(Entity_Player* self) {
+		return self->_moveSpeed;
+	}
+
+	void L_EntityPlayer_SetMoveSpeed(Entity_Player* self, float moveSpeed) {
+		self->_moveSpeed = moveSpeed;
+	}
+
+	QueueItemData* L_EntityPlayer_GetQueuedItem(Entity_Player* self) {
+		return &self->_queuedItem;
+	}
+
+	void L_EntityPlayer_SetQueuedItem(Entity_Player* self, QueueItemData* queuedItem) {
+		self->_queuedItem = *queuedItem;
+	}
+
+	float L_EntityPlayer_GetSamsonBerserkCharge(Entity_Player* self) {
+		return self->_samsonBerserkCharge;
+	}
+
+	void L_EntityPlayer_SetSamsonBerserkCharge(Entity_Player* self, float samsonBerserkCharge) {
+		self->_samsonBerserkCharge = samsonBerserkCharge;
+	}
+
+	float L_EntityPlayer_GetShotSpeed(Entity_Player* self) {
+		return self->_shotSpeed;
+	}
+
+	void L_EntityPlayer_SetShotSpeed(Entity_Player* self, float shotSpeed) {
+		self->_shotSpeed = shotSpeed;
+	}
+
+	ColorMod* L_EntityPlayer_GetTearColor(Entity_Player* self) {
+		return &self->_tearColor;
+	}
+
+	void L_EntityPlayer_SetTearColor(Entity_Player* self, ColorMod* tearColor) {
+		self->_tearColor = *tearColor;
+	}
+
+	float L_EntityPlayer_GetTearFallingAcceleration(Entity_Player* self) {
+		return self->_tearFallingAcceleration;
+	}
+
+	void L_EntityPlayer_SetTearFallingAcceleration(Entity_Player* self, float tearFallingAcceleration) {
+		self->_tearFallingAcceleration = tearFallingAcceleration;
+	}
+
+	float L_EntityPlayer_GetTearFallingSpeed(Entity_Player* self) {
+		return self->_tearFallingSpeed;
+	}
+
+	void L_EntityPlayer_SetTearFallingSpeed(Entity_Player* self, float tearFallingSpeed) {
+		self->_tearFallingSpeed = tearFallingSpeed;
+	}
+
+	BitSet128* L_EntityPlayer_GetTearFlags(Entity_Player* self) {
+		return &self->_tearFlags;
+	}
+
+	void L_EntityPlayer_SetTearFlags(Entity_Player* self, BitSet128* tearFlags) {
+		self->_tearFlags = *tearFlags;
+	}
+
+	float L_EntityPlayer_GetTearHeight(Entity_Player* self) {
+		return self->_tearHeight;
+	}
+
+	void L_EntityPlayer_SetTearHeight(Entity_Player* self, float tearHeight) {
+		self->_tearHeight = tearHeight;
+	}
+
+	float L_EntityPlayer_GetTearRange(Entity_Player* self) {
+		return self->_tearRange;
+	}
+
+	void L_EntityPlayer_SetTearRange(Entity_Player* self, float tearRange) {
+		self->_tearRange = tearRange;
+	}
+
+	Vector* L_EntityPlayer_GetTearsOffset(Entity_Player* self) {
+		return &self->_tearsOffset;
+	}
+
+	void L_EntityPlayer_SetTearsOffset(Entity_Player* self, Vector* tearsOffset) {
+		self->_tearsOffset = *tearsOffset;
 	}
 }
 
