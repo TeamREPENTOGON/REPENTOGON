@@ -29,6 +29,7 @@
 using namespace rapidxml;
 using namespace std;
 
+ANM2* pathCheckanm2 = new ANM2();
 char* bosspoolsxml; //caching this ffs
 bool itempoolerror = false;
 bool xmlsloaded = false;
@@ -567,57 +568,199 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 }
 //Stages XML Hijack
 
+//dirty AI things
+bool endsWithPNG(const std::string& str) {
+    if (str.length() >= 4) {
+        return str.substr(str.length() -  4) == ".png";
+    }
+    return false;
+}
 
-//backdrop hijack (commented until we figure out backdropconfig stucture)
-/*
-int lasthackybackid = -1;
+bool endsWithANM(const std::string& str) {
+    if (str.length() >= 5) {
+        return str.substr(str.length() -  5) == ".anm2";
+    }
+    return false;
+}
+
+bool toboolnode(const std::string& str) {
+    if (str.length() >= 4) {
+        return str == "true";
+    }
+    return false;
+}
+
+std::bitset<61> changedbackdrops;
+uint32_t hookedbackdroptype;
+extern std::bitset<500> CallbackState;
+
 HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
-	if ((XMLStuff.BackdropData->nodes.count(bcktype) > 0) && ((bcktype == 1) || (bcktype > 60))) {
-		if (lasthackybackid != bcktype) {
-			XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
-			super(1, true);
-			//for (int i = 1; i <= 60; i++) {
-				//printf("dasfdsaf %s \n", this->configurations[i].gfx.c_str());
-			//}
-			
-			//for (int i = 0; i <= 60; i++) {
-			/*
-			this->configurations[1].gfx = node["gfx"];
-			
-			this->configurations[1].walls = toint(node["walls"]);
-			this->configurations[1].wallVariants = toint(node["wallvariants"]);
-			this->configurations[1].floors = toint(node["floors"]);
-			this->configurations[1].floorVariants = toint(node["floorvariants"]);
-			this->configurations[1].lFloorGfx = node["lfloorgfx"];
-			this->configurations[1].nFloorGfx = node["nfloorgfx"];
-			this->configurations[1].waterGfx = node["watergfx"];
-			//this->configurations[1].reversewatergfx = node["reversewatergfx"]; //missing
-			this->configurations[1].props = node["props"];
-			this->configurations[1].rocks = node["rocks"];
-			this->configurations[1].pit = node["pit"];
-			this->configurations[1].waterPit = node["waterpit"];
-			this->configurations[1].bridge = node["bridge"];
-			this->configurations[1].door = node["door"];
-			this->configurations[1].holeInWall = node["holeinwall"];
-			this->configurations[1].waterPitsMode = toint(node["waterpitsmode"]);
-			*/
-/*
-			super(1, true);
-			//}
-			lasthackybackid = bcktype;
+	const int callbackId = 1141;
+	const int callbackId2 = 1142;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(bcktype)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				uint32_t backdropid = (uint32_t)lua_tointeger(L, -1);
+				bcktype = backdropid;
+				//super(backdropid, loadgraphics);
+				//return;
+			}
+		}
+	}
+	
+	if ((XMLStuff.BackdropData->nodes.count(bcktype) > 0) && (bcktype > 60 || changedbackdrops.test(bcktype))) { // && (bcktype > 0)
+		XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
+
+		uint32_t refbackdrop = toint(node["reftype"]);
+		if (refbackdrop > 60) {
+			//luaL_error(L, "field 'referenceType' should be between 1 and 60 ", refbackdrop);
+			g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60 \n");
+			return;
+		}
+		if (bcktype > 60 && refbackdrop < 1) {
+			if (toboolnode(node["reversewatergfx"])) refbackdrop = 3;
+			else refbackdrop = 1;
+		}
+		else if (bcktype < 61) refbackdrop = bcktype;
+		
+		if (refbackdrop == bcktype) changedbackdrops.reset(refbackdrop);
+		else changedbackdrops.set(refbackdrop);
+
+		bool isAnm2Gfx = false;
+		if (refbackdrop == 18 || refbackdrop == 26 || refbackdrop == 35 
+		|| refbackdrop == 52 || refbackdrop == 53 || refbackdrop == 54) 
+			isAnm2Gfx = true;
+		
+		string gfxpath = node["gfxroot"] + node["gfx"];
+		bool correctPath = false;
+		if (isAnm2Gfx && (endsWithANM(gfxpath))) {  //file path check // added safe-check for anm2 otherwise it would spriteload a png and have a stroke if the param is wrong
+			if (!pathCheckanm2->_loaded) {
+				ANM2* s = &this->floorANM2;
+				pathCheckanm2->construct_from_copy(s);
+			}
+			pathCheckanm2->Load(gfxpath, true);
+			pathCheckanm2->LoadGraphics(true);
+			if (pathCheckanm2->_animDefaultName.length() > 0) {
+				correctPath = true;
+			}
+			else {
+				g_Game->GetConsole()->PrintError("[Backdrop:" + to_string(bcktype) + "] file at path '" + gfxpath + "' does not exist \n");
+				return;
+			}
+			pathCheckanm2->Reset();
+		}
+		
+		if (!isAnm2Gfx || correctPath) this->configurations[refbackdrop].gfx = gfxpath;
+
+		this->configurations[refbackdrop].walls = toint(node["walls"]);
+		this->configurations[refbackdrop].wallVariants = toint(node["wallvariants"]);
+
+		this->configurations[refbackdrop].floors = toint(node["floors"]);
+		this->configurations[refbackdrop].floorVariants = toint(node["floorvariants"]);
+
+		if ( endsWithPNG(node["lfloorgfx"]) ) {
+			string lFloorGfxpath = node["gfxroot"] + node["lfloorgfx"];
+			this->configurations[refbackdrop].lFloorGfx = lFloorGfxpath;
 		}
 		else {
-			super(1, loadgraphics);
+			this->configurations[refbackdrop].lFloorGfx = "";
 		}
+
+		if ( endsWithPNG(node["nfloorgfx"]) ) {
+			this->configurations[refbackdrop].nFloorGfx = node["gfxroot"] + node["nfloorgfx"];
+		}
+		else {
+			this->configurations[refbackdrop].nFloorGfx = "";
+		}
+
+		if ( endsWithPNG(node["watergfx"]) ) {
+			this->configurations[refbackdrop].waterGfx = node["gfxroot"] + node["watergfx"];
+		}
+		else {
+			this->configurations[refbackdrop].waterGfx = "";
+		}
+
+		/*
+			this->configurations[refbackdrop].reversewatergfx = toboolnode(node["reversewatergfx"]);
+		*/
+
+		if ( endsWithANM(node["props"]) ) {
+			this->configurations[refbackdrop].props = node["gridgfxroot"] + node["props"];
+		}
+		else {
+			this->configurations[refbackdrop].props = "";
+		}
+
+		if ( endsWithPNG(node["rocks"]) ) {
+			this->configurations[refbackdrop].rocks = node["gridgfxroot"] + node["rocks"];
+		}
+		else {
+			this->configurations[refbackdrop].rocks = "gfx/grid/rocks_basement.png";
+		}
+
+		if ( endsWithPNG(node["pit"]) ) {
+			this->configurations[refbackdrop].pit = node["gridgfxroot"] + node["pit"];
+		}
+		else {
+			this->configurations[refbackdrop].pit = "gfx/grid/grid_pit.png";
+		}
+
+		if ( endsWithPNG(node["waterpit"]) ) {
+			this->configurations[refbackdrop].waterPit = node["gridgfxroot"] + node["waterpit"];
+		}
+		else {
+			this->configurations[refbackdrop].waterPit = "gfx/grid/grid_pit_water.png";
+		}
+
+		if ( endsWithPNG(node["bridge"]) ) {
+			this->configurations[refbackdrop].bridge = node["gridgfxroot"] + node["bridge"];
+		}
+		else {
+			this->configurations[refbackdrop].bridge = "gfx/grid/grid_bridge.png";
+		}
+
+		if ( endsWithPNG(node["door"]) ) {
+			this->configurations[refbackdrop].door = node["gridgfxroot"] + node["door"];
+		}
+		else {
+			this->configurations[refbackdrop].door = "gfx/grid/door_01_normaldoor.png";
+		}
+
+		if ( endsWithPNG(node["holeinwall"]) ) {
+			this->configurations[refbackdrop].holeInWall = node["gridgfxroot"] + node["holeinwall"];
+		}
+		else {
+			this->configurations[refbackdrop].holeInWall = "gfx/grid/door_08_holeinwall.png";
+		}
+
+		hookedbackdroptype = bcktype;
+		super((uint32_t)refbackdrop, loadgraphics);
+
+		if (CallbackState.test(callbackId2 - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackId2)
+				.push(bcktype)
+				.push(bcktype)
+				.call(1);
+		}
+		return;
 	}
-	else {
+	hookedbackdroptype = bcktype;
 	super(bcktype, loadgraphics);
-	}
 }
-void SwapBackdrop(int source, int target) {
-	
-}
-*/
+
 //
 //#include <time.h>
 bool initedxmlenums = false;
@@ -1298,7 +1441,11 @@ void ProcessXmlNode(xml_node<char>* node) {
 			}
 			for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
 			{
-				backdrop[stringlower(attr->name())] = string(attr->value());
+				//temporary solution
+				if (backdrop.find(attr->name()) == backdrop.end()) {
+				//
+					backdrop[stringlower(attr->name())] = string(attr->value());
+				}
 			}
 			//string oldid = backdrop["id"];
 			if ((backdrop.count("id") > 0)) {
@@ -1314,7 +1461,7 @@ void ProcessXmlNode(xml_node<char>* node) {
 				XMLStuff.BackdropData->maxid = id;
 			}
 			//if (oldid.length() > 0) { backdrop["id"] = oldid; }
-			if (backdrop.find("name") != backdrop.end()) {
+			if (backdrop.find("name") == backdrop.end()) {
 				backdrop["name"] = backdrop["gfx"].substr(0, backdrop["gfx"].length() - 4);
 				int pos = backdrop["name"].find("_");
 				if ((pos < 4) && (pos > 0)) {
@@ -3094,6 +3241,15 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
 							{
 								node[stringlower(attr->name())] = string(attr->value());
+							}
+							//temporary solution, I hope
+							xml_node<char>* daddy = auxnode->parent();
+							for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+							{
+								xml_attribute<char>* newatt = new xml_attribute<char>(); 
+								newatt->name(attr->name()); 
+								newatt->value(attr->value()); 
+								clonedNode->append_attribute(newatt);
 							}
 							if (node.count("id") == 0) {
 								maxnodebackdrop += 1;
