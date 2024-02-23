@@ -423,7 +423,6 @@ HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned long long damageF
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
 		lua::LuaResults lua_result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
 			.push(this, lua::Metatables::ENTITY_PLAYER)
@@ -440,6 +439,200 @@ HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned long long damageF
 
 	return super(damage, damageFlags, source, damageCountdown);
 }
+
+// PRE/POST_PLAYER_ADD_HEARTS
+std::optional<int> PreAddHeartsCallbacks(Entity_Player* player,int hearts, int heartcallbackid, std::optional<bool> boolval) {
+	const int callbackid = 1009;
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaCaller caller = lua::LuaCaller(L).push(callbackid)
+		.push(heartcallbackid)
+		.push(player, lua::Metatables::ENTITY_PLAYER)
+		.push(hearts)
+		.push(heartcallbackid);
+
+	if (boolval == std::nullopt) {
+		caller = caller.pushnil();
+	}
+	else {
+		caller = caller.push(boolval.value());
+	}
+
+	lua::LuaResults result=caller.call(1);
+
+	if (!result) {
+		if (lua_isinteger(L, -1)) {
+			 return (int)lua_tointeger(L, -1);
+		}
+	}
+	return std::nullopt;
+}
+
+void PostAddHeartsCallbacks(Entity_Player* player, int hearts, int heartcallbackid, std::optional<bool> boolval) {
+	const int callbackid = 1010;
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaCaller caller = lua::LuaCaller(L).push(callbackid)
+		.push(heartcallbackid)
+		.push(player, lua::Metatables::ENTITY_PLAYER)
+		.push(hearts)
+		.push(heartcallbackid);
+
+	if (boolval == std::nullopt) {
+		caller = caller.pushnil();
+	}
+	else {
+		caller = caller.push(boolval.value());
+	}
+
+	lua::LuaResults result = caller.call(1);
+
+	return;
+}
+
+HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk) -> void) {	//red hp
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(hearts, unk);
+	}
+	
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, hearts, 1<<0, std::nullopt);	//do not pass unk
+		hearts = heartcount.value_or(hearts);
+		super(hearts, unk);
+	}
+
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, hearts, 1 << 0, std::nullopt);
+	}
+}
+
+HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void) {	//max hearts
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount, ignoreKeeper);
+	}
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 1, ignoreKeeper);
+		amount = heartcount.value_or(amount);
+		super(amount, ignoreKeeper);
+	}
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, amount, 1 << 1, ignoreKeeper);
+	}
+}
+
+HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount) -> Entity_Player*) {	//soul hp
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount);
+	}
+
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1<<2 ,std::nullopt);
+		amount = heartcount.value_or(amount);
+		super(amount);
+	}
+
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, amount, 1 << 2, std::nullopt);
+	}
+	return this;
+}
+
+
+HOOK_METHOD(Entity_Player, AddBlackHearts, (int amount) -> void) {	//black
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount);
+	}
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1<<3, std::nullopt);
+		amount = heartcount.value_or(amount);
+		super(amount);
+	}
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, amount, 1 << 3, std::nullopt);
+	}
+}
+
+HOOK_METHOD(Entity_Player, AddEternalHearts, (int amount) -> void) {	//eternal
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount);
+	}
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 4, std::nullopt);
+		amount = heartcount.value_or(amount);
+		super(amount);
+	}
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, amount, 1 << 4, std::nullopt);
+	}
+}
+
+HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount) -> void) {	//golden
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount);
+	}
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);
+		amount = heartcount.value_or(amount);
+		super(amount);
+	}
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);
+	}
+}
+
+HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bone
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount);
+	}
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 6, std::nullopt);
+		amount = heartcount.value_or(amount);
+		super(amount);
+	}
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, amount, 1 << 6, std::nullopt);
+	}
+	return this;
+}
+
+HOOK_METHOD(Entity_Player, AddRottenHearts, (int amount, bool unk) -> void) {	//rotten
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount, unk);
+	}
+
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 7, std::nullopt);	//do not pass unk
+		amount = heartcount.value_or(amount);
+		super(amount, unk);
+	}
+
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, amount, 1 << 7, std::nullopt);
+	}
+}
+
+HOOK_METHOD(Entity_Player, AddBrokenHearts, (int amount) -> void) {	//broken
+	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+		super(amount);
+	}
+	if (CallbackState.test(1009 - 1000)) {
+		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 8, std::nullopt);
+		amount = heartcount.value_or(amount);
+		super(amount);
+	}
+	if (CallbackState.test(1010 - 1000)) {
+		PostAddHeartsCallbacks(this, amount, 1 << 8, std::nullopt);
+	}
+}
+
 
 //PRE/POST_ENTITY_THROW (1040/1041)
 void ProcessPostEntityThrow(Vector* Velocity, Entity_Player* player, Entity* ent) {

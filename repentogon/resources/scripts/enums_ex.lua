@@ -4,7 +4,8 @@ ModCallbacks.MC_POST_TAKE_DMG = 1006 -- deprecated but still in here for backwar
 ModCallbacks.MC_POST_ENTITY_TAKE_DMG = 1006
 ModCallbacks.MC_ENTITY_TAKE_DMG = 1007
 ModCallbacks.MC_PRE_PLAYER_TAKE_DMG = 1008
--- free
+ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS = 1009
+ModCallbacks.MC_POST_PLAYER_ADD_HEARTS = 1010
 ModCallbacks.MC_POST_GRID_ROCK_DESTROY = 1011
 ModCallbacks.MC_GRID_HURT_DAMAGE = 1012
 ModCallbacks.MC_POST_GRID_HURT_DAMAGE = 1013
@@ -236,6 +237,19 @@ ModCallbacks.MC_POST_SAVESLOT_LOAD = 1470
 
 ModCallbacks.MC_PRE_CHALLENGE_DONE = 1471
 ModCallbacks.MC_POST_CHALLENGE_DONE = 1472
+
+AddHealthType={	
+	NONE	=	0,
+	RED		=	1<<0,
+	MAX		=	1<<1,
+	SOUL	=	1<<2,
+	BLACK	=	1<<3,
+	ETERNAL	=	1<<4,
+	GOLDEN	=	1<<5,
+	BONE	=	1<<6,
+	ROTTEN	=	1<<7,
+	BROKEN	=	1<<8
+}
 
 DeliriumCallbacks = {
     PRE_TRANSFORMATION = "DeliriumPreTransformation",
