@@ -25,13 +25,13 @@ Determines how an image (either a [Sprite](../Sprite.md) as a whole or one of it
 #### void SetMode ( int mode ) {: .copyable aria-label='Functions' } 
 Ranges from 0-2. Invalid modes are ignored. The game uses `1` as a default value, `0` for the blue base of the Planetarium backdrop, and `2` for multiplicative blending (Planetarium backdrop starfield layers, `8bitclouds_utero` backdrop layer, Beast death spotlight, and various other misc effects.
 
-???- info "Nonstandard modes
+???- info "Nonstandard modes"
     The game additionally manually sets modes for various effects:
 
-    * EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses `{ 0, 2, 1, 1 }`
-    * Level 2 Willo, Necro, Visage (seemingly including the heart, mask, and plasma ball), Bulbs (on death), Fire variant projectiles & tears, EffectVariant.CRACK_THE_SKY (as spawned by the active, at least), EffectVariant.DUST_CLOUD (as spawned by Book of Belial), EffectVariant.DUST_CLOUD (as spawned by Ultra War) use `{ 1, 1, 1 ,1 }`
-    * EffectVariant.HUSH_ASHES & the [Boss Intro versus Sprite](../RoomTransition.md#getversusscreensprite) uses `{ 4, 7, 4, 7 }`
-    * EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and one of special Hell backdrop layers for the Beast fight use `{ 0, 2, 0, 2 }`
+    EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses `{ 0, 2, 1, 1 }`
+    Level 2 Willo, Necro, Visage (seemingly including the heart, mask, and plasma ball), Bulbs (on death), Fire variant projectiles & tears, EffectVariant.CRACK_THE_SKY (as spawned by the active, at least), EffectVariant.DUST_CLOUD (as spawned by Book of Belial), EffectVariant.DUST_CLOUD (as spawned by Ultra War) use `{ 1, 1, 1 ,1 }`
+    EffectVariant.HUSH_ASHES & the [Boss Intro versus Sprite](../RoomTransition.md#getversusscreensprite) uses `{ 4, 7, 4, 7 }`
+    EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and one of special Hell backdrop layers for the Beast fight use `{ 0, 2, 0, 2 }`
 
 ___
 ## Variables
