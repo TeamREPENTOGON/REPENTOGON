@@ -4,6 +4,7 @@ Additions:
 	- RemoveFromPlayer
 * XMLData :
 	- XMLData.GetEntryByOrder: gets entries in the order they appear on the xmls.
+* Added MC_PRE/POST_PLAYER_ADD_HEARTS(EntityPlayer Player, int Amount, AddHealthType AddHealthType, bool OptionalArg) that allows changing the added amount of hearts.
 /newline/
 Modified:
 * Pickup :

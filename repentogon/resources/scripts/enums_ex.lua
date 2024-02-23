@@ -236,6 +236,19 @@ ModCallbacks.MC_POST_SAVESLOT_LOAD = 1470
 ModCallbacks.MC_PRE_CHALLENGE_DONE = 1471
 ModCallbacks.MC_POST_CHALLENGE_DONE = 1472
 
+AddHealthType={	
+	NONE	=	0,
+	RED		=	1<<0,
+	MAX		=	1<<1,
+	SOUL	=	1<<2,
+	BLACK	=	1<<3,
+	ETERNAL	=	1<<4,
+	GOLDEN	=	1<<5,
+	BONE	=	1<<6,
+	ROTTEN	=	1<<7,
+	BROKEN	=	1<<8
+}
+
 DeliriumCallbacks = {
     PRE_TRANSFORMATION = "DeliriumPreTransformation",
     TRANSFORMATION = "DeliriumTransformation",

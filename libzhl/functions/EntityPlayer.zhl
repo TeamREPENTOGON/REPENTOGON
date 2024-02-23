@@ -136,7 +136,7 @@ __thiscall Entity_Pickup* Entity_Player::DropCollectible(int collectible, Entity
 __thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible);
 
 "558bec83e4f8518a55":
-__thiscall void Entity_Player::AddHearts(int hearts, bool isvampire);
+__thiscall void Entity_Player::AddHearts(int hearts, bool unk);
 
 "558bec83e4f85153568bf1578b7d??83be????????28":
 __thiscall void Entity_Player::AddMaxHearts(int amount, bool ignoreKeeper);
@@ -209,10 +209,10 @@ __thiscall bool Entity_Player::HandleCollision(Entity* collider, bool low);
 __thiscall void Entity_Player::InitPreLevelInitStats();
 
 "558bec83e4f883ec0c5356578bf1":
-__thiscall void Entity_Player::AddBlackHearts(unsigned int amount);
+__thiscall void Entity_Player::AddBlackHearts(int amount);
 
 "558bec83e4f851538a5d":
-__thiscall void Entity_Player::AddRottenHearts(unsigned int amount, bool isvampire);
+__thiscall void Entity_Player::AddRottenHearts(int amount, bool unk);
 
 "558bec51568bf1c745??000000008d86":
 __thiscall void Entity_Player::AddGigaBombs(int amount);
