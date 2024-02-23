@@ -452,14 +452,13 @@ __thiscall void Entity_Player::ClearQueueItem();
 
 
 struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public Entity { {{
-	inline RNG* GetDropRNG() {return (RNG*)((char*)this + 0x334); }
-    inline int* GetMaxHearts() {return (int*)((char*)this + 0x1290); }
-	inline int* GetRedHearts() {return (int*)((char*)this + 0x1294); }
-	inline int* GetEternalHearts() {return (int*)((char*)this + 0x1298); }
-	inline int* GetSoulHearts() {return (int*)((char*)this + 0x129C); }
-	inline int* GetBlackHearts() {return (int*)((char*)this + 0x12A0); }
-	inline int* GetMetronomeCollectibleID() { return (int*)((char*)this + 0x12d8); } 
-	inline int GetPlayerType() { return *(int*)((char*)this + 0x130c); }
+    inline int* GetMaxHearts() {return &this->_maxHearts; }
+	inline int* GetRedHearts() {return &this->_redHearts; }
+	inline int* GetEternalHearts() {return &this->_eternalHearts; }
+	inline int* GetSoulHearts() {return &this->_soulHearts; }
+	inline int* GetBlackHearts() {return &this->_blackHearts; }
+	inline int* GetMetronomeCollectibleID() { return &this->_metronomeCollectibleID; } 
+	inline int GetPlayerType() { return this->_playerType; }
 	inline int* GetPlayerTypeMutable() { return (int*)((char*)this + 0x130c); }
 	inline Weapon** GetWeapon(int index) { return (Weapon**)((char*)this + index * 4 + 0x1328); }
 	inline Entity_Effect* GetMarkedTarget() { return *(Entity_Effect**)((char*)this + 0x1354); }
@@ -502,7 +501,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	inline int* GetGigaBombs() {return (int*)((char*)this + 0x1CF4); }
 	inline History* GetHistory() { return (History*)((char*)this + 0x1D0C); }
 	inline float* GetTearPoisonDamage() { return (float*)((char*)this + 0x14c0); }
-	inline ActiveItemDesc* GetActiveItemDesc(int index) { return (ActiveItemDesc*)((char*)this + index * 28 + 0x14c4); }
+	inline ActiveItemDesc* GetActiveItemDesc(int index) { return &this->_activeDesc[index]; }
 	inline ANM2* GetHeldSprite() { return &this->_heldSprite; }
 }} 
 
@@ -566,10 +565,14 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
     }}
 
+	
 	ANM2 _heldSprite : 0xf48;
 	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1170;
 	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
 	int _gnawedLeafTimer : 0x12c4;
+	int _maxHearts : 0x1290, _redHearts : 0x1294,  _eternalHearts : 0x1298, _soulHearts : 0x129C, _blackHearts : 0x12A0;
+	int _metronomeCollectibleID : 0x12d8;
+	int _playerType: 0x130c;
 	float _damage : 0x13b8;
 	float _movespeed : 0x14ac;
 	float _luck : 0x14b0;
@@ -582,6 +585,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	ColorMod _laserColor : 0x140c;
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
 	uint32_t _cacheFlags : 0x14b8;
+	ActiveItemDesc _activeDesc[4] : 0x14c4;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	int _playerForms[15] : 0x1700;
 	KColor _footprintColor1 : 0x1768;
