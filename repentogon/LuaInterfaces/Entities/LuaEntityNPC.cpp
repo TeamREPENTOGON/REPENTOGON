@@ -333,6 +333,12 @@ LUA_FUNCTION(Lua_GetBossColorIdx) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetDarkRedChampionRegenTimer) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	lua_pushinteger(L, npc->_championRegenTimer);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -359,6 +365,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 		{ "IsBossColor", Lua_IsBossColor },
 		{ "GetBossColorIdx", Lua_GetBossColorIdx },
+		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }

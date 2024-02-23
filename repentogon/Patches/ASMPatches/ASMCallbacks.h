@@ -15,3 +15,4 @@ void ASMPatchPrePickupVoided();
 void ASMPatchPrePickupVoidedBlackRune();
 void ASMPatchPrePickupVoidedAbyss();
 void ASMPatchPrePickupComposted();
+void ASMPatchPostChampionRegenCallback();

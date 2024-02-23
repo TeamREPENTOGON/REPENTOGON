@@ -414,6 +414,7 @@ HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 	return unmodifiedTarget;
 }
 
+
 // PRE_PLAYER_TAKE_DMG
 // (Runs before holy mantle, etc)
 HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned long long damageFlags, EntityRef* source, int damageCountdown) -> bool) {
@@ -2877,6 +2878,8 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 	}
 }
 
+//MC_PRE_BACKDROP_CHANGE/INIT (1141-1142) --> it's chilling on xmldata.cpp for now, may be moved here later
+
 HOOK_METHOD(Backdrop, RenderWalls, (Vector const& renderOffset, ColorMod mod) -> void) {
 	const int callbackId = 1106;
 	if (CallbackState.test(callbackId - 1000)) {
@@ -2937,30 +2940,6 @@ HOOK_METHOD(Backdrop, pre_render_walls, () -> void) {
 			.pushnil()
 			.call(0);
 	}
-}
-
-//PRE_BACKDROP_CHANGE (1141)
-HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
-	const int callbackId = 1141;
-	if (CallbackState.test(callbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
-			.pushnil()
-			.push(bcktype)
-			.call(1);
-
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				uint32_t backdropid = (uint32_t)lua_tointeger(L, -1);
-				super(backdropid, loadgraphics);
-				return;
-			}
-		}
-	}
-	super(bcktype, loadgraphics);
 }
 
 //PLAYER_INIT_PRE_LEVEL_INIT_STATS (1127)

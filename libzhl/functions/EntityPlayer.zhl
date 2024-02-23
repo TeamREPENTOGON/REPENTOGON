@@ -600,6 +600,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	bool _isCoopGhost : 0x1f88;
 	bool _canShoot : 0x1745;
 	bool _canFly : 0x14b4;
+	std_vector_int _unkcolentry: 0x15f0;
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":
