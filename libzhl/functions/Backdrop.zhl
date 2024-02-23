@@ -1,15 +1,24 @@
 "558bec83e4f88b45088bd185c0":
 __thiscall void Backdrop::Init(uint32_t backdropId, bool LoadGraphics);
 
-struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG) {
+struct Backdrop depends (ReferenceCounter_ImageBase, BackdropConfig, RNG, Vector, ANM2) {
     ReferenceCounter_ImageBase floorBuffer : 0x0; // 0x0
     ReferenceCounter_ImageBase wallsBuffer : 0x8; // 0x8 
+    ReferenceCounter_ImageBase floorSurface2 : 0x10; // 0x10
+    ReferenceCounter_ImageBase tempBackdropSurface : 0x18; // 0x18
     ReferenceCounter_ImageBase gfx : 0x24; // 0x24
     ReferenceCounter_ImageBase waterGfx : 0x2C; // 0x2C
     ReferenceCounter_ImageBase nlfloorGfx : 0x34; // 0x34
+    ANM2 floorANM2 : 0x3C; // 0x3C
     uint32_t backdropId : 0x150; // 0x150
     BackdropConfig configurations[61] : 0x154; // 0x154
-    RNG rng : 0x4cb0; // 0x4cb0
+    Vector unkVec1 : 0x4ca0;
+    Vector unkVec2 : 0x4ca8;
+    RNG rng : 0x4cb0; // 0x4cb0;
+    uint32_t seed : 0x4cc0;
+    ANM2 _wallDetailANM2 : 0x4cc4;
+    ANM2 _controlsANM2 : 0x4dd8;
+    ANM2 _controlsButtonsANM2 : 0x4eec;
 };
 
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b86c030100":

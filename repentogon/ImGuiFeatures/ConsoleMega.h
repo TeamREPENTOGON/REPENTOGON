@@ -391,8 +391,6 @@ struct ConsoleMega : ImGuiWindowObject {
                 s = (char*)fixedCommand.c_str();
                 if (s[0])
                   ExecuteCommand(s);
-                else // close console when nothing is in the textbox
-                  menuShown = false;
                 reclaimFocus = true;
               }
               ImGui::PopItemWidth();

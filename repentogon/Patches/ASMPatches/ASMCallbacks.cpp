@@ -1,3 +1,5 @@
+#include "IsaacRepentance.h"
+
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 
@@ -752,4 +754,57 @@ void ASMPatchPrePickupComposted() {
 		.AddRelativeJump((char*)addr + 0x5);
 
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void __stdcall RunPostChampionRegenCallback(Entity_NPC* npc) {
+	// These calls get skipped over due to the placement of the patch, so just do them here.
+	npc->_pathfinder.Reset();
+	npc->ResetColor();
+
+	const int callbackid = 1223;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.push(*npc->GetType())
+			.push(npc, lua::Metatables::ENTITY_NPC)
+			.call(0);
+	}
+}
+
+void ASMPatchPostChampionRegenCallback() {
+	// Scan for the address to jump to after we're done.
+	// This is where the code would end up after the regen is done.
+	SigScan exitScanner("8d77??83bf????????19");
+	exitScanner.Scan();
+	void* exitAddr = exitScanner.GetAddress();
+
+	// The easiest place to patch in was over the call to NPCAI_Pathfinder::Reset()
+	// It's the last thing that is done in the block that ONLY handles the end of the regen, after the Entity_NPC's Sprite is reset, etc.
+	// There's actually two of them because Clickety Clacks have some special handling for being dark red champions, but we can patch both the same.
+	const std::vector<std::string> signatures = {
+		"e8????????eb??8bcfe8????????d80d",  // NPCAI_Pathfinder::Reset() call for most entities
+		"e8????????e9????????68????????8d8f"  // NPCAI_Pathfinder::Reset() call for clickety clacks specifically
+	};
+
+	for (const std::string& sig : signatures) {
+		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+		ASMPatch patch;
+
+		SigScan scanner(sig.c_str());
+		scanner.Scan();
+		void* addr = scanner.GetAddress();
+
+		patch.AddBytes("\x8B\x07")  // mov eax, dword ptr ds:[edi]
+			.AddBytes("\x8B\xCF")  // mov ecx,edi
+			.PreserveRegisters(savedRegisters)
+			.Push(ASMPatch::Registers::EDI) // Push the Entity_NPC
+			.AddInternalCall(RunPostChampionRegenCallback)
+			.RestoreRegisters(savedRegisters)
+			.AddBytes("\x31\xF6")  // xor esi,esi
+			.AddRelativeJump((char*)exitAddr);
+
+		sASMPatcher.PatchAt(addr, &patch);
+	}
 }

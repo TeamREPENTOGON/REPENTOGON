@@ -4,6 +4,7 @@
 #include "Room.h"
 
 RoomASM roomASM;
+extern uint32_t hookedbackdroptype;
 
 LUA_FUNCTION(Lua_SpawnGridEntity) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
@@ -354,6 +355,19 @@ LUA_FUNCTION(Lua_RoomGetNumRainSpawners) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomGetBackdropTypeHui) { //this is a bad way to replace room.GetBackdropType, I think
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	if (hookedbackdroptype != 0) {
+		lua_pushinteger(L, hookedbackdroptype);
+		return 1;
+	}
+	else {
+		Backdrop* bg = room->GetBackdrop();
+		lua_pushinteger(L, bg->backdropId);
+		return 1;
+	}
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -397,6 +411,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetRainIntensity", Lua_RoomGetRainIntensity},
 		{ "SetRainIntensity", Lua_RoomSetRainIntensity},
 		{ "GetNumRainSpawners", Lua_RoomGetNumRainSpawners},
+		{ "GetBackdropType", Lua_RoomGetBackdropTypeHui},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

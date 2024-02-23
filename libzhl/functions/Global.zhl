@@ -1454,6 +1454,9 @@ cleanup void RepCaughtException(int x); // Cant hook to this shit no matter what
 "a1(????????)83ec10803d????????00":
 reference char* g_KAGEInputController; // This is very likely not correct, but I need this offset for Lua, so whatever.
 
+"a1(????????)895d??8945":
+reference char* ModReferences; // ModReference data from RegisterMod 
+
 struct GlobalPost {
 {{
 }} };
