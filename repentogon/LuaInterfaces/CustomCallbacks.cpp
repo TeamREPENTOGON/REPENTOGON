@@ -414,6 +414,7 @@ HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 	return unmodifiedTarget;
 }
 
+
 // PRE_PLAYER_TAKE_DMG
 // (Runs before holy mantle, etc)
 HOOK_METHOD(Entity_Player, TakeDamage, (float damage, unsigned long long damageFlags, EntityRef* source, int damageCountdown) -> bool) {
@@ -2683,6 +2684,8 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 		super(levelType, stageType);
 	}
 }
+
+//MC_PRE_BACKDROP_CHANGE/INIT (1141-1142) --> it's chilling on xmldata.cpp for now, may be moved here later
 
 HOOK_METHOD(Backdrop, RenderWalls, (Vector const& renderOffset, ColorMod mod) -> void) {
 	const int callbackId = 1106;

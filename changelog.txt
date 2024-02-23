@@ -1,5 +1,10 @@
 v1.0.x -
 Additions:
+* Backdrops:
+	- Custom Backdrop support! with contents/backdrops.xml!
+	- Custom attribute reftype to specify the base backdrop for the custom ones
+	- Isaac.GetBackdropTypeByName (self-explanatory make sure to give your backdrops a name!)
+	- MC_PRE/POST_BACKDROP_CHANGE callback accepting callbacktype as a return value on pre and recieving callbacktype as a param
 * Familiar :
 	- RemoveFromPlayer
 * EntityNPC :
@@ -14,6 +19,7 @@ Modified:
 	- Pickup:IsBlind method now checks natural blind effect (also added "CheckForcedBlindOnly" optional argument)
 /newline/
 Fixes:
+	* Fixed issue that preventing the root attributes on repentogon-supported xmls(achievements,giantbook,backdrops) from working properly
 	* Fixed an issue that prevented custom parsed attributes from working on xmls with hugeass comments at the beginning of the file
 	* Fixed an issue where the console would behave sporadically when closed with numpad enter
 /newline/
