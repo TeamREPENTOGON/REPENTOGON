@@ -117,13 +117,12 @@ DWORD RedirectLua(HMODULE* outLua) {
 
 static HMODULE luaHandle = NULL;
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
-{
-	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
-	{
+extern "C" {
+	void __declspec(dllexport) LaunchZHL() {
 		sLogger->SetOutputFile("dsound.log", "w", true);
 		sLogger->SetFlushOnLog(true);
 		sLogger->Info("Loaded REPENTOGON dsound.dll\n");
+
 		if (HasCommandLineArgument("-repentogonoff")) {
 			FILE* f = fopen("repentogon.log", "a");
 			if (f) {
@@ -132,7 +131,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 				fprintf(f, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
 				fclose(f);
 			}
-			return TRUE;
+			return;
 		}
 
 		sLogger->Info("dsound: Overriding Lua 5.3.3 with Lua 5.4\n");
@@ -181,16 +180,17 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		WIN32_FIND_DATA findData;
 		HANDLE hFind = FindFirstFile("*", &findData);
 
-		if(hFind != INVALID_HANDLE_VALUE)
+		LoadLibrary("libzhl.dll");
+		if (hFind != INVALID_HANDLE_VALUE)
 		{
 			do
 			{
-				if(!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+				if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 				{
-					const char *fileName = findData.cFileName;
+					const char* fileName = findData.cFileName;
 
 					int n = strlen(fileName);
-					if(n >= 4 && !_stricmp(fileName + n - 4, ".dll") && !_strnicmp(fileName, "zhl", 3))
+					if (n >= 4 && !_stricmp(fileName + n - 4, ".dll") && !_strnicmp(fileName, "zhl", 3))
 					{
 						HMODULE library = LoadLibraryA(fileName);
 						if (!library)
@@ -206,7 +206,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 						//printf("loaded mod %s\n", fileName);
 					}
 				}
-			} while(FindNextFile(hFind, &findData));
+			} while (FindNextFile(hFind, &findData));
 			FindClose(hFind);
 		}
 
@@ -226,7 +226,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 
 		sLogger->Info("dsound: Loaded all ZHL mods in %d msecs\n", GetTickCount() - startTime);
 	}
-	else if(ul_reason_for_call == DLL_PROCESS_DETACH)
+}
+
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+{
+	if(ul_reason_for_call == DLL_PROCESS_DETACH)
 	{
 		sLogger->Info("dsound: Unloading dsound.dll\n");
 		/* printf("unloading libs\n");

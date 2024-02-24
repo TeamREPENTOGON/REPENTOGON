@@ -275,7 +275,7 @@ static std::vector<WPARAM> pressedKeys;
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	if (shutdownInitiated)
+	if (shutdownInitiated || !g_Game)
 		return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 
 	// Enable the overlay using the grave key, disable using ESC

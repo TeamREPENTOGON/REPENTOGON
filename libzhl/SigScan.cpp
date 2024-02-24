@@ -1,3 +1,4 @@
+#include "Log.h"
 #include "SigScan.h"
 #include <string>
 #include <Windows.h>
@@ -197,6 +198,12 @@ bool SigScan::Scan(Callback callback)
 	}
 
 	s_pLastAddress = s_pBase;
+	ZHL::Logger logger;
+	logger.Log("[ERROR] Unable to find signature ");
+	FILE* f = logger.GetFile();
+	for (size_t i = 0; i < m_iLength; ++i)
+		fprintf(f, "%hhx", m_sig[i]);
+	fprintf(f, "\n");
 	return false;
 }
 
