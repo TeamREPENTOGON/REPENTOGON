@@ -39,19 +39,26 @@ ___
 #### int Flag1 {: .copyable aria-label='Variables'}
 Used for alpha blending. In most cases this is `1`.
 
+Based on newer knowledge, a better name for this might be `AlphaSourceFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+
 ___
 ### Flag2 {: aria-label='Variables' }
 #### int Flag2 {: .copyable aria-label='Variables'}
 `0` in "Mode 0", `7` in "Mode 1", and `1` in "Mode 2".
+
+Based on newer knowledge, a better name for this might be `AlphaDestinationFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
 
 ___
 ### Flag3 {: aria-label='Variables' }
 #### int Flag3 {: .copyable aria-label='Variables'}
 Set to `1` in all modes.
 
+Based on newer knowledge, a better name for this might be `RGBSourceFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+
 ___
 ### Flag4 {: aria-label='Variables' }
 #### int Flag4 {: .copyable aria-label='Variables'}
 `0` in "Mode 0", `7` in "Mode 1", and `1` in "Mode 2".
 
+Based on newer knowledge, a better name for this might be `RGBDestinationFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
 ___

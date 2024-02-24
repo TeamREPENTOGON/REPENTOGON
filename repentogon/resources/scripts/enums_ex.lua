@@ -239,6 +239,12 @@ ModCallbacks.MC_POST_SAVESLOT_LOAD = 1470
 ModCallbacks.MC_PRE_CHALLENGE_DONE = 1471
 ModCallbacks.MC_POST_CHALLENGE_DONE = 1472
 
+local function AddEnumToNamespace(namespace, enums)
+	for k,v in pairs(enums) do
+		rawset(namespace, k, v)
+	end
+end
+
 AddHealthType={	
 	NONE	=	0,
 	RED		=	1<<0,
@@ -2514,3 +2520,9 @@ SpecialQuest = {
 	MIRROR = 1,
 	MINESHAFT = 2,
 }
+
+AddEnumToNamespace(BlendMode, {
+	ADD = 0,
+	NORMAL = 1,
+	MULTIPLY = 2,
+})

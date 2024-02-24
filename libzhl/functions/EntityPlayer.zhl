@@ -465,20 +465,20 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	inline Entity** GetHeldEntity() { return (Entity**)((char*)this + 0x1358); }
 	inline int* GetFireDelayModifier() { return &this->_fireDelayModifier; }
 	inline int* GetDamageModifier() { return &this->_damageModifier; }
-	inline float* GetEdenSpeed() { return (float*)((char*)this + 0x1490); }
-	inline float* GetEdenFireDelay() { return (float*)((char*)this + 0x1494); }
-	inline float* GetEdenDamage() { return (float*)((char*)this + 0x1498); }
-	inline float* GetEdenRange() { return (float*)((char*)this + 0x149c); }
-	inline float* GetEdenShotSpeed() { return (float*)((char*)this + 0x14a0); }
-	inline float* GetEdenLuck() { return (float*)((char*)this + 0x14a4); }
-	inline int* GetCanFly() { return (int*)((char*)this + 0x14b4); }
+	inline float* GetEdenSpeed() { return &this->_edenSpeed; }
+	inline float* GetEdenFireDelay() { return &this->_edenFireDelay; }
+	inline float* GetEdenDamage() { return &this->_edenDamage; }
+	inline float* GetEdenRange() { return &this->_edenTearRange; }
+	inline float* GetEdenShotSpeed() { return &this->_edenShotSpeed; }
+	inline float* GetEdenLuck() { return &this->_edenLuck; }
+	inline bool* GetCanFly() { return &this->_canFly; }
 	inline std_vector_int GetCollectiblesList() { return *(std_vector_int*)((char*)this + 0x15f0); }
 	inline vector_SmeltedTrinketDesc* GetSmeltedTrinket() { return &this->_smeltedTrinkets; }
 	inline std_vector_int GetVoidedCollectiblesList() { return *(std_vector_int*)((char*)this + 0x167c); }
 	inline int* GetPonyCharge() { return (int*)((char*)this + 0x17a8); } 
-	inline int GetDeadEyeCharge() { return *(int*)((char*)this + 0x17D0); }
-	inline int GetDeadEyeMisses() { return *(int*)((char*)this + 0x17D0); }
-	inline bool* GetCanShoot() { return (bool*)((char*)this + 0x1745); }
+	inline uint32_t GetDeadEyeCharge() { return this->_deadEyeCharges; }
+	inline uint32_t GetDeadEyeMisses() { return this->_deadEyeMisses; }
+	inline bool* GetCanShoot() { return &this->_canShoot; }
 	inline int* GetEpiphoraCharge() { return (int*)((char*)this + 0x17c4); }
 	inline int* GetMegaBlastDuration() { return (int*)((char*)this + 0x1814); }
 	inline int* GetPeeBurstCooldown() { return (int*)((char*)this + 0x1818); }
@@ -584,6 +584,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	float _maxfiredelay : 0x13a8;
 	ColorMod _laserColor : 0x140c;
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
+	float _edenSpeed : 0x1490, _edenFireDelay : 0x1494, _edenDamage : 0x1498, _edenTearRange : 0x149c, _edenShotSpeed : 0x14a0, _edenLuck : 0x14a4;
 	uint32_t _cacheFlags : 0x14b8;
 	ActiveItemDesc _activeDesc[4] : 0x14c4;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
