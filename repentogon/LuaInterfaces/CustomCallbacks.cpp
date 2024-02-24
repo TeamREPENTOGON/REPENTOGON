@@ -66,6 +66,7 @@ HOOK_STATIC(LuaCallbacks, PostUpdate, () -> void, __stdcall) {
 	} 
 }
 
+// MC_POST_RENDER
 HOOK_STATIC(LuaCallbacks, PostRender, () -> void, __stdcall) {
 	const int callbackid = 2;
 
@@ -74,6 +75,31 @@ HOOK_STATIC(LuaCallbacks, PostRender, () -> void, __stdcall) {
 		int* returnType = (int*)malloc(sizeof(int*));
 		L_RunCallback(callbackid, NULL, NULL, 0, returnType, ret);
 
+		free(ret);
+		free(returnType);
+	}
+}	
+
+// MC_EVALUATE_CACHE
+HOOK_STATIC(LuaCallbacks, EvaluateItems, (Entity_Player* player, int cacheFlag) -> void, __stdcall) {
+	static constexpr int callbackid = 8;
+
+	struct cbargs {
+		Entity_Player* player;
+		int cacheFlag;
+	};
+
+	if (CallbackState.test(callbackid)) {
+		cbargs* args = (cbargs*)malloc(sizeof(cbargs));
+		void** ret = (void**)malloc(sizeof(void*));
+		int* returnType = (int*)malloc(sizeof(int*));
+
+		args->player = player;
+		args->cacheFlag = cacheFlag;
+
+		L_RunCallback(callbackid, NULL, (void**)args, 2, returnType, ret);
+
+		free(args);
 		free(ret);
 		free(returnType);
 	}

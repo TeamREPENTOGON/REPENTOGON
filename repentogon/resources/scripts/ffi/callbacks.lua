@@ -121,7 +121,7 @@ local ffiReturns = {
 }
 function CallbackWrapper(id, param, args, numArgs, retType, ret)
 	local argtable = {}
-	for i = 1, numArgs do
+	for i = 0, numArgs - 1 do
 		table.insert(argtable, args[i])
         local argType = type(args[i])
     end
