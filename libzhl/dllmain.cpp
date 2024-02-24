@@ -50,7 +50,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 					}
 					out << ")" << std::endl;
 				}
-				MessageBox(0, "Multiple function / variables were not found", "Error", MB_ICONERROR);
+				MessageBox(0, "Multiple function / variables were not found.\nIf you're a user facing this issue, you might be using an unsupported version of the game.", "Error", MB_ICONERROR);
 			}
 			ExitProcess(1);
 		}
