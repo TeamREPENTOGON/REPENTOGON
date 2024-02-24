@@ -26,6 +26,7 @@ Fixes:
 	* Fixed issue that preventing the root attributes on repentogon-supported xmls(achievements,giantbook,backdrops) from working properly
 	* Fixed an issue that prevented custom parsed attributes from working on xmls with hugeass comments at the beginning of the file
 	* Fixed an issue where the console would behave sporadically when closed with numpad enter
+	* Fixed MC_POST_SFX_PLAY not firing properly when there was no PRE added.
 /newline/
 /newline/
 v1.0.6b -
