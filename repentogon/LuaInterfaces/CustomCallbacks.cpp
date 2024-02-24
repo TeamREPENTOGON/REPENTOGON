@@ -196,7 +196,8 @@ void ProcessPostSFXPlay(int ID, float Volume, int FrameDelay, bool Loop, float P
 HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, float Pitch, float Pan) -> void) {
 	const int callbackid = 1030;
 	if (!CallbackState.test(callbackid - 1000)) {
-		return super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+		super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+		ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 	}
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -223,6 +224,7 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 				Pan = (float) lua::callbacks::ToNumber(L, 6);
 				super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 				ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+				return;
 			}
 		}
 		else if (lua_isboolean(L, -1)) {
@@ -230,11 +232,9 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 				return;
 			}
 		}
-		else {
-			super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
-			ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
-		}
 	}
+	super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+	ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 }
 //SFX_PRE/POST_PLAY callbacks end
 
