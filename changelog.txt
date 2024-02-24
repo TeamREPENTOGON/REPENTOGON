@@ -16,8 +16,11 @@ Additions:
   - Added MC_PRE/POST_PLAYER_ADD_HEARTS(EntityPlayer Player, int Amount, AddHealthType AddHealthType, bool OptionalArg) that allows changing the added amount of hearts.
 /newline/
 Modified:
+* Entity :
+	- GetCollisionCapsule offset vector argument is now optional (Vector.Zero)
 * Pickup :
 	- Pickup:IsBlind method now checks natural blind effect (also added "CheckForcedBlindOnly" optional argument)
+* Changed the destination goal sprites from the daily menu to match the style of the other paper sprites
 /newline/
 Fixes:
 	* Fixed issue that preventing the root attributes on repentogon-supported xmls(achievements,giantbook,backdrops) from working properly
