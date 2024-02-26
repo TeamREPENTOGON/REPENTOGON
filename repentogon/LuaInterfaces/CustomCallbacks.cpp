@@ -3790,3 +3790,28 @@ HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float sca
 	}
 	super(slot, pos, scale);
 }
+
+//MC_PRE_FAMILIAR_CAN_CHARM (1473)
+HOOK_METHOD(Entity_Familiar, CanCharm, () -> bool) {
+	const int callbackid = 1473;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(_variant)
+			.push(this, lua::Metatables::ENTITY_FAMILIAR)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return false;
+				}
+			}
+		}
+	}
+	return super();
+}

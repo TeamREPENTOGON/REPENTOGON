@@ -67,6 +67,22 @@ LUA_FUNCTION(Lua_FamiliarRemoveFromPlayer)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_FamiliarCanCharm)
+{
+	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	lua_pushboolean(L, fam->CanCharm());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FamiliarIsCharmed)
+{
+	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	Entity_Player* player = fam->_player;
+	
+	lua_pushboolean(L, player && (player->_spawnerType == 904 && player->_spawnerVariant == 0));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -80,6 +96,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "UpdateDirtColor", Lua_FamiliarUpdateDirtColor },
 		{ "GetDirtColor", Lua_FamiliarGetDirtColor },
 		{ "RemoveFromPlayer", Lua_FamiliarRemoveFromPlayer },
+		{ "CanCharm", Lua_FamiliarCanCharm },
+		{ "IsCharmed", Lua_FamiliarIsCharmed },
 		{ NULL, NULL }
 	};
 

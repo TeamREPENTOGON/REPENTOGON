@@ -339,6 +339,20 @@ LUA_FUNCTION(Lua_GetDarkRedChampionRegenTimer) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetSirenPlayerEntity) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+
+	if (npc->_type == 904) {
+		Entity_Player* player = npc->_sirenPlayerEntity;
+		if (player) {
+			lua::luabridge::UserdataPtr::push(L, npc->_sirenPlayerEntity, lua::Metatables::ENTITY_PLAYER);
+			return 1;
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -366,6 +380,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsBossColor", Lua_IsBossColor },
 		{ "GetBossColorIdx", Lua_GetBossColorIdx },
 		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
+		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }

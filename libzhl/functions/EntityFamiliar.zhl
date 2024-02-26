@@ -38,6 +38,9 @@ __thiscall bool Entity_Familiar::CanBlockProjectiles();
 "558bec83e4f883ec3ca1????????33c4894424??538bd95657895c24":
 __thiscall void Entity_Familiar::RemoveFromPlayer(bool UnusedRemoveFamiliar);
 
+"8b41??3d84030000":
+__thiscall bool Entity_Familiar::CanCharm();
+
 
 struct Entity_Familiar depends (ColorMod) : public Entity {
 {{
@@ -46,6 +49,7 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
 	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); }
 }}
 	
+	Entity_Player* _player : 0x360;
 	ColorMod* _dirtColor : 0xe28;
 	int _state : 0xcd4;
 	

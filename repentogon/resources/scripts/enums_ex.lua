@@ -238,6 +238,8 @@ ModCallbacks.MC_POST_SAVESLOT_LOAD = 1470
 ModCallbacks.MC_PRE_CHALLENGE_DONE = 1471
 ModCallbacks.MC_POST_CHALLENGE_DONE = 1472
 
+ModCallbacks.MC_PRE_FAMILIAR_CAN_CHARM = 1473
+
 local function AddEnumToNamespace(namespace, enums)
 	for k,v in pairs(enums) do
 		rawset(namespace, k, v)

@@ -121,6 +121,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     unsigned int _type : 0x28; //0x28
     unsigned int _variant : 0x2c; //0x2c
     unsigned int _subtype : 0x30; //0x30
+	unsigned int _spawnerType : 0x34; // 0x34
+	unsigned int _spawnerVariant: 0x38; // 0x38
 	ANM2 _sprite : 0x3c;
     unsigned int _shadowSize : 0x150; //0x150   
 	unsigned long long _flags : 0x160;
@@ -157,6 +159,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	float _shrinkStatus1 : 0x30c;
 	float _shrinkStatus2 : 0x310;
 	Entity * _child : 0x318;
+	Entity * _spawnerEntity : 0x320;
 	RNG _dropRNG : 0x334;
 
     __vtable {
