@@ -4,7 +4,7 @@ tags:
 ---
 # Class "BlendMode"
 
-Determines how an image (either a [Sprite](../Sprite.md) as a whole or one of its [LayerStates](../LayerState.md))should blend with the elements rendered behind it. Used by [fxlayers.xml](https://wofsauge.github.io/IsaacDocs/rep/xml/fxlayers.html?h=blendMode) and various effects for multiplicative blending, but potentially has other uses. 
+Determines how an image (either a [Sprite](../Sprite.md) as a whole or a [LayerState](../LayerState.md))should blend with the elements rendered behind it. Specifically, these parameters are used in calls to [glBlendFuncSeparate](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFuncSeparate.xml).
 
 ???+ info
     You can get this class by using the following functions:
@@ -17,13 +17,13 @@ Determines how an image (either a [Sprite](../Sprite.md) as a whole or one of it
         ```
 
 ???+ warning "Warning"
-    Largely undocumented. I believe the `Flag` variables are actually two sets, with the first set being for Alpha and the second being for RGB. I also suspect that these flags correspond with the enums used for [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml).
+    The variables in this class refer to the enums used by [glBlendFuncSeparate](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFuncSeparate.xml) (with a starting index of `0`). Official enums will be added for this next release.
 
 ## Functions
 
 ### SetMode () {: aria-label='Functions' }
 #### void SetMode ( int mode ) {: .copyable aria-label='Functions' } 
-Ranges from 0-2. Invalid modes are ignored. The game uses `1` as a default value, `0` for the blue base of the Planetarium backdrop, and `2` for multiplicative blending (Planetarium backdrop starfield layers, `8bitclouds_utero` backdrop layer, Beast death spotlight, and various other misc effects.
+Ranges from 0-2. Invalid modes are ignored. The game uses mode `1` (or `{ 1, 7, 1, 7 }`) as a default value, mode `0` (or `{ 0, 1, 0, 1 }`) for the blue base of the Planetarium backdrop, and mode `2` (or `{ 1, 1, 1, 1 }`) for multiplicative blending (Planetarium backdrop starfield layers, `8bitclouds_utero` backdrop layer, Beast death spotlight, and various other misc effects).
 
 ???- info "Nonstandard modes"
     The game additionally manually sets modes for various effects:
@@ -37,28 +37,32 @@ ___
 ## Variables
 ### Flag1 {: aria-label='Variables' }
 #### int Flag1 {: .copyable aria-label='Variables'}
-Used for alpha blending. In most cases this is `1`.
+This is generally always `1`. There's a possibility for this to be `6` if an internal `UsePremultipliedAlpha` variable in the graphics manager class isn't set, but it has so far always been.
 
-Based on newer knowledge, a better name for this might be `AlphaSourceFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+???+ warning "Depreciation Warning"
+    This variable will be depreciated in favor of `RGBSourceFactor` next release.
 
 ___
 ### Flag2 {: aria-label='Variables' }
 #### int Flag2 {: .copyable aria-label='Variables'}
 `0` in "Mode 0", `7` in "Mode 1", and `1` in "Mode 2".
 
-Based on newer knowledge, a better name for this might be `AlphaDestinationFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+???+ warning "Depreciation Warning"
+    This variable will be depreciated in favor of `RGBDestinationFactor` next release.
 
 ___
 ### Flag3 {: aria-label='Variables' }
 #### int Flag3 {: .copyable aria-label='Variables'}
 Set to `1` in all modes.
 
-Based on newer knowledge, a better name for this might be `RGBSourceFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+???+ warning "Depreciation Warning"
+    This variable will be depreciated in favor of `AlphaSourceFactor` next release.
 
 ___
 ### Flag4 {: aria-label='Variables' }
 #### int Flag4 {: .copyable aria-label='Variables'}
 `0` in "Mode 0", `7` in "Mode 1", and `1` in "Mode 2".
 
-Based on newer knowledge, a better name for this might be `RGBDestinationFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+???+ warning "Depreciation Warning"
+    This variable will be depreciated in favor of `AlphaDestinationFactor` next release.
 ___
