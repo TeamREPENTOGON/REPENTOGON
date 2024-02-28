@@ -97,6 +97,7 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	SoundEffects _sfxManager : 0x29de0;
 	ItemConfig _itemConfig : 0x29e84;
 	EntityConfig _entityConfig : 0x29f88;
+	//ModManager _modManager : 0x29FD8;
 	ANM2 _cursorSprite : 0x1ea840;
 	ANM2 _buttonsSprite : 0x4a284;
 	Font _font7_TeamMeat_10 : 0x10a514;

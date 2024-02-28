@@ -25,7 +25,10 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 
 // Force achievements to be unlockable (expect outside of game mode)
 HOOK_METHOD(Manager, AchievementUnlocksDisallowed, (bool unk) -> bool) {
-	if (g_Manager->GetOptions()->ModsEnabled() || g_Manager->GetOptions()->_enableDebugConsole) {
+	ModManager* modman = g_Manager->GetModManager();
+	auto loadedMod = std::find_if(modman->_mods.begin(), modman->_mods.end(), [](ModEntry* mod) { return mod->_loaded; });
+
+	if (loadedMod != modman->_mods.end() || g_Manager->GetOptions()->_enableDebugConsole) {
 		if ((unk) || ((g_Manager->GetState() != 2 || g_Game == nullptr) || (g_Game->GetDailyChallenge()._id == 0 && !g_Game->IsDebug() ))) {
 			return true;
 		}
