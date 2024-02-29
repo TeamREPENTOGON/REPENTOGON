@@ -3744,6 +3744,30 @@ HOOK_METHOD_PRIORITY(PersistentGameData, AddChallenge, -9999, (int challengeid) 
 
 }
 
+//ModCallbacks.MC_PRE_FAMILIAR_CAN_CHARM = 1473
+
+//MC_POST_ACHIEVEMENT UNLOCK (1476)
+HOOK_METHOD_PRIORITY(PersistentGameData, TryUnlock, -9999, (int achievid) -> bool) {
+	bool deed = super(achievid);
+	if (deed) {
+		const int callbackid1 = 1476;
+		lua_State* L = g_LuaEngine->_state;
+		if (CallbackState.test(callbackid1 - 1000)) {
+
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
+				.push(achievid)
+				.push(achievid)
+				.call(1);
+
+		}
+	}
+	return deed;
+}
+
 
 HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float scale) -> void) {
 	const int callbackid = 1264;
@@ -3789,29 +3813,4 @@ HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float sca
 		}
 	}
 	super(slot, pos, scale);
-}
-
-//MC_PRE_FAMILIAR_CAN_CHARM (1473)
-HOOK_METHOD(Entity_Familiar, CanCharm, () -> bool) {
-	const int callbackid = 1473;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(_variant)
-			.push(this, lua::Metatables::ENTITY_FAMILIAR)
-			.call(1);
-
-		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				if (!lua_toboolean(L, -1)) {
-					return false;
-				}
-			}
-		}
-	}
-	return super();
 }

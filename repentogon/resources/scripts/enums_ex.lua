@@ -240,6 +240,8 @@ ModCallbacks.MC_POST_CHALLENGE_DONE = 1472
 
 ModCallbacks.MC_PRE_FAMILIAR_CAN_CHARM = 1473
 
+ModCallbacks.MC_POST_ACHIEVEMENT_UNLOCK = 1476
+
 local function AddEnumToNamespace(namespace, enums)
 	for k,v in pairs(enums) do
 		rawset(namespace, k, v)
