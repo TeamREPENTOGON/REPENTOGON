@@ -29,6 +29,7 @@ Fixes:
 	* Fixed an issue where the console would behave sporadically when closed with numpad enter
 	* Fixed MC_POST_SFX_PLAY not firing properly when there was no PRE added.
 	* Fixed Achievement Reversed Hierophant enum naming (deprecated ones left for compatibility)
+	* Fixed a bug where adding modded follower familiars could sometimes freeze the game (especially while using MC_GET_FOLLOWER_PRIORITY).
 /newline/
 /newline/
 v1.0.6b -
