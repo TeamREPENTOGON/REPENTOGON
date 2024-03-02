@@ -1,4 +1,5 @@
 #include "IsaacRepentance.h"
+#include "Log.h"
 
 bool Room::IsValidRailType(lua_Integer rail) {
 	if (rail < 0) {
@@ -238,4 +239,21 @@ void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time) {
 		_runTime = time;
 	}
 	return;
+}
+
+void EntityList_EL::Untie() {
+	if (!_sublist) {
+		ZHL::Log("[ERROR] Attempting to untie a list that is not a sublist, ignoring\n");
+		return;
+	}
+
+	Entity** entities = (Entity**)calloc(_size, sizeof(Entity*));
+	if (!entities) {
+		ZHL::Log("[CRITICAL] Unable to allocate memory to untie sublist, ignoring\n");
+		return;
+	}
+
+	_sublist = false;
+	memcpy(entities, _data, _size * sizeof(Entity*));
+	_data = entities;
 }

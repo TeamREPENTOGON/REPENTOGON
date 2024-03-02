@@ -208,7 +208,9 @@ public:
 			XMM4 = 1 << 12,
 			XMM5 = 1 << 13,
 			XMM6 = 1 << 14,
-			XMM7 = 1 << 15
+			XMM7 = 1 << 15,
+			XMM_REGISTERS = XMM0 | XMM1 | XMM2 | XMM3 | XMM4 | XMM5 | XMM6 | XMM7,
+			ALL = GP_REGISTERS | XMM_REGISTERS
 		};
 
 		SavedRegisters(uint32_t mask, bool shouldRestore);

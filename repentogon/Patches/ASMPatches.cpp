@@ -13,6 +13,7 @@
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
 #include "ASMPatches/ASMRoom.h"
+#include "ASMPatches/ASMTweaks.h"
 
 #include "ASMPatcher.hpp"
 
@@ -122,4 +123,13 @@ void PerformASMPatches() {
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
 	HookImGui();
+
+	// Tweaks (bug crashes)
+	if (!ASMPatches::FixGodheadEntityPartition()) {
+		ZHL::Log("[ERROR] Unable to find signature for Godhead EntityPartition patch\n");
+	}
+
+	if (!ASMPatches::FixTearDetonatorEntityList()) {
+		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
+	}
 }

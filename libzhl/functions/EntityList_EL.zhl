@@ -15,6 +15,12 @@ struct EntityList_EL {
     {
     
     }
+
+    /* If this list is a sublist, turn it into a non sublist. This makes the content 
+     * of the list no longer shared with other sublists, preventing some issues with
+     * the way the game manages sublists.
+     */
+    LIBZHL_API void Untie();
 }} 
     bool _sublist : 0x0;
     Entity** _data : 0x4;
