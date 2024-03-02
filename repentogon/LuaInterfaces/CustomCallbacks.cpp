@@ -97,7 +97,7 @@ HOOK_STATIC(LuaCallbacks, EvaluateItems, (Entity_Player* player, int cacheFlag) 
 		args->player = player;
 		args->cacheFlag = cacheFlag;
 
-		L_RunCallback(callbackid, NULL, (void**)args, 2, returnType, ret);
+		L_RunCallback(callbackid, cacheFlag, (void**)args, 2, returnType, ret);
 
 		free(args);
 		free(ret);

@@ -26,10 +26,13 @@ __thiscall bool LevelGenerator::is_placement_valid(uint32_t* position, uint32_t 
 "558bec515356578bf9b8398ee33833db8b8f680300008bd18bb764030000":
 __thiscall void LevelGenerator::mark_dead_ends();
 
+"558becf30f7e05":
+__thiscall LevelGenerator* LevelGenerator::constructor(uint32_t seed);
+
 struct LevelGenerator depends (LevelGenerator_Room) {
 {{
     inline int* GetNumBossRooms() { return (int*)((char*)this + 0x38C); }
     inline std::vector<LevelGenerator_Room>* GetAllRooms() { return (std::vector<LevelGenerator_Room>*)((char*)this + 0x364); }
     inline std::vector<int>* GetDeadEnds() { return (std::vector<int>*)((char*)this + 0x370); }
     inline std::vector<int>* GetNonDeadEnds() { return (std::vector<int>*)((char*)this + 0x37C); }
-}} };
+}} } : 0x390;

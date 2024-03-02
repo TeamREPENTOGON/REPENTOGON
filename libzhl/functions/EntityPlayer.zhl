@@ -842,7 +842,7 @@ __thiscall bool Entity_Player::TryUseKey();
 __thiscall bool Entity_Player::UpdateCanShoot();
 
 "558bec6aff68????????64a1????????50b864160000":
-__thiscall void Entity_Player::UseActiveItem(int item, int useFlags, int slot, int varData);
+__thiscall void Entity_Player::UseActiveItem(uint16_t* unk, int item, int useFlags, int slot, int varData);
 
 "558bec83e4f083ec58a1????????33c4894424??8b45":
 __thiscall void Entity_Player::UsePoopSpell(int type);

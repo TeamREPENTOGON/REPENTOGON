@@ -1,15 +1,37 @@
 ffi.cdef[[
     // stubs
-    typedef struct {void *_;} ActiveItemDesc;
+    typedef struct {
+        int Item;
+        int ActiveCharge;
+        int BatteryCharge;
+        int SubCharge;
+        int TimedRechargeCooldown;
+        int PartialCharge;
+        int VarData;
+    } ActiveItemDesc;
+
     typedef struct {void *_;} TemporaryEffects;
     typedef struct {void *_;} EntityConfig_Player;
     typedef struct {void *_;} History;
-    typedef struct {void *_;} PosVel;
+
+    typedef struct {
+        Vector Position;
+        Vector Velocity;
+    } PosVel;
+
     typedef struct {void *_;} Weapon;
     typedef struct {void *_;} Weapon_MultiShotParams;
     typedef struct {void *_;} TearParams;
-    typedef struct {void *_;} EntityDesc;
-    typedef struct {void *_;} QueueItemData;
+    typedef struct {
+        uint32_t Type;
+        uint32_t Variant;
+        uint32_t Subtype;
+        int32_t ChampionColor;
+        float Health;
+        float MaxHealth;
+        bool _;
+        char _[3];
+    } EntityDesc;
 
     int L_EntityPlayer_AddActiveCharge(Entity_Player*, int, int, bool, bool, bool);
     void L_EntityPlayer_AddBoneOrbital(Entity_Player*, Vector*);
@@ -1790,7 +1812,7 @@ end
 
 function EntityPlayerFuncs:SetActiveVarData(vardata, slot)
     ffichecks.checknumber(2, vardata)
-    activeSlot = ffichecks.optnumber(activeSlot, ActiveSlot.SLOT_PRIMARY)
+    slot = ffichecks.optnumber(activeSlot, ActiveSlot.SLOT_PRIMARY)
 
     repentogon.L_EntityPlayer_SetActiveVarData(self, vardata, slot)
 end
@@ -2265,6 +2287,8 @@ function EntityPlayerFuncs:UseActiveItem(item, flagsOrShowAnim, slotOrKeepActive
         slotOrKeepActiveItem = ffichecks.optnumber(slotOrKeepActiveItem, -1)
         customVarDataOrAllowNonMainPlayer = ffichecks.optnumber(customVarDataOrAllowNonMainPlayer, 0)
 
+        print(item, slotOrKeepActiveItem, customVarDataOrAllowNonMainPlayer)
+
         repentogon.L_EntityPlayer_UseActiveItem(self, item, flagsOrShowAnim, slotOrKeepActiveItem, customVarDataOrAllowNonMainPlayer)
         return
     end
@@ -2276,9 +2300,13 @@ function EntityPlayerFuncs:UseActiveItem(item, flagsOrShowAnim, slotOrKeepActive
         slot = ffichecks.optnumber(slot, -1)
         customVarData = ffichecks.optnumber(customVarData, 0)
 
+        print(flagsOrShowAnim, slotOrKeepActiveItem, customVarDataOrAllowNonMainPlayer, toAddCostume, slot, customVarData)
+
         repentogon.L_EntityPlayer_UseActiveItemAbp(self, flagsOrShowAnim, slotOrKeepActiveItem, customVarDataOrAllowNonMainPlayer, toAddCostume, slot, customVarData)
         return
     end
+
+    print(item)
 
     repentogon.L_EntityPlayer_UseActiveItem(self, item, 0, -1, 0)
 end

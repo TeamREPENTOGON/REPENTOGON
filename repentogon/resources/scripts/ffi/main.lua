@@ -114,6 +114,7 @@ end
 
 pcall(require("Isaac"))
 
+printf = print
 print = function(...)
 	local str = ""
 
@@ -153,6 +154,7 @@ pcall(require("EntityPickup"))
 pcall(require("EntityProjectile"))
 pcall(require("ItemConfigCostume"))
 pcall(require("ItemConfigItem"))
+pcall(require("QueueItemData"))
 pcall(require("EntityPlayer"))
 pcall(require("Room"))
 pcall(require("Level"))

@@ -1833,12 +1833,14 @@ extern "C" {
 	}
 
 	void L_EntityPlayer_UseActiveItem(Entity_Player* self, CollectibleType item, int flags, int slot, int customVarData) {
-		self->UseActiveItem(item, flags, slot, customVarData);
+		uint16_t spider_nicalis = 0;
+		self->UseActiveItem(&spider_nicalis, 33, 0, -1, 0);
 	}
 
 	void L_EntityPlayer_UseActiveItemAbp(Entity_Player* self, CollectibleType item, bool showAnim, bool keepActiveItem, bool allowNonMainPlayer, bool toAddCostume, int slot, int customVarData) {
 		int flags = !showAnim | !keepActiveItem << 4 | allowNonMainPlayer << 3 | !toAddCostume << 1;
-		self->UseActiveItem(item, flags, slot, customVarData);
+		uint16_t spider_nicalis = 0;
+		self->UseActiveItem(&spider_nicalis, item, flags, slot, customVarData);
 	}
 
 	void L_EntityPlayer_UseCard(Entity_Player* self, int id, int useFlags) {
