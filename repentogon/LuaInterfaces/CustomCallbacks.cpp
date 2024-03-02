@@ -3814,3 +3814,27 @@ HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float sca
 	}
 	super(slot, pos, scale);
 }
+
+//MC_PRE_PICKUP_GET_LOOT_LIST (1334)
+HOOK_METHOD(Entity_Pickup, GetLootList, (bool unk) -> LootList) {
+	LootList list = super(unk);
+
+	const int callbackid = 1334;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			//.push(&list, lua::metatables::LootListMT)
+			.push(this, lua::Metatables::ENTITY_PICKUP)
+			.push(unk)
+			.call(1);
+
+		if (!result && lua_isuserdata(L, -1)) {
+			return *lua::GetUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
+		}
+	}
+	return list;
+}
