@@ -131,10 +131,10 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 }
 
 HOOK_METHOD(Menu_Mods, Render, () -> void) {
-	LayerState* frame_widgetprompt = this->ModsMenuSprite.GetLayer(13);
-	LayerState* frame_widgettext = this->ModsMenuSprite.GetLayer(12);
-	LayerState* frame_widgetbg = this->ModsMenuSprite.GetLayer(11);
-	LayerState* framemain = this->ModsMenuSprite.GetLayer(0);
+	LayerState* frame_widgetprompt = this->ModsMenuSprite.GetLayer("WidgetTab");
+	LayerState* frame_widgettext = this->ModsMenuSprite.GetLayer("WidgetText");
+	LayerState* frame_widgetbg = this->ModsMenuSprite.GetLayer("Widget");
+	LayerState* framemain = this->ModsMenuSprite.GetLayer("Main");
 	frame_widgetprompt->_visible = false;
 	frame_widgettext->_visible = false;
 	frame_widgetbg->_visible = false;
@@ -148,6 +148,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	Vector* offset = new Vector(ref->x - 1440, ref->y + 216);
 	Vector initialpos = Vector(70 + offset->x, offset->y + 35);
 	Vector* undopos = new Vector(310 + offset->x, offset->y + 63);
+	//printf("%f %f (%f %f)\n", (frame_widgettext->_pos.x) , frame_widgettext->_pos.y,undopos->x,undopos->y);
 	Vector* tabbtnpos = new Vector(307 + offset->x, offset->y + 18);
 	Vector pos = Vector(70 + offset->x, offset->y + 35);
 	Vector* barpos = new Vector(pos.x + 90, (g_HEIGHT- 30));
