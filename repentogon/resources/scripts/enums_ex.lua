@@ -241,6 +241,10 @@ ModCallbacks.MC_POST_CHALLENGE_DONE = 1472
 ModCallbacks.MC_PRE_FAMILIAR_CAN_CHARM = 1473
 
 ModCallbacks.MC_POST_ACHIEVEMENT_UNLOCK = 1476
+ModCallbacks.MC_PRE_MINIMAP_UPDATE = 1477
+ModCallbacks.MC_POST_MINIMAP_UPDATE = 1478
+ModCallbacks.MC_PRE_MINIMAP_RENDER = 1479
+ModCallbacks.MC_POST_MINIMAP_RENDER = 1480
 
 local function AddEnumToNamespace(namespace, enums)
 	for k,v in pairs(enums) do

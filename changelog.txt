@@ -17,6 +17,8 @@ Additions:
 * Callbacks :
 	- MC_POST_NPC_DARK_RED_CHAMPION_REGEN: Called right after a dark red champion regenerates out of goo form
 	- MC_POST_ACHIEVEMENT_UNLOCK: Called after an achievement is unlocked, has the achievement id as its param
+	- MC_PRE/POST_MINIMAP_UPDATE: Called right before or right after the minimap is updated
+	- MC_PRE/POST_MINIMAP_RENDER: Called right before or right after the minimap is rendered
   - Added MC_PRE/POST_PLAYER_ADD_HEARTS(EntityPlayer Player, int Amount, AddHealthType AddHealthType, bool OptionalArg) that allows changing the added amount of hearts.
 /newline/
 Modified:
