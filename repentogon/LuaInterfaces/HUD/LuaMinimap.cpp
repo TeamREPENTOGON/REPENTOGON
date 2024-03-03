@@ -19,11 +19,25 @@ LUA_FUNCTION(Lua_MinimapGetState)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_MinimapSetState)
+{
+	Minimap* minimap = g_Game->GetMinimap();
+	minimap->_state = (int)luaL_checkinteger(L, 1);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_MinimapGetHoldTime)
 {
 	Minimap* minimap = g_Game->GetMinimap();
 	lua_pushinteger(L, minimap->_holdTime);
 	return 1;
+}
+
+LUA_FUNCTION(Lua_MinimapSetHoldTime)
+{
+	Minimap* minimap = g_Game->GetMinimap();
+	minimap->_holdTime = (int)luaL_checkinteger(L, 1);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_MinimapGetDisplayedSize)
@@ -83,7 +97,9 @@ static void RegisterMinimap(lua_State* L) {
 	lua_newtable(L);
 	//luaL_Reg functions[] = {
 	lua::TableAssoc(L, "GetState", Lua_MinimapGetState);
+	lua::TableAssoc(L, "SetState", Lua_MinimapSetState);
 	lua::TableAssoc(L, "GetHoldTime", Lua_MinimapGetHoldTime);
+	lua::TableAssoc(L, "SetHoldTime", Lua_MinimapSetHoldTime);
 	lua::TableAssoc(L, "GetDisplayedSize", Lua_MinimapGetDisplayedSize);
 	lua::TableAssoc(L, "GetItemIconsSprite", Lua_MinimapGetItemIconsSprite);
 	lua::TableAssoc(L, "GetIconsSprite", Lua_MinimapGetIconsSprite);

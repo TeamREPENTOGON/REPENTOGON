@@ -9,6 +9,9 @@ Additions:
 	- RemoveFromPlayer
 * EntityNPC :
 	- GetDarkRedChampionRegenTimer
+* Minimap :
+	- SetState
+	- SetHoldTime
 * XMLData :
 	- XMLData.GetEntryByOrder: gets entries in the order they appear on the xmls.
 * Callbacks :
