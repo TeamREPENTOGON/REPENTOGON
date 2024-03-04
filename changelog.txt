@@ -9,6 +9,8 @@ Additions:
 	- RemoveFromPlayer
 * EntityNPC :
 	- GetDarkRedChampionRegenTimer
+* EntityPlayer:
+	- GetUrnSouls
 * Minimap :
 	- SetState
 	- SetHoldTime
