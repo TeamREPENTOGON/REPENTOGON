@@ -525,7 +525,7 @@ LUA_FUNCTION(Lua_GetBossColorIdxByName) {
 	auto iter = XMLStuff.BossColorData->childbyname.find(bosscolorname);
 	if (iter == XMLStuff.BossColorData->childbyname.end()) { lua_pushinteger(L, -1); }
 	else {
-		lua_pushinteger(L, iter->second);
+		lua_pushinteger(L, (iter->second - 1));
 	}
 
 	return 1;

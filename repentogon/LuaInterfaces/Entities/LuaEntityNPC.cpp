@@ -325,7 +325,7 @@ LUA_FUNCTION(Lua_GetBossColorIdx) {
 	if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
 		vector<XMLAttributes> vecnodes = XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
 		if ((npc->_subtype > 0) && (vecnodes.size() > (npc->_subtype - 1))) {
-			lua_pushinteger(L, npc->_subtype);
+			lua_pushinteger(L, (npc->_subtype - 1));
 			return 1;
 		}
 	}
