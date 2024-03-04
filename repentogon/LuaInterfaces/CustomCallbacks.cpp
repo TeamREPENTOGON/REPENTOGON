@@ -1822,7 +1822,22 @@ HOOK_METHOD(GridEntity, Init, (unsigned int Seed) -> void) {
 	}
 };
 
-//RenderHead Callback (id: 1038)
+void postrenderbodyhead(const int callbackid,Entity_Player* playa, Vector* x) {
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(playa->GetPlayerType())
+			.push(playa, lua::Metatables::ENTITY_PLAYER)
+			.pushUserdataValue(*x, lua::Metatables::VECTOR)
+			.call(1);
+	}
+}
+
+//RenderHead Callback (id: 1038/1045)
 HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 	const int callbackid = 1038;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -1839,7 +1854,9 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				super(lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector"));
+				Vector* p = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				super(p);
+				postrenderbodyhead(1045, this, p);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
@@ -1850,9 +1867,10 @@ HOOK_METHOD(Entity_Player, RenderHead, (Vector* x) -> void) {
 		}
 	}
 	super(x);
+	postrenderbodyhead(1045, this, x);
 }
 
-//Renderbody Callback (id: 1039)
+//PRE_POST Renderbody Callback (id: 1039/1046)
 HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 	const int callbackid = 1039;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -1869,7 +1887,9 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 
 		if (!result) {
 			if (lua_isuserdata(L, -1)) {
-				super(lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector"));
+				Vector* p = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+				super(p);
+				postrenderbodyhead(1046, this, p);
 				return;
 			}
 			else if (lua_isboolean(L, -1)) {
@@ -1880,6 +1900,7 @@ HOOK_METHOD(Entity_Player, RenderBody, (Vector* x) -> void) {
 		}
 	}
 	super(x);
+	postrenderbodyhead(1046, this, x);
 }
 
 //PRE_ROOM_TRIGGER_CLEAR (id: 1068)
