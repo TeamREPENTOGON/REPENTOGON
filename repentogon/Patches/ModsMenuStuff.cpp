@@ -84,10 +84,10 @@ void RestoreEnabledStates() {
 }
 
 bool IsKeytriggered(int key) {
-	return g_InputManagerBase.IsButtonTriggered(key, g_MenuManager->_controllerIndex, 0);
+	return g_InputManagerBase.IsButtonTriggered(key, -1, 0);
 }
 bool IsKeyPressed(int key) {
-	return g_InputManagerBase.IsButtonPressed(key, g_MenuManager->_controllerIndex, 0);
+	return g_InputManagerBase.IsButtonPressed(key, -1, 0);
 }
 
 HOOK_METHOD(MenuManager, Update, () -> void) {
@@ -97,7 +97,7 @@ HOOK_METHOD(MenuManager, Update, () -> void) {
 
 HOOK_METHOD(Menu_Mods, Update, () -> void) {
 	
-	if (g_InputManagerBase.IsActionTriggered(14,g_MenuManager->_controllerIndex,0)) {
+	if (g_InputManagerBase.IsActionTriggered(14,-1,0)) {
 		if ((lastvalid > -1) && (!issearching) && (this->SelectedElement <= lastvalid) && (this->SelectedElement >= 0) && (!(IsKeytriggered(opensearchkey)))) {
 			this->_pointerToSelectedMod->SetEnabled(!this->_pointerToSelectedMod->IsEnabled());
 			string disablepath = std::filesystem::current_path().string() + "\\mods\\" + this->_pointerToSelectedMod->GetDir().c_str() + "\\disable.it";
@@ -220,7 +220,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 				issearching = true;
 				lastKeyPressTimeMap[opensearchkey] = currentTime;
 			}
-			else if ((g_MenuManager->_selectedMenuID == 16) && (((g_MenuManager->_controllerIndex <= 0) && (IsKeytriggered(undomodchangeskey)) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuManager->_controllerIndex > 0) && g_InputManagerBase.IsActionTriggered(undomodchangesbtn, g_MenuManager->_controllerIndex,0))) {
+			else if ((g_MenuManager->_selectedMenuID == 16) && (((g_MenuManager->_controllerIndex <= 0) && (IsKeytriggered(undomodchangeskey)) && ((currentTime - lastKeyPressTimeMap[undomodchangeskey]) > keydelay)))|| ((g_MenuManager->_controllerIndex > 0) && g_InputManagerBase.IsActionTriggered(undomodchangesbtn, -1,0))) {
 				RestoreEnabledStates();
 				this->State = 0; //resets the change tracker
 			}

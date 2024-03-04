@@ -536,9 +536,9 @@ HOOK_METHOD(Menu_Stats, Update, () -> void) {
 	if (this->_isAchievementScreenVisible && g_Manager->GetOptions()->ModsEnabled()) {
 		SetUpReverseSourcesVec();
 		
-		if (g_InputManagerBase.IsActionTriggered(22, g_MenuManager->_controllerIndex, 0)) {
+		if (g_InputManagerBase.IsActionTriggered(22, -1, 0)) {
 			ChangeCurrentSecrets(1);
-		}else if (g_InputManagerBase.IsActionTriggered(23, g_MenuManager->_controllerIndex, 0)) {
+		}else if (g_InputManagerBase.IsActionTriggered(23, -1, 0)) {
 			ChangeCurrentSecrets(-1);
 		}
 		Menu_Stats* menstats = g_MenuManager->GetMenuStats();
