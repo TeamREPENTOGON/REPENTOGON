@@ -88,8 +88,8 @@ void PatchPreLaserCollision() {
 * We need to patch into both Entity::TakeDamage AND EntityPlayer::TakeDamage.
 */
 bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer) {
-	const int callbackid = 1007;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int callbackid = 11;
+	if (VanillaCallbackState.test(callbackid)) {
 		// Obtain inputs as offsets from EBP (same way the compiled code reads them).
 		// As pointers so we can modify them :)
 		uint64_t* damageFlags = (uint64_t*)(ebp + 0x0C);
@@ -239,6 +239,9 @@ void PatchPreEntityTakeDamageCallbacks() {
 	playerTakeDmgScanner.Scan();
 	InjectPreDamageCallback(playerTakeDmgScanner.GetAddress(), true);
 }
+
+// Even though I patched overtop the calls to this callback, super kill it for good measure.
+HOOK_METHOD(LuaEngine, EntityTakeDamage, (Entity* entity, float damage, unsigned long long damageFlags, EntityRef* source, int damageCountdown) -> bool) { return true; }
 
 // End of ENTITY_TAKE_DMG patches
 

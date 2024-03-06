@@ -14,12 +14,14 @@
 #include "../LuaInit.h"
 
 //Callback tracking for optimizations
-std::bitset<500> CallbackState; //I dont think we will add 500 callbacks but lets set it there for now
+std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
+std::bitset<75> VanillaCallbackState;  // For vanilla callbacks & reimplementations of them.
 HOOK_STATIC(Isaac,SetBuiltInCallbackState, (const int callbackid, bool enable)-> void, __cdecl){
 	if (callbackid > 1000) {
 		CallbackState.set(callbackid - 1000, enable);
 	}
 	else {
+		VanillaCallbackState.set(callbackid, enable);
 		super(callbackid, enable);
 	}
 }
@@ -243,6 +245,7 @@ struct CollisionInputs {
 	Entity* entity;
 	Entity* collider;
 	bool low;
+	bool override_vanilla_pre_collision;
 
 	lua::Metatables vanilla_metatable = lua::Metatables::ENTITY;
 	const char* luabridge_metatable = nullptr;
@@ -286,7 +289,7 @@ lua::LuaResults RunCollisionCallback(const CollisionInputs& inputs, const int ca
 PreCollisionResult ProcessPreCollisionCallback(const CollisionInputs& inputs, const int callbackid) {
 	PreCollisionResult result;
 
-	if (CallbackState.test(callbackid - 1000)) {
+	if (inputs.override_vanilla_pre_collision ? VanillaCallbackState.test(callbackid) : CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -353,22 +356,32 @@ bool HandleCollisionCallbacks(const CollisionInputs& inputs, const int precallba
 
 // "super" is wrapped into a lambda so that I can share the logic for all the collision callbacks without shoving it all into the macro.
 #define _COLLISION_SUPER_LAMBDA() [this](Entity* collider, bool low) { return super(collider, low); }
-#define HOOK_COLLISION_CALLBACKS(_type, _metatable, _precallback, _postcallback) \
+#define HOOK_COLLISION_CALLBACKS(_type, _metatable, _overridevanillaprecollision, _precallback, _postcallback) \
 HOOK_METHOD(_type, HandleCollision, (Entity* collider, bool low) -> bool) { \
-	CollisionInputs inputs = {this, collider, low}; \
+	CollisionInputs inputs = { this, collider, low, _overridevanillaprecollision }; \
 	inputs.SetMetatable(_metatable); \
 	return HandleCollisionCallbacks(inputs, _precallback, _postcallback, _COLLISION_SUPER_LAMBDA()); \
 }
 
-HOOK_COLLISION_CALLBACKS(Entity_Player, lua::Metatables::ENTITY_PLAYER, 1230, 1231)
-HOOK_COLLISION_CALLBACKS(Entity_Tear, lua::Metatables::ENTITY_TEAR, 1232, 1233)
-HOOK_COLLISION_CALLBACKS(Entity_Familiar, lua::Metatables::ENTITY_FAMILIAR,	1234, 1235)
-HOOK_COLLISION_CALLBACKS(Entity_Bomb, lua::Metatables::ENTITY_BOMB, 1236, 1237)
-HOOK_COLLISION_CALLBACKS(Entity_Pickup, lua::Metatables::ENTITY_PICKUP, 1238, 1239)
-HOOK_COLLISION_CALLBACKS(Entity_Slot, lua::metatables::EntitySlotMT, 1240, 1241)
-HOOK_COLLISION_CALLBACKS(Entity_Knife, lua::Metatables::ENTITY_KNIFE, 1242, 1243)
-HOOK_COLLISION_CALLBACKS(Entity_Projectile, lua::Metatables::ENTITY_PROJECTILE, 1244, 1245)
-HOOK_COLLISION_CALLBACKS(Entity_NPC, lua::Metatables::ENTITY_NPC, 1246, 1247)
+HOOK_COLLISION_CALLBACKS(Entity_Player, lua::Metatables::ENTITY_PLAYER, true, 33, 1231)
+HOOK_COLLISION_CALLBACKS(Entity_Tear, lua::Metatables::ENTITY_TEAR, true, 42, 1233)
+HOOK_COLLISION_CALLBACKS(Entity_Familiar, lua::Metatables::ENTITY_FAMILIAR, true, 26, 1235)
+HOOK_COLLISION_CALLBACKS(Entity_Bomb, lua::Metatables::ENTITY_BOMB, true, 60, 1237)
+HOOK_COLLISION_CALLBACKS(Entity_Pickup, lua::Metatables::ENTITY_PICKUP, true, 38, 1239)
+HOOK_COLLISION_CALLBACKS(Entity_Knife, lua::Metatables::ENTITY_KNIFE, true, 53, 1243)
+HOOK_COLLISION_CALLBACKS(Entity_Projectile, lua::Metatables::ENTITY_PROJECTILE, true, 46, 1245)
+HOOK_COLLISION_CALLBACKS(Entity_NPC, lua::Metatables::ENTITY_NPC, true, 30, 1247)
+HOOK_COLLISION_CALLBACKS(Entity_Slot, lua::metatables::EntitySlotMT, false, 1240, 1241)
+
+// Nullify the vanilla pre-collision callbacks.
+HOOK_METHOD(LuaEngine, PrePlayerCollide, (Entity_Player* player, Entity* collider, bool low) -> int) { return 0; }
+HOOK_METHOD(LuaEngine, PreTearCollision, (Entity_Tear* tear, Entity* collider, bool low) -> int) { return 0; }
+HOOK_METHOD(LuaEngine, PreFamiliarCollision, (Entity_Familiar* fam, Entity* collider, bool low) -> int) { return 0; }
+HOOK_METHOD(LuaEngine, PreBombCollision, (Entity_Bomb* bomb, Entity* collider, bool low) -> int) { return 0; }
+HOOK_METHOD(LuaEngine, PrePickupCollision, (Entity_Pickup* pickup, Entity* collider, bool low) -> int) { return 0; }
+HOOK_METHOD(LuaEngine, PreKnifeCollision, (Entity_Knife* knife, Entity* collider, bool low) -> int) { return 0; }
+HOOK_METHOD(LuaEngine, PreProjectileCollision, (Entity_Projectile* proj, Entity* collider, bool low) -> int) { return 0; }
+HOOK_METHOD(LuaEngine, PreNPCCollision, (Entity_NPC* npc, Entity* collider, bool low) -> int) { return 0; }
 // PRE/POST_X_COLLISION callbacks END
 
 // POST_LASER_COLLISION (1249) (PRE_LASER_COLLISION lives in ASMPatches land)
@@ -1322,8 +1335,9 @@ HOOK_METHOD(Entity_Player, UseCard, (int cardType, unsigned int useFlag) -> void
 }
 
 
-//(PRE_)USE_PILL (id: 1065/1001)
+//(PRE_)USE_PILL (id: 1065/10)
 HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int useFlag) -> void) {
+	// MC_PRE_USE_PILL
 	const int callbackid1 = 1065;
 	lua_State* L = g_LuaEngine->_state;
 	if (CallbackState.test(callbackid1 - 1000)) {
@@ -1349,8 +1363,10 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 		}
 	}
 	super(pillEffect, pillColor, useFlag);
-	const int callbackid2 = 1001;
-	if (CallbackState.test(callbackid2 - 1000)) {
+
+	// MC_USE_PILL re-implementation
+	const int callbackid2 = 10;
+	if (VanillaCallbackState.test(10)) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaResults postResult = lua::LuaCaller(L).push(callbackid2)
 			.push(pillEffect)
@@ -1360,8 +1376,10 @@ HOOK_METHOD(Entity_Player, UsePill, (int pillEffect, int pillColor, unsigned int
 			.push(pillColor)
 			.call(1);
 	}
-	
 }
+
+// Kill the original MC_USE_PILL callback.
+HOOK_METHOD(LuaEngine, UsePill, (int pillEffect, Entity_Player* player, unsigned int useFlags) -> void) {}
 
 //GET_SHOP_ITEM_PRICE (id: 1066)
 HOOK_METHOD(Room, GetShopItemPrice, (unsigned int entVariant, unsigned int entSubtype, int shopItemID) -> int) {
