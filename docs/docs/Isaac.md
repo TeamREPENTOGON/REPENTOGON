@@ -127,7 +127,7 @@ ___
 ___
 ### GetCompletionMark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [CompletionType](enums/CompletionType.md) Mark) {: .copyable aria-label='Functions' }
-Gets a completion mark value for a specific character.
+Gets a completion mark value for a specific character, value from `0` to `2` (0 = not accomplished, 1 = normal, 2 = hard).
 
 ___
 ### GetCompletionMarks () {: aria-label='Functions' }
@@ -247,7 +247,7 @@ Sets the contents of the clipboard to the provided string.
 ___
 ### SetCompletionMark () {: aria-label='Functions' }
 #### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [CompletionType](enums/CompletionType.md) Mark, int Value) {: .copyable aria-label='Functions' }
-Sets a completion mark of a character to match a specific value from `0` to `2`.
+Sets a completion mark of a character to match a specific value from `0` to `2` (0 = not accomplished, 1 = normal, 2 = hard).
 
 ___
 ### SetCompletionMarks () {: aria-label='Functions' }
