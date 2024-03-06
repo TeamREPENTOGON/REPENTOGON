@@ -40,6 +40,7 @@ Fixes:
 	* Fixed Achievement Reversed Hierophant enum naming (deprecated ones left for compatibility)
 	* Fixed a bug where adding modded follower familiars could sometimes freeze the game (especially while using MC_GET_FOLLOWER_PRIORITY).
 	* Fixed EntityNPC:GetBossColorIdx() not matching the values of the function in vanilla
+	* Callbacks re-implemented by REPENTOGON (such as MC_ENTITY_TAKE_DMG) now use their original callback IDs rather than a new one (fixes cases where the original ID was used directly, instead of the enum).
 /newline/
 /newline/
 v1.0.6b -
