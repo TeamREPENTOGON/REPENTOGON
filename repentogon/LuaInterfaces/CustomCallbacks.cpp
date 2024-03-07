@@ -2333,21 +2333,52 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int unk) -> void, __stdcall) {
 
 //POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1079)
 HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk, float size) -> void) {
-	super(slot,pos, alpha, unk, size);
+	super(slot, pos, alpha, unk, size);
 
 	const int callbackid = 1079;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
+		const bool isSchoolbagSlot = (slot == 1);
+
+		// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.
+		// The game does this inside RenderActiveItem.
+		// Size adjustments for pocket slots are already accounted for.
+		float actualSize = size;
+		if (isSchoolbagSlot) {
+			actualSize *= 0.5;
+		}
+
+		// The positions we send through the callback may be modified slightly to be more accurate to where the game actually rendered stuff.
+		Vector itemPos = pos;
+		Vector chargeBarPos = pos;
+
+		// Index #4 is for player 1's Esau, who has different offsets for the charge bar.
+		if (this->_playerHudIndex < 4) {
+			chargeBarPos.x += (isSchoolbagSlot ? -2 : 34) * actualSize;
+		}
+		else if (isSchoolbagSlot) {
+			chargeBarPos.x += 38 * actualSize;
+		}
+		chargeBarPos.y += 17 * actualSize;
+
+		if (this->_activeItem[slot].bookImage != nullptr) {
+			// A book sprite was rendered under the item (Book of Virtues or Judas' Birthright).
+			// Update the offsets we're sending through the callback to match where the corresponding sprites were actually rendered.
+			itemPos.y -= 4;
+			chargeBarPos.y += 3;
+		}
+
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
 			.push(slot)
-			.pushUserdataValue(pos, lua::Metatables::VECTOR)
+			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
 			.push(alpha)
-			.push(size)
+			.push(actualSize)
+			.pushUserdataValue(chargeBarPos, lua::Metatables::VECTOR)
 			.call(1);
 	}
 }
