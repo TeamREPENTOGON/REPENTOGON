@@ -13,7 +13,6 @@
 
 extern int handleWindowFlags(int flags);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
-extern bool imguiResized;
 extern bool menuShown;
 extern ImVec2 imguiSizeModifier;
 
@@ -297,11 +296,6 @@ struct ConsoleMega : ImGuiWindowObject {
         ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
         
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
-            if (imguiResized) {
-                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
-                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
-;            }
-
             AddWindowContextMenu();
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 

@@ -42,8 +42,6 @@ std::string iniFilePath;
 static bool imguiInitialized = false;
 static bool show_app_style_editor = false;
 static bool shutdownInitiated = false;
-static bool imguiResized;
-static ImVec2 imguiSizeModifier;
 
 HelpMenu helpMenu;
 LogViewer logViewer;
@@ -434,6 +432,7 @@ void __stdcall RunImGui(HDC hdc) {
 		ImGui::GetStyle().FrameRounding = 4.0f; // rounded edges (default was 0)
 		ImGui::GetStyle().FramePadding.x = 6.0f; // more padding inside of objects to prevent ugly text clipping (default was 4)
 		ImGui::GetStyle().WindowTitleAlign = ImVec2(0.5f, 0.5f);
+		ImGui::GetStyle().DisplayWindowPadding = ImVec2(100.0f, 100.0f); // This should ensure that more of the window is visible when resizing.
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.IniFilename = NULL; // Disable vanilla .ini file management
@@ -444,7 +443,6 @@ void __stdcall RunImGui(HDC hdc) {
 		io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
 		ImGui::CaptureMouseFromApp();
 		ImGui::CaptureKeyboardFromApp();
-
 		ImFontConfig cfg;
 		cfg.FontBuilderFlags |= ImGuiFreeTypeBuilderFlags_Monochrome | ImGuiFreeTypeBuilderFlags_MonoHinting;
 		cfg.OversampleH = 1;
@@ -522,16 +520,6 @@ void __stdcall RunImGui(HDC hdc) {
 		glBindTexture(GL_TEXTURE_2D, last_texture);
 	}
 	
-	imguiResized = false;
-	static ImVec2 oldSize = ImVec2(0, 0);
-	if ((oldSize.x != ImGui::GetMainViewport()->Size.x || oldSize.y != ImGui::GetMainViewport()->Size.y) &&
-		(oldSize.x > 1 && oldSize.y > 1) &&
-		(ImGui::GetMainViewport()->Size.x > 1 && ImGui::GetMainViewport()->Size.y > 1)) { // no operator? (megamind stares intently at the camera)
-		imguiResized = true;
-		imguiSizeModifier = ImVec2(ImGui::GetMainViewport()->Size.x / oldSize.x, ImGui::GetMainViewport()->Size.y / oldSize.y);
-	}
-	oldSize = ImGui::GetMainViewport()->Size;
-
 	if (menuShown) {
 		if (ImGui::BeginMainMenuBar()) {
 			ImGui::MenuItem(ICON_FA_CHEVRON_LEFT"",NULL,&menuShown);

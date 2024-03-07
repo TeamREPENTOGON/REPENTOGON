@@ -9,8 +9,6 @@
 extern int handleWindowFlags(int flags);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
-extern bool imguiResized;
-extern ImVec2 imguiSizeModifier;
 
 struct GameOptionsWindow : ImGuiWindowObject {
     GameOptionsWindow()
@@ -78,10 +76,6 @@ struct GameOptionsWindow : ImGuiWindowObject {
         ImGui::SetNextWindowSize(ImVec2(675, 375), ImGuiCond_FirstUseEver);
 
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
-            if (imguiResized) {
-                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
-                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
-            }
             AddWindowContextMenu();
             if (ImGui::BeginTabBar("GameOptionsTabBar", ImGuiTabBarFlags_None)) {
                 int resetCounter = 0;
