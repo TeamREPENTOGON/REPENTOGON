@@ -27,9 +27,9 @@ struct REPENTOGONOptions {
 		if (!std::filesystem::exists(optionsPath)) {
 			printf("INI doesn't exist, creating\n");
 			
-			ini["VanillaTweaks"]["BetterVoidGeneration"] = "1";
-			ini["VanillaTweaks"]["HushPanicStateFix"] = "1";
-			ini["VanillaTweaks"]["KeyMasterDealChance"] = "1";
+			ini["VanillaTweaks"]["BetterVoidGeneration"] = "0";
+			ini["VanillaTweaks"]["HushPanicStateFix"] = "0";
+			ini["VanillaTweaks"]["KeyMasterDealChance"] = "0";
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
 			ini["internal"]["DidModReset"] = "0";
@@ -40,9 +40,9 @@ struct REPENTOGONOptions {
 
 		iniFile.read(ini);
 
-		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],1);
-		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],1);
-		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],1);
+		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],0);
+		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],0);
+		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],0);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
