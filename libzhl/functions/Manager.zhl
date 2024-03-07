@@ -70,7 +70,7 @@ __thiscall void Manager::SetFullscreenRendering(bool value);
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam) { {{
+struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
@@ -103,6 +103,7 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	Font _font7_TeamMeat_10 : 0x10a514;
 	Font _font8_TeamMeat_12 : 0x12a550;	
 	unsigned int _framecount : 0x4a264;
+	Music _musicmanager : 0x29a78;
 } : 0x20a9d8;
 
 "e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":
