@@ -33,6 +33,7 @@ Additions:
   	- MC_PRE/POST_PLAYER_ADD_HEARTS(EntityPlayer Player, int Amount, AddHealthType AddHealthType, bool OptionalArg): Called when hearts are added to the player, allows changing the added amount of hearts.
 	- MC_POST_RENDER_PLAYER_HEAD/BODY we had the pre but not the post. Same args as the pre, but with the updated vector if its changed on pre
 	- MC_POST_PLAYERHUD_ACTIVE_ITEM now has an additional "ChargeBarOffset" arg (the screen position where the charge bar would be rendered)
+* ImGui now supports multiline input! Use CTRL + Enter for a newline. Useful for pasting Lua scripts or making fortunes.
 /newline/
 Modified:
 * Entity :
@@ -53,6 +54,8 @@ Fixes:
 	* Callbacks re-implemented by REPENTOGON (such as MC_ENTITY_TAKE_DMG) now use their original callback IDs rather than a new one (fixes cases where the original ID was used directly, instead of the enum).
 	* MC_POST_PLAYERHUD_ACTIVE_ITEM's "Offet" arg now accounts for Book of Virtues & Judas' Birthright
 	* MC_POST_PLAYERHUD_ACTIVE_ITEM's "Scale" arg is now correctly halved for the secondary (schoolbag) slot
+	* Removed ImGui's automatic window resizing as it caused more issues than it solved
+	* Set a larger padding for ImGui to instruct it to always keep at least (100, 100) pixels of debug windows visible
 /newline/
 /newline/
 v1.0.6b -
