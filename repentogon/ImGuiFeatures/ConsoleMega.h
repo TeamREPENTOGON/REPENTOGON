@@ -287,6 +287,7 @@ struct ConsoleMega : ImGuiWindowObject {
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
         autocompleteBuffer.clear();
+        reclaimFocus = true;
     }
 
     void Draw(bool isImGuiActive) {
@@ -378,7 +379,12 @@ struct ConsoleMega : ImGuiWindowObject {
               ImVec2 drawPos = ImGui::GetCursorPos();
 
               ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
-              if (ImGui::InputTextWithHint("##", LANG.CONSOLE_CMD_HINT, inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
+                
+              // This works around multiline losing focus on enter (genius!)
+              if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
+                  ImGui::SetKeyboardFocusHere(0);
+
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
                 char* s = inputBuf;
                 Strtrim(s);
                 std::string fixedCommand = FixSpawnCommand(s);
@@ -393,6 +399,16 @@ struct ConsoleMega : ImGuiWindowObject {
               if (reclaimFocus) {
                 ImGui::SetKeyboardFocusHere(-1);
                 reclaimFocus = false;
+              }
+
+              // Handle hint
+              if (!inputBuf[0])
+              {
+                  ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
+
+                  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
+                  ImGui::Text(LANG.CONSOLE_CMD_HINT);
+                  ImGui::PopStyleColor();
               }
 
               // Handle preview text
