@@ -12,6 +12,10 @@ Additions:
 	- Isaac.GetCurrentStageConfigId(): returns the stagesid from the stages xml for the current floor.
 * Familiar :
 	- RemoveFromPlayer
+	- CanBlockProjectiles
+	- CanBeDamagedByProjectiles
+	- CanBeDamagedByEnemies
+	- CanBeDamagedByLasers
 * EntityNPC :
 	- GetDarkRedChampionRegenTimer
 * EntityPlayer:
@@ -28,6 +32,7 @@ Additions:
 	- MC_PRE/POST_MINIMAP_RENDER: Called right before or right after the minimap is rendered
   	- MC_PRE/POST_PLAYER_ADD_HEARTS(EntityPlayer Player, int Amount, AddHealthType AddHealthType, bool OptionalArg): Called when hearts are added to the player, allows changing the added amount of hearts.
 	- MC_POST_RENDER_PLAYER_HEAD/BODY we had the pre but not the post. Same args as the pre, but with the updated vector if its changed on pre
+	- MC_POST_PLAYERHUD_ACTIVE_ITEM now has an additional "ChargeBarOffset" arg (the screen position where the charge bar would be rendered)
 /newline/
 Modified:
 * Entity :
@@ -46,6 +51,8 @@ Fixes:
 	* Fixed a bug where adding modded follower familiars could sometimes freeze the game (especially while using MC_GET_FOLLOWER_PRIORITY).
 	* Fixed EntityNPC:GetBossColorIdx() not matching the values of the function in vanilla
 	* Callbacks re-implemented by REPENTOGON (such as MC_ENTITY_TAKE_DMG) now use their original callback IDs rather than a new one (fixes cases where the original ID was used directly, instead of the enum).
+	* MC_POST_PLAYERHUD_ACTIVE_ITEM's "Offet" arg now accounts for Book of Virtues & Judas' Birthright
+	* MC_POST_PLAYERHUD_ACTIVE_ITEM's "Scale" arg is now correctly halved for the secondary (schoolbag) slot
 /newline/
 /newline/
 v1.0.6b -

@@ -13,10 +13,12 @@ __thiscall void PlayerHUD::UpdateHearts(PlayerHUDHeart* heart, int unkInt, Entit
 "558bec83e4f081ecc80000008b11":
 __thiscall void PlayerHUD::RenderTrinket(uint32_t TrinketSlot, Vector* pos, float scale<xmm3>);
 
-struct PlayerHUD depends (PlayerHUDHeart) { {{
+struct PlayerHUD depends (PlayerHUDHeart, PlayerHUDActiveItem) { {{
 	inline Entity_Player* GetPlayer() { return this->_player; }
 }} 
     Entity_Player* _player : 0x0;
     HUD* _HUD : 0x4;
+    short _playerHudIndex : 0x8;
     PlayerHUDHeart _heart[24] : 0x10;
+    PlayerHUDActiveItem _activeItem[4] : 0x190;
 } : 0x6b0;

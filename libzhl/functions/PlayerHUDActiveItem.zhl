@@ -1,6 +1,8 @@
 "558bec8b0183ec18":
 void PlayerHUDActiveItem::RenderGfx(SourceQuad* sourceQuad, DestinationQuad* destQuad, const ColorMod& color);
 
-struct PlayerHUDActiveItem {
+struct PlayerHUDActiveItem depends (KAGE_Graphics_ImageBase) {
     int id : 0x0;
-} : 0x4;
+    KAGE_Graphics_ImageBase* itemImage : 0x8;
+    KAGE_Graphics_ImageBase* bookImage : 0x10;
+} : 0x1C;
