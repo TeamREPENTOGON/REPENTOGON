@@ -10,6 +10,10 @@ Additions:
 	- Isaac.GetCurrentStageConfigId(): returns the stagesid from the stages xml for the current floor.
 * Familiar :
 	- RemoveFromPlayer
+	- CanBlockProjectiles
+	- CanBeDamagedByProjectiles
+	- CanBeDamagedByEnemies
+	- CanBeDamagedByLasers
 * EntityNPC :
 	- GetDarkRedChampionRegenTimer
 * EntityPlayer:
