@@ -3,10 +3,12 @@ Additions:
 * Backdrops:
 	- Custom Backdrop support! with contents/backdrops.xml!
 	- Custom attribute reftype to specify the base backdrop for the custom ones
-	- Isaac.GetBackdropTypeByName (self-explanatory make sure to give your backdrops a name!)
+	- Isaac.GetBackdropIdByName (self-explanatory make sure to give your backdrops a name!)
 	- MC_PRE/POST_BACKDROP_CHANGE callback accepting callbacktype as a return value on pre and recieving callbacktype as a param
 * Stages:
 	- Isaac.SetCurrentFloorMusic(musicid): changes the default music for the current floor(will reset after you leave the floor).
+	- Isaac.SetCurrentFloorBackdrop(backdropid): changes the default backdrop for the current floor(will reset after you leave the floor).
+	- Isaac.SetCurrentFloorName(string): changes the stage name for the current floor(will reset after you leave the floor).
 	- Isaac.GetCurrentStageConfigId(): returns the stagesid from the stages xml for the current floor.
 * Familiar :
 	- RemoveFromPlayer

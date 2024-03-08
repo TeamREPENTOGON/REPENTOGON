@@ -587,7 +587,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropTypeByName", Lua_GetBackdropTypeByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdByName", Lua_GetBossColorIdxByName); //alias for musclememory
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

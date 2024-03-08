@@ -28,11 +28,26 @@
 
 int bckmstage = -1;
 int bckmmusic = -1;
+
+int bckbstage = -1;
+int bckbbackdrop = -1;
+
+int bcknstage = -1;
+string bcknname;
 HOOK_METHOD(Level, Init, ()-> void) {
 	if (bckmmusic > -1) {
 		g_Game->_roomConfigs.configs[bckmstage].music = bckmmusic;
 		bckmstage = -1;
 		bckmmusic = -1;
+	}
+	if (bckbbackdrop > -1) {
+		g_Game->_roomConfigs.configs[bckbstage].backdrop = bckbbackdrop;
+		bckbstage = -1;
+		bckbbackdrop = -1;
+	}
+	if (bcknstage > -1) {
+		g_Game->_roomConfigs.configs[bcknstage].stageName = bcknname;
+		bcknstage = -1;
 	}
 	super();
 }
@@ -48,6 +63,28 @@ void SetCurrentFloorMusic(int etype) {
 		g_Manager->_musicmanager.UpdateVolume();
 	}
 	g_Game->_roomConfigs.configs[currstageid].music = etype;
+}
+
+void SetCurrentFloorBackdrop(int etype) {
+	int currstageid = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+	if (bckbbackdrop == -1) {
+		bckbstage = currstageid;
+		bckbbackdrop = g_Game->_roomConfigs.configs[currstageid].backdrop;
+	}
+	Backdrop* bck = g_Game->_room->GetBackdrop();
+	if (bck->backdropId == g_Game->_roomConfigs.configs[currstageid].backdrop) {
+		bck->Init(etype, true);
+	}
+	g_Game->_roomConfigs.configs[currstageid].backdrop = etype;
+}
+
+void SetCurrentFloorName(string etype) {
+	int currstageid = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
+	if (bcknstage == -1) {
+		bcknstage = currstageid;
+		bcknname = g_Game->_roomConfigs.configs[currstageid].stageName;
+	}
+	g_Game->_roomConfigs.configs[currstageid].stageName = etype;
 }
 
 
@@ -197,6 +234,24 @@ LUA_FUNCTION(Lua_SetCurrentFloorMusic)
 
 }
 
+LUA_FUNCTION(Lua_SetCurrentFloorBackdrop)
+{
+	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected BackdropId as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
+	int etype = (int)luaL_checknumber(L, 1);
+	SetCurrentFloorBackdrop(etype);
+	return 0;
+
+}
+
+LUA_FUNCTION(Lua_SetCurrentFloorName)
+{
+	if (!lua_isstring(L, 1)) { return luaL_error(L, "Expected floorname as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
+	string etype = luaL_checkstring(L, 1);
+	SetCurrentFloorName(etype);
+	return 0;
+
+}
+
 LUA_FUNCTION(Lua_GetCurrentStageConfigId)
 {
 	lua_pushinteger(L, RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1));
@@ -210,5 +265,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCurrentFloorMusic", Lua_SetCurrentFloorMusic);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCurrentFloorBackdrop", Lua_SetCurrentFloorBackdrop);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetCurrentFloorName", Lua_SetCurrentFloorName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCurrentStageConfigId", Lua_GetCurrentStageConfigId);
 }

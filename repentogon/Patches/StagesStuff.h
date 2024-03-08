@@ -1,5 +1,5 @@
-#ifndef ACHIEVSTUFF_H
-#define ACHIEVSTUFF_H
+#ifndef STAGESSTUFF_H
+#define STAGESSTUFF_H
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
@@ -23,8 +23,8 @@
 using namespace std;
 extern void SetCurrentFloorMusic(int etype);
 
-unordered_map<int, tuple<int, int> > stageidtotuple;
-void initstagetotuple() {
+inline unordered_map<int, tuple<int, int> > stageidtotuple;
+inline void initstagetotuple() {
 	//Vanilla
 	stageidtotuple[1] = { 1,0 };
 	stageidtotuple[2] = { 1,1 };

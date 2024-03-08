@@ -12,6 +12,7 @@
 #include <cstring>
 
 #include "XMLData.h"
+#include "StagesStuff.h"
 
 #include "SigScan.h"
 #include "IsaacRepentance.h"
@@ -594,6 +595,147 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 }
 
 
+/*
+string ogstagespath;
+int queuedstage = 0;
+int queuedalt = 0;
+int lastrequest = 0;
+
+HOOK_STATIC(RoomConfig, GetStageID, (unsigned int LevelStage, unsigned int StageType, unsigned int Mode)-> unsigned int, __cdecl) {
+	unsigned int stageid = super(LevelStage, StageType, Mode);
+	//printf("getstage: %d \n", stageid);
+	return stageid;
+}
+
+HOOK_METHOD(RoomConfig, LoadStages, (char* xmlpath)-> void) {
+	if (ogstagespath.length() == 0) {
+		ogstagespath = xmlpath;
+	}
+	printf("stagexml: %s \n", xmlpath);
+	super(xmlpath);
+}
+
+
+
+
+bool IsOnSecondFloor() {
+	int stageid = g_Game->_stage;
+	return (stageid == 2) || (stageid == 4) || (stageid == 6) || (stageid == 8) || (g_Game->_curses & (1 << 1)); //has curse XL
+}
+
+extern int toint(const string& str);
+
+tuple<int, int> GetSetStage(int stageid, bool secondfloor) {
+	if (stageidtotuple.empty()) {
+		initstagetotuple();
+	}
+	if (stageidtotuple.count(stageid) > 0) {
+		tuple<int, int> ret = stageidtotuple[stageid];
+		if (secondfloor && (get<0>(ret) < 9)) {
+			ret = { get<0>(ret) + 1,get<1>(ret) };
+		}
+		return ret;
+	}
+	else {
+		return { stageid,0 };
+	}
+}
+
+
+
+tuple<int, int> ConsoleStageIdToTuple(const string& input) {
+	string* numberPart = new string("");
+	int letterValue = 0;
+	for (char c : input) {
+		if (isdigit(c)) {
+			*numberPart += c;
+		}
+		else {
+			if (isalpha(c)) {
+				int x = toint(*numberPart);
+				delete numberPart;
+				return { x ,c - 'a' + 1 };
+			}
+		}
+	}
+	int y = toint(*numberPart);
+	delete numberPart;
+	return { y ,0 };
+}
+
+
+int lastparentstage = 0;
+int setstageoverloadid = 0;
+int setstageoverloadalt = 0;
+
+
+HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
+	if (in.rfind("stage", 0) == 0) {
+		std::vector<std::string> cmdlets = ParseCommand2(in, 2);
+		tuple<int, int> id = ConsoleStageIdToTuple(cmdlets[1]);
+		if (XMLStuff.StageData->bystagealt.count(id) == 0) { //stage 14 works without intervention, lol
+			super(in, out, player);
+			return;
+		}
+		else {
+			//super(in, out, player); //we still run it just in case I dunno, does nothing anyway
+			setstageoverloadid = get<0>(id);
+			setstageoverloadalt = get<1>(id);
+			g_Game->GetConsole()->RunCommand(string("stage 1"), out, player);
+			return;
+		}
+	}
+	super(in, out, player);
+}
+
+
+HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
+	int stageid = a;
+	int alt = b;
+	if (setstageoverloadid > 0) { stageid = setstageoverloadid; setstageoverloadid = 0; }
+	if (setstageoverloadalt > 0) { alt = setstageoverloadalt; setstageoverloadalt = 0; }
+	char* xml = new char[ogstagespath.length() + 1];
+	strcpy(xml, ogstagespath.c_str());
+	tuple<int, int> idx = { stageid,alt };
+	if (XMLStuff.StageData->bystagealt.count(idx) > 0) {
+		XMLAttributes* targetstage = new XMLAttributes(XMLStuff.StageData->nodes[XMLStuff.StageData->bystagealt[idx]]);
+		int parentstage = toint((*targetstage)["basestage"]);
+		if (parentstage == 0) { parentstage = 1; }
+		queuedhackyxmlvalue = stageid;
+		queuedhackyxmltarget = parentstage;
+		queuedhackyxmlmaxval = 36;
+		//if (lastparentstage != stageid) {
+		for (int i = 0; i <= 36; i++) {
+			g_Game->_roomConfigs.configs[i].Unload();
+		}
+		g_Game->GetRoomConfig()->LoadStages(xml);
+		//}
+		printf("setstageX: %d %d  \n", stageid, alt);
+		tuple<int, int> setstg = GetSetStage(parentstage, IsOnSecondFloor());
+		super(get<0>(setstg), get<1>(setstg));
+		printf("done");
+		lastparentstage = get<0>(setstg);
+		setstg;
+	}
+	else if (lastparentstage == get<0>(GetSetStage(a, IsOnSecondFloor()))) {
+		//no = true;
+		//for (int i = 0; i <= 36; i++) {
+		for (int i = 0; i <= 36; i++) {
+			g_Game->_roomConfigs.configs[i].Unload();
+		}
+		//}
+		g_Game->GetRoomConfig()->LoadStages(xml);
+		super(stageid, alt);
+		lastparentstage = 0;
+	}
+	else {
+		super(stageid, alt);
+	}
+	queuedhackyxmlvalue = 0;
+	queuedhackyxmltarget = 0;
+	mclear(xml);
+}
+*/
 void inheritdaddyatts(xml_node<char>* daddy,XMLAttributes* atts) {
 	for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
 	{
@@ -2647,7 +2789,7 @@ xml_node<char>* find_child(
 		node = node->next_sibling(type.c_str());
 	}
 	//printf("node2");
-	return node;
+	return NULL;
 	}
 	catch(exception ex){
 		return NULL;
@@ -3129,7 +3271,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 				//printf("2");
 				xml_node<char>* todel = find_child(root, "stage", "id", IntToChar(queuedhackyxmltarget));
 				if (todel != NULL) {
-					if (todel->first_attribute("id")) { todel->remove_node(todel); }
+					root->remove_node(todel);
 				}
 				//printf("3");
 			}
@@ -3286,7 +3428,10 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 			return;
 		}
 		else if (charfind(xmldata, "<cuts", 50)) {
-			super(BuildModdedXML(xmldata, "cutscenes.xml", false));
+			return super(BuildModdedXML(xmldata, "cutscenes.xml", false));
+		}
+		else if (charfind(xmldata, "<stages", 50)) {
+			return super(BuildModdedXML(xmldata, "stages.xml", false));
 		}
 		else if (charfind(xmldata, "<itempoo", 50)) {
 			//XMLStuff.PoolData->Clear();
