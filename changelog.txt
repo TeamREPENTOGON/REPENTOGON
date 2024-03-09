@@ -20,6 +20,8 @@ Additions:
 	- GetDarkRedChampionRegenTimer
 * EntityPlayer:
 	- GetUrnSouls
+* EntitiesSaveStateVector:
+	- Clear
 * Minimap :
 	- SetState
 	- SetHoldTime
