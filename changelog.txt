@@ -25,6 +25,8 @@ Additions:
 * Minimap :
 	- SetState
 	- SetHoldTime
+* EntityConfig:
+	- Added EntityConfig.GetBaby(i) and EntityConfig.GetMaxBabyID(), as well as the corresponding EntityConfigBaby class (its co-op babies).
 * XMLData :
 	- XMLData.GetEntryByOrder: gets entries in the order they appear on the xmls.
 * Callbacks :
