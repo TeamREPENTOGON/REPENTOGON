@@ -1,0 +1,6 @@
+struct EntityConfig_Baby {
+	int id : 0x0;
+	std_string name: 0x4;
+	std_string gfx: 0x1C;
+	int achievementID : 0x34;
+} : 0x38;
