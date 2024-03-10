@@ -303,7 +303,7 @@ struct ConsoleMega : ImGuiWindowObject {
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
             bool textInputScrollbarVisible = imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
-            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize) - (textInputScrollbarVisible ? 10 : 0);
+            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize) - (textInputScrollbarVisible ? 14 : 0);
 
             if (!isImGuiActive)
             {
@@ -381,13 +381,13 @@ struct ConsoleMega : ImGuiWindowObject {
               }
               ImVec2 drawPos = ImGui::GetCursorPos();
 
-              ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
+              ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_NoHorizontalScroll;
                 
               // This works around multiline losing focus on enter (genius!)
               if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0) && !textInputScrollbarVisible)
                   ImGui::SetKeyboardFocusHere(0);
 
-              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 10 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
                   char* s = inputBuf;
                   Strtrim(s);
                   std::string fixedCommand = FixSpawnCommand(s);
@@ -464,6 +464,14 @@ struct ConsoleMega : ImGuiWindowObject {
             case ImGuiInputTextFlags_CallbackEdit:
             {
                 if (autocompleteActive) return 0; // Dont execute callback when ImGuiInputTextFlags_CallbackCompletion does its thing
+
+                // To help accomodate for the horizontal scrollbar hacks we've implemented in ImGui, we handle scrolling manually.
+                // I don't like it, but it's still much better than how we used to handle this (we didn't)
+                static int bufLength = 0;
+
+                ImGui::SetScrollX(ImGui::GetScrollX() + (data->BufTextLen > bufLength ? 7 : -7) * imFontUnifont->Scale); //TODO This works for now, but unhardcode the 7 later on to account for different fonts.
+
+                bufLength = data->BufTextLen;
 
                 std::string strBuf = data->Buf;
                 std::vector<std::string> cmdlets = ParseCommand(strBuf);

@@ -40,7 +40,9 @@ Additions:
   	- MC_PRE/POST_PLAYER_ADD_HEARTS(EntityPlayer Player, int Amount, AddHealthType AddHealthType, bool OptionalArg): Called when hearts are added to the player, allows changing the added amount of hearts.
 	- MC_POST_RENDER_PLAYER_HEAD/BODY we had the pre but not the post. Same args as the pre, but with the updated vector if its changed on pre
 	- MC_POST_PLAYERHUD_ACTIVE_ITEM now has an additional "ChargeBarOffset" arg (the screen position where the charge bar would be rendered)
-* ImGui now supports multiline input! Use CTRL + Enter for a newline. Useful for pasting Lua scripts or making fortunes.
+* ImGui :
+	- Now supports multiline input. Use CTRL + Enter for a newline. Useful for pasting Lua scripts or making fortunes.
+	- Now has a horizontal scrollbar when needed for console input. Still experimental, but seems functional.
 /newline/
 Modified:
 * Entity :
