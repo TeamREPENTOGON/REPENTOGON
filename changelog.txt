@@ -11,8 +11,8 @@ Additions:
 	- Isaac.SetCurrentFloorName(string): changes the stage name for the current floor(will reset after you leave the floor).
 	- Isaac.GetCurrentStageConfigId(): returns the stagesid from the stages xml for the current floor.
 * Challenges:
-	- Added the "hidden" attribute to the achievements.xml that can hide modded achievements from the menu when it's anything but "false".
-	- Added support for the "achievements" attribute for modded challenges, so modded achievements can now be locked. This param also supports using modded achievements.
+	- Added the "hidden" attribute to the challenges.xml that can hide modded challenges from the menu when it's anything but "false".
+	- Added support for the "achievements" attribute for modded challenges, so modded challenges can now be locked. This param also supports using modded achievements.
 	- Added a new "lockeddesc" attribute, so you can a custom message to be displayed when your challenge is locked (default is "LOCKED :("). Pretty useful for unlock hints.
 * Familiar :
 	- RemoveFromPlayer
