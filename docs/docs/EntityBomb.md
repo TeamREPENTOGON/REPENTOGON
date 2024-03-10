@@ -12,6 +12,11 @@ tags:
 #### [Sprite](Sprite.md) GetCostumeLayerSprite ( [BombCostumeLayer](enums/BombCostumeLayer.md) LayerID ) {: .copyable aria-label='Functions' }
 
 ___
+### GetAngularMovement () {: aria-label='Functions' }
+#### float GetAngularMovement ( ) {: .copyable aria-label='Functions' }
+Get the angular movement of the bomb. This is only applicable to rocket bombs. It influences both their movement and the orientation of their sprite.
+
+___
 ### GetExplosionCountdown () {: aria-label='Functions' }
 #### int GetExplosionCountdown ( ) {: .copyable aria-label='Functions' }
 
@@ -35,6 +40,11 @@ Used to apply animation set for bomb costume.
 ___
 ### IsLoadingCostumes () {: aria-label='Functions' }
 #### boolean IsLoadingCostumes ( ) {: .copyable aria-label='Functions' }
+
+___
+### SetAngularMovement () {: aria-label='Functions' }
+#### void SetAngularMovement ( float angle ) {: .copyable aria-label='Functions' }
+Set the angular movement of the bomb. This is only applicable to rocket bombs. It influences both their movement and the orientation of their sprite.
 
 ___
 ### SetFallingSpeed () {: aria-label='Functions' }

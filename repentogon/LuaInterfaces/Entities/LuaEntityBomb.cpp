@@ -110,6 +110,19 @@ LUA_FUNCTION(Lua_BombGetCostumeLayerSprite) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_BombGetAngularMovement) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua_pushnumber(L, bomb->_angularMovement);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetAngularMovement) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua_Number angle = luaL_checknumber(L, 2);
+	bomb->_angularMovement = angle;
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -128,6 +141,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsLoadingCostumes", Lua_BombIsLoadingCostumes },
 		{ "SetLoadCostumes", Lua_BombSetLoadCostumes },
 		{ "GetCostumeLayerSprite", Lua_BombGetCostumeLayerSprite },
+		{ "GetAngularMovement", Lua_BombGetAngularMovement },
+		{ "SetAngularMovement", Lua_BombSetAngularMovement },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);
