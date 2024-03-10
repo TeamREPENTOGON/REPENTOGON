@@ -18,6 +18,9 @@ Additions:
 	- CanBeDamagedByLasers
 * EntityNPC :
 	- GetDarkRedChampionRegenTimer
+* EntityBomb:
+	- GetRocketAngle / SetRocketAngle
+	- GetRocketSpeed / SetRocketSpeed
 * EntityPlayer:
 	- GetUrnSouls
 * EntitiesSaveStateVector:
