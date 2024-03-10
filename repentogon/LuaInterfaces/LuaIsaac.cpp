@@ -376,7 +376,7 @@ LUA_FUNCTION(Lua_IsaacPause) {
 }
 LUA_FUNCTION(Lua_IsaacResume) {
 	if (apipause && !console.enabled) {
-		*g_Game->GetConsole()->GetState() = 0;
+		g_Game->GetConsole()->_state = 0;
 	}
 	apipause = false;
 	return 1;

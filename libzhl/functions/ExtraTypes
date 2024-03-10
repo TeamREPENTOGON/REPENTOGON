@@ -70,6 +70,11 @@ TypeInfo deque_string {
     Align 4;
 };
 
+TypeInfo deque_console_historyentry {
+    Size 20;
+    Align 4;
+};
+
 TypeInfo vector_ItemPtr {
     Size 12;
     Align 4;

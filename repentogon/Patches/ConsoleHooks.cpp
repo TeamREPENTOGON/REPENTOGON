@@ -63,9 +63,9 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
     // Armed with this info, we can fix commands not saving on game crash by saving it every time.
     // Kinda hacky, but whatever.
     if (text.rfind(">", 0) == 0 && color == 0xFF808080) {
-        int state = *this->GetState();
+        int state = this->_state;
         this->SaveCommandHistory();
-        *this->GetState() = state;
+        this->_state = state;
     }
 
     // Change Repentance into REPENTOGON in the console
@@ -179,12 +179,12 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
                 bool firstCommandRan = false;
                 int test_it = 0;
                 for (std::string command : macro.commands) {
-                    this->GetCommandHistory()->push_front(command);
+                    this->_commandHistory.push_front(command);
                     this->RunCommand(command, out, player);
                 }
 
                 for (unsigned int i = 0; i < macro.commands.size(); ++i) {
-                    this->GetCommandHistory()->pop_front();
+                    this->_commandHistory.pop_front();
                 }
 
                 res.append("Macro finished.\n");

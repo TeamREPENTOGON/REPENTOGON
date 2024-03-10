@@ -305,7 +305,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 	}
 
-	if (menuShown && *g_Game->GetConsole()->GetState() != 2) {
+	if (menuShown && g_Game->GetConsole()->_state != 2) {
 		// Release keys we've tracked as being pressed. Call the game's wndProc to accomplish this
 		std::vector keys = pressedKeys;
 		for (WPARAM key : keys) {
@@ -322,7 +322,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 
 		// Induce a game pause by setting the debug console's state to 2 (shown). We'll suppress rendering in another hook.
-		*g_Game->GetConsole()->GetState() = 2;
+		g_Game->GetConsole()->_state = 2;
 
 		// Console should steal focus by default, if visible.
 		// Everybody (myself included) has been muscle-memoried into pressing ` and typing a command, we should respect that!
@@ -330,7 +330,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		console.reclaimFocus = true;
 	}
 
-	if (!menuShown && *g_Game->GetConsole()->GetState() != 0) {
+	if (!menuShown && g_Game->GetConsole()->_state != 0) {
 		std::vector keys = pressedKeys;
 		for (WPARAM key : keys) {
 			ImGui_ImplWin32_WndProcHandler(hWnd, WM_KEYUP, key, lParam);
@@ -342,7 +342,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			ImGui_ImplWin32_WndProcHandler(hWnd, WM_LBUTTONUP, 0, lParam);
 		}
 
-		*g_Game->GetConsole()->GetState() = 0;
+		g_Game->GetConsole()->_state = 0;
 	}
 
 

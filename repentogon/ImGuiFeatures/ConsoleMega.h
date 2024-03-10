@@ -276,12 +276,12 @@ struct ConsoleMega : ImGuiWindowObject {
         std::string out;
         bool clear = false;
 
-        if (!console->GetCommandHistory()->empty() && console->GetCommandHistory()->front() == input && !commandFromHistory)
+        if (!console->_commandHistory.empty() && console->_commandHistory.front() == input && !commandFromHistory)
             clear = true;
 
         // For whatever asinine reason, the vanilla console makes a distinction between commands typed out and commands entered from history.
         // Commands sent from history are entirely purged from previous history first, so they don't duplicate.
-        if (!console->GetCommandHistory()->empty() && commandFromHistory) {
+        if (!console->_commandHistory.empty() && commandFromHistory) {
             std::deque<std::string> newHistory;
 
             for (std::string command : console->_commandHistory) {
@@ -296,7 +296,7 @@ struct ConsoleMega : ImGuiWindowObject {
         console->SubmitInput(false);
 
         if (clear)
-            console->GetCommandHistory()->pop_front();
+            console->_commandHistory.pop_front();
 
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
@@ -312,7 +312,7 @@ struct ConsoleMega : ImGuiWindowObject {
         
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
             AddWindowContextMenu();
-            std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
+            std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
 
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
@@ -1200,7 +1200,7 @@ struct ConsoleMega : ImGuiWindowObject {
             }
             case ImGuiInputTextFlags_CallbackHistory:
             {
-                std::deque<std::string> history = *(g_Game->GetConsole())->GetCommandHistory();
+                std::deque<std::string> history = (g_Game->GetConsole())->_commandHistory;
                 autocompleteBuffer.clear();
 
                 const int prev_history_pos = historyPos;
