@@ -384,14 +384,15 @@ struct ConsoleMega : ImGuiWindowObject {
               if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
                   ImGui::SetKeyboardFocusHere(0);
 
-              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
-                char* s = inputBuf;
-                Strtrim(s);
-                std::string fixedCommand = FixSpawnCommand(s);
-                s = (char*)fixedCommand.c_str();
-                if (s[0])
-                  ExecuteCommand(s);
-                reclaimFocus = true;
+              printf("%f %f\n", imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale, ImGui::CalcItemWidth());
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + 10), consoleFlags, &TextEditCallbackStub, (void*)this)) {
+                  char* s = inputBuf;
+                  Strtrim(s);
+                  std::string fixedCommand = FixSpawnCommand(s);
+                  s = (char*)fixedCommand.c_str();
+                  if (s[0])
+                      ExecuteCommand(s);
+                  reclaimFocus = true;
               }
               ImGui::PopItemWidth();
 
