@@ -300,8 +300,11 @@ struct ConsoleMega : ImGuiWindowObject {
             AddWindowContextMenu();
             std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
 
+
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
-            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize);
+            bool textInputScrollbarVisible = imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
+            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize) - (textInputScrollbarVisible ? 10 : 0);
+
             if (!isImGuiActive)
             {
               textboxHeight = 0;
@@ -381,11 +384,10 @@ struct ConsoleMega : ImGuiWindowObject {
               ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
                 
               // This works around multiline losing focus on enter (genius!)
-              if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0))
+              if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0) && !textInputScrollbarVisible)
                   ImGui::SetKeyboardFocusHere(0);
 
-              printf("%f %f\n", imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale, ImGui::CalcItemWidth());
-              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + 10), consoleFlags, &TextEditCallbackStub, (void*)this)) {
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 10 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
                   char* s = inputBuf;
                   Strtrim(s);
                   std::string fixedCommand = FixSpawnCommand(s);
@@ -397,6 +399,7 @@ struct ConsoleMega : ImGuiWindowObject {
               ImGui::PopItemWidth();
 
               ImGui::SetItemDefaultFocus();
+
               if (reclaimFocus) {
                 ImGui::SetKeyboardFocusHere(-1);
                 reclaimFocus = false;
