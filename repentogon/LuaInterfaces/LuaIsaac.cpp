@@ -277,7 +277,7 @@ LUA_FUNCTION(Lua_GetClipboard) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_GetSubTypwByName) {
+LUA_FUNCTION(Lua_GetSubTypeByName) {
 	string text = string(luaL_checkstring(L, 1));
 	if (XMLStuff.EntityData->byname.count(text) > 0)
 	{
@@ -372,14 +372,14 @@ HOOK_STATIC(Manager, Update, () -> void, __stdcall) {
 }
 LUA_FUNCTION(Lua_IsaacPause) {
 	apipause = true;
-	return 1;
+	return 0;
 }
 LUA_FUNCTION(Lua_IsaacResume) {
 	if (apipause && !console.enabled) {
 		g_Game->GetConsole()->_state = 0;
 	}
 	apipause = false;
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
@@ -568,7 +568,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetClipboard", Lua_SetClipboard);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCursorSprite", Lua_IsaacGetCursorSprite);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetLoadedModules", Lua_GetLoadedModules);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypwByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypeByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCutsceneIdByName", Lua_GetCutsceneByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetGiantBookIdByName", Lua_GetGiantBookByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNullItemIdByName", Lua_IsaacGetNullItemIdByName);
