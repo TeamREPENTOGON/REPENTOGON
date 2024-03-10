@@ -45,8 +45,9 @@ Additions:
 	- MC_POST_RENDER_PLAYER_HEAD/BODY we had the pre but not the post. Same args as the pre, but with the updated vector if its changed on pre
 	- MC_POST_PLAYERHUD_ACTIVE_ITEM now has an additional "ChargeBarOffset" arg (the screen position where the charge bar would be rendered)
 * ImGui :
-	- Now supports multiline input. Use CTRL + Enter for a newline. Useful for pasting Lua scripts or making fortunes.
-	- Now has a horizontal scrollbar when needed for console input. Still experimental, but seems functional.
+	- Now supports multiline input. Use CTRL + Enter for a newline, useful for pasting Lua scripts or making fortunes
+	- Now has a horizontal scrollbar when needed for console input
+	- Console history reimplementation is now more accurate, properly removing duplicate entries from history when a command is executed from history
 /newline/
 Modified:
 * Entity :
