@@ -1,5 +1,5 @@
-#ifndef ACHIEVSTUFF_H
-#define ACHIEVSTUFF_H
+#ifndef CHALLENGESSTUFF_H
+#define CHALLENGESSTUFF_H
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"

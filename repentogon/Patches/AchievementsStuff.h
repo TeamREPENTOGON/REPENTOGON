@@ -541,6 +541,33 @@ inline void IncreaseAchievementCounter(int achievementid) {
 	}
 }
 
+
+
+inline bool MeetsComaSeparatedAchievs(const string& names) {
+	size_t start = 0;
+	size_t pos = names.find(',');
+	string item;
+	string parsedlist = "";
+	if (pos == std::string::npos) {
+		return g_Manager->_persistentGameData.Unlocked(toint(names));
+	}
+	while (pos != std::string::npos) {
+		item = names.substr(start, pos - start);
+		int id = toint(item);
+		if (!g_Manager->_persistentGameData.Unlocked(id)) {
+			return false;
+		}
+		start = pos + 1;
+		pos = names.find(',', start);
+	}
+	item = names.substr(start, names.length());
+	int id = toint(item);
+	if (!g_Manager->_persistentGameData.Unlocked(id)) {
+		return false;
+	}
+	return true;
+}
+
 inline void AddMarkTracker(int achievementid, int marktype, int charaid = -1) {
 	if (find(CompletionMarkListeners[marktype][charaid].begin(), CompletionMarkListeners[marktype][charaid].end(), achievementid) == CompletionMarkListeners[marktype][charaid].end()) {
 		CompletionMarkListeners[marktype][charaid].push_back(achievementid);
