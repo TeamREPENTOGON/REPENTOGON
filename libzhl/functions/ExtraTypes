@@ -65,6 +65,11 @@ TypeInfo deque_Point {
     Align 4;
 };
 
+TypeInfo deque_string {
+    Size 20;
+    Align 4;
+};
+
 TypeInfo vector_ItemPtr {
     Size 12;
     Align 4;

@@ -35,4 +35,5 @@ struct Console depends (Console_HistoryEntry) {
 	enum Color: unsigned int {WHITE = 0xFFD3D3D3};
 }} 
 std_string _input : 0x3c;
+deque_string _commandHistory : 0x74;
 } : 0x88;

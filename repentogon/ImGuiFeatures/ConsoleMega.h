@@ -119,6 +119,7 @@ struct ConsoleMega : ImGuiWindowObject {
     std::vector<AutocompleteEntry> autocompleteBuffer;
     unsigned int autocompletePos;
     bool autocompleteActive = false;
+    bool commandFromHistory = false;
     bool autocompleteNeedFocusChange = false;
     bool reclaimFocus = false;
 
@@ -275,8 +276,21 @@ struct ConsoleMega : ImGuiWindowObject {
         std::string out;
         bool clear = false;
 
-        if (!console->GetCommandHistory()->empty() && console->GetCommandHistory()->front() == input)
+        if (!console->GetCommandHistory()->empty() && console->GetCommandHistory()->front() == input && !commandFromHistory)
             clear = true;
+
+        // For whatever asinine reason, the vanilla console makes a distinction between commands typed out and commands entered from history.
+        // Commands sent from history are entirely purged from previous history first, so they don't duplicate.
+        if (!console->GetCommandHistory()->empty() && commandFromHistory) {
+            std::deque<std::string> newHistory;
+
+            for (std::string command : console->_commandHistory) {
+                if (command != input) {
+                    newHistory.push_back(command);
+                }
+            }
+            console->_commandHistory = newHistory;
+        }
 
         console->_input = input;
         console->SubmitInput(false);
@@ -484,6 +498,8 @@ struct ConsoleMega : ImGuiWindowObject {
             case ImGuiInputTextFlags_CallbackEdit:
             {
                 if (autocompleteActive) return 0; // Dont execute callback when ImGuiInputTextFlags_CallbackCompletion does its thing
+
+                commandFromHistory = false;
 
                 std::string strBuf = data->Buf;
                 std::vector<std::string> cmdlets = ParseCommand(strBuf);
@@ -1199,11 +1215,14 @@ struct ConsoleMega : ImGuiWindowObject {
                             historyPos = 0;
                 }
 
-                if (prev_history_pos != historyPos) {;
+                if (prev_history_pos != historyPos) {
                     std::string entry = historyPos ? history[historyPos - 1] : "";
                     entry.erase(std::remove(entry.begin(), entry.end(), '\n'), entry.end());
+                    autocompleteActive = true;
                     data->DeleteChars(0, data->BufTextLen);
                     data->InsertChars(0, entry.c_str());
+                    autocompleteActive = false;
+                    commandFromHistory = true;
                 }
                 break;
             }
