@@ -12,11 +12,6 @@ tags:
 #### [Sprite](Sprite.md) GetCostumeLayerSprite ( [BombCostumeLayer](enums/BombCostumeLayer.md) LayerID ) {: .copyable aria-label='Functions' }
 
 ___
-### GetAngularMovement () {: aria-label='Functions' }
-#### float GetAngularMovement ( ) {: .copyable aria-label='Functions' }
-Get the angular movement of the bomb. This is only applicable to rocket bombs. It influences both their movement and the orientation of their sprite.
-
-___
 ### GetExplosionCountdown () {: aria-label='Functions' }
 #### int GetExplosionCountdown ( ) {: .copyable aria-label='Functions' }
 
@@ -33,6 +28,16 @@ ___
 #### int[] GetHitList ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetRocketAngle () {: aria-label='Functions' }
+#### float GetRocketAngle ( ) {: .copyable aria-label='Functions' }
+Target angle for rocket bombs. It influences both their movement and the orientation of their sprite.
+
+___
+### GetRocketSpeed () {: aria-label='Functions' }
+#### float GetRocketSpeed ( ) {: .copyable aria-label='Functions' }
+Target speed for rocket bombs. Naturally increases by 1 every frame.
+
+___
 ### GetScale () {: aria-label='Functions' }
 #### float GetScale ( ) {: .copyable aria-label='Functions' }
 Used to apply animation set for bomb costume.
@@ -40,11 +45,6 @@ Used to apply animation set for bomb costume.
 ___
 ### IsLoadingCostumes () {: aria-label='Functions' }
 #### boolean IsLoadingCostumes ( ) {: .copyable aria-label='Functions' }
-
-___
-### SetAngularMovement () {: aria-label='Functions' }
-#### void SetAngularMovement ( float angle ) {: .copyable aria-label='Functions' }
-Set the angular movement of the bomb. This is only applicable to rocket bombs. It influences both their movement and the orientation of their sprite.
 
 ___
 ### SetFallingSpeed () {: aria-label='Functions' }
@@ -57,6 +57,16 @@ ___
 ___
 ### SetLoadCostumes () {: aria-label='Functions' }
 #### void SetLoadCostumes ( boolean Load = true ) {: .copyable aria-label='Functions' }
+
+___
+### SetRocketAngle () {: aria-label='Functions' }
+#### void SetRocketAngle ( float Angle ) {: .copyable aria-label='Functions' }
+Set the target angle for a rocket bomb. It influences both their movement and the orientation of their sprite.
+
+___
+### SetRocketSpeed () {: aria-label='Functions' }
+#### void SetRocketSpeed ( float Speed ) {: .copyable aria-label='Functions' }
+Set the target speed for a rocket bomb. Note that this will naturally increase by 1 every frame.
 
 ___
 ### SetScale () {: aria-label='Functions' }
