@@ -122,6 +122,7 @@ struct ConsoleMega : ImGuiWindowObject {
     bool commandFromHistory = false;
     bool autocompleteNeedFocusChange = false;
     bool reclaimFocus = false;
+    bool focused = false;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -311,6 +312,7 @@ struct ConsoleMega : ImGuiWindowObject {
         ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
         
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
+            focused = ImGui::IsWindowFocused();
             AddWindowContextMenu();
             std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
 

@@ -287,7 +287,7 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		}
 
 		case VK_RETURN: {
-			if (menuShown && !console.inputBuf[0]) {
+			if (menuShown && !console.inputBuf[0] && console.focused) {
 				menuShown = false;
 				return true;
 			}
