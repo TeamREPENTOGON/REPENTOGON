@@ -60,5 +60,10 @@ LibZHL is licensed under the MIT license. All contents in the `libzhl` and `libz
 
 Folders in the `libs` folder are *external dependencies* and have their own licensing information. Check those folder (or, in the case of submodules, their respective dependencies) for further information.
 
+# Sponsors
+[Signpath](https://signpath.io/?utm_source=foundation&utm_medium=github&utm_campaign=repentogon) is providing us with free code signing for our releases, thanks!
+
+[![signpath](https://user-images.githubusercontent.com/26871415/182468471-6ef4aac6-a4e2-4ae8-93ef-d638cd01627d.png)](https://signpath.io/?utm_source=foundation&utm_medium=github&utm_campaign=repentogon)
+
 # Privacy Notice
 REPENTOGON does not collect or transmit any user data without explicit consent. We have an opt-in update mechanism that will transmit the user's IP address to GitHub on launch to determine if there is a new version available, but otherwise, absolutely zero data is processed or stored.
