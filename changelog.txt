@@ -1,4 +1,4 @@
-v1.0.x -
+v1.0.7 -
 Additions:
 * Backdrops:
 	- Custom Backdrop support! with contents/backdrops.xml!
