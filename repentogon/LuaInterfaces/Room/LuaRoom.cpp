@@ -368,6 +368,13 @@ LUA_FUNCTION(Lua_RoomGetBackdropTypeHui) { //this is a bad way to replace room.G
 	}
 }
 
+LUA_FUNCTION(Lua_RoomSaveState) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	room->SaveState();
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -412,6 +419,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetRainIntensity", Lua_RoomSetRainIntensity},
 		{ "GetNumRainSpawners", Lua_RoomGetNumRainSpawners},
 		{ "GetBackdropType", Lua_RoomGetBackdropTypeHui},
+		{ "SaveState", Lua_RoomSaveState},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

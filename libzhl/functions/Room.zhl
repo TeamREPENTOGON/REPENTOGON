@@ -70,6 +70,9 @@ bool Room::IsPersistentRoomEntity(int type, int variant, int subtype);
 "558bec83ec0ca1????????53894d":
 __thiscall bool Room::TrySpawnSpecialQuestDoor();
 
+"558bec6aff68????????64a1????????5081ecf8000000":
+__thiscall void Room::SaveState();
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
