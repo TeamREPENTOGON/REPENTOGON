@@ -5652,6 +5652,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getentrybyorder" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetEntryByOrder ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getmodbyid" class="md-nav__link">
     <span class="md-ellipsis">
       GetModById ()
@@ -5986,6 +5995,15 @@
   <a href="#getentrybyid" class="md-nav__link">
     <span class="md-ellipsis">
       GetEntryById ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getentrybyorder" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetEntryByOrder ()
     </span>
   </a>
   
@@ -6512,6 +6530,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getentrybyorder" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetEntryByOrder ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getmodbyid" class="md-nav__link">
     <span class="md-ellipsis">
       GetModById ()
@@ -6632,6 +6659,23 @@
 <details class="- info">
 <summary>Table usage</summary>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntryById</span><span class="p">(</span><span class="n">XMLNode</span><span class="p">.</span><span class="n">ITEM</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="n">description</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
+<details class="note" open="open">
+<summary>child nodes</summary>
+<p>Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can use <code>soundentry.sample[1]</code>.</p>
+</details>
+<details class="note" open="open">
+<summary>id?</summary>
+<p>The Id usually matches the actual id of the node in question, with the exception of cases like the entities.xml where ids are not unique, on those cases, the id is the order of the node and wont correspond with the actual id. On the cases of XMLs without ids, its just the order again.</p>
+</details>
+<hr />
+<h3 aria-label="Functions" id="getentrybyorder">GetEntryByOrder ()<a class="headerlink" href="#getentrybyorder" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="table-getentrybyorder-xmlnode-nodetype-int-order">table GetEntryByOrder ( <a href="enums/XMLNode.html">XMLNode</a> NodeType, int Order )<a class="headerlink" href="#table-getentrybyorder-xmlnode-nodetype-int-order" title="Permanent link">⚓︎</a></h4>
+<p>Similar to GetByName or GetById, but it returns the node based on the order in which it appears on the xmls (1 will return the first node, 2 the second one and so on). Useful to iterate through xmls in combination with GetNumEntries, specially for redundant xmls like entities.xml.</p>
+<details class="- info">
+<summary>Table usage</summary>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sad Onion&#39;s description:&quot;</span><span class="p">,</span> <span class="n">XMLData</span><span class="p">.</span><span class="n">GetEntryByOrder</span><span class="p">(</span><span class="n">XMLNode</span><span class="p">.</span><span class="n">ITEM</span><span class="p">,</span> <span class="mi">1</span><span class="p">).</span><span class="n">description</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <details class="note" open="open">
