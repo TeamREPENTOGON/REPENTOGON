@@ -2753,6 +2753,24 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_pre_player_add_hearts" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_PLAYER_ADD_HEARTS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_post_player_add_hearts" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_PLAYER_ADD_HEARTS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_pre_player_trigger_room_clear" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR
@@ -5778,6 +5796,24 @@
   <a href="#mc_pre_player_take_dmg" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_PLAYER_TAKE_DMG
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_pre_player_add_hearts" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_PLAYER_ADD_HEARTS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_post_player_add_hearts" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_PLAYER_ADD_HEARTS
     </span>
   </a>
   
@@ -12193,6 +12229,24 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_pre_player_add_hearts" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_PRE_PLAYER_ADD_HEARTS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_post_player_add_hearts" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_PLAYER_ADD_HEARTS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_pre_player_trigger_room_clear" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR
@@ -16908,6 +16962,50 @@ Accepts <code>false</code> to cancel the pickup getting consumed.</p>
 <td style="text-align: left;">(<a href="../EntityPlayer.html">EntityPlayer</a> Player, <br>float Damage, <br><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html">DamageFlags</a> DamageFlags, <br><a href="https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html">EntityRef</a> Source, <br>int DamageCountdown)</td>
 <td style="text-align: left;"><a href="PlayerVariant.html">PlayerVariant</a></td>
 <td style="text-align: left;">boolean</td>
+</tr>
+</tbody>
+</table>
+<h3 class="copyable" id="mc_pre_player_add_hearts">MC_PRE_PLAYER_ADD_HEARTS<a class="headerlink" href="#mc_pre_player_add_hearts" title="Permanent link">⚓︎</a></h3>
+<p>Runs before Add(...)Hearts functions, allows returning a value to change the given amount of health. Functions that include an argument (e.g. ignoreKeeper for AddMaxHearts) provide the value using OptionalArg.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1009</td>
+<td class="copyable" style="text-align: left;">MC_PRE_PLAYER_ADD_HEARTS</td>
+<td style="text-align: left;">(<a href="../EntityPlayer.html">EntityPlayer</a> Player, <br>int Amount, <br><a href="AddHealthType.html">AddHealthType</a> AddHealthType, <br>boolean OptionalArg)</td>
+<td style="text-align: left;"><a href="AddHealthType.html">AddHealthType</a></td>
+<td style="text-align: left;">int</td>
+</tr>
+</tbody>
+</table>
+<h3 class="copyable" id="mc_post_player_add_hearts">MC_POST_PLAYER_ADD_HEARTS<a class="headerlink" href="#mc_post_player_add_hearts" title="Permanent link">⚓︎</a></h3>
+<p>Runs after Add(...)Hearts functions and MC_PRE_PLAYER_ADD_HEARTS callback. Functions that include an argument (e.g. ignoreKeeper for AddMaxHearts) provide the value using OptionalArg.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1010</td>
+<td class="copyable" style="text-align: left;">MC_POST_PLAYER_ADD_HEARTS</td>
+<td style="text-align: left;">(<a href="../EntityPlayer.html">EntityPlayer</a> Player, <br>int Amount, <br><a href="AddHealthType.html">AddHealthType</a> AddHealthType, <br>boolean OptionalArg)</td>
+<td style="text-align: left;"><a href="AddHealthType.html">AddHealthType</a></td>
+<td style="text-align: left;">void</td>
 </tr>
 </tbody>
 </table>

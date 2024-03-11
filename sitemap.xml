@@ -531,6 +531,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://repentogon.com/enums/AddHealthType.html</loc>
+         <lastmod>2024-03-11</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://repentogon.com/enums/AnimRenderFlags.html</loc>
          <lastmod>2024-03-11</lastmod>
          <changefreq>daily</changefreq>
