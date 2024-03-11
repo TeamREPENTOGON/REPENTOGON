@@ -1557,6 +1557,20 @@ Only accepts returning false to cancel the damage. Good for giving the player in
 |:--|:--|:--|:--|:--|
 |1008 |MC_PRE_PLAYER_TAKE_DMG {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>float Damage, <br>[DamageFlags](https://wofsauge.github.io/IsaacDocs/rep/enums/DamageFlag.html) DamageFlags, <br>[EntityRef](https://wofsauge.github.io/IsaacDocs/rep/EntityRef.html) Source, <br>int DamageCountdown) | [PlayerVariant](PlayerVariant.md) | boolean |
 
+### MC_PRE_PLAYER_ADD_HEARTS {: .copyable }
+Runs before Add(...)Hearts functions, allows returning a value to change the given amount of health. Functions that include an argument (e.g. ignoreKeeper for AddMaxHearts) provide the value using OptionalArg.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1009 |MC_PRE_PLAYER_ADD_HEARTS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>int Amount, <br>[AddHealthType](AddHealthType.md) AddHealthType, <br>boolean OptionalArg) | [AddHealthType](AddHealthType.md) | int |
+
+### MC_POST_PLAYER_ADD_HEARTS {: .copyable }
+Runs after Add(...)Hearts functions and MC_PRE_PLAYER_ADD_HEARTS callback. Functions that include an argument (e.g. ignoreKeeper for AddMaxHearts) provide the value using OptionalArg.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1010 |MC_POST_PLAYER_ADD_HEARTS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>int Amount, <br>[AddHealthType](AddHealthType.md) AddHealthType, <br>boolean OptionalArg) | [AddHealthType](AddHealthType.md) | void |
+
 ### MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR {: .copyable }
 Accepts `false` to cancel trigger effects.
 
