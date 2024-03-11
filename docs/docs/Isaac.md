@@ -211,6 +211,10 @@ ___
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetCurrentStageConfigId () {: aria-label='Functions' }
+#### [StbType](enums/StbType.md) GetCurrentStageConfigId () {: .copyable aria-label='Functions' }
+Gets the current stageconfigId/stbType, or whatever you wanna call the id of the stages.xml, for the current stage.
+___
 ### GetRenderPosition () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetRenderPosition ( [Vector](Vector.md) Position, boolean Scale = true ) {: .copyable aria-label='Functions' }       
 
@@ -282,6 +286,22 @@ Sets the completion marks of a character to match an input table. Requires a tab
 			Isaac.SetCompletionMarks(marks) --Impacts the changes on the player
 			```
 ___
+
+### SetCurrentFloorMusic () {: aria-label='Functions' }
+#### void SetCurrentFloorMusic (int MusicId) {: .copyable aria-label='Functions' }
+Changes the music track for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
+___
+
+### SetCurrentFloorBackdrop () {: aria-label='Functions' }
+#### void SetCurrentFloorMusic (int BackdropId) {: .copyable aria-label='Functions' }
+Changes the default room backdrop for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
+___
+
+### SetCurrentFloorName () {: aria-label='Functions' }
+#### void SetCurrentFloorMusic (string Name) {: .copyable aria-label='Functions' }
+Changes the display name for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
+___
+
 ### ShowErrorDialog () {: aria-label='Functions' }
 #### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.

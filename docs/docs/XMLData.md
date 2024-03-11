@@ -52,6 +52,18 @@ Returns a table containing the attributes of the corresponding xml, the matching
 ???+ note "id?"
     The Id usually matches the actual id of the node in question, with the exception of cases like the entities.xml where ids are not unique, on those cases, the id is the order of the node and wont correspond with the actual id. On the cases of XMLs without ids, its just the order again.
 ___
+### GetEntryByOrder () {: aria-label='Functions' }
+#### table GetEntryByOrder ( [XMLNode](enums/XMLNode.md) NodeType, int Order ) {: .copyable aria-label='Functions' }
+Similar to GetByName or GetById, but it returns the node based on the order in which it appears on the xmls (1 will return the first node, 2 the second one and so on). Useful to iterate through xmls in combination with GetNumEntries, specially for redundant xmls like entities.xml.
+???- info "Table usage"
+	```lua
+	print("Sad Onion's description:", XMLData.GetEntryByOrder(XMLNode.ITEM, 1).description)
+	```
+???+ note "child nodes"
+    Child nodes are returned as tables alongside the rest of the attributes. For example, if you want to access the samples of a sound entry, you can use `soundentry.sample[1]`.
+???+ note "id?"
+    The Id usually matches the actual id of the node in question, with the exception of cases like the entities.xml where ids are not unique, on those cases, the id is the order of the node and wont correspond with the actual id. On the cases of XMLs without ids, its just the order again.
+___
 ### GetModById () {: aria-label='Functions' }
 #### table GetModById ( string modId ) {: .copyable aria-label='Functions' }
 Returns a table containing the attributes of the metdata xml of the matching mod id.
