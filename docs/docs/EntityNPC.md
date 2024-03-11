@@ -41,6 +41,10 @@ ___
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return `-1` when not being controlled by any player.
 
 ___
+### GetDarkRedChampionRegenTimer () {: aria-label='Functions' }
+#### int GetDarkRedChampionRegenTimer ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDirtColor () {: aria-label='Functions' }
 #### [Color](Color.md) GetDirtColor ( ) {: .copyable aria-label='Functions' }
 Returns the dynamic dirt color of the entity. This lets entities like Nightcrawler blend in to the environment.
@@ -52,6 +56,14 @@ ___
 ___
 ### GetShieldStrength () {: aria-label='Functions' }
 #### float GetShieldStrength ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSirenPlayerEntity () {: aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) GetSirenPlayerEntity ( ) {: .copyable aria-label='Functions' }
+
+___
+### IsBossColor () {: aria-label='Functions' }
+#### boolean IsBossColor ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetControllerId () {: aria-label='Functions' }

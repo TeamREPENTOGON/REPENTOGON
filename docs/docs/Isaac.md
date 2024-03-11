@@ -110,11 +110,15 @@ ___
 Return entities inside of given capsule, filtered by partitions mask.
 ___
 ### GetAchievementIdByName () {: aria-label='Functions' }
-#### table GetAchievementIdByName ( string name ) {: .copyable aria-label='Functions' }
+#### table GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
 ___
+### GetBackdropIdByName () {: aria-label='Functions' }
+#### int GetBackdropIdByName ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBossColorIdxByName () {: aria-label='Functions' }
-#### int GetBossColorIdxByName ( string name ) {: .copyable aria-label='Functions' }
+#### int GetBossColorIdxByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the boss color idx By Name, the idx is usually the subtype the boss needs to become the desired color. Granted, you actually need to give your color entry a name on the xml for this to work (suffix wont work usually, since its not mandatory).
 ___
 ### GetClipboard () {: aria-label='Functions' }

@@ -211,6 +211,7 @@ nav:
     - EntityTear: EntityTear.md
   - EntityConfig:
     - EntityConfig: EntityConfig.md
+    - EntityConfigBaby: EntityConfigBaby.md
     - EntityConfigEntity: EntityConfigEntity.md
     - EntityConfigPlayer: EntityConfigPlayer.md
   - Font: Font.md
@@ -266,6 +267,7 @@ nav:
     - MainMenu: menus/MainMenu.md
     - ModsMenu: menus/ModsMenu.md
     - OptionsMenu: menus/OptionsMenu.md
+    - PauseMenu: menus/PauseMenu.md
     - SaveMenu: menus/SaveMenu.md
     - SpecialSeedsMenu: menus/SpecialSeedsMenu.md
     - StatsMenu: menus/StatsMenu.md

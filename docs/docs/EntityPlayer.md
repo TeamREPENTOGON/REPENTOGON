@@ -124,6 +124,10 @@ ___
 #### void ClearItemAnimNullItems ( ) {: .copyable aria-label='Functions' }
 
 ___
+### ClearQueueItem () {: aria-label='Functions' }
+#### void ClearQueueItem ( ) {: .copyable aria-label='Functions' }
+
+___
 ### DropCollectible () {: aria-label='Functions' }
 #### void DropCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [EntityPickup](EntityPickup.md) ExistingPedestal = nil, boolean RemoveFromPlayerForm = false ) {: .copyable aria-label='Functions' }
 
@@ -476,6 +480,10 @@ For Experimental Treatement, returns `-1`, `0` or `1` depending on the speed rol
 ___
 ### GetTotalActiveCharge () {: aria-label='Functions' }
 #### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+
+___
+### GetUrnSouls () {: aria-label='Functions' }
+#### int GetUrnSouls ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetVoidedCollectiblesList () {: aria-label='Functions' }

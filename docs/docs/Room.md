@@ -6,6 +6,10 @@ tags:
 
 ## Modified Functions
 
+### GetBackdropType () {: aria-label='Functions' }
+#### [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) GetBackdropType ( ) {: .copyable aria-label='Functions' }
+
+___
 ### SpawnGridEntity () {: aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant = 0, int Seed = nil, int VarData = 0 ) {: .copyable aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Descriptor) {: .copyable aria-label='Modified Functions' }
