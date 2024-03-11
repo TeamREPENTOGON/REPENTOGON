@@ -1,3 +1,5 @@
+#ifndef NDEBUG
+
 #include <cstdio>
 
 #include "ASMPatcher.hpp"
@@ -290,3 +292,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	lua_register(state, "Disassemble", Lua_Disassemble);
 };
+
+#endif
