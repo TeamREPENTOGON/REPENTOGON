@@ -123,6 +123,7 @@ struct ConsoleMega : ImGuiWindowObject {
     bool autocompleteNeedFocusChange = false;
     bool reclaimFocus = false;
     bool focused = false;
+    bool commandNeedScrollChange = false;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -400,8 +401,13 @@ struct ConsoleMega : ImGuiWindowObject {
               ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_NoHorizontalScroll;
                 
               // This works around multiline losing focus on enter (genius!)
-              if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0) && !textInputScrollbarVisible)
+              //if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0) && !textInputScrollbarVisible)
+              //   ImGui::SetKeyboardFocusHere(0);
+
+              if (reclaimFocus) {
                   ImGui::SetKeyboardFocusHere(0);
+                  reclaimFocus = false;
+              }
 
               if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
                   char* s = inputBuf;
@@ -410,16 +416,11 @@ struct ConsoleMega : ImGuiWindowObject {
                   s = (char*)fixedCommand.c_str();
                   if (s[0])
                       ExecuteCommand(s);
-                  reclaimFocus = true;
+                  ImGui::SetKeyboardFocusHere(0);
               }
               ImGui::PopItemWidth();
 
               ImGui::SetItemDefaultFocus();
-
-              if (reclaimFocus) {
-                ImGui::SetKeyboardFocusHere(-1);
-                reclaimFocus = false;
-              }
 
               // Handle hint
               if (!inputBuf[0])
@@ -477,7 +478,12 @@ struct ConsoleMega : ImGuiWindowObject {
               
                 if (data->CursorPos * textSize > ImGui::GetScrollX() + ImGui::GetContentRegionAvail().x)
                     ImGui::SetScrollX(ImGui::GetScrollX() + textSize);
-                      
+
+                if (commandNeedScrollChange) {
+                    ImGui::SetScrollX(ImGui::GetScrollMaxX());
+                    commandNeedScrollChange = false;
+                }
+
                 break;
             }
 
@@ -1225,6 +1231,7 @@ struct ConsoleMega : ImGuiWindowObject {
                     data->InsertChars(0, entry.c_str());
                     autocompleteActive = false;
                     commandFromHistory = true;
+                    commandNeedScrollChange = true;
                 }
                 break;
             }
