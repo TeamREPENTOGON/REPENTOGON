@@ -3924,3 +3924,82 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 		lua::LuaCaller(L).push(postcallbackid).call(1);
 	}
 }
+
+HOOK_STATIC(Room, ShouldSaveEntity, (unsigned int Type, unsigned int Variant, unsigned int SubType, unsigned int SpawnerType, bool unk) -> bool) {
+	const int callbackid = 1481;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(Type)
+			.push(Variant)
+			.push(SubType)
+			.push(SpawnerType)
+			.push(unk)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return lua_toboolean(L, -1);
+			}
+		}
+	}
+	super(Type, Variant, SubType, SpawnerType, unk);
+}
+
+/*void ProcessSaveRestoreCallbacks(Entity* entity, EntitySaveState* state, const char* mode, bool isCleared) {
+	
+}
+*/
+
+HOOK_METHOD(Room, SaveEntity, (Entity* entity, EntitySaveState* state, bool isCleared) -> bool) {
+	const int callbackid = 1482;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller caller(L);
+
+
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(entity->_type)
+			.push(entity, lua::Metatables::ENTITY)
+			.push(&state, lua::metatables::EntitySaveStateMT)
+			.push(isCleared)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return super(entity, state, isCleared);
+
+}
+
+HOOK_METHOD(Room, RestoreEntity, (Entity* entity, EntitySaveState* state) -> void) {
+	const int callbackid = 1483;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(entity->_type)
+			.push(entity, lua::Metatables::ENTITY)
+			.push(state, lua::metatables::EntitySaveStateMT)
+			.call(1);
+	}
+
+	super(entity, state);
+}

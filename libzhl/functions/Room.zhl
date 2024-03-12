@@ -73,6 +73,15 @@ __thiscall bool Room::TrySpawnSpecialQuestDoor();
 "558bec6aff68????????64a1????????5081ecf8000000":
 __thiscall void Room::SaveState();
 
+"558bec83f905":
+static cleanup bool Room::ShouldSaveEntity(unsigned int Type<ecx>, unsigned int Variant<edx>, unsigned int SubType, unsigned int SpawnerType, bool Unk);
+
+"558bec6aff68????????64a1????????5083ec3056":
+__thiscall bool Room::SaveEntity(Entity* ent, EntitySaveState* saveState, bool unk);
+
+"558bec83e4f883ec1c5356578b7d??8bf1":
+__thiscall void Room::RestoreEntity(Entity* ent, EntitySaveState* saveState);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
