@@ -19,6 +19,7 @@ tags:
 
 ### GetBaby () {: aria-label='Functions' }
 #### [EntityConfigBaby](EntityConfigBaby.md) GetBaby ( [BabySubType](https://wofsauge.github.io/IsaacDocs/rep/enums/BabySubType.html) Type ) {: .copyable aria-label='Functions' }
+Returns nil if there is no co-op baby with the given ID.
 
 ___
 ### GetEntity () {: aria-label='Functions' }
@@ -30,6 +31,7 @@ Providing Variant and/or SubType is optional. If a non-existent Variant/SubType 
 ___
 ### GetMaxBabyID () {: aria-label='Functions' }
 #### int GetMaxBabyID ( ) {: .copyable aria-label='Functions' }
+Returns the highest ID (corresponds to SubType) currently assigned to a valid co-op baby.
 
 ___
 ### GetMaxPlayerType () {: aria-label='Functions' }
