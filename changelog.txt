@@ -1,3 +1,11 @@
+v1.0.7b - 
+Additions:
+* Add an option to show Planetarium spawn chance in the stat HUD
+* BlendMode's variables are now RGBSourceFactor, RGBDestinationFactor, AlphaSourceFactor, AlphaDestinationFactor (previous names will still work for now)
+Fixes:
+* Fix regression caused by Godhead + Tear Detonator fix that prevented the aura from damaging enemies
+* Fixed console wonkies involving input text edge detection and scaling
+/newline/
 v1.0.7a - 
 Fixes:
 * Fixed an issue where a change in the build process resulted in the changelog being saved in UTF-16 LE format, breaking the changelog and several other REPENTOGON menu features
