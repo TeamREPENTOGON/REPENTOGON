@@ -1,3 +1,7 @@
+v1.0.7b
+Fixes:
+	* Fixed Game:ShowGenericLeaderboard method to throw back to main menu even if leaderboards are no longer displayed after new run/continue
+/newline/
 v1.0.7a - 
 Fixes:
 * Fixed an issue where a change in the build process resulted in the changelog being saved in UTF-16 LE format, breaking the changelog and several other REPENTOGON menu features
