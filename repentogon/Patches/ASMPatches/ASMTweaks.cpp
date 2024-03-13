@@ -15,7 +15,7 @@ namespace ASMPatches {
 
 		void* addr = signature.GetAddress();
 		ASMPatch patch;
-		patch.AddBytes(ByteBuffer().AddString("\x6a\x02"));
+		patch.AddBytes(ByteBuffer().AddString("\x6a\x08"));
 		sASMPatcher.FlatPatch(addr, &patch);
 
 		return true;
