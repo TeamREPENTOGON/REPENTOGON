@@ -90,14 +90,10 @@ void PatchStatHudPlanetariumChanceCalc() {
 	SigScan signature("8d8e????????0f57c953");
 	signature.Scan();
 
-	SigScan flagSig("a90001000074??8d8e");
-	flagSig.Scan();
-
 	void* addr = signature.GetAddress();
-	void* flagAddr = flagSig.GetAddress();
 	void* planetariumStat = &statHudPlanetariumChance;
 
-	printf("[REPENTOGON] Patching planetarium chance calculation at %p, %p\n", addr, flagAddr);
+	printf("[REPENTOGON] Patching planetarium chance calculation at %p\n", addr);
 	ASMPatch patch;
 	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	patch.AddBytes("\x8D\x8E\xB8\x01").AddZeroes(2) // lea this, [esi + 0x1b8]
@@ -108,12 +104,6 @@ void PatchStatHudPlanetariumChanceCalc() {
 		.AddRelativeJump((char*)addr + 0x9);
 
 	sASMPatcher.PatchAt(addr, &patch);
-
-	ASMPatch flagPatch;
-	flagPatch.AddBytes("\x90\x90\x90\x90\x90\x90\x90");
-
-	sASMPatcher.FlatPatch(flagAddr, &flagPatch);
-
 }
 
 void PatchStatHudPlanetariumChance() {

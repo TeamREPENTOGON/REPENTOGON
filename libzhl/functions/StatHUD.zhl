@@ -1,0 +1,8 @@
+struct StatHUD depends (Entity_Player) {
+} : 0x2af;
+
+"558bec53568b75??8bd98bce":
+__thiscall int StatHUD::GetPlayerId(Entity_Player* player);
+
+"558bec8b45??83ec0853":
+__thiscall void StatHUD::RecomputeStats(int playerId, unsigned int flags);
