@@ -2,6 +2,7 @@ v1.0.7b -
 Additions:
 * Add an option to show Planetarium spawn chance in the stat HUD
 * BlendMode's variables are now RGBSourceFactor, RGBDestinationFactor, AlphaSourceFactor, AlphaDestinationFactor (previous names will still work for now)
+* Added BlendFactor and BlendType enums for BlendMode
 Fixes:
 * Fix regression caused by Godhead + Tear Detonator fix that prevented the aura from damaging enemies
 * Fixed console wonkies involving input text edge detection and scaling
