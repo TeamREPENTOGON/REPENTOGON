@@ -234,6 +234,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	bool _isRerun : 0x1c31a0;
 	bool _isDebug : 0x1c31a1;
     Ambush _ambush : 0x1c31b8; // 0x1c31b8
+	DailyChallenge _dailyChallenge: 0x1c3204; // 0x1C3204
 	ScoreSheet _scoreSheet : 0x1c32b8; //
     uint32_t _difficulty : 0x243624; // 0x243624
 	bool _shouldLerpColorModState : 0x283b80; // 0x283b80
