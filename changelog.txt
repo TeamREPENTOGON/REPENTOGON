@@ -1,6 +1,11 @@
-v1.0.7b
+v1.0.7b - 
+Additions:
+* Add an option to show Planetarium spawn chance in the stat HUD
+* BlendMode's variables are now RGBSourceFactor, RGBDestinationFactor, AlphaSourceFactor, AlphaDestinationFactor (previous names will still work for now)
 Fixes:
-	* Fixed Game:ShowGenericLeaderboard method to throw back to main menu even if leaderboards are no longer displayed after new run/continue
+* Fix regression caused by Godhead + Tear Detonator fix that prevented the aura from damaging enemies
+* Fixed console wonkies involving input text edge detection and scaling
+* Fixed Game:ShowGenericLeaderboard method to throw back to main menu even if leaderboards are no longer displayed after new run/continue
 /newline/
 v1.0.7a - 
 Fixes:
