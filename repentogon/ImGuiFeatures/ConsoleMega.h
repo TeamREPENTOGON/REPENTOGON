@@ -317,6 +317,7 @@ struct ConsoleMega : ImGuiWindowObject {
             AddWindowContextMenu();
             std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
 
+            ImGui::SetWindowFontScale(1.0f);
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
             bool textInputScrollbarVisible = imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
@@ -464,24 +465,27 @@ struct ConsoleMega : ImGuiWindowObject {
         {
             case ImGuiInputTextFlags_CallbackAlways:
             {
-                static float textSize = 7 * imFontUnifont->Scale; //TODO This works for now, but unhardcode the 7 later on to account for different fonts.
 
                 // To help accomodate for the horizontal scrollbar hacks we've implemented in ImGui, we handle scrolling manually.
                 // I don't like it, but it's still much better than how we used to handle this (we didn't)
+
+                float textSize = ImGui::CalcTextSize("h").x; //TODO Since the font is monospace, it shouldn't matter what character this is, but it might matter for localization.
+
+                // Handle insertions and deletions of any length
                 static int bufLength = 0;
                 ImGui::SetScrollX(ImGui::GetScrollX() + (textSize * (data->BufTextLen - bufLength)));
-
+                
                 bufLength = data->BufTextLen;
 
-                if (data->CursorPos * textSize < ImGui::GetScrollX())
-                    ImGui::SetScrollX(ImGui::GetScrollX() - textSize);
-              
-                if (data->CursorPos * textSize > ImGui::GetScrollX() + ImGui::GetContentRegionAvail().x)
-                    ImGui::SetScrollX(ImGui::GetScrollX() + textSize);
+                //printf("current position %f %f\n", data->CursorPos * textSize, ImGui::GetScrollX() + ImGui::GetContentRegionAvail().x);
 
-                if (commandNeedScrollChange) {
-                    ImGui::SetScrollX(ImGui::GetScrollMaxX());
-                    commandNeedScrollChange = false;
+                // Handle arrow keys + command history
+                if (data->CursorPos * textSize < ImGui::GetScrollX()) {
+                    ImGui::SetScrollX(data->CursorPos * textSize);
+                }
+
+                if (data->CursorPos * textSize > ImGui::GetScrollX() + ImGui::GetContentRegionAvail().x) {
+                    ImGui::SetScrollX(textSize + data->CursorPos * textSize - ImGui::GetContentRegionAvail().x - imFontUnifont->Scale);
                 }
 
                 break;
@@ -1231,7 +1235,6 @@ struct ConsoleMega : ImGuiWindowObject {
                     data->InsertChars(0, entry.c_str());
                     autocompleteActive = false;
                     commandFromHistory = true;
-                    commandNeedScrollChange = true;
                 }
                 break;
             }
