@@ -477,8 +477,6 @@ struct ConsoleMega : ImGuiWindowObject {
                 
                 bufLength = data->BufTextLen;
 
-                //printf("current position %f %f\n", data->CursorPos * textSize, ImGui::GetScrollX() + ImGui::GetContentRegionAvail().x);
-
                 // Handle arrow keys + command history
                 if (data->CursorPos * textSize < ImGui::GetScrollX()) {
                     ImGui::SetScrollX(data->CursorPos * textSize);

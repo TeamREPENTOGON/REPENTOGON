@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "IsaacRepentance.h"
 #include "SigScan.h"
+#include "../../REPENTOGONOptions.h"
 
 namespace ASMPatches {
 	static void __stdcall __TearDetonatorPatch(EntityList_EL*);
@@ -55,5 +56,37 @@ namespace ASMPatches {
 	 */
 	void __stdcall __TearDetonatorPatch(EntityList_EL* list) {
 		list->Untie();
+	}
+
+	/* Planetarium chance was implemented, but disabled! Oops!
+	*/
+	bool PatchStatHudPlanetariumChanceIcon() {
+		SigScan signature("83fe080f84????????83fe090f84????????83fe06");
+		if (!signature.Scan()) {
+			return false;
+		}
+		
+		SigScan jmpSig("4683fe0a0f82????????33d2");
+		if (!jmpSig.Scan()) {
+			return false;
+		}
+
+		void* addr = signature.GetAddress();
+		void* jmpAddr = jmpSig.GetAddress();
+		void* statHUDPlanetariumAddr = &repentogonOptions.statHUDPlanetarium;
+
+		printf("[REPENTOGON] Patching planetarium chance icon visibility at %p", addr);
+		ASMPatch patch;
+
+		ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::EAX, true);
+		patch.PreserveRegisters(savedRegisters)
+			.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&statHUDPlanetariumAddr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
+			.AddBytes("\x84\xC0") // test al, al
+			.RestoreRegisters(savedRegisters)
+			.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, jmpAddr)
+			.AddRelativeJump((char*)addr + 0x8);
+		sASMPatcher.FlatPatch(addr, &patch);
+
+		return true;
 	}
 }
