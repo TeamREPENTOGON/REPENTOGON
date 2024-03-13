@@ -5075,36 +5075,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#flag1" class="md-nav__link">
+  <a href="#alphadestinationfactor" class="md-nav__link">
     <span class="md-ellipsis">
-      Flag1
+      AlphaDestinationFactor
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#flag2" class="md-nav__link">
+  <a href="#alphasourcefactor" class="md-nav__link">
     <span class="md-ellipsis">
-      Flag2
+      AlphaSourceFactor
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#flag3" class="md-nav__link">
+  <a href="#rgbdestinationfactor" class="md-nav__link">
     <span class="md-ellipsis">
-      Flag3
+      RGBDestinationFactor
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#flag4" class="md-nav__link">
+  <a href="#rgbsourcefactor" class="md-nav__link">
     <span class="md-ellipsis">
-      Flag4
+      RGBSourceFactor
     </span>
   </a>
   
@@ -6455,36 +6455,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#flag1" class="md-nav__link">
+  <a href="#alphadestinationfactor" class="md-nav__link">
     <span class="md-ellipsis">
-      Flag1
+      AlphaDestinationFactor
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#flag2" class="md-nav__link">
+  <a href="#alphasourcefactor" class="md-nav__link">
     <span class="md-ellipsis">
-      Flag2
+      AlphaSourceFactor
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#flag3" class="md-nav__link">
+  <a href="#rgbdestinationfactor" class="md-nav__link">
     <span class="md-ellipsis">
-      Flag3
+      RGBDestinationFactor
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#flag4" class="md-nav__link">
+  <a href="#rgbsourcefactor" class="md-nav__link">
     <span class="md-ellipsis">
-      Flag4
+      RGBSourceFactor
     </span>
   </a>
   
@@ -6525,7 +6525,7 @@
 
 
 <h1 id="class-blendmode">Class "BlendMode"<a class="headerlink" href="#class-blendmode" title="Permanent link">⚓︎</a></h1>
-<p>Determines how an image (either a <a href="../Sprite.html">Sprite</a> as a whole or a <a href="../LayerState.html">LayerState</a>)should blend with the elements rendered behind it. Specifically, these parameters are used in calls to <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFuncSeparate.xml">glBlendFuncSeparate</a>.</p>
+<p>Determines how a <a href="../LayerState.html">LayerState</a> should blend with the elements rendered behind it. Specifically, these parameters are used in calls to <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFuncSeparate.xml">glBlendFuncSeparate</a>.</p>
 <details class="info" open="open">
 <summary>Info</summary>
 <p>You can get this class by using the following functions:</p>
@@ -6538,55 +6538,51 @@
 </code></pre></div></td></tr></table></div>
 </details>
 </details>
-<details class="warning" open="open">
-<summary>Warning</summary>
-<p>The variables in this class refer to the enums used by <a href="https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFuncSeparate.xml">glBlendFuncSeparate</a> (with a starting index of <code>0</code>). Official enums will be added for this next release.</p>
-</details>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="setmode">SetMode ()<a class="headerlink" href="#setmode" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-setmode-blendfactor-mode">void SetMode ( <a href="../enums/BlendType.html">BlendFactor</a> Mode )<a class="headerlink" href="#void-setmode-blendfactor-mode" title="Permanent link">⚓︎</a></h4>
-<p>This defaults to <code>NORMAL</code> (or <code>{ 1, 7, 1, 7 }</code>) as a default value, <code>ADDITIVE</code> (or <code>{ 0, 1, 0, 1 }</code>) for the blue base of the Planetarium backdrop, and <code>MULTIPLICATIVE</code> (or <code>{ 1, 1, 1, 1 }</code>) for Planetarium backdrop starfield layers, <code>8bitclouds_utero</code> backdrop layer, Beast death spotlight, and various other misc effects.</p>
+<h4 aria-label="Functions" class="copyable" id="void-setmode-blendtype-type">void SetMode ( <a href="../enums/BlendType.html">BlendType</a> Type )<a class="headerlink" href="#void-setmode-blendtype-type" title="Permanent link">⚓︎</a></h4>
+<p><code>NORMAL</code> is used as the default value, <code>ADDITIVE</code> for the blue base of the Planetarium backdrop, and <code>MULTIPLICATIVE</code> for Planetarium backdrop starfield layers, <code>8bitclouds_utero</code> backdrop layer, Beast death spotlight, and various other misc effects.</p>
 <details class="- info">
 <summary>Nonstandard modes</summary>
 <p>The game additionally manually sets modes for various effects:</p>
 <ul>
-<li>EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses <code>{ 0, 2, 1, 1 }</code></li>
-<li>EffectVariant.HUSH_ASHES &amp; the <a href="../RoomTransition.html#getversusscreensprite">Boss Intro versus Sprite</a> uses <code>{ 4, 7, 4, 7 }</code></li>
-<li>EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and one of special Hell backdrop layers for the Beast fight use <code>{ 0, 2, 0, 2 }</code></li>
+<li>EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses <code>{ RGBSourceFactor.ZERO, RGBDestinationFactor.SRC_COLOR, AlphaSourceFactor.ONE, AlphaDestinationFactor.ONE }</code></li>
+<li>EffectVariant.HUSH_ASHES &amp; the <a href="../RoomTransition.html#getversusscreensprite">Boss Intro versus Sprite</a> uses <code>{ RGBSourceFactor.DST_COLOR, RGBDestinationFactor.ONE_MINUS_SRC_ALPHA, AlphaSourceFactor.DST_COLOR, AlphaDestinationFactor.ONE_MINUS_SRC_ALPHA }</code></li>
+<li>EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and one of special Hell backdrop layers for the Beast fight use <code>{ RGBSourceFactor.ZERO, RGBDestinationFactor.SRC_COLOR, AlphaSourceFactor.ZERO, AlphaDestinationFactor.SRC_COLOR }</code></li>
 </ul>
 </details>
 <hr />
 <h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">⚓︎</a></h2>
-<h3 aria-label="Variables" id="flag1">Flag1<a class="headerlink" href="#flag1" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="blendfactor-flag1"><a href="../enums/BlendFactor.html">BlendFactor</a> Flag1<a class="headerlink" href="#blendfactor-flag1" title="Permanent link">⚓︎</a></h4>
-<p>This is generally always <code>ONE</code>. There's a possibility for this to be <code>SRC_ALPHA</code> if an internal <code>UsePremultipliedAlpha</code> variable in the graphics manager class isn't set, but it has so far always been.</p>
-<details class="warning" open="open">
-<summary>Depreciation Warning</summary>
-<p>This variable will be depreciated in favor of <code>RGBSourceFactor</code> next release.</p>
+<h3 aria-label="Variables" id="alphadestinationfactor">AlphaDestinationFactor<a class="headerlink" href="#alphadestinationfactor" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Variables" class="copyable" id="blendfactor-alphadestinationfactor"><a href="../enums/BlendFactor.html">BlendFactor</a> AlphaDestinationFactor<a class="headerlink" href="#blendfactor-alphadestinationfactor" title="Permanent link">⚓︎</a></h4>
+<p><code>ZERO</code> in mode <code>ADDITIVE</code>, <code>ONE_MINUS_SRC_ALPHA</code> in mode <code>NORMAL</code>, and <code>ONE</code> in mode <code>MULTIPLICATIVE</code>.</p>
+<details class="- warning">
+<summary>Depreciation history</summary>
+<p>This variable was previously known as <code>Flag4</code>.</p>
 </details>
 <hr />
-<h3 aria-label="Variables" id="flag2">Flag2<a class="headerlink" href="#flag2" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="blendfactor-flag2"><a href="../enums/BlendFactor.html">BlendFactor</a> Flag2<a class="headerlink" href="#blendfactor-flag2" title="Permanent link">⚓︎</a></h4>
-<p><code>ZERO</code> in "Mode 0", <code>ONE_MINUS_SRC_ALPHA</code> in "Mode 1", and <code>ONE</code> in "Mode 2".</p>
-<details class="warning" open="open">
-<summary>Depreciation Warning</summary>
-<p>This variable will be depreciated in favor of <code>RGBDestinationFactor</code> next release.</p>
-</details>
-<hr />
-<h3 aria-label="Variables" id="flag3">Flag3<a class="headerlink" href="#flag3" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="blendfactor-flag3"><a href="../enums/BlendFactor.html">BlendFactor</a> Flag3<a class="headerlink" href="#blendfactor-flag3" title="Permanent link">⚓︎</a></h4>
+<h3 aria-label="Variables" id="alphasourcefactor">AlphaSourceFactor<a class="headerlink" href="#alphasourcefactor" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Variables" class="copyable" id="blendfactor-alphasourcefactor"><a href="../enums/BlendFactor.html">BlendFactor</a> AlphaSourceFactor<a class="headerlink" href="#blendfactor-alphasourcefactor" title="Permanent link">⚓︎</a></h4>
 <p>Set to <code>ONE</code> in all modes.</p>
-<details class="warning" open="open">
-<summary>Depreciation Warning</summary>
-<p>This variable will be depreciated in favor of <code>AlphaSourceFactor</code> next release.</p>
+<details class="- warning">
+<summary>Depreciation history</summary>
+<p>This variable was previously known as <code>Flag3</code>.</p>
 </details>
 <hr />
-<h3 aria-label="Variables" id="flag4">Flag4<a class="headerlink" href="#flag4" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="blendfactor-flag4"><a href="../enums/BlendFactor.html">BlendFactor</a> Flag4<a class="headerlink" href="#blendfactor-flag4" title="Permanent link">⚓︎</a></h4>
-<p><code>ZERO</code> in "Mode 0", <code>ONE_MINUS_SRC_ALPHA</code> in "Mode 1", and <code>ONE</code> in "Mode 2".</p>
-<details class="warning" open="open">
-<summary>Depreciation Warning</summary>
-<p>This variable will be depreciated in favor of <code>AlphaDestinationFactor</code> next release.</p>
+<h3 aria-label="Variables" id="rgbdestinationfactor">RGBDestinationFactor<a class="headerlink" href="#rgbdestinationfactor" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Variables" class="copyable" id="blendfactor-rgbdestinationfactor"><a href="../enums/BlendFactor.html">BlendFactor</a> RGBDestinationFactor<a class="headerlink" href="#blendfactor-rgbdestinationfactor" title="Permanent link">⚓︎</a></h4>
+<p><code>ZERO</code> in mode <code>ADDITIVE</code>, <code>ONE_MINUS_SRC_ALPHA</code> in mode <code>NORMAL</code>, and <code>ONE</code> in mode <code>MULTIPLICATIVE</code>.</p>
+<details class="- warning">
+<summary>Depreciation history</summary>
+<p>This variable was previously known as <code>Flag2</code>.</p>
+</details>
+<hr />
+<h3 aria-label="Variables" id="rgbsourcefactor">RGBSourceFactor<a class="headerlink" href="#rgbsourcefactor" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Variables" class="copyable" id="blendfactor-rgbsourcefactor"><a href="../enums/BlendFactor.html">BlendFactor</a> RGBSourceFactor<a class="headerlink" href="#blendfactor-rgbsourcefactor" title="Permanent link">⚓︎</a></h4>
+<p>This is generally always <code>ONE</code>. There's a possibility for this to be <code>SRC_ALPHA</code> if an internal <code>UsePremultipliedAlpha</code> variable in the graphics manager class isn't set, but it has so far always been.</p>
+<details class="- warning">
+<summary>Depreciation history</summary>
+<p>This variable was previously known as <code>Flag1</code>.</p>
 </details>
 <hr />
 
