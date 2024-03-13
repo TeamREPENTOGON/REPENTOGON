@@ -1173,6 +1173,48 @@
   
   
     <li class="md-nav__item">
+      <a href="../enums/BlendFactor.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BlendFactor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../enums/BlendType.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BlendType
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../enums/BombCostumeLayer.html" class="md-nav__link">
         
   
@@ -6502,14 +6544,13 @@
 </details>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="setmode">SetMode ()<a class="headerlink" href="#setmode" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-setmode-int-mode">void SetMode ( int mode )<a class="headerlink" href="#void-setmode-int-mode" title="Permanent link">⚓︎</a></h4>
-<p>Ranges from 0-2. Invalid modes are ignored. The game uses mode <code>1</code> (or <code>{ 1, 7, 1, 7 }</code>) as a default value, mode <code>0</code> (or <code>{ 0, 1, 0, 1 }</code>) for the blue base of the Planetarium backdrop, and mode <code>2</code> (or <code>{ 1, 1, 1, 1 }</code>) for multiplicative blending (Planetarium backdrop starfield layers, <code>8bitclouds_utero</code> backdrop layer, Beast death spotlight, and various other misc effects).</p>
+<h4 aria-label="Functions" class="copyable" id="void-setmode-blendfactor-mode">void SetMode ( <a href="../enums/BlendType.html">BlendFactor</a> Mode )<a class="headerlink" href="#void-setmode-blendfactor-mode" title="Permanent link">⚓︎</a></h4>
+<p>This defaults to <code>NORMAL</code> (or <code>{ 1, 7, 1, 7 }</code>) as a default value, <code>ADDITIVE</code> (or <code>{ 0, 1, 0, 1 }</code>) for the blue base of the Planetarium backdrop, and <code>MULTIPLICATIVE</code> (or <code>{ 1, 1, 1, 1 }</code>) for Planetarium backdrop starfield layers, <code>8bitclouds_utero</code> backdrop layer, Beast death spotlight, and various other misc effects.</p>
 <details class="- info">
 <summary>Nonstandard modes</summary>
 <p>The game additionally manually sets modes for various effects:</p>
 <ul>
 <li>EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses <code>{ 0, 2, 1, 1 }</code></li>
-<li>Level 2 Willo, Necro, Visage (seemingly including the heart, mask, and plasma ball), Bulbs (on death), Fire variant projectiles &amp; tears, EffectVariant.CRACK_THE_SKY (as spawned by the active, at least), EffectVariant.DUST_CLOUD (as spawned by Book of Belial), EffectVariant.DUST_CLOUD (as spawned by Ultra War) use <code>{ 1, 1, 1 ,1 }</code></li>
 <li>EffectVariant.HUSH_ASHES &amp; the <a href="../RoomTransition.html#getversusscreensprite">Boss Intro versus Sprite</a> uses <code>{ 4, 7, 4, 7 }</code></li>
 <li>EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and one of special Hell backdrop layers for the Beast fight use <code>{ 0, 2, 0, 2 }</code></li>
 </ul>
@@ -6517,32 +6558,32 @@
 <hr />
 <h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Variables" id="flag1">Flag1<a class="headerlink" href="#flag1" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="int-flag1">int Flag1<a class="headerlink" href="#int-flag1" title="Permanent link">⚓︎</a></h4>
-<p>This is generally always <code>1</code>. There's a possibility for this to be <code>6</code> if an internal <code>UsePremultipliedAlpha</code> variable in the graphics manager class isn't set, but it has so far always been.</p>
+<h4 aria-label="Variables" class="copyable" id="blendfactor-flag1"><a href="../enums/BlendFactor.html">BlendFactor</a> Flag1<a class="headerlink" href="#blendfactor-flag1" title="Permanent link">⚓︎</a></h4>
+<p>This is generally always <code>ONE</code>. There's a possibility for this to be <code>SRC_ALPHA</code> if an internal <code>UsePremultipliedAlpha</code> variable in the graphics manager class isn't set, but it has so far always been.</p>
 <details class="warning" open="open">
 <summary>Depreciation Warning</summary>
 <p>This variable will be depreciated in favor of <code>RGBSourceFactor</code> next release.</p>
 </details>
 <hr />
 <h3 aria-label="Variables" id="flag2">Flag2<a class="headerlink" href="#flag2" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="int-flag2">int Flag2<a class="headerlink" href="#int-flag2" title="Permanent link">⚓︎</a></h4>
-<p><code>0</code> in "Mode 0", <code>7</code> in "Mode 1", and <code>1</code> in "Mode 2".</p>
+<h4 aria-label="Variables" class="copyable" id="blendfactor-flag2"><a href="../enums/BlendFactor.html">BlendFactor</a> Flag2<a class="headerlink" href="#blendfactor-flag2" title="Permanent link">⚓︎</a></h4>
+<p><code>ZERO</code> in "Mode 0", <code>ONE_MINUS_SRC_ALPHA</code> in "Mode 1", and <code>ONE</code> in "Mode 2".</p>
 <details class="warning" open="open">
 <summary>Depreciation Warning</summary>
 <p>This variable will be depreciated in favor of <code>RGBDestinationFactor</code> next release.</p>
 </details>
 <hr />
 <h3 aria-label="Variables" id="flag3">Flag3<a class="headerlink" href="#flag3" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="int-flag3">int Flag3<a class="headerlink" href="#int-flag3" title="Permanent link">⚓︎</a></h4>
-<p>Set to <code>1</code> in all modes.</p>
+<h4 aria-label="Variables" class="copyable" id="blendfactor-flag3"><a href="../enums/BlendFactor.html">BlendFactor</a> Flag3<a class="headerlink" href="#blendfactor-flag3" title="Permanent link">⚓︎</a></h4>
+<p>Set to <code>ONE</code> in all modes.</p>
 <details class="warning" open="open">
 <summary>Depreciation Warning</summary>
 <p>This variable will be depreciated in favor of <code>AlphaSourceFactor</code> next release.</p>
 </details>
 <hr />
 <h3 aria-label="Variables" id="flag4">Flag4<a class="headerlink" href="#flag4" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Variables" class="copyable" id="int-flag4">int Flag4<a class="headerlink" href="#int-flag4" title="Permanent link">⚓︎</a></h4>
-<p><code>0</code> in "Mode 0", <code>7</code> in "Mode 1", and <code>1</code> in "Mode 2".</p>
+<h4 aria-label="Variables" class="copyable" id="blendfactor-flag4"><a href="../enums/BlendFactor.html">BlendFactor</a> Flag4<a class="headerlink" href="#blendfactor-flag4" title="Permanent link">⚓︎</a></h4>
+<p><code>ZERO</code> in "Mode 0", <code>ONE_MINUS_SRC_ALPHA</code> in "Mode 1", and <code>ONE</code> in "Mode 2".</p>
 <details class="warning" open="open">
 <summary>Depreciation Warning</summary>
 <p>This variable will be depreciated in favor of <code>AlphaDestinationFactor</code> next release.</p>
