@@ -200,6 +200,7 @@ HOOK_METHOD(SFXManager, Play, (int ID, float Volume, int FrameDelay, bool Loop, 
 	if (!CallbackState.test(callbackid - 1000)) {
 		super(ID, Volume, FrameDelay, Loop, Pitch, Pan);
 		ProcessPostSFXPlay(ID, Volume, FrameDelay, Loop, Pitch, Pan);
+		return;
 	}
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
