@@ -50,6 +50,17 @@ LUA_FUNCTION(Lua_Options_SetKeyMasterDealChance) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_Options_GetStatHUDPlanetarium) {
+	lua_pushboolean(L, repentogonOptions.statHUDPlanetarium);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_Options_SetStatHUDPlanetarium) {
+	bool value = lua::luaL_checkboolean(L, 1);
+	repentogonOptions.statHUDPlanetarium = value;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_Options_GetQuickRoomClear) {
 	lua_pushboolean(L, repentogonOptions.quickRoomClear);
 	return 1;
@@ -87,6 +98,7 @@ static void RegisterLuaOptions(lua_State* L) {
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "BetterVoidGeneration", Lua_Options_GetVoidGeneration, Lua_Options_SetVoidGeneration);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "HushPanicStateFix", Lua_Options_GetHushFix, Lua_Options_SetHushFix);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "KeyMasterDealChance", Lua_Options_GetKeyMasterDealChance, Lua_Options_SetKeyMasterDealChance);
+	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "StatHUDPlanetarium", Lua_Options_GetStatHUDPlanetarium, Lua_Options_SetStatHUDPlanetarium);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "QuickRoomClear", Lua_Options_GetQuickRoomClear, Lua_Options_SetQuickRoomClear);
 	lua::RegisterGlobalClassVariable(L, lua::GlobalClasses::Options, "PreventModUpdates", Lua_Options_GetPreventModUpdates, Lua_Options_SetPreventModUpdates);
 	lua::RegisterGlobalClassVariableSetter(L, lua::GlobalClasses::Options, "SFXVolume", Lua_Options_Fix_SetSFXVolume);
