@@ -16,7 +16,7 @@ tags:
 
 ## CustomTags
 
-Repentogon adds a new `customtags` attribute that can contain a space-separated list of strings that can then be checked in-game. Mods can freely add arbitrary string tags to this attribute in the XML and check if they were added to an entity in-game. This makes it easier for mods to add common entity behaviour/traits similar to the existing [EntityTag](https://repentogon.com/enums/EntityTag.html)s without needing to individually list each entity in lua code, and mods can also use `customtags` from other mods in their own XMLs for easier mod compatability.
+Repentogon adds a new `customtags` attribute that can contain a space-separated list of strings that can then be checked in-game. Mods can freely add arbitrary string tags to this attribute in the XML and check if they were added to an entity in-game. This makes it easier for mods to add common entity behaviour/traits similar to the existing [EntityTagFlag](https://repentogon.com/enums/EntityTagFlag.html)s without needing to individually list each entity in lua code, and mods can also use `customtags` from other mods in their own XMLs for easier mod compatability.
 
 Capitalization does not matter and is ignored entirely when adding or checking for `customtags`.
 

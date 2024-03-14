@@ -135,7 +135,7 @@ nav:
     - DipSubType: enums/DipSubType.md
     - Ending: enums/Ending.md
     - EntityPoopVariant: enums/EntityPoopVariant.md
-    - EntityTag: enums/EntityTag.md
+    - EntityTagFlag: enums/EntityTagFlag.md
     - EventCounter: enums/EventCounter.md
     - ExtraHudStyle: enums/ExtraHudStyle.md
     - FadeoutTarget: enums/FadeoutTarget.md

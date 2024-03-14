@@ -2,7 +2,7 @@
 tags:
   - Enum
 ---
-# Enum "EntityTag"
+# Enum "EntityTagFlag"
 ???+ tip "Bitset Calculator"
     [](#){: .bitsetCalculator }
 |Value|Enumerator|Comment|

@@ -2470,7 +2470,7 @@ ProceduralEffectActionType = {
 	FART = 5,
 }
 
-EntityTag = { -- bitwise
+EntityTagFlag = { -- bitwise
 	FLY = 1 << 0,
 	SPIDER = 1 << 1,
 	--unused?
@@ -2558,3 +2558,16 @@ BlendType = {
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
 Achievement.RESERVED_HEIROPHANT = 529
+
+EntityTag = { -- Renamed to `EntityTagFlag`
+	FLY = 1 << 0,
+	SPIDER = 1 << 1,
+	--unused?
+	GHOST = 1 << 3,
+	NOREROLL = 1 << 4,
+	CANSACRIFICE = 1 << 5,
+	EXPLOSIVE_SOUL = 1 << 6,
+	HOMING_SOUL = 1 << 7,
+	BRIMSTONE_SOUL = 1 << 8,
+	NODELIRIUM = 1 << 9,
+}

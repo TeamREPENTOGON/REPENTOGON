@@ -89,7 +89,7 @@ Returns a table containing all the strings specified in the entity's `customtags
 ___
 ### GetEntityTags () {: aria-label='Functions' }
 #### int GetEntityTags ( ) {: .copyable aria-label='Functions' }
-Returns the bitmask of [EntityTag](enums/EntityTag.md)s for this entity.
+Returns the bitmask of [EntityTagFlag](enums/EntityTagFlag.md)s for this entity.
 
 ___
 ### GetFriction () {: aria-label='Functions' }
@@ -161,7 +161,7 @@ Returns true if the entity has the provided string specified in its `customtags`
 ___
 ### HasEntityTags () {: aria-label='Functions' }
 #### boolean HasEntityTags ( int Tags ) {: .copyable aria-label='Functions' }
-Returns true if the entity has all [EntityTag](enums/EntityTag.md)s specified in the provided bitset.
+Returns true if the entity has all [EntityTagFlag](enums/EntityTagFlag.md)s specified in the provided bitset.
 
 ___
 ### HasFloorAlts () {: aria-label='Functions' }
