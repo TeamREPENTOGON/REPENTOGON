@@ -277,7 +277,8 @@ static void RegisterStatsMenuGame(lua_State* L)
 	lua::TableAssoc(L, "GetDifficultyPageSprite", lua_CharMenu_GetDifficultyPageSprite);
 	lua::TableAssoc(L, "GetSeedPageSprite", lua_CharMenu_GetSeedPageSprite);
 	lua::TableAssoc(L, "GetWinStreakPageSprite", lua_CharMenu_GetWinStreakPageSprite);
-	lua::TableAssoc(L, "GetEastereggPageSprite", lua_CharMenu_GetEastereggPageSprite);
+	lua::TableAssoc(L, "GetEasterEggPageSprite", lua_CharMenu_GetEastereggPageSprite);
+	lua::TableAssoc(L, "GetEastereggPageSprite", lua_CharMenu_GetEastereggPageSprite); //deprecated
 	lua::TableAssoc(L, "GetSeedUnlockPageSprite", lua_CharMenu_GetSeedUnlockPageSprite);
 	lua::TableAssoc(L, "GetSeedUnlockPageSprite", lua_CharMenu_GetSeedUnlockPageSprite);
 	lua::TableAssoc(L, "GetCharacterPortraitSprite", lua_CharMenu_GetCharacterPortraitSprite);
