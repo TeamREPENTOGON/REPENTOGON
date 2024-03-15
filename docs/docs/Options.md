@@ -25,18 +25,18 @@ ___
 If set, Key Master bums will also raise the chance for a deal when killed.
 
 ___
-### StatHUDPlanetarium {: aria-label='Variables' }
-#### boolean StatHUDPlanetarium {: .copyable aria-label='Variables'}
-If set, natively shows Planetarium chance on the HUD. 
-
-Note that this option has no effect if Planetariums are not unlocked, so just checking this value isn't good enough if the intent is to see if the Planetarium HUD is rendering.
-
-___
 ### PreventModUpdates {: aria-label='Variables' }
 #### boolean PreventModUpdates {: .copyable aria-label='Variables' }
 
 ___
 ### QuickRoomClear {: aria-label='Variables' }
 #### boolean QuickRoomClear {: .copyable aria-label='Variables' }
+
+___
+### StatHUDPlanetarium {: aria-label='Variables' }
+#### boolean StatHUDPlanetarium {: .copyable aria-label='Variables'}
+If set, natively shows Planetarium chance on the HUD. 
+
+Note that this option has no effect if Planetariums are not unlocked, so just checking this value isn't good enough if the intent is to see if the Planetarium HUD is rendering.
 
 ___

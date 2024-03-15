@@ -9,10 +9,12 @@ tags:
 ### FindByType () {: aria-label='Modified Functions' }
 #### [Entity](Entity.md)[] FindByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
 Same as vanilla, but much faster.
+
 ___
 ### FindInRadius () {: aria-label='Modified Functions' }
 #### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
 Same as in vanilla, but much faster and with fixed search for effects.
+
 ___
 ### GetRoomEntities () {: aria-label='Modified Functions' }
 #### [Entity](Entity.md)[] GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
@@ -168,6 +170,10 @@ Returns a table containing all the marks for the character.
 			```
 
 ___
+### GetCurrentStageConfigId () {: aria-label='Functions' }
+#### [StbType](enums/StbType.md) GetCurrentStageConfigId ( ) {: .copyable aria-label='Functions' }
+Gets the current stageconfigId/stbType, or whatever you wanna call the id of the stages.xml, for the current stage.
+___
 ### GetCursorSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetCursorSprite ( ) {: .copyable aria-label='Functions' }
 Returns the cursor sprite that is rendered when ``Options.MouseControl`` is set to true. 
@@ -210,10 +216,6 @@ ___
 ### GetPersistentGameData () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
 
-___
-### GetCurrentStageConfigId () {: aria-label='Functions' }
-#### [StbType](enums/StbType.md) GetCurrentStageConfigId () {: .copyable aria-label='Functions' }
-Gets the current stageconfigId/stbType, or whatever you wanna call the id of the stages.xml, for the current stage.
 ___
 ### GetRenderPosition () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetRenderPosition ( [Vector](Vector.md) Position, boolean Scale = true ) {: .copyable aria-label='Functions' }       
@@ -287,18 +289,18 @@ Sets the completion marks of a character to match an input table. Requires a tab
 			```
 ___
 
-### SetCurrentFloorMusic () {: aria-label='Functions' }
-#### void SetCurrentFloorMusic (int MusicId) {: .copyable aria-label='Functions' }
-Changes the music track for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
-___
-
 ### SetCurrentFloorBackdrop () {: aria-label='Functions' }
-#### void SetCurrentFloorMusic (int BackdropId) {: .copyable aria-label='Functions' }
+#### void SetCurrentFloorMusic ( int BackdropId ) {: .copyable aria-label='Functions' }
 Changes the default room backdrop for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
 ___
 
+### SetCurrentFloorMusic () {: aria-label='Functions' }
+#### void SetCurrentFloorMusic ( int MusicId ) {: .copyable aria-label='Functions' }
+Changes the music track for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
+___
+
 ### SetCurrentFloorName () {: aria-label='Functions' }
-#### void SetCurrentFloorMusic (string Name) {: .copyable aria-label='Functions' }
+#### void SetCurrentFloorMusic ( string Name ) {: .copyable aria-label='Functions' }
 Changes the display name for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
 ___
 
