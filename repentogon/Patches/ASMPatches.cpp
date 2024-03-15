@@ -103,6 +103,7 @@ void PerformASMPatches() {
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
+	PatchDealRoomVariant();
 
 	// Menu
 	ASMPatchModsMenu();

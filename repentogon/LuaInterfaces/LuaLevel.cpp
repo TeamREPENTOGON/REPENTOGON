@@ -112,6 +112,22 @@ HOOK_METHOD(Level, HasAbandonedMineshaft, () -> bool) {
 	return CheckQuest(this, g_Game->_stage, 4, 2);
 }
 
+// helper for asm patch
+bool dealRoomsPatched = false;
+HOOK_METHOD(Level, InitializeDevilAngelRoom, (bool ForceAngel, bool ForceDevil) -> void) {
+	if (!dealRoomsPatched) {
+		unsigned int doors = 0;
+		for (int i = 14; i < 16; i++) {
+			RoomConfigPtrVector rooms = g_Game->_roomConfigs.GetRooms(0, i, 13, 100, 100, 0, -1, &doors, 0, -1);
+			for (RoomConfig* p : rooms) {
+				p->Subtype = 666;
+			}
+		}
+		dealRoomsPatched = true;
+	}
+	super(ForceAngel, ForceDevil);
+}
+
 /* HOOK_METHOD(Level, GetName, () -> std::string) {
 	std::string name = super();
 	if (!CustomStageName.empty()) {
