@@ -1,4 +1,6 @@
 v1.0.Xx - 
+Additions:
+* Deal rooms can now generate variants above 100
 Fixes:
 * Made it so the planetarium change hud is initialized properly on save/continue
 /newline/
