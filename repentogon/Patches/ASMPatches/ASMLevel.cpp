@@ -157,17 +157,16 @@ void PatchDealRoomVariant() {
 	printf("[REPENTOGON] Patching InitializeDevilAngelRoom max variant at %p\n", (char*)addrs[0] + 8);
 	ASMPatch patch1;
 	patch1.AddBytes("\xFF\xFF\xFF\xFF"); // -1
-	sASMPatcher.FlatPatch((char*)addrs[0] + 8, &patch1);
+	sASMPatcher.FlatPatch((char*)addrs[0] + 4, &patch1);
 
 	printf("[REPENTOGON] Patching InitializeDevilAngelRoom subtype push %p\n", (char*)addrs[1] + 2);
 	ASMPatch patch2;
-	patch2.Push(ASMPatch::Registers::EBP, -0x20) // minVariant
-		.AddBytes("\x81\x7d\xe0\x64\x00\x00\x00") // cmp dword ptr [EBP + -0x20],0x64 (100)
-		.Push(-0x1)
-		.AddBytes("\x77\x69") // jne 0x69
+	patch2.AddBytes("\x83\x7c\x24\x28\x64") // cmp dword ptr ss:[EBP+0x28],0x64 (100)
+		.Push(-0x1) // mode
+		.AddBytes("\x75\x0a") // jne 0x0a
 		.Push(0x29a) // 666
 		.AddRelativeJump((char*)addrs[1] + 0x6)
-		.Push(0x0) // JNE skips here
+		.AddBytes("\xFF\x74\x24\x24") // push dword ptr ss:[EBP+0x28] (subtype, JNE skips here)
 		.AddRelativeJump((char*)addrs[1] + 0x6);
-	sASMPatcher.PatchAt((char*)addrs[1] + 2, &patch2);
+	sASMPatcher.PatchAt((char*)addrs[1], &patch2);
 }

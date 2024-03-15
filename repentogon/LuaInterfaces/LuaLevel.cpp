@@ -118,7 +118,7 @@ HOOK_METHOD(Level, InitializeDevilAngelRoom, (bool ForceAngel, bool ForceDevil) 
 	if (!dealRoomsPatched) {
 		unsigned int doors = 0;
 		for (int i = 14; i < 16; i++) {
-			RoomConfigPtrVector rooms = g_Game->_roomConfigs.GetRooms(0, i, 13, 100, 100, 0, -1, &doors, 0, -1);
+			RoomConfigPtrVector rooms = g_Game->_roomConfigs.GetRooms(0, i, 13, 100, 100, 0, 20, &doors, 0, -1);
 			for (RoomConfig* p : rooms) {
 				p->Subtype = 666;
 			}
