@@ -248,13 +248,7 @@ ModCallbacks.MC_POST_MINIMAP_UPDATE = 1478
 ModCallbacks.MC_PRE_MINIMAP_RENDER = 1479
 ModCallbacks.MC_POST_MINIMAP_RENDER = 1480
 
-local function AddEnumToNamespace(namespace, enums)
-	for k,v in pairs(enums) do
-		rawset(namespace, k, v)
-	end
-end
-
-AddHealthType={	
+AddHealthType = {
 	NONE	=	0,
 	RED		=	1<<0,
 	MAX		=	1<<1,
@@ -2551,7 +2545,7 @@ BlendFactor = {
 BlendType = {
 	ADDITIVE = 0,
 	NORMAL = 1,
-	MULTIPLCATIVE = 2,
+	MULTIPLICATIVE = 2,
 }
 
 --deprecated enums

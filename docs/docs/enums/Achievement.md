@@ -681,8 +681,8 @@ tags:
 |527 |REVERSED_EMPRESS {: .copyable } |  |
 |528 |REVERSED_THE_EMPEROR {: .copyable } |  |
 |528 |REVERSED_EMPEROR {: .copyable } |  |
-|529 |REVERSED_THE_HEIROPHANT {: .copyable } |  |
-|529 |RESERVED_HEIROPHANT {: .copyable } |  |
+|529 |REVERSED_THE_HIEROPHANT {: .copyable } |  |
+|529 |REVERSED_HIEROPHANT {: .copyable } |  |
 |530 |REVERSED_THE_LOVERS {: .copyable } |  |
 |530 |REVERSED_LOVERS {: .copyable } |  |
 |531 |REVERSED_THE_CHARIOT {: .copyable } |  |

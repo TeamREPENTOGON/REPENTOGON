@@ -115,6 +115,7 @@ nav:
     - ModCallbacks: enums/ModCallbacks.md
   - Enums:
     - Achievement: enums/Achievement.md
+    - AddHealthType: enums/AddHealthType.md
     - AnimRenderFlags: enums/AnimRenderFlags.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - AutocompleteType: enums/AutocompleteType.md
