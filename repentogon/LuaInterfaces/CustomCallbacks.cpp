@@ -513,11 +513,10 @@ void PostAddHeartsCallbacks(Entity_Player* player, int hearts, int heartcallback
 }
 
 HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk) -> void) {	//red hp
-	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+	if (!CallbackState.test(1009 - 1000)) {
 		super(hearts, unk);
 	}
-	
-	if (CallbackState.test(1009 - 1000)) {
+	else{
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, hearts, 1<<0, std::nullopt);	//do not pass unk
 		hearts = heartcount.value_or(hearts);
 		super(hearts, unk);
@@ -529,10 +528,10 @@ HOOK_METHOD(Entity_Player, AddHearts, (int hearts, bool unk) -> void) {	//red hp
 }
 
 HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void) {	//max hearts
-	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+	if (!CallbackState.test(1009 - 1000)) {
 		super(amount, ignoreKeeper);
 	}
-	if (CallbackState.test(1009 - 1000)) {
+	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 1, ignoreKeeper);
 		amount = heartcount.value_or(amount);
 		super(amount, ignoreKeeper);
@@ -543,11 +542,11 @@ HOOK_METHOD(Entity_Player, AddMaxHearts, (int amount, bool ignoreKeeper) -> void
 }
 
 HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount) -> Entity_Player*) {	//soul hp
-	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+	if (!CallbackState.test(1009 - 1000)) {
 		super(amount);
 	}
 
-	if (CallbackState.test(1009 - 1000)) {
+	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1<<2 ,std::nullopt);
 		amount = heartcount.value_or(amount);
 		super(amount);
@@ -561,10 +560,10 @@ HOOK_METHOD(Entity_Player, AddSoulHearts, (int amount) -> Entity_Player*) {	//so
 
 
 HOOK_METHOD(Entity_Player, AddBlackHearts, (int amount) -> void) {	//black
-	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+	if (!CallbackState.test(1009 - 1000)) {
 		super(amount);
 	}
-	if (CallbackState.test(1009 - 1000)) {
+	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1<<3, std::nullopt);
 		amount = heartcount.value_or(amount);
 		super(amount);
@@ -578,7 +577,7 @@ HOOK_METHOD(Entity_Player, AddEternalHearts, (int amount) -> void) {	//eternal
 	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
 		super(amount);
 	}
-	if (CallbackState.test(1009 - 1000)) {
+	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 4, std::nullopt);
 		amount = heartcount.value_or(amount);
 		super(amount);
@@ -589,10 +588,10 @@ HOOK_METHOD(Entity_Player, AddEternalHearts, (int amount) -> void) {	//eternal
 }
 
 HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount) -> void) {	//golden
-	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+	if (!CallbackState.test(1009 - 1000)) {
 		super(amount);
 	}
-	if (CallbackState.test(1009 - 1000)) {
+	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 5, std::nullopt);
 		amount = heartcount.value_or(amount);
 		super(amount);
@@ -603,10 +602,10 @@ HOOK_METHOD(Entity_Player, AddGoldenHearts, (int amount) -> void) {	//golden
 }
 
 HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bone
-	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+	if (!CallbackState.test(1009 - 1000)) {
 		super(amount);
 	}
-	if (CallbackState.test(1009 - 1000)) {
+	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 6, std::nullopt);
 		amount = heartcount.value_or(amount);
 		super(amount);
@@ -618,11 +617,10 @@ HOOK_METHOD(Entity_Player, AddBoneHearts, (int amount) -> Entity_Player*) {	//bo
 }
 
 HOOK_METHOD(Entity_Player, AddRottenHearts, (int amount, bool unk) -> void) {	//rotten
-	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+	if (!CallbackState.test(1009 - 1000)) {
 		super(amount, unk);
 	}
-
-	if (CallbackState.test(1009 - 1000)) {
+	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 7, std::nullopt);	//do not pass unk
 		amount = heartcount.value_or(amount);
 		super(amount, unk);
@@ -634,10 +632,10 @@ HOOK_METHOD(Entity_Player, AddRottenHearts, (int amount, bool unk) -> void) {	//
 }
 
 HOOK_METHOD(Entity_Player, AddBrokenHearts, (int amount) -> void) {	//broken
-	if (!CallbackState.test(1009 - 1000) && !CallbackState.test(1010 - 1000)) {
+	if (!CallbackState.test(1009 - 1000)) {
 		super(amount);
 	}
-	if (CallbackState.test(1009 - 1000)) {
+	else {
 		std::optional<int> heartcount = PreAddHeartsCallbacks(this, amount, 1 << 8, std::nullopt);
 		amount = heartcount.value_or(amount);
 		super(amount);
