@@ -11,6 +11,9 @@ FuncSignature Signature_GameIsPaused = {
 	"xx?????xx",
 */
 
+"558bec6aff68????????64a1????????5081ecac000000":
+__thiscall void Game::RestoreState(GameState *gstate,bool loaded); //I think that 2nd param is if some stuff is already loaded or not, just a wild guess, take it with a grain of salt
+
 "83b9????????008b15":
 __thiscall bool Game::IsPaused();
 

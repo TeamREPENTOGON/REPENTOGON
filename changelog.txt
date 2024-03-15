@@ -1,8 +1,13 @@
+v1.0.Xx - 
+Fixes:
+* Made it so the planetarium change hud is initialized properly on save/continue
+/newline/
 v1.0.7c - 
 Additions:
 * Options.StatHUDPlanetarum
 Fixes:
 * Fixed a bug where sounds were duplicated if MC_POST_SFX_PLAY was in use
+/newline/
 v1.0.7b - 
 Additions:
 * Add an option to show Planetarium spawn chance in the stat HUD
