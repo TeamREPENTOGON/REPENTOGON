@@ -70,5 +70,5 @@ HOOK_METHOD(Level, Init, () -> void) {
 	super();
 
 	int playerId = g_Game->GetHUD()->_statHUD.GetPlayerId(g_Game->_playerManager._playerList[0]);
-	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100); // TODO: enum
+	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100,false); // TODO: enum
 };
