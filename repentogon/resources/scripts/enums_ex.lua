@@ -2543,9 +2543,11 @@ BlendFactor = {
 }
 
 BlendType = {
-	ADDITIVE = 0,
+	CONSTANT = 0,
 	NORMAL = 1,
-	MULTIPLICATIVE = 2,
+	ADDITIVE = 2,
+	MULTIPLICATIVE = 3,
+	OVERLAY = 4,
 }
 
 --deprecated enums

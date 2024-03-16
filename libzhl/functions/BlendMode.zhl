@@ -1,6 +1,9 @@
 "558bec83e4f88b45??83e800":
 __thiscall void BlendMode::SetMode(unsigned int mode);
 
-struct BlendMode {
+struct BlendMode { {{
+	BlendMode() : _rgbSourceFactor(1), _rgbDestFactor(7), _alphaSourceFactor(1), _alphaDestFactor(7){}
+	BlendMode(int rgbS, int rgbD, int aS, int aD) : _rgbSourceFactor(rgbS), _rgbDestFactor(rgbD), _alphaSourceFactor(aS), _alphaDestFactor(aD) {}
+}}
     unsigned int _rgbSourceFactor : 0x0, _rgbDestFactor : 0x4, _alphaSourceFactor : 0x8, _alphaDestFactor : 0xc;
 } : 0x10;

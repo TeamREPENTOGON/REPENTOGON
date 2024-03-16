@@ -19,21 +19,27 @@ Determines how a [LayerState](../LayerState.md) should blend with the elements r
 ## Functions
 
 ### SetMode () {: aria-label='Functions' }
-#### void SetMode ( [BlendType](../enums/BlendType.md) Type ) {: .copyable aria-label='Functions' } 
-`NORMAL` is used as the default value, `ADDITIVE` for the blue base of the Planetarium backdrop, and `MULTIPLICATIVE` for Planetarium backdrop starfield layers, `8bitclouds_utero` backdrop layer, Beast death spotlight, and various other misc effects.
-
+#### void SetMode ( [BlendType](../enums/BlendType.md) Type ) {: .copyable aria-label='Functions' }
+???+ info "Mode usages"
+	The game uses:
+	
+	* `CONSTANT` for the flat blue Planetarium backdrop layer and the flat color layers of the Hell backdrop
+	* `NORMAL` as the default value
+	* `ADDITIVE` for Planetarium backdrop starfield layers, `8bitclouds_utero` backdrop layer, the `lava_add` layer of the Hell backdrop, Beast death spotlight, and various other misc effects
+	* `MULTIPLICATIVE` for EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and the `lava_multiply` layer of the Hell backdrop
+	* `OVERLAY` for EffectVariant.HUSH_ASHES & the overlay layer of the [Boss Intro versus Sprite](../RoomTransition.md#getversusscreensprite)
+	
 ???- info "Nonstandard modes"
-    The game additionally manually sets modes for various effects:
+    There have also been a couple nonstandard modes seen used for specific situations:
 
     * EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses `{ RGBSourceFactor.ZERO, RGBDestinationFactor.SRC_COLOR, AlphaSourceFactor.ONE, AlphaDestinationFactor.ONE }`
-    * EffectVariant.HUSH_ASHES & the [Boss Intro versus Sprite](../RoomTransition.md#getversusscreensprite) uses `{ RGBSourceFactor.DST_COLOR, RGBDestinationFactor.ONE_MINUS_SRC_ALPHA, AlphaSourceFactor.DST_COLOR, AlphaDestinationFactor.ONE_MINUS_SRC_ALPHA }`
-    * EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and one of special Hell backdrop layers for the Beast fight use `{ RGBSourceFactor.ZERO, RGBDestinationFactor.SRC_COLOR, AlphaSourceFactor.ZERO, AlphaDestinationFactor.SRC_COLOR }`
+	* Light rendering uses `{ RGBSourceFactor.DST_COLOR, RGBDestinationFactor.DST_ALPHA, AlphaSourceFactor.DST_COLOR, AlphaDestinationFactor.ONE_MINUS_SRC_ALPHA }`
 
 ___
 ## Variables
 ### AlphaDestinationFactor {: aria-label='Variables' }
 #### [BlendFactor](../enums/BlendFactor.md) AlphaDestinationFactor {: .copyable aria-label='Variables'}
-`ZERO` in mode `ADDITIVE`, `ONE_MINUS_SRC_ALPHA` in mode `NORMAL`, and `ONE` in mode `MULTIPLICATIVE`.
+`ZERO` in mode `CONSTANT`, `ONE_MINUS_SRC_ALPHA` in mode `NORMAL` and `OVERLAY`, `ONE` in mode `ADDITIVE`, and `SRC_COLOR` in `MULTIPLICATIVE`.
 
 ???- warning "Depreciation history"
     This variable was previously known as `Flag4`.
@@ -41,7 +47,7 @@ ___
 ___
 ### AlphaSourceFactor {: aria-label='Variables' }
 #### [BlendFactor](../enums/BlendFactor.md) AlphaSourceFactor {: .copyable aria-label='Variables'}
-Set to `ONE` in all modes.
+`ZERO` in mode `MULTIPLICATIVE`, `ONE` in all other modes.
 
 ???- warning "Depreciation history"
     This variable was previously known as `Flag3`.
@@ -49,7 +55,7 @@ Set to `ONE` in all modes.
 ___
 ### RGBDestinationFactor {: aria-label='Variables' }
 #### [BlendFactor](../enums/BlendFactor.md) RGBDestinationFactor {: .copyable aria-label='Variables'}
-`ZERO` in mode `ADDITIVE`, `ONE_MINUS_SRC_ALPHA` in mode `NORMAL`, and `ONE` in mode `MULTIPLICATIVE`.
+`ZERO` in mode `CONSTANT`, `ONE_MINUS_SRC_ALPHA` in mode `NORMAL` and `OVERLAY`, `ONE` in mode `ADDITIVE`, and `SRC_COLOR` in `MULTIPLICATIVE`.
 
 ???- warning "Depreciation history"
     This variable was previously known as `Flag2`.
@@ -57,7 +63,7 @@ ___
 ___
 ### RGBSourceFactor {: aria-label='Variables' }
 #### [BlendFactor](../enums/BlendFactor.md) RGBSourceFactor {: .copyable aria-label='Variables'}
-This is generally always `ONE`. There's a possibility for this to be `SRC_ALPHA` if an internal `UsePremultipliedAlpha` variable in the graphics manager class isn't set, but it has so far always been.
+`ZERO` in mode `MULTIPLICATIVE`, `ONE` in all other modes (there's a possibility for this to be `SRC_ALPHA` if an internal `UsePremultipliedAlpha` variable in the graphics manager class isn't set, but this has not yet been observed)
 
 ???- warning "Depreciation history"
     This variable was previously known as `Flag1`.

@@ -67,21 +67,31 @@ LUA_FUNCTION(Lua_SetAlphaDestinationFactor)
 	return 0;
 }
 
+const BlendMode modes[5] = {
+	BlendMode(1, 0, 1, 0),
+	BlendMode(1, 7, 1, 7),
+	BlendMode(1, 1, 1, 1),
+	BlendMode(0, 2, 0, 2),
+	BlendMode(4, 7, 4, 7)
+};
+
 LUA_FUNCTION(Lua_SetMode)
 {
 	BlendMode* mode = *lua::GetUserdata<BlendMode**>(L, 1, lua::metatables::BlendModeMT);
 	if (lua_gettop(L) > 2) {
-		mode->_rgbSourceFactor = (unsigned int)luaL_checknumber(L, 2);
-		mode->_rgbDestFactor = (unsigned int)luaL_checknumber(L, 3);
-		mode->_alphaSourceFactor = (unsigned int)luaL_checknumber(L, 4);
-		mode->_alphaDestFactor = (unsigned int)luaL_checknumber(L, 5);
+		mode->_rgbSourceFactor = (int)luaL_optnumber(L, 2, mode->_rgbSourceFactor);
+		mode->_rgbDestFactor = (int)luaL_optnumber(L, 3, mode->_rgbDestFactor);
+		mode->_alphaSourceFactor = (int)luaL_optnumber(L, 4, mode->_alphaSourceFactor);
+		mode->_alphaDestFactor = (int)luaL_optnumber(L, 5, mode->_alphaDestFactor);
 	}
 	else
 	{
-		unsigned int newMode = (unsigned int)luaL_checknumber(L, 2);
+		int newMode = (int)luaL_checknumber(L, 2);
 
 		//invalid modes are simply ignored
-		mode->SetMode(newMode);
+		if (newMode >= 0 && newMode <= 5) {
+			*mode = modes[newMode];
+		}
 	}
 
 	return 0;
