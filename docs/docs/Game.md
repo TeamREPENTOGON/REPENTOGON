@@ -123,6 +123,14 @@ ___
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
 
 ___
+### SetDonationModAngel () {: aria-label='Functions' }
+#### void SetDonationModAngel ( int Amount ) {: .copyable aria-label='Functions' }
+
+___
+### SetDonationModGreed () {: aria-label='Functions' }
+#### void SetDonationModGreed ( int Amount ) {: .copyable aria-label='Functions' }
+
+___
 ### ShowGenericLeaderboard () {: aria-label='Functions' }
 #### void ShowGenericLeaderboard ( ) {: .copyable aria-label='Functions' }
 

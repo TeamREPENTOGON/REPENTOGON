@@ -2,6 +2,8 @@ v1.0.Xx -
 Additions:
 * Deal rooms can now generate variants above 100
 * Add new BlendTypes CONSTANT, OVERLAY
+* Game:
+	- SetDonationMod[Angel/Greed]
 * ItemPool:
 	- GetBibleUpgrades(ItemPoolType)
 Fixes:

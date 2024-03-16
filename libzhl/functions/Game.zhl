@@ -245,5 +245,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     vector_ErasedEntities _erasedEntities : 0x283c14; 
 	bool  _triggerWindowResize : 0x1c3154;
 	unsigned int _gameStateFlags : 0x1c316c;
+	int _donationModGreed : 0x1c318c;
+	int _donationModAngel : 0x1c3190;
 	float _lightningIntensity : 0x283c00;
 } : 0x285238;
