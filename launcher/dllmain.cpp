@@ -174,6 +174,29 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 
 		//ZHL::Init();
 
+		/* Initialize ZHL */
+		HMODULE zhl = LoadLibrary("libzhl.dll");
+		if (!zhl)
+		{
+			sLogger->Fatal("Unable to load libzhl.dll");
+			return FALSE;
+		}
+
+		int(*zhlInit)() = (int(*)())GetProcAddress(zhl, "InitZHL");
+		if (!zhlInit)
+		{
+			sLogger->Fatal("Unable to find \"InitZHL\" in libzhl.dll\n");
+			FreeLibrary(zhl);
+			return FALSE;
+		}
+
+		if (zhlInit())
+		{
+			sLogger->Fatal("Errors encountered while initializing ZHL\n");
+			FreeLibrary(zhl);
+			return FALSE;
+		}
+
 		// Load all the mods
 		auto startTime = GetTickCount();
 
