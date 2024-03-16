@@ -1,8 +1,14 @@
 v1.0.Xx - 
 Additions:
 * Deal rooms can now generate variants above 100
+* Add new BlendTypes CONSTANT, OVERLAY
+* ItemPool:
+	- GetBibleUpgrades(ItemPoolType)
 Fixes:
-* Made it so the planetarium change hud is initialized properly on save/continue
+* Planetarium chance stat HUD is now initialized properly on save/continue
+* Fix previously incorrect BlendType enums (ADDITIVE -> CONSTANT, MULTIPLICATIVE -> ADDITIVE)
+* Fix ItemPool:GetPillColor not checking all identified effects
+* Fix potential buffer overflow in ItemPool:UnidentifyPill
 /newline/
 v1.0.7c - 
 Additions:
