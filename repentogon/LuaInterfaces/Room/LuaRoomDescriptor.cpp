@@ -747,6 +747,12 @@ LUA_FUNCTION(Lua_GetGridEntitiesSaveState) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetBossDeathSeed) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	lua_pushinteger(L, descriptor->BossDeathSeed);
+	return 1;
+}
+
 static void RegisterRoomDescriptorMethods(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetEntitiesSaveState", Lua_GetEntitiesSaveState },
@@ -756,6 +762,7 @@ static void RegisterRoomDescriptorMethods(lua_State* L) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::ROOM_DESCRIPTOR, functions);
+	lua::RegisterVariableGetter(L, lua::Metatables::ROOM_DESCRIPTOR, "BossDeathSeed", Lua_GetBossDeathSeed);
 }
 
 static void RegisterEntitiesSaveStateMetatables(lua_State* L) {
