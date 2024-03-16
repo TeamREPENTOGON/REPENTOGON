@@ -6562,21 +6562,30 @@
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="setmode">SetMode ()<a class="headerlink" href="#setmode" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setmode-blendtype-type">void SetMode ( <a href="../enums/BlendType.html">BlendType</a> Type )<a class="headerlink" href="#void-setmode-blendtype-type" title="Permanent link">⚓︎</a></h4>
-<p><code>NORMAL</code> is used as the default value, <code>ADDITIVE</code> for the blue base of the Planetarium backdrop, and <code>MULTIPLICATIVE</code> for Planetarium backdrop starfield layers, <code>8bitclouds_utero</code> backdrop layer, Beast death spotlight, and various other misc effects.</p>
+<details class="info" open="open">
+<summary>Mode usages</summary>
+<p>The game uses:</p>
+<ul>
+<li><code>CONSTANT</code> for the flat blue Planetarium backdrop layer and the flat color layers of the Hell backdrop</li>
+<li><code>NORMAL</code> as the default value</li>
+<li><code>ADDITIVE</code> for Planetarium backdrop starfield layers, <code>8bitclouds_utero</code> backdrop layer, the <code>lava_add</code> layer of the Hell backdrop, Beast death spotlight, and various other misc effects</li>
+<li><code>MULTIPLICATIVE</code> for EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and the <code>lava_multiply</code> layer of the Hell backdrop</li>
+<li><code>OVERLAY</code> for EffectVariant.HUSH_ASHES &amp; the overlay layer of the <a href="../RoomTransition.html#getversusscreensprite">Boss Intro versus Sprite</a></li>
+</ul>
+</details>
 <details class="- info">
 <summary>Nonstandard modes</summary>
-<p>The game additionally manually sets modes for various effects:</p>
+<p>There have also been a couple nonstandard modes seen used for specific situations:</p>
 <ul>
 <li>EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses <code>{ RGBSourceFactor.ZERO, RGBDestinationFactor.SRC_COLOR, AlphaSourceFactor.ONE, AlphaDestinationFactor.ONE }</code></li>
-<li>EffectVariant.HUSH_ASHES &amp; the <a href="../RoomTransition.html#getversusscreensprite">Boss Intro versus Sprite</a> uses <code>{ RGBSourceFactor.DST_COLOR, RGBDestinationFactor.ONE_MINUS_SRC_ALPHA, AlphaSourceFactor.DST_COLOR, AlphaDestinationFactor.ONE_MINUS_SRC_ALPHA }</code></li>
-<li>EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and one of special Hell backdrop layers for the Beast fight use <code>{ RGBSourceFactor.ZERO, RGBDestinationFactor.SRC_COLOR, AlphaSourceFactor.ZERO, AlphaDestinationFactor.SRC_COLOR }</code></li>
+<li>Light rendering uses <code>{ RGBSourceFactor.DST_COLOR, RGBDestinationFactor.DST_ALPHA, AlphaSourceFactor.DST_COLOR, AlphaDestinationFactor.ONE_MINUS_SRC_ALPHA }</code></li>
 </ul>
 </details>
 <hr />
 <h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Variables" id="alphadestinationfactor">AlphaDestinationFactor<a class="headerlink" href="#alphadestinationfactor" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="blendfactor-alphadestinationfactor"><a href="../enums/BlendFactor.html">BlendFactor</a> AlphaDestinationFactor<a class="headerlink" href="#blendfactor-alphadestinationfactor" title="Permanent link">⚓︎</a></h4>
-<p><code>ZERO</code> in mode <code>ADDITIVE</code>, <code>ONE_MINUS_SRC_ALPHA</code> in mode <code>NORMAL</code>, and <code>ONE</code> in mode <code>MULTIPLICATIVE</code>.</p>
+<p><code>ZERO</code> in mode <code>CONSTANT</code>, <code>ONE_MINUS_SRC_ALPHA</code> in mode <code>NORMAL</code> and <code>OVERLAY</code>, <code>ONE</code> in mode <code>ADDITIVE</code>, and <code>SRC_COLOR</code> in <code>MULTIPLICATIVE</code>.</p>
 <details class="- warning">
 <summary>Depreciation history</summary>
 <p>This variable was previously known as <code>Flag4</code>.</p>
@@ -6584,7 +6593,7 @@
 <hr />
 <h3 aria-label="Variables" id="alphasourcefactor">AlphaSourceFactor<a class="headerlink" href="#alphasourcefactor" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="blendfactor-alphasourcefactor"><a href="../enums/BlendFactor.html">BlendFactor</a> AlphaSourceFactor<a class="headerlink" href="#blendfactor-alphasourcefactor" title="Permanent link">⚓︎</a></h4>
-<p>Set to <code>ONE</code> in all modes.</p>
+<p><code>ZERO</code> in mode <code>MULTIPLICATIVE</code>, <code>ONE</code> in all other modes.</p>
 <details class="- warning">
 <summary>Depreciation history</summary>
 <p>This variable was previously known as <code>Flag3</code>.</p>
@@ -6592,7 +6601,7 @@
 <hr />
 <h3 aria-label="Variables" id="rgbdestinationfactor">RGBDestinationFactor<a class="headerlink" href="#rgbdestinationfactor" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="blendfactor-rgbdestinationfactor"><a href="../enums/BlendFactor.html">BlendFactor</a> RGBDestinationFactor<a class="headerlink" href="#blendfactor-rgbdestinationfactor" title="Permanent link">⚓︎</a></h4>
-<p><code>ZERO</code> in mode <code>ADDITIVE</code>, <code>ONE_MINUS_SRC_ALPHA</code> in mode <code>NORMAL</code>, and <code>ONE</code> in mode <code>MULTIPLICATIVE</code>.</p>
+<p><code>ZERO</code> in mode <code>CONSTANT</code>, <code>ONE_MINUS_SRC_ALPHA</code> in mode <code>NORMAL</code> and <code>OVERLAY</code>, <code>ONE</code> in mode <code>ADDITIVE</code>, and <code>SRC_COLOR</code> in <code>MULTIPLICATIVE</code>.</p>
 <details class="- warning">
 <summary>Depreciation history</summary>
 <p>This variable was previously known as <code>Flag2</code>.</p>
@@ -6600,7 +6609,7 @@
 <hr />
 <h3 aria-label="Variables" id="rgbsourcefactor">RGBSourceFactor<a class="headerlink" href="#rgbsourcefactor" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Variables" class="copyable" id="blendfactor-rgbsourcefactor"><a href="../enums/BlendFactor.html">BlendFactor</a> RGBSourceFactor<a class="headerlink" href="#blendfactor-rgbsourcefactor" title="Permanent link">⚓︎</a></h4>
-<p>This is generally always <code>ONE</code>. There's a possibility for this to be <code>SRC_ALPHA</code> if an internal <code>UsePremultipliedAlpha</code> variable in the graphics manager class isn't set, but it has so far always been.</p>
+<p><code>ZERO</code> in mode <code>MULTIPLICATIVE</code>, <code>ONE</code> in all other modes (there's a possibility for this to be <code>SRC_ALPHA</code> if an internal <code>UsePremultipliedAlpha</code> variable in the graphics manager class isn't set, but this has not yet been observed)</p>
 <details class="- warning">
 <summary>Depreciation history</summary>
 <p>This variable was previously known as <code>Flag1</code>.</p>
