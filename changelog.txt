@@ -2,6 +2,9 @@ v1.0.Xx -
 Additions:
 * Deal rooms can now generate variants above 100
 * Add new BlendTypes CONSTANT, OVERLAY
+* EntityPlayer:
+	- SetHeadDirection(Direction, Time, Force)
+	- Get/SetHeadDirectionLockTime
 * Game:
 	- SetDonationMod[Angel/Greed]
 * ItemPool:

@@ -353,6 +353,11 @@ ___
 #### int GetGreedsGulletHearts ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetHeadDirectionLockTime () {: aria-label='Functions' }
+#### int GetHeadDirectionLockTime ( ) {: .copyable aria-label='Functions' }
+How long the player's head should be forced to stay in its current direction. `-1` (or lower) indicates the direction is not currently locked.
+
+___
 ### GetHealthType () {: aria-label='Functions' }
 #### [HealthType](enums/HealthType.md) GetHealthType ( ) {: .copyable aria-label='Functions' }
 
@@ -767,6 +772,16 @@ Sets the player's footprint color.
 ___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }
 #### void SetGnawedLeafTimer ( int Timer ) {: .copyable aria-label='Functions' }
+
+___
+### SetHeadDirection () {: aria-label='Functions' }
+#### void SetHeadDirection ( [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction, int Time, boolean Force = false ) {: .copyable aria-label='Functions' }
+Locks the player's head animation to the specified [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html). `Force` will override existing head direction locks, such as the one from firing Mom's Knife.
+
+___
+### SetHeadDirectionLockTime () {: aria-label='Functions' }
+#### void SetHeadDirectionLockTime ( int Time ) {: .copyable aria-label='Functions' }
+How long the player's head should be forced to stay in its current direction.
 
 ___
 ### SetImmaculateConceptionState () {: aria-label='Functions' }

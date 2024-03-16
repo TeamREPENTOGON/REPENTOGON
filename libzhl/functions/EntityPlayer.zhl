@@ -569,8 +569,11 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	ANM2 _heldSprite : 0xf48;
 	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1170;
 	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
-	int _gnawedLeafTimer : 0x12c4;
+	std_string _headAnim : 0x1270;
+	int _blinkTime : 0x1288;
+	int _headDirectionTime : 0x128c;
 	int _maxHearts : 0x1290, _redHearts : 0x1294,  _eternalHearts : 0x1298, _soulHearts : 0x129C, _blackHearts : 0x12A0;
+	int _gnawedLeafTimer : 0x12c4;
 	int _metronomeCollectibleID : 0x12d8;
 	int _playerType: 0x130c;
 	float _damage : 0x13b8;
@@ -587,6 +590,8 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	float _edenSpeed : 0x1490, _edenFireDelay : 0x1494, _edenDamage : 0x1498, _edenTearRange : 0x149c, _edenShotSpeed : 0x14a0, _edenLuck : 0x14a4;
 	uint32_t _cacheFlags : 0x14b8;
 	ActiveItemDesc _activeDesc[4] : 0x14c4;
+	int _moveDirection : 0x1558;
+	int _headDirection: 0x155c;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	int _playerForms[15] : 0x1700;
 	KColor _footprintColor1 : 0x1768;
