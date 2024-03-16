@@ -3737,6 +3737,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getheaddirectionlocktime" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetHeadDirectionLockTime ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gethealthtype" class="md-nav__link">
     <span class="md-ellipsis">
       GetHealthType ()
@@ -4442,6 +4451,24 @@
   <a href="#setgnawedleaftimer" class="md-nav__link">
     <span class="md-ellipsis">
       SetGnawedLeafTimer ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setheaddirection" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetHeadDirection ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setheaddirectionlocktime" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetHeadDirectionLockTime ()
     </span>
   </a>
   
@@ -8693,6 +8720,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getheaddirectionlocktime" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetHeadDirectionLockTime ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gethealthtype" class="md-nav__link">
     <span class="md-ellipsis">
       GetHealthType ()
@@ -9404,6 +9440,24 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#setheaddirection" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetHeadDirection ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setheaddirectionlocktime" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetHeadDirectionLockTime ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#setimmaculateconceptionstate" class="md-nav__link">
     <span class="md-ellipsis">
       SetImmaculateConceptionState ()
@@ -10104,6 +10158,10 @@ If none of these exist, this returns <code>nil</code>.</p>
 <h3 aria-label="Functions" id="getgreedsgullethearts">GetGreedsGulletHearts ()<a class="headerlink" href="#getgreedsgullethearts" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getgreedsgullethearts">int GetGreedsGulletHearts ( )<a class="headerlink" href="#int-getgreedsgullethearts" title="Permanent link">⚓︎</a></h4>
 <hr />
+<h3 aria-label="Functions" id="getheaddirectionlocktime">GetHeadDirectionLockTime ()<a class="headerlink" href="#getheaddirectionlocktime" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="int-getheaddirectionlocktime">int GetHeadDirectionLockTime ( )<a class="headerlink" href="#int-getheaddirectionlocktime" title="Permanent link">⚓︎</a></h4>
+<p>How long the player's head should be forced to stay in its current direction. <code>-1</code> (or lower) indicates the direction is not currently locked.</p>
+<hr />
 <h3 aria-label="Functions" id="gethealthtype">GetHealthType ()<a class="headerlink" href="#gethealthtype" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="healthtype-gethealthtype"><a href="enums/HealthType.html">HealthType</a> GetHealthType ( )<a class="headerlink" href="#healthtype-gethealthtype" title="Permanent link">⚓︎</a></h4>
 <hr />
@@ -10464,6 +10522,14 @@ If the target is not displayed on the ground, this function returns <code>nil</c
 <hr />
 <h3 aria-label="Functions" id="setgnawedleaftimer">SetGnawedLeafTimer ()<a class="headerlink" href="#setgnawedleaftimer" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setgnawedleaftimer-int-timer">void SetGnawedLeafTimer ( int Timer )<a class="headerlink" href="#void-setgnawedleaftimer-int-timer" title="Permanent link">⚓︎</a></h4>
+<hr />
+<h3 aria-label="Functions" id="setheaddirection">SetHeadDirection ()<a class="headerlink" href="#setheaddirection" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-setheaddirection-direction-direction-int-time-boolean-force-false">void SetHeadDirection ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html">Direction</a> Direction, int Time, boolean Force = false )<a class="headerlink" href="#void-setheaddirection-direction-direction-int-time-boolean-force-false" title="Permanent link">⚓︎</a></h4>
+<p>Locks the player's head animation to the specified <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html">Direction</a>. <code>Force</code> will override existing head direction locks, such as the one from firing Mom's Knife.</p>
+<hr />
+<h3 aria-label="Functions" id="setheaddirectionlocktime">SetHeadDirectionLockTime ()<a class="headerlink" href="#setheaddirectionlocktime" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-setheaddirectionlocktime-int-time">void SetHeadDirectionLockTime ( int Time )<a class="headerlink" href="#void-setheaddirectionlocktime-int-time" title="Permanent link">⚓︎</a></h4>
+<p>How long the player's head should be forced to stay in its current direction.</p>
 <hr />
 <h3 aria-label="Functions" id="setimmaculateconceptionstate">SetImmaculateConceptionState ()<a class="headerlink" href="#setimmaculateconceptionstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setimmaculateconceptionstate-int-state">void SetImmaculateConceptionState ( int State )<a class="headerlink" href="#void-setimmaculateconceptionstate-int-state" title="Permanent link">⚓︎</a></h4>
