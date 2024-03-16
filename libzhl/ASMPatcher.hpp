@@ -19,6 +19,10 @@
 #include "ByteBuffer.h"
 #include "libzhl.h"
 
+extern "C" {
+	__declspec(dllexport) int InitZHL();
+}
+
 class LIBZHL_API ASMPatcher
 {
 public:
@@ -218,7 +222,7 @@ public:
 
 	private:
 		friend ASMPatch;
-		friend BOOL APIENTRY DllMain(HMODULE, DWORD, LPVOID);
+		friend __declspec(dllexport) int InitZHL();
 
 		void Restore();
 		uint32_t GetMask() const;
@@ -432,7 +436,7 @@ private:
 		void* _target;
 	};
 
-	friend BOOL APIENTRY DllMain(HMODULE, DWORD, LPVOID);
+	friend __declspec(dllexport) int InitZHL();
 	static void _Init();
 
 	uint8_t RegisterTox86(Registers reg);
