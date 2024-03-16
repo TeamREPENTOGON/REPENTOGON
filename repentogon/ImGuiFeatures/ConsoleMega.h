@@ -278,12 +278,13 @@ struct ConsoleMega : ImGuiWindowObject {
         std::string out;
         bool clear = false;
 
-        if (!console->_commandHistory.empty() && console->_commandHistory.front() == input && !commandFromHistory)
+        if (console->_commandHistory.size() > 1 && console->_commandHistory.front() == input && !commandFromHistory)
             clear = true;
 
         // For whatever asinine reason, the vanilla console makes a distinction between commands typed out and commands entered from history.
         // Commands sent from history are entirely purged from previous history first, so they don't duplicate.
-        if (!console->_commandHistory.empty() && commandFromHistory) {
+        // We need to be careful to always keep at least one command in history, or the game is Not Happy.
+        if (commandFromHistory) {
             std::deque<std::string> newHistory;
 
             for (std::string command : console->_commandHistory) {
@@ -291,7 +292,9 @@ struct ConsoleMega : ImGuiWindowObject {
                     newHistory.push_back(command);
                 }
             }
-            console->_commandHistory = newHistory;
+
+            if (!newHistory.empty())
+                console->_commandHistory = newHistory;
         }
 
         console->_input = input;
