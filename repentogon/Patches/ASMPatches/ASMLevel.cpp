@@ -166,7 +166,7 @@ void PatchDealRoomVariant() {
 		.AddBytes("\x75\x0a") // jne 0x0a
 		.Push(0x29a) // 666
 		.AddRelativeJump((char*)addrs[1] + 0x6)
-		.AddBytes("\xFF\x74\x24\x24") // push dword ptr ss:[EBP+0x28] (subtype, JNE skips here)
+		.AddBytes("\xFF\x74\x24\x28") // push dword ptr ss:[EBP+0x28] (subtype, JNE skips here)
 		.AddRelativeJump((char*)addrs[1] + 0x6);
 	sASMPatcher.PatchAt((char*)addrs[1], &patch2);
 }
