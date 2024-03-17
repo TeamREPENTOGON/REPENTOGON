@@ -59,17 +59,17 @@ void PatchStatHudPlanetariumChanceText() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void PatchStatHudPlanetariumChanceStr() {
-	SigScan signature("83fe0774??f30f1044");
+void PatchStatHudPlanetariumChanceIf(const char* sig, const char* jmpSig) {
+	SigScan signature(sig);
 	signature.Scan();
-
-	SigScan jmpSig("f30f1044????8d4424??0f5ac083ec08f20f11042468????????6a0c50e8????????b8????????b9????????f30f1044");
-	jmpSig.Scan();
+	
+	SigScan jmpSignature(jmpSig);
+	jmpSignature.Scan();
 
 	void* addr = signature.GetAddress();
-	void* jmpAddr = jmpSig.GetAddress();
+	void* jmpAddr = jmpSignature.GetAddress();
 
-	printf("[REPENTOGON] Patching planetarium chance string at %p\n", addr);
+	printf("[REPENTOGON] Patching if statement for planetarium chance visibility at %p\n", addr);
 	ASMPatch patch;
 
 	patch.AddBytes("\x83\xFE\x07") // cmp index, 0x7
@@ -109,6 +109,7 @@ void PatchStatHudPlanetariumChanceCalc() {
 void PatchStatHudPlanetariumChance() {
 	PatchStatHudPlanetariumChanceIcon();
 	PatchStatHudPlanetariumChanceText();
-	PatchStatHudPlanetariumChanceStr();
+	PatchStatHudPlanetariumChanceIf("83fe0774??f30f1044", "f30f1044????8d4424??0f5ac083ec08f20f11042468????????6a0c50e8????????b8????????b9????????f30f1044");
+	PatchStatHudPlanetariumChanceIf("83fe0774??85f675", "85d20f85????????a1????????0f28cc");
 	PatchStatHudPlanetariumChanceCalc();
 }
