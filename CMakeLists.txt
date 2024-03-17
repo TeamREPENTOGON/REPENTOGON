@@ -90,18 +90,14 @@ add_custom_command(OUTPUT "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h" COMMAND min
 FILE(GLOB BUILDVM_SRC "${LUAJIT_SOURCE_DIR}/host/buildvm*.c")
 LIST(APPEND BUILDVM_SRC "${LUAJIT_SOURCE_DIR}/host/buildvm_arch.h")
 add_executable(buildvm ${BUILDVM_SRC})
+target_include_directories(buildvm PUBLIC ${LUAJIT_SOURCE_DIR})
+add_custom_command(TARGET buildvm PRE_BUILD COMMAND powershell "git show -s --format=%%ct | Out-File -encoding ASCII luajit_relver.txt" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}")
+add_custom_command(TARGET buildvm PRE_BUILD COMMAND minilua "${LUAJIT_SOURCE_DIR}/host/genversion.lua" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS minilua)	
+
 target_compile_options(minilua PUBLIC ${LJ_FLAGS})
 
 FILE(GLOB ALL_LIB "${LUAJIT_SOURCE_DIR}/lib_*.c")
 list(REMOVE_ITEM LUA_SRC "${LUAJIT_SOURCE_DIR}/lib_aux.c" "${LUAJIT_SOURCE_DIR}/lib_init.c")
-
-add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_vm.obj COMMAND buildvm -m peobj -o "${LUAJIT_SOURCE_DIR}/lj_vm.obj" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
-add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_bcdef.h COMMAND buildvm -m bcdef -o "${LUAJIT_SOURCE_DIR}/lj_bcdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
-add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_ffdef.h COMMAND buildvm -m ffdef -o "${LUAJIT_SOURCE_DIR}/lj_ffdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
-add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_libdef.h COMMAND buildvm -m libdef -o "${LUAJIT_SOURCE_DIR}/lj_libdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
-add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_recdef.h COMMAND buildvm -m recdef -o "${LUAJIT_SOURCE_DIR}/lj_recdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
-add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_vmdef.h COMMAND buildvm -m vmdef -o "${LUAJIT_SOURCE_DIR}/lj_vmdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
-# add_custom_command(OUTPUT ${LUAJIT_SOURCE_DIR}/lj_folddef.h COMMAND buildvm -m folddef -o "${LUAJIT_SOURCE_DIR}/lj_folddef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm) # TODO: fix this file not getting generated properly (see https://ptb.discord.com/channels/1069368602156863610/1069368602597273630/1199818009162817659)
 
 set(LJ_GEN ${LUAJIT_SOURCE_DIR}/lj_vm.obj ${LUAJIT_SOURCE_DIR}/lj_bcdef.h ${LUAJIT_SOURCE_DIR}/lj_ffdef.h ${LUAJIT_SOURCE_DIR}/lj_libdef.h ${LUAJIT_SOURCE_DIR}/lj_recdef.h ${LUAJIT_SOURCE_DIR}/lj_vmdef.h)
 
@@ -109,6 +105,14 @@ FILE(GLOB LUA51_SRC "${LUAJIT_SOURCE_DIR}/lj_*.c" "${LUAJIT_SOURCE_DIR}/lib_*.c"
 LIST(APPEND LUA51_SRC ${LJ_GEN})
 add_library(lua51 SHARED ${LUA51_SRC})
 target_compile_options(lua51 PUBLIC "/MD")
+add_custom_command(TARGET lua51 PRE_BUILD COMMAND buildvm -m peobj -o "${LUAJIT_SOURCE_DIR}/lj_vm.obj" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET lua51 PRE_BUILD COMMAND buildvm -m bcdef -o "${LUAJIT_SOURCE_DIR}/lj_bcdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET lua51 PRE_BUILD COMMAND buildvm -m ffdef -o "${LUAJIT_SOURCE_DIR}/lj_ffdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET lua51 PRE_BUILD COMMAND buildvm -m libdef -o "${LUAJIT_SOURCE_DIR}/lj_libdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET lua51 PRE_BUILD COMMAND buildvm -m recdef -o "${LUAJIT_SOURCE_DIR}/lj_recdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET lua51 PRE_BUILD COMMAND buildvm -m vmdef -o "${LUAJIT_SOURCE_DIR}/lj_vmdef.h" ${ALL_LIB} WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+add_custom_command(TARGET lua51 PRE_BUILD COMMAND buildvm -m folddef -o "${LUAJIT_SOURCE_DIR}/lj_folddef.h" "${LUAJIT_SOURCE_DIR}/lj_opt_fold.c" WORKING_DIRECTORY "${LUAJIT_SOURCE_DIR}" DEPENDS buildvm)
+
 
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
