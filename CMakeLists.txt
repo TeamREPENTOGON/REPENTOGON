@@ -100,7 +100,7 @@ FILE(GLOB ALL_LIB "${LUAJIT_SOURCE_DIR}/lib_*.c")
 list(REMOVE_ITEM LUA_SRC "${LUAJIT_SOURCE_DIR}/lib_aux.c" "${LUAJIT_SOURCE_DIR}/lib_init.c")
 
 set(LJ_GEN ${LUAJIT_SOURCE_DIR}/lj_vm.obj ${LUAJIT_SOURCE_DIR}/lj_bcdef.h ${LUAJIT_SOURCE_DIR}/lj_ffdef.h ${LUAJIT_SOURCE_DIR}/lj_libdef.h ${LUAJIT_SOURCE_DIR}/lj_recdef.h ${LUAJIT_SOURCE_DIR}/lj_vmdef.h)
-
+set_source_files_properties(${LJ_GEN} PROPERTIES GENERATED TRUE)
 FILE(GLOB LUA51_SRC "${LUAJIT_SOURCE_DIR}/lj_*.c" "${LUAJIT_SOURCE_DIR}/lib_*.c" "${CMAKE_SOURCE_DIR}/libs/lua53compat/*.c")
 LIST(APPEND LUA51_SRC ${LJ_GEN})
 add_library(lua51 SHARED ${LUA51_SRC})
