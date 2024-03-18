@@ -46,6 +46,9 @@ __thiscall bool Level::IsNextStageAvailable();
 "8b41??83f80474??83f80574??32c0":
 __thiscall bool Level::IsAltPath();
 
+"558bec83e4f883ec345356576aff":
+__thiscall void Level::InitializeDevilAngelRoom(bool ForceAngel, bool ForceDevil);
+
 struct Level {
 	uint32_t _levelStateFlag : 0x1822c;
 } : 0x18230;

@@ -375,6 +375,13 @@ LUA_FUNCTION(Lua_RoomSaveState) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetBossVictoryJingle) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	lua_pushinteger(L, room->GetBossVictoryJingle());
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -420,6 +427,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetNumRainSpawners", Lua_RoomGetNumRainSpawners},
 		{ "GetBackdropType", Lua_RoomGetBackdropTypeHui},
 		{ "SaveState", Lua_RoomSaveState},
+		{ "GetBossVictoryJingle", Lua_GetBossVictoryJingle},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);

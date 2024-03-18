@@ -115,10 +115,13 @@ nav:
     - ModCallbacks: enums/ModCallbacks.md
   - Enums:
     - Achievement: enums/Achievement.md
+    - AddHealthType: enums/AddHealthType.md
     - AnimRenderFlags: enums/AnimRenderFlags.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - AutocompleteType: enums/AutocompleteType.md
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
+    - BlendFactor: enums/BlendFactor.md
+    - BlendType: enums/BlendType.md
     - BombCostumeLayer: enums/BombCostumeLayer.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md

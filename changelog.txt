@@ -1,3 +1,36 @@
+v1.0.Xx - 
+Additions:
+* Deal rooms can now generate variants above 100
+* Add new BlendTypes CONSTANT, OVERLAY
+* EntityPlayer:
+	- SetHeadDirection(Direction, Time, Force)
+	- Get/SetHeadDirectionLockTime
+* Game:
+	- SetDonationMod[Angel/Greed]
+* ItemPool:
+	- GetBibleUpgrades(ItemPoolType)
+Fixes:
+* Planetarium chance stat HUD is now initialized properly on save/continue
+* Fix previously incorrect BlendType enums (ADDITIVE -> CONSTANT, MULTIPLICATIVE -> ADDITIVE)
+* Fix ItemPool:GetPillColor not checking all identified effects
+* Fix potential buffer overflow in ItemPool:UnidentifyPill
+/newline/
+v1.0.7c - 
+Additions:
+* Options.StatHUDPlanetarum
+Fixes:
+* Fixed a bug where sounds were duplicated if MC_POST_SFX_PLAY was in use
+/newline/
+v1.0.7b - 
+Additions:
+* Add an option to show Planetarium spawn chance in the stat HUD
+* BlendMode's variables are now RGBSourceFactor, RGBDestinationFactor, AlphaSourceFactor, AlphaDestinationFactor (previous names will still work for now)
+* Added BlendFactor and BlendType enums for BlendMode
+Fixes:
+* Fix regression caused by Godhead + Tear Detonator fix that prevented the aura from damaging enemies
+* Fixed console wonkies involving input text edge detection and scaling
+* Fixed Game:ShowGenericLeaderboard method to throw back to main menu even if leaderboards are no longer displayed after new run/continue
+/newline/
 v1.0.7a - 
 Fixes:
 * Fixed an issue where a change in the build process resulted in the changelog being saved in UTF-16 LE format, breaking the changelog and several other REPENTOGON menu features

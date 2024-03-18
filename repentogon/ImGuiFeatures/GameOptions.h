@@ -277,7 +277,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_BETTER_VOID_GEN, &repentogonOptions.betterVoidGeneration);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_BETTER_VOID_GEN_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.betterVoidGeneration, true);
+                        AddResetButton(++resetCounter, repentogonOptions.betterVoidGeneration, false);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_HUSH_PANIC_FIX, &repentogonOptions.hushPanicStateFix);
                         ImGui::SameLine();
@@ -287,7 +287,12 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES, &repentogonOptions.keyMasterDealChance);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.keyMasterDealChance, true);
+                        AddResetButton(++resetCounter, repentogonOptions.keyMasterDealChance, false);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_STAT_HUD_PLANETARIUM, &repentogonOptions.statHUDPlanetarium);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_STAT_HUD_PLANETARIUM_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.statHUDPlanetarium, true);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_QUICKER_ROOM_CLEAR, &repentogonOptions.quickRoomClear);
                         ImGui::SameLine();

@@ -73,6 +73,9 @@ __thiscall bool Room::TrySpawnSpecialQuestDoor();
 "558bec6aff68????????64a1????????5081ecf8000000":
 __thiscall void Room::SaveState();
 
+"568b35????????578bf9833e0d":
+__thiscall uint32_t Room::GetBossVictoryJingle();
+
 "558bec83f905":
 static cleanup bool Room::ShouldSaveEntity(unsigned int Type<ecx>, unsigned int Variant<edx>, unsigned int SubType, unsigned int SpawnerType, bool Unk);
 

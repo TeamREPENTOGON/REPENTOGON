@@ -248,13 +248,7 @@ ModCallbacks.MC_POST_MINIMAP_UPDATE = 1478
 ModCallbacks.MC_PRE_MINIMAP_RENDER = 1479
 ModCallbacks.MC_POST_MINIMAP_RENDER = 1480
 
-local function AddEnumToNamespace(namespace, enums)
-	for k,v in pairs(enums) do
-		rawset(namespace, k, v)
-	end
-end
-
-AddHealthType={	
+AddHealthType = {
 	NONE	=	0,
 	RED		=	1<<0,
 	MAX		=	1<<1,
@@ -2530,11 +2524,31 @@ SpecialQuest = {
 	MINESHAFT = 2,
 }
 
-AddEnumToNamespace(BlendMode, {
-	ADD = 0,
+BlendFactor = {
+	ZERO = 0,
+	ONE = 1,
+	SRC_COLOR = 2,
+	ONE_MINUS_SRC_COLOR = 3,
+	DST_COLOR = 4,
+	ONE_MINUS_DST_COLOR = 5,
+	SRC_ALPHA = 6,
+	ONE_MINUS_SRC_ALPHA = 7,
+	DST_ALPHA = 8,
+	ONE_MINUS_DST_ALPHA = 9,
+	CONSTANT_COLOR = 10,
+	ONE_MINUS_CONSTANT_COLOR = 11,
+	CONSTANT_ALPHA = 12,
+	ONE_MINUS_CONSTANT_ALPHA = 13,
+	SRC_ALPHA_SATURATE = 14,
+}
+
+BlendType = {
+	CONSTANT = 0,
 	NORMAL = 1,
-	MULTIPLY = 2,
-})
+	ADDITIVE = 2,
+	MULTIPLICATIVE = 3,
+	OVERLAY = 4,
+}
 
 --deprecated enums
 

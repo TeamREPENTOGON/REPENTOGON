@@ -11,6 +11,9 @@ FuncSignature Signature_GameIsPaused = {
 	"xx?????xx",
 */
 
+"558bec6aff68????????64a1????????5081ecac000000":
+__thiscall void Game::RestoreState(GameState *gstate,bool loaded); //I think that 2nd param is if some stuff is already loaded or not, just a wild guess, take it with a grain of salt
+
 "83b9????????008b15":
 __thiscall bool Game::IsPaused();
 
@@ -234,6 +237,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	bool _isRerun : 0x1c31a0;
 	bool _isDebug : 0x1c31a1;
     Ambush _ambush : 0x1c31b8; // 0x1c31b8
+	DailyChallenge _dailyChallenge: 0x1c3204; // 0x1C3204
 	ScoreSheet _scoreSheet : 0x1c32b8; //
     uint32_t _difficulty : 0x243624; // 0x243624
 	bool _shouldLerpColorModState : 0x283b80; // 0x283b80
@@ -241,5 +245,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     vector_ErasedEntities _erasedEntities : 0x283c14; 
 	bool  _triggerWindowResize : 0x1c3154;
 	unsigned int _gameStateFlags : 0x1c316c;
+	int _donationModGreed : 0x1c318c;
+	int _donationModAngel : 0x1c3190;
 	float _lightningIntensity : 0x283c00;
 } : 0x285238;

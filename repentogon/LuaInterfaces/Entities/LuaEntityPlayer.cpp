@@ -1916,6 +1916,50 @@ LUA_FUNCTION(Lua_PlayerClearQueueItem) {
 	return 0;
 }
 
+const char* headAnims[4] = {
+	"HeadLeft",
+	"HeadUp",
+	"HeadRight",
+	"HeadDown",
+};
+
+LUA_FUNCTION(Lua_PlayerSetHeadDirection) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int direction = (int)luaL_checkinteger(L, 2);
+	int time = (int)luaL_checkinteger(L, 3);
+	bool force = lua::luaL_optboolean(L, 4, false);
+
+	if (direction < 0 || direction > 3) {
+		return luaL_argerror(L, 2, "Invalid Direction");
+	}
+
+	if (force || player->_headDirectionTime < 0) {
+		if (player->_headDirection != direction) {
+			player->_headDirection = direction;
+			player->_headAnim = headAnims[direction];
+		}
+		player->_headDirectionTime = time;
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetHeadDirectionLockTime) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_headDirectionTime);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetHeadDirectionLockTime) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int time = (int)luaL_checkinteger(L, 2);
+
+	player->_headDirectionTime = time;
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2103,6 +2147,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetGnawedLeafTimer", Lua_PlayerGetGnawedLeafTimer },
 		{ "SetGnawedLeafTimer", Lua_PlayerSetGnawedLeafTimer },
 		{ "ClearQueueItem", Lua_PlayerClearQueueItem },
+		{ "GetHeadDirectionLockTime", Lua_PlayerGetHeadDirectionLockTime },
+		{ "SetHeadDirectionLockTime", Lua_PlayerSetHeadDirectionLockTime },
+		{ "SetHeadDirection", Lua_PlayerSetHeadDirection },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

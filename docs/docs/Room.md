@@ -3,7 +3,6 @@ tags:
   - Class
 ---
 # Class "Room"
-
 ## Modified Functions
 
 ### GetBackdropType () {: aria-label='Functions' }
@@ -21,7 +20,6 @@ ___
 An `IgnoreStageType` parameter has been added to allow spawning the Mirror & Mineshaft door outside of `STAGETYPE_REPENTANCE` and `STAGETYPE_REPENTANCE_B` stages. Note that the `KNIFE_PUZZLE` [dimension](Level.md?#dimension-getdimension) must be set up properly for these doors not to crash on entry!
 
 ___
-
 ## Functions
 
 ### CanPickupGridEntity () {: aria-label='Functions' }

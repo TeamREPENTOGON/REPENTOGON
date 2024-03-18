@@ -64,3 +64,15 @@ HOOK_METHOD(Console, SubmitInput, (bool unk) -> void) {
 			game->End(1);
 	}
 }
+
+// Instruct the stat HUD to recalculate planetarium chance after every new level. Avoids running planetarium chance calculation and associated callbacks every frame
+HOOK_METHOD(Level, Init, () -> void) {
+	super();
+	int playerId = g_Game->GetHUD()->_statHUD.GetPlayerId(g_Game->_playerManager._playerList[0]);
+	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100,false); // TODO: enum
+};
+HOOK_METHOD(Game, RestoreState, (GameState* gstate, bool loaded) -> void) { //so it also runs on save/continue
+	super(gstate, loaded);
+	int playerId = g_Game->GetHUD()->_statHUD.GetPlayerId(g_Game->_playerManager._playerList[0]);
+	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100, false); // TODO: enum
+};

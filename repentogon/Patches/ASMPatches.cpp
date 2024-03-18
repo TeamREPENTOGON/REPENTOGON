@@ -12,6 +12,7 @@
 #include "ASMPatches/ASMLevel.h"
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
+#include "ASMPatches/ASMRender.h"
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMTweaks.h"
 
@@ -102,6 +103,7 @@ void PerformASMPatches() {
 	ASMPatchBlueWombCurse();
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
+	PatchDealRoomVariant();
 
 	// Menu
 	ASMPatchModsMenu();
@@ -118,6 +120,7 @@ void PerformASMPatches() {
 
 	// Render
 	LuaRender::PatchglDrawElements();
+	PatchStatHudPlanetariumChance();
 
 	// External
 	ASMPatchesForFamiliarCustomTags();

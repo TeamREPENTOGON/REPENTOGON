@@ -18,8 +18,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleFromList) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	if (!lua_istable(L, 2))
 	{
-		luaL_error(L, "Expected a table as second argument");
-		return 0;
+		return luaL_error(L, "Expected a table as second argument");
 	}
 
 	size_t length = (size_t)lua_rawlen(L, 2);
@@ -157,7 +156,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 		}
 	}
 	else {
-		luaL_error(L, "Invalid ItemPoolType");
+		return luaL_argerror(L, 2, "Invalid ItemPoolType");
 	}
 
 	return 1;
@@ -211,9 +210,11 @@ LUA_FUNCTION(Lua_ItemPoolGetNumAvailableTrinkets) {
 
 LUA_FUNCTION(Lua_ItemPoolUnidentifyPill) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	const int pillColor = (int)luaL_checkinteger(L, 2);
-	itemPool->_idendifiedPillEffects[pillColor & 0x7ff] = false;
-
+	const int pillColor = ((int)luaL_checkinteger(L, 2)) & 0x7ff;
+	if (pillColor >= 0 && pillColor <= 14) {
+		itemPool->_idendifiedPillEffects[pillColor] = false;
+	}
+	
 	return 0;
 }
 
@@ -221,7 +222,7 @@ LUA_FUNCTION(Lua_ItemPoolGetPillColor) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int pillEffect = (int)luaL_checkinteger(L, 2);
 
-	for (int i = 1; i < 14; i++) {
+	for (int i = 0; i < 15; i++) {
 		if (itemPool->_pillEffects[i] == pillEffect) {
 			lua_pushinteger(L, i);
 			return 1;
@@ -229,6 +230,19 @@ LUA_FUNCTION(Lua_ItemPoolGetPillColor) {
 	}
 
 	lua_pushinteger(L, -1);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemPoolGetBibleUpgrades) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	const unsigned int pool = (int)luaL_checkinteger(L, 2);
+
+	if (pool < 0 || pool > 30) {
+		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+	}
+
+	lua_pushinteger(L, itemPool->_pools[pool]._bibleUpgrade);
+
 	return 1;
 }
 
@@ -249,6 +263,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetNumAvailableTrinkets", Lua_ItemPoolGetNumAvailableTrinkets },
 		{ "UnidentifyPill", Lua_ItemPoolUnidentifyPill },
 		{ "GetPillColor", Lua_ItemPoolGetPillColor },
+		{ "GitBibleUpgrades", Lua_ItemPoolGetBibleUpgrades },
 
 		{ NULL, NULL }
 	};

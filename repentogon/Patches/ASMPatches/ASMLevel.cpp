@@ -141,3 +141,32 @@ void ASMPatchGenericIsAltPath(void* addr, int condJumpOffset, int jumpOffset) {
 void PatchSpecialQuest() {
 	ASMPatchTrySpawnSpecialQuestDoor();
 }
+
+const char* sigs[2] = {
+	"c74424??63000000c74424??00000000",
+	"6affff7424??8bd0"
+};
+
+void PatchDealRoomVariant() {
+	SigScan maxVariantScanner(sigs[0]); // maxVariant 0x63 (99)
+	SigScan subTypePushScanner(sigs[1]); // PUSH -0x1, PUSH dword ptr[ESP + subtype]
+	maxVariantScanner.Scan();
+	subTypePushScanner.Scan();
+	void* addrs[2] = { maxVariantScanner.GetAddress(), subTypePushScanner.GetAddress() };
+
+	printf("[REPENTOGON] Patching InitializeDevilAngelRoom max variant at %p\n", (char*)addrs[0] + 8);
+	ASMPatch patch1;
+	patch1.AddBytes("\xFF\xFF\xFF\xFF"); // -1
+	sASMPatcher.FlatPatch((char*)addrs[0] + 4, &patch1);
+
+	printf("[REPENTOGON] Patching InitializeDevilAngelRoom subtype push %p\n", (char*)addrs[1] + 2);
+	ASMPatch patch2;
+	patch2.AddBytes("\x83\x7c\x24\x28\x64") // cmp dword ptr ss:[EBP+0x28],0x64 (100)
+		.Push(-0x1) // mode
+		.AddBytes("\x75\x0a") // jne 0x0a
+		.Push(0x29a) // 666
+		.AddRelativeJump((char*)addrs[1] + 0x6)
+		.AddBytes("\xFF\x74\x24\x28") // push dword ptr ss:[EBP+0x28] (subtype, JNE skips here)
+		.AddRelativeJump((char*)addrs[1] + 0x6);
+	sASMPatcher.PatchAt((char*)addrs[1], &patch2);
+}
