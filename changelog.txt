@@ -10,6 +10,7 @@ Additions:
 * ItemPool:
 	- GetBibleUpgrades(ItemPoolType)
 Fixes:
+* Fixed an issue with some Bethany challenges where you are supposed to start without book of virtues, starting with book of virtues
 * Planetarium chance stat HUD is now initialized properly on save/continue
 * Fix previously incorrect BlendType enums (ADDITIVE -> CONSTANT, MULTIPLICATIVE -> ADDITIVE)
 * Fix ItemPool:GetPillColor not checking all identified effects
