@@ -1,57 +1,102 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
-#include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GridEntityHurtDamage)
-{
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	Entity* entity = lua::GetUserdata<Entity*>(L, 2, lua::Metatables::ENTITY, "Entity");
-	int damage = (int)luaL_checkinteger(L, 3);
-	int damageFlags = (int)luaL_checkinteger(L, 4);
-	float unk3 = (float)luaL_checknumber(L, 5);
-	bool unk4 = lua::luaL_checkboolean(L, 6);
-	gridEnt->hurt_func(entity, damage, damageFlags, unk3, unk4);
-	return 0;
-}
+extern "C" {
+	bool L_GridEntity_Destroy(GridEntity* grid, bool Immediate) {
+		return grid->Destroy(Immediate);
+	}
+	
+	int L_GridEntity_GetGridIndex(GridEntity* grid) {
+		return grid->_gridIdx;
+	}
 
-LUA_FUNCTION(Lua_GridEntityHurtSurroundings)
-{
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	int damage = (int)luaL_checkinteger(L, 2);
-	int damageFlags = (int)luaL_checkinteger(L, 3);
-	float unk3 = (float)luaL_checknumber(L, 4);
-	bool unk4 = lua::luaL_checkboolean(L, 5);
-	gridEnt->hurt_surroundings(damage, damageFlags, unk3, unk4);
-	return 0;
-}
+	RNG* L_GridEntity_GetRNG(GridEntity* grid) {
+		return &grid->_rng;
+	}
 
-LUA_FUNCTION(Lua_GridEntityGetRenderPosition)
-{
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	//Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	Vector* buffer = new Vector(0, 0);
-	*toLua = *gridEnt->GetRenderPosition(buffer);
-	return 1;
-}
+	GridEntityDesc* L_GridEntity_GetDesc(GridEntity* grid) {
+		return &grid->_desc;
+	}
 
-LUA_FUNCTION(Lua_GridEntityIsBreakableRock)
-{
-	GridEntity* gridEnt = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	lua_pushboolean(L, gridEnt->IsBreakableRock());
-	return 1;
-}
+	void L_GridEntity_SetDesc(GridEntity* grid, GridEntityDesc* desc) {
+		grid->_desc = *desc;
+	}
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
-	super();
+	ANM2* L_GridEntity_GetSprite(GridEntity* grid) {
+		return &grid->_anm2;
+	}
 
-	lua::LuaStackProtector protector(_state);
-	luaL_Reg functions[] = {
-		{ "HurtDamage", Lua_GridEntityHurtDamage },
-		{ "HurtSurroundings", Lua_GridEntityHurtSurroundings },
-		{ "GetRenderPosition", Lua_GridEntityGetRenderPosition },
-		{ "IsBreakableRock", Lua_GridEntityIsBreakableRock },
-		{ NULL, NULL }
-	};
-	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY, functions);
+	int L_GridEntity_GetType(GridEntity* grid) {
+		return grid->_desc._type;
+	}
+
+	int L_GridEntity_GetVariant(GridEntity* grid) {
+		return grid->_desc._variant;
+	}
+
+	/*
+	bool L_GridEntity_Hurt(GridEntity* grid, int Damage) {
+		return grid->Hurt(Damage);
+	}
+	*/
+
+	void L_GridEntity_Init(GridEntity* grid, unsigned int Seed) {
+		grid->Init(Seed);
+	}
+
+	void L_GridEntity_PostInit(GridEntity* grid) {
+		grid->PostInit();
+	}
+
+	void L_GridEntity_Render(GridEntity* grid, Vector* offset) {
+		grid->Render(*offset);
+	}
+
+	void L_GridEntity_SetType(GridEntity* grid, int Type) {
+		grid->_desc._type = Type;
+	}
+
+	void L_GridEntity_SetVariant(GridEntity* grid, int Variant) {
+		grid->_desc._variant = Variant;
+	}
+
+	GridEntity_Door* L_GridEntity_ToDoor(GridEntity* grid) {
+		return grid->ToDoor();
+	}
+
+	/*
+	void L_GridEntity_Update(GridEntity* grid) {
+		grid->Update();
+	}
+	*/
+
+	int L_GridEntity_GetCollisionClass(GridEntity* grid) {
+		return grid->_collisionClass;
+	}
+
+	void L_GridEntity_GetCollisionClass(GridEntity* grid, int value) {
+		grid->_collisionClass = value;
+	}
+
+	Vector* L_GridEntity_GetPosition(GridEntity* grid) {
+		Vector buffer;
+		grid->GetPosition(&buffer);
+		return &buffer;
+	}
+
+	int L_GridEntity_GetState(GridEntity* grid) {
+		return grid->_desc._state;
+	}
+
+	void L_GridEntity_SetState(GridEntity* grid, int value) {
+		grid->_desc._state = value;
+	}
+
+	int L_GridEntity_GetVarData(GridEntity* grid) {
+		return grid->_desc._varData;
+	}
+
+	void L_GridEntity_SetVarData(GridEntity* grid, int value) {
+		grid->_desc._varData = value;
+	}
 }

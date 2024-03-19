@@ -13,6 +13,9 @@ __thiscall void GridEntity::hurt_surroundings(int Damage, unsigned long long Dam
 "558bec83ec088b41":
 __thiscall Vector* GridEntity::GetRenderPosition(Vector* buffer);
 
+"558bec8b41??8b0d":
+__thiscall Vector* GridEntity::GetPosition(Vector* buffer);
+
 "8b41??83f80274??83f80374??83f80474??83f80574??83f80674??83f81674??83f81874??83f81974??83f81a74??83f81b74??32c0":
 __thiscall bool GridEntity::IsBreakableRock();
 
@@ -56,6 +59,13 @@ struct GridEntity depends (GridEntityDesc) {
 	inline GridEntity_Wall* ToWall() { return FakeDowncast<GridEntity_Wall*>(15); }
 	inline GridEntity_Web* ToWeb() { return FakeDowncast<GridEntity_Web*>(10); }
 }} 
+	
+	GridEntityDesc _desc : 0x4;
+	unsigned int _gridIdx : 0x24;
+	unsigned int _spawnedFrame : 0x28;
+	RNG _rng : 0x2c;
+	unsigned int _collisionClass : 0x3c;
+	ANM2 _anm2 : 0x40;
 	
 	__vtable {
 		skip; // Free

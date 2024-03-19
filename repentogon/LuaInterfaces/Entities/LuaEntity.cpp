@@ -522,10 +522,12 @@ extern "C" {
 		return ent->_type;
 	}
 
+	/*
 	// CHAOS CHAOS
 	void L_Entity_SetType(Entity* ent, unsigned int type) {
 		ent->_type = type;
 	}
+	*/
 
 	unsigned int L_Entity_GetVariant(Entity* ent) {
 		return ent->_variant;
