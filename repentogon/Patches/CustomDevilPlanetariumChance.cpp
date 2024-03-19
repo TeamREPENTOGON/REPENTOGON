@@ -210,6 +210,23 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     if (g_Game->GetDailyChallenge()._id) {
         return originalChance;
     }
+
+    // ** VANILLA FIX **
+    // Always return 0.0 if planetariums are not unlocked
+    if (g_Manager->GetPersistentGameData()->Unlocked(406) == false) {
+        return 0.0f;
+    }
+
+    // ** VANILLA FIX **
+    // Always return 0.0 if treasure rooms cannot spawn in a challenge, as that makes planetariums unable to spawn as well
+    unsigned int challenge = g_Game->GetChallenge();
+    if (challenge != 0x0) {
+        ChallengeParam* chalpram = g_Manager->GetChallengeParams(challenge);
+        if (chalpram->_roomset.find(4) != chalpram->_roomset.end()) {
+            return 0.0f;
+        }
+    }
+
     lua_State* L = g_LuaEngine->_state;
 
     // My reimplementation *should* be accurate, but there's no reason to run it if mods aren't actively attempting to change values.

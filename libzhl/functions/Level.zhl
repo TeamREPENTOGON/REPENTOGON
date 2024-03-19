@@ -49,9 +49,6 @@ __thiscall bool Level::IsAltPath();
 "558bec83e4f883ec345356576aff":
 __thiscall void Level::InitializeDevilAngelRoom(bool ForceAngel, bool ForceDevil);
 
-"558bec83ec1cf30f1005":
-__thiscall float Level::GetPlanetariumChance();
-
 struct Level {
 	uint32_t _levelStateFlag : 0x1822c;
 } : 0x18230;
