@@ -371,13 +371,15 @@ std::vector<std::string> ParseCommand2(const std::string &command, int size = 0)
 }
 int hijackedcutscene = 0;
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
-	if (in.rfind("cutscene", 0) == 0) {
+	if (in.rfind("cutscene ", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommand2(in, 2);
-		int id = stoi(cmdlets[1]);
-		if (id > 26) {
-			hijackedcutscene = id;
-			super(std::string("cutscene 1"), out, player);
-			return;
+		if (cmdlets.size() > 1) {
+			int id = stoi(cmdlets[1]);
+			if (id > 26) {
+				hijackedcutscene = id;
+				super(std::string("cutscene 1"), out, player);
+				return;
+			}
 		}
 	}
 	super(in, out, player);

@@ -163,7 +163,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achievementID) -> bool) {
 }
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player) -> void) {
 	super(in,out, player);
-	if (in.find("lockachievement",15)) {
+	if (in.find("lockachievement ",15)) {
 		visibleinit = false;	
 	}
 }

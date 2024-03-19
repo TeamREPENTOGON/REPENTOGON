@@ -206,19 +206,21 @@ extern std::vector<std::string> ParseCommand2(const std::string& command, int si
 
 
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
-	if (in.rfind("stage", 0) == 0) {
+	if (in.rfind("stage ", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommand2(in, 2);
-		tuple<int, int> id = ConsoleStageIdToTuple(cmdlets[1]);
-		if (XMLStuff.StageData->bystagealt.count(id) == 0) { //stage 14 works without intervention, lol
-			super(in, out, player);
-			return;
-		}
-		else {
-			//super(in, out, player); //we still run it just in case I dunno, does nothing anyway
-			setstageoverloadid = get<0>(id);
-			setstageoverloadalt = get<1>(id);
-			g_Game->GetConsole()->RunCommand(string("stage 1"), out, player);
-			return;
+		if (cmdlets.size() > 1) {
+			tuple<int, int> id = ConsoleStageIdToTuple(cmdlets[1]);
+			if (XMLStuff.StageData->bystagealt.count(id) == 0) { //stage 14 works without intervention, lol
+				super(in, out, player);
+				return;
+			}
+			else {
+				//super(in, out, player); //we still run it just in case I dunno, does nothing anyway
+				setstageoverloadid = get<0>(id);
+				setstageoverloadalt = get<1>(id);
+				g_Game->GetConsole()->RunCommand(string("stage 1"), out, player);
+				return;
+			}
 		}
 	}
 	super(in, out, player);
