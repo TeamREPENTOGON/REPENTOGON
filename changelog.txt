@@ -12,6 +12,7 @@ Additions:
 Fixes:
 * Fixed an issue with some Bethany challenges where you are supposed to start without book of virtues, starting with book of virtues
 * Planetarium chance stat HUD is now initialized properly on save/continue
+* Planetarium chance will now always return 0.0 if a planetarium room cannot spawn in the run (i.e. if a challenge doesn't spawn treasure rooms, or if planetariums aren't unlocked)
 * Fix previously incorrect BlendType enums (ADDITIVE -> CONSTANT, MULTIPLICATIVE -> ADDITIVE)
 * Fix ItemPool:GetPillColor not checking all identified effects
 * Fix potential buffer overflow in ItemPool:UnidentifyPill
