@@ -69,10 +69,27 @@ HOOK_METHOD(Console, SubmitInput, (bool unk) -> void) {
 HOOK_METHOD(Level, Init, () -> void) {
 	super();
 	int playerId = g_Game->GetHUD()->_statHUD.GetPlayerId(g_Game->_playerManager._playerList[0]);
-	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100,false); // TODO: enum
+	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100, false); // TODO: enum
 };
 HOOK_METHOD(Game, RestoreState, (GameState* gstate, bool loaded) -> void) { //so it also runs on save/continue
 	super(gstate, loaded);
 	int playerId = g_Game->GetHUD()->_statHUD.GetPlayerId(g_Game->_playerManager._playerList[0]);
 	g_Game->GetHUD()->_statHUD.RecomputeStats(playerId, 0x100, false); // TODO: enum
 };
+
+// Have GetPlanetariumChance always return 0 if they cannot spawn (in challenges without treasure rooms and if its not unlocked)
+HOOK_METHOD(Level, GetPlanetariumChance, () -> float) {
+	if (g_Manager->GetPersistentGameData()->Unlocked(406) == false) {
+		return 0.0f;
+	}
+
+	unsigned int challenge = g_Game->GetChallenge();
+	if (challenge != 0x0) {
+		ChallengeParam* chalpram = g_Manager->GetChallengeParams(challenge);
+		if (chalpram->_roomset.find(4) != chalpram->_roomset.end()) {
+			return 0.0f;
+		}
+	}
+
+	return super();
+}
