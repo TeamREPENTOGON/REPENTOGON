@@ -10,6 +10,7 @@ Additions:
 * ItemPool:
 	- GetBibleUpgrades(ItemPoolType)
 Fixes:
+* Fixes a crash on MC_PRE_LEVEL_SELECT when a callback returned null
 * Fixed a crash that could happen when you ran stage and achievement-related commands with bad syntax (missing a space)
 * Fixed an issue with some Bethany challenges where you are supposed to start without book of virtues, starting with book of virtues
 * Planetarium chance stat HUD is now initialized properly on save/continue
