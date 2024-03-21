@@ -9,6 +9,8 @@ Additions:
 	- SetDonationMod[Angel/Greed]
 * ItemPool:
 	- GetBibleUpgrades(ItemPoolType)
+* Player:
+	- Added Player:AddNullItemEffect and Player:AddCollectibleEffect, both with the same params (int type,bool costume, int cooldown, bool additive)
 Fixes:
 * Fixes a crash on MC_PRE_LEVEL_SELECT when a callback returned null
 * Fixed a crash that could happen when you ran stage and achievement-related commands with bad syntax (missing a space)
