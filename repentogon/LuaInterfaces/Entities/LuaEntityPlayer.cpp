@@ -1876,6 +1876,72 @@ LUA_FUNCTION(Lua_PlayerVoidHasCollectible) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerAddColEffect) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int colid = (int)luaL_checkinteger(L, 2);
+	bool costume = lua::luaL_checkboolean(L, 3);
+	int cooldown = luaL_optinteger(L, 4, -6942069); //lol
+	bool additive = lua::luaL_optboolean(L, 5, true);
+	
+	TemporaryEffects* effs = &player->_temporaryeffects;
+	if (additive && (cooldown != -6942069)) {
+		TemporaryEffect* coleff = effs->GetCollectibleEffect(colid);
+		if (coleff && (coleff->_count > 0)) {
+			cooldown += coleff->_cooldown;
+		}
+		if (cooldown < 1) { cooldown = 1; }
+	}
+	effs->AddCollectibleEffect(colid, costume, 1);
+	if ((!additive) || (cooldown != -6942069)) {
+		effs->GetCollectibleEffect(colid)->_cooldown = cooldown;
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerAddNullEffect) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int colid = (int)luaL_checkinteger(L, 2);
+	bool costume = lua::luaL_checkboolean(L, 3);
+	int cooldown = luaL_optinteger(L, 4, -6942069); //lol
+	bool additive = lua::luaL_optboolean(L, 5, true);
+
+	TemporaryEffects* effs = &player->_temporaryeffects;
+	if (additive && (cooldown != -6942069)) {
+		TemporaryEffect* coleff = effs->GetNullEffect(colid);
+		if (coleff && (coleff->_count > 0)) {
+			cooldown += coleff->_cooldown;
+		}
+		if (cooldown < 1) { cooldown = 1; }
+	}
+	effs->AddNullEffect(colid, costume, 1);
+	if ((!additive) || (cooldown != -6942069)) {
+		effs->GetNullEffect(colid)->_cooldown = cooldown;
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerAddTrinketEffect) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int colid = (int)luaL_checkinteger(L, 2);
+	bool costume = lua::luaL_checkboolean(L, 3);
+	int cooldown = luaL_optinteger(L, 4, -6942069); //lol
+	bool additive = lua::luaL_optboolean(L, 5, true);
+
+	TemporaryEffects* effs = &player->_temporaryeffects;
+	if (additive && (cooldown != -6942069)) {
+		TemporaryEffect* coleff = effs->GetTrinketEffect(colid);
+		if (coleff && (coleff->_count > 0)) {
+			cooldown += coleff->_cooldown;
+		}
+		if (cooldown < 1) { cooldown = 1; }
+	}
+	effs->AddTrinketEffect(colid, costume, 1);
+	if ((!additive) || (cooldown != -6942069)) {
+		effs->GetTrinketEffect(colid)->_cooldown = cooldown;
+	}
+	return 1;
+}
+
 /*
 // doesn't seem to work
 LUA_FUNCTION(Lua_PlayerAttachMinecart) {
@@ -2150,6 +2216,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetHeadDirectionLockTime", Lua_PlayerGetHeadDirectionLockTime },
 		{ "SetHeadDirectionLockTime", Lua_PlayerSetHeadDirectionLockTime },
 		{ "SetHeadDirection", Lua_PlayerSetHeadDirection },
+		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
+		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
+		{ "AddNullItemEffect", Lua_PlayerAddNullEffect },
+		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothign, leaving it out of the docs
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
