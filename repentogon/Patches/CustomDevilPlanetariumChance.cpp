@@ -212,8 +212,10 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     }
 
     // ** VANILLA FIX **
-    // Always return 0.0 if planetariums are not unlocked
-    if (g_Manager->GetPersistentGameData()->Unlocked(406) == false) {
+    // Always return 0.0 if Telescope Lens is not available in a run 
+    // This seems to be a good check for every case any planetarium cannot spawn, besides the challenges case. It accounts for if planetariums are unlocked, and if the game is Greed Mode
+    // Using this method also allows mods to intuitively bypass it
+    if (g_Manager->GetItemConfig()->GetTrinket(152)->IsAvailableEx((152 & 255 ^ 1) * 2 - 3) == false) {
         return 0.0f;
     }
 
