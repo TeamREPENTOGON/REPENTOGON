@@ -21,6 +21,7 @@ Fixes:
 * Fix previously incorrect BlendType enums (ADDITIVE -> CONSTANT, MULTIPLICATIVE -> ADDITIVE)
 * Fix ItemPool:GetPillColor not checking all identified effects
 * Fix potential buffer overflow in ItemPool:UnidentifyPill
+* Fix the console crashing when running a command from history in some cases
 /newline/
 v1.0.7c - 
 Additions:
