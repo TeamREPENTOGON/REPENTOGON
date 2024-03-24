@@ -21,6 +21,6 @@ __thiscall TemporaryEffect* TemporaryEffects::GetTrinketEffect(int coltype);
 struct TemporaryEffects
 {
     vector_TemporaryEffect _effects : 0x4;
-    int _disabled: 0x14; // Should be bool though...
-    Entity_Player* _player : 0x18;
+    bool _disabled: 0x11;
+    Entity_Player* _player : 0x14;
 } : 0x18;
