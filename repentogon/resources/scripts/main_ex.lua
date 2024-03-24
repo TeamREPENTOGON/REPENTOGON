@@ -748,15 +748,6 @@ local CALLBACK_ID_TYPE = "Callback ID"
 local function checkArgType(index, val, expectedType, level)
 	level = (level or 2) + 1
 
-	if debug_getinfo(level+1).short_src == "resources/scripts/main.lua" then
-		local name = debug_getinfo(level+1).name
-		if name == "AddCallback" or name == "RemoveCallback" or name == "AddPriorityCallback" then
-			-- Throw the error up an extra level for those mod table wrappers, to show the actual call site.
-			-- IE, mod:AddCallback() / mod:AddPriorityCallback() / mod:RemoveCallback().
-			level = level + 1
-		end
-	end
-
 	local actualType = type(val)
 	local valid
 	if expectedType == CALLBACK_ID_TYPE then
@@ -766,6 +757,14 @@ local function checkArgType(index, val, expectedType, level)
 		valid = (actualType == expectedType)
 	end
 	if not valid then
+		if debug_getinfo(level+1).short_src == "resources/scripts/main.lua" then
+			local name = debug_getinfo(level+1).name
+			if name == "AddCallback" or name == "RemoveCallback" or name == "AddPriorityCallback" then
+				-- Throw the error up an extra level for those mod table wrappers, to show the actual call site.
+				-- IE, mod:AddCallback() / mod:AddPriorityCallback() / mod:RemoveCallback().
+				level = level + 1
+			end
+		end
 		error(string.format("Bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level).name, expectedType, actualType), level+1)
 	end
 end
@@ -788,9 +787,7 @@ end
 
 -- Returns an iterator function that takes advantage of how callbacks are now mapped by their optional params.
 -- Allows other code to easily iterate over callbacks using a param, in the correct execution order.
-rawset(Isaac, "GetCallbackIterator", function(callbackID, param)
-	checkCallbackIdArg(1, callbackID)
-
+local function GetCallbackIterator(callbackID, param)
 	local callbackData = Callbacks[callbackID]
 
 	if not callbackData then
@@ -827,6 +824,11 @@ rawset(Isaac, "GetCallbackIterator", function(callbackID, param)
 			return nextParamCallback
 		end
 	end
+end
+
+rawset(Isaac, "GetCallbackIterator", function(callbackID, param)
+	checkCallbackIdArg(1, callbackID)
+	return GetCallbackIterator(callbackID, param)
 end)
 
 -- Maintain legacy Isaac.GetCallbacks behaviour as it is accessible to mods and expects a table of ALL the callbacks, in execution order.
@@ -980,7 +982,7 @@ end
 function _RunCallback(callbackID, param, ...)
 	local ret
 
-	for callback in Isaac.GetCallbackIterator(callbackID, param) do
+	for callback in GetCallbackIterator(callbackID, param) do
 		ret = RunCallbackInternal(callbackID, callback, ...)
 		if ret ~= nil then
 			break
@@ -998,7 +1000,7 @@ end
 -- Additive callback behaviour (values returned from a callback replace the value of the first arg for later callbacks).
 -- Doesn't currently support an optional param (would need to update all callbacks that use this to add one).
 function _RunAdditiveCallback(callbackID, value, ...)
-	for callback in Isaac.GetCallbackIterator(callbackID) do
+	for callback in GetCallbackIterator(callbackID) do
 		local ret = RunCallbackInternal(callbackID, callback, value, ...)
 		if ret ~= nil then
 			value = ret
@@ -1009,7 +1011,7 @@ end
 
 -- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
 function _RunPreRenderCallback(callbackID, param, mt, value, ...)
-	for callback in Isaac.GetCallbackIterator(callbackID, param) do
+	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, mt, value, ...)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
@@ -1027,7 +1029,7 @@ end
 function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlags, source, damageCountdown)
 	local combinedRet
 
-	for callback in Isaac.GetCallbackIterator(callbackID, param) do
+	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, entity, damage, damageFlags, source, damageCountdown)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
