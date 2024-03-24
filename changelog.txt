@@ -1,5 +1,6 @@
-v1.0.Xx - 
+v1.0.8 - 
 Additions:
+* New general callback improvements to address some performance issues on some scenarios
 * Deal rooms can now generate variants above 100
 * Add new BlendTypes CONSTANT, OVERLAY
 * EntityPlayer:
