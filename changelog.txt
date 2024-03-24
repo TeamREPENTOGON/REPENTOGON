@@ -1,3 +1,7 @@
+v1.0.8a - 
+Fixes:
+* Fixed issues with EntityPlayer:GetSmeltedTrinkets() and EntityPlayer:GetFootprintColor()
+/newline/
 v1.0.8 - 
 Additions:
 * New general callback improvements to address some performance issues on some scenarios
