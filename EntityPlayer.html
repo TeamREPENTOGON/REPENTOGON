@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.14">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.10ba22f1.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.7e359304.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
@@ -3116,6 +3116,24 @@
   <a href="#addcacheflags" class="md-nav__link">
     <span class="md-ellipsis">
       AddCacheFlags ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addcollectibleeffect" class="md-nav__link">
+    <span class="md-ellipsis">
+      AddCollectibleEffect, ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addnullitemeffect" class="md-nav__link">
+    <span class="md-ellipsis">
+      AddNullItemEffect, ()
     </span>
   </a>
   
@@ -8105,6 +8123,24 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#addcollectibleeffect" class="md-nav__link">
+    <span class="md-ellipsis">
+      AddCollectibleEffect, ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#addnullitemeffect" class="md-nav__link">
+    <span class="md-ellipsis">
+      AddNullItemEffect, ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#cleardeadeyecharge" class="md-nav__link">
     <span class="md-ellipsis">
       ClearDeadEyeCharge ()
@@ -9860,6 +9896,14 @@
 <h3 aria-label="Modified Functions" id="addcacheflags">AddCacheFlags ()<a class="headerlink" href="#addcacheflags" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="void-addcacheflags-cacheflag-cacheflag-boolean-evaluateitems-false">void AddCacheFlags ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CacheFlag.html">CacheFlag</a> CacheFlag, boolean EvaluateItems = false )<a class="headerlink" href="#void-addcacheflags-cacheflag-cacheflag-boolean-evaluateitems-false" title="Permanent link">⚓︎</a></h4>
 <p>Now accepts an optional <code>bool</code> to determine if <a href="EntityPlayer.html">EntityPlayer</a>:EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.</p>
+<hr />
+<h3 aria-label="Modified Functions" id="addcollectibleeffect">AddCollectibleEffect, ()<a class="headerlink" href="#addcollectibleeffect" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Modified Functions" class="copyable" id="void-addcollectibleeffect-collectibletype-ctype-bool-applycostume-int-cooldown-vanillacd-bool-additive-true">void AddCollectibleEffect ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> ctype, bool applycostume, int cooldown = vanillacd, bool additive = true )<a class="headerlink" href="#void-addcollectibleeffect-collectibletype-ctype-bool-applycostume-int-cooldown-vanillacd-bool-additive-true" title="Permanent link">⚓︎</a></h4>
+<p>Shortcut of TemporaryEffects:AddCollectibleEffect with extra args to handle cooldown. The additive parameter determines if the cooldown should be added to the preexistent cooldown value or if it should be set for that value. You can use negative cooldown values with additive to reduce preexistent cooldown.</p>
+<hr />
+<h3 aria-label="Modified Functions" id="addnullitemeffect">AddNullItemEffect, ()<a class="headerlink" href="#addnullitemeffect" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Modified Functions" class="copyable" id="void-addnullitemeffect-int-nullitemid-bool-applycostume-int-cooldown-vanillacd-bool-additive-true">void AddNullItemEffect ( int nullItemid, bool applycostume, int cooldown = vanillacd, bool additive = true )<a class="headerlink" href="#void-addnullitemeffect-int-nullitemid-bool-applycostume-int-cooldown-vanillacd-bool-additive-true" title="Permanent link">⚓︎</a></h4>
+<p>Shortcut of TemporaryEffects:AddNullItemEffect with extra args to handle cooldown. The additive parameter determines if the cooldown should be added to the preexistent cooldown value or if it should be set for that value. You can use negative cooldown values with additive to reduce preexistent cooldown.</p>
 <hr />
 <h3 aria-label="Modified Functions" id="cleardeadeyecharge">ClearDeadEyeCharge ()<a class="headerlink" href="#cleardeadeyecharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="void-cleardeadeyecharge-boolean-force-false">void ClearDeadEyeCharge ( boolean Force = false )<a class="headerlink" href="#void-cleardeadeyecharge-boolean-force-false" title="Permanent link">⚓︎</a></h4>
