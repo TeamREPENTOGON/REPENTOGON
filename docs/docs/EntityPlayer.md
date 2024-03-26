@@ -344,7 +344,7 @@ If none of these exist, this returns `nil`.
 
 ___
 ### GetFootprintColor () {: aria-label='Functions' }
-#### [Color](Color.md) GetFootprintColor ( boolean LeftFootprint ) {: .copyable aria-label='Functions' }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetFootprintColor ( boolean LeftFootprint ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetGlitchBabySubType () {: aria-label='Functions' }
