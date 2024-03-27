@@ -785,6 +785,19 @@ local function CallbackComparator(a, b)
 	end
 end
 
+-- Normally if you execute a callback with -1 as the param, it will run ALL added callbacks regardless of their specified param.
+-- This behaviour exists for some vanilla callbacks that aren't intended to support optional params in the first place.
+-- However, it can cause problems if a callback that DOES use params can get executed with -1 as the param, such as the first glitch item ID.
+local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
+	[ModCallbacks.MC_PRE_USE_ITEM] = true,
+	[ModCallbacks.MC_USE_ITEM] = true,
+	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = true,
+	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = true,
+	[ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED] = true,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = true,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = true,
+}
+
 -- Returns an iterator function that takes advantage of how callbacks are now mapped by their optional params.
 -- Allows other code to easily iterate over callbacks using a param, in the correct execution order.
 local function GetCallbackIterator(callbackID, param)
@@ -793,6 +806,17 @@ local function GetCallbackIterator(callbackID, param)
 	if not callbackData then
 		-- No callbacks to run. Return an empty iterator.
 		return function() end
+	end
+
+	if param == -1 and not RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST[callbackID] then
+		-- If the callback is executed with -1 as the param, run ALL callbacks.
+		-- This is sometimes used by the game for callbacks not intended to support optional params.
+		local allCallbacks = callbackData.ALL
+		local i = 0
+		return function()
+			i = i + 1
+			return allCallbacks[i]
+		end
 	end
 
 	local commonCallbacksList = callbackData.COMMON
@@ -811,7 +835,7 @@ local function GetCallbackIterator(callbackID, param)
 	-- By comparing the Priority of the callbacks and the order they were added, we can iterate in the correct order.
 	local commonIndex = 1
 	local paramIndex = 1
-	
+
 	return function()
 		local nextCommonCallback = commonCallbacksList[commonIndex]
 		local nextParamCallback = paramCallbacksList[paramIndex]
@@ -898,7 +922,7 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 	AddToCallbackList(callbackData.ALL, newCallback)
 
 	-- Callbacks with -1 as their param behave the same as those with no param.
-	-- This is a legacy "feature" of the old implementation.
+	-- This aligns with the behaviour of the old implementation.
 	if param and param ~= -1 then
 		if not callbackData.PARAM[param] then
 			callbackData.PARAM[param] = {}
