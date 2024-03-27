@@ -1,3 +1,8 @@
+v1.0.8c - 
+Fixes:
+* Fixed adding a callback function with an optional param to a vanilla callback that does not support optional params leading to that function never being called, where it used to previously.
+* Fixed the result of Isaac.GetCallbacks() no longer having a metatable.
+/newline/
 v1.0.8b - 
 Fixes:
 * Fixed the MC_PLAYER_GET_HEALTH_TYPE callback causing the last heart to render underneath the first one.
