@@ -774,6 +774,25 @@ local function checkCallbackIdArg(index, val, level) checkArgType(index, val, CA
 
 local Callbacks = {}
 
+-- The new callback structure does not use this at all.
+-- However, it's kept for the legacy list of "ALL" callbacks to accomodate some niche custom callback usage.
+local legacyCallbackMeta = {
+	__matchParams = function(a, b)
+		return not a or not b or a == -1 or b == -1 or a == b
+	end
+}
+
+local function InitCallbackIfNeeded(callbackID)
+	if not Callbacks[callbackID] then
+		Callbacks[callbackID] = {
+			NUM_ADDED = 0,
+			ALL = setmetatable({}, legacyCallbackMeta),
+			COMMON = {},
+			PARAM = {},
+		}
+	end
+end
+
 -- Returns true if callback A should run before callback B.
 local function CallbackComparator(a, b)
 	if not a or not b then
@@ -856,8 +875,11 @@ rawset(Isaac, "GetCallbackIterator", function(callbackID, param)
 end)
 
 -- Maintain legacy Isaac.GetCallbacks behaviour as it is accessible to mods and expects a table of ALL the callbacks, in execution order.
-rawset(Isaac, "GetCallbacks", function(callbackID, unusedCreateIfMissingBool)
+rawset(Isaac, "GetCallbacks", function(callbackID, createIfMissing)
 	checkCallbackIdArg(1, callbackID)
+	if createIfMissing then
+		InitCallbackIfNeeded(callbackID)
+	end
 	return Callbacks[callbackID] and Callbacks[callbackID].ALL or {}
 end)
 
@@ -904,14 +926,7 @@ rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, par
 	checkNumberArg(3, priority)
 	checkFunctionArg(4, fn)
 
-	if not Callbacks[callbackID] then
-		Callbacks[callbackID] = {
-			NUM_ADDED = 0,
-			ALL = {},
-			COMMON = {},
-			PARAM = {},
-		}
-	end
+	InitCallbackIfNeeded(callbackID)
 
 	local callbackData = Callbacks[callbackID]
 	local wasEmpty = (#callbackData.ALL == 0)
