@@ -1,3 +1,9 @@
+v1.??? -
+Additions:
+* EntityPlayer:
+	- Get/SetBombPlaceDelay
+	- Get/SetBloodLustCounter
+/newline/
 v1.0.8c - 
 Fixes:
 * Fixed adding a callback function with an optional param to a vanilla callback that does not support optional params leading to that function never being called, where it used to previously.

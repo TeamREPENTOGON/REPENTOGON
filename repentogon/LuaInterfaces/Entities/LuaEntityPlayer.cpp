@@ -7,13 +7,13 @@
 
 /*
 
-		 .___.
-	 / /\ /\ \
-	||●  `\ ●||
-	 \   ⌓   /
-		/  ᴥ  \
-	 ||  _  ||
-		|_| |_|
+..........___.
+......./ /\ /\ \
+......||●  `\ ●||
+.......\   ⌓   /
+ ......./  ᴥ  \
+...... ||  _  ||
+........|_| |_|
 
 	 "code"
  (copycat of kilburn's ascii art of Isaac)
@@ -1976,6 +1976,31 @@ LUA_FUNCTION(Lua_PlayerSetGnawedLeafTimer) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetBloodLustCounter) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_bloodLustCounter);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetBloodLustCounter) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_bloodLustCounter = (short)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBombPlaceDelay) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_bombPlaceDelay);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetBombPlaceDelay) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_bombPlaceDelay = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+
 LUA_FUNCTION(Lua_PlayerClearQueueItem) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	player->ClearQueueItem();
@@ -2212,6 +2237,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetKeepersSackBonus", Lua_PlayerSetKeepersSackBonus },
 		{ "GetGnawedLeafTimer", Lua_PlayerGetGnawedLeafTimer },
 		{ "SetGnawedLeafTimer", Lua_PlayerSetGnawedLeafTimer },
+		{ "GetBloodLustCounter", Lua_PlayerGetBloodLustCounter },
+		{ "SetBloodLustCounter", Lua_PlayerSetBloodLustCounter },
+		{ "GetBombPlaceDelay", Lua_PlayerGetBombPlaceDelay },
+		{ "SetBombPlaceDelay", Lua_PlayerSetBombPlaceDelay },
 		{ "ClearQueueItem", Lua_PlayerClearQueueItem },
 		{ "GetHeadDirectionLockTime", Lua_PlayerGetHeadDirectionLockTime },
 		{ "SetHeadDirectionLockTime", Lua_PlayerSetHeadDirectionLockTime },
