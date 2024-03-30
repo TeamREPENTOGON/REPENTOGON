@@ -81,23 +81,16 @@ namespace PlayerCollBlock {
 	};
 }
 
-//HOOK_METHOD(Entity_Player, Remove, ()->void) {
-//	CollBlockList[this->_playerIndex] = {};		//cleaning pl data
-//	super();
-//}
-HOOK_METHOD(Entity_Player, ResetPlayer, ()->void) {
-	CollBlockList[this->_playerIndex] = {};		//cleaning pl data
+HOOK_METHOD(Entity, Remove, ()->void) {
+	if (this && this->_type == 1) {
+		CollBlockList[ ((Entity_Player*)this) -> _playerIndex ] = {};		//cleaning pl data
+	}
 	super();
 }
 
-HOOK_METHOD(PlayerManager, RemoveCoPlayer, (Entity_Player* player)->void) {
-	CollBlockList[player->_playerIndex] = {};		//cleaning pl data
-	super(player);
-}
-
 HOOK_METHOD(Game, Exit, (bool ShouldSave)->void) {
+	CollBlockList = {};
 	super(ShouldSave);
-	CollBlockList.clear();
 }
 
 LUA_FUNCTION(Lua_HasCollectible) {
