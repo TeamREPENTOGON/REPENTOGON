@@ -11,6 +11,9 @@ __thiscall bool InputManager::IsButtonPressed(int btn,int controllerid,int unk);
 "558bec53568bf18b46":
 __thiscall int InputManager::GetDeviceType(int controlleridx);
 
+"558becff75??e8????????85c074??8b108bc8ff52??5dc2040033c05dc20400558becff750ce8b5":
+__thiscall char* InputManager::GetDeviceNameByIdx(int cidx);
+
 struct InputManager {
 };
 
