@@ -3,6 +3,14 @@ Additions:
 * EntityPlayer:
 	- Get/SetBombPlaceDelay
 	- Get/SetBloodLustCounter
+	- New functionality for blocking items:
+		BlockCollectible(int itemID)
+		UnblockCollectible(int itemID)
+		IsCollectibleBlocked(int itemID)
+	-Change to HasCollectible and GetCollectibleNum:
+		new optional boolean (IgnoreBlock), ignores collectible block when set to true
+* Input:
+	- GetDeviceNameByIdx
 /newline/
 v1.0.8c - 
 Fixes:

@@ -565,7 +565,6 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
     }}
 
-	
 	ANM2 _heldSprite : 0xf48;
 	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1170;
 	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
@@ -592,6 +591,8 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	uint32_t _cacheFlags : 0x14b8;
 	ActiveItemDesc _activeDesc[4] : 0x14c4;
 	int _bombPlaceDelay : 0x1544;
+	int _controllerIndex : 0x154c;
+	int _playerIndex : 0x1550;
 	int _moveDirection : 0x1558;
 	int _headDirection: 0x155c;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
@@ -615,6 +616,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	std_vector_int _unkcolentry: 0x15f0;
 	uint32_t _urnSouls: 0x1cf0;
 	TemporaryEffects _temporaryeffects : 0x1450;
+	Entity_Player* _twinPlayer : 0x1d80;
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":

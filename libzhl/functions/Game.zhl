@@ -107,6 +107,9 @@ __thiscall void Game::FadeOut(float Speed, int FadeoutTarget);
 "558bec83e4f851a1????????566aff":
 __thiscall void Game::MoveToRandomRoom(bool iAmErrorRoom, int Seed, Entity_Player* player);
 
+"558bec83ec0853568b35????????578975":
+__stdcall void Game::Exit(bool ShouldSave);
+
 
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;

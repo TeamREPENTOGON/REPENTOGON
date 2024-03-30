@@ -20,6 +20,145 @@
 */
 
 std::map<int, int> fakeItems;
+std::unordered_map<int, std::unordered_map<int, bool>> CollBlockList;
+
+HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->bool) {
+	auto& itemlist = CollBlockList;
+	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
+		if (auto searchInner = itemlist[this->_playerIndex].find(type); searchInner != itemlist[this->_playerIndex].end()) {
+			if (itemlist[this->_playerIndex][type] == 0) {
+				return super(type, ignoreModifiers);
+			}
+			return false;
+		};
+	};
+	return super(type, ignoreModifiers);
+}
+
+HOOK_METHOD(Entity_Player, GetCollectibleNum, (int collectibleID, bool onlyCountTrueItems)->int) {
+	auto& itemlist = CollBlockList;
+	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
+		if (auto searchInner = itemlist[this->_playerIndex].find(collectibleID); searchInner != itemlist[this->_playerIndex].end()) {
+			if (itemlist[this->_playerIndex][collectibleID] == 0) {
+				return super(collectibleID, onlyCountTrueItems);
+			}
+			return 0;
+		};
+	};
+	return super(collectibleID, onlyCountTrueItems);
+}
+
+namespace PlayerCollBlock {
+	void BlockCollectible(Entity_Player* player, int itemID) {
+		auto& itemlist = CollBlockList;
+		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
+		}
+		else {
+			itemlist[player->_playerIndex] = {};
+		}
+		itemlist[player->_playerIndex].insert_or_assign(itemID, true);
+	};
+	void UnblockCollectible(Entity_Player* player, int itemID) {
+		auto& itemlist = CollBlockList;
+		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
+		}
+		else {
+			itemlist[player->_playerIndex] = {};
+		}
+		itemlist[player->_playerIndex].insert_or_assign(itemID, false);
+	};
+	bool IsCollectibleBlocked(Entity_Player* player, int itemID) {
+		auto& itemlist = CollBlockList;
+		bool outbool = false;
+		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
+			if (auto searchInner = itemlist[player->_playerIndex].find(itemID); searchInner != itemlist[player->_playerIndex].end()) {
+				outbool = itemlist[player->_playerIndex][itemID];
+				goto end;
+			};
+		};
+	end:
+		return outbool;
+	};
+}
+
+//HOOK_METHOD(Entity_Player, Remove, ()->void) {
+//	CollBlockList[this->_playerIndex] = {};		//cleaning pl data
+//	super();
+//}
+HOOK_METHOD(Entity_Player, ResetPlayer, ()->void) {
+	CollBlockList[this->_playerIndex] = {};		//cleaning pl data
+	super();
+}
+
+HOOK_METHOD(PlayerManager, RemoveCoPlayer, (Entity_Player* player)->void) {
+	CollBlockList[player->_playerIndex] = {};		//cleaning pl data
+	super(player);
+}
+
+HOOK_METHOD(Game, Exit, (bool ShouldSave)->void) {
+	super(ShouldSave);
+	CollBlockList.clear();
+}
+
+LUA_FUNCTION(Lua_HasCollectible) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	bool ignoreModifiers = (bool)lua::luaL_optboolean(L, 3, false);
+	bool ignoreBlock = (bool)lua::luaL_optboolean(L, 4, false);
+	bool outbool = false;
+	bool blockState = PlayerCollBlock::IsCollectibleBlocked(player,itemID);
+	if (ignoreBlock && blockState) {
+		PlayerCollBlock::UnblockCollectible(player, itemID);
+	}
+	outbool = player->HasCollectible(itemID,ignoreModifiers);
+	if (ignoreBlock && blockState) {
+		PlayerCollBlock::BlockCollectible(player, itemID);
+	}
+	lua_pushboolean(L, outbool);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetCollectibleNum) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	bool onlyCountTrueItems = (bool)lua::luaL_optboolean(L, 3, false);
+	bool ignoreBlock = (bool)lua::luaL_optboolean(L, 4, false);
+	int outnum = 0;
+	bool blockState = PlayerCollBlock::IsCollectibleBlocked(player, itemID);
+	if (ignoreBlock && blockState) {
+		PlayerCollBlock::UnblockCollectible(player, itemID);
+	}
+	outnum = player->GetCollectibleNum(itemID, onlyCountTrueItems);
+	if (ignoreBlock && blockState) {
+		PlayerCollBlock::BlockCollectible(player, itemID);
+	}
+	lua_pushinteger(L, outnum);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BlockCollectible) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	PlayerCollBlock::BlockCollectible(player, itemID);
+	lua_pushnil(L);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_UnblockCollectible) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	PlayerCollBlock::UnblockCollectible(player, itemID);
+	lua_pushnil(L);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsCollectibleBlocked) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	bool outbool = PlayerCollBlock::IsCollectibleBlocked(player, itemID);
+	lua_pushboolean(L, outbool);	//push false if entry is not found
+	return 1;
+}
 
 LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, but magically vanished some point after 1.7.8.
 {
@@ -2057,6 +2196,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "HasCollectible",Lua_HasCollectible },
+		{ "GetCollectibleNum",Lua_GetCollectibleNum },
 		{ "GetMultiShotPositionVelocity", Lua_GetMultiShotPositionVelocity },
 		{ "InitTwin", Lua_InitTwin },
 		{ "InitPostLevelInitStats", Lua_InitPostLevelInitStats },
@@ -2248,6 +2389,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
 		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
 		{ "AddNullItemEffect", Lua_PlayerAddNullEffect },
+		{ "BlockCollectible", Lua_BlockCollectible },
+		{ "UnblockCollectible", Lua_UnblockCollectible },
+		{ "IsCollectibleBlocked", Lua_IsCollectibleBlocked },
 		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothign, leaving it out of the docs
 		{ NULL, NULL }
 	};
