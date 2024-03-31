@@ -178,6 +178,18 @@ LUA_FUNCTION(Lua_CreateTimer) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_StartNewGame) {
+	int pltype = (int)luaL_optinteger(L, 1, 0);
+	int challenge = (int)luaL_optinteger(L, 2, 0);
+	unsigned int difficulty = (int)luaL_optinteger(L, 3, 0);
+	unsigned int seed = (int)luaL_optinteger(L, 4, 0);
+	Seeds seedobj;	//am avoiding heap corruption this way
+	seedobj.constructor();	
+	seedobj.set_start_seed(seed);
+	g_Manager->StartNewGame(pltype, challenge, seedobj, difficulty);
+	return 0;
+}
+
 LUA_FUNCTION(Lua_DrawLine) {
 	Vector* pos1 = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* pos2 = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
@@ -589,6 +601,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdByName", Lua_GetBossColorIdxByName); //alias for musclememory
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartNewGame", Lua_StartNewGame);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

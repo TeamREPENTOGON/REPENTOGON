@@ -231,6 +231,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     RoomConfigHolder _roomConfigs : 0x1879c; // 0x1879C
 	ItemPool _itemPool : 0x1A5CC;
     PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
+	Seeds _seedEffects : 0x1bb04;	// 0x1BB04
     Console _console : 0x1bb60; // 0x1BB60
     ItemOverlay _itemOverlay : 0x1bcc0; // 0x1BCC0
 	Leaderboard _leaderboard : 0x3d5f0; // 0x3d5f0
