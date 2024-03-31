@@ -3,7 +3,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-
 LUA_FUNCTION(Lua_InputGetDeviceNameByIdx)
 {
 	int cidx=(int)luaL_checkinteger(L, 1);

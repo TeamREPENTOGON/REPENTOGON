@@ -12,6 +12,7 @@
 #include "../Patches/XMLData.h"
 #include "Level.h"
 #include "../LuaInit.h"
+#include "../Patches/MainMenuBlock.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
@@ -158,16 +159,26 @@ HOOK_METHOD(HUD, Render, () -> void) {
 
 //(POST_)HUD_RENDER callbacks end
 
+
 //Character menu render Callback(id:1023)
 HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	super();
 	const int callbackid = 1023;
+	bool menublock_prevstate=0;
+	if (MainMenuInputBlock::_enabled) {
+		menublock_prevstate = 1;
+		MainMenuInputBlock::_enabled = 0;
+	}
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid).call(1);
+	}
+	if (menublock_prevstate) {
+		MainMenuInputBlock::_enabled = menublock_prevstate;
+		menublock_prevstate = 0;
 	}
 }
 

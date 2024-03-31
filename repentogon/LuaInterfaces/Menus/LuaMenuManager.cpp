@@ -1,6 +1,8 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/MainMenuBlock.h"
+
 
 LUA_FUNCTION(Lua_WorldToMenuPosition)
 {
@@ -214,6 +216,43 @@ LUA_FUNCTION(Lua_MenuSetViewPosition)
 	return 0;
 }
 
+HOOK_METHOD(InputManager, IsActionTriggered, (int btn, int controllerid, int unk)->bool) {
+	if (MainMenuInputBlock::_enabled==true) {
+		return (MainMenuInputBlock::_inputmask & (1 << btn)) && super(btn, controllerid, unk);
+	}
+	else {
+		return super(btn, controllerid, unk);
+	}
+};
+HOOK_METHOD(InputManager, IsActionPressed, (int btn, int controllerid, int unk)->bool) {
+	if (MainMenuInputBlock::_enabled==true) {
+		return (MainMenuInputBlock::_inputmask & (1 << btn)) && super(btn, controllerid, unk);
+	}
+	else{
+		return super(btn, controllerid, unk);
+	}
+};
+
+HOOK_METHOD(Game, Start, (int playertype, int challenge, Seeds seeds, unsigned int difficulty)->void) {
+	MainMenuInputBlock::ClearInputMask();
+	super(playertype, challenge, seeds, difficulty);
+};
+
+LUA_FUNCTION(Lua_SetInputMask) {
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
+	unsigned int mask = luaL_checkinteger(L, 1);
+	MainMenuInputBlock::_enabled = true;
+	MainMenuInputBlock::SetInputMask(mask);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetInputMask) {
+	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
+	lua_pushinteger(L,MainMenuInputBlock::GetInputMask());
+	return 1;
+}
+
+
 static void RegisterMenuManager(lua_State* L)
 {
 	lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "WorldToMenuPosition", Lua_WorldToMenuPosition);
@@ -232,6 +271,8 @@ static void RegisterMenuManager(lua_State* L)
 
 	lua::TableAssoc(L, "GetViewPosition", Lua_MenuGetViewPosition);
 	lua::TableAssoc(L, "SetViewPosition", Lua_MenuSetViewPosition);
+	lua::TableAssoc(L, "GetInputMask", Lua_GetInputMask);
+	lua::TableAssoc(L, "SetInputMask", Lua_SetInputMask);
 
 	lua_setglobal(L, lua::metatables::MenuManagerMT);
 }

@@ -10,6 +10,20 @@ LUA_FUNCTION(Lua_GameAchievementUnlocksDisallowed)
 	return 1;
 }
 
+//LUA_FUNCTION(Lua_GameStart) {
+//	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+//	int pltype = (int)luaL_optinteger(L, 2, 0);
+//	int challenge = (int)luaL_optinteger(L, 3, 0);
+//	int runseed = (int)luaL_optinteger(L, 4, 1);
+//	Seeds a;		//needs constructor exposed in order not to mess up!
+//	a.constructor();
+//	a._gameStartSeed = runseed;
+//	unsigned int difficulty = (int)luaL_optinteger(L, 5, 0);
+//	game->Start(pltype, challenge, a, difficulty);
+//	lua_pushnil(L);
+//	return 1;
+//}
+
 LUA_FUNCTION(Lua_GameIsPauseMenuOpen)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
@@ -288,6 +302,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsGreedBoss", Lua_GameIsGreedBoss},
 		{ "IsGreedFinalBoss", Lua_GameIsGreedFinalBoss},
 		{ "StartStageTransition", lua_GameStartStageTransition},
+		//{ "Start", Lua_GameStart},
 		{ "IsErased", lua_GameIsErased},
 		{ "GetCurrentColorModifier", Lua_GameGetCurrentColorModifier},
 		{ "GetTargetColorModifier", Lua_GameGetTargetColorModifier},

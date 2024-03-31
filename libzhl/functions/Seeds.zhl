@@ -1,6 +1,9 @@
 "558bec51568d45??8bf1":
 static int Seeds::String2Seed(std_string *str);
 
+"558bec51f30f7e05????????a1????????53":
+__fastcall void Seeds::constructor();
+
 // sorry for the mess, this is a direct ghidra export :(
 struct Seeds depends (RNG,ANM2){
     bool _isCustomRun : 0x0;
