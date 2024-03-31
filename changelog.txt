@@ -7,12 +7,12 @@ Additions:
 		BlockCollectible(int itemID)
 		UnblockCollectible(int itemID)
 		IsCollectibleBlocked(int itemID)
-	-Change to HasCollectible and GetCollectibleNum:
+	- Change to HasCollectible and GetCollectibleNum:
 		new optional boolean (IgnoreBlock), ignores collectible block when set to true
 * Input:
 	- GetDeviceNameByIdx
 * MenuManager:
-	- SetInputMask(int mask) for use with the new ButtonActionBitwise enum, selectively allows the game's menu read certain inputs, useful for custom menus
+	- SetInputMask(int mask) for use with the new ButtonActionBitwise enum, selectively allows/disallows the game's menu read certain inputs, useful for custom menus
 	- GetInputMask()
 * Isaac:
 	- StartNewGame(int playertype, int challenge, int difficulty, int seed), allows starting the game from within the main menu

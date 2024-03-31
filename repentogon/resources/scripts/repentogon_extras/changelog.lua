@@ -107,6 +107,16 @@ local MaxPollCIdx = 3
 
 local UseFade = false
 
+local function UpdateMaxPollCIdx()
+    local str=Input.GetDeviceNameByIdx(0)
+    local i=0
+    while (str~=nil) do
+        i=i+1
+        str=Input.GetDeviceNameByIdx(i)
+    end
+    MaxPollCIdx=i
+end
+
 local function IsActionTriggeredAll(action)
     for i = 0, MaxPollCIdx do
         if Input.IsActionTriggered(action, i) then
@@ -140,6 +150,7 @@ function ChangeLog.MenuRender()
     local ActiveMenu=MenuManager:GetActiveMenu()
 
     if ActiveMenu == _MainMenuType.TITLE or ActiveMenu==0 then    --reserve menu id 0 for changelog to prevent inputs, mdoders: please do not use that specific id, you already have almost 2^32 of them!...
+        UpdateMaxPollCIdx()
         if IsActionTriggeredAll(_ButtonAction.ACTION_MAP) then
             Cl.CurrentState = not Cl.CurrentState
 

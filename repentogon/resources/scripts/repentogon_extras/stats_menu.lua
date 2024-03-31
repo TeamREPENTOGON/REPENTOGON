@@ -125,6 +125,15 @@ font:Load("font/teammeatfont10.fnt")
 local fontcolor = KColor(0.20, 0.15, 0.1, 1)
 
 local MaxPollCIdx = 3
+local function UpdateMaxPollCIdx()
+    local str=Input.GetDeviceNameByIdx(0)
+    local i=0
+    while (str~=nil) do
+        i=i+1
+        str=Input.GetDeviceNameByIdx(i)
+    end
+    MaxPollCIdx=i
+end
 local function IsActionTriggeredAll(action)
     for i = 0, MaxPollCIdx do
         if Input.IsActionTriggered(action, i) then
@@ -164,6 +173,7 @@ local function RenderExtraStats()
     end
     if MenuManager:GetActiveMenu() == _MainMenuType.SAVES then StatsMenuRep.ScheduleRefresh = true end
     if MenuManager:GetActiveMenu() == _MainMenuType.STATS then
+        UpdateMaxPollCIdx()
         if StatsMenuRep.ScheduleRefresh then
             local gameData = Isaac.GetPersistentGameData()
             MaxCategoryID = #StatsMenuRep.Stats + 1
