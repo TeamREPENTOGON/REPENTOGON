@@ -28,7 +28,7 @@ bool IsFloorUnlocked(unsigned int stageId) {
 	return true;
 }
 // The void now draws from all floors
-bool __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomConfig*>* rooms, int type, int shape, int minVariant,
+bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_Room*>* rooms, int type, int shape, int minVariant,
 	int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) {
 	// we want to skip all this and let the game handle things if we're generating death certificate
 	if (g_Game->GetDimension() != 2) {
@@ -45,7 +45,7 @@ bool __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomC
 			/* if (i == 36) {
 
 			} */
-			std::vector<RoomConfig*> stageRooms = _this->GetRooms(i, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
+			std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(i, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
 			rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
 		}
 		return true;

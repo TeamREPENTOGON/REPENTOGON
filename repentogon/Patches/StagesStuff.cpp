@@ -36,17 +36,17 @@ int bcknstage = -1;
 string bcknname;
 HOOK_METHOD(Level, Init, ()-> void) {
 	if (bckmmusic > -1) {
-		g_Game->_roomConfigs.configs[bckmstage].music = bckmmusic;
+		g_Game->_roomConfig._stages[bckmstage]._musicId = bckmmusic;
 		bckmstage = -1;
 		bckmmusic = -1;
 	}
 	if (bckbbackdrop > -1) {
-		g_Game->_roomConfigs.configs[bckbstage].backdrop = bckbbackdrop;
+		g_Game->_roomConfig._stages[bckbstage]._backdrop = bckbbackdrop;
 		bckbstage = -1;
 		bckbbackdrop = -1;
 	}
 	if (bcknstage > -1) {
-		g_Game->_roomConfigs.configs[bcknstage].stageName = bcknname;
+		g_Game->_roomConfig._stages[bcknstage]._displayName = bcknname;
 		bcknstage = -1;
 	}
 	super();
@@ -56,35 +56,35 @@ void SetCurrentFloorMusic(int etype) {
 	int currstageid = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
 	if (bckmmusic == -1) {
 		bckmstage = currstageid;
-		bckmmusic = g_Game->_roomConfigs.configs[currstageid].music;
+		bckmmusic = g_Game->_roomConfig._stages[currstageid]._musicId;
 	}
-	if (g_Manager->_musicmanager._currentId == g_Game->_roomConfigs.configs[currstageid].music) {
+	if (g_Manager->_musicmanager._currentId == g_Game->_roomConfig._stages[currstageid]._musicId) {
 		g_Manager->_musicmanager.Play(etype, 0.1);
 		g_Manager->_musicmanager.UpdateVolume();
 	}
-	g_Game->_roomConfigs.configs[currstageid].music = etype;
+	g_Game->_roomConfig._stages[currstageid]._musicId = etype;
 }
 
 void SetCurrentFloorBackdrop(int etype) {
 	int currstageid = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
 	if (bckbbackdrop == -1) {
 		bckbstage = currstageid;
-		bckbbackdrop = g_Game->_roomConfigs.configs[currstageid].backdrop;
+		bckbbackdrop = g_Game->_roomConfig._stages[currstageid]._backdrop;
 	}
 	Backdrop* bck = g_Game->_room->GetBackdrop();
-	if (bck->backdropId == g_Game->_roomConfigs.configs[currstageid].backdrop) {
+	if (bck->backdropId == g_Game->_roomConfig._stages[currstageid]._backdrop) {
 		bck->Init(etype, true);
 	}
-	g_Game->_roomConfigs.configs[currstageid].backdrop = etype;
+	g_Game->_roomConfig._stages[currstageid]._backdrop = etype;
 }
 
 void SetCurrentFloorName(string etype) {
 	int currstageid = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
 	if (bcknstage == -1) {
 		bcknstage = currstageid;
-		bcknname = g_Game->_roomConfigs.configs[currstageid].stageName;
+		bcknname = g_Game->_roomConfig._stages[currstageid]._displayName;
 	}
-	g_Game->_roomConfigs.configs[currstageid].stageName = etype;
+	g_Game->_roomConfig._stages[currstageid]._displayName = etype;
 }
 
 

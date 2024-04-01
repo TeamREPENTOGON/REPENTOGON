@@ -17,7 +17,7 @@ bool Room::IsValidRailType(lua_Integer rail) {
 	}
 }
 
-bool RoomConfig::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
+bool RoomConfig_Room::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
 	if (index < 0) {
 		return false;
 	}
@@ -92,7 +92,7 @@ bool RoomConfig::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
 	}
 }
 
-bool RoomConfig::IsAllowedGridIndex(lua_Integer index) const {
+bool RoomConfig_Room::IsAllowedGridIndex(lua_Integer index) const {
 	switch (Shape) {
 	case ROOMSHAPE_1x1:
 	case ROOMSHAPE_IH:

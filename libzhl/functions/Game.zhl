@@ -114,7 +114,7 @@ __stdcall void Game::Exit(bool ShouldSave);
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt) { {{
 	Game()
 	{
 		this->constructor();
@@ -142,8 +142,6 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	inline int GetGreedModeWave() { return *(int*)((char*)this + 0x181C4); }
 	
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
-		
-	inline RoomConfigHolder* GetRoomConfigHolder() { return (RoomConfigHolder*)((char*)this + 0x1879C); }
 	
 	inline RoomConfig* GetRoomConfig() { return (RoomConfig*)((char*)this + 0x1879C); }
 	
@@ -228,7 +226,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     uint32_t _greedModeWave : 0x181c4; // 0x181C4
     unsigned int _stateFlags : 0x1822c; // 0x1822C
     uint32_t _greedModeTreasureRoomIdx : 0x18200; // 0x18200
-    RoomConfigHolder _roomConfigs : 0x1879c; // 0x1879C
+    RoomConfig _roomConfig : 0x1879c; // 0x1879C
 	ItemPool _itemPool : 0x1A5CC;
     PlayerManager _playerManager : 0x1BA40; // 0x1BA40 
 	Seeds _seedEffects : 0x1bb04;	// 0x1BB04

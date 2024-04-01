@@ -1,11 +1,11 @@
-struct RoomDescriptor depends (RoomConfig)
+struct RoomDescriptor depends (RoomConfig_Room)
 {
     int32_t GridIndex : 0x0; // 0x0
     int32_t SafeGridIndex : 0x4; // 0x4
     int32_t ListIndex : 0x8; // 0x8
     int32_t unk0 : 0xc; // 0xC
-    RoomConfig* Data : 0x10; // 0x10
-    RoomConfig* OverrideData : 0x14; // 0x14
+    RoomConfig_Room* Data : 0x10; // 0x10
+    RoomConfig_Room* OverrideData : 0x14; // 0x14
     int32_t AllowedDoors : 0x18; // 0x18
     int32_t Doors[8] : 0x1c; // 0x1C
     int32_t DisplayFlags : 0x3c; // 0x3C
