@@ -253,7 +253,7 @@ const char* suffixes[36] = {
 	"",
 	"",
 	"",
-	"_void",
+	"", // void doesn't work, local stage ids are used
 	"_downpour",
 	"_dross",
 	"_mines",
@@ -261,7 +261,7 @@ const char* suffixes[36] = {
 	"_mausoleum",
 	"_gehenna",
 	"_corpse",
-	"",
+	"", // there will never be a mortis
 	"_home"
 };
 

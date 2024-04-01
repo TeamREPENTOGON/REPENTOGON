@@ -13,8 +13,7 @@ struct RoomConfig_Stage depends (RoomSet) {
 	std_string _playerSpot : 0x1c;
 	std_string _bossSpot : 0x34;
 	std_string _suffix : 0x4c;
-	RoomSet _rooms : 0x64;
-	RoomSet _greedRooms : 0x90;
+	RoomSet _rooms[2] : 0x64;
 	int _musicId : 0xbc;
 	int _backdrop : 0xc0;
 } : 0xc4;

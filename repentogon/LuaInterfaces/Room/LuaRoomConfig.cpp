@@ -11,7 +11,7 @@
 }
 */
 
-LUA_FUNCTION(Lua_RoomConfigGetRoomByStageTypeAndVariant) {
+LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	int n = lua_gettop(L);
 	if (n != 4) {
 		return luaL_error(L, "Expected four parameters, got %d\n", n);
@@ -109,11 +109,29 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomConfig_GetStage) {
+	RoomConfig* roomConfig = g_Game->GetRoomConfig();
+	int stage = (int)luaL_checkinteger(L, 1);
+
+	if (stage < 0 || stage > 36) {
+		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
+	}
+
+	RoomConfig_Stage* configStage = &roomConfig->_stages[stage];
+	printf("%p, %p, %d\n", roomConfig, configStage, configStage->_musicId);
+
+	RoomConfig_Stage** ud = (RoomConfig_Stage**)lua_newuserdata(L, sizeof(RoomConfig_Stage*));
+	*ud = configStage;
+	luaL_setmetatable(L, lua::metatables::RoomConfigStageMT);
+	return 1;
+}
+
 static void RegisterRoomConfig(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomConfig", Lua_GameGetRoomConfig);
 	lua_newtable(L);
-	lua::TableAssoc(L, "GetRoomByStageTypeAndVariant", Lua_RoomConfigGetRoomByStageTypeAndVariant);
+	lua::TableAssoc(L, "GetRoomByStageTypeAndVariant", Lua_RoomConfig_GetRoomByStageTypeAndVariant);
 	lua::TableAssoc(L, "GetRandomRoom", Lua_RoomConfig_GetRandomRoom);
+	lua::TableAssoc(L, "GetStage", Lua_RoomConfig_GetStage);
 	lua_setglobal(L, "RoomConfig");
 }
 

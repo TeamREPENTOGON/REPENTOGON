@@ -46,6 +46,16 @@ struct Music {
 		*(int*)((char*)this + 0x348) = 0;
 		*(int*)((char*)this + 0x364) = -99;
 	};
+	
+	inline bool ValidateMusicID(int id, int& max) {
+		void* ecx = *(void**)((char*)this + 0x320);
+		void* edi = *(void**)((char*)this + 0x31C);
+
+		ptrdiff_t length = (ptrdiff_t)ecx - (ptrdiff_t)edi;
+		max = length / 96; // Size of the content of the array
+
+		return id >= 0 && id < max;
+	}
 }} 
 	unsigned int _currentId : 0x30c;
 	unsigned int _queuedId : 0x310;
