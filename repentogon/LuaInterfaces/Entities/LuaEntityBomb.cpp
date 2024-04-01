@@ -118,7 +118,7 @@ LUA_FUNCTION(Lua_BombGetRocketAngle) {
 
 LUA_FUNCTION(Lua_BombSetRocketAngle) {
 	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-	bomb->_rocketAngle = luaL_checknumber(L, 2);
+	bomb->_rocketAngle = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 
@@ -130,7 +130,7 @@ LUA_FUNCTION(Lua_BombGetRocketSpeed) {
 
 LUA_FUNCTION(Lua_BombSetRocketSpeed) {
 	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
-	bomb->_rocketSpeed = luaL_checknumber(L, 2);
+	bomb->_rocketSpeed = (float)luaL_checknumber(L, 2);
 	return 0;
 }
 

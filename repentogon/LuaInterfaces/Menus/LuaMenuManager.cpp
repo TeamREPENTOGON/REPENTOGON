@@ -240,7 +240,7 @@ HOOK_METHOD(Game, Start, (int playertype, int challenge, Seeds seeds, unsigned i
 
 LUA_FUNCTION(Lua_SetInputMask) {
 	lua::LuaCheckMainMenuExists(L, lua::metatables::MenuManagerMT);
-	unsigned int mask = luaL_checkinteger(L, 1);
+	unsigned int mask = (int)luaL_checkinteger(L, 1);
 	MainMenuInputBlock::_enabled = true;
 	MainMenuInputBlock::SetInputMask(mask);
 	return 1;

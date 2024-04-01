@@ -114,7 +114,7 @@ __stdcall void Game::Exit(bool ShouldSave);
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge) { {{
 	Game()
 	{
 		this->constructor();

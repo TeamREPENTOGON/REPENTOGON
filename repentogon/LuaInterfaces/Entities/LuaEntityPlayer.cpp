@@ -2012,7 +2012,7 @@ LUA_FUNCTION(Lua_PlayerAddColEffect) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int colid = (int)luaL_checkinteger(L, 2);
 	bool costume = lua::luaL_checkboolean(L, 3);
-	int cooldown = luaL_optinteger(L, 4, -6942069); //lol
+	int cooldown = (int)luaL_optinteger(L, 4, -6942069); //lol
 	bool additive = lua::luaL_optboolean(L, 5, true);
 	
 	TemporaryEffects* effs = &player->_temporaryeffects;
@@ -2034,7 +2034,7 @@ LUA_FUNCTION(Lua_PlayerAddNullEffect) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int colid = (int)luaL_checkinteger(L, 2);
 	bool costume = lua::luaL_checkboolean(L, 3);
-	int cooldown = luaL_optinteger(L, 4, -6942069); //lol
+	int cooldown = (int)luaL_optinteger(L, 4, -6942069); //lol
 	bool additive = lua::luaL_optboolean(L, 5, true);
 
 	TemporaryEffects* effs = &player->_temporaryeffects;
@@ -2056,7 +2056,7 @@ LUA_FUNCTION(Lua_PlayerAddTrinketEffect) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	int colid = (int)luaL_checkinteger(L, 2);
 	bool costume = lua::luaL_checkboolean(L, 3);
-	int cooldown = luaL_optinteger(L, 4, -6942069); //lol
+	int cooldown = (int)luaL_optinteger(L, 4, -6942069); //lol
 	bool additive = lua::luaL_optboolean(L, 5, true);
 
 	TemporaryEffects* effs = &player->_temporaryeffects;

@@ -46,7 +46,7 @@ unordered_map<int, int> lastKeyPressTimeMap;
 bool cursorblink = false;
 float prevscroll = 0;
 int prevselect = 0;
-int minmods = 15;
+const unsigned int minmods = 15;
 float paperedge = 0;
 
 vector<bool> enabledtstates;
@@ -158,11 +158,11 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 
 	entry->_boxWidth = 0;
 	entry->_center = false;
-	entry->_scaleX = 0.9;
-	entry->_scaleY = 0.9;
-	entry->_color._blue = 0;
-	entry->_color._green = 0;
-	entry->_color._red = 0;
+	entry->_scaleX = 0.9f;
+	entry->_scaleY = 0.9f;
+	entry->_color._blue = 0.f;
+	entry->_color._green = 0.f;
+	entry->_color._red = 0.f;
 	int i = 1;
 	int actualpos = -1;
 
@@ -172,7 +172,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	int currentTime = g_Manager->_framecount;
 
 	if (g_MenuManager->_selectedMenuID == 16) {				//i am a newbie so here's a question:
-		frame_widgettext->_cropOffset.y = 64*modsenabled;	//is it worth keeping the if check here? (perf question)
+		frame_widgettext->_cropOffset.y = (float)64 * modsenabled;	//is it worth keeping the if check here? (perf question)
 	}
 
 	if (g_MenuManager->_selectedMenuID != 16) { issearching = false; }
@@ -202,7 +202,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 							}
 							if (did) {
 								if (lastKeyPressTimeMap[i] > 0) {
-									lastKeyPressTimeMap[i] = currentTime - (keydelay * 0.7);
+									lastKeyPressTimeMap[i] = currentTime - (int)(keydelay * 0.7f);
 								}
 								else {
 									lastKeyPressTimeMap[i] = currentTime;
@@ -243,7 +243,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			entry->_x = pos.x;
 			entry->_y = pos.y;
 			if (!modsenabled) {
-				entry->_color._alpha = entry->_color._alpha * 0.3;
+				entry->_color._alpha = entry->_color._alpha * 0.3f;
 			}
 			g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
 			if (actualpos == this->SelectedElement) {
@@ -268,7 +268,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		entry->_x = pos.x;
 		entry->_y = pos.y;
 		if (!modsenabled) {
-			entry->_color._alpha = entry->_color._alpha * 0.3;
+			entry->_color._alpha = entry->_color._alpha * 0.3f;
 		}
 		g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
 		if (actualpos == this->SelectedElement) {
@@ -278,7 +278,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		i++;
 	}
 
-	if (paperedge == 0) { paperedge = (modman->_mods.size() *25)+40; } // this is to prevent the searchbar from busting into the unknown depths below
+	if (paperedge == 0) { paperedge = (float)((modman->_mods.size() * 25) + 40); } // this is to prevent the searchbar from busting into the unknown depths below
 
 		if (!searchbar->_loaded) {
 			ANM2* s = this->GetModsMenuSprite();
@@ -314,11 +314,11 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 		}
 		entry->_x = pos.x - 20;
 		
-		int egde = initialpos.y + paperedge;
+		int egde = (int)(initialpos.y + paperedge);
 		if (modman->_mods.size() > minmods) {
 			if (barpos->y >= egde) {
-				Vector* vdif = new Vector(barpos->x, egde);
-				entry->_y = egde;
+				Vector* vdif = new Vector(barpos->x, (float)egde);
+				entry->_y = (float)egde;
 				searchbar->Render(vdif, &z, &z);
 			}
 			else if (((barpos->y - pos.y) < 22) && (prevscroll > 161.9) && (g_MenuManager->_scrollinterpolationY == prevscroll) && (this->SelectedElement == lastvalid)) { // this is for when the searchbar would obstruct the last element on the list
@@ -358,12 +358,12 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
 			if (issearching) {
 				entry->_text = "|";
-				entry->_color._alpha = 0.8;
-				if (cursorblink) { entry->_color._alpha = 0.3; }
+				entry->_color._alpha = 0.8f;
+				if (cursorblink) { entry->_color._alpha = 0.3f; }
 				if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 10; }
 				//entry->_x += 2;
 				entry->_x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
-				entry->_scaleY = 1.2;
+				entry->_scaleY = 1.2f;
 				g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
 			}
 		}

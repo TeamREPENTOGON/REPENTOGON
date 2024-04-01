@@ -1,4 +1,4 @@
-struct RoomConfig_Room
+struct RoomConfig_Room depends (RoomSpawn)
 {
     int32_t StageId : 0x0; // 0x0
     int32_t Mode : 0x4; // 0x4
@@ -16,10 +16,10 @@ struct RoomConfig_Room
     int8_t Width : 0x46; // 0x46
     int8_t Height : 0x47; // 0x47
     int32_t Shape : 0x48; // 0x48
-    int32_t unk9 : 0x4c; // 0x4C
+    int32_t unkFlags : 0x4c; // 0x4C
     int32_t unk10 : 0x50; // 0x50
     int32_t unk11 : 0x54; // 0x54
-    int32_t unk12 : 0x58; // 0x58
+    int32_t originalVariant : 0x58; // 0x58
 
     {{
     bool LIBZHL_API IsValidGridIndex(lua_Integer index, bool includeWalls = true) const;

@@ -59,7 +59,7 @@ void SetCurrentFloorMusic(int etype) {
 		bckmmusic = g_Game->_roomConfig._stages[currstageid]._musicId;
 	}
 	if (g_Manager->_musicmanager._currentId == g_Game->_roomConfig._stages[currstageid]._musicId) {
-		g_Manager->_musicmanager.Play(etype, 0.1);
+		g_Manager->_musicmanager.Play(etype, 0.1f);
 		g_Manager->_musicmanager.UpdateVolume();
 	}
 	g_Game->_roomConfig._stages[currstageid]._musicId = etype;

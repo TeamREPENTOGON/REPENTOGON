@@ -26,7 +26,7 @@ extern int opensearchkey;
 extern int undomodchangeskey;
 extern bool issearching;
 extern unordered_map<int, int> lastKeyPressTimeMap;
-extern int minmods;
+extern const unsigned int minmods;
 
 
 enum class KeyboardKey : int {

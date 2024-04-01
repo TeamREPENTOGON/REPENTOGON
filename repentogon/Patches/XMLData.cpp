@@ -2657,7 +2657,7 @@ LUA_FUNCTION(Lua_GetEntryByOrderXML)
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	if (!lua_isnumber(L, 2)) { return luaL_error(L, "Expected int as parameter #2, got %s", lua_typename(L, lua_type(L, 2))); }
 	int nodetype = (int)luaL_checknumber(L, 1);
-	int order = luaL_checknumber(L, 2);
+	int order = (int)luaL_checknumber(L, 2);
 	tuple<XMLAttributes, XMLChilds> daddychild;
 	if (nodetype == 1) {
 		daddychild = XMLStuff.EntityData->GetXMLNodeNChildsByOrder(order);
