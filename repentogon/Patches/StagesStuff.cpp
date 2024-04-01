@@ -226,6 +226,52 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	super(in, out, player);
 }
 
+const char* suffixes[36] = {
+	"",
+	"_basement",
+	"_cellar",
+	"_burningbasement",
+	"_caves",
+	"_catacombs",
+	"_floodedcaves",
+	"_depths",
+	"_necropolis",
+	"_dankdepths",
+	"_womb",
+	"_utero",
+	"_scarredwomb",
+	"_bluewomb",
+	"_sheol",
+	"_cathedral",
+	"_darkroom",
+	"_chest",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"_void",
+	"_downpour",
+	"_dross",
+	"_mines",
+	"_ashpit",
+	"_mausoleum",
+	"_gehenna",
+	"_corpse",
+	"",
+	"_home"
+};
+
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
+	super(Stage, Mode);
+
+	if (Stage < 36) {
+		this->_stages[Stage]._suffix = suffixes[Stage];
+	}
+}
 
 LUA_FUNCTION(Lua_SetCurrentFloorMusic)
 {

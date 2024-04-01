@@ -172,7 +172,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	int currentTime = g_Manager->_framecount;
 
 	if (g_MenuManager->_selectedMenuID == 16) {				//i am a newbie so here's a question:
-		frame_widgettext->_cropOffset.y = (float)64 * modsenabled;	//is it worth keeping the if check here? (perf question)
+		frame_widgettext->_cropOffset.y = 64.f * modsenabled;	//is it worth keeping the if check here? (perf question)
 	}
 
 	if (g_MenuManager->_selectedMenuID != 16) { issearching = false; }
