@@ -73,6 +73,9 @@ LUA_FUNCTION(Lua_RoomConfigStageGetDisplayName)
 LUA_FUNCTION(Lua_RoomConfigStageSetDisplayName)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	if (lua_type(L, 2) != LUA_TSTRING) {
+		return luaL_argerror(L, 2, "Argument must be a string!");
+	}
 	stage->_displayName = lua_tostring(L, 2);
 
 	return 0;
@@ -89,6 +92,9 @@ LUA_FUNCTION(Lua_RoomConfigStageGetPlayerSpot)
 LUA_FUNCTION(Lua_RoomConfigStageSetPlayerSpot)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	if (lua_type(L, 2) != LUA_TSTRING) {
+		return luaL_argerror(L, 2, "Argument must be a string!");
+	}
 	stage->_playerSpot = lua_tostring(L, 2);
 
 	return 0;
@@ -105,6 +111,9 @@ LUA_FUNCTION(Lua_RoomConfigStageGetBossSpot)
 LUA_FUNCTION(Lua_RoomConfigStageSetBossSpot)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	if (lua_type(L, 2) != LUA_TSTRING) {
+		return luaL_argerror(L, 2, "Argument must be a string!");
+	}
 	stage->_bossSpot = lua_tostring(L, 2);
 
 	return 0;
@@ -121,6 +130,9 @@ LUA_FUNCTION(Lua_RoomConfigStageGetSuffix)
 LUA_FUNCTION(Lua_RoomConfigStageSetSuffix)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	if (lua_type(L, 2) != LUA_TSTRING) {
+		return luaL_argerror(L, 2, "Argument must be a string!");
+	}
 	stage->_suffix = lua_tostring(L, 2);
 
 	return 0;

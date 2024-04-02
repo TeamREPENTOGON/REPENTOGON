@@ -13,6 +13,9 @@ LUA_FUNCTION(Lua_RoomSetGetName)
 LUA_FUNCTION(Lua_RoomSetSetName)
 {
 	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomSetMT);
+	if (lua_type(L, 2) != LUA_TSTRING) {
+		return luaL_argerror(L, 2, "Argument must be a string!");
+	}
 	set->_filepath = lua_tostring(L, 2);
 
 	return 0;
@@ -41,8 +44,8 @@ LUA_FUNCTION(Lua_RoomSetIsLoaded)
 
 static void RegisterRoomSet(lua_State* L) {
 	luaL_Reg functions[] = {
-		{ "GetXMLName", Lua_RoomSetGetName },
-		{ "SetXMLName", Lua_RoomSetSetName },
+		{ "GetXMLPath", Lua_RoomSetGetName },
+		{ "SetXMLPath", Lua_RoomSetSetName },
 		{ "GetRooms", Lua_RoomSetGetRooms },
 		{ "IsLoaded", Lua_RoomSetIsLoaded },
 		{ NULL, NULL }
