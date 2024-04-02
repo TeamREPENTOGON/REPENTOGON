@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_RoomSetGetName)
 {
-	RoomSet* set = lua::GetUserdata<RoomSet*>(L, 1, lua::metatables::RoomSetMT);
+	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomSetMT);
 	lua_pushstring(L, set->_filepath.c_str());
 
 	return 1;
@@ -12,7 +12,7 @@ LUA_FUNCTION(Lua_RoomSetGetName)
 
 LUA_FUNCTION(Lua_RoomSetSetName)
 {
-	RoomSet* set = lua::GetUserdata<RoomSet*>(L, 1, lua::metatables::RoomSetMT);
+	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomSetMT);
 	set->_filepath = lua_tostring(L, 2);
 
 	return 0;
@@ -20,7 +20,7 @@ LUA_FUNCTION(Lua_RoomSetSetName)
 
 LUA_FUNCTION(Lua_RoomSetGetRooms)
 {
-	RoomSet* set = lua::GetUserdata<RoomSet*>(L, 1, lua::metatables::RoomSetMT);
+	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomSetMT);
 	lua_newtable(L);
 	for (size_t i = 0; i < set->_count; ++i) {
 		lua_pushinteger(L, i + 1);
@@ -33,7 +33,7 @@ LUA_FUNCTION(Lua_RoomSetGetRooms)
 
 LUA_FUNCTION(Lua_RoomSetIsLoaded)
 {
-	RoomSet* set = lua::GetUserdata<RoomSet*>(L, 1, lua::metatables::RoomSetMT);
+	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomSetMT);
 	lua_pushboolean(L, set->_loaded);
 
 	return 1;
@@ -41,8 +41,8 @@ LUA_FUNCTION(Lua_RoomSetIsLoaded)
 
 static void RegisterRoomSet(lua_State* L) {
 	luaL_Reg functions[] = {
-		{ "GetName", Lua_RoomSetGetName },
-		{ "SetName", Lua_RoomSetSetName },
+		{ "GetXMLName", Lua_RoomSetGetName },
+		{ "SetXMLName", Lua_RoomSetSetName },
 		{ "GetRooms", Lua_RoomSetGetRooms },
 		{ "IsLoaded", Lua_RoomSetIsLoaded },
 		{ NULL, NULL }
