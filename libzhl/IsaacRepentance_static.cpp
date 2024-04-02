@@ -1,7 +1,7 @@
 #include "IsaacRepentance.h"
 #include "Log.h"
 
-bool Room::IsValidRailType(lua_Integer rail) {
+bool Room::IsValidRailType(int rail) {
 	if (rail < 0) {
 		return false;
 	}
@@ -17,7 +17,7 @@ bool Room::IsValidRailType(lua_Integer rail) {
 	}
 }
 
-bool RoomConfig_Room::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
+bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 	if (index < 0) {
 		return false;
 	}
@@ -92,7 +92,7 @@ bool RoomConfig_Room::IsValidGridIndex(lua_Integer index, bool includeWalls) con
 	}
 }
 
-bool RoomConfig_Room::IsAllowedGridIndex(lua_Integer index) const {
+bool RoomConfig_Room::IsAllowedGridIndex(int index) const {
 	switch (Shape) {
 	case ROOMSHAPE_1x1:
 	case ROOMSHAPE_IH:
@@ -256,4 +256,11 @@ void EntityList_EL::Untie() {
 	_sublist = false;
 	memcpy(entities, _data, _size * sizeof(Entity*));
 	_data = entities;
+}
+
+bool Music::ValidateMusicID(int id, int& max) {
+	ptrdiff_t length = _maxBound - _minBound;
+	max = length / 96; // Size of the content of the array
+
+	return id >= 0 && id < max;
 }

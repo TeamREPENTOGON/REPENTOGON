@@ -33,20 +33,24 @@
 #include <regex>
 #include <queue>
 
+int opensearchkey = (int)KeyboardKey::KEY_LEFT_CONTROL;
+int undomodchangeskey = (int)KeyboardKey::KEY_BACKSPACE;
+int undomodchangesbtn = 24; //left bumber
+
 ANM2* searchbar = new ANM2();
 ANM2* undopop = new ANM2();
+
+unsigned int minmods = 15;
+
 string searchstr = "";
 bool issearching= false;
 const int keydelay = 20;
 int lastvalid = 0;
-int opensearchkey = (int)KeyboardKey::KEY_LEFT_CONTROL;
-int undomodchangeskey = (int)KeyboardKey::KEY_BACKSPACE;
-int undomodchangesbtn = 24; //left bumber
+
 unordered_map<int, int> lastKeyPressTimeMap;
 bool cursorblink = false;
 float prevscroll = 0;
 int prevselect = 0;
-const unsigned int minmods = 15;
 float paperedge = 0;
 
 vector<bool> enabledtstates;
