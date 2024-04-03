@@ -17,6 +17,15 @@ font:Load("font/teammeatfont10.fnt")
 local fontcolor = KColor(0.20, 0.15, 0.1, 1)
 
 local MaxPollCIdx = 3
+local function UpdateMaxPollCIdx()
+    local str=Input.GetDeviceNameByIdx(0)
+    local i=0
+    while (str~=nil) do
+        i=i+1
+        str=Input.GetDeviceNameByIdx(i)
+    end
+    MaxPollCIdx=i
+end
 local function IsActionTriggeredAll(action)
     for i = 0, MaxPollCIdx do
         if Input.IsActionTriggered(action, i) then
@@ -55,6 +64,7 @@ local function RenderBestiaryMenu()
     local isEnemyPage = selectedPage <= lastEnemyPage
     local inputController=-1
     if MenuManager:GetActiveMenu() == _MainMenuType.BESTIARY then
+    UpdateMaxPollCIdx()
 	local scrollBy=0
 	local leftInputIdx,rightInputIdx
 	local scrollLeft,scrollRight

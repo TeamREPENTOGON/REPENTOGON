@@ -12,6 +12,7 @@
 #include "../Patches/XMLData.h"
 #include "Level.h"
 #include "../LuaInit.h"
+#include "../Patches/MainMenuBlock.h"
 
 //Callback tracking for optimizations
 std::bitset<500> CallbackState;  // For new REPENTOGON callbacks. I dont think we will add 500 callbacks but lets set it there for now
@@ -158,16 +159,26 @@ HOOK_METHOD(HUD, Render, () -> void) {
 
 //(POST_)HUD_RENDER callbacks end
 
+
 //Character menu render Callback(id:1023)
 HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	super();
 	const int callbackid = 1023;
+	bool menublock_prevstate=0;
+	if (MainMenuInputBlock::_enabled) {
+		menublock_prevstate = 1;
+		MainMenuInputBlock::_enabled = 0;
+	}
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaCaller(L).push(callbackid).call(1);
+	}
+	if (menublock_prevstate) {
+		MainMenuInputBlock::_enabled = menublock_prevstate;
+		menublock_prevstate = 0;
 	}
 }
 
@@ -2897,41 +2908,43 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 		}
 		else {
 			if (resTop == startTop + 1) {
-				lua_len(L, -1);
-				int len = lua_tointeger(L, -1);
-				lua_pop(L, 1);
+				if (lua_istable(L, -1)) {
+					lua_len(L, -1);
+					int len = (int)lua_tointeger(L, -1);
+					lua_pop(L, 1);
 
-				if (len != 2) {
-					logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid return value, table contains %d elements, expected 2\n", len);
-					goto error;
-				}
-
-				lua_rawgeti(L, -1, 1);
-				int level = lua_tointeger(L, -1);
-				lua_pop(L, 1);
-				if (g_Game->IsGreedMode()) {
-					if (level < 1 || level > 7) {
-						logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 7] (detected greed(ier) mode)\n", level);
+					if (len != 2) {
+						logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid return value, table contains %d elements, expected 2\n", len);
 						goto error;
 					}
-				}
-				else {
-					if (level < 1 || level > 14) {
-						logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 14] (detected normal/hard mode)\n", level);
+
+					lua_rawgeti(L, -1, 1);
+					int level = (int)lua_tointeger(L, -1);
+					lua_pop(L, 1);
+					if (g_Game->IsGreedMode()) {
+						if (level < 1 || level > 7) {
+							logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 7] (detected greed(ier) mode)\n", level);
+							goto error;
+						}
+					}
+					else {
+						if (level < 1 || level > 14) {
+							logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid level stage, received %d, should be in range [1; 14] (detected normal/hard mode)\n", level);
+							goto error;
+						}
+					}
+
+					lua_rawgeti(L, -1, 2);
+					int type = (int)lua_tointeger(L, -1);
+					lua_pop(L, 1);
+					if (type < 0 || type == 3 || type > 5) {
+						logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid stage type, received value %d, expected 0, 1, 2, 4 or 5\n", type);
 						goto error;
 					}
-				}
 
-				lua_rawgeti(L, -1, 2);
-				int type = (int)lua_tointeger(L, -1);
-				lua_pop(L, 1);
-				if (type < 0 || type == 3 || type > 5) {
-					logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid stage type, received value %d, expected 0, 1, 2, 4 or 5\n", type);
-					goto error;
+					super(level, type);
+					return;
 				}
-
-				super(level, type);
-				return;
 			}
 			else {
 				logViewer.AddLog(LogViewer::Game, "MC_PRE_LEVEL_SELECT: Invalid number of return values, got %d, expected 1\n", resTop - startTop);
@@ -3081,7 +3094,7 @@ HOOK_METHOD(Manager, Render, () -> void) {
 	super();
 }
 
-HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig* config, uint32_t seed, uint32_t unk) -> bool) {
+HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* config, uint32_t seed, uint32_t unk) -> bool) {
 	const int callbackid = 1137;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -3094,10 +3107,10 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig* config, u
 		room->context = nullptr;
 		room->room = slot;
 		
-		RoomConfig* other = nullptr;
+		RoomConfig_Room* other = nullptr;
 		lua::LuaResults results = caller.push(config, lua::Metatables::ROOM_CONFIG_ROOM).push(seed).call(1);
 		if (lua_isuserdata(L, -1)) {
-			auto opt = lua::TestUserdata<RoomConfig*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
+			auto opt = lua::TestUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
 
 			if (!opt) {
 				KAGE::LogMessage(2, "Invalid userdata returned in MC_PRE_LEVEL_PLACE_ROOM");

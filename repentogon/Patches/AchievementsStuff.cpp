@@ -271,20 +271,22 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 }
 
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
-	if (in.rfind("lockachievement", 0) == 0) {
+	if (in.rfind("lockachievement ", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
-		int id = toint(cmdlets[1]);
-		if (id == 0) {
-			g_Game->GetConsole()->PrintError("No achievement Id Provided. \n");
-		}
-		else if (LockAchievement(id)) {
-			g_Game->GetConsole()->Print("Locked achievement. \n", Console::Color::WHITE, 0x96U);
-		}
-		else {
-			g_Game->GetConsole()->PrintError("Achievement already locked.");
+		if (cmdlets.size() > 1) {
+			int id = toint(cmdlets[1]);
+			if (id == 0) {
+				g_Game->GetConsole()->PrintError("No achievement Id Provided. \n");
+			}
+			else if (LockAchievement(id)) {
+				g_Game->GetConsole()->Print("Locked achievement. \n", Console::Color::WHITE, 0x96U);
+			}
+			else {
+				g_Game->GetConsole()->PrintError("Achievement already locked.");
+			}
 		}
 	}
-	if (in.rfind("achievement", 0) == 0) {
+	if (in.rfind("achievement ", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommandA(in, 2);
 		if (cmdlets.size() < 2) { g_Game->GetConsole()->PrintError("No achievement Id Provided. \n"); super(in, out, player); return; }
 		int id = toint(cmdlets[1]);
@@ -511,13 +513,13 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			sourcename->_color._blue = 1;
 			sourcename->_color._green = 1;
 			sourcename->_color._red = 1;
-			sourcename->_color._alpha = 0.8;
+			sourcename->_color._alpha = 0.8f;
 			sourcename->_center = true;
 			sourcename->_boxWidth = 900;
 			sourcename->_x = pos.x;
 			sourcename->_y = pos.y;
 			g_Manager->_font7_TeamMeat_10.DrawString(*sourcename);
-			float txtwidth = g_Manager->_font7_TeamMeat_10.GetStringWidth(sourcename->_text)/2;
+			float txtwidth = (float)g_Manager->_font7_TeamMeat_10.GetStringWidth(sourcename->_text)/2;
 			float x = 0;
 			float y = 100;
 			this->_cursorLeftSprite._scale = Vector(0.5, 0.5);

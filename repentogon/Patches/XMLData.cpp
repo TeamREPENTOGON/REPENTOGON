@@ -371,13 +371,15 @@ std::vector<std::string> ParseCommand2(const std::string &command, int size = 0)
 }
 int hijackedcutscene = 0;
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
-	if (in.rfind("cutscene", 0) == 0) {
+	if (in.rfind("cutscene ", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommand2(in, 2);
-		int id = stoi(cmdlets[1]);
-		if (id > 26) {
-			hijackedcutscene = id;
-			super(std::string("cutscene 1"), out, player);
-			return;
+		if (cmdlets.size() > 1) {
+			int id = stoi(cmdlets[1]);
+			if (id > 26) {
+				hijackedcutscene = id;
+				super(std::string("cutscene 1"), out, player);
+				return;
+			}
 		}
 	}
 	super(in, out, player);
@@ -2655,7 +2657,7 @@ LUA_FUNCTION(Lua_GetEntryByOrderXML)
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected XMLNode as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
 	if (!lua_isnumber(L, 2)) { return luaL_error(L, "Expected int as parameter #2, got %s", lua_typename(L, lua_type(L, 2))); }
 	int nodetype = (int)luaL_checknumber(L, 1);
-	int order = luaL_checknumber(L, 2);
+	int order = (int)luaL_checknumber(L, 2);
 	tuple<XMLAttributes, XMLChilds> daddychild;
 	if (nodetype == 1) {
 		daddychild = XMLStuff.EntityData->GetXMLNodeNChildsByOrder(order);

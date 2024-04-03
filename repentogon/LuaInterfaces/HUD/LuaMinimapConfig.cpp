@@ -6,7 +6,7 @@ LUA_FUNCTION(Lua_MinimapGetConfig)
 {
 	Minimap* minimap = g_Game->GetMinimap();
 	MinimapConfig** toLua = (MinimapConfig**)lua_newuserdata(L, sizeof(MinimapConfig*));
-	const int index = luaL_checkinteger(L, 1);
+	const int index = (int)luaL_checkinteger(L, 1);
 	*toLua = &minimap->_config[index];
 	luaL_setmetatable(L, lua::metatables::MinimapConfigMT);
 	return 1;

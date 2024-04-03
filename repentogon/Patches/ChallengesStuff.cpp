@@ -124,9 +124,9 @@ HOOK_METHOD(Menu_Challenge, Render, () -> void) {
 	LayerState* frame3 = this->ChallengeMenuSprite.GetLayer(28);
 	int sel = this->SelectedChallengeID;
 	float targetyoffset = 0;
-		if (sel > 4) { targetyoffset = ((sel - 4) * 22); }
+		if (sel > 4) { targetyoffset = (float)((sel - 4) * 22); }
 
-		frame->_pos.y = lerp(frame->_pos.y, targetyoffset,0.05);
+		frame->_pos.y = lerp(frame->_pos.y, targetyoffset,0.05f);
 		frame2->_pos.y = frame->_pos.y;
 		frame3->_pos.y = frame->_pos.y;
 	super();
@@ -163,7 +163,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achievementID) -> bool) {
 }
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player) -> void) {
 	super(in,out, player);
-	if (in.find("lockachievement",15)) {
+	if (in.find("lockachievement ",15)) {
 		visibleinit = false;	
 	}
 }
@@ -232,12 +232,12 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 	DrawStringScaledEntry* entry = new DrawStringScaledEntry();
 	entry->_boxWidth = 0;
 	entry->_center = false;
-	entry->_scaleX = 0.8;
+	entry->_scaleX = 0.8f;
 	entry->_scaleY = 1;
-	entry->_color._blue = 0.14;
-	entry->_color._green = 0.15;
-	entry->_color._red = 0.21;
-	entry->_color._alpha = 1;
+	entry->_color._blue = 0.14f;
+	entry->_color._green = 0.15f;
+	entry->_color._red = 0.21f;
+	entry->_color._alpha = 1.f;
 
 
 	super();
@@ -277,10 +277,10 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 			g_Manager->_font8_TeamMeat_12.DrawStringScaled(*entry);
 			if (Challenges[node["name"] + node["sourceid"]] > 0) {
 				srand(i-40);
-				Streak->SetFrame(&string("Idle"), rand() % 6);
+				Streak->SetFrame(&string("Idle"), (float)(rand() % 6));
 				Streak->Update();
-				Streak->_scale.x =  (g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(node["name"].c_str()) / 294.0);
-				Streak->_offset.x = g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(order.c_str()) - 10;
+				Streak->_scale.x =  (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(node["name"].c_str()) / 294.0);
+				Streak->_offset.x = (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(order.c_str()) - 10);
 				Streak->Render(&pos, &z, &z);
 			}
 		}

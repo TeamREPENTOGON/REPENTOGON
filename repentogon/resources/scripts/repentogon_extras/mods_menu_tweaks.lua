@@ -5,6 +5,15 @@ local _ButtonAction = ButtonAction
 local _Keyboard = Keyboard
 
 local MaxPollCIdx = 3
+local function UpdateMaxPollCIdx()
+    local str=Input.GetDeviceNameByIdx(0)
+    local i=0
+    while (str~=nil) do
+        i=i+1
+        str=Input.GetDeviceNameByIdx(i)
+    end
+    MaxPollCIdx=i
+end
 local function IsActionTriggeredAll(action)
     for i = 0, MaxPollCIdx do
         if Input.IsActionTriggered(action, i) then
@@ -26,6 +35,7 @@ end
 local function TweakModsMenu()
     -- The values are automatically clamped so there's not much to worry about here
     if MenuManager.GetActiveMenu() == _MainMenuType.MODS then
+        UpdateMaxPollCIdx()
         if IsActionTriggeredAll(_ButtonAction.ACTION_MENULEFT) then
 		 	ModsMenu.SetSelectedElement(ModsMenu.GetSelectedElement() - 3)
         elseif IsActionTriggeredAll(_ButtonAction.ACTION_MENURIGHT) then

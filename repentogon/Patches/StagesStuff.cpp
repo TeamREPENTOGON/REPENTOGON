@@ -36,17 +36,17 @@ int bcknstage = -1;
 string bcknname;
 HOOK_METHOD(Level, Init, ()-> void) {
 	if (bckmmusic > -1) {
-		g_Game->_roomConfigs.configs[bckmstage].music = bckmmusic;
+		g_Game->_roomConfig._stages[bckmstage]._musicId = bckmmusic;
 		bckmstage = -1;
 		bckmmusic = -1;
 	}
 	if (bckbbackdrop > -1) {
-		g_Game->_roomConfigs.configs[bckbstage].backdrop = bckbbackdrop;
+		g_Game->_roomConfig._stages[bckbstage]._backdrop = bckbbackdrop;
 		bckbstage = -1;
 		bckbbackdrop = -1;
 	}
 	if (bcknstage > -1) {
-		g_Game->_roomConfigs.configs[bcknstage].stageName = bcknname;
+		g_Game->_roomConfig._stages[bcknstage]._displayName = bcknname;
 		bcknstage = -1;
 	}
 	super();
@@ -56,35 +56,35 @@ void SetCurrentFloorMusic(int etype) {
 	int currstageid = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
 	if (bckmmusic == -1) {
 		bckmstage = currstageid;
-		bckmmusic = g_Game->_roomConfigs.configs[currstageid].music;
+		bckmmusic = g_Game->_roomConfig._stages[currstageid]._musicId;
 	}
-	if (g_Manager->_musicmanager._currentId == g_Game->_roomConfigs.configs[currstageid].music) {
-		g_Manager->_musicmanager.Play(etype, 0.1);
+	if (g_Manager->_musicmanager._currentId == g_Game->_roomConfig._stages[currstageid]._musicId) {
+		g_Manager->_musicmanager.Play(etype, 0.1f);
 		g_Manager->_musicmanager.UpdateVolume();
 	}
-	g_Game->_roomConfigs.configs[currstageid].music = etype;
+	g_Game->_roomConfig._stages[currstageid]._musicId = etype;
 }
 
 void SetCurrentFloorBackdrop(int etype) {
 	int currstageid = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
 	if (bckbbackdrop == -1) {
 		bckbstage = currstageid;
-		bckbbackdrop = g_Game->_roomConfigs.configs[currstageid].backdrop;
+		bckbbackdrop = g_Game->_roomConfig._stages[currstageid]._backdrop;
 	}
 	Backdrop* bck = g_Game->_room->GetBackdrop();
-	if (bck->backdropId == g_Game->_roomConfigs.configs[currstageid].backdrop) {
+	if (bck->backdropId == g_Game->_roomConfig._stages[currstageid]._backdrop) {
 		bck->Init(etype, true);
 	}
-	g_Game->_roomConfigs.configs[currstageid].backdrop = etype;
+	g_Game->_roomConfig._stages[currstageid]._backdrop = etype;
 }
 
 void SetCurrentFloorName(string etype) {
 	int currstageid = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
 	if (bcknstage == -1) {
 		bcknstage = currstageid;
-		bcknname = g_Game->_roomConfigs.configs[currstageid].stageName;
+		bcknname = g_Game->_roomConfig._stages[currstageid]._displayName;
 	}
-	g_Game->_roomConfigs.configs[currstageid].stageName = etype;
+	g_Game->_roomConfig._stages[currstageid]._displayName = etype;
 }
 
 
@@ -206,24 +206,72 @@ extern std::vector<std::string> ParseCommand2(const std::string& command, int si
 
 
 HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player)-> void) {
-	if (in.rfind("stage", 0) == 0) {
+	if (in.rfind("stage ", 0) == 0) {
 		std::vector<std::string> cmdlets = ParseCommand2(in, 2);
-		tuple<int, int> id = ConsoleStageIdToTuple(cmdlets[1]);
-		if (XMLStuff.StageData->bystagealt.count(id) == 0) { //stage 14 works without intervention, lol
-			super(in, out, player);
-			return;
-		}
-		else {
-			//super(in, out, player); //we still run it just in case I dunno, does nothing anyway
-			setstageoverloadid = get<0>(id);
-			setstageoverloadalt = get<1>(id);
-			g_Game->GetConsole()->RunCommand(string("stage 1"), out, player);
-			return;
+		if (cmdlets.size() > 1) {
+			tuple<int, int> id = ConsoleStageIdToTuple(cmdlets[1]);
+			if (XMLStuff.StageData->bystagealt.count(id) == 0) { //stage 14 works without intervention, lol
+				super(in, out, player);
+				return;
+			}
+			else {
+				//super(in, out, player); //we still run it just in case I dunno, does nothing anyway
+				setstageoverloadid = get<0>(id);
+				setstageoverloadalt = get<1>(id);
+				g_Game->GetConsole()->RunCommand(string("stage 1"), out, player);
+				return;
+			}
 		}
 	}
 	super(in, out, player);
 }
 
+const char* suffixes[36] = {
+	"",
+	"_basement",
+	"_cellar",
+	"_burningbasement",
+	"_caves",
+	"_catacombs",
+	"_floodedcaves",
+	"_depths",
+	"_necropolis",
+	"_dankdepths",
+	"_womb",
+	"_utero",
+	"_scarredwomb",
+	"_bluewomb",
+	"_sheol",
+	"_cathedral",
+	"_darkroom",
+	"_chest",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"", // void doesn't work, local stage ids are used
+	"_downpour",
+	"_dross",
+	"_mines",
+	"_ashpit",
+	"_mausoleum",
+	"_gehenna",
+	"_corpse",
+	"", // there will never be a mortis
+	"_home"
+};
+
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
+	super(Stage, Mode);
+
+	if (Stage < 36) {
+		this->_stages[Stage]._suffix = suffixes[Stage];
+	}
+}
 
 LUA_FUNCTION(Lua_SetCurrentFloorMusic)
 {
