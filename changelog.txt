@@ -9,6 +9,10 @@ Additions:
 		IsCollectibleBlocked(int itemID)
 	- Change to HasCollectible and GetCollectibleNum:
 		new optional boolean (IgnoreBlock), ignores collectible block when set to true
+* EntityTear:
+	- GetTearHaloSprite
+	- GetTearEffectSprite
+	- GetDeadEyeSprite
 * Input:
 	- GetDeviceNameByIdx
 * Isaac:
