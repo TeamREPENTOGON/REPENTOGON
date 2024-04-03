@@ -259,8 +259,7 @@ void EntityList_EL::Untie() {
 }
 
 bool Music::ValidateMusicID(int id, int& max) {
-	ptrdiff_t length = _maxBound - _minBound;
-	max = length / 96; // Size of the content of the array
+	max = _entries.size();
 
 	return id >= 0 && id < max;
 }

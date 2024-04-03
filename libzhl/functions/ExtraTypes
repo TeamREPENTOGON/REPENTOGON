@@ -55,6 +55,11 @@ TypeInfo std_vector_uint {
     Align 4;
 }; 
 
+TypeInfo vector_MusicEntry {
+    Size 12;
+    Align 4;
+}; 
+
 TypeInfo vector_Curse {
     Size 12;
     Align 4;

@@ -40,7 +40,7 @@ __thiscall void Music::UpdateVolume();
 "558beca1????????f30f1045":
 __thiscall void Music::VolumeSlide(float TargetVolume, float FadeRate);
 
-struct Music {
+struct Music depends (MusicEntry) {
 {{
 	inline void StopJingle() {
 		*(int*)((char*)this + 0x348) = 0;
@@ -49,11 +49,15 @@ struct Music {
 	
 	  bool LIBZHL_API ValidateMusicID(int id, int& max);
 }} 
+	unsigned int _currentStream : 0x0;
+	// i'll add StreamSet later
 	unsigned int _currentId : 0x30c;
 	unsigned int _queuedId : 0x310;
 	float _pitch : 0x314;
 	float _targetPitch : 0x318;
-	int _minBound : 0x31c;
-	int _maxBound : 0x320;
+	vector_MusicEntry _entries : 0x31c;
 	bool _enabled : 0x328;
+	// and Stream
+	float _jingleVolumeMaybe : 0x360;
+	int _jingleCountdownMaybe : 0x364;
 } : 0x368;
