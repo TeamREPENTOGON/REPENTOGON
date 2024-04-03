@@ -24,6 +24,7 @@ Additions:
 * RoomConfigSet:
 	* Acts like other ArrayProxy classes, but for RoomConfigRoom
 	* __len and Get method, Size const variable
+* All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
 v1.0.8c - 
 Fixes:
