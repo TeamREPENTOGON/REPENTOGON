@@ -313,7 +313,7 @@ struct GridCollisionCallbackInfo {
 };
 
 const std::unordered_map<int, const GridCollisionCallbackInfo> gridCollisionCallbacks = {
-	// {1, { 1171, 1172, lua::Metatables::ENTITY_PLAYER }},
+	{1, { 1171, 1172, lua::Metatables::ENTITY_PLAYER }},
 	{2, { 1173, 1174, lua::Metatables::ENTITY_TEAR }},
 	{3, { 1175, 1176, lua::Metatables::ENTITY_FAMILIAR }},
 	{4, { 1177, 1178, lua::Metatables::ENTITY_BOMB }},
@@ -450,8 +450,11 @@ void ASMPatchGroundGridCollisionCallback() {
 }
 
 // EntityGridCollisionClass.GRIDCOLL_NOPITS (6)
+bool __stdcall NoPitsGridCollisionCallbackHook(Entity* entity, const int gridRow, const int gridCol) {
+	const int gridIndex = gridRow * g_Game->GetCurrentRoom()->_gridWidth + gridCol;
+	return TriggerGridCollisionCallbacks(entity, gridIndex);
+}
 void ASMPatchNoPitsGridCollisionCallback() {
-	// SigScan scanner("50e8????????8bd08b45");
 	SigScan scanner("8b75??8b87????????f30f1045");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
@@ -460,10 +463,10 @@ void ASMPatchNoPitsGridCollisionCallback() {
 	ASMPatch patch;
 
 	patch.PreserveRegisters(savedRegisters)
-		.AddBytes("\x8B\x45\xB4")  // mov eax, dword ptr [ebp-0x4C]
-		.Push(ASMPatch::Registers::EAX)  // Push the grid index
+		.AddBytes("\xFF\x75\xDC")  // push dword ptr [ebp-0x24] (column)
+		.AddBytes("\xFF\x75\xE4")  // push dword ptr [ebp-0x1C] (row)
 		.Push(ASMPatch::Registers::EDI)  // Push the Entity*
-		.AddInternalCall(TriggerGridCollisionCallbacks)
+		.AddInternalCall(NoPitsGridCollisionCallbackHook)
 		.AddBytes("\x84\xC0") // test al, al
 		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x35)  // If call returned true, ignore collision
@@ -532,6 +535,56 @@ void ASMPatchWallCollisionCallback() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+// I wasn't able to find a safe place to obtain the player's collided grid index at the time of collision.
+// (I found the index a couple of times as offsets from EBP, but hard to guaruntee that those are safe to use.)
+// So instead, I have two patches, one that stores the grid index here, and one that actually runs the callbacks.
+// The patch that triggers the callback CANNOT be reached without triggering the first patch.
+int playerGridCollisionCurrentGridIndex = 0;
+
+void __stdcall PlayerGridCollisionTrackGridIndex(const int gridIndex) {
+	playerGridCollisionCurrentGridIndex = gridIndex;
+}
+void ASMPatchPlayerGridCollisionTrackGridIndex() {
+	SigScan scanner("81ffc00100007d??8b45");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI)  // Push the grid index
+		.AddInternalCall(PlayerGridCollisionTrackGridIndex)
+		.RestoreRegisters(savedRegisters)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x6))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0x6);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+int __stdcall PlayerGridCollisionCallbackHook(Entity_Player* player) {
+	return TriggerGridCollisionCallbacks(player, playerGridCollisionCurrentGridIndex);
+}
+void ASMPatchPlayerGridCollisionCallback() {
+	SigScan scanner("8b55??8b87????????8d0cd5");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI)  // Push the Entity_Player
+		.AddInternalCall(PlayerGridCollisionCallbackHook)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr - 0x2C3)  // If call returned true, ignore collision
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x9))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0x9);
+
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
 /* /////////////////////
 // Exposed function to apply the patches
 */ /////////////////////
@@ -547,7 +600,9 @@ void PatchGridCallbackShit()
 	ASMPatchNoPitsGridCollisionCallback();
 	ASMPatchPitsOnlyGridCollisionCallback();
 	ASMPatchWallCollisionCallback();
-	// TODO: Player Grid Collision Callback
+	
+	ASMPatchPlayerGridCollisionTrackGridIndex();
+	ASMPatchPlayerGridCollisionCallback();
 }
 
 //////////////////////////////////////////////
