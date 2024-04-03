@@ -228,10 +228,10 @@ namespace lua {
         extern LIBZHL_API const char* ProceduralItemManagerMT;
         extern LIBZHL_API const char* RngMT;
         extern LIBZHL_API const char* RoomMT;
+        extern LIBZHL_API const char* RoomConfigSetMT;
         extern LIBZHL_API const char* RoomConfigStageMT;
         extern LIBZHL_API const char* RoomDescriptorDoors;
         extern LIBZHL_API const char* RoomDescriptorDoorsConst;
-        extern LIBZHL_API const char* RoomSetMT;
         extern LIBZHL_API const char* RoomTransitionMT;
         extern LIBZHL_API const char* SaveMenuMT;
         extern LIBZHL_API const char* ScoreSheetMT;

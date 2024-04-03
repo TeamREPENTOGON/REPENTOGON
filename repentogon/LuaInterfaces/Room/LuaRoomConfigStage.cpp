@@ -49,7 +49,7 @@ LUA_FUNCTION(Lua_RoomConfigStageGetRoomSet)
 	
 	RoomSet** ud = (RoomSet**)lua_newuserdata(L, sizeof(RoomSet*));
 	*ud = &stage->_rooms[mode];
-	luaL_setmetatable(L, lua::metatables::RoomSetMT);
+	luaL_setmetatable(L, lua::metatables::RoomConfigSetMT);
 
 	return 1;
 }
@@ -73,10 +73,7 @@ LUA_FUNCTION(Lua_RoomConfigStageGetDisplayName)
 LUA_FUNCTION(Lua_RoomConfigStageSetDisplayName)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	if (lua_type(L, 2) != LUA_TSTRING) {
-		return luaL_argerror(L, 2, "Argument must be a string!");
-	}
-	stage->_displayName = lua_tostring(L, 2);
+	stage->_displayName = luaL_checkstring(L, 2);
 
 	return 0;
 }
@@ -92,10 +89,7 @@ LUA_FUNCTION(Lua_RoomConfigStageGetPlayerSpot)
 LUA_FUNCTION(Lua_RoomConfigStageSetPlayerSpot)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	if (lua_type(L, 2) != LUA_TSTRING) {
-		return luaL_argerror(L, 2, "Argument must be a string!");
-	}
-	stage->_playerSpot = lua_tostring(L, 2);
+	stage->_playerSpot = luaL_checkstring(L, 2);
 
 	return 0;
 }
@@ -111,10 +105,7 @@ LUA_FUNCTION(Lua_RoomConfigStageGetBossSpot)
 LUA_FUNCTION(Lua_RoomConfigStageSetBossSpot)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	if (lua_type(L, 2) != LUA_TSTRING) {
-		return luaL_argerror(L, 2, "Argument must be a string!");
-	}
-	stage->_bossSpot = lua_tostring(L, 2);
+	stage->_bossSpot = luaL_checkstring(L, 2);
 
 	return 0;
 }
@@ -130,10 +121,47 @@ LUA_FUNCTION(Lua_RoomConfigStageGetSuffix)
 LUA_FUNCTION(Lua_RoomConfigStageSetSuffix)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	if (lua_type(L, 2) != LUA_TSTRING) {
-		return luaL_argerror(L, 2, "Argument must be a string!");
+	stage->_suffix = luaL_checkstring(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomConfigStageGetXMLName)
+{
+	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	std::string* string = &stage->_rooms[0]._filepath;
+	lua_pushstring(L, string->substr(6).c_str());
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomConfigStageSetXMLName)
+{
+	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	std::string name = luaL_checkstring(L, 2);
+
+	stage->_rooms[0]._filepath = "rooms/" + name;
+	stage->_rooms[1]._filepath = "rooms/greed/" + name;
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_RoomConfigStageGetRoomSetLoaded)
+{
+	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	int mode = (int)luaL_optinteger(L, 2, 0);
+	if (mode < 0 || mode > 1) {
+		return luaL_error(L, "Invalid RoomSet mode %d", mode);
 	}
-	stage->_suffix = lua_tostring(L, 2);
+	lua_pushboolean(L, stage->_rooms[mode]._loaded);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomConfigStageUnload)
+{
+	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	stage->unload();
 
 	return 0;
 }
@@ -154,6 +182,10 @@ static void RegisterRoomConfigStage(lua_State* L) {
 		{ "GetSuffix", Lua_RoomConfigStageGetSuffix },
 		{ "SetSuffix", Lua_RoomConfigStageSetSuffix },
 		{ "GetRoomSet", Lua_RoomConfigStageGetRoomSet },
+		{ "GetXMLName", Lua_RoomConfigStageGetXMLName },
+		{ "SetXMLName", Lua_RoomConfigStageSetXMLName },
+		{ "IsLoaded", Lua_RoomConfigStageGetRoomSetLoaded },
+		{ "Unload", Lua_RoomConfigStageUnload },
 		{ NULL, NULL }
 	};
 
