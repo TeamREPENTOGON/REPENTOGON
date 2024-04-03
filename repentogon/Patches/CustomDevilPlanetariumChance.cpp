@@ -36,7 +36,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     PlayerManager* manager = g_Game->GetPlayerManager();
     RNG *rng = &manager->_rng;
     int flags = *g_Game->GetLevelStateFlags();
-    Room* room = *g_Game->GetCurrentRoom();
+    Room* room = g_Game->GetCurrentRoom();
     RoomDescriptor* desc = g_Game->GetRoomByIdx(g_Game->GetCurrentRoomIdx(), -1);
     EntityList* list = room->GetEntityList();
     bool hasActOfContrition = manager->FirstCollectibleOwner(COLLECTIBLE_ACT_OF_CONTRITION, &rng, true);

@@ -331,7 +331,7 @@ HOOK_METHOD(Game, Update, () -> void) {
 }
 
 bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::Metatables metatable, const int param, const int precallbackid, const int postcallbackid) {
-	GridEntity* gridEntity = (*g_Game->GetCurrentRoom())->GetGridEntity(gridIndex);
+	GridEntity* gridEntity = g_Game->GetCurrentRoom()->GetGridEntity(gridIndex);
 
 	// MC_PRE_X_GRID_COLLISION
 	if (CallbackState.test(precallbackid - 1000)) {
@@ -421,7 +421,7 @@ void ASMPatchBulletGridCollisionCallback() {
 
 // EntityGridCollisionClass.GRIDCOLL_GROUND (5)
 int __stdcall GroundGridCollisionCallbackHook(Entity* entity, const int gridIndex) {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	const int gridCol = room->GetGridCollision(gridIndex);
 	if (gridCol != 0 && TriggerGridCollisionCallbacks(entity, gridIndex)) {
 		// Ignore collision
@@ -474,7 +474,7 @@ void ASMPatchNoPitsGridCollisionCallback() {
 
 // EntityGridCollisionClass.GRIDCOLL_PITSONLY (7)
 int __stdcall PitsOnlyCollisionCallbackHook(Entity* entity, const int gridIndex) {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	const int gridCol = room->GetGridCollision(gridIndex);
 	if (gridCol != 1 && TriggerGridCollisionCallbacks(entity, gridIndex)) {
 		// Ignore collision
@@ -504,7 +504,7 @@ void ASMPatchPitsOnlyGridCollisionCallback() {
 // EntityGridCollisionClass.GRIDCOLL_WALLS (3)
 // Important for flying enemies colliding with pillars.
 int __stdcall WallCollisionCallbackHook(Entity* entity, const int gridIndex) {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	const int gridCol = room->GetGridCollision(gridIndex);
 	if ((gridCol == 4 || gridCol == 5) && room->_roomType != 16 && TriggerGridCollisionCallbacks(entity, gridIndex)) {
 		// Ignore collision
