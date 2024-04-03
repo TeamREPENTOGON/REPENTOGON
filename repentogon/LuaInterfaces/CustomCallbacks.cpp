@@ -164,11 +164,7 @@ HOOK_METHOD(HUD, Render, () -> void) {
 HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 	super();
 	const int callbackid = 1023;
-	bool menublock_prevstate=0;
-	if (MainMenuInputBlock::_enabled) {
-		menublock_prevstate = 1;
-		MainMenuInputBlock::_enabled = 0;
-	}
+	MainMenuInputBlock::_enabled = false;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
@@ -176,10 +172,10 @@ HOOK_METHOD(MenuManager, RenderButtonLayout, () -> void) {
 
 		lua::LuaCaller(L).push(callbackid).call(1);
 	}
-	if (menublock_prevstate) {
-		MainMenuInputBlock::_enabled = menublock_prevstate;
-		menublock_prevstate = 0;
-	}
+	MainMenuInputBlock::_enabled = true;
+	if ((this->_state | (1 << 8)) == this->_state) {
+		MainMenuInputBlock::_enabled = false;	//kill off if we are in the game transition
+	};
 }
 
 //Character menu render Callback end
