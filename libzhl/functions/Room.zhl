@@ -101,8 +101,8 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     inline RailType* GetRails() { return (RailType*)((char*)this + 0x7350); }
     inline RailType GetRailType(uint8_t gridIndex) { return GetRails()[gridIndex]; }
     inline void SetRailType(uint8_t gridIndex, RailType railType) { GetRails()[gridIndex] = railType; }
-    static bool LIBZHL_API IsValidRailType(lua_Integer rail);
-    inline bool IsValidGridIndex(lua_Integer index, bool includeWalls = true) const {
+    static bool LIBZHL_API IsValidRailType(int rail);
+    inline bool IsValidGridIndex(int index, bool includeWalls = true) const {
         return _descriptor->Data->IsValidGridIndex(index, includeWalls);
     }
     bool LIBZHL_API IsChampionBossSeed() const;

@@ -346,7 +346,8 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::M
 			.push(gridEntity, lua::Metatables::GRID_ENTITY)
 			.call(1);
 
-		if (!result && lua_isboolean(L, -1) && lua_toboolean(L, -1) == true) {
+		// why does lua_toboolean return an int wtf
+		if (!result && lua_isboolean(L, -1) && (bool)lua_toboolean(L, -1) == true) {
 			return true;
 		}
 	}

@@ -2910,7 +2910,7 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 			if (resTop == startTop + 1) {
 				if (lua_istable(L, -1)) {
 					lua_len(L, -1);
-					int len = lua_tointeger(L, -1);
+					int len = (int)lua_tointeger(L, -1);
 					lua_pop(L, 1);
 
 					if (len != 2) {
@@ -2919,7 +2919,7 @@ HOOK_METHOD(Level, SetStage, (int levelType, int stageType) -> void) {
 					}
 
 					lua_rawgeti(L, -1, 1);
-					int level = lua_tointeger(L, -1);
+					int level = (int)lua_tointeger(L, -1);
 					lua_pop(L, 1);
 					if (g_Game->IsGreedMode()) {
 						if (level < 1 || level > 7) {
@@ -3094,7 +3094,7 @@ HOOK_METHOD(Manager, Render, () -> void) {
 	super();
 }
 
-HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig* config, uint32_t seed, uint32_t unk) -> bool) {
+HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* config, uint32_t seed, uint32_t unk) -> bool) {
 	const int callbackid = 1137;
 	if (CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -3107,10 +3107,10 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig* config, u
 		room->context = nullptr;
 		room->room = slot;
 		
-		RoomConfig* other = nullptr;
+		RoomConfig_Room* other = nullptr;
 		lua::LuaResults results = caller.push(config, lua::Metatables::ROOM_CONFIG_ROOM).push(seed).call(1);
 		if (lua_isuserdata(L, -1)) {
-			auto opt = lua::TestUserdata<RoomConfig*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
+			auto opt = lua::TestUserdata<RoomConfig_Room*>(L, -1, lua::Metatables::ROOM_CONFIG_ROOM);
 
 			if (!opt) {
 				KAGE::LogMessage(2, "Invalid userdata returned in MC_PRE_LEVEL_PLACE_ROOM");

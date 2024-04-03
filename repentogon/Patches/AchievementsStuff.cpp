@@ -513,13 +513,13 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			sourcename->_color._blue = 1;
 			sourcename->_color._green = 1;
 			sourcename->_color._red = 1;
-			sourcename->_color._alpha = 0.8;
+			sourcename->_color._alpha = 0.8f;
 			sourcename->_center = true;
 			sourcename->_boxWidth = 900;
 			sourcename->_x = pos.x;
 			sourcename->_y = pos.y;
 			g_Manager->_font7_TeamMeat_10.DrawString(*sourcename);
-			float txtwidth = g_Manager->_font7_TeamMeat_10.GetStringWidth(sourcename->_text)/2;
+			float txtwidth = (float)g_Manager->_font7_TeamMeat_10.GetStringWidth(sourcename->_text)/2;
 			float x = 0;
 			float y = 100;
 			this->_cursorLeftSprite._scale = Vector(0.5, 0.5);

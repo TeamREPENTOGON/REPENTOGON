@@ -42,7 +42,7 @@ __thiscall void Game::Update();
 __thiscall bool Game::AchievementUnlocksDisallowed();
 
 "558bec83ec1c53568b75??578bf9":
-__thiscall bool Game::PlaceRoom(LevelGenerator_Room *room, RoomConfig *data, unsigned int Seed, int dimension);
+__thiscall bool Game::PlaceRoom(LevelGenerator_Room *room, RoomConfig_Room *data, unsigned int Seed, int dimension);
 
 "558bec83e4f8515356578bf96aff":
 __thiscall void Game::UpdateVisibility();
@@ -114,7 +114,7 @@ __stdcall void Game::Exit(bool ShouldSave);
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge) { {{
 	Game()
 	{
 		this->constructor();
@@ -142,8 +142,6 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
 	inline int GetGreedModeWave() { return *(int*)((char*)this + 0x181C4); }
 	
 	inline const unsigned int* GetLevelStateFlags() { return (const unsigned int*)((char*)this + 0x1822C); }
-		
-	inline RoomConfigHolder* GetRoomConfigHolder() { return (RoomConfigHolder*)((char*)this + 0x1879C); }
 	
 	inline RoomConfig* GetRoomConfig() { return (RoomConfig*)((char*)this + 0x1879C); }
 	
@@ -207,46 +205,46 @@ struct Game depends (Level, RoomDescriptor, RoomConfigHolder, PlayerManager, Con
     bool LIBZHL_API IsErased(int type, int variant, int subtype);
 }} 
 	//Level _level : 0x0;
-    uint32_t _stage : 0x0;
-    uint32_t _stageType : 0x4;
-    bool _bossChallenge : 0x8;
-    bool _devilRoomDisabled : 0x9;
-    uint32_t _curses : 0xC;
-    RoomDescriptor _gridRooms[507] : 0x14;
-    RoomDescriptor _negativeGridRooms[18] : 0x16c7c;
-    uint32_t _roomOffset[507] : 0x1796c;
-    uint32_t _nbRooms : 0x1815c;
-    uint32_t _startingRoomIdx : 0x18160;
-    Room* _room : 0x18190;
-    uint32_t _currentRoomIdx : 0x18194;
-    uint32_t _lastRoomIdx : 0x18198;
-    uint32_t _currentDimensionIdx : 0x1819c;
-    uint32_t _lastRoomDimensionIdx : 0x181a0;
-    uint32_t _lastBossRoomListIdx : 0x181a4;
-    uint32_t _leaveDoor : 0x181a8;
-    uint32_t _enterDoor : 0x181ac;
-    uint32_t _greedModeWave : 0x181c4;
-    unsigned int _stateFlags : 0x1822c;
-    uint32_t _greedModeTreasureRoomIdx : 0x18200;
-    RoomConfigHolder _roomConfigs : 0x1879c;
+	uint32_t _stage : 0x0;
+	uint32_t _stageType : 0x4;
+	bool _bossChallenge : 0x8;
+	bool _devilRoomDisabled : 0x9;
+	uint32_t _curses : 0xC;
+	RoomDescriptor _gridRooms[507] : 0x14;
+	RoomDescriptor _negativeGridRooms[18] : 0x16c7c;
+	uint32_t _roomOffset[507] : 0x1796c;
+	uint32_t _nbRooms : 0x1815c;
+	uint32_t _startingRoomIdx : 0x18160;
+	Room* _room : 0x18190;
+	uint32_t _currentRoomIdx : 0x18194;
+	uint32_t _lastRoomIdx : 0x18198;
+	uint32_t _currentDimensionIdx : 0x1819c;
+	uint32_t _lastRoomDimensionIdx : 0x181a0;
+	uint32_t _lastBossRoomListIdx : 0x181a4;
+	uint32_t _leaveDoor : 0x181a8;
+	uint32_t _enterDoor : 0x181ac;
+	uint32_t _greedModeWave : 0x181c4;
+	unsigned int _stateFlags : 0x1822c;
+	uint32_t _greedModeTreasureRoomIdx : 0x18200;
+	RoomConfig _roomConfig : 0x1879c;
 	ItemPool _itemPool : 0x1A5CC;
-    PlayerManager _playerManager : 0x1BA40;
+	PlayerManager _playerManager : 0x1BA40;
 	Seeds _seedEffects : 0x1bb04;
-    Console _console : 0x1bb60;
-    ItemOverlay _itemOverlay : 0x1bcc0;
+	Console _console : 0x1bb60;
+	ItemOverlay _itemOverlay : 0x1bcc0;
 	Leaderboard _leaderboard : 0x3d5f0;
 	int _frameCount : 0x1a30dc; // 0x1a30dc
-    int _treasureRoomsVisited : 0x1c3178;
-    int _planetariumsVisited : 0x1c317c;
+	int _treasureRoomsVisited : 0x1c3178;
+	int _planetariumsVisited : 0x1c317c;
 	bool _isRerun : 0x1c31a0;
 	bool _isDebug : 0x1c31a1;
-    Ambush _ambush : 0x1c31b8;
+	Ambush _ambush : 0x1c31b8;
 	DailyChallenge _dailyChallenge: 0x1c3204;
 	ScoreSheet _scoreSheet : 0x1c32b8;
-    uint32_t _difficulty : 0x243624;
+	uint32_t _difficulty : 0x243624;
 	bool _shouldLerpColorModState : 0x283b80;
-    ProceduralItemManager _proceduralItemManager : 0x283c20;
-    vector_ErasedEntities _erasedEntities : 0x283c14; 
+	ProceduralItemManager _proceduralItemManager : 0x283c20;
+	vector_ErasedEntities _erasedEntities : 0x283c14; 
 	bool  _triggerWindowResize : 0x1c3154;
 	unsigned int _gameStateFlags : 0x1c316c;
 	int _donationModGreed : 0x1c318c;

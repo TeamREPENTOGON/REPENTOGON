@@ -120,8 +120,8 @@ HOOK_METHOD(Level, InitializeDevilAngelRoom, (bool ForceAngel, bool ForceDevil) 
 		unsigned int doors = 0;
 		for (int i = 14; i < 16; i++) {
 			//printf("type #%d\n", i);
-			RoomConfigPtrVector rooms = g_Game->_roomConfigs.GetRooms(0, i, 13, 100, 100, 0, 20, &doors, 0, -1);
-			for (RoomConfig* p : rooms) {
+			RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, i, 13, 100, 100, 0, 20, &doors, 0, -1);
+			for (RoomConfig_Room* p : rooms) {
 				//printf("changing subtype of roomconfig at %p (var %d, subtype %d)\n", p, p->Variant, p->Subtype);
 				p->Subtype = 666;
 			}

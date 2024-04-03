@@ -575,8 +575,9 @@ struct ConsoleMega : ImGuiWindowObject {
 
                         case GOTO: {
                             unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
-                            RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
-                            RoomConfig* config = stage.configs;
+                            RoomConfig_Stage* stage = &g_Game->GetRoomConfig()->_stages[stbID];
+                            RoomSet* set = &stage->_rooms[g_Game->IsGreedMode() ? 1 : 0];
+                            RoomConfig_Room* config = set->_configs;
                             std::map<int, std::string> specialRoomTypes = {
                                 std::pair<int, std::string>(1, "default"),
                                 std::pair<int, std::string>(2, "shop"),
@@ -609,15 +610,16 @@ struct ConsoleMega : ImGuiWindowObject {
                                 std::pair<int, std::string>(29, "ultrasecret"),
                             };
 
-                            for (unsigned int i = 0; i < stage.nbRooms; ++i) {       
+                            for (unsigned int i = 0; i < set->_count; ++i) {
                                 entries.insert(AutocompleteEntry(std::string("d.") + std::to_string(config->Variant), config->Name));
                                 config++;
                             }
 
-                            RoomConfigs special = g_Game->GetRoomConfigHolder()->configs[0];
-                            config = special.configs;
+                            RoomConfig_Stage* special = &g_Game->GetRoomConfig()->_stages[0];
+                            RoomSet* specialSet = &stage->_rooms[g_Game->IsGreedMode() ? 1 : 0];
+                            config = specialSet->_configs;
 
-                            for (unsigned int i = 0; i < special.nbRooms; ++i) {
+                            for (unsigned int i = 0; i < specialSet->_count; ++i) {
                                 entries.insert(AutocompleteEntry(std::string("s.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
                                 config++;
                             }
