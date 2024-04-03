@@ -28,7 +28,7 @@ void LuaReset() {
 
     // Reset the lua data of all entities in the room before we continue.
     // Right now they're invalid, dangling pointers. Let's reset them.
-    Room* room = *g_Game->GetCurrentRoom();
+    Room* room = g_Game->GetCurrentRoom();
     EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
     unsigned int size = res->_size;
     lua_State* L = g_LuaEngine->_state;

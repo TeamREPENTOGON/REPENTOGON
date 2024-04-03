@@ -14,7 +14,7 @@ static int timerFnTable = -1;
 
 LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	int type = (int)luaL_checkinteger(L, 1);
 	int variant = (int)luaL_optinteger(L, 2, -1);
@@ -50,7 +50,7 @@ LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 
 LUA_FUNCTION(Lua_IsaacGetRoomEntitiesFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
 	lua_newtable(L);
 	unsigned int size = res->_size;
@@ -80,7 +80,7 @@ static void DummyQueryRadius(EntityList_EL* el, void* pos, int partition) {
 
 LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float radius = (float)luaL_checknumber(L, 2);
@@ -426,7 +426,7 @@ LUA_FUNCTION(Lua_IsaacClearBossHazards) {
 
 LUA_FUNCTION(Lua_IsaacFindInCapsule)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	unsigned int partition = (unsigned int)luaL_optinteger(L, 2, -1);
