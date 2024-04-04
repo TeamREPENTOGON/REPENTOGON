@@ -1,15 +1,11 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include <unordered_map>
 
-/*LUA_FUNCTION(Lua_GameGetRoomConfig) {
-	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	RoomConfig** ud = (RoomConfig**)lua_newuserdata(L, sizeof(RoomConfig*));
-	*ud = game->GetRoomConfig();
-	luaL_setmetatable(L, lua::metatables::RoomConfigMT);
-	return 1;
-}
-*/
+constexpr unsigned int BUFFER_STAGEID = 23;
+
+std::unordered_map<std::string, RoomSet> roomSetMap;
 
 LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	int n = lua_gettop(L);
@@ -18,10 +14,18 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	}
 
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
-	int stage = (int)luaL_checkinteger(L, 1);
+	int stage = -1;
+	RoomSet* set;
 
-	if (stage < 0 || stage > 36) {
-		return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
+	if (lua_type(L, 1) == LUA_TUSERDATA) {
+		set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	}
+	else
+	{
+		stage = (int)luaL_checkinteger(L, 1);
+		if (stage < 0 || stage > 36) {
+			return luaL_error(L, "StageID must be between 0 and 36 (both inclusive), got %d\n", stage);
+		}
 	}
 
 	int type = (int)luaL_checkinteger(L, 2);
@@ -35,12 +39,30 @@ LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 		difficulty = -1;
 	}
 
-	RoomConfig_Room* config = roomConfig->GetRoomByStageTypeAndVariant(stage, type, variant, difficulty);
-	if (!config) {
+	RoomConfig_Room* config;
+	if (stage == -1) {
+		// swap in
+		//RoomSet oldSet = roomConfig->_stages[BUFFER_STAGEID]._rooms[0];
+		roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = *set;
+
+		// get room
+		config = roomConfig->GetRoomByStageTypeAndVariant(BUFFER_STAGEID, type, variant, difficulty);
+
+		// swap out
+		*set = roomConfig->_stages[BUFFER_STAGEID]._rooms[0];
+		//roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = oldSet;
+	}
+	else
+	{
+		config = roomConfig->GetRoomByStageTypeAndVariant(stage, type, variant, difficulty);
+	}
+
+	if (config == NULL) {
 		lua_pushnil(L);
 	}
-	else {
-		lua::luabridge::UserdataPtr::push(L, config, lua::GetMetatableKey(lua::Metatables::CONST_ROOM_CONFIG_ROOM));
+	else
+	{
+		lua::luabridge::UserdataPtr::push(L, config, lua::Metatables::CONST_ROOM_CONFIG_ROOM);
 	}
 
 	return 1;
@@ -50,10 +72,18 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	int seed = (int)luaL_checkinteger(L, 1);
 	bool reduceWeight = lua::luaL_checkboolean(L, 2);
+	int stage = -1;
+	RoomSet* set;
 
-	int stage = (int)luaL_checkinteger(L, 3);
-	if (stage < 0 || (stage > 17 && stage < 27) || stage > 36) {
-		return luaL_error(L, "Invalid stage %d\n", stage);
+	if (lua_type(L, 3) == LUA_TUSERDATA) {
+		set = *lua::GetUserdata<RoomSet**>(L, 3, lua::metatables::RoomConfigSetMT);
+	}
+	else
+	{
+		stage = (int)luaL_checkinteger(L, 3);
+		if (stage < 0 || (stage > 17 && stage < 27) || stage > 36) {
+			return luaL_error(L, "Invalid stage %d\n", stage);
+		}
 	}
 
 	int type = (int)luaL_checkinteger(L, 4);
@@ -103,9 +133,32 @@ LUA_FUNCTION(Lua_RoomConfig_GetRandomRoom) {
 		return luaL_error(L, "Invalid mode %d\n", mode);
 	}
 
+	RoomConfig_Room* config;
+	if (stage == -1) {
+		// swap in
+		//RoomSet oldSet = roomConfig->_stages[BUFFER_STAGEID]._rooms[0];
+		roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = *set;
 
-	RoomConfig_Room* config = roomConfig->GetRandomRoom(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*)&doors, subtype, mode);
-	lua::luabridge::UserdataPtr::push(L, config, lua::Metatables::CONST_ROOM_CONFIG_ROOM);
+		// get room
+		config = roomConfig->GetRandomRoom(seed, reduceWeight, BUFFER_STAGEID, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*)&doors, subtype, mode);
+
+		// swap out
+		*set = roomConfig->_stages[BUFFER_STAGEID]._rooms[0];
+		//roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = oldSet;
+	}
+	else
+	{
+		config = roomConfig->GetRandomRoom(seed, reduceWeight, stage, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, (unsigned int*)&doors, subtype, mode);
+	}
+
+	if (config == NULL) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		lua::luabridge::UserdataPtr::push(L, config, lua::Metatables::CONST_ROOM_CONFIG_ROOM);
+	}
+
 	return 1;
 }
 
@@ -118,11 +171,63 @@ LUA_FUNCTION(Lua_RoomConfig_GetStage) {
 	}
 
 	RoomConfig_Stage* configStage = &roomConfig->_stages[stage];
-	printf("%p, %p, %d\n", roomConfig, configStage, configStage->_musicId);
+	//printf("%p, %p, %d\n", roomConfig, configStage, configStage->_musicId);
 
 	RoomConfig_Stage** ud = (RoomConfig_Stage**)lua_newuserdata(L, sizeof(RoomConfig_Stage*));
 	*ud = configStage;
 	luaL_setmetatable(L, lua::metatables::RoomConfigStageMT);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomConfig_LoadBinary) {
+	RoomConfig* roomConfig = g_Game->GetRoomConfig();
+	const char* path = luaL_checkstring(L, 1);
+	const char* id = luaL_checkstring(L, 2);
+
+	// store this, it's going to be overwritten in a moment
+	//RoomSet oldSet = roomConfig->_stages[BUFFER_STAGEID]._rooms[0];
+
+	RoomSet newSet;
+	newSet._filepath = path;
+	roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = newSet;
+
+	std::pair<std::unordered_map<std::string, RoomSet>::iterator, bool> itr;
+
+	// switcharoo
+	roomConfig->LoadStageBinary(BUFFER_STAGEID, 0);
+	itr = roomSetMap.insert({ std::string(id), roomConfig->_stages[BUFFER_STAGEID]._rooms[0] });
+
+	// restore old set
+	//roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = oldSet;
+
+	if (!itr.second) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		RoomSet** ud = (RoomSet**)lua_newuserdata(L, sizeof(RoomSet*));
+		*ud = &itr.first._Ptr->_Myval.second;
+		luaL_setmetatable(L, lua::metatables::RoomConfigSetMT);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomConfig_GetBinary) {
+	RoomConfig* roomConfig = g_Game->GetRoomConfig();
+	const char* id = luaL_checkstring(L, 1);
+	std::unordered_map<std::string, RoomSet>::const_iterator itr = roomSetMap.find(std::string(id));
+
+	if (itr == roomSetMap.end()) {
+		lua_pushnil(L);
+	}
+	else
+	{
+		const RoomSet** ud = (const RoomSet**)lua_newuserdata(L, sizeof(RoomSet*));
+		*ud = &itr->second;
+		luaL_setmetatable(L, lua::metatables::RoomConfigSetMT);
+	}
+
 	return 1;
 }
 
@@ -132,6 +237,8 @@ static void RegisterRoomConfig(lua_State* L) {
 	lua::TableAssoc(L, "GetRoomByStageTypeAndVariant", Lua_RoomConfig_GetRoomByStageTypeAndVariant);
 	lua::TableAssoc(L, "GetRandomRoom", Lua_RoomConfig_GetRandomRoom);
 	lua::TableAssoc(L, "GetStage", Lua_RoomConfig_GetStage);
+	lua::TableAssoc(L, "LoadBinary", Lua_RoomConfig_LoadBinary);
+	lua::TableAssoc(L, "GetBinary", Lua_RoomConfig_GetBinary);
 	lua_setglobal(L, "RoomConfig");
 }
 
