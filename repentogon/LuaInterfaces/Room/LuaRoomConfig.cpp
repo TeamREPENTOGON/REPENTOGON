@@ -231,6 +231,23 @@ LUA_FUNCTION(Lua_RoomConfig_GetBinary) {
 	return 1;
 }
 
+void ResetRoomWeights(RoomSet* set) {
+	for (unsigned int i = 0; i < set->_count; i++) {
+		set->_configs[i].Weight = set->_configs[i].InitialWeight;
+	}
+}
+
+HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state) -> void, __stdcall) {
+	if (state == 0) {
+		for (auto i = roomSetMap.begin(); i != roomSetMap.end(); i++) {
+			ResetRoomWeights(&i->second);
+		}
+	}
+
+	super(state);
+}
+
+
 static void RegisterRoomConfig(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomConfig", Lua_GameGetRoomConfig);
 	lua_newtable(L);
