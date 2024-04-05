@@ -3,9 +3,13 @@
 #include "HookSystem.h"
 #include <unordered_map>
 
+#include "../repentogon/Patches/XMLData.h"
+
 constexpr unsigned int BUFFER_STAGEID = 23;
 
-std::unordered_map<std::string, RoomSet> roomSetMap;
+std::unordered_map<std::string, RoomSet> binaryMap;
+//std::unordered_map<std::string, RoomConfig_Stage> customStageMap;
+//std::unordered_map<int, RoomConfig_Stage> baseStageMap;
 
 LUA_FUNCTION(Lua_RoomConfig_GetRoomByStageTypeAndVariant) {
 	int n = lua_gettop(L);
@@ -179,6 +183,59 @@ LUA_FUNCTION(Lua_RoomConfig_GetStage) {
 	return 1;
 }
 
+//
+
+LUA_FUNCTION(Lua_RoomConfig_LoadStage) {
+	RoomConfig* roomConfig = g_Game->GetRoomConfig();
+	const char* name = luaL_checkstring(L, 1);
+
+	XMLAttributes xmlData = XMLStuff.StageData->GetNodeByName(std::string(name));
+
+	if (xmlData["id"] != "") {
+		std::string binary = xmlData["root"] + xmlData["path"];
+		std::string greedBinary = xmlData["greedroot"] + xmlData["path"];
+		std::string gfxRoot = xmlData["bossgfxroot"];
+		std::string playerSpot = gfxRoot + xmlData["playerspot"];
+		std::string bossSpot = gfxRoot + xmlData["playerspot"];
+		int musicId = stoi(xmlData["music"]);
+		int backdropId = stoi(xmlData["backdrop"]);
+		int oldId = stoi(xmlData["basestage"]);
+
+		/*
+		RoomConfig_Stage stage;
+		stage._id = oldId;
+		stage._rooms[0]._filepath = binary;
+		stage._rooms[1]._filepath = greedBinary;
+		stage._backdrop = backdropId;
+		stage._displayName = xmlData["name"];
+		stage._playerSpot = playerSpot;
+		stage._bossSpot = bossSpot;
+		stage._musicId = musicId;
+		*/
+
+		RoomConfig_Stage* oldStage = &roomConfig->_stages[oldId];
+		oldStage->_rooms[0]._filepath = binary;
+		oldStage->_rooms[1]._filepath = greedBinary;
+		oldStage->_backdrop = backdropId;
+		oldStage->_displayName = xmlData["name"];
+		oldStage->_playerSpot = playerSpot;
+		oldStage->_bossSpot = bossSpot;
+		oldStage->_musicId = musicId;
+		
+		///baseStageMap.insert({ oldId, roomConfig->_stages[oldId] });
+		///customStageMap.insert({ stage._displayName, stage });
+
+		///roomConfig->_stages[oldId] = stage;
+
+		lua_pushboolean(L, true);
+	}
+	else {
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_RoomConfig_LoadBinary) {
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	const char* path = luaL_checkstring(L, 1);
@@ -195,7 +252,7 @@ LUA_FUNCTION(Lua_RoomConfig_LoadBinary) {
 
 	// switcharoo
 	roomConfig->LoadStageBinary(BUFFER_STAGEID, 0);
-	itr = roomSetMap.insert({ std::string(id), roomConfig->_stages[BUFFER_STAGEID]._rooms[0] });
+	itr = binaryMap.insert({ std::string(id), roomConfig->_stages[BUFFER_STAGEID]._rooms[0] });
 
 	// restore old set
 	//roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = oldSet;
@@ -216,9 +273,9 @@ LUA_FUNCTION(Lua_RoomConfig_LoadBinary) {
 LUA_FUNCTION(Lua_RoomConfig_GetBinary) {
 	RoomConfig* roomConfig = g_Game->GetRoomConfig();
 	const char* id = luaL_checkstring(L, 1);
-	std::unordered_map<std::string, RoomSet>::const_iterator itr = roomSetMap.find(std::string(id));
+	std::unordered_map<std::string, RoomSet>::const_iterator itr = binaryMap.find(std::string(id));
 
-	if (itr == roomSetMap.end()) {
+	if (itr == binaryMap.end()) {
 		lua_pushnil(L);
 	}
 	else
@@ -239,7 +296,7 @@ void ResetRoomWeights(RoomSet* set) {
 
 HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state) -> void, __stdcall) {
 	if (state == 0) {
-		for (auto i = roomSetMap.begin(); i != roomSetMap.end(); i++) {
+		for (auto i = binaryMap.begin(); i != binaryMap.end(); i++) {
 			ResetRoomWeights(&i->second);
 		}
 	}
@@ -247,13 +304,13 @@ HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state) -> void, __stdcall) {
 	super(state);
 }
 
-
 static void RegisterRoomConfig(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetRoomConfig", Lua_GameGetRoomConfig);
 	lua_newtable(L);
 	lua::TableAssoc(L, "GetRoomByStageTypeAndVariant", Lua_RoomConfig_GetRoomByStageTypeAndVariant);
 	lua::TableAssoc(L, "GetRandomRoom", Lua_RoomConfig_GetRandomRoom);
 	lua::TableAssoc(L, "GetStage", Lua_RoomConfig_GetStage);
+	lua::TableAssoc(L, "LoadStage", Lua_RoomConfig_LoadStage);
 	lua::TableAssoc(L, "LoadBinary", Lua_RoomConfig_LoadBinary);
 	lua::TableAssoc(L, "GetBinary", Lua_RoomConfig_GetBinary);
 	lua_setglobal(L, "RoomConfig");
