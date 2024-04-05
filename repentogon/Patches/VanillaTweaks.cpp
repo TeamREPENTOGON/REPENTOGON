@@ -17,10 +17,10 @@ HOOK_METHOD(Entity_Slot, TakeDamage, (float Damage, unsigned long long DamageFla
 // Allow Void to have its own rooms. 
 // By default, the void path is "rooms/01.Basement.xml" which is not ideal!
 // Redirect to "rooms/26.The Void_ex.xml" since the game already has a "rooms/26.The Void.xml" that hasn't been tested.
-HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool) {
 	if (Stage == 26 && g_Game->GetRoomConfig()->_stages[26]._rooms[Mode]._filepath == "rooms/01.Basement.xml")
 		g_Game->GetRoomConfig()->_stages[26]._rooms[Mode]._filepath = "rooms/26.The Void_ex.xml";
-	super(Stage, Mode);
+	return super(Stage, Mode);
 }
 
 // Force achievements to be unlockable (expect outside of game mode)

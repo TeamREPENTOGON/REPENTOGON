@@ -54,6 +54,19 @@ LUA_FUNCTION(Lua_RoomConfigStageGetRoomSet)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomConfigStageSetRoomSet)
+{
+	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 2, lua::metatables::RoomConfigSetMT);
+	int mode = (int)luaL_optinteger(L, 3, 0);
+	if (mode < 0 || mode > 1) {
+		return luaL_error(L, "Invalid RoomSet mode %d", mode);
+	}
+	stage->_rooms[mode] = *set;
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_RoomConfigStageGetID)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
@@ -182,6 +195,7 @@ static void RegisterRoomConfigStage(lua_State* L) {
 		{ "GetSuffix", Lua_RoomConfigStageGetSuffix },
 		{ "SetSuffix", Lua_RoomConfigStageSetSuffix },
 		{ "GetRoomSet", Lua_RoomConfigStageGetRoomSet },
+		{ "SetRoomSet", Lua_RoomConfigStageSetRoomSet },
 		{ "GetXMLName", Lua_RoomConfigStageGetXMLName },
 		{ "SetXMLName", Lua_RoomConfigStageSetXMLName },
 		{ "IsLoaded", Lua_RoomConfigStageGetRoomSetLoaded },

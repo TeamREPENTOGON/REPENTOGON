@@ -265,12 +265,14 @@ const char* suffixes[36] = {
 	"_home"
 };
 
-HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
-	super(Stage, Mode);
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool) {
+	bool res = super(Stage, Mode);
 
 	if (Stage < 36) {
 		this->_stages[Stage]._suffix = suffixes[Stage];
 	}
+	
+	return res;
 }
 
 LUA_FUNCTION(Lua_SetCurrentFloorMusic)
