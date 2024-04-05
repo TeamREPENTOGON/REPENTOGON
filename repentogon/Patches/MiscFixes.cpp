@@ -50,3 +50,7 @@ HOOK_METHOD(Entity_Familiar, AddToDelayed, () -> void) {
 	}
 	super();
 }
+HOOK_METHOD(Entity_Player, Update, ()->void) {
+	super();
+	return;
+};
