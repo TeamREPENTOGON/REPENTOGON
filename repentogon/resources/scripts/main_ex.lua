@@ -1153,6 +1153,7 @@ end
 
 
 rawset(Isaac, "GetEntityConfig", function() return EntityConfig end)
+RoomConfigHolder = RoomConfig  -- Backwards compatability
 
 -- Reset Imgui Data after reload of all mods
 ImGui.Reset()

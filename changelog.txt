@@ -33,6 +33,9 @@ Additions:
 	* __len and Get method, Size const variable
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
+Fixes:
+* Fixed incorrect declaration for ItemConfig::GetTaggedItems
+/newline/
 v1.0.8c - 
 Fixes:
 * Fixed adding a callback function with an optional param to a vanilla callback that does not support optional params leading to that function never being called, where it used to previously.
