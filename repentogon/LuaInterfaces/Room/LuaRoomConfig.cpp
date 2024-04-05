@@ -12,6 +12,8 @@ std::unordered_map<std::string, RoomSet> binaryMap;
 bool stageOverwritten[37] = { false };
 
 RoomSet* LoadBinary(RoomConfig* roomConfig, std::string* path) {
+	ZHL::Logger logger(true);
+	logger.Log("Loading binary %s\n", path->c_str());
 	RoomSet newSet;
 	newSet._filepath = *path;
 	roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = newSet;
@@ -27,6 +29,9 @@ RoomSet* LoadBinary(RoomConfig* roomConfig, std::string* path) {
 }
 
 RoomSet* GetBinary(std::string* path) {
+	ZHL::Logger logger(true);
+	logger.Log("Getting binary for path %s\n", path->c_str());
+
 	std::unordered_map<std::string, RoomSet>::const_iterator itr = binaryMap.find(*path);
 
 	if (itr != binaryMap.end()) {
@@ -51,6 +56,121 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int stage, unsigned int mode)
 	}
 
 	return res;
+}
+
+void SwapStage(RoomConfig* roomConfig, XMLAttributes xmlData, int stageId) {
+	std::string binary = xmlData["root"] + xmlData["path"];
+	std::string greedBinary = xmlData["greedroot"] + xmlData["path"];
+	std::string gfxRoot = xmlData["bossgfxroot"];
+	std::string playerSpot = gfxRoot + xmlData["playerspot"];
+	std::string bossSpot = gfxRoot + xmlData["playerspot"];
+	int musicId = stoi(xmlData["music"]);
+	int backdropId = stoi(xmlData["backdrop"]);
+
+	ZHL::Logger logger(true);
+	logger.Log("\nLOADING STAGE: id %d, path %s, greed path %s, gfx path %s, playerSpot %s, bossSpot %s, musicId %d, backDropId %d\n", stageId, binary.c_str(), greedBinary.c_str(), gfxRoot.c_str(), playerSpot.c_str(), bossSpot.c_str(), musicId, backdropId);
+
+	RoomConfig_Stage* stage = &roomConfig->_stages[stageId];
+	std::unordered_map<std::string, RoomSet>::const_iterator itr;
+	for (size_t i = 0; i < 2; i++)
+	{
+		// :goblinPls:P:goblinPls:A:goblinPls:I:goblinPls:N:goblinPls:
+		std::string path;
+		if (i)
+			path = greedBinary;
+		else
+			path = binary;
+
+		logger.Log("RoomSet %d\n");
+		if (stage->_rooms[i]._loaded)
+		{
+			logger.Log("already loaded\n");
+			itr = binaryMap.find(stage->_rooms[i]._filepath);
+			if (itr == binaryMap.end()) {
+				// somehow hasn't been inserted yet, do so
+				logger.Log("inserting filepath %s\n", stage->_rooms[i]._filepath.c_str());
+				binaryMap.insert({ stage->_rooms[i]._filepath, stage->_rooms[i] });
+			}
+			else
+			{
+				// update with current copy
+				logger.Log("updating with existing copy\n");
+				itr._Ptr->_Myval.second = stage->_rooms[i];
+			}
+		}
+		else
+		{
+			logger.Log("not loaded yet\n");
+			RoomSet* baseSet = LoadBinary(roomConfig, &stage->_rooms[i]._filepath);
+			if (baseSet != nullptr)
+				binaryMap.insert({ stage->_rooms[i]._filepath, *baseSet });
+			else
+				logger.Log("LoadBinary failed\n");
+		}
+
+		RoomSet* set = GetBinary(&path);
+		if (set != nullptr) {
+			logger.Log("replacing with existing RoomSet, %s\n", set->_filepath.c_str());
+			stage->_rooms[i] = *set;
+		}
+		else
+		{
+			logger.Log("loading new binary to overwrite\n");
+			RoomSet* newBinary = LoadBinary(roomConfig, &path);
+			if (newBinary != nullptr) {
+				logger.Log("loading successful, %s\n", newBinary->_filepath.c_str());
+				stage->_rooms[i] = *newBinary;
+			}
+			else
+			{
+				logger.Log("LoadBinary failed\n");
+			}
+		}
+	}
+
+	stage->_backdrop = backdropId;
+	stage->_displayName = xmlData["name"];
+	stage->_playerSpot = playerSpot;
+	stage->_bossSpot = bossSpot;
+	stage->_suffix = xmlData["suffix"];
+	stage->_musicId = musicId;
+
+	stageOverwritten[stageId] = !stageOverwritten[stageId];
+	logger.Log("we're done here\n\n");
+}
+
+LUA_FUNCTION(Lua_RoomConfig_LoadStage) {
+	RoomConfig* roomConfig = g_Game->GetRoomConfig();
+	const char* name = luaL_checkstring(L, 1);
+
+	XMLAttributes xmlData = XMLStuff.StageData->GetNodeByName(std::string(name));
+
+	if (xmlData["basestage"] != "" && !stageOverwritten[stoi(xmlData["basestage"])]) {
+		SwapStage(roomConfig, xmlData, stoi(xmlData["basestage"]));
+		lua_pushboolean(L, true);
+	}
+	else {
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_RoomConfig_RestoreStage) {
+	RoomConfig* roomConfig = g_Game->GetRoomConfig();
+	int id = (int)luaL_checkinteger(L, 1);
+
+	XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(id);
+
+	if (xmlData["id"] != "" && stageOverwritten[stoi(xmlData["id"])]) {
+		SwapStage(roomConfig, xmlData, stoi(xmlData["id"]));
+		lua_pushboolean(L, true);
+	}
+	else {
+		lua_pushboolean(L, false);
+	}
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomConfig_GetStage) {
@@ -291,8 +411,8 @@ static void RegisterRoomConfig(lua_State* L) {
 	lua::TableAssoc(L, "GetRoomByStageTypeAndVariant", Lua_RoomConfig_GetRoomByStageTypeAndVariant);
 	lua::TableAssoc(L, "GetRandomRoom", Lua_RoomConfig_GetRandomRoom);
 	lua::TableAssoc(L, "GetStage", Lua_RoomConfig_GetStage);
-	//lua::TableAssoc(L, "LoadStage", Lua_RoomConfig_LoadStage);
-	//lua::TableAssoc(L, "RestoreStage", Lua_RoomConfig_RestoreStage);
+	lua::TableAssoc(L, "LoadStage", Lua_RoomConfig_LoadStage);
+	lua::TableAssoc(L, "RestoreStage", Lua_RoomConfig_RestoreStage);
 	lua::TableAssoc(L, "LoadBinary", Lua_RoomConfig_LoadBinary);
 	lua::TableAssoc(L, "GetBinary", Lua_RoomConfig_GetBinary);
 	lua_setglobal(L, "RoomConfig");
