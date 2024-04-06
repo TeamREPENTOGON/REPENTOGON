@@ -40,7 +40,7 @@ RoomSet* LoadBinary(RoomConfig* roomConfig, std::string* path) {
 
 RoomSet* GetBinary(std::string* path) {
 	ZHL::Logger logger(true);
-	logger.Log("[INFO] Attempting to grab binary \"%s\" from cache\n", path->c_str());
+	logger.Log("[INFO] Attempting to get binary \"%s\" from cache\n", path->c_str());
 
 	std::unordered_map<std::string, RoomSet>::const_iterator itr = binaryMap.find(*path);
 
@@ -50,7 +50,7 @@ RoomSet* GetBinary(std::string* path) {
 		return ret;
 	}
 
-	logger.Log("[INFO] Binary \"%s\" not in cache\n");
+	logger.Log("[INFO] Binary \"%s\" not in cache\n", path->c_str());
 	return nullptr;
 }
 
