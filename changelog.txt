@@ -23,6 +23,8 @@ Additions:
 * MenuManager:
 	- SetInputMask(int mask) for use with the new ButtonActionBitwise enum, selectively allows/disallows the game's menu read certain inputs, useful for custom menus
 	- GetInputMask()
+* MinimapState Enum:
+	- Used for Minimap.SetState() and Minimap.GetState().
 * RoomConfig:
 	RoomConfig:GetStage(StbType)
 * RoomConfigStage
