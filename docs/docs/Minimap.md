@@ -43,7 +43,7 @@ ___
 
 ___
 ### GetState () {: aria-label='Functions' }
-#### int GetState ( ) {: .copyable aria-label='Functions' }
+#### [MinimapState](./enums/MinimapState.md) GetState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetHoldTime () {: aria-label='Functions' }
@@ -59,4 +59,4 @@ ___
 
 ___
 ### SetState () {: aria-label='Functions' }
-#### void SetState ( int State ) {: .copyable aria-label='Functions' }
+#### void SetState ( [MinimapState](./enums/MinimapState.md) State ) {: .copyable aria-label='Functions' }

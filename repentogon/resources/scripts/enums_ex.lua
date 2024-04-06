@@ -2608,6 +2608,12 @@ BlendType = {
 	OVERLAY = 4,
 }
 
+MinimapState = {
+	NORMAL = 0,
+	EXPANDED_OPAQUE = 1,
+	EXPANDED = 2
+}
+
 --deprecated enums
 
 Achievement.REVERSED_THE_HEIROPHANT = 529
