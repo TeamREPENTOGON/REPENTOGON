@@ -78,8 +78,9 @@ LUA_FUNCTION(Lua_RoomConfigStageGetID)
 LUA_FUNCTION(Lua_RoomConfigStageGetDisplayName)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	lua_pushstring(L, stage->_displayName.c_str());
-
+	std::string* name = &stage->_displayName;
+	lua_pushstring(L, name->empty() ? "" : name->c_str());
+	
 	return 1;
 }
 
@@ -94,7 +95,8 @@ LUA_FUNCTION(Lua_RoomConfigStageSetDisplayName)
 LUA_FUNCTION(Lua_RoomConfigStageGetPlayerSpot)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	lua_pushstring(L, stage->_playerSpot.c_str());
+	std::string* name = &stage->_playerSpot;
+	lua_pushstring(L, name->empty() ? "" : name->c_str());
 
 	return 1;
 }
@@ -110,7 +112,8 @@ LUA_FUNCTION(Lua_RoomConfigStageSetPlayerSpot)
 LUA_FUNCTION(Lua_RoomConfigStageGetBossSpot)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	lua_pushstring(L, stage->_bossSpot.c_str());
+	std::string* name = &stage->_bossSpot;
+	lua_pushstring(L, name->empty() ? "" : name->c_str());
 
 	return 1;
 }
@@ -126,7 +129,8 @@ LUA_FUNCTION(Lua_RoomConfigStageSetBossSpot)
 LUA_FUNCTION(Lua_RoomConfigStageGetSuffix)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	lua_pushstring(L, stage->_suffix.c_str());
+	std::string* name = &stage->_suffix;
+	lua_pushstring(L, name->empty() ? "" : name->c_str());
 
 	return 1;
 }
@@ -142,19 +146,30 @@ LUA_FUNCTION(Lua_RoomConfigStageSetSuffix)
 LUA_FUNCTION(Lua_RoomConfigStageGetXMLName)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
-	std::string* string = &stage->_rooms[0]._filepath;
-	lua_pushstring(L, string->substr(6).c_str());
+	int mode = (int)luaL_optinteger(L, 2, 0);
+	if (mode < 0 || mode > 1) {
+		return luaL_error(L, "Invalid RoomSet mode %d", mode);
+	}
 
+	std::string* name = &stage->_rooms[mode]._filepath;
+	lua_pushstring(L, name->empty() ? "" : name->c_str());
+	
 	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomConfigStageSetXMLName)
 {
 	RoomConfig_Stage* stage = *lua::GetUserdata<RoomConfig_Stage**>(L, 1, lua::metatables::RoomConfigStageMT);
+	int mode = (int)luaL_optinteger(L, 2, -1);
+	if (mode > 1) {
+		mode = -1;
+	}
 	std::string name = luaL_checkstring(L, 2);
 
-	stage->_rooms[0]._filepath = "rooms/" + name;
-	stage->_rooms[1]._filepath = "rooms/greed/" + name;
+	if (mode == -1 || mode == 0)
+		stage->_rooms[0]._filepath = name;
+	if (mode == -1 || mode == 1)
+		stage->_rooms[1]._filepath = name;
 
 	return 0;
 }

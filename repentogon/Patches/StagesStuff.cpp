@@ -226,55 +226,6 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	super(in, out, player);
 }
 
-const char* suffixes[36] = {
-	"",
-	"_basement",
-	"_cellar",
-	"_burningbasement",
-	"_caves",
-	"_catacombs",
-	"_floodedcaves",
-	"_depths",
-	"_necropolis",
-	"_dankdepths",
-	"_womb",
-	"_utero",
-	"_scarredwomb",
-	"_bluewomb",
-	"_sheol",
-	"_cathedral",
-	"_darkroom",
-	"_chest",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"", // void doesn't work, local stage ids are used
-	"_downpour",
-	"_dross",
-	"_mines",
-	"_ashpit",
-	"_mausoleum",
-	"_gehenna",
-	"_corpse",
-	"", // there will never be a mortis
-	"_home"
-};
-
-HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool) {
-	bool res = super(Stage, Mode);
-
-	if (Stage < 36) {
-		this->_stages[Stage]._suffix = suffixes[Stage];
-	}
-	
-	return res;
-}
-
 LUA_FUNCTION(Lua_SetCurrentFloorMusic)
 {
 	if (!lua_isnumber(L, 1)) { return luaL_error(L, "Expected MusicId as parameter #1, got %s", lua_typename(L, lua_type(L, 1))); }
