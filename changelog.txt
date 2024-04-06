@@ -35,6 +35,9 @@ Additions:
 	* __len and Get method, Size const variable
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
+Fixes:
+	* Fixed bonehearts not displaying correctly when set through players.xml
+/newline/
 Modified:
 * Game:ShowGenericLeaderboard no longer fades to main menu
 /newline/
