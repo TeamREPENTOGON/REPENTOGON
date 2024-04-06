@@ -157,6 +157,7 @@ nav:
     - Language: enums/Language.md
     - LineCheckMode: enums/LineCheckMode.md
     - MainMenuType: enums/MainMenuType.md
+    - MinimapState: enums/MinimapState.md
     - ModCallbacks: enums/ModCallbacks.md
     - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
