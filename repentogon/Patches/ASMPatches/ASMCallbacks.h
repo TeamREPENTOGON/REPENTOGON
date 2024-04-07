@@ -17,3 +17,4 @@ void ASMPatchPrePickupVoidedAbyss();
 void ASMPatchPrePickupComposted();
 void ASMPatchPostChampionRegenCallback();
 void ASMPatchTrinketRender();
+void ASMPatchPickupUpdatePickupGhosts();

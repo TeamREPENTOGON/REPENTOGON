@@ -904,3 +904,49 @@ void ASMPatchTrinketRender() {
 
 		sASMPatcher.PatchAt(addr, &patch);
 }
+
+bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) { 
+	const int callbackid = 1335;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+
+	return (g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_GUPPYS_EYE, nullptr, true) != nullptr && ((pickup->IsChest(pickup->_variant) && pickup->_subtype != 0) || (pickup->_variant == 69 && !pickup->IsDead())));
+
+}
+
+void ASMPatchPickupUpdatePickupGhosts() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan signature("e8????????85c00f84????????8b4e2ce8????????");
+	signature.Scan();
+
+	void* addr = signature.GetAddress();
+
+	printf("[REPENTOGON] Patching Pickup::UpdatePickupGhosts at %p\n", addr);
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // pickup
+		.AddInternalCall(RunPickupUpdatePickupGhostsCallback)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
+		//.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
+		.AddRelativeJump((char*)addr + 0xCA);
+	sASMPatcher.PatchAt(addr, &patch);
+}

@@ -86,6 +86,7 @@ void PerformASMPatches() {
 	ASMPatchPrePickupComposted();
 	ASMPatchPostChampionRegenCallback();
 	ASMPatchTrinketRender();
+	ASMPatchPickupUpdatePickupGhosts();
 
 	// Delirium
 	delirium::AddTransformationCallback();
