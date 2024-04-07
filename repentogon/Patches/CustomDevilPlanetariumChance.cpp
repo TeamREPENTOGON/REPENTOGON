@@ -36,7 +36,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     PlayerManager* manager = g_Game->GetPlayerManager();
     RNG *rng = &manager->_rng;
     int flags = *g_Game->GetLevelStateFlags();
-    Room* room = *g_Game->GetCurrentRoom();
+    Room* room = g_Game->GetCurrentRoom();
     RoomDescriptor* desc = g_Game->GetRoomByIdx(g_Game->GetCurrentRoomIdx(), -1);
     EntityList* list = room->GetEntityList();
     bool hasActOfContrition = manager->FirstCollectibleOwner(COLLECTIBLE_ACT_OF_CONTRITION, &rng, true);
@@ -210,6 +210,25 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     if (g_Game->GetDailyChallenge()._id) {
         return originalChance;
     }
+
+    // ** VANILLA FIX **
+    // Always return 0.0 if Telescope Lens is not available in a run 
+    // This seems to be a good check for every case any planetarium cannot spawn, besides the challenges case. It accounts for if planetariums are unlocked, and if the game is Greed Mode
+    // Using this method also allows mods to intuitively bypass it
+    if (g_Manager->GetItemConfig()->GetTrinket(152)->IsAvailableEx((152 & 255 ^ 1) * 2 - 3) == false) {
+        return 0.0f;
+    }
+
+    // ** VANILLA FIX **
+    // Always return 0.0 if treasure rooms cannot spawn in a challenge, as that makes planetariums unable to spawn as well
+    unsigned int challenge = g_Game->GetChallenge();
+    if (challenge != 0x0) {
+        ChallengeParam* chalpram = g_Manager->GetChallengeParams(challenge);
+        if (chalpram->_roomset.find(4) != chalpram->_roomset.end()) {
+            return 0.0f;
+        }
+    }
+
     lua_State* L = g_LuaEngine->_state;
 
     // My reimplementation *should* be accurate, but there's no reason to run it if mods aren't actively attempting to change values.

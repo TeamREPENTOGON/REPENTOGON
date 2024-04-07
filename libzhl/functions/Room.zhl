@@ -4,6 +4,9 @@ __thiscall float Room::GetDevilRoomChance();
 "558bec8b45??3dbf01000077??8b44":
 __thiscall GridEntity* Room::GetGridEntity(uint32_t idx);
 
+"558bec8b41??8b40":
+__thiscall uint32_t Room::GetGridCollision(int index);
+
 "558bec6aff68????????64a1????????5083ec7ca1????????33c58945??535657508d45??64a3????????8bd9":
 __thiscall void Room::ShopRestockFull();
 
@@ -70,6 +73,12 @@ bool Room::IsPersistentRoomEntity(int type, int variant, int subtype);
 "558bec83ec0ca1????????53894d":
 __thiscall bool Room::TrySpawnSpecialQuestDoor();
 
+"558bec6aff68????????64a1????????5081ecf8000000":
+__thiscall void Room::SaveState();
+
+"568b35????????578bf9833e0d":
+__thiscall uint32_t Room::GetBossVictoryJingle();
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
@@ -92,29 +101,31 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     inline RailType* GetRails() { return (RailType*)((char*)this + 0x7350); }
     inline RailType GetRailType(uint8_t gridIndex) { return GetRails()[gridIndex]; }
     inline void SetRailType(uint8_t gridIndex, RailType railType) { GetRails()[gridIndex] = railType; }
-    static bool LIBZHL_API IsValidRailType(lua_Integer rail);
-    inline bool IsValidGridIndex(lua_Integer index, bool includeWalls = true) const {
+    static bool LIBZHL_API IsValidRailType(int rail);
+    inline bool IsValidGridIndex(int index, bool includeWalls = true) const {
         return _descriptor->Data->IsValidGridIndex(index, includeWalls);
     }
     bool LIBZHL_API IsChampionBossSeed() const;
     float LIBZHL_API GetChampionBossChance() const;
 }} 
-    RoomDescriptor* _descriptor : 0x4; //0x04
-	uint32_t _roomType : 0x8; //0x08
-    GridEntity* _gridEntities[0x1BF] : 0x24; // 0x24
-    GridEntity* _doors[8] : 0x724; // 0x724
-    uint32_t _doorGridPositions[8] : 0x744; // 0x744
+    RoomDescriptor* _descriptor : 0x4;
+	uint32_t _roomType : 0x8;
+	uint32_t _gridWidth : 0xC;
+	uint32_t _gridHeight : 0x10;
+    GridEntity* _gridEntities[0x1BF] : 0x24;
+    GridEntity* _doors[8] : 0x724;
+    uint32_t _doorGridPositions[8] : 0x744;
 	int _roomClearDelay : 0x11ec;
-    Camera *_Camera : 0x11f8; //0x11F8
-    bool _redHeartDamage : 0x120c; //0x120C
-    EntityList _entityList : 0x1218; //0x1218
+    Camera *_Camera : 0x11f8;
+    bool _redHeartDamage : 0x120c;
+    EntityList _entityList : 0x1218;
 	int _greedWaveTimer : 0x7130;
 	float _waterAmount : 0x7134;
 	bool _pacifist : 0x7185;
-    TemporaryEffects _temporaryEffects : 0x71f4; //0x71F4
+    TemporaryEffects _temporaryEffects : 0x71f4;
 	int _numRainSpawners : 0x7338;
 	float _rainIntensity : 0x733c;
-	RailManager _railManager : 0x734c; //0x734c
+	RailManager _railManager : 0x734c;
 	float _lavaIntensity : 0x7624;
 
     "558bec6aff68????????64a1000000005083ec305657a1????????33c550":

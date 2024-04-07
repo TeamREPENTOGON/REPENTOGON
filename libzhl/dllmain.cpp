@@ -14,9 +14,8 @@
 #include <filesystem>
 #include <sstream>
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
-{
-	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
+extern "C" {
+	__declspec(dllexport) int InitZHL()
 	{
 		InitializeSymbolHandler();
 
@@ -32,7 +31,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 			ExitProcess(1);
 		}
 #endif
-		if(!FunctionDefinition::Init())
+		if (!FunctionDefinition::Init())
 		{
 			auto const& missing = Definition::GetMissing();
 			if (missing.size() == 1) {
@@ -50,18 +49,15 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 					}
 					out << ")" << std::endl;
 				}
-				MessageBox(0, "Multiple function / variables were not found", "Error", MB_ICONERROR);
+				MessageBox(0, "Multiple function / variables were not found.\nIf you're a user facing this issue, you might be using an unsupported version of the game.", "Error", MB_ICONERROR);
 			}
-			ExitProcess(1);
+
+			return 1;
 		}
 
 		ASMPatch::_Init();
 		ASMPatch::SavedRegisters::_Init();
-	}
-	else {
-		TerminateSymbolHandler();
-	}
 
-	
-	return TRUE;
+		return 0;
+	}
 }

@@ -16,7 +16,7 @@ __thiscall void HUD::FlashRedHearts(Entity_Player *player);
 "558bec81eca8010000":
 __thiscall void HUD::ShowItemText(char* param_1,char *param_2,bool iscurse,bool idk);
 
-struct HUD depends (PlayerHUD, ANM2) { {{
+struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
 	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }
 }} 
     PlayerHUD _playerHUD[8] : 0x0;
@@ -33,4 +33,5 @@ struct HUD depends (PlayerHUD, ANM2) { {{
 	ANM2 _inventorySprite : 0xc3fd8;
 	ANM2 _craftingTableSprite : 0x0c40ec;
 	ANM2 _poopSpellsSprite : 0xc4200;
+	StatHUD _statHUD : 0xc4314;
 } : 0xc45f0;

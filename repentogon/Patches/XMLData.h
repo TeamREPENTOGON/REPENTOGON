@@ -666,7 +666,7 @@ inline bool isvalidid(const string& str) {
 		char* endPtr;
 		int returnval = strtol(str.c_str(), &endPtr, 0);
 		if (endPtr != "\0") {
-			return returnval > 0;
+			return ((returnval != 0) || (str == "0"));
 		}
 	}
 	return false;

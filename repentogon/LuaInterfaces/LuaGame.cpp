@@ -253,6 +253,20 @@ LUA_FUNCTION(Lua_MoveToRandomRoom) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SetDonationModAngel) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+
+	game->_donationModAngel = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SetDonationModGreed) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+
+	game->_donationModGreed = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -283,6 +297,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPlayer", Lua_GameGetPlayer},
 		{ "ShowGenericLeaderboard", Lua_ShowGenericLeaderboard},
 		{ "MoveToRandomRoom", Lua_MoveToRandomRoom},
+		{ "SetDonationModAngel", Lua_SetDonationModAngel},
+		{ "SetDonationModGreed", Lua_SetDonationModGreed},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

@@ -2,7 +2,7 @@ ModCallbacks.MC_PRE_ADD_COLLECTIBLE = 1004
 ModCallbacks.MC_POST_ADD_COLLECTIBLE = 1005
 ModCallbacks.MC_POST_TAKE_DMG = 1006 -- deprecated but still in here for backwards compatibility
 ModCallbacks.MC_POST_ENTITY_TAKE_DMG = 1006
-ModCallbacks.MC_ENTITY_TAKE_DMG = 1007
+--ModCallbacks.DEPRECATED_MC_ENTITY_TAKE_DMG = 1007  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_PRE_PLAYER_TAKE_DMG = 1008
 ModCallbacks.MC_PRE_PLAYER_ADD_HEARTS = 1009
 ModCallbacks.MC_POST_PLAYER_ADD_HEARTS = 1010
@@ -20,7 +20,9 @@ ModCallbacks.MC_POST_SFX_PLAY = 1031
 ModCallbacks.MC_PRE_MUSIC_PLAY = 1034
 ModCallbacks.MC_PRE_MUSIC_LAYER_TOGGLE = 1035
 ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD = 1038
+ModCallbacks.MC_POST_RENDER_PLAYER_HEAD = 1045
 ModCallbacks.MC_PRE_RENDER_PLAYER_BODY = 1039
+ModCallbacks.MC_POST_RENDER_PLAYER_BODY = 1046
 ModCallbacks.MC_PRE_ENTITY_THROW = 1040
 ModCallbacks.MC_POST_ENTITY_THROW = 1041
 ModCallbacks.MC_PLAYER_INIT_POST_LEVEL_INIT_STATS = 1042
@@ -88,7 +90,7 @@ ModCallbacks.MC_POST_DEVIL_CALCULATE = 1133
 ModCallbacks.MC_COMPLETION_MARK_GET = 1047
 ModCallbacks.MC_POST_COMPLETION_MARK_GET = 1048
 ModCallbacks.MC_PRE_COMPLETION_EVENT = 1049
-ModCallbacks.MC_USE_PILL = 1001
+--ModCallbacks.DEPRECATED_MC_USE_PILL = 1001  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM = 1079
 ModCallbacks.MC_PRE_PLAYERHUD_RENDER_HEARTS = 1118
 ModCallbacks.MC_POST_PLAYERHUD_RENDER_HEARTS = 1091
@@ -117,23 +119,49 @@ ModCallbacks.MC_PRE_PLAYER_USE_BOMB = 1220
 ModCallbacks.MC_POST_PLAYER_USE_BOMB = 1221
 ModCallbacks.MC_NPC_PICK_TARGET = 1222
 ModCallbacks.MC_POST_NPC_DARK_RED_CHAMPION_REGEN = 1223
-ModCallbacks.MC_PRE_PLAYER_COLLISION = 1230
+-- Reserved (WIP)
+--ModCallbacks.MC_PRE_PLAYER_UPDATE = 1160
+--ModCallbacks.MC_PRE_PEFFECT_UPDATE = 1161
+--ModCallbacks.MC_PRE_TEAR_UPDATE = 1162
+--ModCallbacks.MC_PRE_FAMILIAR_UPDATE = 1163
+--ModCallbacks.MC_PRE_BOMB_UPDATE = 1164
+--ModCallbacks.MC_PRE_PICKUP_UPDATE = 1165
+--ModCallbacks.MC_PRE_KNIFE_UPDATE = 1166
+--ModCallbacks.MC_PRE_PROJECTILE_UPDATE = 1167
+--ModCallbacks.MC_PRE_LASER_UPDATE = 1168
+--ModCallbacks.MC_PRE_EFFECT_UPDATE = 1169
+--ModCallbacks.MC_PRE_SLOT_UPDATE = 1170
+ModCallbacks.MC_PRE_PLAYER_GRID_COLLISION = 1171
+ModCallbacks.MC_PLAYER_GRID_COLLISION = 1172
+ModCallbacks.MC_PRE_TEAR_GRID_COLLISION = 1173
+ModCallbacks.MC_TEAR_GRID_COLLISION = 1174
+ModCallbacks.MC_PRE_FAMILIAR_GRID_COLLISION = 1175
+ModCallbacks.MC_FAMILIAR_GRID_COLLISION = 1176
+ModCallbacks.MC_PRE_BOMB_GRID_COLLISION = 1177
+ModCallbacks.MC_BOMB_GRID_COLLISION = 1178
+ModCallbacks.MC_PRE_PICKUP_GRID_COLLISION = 1179
+ModCallbacks.MC_PICKUP_GRID_COLLISION = 1180
+ModCallbacks.MC_PRE_PROJECTILE_GRID_COLLISION = 1181
+ModCallbacks.MC_PROJECTILE_GRID_COLLISION = 1182
+ModCallbacks.MC_PRE_NPC_GRID_COLLISION = 1183
+ModCallbacks.MC_NPC_GRID_COLLISION = 1184
+--ModCallbacks.DEPRECATED_MC_PRE_PLAYER_COLLISION = 1230  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_PLAYER_COLLISION = 1231
-ModCallbacks.MC_PRE_TEAR_COLLISION = 1232
+--ModCallbacks.DEPRECATED_MC_PRE_TEAR_COLLISION = 1232  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_TEAR_COLLISION = 1233
-ModCallbacks.MC_PRE_FAMILIAR_COLLISION = 1234
+--ModCallbacks.DEPRECATED_MC_PRE_FAMILIAR_COLLISION = 1234  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_FAMILIAR_COLLISION = 1235
-ModCallbacks.MC_PRE_BOMB_COLLISION = 1236
+--ModCallbacks.DEPRECATED_MC_PRE_BOMB_COLLISION = 1236  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_BOMB_COLLISION = 1237
-ModCallbacks.MC_PRE_PICKUP_COLLISION = 1238
+--ModCallbacks.DEPRECATED_MC_PRE_PICKUP_COLLISION = 1238  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_PICKUP_COLLISION = 1239
 ModCallbacks.MC_PRE_SLOT_COLLISION = 1240
 ModCallbacks.MC_POST_SLOT_COLLISION = 1241
-ModCallbacks.MC_PRE_KNIFE_COLLISION = 1242
+--ModCallbacks.DEPRECATED_MC_PRE_KNIFE_COLLISION = 1242  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_KNIFE_COLLISION = 1243
-ModCallbacks.MC_PRE_PROJECTILE_COLLISION = 1244
+--ModCallbacks.DEPRECATED_MC_PRE_PROJECTILE_COLLISION = 1244  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_PROJECTILE_COLLISION = 1245
-ModCallbacks.MC_PRE_NPC_COLLISION = 1246
+--ModCallbacks.DEPRECATED_MC_PRE_NPC_COLLISION = 1246  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_NPC_COLLISION = 1247
 ModCallbacks.MC_PRE_LASER_COLLISION = 1248
 ModCallbacks.MC_POST_LASER_COLLISION = 1249
@@ -239,13 +267,15 @@ ModCallbacks.MC_POST_SAVESLOT_LOAD = 1470
 ModCallbacks.MC_PRE_CHALLENGE_DONE = 1471
 ModCallbacks.MC_POST_CHALLENGE_DONE = 1472
 
-local function AddEnumToNamespace(namespace, enums)
-	for k,v in pairs(enums) do
-		rawset(namespace, k, v)
-	end
-end
+ModCallbacks.MC_PRE_FAMILIAR_CAN_CHARM = 1473
 
-AddHealthType={	
+ModCallbacks.MC_POST_ACHIEVEMENT_UNLOCK = 1476
+ModCallbacks.MC_PRE_MINIMAP_UPDATE = 1477
+ModCallbacks.MC_POST_MINIMAP_UPDATE = 1478
+ModCallbacks.MC_PRE_MINIMAP_RENDER = 1479
+ModCallbacks.MC_POST_MINIMAP_RENDER = 1480
+
+AddHealthType = {
 	NONE	=	0,
 	RED		=	1<<0,
 	MAX		=	1<<1,
@@ -402,6 +432,38 @@ BossType = {
 	HORNY_BOYS = 101,
 	CLUTCH = 102,
 	CADAVRA = 103,
+}
+
+ButtonActionBitwise = {
+	ACTION_LEFT = 1<<0,
+	ACTION_RIGHT = 1<<1,
+	ACTION_UP = 1<<2,
+	ACTION_DOWN = 1<<3,
+	ACTION_SHOOTLEFT = 1<<4,
+	ACTION_SHOOTRIGHT = 1<<5,
+	ACTION_SHOOTUP = 1<<6,
+	ACTION_SHOOTDOWN = 1<<7,
+	ACTION_BOMB = 1<<8,
+	ACTION_ITEM = 1<<9,
+	ACTION_PILLCARD = 1<<10,
+	ACTION_DROP = 1<<11,
+	ACTION_PAUSE = 1<<12,
+	ACTION_MAP = 1<<13,
+	ACTION_MENUCONFIRM = 1<<14,
+	ACTION_MENUBACK = 1<<15,
+	ACTION_RESTART = 1<<16,
+	ACTION_FULLSCREEN = 1<<17,
+	ACTION_MUTE = 1<<18,
+	ACTION_JOINMULTIPLAYER = 1<<19,
+	ACTION_MENULEFT = 1<<20,
+	ACTION_MENURIGHT = 1<<21,
+	ACTION_MENUUP = 1<<22,
+	ACTION_MENUDOWN = 1<<23,
+	ACTION_MENULT = 1<<24,
+	ACTION_MENURT = 1<<25,
+	ACTION_MENUTAB = 1<<26,
+	
+	ACTION_CONSOLE = 1<<28
 }
 
 NullPickupSubType = {
@@ -1093,7 +1155,7 @@ Achievement = {
 	REVERSED_THE_HIGH_PRIESTESS = 526, REVERSED_HIGH_PRIESTESS = 526,
 	REVERSED_THE_EMPRESS = 527, REVERSED_EMPRESS = 527,
 	REVERSED_THE_EMPEROR = 528, REVERSED_EMPEROR = 528,
-	REVERSED_THE_HEIROPHANT = 529, RESERVED_HEIROPHANT = 529,
+	REVERSED_THE_HIEROPHANT = 529, REVERSED_HIEROPHANT = 529,
 	REVERSED_THE_LOVERS = 530, REVERSED_LOVERS = 530,
 	REVERSED_THE_CHARIOT = 531, REVERSED_CHARIOT = 531,
 	REVERSED_JUSTICE = 532,
@@ -2521,8 +2583,39 @@ SpecialQuest = {
 	MINESHAFT = 2,
 }
 
-AddEnumToNamespace(BlendMode, {
-	ADD = 0,
+BlendFactor = {
+	ZERO = 0,
+	ONE = 1,
+	SRC_COLOR = 2,
+	ONE_MINUS_SRC_COLOR = 3,
+	DST_COLOR = 4,
+	ONE_MINUS_DST_COLOR = 5,
+	SRC_ALPHA = 6,
+	ONE_MINUS_SRC_ALPHA = 7,
+	DST_ALPHA = 8,
+	ONE_MINUS_DST_ALPHA = 9,
+	CONSTANT_COLOR = 10,
+	ONE_MINUS_CONSTANT_COLOR = 11,
+	CONSTANT_ALPHA = 12,
+	ONE_MINUS_CONSTANT_ALPHA = 13,
+	SRC_ALPHA_SATURATE = 14,
+}
+
+BlendType = {
+	CONSTANT = 0,
 	NORMAL = 1,
-	MULTIPLY = 2,
-})
+	ADDITIVE = 2,
+	MULTIPLICATIVE = 3,
+	OVERLAY = 4,
+}
+
+MinimapState = {
+	NORMAL = 0,
+	EXPANDED_OPAQUE = 1,
+	EXPANDED = 2
+}
+
+--deprecated enums
+
+Achievement.REVERSED_THE_HEIROPHANT = 529
+Achievement.RESERVED_HEIROPHANT = 529

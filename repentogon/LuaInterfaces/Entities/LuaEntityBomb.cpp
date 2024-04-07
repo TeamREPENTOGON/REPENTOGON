@@ -110,6 +110,30 @@ LUA_FUNCTION(Lua_BombGetCostumeLayerSprite) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_BombGetRocketAngle) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua_pushnumber(L, bomb->_rocketAngle);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetRocketAngle) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	bomb->_rocketAngle = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_BombGetRocketSpeed) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua_pushnumber(L, bomb->_rocketSpeed);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetRocketSpeed) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	bomb->_rocketSpeed = (float)luaL_checknumber(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -128,6 +152,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsLoadingCostumes", Lua_BombIsLoadingCostumes },
 		{ "SetLoadCostumes", Lua_BombSetLoadCostumes },
 		{ "GetCostumeLayerSprite", Lua_BombGetCostumeLayerSprite },
+		{ "GetRocketAngle", Lua_BombGetRocketAngle },
+		{ "SetRocketAngle", Lua_BombSetRocketAngle },
+		{ "GetRocketSpeed", Lua_BombGetRocketSpeed },
+		{ "SetRocketSpeed", Lua_BombSetRocketSpeed },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);

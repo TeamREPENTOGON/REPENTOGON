@@ -8,17 +8,16 @@ build_script:
 
     git submodule update
 
-
-    echo "return [[" > repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-            git log -n 10 --pretty=format:"%h (%an)%n* %s%n/fade/%b%n/newline/" >> repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-            echo "]]" >> repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-            echo "Resulting lua file:"
-            type repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-            echo "#pragma once" > repentogon/Version.h
-            $sha = git rev-parse --short HEAD
-            echo "#define VERSION `"nightly-$sha`"" >> repentogon/Version.h
-            (gc repentogon/resources/scripts/main_ex.lua) -replace 'dev build', "nightly-$sha" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
-            (gc launcher/Updater.cpp) -replace 'std::string version = "dev build";', 'std::string version = "nightly-$sha";' | Out-File -encoding ASCII launcher/Updater.cpp
+    echo "return [[" | Out-File -encoding ASCII repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
+        Get-Content changelog.txt -Raw | Add-Content repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
+        echo "]]" | Add-Content repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
+        echo "Resulting lua file:"
+        type repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
+        echo "#pragma once" | Out-File -encoding ASCII repentogon/Version.h
+        $version = Get-Content version.txt -Raw
+        echo "#define VERSION `"$version`"" | Add-Content repentogon/Version.h
+        (gc repentogon/resources/scripts/main_ex.lua) -replace 'dev build', "$version" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
+        (gc launcher/Updater.cpp) -replace 'std::string version = "dev build";', "std::string version = `"$version`";" | Out-File -encoding ASCII launcher/Updater.cpp
 
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release
 
@@ -27,16 +26,16 @@ build_script:
 
 
     cd build/Release
-            mkdir artifact
-            mv resources artifact
-            mv resources-repentogon artifact
-            if (Test-Path dsound.dll) { mv dsound.dll artifact }
-            if (Test-Path launcher.dll) { mv launcher.dll artifact }
-            if (Test-Path injector.exe) { mv injector.exe artifact }
-            mv libzhl.dll artifact
-            mv zhlREPENTOGON.dll artifact
-            mv Lua5.4.dll artifact
-            mv freetype.dll artifact
+        mkdir artifact
+        mv resources artifact
+        mv resources-repentogon artifact
+        if (Test-Path dsound.dll) { mv dsound.dll artifact }
+        if (Test-Path launcher.dll) { mv launcher.dll artifact }
+        if (Test-Path injector.exe) { mv injector.exe artifact }
+        mv libzhl.dll artifact
+        mv zhlREPENTOGON.dll artifact
+        mv Lua5.4.dll artifact
+        mv freetype.dll artifact
 
     cd artifact
 
@@ -48,6 +47,6 @@ build_script:
     
 deploy:
 - provider: Webhook
-  url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=REPENTOGON&SigningPolicySlug=test-signing
+  url: https://app.signpath.io/API/v1/b3b61b76-b26e-4cfd-9b51-bb56d66476fa/Integrations/AppVeyor?ProjectSlug=REPENTOGON&SigningPolicySlug=release-signing
   authorization:
      secure: 9Q8HEL1yf+Yo/1rmKdb7kZLMb7xDvWOmnOH2GjF5vYdHDj0w9Xfdu0xtQ3h/q9TR02ImSrIoyiYj/CsZPXUaoQ==

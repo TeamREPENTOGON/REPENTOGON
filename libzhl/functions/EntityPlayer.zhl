@@ -5,6 +5,14 @@
 __thiscall void Entity_Player::AnimatePickup(ANM2 *param_1,bool param_2,char *param_3);
 */
 
+"558bec83e4f883ec0c5356578bf98bb7":
+__thiscall void Entity_Player::update_red_hearts();
+
+"53568bf15780be????????0075":
+__thiscall void Entity_Player::update_golden_hearts();
+
+"5356576a008bf9e8????????8b8f":
+__thiscall void Entity_Player::update_bone_hearts();
 
 //AddCollectible - 
 "558bec6aff68????????64a1????????5081ec88000000a1????????33c58945??5657508d45??64a3????????8bf1":
@@ -451,7 +459,7 @@ __thiscall float Entity_Player::GetGreedDonationBreakChance();
 __thiscall void Entity_Player::ClearQueueItem();
 
 
-struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public Entity { {{
+struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
 	inline int* GetRedHearts() {return &this->_redHearts; }
 	inline int* GetEternalHearts() {return &this->_eternalHearts; }
@@ -565,12 +573,15 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	bool LIBZHL_API AddSmeltedTrinket(int trinketID, bool firstTime);
     }}
 
-	
 	ANM2 _heldSprite : 0xf48;
 	vector_CostumeSpriteDesc _costumeSpriteDescs : 0x1170;
 	PlayerCostumeMap _playerCostumeMap[15] : 0x117c;
-	int _gnawedLeafTimer : 0x12c4;
+	std_string _headAnim : 0x1270;
+	int _blinkTime : 0x1288;
+	int _headDirectionTime : 0x128c;
 	int _maxHearts : 0x1290, _redHearts : 0x1294,  _eternalHearts : 0x1298, _soulHearts : 0x129C, _blackHearts : 0x12A0;
+	int _gnawedLeafTimer : 0x12c4;
+	short _bloodLustCounter : 0x12cc;	//not sure whether its actually short but we are on x86 so who cares lul
 	int _metronomeCollectibleID : 0x12d8;
 	int _playerType: 0x130c;
 	float _damage : 0x13b8;
@@ -587,6 +598,11 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	float _edenSpeed : 0x1490, _edenFireDelay : 0x1494, _edenDamage : 0x1498, _edenTearRange : 0x149c, _edenShotSpeed : 0x14a0, _edenLuck : 0x14a4;
 	uint32_t _cacheFlags : 0x14b8;
 	ActiveItemDesc _activeDesc[4] : 0x14c4;
+	int _bombPlaceDelay : 0x1544;
+	int _controllerIndex : 0x154c;
+	int _playerIndex : 0x1550;
+	int _moveDirection : 0x1558;
+	int _headDirection: 0x155c;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	int _playerForms[15] : 0x1700;
 	KColor _footprintColor1 : 0x1768;
@@ -606,6 +622,9 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap) : public
 	bool _canShoot : 0x1745;
 	bool _canFly : 0x14b4;
 	std_vector_int _unkcolentry: 0x15f0;
+	uint32_t _urnSouls: 0x1cf0;
+	TemporaryEffects _temporaryeffects : 0x1450;
+	Entity_Player* _twinPlayer : 0x1d80;
 } : 0x2580;
 
 "f30f1087c40200006a0068(????????)68????????f30f59c1":

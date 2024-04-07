@@ -9,10 +9,12 @@ tags:
 ### FindByType () {: aria-label='Modified Functions' }
 #### [Entity](Entity.md)[] FindByType ( [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) Type, int Variant = -1, int SubType = -1, boolean Cache = false, boolean IgnoreFriendly = false ) {: .copyable aria-label='Modified Functions' }
 Same as vanilla, but much faster.
+
 ___
 ### FindInRadius () {: aria-label='Modified Functions' }
 #### [Entity](Entity.md)[] FindInRadius ( [Vector](Vector.md) Position, float Radius, int Partitions = 0xFFFFFFFF  ) {: .copyable aria-label='Modified Functions' }
 Same as in vanilla, but much faster and with fixed search for effects.
+
 ___
 ### GetRoomEntities () {: aria-label='Modified Functions' }
 #### [Entity](Entity.md)[] GetRoomEntities ( ) {: .copyable aria-label='Modified Functions' }
@@ -110,11 +112,15 @@ ___
 Return entities inside of given capsule, filtered by partitions mask.
 ___
 ### GetAchievementIdByName () {: aria-label='Functions' }
-#### table GetAchievementIdByName ( string name ) {: .copyable aria-label='Functions' }
+#### table GetAchievementIdByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the Achievement ID By Name.
 ___
+### GetBackdropIdByName () {: aria-label='Functions' }
+#### int GetBackdropIdByName ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBossColorIdxByName () {: aria-label='Functions' }
-#### int GetBossColorIdxByName ( string name ) {: .copyable aria-label='Functions' }
+#### int GetBossColorIdxByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the boss color idx By Name, the idx is usually the subtype the boss needs to become the desired color. Granted, you actually need to give your color entry a name on the xml for this to work (suffix wont work usually, since its not mandatory).
 ___
 ### GetClipboard () {: aria-label='Functions' }
@@ -127,7 +133,7 @@ ___
 ___
 ### GetCompletionMark () {: aria-label='Functions' }
 #### int GetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [CompletionType](enums/CompletionType.md) Mark) {: .copyable aria-label='Functions' }
-Gets a completion mark value for a specific character.
+Gets a completion mark value for a specific character, value from `0` to `2` (0 = not accomplished, 1 = normal, 2 = hard).
 
 ___
 ### GetCompletionMarks () {: aria-label='Functions' }
@@ -163,6 +169,10 @@ Returns a table containing all the marks for the character.
 			end
 			```
 
+___
+### GetCurrentStageConfigId () {: aria-label='Functions' }
+#### [StbType](enums/StbType.md) GetCurrentStageConfigId ( ) {: .copyable aria-label='Functions' }
+Gets the current stageconfigId/stbType, or whatever you wanna call the id of the stages.xml, for the current stage.
 ___
 ### GetCursorSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetCursorSprite ( ) {: .copyable aria-label='Functions' }
@@ -247,7 +257,7 @@ Sets the contents of the clipboard to the provided string.
 ___
 ### SetCompletionMark () {: aria-label='Functions' }
 #### void SetCompletionMark ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [CompletionType](enums/CompletionType.md) Mark, int Value) {: .copyable aria-label='Functions' }
-Sets a completion mark of a character to match a specific value from `0` to `2`.
+Sets a completion mark of a character to match a specific value from `0` to `2` (0 = not accomplished, 1 = normal, 2 = hard).
 
 ___
 ### SetCompletionMarks () {: aria-label='Functions' }
@@ -278,6 +288,22 @@ Sets the completion marks of a character to match an input table. Requires a tab
 			Isaac.SetCompletionMarks(marks) --Impacts the changes on the player
 			```
 ___
+
+### SetCurrentFloorBackdrop () {: aria-label='Functions' }
+#### void SetCurrentFloorMusic ( int BackdropId ) {: .copyable aria-label='Functions' }
+Changes the default room backdrop for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
+___
+
+### SetCurrentFloorMusic () {: aria-label='Functions' }
+#### void SetCurrentFloorMusic ( int MusicId ) {: .copyable aria-label='Functions' }
+Changes the music track for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
+___
+
+### SetCurrentFloorName () {: aria-label='Functions' }
+#### void SetCurrentFloorMusic ( string Name ) {: .copyable aria-label='Functions' }
+Changes the display name for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
+___
+
 ### ShowErrorDialog () {: aria-label='Functions' }
 #### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.

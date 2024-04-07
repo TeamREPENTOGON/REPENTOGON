@@ -1,5 +1,5 @@
-#ifndef ACHIEVSTUFF_H
-#define ACHIEVSTUFF_H
+#ifndef MODSSTUFF_H
+#define MODSSTUFF_H
 
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
@@ -26,7 +26,7 @@ extern int opensearchkey;
 extern int undomodchangeskey;
 extern bool issearching;
 extern unordered_map<int, int> lastKeyPressTimeMap;
-extern int minmods;
+extern unsigned int minmods;
 
 
 enum class KeyboardKey : int {

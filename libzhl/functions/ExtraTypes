@@ -55,12 +55,32 @@ TypeInfo std_vector_uint {
     Align 4;
 }; 
 
+TypeInfo vector_MusicEntry {
+    Size 12;
+    Align 4;
+}; 
+
+TypeInfo vector_Curse {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo vector_ColorParams {
     Size 12;
     Align 4;
 };
 
 TypeInfo deque_Point {
+    Size 20;
+    Align 4;
+};
+
+TypeInfo deque_string {
+    Size 20;
+    Align 4;
+};
+
+TypeInfo deque_console_historyentry {
     Size 20;
     Align 4;
 };
@@ -104,7 +124,7 @@ TypeInfo CRITICAL_SECTION {
     Align 4;
 };
 
-TypeInfo RoomConfigPtrVector {
+TypeInfo RoomConfigRoomPtrVector {
     Size 12;
     Align 4;
 };

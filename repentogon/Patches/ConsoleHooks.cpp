@@ -28,7 +28,7 @@ void LuaReset() {
 
     // Reset the lua data of all entities in the room before we continue.
     // Right now they're invalid, dangling pointers. Let's reset them.
-    Room* room = *g_Game->GetCurrentRoom();
+    Room* room = g_Game->GetCurrentRoom();
     EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
     unsigned int size = res->_size;
     lua_State* L = g_LuaEngine->_state;
@@ -62,21 +62,12 @@ HOOK_METHOD(Console, Print, (const std::string& text, unsigned int color, unsign
     // Commands always print in history as (">") with a color of 0xFF808080.
     // Armed with this info, we can fix commands not saving on game crash by saving it every time.
     // Kinda hacky, but whatever.
-
     if (text.rfind(">", 0) == 0 && color == 0xFF808080) {
-        // Initially I was calling SaveCommandHistory() but it seems to also close the console, no good.
-        // Do it outselves.
-        char historyPath[256];
-        snprintf(historyPath, 256, "%s%s", (char*)&g_SaveDataPath, "cmd_history.txt");
-
-        std::ofstream history;
-        history.open(historyPath, std::ios::trunc);
-        
-        for (const std::string entry : *this->GetCommandHistory()) {
-            history << entry << std::endl;
-        }
-        history.close();
+        int state = this->_state;
+        this->SaveCommandHistory();
+        this->_state = state;
     }
+
     // Change Repentance into REPENTOGON in the console
     if (text.rfind("Repentance Console\n", 0) == 0) {
         super("REPENTOGON Console\n", color, fadeTime);
@@ -188,12 +179,12 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
                 bool firstCommandRan = false;
                 int test_it = 0;
                 for (std::string command : macro.commands) {
-                    this->GetCommandHistory()->push_front(command);
+                    this->_commandHistory.push_front(command);
                     this->RunCommand(command, out, player);
                 }
 
                 for (unsigned int i = 0; i < macro.commands.size(); ++i) {
-                    this->GetCommandHistory()->pop_front();
+                    this->_commandHistory.pop_front();
                 }
 
                 res.append("Macro finished.\n");

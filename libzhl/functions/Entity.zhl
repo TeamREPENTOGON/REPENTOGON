@@ -119,16 +119,19 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 		this->constructor();
 	}
 }} 
-    unsigned int _index : 0x20; //0x20
-    unsigned int _collisionIndex : 0x24; //0x24
-    unsigned int _type : 0x28; //0x28
-    unsigned int _variant : 0x2c; //0x2c
-    unsigned int _subtype : 0x30; //0x30
+    unsigned int _index : 0x20;
+    unsigned int _collisionIndex : 0x24;
+    unsigned int _type : 0x28;
+    unsigned int _variant : 0x2c;
+    unsigned int _subtype : 0x30;
+	unsigned int _spawnerType : 0x34;
+	unsigned int _spawnerVariant: 0x38;
 	ANM2 _sprite : 0x3c;
-    unsigned int _shadowSize : 0x150; //0x150   
+    unsigned int _shadowSize : 0x150;
 	unsigned long long _flags : 0x160;
     bool _dead : 0x168; 
-    bool _visible : 0x169; // 0x169
+    bool _visible : 0x169;
+	bool _collidesWithGrid : 0x188;
 	vector_ColorParams _colorParams : 0x1a4;
 	int _fireDamageCountdown : 0x208;
 	int _damageCountdown : 0x20c;
@@ -159,7 +162,9 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     float _speedMultiplier : 0x2F4;
 	float _shrinkStatus1 : 0x30c;
 	float _shrinkStatus2 : 0x310;
+	Entity * _parent : 0x314;
 	Entity * _child : 0x318;
+	Entity * _spawnerEntity : 0x320;
 	RNG _dropRNG : 0x334;
 
     __vtable {

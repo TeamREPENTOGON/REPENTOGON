@@ -150,9 +150,9 @@ LUA_FUNCTION(Lua_ScoreSheetSetRunEnding)
 LUA_FUNCTION(Lua_ScoreSheetAddFinishedStage)
 {
 	ScoreSheet* scoreSheet = g_Game->GetScoreSheet();
-	const int stage = luaL_checkinteger(L, 1);
-	const int stageType = luaL_checkinteger(L, 2);
-	CONST int time = luaL_checkinteger(L, 3);
+	const int stage = (int)luaL_checkinteger(L, 1);
+	const int stageType = (int)luaL_checkinteger(L, 2);
+	CONST int time = (int)luaL_checkinteger(L, 3);
 	scoreSheet->AddFinishedStage(stage, stageType, time);
 
 	return 0;

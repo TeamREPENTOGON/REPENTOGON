@@ -49,9 +49,11 @@ struct IntPair {
 };
 
 // When adding typedefs, remember to define them in ExtraTypes!
+typedef std::vector<MusicEntry> vector_MusicEntry;
+typedef std::vector<RoomConfig_Curse> vector_Curse;
 typedef std::deque<Point> deque_Point;
 typedef std::vector<ColorParams> vector_ColorParams;
-typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
+typedef std::deque<Console_HistoryEntry> deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
@@ -87,8 +89,8 @@ typedef std::vector<PoolItem> vector_PoolItem;
 // Something goofy seemed to be happening with std::vector<bool> in zhl
 // typedef std::vector<bool> vector_bool;
 
-struct RoomConfig;
-typedef std::vector<RoomConfig*> RoomConfigPtrVector;
+struct RoomConfig_Room;
+typedef std::vector<RoomConfig_Room*> RoomConfigRoomPtrVector;
 
 struct SmeltedTrinketDesc {
 	short _trinketNum;

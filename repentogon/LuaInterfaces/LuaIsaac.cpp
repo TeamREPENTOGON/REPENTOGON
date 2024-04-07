@@ -14,7 +14,7 @@ static int timerFnTable = -1;
 
 LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	int type = (int)luaL_checkinteger(L, 1);
 	int variant = (int)luaL_optinteger(L, 2, -1);
@@ -50,7 +50,7 @@ LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 
 LUA_FUNCTION(Lua_IsaacGetRoomEntitiesFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
 	lua_newtable(L);
 	unsigned int size = res->_size;
@@ -80,7 +80,7 @@ static void DummyQueryRadius(EntityList_EL* el, void* pos, int partition) {
 
 LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float radius = (float)luaL_checknumber(L, 2);
@@ -176,6 +176,18 @@ LUA_FUNCTION(Lua_CreateTimer) {
 
 	lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 	return 1;
+}
+
+LUA_FUNCTION(Lua_StartNewGame) {
+	int pltype = (int)luaL_optinteger(L, 1, 0);
+	int challenge = (int)luaL_optinteger(L, 2, 0);
+	unsigned int difficulty = (int)luaL_optinteger(L, 3, 0);
+	unsigned int seed = (int)luaL_optinteger(L, 4, 0);
+	Seeds seedobj;	//am avoiding heap corruption this way
+	seedobj.constructor();	
+	seedobj.set_start_seed(seed);
+	g_Manager->StartNewGame(pltype, challenge, seedobj, difficulty);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_DrawLine) {
@@ -277,7 +289,7 @@ LUA_FUNCTION(Lua_GetClipboard) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_GetSubTypwByName) {
+LUA_FUNCTION(Lua_GetSubTypeByName) {
 	string text = string(luaL_checkstring(L, 1));
 	if (XMLStuff.EntityData->byname.count(text) > 0)
 	{
@@ -372,14 +384,14 @@ HOOK_STATIC(Manager, Update, () -> void, __stdcall) {
 }
 LUA_FUNCTION(Lua_IsaacPause) {
 	apipause = true;
-	return 1;
+	return 0;
 }
 LUA_FUNCTION(Lua_IsaacResume) {
 	if (apipause && !console.enabled) {
-		*g_Game->GetConsole()->GetState() = 0;
+		g_Game->GetConsole()->_state = 0;
 	}
 	apipause = false;
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
@@ -414,7 +426,7 @@ LUA_FUNCTION(Lua_IsaacClearBossHazards) {
 
 LUA_FUNCTION(Lua_IsaacFindInCapsule)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	unsigned int partition = (unsigned int)luaL_optinteger(L, 2, -1);
@@ -525,7 +537,7 @@ LUA_FUNCTION(Lua_GetBossColorIdxByName) {
 	auto iter = XMLStuff.BossColorData->childbyname.find(bosscolorname);
 	if (iter == XMLStuff.BossColorData->childbyname.end()) { lua_pushinteger(L, -1); }
 	else {
-		lua_pushinteger(L, iter->second);
+		lua_pushinteger(L, (iter->second - 1));
 	}
 
 	return 1;
@@ -568,7 +580,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetClipboard", Lua_SetClipboard);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCursorSprite", Lua_IsaacGetCursorSprite);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetLoadedModules", Lua_GetLoadedModules);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypwByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypeByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCutsceneIdByName", Lua_GetCutsceneByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetGiantBookIdByName", Lua_GetGiantBookByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNullItemIdByName", Lua_IsaacGetNullItemIdByName);
@@ -587,7 +599,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropTypeByName", Lua_GetBackdropTypeByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdByName", Lua_GetBossColorIdxByName); //alias for musclememory
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartNewGame", Lua_StartNewGame);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

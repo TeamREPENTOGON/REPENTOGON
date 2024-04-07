@@ -41,6 +41,10 @@ ___
 Returns the ControllerId for the NPC, which indicates which player is controlling it. Will return `-1` when not being controlled by any player.
 
 ___
+### GetDarkRedChampionRegenTimer () {: aria-label='Functions' }
+#### int GetDarkRedChampionRegenTimer ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDirtColor () {: aria-label='Functions' }
 #### [Color](Color.md) GetDirtColor ( ) {: .copyable aria-label='Functions' }
 Returns the dynamic dirt color of the entity. This lets entities like Nightcrawler blend in to the environment.
@@ -54,6 +58,14 @@ ___
 #### float GetShieldStrength ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetSirenPlayerEntity () {: aria-label='Functions' }
+#### [EntityPlayer](EntityPlayer.md) GetSirenPlayerEntity ( ) {: .copyable aria-label='Functions' }
+
+___
+### IsBossColor () {: aria-label='Functions' }
+#### boolean IsBossColor ( ) {: .copyable aria-label='Functions' }
+
+___
 ### SetControllerId () {: aria-label='Functions' }
 #### int SetControllerId ( int ControllerId ) {: .copyable aria-label='Functions' }
 Sets the ControllerId for the NPC, which indicates which player will control it. Set it to `-1` for no player controls (back to normal behaviour).
@@ -64,7 +76,7 @@ ___
 
 ___
 ### ShootMaggotProjectile () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Target, float Velocity = -24.0, float YOffset = -8.0 ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Position, [Vector](Vector.md) Target, float Velocity = -24.0, float YOffset = -8.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodCloud () {: aria-label='Functions' }
@@ -76,19 +88,23 @@ ___
 
 ___
 ### ThrowLeech () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) ThrowLeech ( [Entity](Entity.md) Source, [Vector](Vector.md) Target, float YPosOffset = -10.0, boolean Big = false ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ThrowLeech ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Target, float YPosOffset = -10.0, boolean Big = false ) {: .copyable aria-label='Functions' }
+
+___
+### ThrowMaggot () {: aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ThrowMaggot ( [Vector](Vector.md) Origin, [Vector](Vector.md) Velocity, float yOffset = -10.0, float FallSpeed = -8.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowMaggotAtPos () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) Origin, float Velocity = -8.0, float YOffset = 0.0 ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ThrowMaggotAtPos ( [Vector](Vector.md) Origin, [Vector](Vector.md) Target, float YOffset = -8.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowRockSpider () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) ThrowRockSpider ( [Entity](Entity.md) Source, [Vector](Vector.md) Target, int Variant = 0, float YPosOffset = -10.0 ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ThrowRockSpider ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Velocity, int Variant = 0, float YPosOffset = -10.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowStrider () {: aria-label='Functions' }
-#### [EntityNPC](EntityNPC.md) ThrowStrider ( [Entity](Entity.md) Source, [Vector](Vector.md) Target ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ThrowStrider ( [Vector](Vector.md) Position, [Entity](Entity.md) Source, [Vector](Vector.md) Target ) {: .copyable aria-label='Functions' }
 
 ___
 ### TryForceTarget () {: aria-label='Functions' }

@@ -20,8 +20,6 @@
 extern int handleWindowFlags(int flags);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
-extern bool imguiResized;
-extern ImVec2 imguiSizeModifier;
 
 static constexpr const size_t LogViewerBufMaxSize = 4 * 1024 * 1024;
 static constexpr const size_t LogViewerReduceSize = size_t(LogViewerBufMaxSize * 0.25f);
@@ -154,10 +152,6 @@ struct LogViewer : ImGuiWindowObject {
         ImGui::SetNextWindowSize(ImVec2(550, 300), ImGuiCond_FirstUseEver);
 
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
-            if (imguiResized) {
-                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
-                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
-            }
             AddWindowContextMenu();
 
             if (ImGui::BeginTable("LogViewer_Table", 2, ImGuiTableFlags_SizingStretchProp)) { // table layout makes it scale nicer

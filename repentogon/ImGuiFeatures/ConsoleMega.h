@@ -13,7 +13,6 @@
 
 extern int handleWindowFlags(int flags);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
-extern bool imguiResized;
 extern bool menuShown;
 extern ImVec2 imguiSizeModifier;
 
@@ -120,8 +119,11 @@ struct ConsoleMega : ImGuiWindowObject {
     std::vector<AutocompleteEntry> autocompleteBuffer;
     unsigned int autocompletePos;
     bool autocompleteActive = false;
+    bool commandFromHistory = false;
     bool autocompleteNeedFocusChange = false;
     bool reclaimFocus = false;
+    bool focused = false;
+    bool commandNeedScrollChange = false;
 
     static void  Strtrim(char* s) { char* str_end = s + strlen(s); while (str_end > s && str_end[-1] == ' ') str_end--; *str_end = 0; }
 
@@ -276,18 +278,35 @@ struct ConsoleMega : ImGuiWindowObject {
         std::string out;
         bool clear = false;
 
-        if (!console->GetCommandHistory()->empty() && console->GetCommandHistory()->front() == input)
+        if (console->_commandHistory.size() > 1 && console->_commandHistory.front() == input && !commandFromHistory)
             clear = true;
+
+        // For whatever asinine reason, the vanilla console makes a distinction between commands typed out and commands entered from history.
+        // Commands sent from history are entirely purged from previous history first, so they don't duplicate.
+        // We need to be careful to always keep at least one command in history, or the game is Not Happy.
+        if (commandFromHistory) {
+            std::deque<std::string> newHistory;
+
+            for (std::string command : console->_commandHistory) {
+                if (command != input) {
+                    newHistory.push_back(command);
+                }
+            }
+
+            if (!newHistory.empty())
+                console->_commandHistory = newHistory;
+        }
 
         console->_input = input;
         console->SubmitInput(false);
 
         if (clear)
-            console->GetCommandHistory()->pop_front();
+            console->_commandHistory.pop_front();
 
         memset(inputBuf, 0, sizeof(inputBuf));
         historyPos = 0;
         autocompleteBuffer.clear();
+        reclaimFocus = true;
     }
 
     void Draw(bool isImGuiActive) {
@@ -297,16 +316,16 @@ struct ConsoleMega : ImGuiWindowObject {
         ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
         
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
-            if (imguiResized) {
-                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
-                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
-;            }
-
+            focused = ImGui::IsWindowFocused();
             AddWindowContextMenu();
-            std::deque<Console_HistoryEntry>* history = g_Game->GetConsole()->GetHistory();
+            std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
+
+            ImGui::SetWindowFontScale(1.0f);
 
             // fill remaining window space minus the current font size (+ padding). fixes issue where the input is outside the window frame
-            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize);
+            bool textInputScrollbarVisible = imFontUnifont->CalcTextSizeA(imFontUnifont->FontSize, FLT_MAX, 0.0f, inputBuf, inputBuf + strlen(inputBuf)).x * imFontUnifont->Scale > ImGui::GetContentRegionAvail().x;
+            float textboxHeight = -4 - (ImGui::GetStyle().FramePadding.y * 2) - (imFontUnifont->Scale * imFontUnifont->FontSize) - (textInputScrollbarVisible ? 14 : 0);
+
             if (!isImGuiActive)
             {
               textboxHeight = 0;
@@ -383,22 +402,38 @@ struct ConsoleMega : ImGuiWindowObject {
               }
               ImVec2 drawPos = ImGui::GetCursorPos();
 
-              ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CtrlEnterForNewLine;
-              if (ImGui::InputTextWithHint("##", LANG.CONSOLE_CMD_HINT, inputBuf, 1024, consoleFlags, &TextEditCallbackStub, (void*)this)) {
-                char* s = inputBuf;
-                Strtrim(s);
-                std::string fixedCommand = FixSpawnCommand(s);
-                s = (char*)fixedCommand.c_str();
-                if (s[0])
-                  ExecuteCommand(s);
-                reclaimFocus = true;
+              ImGuiInputTextFlags consoleFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion | ImGuiInputTextFlags_CallbackHistory | ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CallbackAlways | ImGuiInputTextFlags_CtrlEnterForNewLine | ImGuiInputTextFlags_NoHorizontalScroll;
+                
+              // This works around multiline losing focus on enter (genius!)
+              //if (ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) && !ImGui::IsAnyItemActive() && !ImGui::IsMouseClicked(0) && !textInputScrollbarVisible)
+              //   ImGui::SetKeyboardFocusHere(0);
+
+              if (reclaimFocus) {
+                  ImGui::SetKeyboardFocusHere(0);
+                  reclaimFocus = false;
+              }
+
+              if (ImGui::InputTextMultiline("##", inputBuf, 1024, ImVec2(0, (ImGui::GetStyle().FramePadding.y * 2) + (imFontUnifont->Scale * imFontUnifont->FontSize) + (textInputScrollbarVisible ? 14 : 0)), consoleFlags, &TextEditCallbackStub, (void*)this)) {
+                  char* s = inputBuf;
+                  Strtrim(s);
+                  std::string fixedCommand = FixSpawnCommand(s);
+                  s = (char*)fixedCommand.c_str();
+                  if (s[0])
+                      ExecuteCommand(s);
+                  ImGui::SetKeyboardFocusHere(0);
               }
               ImGui::PopItemWidth();
 
               ImGui::SetItemDefaultFocus();
-              if (reclaimFocus) {
-                ImGui::SetKeyboardFocusHere(-1);
-                reclaimFocus = false;
+
+              // Handle hint
+              if (!inputBuf[0])
+              {
+                  ImGui::SetCursorPos(ImVec2(drawPos.x + ImGui::GetStyle().FramePadding.x, drawPos.y + ImGui::GetStyle().FramePadding.y));
+
+                  ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.7f, 0.7f, 0.7f, 1));
+                  ImGui::Text(LANG.CONSOLE_CMD_HINT);
+                  ImGui::PopStyleColor();
               }
 
               // Handle preview text
@@ -431,6 +466,32 @@ struct ConsoleMega : ImGuiWindowObject {
     {
         switch (data->EventFlag)
         {
+            case ImGuiInputTextFlags_CallbackAlways:
+            {
+
+                // To help accomodate for the horizontal scrollbar hacks we've implemented in ImGui, we handle scrolling manually.
+                // I don't like it, but it's still much better than how we used to handle this (we didn't)
+
+                float textSize = ImGui::CalcTextSize("h").x; //TODO Since the font is monospace, it shouldn't matter what character this is, but it might matter for localization.
+
+                // Handle insertions and deletions of any length
+                static int bufLength = 0;
+                ImGui::SetScrollX(ImGui::GetScrollX() + (textSize * (data->BufTextLen - bufLength)));
+                
+                bufLength = data->BufTextLen;
+
+                // Handle arrow keys + command history
+                if (data->CursorPos * textSize < ImGui::GetScrollX()) {
+                    ImGui::SetScrollX(data->CursorPos * textSize);
+                }
+
+                if (data->CursorPos * textSize > ImGui::GetScrollX() + ImGui::GetContentRegionAvail().x) {
+                    ImGui::SetScrollX(textSize + data->CursorPos * textSize - ImGui::GetContentRegionAvail().x - imFontUnifont->Scale);
+                }
+
+                break;
+            }
+
             case ImGuiInputTextFlags_CallbackCompletion:
             {
                 if (autocompleteBuffer.size() > 0) {
@@ -450,6 +511,8 @@ struct ConsoleMega : ImGuiWindowObject {
             case ImGuiInputTextFlags_CallbackEdit:
             {
                 if (autocompleteActive) return 0; // Dont execute callback when ImGuiInputTextFlags_CallbackCompletion does its thing
+
+                commandFromHistory = false;
 
                 std::string strBuf = data->Buf;
                 std::vector<std::string> cmdlets = ParseCommand(strBuf);
@@ -512,8 +575,9 @@ struct ConsoleMega : ImGuiWindowObject {
 
                         case GOTO: {
                             unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
-                            RoomConfigs stage = g_Game->GetRoomConfigHolder()->configs[stbID];
-                            RoomConfig* config = stage.configs;
+                            RoomConfig_Stage* stage = &g_Game->GetRoomConfig()->_stages[stbID];
+                            RoomSet* set = &stage->_rooms[g_Game->IsGreedMode() ? 1 : 0];
+                            RoomConfig_Room* config = set->_configs;
                             std::map<int, std::string> specialRoomTypes = {
                                 std::pair<int, std::string>(1, "default"),
                                 std::pair<int, std::string>(2, "shop"),
@@ -546,15 +610,16 @@ struct ConsoleMega : ImGuiWindowObject {
                                 std::pair<int, std::string>(29, "ultrasecret"),
                             };
 
-                            for (unsigned int i = 0; i < stage.nbRooms; ++i) {       
+                            for (unsigned int i = 0; i < set->_count; ++i) {
                                 entries.insert(AutocompleteEntry(std::string("d.") + std::to_string(config->Variant), config->Name));
                                 config++;
                             }
 
-                            RoomConfigs special = g_Game->GetRoomConfigHolder()->configs[0];
-                            config = special.configs;
+                            RoomConfig_Stage* special = &g_Game->GetRoomConfig()->_stages[0];
+                            RoomSet* specialSet = &stage->_rooms[g_Game->IsGreedMode() ? 1 : 0];
+                            config = specialSet->_configs;
 
-                            for (unsigned int i = 0; i < special.nbRooms; ++i) {
+                            for (unsigned int i = 0; i < specialSet->_count; ++i) {
                                 entries.insert(AutocompleteEntry(std::string("s.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
                                 config++;
                             }
@@ -1150,7 +1215,7 @@ struct ConsoleMega : ImGuiWindowObject {
             }
             case ImGuiInputTextFlags_CallbackHistory:
             {
-                std::deque<std::string> history = *(g_Game->GetConsole())->GetCommandHistory();
+                std::deque<std::string> history = (g_Game->GetConsole())->_commandHistory;
                 autocompleteBuffer.clear();
 
                 const int prev_history_pos = historyPos;
@@ -1165,11 +1230,14 @@ struct ConsoleMega : ImGuiWindowObject {
                             historyPos = 0;
                 }
 
-                if (prev_history_pos != historyPos) {;
+                if (prev_history_pos != historyPos) {
                     std::string entry = historyPos ? history[historyPos - 1] : "";
                     entry.erase(std::remove(entry.begin(), entry.end(), '\n'), entry.end());
+                    autocompleteActive = true;
                     data->DeleteChars(0, data->BufTextLen);
                     data->InsertChars(0, entry.c_str());
+                    autocompleteActive = false;
+                    commandFromHistory = true;
                 }
                 break;
             }

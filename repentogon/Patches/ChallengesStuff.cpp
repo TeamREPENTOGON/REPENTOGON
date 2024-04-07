@@ -12,6 +12,7 @@
 
 #include "XMLData.h"
 #include "ChallengesStuff.h"
+#include "AchievementsStuff.h"
 
 #include "SigScan.h"
 #include "IsaacRepentance.h"
@@ -74,6 +75,7 @@ void LoadChallengesFromJson() {
 
 
 void UndoChallenge(int challengeid) {
+	if (challengeid < 0) { return; }
 	if (challengeid <= 45) {
 		g_Manager->GetPersistentGameData()->challenges[challengeid] = false;
 		g_Manager->GetPersistentGameData()->Save();
@@ -100,12 +102,21 @@ float lerp(float a, float b, float t)
 	return a + t * (b - a);
 }
 
-/*
+vector<int> visiblechallenges;
+
 HOOK_METHOD(Manager, StartNewGame, (int playerType, int challenge, Seeds unk, int difficulty) -> void) {
-	super(playerType, challenge, unk, difficulty);
+	if (g_MenuManager != NULL) {
+		if ((g_MenuManager->_selectedMenuID == 15)) {
+			int sel = g_MenuManager->GetMenuCustomChallenge()->SelectedElement;
+			if ((sel == 1) || ((visiblechallenges.size() - 1) < (sel - 46))) {
+				return super(0, 1, unk, difficulty);
+			}
+			return super(playerType, visiblechallenges[sel - 46], unk, difficulty);
+		}
+	}
+	return super(playerType, challenge, unk, difficulty);
 
 }
-*/
 
 HOOK_METHOD(Menu_Challenge, Render, () -> void) {
 	LayerState* frame = this->ChallengeMenuSprite.GetLayer(26);
@@ -113,25 +124,126 @@ HOOK_METHOD(Menu_Challenge, Render, () -> void) {
 	LayerState* frame3 = this->ChallengeMenuSprite.GetLayer(28);
 	int sel = this->SelectedChallengeID;
 	float targetyoffset = 0;
-		if (sel > 4) { targetyoffset = ((sel - 4) * 22); }
+		if (sel > 4) { targetyoffset = (float)((sel - 4) * 22); }
 
-		frame->_pos.y = lerp(frame->_pos.y, targetyoffset,0.05);
+		frame->_pos.y = lerp(frame->_pos.y, targetyoffset,0.05f);
 		frame2->_pos.y = frame->_pos.y;
 		frame3->_pos.y = frame->_pos.y;
 	super();
 }
 ANM2* Streak = new ANM2();
+int prevchalselect = -1;
+unordered_map<int, bool> lockedchallenges;
+string lockedchalstr = string("LOCKED :(");
+
+
+int firstunlocked = 1;
+int lastunlocked = 1;
+
+void boundselchal(Menu_CustomChallenge* s) {
+	if (firstunlocked == lastunlocked) { s->SelectedElement = firstunlocked; return; }
+	if ((s->SelectedElement) > (lastunlocked)) {
+		if (prevchalselect == firstunlocked) {
+			s->SelectedElement = lastunlocked;
+		}
+		else {
+			s->SelectedElement = firstunlocked;
+		}
+	}
+	else if ((s->SelectedElement) < firstunlocked){
+			s->SelectedElement = lastunlocked;
+		
+	}
+}
+bool visibleinit = false;
+HOOK_METHOD(PersistentGameData, TryUnlock, (int achievementID) -> bool) {
+	bool ret = super(achievementID);
+	visibleinit = false;
+	return ret;
+}
+HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player* player) -> void) {
+	super(in,out, player);
+	if (in.find("lockachievement ",15)) {
+		visibleinit = false;	
+	}
+}
+
+void skiplocked(Menu_CustomChallenge* m) {
+	if (visibleinit && (visiblechallenges.size() > 0)) {
+		int p = m->SelectedElement;
+		do {
+			p = m->SelectedElement;
+			int sel = visiblechallenges[m->SelectedElement - 46];
+			if (lockedchallenges[sel]) {
+				if (prevchalselect < m->SelectedElement) {
+					m->SelectedElement = m->SelectedElement + 1;
+				}
+				else {
+					m->SelectedElement = m->SelectedElement - 1;
+				}
+			}
+			boundselchal(m);
+			//printf("%d %d\n", this->SelectedElement,p);
+		} while ((p != m->SelectedElement));
+	}
+}
+
+HOOK_METHOD(Menu_CustomChallenge, Update, () -> void) {
+	if (!visibleinit) {
+		visibleinit = true;
+		firstunlocked = 1;
+		visiblechallenges.clear();
+		for (int i = 46; i <= XMLStuff.ChallengeData->maxid; i++) {
+			XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(i);
+			if ((node.find("hidden") == node.end()) || (node["hidden"] == "false")) {
+				visiblechallenges.push_back(i);
+				lockedchallenges[i] = false;
+				if ((node.begin() != node.end()) && (node.find("achievements") != node.end()) && !(MeetsComaSeparatedAchievs(node["achievements"]))) {
+					lockedchallenges[i] = true;
+				}
+				else {
+					if (firstunlocked == 1) { firstunlocked = 46 + (visiblechallenges.size() - 1); }
+					lastunlocked = 46 + (visiblechallenges.size() - 1);
+				}
+			}
+		}
+		 this->SelectedElement=firstunlocked;
+		 if (firstunlocked == 1) {
+			 this->SelectedElement = 1;
+		 }
+	}
+	if ((visiblechallenges.size() > 0)) {
+		skiplocked(this);
+	}
+	else
+	{
+		this->SelectedElement = 1;
+	}
+	prevchalselect = this->SelectedElement;
+	super();
+}
 
 HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
+	boundselchal(this);
+	skiplocked(this);
 	int sel = this->SelectedElement;
 	float targetyoffset = 0;
 	ANM2* s = &g_MenuManager->GetMenuChallenge()->ChallengeMenuSprite;
+	DrawStringScaledEntry* entry = new DrawStringScaledEntry();
+	entry->_boxWidth = 0;
+	entry->_center = false;
+	entry->_scaleX = 0.8f;
+	entry->_scaleY = 1;
+	entry->_color._blue = 0.14f;
+	entry->_color._green = 0.15f;
+	entry->_color._red = 0.21f;
+	entry->_color._alpha = 1.f;
+
 
 	super();
 	if (!Streak->_loaded) {
 		Streak->construct_from_copy(s);
-		string dir = string("../../../resources-repentogon/gfx/ui/challengesmenustuff.anm2");
-		Streak->Load(dir, true);
+		Streak->Load(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/challengesmenustuff.anm2"), true);
 		Streak->LoadGraphics(true);
 		Streak->Play("Idle", true);
 		Streak->Update();
@@ -141,17 +253,36 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 	Vector* offset = new Vector(ref->x - 950, ref->y + 216);
 	Vector pos = Vector(70 + offset->x, 53 + offset->y);
 	Vector z = Vector(0, 0);
-	for (int i = 46; i <= XMLStuff.ChallengeData->maxid;i++ ) {
+	int count = 0;
+	for each(int i in visiblechallenges) {
+		count++;
 		XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(i);
+		string order = to_string(count) + ".";
+		string challengesrt = (order + node["name"]);
 		pos.y += 25;
-		if (Challenges[node["name"] + node["sourceid"]] > 0) {
-			string order = to_string(i - 45) + ".";
-			srand(i-40);
-			Streak->SetFrame(&string("Idle"), rand() % 6);
-			Streak->Update();
-			Streak->_scale.x =  (g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(node["name"].c_str()) / 294.0);
-			Streak->_offset.x = g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(order.c_str()) - 10;
-			Streak->Render(&pos, &z, &z);
+		entry->_text = challengesrt.c_str();
+		entry->_x = pos.x;
+		entry->_y = pos.y - 20;
+		entry->_color._alpha = 1;
+		if (lockedchallenges[i]) {
+			string locked = order + lockedchalstr;
+			if ((node.find("lockeddesc") != node.end())) {
+				locked = order + node["lockeddesc"];
+			}
+			entry->_color._alpha = 0.5;
+			entry->_text = locked.c_str();
+			g_Manager->_font8_TeamMeat_12.DrawStringScaled(*entry);
+		}
+		else {
+			g_Manager->_font8_TeamMeat_12.DrawStringScaled(*entry);
+			if (Challenges[node["name"] + node["sourceid"]] > 0) {
+				srand(i-40);
+				Streak->SetFrame(&string("Idle"), (float)(rand() % 6));
+				Streak->Update();
+				Streak->_scale.x =  (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(node["name"].c_str()) / 294.0);
+				Streak->_offset.x = (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(order.c_str()) - 10);
+				Streak->Render(&pos, &z, &z);
+			}
 		}
 	}
 }

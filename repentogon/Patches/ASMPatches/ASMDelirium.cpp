@@ -96,7 +96,7 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 		}
 		else if (lua_istable(L, -1)) {
 			lua_len(L, -1);
-			int length = lua_tointeger(L, -1);
+			int length = (int)lua_tointeger(L, -1);
 			lua_pop(L, 1);
 			
 			// Empty table
@@ -110,7 +110,7 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 					return;
 				}
 
-				data->type = lua_tointeger(L, -1);
+				data->type = (int)lua_tointeger(L, -1);
 				// Variant defaults to 0
 				data->variant = 0;
 				lua_pop(L, 1);
@@ -123,7 +123,7 @@ static void __stdcall TransformationCallback(Box<DeliriumTransformationData*> bd
 						return;
 					}
 					else {
-						data->variant = lua_tointeger(L, -1);
+						data->variant = (int)lua_tointeger(L, -1);
 						lua_pop(L, 1);
 					}
 				}

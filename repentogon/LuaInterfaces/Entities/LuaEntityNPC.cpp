@@ -318,24 +318,23 @@ LUA_FUNCTION(Lua_IsBossColor) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_GetBossColorIdx) {
-	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	//lua_pushnumber(L, npc->_bosscoloridx);
-	std::tuple idx = { npc->_type,npc->_variant };
-	if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
-		vector<XMLAttributes> vecnodes = XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
-		if ((npc->_subtype > 0) && (vecnodes.size() > (npc->_subtype - 1))) {
-			lua_pushinteger(L, npc->_subtype);
-			return 1;
-		}
-	}
-	lua_pushinteger(L, -1);
-	return 1;
-}
-
 LUA_FUNCTION(Lua_GetDarkRedChampionRegenTimer) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	lua_pushinteger(L, npc->_championRegenTimer);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetSirenPlayerEntity) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+
+	if (npc->_type == 904) {
+		Entity_Player* player = npc->_sirenPlayerEntity;
+		if (player) {
+			lua::luabridge::UserdataPtr::push(L, npc->_sirenPlayerEntity, lua::Metatables::ENTITY_PLAYER);
+			return 1;
+		}
+	}
+	lua_pushnil(L);
 	return 1;
 }
 
@@ -364,8 +363,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "TryThrow", Lua_EntityNPC_TryThrow },
 
 		{ "IsBossColor", Lua_IsBossColor },
-		{ "GetBossColorIdx", Lua_GetBossColorIdx },
 		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
+		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }

@@ -107,6 +107,16 @@ local MaxPollCIdx = 3
 
 local UseFade = false
 
+local function UpdateMaxPollCIdx()
+    local str=Input.GetDeviceNameByIdx(0)
+    local i=0
+    while (str~=nil) do
+        i=i+1
+        str=Input.GetDeviceNameByIdx(i)
+    end
+    MaxPollCIdx=i
+end
+
 local function IsActionTriggeredAll(action)
     for i = 0, MaxPollCIdx do
         if Input.IsActionTriggered(action, i) then
@@ -140,6 +150,7 @@ function ChangeLog.MenuRender()
     local ActiveMenu=MenuManager:GetActiveMenu()
 
     if ActiveMenu == _MainMenuType.TITLE or ActiveMenu==0 then    --reserve menu id 0 for changelog to prevent inputs, mdoders: please do not use that specific id, you already have almost 2^32 of them!...
+        UpdateMaxPollCIdx()
         if IsActionTriggeredAll(_ButtonAction.ACTION_MAP) then
             Cl.CurrentState = not Cl.CurrentState
 
@@ -174,6 +185,7 @@ function ChangeLog.MenuRender()
                 170 *
                 NullScale
                 .Y                                                               --170 is a total height of the paper, should get it exposed in the table
+                local TextStretchFactor=0
                 for _, iterline in pairs(Cl.Sheets[1].TextArray) do
                     if string.find(iterline, "/f/") then
                         UseFade = true
@@ -184,6 +196,12 @@ function ChangeLog.MenuRender()
                     local XOffset = (-BoxSize / 2) * NullScale.X
                     local FullY = LogRenderPosition.Y + NullPos.Y + 40 * NullScale.Y + YOffset * NullScale.Y +
                     ScrollOffset
+--                    if FullY<500 then
+--                    print(line,"fully-minoffset",FullY - MinOffset,",minoffset:",(MinOffset + Cl.ScrollMargin * NullScale.Y),",maxoffset:",(MaxOffset - Cl.ScrollMargin * NullScale.Y)) end
+--                    print("checking",FullY-MinOffset)
+                    if ((MaxOffset - FullY) < 0.0) or ((FullY - MinOffset) < 0.0) then
+                        goto skiptonextline
+                    end
                     if FullY < (MinOffset + Cl.ScrollMargin * NullScale.Y) or FullY > (MaxOffset - Cl.ScrollMargin * NullScale.Y) then
                         if FullY - MinOffset < Cl.ScrollMargin * NullScale.Y then
                             Cl.FontColor.Alpha = (FullY - MinOffset) / Cl.ScrollMargin
@@ -197,9 +215,10 @@ function ChangeLog.MenuRender()
                     if UseFade then
                         Cl.FontColor.Alpha = Cl.FontColor.Alpha * 0.75
                     end
-                    local TextStretchFactor=math.min(1.0, BoxSize/Cl.Font:GetStringWidthUTF8(line) )    --this way the long lines of text get squished horizontally
+                    TextStretchFactor=math.min(1.0, BoxSize/Cl.Font:GetStringWidthUTF8(line) )    --this way the long lines of text get squished horizontally
                     Cl.Font:DrawStringScaledUTF8(line, LogRenderPosition.X + NullPos.X + XOffset, FullY, NullScale.X*TextStretchFactor,
                         NullScale.Y, Cl.FontColor, 0, false)
+                    ::skiptonextline::
                     YOffset = YOffset + Cl.LineHeight
                 end
             end

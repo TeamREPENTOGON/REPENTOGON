@@ -14,8 +14,6 @@ extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
 extern bool menuShown;
-extern bool imguiResized;
-extern ImVec2 imguiSizeModifier;
 
 enum class IMGUI_ELEMENT {
     Window,
@@ -959,10 +957,6 @@ struct CustomImGui {
                     if (window->data.newSizeRequested) {
                         ImGui::SetWindowSize(window->data.newSize);
                         window->data.newSizeRequested = false;
-                    }
-                    if (imguiResized) {
-                        ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
-                        ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
                     }
                     AddWindowContextMenu(&window->data.windowPinned);
                     DrawElements(window->children);

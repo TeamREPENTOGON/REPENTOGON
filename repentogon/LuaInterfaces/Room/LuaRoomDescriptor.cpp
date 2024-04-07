@@ -618,6 +618,13 @@ struct RoomDescriptor_SavedEntities {
 		return 1;
 	}
 
+	LUA_FUNCTION(Lua_Clear) {
+		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
+		ud->data->clear();
+
+		return 0;
+	}
+
 	LUA_FUNCTION(Lua_MetaLen) {
 		RoomDescriptor_SavedEntities* ud = GetData(L, 1);
 		lua_pushinteger(L, ud->data->size());
@@ -630,6 +637,7 @@ struct RoomDescriptor_SavedEntities {
 luaL_Reg RoomDescriptor_SavedEntities::methods[] = {
 	{ "Get", RoomDescriptor_SavedEntities::Lua_Get },
 	{ "GetByType", RoomDescriptor_SavedEntities::Lua_GetByType },
+	{ "Clear", RoomDescriptor_SavedEntities::Lua_Clear },
 	{ "__len", RoomDescriptor_SavedEntities::Lua_MetaLen },
 	{ NULL, NULL }
 };
@@ -706,6 +714,14 @@ struct RoomDescriptor_SavedGridEntities {
 		return 1;
 	}
 
+	/*LUA_FUNCTION(Lua_Clear) {
+		RoomDescriptor_SavedGridEntities* ud = GetData(L, 1);
+		ud->data->clear();
+
+		return 0;
+	}
+	*/
+
 	LUA_FUNCTION(Lua_MetaLen) {
 		RoomDescriptor_SavedGridEntities* ud = GetData(L, 1);
 		lua_pushinteger(L, ud->data->size());
@@ -719,6 +735,7 @@ luaL_Reg RoomDescriptor_SavedGridEntities::methods[] = {
 
 	{ "Get", RoomDescriptor_SavedGridEntities::Lua_Get },
 	{ "GetByType", RoomDescriptor_SavedGridEntities::Lua_GetByType },
+	//{ "Clear", RoomDescriptor_SavedGridEntities::Lua_Clear },
 	{ "__len", RoomDescriptor_SavedGridEntities::Lua_MetaLen },
 	{ NULL, NULL }
 };
@@ -727,6 +744,12 @@ LUA_FUNCTION(Lua_GetGridEntitiesSaveState) {
 	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
 	RoomDescriptor_SavedGridEntities* ud = lua::place<RoomDescriptor_SavedGridEntities>(L, lua::metatables::GridEntitiesSaveStateVectorMT);
 	ud->data = &(descriptor->SavedGridEntities);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetBossDeathSeed) {
+	RoomDescriptor* descriptor = lua::GetUserdata<RoomDescriptor*>(L, 1, lua::Metatables::ROOM_DESCRIPTOR, "RoomDescriptor");
+	lua_pushinteger(L, descriptor->BossDeathSeed);
 	return 1;
 }
 
@@ -739,6 +762,7 @@ static void RegisterRoomDescriptorMethods(lua_State* L) {
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::ROOM_DESCRIPTOR, functions);
+	lua::RegisterVariableGetter(L, lua::Metatables::ROOM_DESCRIPTOR, "BossDeathSeed", Lua_GetBossDeathSeed);
 }
 
 static void RegisterEntitiesSaveStateMetatables(lua_State* L) {

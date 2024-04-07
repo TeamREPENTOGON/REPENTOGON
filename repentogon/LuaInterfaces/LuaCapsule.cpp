@@ -32,10 +32,16 @@ LUA_FUNCTION(Lua_EntityGetNullCapsule) {
 
 LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector* vec = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector offsetVec;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		offsetVec = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	}
+	else {
+		offsetVec = Vector(0, 0);
+	}
 
 	Capsule* ud = (Capsule*)lua_newuserdata(L, sizeof(Capsule));
-	*ud = ent->GetCollisionCapsule(vec);
+	*ud = ent->GetCollisionCapsule(&offsetVec);
 	luaL_setmetatable(L, lua::metatables::CapsuleMT);
 	return 1;
 };

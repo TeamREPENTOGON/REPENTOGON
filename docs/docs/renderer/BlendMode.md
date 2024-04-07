@@ -4,7 +4,7 @@ tags:
 ---
 # Class "BlendMode"
 
-Determines how an image (either a [Sprite](../Sprite.md) as a whole or one of its [LayerStates](../LayerState.md))should blend with the elements rendered behind it. Used by [fxlayers.xml](https://wofsauge.github.io/IsaacDocs/rep/xml/fxlayers.html?h=blendMode) and various effects for multiplicative blending, but potentially has other uses. 
+Determines how a [LayerState](../LayerState.md) should blend with the elements rendered behind it. Specifically, these parameters are used in calls to [glBlendFuncSeparate](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFuncSeparate.xml).
 
 ???+ info
     You can get this class by using the following functions:
@@ -16,49 +16,56 @@ Determines how an image (either a [Sprite](../Sprite.md) as a whole or one of it
         local blendMode = Sprite():GetLayer(0):GetBlendMode()
         ```
 
-???+ warning "Warning"
-    Largely undocumented. I believe the `Flag` variables are actually two sets, with the first set being for Alpha and the second being for RGB. I also suspect that these flags correspond with the enums used for [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml).
-
 ## Functions
 
 ### SetMode () {: aria-label='Functions' }
-#### void SetMode ( int mode ) {: .copyable aria-label='Functions' } 
-Ranges from 0-2. Invalid modes are ignored. The game uses `1` as a default value, `0` for the blue base of the Planetarium backdrop, and `2` for multiplicative blending (Planetarium backdrop starfield layers, `8bitclouds_utero` backdrop layer, Beast death spotlight, and various other misc effects.
-
+#### void SetMode ( [BlendType](../enums/BlendType.md) Type ) {: .copyable aria-label='Functions' }
+???+ info "Mode usages"
+	The game uses:
+	
+	* `CONSTANT` for the flat blue Planetarium backdrop layer and the flat color layers of the Hell backdrop
+	* `NORMAL` as the default value
+	* `ADDITIVE` for Planetarium backdrop starfield layers, `8bitclouds_utero` backdrop layer, the `lava_add` layer of the Hell backdrop, Beast death spotlight, and various other misc effects
+	* `MULTIPLICATIVE` for EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and the `lava_multiply` layer of the Hell backdrop
+	* `OVERLAY` for EffectVariant.HUSH_ASHES & the overlay layer of the [Boss Intro versus Sprite](../RoomTransition.md#getversusscreensprite)
+	
 ???- info "Nonstandard modes"
-    The game additionally manually sets modes for various effects:
+    There have also been a couple nonstandard modes seen used for specific situations:
 
-    * EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses `{ 0, 2, 1, 1 }`
-    * Level 2 Willo, Necro, Visage (seemingly including the heart, mask, and plasma ball), Bulbs (on death), Fire variant projectiles & tears, EffectVariant.CRACK_THE_SKY (as spawned by the active, at least), EffectVariant.DUST_CLOUD (as spawned by Book of Belial), EffectVariant.DUST_CLOUD (as spawned by Ultra War) use `{ 1, 1, 1 ,1 }`
-    * EffectVariant.HUSH_ASHES & the [Boss Intro versus Sprite](../RoomTransition.md#getversusscreensprite) uses `{ 4, 7, 4, 7 }`
-    * EffectVariant.HALO (specifically the one used by Cursed Death's Head), EffectVariant.PURGATORY, and one of special Hell backdrop layers for the Beast fight use `{ 0, 2, 0, 2 }`
+    * EffectVariant.BACKDROP_DECORATION, as used by Mother for the fake backdrop wall, uses `{ RGBSourceFactor.ZERO, RGBDestinationFactor.SRC_COLOR, AlphaSourceFactor.ONE, AlphaDestinationFactor.ONE }`
+	* Light rendering uses `{ RGBSourceFactor.DST_COLOR, RGBDestinationFactor.DST_ALPHA, AlphaSourceFactor.DST_COLOR, AlphaDestinationFactor.ONE_MINUS_SRC_ALPHA }`
 
 ___
 ## Variables
-### Flag1 {: aria-label='Variables' }
-#### int Flag1 {: .copyable aria-label='Variables'}
-Used for alpha blending. In most cases this is `1`.
+### AlphaDestinationFactor {: aria-label='Variables' }
+#### [BlendFactor](../enums/BlendFactor.md) AlphaDestinationFactor {: .copyable aria-label='Variables'}
+`ZERO` in mode `CONSTANT`, `ONE_MINUS_SRC_ALPHA` in mode `NORMAL` and `OVERLAY`, `ONE` in mode `ADDITIVE`, and `SRC_COLOR` in `MULTIPLICATIVE`.
 
-Based on newer knowledge, a better name for this might be `AlphaSourceFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
-
-___
-### Flag2 {: aria-label='Variables' }
-#### int Flag2 {: .copyable aria-label='Variables'}
-`0` in "Mode 0", `7` in "Mode 1", and `1` in "Mode 2".
-
-Based on newer knowledge, a better name for this might be `AlphaDestinationFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+???- warning "Depreciation history"
+    This variable was previously known as `Flag4`.
 
 ___
-### Flag3 {: aria-label='Variables' }
-#### int Flag3 {: .copyable aria-label='Variables'}
-Set to `1` in all modes.
+### AlphaSourceFactor {: aria-label='Variables' }
+#### [BlendFactor](../enums/BlendFactor.md) AlphaSourceFactor {: .copyable aria-label='Variables'}
+`ZERO` in mode `MULTIPLICATIVE`, `ONE` in all other modes.
 
-Based on newer knowledge, a better name for this might be `RGBSourceFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+???- warning "Depreciation history"
+    This variable was previously known as `Flag3`.
 
 ___
-### Flag4 {: aria-label='Variables' }
-#### int Flag4 {: .copyable aria-label='Variables'}
-`0` in "Mode 0", `7` in "Mode 1", and `1` in "Mode 2".
+### RGBDestinationFactor {: aria-label='Variables' }
+#### [BlendFactor](../enums/BlendFactor.md) RGBDestinationFactor {: .copyable aria-label='Variables'}
+`ZERO` in mode `CONSTANT`, `ONE_MINUS_SRC_ALPHA` in mode `NORMAL` and `OVERLAY`, `ONE` in mode `ADDITIVE`, and `SRC_COLOR` in `MULTIPLICATIVE`.
 
-Based on newer knowledge, a better name for this might be `RGBDestinationFactor`, with the `int` being one of the enums used by [glBlendFunc](https://registry.khronos.org/OpenGL-Refpages/gl2.1/xhtml/glBlendFunc.xml). More research is required before this can be confirmed.
+???- warning "Depreciation history"
+    This variable was previously known as `Flag2`.
+
+___
+### RGBSourceFactor {: aria-label='Variables' }
+#### [BlendFactor](../enums/BlendFactor.md) RGBSourceFactor {: .copyable aria-label='Variables'}
+`ZERO` in mode `MULTIPLICATIVE`, `ONE` in all other modes (there's a possibility for this to be `SRC_ALPHA` if an internal `UsePremultipliedAlpha` variable in the graphics manager class isn't set, but this has not yet been observed)
+
+???- warning "Depreciation history"
+    This variable was previously known as `Flag1`.
+
 ___

@@ -19,6 +19,10 @@
 #include "ByteBuffer.h"
 #include "libzhl.h"
 
+extern "C" {
+	__declspec(dllexport) int InitZHL();
+}
+
 class LIBZHL_API ASMPatcher
 {
 public:
@@ -208,7 +212,9 @@ public:
 			XMM4 = 1 << 12,
 			XMM5 = 1 << 13,
 			XMM6 = 1 << 14,
-			XMM7 = 1 << 15
+			XMM7 = 1 << 15,
+			XMM_REGISTERS = XMM0 | XMM1 | XMM2 | XMM3 | XMM4 | XMM5 | XMM6 | XMM7,
+			ALL = GP_REGISTERS | XMM_REGISTERS
 		};
 
 		SavedRegisters(uint32_t mask, bool shouldRestore);
@@ -216,7 +222,7 @@ public:
 
 	private:
 		friend ASMPatch;
-		friend BOOL APIENTRY DllMain(HMODULE, DWORD, LPVOID);
+		friend __declspec(dllexport) int InitZHL();
 
 		void Restore();
 		uint32_t GetMask() const;
@@ -430,7 +436,7 @@ private:
 		void* _target;
 	};
 
-	friend BOOL APIENTRY DllMain(HMODULE, DWORD, LPVOID);
+	friend __declspec(dllexport) int InitZHL();
 	static void _Init();
 
 	uint8_t RegisterTox86(Registers reg);

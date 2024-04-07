@@ -168,7 +168,7 @@ LUA_FUNCTION(Lua_PickupGetCollectibleCycle) {
 
 	lua_newtable(L);
 
-	for (int i = 0; i < pickup->_cycleCollectibleCount; i++) {
+	for (unsigned int i = 0; i < pickup->_cycleCollectibleCount; i++) {
 		lua_pushinteger(L, pickup->_cycleCollectibleList[i]);
 		lua_rawseti(L, -2, i + 1);
 	}

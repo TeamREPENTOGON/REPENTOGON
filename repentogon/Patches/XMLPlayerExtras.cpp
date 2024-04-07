@@ -26,7 +26,6 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 		if (!playerXML[value.first].empty())
 			*value.second = stoi(playerXML[value.first]);
 	}
-
 	// Special cases, where direct setting doesn't work right
 
 	if (!playerXML["blackhearts"].empty()) {
@@ -42,6 +41,9 @@ HOOK_METHOD(Entity_Player, Init, (unsigned int type, unsigned int variant, unsig
 		this->AddBombs(stoi(playerXML["gigabombs"]));
 		this->AddGigaBombs(stoi(playerXML["gigabombs"]));
 	}
+	this->update_red_hearts(); 
+	this->update_golden_hearts(); 
+	this->update_bone_hearts(); 
 }
 
 HOOK_METHOD_PRIORITY(Entity_Player, GetHealthType, 100, () -> int) {

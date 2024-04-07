@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
+#include "Log.h"
 
-bool Room::IsValidRailType(lua_Integer rail) {
+bool Room::IsValidRailType(int rail) {
 	if (rail < 0) {
 		return false;
 	}
@@ -16,7 +17,7 @@ bool Room::IsValidRailType(lua_Integer rail) {
 	}
 }
 
-bool RoomConfig::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
+bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 	if (index < 0) {
 		return false;
 	}
@@ -91,7 +92,7 @@ bool RoomConfig::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
 	}
 }
 
-bool RoomConfig::IsAllowedGridIndex(lua_Integer index) const {
+bool RoomConfig_Room::IsAllowedGridIndex(int index) const {
 	switch (Shape) {
 	case ROOMSHAPE_1x1:
 	case ROOMSHAPE_IH:
@@ -238,4 +239,27 @@ void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time) {
 		_runTime = time;
 	}
 	return;
+}
+
+void EntityList_EL::Untie() {
+	if (!_sublist) {
+		ZHL::Log("[ERROR] Attempting to untie a list that is not a sublist, ignoring\n");
+		return;
+	}
+
+	Entity** entities = (Entity**)calloc(_size, sizeof(Entity*));
+	if (!entities) {
+		ZHL::Log("[CRITICAL] Unable to allocate memory to untie sublist, ignoring\n");
+		return;
+	}
+
+	_sublist = false;
+	memcpy(entities, _data, _size * sizeof(Entity*));
+	_data = entities;
+}
+
+bool Music::ValidateMusicID(int id, int& max) {
+	max = _entries.size();
+
+	return id >= 0 && id < max;
 }

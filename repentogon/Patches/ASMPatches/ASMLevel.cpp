@@ -28,28 +28,33 @@ bool IsFloorUnlocked(unsigned int stageId) {
 	return true;
 }
 // The void now draws from all floors
-void __stdcall VoidGenerationOverride(RoomConfigHolder* _this, std::vector<RoomConfig*>* rooms, int type, int shape, int minVariant,
+bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_Room*>* rooms, int type, int shape, int minVariant,
 	int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) {
-	for (int i = 1; i < 37; ++i) {
+	// we want to skip all this and let the game handle things if we're generating death certificate
+	if (g_Game->GetDimension() != 2) {
+		for (int i = 1; i < 37; ++i) {
 
-		if (!repentogonOptions.betterVoidGeneration && (i > 17 && i != 26) && i != 13)
-			continue;
-		else if (repentogonOptions.betterVoidGeneration && ((i > 17 && i < 26) || i == 34 || i == 35 || !IsFloorUnlocked(i)))
-			continue;
+			if (!repentogonOptions.betterVoidGeneration && (i > 17 && i != 26) && i != 13)
+				continue;
+			else if (repentogonOptions.betterVoidGeneration && ((i > 17 && i < 26) || i == 34 || i == 35 || !IsFloorUnlocked(i)))
+				continue;
 
-		// Configure the subtype here because backwards uses a 
-		// specific set of subtypes. I'll need the RNG object to 
-		// make this seed dependant.
-		/* if (i == 36) {
+			// Configure the subtype here because backwards uses a 
+			// specific set of subtypes. I'll need the RNG object to 
+			// make this seed dependant.
+			/* if (i == 36) {
 
-		} */
-		std::vector<RoomConfig*> stageRooms = _this->GetRooms(i, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
-		rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
+			} */
+			std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(i, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
+			rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
+		}
+		return true;
 	}
+	return false;
 }
 
 void ASMPatchVoidGeneration() {
-	SigScan scanner("83f82374758b5dd4be010000008b7dd0");
+	SigScan scanner("8b5d??be010000008b7d");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
 
@@ -57,27 +62,26 @@ void ASMPatchVoidGeneration() {
 
 	ASMPatch patch;
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::XMM0 | ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
-	patch.PreserveRegisters(registers);
-	patch.Push(ASMPatch::Registers::EBP, -0x38);
-	patch.Push(ASMPatch::Registers::EBP, -0x68);
-	patch.Push(ASMPatch::Registers::EBP, -0x40);
-	patch.Push(0x14);
-	patch.Push(ASMPatch::Registers::EBP, -0x70);
-	patch.Push(ASMPatch::Registers::EBP, -0x74);
-	patch.Push(ASMPatch::Registers::EBP, -0x78);
-	patch.Push(ASMPatch::Registers::EBP, -0x7C);
-	patch.Push(ASMPatch::Registers::EBP, -0x80);
-	// patch.Push(ASMPatch::Registers::EBP, -0x64);
-	patch.LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x64, ASMPatch::Registers::EBX);
-	patch.Push(ASMPatch::Registers::EBX);
-	patch.Push(ASMPatch::Registers::EBP, -0x30);
-	patch.AddInternalCall(VoidGenerationOverride);
-	patch.RestoreRegisters(registers);
-	// ASMPatch::ByteBuffer mov;
-	// mov.AddString("c7459414").AddZeroes(3);
-	patch.AddBytes("\xc7\x45\x94\x14").AddZeroes(3);
-	// patch.AddBytes(mov);
-	patch.AddRelativeJump((char*)addr + 108);
+	patch.PreserveRegisters(registers)
+	.Push(ASMPatch::Registers::EBP, -0x38)
+	.Push(ASMPatch::Registers::EBP, -0x68)
+	.Push(ASMPatch::Registers::EBP, -0x40)
+	.Push(0x14)
+	.Push(ASMPatch::Registers::EBP, -0x70)
+	.Push(ASMPatch::Registers::EBP, -0x74)
+	.Push(ASMPatch::Registers::EBP, -0x78)
+	.Push(ASMPatch::Registers::EBP, -0x7C)
+	.Push(ASMPatch::Registers::EBP, -0x80)
+	.LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x64, ASMPatch::Registers::EBX)
+	.Push(ASMPatch::Registers::EBX)
+	.Push(ASMPatch::Registers::EBP, -0x30)
+	.AddInternalCall(VoidGenerationOverride)
+	.AddBytes("\x84\xC0") // test al, al
+	.RestoreRegisters(registers)
+	.AddBytes("\xc7\x45\x94\x14").AddZeroes(3)
+	.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 103) // we handled the vector ourselves
+	.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore the commands we overwrote
+	.AddRelativeJump((char*)addr + 0x8);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -136,4 +140,33 @@ void ASMPatchGenericIsAltPath(void* addr, int condJumpOffset, int jumpOffset) {
 
 void PatchSpecialQuest() {
 	ASMPatchTrySpawnSpecialQuestDoor();
+}
+
+const char* sigs[2] = {
+	"c74424??63000000c74424??00000000",
+	"6affff7424??8bd0"
+};
+
+void PatchDealRoomVariant() {
+	SigScan maxVariantScanner(sigs[0]); // maxVariant 0x63 (99)
+	SigScan subTypePushScanner(sigs[1]); // PUSH -0x1, PUSH dword ptr[ESP + subtype]
+	maxVariantScanner.Scan();
+	subTypePushScanner.Scan();
+	void* addrs[2] = { maxVariantScanner.GetAddress(), subTypePushScanner.GetAddress() };
+
+	printf("[REPENTOGON] Patching InitializeDevilAngelRoom max variant at %p\n", (char*)addrs[0] + 8);
+	ASMPatch patch1;
+	patch1.AddBytes("\xFF\xFF\xFF\xFF"); // -1
+	sASMPatcher.FlatPatch((char*)addrs[0] + 4, &patch1);
+
+	printf("[REPENTOGON] Patching InitializeDevilAngelRoom subtype push %p\n", (char*)addrs[1] + 2);
+	ASMPatch patch2;
+	patch2.AddBytes("\x83\x7c\x24\x28\x64") // cmp dword ptr ss:[EBP+0x28],0x64 (100)
+		.Push(-0x1) // mode
+		.AddBytes("\x75\x0a") // jne 0x0a
+		.Push(0x29a) // 666
+		.AddRelativeJump((char*)addrs[1] + 0x6)
+		.AddBytes("\xFF\x74\x24\x28") // push dword ptr ss:[EBP+0x28] (subtype, JNE skips here)
+		.AddRelativeJump((char*)addrs[1] + 0x6);
+	sASMPatcher.PatchAt((char*)addrs[1], &patch2);
 }

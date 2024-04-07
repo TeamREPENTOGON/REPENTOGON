@@ -24,7 +24,7 @@ LUA_FUNCTION(Lua_ConsolePrintError)
 LUA_FUNCTION(Lua_ConsoleGetHistory)
 {
 	Console* console = g_Game->GetConsole();
-	std::deque<Console_HistoryEntry>* history = console->GetHistory();
+	std::deque<Console_HistoryEntry>* history = &console->_history;
 
 	lua_newtable(L);
 	unsigned int idx = 1;
@@ -41,7 +41,7 @@ LUA_FUNCTION(Lua_ConsoleGetHistory)
 LUA_FUNCTION(Lua_ConsoleGetCommandHistory)
 {
 	Console* console = g_Game->GetConsole();
-	std::deque<std::string> commandHistory = *console->GetCommandHistory();
+	std::deque<std::string> commandHistory = console->_commandHistory;
 
 	lua_newtable(L);
 	unsigned int idx = 1;
@@ -70,7 +70,7 @@ LUA_FUNCTION(Lua_ConsolePrintWarning)
 LUA_FUNCTION(Lua_ConsolePopHistory) {
 	Console* console = g_Game->GetConsole();
 	int amount = (int)luaL_optinteger(L, 1, 1);
-	std::deque<Console_HistoryEntry>* history = console->GetHistory();
+	std::deque<Console_HistoryEntry>* history = &console->_history;
 	amount++;
 
 	for (int i = 0; i < amount; ++i) {

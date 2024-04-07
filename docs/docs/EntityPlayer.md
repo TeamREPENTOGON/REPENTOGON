@@ -15,6 +15,16 @@ This class contains both new functions and modified reimplementations of existin
 Now accepts an optional `bool` to determine if [EntityPlayer](EntityPlayer.md):EvaluateItems() should be automatically called after adding cache flags. In most cases, you'll want to do this.
 
 ___
+### AddCollectibleEffect, () {: aria-label='Modified Functions' }
+#### void AddCollectibleEffect ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) ctype, bool applycostume, int cooldown = vanillacd, bool additive = true ) {: .copyable aria-label='Modified Functions' }
+Shortcut of TemporaryEffects:AddCollectibleEffect with extra args to handle cooldown. The additive parameter determines if the cooldown should be added to the preexistent cooldown value or if it should be set for that value. You can use negative cooldown values with additive to reduce preexistent cooldown.
+
+___
+### AddNullItemEffect, () {: aria-label='Modified Functions' }
+#### void AddNullItemEffect ( int nullItemid, bool applycostume, int cooldown = vanillacd, bool additive = true ) {: .copyable aria-label='Modified Functions' }
+Shortcut of TemporaryEffects:AddNullItemEffect with extra args to handle cooldown. The additive parameter determines if the cooldown should be added to the preexistent cooldown value or if it should be set for that value. You can use negative cooldown values with additive to reduce preexistent cooldown.
+
+___
 ### ClearDeadEyeCharge () {: aria-label='Modified Functions' }
 #### void ClearDeadEyeCharge ( boolean Force = false ) {: .copyable aria-label='Modified Functions' }
 Now accepts a `Force` argument to forcefully reset the charge instead of only rolling for a change to reset.
@@ -122,6 +132,10 @@ ___
 ___
 ### ClearItemAnimNullItems () {: aria-label='Functions' }
 #### void ClearItemAnimNullItems ( ) {: .copyable aria-label='Functions' }
+
+___
+### ClearQueueItem () {: aria-label='Functions' }
+#### void ClearQueueItem ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### DropCollectible () {: aria-label='Functions' }
@@ -330,7 +344,7 @@ If none of these exist, this returns `nil`.
 
 ___
 ### GetFootprintColor () {: aria-label='Functions' }
-#### [Color](Color.md) GetFootprintColor ( boolean LeftFootprint ) {: .copyable aria-label='Functions' }
+#### [KColor](https://wofsauge.github.io/IsaacDocs/rep/KColor.html) GetFootprintColor ( boolean LeftFootprint ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetGlitchBabySubType () {: aria-label='Functions' }
@@ -347,6 +361,11 @@ ___
 ___
 ### GetGreedsGulletHearts () {: aria-label='Functions' }
 #### int GetGreedsGulletHearts ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetHeadDirectionLockTime () {: aria-label='Functions' }
+#### int GetHeadDirectionLockTime ( ) {: .copyable aria-label='Functions' }
+How long the player's head should be forced to stay in its current direction. `-1` (or lower) indicates the direction is not currently locked.
 
 ___
 ### GetHealthType () {: aria-label='Functions' }
@@ -476,6 +495,10 @@ For Experimental Treatement, returns `-1`, `0` or `1` depending on the speed rol
 ___
 ### GetTotalActiveCharge () {: aria-label='Functions' }
 #### int GetTotalActiveCharge ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+
+___
+### GetUrnSouls () {: aria-label='Functions' }
+#### int GetUrnSouls ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetVoidedCollectiblesList () {: aria-label='Functions' }
@@ -759,6 +782,16 @@ Sets the player's footprint color.
 ___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }
 #### void SetGnawedLeafTimer ( int Timer ) {: .copyable aria-label='Functions' }
+
+___
+### SetHeadDirection () {: aria-label='Functions' }
+#### void SetHeadDirection ( [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html) Direction, int Time, boolean Force = false ) {: .copyable aria-label='Functions' }
+Locks the player's head animation to the specified [Direction](https://wofsauge.github.io/IsaacDocs/rep/enums/Direction.html). `Force` will override existing head direction locks, such as the one from firing Mom's Knife.
+
+___
+### SetHeadDirectionLockTime () {: aria-label='Functions' }
+#### void SetHeadDirectionLockTime ( int Time ) {: .copyable aria-label='Functions' }
+How long the player's head should be forced to stay in its current direction.
 
 ___
 ### SetImmaculateConceptionState () {: aria-label='Functions' }
