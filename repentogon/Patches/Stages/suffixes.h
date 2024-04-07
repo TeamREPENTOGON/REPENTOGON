@@ -1,10 +1,5 @@
 #pragma once
 
-extern constexpr unsigned int BUFFER_STAGEID = 23;
-
-extern std::unordered_map<std::string, RoomSet> binaryMap;
-extern bool stageOverwritten[37] = { false };
-
 const char* suffixes[36] = {
 	"",
 	"_basement",
