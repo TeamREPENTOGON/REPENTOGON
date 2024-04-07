@@ -18,6 +18,8 @@ Additions:
 	- GetDeadEyeSprite
 * Input:
 	- GetDeviceNameByIdx
+* Console:
+	* Added a popup error when a script ran by luamod errors, highlighting the last error thrown, to prevent it from being instantly buried
 * Isaac:
 	- StartNewGame(int playertype, int challenge, int difficulty, int seed), allows starting the game from within the main menu
 * MenuManager:

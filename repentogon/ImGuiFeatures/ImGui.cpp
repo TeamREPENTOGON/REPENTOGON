@@ -411,6 +411,57 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return CallWindowProc(windowProc, hWnd, uMsg, wParam, lParam);
 }
 
+
+
+
+//luamod error popup
+string luamoderrorcache = "";
+bool popupdismissed = false;
+bool popupscrolled = false;
+bool popupwasenterreleased = false;
+
+HOOK_METHOD(LuaEngine, LuamodCMD, (char* modname) -> char*) {
+	luamoderrorcache = "";
+	popupdismissed = false;
+	popupscrolled = false;
+	popupwasenterreleased = false;
+	char* success = super(modname);
+	std::deque<Console_HistoryEntry>* history = &g_Game->GetConsole()->_history;
+	if ((!success) && (history->size() > 1)) {
+		luamoderrorcache = history->at(1)._text;
+	}
+	return success;
+}
+
+void RenderLuamodErrorPopup() {
+	if ((luamoderrorcache.length() > 0) && (!popupdismissed) && (menuShown)) {
+		ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_FirstUseEver);
+		ImGui::OpenPopup("Luamod Error");
+		if (ImGui::BeginPopupModal("Luamod Error", NULL)) {
+				float buttonWidth = ImGui::CalcTextSize("Close").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+				float buttonHeight = ImGui::CalcTextSize("Close").y + ImGui::GetStyle().FramePadding.y * 2.0f;
+				if (ImGui::BeginChild("ErrorBox", ImVec2(0, ImGui::GetWindowHeight() - (buttonHeight * 2.5f)), ImGuiChildFlags_Border)) {
+					ImGui::TextWrapped(luamoderrorcache.c_str());
+					if (!popupscrolled) {
+						ImGui::SetScrollHereY(1.0f);
+						popupscrolled = true; // Prevent scrolling every frame
+					}
+				}
+				ImGui::EndChild();
+				float buttonX = (ImGui::GetWindowWidth() - buttonWidth) * 0.5f;
+				ImGui::SetCursorPosX(buttonX);
+				if (ImGui::Button("Close") || ImGui::IsKeyPressed(ImGuiKey_Escape) || (ImGui::IsKeyPressed(ImGuiKey_Enter) && popupwasenterreleased)) {
+					popupdismissed = true;
+					ImGui::CloseCurrentPopup();
+					console.reclaimFocus = true;
+				}
+				popupwasenterreleased = !ImGui::IsKeyPressed(ImGuiKey_Enter);
+		}
+		ImGui::EndPopup();
+	}
+}
+//luamod error popup end
+
 ImFont* imFontUnifont = NULL;
 
 void __stdcall RunImGui(HDC hdc) {
@@ -554,6 +605,8 @@ void __stdcall RunImGui(HDC hdc) {
 	// render console very late to make auto-focus work properly
 	console.Draw(menuShown);
 
+	RenderLuamodErrorPopup(); //above the konsol
+
 	// notifications last, to force them to overlap everything
 	notificationHandler.Draw(menuShown);
 
@@ -610,6 +663,7 @@ HOOK_STATIC(Isaac, Shutdown, () -> void, __cdecl) {
 	shutdownInitiated = true;
 	super();
 }
+
 
 extern int handleWindowFlags(int flags);
 extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
