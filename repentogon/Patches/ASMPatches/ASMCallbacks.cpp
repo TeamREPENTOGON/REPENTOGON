@@ -930,23 +930,26 @@ bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 }
 
 void ASMPatchPickupUpdatePickupGhosts() {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch;
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::EAX, true);
+    ASMPatch patch;
 
-	SigScan signature("e8????????85c00f84????????8b4e2ce8????????");
-	signature.Scan();
+    SigScan signature("e8????????85c00f84????????8b4e2ce8????????");
+    signature.Scan();
 
-	void* addr = signature.GetAddress();
+    void* addr = signature.GetAddress();
 
-	printf("[REPENTOGON] Patching Pickup::UpdatePickupGhosts at %p\n", addr);
+    printf("[REPENTOGON] Patching Pickup::UpdatePickupGhosts at %p\n", addr);
 
-	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::ESI) // pickup
-		.AddInternalCall(RunPickupUpdatePickupGhostsCallback)
-		.AddBytes("\x84\xC0") // test al, al
-		.RestoreRegisters(savedRegisters)
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
-		//.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
-		.AddRelativeJump((char*)addr + 0xCA);
-	sASMPatcher.PatchAt(addr, &patch);
+    patch.Pop(ASMPatch::Registers::EAX)
+        .Pop(ASMPatch::Registers::EAX)
+        .Pop(ASMPatch::Registers::EAX)  // Pop everything that was pushed onto the stack intended for the overwritten call to FirstCollectibleOwner.
+        .PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::ESI) // pickup
+        .AddInternalCall(RunPickupUpdatePickupGhostsCallback)
+        .AddBytes("\x84\xC0") // test al, al
+        .RestoreRegisters(savedRegisters)
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
+        //.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
+        .AddRelativeJump((char*)addr + 0xCA);
+    sASMPatcher.PatchAt(addr, &patch);
 }
