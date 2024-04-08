@@ -6448,7 +6448,7 @@
 <p>It's important to note that even though they game displays a value of ~33% or ~66% for the 25% and 50% values respectively, devil chance is <em>not</em> clamped to a value between 0 and 1, and "100%" chance without items generally means a value of around ~133%.</p>
 <p>Return a <code>float</code> to modify the chance in this step of the calculation.</p>
 <p><a href="../enums/ModCallbacks.html#mc_pre_devil_apply_stage_penalty">MC_PRE_DEVIL_APPLY_STAGE_PENALTY</a> allows you to return <code>false</code> to bypass the stage penalty.</p>
-<p><a href="../enums/ModCallbacks.html#mc_pre_devil_apply_items">MC_PRE_DEVIL_APPLY_ITEMS</a> is where the game applies modifications that bypass the stage penalty, for items such as Goat Head and Eucharist. Return a <code>float</code> to modify the chance in this step of the calculation.</p>
+<p><a href="../enums/ModCallbacks.html#mc_pre_devil_apply_special_items">MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS</a> is where the game applies modifications that bypass the stage penalty, for items such as Goat Head and Eucharist. Return a <code>float</code> to modify the chance in this step of the calculation.</p>
 <p><a href="../enums/ModCallbacks.html#mc_post_devil_calculate">MC_POST_DEVIL_CALCULATE</a> is called after the deal chance has been calculated. You can return a <code>float</code> here to override the calculated chance.</p>
 <p>The following example mod adds an item that will randomize the deal chance on MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS while in an uncleared boss room, and keeps that chance applied after the room is cleared.</p>
 <h2 id="code">Code<a class="headerlink" href="#code" title="Permanent link">⚓︎</a></h2>
