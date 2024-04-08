@@ -193,7 +193,7 @@ LUA_FUNCTION(Lua_PickupGetPickupGhost) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_PickupUpdatePickupGhost) {
+LUA_FUNCTION(Lua_PickupUpdatePickupGhosts) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	pickup->UpdatePickupGhosts();
 	return 0;
@@ -235,7 +235,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "RemoveCollectibleCycle", Lua_PickupRemoveCollectibleCycle },
 		//{ "IsChest", Lua_PickupIsChest },
 		{ "GetPickupGhost", Lua_PickupGetPickupGhost },
-		{ "UpdatePickupGhosts", Lua_PickupUpdatePickupGhost },
+		{ "UpdatePickupGhosts", Lua_PickupUpdatePickupGhosts },
 		{ NULL, NULL }
 	};
 
