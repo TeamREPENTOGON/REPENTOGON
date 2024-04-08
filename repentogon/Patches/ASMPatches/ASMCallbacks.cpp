@@ -924,9 +924,10 @@ bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) {
 			}
 		}
 	}
-
-	return (g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_GUPPYS_EYE, nullptr, true) != nullptr && ((pickup->IsChest(pickup->_variant) && pickup->_subtype != 0) || (pickup->_variant == 69 && !pickup->IsDead())));
-
+	
+	return (g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_GUPPYS_EYE, nullptr, true) != nullptr && 
+		((pickup->IsChest(pickup->_variant) && pickup->_subtype != 0) || (pickup->_variant == 69 && !pickup->_dead)) 
+			&& (pickup->_timeout < 1) );
 }
 
 void ASMPatchPickupUpdatePickupGhosts() {
