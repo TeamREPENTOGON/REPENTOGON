@@ -905,6 +905,7 @@ void ASMPatchTrinketRender() {
 		sASMPatcher.PatchAt(addr, &patch);
 }
 
+//MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (1335)
 bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) { 
 	const int callbackid = 1335;
 

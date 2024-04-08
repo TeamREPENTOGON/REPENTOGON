@@ -28,9 +28,33 @@ LUA_FUNCTION(Lua_LootListPushEntry) {
 
 LUA_FUNCTION(Lua_PickupGetLootList) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
-	bool unk = lua::luaL_optboolean(L, 2, false);
+	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
 
-	LootList loot = pickup->GetLootList(unk);
+	LootList loot = pickup->GetLootList(shouldAdvance);
+	LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
+
+	luaL_setmetatable(L, lua::metatables::LootListMT);
+	memcpy(toLua, &loot, sizeof(LootList));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_NPCGetFireplaceLoot) {
+	auto* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
+
+	LootList loot = npc->fireplace_get_loot(shouldAdvance);
+	LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
+
+	luaL_setmetatable(L, lua::metatables::LootListMT);
+	memcpy(toLua, &loot, sizeof(LootList));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_NPCGetShopkeeperLoot) {
+	auto* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	bool shouldAdvance = lua::luaL_optboolean(L, 2, false);
+
+	LootList loot = npc->shopkeeper_get_loot(shouldAdvance);
 	LootList* toLua = (LootList*)lua_newuserdata(L, sizeof(LootList));
 
 	luaL_setmetatable(L, lua::metatables::LootListMT);
@@ -68,6 +92,9 @@ LUA_FUNCTION(Lua_LootListGetEntries)
 static void RegisterLootList(lua_State* L) {
 
 	lua::RegisterFunction(L, lua::Metatables::ENTITY_PICKUP, "GetLootList", Lua_PickupGetLootList);
+
+	lua::RegisterFunction(L, lua::Metatables::ENTITY_NPC, "GetFireplaceLoot", Lua_NPCGetFireplaceLoot);
+	lua::RegisterFunction(L, lua::Metatables::ENTITY_NPC, "GetShopkeeperLoot", Lua_NPCGetShopkeeperLoot);
 
 	luaL_Reg functions[] = {
 		{ "GetEntries", Lua_LootListGetEntries },

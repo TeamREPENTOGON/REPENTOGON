@@ -3933,8 +3933,8 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 }
 
 //MC_PRE_PICKUP_GET_LOOT_LIST (1334)
-HOOK_METHOD(Entity_Pickup, GetLootList, (bool unk) -> LootList) {
-	LootList list = super(unk);
+HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance) -> LootList) {
+	LootList list = super(shouldAdvance);
 
 	const int callbackid = 1334;
 	if (CallbackState.test(callbackid - 1000)) {
@@ -3944,9 +3944,9 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool unk) -> LootList) {
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()
-			//.push(&list, lua::metatables::LootListMT)
+			//.push(&list, lua::metatables::LootListMT) //can't work with loot directly for now
 			.push(this, lua::Metatables::ENTITY_PICKUP)
-			.push(unk)
+			.push(shouldAdvance)
 			.call(1);
 
 		if (!result && lua_isuserdata(L, -1)) {
