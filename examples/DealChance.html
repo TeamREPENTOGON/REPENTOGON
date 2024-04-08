@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://repentogon.com/examples/Beams.html">
+        <link rel="canonical" href="https://repentogon.com/examples/DealChance.html">
       
       
-        <link rel="prev" href="WeightedOutcomes.html">
+        <link rel="prev" href="Capsules.html">
       
       
-        <link rel="next" href="ColorModifiers.html">
+        <link rel="next" href="WeightedOutcomes.html">
       
       
       <link rel="icon" href="../img/favicon.ico">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Beams - BoI: REPENTOGON</title>
+        <title>Deal Chance - BoI: REPENTOGON</title>
       
     
     
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#beams-example" class="md-skip">
+        <a href="#altering-deal-chance-example" class="md-skip">
           Skip to content
         </a>
       
@@ -116,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Beams
+              Deal Chance
             
           </span>
         </div>
@@ -6233,48 +6233,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="DealChance.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Deal Chance
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="WeightedOutcomes.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Weighted Outcomes
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -6291,18 +6249,18 @@
           
   
   <span class="md-ellipsis">
-    Beams
+    Deal Chance
   </span>
   
 
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="Beams.html" class="md-nav__link md-nav__link--active">
+      <a href="DealChance.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
-    Beams
+    Deal Chance
   </span>
   
 
@@ -6336,6 +6294,48 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="WeightedOutcomes.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Weighted Outcomes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="Beams.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Beams
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -6442,19 +6442,24 @@
   
 
 
-<h1 id="beams-example">Beams Example<a class="headerlink" href="#beams-example" title="Permanent link">⚓︎</a></h1>
-<p><a href="../renderer/Beam.html">Beams</a> are used internally for rendering cords, such as Gello's umbilical cord. Note that this <em>only handles rendering</em> and not physics.</p>
-<p>Beams are best demonstrated by looking at the Ball and Chain enemies found in Gehenna, which have a chain that dynamically moves and stretches depending on how far away the spiked ball is from where it is chained.</p>
-<p>Beams are comprised of any number of <a href="../renderer/Point.html">Points</a>.</p>
+<h1 id="altering-deal-chance-example">Altering Deal Chance Example<a class="headerlink" href="#altering-deal-chance-example" title="Permanent link">⚓︎</a></h1>
+<p>There are four callbacks that allow us to manipulate devil and angel chances.</p>
+<p><a href="../enums/ModCallbacks.html#mc_pre_devil_apply_items">MC_PRE_DEVIL_APPLY_ITEMS</a> is run when most items that effect deal chance modify the calculation. It's called before the stage penalty is applied. If a deal has spawned anywhere on the previous two floors, the game decays the resulting deal chance by a stage penalty of either 25% or 50%, depending on how many deals have been taken.</p>
+<p>It's important to note that even though they game displays a value of ~33% or ~66% for the 25% and 50% values respectively, devil chance is <em>not</em> clamped to a value between 0 and 1, and "100%" chance without items generally means a value of around ~133%.</p>
+<p>Return a <code>float</code> to modify the chance in this step of the calculation.</p>
+<p><a href="../enums/ModCallbacks.html#mc_pre_devil_apply_stage_penalty">MC_PRE_DEVIL_APPLY_STAGE_PENALTY</a> allows you to return <code>false</code> to bypass the stage penalty.</p>
+<p><a href="../enums/ModCallbacks.html#mc_pre_devil_apply_items">MC_PRE_DEVIL_APPLY_ITEMS</a> is where the game applies modifications that bypass the stage penalty, for items such as Goat Head and Eucharist. Return a <code>float</code> to modify the chance in this step of the calculation.</p>
+<p><a href="../enums/ModCallbacks.html#mc_post_devil_calculate">MC_POST_DEVIL_CALCULATE</a> is called after the deal chance has been calculated. You can return a <code>float</code> here to override the calculated chance.</p>
+<p>The following example mod adds an item that will randomize the deal chance on MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS while in an uncleared boss room, and keeps that chance applied after the room is cleared.</p>
 <h2 id="code">Code<a class="headerlink" href="#code" title="Permanent link">⚓︎</a></h2>
-<p><a href="zips/repentogon-beam.zip">You can download the full mod and its assets by clicking here.</a></p>
+<p><a href="zips/repentogon-devil-chance.zip">You can download the full mod and its assets by clicking here.</a></p>
 <details class="- example">
 <summary>Video Demonstration</summary>
 <p><figure class="video_container">
     <video controls="true" allowfullscreen="true" muted="true" style="width:25rem">
-        <source src="videos/beam_damage_ray.mp4" type="video/mp4">
+        <source src="videos/devil_chance.mp4" type="video/mp4">
     </video>
-    <figcaption>A laser Beam of death incinerating enemies.</figcaption>
+    <figcaption>The devil deal chance is randomized every frame while fighting Baby Plum.</figcaption>
 </figure></p>
 </details>
 <details class="example code" open="open">
@@ -6497,89 +6502,45 @@
 <span class="normal">36</span>
 <span class="normal">37</span>
 <span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Beam Example&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Repentogon Devil Chance&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">()</span>
 
-<span class="c1">-- Some constants.</span>
-<span class="kd">local</span> <span class="n">DAMAGE_MULTIPLIER</span> <span class="o">=</span> <span class="mf">0.01</span>
-<span class="kd">local</span> <span class="n">ITEM_ID</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemIdByName</span><span class="p">(</span><span class="s2">&quot;Life-Drain Gem&quot;</span><span class="p">)</span>
+<span class="c1">-- The item &quot;Dark Spellcasting Tome&quot; will set the devil deal chance to</span>
+<span class="c1">-- a random percentage every frame while in an uncleared boss room.</span>
+<span class="kd">local</span> <span class="n">ITEM_ID</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemIdByName</span><span class="p">(</span><span class="s2">&quot;Dark Spellcasting Tome&quot;</span><span class="p">)</span>
 
-<span class="c1">-- First make a sprite.</span>
-<span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">Sprite</span><span class="p">()</span>
-<span class="n">sprite</span><span class="p">:</span><span class="n">Load</span><span class="p">(</span><span class="s2">&quot;gfx/chain_beam.anm2&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
-<span class="n">sprite</span><span class="p">:</span><span class="n">Play</span><span class="p">(</span><span class="s2">&quot;Idle&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+<span class="c1">-- Store the random chance that will be set when the boss room is cleared.</span>
+<span class="kd">local</span> <span class="n">modifiedChance</span> <span class="o">=</span> <span class="mi">0</span>
 
-<span class="c1">-- Handles the beam and damaging of the closest enemy to the player.</span>
-<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">HandleLifeSteam</span><span class="p">(</span><span class="n">player</span><span class="p">)</span>
-    <span class="kd">local</span> <span class="n">data</span> <span class="o">=</span> <span class="n">player</span><span class="p">:</span><span class="n">GetData</span><span class="p">()</span>
+<span class="c1">-- There&#39;s four callbacks for devil chance that are applied at different times.</span>
+<span class="c1">-- The one we&#39;re using is MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS.</span>
+<span class="c1">-- This is where the game applies chances that bypass the stage penalty, such as Goat Head and Eucharist.</span>
+<span class="c1">-- There&#39;s also MC_PRE_DEVIL_APPLY_ITEMS, which is where most items apply their modified chance.</span>
 
-    <span class="c1">-- Check if the player has our item, first.</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">player</span><span class="p">:</span><span class="n">HasCollectible</span><span class="p">(</span><span class="n">ITEM_ID</span><span class="p">)</span> <span class="kr">then</span>
-        <span class="kr">return</span>
-    <span class="kr">end</span>
+<span class="c1">-- If in a boss room and it isn&#39;t cleared, set the chance to something random.</span>
+<span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">RandomizeDevilChance</span><span class="p">()</span>
+    <span class="c1">-- Check if we should actually do the item&#39;s effects.</span>
+    <span class="c1">-- We need the RNG for later so we&#39;ll check if the following variable is nil.</span>
+    <span class="kd">local</span> <span class="n">firstPlayer</span> <span class="o">=</span> <span class="n">PlayerManager</span><span class="p">.</span><span class="n">FirstCollectibleOwner</span><span class="p">(</span><span class="n">ITEM_ID</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">firstPlayer</span> <span class="kr">then</span>
+        <span class="kd">local</span> <span class="n">room</span> <span class="o">=</span> <span class="n">game</span><span class="p">:</span><span class="n">GetRoom</span><span class="p">()</span>
 
-    <span class="c1">-- Get the beam stored in player:GetData(), or create one if it doesn&#39;t exist.</span>
-    <span class="kd">local</span> <span class="n">beam</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">LifeStealBeam</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">beam</span> <span class="kr">then</span>
-        <span class="c1">-- Create the beam. We don&#39;t need to use the overlay here.</span>
-        <span class="n">data</span><span class="p">.</span><span class="n">LifeStealBeam</span> <span class="o">=</span> <span class="n">Beam</span><span class="p">(</span><span class="n">sprite</span><span class="p">,</span> <span class="s2">&quot;chain&quot;</span><span class="p">,</span> <span class="kc">false</span><span class="p">,</span> <span class="kc">false</span><span class="p">)</span>
-        <span class="n">beam</span> <span class="o">=</span> <span class="n">data</span><span class="p">.</span><span class="n">LifeStealBeam</span>
-    <span class="kr">end</span>
+        <span class="c1">-- Only do this in a boss room.</span>
+        <span class="kr">if</span> <span class="n">room</span><span class="p">:</span><span class="n">GetType</span><span class="p">()</span> <span class="o">==</span> <span class="n">RoomType</span><span class="p">.</span><span class="n">ROOM_BOSS</span> <span class="kr">then</span>
+            <span class="c1">-- Check if in a boss room and if isn&#39;t clear, and randomize if so.</span>
+            <span class="kr">if</span> <span class="ow">not</span> <span class="n">room</span><span class="p">:</span><span class="n">IsClear</span><span class="p">()</span> <span class="kr">then</span>
+                <span class="kd">local</span> <span class="n">rng</span> <span class="o">=</span> <span class="n">firstPlayer</span><span class="p">:</span><span class="n">GetCollectibleRNG</span><span class="p">(</span><span class="n">ITEM_ID</span><span class="p">)</span>
 
-    <span class="c1">-- Get the closest enemy</span>
-    <span class="kd">local</span> <span class="n">closestDistance</span><span class="p">,</span> <span class="n">closestEnemy</span>
-    <span class="kr">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">enemy</span> <span class="kr">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">GetRoomEntities</span><span class="p">())</span> <span class="kr">do</span>
-        <span class="kr">if</span> <span class="n">enemy</span><span class="p">:</span><span class="n">IsActiveEnemy</span><span class="p">()</span> <span class="ow">and</span> <span class="n">enemy</span><span class="p">:</span><span class="n">IsVulnerableEnemy</span><span class="p">()</span> <span class="kr">then</span>
-            <span class="kd">local</span> <span class="n">distanceToPlayer</span> <span class="o">=</span> <span class="n">enemy</span><span class="p">.</span><span class="n">Position</span><span class="p">:</span><span class="n">Distance</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Position</span><span class="p">)</span>
-            <span class="kr">if</span> <span class="ow">not</span> <span class="n">closestDistance</span> <span class="ow">or</span> <span class="n">closestDistance</span> <span class="o">&gt;</span> <span class="n">distanceToPlayer</span> <span class="kr">then</span>
-                <span class="n">closestEnemy</span> <span class="o">=</span> <span class="n">enemy</span><span class="p">:</span><span class="n">ToNPC</span><span class="p">()</span>
-                <span class="n">closestDistance</span> <span class="o">=</span> <span class="n">distanceToPlayer</span>
+                <span class="c1">-- Random chance between 0% and 100%.</span>
+                <span class="n">modifiedChance</span> <span class="o">=</span> <span class="n">rng</span><span class="p">:</span><span class="n">RandomFloat</span><span class="p">()</span>
             <span class="kr">end</span>
+
+            <span class="kr">return</span> <span class="n">modifiedChance</span>
         <span class="kr">end</span>
     <span class="kr">end</span>
-
-    <span class="c1">-- If there&#39;s no enemy in the room, end the function early.</span>
-    <span class="kr">if</span> <span class="ow">not</span> <span class="n">closestEnemy</span> <span class="kr">then</span>
-        <span class="kr">return</span>
-    <span class="kr">end</span>
-
-    <span class="c1">-- Deal damage every frame.</span>
-    <span class="n">closestEnemy</span><span class="p">:</span><span class="n">TakeDamage</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Damage</span> <span class="o">*</span> <span class="n">DAMAGE_MULTIPLIER</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">EntityRef</span><span class="p">(</span><span class="n">player</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-
-    <span class="c1">-- Render the beam. The position is in screen coordinates.</span>
-    <span class="c1">-- The second argument, SpritesheetCoordinate, is what the Y position of the spritesheet is by the time this Point is reached.</span>
-    <span class="c1">-- So for example, two points of 0 and 64 SpritesheetCoordinate will render the sprite starting from y0 to 64.</span>
-    <span class="c1">-- An additional Point with a SpritesheetCoordinate of 0 will draw it in reverse from y64 to y0.</span>
-    <span class="c1">-- Width is an optional third argument that is a multiplier used to determine the width of the Beam.</span>
-    <span class="n">beam</span><span class="p">:</span><span class="n">Add</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">player</span><span class="p">.</span><span class="n">Position</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">beam</span><span class="p">:</span><span class="n">Add</span><span class="p">(</span><span class="n">Isaac</span><span class="p">.</span><span class="n">WorldToScreen</span><span class="p">(</span><span class="n">closestEnemy</span><span class="p">.</span><span class="n">Position</span><span class="p">),</span> <span class="mi">64</span><span class="p">)</span> <span class="c1">-- 64 is the height of the spritesheet.</span>
-
-    <span class="c1">-- Render the beam. By default, this will clear all points.</span>
-    <span class="n">beam</span><span class="p">:</span><span class="n">Render</span><span class="p">()</span>
 <span class="kr">end</span>
 
-<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_PLAYER_RENDER</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">HandleLifeSteam</span><span class="p">)</span>
+<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">RandomizeDevilChance</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 
