@@ -809,6 +809,8 @@ namespace lua {
 		const char* WeightedOutcomePickerMT = "WeightedOutcomePicker";
 		const char* CostumeSpriteDescMT = "CostumeSpriteDesc";
 		const char* RailManagerMT = "RailManager";
+		const char* LootListMT = "LootList";
+		const char* LootListEntryMT = "LootListEntry";
 		const char* MinimapConfigMT = "MinimapConfig";
 	}
 

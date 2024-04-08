@@ -3846,7 +3846,6 @@ HOOK_METHOD_PRIORITY(PersistentGameData, TryUnlock, -9999, (int achievid) -> boo
 	return deed;
 }
 
-
 //HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float scale) -> void) {
 //	const int callbackid = 1264;
 //	if (CallbackState.test(callbackid - 1000)) {
@@ -3931,4 +3930,28 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(postcallbackid).call(1);
 	}
+}
+
+//MC_PRE_PICKUP_GET_LOOT_LIST (1334)
+HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance) -> LootList) {
+	LootList list = super(shouldAdvance);
+
+	const int callbackid = 1334;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			//.push(&list, lua::metatables::LootListMT) //can't work with loot directly for now
+			.push(this, lua::Metatables::ENTITY_PICKUP)
+			.push(shouldAdvance)
+			.call(1);
+
+		if (!result && lua_isuserdata(L, -1)) {
+			return *lua::GetUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
+		}
+	}
+	return list;
 }

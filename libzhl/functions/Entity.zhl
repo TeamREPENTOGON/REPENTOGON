@@ -89,7 +89,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	}
 	inline float* GetShadowSize() { return (float*)((char*)this + 0x150); }
 	inline bool* GetVisible() { return (bool*)((char*)this + 0x169); }
-	inline bool* IsDead() { return (bool*)((char*)this + 0x16b); }
+	inline bool* IsDead() { return &this->_dead; }
 	inline int* GetBossStatusEffectCooldown() { return (int*)((char*)this + 0x230); }
 	inline int* GetPauseTime() { return (int*)((char*)this + 0x274); }
 	inline Vector* GetPosition() { return (Vector*)((char*)this + 0x294); }
@@ -103,6 +103,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     }
 
     inline Entity_NPC* GetMinecart() { return *(Entity_NPC**)((char*)this + 0x32C); }
+	inline RNG GetDropRNG() { return *(RNG*)((char*)this + 0x334); }
 	
 	inline LuaBridgeRef** GetLuaRef() { return (LuaBridgeRef**)((char*)this + 0x35C); }
 	
@@ -126,8 +127,9 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	ANM2 _sprite : 0x3c;
     unsigned int _shadowSize : 0x150;
 	unsigned long long _flags : 0x160;
-    bool _dead : 0x168; 
+    bool _valid : 0x168; 
     bool _visible : 0x169;
+	bool _dead : 0x16b;
 	bool _collidesWithGrid : 0x188;
 	vector_ColorParams _colorParams : 0x1a4;
 	int _fireDamageCountdown : 0x208;
