@@ -9,7 +9,7 @@ Return a `float` to modify the chance in this step of the calculation.
 
 [MC_PRE_DEVIL_APPLY_STAGE_PENALTY](../enums/ModCallbacks.md#mc_pre_devil_apply_stage_penalty) allows you to return `false` to bypass the stage penalty.
 
-[MC_PRE_DEVIL_APPLY_ITEMS](../enums/ModCallbacks.md#mc_pre_devil_apply_items) is where the game applies modifications that bypass the stage penalty, for items such as Goat Head and Eucharist. Return a `float` to modify the chance in this step of the calculation.
+[MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS](../enums/ModCallbacks.md#mc_pre_devil_apply_special_items) is where the game applies modifications that bypass the stage penalty, for items such as Goat Head and Eucharist. Return a `float` to modify the chance in this step of the calculation.
 
 [MC_POST_DEVIL_CALCULATE](../enums/ModCallbacks.md#mc_post_devil_calculate) is called after the deal chance has been calculated. You can return a `float` here to override the calculated chance.
 
