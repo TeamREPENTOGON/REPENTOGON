@@ -146,11 +146,35 @@ local function checkTableSizeFunction(size)
 	return function(val)
 		local tablesize = 0
 		for i, tabletype in pairs(val) do
-			tablesize = i
+			tablesize = tablesize + 1
 		end
 
 		if tablesize > size then
+		
 			return "bad return table length (" .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
+		end
+	end
+end
+
+local function checkTableIndexes(typestrings)
+	return function(tbl)
+		for i, param in pairs(tbl) do
+			if not typestrings[i] then 
+				return "return table has unexpected key `" .. tostring(i) .. "` with value type " .. type(param)
+			end
+		end
+	end
+end
+
+local function checkTableSizeFunctionUpTo(size)
+	return function(val)
+		local tablesize = 0
+		for i, tabletype in pairs(val) do
+			tablesize = tablesize + 1
+		end
+
+		if tablesize > size then
+			return "bad return table length (up to " .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
 		end
 	end
 end
@@ -162,33 +186,22 @@ local function checkTableTypeFunction(typestrings)
 			tablesize = tablesize + 1
 		end
 
-		local numtypestrings = 0
-		for i, typestr in pairs(typestrings) do
-			numtypestrings = numtypestrings + 1
-		end
-
-		if tablesize > numtypestrings then
-			return "bad return table length (up to " .. tostring(numtypestrings) .. " expected, got " .. tostring(tablesize) .. ")"
-		end
-
 		for i, param in pairs(tbl) do
-			local paramType = type(param)
+			if typestrings[i] then --no point in doing any of this if the thing doesnt even fucking exist
+				local paramType = type(param)
 
-			if paramType == "number" and math.type(param) == "integer" then
-				paramType = "integer"
-			end
+				if paramType == "number" and math.type(param) == "integer" then
+					paramType = "integer"
+				end
 
-			if paramType == "userdata" then
-				paramType = GetMetatableType(param)
-			end
+				if paramType == "userdata" then
+					paramType = GetMetatableType(param)
+				end
 
-			if not typestrings[i] then
-				return "return table has unexpected key `" .. tostring(i) .. "` with value type " .. paramType
-			end
-
-			if paramType ~= typestrings[i] and not (paramType == "integer" and typestrings[i] == "number") then
-				return "bad return type for table value with key `" ..
-				tostring(i) .. "` (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+				if paramType ~= typestrings[i] and not (paramType == "integer" and typestrings[i] == "number") then
+					return "bad return type for table value with key `" ..
+					tostring(i) .. "` (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+				end
 			end
 		end
 	end
@@ -211,12 +224,6 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_SFX_PLAY] = {
 		["table"] = checkTableTypeFunction({ "integer", "number", "integer", "boolean", "number", "number" }),
 		["boolean"] = true
-	},
-	[ModCallbacks.MC_PRE_ENTITY_SPAWN] = {
-		["table"] = checkTableSizeFunction(4)
-	},
-	[ModCallbacks.MC_POST_PICKUP_SELECTION] = {
-		["table"] = checkTableSizeFunction(2)
 	},
 	[ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN] = {
 		["table"] = checkTableTypeFunction({ "integer", "integer", "integer" })
@@ -397,6 +404,70 @@ local typecheckWarnFunctions = {
 	},
 	[ModCallbacks.MC_EXECUTE_CMD] = { -- returning any value causes the game to crash... but strings seem to work? docs aren't clear
 		["string"] = true
+	},
+	[ModCallbacks.MC_PRE_ENTITY_SPAWN] = {
+		["table"] = checkTableSizeFunction(4)
+	},
+	[ModCallbacks.MC_POST_PICKUP_SELECTION] = {
+		["table"] = checkTableSizeFunction(2)
+	},
+	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = {
+		["table"] = checkTableSizeFunctionUpTo(5)    --{ "integer", "integer", "boolean", "integer", "integer" }),
+	},
+	[ModCallbacks.MC_PRE_SFX_PLAY] = {
+		["table"] = checkTableSizeFunctionUpTo(6)    --{ "integer", "number", "integer", "boolean", "number", "number" }),
+	},
+	[ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN] = {
+		["table"] = checkTableSizeFunctionUpTo(3)    --{ "integer", "integer", "integer" })
+	},
+	[ModCallbacks.MC_PRE_MUSIC_PLAY] = {
+		["table"] = checkTableSizeFunctionUpTo(3)    --{ "integer", "number", "boolean" }),
+	},
+	[ModCallbacks.MC_PRE_CHANGE_ROOM] = {
+		["table"] = checkTableSizeFunctionUpTo(2)    --{ "integer", "integer" }),
+	},
+	[ModCallbacks.MC_PRE_PICKUP_MORPH] = {
+		["table"] = checkTableSizeFunctionUpTo(6) --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
+	},
+	[ModCallbacks.MC_PRE_NPC_MORPH] = {
+		["table"] = checkTableSizeFunctionUpTo(6) --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
+	},
+	[ModCallbacks.MC_PRE_REPLACE_SPRITESHEET] = {
+		["table"] = checkTableSizeFunctionUpTo(2) --{ "integer", "string" })
+	},
+	[ModCallbacks.MC_PRE_PLAYER_COLLISION] = {
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_TEAR_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_FAMILIAR_COLLISION] = {
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_BOMB_COLLISION] = {
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_PICKUP_COLLISION] = {
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_SLOT_COLLISION] = {
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_KNIFE_COLLISION] = {
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_PROJECTILE_COLLISION] = {
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_NPC_COLLISION] = {
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_ENTITY_TAKE_DMG] = {
+		["table"] = checkTableIndexes({ Damage="number", DamageFlags="integer", DamageCountdown="number" }),
+	},
+	[ModCallbacks.MC_USE_ITEM] = {
+		["table"] = checkTableIndexes({ Discharge = "boolean", Remove = "boolean", ShowAnim = "boolean", }),
 	},
 }
 
