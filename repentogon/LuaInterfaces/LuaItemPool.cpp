@@ -263,7 +263,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetNumAvailableTrinkets", Lua_ItemPoolGetNumAvailableTrinkets },
 		{ "UnidentifyPill", Lua_ItemPoolUnidentifyPill },
 		{ "GetPillColor", Lua_ItemPoolGetPillColor },
-		{ "GitBibleUpgrades", Lua_ItemPoolGetBibleUpgrades },
+		{ "GetBibleUpgrades", Lua_ItemPoolGetBibleUpgrades },
 
 		{ NULL, NULL }
 	};
