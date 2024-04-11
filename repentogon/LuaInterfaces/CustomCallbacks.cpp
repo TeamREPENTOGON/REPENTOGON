@@ -3955,3 +3955,34 @@ HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance) -> LootList) {
 	}
 	return list;
 }
+
+//MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED (1268)
+HOOK_METHOD(Entity_Player, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> void) {
+	super(item, unused);
+	const int callbackid = 1268;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(item, lua::Metatables::ITEM)
+			.call(1);
+	}
+}
+
+//MC_POST_ROOM_TRIGGER_EFFECT_REMOVED (1269)
+HOOK_METHOD(Room, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> void) {
+	super(item, unused);
+	const int callbackid = 1269;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.call(1);
+	}
+}

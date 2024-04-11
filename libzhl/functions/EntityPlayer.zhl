@@ -458,6 +458,9 @@ __thiscall float Entity_Player::GetGreedDonationBreakChance();
 "568bf1e8????????84c074??8d8e":
 __thiscall void Entity_Player::ClearQueueItem();
 
+"558bec6aff68????????64a1????????5081ecec010000":
+__thiscall void Entity_Player::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
+
 
 struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }

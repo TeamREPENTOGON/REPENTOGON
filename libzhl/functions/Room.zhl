@@ -79,6 +79,14 @@ __thiscall void Room::SaveState();
 "568b35????????578bf9833e0d":
 __thiscall uint32_t Room::GetBossVictoryJingle();
 
+/*
+"558bec83e4f883ec1cf30f1005":
+__thiscall float<xmm0> Room::GetTimeScale(Vector* unused, Entity* ent);
+*/
+
+"558bec8b55??56578b02":
+__thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
