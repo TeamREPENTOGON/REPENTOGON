@@ -436,6 +436,7 @@ local typecheckWarnFunctions = {
 		["table"] = checkTableSizeFunctionUpTo(2) --{ "integer", "string" })
 	},
 	[ModCallbacks.MC_PRE_PLAYER_COLLISION] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_TEAR_COLLISION] = {
@@ -443,30 +444,39 @@ local typecheckWarnFunctions = {
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_FAMILIAR_COLLISION] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_BOMB_COLLISION] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_PICKUP_COLLISION] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_SLOT_COLLISION] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_KNIFE_COLLISION] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_PROJECTILE_COLLISION] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_PRE_NPC_COLLISION] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
 	},
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Damage="number", DamageFlags="integer", DamageCountdown="number" }),
 	},
 	[ModCallbacks.MC_USE_ITEM] = {
+		["boolean"] = true,
 		["table"] = checkTableIndexes({ Discharge = "boolean", Remove = "boolean", ShowAnim = "boolean", }),
 	},
 }
