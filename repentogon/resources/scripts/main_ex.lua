@@ -427,10 +427,12 @@ local typecheckWarnFunctions = {
 		["table"] = checkTableSizeFunctionUpTo(2)    --{ "integer", "integer" }),
 	},
 	[ModCallbacks.MC_PRE_PICKUP_MORPH] = {
-		["table"] = checkTableSizeFunctionUpTo(6) --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
+		["table"] = checkTableSizeFunctionUpTo(6), --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
+		["boolean"] = true
 	},
 	[ModCallbacks.MC_PRE_NPC_MORPH] = {
-		["table"] = checkTableSizeFunctionUpTo(6) --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
+		["table"] = checkTableSizeFunctionUpTo(6), --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
+		["boolean"] = true
 	},
 	[ModCallbacks.MC_PRE_REPLACE_SPRITESHEET] = {
 		["table"] = checkTableSizeFunctionUpTo(2) --{ "integer", "string" })

@@ -37,10 +37,13 @@ Additions:
 	* __len and Get method, Size const variable
 * Level
 	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
+* Cutscenes
+	* Support for custom music for the music attribute on cutscenes.xml
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
 Fixes:
 	* Fixed bonehearts not displaying correctly when set through players.xml
+	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
 /newline/
 Modified:
 * Game:ShowGenericLeaderboard no longer fades to main menu

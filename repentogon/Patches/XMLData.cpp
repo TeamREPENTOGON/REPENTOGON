@@ -2852,6 +2852,11 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 					}
 				}*/
 			}
+			if (queuedhackyxmlvalue > 0) {
+				for (xml_node<char>* auxnodebaby = auxnode->first_node(); auxnodebaby; auxnodebaby = auxnodebaby->next_sibling()) {
+					SingleValXMLParamParse(auxnodebaby, xmldoc, XMLStuff.MusicData, "music");
+				}
+			}
 		}
 	}else if (strcmp(filename, "stages.xml") == 0) {
 		int id = 36;
