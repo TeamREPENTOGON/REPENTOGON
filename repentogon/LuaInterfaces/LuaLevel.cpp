@@ -47,6 +47,17 @@ LUA_FUNCTION(lua_LevelSetName) {
 	return 0;
 }
 
+LUA_FUNCTION(lua_LevelSetGreedWavesClearedWithoutRedHeartDamage) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	level->_greedwavesclearedwithoutredheartdamage = luaL_checkinteger(L, 2);
+	return 0;
+}
+LUA_FUNCTION(lua_LevelGetGreedWavesClearedWithoutRedHeartDamage) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, level->_greedwavesclearedwithoutredheartdamage);
+	return 1;
+}
+
 LUA_FUNCTION(lua_LevelIsStageAvailable) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int levelStage = (int)luaL_checkinteger(L, 2);
@@ -162,6 +173,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetDimension", Lua_GetDimension},
 		{ "GetForceSpecialQuest", Lua_GetForceSpecialQuest },
 		{ "SetForceSpecialQuest", Lua_SetForceSpecialQuest },
+
+		{ "SetGreedWavesClearedWithoutRedHeartDamage", lua_LevelSetGreedWavesClearedWithoutRedHeartDamage },
+		{ "GetGreedWavesClearedWithoutRedHeartDamage", lua_LevelGetGreedWavesClearedWithoutRedHeartDamage },
 		{ NULL, NULL }
 	};
 

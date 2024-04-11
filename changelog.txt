@@ -35,6 +35,8 @@ Additions:
 * RoomConfigSet:
 	* Acts like other ArrayProxy classes, but for RoomConfigRoom
 	* __len and Get method, Size const variable
+* Level
+	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
 Fixes:
