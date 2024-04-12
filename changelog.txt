@@ -3,6 +3,12 @@ Modified:
 * Callbacks:
 	- MC_PRE_PLAYERHUD_TRINKET_RENDER: now provides [Vector] CropOffset parameter and accepts CropOffset vector in the return table.
 Additions:
+* Lootlist:
+	- constructor
+	- PushEntry(Type, Variant, SubType, Seed = Random(), RNG = nil)
+	- GetEntries
+* LootListEntry:
+	- [Get]Type/Variant/SubType/Seed/RNG
 * EntityPlayer:
 	- Get/SetBombPlaceDelay
 	- Get/SetBloodLustCounter
@@ -16,8 +22,17 @@ Additions:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
 	- GetDeadEyeSprite
+* EntityPickup:
+	- GetLootList(ShouldAdvance = false)
+	- GetPickupGhost
+	- UpdatePickupGhosts
+* EntityNPC:
+	- GetFireplaceLoot
+	- GetShopkeeperLoot
 * Input:
 	- GetDeviceNameByIdx
+* Game
+	- SetBloom
 * Console:
 	* Added a popup error when a script ran by luamod errors, highlighting the last error thrown, to prevent it from being instantly buried
 * Isaac:
@@ -37,6 +52,11 @@ Additions:
 	* __len and Get method, Size const variable
 * Level
 	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
+*Callbacks:
+	- MC_PRE_PICKUP_GET_LOOT_LIST callback (Pickup, bool ShouldAdvance) - Return LootList to change loot content
+	- MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (Pickup) - Return true to apply pickup ghost to your pickup entitiy, false to cancel it
+	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED (Player, ItemConfigItem)
+	- MC_POST_ROOM_TRIGGER_EFFECT_REMOVED (ItemConfigItem)
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
 Fixes:
