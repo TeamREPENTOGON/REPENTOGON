@@ -52,6 +52,8 @@ Additions:
 	* __len and Get method, Size const variable
 * Level
 	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
+* Cutscenes
+	* Support for custom music for the music attribute on cutscenes.xml
 *Callbacks:
 	- MC_PRE_PICKUP_GET_LOOT_LIST callback (Pickup, bool ShouldAdvance) - Return LootList to change loot content
 	- MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (Pickup) - Return true to apply pickup ghost to your pickup entitiy, false to cancel it
@@ -61,6 +63,7 @@ Additions:
 /newline/
 Fixes:
 	* Fixed bonehearts not displaying correctly when set through players.xml
+	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
 /newline/
 Modified:
 * Game:ShowGenericLeaderboard no longer fades to main menu
