@@ -412,19 +412,24 @@ local typecheckWarnFunctions = {
 		["table"] = checkTableSizeFunction(2)
 	},
 	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = {
-		["table"] = checkTableSizeFunctionUpTo(5)    --{ "integer", "integer", "boolean", "integer", "integer" }),
+		["table"] = checkTableSizeFunctionUpTo(5),  --{ "integer", "integer", "boolean", "integer", "integer" }),
+		["number"] = checkInteger,
+		["boolean"] = true,
 	},
 	[ModCallbacks.MC_PRE_SFX_PLAY] = {
-		["table"] = checkTableSizeFunctionUpTo(6)    --{ "integer", "number", "integer", "boolean", "number", "number" }),
+		["table"] = checkTableSizeFunctionUpTo(6),  --{ "integer", "number", "integer", "boolean", "number", "number" }),
+		["boolean"] = true
 	},
 	[ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN] = {
-		["table"] = checkTableSizeFunctionUpTo(3)    --{ "integer", "integer", "integer" })
+		["table"] = checkTableSizeFunctionUpTo(3),  --{ "integer", "integer", "integer" })
 	},
 	[ModCallbacks.MC_PRE_MUSIC_PLAY] = {
-		["table"] = checkTableSizeFunctionUpTo(3)    --{ "integer", "number", "boolean" }),
+		["table"] = checkTableSizeFunctionUpTo(3),  --{ "integer", "number", "boolean" }),
+		["boolean"] = true,
+		["number"] = checkInteger,
 	},
 	[ModCallbacks.MC_PRE_CHANGE_ROOM] = {
-		["table"] = checkTableSizeFunctionUpTo(2)    --{ "integer", "integer" }),
+		["table"] = checkTableSizeFunctionUpTo(2),  --{ "integer", "integer" }),
 	},
 	[ModCallbacks.MC_PRE_PICKUP_MORPH] = {
 		["table"] = checkTableSizeFunctionUpTo(6), --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
@@ -783,30 +788,31 @@ local function logError(callbackID, modName, err)
 end
 
 local function typeCheckCallback(callback, callbackID, ret, ...)
-    local err
 	local typeCheck = typecheckFunctions[callbackID]
 	if typeCheck then
+		local err
 		local typ = type(ret)
 		if typ == "userdata" then typ = GetMetatableType(ret) end
-		if not err then
-			if typeCheck[typ] == true then
-			elseif typeCheck[typ] then
-				err = typeCheck[typ](ret, typ, ...)
-			else
-				err = "bad return type (" ..
-				typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
-			end
+
+		if typeCheck[typ] == true then
+		elseif typeCheck[typ] then
+			err = typeCheck[typ](ret, typ, ...)
+		else
+			err = "bad return type (" ..
+			typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
 		end
 
 		if err then
 			local info = debug_getinfo(callback.Function, "S")
 			logError(callbackID, callback.Mod.Name,
 				info.short_src .. ": " .. info.linedefined .. ": " .. err)
+			return err
 		end
 	end
 
 	local typeCheckWarn = typecheckWarnFunctions[callbackID]
 	if typeCheckWarn then
+		local warn
 		local typ = type(ret)
 		if typeCheckWarn[typ] == true then
 		elseif typeCheckWarn[typ] then
@@ -822,8 +828,6 @@ local function typeCheckCallback(callback, callbackID, ret, ...)
 				info.short_src .. ": " .. info.linedefined .. ": " .. warn)
 		end
 	end
-	
-	return err
 end
 
 -- Function argument type checking for AddCallback, RemoveCallback, etc.
