@@ -91,6 +91,7 @@ ModCallbacks.MC_COMPLETION_MARK_GET = 1047
 ModCallbacks.MC_POST_COMPLETION_MARK_GET = 1048
 ModCallbacks.MC_PRE_COMPLETION_EVENT = 1049
 --ModCallbacks.DEPRECATED_MC_USE_PILL = 1001  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
+ModCallbacks.MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM = 1119
 ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM = 1079
 ModCallbacks.MC_PRE_PLAYERHUD_RENDER_HEARTS = 1118
 ModCallbacks.MC_POST_PLAYERHUD_RENDER_HEARTS = 1091
