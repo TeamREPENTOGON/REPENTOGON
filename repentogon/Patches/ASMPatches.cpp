@@ -137,4 +137,8 @@ void PerformASMPatches() {
 	if (!ASMPatches::FixTearDetonatorEntityList()) {
 		ZHL::Log("[ERROR] Unable to find signature for Tear Detonator EntityList_EL in UseActiveItem\n");
 	}
+
+	if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
+		ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
+	}
 }
