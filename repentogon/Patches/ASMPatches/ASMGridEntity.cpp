@@ -323,7 +323,7 @@ const std::unordered_map<int, const GridCollisionCallbackInfo> gridCollisionCall
 
 // An entity may check the same grid index for collision multiple times per frame.
 // Let's not fire the callbacks each time.
-std::unordered_map<uint32_t, bool> cachedGridCollisionResult;
+std::unordered_map<Entity*, std::unordered_map<int, bool>> cachedGridCollisionResult;
 
 HOOK_METHOD(Game, Update, () -> void) {
 	super();
@@ -352,8 +352,6 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::M
 		}
 	}
 
-	entity->_collidesWithGrid = true;
-
 	// MC_X_GRID_COLLISION
 	if (CallbackState.test(postcallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
@@ -372,8 +370,8 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::M
 }
 
 bool __stdcall TriggerGridCollisionCallbacks(Entity* entity, const int gridIndex) {
-	if (cachedGridCollisionResult.count(entity->_index) != 0) {
-		return cachedGridCollisionResult[entity->_index];
+	if (cachedGridCollisionResult.count(entity) != 0 && cachedGridCollisionResult[entity].count(gridIndex) != 0) {
+		return cachedGridCollisionResult[entity][gridIndex];
 	}
 
 	bool result = false;
@@ -388,7 +386,7 @@ bool __stdcall TriggerGridCollisionCallbacks(Entity* entity, const int gridIndex
 		result = RunGridCollisionCallbacks(entity, gridIndex, lua::Metatables::ENTITY_NPC, type, 1183, 1184);
 	}
 
-	cachedGridCollisionResult[entity->_index] = result;
+	cachedGridCollisionResult[entity][gridIndex] = result;
 	return result;
 }
 
