@@ -54,11 +54,12 @@ Additions:
 	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
 * Cutscenes
 	* Support for custom music for the music attribute on cutscenes.xml
-*Callbacks:
+* Callbacks:
 	- MC_PRE_PICKUP_GET_LOOT_LIST callback (Pickup, bool ShouldAdvance) - Return LootList to change loot content
 	- MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (Pickup) - Return true to apply pickup ghost to your pickup entitiy, false to cancel it
 	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED (Player, ItemConfigItem)
 	- MC_POST_ROOM_TRIGGER_EFFECT_REMOVED (ItemConfigItem)
+	- MC_PRE_X_GRID_COLLISION and MC_X_GRID_COLLISION (EntityX, int gridIndex, GridEntity or nil) - PLAYER/TEAR/FAMILIAR/BOMB/PICKUP/PROJECTILE/NPC, Return true on PRE to ignore collision.
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
 Fixes:
