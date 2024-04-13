@@ -91,6 +91,9 @@ target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 # wd4251 ignore warning C4251: 'type' : class 'type1' needs to have dll-interface to be used by clients of class 'type2'
 # wd4996 ignores warning C4996: using a depricated function
 
+# ZHL Launcher
+add_library (zhlLauncher SHARED ${CMAKE_SOURCE_DIR}/launcher/launcher.cpp)
+
 # Injected DLL
 FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
 add_library(dsound SHARED ${LAUNCHER_SRC})
