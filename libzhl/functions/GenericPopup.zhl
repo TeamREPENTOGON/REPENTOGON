@@ -1,3 +1,6 @@
+"558bec83ec24a1????????33c58945??5356578bf9837f??00":
+__thiscall void GenericPopup::Render();
+
 struct GenericPopup {
 
 } : 0x120;

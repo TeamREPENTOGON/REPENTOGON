@@ -16,7 +16,7 @@ std::map<std::string, unsigned int> languageMap = {
 	{"pt", 8},
 	{"ru", 10},
 	{"kr", 11},
-	{"zh", 12},
+	{"zh", 13},
 	{"fi", 14},
 	{"sv", 15},
 	{"da", 16},

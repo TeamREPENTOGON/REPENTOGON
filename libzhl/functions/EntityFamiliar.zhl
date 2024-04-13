@@ -1,3 +1,9 @@
+"558bec6aff68????????64a1????????5083ec3c535657a1????????33c5508d45??64a3????????8bf98b87":
+__thiscall void Entity_Familiar::AddToFollowers();
+
+"558bec6aff68????????64a1????????5083ec34535657a1????????33c5508d45??64a3????????8bd98b83":
+__thiscall void Entity_Familiar::AddToDelayed();
+
 "8b41??483dea000000":
 __thiscall int Entity_Familiar::GetFollowerPriority();
 
@@ -18,7 +24,7 @@ __thiscall void Entity_Familiar::TriggerRoomClear();
 
 // jeez
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec88000000a1????????33c58945??5657508d45??64a3????????8bf18975??33c08945??8b0d":
-__thiscall void Entity_Familiar::UpdateDirtColor();
+__thiscall void Entity_Familiar::UpdateDirtColor(bool Immediate);
 
 "558bec83e4f081ec38010000a1":
 __thiscall Entity_Tear* Entity_Familiar::FireProjectile(const Vector& AimDirection, bool Unk);
@@ -35,6 +41,12 @@ __thiscall bool Entity_Familiar::CanBeDamagedByEnemy();
 "558bec83e4f88b41??83ec10":
 __thiscall bool Entity_Familiar::CanBlockProjectiles();
 
+"558bec83e4f883ec3ca1????????33c4894424??538bd95657895c24":
+__thiscall void Entity_Familiar::RemoveFromPlayer(bool UnusedRemoveFamiliar);
+
+"8b41??3d84030000":
+__thiscall bool Entity_Familiar::CanCharm();
+
 
 struct Entity_Familiar depends (ColorMod) : public Entity {
 {{
@@ -43,8 +55,11 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
 	inline Weapon** GetWeapon() { return (Weapon**)((char*)this + 0xcfc); }
 }}
 	
-	ColorMod* _dirtColor : 0xe28;
+	Entity_Player* _player : 0x360;
+	bool _isFollower : 0xcc4;
+	bool _isDelayed : 0xcc5;
 	int _state : 0xcd4;
+	ColorMod _dirtColor : 0xe28;
 	
     __vtable {
 		skip; // Free

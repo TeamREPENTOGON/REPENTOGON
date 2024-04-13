@@ -2,17 +2,42 @@ REPENTOGON = {
 	["Real"] = true,
 	["Name"] = "REPENTOGON", --I avoid having to do RegisterMod this way, sorry ;P
 	["Version"] = "dev build",
-	["RESOURCEPATH"] = "../../../resources-repentogon",
 	["Extras"] = { ["Misc"]={}, }, -- Tables containing additional REPENTOGON data structures, example: ChangeLog or StatsMenu
 }
 
 collectgarbage("generational")
 
-local defaultCallbackMeta = {
-	__matchParams = function(a, b)
-		return not a or not b or a == -1 or b == -1 or a == b
-	end
-}
+
+
+local function MeetsVersion(targetVersion)
+	if (REPENTOGON.Version == "dev build") then return true end
+    local version = {}
+    local target = {}
+    
+    for num in REPENTOGON.Version:gmatch("%d+") do
+        table.insert(version, tonumber(num))
+    end
+    
+    for num in targetVersion:gmatch("%d+") do
+        table.insert(target, tonumber(num))
+    end
+    
+    -- Compare each component of the version strings
+    for i = 1, math.max(#version, #target) do
+        local v = version[i] or 0
+        local t = target[i] or 0
+        
+        if v < t then
+            return false
+        elseif v > t then
+            return true
+        end
+    end
+    
+    return true
+end
+
+REPENTOGON.MeetsVersion = MeetsVersion;
 
 local debug_getinfo = debug.getinfo
 
@@ -121,11 +146,35 @@ local function checkTableSizeFunction(size)
 	return function(val)
 		local tablesize = 0
 		for i, tabletype in pairs(val) do
-			tablesize = i
+			tablesize = tablesize + 1
 		end
 
 		if tablesize > size then
+		
 			return "bad return table length (" .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
+		end
+	end
+end
+
+local function checkTableIndexes(typestrings)
+	return function(tbl)
+		for i, param in pairs(tbl) do
+			if not typestrings[i] then 
+				return "return table has unexpected key `" .. tostring(i) .. "` with value type " .. type(param)
+			end
+		end
+	end
+end
+
+local function checkTableSizeFunctionUpTo(size)
+	return function(val)
+		local tablesize = 0
+		for i, tabletype in pairs(val) do
+			tablesize = tablesize + 1
+		end
+
+		if tablesize > size then
+			return "bad return table length (up to " .. tostring(size) .. " expected, got " .. tostring(tablesize) .. ")"
 		end
 	end
 end
@@ -137,33 +186,22 @@ local function checkTableTypeFunction(typestrings)
 			tablesize = tablesize + 1
 		end
 
-		local numtypestrings = 0
-		for i, typestr in pairs(typestrings) do
-			numtypestrings = numtypestrings + 1
-		end
-
-		if tablesize > numtypestrings then
-			return "bad return table length (up to " .. tostring(numtypestrings) .. " expected, got " .. tostring(tablesize) .. ")"
-		end
-
 		for i, param in pairs(tbl) do
-			local paramType = type(param)
+			if typestrings[i] then --no point in doing any of this if the thing doesnt even fucking exist
+				local paramType = type(param)
 
-			if paramType == "number" and math.type(param) == "integer" then
-				paramType = "integer"
-			end
+				if paramType == "number" and math.type(param) == "integer" then
+					paramType = "integer"
+				end
 
-			if paramType == "userdata" then
-				paramType = GetMetatableType(param)
-			end
+				if paramType == "userdata" then
+					paramType = GetMetatableType(param)
+				end
 
-			if not typestrings[i] then
-				return "return table has unexpected key `" .. tostring(i) .. "` with value type " .. paramType
-			end
-
-			if paramType ~= typestrings[i] and not (paramType == "integer" and typestrings[i] == "number") then
-				return "bad return type for table value with key `" ..
-				tostring(i) .. "` (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+				if paramType ~= typestrings[i] and not (paramType == "integer" and typestrings[i] == "number") then
+					return "bad return type for table value with key `" ..
+					tostring(i) .. "` (" .. typestrings[i] .. " expected, got " .. paramType .. ")"
+				end
 			end
 		end
 	end
@@ -186,12 +224,6 @@ local typecheckFunctions = {
 	[ModCallbacks.MC_PRE_SFX_PLAY] = {
 		["table"] = checkTableTypeFunction({ "integer", "number", "integer", "boolean", "number", "number" }),
 		["boolean"] = true
-	},
-	[ModCallbacks.MC_PRE_ENTITY_SPAWN] = {
-		["table"] = checkTableSizeFunction(4)
-	},
-	[ModCallbacks.MC_POST_PICKUP_SELECTION] = {
-		["table"] = checkTableSizeFunction(2)
 	},
 	[ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN] = {
 		["table"] = checkTableTypeFunction({ "integer", "integer", "integer" })
@@ -373,6 +405,87 @@ local typecheckWarnFunctions = {
 	[ModCallbacks.MC_EXECUTE_CMD] = { -- returning any value causes the game to crash... but strings seem to work? docs aren't clear
 		["string"] = true
 	},
+	[ModCallbacks.MC_PRE_ENTITY_SPAWN] = {
+		["table"] = checkTableSizeFunction(4)
+	},
+	[ModCallbacks.MC_POST_PICKUP_SELECTION] = {
+		["table"] = checkTableSizeFunction(2)
+	},
+	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = {
+		["table"] = checkTableSizeFunctionUpTo(5),  --{ "integer", "integer", "boolean", "integer", "integer" }),
+		["number"] = checkInteger,
+		["boolean"] = true,
+	},
+	[ModCallbacks.MC_PRE_SFX_PLAY] = {
+		["table"] = checkTableSizeFunctionUpTo(6),  --{ "integer", "number", "integer", "boolean", "number", "number" }),
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN] = {
+		["table"] = checkTableSizeFunctionUpTo(3),  --{ "integer", "integer", "integer" })
+	},
+	[ModCallbacks.MC_PRE_MUSIC_PLAY] = {
+		["table"] = checkTableSizeFunctionUpTo(3),  --{ "integer", "number", "boolean" }),
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_CHANGE_ROOM] = {
+		["table"] = checkTableSizeFunctionUpTo(2),  --{ "integer", "integer" }),
+	},
+	[ModCallbacks.MC_PRE_PICKUP_MORPH] = {
+		["table"] = checkTableSizeFunctionUpTo(6), --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_NPC_MORPH] = {
+		["table"] = checkTableSizeFunctionUpTo(6), --{ "integer", "integer", "integer", "integer", "integer", "integer" }),
+		["boolean"] = true
+	},
+	[ModCallbacks.MC_PRE_REPLACE_SPRITESHEET] = {
+		["table"] = checkTableSizeFunctionUpTo(2) --{ "integer", "string" })
+	},
+	[ModCallbacks.MC_PRE_PLAYER_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_TEAR_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_FAMILIAR_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_BOMB_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_PICKUP_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_SLOT_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_KNIFE_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_PROJECTILE_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_PRE_NPC_COLLISION] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Collide="boolean", SkipCollisionEffects="boolean" }),
+	},
+	[ModCallbacks.MC_ENTITY_TAKE_DMG] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Damage="number", DamageFlags="integer", DamageCountdown="number" }),
+	},
+	[ModCallbacks.MC_USE_ITEM] = {
+		["boolean"] = true,
+		["table"] = checkTableIndexes({ Discharge = "boolean", Remove = "boolean", ShowAnim = "boolean", }),
+	},
 }
 
 local boolCallbacks = {
@@ -389,7 +502,6 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_PLANETARIUM_APPLY_PLANETARIUM_PENALTY,
 	ModCallbacks.MC_PRE_SLOT_CREATE_EXPLOSION_DROPS,
 	ModCallbacks.MC_PRE_DEVIL_APPLY_STAGE_PENALTY,
-	ModCallbacks.MC_CUSTOM_CHARACTER_UNLOCKED,
 	ModCallbacks.MC_PRE_MEGA_SATAN_ENDING,
 	ModCallbacks.MC_PRE_PLAYER_USE_BOMB,
 	ModCallbacks.MC_PRE_PLAYER_TAKE_DMG,
@@ -459,11 +571,6 @@ rawset(Isaac, "SetCallbackTypeCheck", function(callbackID, tbl, noSetExpected)
 	if not noSetExpected then
 		setExpectedTypes(tbl)
 	end
-end)
-
-rawset(Isaac, "SetCallbackMatchTest", function(callbackID, func)
-	local callbacks = Isaac.GetCallbacks(callbackID, true)
-	getmetatable(callbacks).__matchParams = func
 end)
 
 local function cleanTraceback(level) -- similar to debug.traceback but breaks at xpcall, uses spaces instead of tabs, and doesn't call local functions upvalues
@@ -681,30 +788,31 @@ local function logError(callbackID, modName, err)
 end
 
 local function typeCheckCallback(callback, callbackID, ret, ...)
-    local err
 	local typeCheck = typecheckFunctions[callbackID]
 	if typeCheck then
+		local err
 		local typ = type(ret)
 		if typ == "userdata" then typ = GetMetatableType(ret) end
-		if not err then
-			if typeCheck[typ] == true then
-			elseif typeCheck[typ] then
-				err = typeCheck[typ](ret, typ, ...)
-			else
-				err = "bad return type (" ..
-				typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
-			end
+
+		if typeCheck[typ] == true then
+		elseif typeCheck[typ] then
+			err = typeCheck[typ](ret, typ, ...)
+		else
+			err = "bad return type (" ..
+			typeCheck.expectedtypes .. " expected, got " .. tostring(typ) .. ")"
 		end
 
 		if err then
 			local info = debug_getinfo(callback.Function, "S")
 			logError(callbackID, callback.Mod.Name,
 				info.short_src .. ": " .. info.linedefined .. ": " .. err)
+			return err
 		end
 	end
 
 	local typeCheckWarn = typecheckWarnFunctions[callbackID]
 	if typeCheckWarn then
+		local warn
 		local typ = type(ret)
 		if typeCheckWarn[typ] == true then
 		elseif typeCheckWarn[typ] then
@@ -720,134 +828,363 @@ local function typeCheckCallback(callback, callbackID, ret, ...)
 				info.short_src .. ": " .. info.linedefined .. ": " .. warn)
 		end
 	end
-	
-	return err
 end
 
-function _RunCallback(callbackID, Param, ...)
-	local callbacks = Isaac.GetCallbacks(callbackID)
-	if callbacks then
-		for _, callback in ipairs(callbacks) do
-			local matchFunc = getmetatable(callbacks).__matchParams or defaultCallbackMeta.__matchParams
-			if matchFunc(Param, callback.Param) then
-				local status, ret = xpcall(callback.Function, function(msg)
-					return msg .. "\n" .. cleanTraceback(2)
-				end, callback.Mod, ...)
-				if status then
-					if ret ~= nil then
-						if not typeCheckCallback(callback, callbackID, ret, ...) then
-							return ret
-						end
-					end
-				else
-					logError(callbackID, callback.Mod.Name, ret)
-				end
+-- Function argument type checking for AddCallback, RemoveCallback, etc.
+local CALLBACK_ID_TYPE = "Callback ID"
+local function checkArgType(index, val, expectedType, level)
+	level = (level or 2) + 1
+
+	local actualType = type(val)
+	local valid
+	if expectedType == CALLBACK_ID_TYPE then
+		-- Literally anything except nil is a valid callback ID.
+		valid = (val ~= nil)
+	else
+		valid = (actualType == expectedType)
+	end
+	if not valid then
+		if debug_getinfo(level+1).short_src == "resources/scripts/main.lua" then
+			local name = debug_getinfo(level+1).name
+			if name == "AddCallback" or name == "RemoveCallback" or name == "AddPriorityCallback" then
+				-- Throw the error up an extra level for those mod table wrappers, to show the actual call site.
+				-- IE, mod:AddCallback() / mod:AddPriorityCallback() / mod:RemoveCallback().
+				level = level + 1
 			end
+		end
+		error(string.format("Bad argument #%d to '%s' (%s expected, got %s)", index, debug_getinfo(level).name, expectedType, actualType), level+1)
+	end
+end
+local function checkNumberArg(index, val, level) checkArgType(index, val, "number", level) end
+local function checkFunctionArg(index, val, level) checkArgType(index, val, "function", level) end
+local function checkCallbackIdArg(index, val, level) checkArgType(index, val, CALLBACK_ID_TYPE, level) end
+
+local Callbacks = {}
+
+-- The new callback structure does not use this at all.
+-- However, it's kept for the legacy list of "ALL" callbacks to accomodate some niche custom callback usage.
+local legacyCallbackMeta = {
+	__matchParams = function(a, b)
+		return not a or not b or a == -1 or b == -1 or a == b
+	end
+}
+
+local function InitCallbackIfNeeded(callbackID)
+	if not Callbacks[callbackID] then
+		Callbacks[callbackID] = {
+			NUM_ADDED = 0,
+			ALL = setmetatable({}, legacyCallbackMeta),
+			COMMON = {},
+			PARAM = {},
+		}
+	end
+end
+
+-- Returns true if callback A should run before callback B.
+local function CallbackComparator(a, b)
+	if not a or not b then
+		return a ~= nil
+	elseif a.Priority == b.Priority then
+		return a.AddOrder < b.AddOrder
+	else
+		return a.Priority < b.Priority
+	end
+end
+
+-- Normally if you execute a callback with -1 as the param, it will run ALL added callbacks regardless of their specified param.
+-- This behaviour exists for some vanilla callbacks that aren't intended to support optional params in the first place.
+-- However, it can cause problems if a callback that DOES use params can get executed with -1 as the param, such as the first glitch item ID.
+local RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST = {
+	[ModCallbacks.MC_PRE_USE_ITEM] = true,
+	[ModCallbacks.MC_USE_ITEM] = true,
+	[ModCallbacks.MC_PRE_ADD_COLLECTIBLE] = true,
+	[ModCallbacks.MC_POST_ADD_COLLECTIBLE] = true,
+	[ModCallbacks.MC_POST_TRIGGER_COLLECTIBLE_REMOVED] = true,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = true,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = true,
+}
+
+-- Returns an iterator function that takes advantage of how callbacks are now mapped by their optional params.
+-- Allows other code to easily iterate over callbacks using a param, in the correct execution order.
+local function GetCallbackIterator(callbackID, param)
+	local callbackData = Callbacks[callbackID]
+
+	if not callbackData then
+		-- No callbacks to run. Return an empty iterator.
+		return function() end
+	end
+
+	if param == -1 and not RUN_CALLBACK_MINUS_ONE_PARAM_BLACKLIST[callbackID] then
+		-- If the callback is executed with -1 as the param, run ALL callbacks.
+		-- This is sometimes used by the game for callbacks not intended to support optional params.
+		local allCallbacks = callbackData.ALL
+		local i = 0
+		return function()
+			i = i + 1
+			return allCallbacks[i]
+		end
+	end
+
+	local commonCallbacksList = callbackData.COMMON
+	local paramCallbacksList = param and callbackData.PARAM[param]
+
+	if not paramCallbacksList or #paramCallbacksList == 0 then
+		-- No parameterized callbacks to run. Return a simple iterator over the common callbacks.
+		local i = 0
+		return function()
+			i = i + 1
+			return commonCallbacksList[i]
+		end
+	end
+
+	-- Simultaneously iterate over both the common callbacks and the relevant parameterized ones.
+	-- By comparing the Priority of the callbacks and the order they were added, we can iterate in the correct order.
+	local commonIndex = 1
+	local paramIndex = 1
+
+	return function()
+		local nextCommonCallback = commonCallbacksList[commonIndex]
+		local nextParamCallback = paramCallbacksList[paramIndex]
+
+		if CallbackComparator(nextCommonCallback, nextParamCallback) then
+			commonIndex = commonIndex + 1
+			return nextCommonCallback
+		else
+			paramIndex = paramIndex + 1
+			return nextParamCallback
 		end
 	end
 end
 
+rawset(Isaac, "GetCallbackIterator", function(callbackID, param)
+	checkCallbackIdArg(1, callbackID)
+	return GetCallbackIterator(callbackID, param)
+end)
+
+-- Maintain legacy Isaac.GetCallbacks behaviour as it is accessible to mods and expects a table of ALL the callbacks, in execution order.
+rawset(Isaac, "GetCallbacks", function(callbackID, createIfMissing)
+	checkCallbackIdArg(1, callbackID)
+	if createIfMissing then
+		InitCallbackIfNeeded(callbackID)
+	end
+	return Callbacks[callbackID] and Callbacks[callbackID].ALL or {}
+end)
+
+-- Finds the correct spot to insert a new callback, taking into account CallbackPriority and the order they were added.
+-- Utilizes Binary Search to improve performance when a lot of callbacks are added.
+local function FindCallbackInsertPos(callbackList, newCallback)
+	-- Check the front or back of the list first.
+	if #callbackList == 0 or CallbackComparator(newCallback, callbackList[1]) then
+		return 1
+	elseif CallbackComparator(callbackList[#callbackList], newCallback) then
+		return #callbackList + 1
+	end
+
+	-- Ok, binary search time.
+	local minIdx = 2
+	local maxIdx = #callbackList - 1
+	local mid
+
+	while true do
+		mid = math.floor((maxIdx+minIdx)/2)
+		local callback = callbackList[mid]
+		if CallbackComparator(callback, newCallback) then
+			minIdx = mid + 1
+			if minIdx > maxIdx then
+				return mid+1
+			end
+		elseif CallbackComparator(newCallback, callback) then
+			maxIdx = mid - 1
+			if minIdx > maxIdx then
+				return mid
+			end
+		else
+			return mid
+		end
+	end
+end
+
+local function AddToCallbackList(callbackList, newCallback)
+	table.insert(callbackList, FindCallbackInsertPos(callbackList, newCallback), newCallback)
+end
+
+rawset(Isaac, "AddPriorityCallback", function(mod, callbackID, priority, fn, param)
+	checkCallbackIdArg(2, callbackID)
+	checkNumberArg(3, priority)
+	checkFunctionArg(4, fn)
+
+	InitCallbackIfNeeded(callbackID)
+
+	local callbackData = Callbacks[callbackID]
+	local wasEmpty = (#callbackData.ALL == 0)
+	local numAdded = callbackData.NUM_ADDED + 1
+	callbackData.NUM_ADDED = numAdded
+	local newCallback = {Mod = mod, Function = fn, Priority = priority, AddOrder = numAdded, Param = param}
+
+	AddToCallbackList(callbackData.ALL, newCallback)
+
+	-- Callbacks with -1 as their param behave the same as those with no param.
+	-- This aligns with the behaviour of the old implementation.
+	if param and param ~= -1 then
+		if not callbackData.PARAM[param] then
+			callbackData.PARAM[param] = {}
+		end
+		AddToCallbackList(callbackData.PARAM[param], newCallback)
+	else
+		AddToCallbackList(callbackData.COMMON, newCallback)
+	end
+
+	if wasEmpty then
+		if type(callbackID) == "number" then
+			-- Enable this callback
+			Isaac.SetBuiltInCallbackState(callbackID, true)
+		end
+	end
+end)
+
+rawset(Isaac, "AddCallback", function(mod, callbackID, fn, param)
+	checkCallbackIdArg(2, callbackID)
+	checkFunctionArg(3, fn)
+	Isaac.AddPriorityCallback(mod, callbackID, CallbackPriority.DEFAULT, fn, param)
+end)
+
+local function RemoveCallbacksIf(callbackList, removeConditionFunc)
+	local removed = false
+	for i=#callbackList,1,-1 do
+		if removeConditionFunc(callbackList[i]) then
+			table.remove(callbackList, i)
+			removed = true
+		end
+	end
+	return removed
+end
+
+local function RemoveAllCallbacksIf(callbackID, removeConditionFunc)
+	local callbackData = Callbacks[callbackID]
+
+	if callbackData and RemoveCallbacksIf(callbackData.ALL, removeConditionFunc) then
+		RemoveCallbacksIf(callbackData.COMMON, removeConditionFunc)
+		for param, paramCallbacks in pairs(callbackData.PARAM) do
+			RemoveCallbacksIf(paramCallbacks, removeConditionFunc)
+		end
+		if #callbackData.ALL == 0 and type(callbackID) == "number" then
+			-- No more functions left, disable this callback
+			Isaac.SetBuiltInCallbackState(callbackID, false)
+		end
+		return true
+	end
+end
+
+rawset(Isaac, "RemoveCallback", function(mod, callbackID, fn)
+	checkCallbackIdArg(2, callbackID)
+	checkFunctionArg(3, fn)
+
+	RemoveAllCallbacksIf(callbackID, function(callback) return callback.Function == fn end)
+end)
+
+-- Replacing _UnloadMod doesn't seem to allow this to get called, so instead
+-- for now I'm calling it at the end of MC_PRE_MOD_UNLOAD.
+local function RemoveAllCallbacksForMod(mod)
+	for callbackID, callbackData in pairs(Callbacks) do
+		RemoveAllCallbacksIf(callbackID, function(callback) return callback.Mod == mod end)
+	end
+end
+
+-- Runs a single callback function and checks the results.
+-- Only returns the value returned by the callback if no errors occured and the return value passed the type checks.
+local function RunCallbackInternal(callbackID, callback, ...)
+	local status, ret = xpcall(callback.Function, function(msg)
+		return msg .. "\n" .. cleanTraceback(2)
+	end, callback.Mod, ...)
+
+	if not status then
+		logError(callbackID, callback.Mod.Name, ret)
+	elseif ret ~= nil and not typeCheckCallback(callback, callbackID, ret, ...) then
+		return ret
+	end
+end
+
+-- Default callback behaviour (first returned value terminates the callback).
+function _RunCallback(callbackID, param, ...)
+	local ret
+
+	for callback in GetCallbackIterator(callbackID, param) do
+		ret = RunCallbackInternal(callbackID, callback, ...)
+		if ret ~= nil then
+			break
+		end
+	end
+
+	if callbackID == ModCallbacks.MC_PRE_MOD_UNLOAD then
+		-- I wasn't able to properly override _UnloadMod so I'm doing this here instead for now...
+		RemoveAllCallbacksForMod(...)  --- First arg for MC_PRE_MOD_UNLOAD is the mod being unloaded.
+	end
+
+	return ret
+end
+
+-- Additive callback behaviour (values returned from a callback replace the value of the first arg for later callbacks).
+-- Doesn't currently support an optional param (would need to update all callbacks that use this to add one).
 function _RunAdditiveCallback(callbackID, value, ...)
-	local callbacks = Isaac.GetCallbacks(callbackID)
-	if callbacks then
-		for _, callback in ipairs(callbacks) do
-			local status, ret = xpcall(callback.Function, function(msg)
-				return msg .. "\n" .. cleanTraceback(2)
-			end, callback.Mod, value, ...)
-			if status then
-				if ret ~= nil then
-					if not typeCheckCallback(callback, callbackID, ret, ...) then
-						value = ret
-					end
-				end
-			else
-				logError(callbackID, callback.Mod.Name, ret)
+	for callback in GetCallbackIterator(callbackID) do
+		local ret = RunCallbackInternal(callbackID, callback, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+-- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
+function _RunPreRenderCallback(callbackID, param, mt, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, mt, value, ...)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				return false
+			elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
+				value = value + ret
 			end
 		end
 	end
 	return value
 end
 
-function _RunPreRenderCallback(callbackID, param, mt, value, ...)
-	local callbacks = Isaac.GetCallbacks(callbackID)
-	
-	if callbacks then
-		local matchFunc = getmetatable(callbacks).__matchParams or defaultCallbackMeta.__matchParams
-
-		for _, callback in ipairs(callbacks) do
-			if matchFunc(param, callback.Param) then
-				local status, ret = xpcall(callback.Function, function(msg)
-					return msg .. "\n" .. cleanTraceback(2)
-				end, callback.Mod, mt, value, ...)
-				if status then
-					if ret ~= nil then
-						if not typeCheckCallback(callback, callbackID, ret, ...) then
-							if type(ret) == "boolean" and ret == false then
-								return false
-							elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
-								value = value + ret
-							end
-						end
-					end
-				else
-					logError(callbackID, callback.Mod.Name, ret)
-				end
-			end
-		end
-		return value
-	end
-end
-
 -- Custom handling for the MC_ENTITY_TAKE_DMG rewrite, so if a mod changes the damage amount etc that doesn't terminate the callback
 -- and the updated values are shown to later callbacks. The callback also now ONLY terminates early if FALSE is returned.
 function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlags, source, damageCountdown)
-	local callbacks = Isaac.GetCallbacks(callbackID)
+	local combinedRet
 
-	if callbacks then
-		local combinedRet
-
-		for _, callback in ipairs(callbacks) do
-			local matchFunc = getmetatable(callbacks).__matchParams or defaultCallbackMeta.__matchParams
-			if matchFunc(param, callback.Param) then
-				local status, ret = xpcall(callback.Function, function(msg)
-					return msg .. "\n" .. cleanTraceback(2)
-				end, callback.Mod, entity, damage, damageFlags, source, damageCountdown)
-				if status then
-					if ret ~= nil then
-						if not typeCheckCallback(callback, callbackID, ret, entity, damage, damageFlags, source, damageCountdown) then
-							if type(ret) == "boolean" and ret == false then
-								-- Only terminate the callback early if someone returns FALSE.
-								-- RIP to returning true stopping the callback.
-								return false
-							elseif type(ret) == "table" then
-								-- Set / update overrides to damage etc so that they are visible to later callbacks.
-								if ret.Damage and type(ret.Damage) == "number" then
-									damage = ret.Damage
-								end
-								if ret.DamageFlags and type(ret.DamageFlags) == "number" and ret.DamageFlags == math.floor(ret.DamageFlags) then
-									damageFlags = ret.DamageFlags
-								end
-								if ret.DamageCountdown and type(ret.DamageCountdown) == "number" then
-									damageCountdown = ret.DamageCountdown
-								end
-								if combinedRet then
-									for k, v in pairs(ret) do
-										combinedRet[k] = v
-									end
-								else
-									combinedRet = ret
-								end
-							end
-						end
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, entity, damage, damageFlags, source, damageCountdown)
+		if ret ~= nil then
+			if type(ret) == "boolean" and ret == false then
+				-- Only terminate the callback early if someone returns FALSE.
+				-- RIP to returning true stopping the callback.
+				return false
+			elseif type(ret) == "table" then
+				-- Set / update overrides to damage etc so that they are visible to later callbacks.
+				if ret.Damage and type(ret.Damage) == "number" then
+					damage = ret.Damage
+				end
+				if ret.DamageFlags and type(ret.DamageFlags) == "number" and ret.DamageFlags == math.floor(ret.DamageFlags) then
+					damageFlags = ret.DamageFlags
+				end
+				if ret.DamageCountdown and type(ret.DamageCountdown) == "number" then
+					damageCountdown = ret.DamageCountdown
+				end
+				if combinedRet then
+					for k, v in pairs(ret) do
+						combinedRet[k] = v
 					end
 				else
-					logError(callbackID, callback.Mod.Name, ret)
+					combinedRet = ret
 				end
 			end
 		end
-
-		return combinedRet
 	end
+
+	return combinedRet
 end
 
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
@@ -903,6 +1240,7 @@ end
 
 
 rawset(Isaac, "GetEntityConfig", function() return EntityConfig end)
+RoomConfigHolder = RoomConfig  -- Backwards compatability
 
 -- Reset Imgui Data after reload of all mods
 ImGui.Reset()
@@ -985,4 +1323,5 @@ pcall(require("repentogon_extras/changelog"))
 pcall(require("repentogon_extras/daily_stats"))
 pcall(require("repentogon_extras/stats_menu"))
 pcall(require("repentogon_extras/bestiary_menu"))
-pcall(require("repentogon_extras/onlinestub"))
+-- pcall(require("repentogon_extras/onlinestub")) let's not load it
+pcall(require("repentogon_extras/mods_menu_tweaks"))

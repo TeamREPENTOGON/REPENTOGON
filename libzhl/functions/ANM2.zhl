@@ -1,7 +1,7 @@
-"558bec83e4f8515356578bf98b57":
+"558bec83ec0880b9????????00":
 __thiscall void ANM2::Render(Vector* position,Vector* topleftclamp,Vector* bottomrightclamp);
 
-"558bec83ec10568bf1578b7e":
+"568bf180be????????0074??8d4e??e8????????8d4e":
 __thiscall void ANM2::Update();
 
 "558bec8379??0056":
@@ -32,7 +32,7 @@ __thiscall bool ANM2::IsPlaying(std_string* name);
 __thiscall int ANM2::GetFrame();
 
 "558bec518b45??568bf18378??1072??8b006a0150e8????????84c074??8b46":
-__thiscall int ANM2::SetFrame(const char* anim,float frame);
+__thiscall int ANM2::SetFrame(std_string* anim,float frame);
 
 "558bec5153568bf157837e??0074":
 __thiscall void ANM2::Load(std_string &ANM2Path, bool loadgraphics);

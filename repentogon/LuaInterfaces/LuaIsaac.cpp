@@ -1,18 +1,20 @@
 #include "SigScan.h"
 #include "IsaacRepentance.h"
+#include "../ImGuiFeatures/ConsoleMega.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
 
 #include "Windows.h"
 #include <string>
+#include "../Patches/ChallengesStuff.h"
 
 static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
 
 LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	int type = (int)luaL_checkinteger(L, 1);
 	int variant = (int)luaL_optinteger(L, 2, -1);
@@ -48,7 +50,7 @@ LUA_FUNCTION(Lua_IsaacFindByTypeFix)
 
 LUA_FUNCTION(Lua_IsaacGetRoomEntitiesFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList_EL* res = room->GetEntityList()->GetUpdateEL();
 	lua_newtable(L);
 	unsigned int size = res->_size;
@@ -78,7 +80,7 @@ static void DummyQueryRadius(EntityList_EL* el, void* pos, int partition) {
 
 LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	float radius = (float)luaL_checknumber(L, 2);
@@ -174,6 +176,18 @@ LUA_FUNCTION(Lua_CreateTimer) {
 
 	lua::luabridge::UserdataPtr::push(L, effect, lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
 	return 1;
+}
+
+LUA_FUNCTION(Lua_StartNewGame) {
+	int pltype = (int)luaL_optinteger(L, 1, 0);
+	int challenge = (int)luaL_optinteger(L, 2, 0);
+	unsigned int difficulty = (int)luaL_optinteger(L, 3, 0);
+	unsigned int seed = (int)luaL_optinteger(L, 4, 0);
+	Seeds seedobj;	//am avoiding heap corruption this way
+	seedobj.constructor();	
+	seedobj.set_start_seed(seed);
+	g_Manager->StartNewGame(pltype, challenge, seedobj, difficulty);
+	return 0;
 }
 
 LUA_FUNCTION(Lua_DrawLine) {
@@ -275,7 +289,7 @@ LUA_FUNCTION(Lua_GetClipboard) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_GetSubTypwByName) {
+LUA_FUNCTION(Lua_GetSubTypeByName) {
 	string text = string(luaL_checkstring(L, 1));
 	if (XMLStuff.EntityData->byname.count(text) > 0)
 	{
@@ -360,6 +374,26 @@ LUA_FUNCTION(Lua_IsaacGetCursorSprite) {
 	return 1;
 }
 
+bool apipause = false;
+HOOK_STATIC(Manager, Update, () -> void, __stdcall) {
+	if (apipause) {
+		g_Manager->_state = 2;
+	}
+	super();
+	
+}
+LUA_FUNCTION(Lua_IsaacPause) {
+	apipause = true;
+	return 0;
+}
+LUA_FUNCTION(Lua_IsaacResume) {
+	if (apipause && !console.enabled) {
+		g_Game->GetConsole()->_state = 0;
+	}
+	apipause = false;
+	return 0;
+}
+
 LUA_FUNCTION(Lua_IsaacGetRenderPosition) {
 	Vector* pos = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	bool scale = lua::luaL_optboolean(L, 2, true);
@@ -392,7 +426,7 @@ LUA_FUNCTION(Lua_IsaacClearBossHazards) {
 
 LUA_FUNCTION(Lua_IsaacFindInCapsule)
 {
-	Room* room = *g_Game->GetCurrentRoom();
+	Room* room = g_Game->GetCurrentRoom();
 	EntityList* list = room->GetEntityList();
 	Capsule* capsule = lua::GetUserdata<Capsule*>(L, 1, lua::metatables::CapsuleMT);
 	unsigned int partition = (unsigned int)luaL_optinteger(L, 2, -1);
@@ -456,6 +490,73 @@ LUA_FUNCTION(Lua_IsInGame) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_IsChallengeDone) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	if (challengeid < 1) {
+		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
+	}
+	if (challengeid <= 45) {
+		lua_pushboolean(L, g_Manager->GetPersistentGameData()->challenges[challengeid]);
+	}
+	else {
+		XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
+		lua_pushboolean(L, Challenges[node["name"] + node["sourceid"]] > 0);
+	}
+	return 1;
+}
+
+
+LUA_FUNCTION(Lua_UnDoChallenge) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	UndoChallenge(challengeid);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ClearChallenge) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	if (challengeid < 1) {
+		return luaL_error(L, "Invalid Challenge ID (expected > 0, got %d)", challengeid);
+	}
+	g_Manager->GetPersistentGameData()->AddChallenge(challengeid);
+	if (challengeid <= 45) {
+		g_Manager->GetPersistentGameData()->Save(); //if the challenges are already unlocked for the challenge then it wont fucking save otherwise!
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetModChallengeClearCount) {
+	int challengeid = (int)luaL_checkinteger(L, 1);
+	XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeid);
+	lua_pushinteger(L, Challenges[node["name"] + node["sourceid"]]);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetBossColorIdxByName) {
+	string bosscolorname = luaL_checkstring(L, 1);
+	auto iter = XMLStuff.BossColorData->childbyname.find(bosscolorname);
+	if (iter == XMLStuff.BossColorData->childbyname.end()) { lua_pushinteger(L, -1); }
+	else {
+		lua_pushinteger(L, (iter->second - 1));
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetBackdropTypeByName) {
+	string text = string(luaL_checkstring(L, 1));
+	if (XMLStuff.BackdropData->byname.count(text) > 0)
+	{
+		XMLAttributes ent = XMLStuff.BackdropData->GetNodeByName(text);
+		if ((ent.end() != ent.begin()) && (ent.count("id") > 0) && (ent["id"].length() > 0)) {
+			lua_pushinteger(L, stoi(ent["id"]));
+			return 1;
+		}
+	};
+	lua_pushinteger(L, -1);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -479,7 +580,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetClipboard", Lua_SetClipboard);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCursorSprite", Lua_IsaacGetCursorSprite);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetLoadedModules", Lua_GetLoadedModules);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypwByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetEntitySubTypeByName", Lua_GetSubTypeByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetCutsceneIdByName", Lua_GetCutsceneByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetGiantBookIdByName", Lua_GetGiantBookByName);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetNullItemIdByName", Lua_IsaacGetNullItemIdByName);
@@ -491,6 +592,16 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "TriggerWindowResize", Lua_TriggerWindowResize);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CenterCursor", Lua_CenterCursor);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsInGame", Lua_IsInGame);
+	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Pause", Lua_IsaacPause); 
+	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Resume", Lua_IsaacResume); //not done, feel free to pick these up they suck
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsChallengeDone", Lua_IsChallengeDone);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "ClearChallenge", Lua_ClearChallenge);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "MarkChallengeAsNotDone", Lua_UnDoChallenge);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetModChallengeClearCount", Lua_GetModChallengeClearCount);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdxByName", Lua_GetBossColorIdxByName);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdByName", Lua_GetBossColorIdxByName); //alias for musclememory
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartNewGame", Lua_StartNewGame);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

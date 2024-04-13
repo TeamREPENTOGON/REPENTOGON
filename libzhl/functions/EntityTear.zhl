@@ -7,6 +7,9 @@ __thiscall bool Entity_Tear::HandleCollision(Entity* collider, bool low);
 "558bec83e4f083ec1856":
 __thiscall Entity_Tear* Entity_Tear::MakeMultidimensionalCopy(Entity * spawner);
 
-struct Entity_Tear : public Entity {
+struct Entity_Tear depends (ANM2) : public Entity {
 	float _deadEyeIntensity : 0x3b4;
+	ANM2 _tearHaloANM2 : 0x3fc;
+	ANM2 _tearEffectANM2 : 0x510;
+	ANM2 _deadEyeANM2 : 0x624;
 } : 0x778;

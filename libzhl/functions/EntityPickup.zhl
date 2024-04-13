@@ -43,6 +43,16 @@ static cleanup Vector * Entity_Pickup::GetRandomPickupVelocity(const Vector& buf
 "558bec83ec24a1????????33c58945??538bd9":
 __thiscall int Entity_Pickup::GetAlternatePedestal();
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec68010000":
+__thiscall LootList Entity_Pickup::GetLootList(bool ShouldAdvance);
+
+"558bec6aff68????????64a1????????5083ec185657a1????????33c5508d45??64a3????????8bf1":
+__thiscall void Entity_Pickup::UpdatePickupGhosts();
+
+
+"83f93274??83f93c":
+static cleanup bool Entity_Pickup::IsChest(uint32_t variant<ecx>);
+
 struct Entity_Pickup depends (ANM2) : public Entity { {{
 	inline bool IsBlind() { return *(bool*)((char*)this + 0x47e); }
 	inline int* GetDropDelay() { return (int*)((char*)this + 0x4a0); }
@@ -82,7 +92,9 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 	};
 
 	ANM2 _priceANM2 : 0x360 ;
+	int _timeout : 0x48c;
 	unsigned int _cycleCollectibleList[8] : 0x4ec;
+	Entity_Effect* _pickupGhost : 0x4dc;
 	unsigned int _cycleCollectibleCount : 0x50c;
 	
 } : 0x638;

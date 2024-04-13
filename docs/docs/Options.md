@@ -33,3 +33,10 @@ ___
 #### boolean QuickRoomClear {: .copyable aria-label='Variables' }
 
 ___
+### StatHUDPlanetarium {: aria-label='Variables' }
+#### boolean StatHUDPlanetarium {: .copyable aria-label='Variables'}
+If set, natively shows Planetarium chance on the HUD. 
+
+Note that this option has no effect if Planetariums are not unlocked, so just checking this value isn't good enough if the intent is to see if the Planetarium HUD is rendering.
+
+___

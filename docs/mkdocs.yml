@@ -115,10 +115,13 @@ nav:
     - ModCallbacks: enums/ModCallbacks.md
   - Enums:
     - Achievement: enums/Achievement.md
+    - AddHealthType: enums/AddHealthType.md
     - AnimRenderFlags: enums/AnimRenderFlags.md
     - AnnouncerVoiceMode: enums/AnnouncerVoiceMode.md
     - AutocompleteType: enums/AutocompleteType.md
     - BagOfCraftingPickup: enums/BagOfCraftingPickup.md
+    - BlendFactor: enums/BlendFactor.md
+    - BlendType: enums/BlendType.md
     - BombCostumeLayer: enums/BombCostumeLayer.md
     - BossType: enums/BossType.md
     - CameraStyle: enums/CameraStyle.md
@@ -154,6 +157,7 @@ nav:
     - Language: enums/Language.md
     - LineCheckMode: enums/LineCheckMode.md
     - MainMenuType: enums/MainMenuType.md
+    - MinimapState: enums/MinimapState.md
     - ModCallbacks: enums/ModCallbacks.md
     - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
@@ -171,6 +175,7 @@ nav:
     - RoomSubType: enums/RoomSubType.md
     - ShaderType: enums/ShaderType.md
     - SlotVariant: enums/SlotVariant.md
+    - SpecialQuest: enums/SpecialQuest.md
     - StbGridType: enums/StbGridType.md
     - StbPoopSubType: enums/StbPoopSubType.md
     - StbRailVariant: enums/StbRailVariant.md
@@ -210,6 +215,7 @@ nav:
     - EntityTear: EntityTear.md
   - EntityConfig:
     - EntityConfig: EntityConfig.md
+    - EntityConfigBaby: EntityConfigBaby.md
     - EntityConfigEntity: EntityConfigEntity.md
     - EntityConfigPlayer: EntityConfigPlayer.md
   - Font: Font.md
@@ -265,6 +271,7 @@ nav:
     - MainMenu: menus/MainMenu.md
     - ModsMenu: menus/ModsMenu.md
     - OptionsMenu: menus/OptionsMenu.md
+    - PauseMenu: menus/PauseMenu.md
     - SaveMenu: menus/SaveMenu.md
     - SpecialSeedsMenu: menus/SpecialSeedsMenu.md
     - StatsMenu: menus/StatsMenu.md
@@ -328,19 +335,27 @@ nav:
   - UI: changes/UI.md
 - XML:
   - XML Overview: xml/overview.md
+  - XMLData: XMLData.md
   - achievements.xml: xml/achievements.md
   - ambush.xml: xml/ambush.md
+  - backdrops.xml: xml/backdrops.md
+  - bosscolors.xml: xml/bosscolors.md
   - costumes.xml: xml/costumes.md
   - cutscenes.xml: xml/cutscenes.md
+  - challenges.xml: xml/challenges.md
   - entities2.xml: xml/entities.md
   - giantbook.xml: xml/giantbook.md
   - items.xml: xml/items.md
+  - pocketitems.xml: xml/pocketitems.md
   - players.xml: xml/players.md
 # - Custom Rendering: renderer/CustomRendering.md
 - Tags: tags.md
 - Example Mods:
   - Capsules: examples/Capsules.md
+  - Deal Chance: examples/DealChance.md
   - Weighted Outcomes: examples/WeightedOutcomes.md
+  - Beams: examples/Beams.md
+  - Color Modifiers: examples/ColorModifiers.md
 - Lua 5.4 Docs: https://www.lua.org/manual/5.4/
 plugins:
 - blog:

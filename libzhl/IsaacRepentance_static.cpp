@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
+#include "Log.h"
 
-bool Room::IsValidRailType(lua_Integer rail) {
+bool Room::IsValidRailType(int rail) {
 	if (rail < 0) {
 		return false;
 	}
@@ -16,7 +17,7 @@ bool Room::IsValidRailType(lua_Integer rail) {
 	}
 }
 
-bool RoomConfig::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
+bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 	if (index < 0) {
 		return false;
 	}
@@ -91,7 +92,7 @@ bool RoomConfig::IsValidGridIndex(lua_Integer index, bool includeWalls) const {
 	}
 }
 
-bool RoomConfig::IsAllowedGridIndex(lua_Integer index) const {
+bool RoomConfig_Room::IsAllowedGridIndex(int index) const {
 	switch (Shape) {
 	case ROOMSHAPE_1x1:
 	case ROOMSHAPE_IH:
@@ -213,4 +214,67 @@ Vector * Isaac::WorldToScreen(Vector * ret, Vector* pos) {
 	ret->x = f1 / scale + room->_renderScrollOffset.x + game->_screenShakeOffset.x;
 	ret->y = f2 / scale + room->_renderScrollOffset.y + game->_screenShakeOffset.y;
 	return ret;
+}
+
+bool Entity_Player::AddSmeltedTrinket(int trinketID, bool firstTime) {
+	bool trinketAdded = false;
+
+	if (ItemConfig::IsValidTrinket(trinketID)) {
+		const int actualTrinketID = trinketID & 0x7fff;
+		if (trinketID != actualTrinketID) {
+			_smeltedTrinkets[actualTrinketID]._goldenTrinketNum++;
+		}
+		else {
+			_smeltedTrinkets[actualTrinketID]._trinketNum++;
+		}
+
+		TriggerTrinketAdded(trinketID, firstTime);
+
+		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
+		GetHistory()->AddHistoryItem(historyItem);
+
+		delete(historyItem);
+
+		InvalidateCoPlayerItems();
+
+		ItemConfig_Item* config = g_Manager->GetItemConfig()->GetTrinket(actualTrinketID);
+		if (config && config->addCostumeOnPickup) {
+			AddCostume(config, false);
+		}
+
+		trinketAdded = true;
+	}
+	return trinketAdded;
+};
+
+void ScoreSheet::AddFinishedStage(int stage, int stageType, unsigned int time) {
+	if ((_runTimeLevel < stage) && g_Game->GetDailyChallenge()._id == 0) {
+		_runTimeLevel = stage;
+		_runTimeLevelType = stageType;
+		_runTime = time;
+	}
+	return;
+}
+
+void EntityList_EL::Untie() {
+	if (!_sublist) {
+		ZHL::Log("[ERROR] Attempting to untie a list that is not a sublist, ignoring\n");
+		return;
+	}
+
+	Entity** entities = (Entity**)calloc(_size, sizeof(Entity*));
+	if (!entities) {
+		ZHL::Log("[CRITICAL] Unable to allocate memory to untie sublist, ignoring\n");
+		return;
+	}
+
+	_sublist = false;
+	memcpy(entities, _data, _size * sizeof(Entity*));
+	_data = entities;
+}
+
+bool Music::ValidateMusicID(int id, int& max) {
+	max = _entries.size();
+
+	return id >= 0 && id < max;
 }

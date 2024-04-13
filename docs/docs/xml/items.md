@@ -8,6 +8,13 @@ tags:
 
 **Content-Folder**{: .xmlInfo .green }: Using this file in a content folder will add new items.
 
+## Items n Trinkets
+With REPENTOGON, the following xml attributes have changed functionality for regular items and trinkets:
+
+| Variable-Name | Possible Values | Description |
+|:--|:--|:--|
+|achievement|int|Ties the item/trinket to be unlocked by anachievement. For modded ones, use the provided achievement name xml attribute(define one if it doesnt have one already). |
+
 ## "Null" Items
 
 With REPENTOGON, you can now define custom "null" items. "Null" items are not typical items that can be spawned or visually seen in-game. They are typically used by the game to handle various costumes, buffs and effects (both temporary and persistent).

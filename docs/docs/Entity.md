@@ -42,17 +42,40 @@ ___
 
 ___
 ### CopyStatusEffects () {: aria-label='Functions' }
-#### void CopyStatusEffects ( boolean CopyColor = true ) {: .copyable aria-label='Functions' }
-#### void CopyStatusEffects ( [Entity](Entity.md) Target, boolean CopyColor = true ) {: .copyable aria-label='Functions' }
-If no Entity is specified, this will recursively copy status effects to all [Child](Entity.md#child) Entities.
+#### void CopyStatusEffects ( [Entity](Entity.md) Target, boolean Overwrite = false ) {: .copyable aria-label='Functions' }
+If `Target` is `nil`, this will recursively copy status effects to all [Child](Entity.md#child) Entities. `Overwrite` will additionally remove all other status effects from the target and set the properties of existing effects to match the entity.
 
 ___
 ### ForceCollide () {: aria-label='Functions' }
 #### boolean ForceCollide ( [Entity](Entity.md) Entity, boolean Low ) {: .copyable aria-label='Functions' }
 
 ___
+### GetBaitedCountdown () {: aria-label='Functions' }
+#### int GetBaitedCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetBleedingCountdown () {: aria-label='Functions' }
+#### int GetBleedingCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBossStatusEffectCooldown () {: aria-label='Functions' }
 #### int GetBossStatusEffectCooldown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetBrimstoneMarkCountdown () {: aria-label='Functions' }
+#### int GetBrimstoneMarkCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetBurnCountdown () {: aria-label='Functions' }
+#### int GetBurnCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetBurnDamageTimer () {: aria-label='Functions' }
+#### int GetBurnDamageTimer ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetCharmedCountdown () {: aria-label='Functions' }
+#### int GetCharmedCountdown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCollisionCapsule () {: aria-label='Functions' }
@@ -62,6 +85,10 @@ ___
 ### GetColorParams () {: aria-label='Functions' }
 #### [ColorParams](ColorParams.md)[] GetColorParams ( ) {: .copyable aria-label='Functions' }
 Returns a table of all colors currently queued by `SetColor` alongside their parameters.
+
+___
+### GetConfusionCountdown () {: aria-label='Functions' }
+#### int GetConfusionCountdown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetDamageCountdown () {: aria-label='Functions' }
@@ -80,8 +107,40 @@ ___
 Returns the corresponding [EntityConfig](EntityConfig.md) entry for this entity.
 
 ___
+### GetFearCountdown () {: aria-label='Functions' }
+#### int GetFearCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetFireDamageCooldown () {: aria-label='Functions' }
+#### int GetFireDamageCooldown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetFreezeCountdown () {: aria-label='Functions' }
+#### int GetFreezeCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetHitListIndex () {: aria-label='Functions' }
 #### int GetHitListIndex ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetIceCountdown () {: aria-label='Functions' }
+#### int GetIceCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetKnockbackCountdown () {: aria-label='Functions' }
+#### int GetKnockbackCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetKnockbackDirection () {: aria-label='Functions' }
+#### [Vector](Vector.md) GetKnockbackDirection ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetMagnetizedCountdown () {: aria-label='Functions' }
+#### int GetMagnetizedCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetMidasFreezeCountdown () {: aria-label='Functions' }
+#### int GetMidasFreezeCountdown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetMinecart () {: aria-label='Functions' }
@@ -105,6 +164,14 @@ ___
 #### int GetPauseTime ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetPoisonCountdown () {: aria-label='Functions' }
+#### int GetPoisonCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetPoisonDamageTimer () {: aria-label='Functions' }
+#### int GetPoisonDamageTimer ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetPosVel () {: aria-label='Functions' }
 #### [PosVel](https://wofsauge.github.io/IsaacDocs/rep/PlayerTypes_PosVel.html) GetPosVel ( ) {: .copyable aria-label='Functions' }
 Returns 2 values, both Vectors. 1st the Position of the entity, 2nd the Velocity of the entity.
@@ -120,12 +187,24 @@ ___
 #### float GetShadowSize ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetShrinkCountdown () {: aria-label='Functions' }
+#### int GetShrinkCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSlowingCountdown () {: aria-label='Functions' }
+#### int GetSlowingCountdown ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetSpeedMultiplier () {: aria-label='Functions' }
 #### float GetSpeedMultiplier ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetType () {: aria-label='Functions' }
 #### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetWeaknessCountdown () {: aria-label='Functions' }
+#### int GetWeaknessCountdown ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GiveMinecart () {: aria-label='Functions' }
@@ -139,25 +218,49 @@ Used to determine if this entity should ignore any status effect coming from `So
 ___
 ### MakeBloodPoof () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) MakeBloodPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
-
-???+ info "Info"
-    This function spawns two effects; the second will be the the Child of the one returned.
+This function spawns two blood poof effects of subtypes 3 and 4; the second of which will be the the Child of the one returned.
 
 ___
 ### MakeGroundPoof () {: aria-label='Functions' }
 #### [EntityEffect](EntityEffect.md) MakeGroundPoof ( [Vector](Vector.md) Position = self.Position, [Color](Color.md) Color = default, float Scale = 1.0 ) {: .copyable aria-label='Functions' }
+This function spawns two dust poof effects of subtypes 1 and 2; the second of which will be the the Child of the one returned.
 
-???+ info "Info"
-    This function spawns two effects; the second will be the the Child of the one returned.
+___
+### SetBaitedCountdown () {: aria-label='Functions' }
+#### void SetBaitedCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetBleedingCountdown () {: aria-label='Functions' }
+#### void SetBleedingCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBossStatusEffectCooldown () {: aria-label='Functions' }
 #### void SetBossStatusEffectCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
 
 ___
+### SetBrimstoneMarkCountdown () {: aria-label='Functions' }
+#### void SetBrimstoneMarkCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetBurnCountdown () {: aria-label='Functions' }
+#### void SetBurnCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetBurnDamageTimer () {: aria-label='Functions' }
+#### void SetBurnDamageTimer ( int Timer ) {: .copyable aria-label='Functions' }
+
+___
+### SetCharmedCountdown () {: aria-label='Functions' }
+#### void SetCharmedCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
 ### SetColorParams () {: aria-label='Functions' }
 #### void SetColorParams ( [ColorParams](ColorParams.md)[] Params ) {: .copyable aria-label='Functions' }
 Sets colors to be used alongside their parameters.
+
+___
+### SetConfusionCountdown () {: aria-label='Functions' }
+#### void SetConfusionCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetDamageCountdown () {: aria-label='Functions' }
@@ -171,20 +274,72 @@ ___
 #### void SetDead ( boolean IsDead ) {: .copyable aria-label='Functions' }
 
 ___
+### SetFearCountdown () {: aria-label='Functions' }
+#### void SetFearCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetFireDamageCooldown () {: aria-label='Functions' }
+#### void SetFireDamageCooldown ( int Cooldown ) {: .copyable aria-label='Functions' }
+
+___
+### SetFreezeCountdown () {: aria-label='Functions' }
+#### void SetFreezeCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetIceCountdown () {: aria-label='Functions' }
+#### void SetIceCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
 ### SetInvincible () {: aria-label='Functions' }
 #### void SetInvincible ( boolean IsInvincible ) {: .copyable aria-label='Functions' }
+
+___
+### SetKnockbackCountdown () {: aria-label='Functions' }
+#### void SetKnockbackCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetKnockbackDirection () {: aria-label='Functions' }
+#### void SetKnockbackDirection ( [Vector](Vector.md) Direction ) {: .copyable aria-label='Functions' }
+
+___
+### SetMagnetizedCountdown () {: aria-label='Functions' }
+#### void SetMagnetizedCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetMidasFreezeCountdown () {: aria-label='Functions' }
+#### void SetMidasFreezeCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetPauseTime () {: aria-label='Functions' }
 #### void SetPauseTime ( int Duration ) {: .copyable aria-label='Functions' }
 
 ___
+### SetPoisonCountdown () {: aria-label='Functions' }
+#### void SetPoisonCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetPoisonDamageTimer () {: aria-label='Functions' }
+#### void SetPoisonDamageTimer ( int Timer ) {: .copyable aria-label='Functions' }
+
+___
 ### SetShadowSize () {: aria-label='Functions' }
 #### float SetShadowSize ( float Size ) {: .copyable aria-label='Functions' }
 
 ___
+### SetShrinkCountdown () {: aria-label='Functions' }
+#### void SetShrinkCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
+### SetSlowingCountdown () {: aria-label='Functions' }
+#### void SetSlowingCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+
+___
 ### SetSpeedMultiplier () {: aria-label='Functions' }
 #### void SetSpeedMultiplier ( float Amount ) {: .copyable aria-label='Functions' }
+
+___
+### SetWeaknessCountdown () {: aria-label='Functions' }
+#### void SetWeaknessCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodEffect () {: aria-label='Functions' }

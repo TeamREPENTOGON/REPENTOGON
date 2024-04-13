@@ -37,7 +37,7 @@ __stdcall void Manager::RestartGame() //v1.7.9b maybe
 __thiscall ChallengeParam* Manager::GetChallengeParams(int challengeID);
 
 "558BEC6AFF68????????64a1000000005083EC60A1????????33C58945F05650":
-__thiscall void Manager::StartNewGame(int playerType, int challenge,  UnknownGameStartStruct unk, int difficulty);
+__thiscall void Manager::StartNewGame(int playerType, int challenge,  Seeds unk, int difficulty);
 
 "558bec51568b35????????8b86":
 __thiscall bool Manager::AchievementUnlocksDisallowed(bool unk);
@@ -70,7 +70,7 @@ __thiscall void Manager::SetFullscreenRendering(bool value);
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2) { {{
+struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
@@ -87,14 +87,23 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	inline ItemConfig* GetItemConfig() { return &this->_itemConfig; }
 	inline EntityConfig* GetEntityConfig() { return &this->_entityConfig; }
 	inline std::vector<EntityConfig_Player>* GetPlayerConfig() { return this->GetEntityConfig()->GetPlayers(); }
+	inline std::vector<ChallengeParam>* GetChallenges() { return (std::vector<ChallengeParam>*)((char*)this + 0x29f7c); }
+	
 }} 
-
+	
+	int _state : 0x8;
     PersistentGameData _persistentGameData : 0x14;
     StringTable _stringTable : 0x4a234;
 	SoundEffects _sfxManager : 0x29de0;
 	ItemConfig _itemConfig : 0x29e84;
 	EntityConfig _entityConfig : 0x29f88;
+	//ModManager _modManager : 0x29FD8;
 	ANM2 _cursorSprite : 0x1ea840;
+	ANM2 _buttonsSprite : 0x4a284;
+	Font _font7_TeamMeat_10 : 0x10a514;
+	Font _font8_TeamMeat_12 : 0x12a550;	
+	unsigned int _framecount : 0x4a264;
+	Music _musicmanager : 0x29a78;
 } : 0x20a9d8;
 
 "e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":

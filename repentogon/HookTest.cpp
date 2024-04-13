@@ -282,3 +282,15 @@ HOOK_METHOD(LevelGenerator, get_neighbor_candidates, (vector_LevelGenRoom* neigh
 	return ret;
 }
 */
+HOOK_METHOD(Leaderboard, ProcessInput, () -> void) {
+	super();
+
+	if (_dailyChallenge._id == 1 && _isLeaderboardClosing == 0) {
+		if (g_InputManagerBase.IsActionTriggered(14, -1, 0)) {
+			//g_Game->FadeOut(.08f, 2);
+			_displayState = 4;
+			_isLeaderboardClosing = true;
+			_dailyChallenge._id = 0;
+		}
+	}
+}

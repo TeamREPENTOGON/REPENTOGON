@@ -531,13 +531,41 @@ extern string achivjsonpath;
 extern int toint(const string &str);
 
 inline void IncreaseAchievementCounter(int achievementid) {
-	string achievement = XMLStuff.AchievementData->nodes[achievementid]["name"] +  XMLStuff.AchievementData->nodes[achievementid]["sourceid"];
+	XMLAttributes node = XMLStuff.AchievementData->GetNodeById(achievementid);
+	string achievement = node["name"] + node["sourceid"];
 	if (Achievements[achievement] != 1) {
 		Achievements[achievement] += 1;
 		if (Achievements[achievement] == 1) {
 			g_Manager->GetPersistentGameData()->TryUnlock(achievementid);
 		}
 	}
+}
+
+
+
+inline bool MeetsComaSeparatedAchievs(const string& names) {
+	size_t start = 0;
+	size_t pos = names.find(',');
+	string item;
+	string parsedlist = "";
+	if (pos == std::string::npos) {
+		return g_Manager->_persistentGameData.Unlocked(toint(names));
+	}
+	while (pos != std::string::npos) {
+		item = names.substr(start, pos - start);
+		int id = toint(item);
+		if (!g_Manager->_persistentGameData.Unlocked(id)) {
+			return false;
+		}
+		start = pos + 1;
+		pos = names.find(',', start);
+	}
+	item = names.substr(start, names.length());
+	int id = toint(item);
+	if (!g_Manager->_persistentGameData.Unlocked(id)) {
+		return false;
+	}
+	return true;
 }
 
 inline void AddMarkTracker(int achievementid, int marktype, int charaid = -1) {
@@ -659,7 +687,7 @@ inline void AddTrackers4Achiev(string idx,int i, XMLAttributes node) {
 
 inline void AccomplishCondition(int condid) {
 	int achievementid = Conditionals[condid];
-	XMLAttributes node = XMLStuff.AchievementData->nodes[achievementid];
+	XMLAttributes node = XMLStuff.AchievementData->GetNodeById(achievementid);
 	string idx = node["name"] + node["sourceid"];
 	Achievements[idx] += 1;
 	if (Achievements[idx] == 1) {
@@ -678,7 +706,7 @@ inline void InitAchievs() {
 	int condid = 0;
 	for (int i = 638; i <= XMLStuff.AchievementData->maxid; i++)
 	{
-		XMLAttributes node = XMLStuff.AchievementData->nodes[i];
+		XMLAttributes node = XMLStuff.AchievementData->GetNodeById(i);
 		if (node["name"].length() > 0) {
 			string idx = node["name"] + node["sourceid"];
 			Achievements[idx] = 0;

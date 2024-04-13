@@ -2,7 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetDebugRenderer)
+/*LUA_FUNCTION(Lua_GetDebugRenderer)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	DebugRenderer** ud = (DebugRenderer**)lua_newuserdata(L, sizeof(DebugRenderer*));
@@ -10,6 +10,7 @@ LUA_FUNCTION(Lua_GetDebugRenderer)
 	luaL_setmetatable(L, lua::metatables::DebugRendererMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_DebugRendererGet) {
 	DebugRenderer* debugRenderer = g_Game->GetDebugRenderer();

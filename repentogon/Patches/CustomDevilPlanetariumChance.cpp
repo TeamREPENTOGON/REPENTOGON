@@ -3,9 +3,9 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include "LuaCore.h"
+#include "../LuaInit.h"
 
 extern std::bitset<500> CallbackState;
-extern int additiveCallbackKey;
 
 bool modsChangingDevilChance(lua_State* L) {
     int callbacks[4] = { 1130, 1131, 1132, 1133 };
@@ -36,7 +36,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     PlayerManager* manager = g_Game->GetPlayerManager();
     RNG *rng = &manager->_rng;
     int flags = *g_Game->GetLevelStateFlags();
-    Room* room = *g_Game->GetCurrentRoom();
+    Room* room = g_Game->GetCurrentRoom();
     RoomDescriptor* desc = g_Game->GetRoomByIdx(g_Game->GetCurrentRoomIdx(), -1);
     EntityList* list = room->GetEntityList();
     bool hasActOfContrition = manager->FirstCollectibleOwner(COLLECTIBLE_ACT_OF_CONTRITION, &rng, true);
@@ -50,7 +50,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
         //MC_PRE_DEVIL_APPLY_ITEMS
         if (CallbackState.test(1130 - 1000)) {
 
-            lua_rawgeti(L, LUA_REGISTRYINDEX, additiveCallbackKey);
+            lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
             lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1130)
                 .push(chance)
@@ -141,7 +141,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     //MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS
     if (CallbackState.test(1132 - 1000)) {
 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, additiveCallbackKey);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
         lua::LuaResults preApplySpecialItemsResult = lua::LuaCaller(L).push(1132)
             .push(chance)
@@ -170,7 +170,7 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
     //MC_POST_DEVIL_CALCULATE
     if (CallbackState.test(1133 - 1000)) {
 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, additiveCallbackKey);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
         lua::LuaResults postDevilCalculateResult = lua::LuaCaller(L).push(1133)
             .push(chance)
@@ -210,6 +210,25 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     if (g_Game->GetDailyChallenge()._id) {
         return originalChance;
     }
+
+    // ** VANILLA FIX **
+    // Always return 0.0 if Telescope Lens is not available in a run 
+    // This seems to be a good check for every case any planetarium cannot spawn, besides the challenges case. It accounts for if planetariums are unlocked, and if the game is Greed Mode
+    // Using this method also allows mods to intuitively bypass it
+    if (g_Manager->GetItemConfig()->GetTrinket(152)->IsAvailableEx((152 & 255 ^ 1) * 2 - 3) == false) {
+        return 0.0f;
+    }
+
+    // ** VANILLA FIX **
+    // Always return 0.0 if treasure rooms cannot spawn in a challenge, as that makes planetariums unable to spawn as well
+    unsigned int challenge = g_Game->GetChallenge();
+    if (challenge != 0x0) {
+        ChallengeParam* chalpram = g_Manager->GetChallengeParams(challenge);
+        if (chalpram->_roomset.find(4) != chalpram->_roomset.end()) {
+            return 0.0f;
+        }
+    }
+
     lua_State* L = g_LuaEngine->_state;
 
     // My reimplementation *should* be accurate, but there's no reason to run it if mods aren't actively attempting to change values.
@@ -296,7 +315,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
         //MC_PRE_PLANETARIUM_APPLY_ITEMS
         if (CallbackState.test(1113 - 1000)) {
 
-            lua_rawgeti(L, LUA_REGISTRYINDEX, additiveCallbackKey);
+            lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
             lua::LuaResults preApplyItemsResult = lua::LuaCaller(L).push(1113)
                 .push(chance)
@@ -324,7 +343,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     //MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS
     if (CallbackState.test(1114 - 1000)) {
 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, additiveCallbackKey);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
         lua::LuaResults preApplyLensResult = lua::LuaCaller(L).push(1114)
             .push(chance)
@@ -343,7 +362,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
     //MC_POST_PLANETARIUM_CALCULATE
     if (CallbackState.test(1115 - 1000)) {
 
-        lua_rawgeti(L, LUA_REGISTRYINDEX, additiveCallbackKey);
+        lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
 
         lua::LuaResults postCalculateResult = lua::LuaCaller(L).push(1115)
             .push(chance)

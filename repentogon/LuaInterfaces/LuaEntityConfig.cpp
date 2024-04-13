@@ -721,6 +721,62 @@ LUA_FUNCTION(Lua_EntityConfigPlayerGetTaintedCounterpart)
 }
 
 /*
+* EntityConfigBaby Functions
+*/
+
+LUA_FUNCTION(Lua_EntityConfigGetBaby)
+{
+	const int id = (int)luaL_checkinteger(L, 1);
+
+	EntityConfig_Baby* babyConfig = g_Manager->GetEntityConfig()->GetBaby(id);
+
+	if (babyConfig == nullptr) {
+		lua_pushnil(L);
+	}
+	else {
+		EntityConfig_Baby** toLua = (EntityConfig_Baby**)lua_newuserdata(L, sizeof(EntityConfig_Baby*));
+		*toLua = babyConfig;
+		luaL_setmetatable(L, lua::metatables::EntityConfigBabyMT);
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigGetMaxBabyID)
+{
+	lua_pushinteger(L, g_Manager->GetEntityConfig()->GetBabies()->size() - 1);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigBabyGetId)
+{
+	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	lua_pushinteger(L, baby->id);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigBabyGetName)
+{
+	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	lua_pushstring(L, baby->name.c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigBabyGetSpritesheetPath)
+{
+	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	lua_pushstring(L, baby->gfx.c_str());
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityConfigBabyGetAchievementID)
+{
+	EntityConfig_Baby* baby = *lua::GetUserdata<EntityConfig_Baby**>(L, 1, lua::metatables::EntityConfigBabyMT);
+	lua_pushinteger(L, baby->achievementID);
+	return 1;
+}
+
+/*
 * Registration Stuff
 */
 
@@ -729,6 +785,8 @@ static void RegisterEntityConfig(lua_State* L) {
 	lua::TableAssoc(L, "GetEntity", Lua_EntityConfigGetEntity);
 	lua::TableAssoc(L, "GetPlayer", Lua_EntityConfigGetPlayer);
 	lua::TableAssoc(L, "GetMaxPlayerType", Lua_EntityConfigGetMaxPlayerType);
+	lua::TableAssoc(L, "GetBaby", Lua_EntityConfigGetBaby);
+	lua::TableAssoc(L, "GetMaxBabyID", Lua_EntityConfigGetMaxBabyID);
 	lua_setglobal(L, lua::metatables::EntityConfigMT);
 }
 
@@ -815,6 +873,17 @@ static void RegisterEntityConfigPlayer(lua_State* L) {
 	lua::RegisterNewClass(L, lua::metatables::EntityConfigPlayerMT, lua::metatables::EntityConfigPlayerMT, functions);
 }
 
+static void RegisterEntityConfigBaby(lua_State* L) {
+	luaL_Reg functions[] = {
+		{ "GetID", Lua_EntityConfigBabyGetId },
+		{ "GetName", Lua_EntityConfigBabyGetName },
+		{ "GetSpritesheetPath", Lua_EntityConfigBabyGetSpritesheetPath },
+		{ "GetAchievementID", Lua_EntityConfigBabyGetAchievementID },
+		{ NULL, NULL }
+	};
+	lua::RegisterNewClass(L, lua::metatables::EntityConfigBabyMT, lua::metatables::EntityConfigBabyMT, functions);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -826,4 +895,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterEntityConfig(_state);
 	RegisterEntityConfigEntity(_state);
 	RegisterEntityConfigPlayer(_state);
+	RegisterEntityConfigBaby(_state);
 }

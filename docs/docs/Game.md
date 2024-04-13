@@ -27,6 +27,10 @@ ___
 If no players exist, this now returns `nil` to prevent a crash. Invalid indexes will return index `0`.
 
 ___
+### Move·To·Random·Room () {: aria-label='Modified Functions' }
+#### void MoveToRandomRoom ( boolean IAmErrorRoom, int Seed, [EntityPlayer](EntityPlayer.md) Player ) {: .copyable aria-label='Modified Functions' }
+Now no longer crashes the game when given a seed equal `0`.
+___
 ### StartStageTransition ()  {: aria-label='Modified Functions' }
 #### void StartStageTransition ( boolean SameStage, int TransitionOverride, [EntityPlayer](EntityPlayer.md) Player = nil ) {: .copyable aria-label='Modified Functions' }
 Fixed the crash that sometimes occured due to an incorrect call on the C++ side.
@@ -48,6 +52,7 @@ Adds a debug flag to the game. Multiple can be added simultaneously with bitwise
 ___
 ### DevolveEnemy () {: aria-label='Functions' }
 #### void DevolveEnemy ( [Entity](Entity.md) ) {: .copyable aria-label='Functions' }
+Devolves an enemy, as if the item D10 was used on it.
 
 ___
 ### GetChallengeParams () {: aria-label='Functions' }
@@ -64,19 +69,13 @@ ___
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
-### GetDimension () {: aria-label='Functions' }
-#### int GetDimension ( ) {: .copyable aria-label='Functions' }
-
-___
 ### GetLerpColorModifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetLerpColorModifier ( ) {: .copyable aria-label='Functions' }
-
-???+ info "Info"
-    This is formatted as the absolute rate of change (ie, all values are positive).
+Returns the lerped color modifier. This is formatted as the absolute rate of change (ie, all values are positive).
 
 ___
 ### GetPauseMenuState () {: aria-label='Functions' }
-#### int GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
+#### [PauseMenuStates](enums/PauseMenuStates.md) GetPauseMenuState ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetPlanetariumsVisited () {: aria-label='Functions' }
@@ -86,20 +85,23 @@ Returns the amount of planetariums the player has entered this run.
 ___
 ### GetTargetColorModifier () {: aria-label='Functions' }
 #### [ColorModifier](ColorModifier.md) GetTargetColorModifier ( ) {: .copyable aria-label='Functions' }
-If currently lerping between two [ColorModifier](ColorModifier.md) states, returns the target state. Is otherwise the same as [GetCurrentColorModifier](Game.md#getcurrentcolormodifier). 
+Returns the target ColorModifier. If currently lerping between two [ColorModifier](ColorModifier.md) states, returns the target state. It is otherwise the same as [GetCurrentColorModifier](Game.md#getcurrentcolormodifier).
 
 ___
 ### IsErased () {: aria-label='Functions' }
 #### boolean IsErased ( [Entity](Entity.md) Entity ) {: .copyable aria-label='Functions' }
 #### boolean IsErased ( int Type, int Variant = -1, int SubType = -1 ) {: .copyable aria-label='Functions' }
 Checks if an entity was erased.
+
 ___
 ### IsGreedBoss () {: aria-label='Functions' }
 #### boolean IsGreedBoss ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the next or current wave is a boss wave. Returns `false` otherwise or if not in Greed Mode.
 
 ___
 ### IsGreedFinalBoss () {: aria-label='Functions' }
 #### boolean IsGreedFinalBoss ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the next or current wave is the optional "nightmare" wave. Returns `false` otherwise or if not in Greed Mode.
 
 ___
 ### IsHardMode () {: aria-label='Functions' }
@@ -114,10 +116,23 @@ Returns `true` if the pause menu is open.
 ___
 ### IsRerun () {: aria-label='Functions' }
 #### boolean IsRerun ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the current run is a rerun.
 
 ___
 ### SetColorModifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
+
+___
+### SetDonationModAngel () {: aria-label='Functions' }
+#### void SetDonationModAngel ( int Amount ) {: .copyable aria-label='Functions' }
+
+___
+### SetDonationModGreed () {: aria-label='Functions' }
+#### void SetDonationModGreed ( int Amount ) {: .copyable aria-label='Functions' }
+
+___
+### ShowGenericLeaderboard () {: aria-label='Functions' }
+#### void ShowGenericLeaderboard ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBombCrater () {: aria-label='Functions' }

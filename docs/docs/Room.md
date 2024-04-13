@@ -3,9 +3,12 @@ tags:
   - Class
 ---
 # Class "Room"
-
 ## Modified Functions
 
+### GetBackdropType () {: aria-label='Functions' }
+#### [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) GetBackdropType ( ) {: .copyable aria-label='Functions' }
+
+___
 ### SpawnGridEntity () {: aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) Type, int Variant = 0, int Seed = nil, int VarData = 0 ) {: .copyable aria-label='Modified Functions' }
 #### boolean SpawnGridEntity ( int GridIndex, [GridEntityDesc](https://wofsauge.github.io/IsaacDocs/rep/GridEntityDesc.html) Descriptor) {: .copyable aria-label='Modified Functions' }
@@ -17,15 +20,20 @@ ___
 An `IgnoreStageType` parameter has been added to allow spawning the Mirror & Mineshaft door outside of `STAGETYPE_REPENTANCE` and `STAGETYPE_REPENTANCE_B` stages. Note that the `KNIFE_PUZZLE` [dimension](Level.md?#dimension-getdimension) must be set up properly for these doors not to crash on entry!
 
 ___
-
 ## Functions
 
 ### CanPickupGridEntity () {: aria-label='Functions' }
 #### boolean CanPickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
 Returns true if the gridentity at the given position can be picked up.
+
 ___
 ### CanSpawnObstacleAtPosition () {: aria-label='Functions' }
 #### boolean CanSpawnObstacleAtPosition ( int GridIndex, boolean Force ) {: .copyable aria-label='Functions' }
+
+___
+### DoLightningStrike () {: aria-label='Functions' }
+#### void DoLightningStrike ( int Seed = RandomSeed ) {: .copyable aria-label='Functions' }
+Creates a lightning effect as seen in Downpour. `Seed` determines [intensity](Room.md#getlightningintensity) (`1.3 + RandomFloat()*.6`) and sound pitch (`0.9 + RandomFloat()*0.2`).
 
 ___
 ### GetBackdrop () {: aria-label='Functions' }
@@ -63,12 +71,32 @@ ___
 #### int GetGridIndexByTile ( int GridRow, int GridColumn ) {: .copyable aria-label='Functions' }
 
 ___
+### GetLightningIntensity () {: aria-label='Functions' }
+#### float GetLightningIntensity ( ) {: .copyable aria-label='Functions' }
+Gets the intensity of the lightning effect used in Downpour. This variable will affect the visibility of Wraiths.
+
+This is set by the game in a random range between `1.3` and `2.1`, and decays by `value * .75` per render.
+
+___
+### GetNumRainSpawners () {: aria-label='Functions' }
+#### int GetNumRainSpawners ( ) {: .copyable aria-label='Functions' }
+The number of areas in a room that spawn rain effects in a tight radius.
+
+???+ info
+    There's more to this than just the number of them, but I'm having trouble identifying how this works.
+
+___
 ### GetRail () {: aria-label='Functions' }
 #### [StbRailVariant](enums/StbRailVariant.md) GetRail ( int GridIndex ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetRailManager () {: aria-label='Functions' }
 #### [RailManager](RailManager.md) GetRailManager ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetRainIntensity () {: aria-label='Functions' }
+#### float GetRainIntensity ( ) {: .copyable aria-label='Functions' }
+Used by the positional rain effect spawners in Downpour. No noticable effect beyond `1.0`.
 
 ___
 ### GetRoomClearDelay () {: aria-label='Functions' }
@@ -104,6 +132,7 @@ ___
 ___
 ### PickupGridEntity () {: aria-label='Functions' }
 #### [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) PickupGridEntity ( int GridIndex ) {: .copyable aria-label='Functions' }
+Tries to pick up the grid entity at the provided index and returns an [EntityEffect](https://wofsauge.github.io/IsaacDocs/rep/EntityEffect.html) of the picked up grid entity.
 
 ___
 ### RemoveGridEntityImmediate () {: aria-label='Functions' }
@@ -122,12 +151,29 @@ ___
 #### void SetGreedWaveTimer ( int Time ) {: .copyable aria-label='Functions' }
 
 ___
+### SetLavaIntensity () {: aria-label='Functions' }
+#### void SetLavaIntensity ( float Intensity ) {: .copyable aria-label='Functions' }
+This primarily affects [UpdateColorModifier](Room.md#updatecolormodifier) (if `Process` is true, an orange glow is added based on the number of pits and lava intensity).
+
+___
+### SetLightningIntensity () {: aria-label='Functions' }
+#### void SetLightningIntensity ( float Intensity ) {: .copyable aria-label='Functions' }
+Sets the intensity of the lightning effect used in Downpour. This variable will affect the visibility of Wraiths.
+
+This is set by the game in a random range between `1.3` and `2.1`, and decays by `value * .75` per render.
+
+___
 ### SetPauseTimer () {: aria-label='Functions' }
 #### void SetPauseTimer ( int Duration ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetRail () {: aria-label='Functions' }
 #### void SetRail ( int GridIndex, [StbRailVariant](enums/StbRailVariant.md) RailVariant ) {: .copyable aria-label='Functions' }
+
+___
+### SetRainIntensity () {: aria-label='Functions' }
+#### void SetRainIntensity ( float Intensity ) {: .copyable aria-label='Functions' }
+Used by the positional rain effect spawners in Downpour. No noticable effect beyond `1.0`.
 
 ___
 ### SetRoomClearDelay () {: aria-label='Functions' }

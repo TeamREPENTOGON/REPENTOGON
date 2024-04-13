@@ -8,6 +8,26 @@ tags:
 --8<-- "docs/snippets/EntityClassDiagram_NewFunkyMode.md"
 ## Functions
 
+### CanBeDamagedByEnemies () {: aria-label='Functions' }
+#### boolean CanBeDamagedByEnemies ( ) {: .copyable aria-label='Functions' }
+
+___
+### CanBeDamagedByLasers () {: aria-label='Functions' }
+#### boolean CanBeDamagedByLasers ( ) {: .copyable aria-label='Functions' }
+
+___
+### CanBeDamagedByProjectiles () {: aria-label='Functions' }
+#### boolean CanBeDamagedByProjectiles ( ) {: .copyable aria-label='Functions' }
+
+___
+### CanBlockProjectiles () {: aria-label='Functions' }
+#### boolean CanBlockProjectiles ( ) {: .copyable aria-label='Functions' }
+
+___
+### CanCharm () {: aria-label='Functions' }
+#### boolean CanCharm ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDirtColor () {: aria-label='Functions' }
 #### [Color](Color.md) GetDirtColor ( ) {: .copyable aria-label='Functions' }
 
@@ -18,6 +38,19 @@ ___
 ___
 ### GetPathFinder () {: aria-label='Functions' }
 #### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathFinder ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetWeapon () {: aria-label='Functions' }
+#### [Weapon](Weapon.md) GetWeapon ( ) {: .copyable aria-label='Functions' }
+Returns `nil` for familiars that don't mimic the player's attacks (Incubus, etc).
+
+___
+### IsCharmed () {: aria-label='Functions' }
+#### boolean IsCharmed ( ) {: .copyable aria-label='Functions' }
+
+___
+### RemoveFromPlayer () {: aria-label='Functions' }
+#### void RemoveFromPlayer ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### TriggerRoomClear () {: aria-label='Functions' }

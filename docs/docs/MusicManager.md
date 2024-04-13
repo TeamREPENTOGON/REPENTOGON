@@ -23,8 +23,16 @@ ___
 
 ## Functions
 
+### GetCurrentPitch () {: aria-label='Functions' }
+#### float GetCurrentPitch ( ) {: .copyable aria-label='Functions' }
+
+___
 ### PlayJingle () {: aria-label='Functions' }
 #### void PlayJingle ( [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) MusicId ) {: .copyable aria-label='Functions' }
+
+___
+### SetCurrentPitch () {: aria-label='Functions' }
+#### void SetCurrentPitch ( float Pitch ) {: .copyable aria-label='Functions' }
 
 ___
 ### StopJingle () {: aria-label='Functions' }

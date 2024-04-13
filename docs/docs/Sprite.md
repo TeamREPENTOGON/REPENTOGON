@@ -62,18 +62,22 @@ ___
 ### GetLayer () {: aria-label='Functions' }
 #### [LayerState](LayerState.md) GetLayer ( int LayerId ) {: .copyable aria-label='Functions' }
 #### [LayerState](LayerState.md) GetLayer ( string LayerName ) {: .copyable aria-label='Functions' }
+Returns the layer data from the provided layer id.
 
 ___
 ### GetNullFrame () {: aria-label='Functions' }
 #### [NullFrame](NullFrame.md) GetNullFrame ( string LayerName ) {: .copyable aria-label='Functions' }
+Returns the [NullFrame](NullFrame.md) from the provided layer name.
 
 ___
 ### GetOverlayAnimationData () {: aria-label='Functions' }
 #### [AnimationData](AnimationData.md) GetOverlayAnimationData ( ) {: .copyable aria-label='Functions' }
+Returns the [AnimationData](AnimationData.md) of the currently playing overlay.
 
 ___
 ### GetOverlayNullFrame () {: aria-label='Functions' }
 #### [NullFrame](NullFrame.md) GetOverlayNullFrame ( string LayerName ) {: .copyable aria-label='Functions' }
+Returns the [NullFrame](NullFrame.md) from the provided layer name of the overlay animation.
 
 ___
 ### GetRenderFlags () {: aria-label='Functions' }
@@ -82,6 +86,7 @@ ___
 ___
 ### IsOverlayEventTriggered () {: aria-label='Functions' }
 #### boolean IsOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
+Returns `true` if the currently playing overlay animation just reached the event with the provided name.
 
 ___
 ### SetRenderFlags () {: aria-label='Functions' }

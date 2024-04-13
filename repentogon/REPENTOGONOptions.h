@@ -27,10 +27,11 @@ struct REPENTOGONOptions {
 		if (!std::filesystem::exists(optionsPath)) {
 			printf("INI doesn't exist, creating\n");
 			
-			ini["VanillaTweaks"]["BetterVoidGeneration"] = "1";
+			ini["VanillaTweaks"]["BetterVoidGeneration"] = "0";
 			ini["VanillaTweaks"]["HushPanicStateFix"] = "1";
-			ini["VanillaTweaks"]["KeyMasterDealChance"] = "1";
+			ini["VanillaTweaks"]["KeyMasterDealChance"] = "0";
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
+			ini["VanillaTweaks"]["StatHUDPlanetarium"] = "1";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
@@ -40,10 +41,11 @@ struct REPENTOGONOptions {
 
 		iniFile.read(ini);
 
-		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],1);
+		betterVoidGeneration = defstoi(ini["VanillaTweaks"]["BetterVoidGeneration"],0);
 		hushPanicStateFix = defstoi(ini["VanillaTweaks"]["HushPanicStateFix"],1);
-		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],1);
+		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],0);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
+		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
 		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
@@ -81,6 +83,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "KeyMasterDealChance",  keyMasterDealChance);
 		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
+		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 	}
@@ -92,6 +95,7 @@ struct REPENTOGONOptions {
 	bool quickRoomClear;
 	bool preventModUpdates;
 	bool enableUnifont;
+	bool statHUDPlanetarium;
 	int unifontRenderMode;
 	std::string optionsPath;
 };

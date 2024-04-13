@@ -10,6 +10,7 @@
 constexpr char FAMILIAR_CAN_TAKE_DAMAGE_TAG[] = "familiarcantakedamage";  // Allows familiars to take damage from enemies/hazards by default.
 constexpr char FAMILIAR_BLOCK_PROJECTILES_TAG[] = "familiarblockprojectiles";  // Allows familiars to block projectiles automatically.
 constexpr char FAMILIAR_IGNORE_BFFS_TAG[] = "familiarignorebffs";  // Makes the familiar ignore the default effects of BFFs.
+constexpr char FAMILIAR_NO_CHARM[] = "nocharm";  // Makes the familiar not be charmed by Siren.
 
 // (Disabled for now, causes projectiles to collide with the enemy but not break so they bounce off weirdly.)
 // (This tag isn't as necessary since this can be accomplished with REPENTOGON's improved pre-collision callbacks.)
@@ -180,6 +181,13 @@ void ASMPatchFamiliarGetMultiplier() {
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)addr + 0x16) // jump for false
 		.AddRelativeJump((char*)addr + 0x9); // jump for true
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+HOOK_METHOD_PRIORITY(Entity_Familiar, CanCharm, -1000, () -> bool) {
+	if (XMLStuff.EntityData->HasCustomTag(3, *this->GetVariant(), *this->GetSubType(), FAMILIAR_NO_CHARM)) {
+		return false;
+	}
+	return super();
 }
 
 // Function called in ASMPatches.cpp to run patches at the appropriate time.

@@ -1,5 +1,339 @@
+v1.??? -
+Modified:
+* Callbacks:
+	- MC_PRE_PLAYERHUD_TRINKET_RENDER: now provides [Vector] CropOffset parameter and accepts CropOffset vector in the return table.
+Additions:
+* Lootlist:
+	- constructor
+	- PushEntry(Type, Variant, SubType, Seed = Random(), RNG = nil)
+	- GetEntries
+* LootListEntry:
+	- [Get]Type/Variant/SubType/Seed/RNG
+* EntityPlayer:
+	- Get/SetBombPlaceDelay
+	- Get/SetBloodLustCounter
+	- New functionality for blocking items:
+		BlockCollectible(int itemID)
+		UnblockCollectible(int itemID)
+		IsCollectibleBlocked(int itemID)
+	- Change to HasCollectible and GetCollectibleNum:
+		new optional boolean (IgnoreBlock), ignores collectible block when set to true
+* EntityTear:
+	- GetTearHaloSprite
+	- GetTearEffectSprite
+	- GetDeadEyeSprite
+* EntityPickup:
+	- GetLootList(ShouldAdvance = false)
+	- GetPickupGhost
+	- UpdatePickupGhosts
+* EntityNPC:
+	- GetFireplaceLoot
+	- GetShopkeeperLoot
+* Input:
+	- GetDeviceNameByIdx
+* Game
+	- SetBloom
+* Console:
+	* Added a popup error when a script ran by luamod errors, highlighting the last error thrown, to prevent it from being instantly buried
+* Isaac:
+	- StartNewGame(int playertype, int challenge, int difficulty, int seed), allows starting the game from within the main menu
+* MenuManager:
+	- SetInputMask(int mask) for use with the new ButtonActionBitwise enum, selectively allows/disallows the game's menu read certain inputs, useful for custom menus
+	- GetInputMask()
+* MinimapState Enum:
+	- Used for Minimap.SetState() and Minimap.GetState().
+* RoomConfig:
+	RoomConfig:GetStage(StbType)
+* RoomConfigStage
+	* Get/Set DisplayName, Suffix, PlayerSpot, BossSpot, Music, Backdrop
+	* GetRoomSet(Mode)
+* RoomConfigSet:
+	* Acts like other ArrayProxy classes, but for RoomConfigRoom
+	* __len and Get method, Size const variable
+* Level
+	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
+* Cutscenes
+	* Support for custom music for the music attribute on cutscenes.xml
+* Callbacks:
+	- MC_PRE_PICKUP_GET_LOOT_LIST callback (Pickup, bool ShouldAdvance) - Return LootList to change loot content
+	- MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (Pickup) - Return true to apply pickup ghost to your pickup entitiy, false to cancel it
+	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED (Player, ItemConfigItem)
+	- MC_POST_ROOM_TRIGGER_EFFECT_REMOVED (ItemConfigItem)
+	- MC_PRE_X_GRID_COLLISION and MC_X_GRID_COLLISION (EntityX, int gridIndex, GridEntity or nil) - PLAYER/TEAR/FAMILIAR/BOMB/PICKUP/PROJECTILE/NPC, Return true on PRE to ignore collision.
+	- MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM(EntityPlayer, ActiveSlot, Vector offset, float alpha, float scale, Vector chargeBarOffset) - Return true to cancel rendering
+* All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
+/newline/
+Fixes:
+	* Fixed bonehearts not displaying correctly when set through players.xml
+	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
+	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready
+/newline/
+Modified:
+* Game:ShowGenericLeaderboard no longer fades to main menu
+/newline/
+Fixes:
+* Fixed incorrect declaration for ItemConfig::GetTaggedItems
+/newline/
+v1.0.8c - 
+Fixes:
+* Fixed adding a callback function with an optional param to a vanilla callback that does not support optional params leading to that function never being called, where it used to previously.
+* Fixed the result of Isaac.GetCallbacks() no longer having a metatable.
+/newline/
+v1.0.8b - 
+Fixes:
+* Fixed the MC_PLAYER_GET_HEALTH_TYPE callback causing the last heart to render underneath the first one.
+/newline/
+v1.0.8a - 
+Fixes:
+* Fixed issues with EntityPlayer:GetSmeltedTrinkets() and EntityPlayer:GetFootprintColor()
+/newline/
+v1.0.8 - 
+Additions:
+* New general callback improvements to address some performance issues on some scenarios
+* Deal rooms can now generate variants above 100
+* Add new BlendTypes CONSTANT, OVERLAY
+* EntityPlayer:
+	- SetHeadDirection(Direction, Time, Force)
+	- Get/SetHeadDirectionLockTime
+* Game:
+	- SetDonationMod[Angel/Greed]
+* ItemPool:
+	- GetBibleUpgrades(ItemPoolType)
+* Player:
+	- Added Player:AddNullItemEffect and Player:AddCollectibleEffect, both with the same params (int type,bool costume, int cooldown=defaultcd, bool additive=true)
+* Room:
+	- GetBossVictoryJingle
+	- SaveState
+* RoomDescriptor.BossDeathSeed
+Fixes:
+* Fixes a crash on MC_PRE_LEVEL_SELECT when a callback returned null
+* Fixed a crash that could happen when you ran stage and achievement-related commands with bad syntax (missing a space)
+* Fixed an issue with some Bethany challenges where you are supposed to start without book of virtues, starting with book of virtues
+* Planetarium chance stat HUD is now initialized properly on save/continue
+* Planetarium chance will now always return 0.0 if a planetarium room cannot spawn in the run (i.e. if a challenge doesn't spawn treasure rooms, the game is greed mode, or if planetariums aren't unlocked)
+* Fix previously incorrect BlendType enums (ADDITIVE -> CONSTANT, MULTIPLICATIVE -> ADDITIVE)
+* Fix ItemPool:GetPillColor not checking all identified effects
+* Fix potential buffer overflow in ItemPool:UnidentifyPill
+* Fix the console crashing when running a command from history in some cases
+/newline/
+v1.0.7c - 
+Additions:
+* Options.StatHUDPlanetarum
+Fixes:
+* Fixed a bug where sounds were duplicated if MC_POST_SFX_PLAY was in use
+/newline/
+v1.0.7b - 
+Additions:
+* Add an option to show Planetarium spawn chance in the stat HUD
+* BlendMode's variables are now RGBSourceFactor, RGBDestinationFactor, AlphaSourceFactor, AlphaDestinationFactor (previous names will still work for now)
+* Added BlendFactor and BlendType enums for BlendMode
+Fixes:
+* Fix regression caused by Godhead + Tear Detonator fix that prevented the aura from damaging enemies
+* Fixed console wonkies involving input text edge detection and scaling
+* Fixed Game:ShowGenericLeaderboard method to throw back to main menu even if leaderboards are no longer displayed after new run/continue
+/newline/
+v1.0.7a - 
+Fixes:
+* Fixed an issue where a change in the build process resulted in the changelog being saved in UTF-16 LE format, breaking the changelog and several other REPENTOGON menu features
+/newline/
+v1.0.7 -
+Additions:
+* Backdrops:
+	- Custom Backdrop support! with contents/backdrops.xml!
+	- Custom attribute reftype to specify the base backdrop for the custom ones
+	- Isaac.GetBackdropIdByName (self-explanatory make sure to give your backdrops a name!)
+	- MC_PRE/POST_BACKDROP_CHANGE callback accepting callbacktype as a return value on pre and recieving callbacktype as a param
+* Stages:
+	- Isaac.SetCurrentFloorMusic(musicid): changes the default music for the current floor(will reset after you leave the floor).
+	- Isaac.SetCurrentFloorBackdrop(backdropid): changes the default backdrop for the current floor(will reset after you leave the floor).
+	- Isaac.SetCurrentFloorName(string): changes the stage name for the current floor(will reset after you leave the floor).
+	- Isaac.GetCurrentStageConfigId(): returns the stagesid from the stages xml for the current floor.
+* Challenges:
+	- Added the "hidden" attribute to the challenges.xml that can hide modded challenges from the menu when it's anything but "false".
+	- Added support for the "achievements" attribute for modded challenges, so modded challenges can now be locked. This param also supports using modded achievements.
+	- Added a new "lockeddesc" attribute, so you can a custom message to be displayed when your challenge is locked (default is "LOCKED :("). Pretty useful for unlock hints.
+* Familiar :
+	- RemoveFromPlayer
+	- CanBlockProjectiles
+	- CanBeDamagedByProjectiles
+	- CanBeDamagedByEnemies
+	- CanBeDamagedByLasers
+* EntityNPC :
+	- GetDarkRedChampionRegenTimer
+* EntityBomb:
+	- GetRocketAngle / SetRocketAngle
+	- GetRocketSpeed / SetRocketSpeed
+* EntityPlayer:
+	- GetUrnSouls
+* EntitiesSaveStateVector:
+	- Clear
+* Minimap :
+	- SetState
+	- SetHoldTime
+* EntityConfig:
+	- Added EntityConfig.GetBaby(i) and EntityConfig.GetMaxBabyID(), as well as the corresponding EntityConfigBaby class (its co-op babies).
+* XMLData :
+	- XMLData.GetEntryByOrder: gets entries in the order they appear on the xmls.
+* Callbacks :
+	- MC_POST_NPC_DARK_RED_CHAMPION_REGEN: Called right after a dark red champion regenerates out of goo form
+	- MC_POST_ACHIEVEMENT_UNLOCK: Called after an achievement is unlocked, has the achievement id as its param
+	- MC_PRE/POST_MINIMAP_UPDATE: Called right before or right after the minimap is updated
+	- MC_PRE/POST_MINIMAP_RENDER: Called right before or right after the minimap is rendered
+  	- MC_PRE/POST_PLAYER_ADD_HEARTS(EntityPlayer Player, int Amount, AddHealthType AddHealthType, bool OptionalArg): Called when hearts are added to the player, allows changing the added amount of hearts.
+	- MC_POST_RENDER_PLAYER_HEAD/BODY we had the pre but not the post. Same args as the pre, but with the updated vector if its changed on pre
+	- MC_POST_PLAYERHUD_ACTIVE_ITEM now has an additional "ChargeBarOffset" arg (the screen position where the charge bar would be rendered)
+* ImGui :
+	- Now supports multiline input. Use CTRL + Enter for a newline, useful for pasting Lua scripts or making fortunes
+	- Now has a horizontal scrollbar when needed for console input
+	- Console history reimplementation is now more accurate, properly removing duplicate entries from history when a command is executed from history
+/newline/
+Modified:
+* Entity :
+	- GetCollisionCapsule offset vector argument is now optional (Vector.Zero)
+* Pickup :
+	- Pickup:IsBlind method now checks natural blind effect (also added "CheckForcedBlindOnly" optional argument)
+* Changed the destination goal sprites from the daily menu to match the style of the other paper sprites
+/newline/
+Fixes:
+	* Fixed a vanilla game crash that happens with detonator+godhead which has been around for years
+	* Fixed issue that preventing the root attributes on repentogon-supported xmls(achievements,giantbook,backdrops) from working properly
+	* Fixed an issue that prevented custom parsed attributes from working on xmls with hugeass comments at the beginning of the file
+	* Fixed an issue where the console would behave sporadically when closed with numpad enter
+	* Fixed MC_POST_SFX_PLAY not firing properly when there was no PRE added.
+	* Fixed Achievement Reversed Hierophant enum naming (deprecated ones left for compatibility)
+	* Fixed a bug where adding modded follower familiars could sometimes freeze the game (especially while using MC_GET_FOLLOWER_PRIORITY).
+	* Fixed EntityNPC:GetBossColorIdx() not matching the values of the function in vanilla
+	* Callbacks re-implemented by REPENTOGON (such as MC_ENTITY_TAKE_DMG) now use their original callback IDs rather than a new one (fixes cases where the original ID was used directly, instead of the enum).
+	* MC_POST_PLAYERHUD_ACTIVE_ITEM's "Offet" arg now accounts for Book of Virtues & Judas' Birthright
+	* MC_POST_PLAYERHUD_ACTIVE_ITEM's "Scale" arg is now correctly halved for the secondary (schoolbag) slot
+	* Removed ImGui's automatic window resizing as it caused more issues than it solved
+	* Set a larger padding for ImGui to instruct it to always keep at least (100, 100) pixels of debug windows visible
+/newline/
+/newline/
+v1.0.6b -
+Fixes:
+* Fixed an issue that caused gamepad to be calling undo mods when going down on the mods menu
+* Fixed an issue that made search and undo mods not work if you didnt restart your machine for 24 days (blame microsoft)
+/newline/
+/newline/
+v1.0.6a -
+Additions:
+* Minimap :
+	- GetState
+	- GetHoldTime
+	- GetItemIconsSprite
+	- GetIconsSprite
+	- [Get/Set]ShakeDuration
+	- [Get/Set]ShakeOffset
+/newline/
+Fixes:
+* Fixed an issue that made it so custom completion marks and achievements are not properly loaded locked or unlocked on a session(big oof, I know).
+/newline/
+/newline/
+v1.0.6 -
+Additions:
+* Weapon :
+	- SetModifiers
+* Added a MeetsVersion(targetversionstring) function to the REPENTOGON global
+* Added support for content on bosscolors.xml
+* Added EntityNPC:GetBossColorIdx() returns the bosscoloridx or -1 if its not a bosscolor.
+* Added Isaac.GetBossColorIdxByName() returns the bosscoloridx or -1 if its not a bosscolor name (you have to give them a unique name for this to work).
+* Added Chinese translation text, thanks @502y
+* Added support for the pocketActive param in players.xml(I forgor)
+* Added MC_PRE_PICKUP_VOIDED(EntityPickup Pickup, boolean IsBlackRune), MC_PRE_PICKUP_VOIDED_ABYSS(EntityPickup Pickup) and MC_PRE_PICKUP_COMPOSTED(EntityPickup Pickup) callbacks, returning false cancels the pickup getting consumed.
+* Modded characters can now donate to the greed donation machine with the vanilla jam percentages
+* Entity:
+	- CopyStatusEffects has been modified to better suit actual use cases
+	- SetColor has been removed, will now always copy ColorParams
+	- Now only copies missing status effects onto the target entity, use Overwrite argument for old behavior
+* EntityPlayer:
+	- Get/SetGnawedLeafTimer
+	- ClearQueueItem
+* Level:
+	- Started work on Level:Get/SetForceSpecialQuest
+		- Allows forcing the Mirror or Mineshaft quest to be enabled or disabled
+		- Not currently complete; will require some bulk patches
+* Room :
+	- SetLavaIntensity
+	- [Get/Set]RainIntensity
+	- [Get/Set]LightningIntensity
+	- DoLightningStrike
+	- GetNumRainSpawners
+* Game :
+	- ShowGenericLeaderboard
+* HUD:
+	- [Get/Set]BossHPBarFill
+	- GetCardsPillsSprite
+	- GetCoopMenuSprite
+	- GetCraftingSprite
+	- GetFortuneSprite
+	- GetHeartsSprite
+	- GetInventorySprite
+	- GetPoopSpellSprite
+	- GetStreakSprite
+* ScoreSheet :
+	- AddFinishedStage
+* ModsMenu:
+	- Added barebones search functionality to filter mods
+	- Added the ability to undo pending changes and avoid a restart if you messed up
+	- Changed the order in which mods are displayed, mods are now paired by their enabled status.
+* PauseMenu:
+	- Added a PauseMenu Global that holds all its related stuff
+	- Added a GetMyStuffSprite that returns the sprite used for the MyStuff items
+	- Added a GetSelectedElement/SetSelectedElement similar to the one seen in other menus
+	- Added GetState/SetState
+* MusicManager:
+	- Get/SetCurrentPitch
+* Unlocks
+	- Added support for unlockable items using the xml achievement attribute
+	- Added support for unlockable trinkets using the xml achievement attribute
+	- Added support for unlockable cards using the xml achievement attribute
+	- Added support for unlockable pilleffects using the xml achievement attribute?
+* Secrets Screen
+	- This screen will now display modded achievements
+	- Made it so the achievement attribute 'hidden' hides achievements from this menu
+* XMLData :
+	- Added GetModById since the normal GetEntryById wont give the expected result when you want to use actual mod ids
+	- Added GetBossColorByTypeVarSub(t,v,s) that gives you the boss color that will be used on a certain typevarsub combo
+* ImGui:
+	- Pressing enter in an empty console input will now close the console and imgui, to mimic the behavior of the vanilla console
+	- Fixed notifications being behind the menu bar
+	- Fixed debug console loosing focus when other windows are present
+	- Fixed ImGui not appearing in OBS's Game Capture mode, Discord streaming, and possibly more
+	- Fixed the first console autocomplete entry not being selectable with the keyboard
+/newline/
+Modified:
+* PlayerManager :
+	- FirstCollectibleOwner(CollectibleType Collectible, boolean LazSharedGlobalTag = true)
+	- FirstTrinketOwner(TrinketType Trinket, RNG RNG = nil, boolean LazSharedGlobalTag = true)
+* OptionsMenu :
+	- Its functions can now be called ingame and point to the pause menu options submenu when appropiate
+* PRE/POST_PLAYERHUD_RENDER_HEARTS callback now passes EntityPlayer (Vector Offset(?), Sprite HeartsSprite, Vector Position, float Unknown, EntityPlayer Player)
+* Rename "MC_HUD_POST_UPDATE" into "MC_POST_HUD_UPDATE" for consistency
+* MC_GET_SHOP_ITEM_PRICE now provides a price argument
+/newline/
+Fixes:
+* Fixed relative ids being displayed as actual ids on xmldata tables.
+* Fixed SetCompletionMarks functions when launching the game from the room editor or BR.
+* Fix GridEntity:ToFire/ToTNT/ToWall functions
+* Fixed binder for Entity:ComputeStatusEffectDuration
+* Fixed pause menu modded marks rendering over the controller disconected popup
+* Fixed DamageFlag.DAMAGE_RED_HEARTS / .DAMAGE_NO_PENALTIES / .DAMAGE_FAKE not working when adding them via MC_ENTITY_TAKE_DMG's return table.
+* Fixed an issue on xmldata that created extra ghost entries on some nodetypes when asking for stuff that isnt there
+* Fixed an issue with the stats sprite for the pause menu callbacks where it ended up holding garbage data
+* Fixed some broken EventCounter enums
+* Fixed PRE/POST_ENTITY_THROW EntityPlayer argument being pushed as optional parameter
+* Fixed crash when calling Game():MoveToRandomRoom() with seed 0
+/newline/
+/newline/
+v1.0.5a -
+Fixes:
+* Hot-Fixed a crash that happened when no mods were enabled in 1.0.5
+/newline/
+/newline/
 v1.0.5 -
 Additions:
+* Added Challenge completion tracking to the mod challenges menu
 * Added localization code support
 * Added settings to change unifont rendering size
 * Add Update callbacks for GridEntityTNT
@@ -17,8 +351,19 @@ Additions:
 * Added support for custom achievements in the achievement attribute for items.xml(cant lock items yet tho...)
 * Added MC_POST_HUD_RENDER callback (good for rendering on top of the HUD)
 * Added WeightedOutcomePicker:RemoveOutcome(int Value) and WeightedOutcomePicker:GetOutcomes()
+* Added Entity Get/Set methods related to status effects countdown
+* Added challenges.xml param unlocksachievement attribute, which tells which achievement is unlocked on the modded challenge completion.
+* Added MC_POST_PRE_CHALLENGE_DONE to do stuff when a challenge is completed, on POST, or prevent its completion on PRE.
+* Added the challenge functions Isaac.GetModChallengeClearCount, Isaac.ClearChallenge, Isaac.MarkChallengeAsNotDone and Isaac.IsChallengeDone.
+* Changed the PRESS E FOR CHALLENGES MENU note, on the challenges menu, to follow you around and not be left at the top.
+* Entity:ForceCollide() now works for EntityLasers
+* ModsMenu.GetSelectedElement() and ModsMenu.SetSelectedElement() now start at 1 to be more intuitive
+* ModsMenu.SetSelectedElement() clamps values below and above the amount of mods the player has
+* The mods menu can now be scrubbed through! Left/Right will scroll three mods at a time. Page Up/PageDown on keyboard and Left/Right Trigger on controller will scroll ten mods at a time.
+* Added WeightedOutcomePicker:AddOutcomeFloat(), WeightedOutcomePicker:Clear() and WeightedOutcomePicker:GetNumOutcomes()
 /newline/
 Fixes:
+* Fix Repentogon Resources not being loaded when mods are off
 * Fix GridEntity render callbacks being massively broken
 * Fix PRE_GRID_ENTITY_SPAWN not accepting a table
 * Fix potential crash with SpawnGridEntity(GridEntityDesc)
@@ -30,6 +375,13 @@ Fixes:
 * Fix GetAchievementIdByName not working until Slot selection
 * Fix XmlData.GetByName and GetById returning the input instead of nil when not finding anything
 * Fix several XMLData Achievement SourceId clownery when mods set ids for their achievements
+* Fix XMLData GetNumEntries being inconsistent
+* Fix binder for Familiar:UpdateDirtColor
+* Fix FlatPatch spam in repentogon.log by reworking Quick Room Clear patch
+* Fix GridEntityDoor vanilla variables PreviousState/PreviousVaraint returning unusable userdata instead of integer
+* Fix Weapon:SetFireDelay() not working
+* Fix ModsMenu.SetSelectedElement() only having a cosmetic effect
+/newline/
 /newline/
 v1.0.4 - 
 Additions:
@@ -50,6 +402,7 @@ Fixes:
 * Fixed PRE_ITEM_OVERLAY_SHOW callback not playing custom giantbook animation, when you replace vanilla one
 * Fixed PRE_PLANETARIUM_APPLY_X_PENALTY softlocking the game
 * Enabled mods/debug console disable access to enter daily run as before
+/newline/
 /newline/
 v1.0.3 - 
 Additions:
@@ -87,6 +440,7 @@ Fixes:
 * Fixed AnimationData:IsLoopingAnimation returning boolean, instead of integer
 * Fixed a custom cutscene issue that played the Intro on cases where it shouldnt
 /newline/
+/newline/
 v1.0.2 - 
 Additions:
 * Added Pickup:GetAlternatePedestal()
@@ -97,6 +451,6 @@ Fixes:
 * Fixed Dingle always spawning a red poop
 * Fixed achievements not firing in Steam
 /newline/
-
+/newline/
 v1.0.1 - 
 Fixed the updater erroneously asking to update, sorry :(

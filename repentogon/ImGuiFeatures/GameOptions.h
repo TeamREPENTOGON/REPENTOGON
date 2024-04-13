@@ -9,8 +9,6 @@
 extern int handleWindowFlags(int flags);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
-extern bool imguiResized;
-extern ImVec2 imguiSizeModifier;
 
 struct GameOptionsWindow : ImGuiWindowObject {
     GameOptionsWindow()
@@ -78,10 +76,6 @@ struct GameOptionsWindow : ImGuiWindowObject {
         ImGui::SetNextWindowSize(ImVec2(675, 375), ImGuiCond_FirstUseEver);
 
         if (WindowBeginEx(windowName.c_str(), &enabled, handleWindowFlags(0))) {
-            if (imguiResized) {
-                ImGui::SetWindowPos(ImVec2(ImGui::GetWindowPos().x * imguiSizeModifier.x, ImGui::GetWindowPos().y * imguiSizeModifier.y));
-                ImGui::SetWindowSize(ImVec2(ImGui::GetWindowSize().x * imguiSizeModifier.x, ImGui::GetWindowSize().y * imguiSizeModifier.y));
-            }
             AddWindowContextMenu();
             if (ImGui::BeginTabBar("GameOptionsTabBar", ImGuiTabBarFlags_None)) {
                 int resetCounter = 0;
@@ -283,7 +277,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_BETTER_VOID_GEN, &repentogonOptions.betterVoidGeneration);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_BETTER_VOID_GEN_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.betterVoidGeneration, true);
+                        AddResetButton(++resetCounter, repentogonOptions.betterVoidGeneration, false);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_HUSH_PANIC_FIX, &repentogonOptions.hushPanicStateFix);
                         ImGui::SameLine();
@@ -293,7 +287,12 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES, &repentogonOptions.keyMasterDealChance);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES_MARK);
-                        AddResetButton(++resetCounter, repentogonOptions.keyMasterDealChance, true);
+                        AddResetButton(++resetCounter, repentogonOptions.keyMasterDealChance, false);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_STAT_HUD_PLANETARIUM, &repentogonOptions.statHUDPlanetarium);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_STAT_HUD_PLANETARIUM_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.statHUDPlanetarium, true);
                         AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_QUICKER_ROOM_CLEAR, &repentogonOptions.quickRoomClear);
                         ImGui::SameLine();

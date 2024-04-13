@@ -14,7 +14,8 @@ An example mod using the Capsule class can be found [here.](./examples/Capsules.
         
 ## Constructors
 ### Capsule () {: aria-label='Constructors' }
-#### [Capsule](Capsule.md) Capsule ( [Vector](Vector.md) Position, [Vector](Vector.md) SizeMult, float Direction = 0.0, float Size = 1.0 ) {: .copyable aria-label='Constructors' }
+#### [Capsule](Capsule.md) Capsule ( [Vector](Vector.md) Position, [Vector](Vector.md) SizeMult, float Rotation, float Size ) {: .copyable aria-label='Constructors' }
+#### [Capsule](Capsule.md) Capsule ( [Vector](Vector.md) Position, [Vector](Vector.md) TargetPosition, float Size ) {: .copyable aria-label='Constructors' }
 
 ## Functions
 

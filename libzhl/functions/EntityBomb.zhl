@@ -13,6 +13,8 @@ struct Entity_Bomb depends (ANM2) : public Entity { {{
 	int _explosionCountdown1 : 0x360;
 	float _height : 0x36c;
 	float _fallingSpeed : 0x370;
+	float _rocketAngle : 0x378;
+	float _rocketSpeed : 0x37C;
 	float _scale : 0x384;
 	bool _loadCostumes : 0x3b3;
 	ANM2 _bombCostumesSprites[5] : 0x3b4;

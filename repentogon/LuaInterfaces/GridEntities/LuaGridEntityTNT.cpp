@@ -4,7 +4,7 @@
 
 LUA_FUNCTION(Lua_GridToGridTNT) {
 	GridEntity* grid = lua::GetUserdata<GridEntity*>(L, 1, lua::Metatables::GRID_ENTITY, "GridEntity");
-	if (grid->GetDesc()->_type == 23) { //TODO: enum
+	if (grid->GetDesc()->_type == 12) { //TODO: enum
 		GridEntity_TNT* newGrid = lua::UserdataToData<GridEntity_TNT*>(lua_touserdata(L, 1));
 
 		luaL_setmetatable(L, lua::metatables::GridTNT_MT);

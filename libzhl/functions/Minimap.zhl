@@ -7,6 +7,18 @@ __thiscall void Minimap::Render();
 "558bec568b75??578bf98b0d":
 __thiscall Vector* Minimap::GetDisplayedSize(Vector &buffer);
 
-struct Minimap {
+"558bec83ec68a1????????33c58945??8b45":
+__thiscall void Minimap::RenderIcons(Vector* Position, float Alpha<xmm2>);
 
+struct Minimap depends (MinimapConfig, ANM2, Vector) {
+	int _state : 0x0;
+	bool _unkBool : 0x4;
+	uint32_t _holdTime : 0x8;
+	float _unkFloat : 0xc;
+	MinimapConfig _config[2] : 0x18; // (0 - small minimap, 1 - big minimap)
+	ANM2 _itemIconsSprite : 0x2d8; //loads mapItemIcons.anm2 (curse icons, treasure/secret map/compass etc.)
+	ANM2 _hudPickupSprite : 0x3ec; //loads hudPickup.anm2 (seems unused?)
+	ANM2 _iconsSprite : 0x500; //(special room icons, pickups, beggars, etc.)
+	int _shakeDuration: 0x61c;
+	Vector _shakeOffset : 0x620;
 } : 0x628;

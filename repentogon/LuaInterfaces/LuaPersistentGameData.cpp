@@ -1,6 +1,8 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../Patches/XMLData.h"
+#include "../Patches/ChallengesStuff.h"
 
 static const unsigned int PGD_COUNTER_MAX = 495;
 static const unsigned int COLLECTIBLE_MAX = 732;
@@ -79,10 +81,13 @@ LUA_FUNCTION(Lua_PGDIsChallengeCompleted) {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int challengeID = (int)luaL_checkinteger(L, 2);
 
-	if (challengeID > CHALLENGE_MAX)
-		luaL_error(L, "bad argument #2 to 'IsChallengeCompleted' (ChallengeID cannot be higher than %d)", CHALLENGE_MAX);
-
-	lua_pushboolean(L, pgd->IsChallengeCompleted(challengeID));
+	if (challengeID <= CHALLENGE_MAX) {
+		lua_pushboolean(L, g_Manager->GetPersistentGameData()->challenges[challengeID]);
+	}
+	else {
+		XMLAttributes node = XMLStuff.ChallengeData->GetNodeById(challengeID);
+		lua_pushboolean(L, Challenges[node["name"] + node["sourceid"]] > 0);
+	}
 
 	return 1;
 }

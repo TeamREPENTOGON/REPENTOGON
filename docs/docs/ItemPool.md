@@ -15,9 +15,15 @@ tags:
     It will still return false if the item was removed from the item pool or if it can't appear because other effects (Tainted Lost offensive items mechanic or NO! trinket effect).
 
 ___
+### GetBibleUpgrades () {: aria-label='Functions' }
+#### int GetBibleUpgrades ( [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType ) {: .copyable aria-label='Functions' }
+Returns number of Bible collectibles added to a pool.
+
+___
 ### GetCardEx () {: aria-label='Functions' }
 #### [Card](https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html) GetCardEx ( int Seed, int SpecialChance, int RuneChance, int SuitChance, boolean AllowNonCards ) {: .copyable aria-label='Functions' }
 More sophisticated version of [ItemPool:GetCard()](https://wofsauge.github.io/IsaacDocs/rep/ItemPool.html#getcard) that allows to define individual chances.
+
 ___
 ### GetCollectibleFromList () {: aria-label='Functions' }
 #### [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) GetCollectibleFromList ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html)[] ItemList, int Seed = Random(), [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) DefaultItem = CollectibleType.COLLECTIBLE_BREAKFAST, boolean AddToBlacklist = true, boolean ExcludeLockedItems = false ) {: .copyable aria-label='Functions' }
@@ -82,12 +88,12 @@ Returns a table of [collectibles](https://wofsauge.github.io/IsaacDocs/rep/enums
 ___
 ### HasCollectible () {: aria-label='Functions' }
 #### boolean HasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
-Returns ``true`` if collectible is available in item pools, ``false`` otherwise.
+Returns `true` if collectible is available in item pools, `false` otherwise.
 
 ___
 ### HasTrinket () {: aria-label='Functions' }
 #### boolean HasTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
-Returns ``true`` if trinket is currently available in trinket pool, ``false`` otherwise.
+Returns `true` if trinket is currently available in trinket pool, `false` otherwise.
 
 ___
 ### UnidentifyPill () {: aria-label='Functions' }

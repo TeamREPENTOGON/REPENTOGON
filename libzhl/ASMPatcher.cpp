@@ -3,6 +3,7 @@
 #include <cstring>
 
 #include <bitset>
+#include <functional>
 #include <vector>
 #include <sstream>
 #include <stdexcept>
@@ -640,6 +641,51 @@ ASMPatch& ASMPatch::MoveImmediate(ASMPatch::Registers dst, int32_t immediate) {
 	return AddBytes(instruction);
 }
 
+ASMPatch& ASMPatch::CopyRegister(std::variant<Registers, XMMRegisters> const& dst, 
+	std::variant<Registers, XMMRegisters> const& src) {
+	ByteBuffer bytes;
+	XMMRegisters const* xmmDst = std::get_if<XMMRegisters>(&dst);
+	XMMRegisters const* xmmSrc = std::get_if<XMMRegisters>(&src);
+	/* Whether the reg field of the ModR/M byte is destination or not. */
+	bool isRegDest = true;
+
+	// Add opcode
+	if (xmmDst || xmmSrc) {
+		if (xmmDst) {
+			if (xmmSrc) {
+				// movss /r: 0xF3 0x0F 0x10 xmm, xmm/m32
+				bytes.AddString("\xF3\x0F\x10");
+			}
+			else {
+				// movd /r: 0x66 0x0F 0x6E mm, r/m32
+				bytes.AddString("\66\x0F\x6E");
+			}
+		}
+		else {
+			// movd /r: 0x66 0x0F 0x7E r/m32, mm
+			bytes.AddString("\x66\x0F\x7E");
+			isRegDest = false;
+		}
+	}
+	else {
+		bytes.AddByte(0x8B);		
+	}
+
+	// Add R/M
+	std::bitset<8> rm = ModRM(src, dst, isRegDest);
+	bytes.AddByte(rm.to_ulong());
+	return AddBytes(bytes);
+}
+
+ASMPatch& ASMPatch::CopyRegister8(ASMPatch::Registers dst, ASMPatch::Registers src) {
+	ByteBuffer bytes;
+	// mov /r: 0x8A r8, r/m8
+	bytes.AddByte(0x8A);
+	std::bitset<8> rm = ModRM(src, dst, true);
+	bytes.AddByte(rm.to_ulong());
+	return AddBytes(bytes);
+}
+
 /* static bool IsRegister(ASMPatch::LeaOperand const& operand) {
 	return std::holds_alternative<ASMPatch::Registers>(operand);
 }
@@ -989,7 +1035,52 @@ uint8_t ASMPatch::RegisterTox86(ASMPatch::Registers reg) {
 		return 0b111;
 
 	default:
-		throw std::runtime_error("Invalid register");
+		throw std::runtime_error("Invalid GP register");
 		return -1;
+	}
+}
+
+uint8_t ASMPatch::RegisterTox86(XMMRegisters reg) {
+	switch (reg) {
+	case XMMRegisters::XMM0:
+		return 0b000;
+
+	case XMMRegisters::XMM1:
+		return 0b001;
+
+	case XMMRegisters::XMM2:
+		return 0b010;
+
+	case XMMRegisters::XMM3:
+		return 0b011;
+
+	case XMMRegisters::XMM4:
+		return 0100;
+
+	case XMMRegisters::XMM5:
+		return 0b101;
+
+	case XMMRegisters::XMM6:
+		return 0b110;
+
+	case XMMRegisters::XMM7:
+		return 0b111;
+
+	default:
+		throw std::runtime_error("Invalid XMM register");
+		return -1;
+	}
+}
+
+std::bitset<8> ASMPatch::ModRM(std::variant<Registers, XMMRegisters> const& src, 
+	std::variant<Registers, XMMRegisters> const& dst, bool isRegDst) {
+	uint8_t rmDst = std::visit([=](auto x) { return RegisterTox86(x);  }, dst);
+	uint8_t rmSrc = std::visit([=](auto x) { return RegisterTox86(x);  }, src);
+
+	if (isRegDst) {
+		return 0b11000000 | (rmDst << 3) | rmSrc;
+	}
+	else {
+		return 0b11000000 | (rmSrc << 3) | rmDst;
 	}
 }

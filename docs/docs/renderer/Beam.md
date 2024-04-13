@@ -4,11 +4,10 @@ tags:
 ---
 # Class "Beam"
 
+An example mod using the Beam class can be found [here.](../examples/Beams.md)
+
 This class provides more streamlined access to the `BeamRenderer` used internally for rendering cords, ie Evis, Gello, Vis Fatty, etc.
 Note that this is a low-level class that strictly handles rendering. We hope to later provide an extension of this class capable of handling the physics calculations and automatic point adjustment required for cords, but this is a complex system that will require a non-trivial amount of effort to implement.
-
-???+ Info "Info"
-    A better tutorial on how to use this class is pending.
 
 ## Constructors
 ### Beam () {: aria-label='Constructors' }

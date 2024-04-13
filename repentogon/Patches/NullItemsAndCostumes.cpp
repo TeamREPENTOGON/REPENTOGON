@@ -110,7 +110,7 @@ bool __stdcall TieModdedCostumesToModdedNullItems(char* ebp) {
 
 	if (XMLStuff.NullItemData->byrelativeid.count(modRelativeKey) > 0) {
 		const unsigned int nullItemID = XMLStuff.NullItemData->byrelativeid[modRelativeKey];
-		const XMLAttributes& nullItemXml = XMLStuff.NullItemData->nodes[nullItemID];
+		const XMLAttributes& nullItemXml = XMLStuff.NullItemData->GetNodeById(nullItemID);
 		const ItemConfig_Item* nullItem = g_Manager->GetItemConfig()->GetNullItem(nullItemID);
 
 		if (!nullItem || nullItem->name != nullItemXml.at("name")) {
@@ -168,7 +168,7 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void
 
 		if (id == 0 || XMLStuff.PlayerData->nodes.count(id) == 0) continue;
 
-		const XMLAttributes& playerXML = XMLStuff.PlayerData->nodes[id];
+		const XMLAttributes& playerXML = XMLStuff.PlayerData->GetNodeById(id);
 		EntityConfig_Player* playerConfig = g_Manager->GetEntityConfig()->GetPlayer(id);
 
 		if (!playerConfig || playerConfig->_name != playerXML.at("name")) {

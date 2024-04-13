@@ -1,0 +1,4 @@
+struct MusicEntry
+{
+    std_string _string1 : 0x4;
+} : 0x60;

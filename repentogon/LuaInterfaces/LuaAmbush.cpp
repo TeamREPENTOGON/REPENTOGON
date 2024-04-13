@@ -4,13 +4,14 @@
 
 int ambushWaves = 3;
 
-LUA_FUNCTION(Lua_GetAmbush) {
+/*LUA_FUNCTION(Lua_GetAmbush) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	Ambush** ud = (Ambush**)lua_newuserdata(L, sizeof(Ambush*));
 	*ud = game->GetAmbush();
 	luaL_setmetatable(L, lua::metatables::AmbushMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_AmbushStartChallenge)
 {
@@ -89,7 +90,7 @@ static int AmbushDifficulty[4] = { 1, 5, 10, 15 };
 
 void SetupAmbushData(lua_State* L, Ambush* ambush, RNG* rng, int* index, int* subtype) {
 	RoomDescriptor* descriptor = g_Game->_room->_descriptor;
-	RoomConfig* config = descriptor->Data;
+	RoomConfig_Room* config = descriptor->Data;
 
 	if (config->Type != 11) {
 		luaL_error(L, "Cannot get Ambush wave information outside of a (boss) challenge room");
@@ -116,7 +117,7 @@ void SetupAmbushData(lua_State* L, Ambush* ambush, RNG* rng, int* index, int* su
 
 LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 	Ambush* ambush = g_Game->GetAmbush();
-	RoomConfig* currentRoom = g_Game->_room->_descriptor->Data;
+	RoomConfig_Room* currentRoom = g_Game->_room->_descriptor->Data;
 	RNG rng;
 	int index;
 	int subtype;
@@ -124,13 +125,13 @@ LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 	SetupAmbushData(L, ambush, &rng, &index, &subtype);
 
 	int spawnCount = 0;
-	RoomConfig* config = nullptr;
+	RoomConfig_Room* config = nullptr;
 
 	int i = 0;
 	do {
 		unsigned int requiredDoors = 0;
 		rng.Next();
-		config = g_Game->GetRoomConfigHolder()->GetRandomRoom(rng._seed, false,
+		config = g_Game->GetRoomConfig()->GetRandomRoom(rng._seed, false,
 			g_Game->GetRoomConfig()->GetStageID(g_Game->_stage, g_Game->_stageType, -1),
 			11 /* Challenge room */, currentRoom->Shape, 0, -1, AmbushDifficulty[index] /* ebp - 60 */,
 			AmbushDifficulty[index] /* ebp - 60 */, &requiredDoors/* ebp - 4C */, subtype /* ebp - 64 */, -1);
@@ -157,7 +158,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWave) {
 LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 	Ambush* ambush = g_Game->GetAmbush();
 	RoomDescriptor* descriptor = g_Game->_room->_descriptor;
-	RoomConfig* currentRoom = descriptor->Data;
+	RoomConfig_Room* currentRoom = descriptor->Data;
 
 	RNG rng;
 	int index;
@@ -166,7 +167,7 @@ LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 
 	SetupAmbushData(L, ambush, &rng, &index, &subtype);
 
-	std::vector<std::tuple<RoomConfig*, float, float>> configs;
+	std::vector<std::tuple<RoomConfig_Room*, float, float>> configs;
 	lua_newtable(L);
 	int limit = ambushWaves;
 	if (currentRoom->Subtype == 1) {
@@ -183,14 +184,14 @@ LUA_FUNCTION(Lua_Ambush_GetNextWaves) {
 			// Draw the room a first time without reducing its weight.
 			// We need to determine what its current weight is in order to reduce it during 
 			// a second draw. 
-			RoomConfig* config = g_Game->GetRoomConfigHolder()->GetRandomRoom(rng._seed, false, stage, 11, currentRoom->Shape, 0, -1, AmbushDifficulty[index], AmbushDifficulty[index], &doors, subtype, -1);
+			RoomConfig_Room* config = g_Game->GetRoomConfig()->GetRandomRoom(rng._seed, false, stage, 11, currentRoom->Shape, 0, -1, AmbushDifficulty[index], AmbushDifficulty[index], &doors, subtype, -1);
 			if (!config) {
 				return 1;
 			}
 
 			float weight = config->Weight;
 			float initial = config->InitialWeight;
-			config = g_Game->GetRoomConfigHolder()->GetRandomRoom(rng._seed, true, stage, 11, currentRoom->Shape, 0, -1, AmbushDifficulty[index], AmbushDifficulty[index], &doors, subtype, -1);
+			config = g_Game->GetRoomConfig()->GetRandomRoom(rng._seed, true, stage, 11, currentRoom->Shape, 0, -1, AmbushDifficulty[index], AmbushDifficulty[index], &doors, subtype, -1);
 
 			spawnCount = config->SpawnCount;
 			if (spawnCount != 0) {

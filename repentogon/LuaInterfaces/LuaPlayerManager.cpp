@@ -2,20 +2,21 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-LUA_FUNCTION(Lua_GetPlayerManager) {
+/*LUA_FUNCTION(Lua_GetPlayerManager) {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
 	PlayerManager** ud = (PlayerManager**)lua_newuserdata(L, sizeof(PlayerManager*));
 	*ud = game->GetPlayerManager();
 	luaL_setmetatable(L, lua::metatables::PlayerManagerMT);
 	return 1;
 }
+*/
 
 LUA_FUNCTION(Lua_FirstCollectibleOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int collectible = (int)luaL_checkinteger(L, 1);
-	bool unk = lua::luaL_checkboolean(L, 2);
-	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, unk);
+	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 2, true);
+	Entity_Player* player = playerManager->FirstCollectibleOwner((CollectibleType)collectible, nullptr, lazSharedGlobalTag);
 	if (!player) {
 		lua_pushnil(L);
 	}
@@ -83,9 +84,13 @@ LUA_FUNCTION(Lua_FirstTrinketOwner)
 {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 	int trinket = (int)luaL_checkinteger(L, 1);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
-	bool unk = lua::luaL_checkboolean(L, 3);
-	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, unk);
+	RNG* rng = nullptr;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	}
+
+	bool lazSharedGlobalTag = lua::luaL_optboolean(L, 3, true);
+	Entity_Player* player = playerManager->FirstTrinketOwner((TrinketType)trinket, &rng, lazSharedGlobalTag);
 	if (!player) {
 		lua_pushnil(L);
 	}
@@ -121,7 +126,7 @@ LUA_FUNCTION(Lua_AnyoneHasTrinket)
 LUA_FUNCTION(Lua_GetPlayers) {
 	PlayerManager* playerManager = g_Game->GetPlayerManager();
 
-	std::vector<Entity_Player**> players = playerManager->_playerList;
+	std::vector<Entity_Player*>& players = playerManager->_playerList;
 
 	lua_newtable(L);
 

@@ -36,3 +36,4 @@ tags:
 |28 |BOSSRUSHWAVE {: .copyable } |  |
 |29 |PLAYERFORM {: .copyable } |  |
 |30 |NULLITEM {: .copyable } |  |
+|31 |BOSSCOLOR {: .copyable } |  |

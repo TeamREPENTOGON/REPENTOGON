@@ -36,6 +36,7 @@ extern "C" {
 struct Console_HistoryEntry;
 struct History_HistoryItem;
 struct EntitySaveState;
+struct LootListEntry;
 
 struct EntityId {
     int type;
@@ -48,9 +49,11 @@ struct IntPair {
 };
 
 // When adding typedefs, remember to define them in ExtraTypes!
+typedef std::vector<MusicEntry> vector_MusicEntry;
+typedef std::vector<RoomConfig_Curse> vector_Curse;
 typedef std::deque<Point> deque_Point;
 typedef std::vector<ColorParams> vector_ColorParams;
-typedef std::deque<Console_HistoryEntry> std_deque_console_historyentry;
+typedef std::deque<Console_HistoryEntry> deque_console_historyentry;
 typedef std::set<int> std_set_int;
 typedef std::vector<TemporaryEffect> vector_TemporaryEffect;
 typedef std::vector<LevelGenerator_Room> vector_LevelGenRoom;
@@ -66,7 +69,7 @@ typedef std::vector<EntitySaveState> vector_EntitySaveState;
 typedef std::vector<GridEntityDesc> vector_GridEntityDesc;
 typedef std::map<int, int> std_map_int_int;
 typedef std::vector<EntityId> vector_ErasedEntities;
-typedef std::vector<Entity_Player**> vector_EntityPlayerPtr;
+typedef std::vector<Entity_Player*> vector_EntityPlayerPtr;
 typedef std::vector<ItemConfig_Item*> vector_ItemPtr;
 typedef std::vector<TrinketPoolItem> vector_TrinketPoolItem;
 typedef std::vector<WeightedOutcomePicker_Outcome> vector_Outcome;
@@ -86,8 +89,8 @@ typedef std::vector<PoolItem> vector_PoolItem;
 // Something goofy seemed to be happening with std::vector<bool> in zhl
 // typedef std::vector<bool> vector_bool;
 
-struct RoomConfig;
-typedef std::vector<RoomConfig*> RoomConfigPtrVector;
+struct RoomConfig_Room;
+typedef std::vector<RoomConfig_Room*> RoomConfigRoomPtrVector;
 
 struct SmeltedTrinketDesc {
 	short _trinketNum;
@@ -95,6 +98,7 @@ struct SmeltedTrinketDesc {
 };
 typedef std::vector<SmeltedTrinketDesc> vector_SmeltedTrinketDesc;
 typedef std::vector<CostumeSpriteDesc> vector_CostumeSpriteDesc;
+typedef std::deque<LootListEntry> deque_LootListEntry;
 
 }}
 
@@ -1366,6 +1370,78 @@ enum eItemPoolType {
     NUM_ITEMPOOLS = 31
 };
 
+enum EntityFlag : UINT64 {
+	FLAG_NO_STATUS_EFFECTS = 1,			// prevent freeze/poison/slow/charm/confusion/fear/burn
+	FLAG_NO_INTERPOLATE = 1 << 1,			// do not interpolate position
+	FLAG_APPEAR = 1 << 2,					// play appear animation after Init
+	FLAG_RENDER_FLOOR = 1 << 3,				// will be rendered to floor texture
+	FLAG_NO_TARGET = 1 << 4,					// will not be a target of NPCs or familiars
+	FLAG_FREEZE = 1 << 5,					// freezing effect
+	FLAG_POISON = 1 << 6,					// poison effect
+	FLAG_SLOW = 1 << 7,						// slowing (velocity)
+	FLAG_CHARM = 1 << 8,						// Charmed
+	FLAG_CONFUSION = 1 << 9,					// Confused
+	FLAG_MIDAS_FREEZE = 1 << 10,				// Midas frozen
+	FLAG_FEAR = 1 << 11,						// Fleeing in Fear (like Mom's Pad)
+	FLAG_BURN = 1 << 12,						// Caused by Fire Mind tears, works like poison except with Red color effect.
+	FLAG_RENDER_WALL = 1 << 13,				// will be rendered to wall texture
+	FLAG_INTERPOLATION_UPDATE = 1 << 14,		// entity is updating at 60 fps, and this is an odd frame
+	FLAG_APPLY_GRAVITY = 1 << 15,			// In sidescrolling room, this indicates that we're in a gravity zone.
+	FLAG_NO_BLOOD_SPLASH = 1 << 16,
+	FLAG_NO_REMOVE_ON_TEX_RENDER = 1 << 17,	// for FLAG_RENDER_FLOOR and FLAG_RENDER_WALL
+	FLAG_NO_DEATH_TRIGGER = 1 << 18,
+
+	// NOTE: Those next flags share the same bit but have a different meaning depending on entity type
+	FLAG_NO_SPIKE_DAMAGE = 1 << 19,			// EntityNPC: shouldn't take any damage from spikes
+	FLAG_LASER_POP = 1 << 19,					// EntityTear: Pop tear fired by a laser, should decelerate very quickly for the first few frames
+	FLAG_ITEM_SHOULD_DUPLICATE = 1 << 19,		// EntityPickup: item pedestal affected by Damocles, will be duplicated at the end of the current frame
+
+	FLAG_BOSSDEATH_TRIGGERED = 1 << 20,
+	FLAG_DONT_OVERWRITE = 1 << 21,			// Used in entityfactory to not remove this entity if there is no space left for new entity
+	FLAG_SPAWN_STICKY_SPIDERS = 1 << 22,		// Used by Sticky bombs to generate spiders on death
+	FLAG_SPAWN_BLACK_HP = 1 << 23,			// Used by black hp drop tear flag to drop a black hp on enemy death
+	FLAG_SHRINK = 1 << 24,					// God's flesh effect
+	FLAG_NO_FLASH_ON_DAMAGE = 1 << 25,		// Entity will not flash red when damaged
+	FLAG_NO_KNOCKBACK = 1 << 26,				// Bombs and farts have no knockback effects
+	FLAG_SLIPPERY_PHYSICS = 1 << 27,			// Standing on a slippery surface
+	FLAG_ADD_JAR_FLY = 1 << 28,				// Adds a fly to the jar when killed
+	FLAG_FRIENDLY = 1 << 29,					// Charmed and m_CharmCountdown<0
+	FLAG_NO_PHYSICS_KNOCKBACK = 1 << 30,		// No knockback from general collisions
+	FLAG_DONT_COUNT_BOSS_HP = 1 << 31,		// Do not count boss hp
+	FLAG_NO_SPRITE_UPDATE = (UINT64)1 << 32,			// Do not update sprite animation
+	FLAG_CONTAGIOUS = (UINT64)1 << 33,				// Used for Contagious item (if the enemy is infected)
+	FLAG_BLEED_OUT = (UINT64)1 << 34,					// Used for Mom's Razor
+	FLAG_HIDE_HP_BAR = (UINT64)1 << 35,				// Added for Ultra Greed so his HP can be hidden after he "dies" since his entity sticks around
+	FLAG_NO_DAMAGE_BLINK = (UINT64)1 << 36,			// Player was given a short period of invulnerability by something other than damage, don't blink
+	FLAG_PERSISTENT = (UINT64)1 << 37,				// Entity persists between rooms
+
+	FLAG_BACKDROP_DETAIL = (UINT64)1 << 38,			// Was spawned as a backdrop decoration, should be deleted if the current backdrop changes (due to Delirium)
+	FLAG_AMBUSH = (UINT64)1 << 39,					// Enemy was spawned by some sort of ambush (Greed Mode, challenge rooms), don't collide with the player for a few frames
+	FLAG_GLITCH = (UINT64)1 << 40,					// Glitched out, has different effects depending on the entity
+	FLAG_SPIN = (UINT64)1 << 41,						// Used by Spin to Win, causes a familiar to rapidly spin around its owner
+	FLAG_NO_REWARD = (UINT64)1 << 42,					// Doesn't spawn any kind of reward on death
+	FLAG_REDUCE_GIBS = (UINT64)1 << 43,				// Spawn less gibs on death
+	FLAG_TRANSITION_UPDATE = (UINT64)1 << 44,			// Updates during room/stage transitions
+	FLAG_NO_PLAYER_CONTROL = (UINT64)1 << 45,			// Cannot be controlled by players
+	FLAG_NO_QUERY = (UINT64)1 << 46,					// Hide from query results
+	FLAG_KNOCKED_BACK = (UINT64)1 << 47,				// Strong knockback: Forcefy moved in a specified direction for a short duration
+	FLAG_APPLY_IMPACT_DAMAGE = (UINT64)1 << 48,		// Inflicts damage upon colliding with enemies, takes damage when colliding with walls
+	FLAG_ICE_FROZEN = (UINT64)1 << 49,				// Frozen solid
+	FLAG_ICE = (UINT64)1 << 50,						// Flagged to become frozen on death
+	FLAG_MAGNETIZED = (UINT64)1 << 51,				// Magnetized: Attracts nearby enemies, projectiles and pickups
+	FLAG_BAITED = (UINT64)1 << 52,					// Baited: Is targeted by nearby enemies
+	FLAG_KILLSWITCH = (UINT64)1 << 53,				// Killed by a killswitch
+	FLAG_WEAKNESS = (UINT64)1 << 54,					// Weakness effect from Reverse Strength
+	FLAG_EXTRA_GORE = (UINT64)1 << 55,				// Spawns more gibs on death
+	FLAG_BRIMSTONE_MARKED = (UINT64)1 << 56,			// Marked by Azazel B, takes extra damage from Brimstone attacks
+	FLAG_HELD = (UINT64)1 << 57,						// Picked up by a player
+	FLAG_THROWN = (UINT64)1 << 58,					// Thrown by a player
+	FLAG_FRIENDLY_BALL = (UINT64)1 << 59,				// Used to detect enemies spawned by Friendly Ball
+
+	FLAG_STATUS_EFFECTS = (UINT64)(FLAG_FREEZE + FLAG_POISON + FLAG_SLOW + FLAG_CHARM + FLAG_CONFUSION + FLAG_MIDAS_FREEZE + FLAG_FEAR + FLAG_BURN + FLAG_SHRINK + FLAG_FRIENDLY + FLAG_BLEED_OUT + FLAG_ICE_FROZEN + FLAG_ICE + FLAG_MAGNETIZED + FLAG_BAITED + FLAG_WEAKNESS + FLAG_BRIMSTONE_MARKED),
+	FLAG_NON_STATUS_EFFECTS = (((UINT64)1 << 60) - 1) - FLAG_STATUS_EFFECTS,
+};
+
 
 	// For address "literals" in LibZHL, it's best to define them here to avoid clashing with the parser more than needed
 	static void* wglSwapBuffersAddr = GetProcAddress(GetModuleHandle("opengl32.dll"), "wglSwapBuffers");
@@ -1379,6 +1455,9 @@ cleanup void RepCaughtException(int x); // Cant hook to this shit no matter what
 
 "a1(????????)83ec10803d????????00":
 reference char* g_KAGEInputController; // This is very likely not correct, but I need this offset for Lua, so whatever.
+
+"a1(????????)895d??8945":
+reference char* ModReferences; // ModReference data from RegisterMod 
 
 struct GlobalPost {
 {{

@@ -1,47 +1,156 @@
-﻿#include <algorithm>
-#include <random>
-
-#include "IsaacRepentance.h"
+﻿#include "IsaacRepentance.h"
 #include "LuaCore.h"
-#include "ASMPatcher.hpp"
-#include "SigScan.h"
 #include "HookSystem.h"
+
 #include "../LuaWeapon.h"
+#include "../../Patches/ASMPatches/ASMPlayer.h"
 
 /*
 
-		 .___.
-	 / /\ /\ \
-	||●  `\ ●||
-	 \   ⌓   /
-		/  ᴥ  \
-	 ||  _  ||
-		|_| |_|
+..........___.
+......./ /\ /\ \
+......||●  `\ ●||
+.......\   ⌓   /
+ ......./  ᴥ  \
+...... ||  _  ||
+........|_| |_|
 
 	 "code"
  (copycat of kilburn's ascii art of Isaac)
 */
 
-
-// this is from LuaInit but with a range of 0, 1 instead of -1, 1
-static std::uniform_real_distribution<float> _distrib(0, 1);
-static std::random_device rd;
-static std::mt19937 gen(rd());
-
 std::map<int, int> fakeItems;
+std::unordered_map<int, std::unordered_map<int, bool>> CollBlockList;
 
-struct CheckFamiliarStorage {
-	std::vector<Entity_Familiar*> familiars;
-	bool inUse = false;
-};
+HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->bool) {
+	auto& itemlist = CollBlockList;
+	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
+		if (auto searchInner = itemlist[this->_playerIndex].find(type); searchInner != itemlist[this->_playerIndex].end()) {
+			if (itemlist[this->_playerIndex][type] == 0) {
+				return super(type, ignoreModifiers);
+			}
+			return false;
+		};
+	};
+	return super(type, ignoreModifiers);
+}
 
-thread_local CheckFamiliarStorage familiarsStorage;
+HOOK_METHOD(Entity_Player, GetCollectibleNum, (int collectibleID, bool onlyCountTrueItems)->int) {
+	auto& itemlist = CollBlockList;
+	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
+		if (auto searchInner = itemlist[this->_playerIndex].find(collectibleID); searchInner != itemlist[this->_playerIndex].end()) {
+			if (itemlist[this->_playerIndex][collectibleID] == 0) {
+				return super(collectibleID, onlyCountTrueItems);
+			}
+			return 0;
+		};
+	};
+	return super(collectibleID, onlyCountTrueItems);
+}
 
-static std::vector<Entity_Familiar*>& InitFamiliarStorage() {
-	std::vector<Entity_Familiar*>& familiars = familiarsStorage.familiars;
-	familiars.clear();
-	familiarsStorage.inUse = true;
-	return familiars;
+namespace PlayerCollBlock {
+	void BlockCollectible(Entity_Player* player, int itemID) {
+		auto& itemlist = CollBlockList;
+		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
+		}
+		else {
+			itemlist[player->_playerIndex] = {};
+		}
+		itemlist[player->_playerIndex].insert_or_assign(itemID, true);
+	};
+	void UnblockCollectible(Entity_Player* player, int itemID) {
+		auto& itemlist = CollBlockList;
+		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
+		}
+		else {
+			itemlist[player->_playerIndex] = {};
+		}
+		itemlist[player->_playerIndex].insert_or_assign(itemID, false);
+	};
+	bool IsCollectibleBlocked(Entity_Player* player, int itemID) {
+		auto& itemlist = CollBlockList;
+		bool outbool = false;
+		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
+			if (auto searchInner = itemlist[player->_playerIndex].find(itemID); searchInner != itemlist[player->_playerIndex].end()) {
+				outbool = itemlist[player->_playerIndex][itemID];
+				goto end;
+			};
+		};
+	end:
+		return outbool;
+	};
+}
+
+HOOK_METHOD(Entity, Remove, ()->void) {
+	if (this && this->_type == 1) {
+		CollBlockList[ ((Entity_Player*)this) -> _playerIndex ] = {};		//cleaning pl data
+	}
+	super();
+}
+
+HOOK_METHOD(Game, Exit, (bool ShouldSave)->void) {
+	CollBlockList = {};
+	super(ShouldSave);
+}
+
+LUA_FUNCTION(Lua_HasCollectible) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	bool ignoreModifiers = (bool)lua::luaL_optboolean(L, 3, false);
+	bool ignoreBlock = (bool)lua::luaL_optboolean(L, 4, false);
+	bool outbool = false;
+	bool blockState = PlayerCollBlock::IsCollectibleBlocked(player,itemID);
+	if (ignoreBlock && blockState) {
+		PlayerCollBlock::UnblockCollectible(player, itemID);
+	}
+	outbool = player->HasCollectible(itemID,ignoreModifiers);
+	if (ignoreBlock && blockState) {
+		PlayerCollBlock::BlockCollectible(player, itemID);
+	}
+	lua_pushboolean(L, outbool);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetCollectibleNum) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	bool onlyCountTrueItems = (bool)lua::luaL_optboolean(L, 3, false);
+	bool ignoreBlock = (bool)lua::luaL_optboolean(L, 4, false);
+	int outnum = 0;
+	bool blockState = PlayerCollBlock::IsCollectibleBlocked(player, itemID);
+	if (ignoreBlock && blockState) {
+		PlayerCollBlock::UnblockCollectible(player, itemID);
+	}
+	outnum = player->GetCollectibleNum(itemID, onlyCountTrueItems);
+	if (ignoreBlock && blockState) {
+		PlayerCollBlock::BlockCollectible(player, itemID);
+	}
+	lua_pushinteger(L, outnum);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BlockCollectible) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	PlayerCollBlock::BlockCollectible(player, itemID);
+	lua_pushnil(L);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_UnblockCollectible) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	PlayerCollBlock::UnblockCollectible(player, itemID);
+	lua_pushnil(L);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_IsCollectibleBlocked) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
+	int itemID = (int)luaL_checkinteger(L, 2);
+	bool outbool = PlayerCollBlock::IsCollectibleBlocked(player, itemID);
+	lua_pushboolean(L, outbool);	//push false if entry is not found
+	return 1;
 }
 
 LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, but magically vanished some point after 1.7.8.
@@ -49,7 +158,7 @@ LUA_FUNCTION(Lua_GetMultiShotPositionVelocity) // This *should* be in the API, b
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int loopIndex = (int)luaL_checkinteger(L, 2);
 	int weaponType = (int)luaL_checkinteger(L, 3);
-	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::ENTITY, "Vector");
+	Vector* shotDirection = lua::GetUserdata<Vector*>(L, 4, lua::Metatables::VECTOR, "Vector");
 	float shotSpeed = (float)luaL_checknumber(L, 5);
 
 	Weapon_MultiShotParams* multiShotParams = lua::GetUserdata<Weapon_MultiShotParams*>(L, 6, lua::metatables::MultiShotParamsMT);
@@ -837,6 +946,13 @@ LUA_FUNCTION(Lua_PlayerGetImmaculateConceptionState)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetPlayerIndex)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, plr->_playerIndex);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerSetImmaculateConceptionState)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -1060,7 +1176,8 @@ LUA_FUNCTION(Lua_SpawnAquariusCreep) {
 	}
 	else
 	{
-		effect->_sprite._scale *= ((_distrib(gen) * 0.5f) + 0.2f);
+		float random = (static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+		effect->_sprite._scale *= ((random * 0.5f) + 0.2f);
 		effect->_collisionDamage = params._tearDamage;
 		effect->SetColor(&params._tearColor, 0, -1, true, false);
 
@@ -1125,35 +1242,7 @@ LUA_FUNCTION(Lua_PlayerAddSmeltedTrinket) {
 	const int trinketID = (int)luaL_checkinteger(L, 2);
 	const bool firstTime = lua::luaL_optboolean(L, 3, true);
 
-	bool trinketAdded = false;
-
-	if (ItemConfig::IsValidTrinket(trinketID)) {
-		const int actualTrinketID = trinketID & 0x7fff;
-		if (trinketID != actualTrinketID) {
-			player->_smeltedTrinkets[actualTrinketID]._goldenTrinketNum++;
-		}
-		else {
-			player->_smeltedTrinkets[actualTrinketID]._trinketNum++;
-		}
-
-		player->TriggerTrinketAdded(trinketID, firstTime);
-
-		History_HistoryItem* historyItem = new History_HistoryItem((TrinketType)trinketID, g_Game->_stage, g_Game->_stageType, g_Game->_room->_roomType, 0);
-		player->GetHistory()->AddHistoryItem(historyItem);
-
-		delete(historyItem);
-
-		player->InvalidateCoPlayerItems();
-
-		ItemConfig_Item* config = g_Manager->GetItemConfig()->GetTrinket(actualTrinketID);
-		if (config && config->addCostumeOnPickup) {
-			player->AddCostume(config,false);
-		}
-
-		trinketAdded = true;
-	}
-
-	lua_pushboolean(L, trinketAdded);
+	lua_pushboolean(L, player->AddSmeltedTrinket(trinketID, firstTime));
 	return 1;
 }
 
@@ -1352,32 +1441,6 @@ LUA_FUNCTION(Lua_EntityPlayer_CheckFamiliarEx) {
 	return 1;
 }
 
-void __stdcall CheckFamiliar_Internal(Entity_Familiar* familiar) {
-	familiar->Update();
-
-	if (familiarsStorage.inUse) {
-		familiarsStorage.familiars.push_back(familiar);
-	}
-	
-	return;
-}
-
-void PatchCheckFamiliar() {
-	SigScan scanner("8b06ff50??8b75"); // this is immediately before the call to Update()
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
-	ASMPatch patch;
-	patch.PreserveRegisters(savedRegisters)
-		.Push(ASMPatch::Registers::ESI)  // Push the familiar spawned
-		.AddInternalCall(CheckFamiliar_Internal) 
-		.RestoreRegisters(savedRegisters)
-		// this should neatly fit in the 5 bytes used to call Update, and we handle calling it there, nothing to restore
-		.AddRelativeJump((char*)addr + 0x5);
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
 LUA_FUNCTION(Lua_PlayerGetEveSumptoriumCharge) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	lua_pushinteger(L, player->_eveSumptoriumCharge);
@@ -1441,6 +1504,13 @@ LUA_FUNCTION(Lua_PlayerAddLeprosy) {
 	player->AddLeprosy();
 
 	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetUrnSouls) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_urnSouls);
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerAddUrnSouls) {
@@ -1945,6 +2015,72 @@ LUA_FUNCTION(Lua_PlayerVoidHasCollectible) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerAddColEffect) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int colid = (int)luaL_checkinteger(L, 2);
+	bool costume = lua::luaL_checkboolean(L, 3);
+	int cooldown = (int)luaL_optinteger(L, 4, -6942069); //lol
+	bool additive = lua::luaL_optboolean(L, 5, true);
+	
+	TemporaryEffects* effs = &player->_temporaryeffects;
+	if (additive && (cooldown != -6942069)) {
+		TemporaryEffect* coleff = effs->GetCollectibleEffect(colid);
+		if (coleff && (coleff->_count > 0)) {
+			cooldown += coleff->_cooldown;
+		}
+		if (cooldown < 1) { cooldown = 1; }
+	}
+	effs->AddCollectibleEffect(colid, costume, 1);
+	if ((!additive) || (cooldown != -6942069)) {
+		effs->GetCollectibleEffect(colid)->_cooldown = cooldown;
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerAddNullEffect) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int colid = (int)luaL_checkinteger(L, 2);
+	bool costume = lua::luaL_checkboolean(L, 3);
+	int cooldown = (int)luaL_optinteger(L, 4, -6942069); //lol
+	bool additive = lua::luaL_optboolean(L, 5, true);
+
+	TemporaryEffects* effs = &player->_temporaryeffects;
+	if (additive && (cooldown != -6942069)) {
+		TemporaryEffect* coleff = effs->GetNullEffect(colid);
+		if (coleff && (coleff->_count > 0)) {
+			cooldown += coleff->_cooldown;
+		}
+		if (cooldown < 1) { cooldown = 1; }
+	}
+	effs->AddNullEffect(colid, costume, 1);
+	if ((!additive) || (cooldown != -6942069)) {
+		effs->GetNullEffect(colid)->_cooldown = cooldown;
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerAddTrinketEffect) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int colid = (int)luaL_checkinteger(L, 2);
+	bool costume = lua::luaL_checkboolean(L, 3);
+	int cooldown = (int)luaL_optinteger(L, 4, -6942069); //lol
+	bool additive = lua::luaL_optboolean(L, 5, true);
+
+	TemporaryEffects* effs = &player->_temporaryeffects;
+	if (additive && (cooldown != -6942069)) {
+		TemporaryEffect* coleff = effs->GetTrinketEffect(colid);
+		if (coleff && (coleff->_count > 0)) {
+			cooldown += coleff->_cooldown;
+		}
+		if (cooldown < 1) { cooldown = 1; }
+	}
+	effs->AddTrinketEffect(colid, costume, 1);
+	if ((!additive) || (cooldown != -6942069)) {
+		effs->GetTrinketEffect(colid)->_cooldown = cooldown;
+	}
+	return 1;
+}
+
 /*
 // doesn't seem to work
 LUA_FUNCTION(Lua_PlayerAttachMinecart) {
@@ -1967,12 +2103,101 @@ LUA_FUNCTION(Lua_PlayerSetKeepersSackBonus) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerGetGnawedLeafTimer) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_gnawedLeafTimer);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetGnawedLeafTimer) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_gnawedLeafTimer = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBloodLustCounter) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_bloodLustCounter);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetBloodLustCounter) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_bloodLustCounter = (short)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetBombPlaceDelay) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_bombPlaceDelay);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetBombPlaceDelay) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_bombPlaceDelay = (int)luaL_checkinteger(L, 2);
+	return 0;
+}
+
+
+LUA_FUNCTION(Lua_PlayerClearQueueItem) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->ClearQueueItem();
+	return 0;
+}
+
+const char* headAnims[4] = {
+	"HeadLeft",
+	"HeadUp",
+	"HeadRight",
+	"HeadDown",
+};
+
+LUA_FUNCTION(Lua_PlayerSetHeadDirection) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int direction = (int)luaL_checkinteger(L, 2);
+	int time = (int)luaL_checkinteger(L, 3);
+	bool force = lua::luaL_optboolean(L, 4, false);
+
+	if (direction < 0 || direction > 3) {
+		return luaL_argerror(L, 2, "Invalid Direction");
+	}
+
+	if (force || player->_headDirectionTime < 0) {
+		if (player->_headDirection != direction) {
+			player->_headDirection = direction;
+			player->_headAnim = headAnims[direction];
+		}
+		player->_headDirectionTime = time;
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetHeadDirectionLockTime) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_headDirectionTime);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetHeadDirectionLockTime) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int time = (int)luaL_checkinteger(L, 2);
+
+	player->_headDirectionTime = time;
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "HasCollectible",Lua_HasCollectible },
+		{ "GetCollectibleNum",Lua_GetCollectibleNum },
 		{ "GetMultiShotPositionVelocity", Lua_GetMultiShotPositionVelocity },
 		{ "InitTwin", Lua_InitTwin },
 		{ "InitPostLevelInitStats", Lua_InitPostLevelInitStats },
@@ -2099,6 +2324,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "AddBoneOrbital", Lua_PlayerAddBoneOrbital },
 		//{ "AddItemCard", Lua_PlayerAddItemCard },
 		{ "AddLeprosy", Lua_PlayerAddLeprosy },
+		{ "GetUrnSouls", Lua_PlayerGetUrnSouls },
 		{ "AddUrnSouls", Lua_PlayerAddUrnSouls },
 		{ "CanAddCollectibleToInventory", Lua_PlayerCanAddCollectibleToInventory },
 		{ "CanCrushRocks", Lua_PlayerCanCrushRocks },
@@ -2150,6 +2376,24 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		//{ "AttachMinecart", Lua_PlayerAttachMinecart },
 		{ "GetKeepersSackBonus", Lua_PlayerGetKeepersSackBonus },
 		{ "SetKeepersSackBonus", Lua_PlayerSetKeepersSackBonus },
+		{ "GetGnawedLeafTimer", Lua_PlayerGetGnawedLeafTimer },
+		{ "SetGnawedLeafTimer", Lua_PlayerSetGnawedLeafTimer },
+		{ "GetBloodLustCounter", Lua_PlayerGetBloodLustCounter },
+		{ "SetBloodLustCounter", Lua_PlayerSetBloodLustCounter },
+		{ "GetBombPlaceDelay", Lua_PlayerGetBombPlaceDelay },
+		{ "SetBombPlaceDelay", Lua_PlayerSetBombPlaceDelay },
+		{ "ClearQueueItem", Lua_PlayerClearQueueItem },
+		{ "GetHeadDirectionLockTime", Lua_PlayerGetHeadDirectionLockTime },
+		{ "SetHeadDirectionLockTime", Lua_PlayerSetHeadDirectionLockTime },
+		{ "SetHeadDirection", Lua_PlayerSetHeadDirection },
+		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
+		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
+		{ "AddNullItemEffect", Lua_PlayerAddNullEffect },
+		{ "BlockCollectible", Lua_BlockCollectible },
+		{ "UnblockCollectible", Lua_UnblockCollectible },
+		{ "IsCollectibleBlocked", Lua_IsCollectibleBlocked },
+		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothing, leaving it out of the docs
+		{ "GetPlayerIndex", Lua_PlayerGetPlayerIndex }, 
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

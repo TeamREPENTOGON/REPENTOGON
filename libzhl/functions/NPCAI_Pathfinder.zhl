@@ -1,3 +1,6 @@
+"538bd956578dbb????????c743??ffffffff":
+__thiscall void NPCAI_Pathfinder::Reset();
+
 struct NPCAI_Pathfinder {
 
 } : 0x750;

@@ -5,10 +5,17 @@
 LUA_FUNCTION(Lua_CapsuleConstructor) {
 	Vector* position = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* multiplier = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	const float rotation = luaL_optnumber(L, 3, .0f);
-	const float size = luaL_optnumber(L, 4, 1.0f);
+	const float f1 = (float)luaL_checknumber(L, 3);
 
-	Capsule* capsule = lua::place<Capsule>(L, lua::metatables::CapsuleMT, position, multiplier, rotation, size);
+	Capsule* capsule = nullptr;
+	if (lua_type(L, 4) == LUA_TNUMBER) {
+		const float f2 = (float)luaL_checknumber(L, 4);
+		capsule = lua::place<Capsule>(L, lua::metatables::CapsuleMT, position, multiplier, f1, f2);
+	}
+	else {
+		capsule = lua::place<Capsule>(L, lua::metatables::CapsuleMT, position, multiplier, f1);
+	}
+
 	return 1;
 }
 
@@ -25,10 +32,16 @@ LUA_FUNCTION(Lua_EntityGetNullCapsule) {
 
 LUA_FUNCTION(Lua_EntityGetCollisionCapsule) {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	Vector* vec = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Vector offsetVec;
+	if (lua_type(L, 2) == LUA_TUSERDATA) {
+		offsetVec = *lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	}
+	else {
+		offsetVec = Vector(0, 0);
+	}
 
 	Capsule* ud = (Capsule*)lua_newuserdata(L, sizeof(Capsule));
-	*ud = ent->GetCollisionCapsule(vec);
+	*ud = ent->GetCollisionCapsule(&offsetVec);
 	luaL_setmetatable(L, lua::metatables::CapsuleMT);
 	return 1;
 };

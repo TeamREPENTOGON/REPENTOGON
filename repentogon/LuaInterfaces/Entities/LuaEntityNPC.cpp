@@ -1,26 +1,9 @@
-#include <vector>
-#include <stdexcept>
-
-#include "ASMPatcher.hpp"
-#include "SigScan.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
 
-
-struct FireProjectilesStorage {
-	std::vector<Entity_Projectile*> projectiles;
-	bool inUse = false;
-};
-
-thread_local FireProjectilesStorage projectilesStorage;
-
-static std::vector<Entity_Projectile*>& InitProjectileStorage() {
-	std::vector<Entity_Projectile*>& projectiles = projectilesStorage.projectiles;
-	projectiles.clear();
-	projectilesStorage.inUse = true;
-	return projectiles;
-}
+#include "../../Patches/XMLData.h"
+#include "../../Patches/ASMPatches/ASMEntityNPC.h"
 
 LUA_FUNCTION(Lua_EntityNPC_UpdateDirtColor)
 {
@@ -320,6 +303,41 @@ LUA_FUNCTION(Lua_EntityNPC_Minecart_UpdateChild) {
 }*/
 
 
+LUA_FUNCTION(Lua_IsBossColor) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	//lua_pushnumber(L, npc->_bosscoloridx);
+	std::tuple idx = { npc->_type,npc->_variant };
+	if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
+		vector<XMLAttributes> vecnodes = XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
+		if ((npc->_subtype > 0) && (vecnodes.size() > (npc->_subtype - 1))) {
+			lua_pushboolean(L, true);
+			return 1;
+		}
+	}
+	lua_pushboolean(L, false);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetDarkRedChampionRegenTimer) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	lua_pushinteger(L, npc->_championRegenTimer);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetSirenPlayerEntity) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+
+	if (npc->_type == 904) {
+		Entity_Player* player = npc->_sirenPlayerEntity;
+		if (player) {
+			lua::luabridge::UserdataPtr::push(L, npc->_sirenPlayerEntity, lua::Metatables::ENTITY_PLAYER);
+			return 1;
+		}
+	}
+	lua_pushnil(L);
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -343,6 +361,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		//{ "ThrowMaggot", Lua_EntityNPC_ThrowMaggot },
 		//{ "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos },
 		{ "TryThrow", Lua_EntityNPC_TryThrow },
+
+		{ "IsBossColor", Lua_IsBossColor },
+		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
+		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }
@@ -359,67 +381,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowStrider", Lua_EntityNPC_ThrowStrider);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowRockSpider", Lua_EntityNPC_ThrowRockSpider);
 	lua::RegisterGlobalClassFunction(_state, "EntityNPC", "ThrowLeech", Lua_EntityNPC_ThrowLeech);
-}
-
-void __stdcall FireProjectilesEx_Internal(std::vector<Entity_Projectile*> const& projectiles) {
-	if (!projectilesStorage.inUse) {
-		return;
-	}
-
-	for (Entity_Projectile* projectile : projectiles) {
-		projectilesStorage.projectiles.push_back(projectile);
-	}
-}
-
-void __stdcall FireBossProjectilesEx_Internal(Entity_Projectile* projectile) {
-	if (!projectilesStorage.inUse) {
-		return;
-	}
-
-	projectilesStorage.projectiles.push_back(projectile);
-}
-
-void PatchFireProjectiles() {
-	const char* signature = "33c92b55b4c1fa02894ddc8955e4";
-	SigScan scanner(signature);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	using Reg = ASMPatch::SavedRegisters::Registers;
-	using GPReg = ASMPatch::Registers;
-
-	ASMPatch patch;
-	ASMPatch::SavedRegisters registers(Reg::EAX | Reg::EBX | Reg::ECX | Reg::EDX | Reg::EDI | Reg::ESI |
-		Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3 | Reg::XMM4 | Reg::XMM5, true);
-	patch.PreserveRegisters(registers);
-	// patch.MoveFromMemory(GPReg::EBP, -0x4C, GPReg::ESI, true);
-	patch.LoadEffectiveAddress(GPReg::EBP, -0x4C, GPReg::ESI);
-	patch.Push(GPReg::ESI);
-	patch.AddInternalCall(FireProjectilesEx_Internal);
-	patch.RestoreRegisters(registers);
-	patch.AddBytes("\x33\xc9\x2b\x55\xb4");
-	patch.AddRelativeJump((char*)addr + 0x5);
-
-	sASMPatcher.PatchAt(addr, &patch);
-}
-
-void PatchFireBossProjectiles() {
-	const char* signature = "f30f104424388bf883c414";
-	SigScan scanner(signature);
-	scanner.Scan();
-	void* addr = scanner.GetAddress();
-
-	using Reg = ASMPatch::SavedRegisters::Registers;
-	using GPReg = ASMPatch::Registers;
-
-	ASMPatch patch;
-	ASMPatch::SavedRegisters registers(Reg::GP_REGISTERS_STACKLESS | Reg::XMM0 | Reg::XMM1 | Reg::XMM2 | Reg::XMM3, true);
-	patch.PreserveRegisters(registers);
-	patch.Push(GPReg::EAX);
-	patch.AddInternalCall(FireBossProjectilesEx_Internal);
-	patch.RestoreRegisters(registers);
-	patch.AddBytes("\xF3\x0f\x10\x44\x24\x38");
-	patch.AddRelativeJump((char*)addr + 0x6);
-
-	sASMPatcher.PatchAt(addr, &patch);
 }

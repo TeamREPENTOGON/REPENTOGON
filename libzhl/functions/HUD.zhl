@@ -16,11 +16,22 @@ __thiscall void HUD::FlashRedHearts(Entity_Player *player);
 "558bec81eca8010000":
 __thiscall void HUD::ShowItemText(char* param_1,char *param_2,bool iscurse,bool idk);
 
-struct HUD depends (PlayerHUD, ANM2) { {{
-	//inline PlayerHUD GetPlayerHUD(int index) { return _playerHUD[index]; } 
+struct HUD depends (PlayerHUD, ANM2, StatHUD) { {{
 	inline PlayerHUD* GetPlayerHUD(int index) { return (PlayerHUD*)((char*)this + index * 1712); }
-	inline ANM2* GetChargeBarSprite() { return (ANM2*)((char*)this + 0xc36e8); }
-	inline ANM2* GetPickupsHUDSprite() { return (ANM2*)((char*)this + 0xc3910); }
 }} 
     PlayerHUD _playerHUD[8] : 0x0;
+    ANM2 _chargeBarSprite : 0xc36e8;
+    ANM2 _heartsSprite : 0xc37fc;
+    ANM2 _pickupHUDSprite : 0xc3910;
+    ANM2 _cardsPillsSprite : 0xc3a44;
+    ANM2 _streakSprite : 0xc3b58;
+    ANM2 _fortuneSprite : 0xc3c6c;
+	ANM2 _oldHUDStatsSprite : 0xc3d80;
+	float _bossHPBarFill : 0xc3ea4;
+	bool _isVisible : 0xc3eb6;
+	ANM2 _coopMenuSprite : 0xc3ec0;
+	ANM2 _inventorySprite : 0xc3fd8;
+	ANM2 _craftingTableSprite : 0x0c40ec;
+	ANM2 _poopSpellsSprite : 0xc4200;
+	StatHUD _statHUD : 0xc4314;
 } : 0xc45f0;
