@@ -65,6 +65,7 @@ Additions:
 Fixes:
 	* Fixed bonehearts not displaying correctly when set through players.xml
 	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
+	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready
 /newline/
 Modified:
 * Game:ShowGenericLeaderboard no longer fades to main menu
