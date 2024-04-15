@@ -14,65 +14,67 @@ LUA_FUNCTION(Lua_WorldToMenuPosition)
 		int menuid = (int)luaL_checkinteger(L, 1);
 		Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
 		Vector* ref = &g_MenuManager->_ViewPosition; //-49~ 72~ worldpos of ref // 10 95 is 0,0 on title // 59 23 offset on title
-		ref = new Vector(ref->x + 39, ref->y + 15);
-		Vector* offset;
+		Vector posbase = *ref + Vector(39, 15);
+		ref = &posbase;
+;		Vector offset;
+		offset = Vector(ref->x + 39, ref->y + 15);
 		switch (menuid) {
 		case 1: //menu title
-			offset = new Vector(ref->x + 0, ref->y + 0); //this is 0,0 at main title  -20,-8
+			offset = Vector(ref->x + 0, ref->y + 0); //this is 0,0 at main title  -20,-8
 			break;
 		case 2: //menu save
-			offset = new Vector(ref->x + 0, ref->y + 270);
+			offset = Vector(ref->x + 0, ref->y + 270);
 			break;
 		case 3: //menu game
-			offset = new Vector(ref->x + 0, ref->y + 540);
+			offset = Vector(ref->x + 0, ref->y + 540);
 			break;
 		case 4: //menu daily run
-			offset = new Vector(ref->x + 479, ref->y + 540);
+			offset = Vector(ref->x + 479, ref->y + 540);
 			break;
 		case 5: //menu character
-			offset = new Vector(ref->x + 0, ref->y + 810);
+			offset = Vector(ref->x + 0, ref->y + 810);
 			break;
 		case 6: //menu eastereggs
-			offset = new Vector(ref->x + 959, ref->y + 810);
+			offset = Vector(ref->x + 959, ref->y + 810);
 			break;
 		case 7: //menu challenge
-			offset = new Vector(ref->x - 480, ref->y + 216);
+			offset = Vector(ref->x - 480, ref->y + 216);
 			break;
 		case 8: //menu collection
-			offset = new Vector(ref->x + 0, ref->y + 1080);
+			offset = Vector(ref->x + 0, ref->y + 1080);
 			break;
 		case 9: //menu stats
-			offset = new Vector(ref->x - 480, ref->y + 1350);
+			offset = Vector(ref->x - 480, ref->y + 1350);
 			break;
 		case 10: //menu options
-			offset = new Vector(ref->x + 479, ref->y + 1080);
+			offset = Vector(ref->x + 479, ref->y + 1080);
 			break;
 		case 11: //menu controls
-			offset = new Vector(ref->x + 479, ref->y + 1620);
+			offset = Vector(ref->x + 479, ref->y + 1620);
 			break;
 		case 12: //menu keyconfig
-			offset = new Vector(ref->x + 479, ref->y + 1890);
+			offset = Vector(ref->x + 479, ref->y + 1890);
 			break;
 		case 13: //menu endings
-			offset = new Vector(ref->x + 479, ref->y + 270);
+			offset = Vector(ref->x + 479, ref->y + 270);
 			break;
 		case 14: //menu bestiary
-			offset = new Vector(ref->x - 480, ref->y + 1670);
+			offset = Vector(ref->x - 480, ref->y + 1670);
 			break;
 		case 15: //menu customchallenges
-			offset = new Vector(ref->x - 950, ref->y + 216);
+			offset = Vector(ref->x - 950, ref->y + 216);
 			break;
 		case 16: //menu mods
-			offset = new Vector(ref->x - 1440, ref->y + 216);
+			offset = Vector(ref->x - 1440, ref->y + 216);
 			break;
 		case 17: //menu seed
-			offset = new Vector(ref->x + 479, ref->y + 810);
+			offset = Vector(ref->x + 479, ref->y + 810);
 			break;
 		default:
 			return luaL_error(L, "Invalid Menu Id");
 			break;
 		}
-		lua::LuaCaller(L).pushUserdataValue(*new Vector(offset->x + pos->x, offset->y + pos->y), lua::Metatables::VECTOR);
+		lua::LuaCaller(L).pushUserdataValue(Vector(offset.x + pos->x, offset.y + pos->y), lua::Metatables::VECTOR);
 		return 1;
 	}
 	else {

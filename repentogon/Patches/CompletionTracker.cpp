@@ -915,7 +915,7 @@ HOOK_METHOD(PauseScreen, Render, () -> void) {
 		array marks = GetMarksForPlayer(playertype, anm,true);
 		if (!hidemarks) {
 			cmpl->CharacterId = playertype;
-			cmpl->Render(new Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
+			cmpl->Render(&Vector((g_WIDTH * 0.6f) + widgtpos->x, (g_HEIGHT * 0.5f) + widgtpos->y), widgtscale);
 		}
 		if (this->notinfocus){
 			this->_controllerconnectionpopup.Render();
@@ -938,13 +938,13 @@ HOOK_METHOD(Menu_Character, Render, () -> void) {
 	if (this->SelectedCharacterID > 17) {
 
 		Vector* ref = &g_MenuManager->_ViewPosition;
-		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);
+//		Vector* cpos = new Vector(ref->x - 80, ref->y + 894);	//goes unused
 		ANM2* anm = cmpl->GetANM2();
 
 		array marks = GetMarksForPlayer(selectedchar, anm,true);
 		if (!hidemarks) {
 			cmpl->CharacterId = selectedchar;
-			cmpl->Render(new Vector(ref->x + 80, ref->y + 860), new Vector(1, 1));
+			cmpl->Render(&Vector(ref->x + 80, ref->y + 860), &Vector(1, 1));
 		}
 
 	}
