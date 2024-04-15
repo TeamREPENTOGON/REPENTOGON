@@ -235,9 +235,9 @@ HOOK_METHOD(InputManager, IsActionPressed, (int btn, int controllerid, int unk)-
 	}
 };
 
-HOOK_METHOD(Game, Start, (int playertype, int challenge, Seeds seeds, unsigned int difficulty)->void) {
+HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state)->void,__stdcall) {
 	MainMenuInputBlock::ClearInputMask();
-	super(playertype, challenge, seeds, difficulty);
+	super(state);
 };
 
 LUA_FUNCTION(Lua_SetInputMask) {
