@@ -2337,47 +2337,68 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int unk) -> void, __stdcall) {
 	super(unk);
 }
 
-//POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1079)
+// PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
 HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector &pos, float alpha, float unk, float size) -> void) {
-	super(slot, pos, alpha, unk, size);
+	const bool isSchoolbagSlot = (slot == 1);
 
-	const int callbackid = 1079;
-	if (CallbackState.test(callbackid - 1000)) {
+	// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.
+	// The game does this inside RenderActiveItem.
+	// Size adjustments for pocket slots are already accounted for.
+	float actualSize = size;
+	if (isSchoolbagSlot) {
+		actualSize *= 0.5;
+	}
+
+	// The positions we send through the callback may be modified slightly to be more accurate to where the game actually rendered stuff.
+	Vector itemPos = pos;
+	Vector chargeBarPos = pos;
+
+	// Index #4 is for player 1's Esau, who has different offsets for the charge bar.
+	if (this->_playerHudIndex < 4) {
+		chargeBarPos.x += (isSchoolbagSlot ? -2 : 34) * actualSize;
+	}
+	else if (isSchoolbagSlot) {
+		chargeBarPos.x += 38 * actualSize;
+	}
+	chargeBarPos.y += 17 * actualSize;
+
+	if (this->_activeItem[slot].bookImage != nullptr) {
+		// A book sprite was rendered under the item (Book of Virtues or Judas' Birthright).
+		// Update the offsets we're sending through the callbacks to match where the corresponding sprites were actually rendered.
+		itemPos.y -= 4;
+		chargeBarPos.y += 3;
+	}
+	
+	const int precallbackid = 1119;
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		const bool isSchoolbagSlot = (slot == 1);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
+			.pushnil()
+			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
+			.push(slot)
+			.pushUserdataValue(itemPos, lua::Metatables::VECTOR)
+			.push(alpha)
+			.push(actualSize)
+			.pushUserdataValue(chargeBarPos, lua::Metatables::VECTOR)
+			.call(1);
 
-		// If the slot is ActiveSlot.SLOT_SECONDARY (schoolbag), halve the size/scale.
-		// The game does this inside RenderActiveItem.
-		// Size adjustments for pocket slots are already accounted for.
-		float actualSize = size;
-		if (isSchoolbagSlot) {
-			actualSize *= 0.5;
+		if (!result && lua_isboolean(L, -1) && (bool)lua_toboolean(L, -1) == true) {
+			return;
 		}
+	}
 
-		// The positions we send through the callback may be modified slightly to be more accurate to where the game actually rendered stuff.
-		Vector itemPos = pos;
-		Vector chargeBarPos = pos;
+	super(slot, pos, alpha, unk, size);
 
-		// Index #4 is for player 1's Esau, who has different offsets for the charge bar.
-		if (this->_playerHudIndex < 4) {
-			chargeBarPos.x += (isSchoolbagSlot ? -2 : 34) * actualSize;
-		}
-		else if (isSchoolbagSlot) {
-			chargeBarPos.x += 38 * actualSize;
-		}
-		chargeBarPos.y += 17 * actualSize;
-
-		if (this->_activeItem[slot].bookImage != nullptr) {
-			// A book sprite was rendered under the item (Book of Virtues or Judas' Birthright).
-			// Update the offsets we're sending through the callback to match where the corresponding sprites were actually rendered.
-			itemPos.y -= 4;
-			chargeBarPos.y += 3;
-		}
+	const int postcallbackid = 1079;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-		lua::LuaCaller(L).push(callbackid)
+		lua::LuaCaller(L).push(postcallbackid)
 			.pushnil()
 			.push(this->GetPlayer(), lua::Metatables::ENTITY_PLAYER)
 			.push(slot)
@@ -3846,52 +3867,51 @@ HOOK_METHOD_PRIORITY(PersistentGameData, TryUnlock, -9999, (int achievid) -> boo
 	return deed;
 }
 
-
-HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float scale) -> void) {
-	const int callbackid = 1264;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(slot)
-			.push(slot)
-			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
-			.push(scale)
-			.push(_player, lua::Metatables::ENTITY_PLAYER)
-			.call(1);
-
-		if (!result) {
-			if (lua_istable(L, -1)) {
-				lua_pushnil(L);
-				while (lua_next(L, -2) != 0) {
-					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
-						const std::string key = lua_tostring(L, -2);
-						if (key == "Position") {
-							*pos = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
-						}
-					}
-					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
-						const std::string key = lua_tostring(L, -2);
-						if (key == "Scale") {
-							scale = (float)lua_tonumber(L, -1);
-						}
-					}
-					lua_pop(L, 1);
-				}
-			}
-			else if (lua_isboolean(L, -1))
-			{
-				if (lua_toboolean(L, -1)) {
-					return;
-				}
-			}
-		}
-	}
-	super(slot, pos, scale);
-}
+//HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float scale) -> void) {
+//	const int callbackid = 1264;
+//	if (CallbackState.test(callbackid - 1000)) {
+//		lua_State* L = g_LuaEngine->_state;
+//		lua::LuaStackProtector protector(L);
+//
+//		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+//
+//		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+//			.push(slot)
+//			.push(slot)
+//			.pushUserdataValue(*pos, lua::Metatables::VECTOR)
+//			.push(scale)
+//			.push(_player, lua::Metatables::ENTITY_PLAYER)
+//			.call(1);
+//
+//		if (!result) {
+//			if (lua_istable(L, -1)) {
+//				lua_pushnil(L);
+//				while (lua_next(L, -2) != 0) {
+//					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
+//						const std::string key = lua_tostring(L, -2);
+//						if (key == "Position") {
+//							*pos = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+//						}
+//					}
+//					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
+//						const std::string key = lua_tostring(L, -2);
+//						if (key == "Scale") {
+//							scale = (float)lua_tonumber(L, -1);
+//						}
+//					}
+//					lua_pop(L, 1);
+//				}
+//			}
+//			else if (lua_isboolean(L, -1))
+//			{
+//				if (lua_toboolean(L, -1)) {
+//					return;
+//				}
+//			}
+//		}
+//	}
+//	super(slot, pos, scale);
+//}
 
 HOOK_METHOD(Minimap, Update, () -> void) {
 	const int precallbackid = 1477;
@@ -3930,5 +3950,60 @@ HOOK_METHOD(Minimap, Render, () -> void) {
 		lua::LuaStackProtector protector(L);
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 		lua::LuaCaller(L).push(postcallbackid).call(1);
+	}
+}
+
+//MC_PRE_PICKUP_GET_LOOT_LIST (1334)
+HOOK_METHOD(Entity_Pickup, GetLootList, (bool shouldAdvance) -> LootList) {
+	LootList list = super(shouldAdvance);
+
+	const int callbackid = 1334;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			//.push(&list, lua::metatables::LootListMT) //can't work with loot directly for now
+			.push(this, lua::Metatables::ENTITY_PICKUP)
+			.push(shouldAdvance)
+			.call(1);
+
+		if (!result && lua_isuserdata(L, -1)) {
+			return *lua::GetUserdata<LootList*>(L, -1, lua::metatables::LootListMT);
+		}
+	}
+	return list;
+}
+
+//MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED (1268)
+HOOK_METHOD(Entity_Player, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> void) {
+	super(item, unused);
+	const int callbackid = 1268;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(item, lua::Metatables::ITEM)
+			.call(1);
+	}
+}
+
+//MC_POST_ROOM_TRIGGER_EFFECT_REMOVED (1269)
+HOOK_METHOD(Room, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> void) {
+	super(item, unused);
+	const int callbackid = 1269;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.call(1);
 	}
 }

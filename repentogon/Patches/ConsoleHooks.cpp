@@ -127,17 +127,17 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
     else if (!player)
         player = g_Game->GetPlayerManager()->GetPlayer(0);
 
-    if (in.rfind("luareset", 0) == 0) {
+    if ((in == "luareset") || (in.rfind("luareset ", 0) == 0)) {
         LuaReset();
         return;
     }
 
-    if (in.rfind("fullrestart", 0) == 0) {
+    if ((in == "fullrestart") || (in.rfind("fullrestart ", 0) == 0)) {
         GameRestart();
         return;
     }
 
-    if (in.rfind("help", 0) == 0) {
+    if ((in == "help") || (in.rfind("help ", 0) == 0)) {
 
         std::vector<std::string> cmdlets = ParseCommand(in, 2);
 
@@ -172,7 +172,7 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         return;
     }
 
-    if (in.rfind("macro", 0) == 0) {
+    if ((in == "macro") || (in.rfind("macro ", 0) == 0)) {
         std::vector<std::string> cmdlets = ParseCommand(in, 2);
         for (ConsoleMacro macro : console.macros) {
             if (cmdlets[1] == macro.name) {

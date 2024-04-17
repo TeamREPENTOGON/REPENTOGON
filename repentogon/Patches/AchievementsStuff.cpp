@@ -497,9 +497,11 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 		super();
 		if (this->_isAchievementScreenVisible && g_Manager->GetOptions()->ModsEnabled() && (SourcesWithAchiev.size() > 1)) {
 			Vector* ref = &g_MenuManager->_ViewPosition;
-			ref = new Vector(ref->x + 39, ref->y + 15);
-			Vector* offset = new Vector(ref->x - 480, ref->y + 1350);
-			Vector pos = Vector(-251 + offset->x, -3 + offset->y);
+			Vector posbase;
+			posbase = Vector(ref->x + 39, ref->y + 15);
+			ref = &posbase;
+			Vector offset = Vector(ref->x - 480, ref->y + 1350);
+			Vector pos = Vector(-251 + offset.x, -3 + offset.y);
 			Vector z = Vector(0, 0);
 			//Vector* a = g_LuaEngine->GetMousePosition(&z, true);
 			//printf("%f %f", a->x, a->y);
@@ -524,9 +526,9 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			float y = 100;
 			this->_cursorLeftSprite._scale = Vector(0.5, 0.5);
 			this->_cursorLeftSprite._rotation = 90;
-			this->_cursorLeftSprite.Render(&(*offset + Vector(192- txtwidth, 8)), &z, &z);
+			this->_cursorLeftSprite.Render(&(offset + Vector(192- txtwidth, 8)), &z, &z);
 			this->_cursorLeftSprite._rotation = -90;
-			this->_cursorLeftSprite.Render(&(*offset + Vector(205+ txtwidth, 4)), &z, &z);
+			this->_cursorLeftSprite.Render(&(offset + Vector(205+ txtwidth, 4)), &z, &z);
 			this->_cursorLeftSprite._rotation = 0;
 			this->_cursorLeftSprite._scale = Vector(1, 1);
 		}

@@ -267,6 +267,15 @@ LUA_FUNCTION(Lua_SetDonationModGreed) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SetBloom) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	const int time = (int)luaL_checkinteger(L, 2);
+	const float strength = (float)luaL_checknumber(L, 3);
+	game->SetBloom(time, strength);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -299,6 +308,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "MoveToRandomRoom", Lua_MoveToRandomRoom},
 		{ "SetDonationModAngel", Lua_SetDonationModAngel},
 		{ "SetDonationModGreed", Lua_SetDonationModGreed},
+		{ "SetBloom", Lua_SetBloom},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

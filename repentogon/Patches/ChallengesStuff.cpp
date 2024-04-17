@@ -131,7 +131,7 @@ HOOK_METHOD(Menu_Challenge, Render, () -> void) {
 		frame3->_pos.y = frame->_pos.y;
 	super();
 }
-ANM2* Streak = new ANM2();
+ANM2 Streak = ANM2();
 int prevchalselect = -1;
 unordered_map<int, bool> lockedchallenges;
 string lockedchalstr = string("LOCKED :(");
@@ -229,29 +229,29 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 	int sel = this->SelectedElement;
 	float targetyoffset = 0;
 	ANM2* s = &g_MenuManager->GetMenuChallenge()->ChallengeMenuSprite;
-	DrawStringScaledEntry* entry = new DrawStringScaledEntry();
-	entry->_boxWidth = 0;
-	entry->_center = false;
-	entry->_scaleX = 0.8f;
-	entry->_scaleY = 1;
-	entry->_color._blue = 0.14f;
-	entry->_color._green = 0.15f;
-	entry->_color._red = 0.21f;
-	entry->_color._alpha = 1.f;
+	DrawStringScaledEntry entry = DrawStringScaledEntry();
+	entry._boxWidth = 0;
+	entry._center = false;
+	entry._scaleX = 0.8f;
+	entry._scaleY = 1;
+	entry._color._blue = 0.14f;
+	entry._color._green = 0.15f;
+	entry._color._red = 0.21f;
+	entry._color._alpha = 1.f;
 
 
 	super();
-	if (!Streak->_loaded) {
-		Streak->construct_from_copy(s);
-		Streak->Load(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/challengesmenustuff.anm2"), true);
-		Streak->LoadGraphics(true);
-		Streak->Play("Idle", true);
-		Streak->Update();
+	if (!Streak._loaded) {
+		Streak.construct_from_copy(s);
+		Streak.Load(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/challengesmenustuff.anm2"), true);
+		Streak.LoadGraphics(true);
+		Streak.Play("Idle", true);
+		Streak.Update();
 	}
-	Vector* ref = &g_MenuManager->_ViewPosition; 
-	ref = new Vector(ref->x + 39, ref->y + 15);
-	Vector* offset = new Vector(ref->x - 950, ref->y + 216);
-	Vector pos = Vector(70 + offset->x, 53 + offset->y);
+	Vector ref = g_MenuManager->_ViewPosition; 
+	ref = Vector(ref.x + 39, ref.y + 15);
+	Vector offset = Vector(ref.x - 950, ref.y + 216);
+	Vector pos = Vector(70 + offset.x, 53 + offset.y);
 	Vector z = Vector(0, 0);
 	int count = 0;
 	for each(int i in visiblechallenges) {
@@ -260,28 +260,28 @@ HOOK_METHOD(Menu_CustomChallenge, Render, () -> void) {
 		string order = to_string(count) + ".";
 		string challengesrt = (order + node["name"]);
 		pos.y += 25;
-		entry->_text = challengesrt.c_str();
-		entry->_x = pos.x;
-		entry->_y = pos.y - 20;
-		entry->_color._alpha = 1;
+		entry._text = challengesrt.c_str();
+		entry._x = pos.x;
+		entry._y = pos.y - 20;
+		entry._color._alpha = 1;
 		if (lockedchallenges[i]) {
 			string locked = order + lockedchalstr;
 			if ((node.find("lockeddesc") != node.end())) {
 				locked = order + node["lockeddesc"];
 			}
-			entry->_color._alpha = 0.5;
-			entry->_text = locked.c_str();
-			g_Manager->_font8_TeamMeat_12.DrawStringScaled(*entry);
+			entry._color._alpha = 0.5;
+			entry._text = locked.c_str();
+			g_Manager->_font8_TeamMeat_12.DrawStringScaled(entry);
 		}
 		else {
-			g_Manager->_font8_TeamMeat_12.DrawStringScaled(*entry);
+			g_Manager->_font8_TeamMeat_12.DrawStringScaled(entry);
 			if (Challenges[node["name"] + node["sourceid"]] > 0) {
 				srand(i-40);
-				Streak->SetFrame(&string("Idle"), (float)(rand() % 6));
-				Streak->Update();
-				Streak->_scale.x =  (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(node["name"].c_str()) / 294.0);
-				Streak->_offset.x = (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(order.c_str()) - 10);
-				Streak->Render(&pos, &z, &z);
+				Streak.SetFrame(&string("Idle"), (float)(rand() % 6));
+				Streak.Update();
+				Streak._scale.x =  (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(node["name"].c_str()) / 294.0);
+				Streak._offset.x = (float)(g_Manager->_font8_TeamMeat_12.GetStringWidthUTF8(order.c_str()) - 10);
+				Streak.Render(&pos, &z, &z);
 			}
 		}
 	}

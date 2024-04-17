@@ -37,6 +37,16 @@ LUA_FUNCTION(Lua_EffectCreateLight)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EffectCreateLootPreview) {
+	LootList* loot = lua::GetUserdata<LootList*>(L, 1, lua::metatables::LootListMT);
+	Vector* position = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	Entity_Pickup* owner = lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	Entity_Effect* eff = lua::GetUserdata<Entity_Effect*>(L, 4, lua::Metatables::ENTITY_EFFECT, "EntityEffect");
+	lua::luabridge::UserdataPtr::push(L, Entity_Effect::CreateLootPreview(loot, position, owner, eff), lua::GetMetatableKey(lua::Metatables::ENTITY_EFFECT));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -51,4 +61,5 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	*/
 
 	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLight", Lua_EffectCreateLight);
+	lua::RegisterGlobalClassFunction(_state, "EntityEffect", "CreateLootPreview", Lua_EffectCreateLootPreview);
 }

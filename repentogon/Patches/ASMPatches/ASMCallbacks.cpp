@@ -811,3 +811,147 @@ void ASMPatchPostChampionRegenCallback() {
 		sASMPatcher.PatchAt(addr, &patch);
 	}
 }
+
+bool __stdcall RunTrinketRenderCallback(PlayerHUD* hud,unsigned int slot, Vector* position, Box<float> scale,Vector* cropoffset) {
+	const int callbackid = 1264;
+	if (CallbackState.test(callbackid - 1000)) {
+		float new_scale;
+		new_scale = scale.Get();
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(slot)
+			.push(slot)
+			.pushUserdataValue(*position, lua::Metatables::VECTOR)
+			.push(new_scale)
+			.push(hud->_player, lua::Metatables::ENTITY_PLAYER)
+			.pushUserdataValue(*cropoffset, lua::Metatables::VECTOR)
+			.call(1);
+		
+		if (!result) {
+			if (lua_istable(L, -1)) {
+				lua_pushnil(L);
+				while (lua_next(L, -2) != 0) {
+					if (lua_isstring(L, -2) && lua_isuserdata(L, -1)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Position") {
+							Vector *new_pos = lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+							*(position) = *(new_pos);
+						}
+						else if (key == "CropOffset") {
+							*cropoffset = *lua::GetUserdata<Vector*>(L, -1, lua::Metatables::VECTOR, "Vector");
+						}
+					}
+					else if (lua_isstring(L, -2) && lua_isnumber(L, -1)) {
+						const std::string key = lua_tostring(L, -2);
+						if (key == "Scale") {
+							new_scale = (float)lua_tonumber(L, -1);
+						}
+					}
+					lua_pop(L, 1);
+				}
+			}
+			else if (lua_isboolean(L, -1))
+			{
+				if (lua_toboolean(L, -1)) {
+					return false;
+				}
+			}
+		}
+		float newx = (position->x) + (g_Game->_screenShakeOffset).x;
+		float newy = (position->y) + (g_Game->_screenShakeOffset).y;
+		__asm {
+			movd xmm2, newx
+			movd xmm3, newy
+			movd xmm4, new_scale
+		}	//updating the xmm registers
+	}
+	return true;
+};
+
+void ASMPatchTrinketRender() {
+	SigScan signature("8d8c24????????e8????????a1");
+	signature.Scan();
+
+	void* addr = signature.GetAddress();
+
+	printf("[REPENTOGON] Patching PlayerHUD::RenderTrinket at %p\n", addr);
+	ASMPatch patch;
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::ALL & ~(ASMPatch::SavedRegisters::XMM4 | ASMPatch::SavedRegisters::XMM2 | ASMPatch::SavedRegisters::XMM3), true);	//make sure new pos and scale are applied
+	patch
+		.PreserveRegisters(savedRegisters)
+		.AddBytes("\x8B\x9C\x24\x80").AddZeroes(3)	//(mov ebx,esp+0x80), playerhud aka (this)
+		.Push(ASMPatch::Registers::EAX)				//cropoffset ptr which resides in eax
+		.AddBytes("\x66\x0F\x7E\xE0")				//(movd eax,xmm4), scale
+		.Push(ASMPatch::Registers::EAX)
+		.AddBytes("\x8B\x45\x0C")					//(mov eax, ebx+0xC):
+		.Push(ASMPatch::Registers::EAX)				//	position
+		.AddBytes("\x8B\x45\x08")					//(mov eax, ebx+0x8):
+		.Push(ASMPatch::Registers::EAX)				//	slot
+		.Push(ASMPatch::Registers::EBX)				//hud from the ebx
+		.AddInternalCall(&RunTrinketRenderCallback)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false
+		.AddBytes("\x8d\x8c\x24\xb8").AddZeroes(3)	//restores the original function at (addr)
+		.AddBytes("\x66\x0F\x7E\x54\x24\x30") 		//movd esp+0x30, xmm2
+		.AddBytes("\x66\x0F\x7E\x5C\x24\x34")		//movd esp+0x34, xmm3
+
+		.AddRelativeJump((char*)addr + 0x7);
+
+		sASMPatcher.PatchAt(addr, &patch);
+}
+
+//MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (1335)
+bool __stdcall RunPickupUpdatePickupGhostsCallback(Entity_Pickup* pickup) { 
+	const int callbackid = 1335;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(pickup, lua::Metatables::ENTITY_PICKUP)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				return (bool)lua_toboolean(L, -1);
+			}
+		}
+	}
+	
+	return (g_Game->_playerManager.FirstCollectibleOwner(COLLECTIBLE_GUPPYS_EYE, nullptr, true) != nullptr && 
+		((pickup->IsChest(pickup->_variant) && pickup->_subtype != 0) || (pickup->_variant == 69 && !pickup->_dead)) 
+			&& (pickup->_timeout < 1) );
+}
+
+void ASMPatchPickupUpdatePickupGhosts() {
+    ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS - ASMPatch::SavedRegisters::Registers::EAX, true);
+    ASMPatch patch;
+
+    SigScan signature("e8????????85c00f84????????8b4e2ce8????????");
+    signature.Scan();
+
+    void* addr = signature.GetAddress();
+
+    printf("[REPENTOGON] Patching Pickup::UpdatePickupGhosts at %p\n", addr);
+
+    patch.Pop(ASMPatch::Registers::EAX)
+        .Pop(ASMPatch::Registers::EAX)
+        .Pop(ASMPatch::Registers::EAX)  // Pop everything that was pushed onto the stack intended for the overwritten call to FirstCollectibleOwner.
+        .PreserveRegisters(savedRegisters)
+        .Push(ASMPatch::Registers::ESI) // pickup
+        .AddInternalCall(RunPickupUpdatePickupGhostsCallback)
+        .AddBytes("\x84\xC0") // test al, al
+        .RestoreRegisters(savedRegisters)
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
+        //.AddBytes(ByteBuffer().AddAny((char*)addr, 0x5))
+        .AddRelativeJump((char*)addr + 0xCA);
+    sASMPatcher.PatchAt(addr, &patch);
+}

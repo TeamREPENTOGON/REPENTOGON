@@ -47,6 +47,17 @@ LUA_FUNCTION(lua_LevelSetName) {
 	return 0;
 }
 
+LUA_FUNCTION(lua_LevelSetGreedWavesClearedWithoutRedHeartDamage) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	level->_greedwavesclearedwithoutredheartdamage = luaL_checkinteger(L, 2);
+	return 0;
+}
+LUA_FUNCTION(lua_LevelGetGreedWavesClearedWithoutRedHeartDamage) {
+	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, level->_greedwavesclearedwithoutredheartdamage);
+	return 1;
+}
+
 LUA_FUNCTION(lua_LevelIsStageAvailable) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
 	int levelStage = (int)luaL_checkinteger(L, 2);
@@ -112,25 +123,6 @@ HOOK_METHOD(Level, HasAbandonedMineshaft, () -> bool) {
 	return CheckQuest(this, g_Game->_stage, 4, 2);
 }
 
-// helper for asm patch
-bool dealRoomsPatched = false;
-HOOK_METHOD(Level, InitializeDevilAngelRoom, (bool ForceAngel, bool ForceDevil) -> void) {
-	if (!dealRoomsPatched) {
-		//printf("attempting to patch deal subtypes\n");
-		unsigned int doors = 0;
-		for (int i = 14; i < 16; i++) {
-			//printf("type #%d\n", i);
-			RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, i, 13, 100, 100, 0, 20, &doors, 0, -1);
-			for (RoomConfig_Room* p : rooms) {
-				//printf("changing subtype of roomconfig at %p (var %d, subtype %d)\n", p, p->Variant, p->Subtype);
-				p->Subtype = 666;
-			}
-		}
-		dealRoomsPatched = true;
-	}
-	super(ForceAngel, ForceDevil);
-}
-
 /* HOOK_METHOD(Level, GetName, () -> std::string) {
 	std::string name = super();
 	if (!CustomStageName.empty()) {
@@ -162,6 +154,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetDimension", Lua_GetDimension},
 		{ "GetForceSpecialQuest", Lua_GetForceSpecialQuest },
 		{ "SetForceSpecialQuest", Lua_SetForceSpecialQuest },
+
+		{ "SetGreedWavesClearedWithoutRedHeartDamage", lua_LevelSetGreedWavesClearedWithoutRedHeartDamage },
+		{ "GetGreedWavesClearedWithoutRedHeartDamage", lua_LevelGetGreedWavesClearedWithoutRedHeartDamage },
 		{ NULL, NULL }
 	};
 

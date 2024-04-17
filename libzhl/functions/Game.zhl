@@ -110,11 +110,14 @@ __thiscall void Game::MoveToRandomRoom(bool iAmErrorRoom, int Seed, Entity_Playe
 "558bec83ec0853568b35????????578975":
 __stdcall void Game::Exit(bool ShouldSave);
 
+"558bec8b45??8981????????8981????????f30f1191":
+__thiscall void Game::SetBloom(int Time, float Strength<xmm2>);
+
 
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector) { {{
 	Game()
 	{
 		this->constructor();
@@ -234,6 +237,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, 
 	ItemOverlay _itemOverlay : 0x1bcc0;
 	Leaderboard _leaderboard : 0x3d5f0;
 	int _frameCount : 0x1a30dc; // 0x1a30dc
+	Vector _screenShakeOffset : 0x1a30f0;
 	int _treasureRoomsVisited : 0x1c3178;
 	int _planetariumsVisited : 0x1c317c;
 	bool _isRerun : 0x1c31a0;

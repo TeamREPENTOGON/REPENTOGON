@@ -946,6 +946,13 @@ LUA_FUNCTION(Lua_PlayerGetImmaculateConceptionState)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetPlayerIndex)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, plr->_playerIndex);
+	return 1;
+}
+
 LUA_FUNCTION(Lua_PlayerSetImmaculateConceptionState)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -2385,7 +2392,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "BlockCollectible", Lua_BlockCollectible },
 		{ "UnblockCollectible", Lua_UnblockCollectible },
 		{ "IsCollectibleBlocked", Lua_IsCollectibleBlocked },
-		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothign, leaving it out of the docs
+		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothing, leaving it out of the docs
+		{ "GetPlayerIndex", Lua_PlayerGetPlayerIndex }, 
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

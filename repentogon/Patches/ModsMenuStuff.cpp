@@ -37,8 +37,8 @@ int opensearchkey = (int)KeyboardKey::KEY_LEFT_CONTROL;
 int undomodchangeskey = (int)KeyboardKey::KEY_BACKSPACE;
 int undomodchangesbtn = 24; //left bumber
 
-ANM2* searchbar = new ANM2();
-ANM2* undopop = new ANM2();
+ANM2 searchbar = ANM2();
+ANM2 undopop = ANM2();
 
 unsigned int minmods = 15;
 
@@ -135,6 +135,14 @@ HOOK_METHOD(InputManager, IsActionTriggered, (int btnaction, int controllerid, i
 }
 
 HOOK_METHOD(Menu_Mods, Render, () -> void) {
+	Vector menu_ref;
+	Vector offset;
+	Vector initialpos;
+	Vector undopos;
+	Vector tabbtnpos;
+	Vector pos;
+	Vector barpos;
+	Vector z;
 	LayerState* frame_widgetprompt = this->ModsMenuSprite.GetLayer("WidgetTab");
 	LayerState* frame_widgettext = this->ModsMenuSprite.GetLayer("WidgetText");
 	LayerState* frame_widgetbg = this->ModsMenuSprite.GetLayer("Widget");
@@ -147,26 +155,26 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	frame_widgettext->_visible = true;
 	frame_widgetbg->_visible = true;
 	SetupEnabledStates();
-	Vector* ref = &g_MenuManager->_ViewPosition;
-	ref = new Vector(ref->x + 39, ref->y + 15);
-	Vector* offset = new Vector(ref->x - 1440, ref->y + 216);
-	Vector initialpos = Vector(70 + offset->x, offset->y + 35);
-	Vector* undopos = new Vector(310 + offset->x, offset->y + 63);
+	//Vector ref = &;
+	menu_ref = Vector(g_MenuManager->_ViewPosition.x + 39, g_MenuManager->_ViewPosition.y + 15);
+	offset = Vector(menu_ref.x - 1440, menu_ref.y + 216);
+	initialpos = Vector(70 + offset.x, offset.y + 35);
+	undopos = Vector(310 + offset.x, offset.y + 63);
 	//printf("%f %f (%f %f)\n", (frame_widgettext->_pos.x) , frame_widgettext->_pos.y,undopos->x,undopos->y);
-	Vector* tabbtnpos = new Vector(307 + offset->x, offset->y + 18);
-	Vector pos = Vector(70 + offset->x, offset->y + 35);
-	Vector* barpos = new Vector(pos.x + 90, (g_HEIGHT- 30));
-	Vector z = Vector(0, 0);
+	tabbtnpos = Vector(307 + offset.x, offset.y + 18);
+	pos = Vector(70 + offset.x, offset.y + 35);
+	barpos = Vector(pos.x + 90, (g_HEIGHT- 30));
+	z = Vector(0, 0);
 	ModManager* modman = g_Manager->GetModManager();
-	DrawStringScaledEntry* entry = new DrawStringScaledEntry();
+	DrawStringScaledEntry entry = DrawStringScaledEntry();
 
-	entry->_boxWidth = 0;
-	entry->_center = false;
-	entry->_scaleX = 0.9f;
-	entry->_scaleY = 0.9f;
-	entry->_color._blue = 0.f;
-	entry->_color._green = 0.f;
-	entry->_color._red = 0.f;
+	entry._boxWidth = 0;
+	entry._center = false;
+	entry._scaleX = 0.9f;
+	entry._scaleY = 0.9f;
+	entry._color._blue = 0.f;
+	entry._color._green = 0.f;
+	entry._color._red = 0.f;
 	int i = 1;
 	int actualpos = -1;
 
@@ -233,23 +241,23 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	for each (ModEntry* mod in modman->_mods) {	
 			string order = to_string(i) + ".";
 			string modname = order + mod->GetName();
-			entry->_text = modname.c_str();
+			entry._text = modname.c_str();
 			if (mod->IsEnabled()) {
 				string modnamelower = stringlower(modname.c_str());
 				if ((searchstr.length() > 0) && (modnamelower.find(searchstr) == string::npos)) { continue; }
 				actualpos++;
 				pos.y += 25;
-				entry->_color._alpha = 1;
+				entry._color._alpha = 1;
 			}
 			else {
 				continue;
 			}
-			entry->_x = pos.x;
-			entry->_y = pos.y;
+			entry._x = pos.x;
+			entry._y = pos.y;
 			if (!modsenabled) {
-				entry->_color._alpha = entry->_color._alpha * 0.3f;
+				entry._color._alpha = entry._color._alpha * 0.3f;
 			}
-			g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
+			g_Manager->_font7_TeamMeat_10.DrawStringScaled(entry);
 			if (actualpos == this->SelectedElement) {
 				this->_pointerToSelectedMod = mod;
 			}
@@ -259,7 +267,7 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 	for each (ModEntry * mod in modman->_mods) {
 		string order = to_string(i) + ".";
 		string modname = order + mod->GetName();
-		entry->_text = modname.c_str();
+		entry._text = modname.c_str();
 		if (mod->IsEnabled()) {
 			continue;
 		}
@@ -267,14 +275,14 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			if ((searchstr.length() > 0) && (stringlower(modname.c_str()).find(searchstr) == string::npos)) { continue; }
 			actualpos++;
 			pos.y += 25;
-			entry->_color._alpha = 0.5;
+			entry._color._alpha = 0.5;
 		}
-		entry->_x = pos.x;
-		entry->_y = pos.y;
+		entry._x = pos.x;
+		entry._y = pos.y;
 		if (!modsenabled) {
-			entry->_color._alpha = entry->_color._alpha * 0.3f;
+			entry._color._alpha = entry._color._alpha * 0.3f;
 		}
-		g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
+		g_Manager->_font7_TeamMeat_10.DrawStringScaled(entry);
 		if (actualpos == this->SelectedElement) {
 			this->_pointerToSelectedMod = mod;
 		}
@@ -284,58 +292,58 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 
 	if (paperedge == 0) { paperedge = (float)((modman->_mods.size() * 25) + 40); } // this is to prevent the searchbar from busting into the unknown depths below
 
-		if (!searchbar->_loaded) {
+		if (!searchbar._loaded) {
 			ANM2* s = this->GetModsMenuSprite();
-			searchbar->construct_from_copy(s);
+			searchbar.construct_from_copy(s);
 			string dir = string(REPENTOGON::GetRGONGfxAbsolutePath("gfx/ui/modsmenupentogon.anm2"));
-			searchbar->Load(dir, true);
-			searchbar->LoadGraphics(true);
-			searchbar->Play("SearchBar", true);
-			searchbar->Update();
+			searchbar.Load(dir, true);
+			searchbar.LoadGraphics(true);
+			searchbar.Play("SearchBar", true);
+			searchbar.Update();
 			
-			undopop->construct_from_copy(s);
-			undopop->Load(dir, true);
-			undopop->LoadGraphics(true);
+			undopop.construct_from_copy(s);
+			undopop.Load(dir, true);
+			undopop.LoadGraphics(true);
 		}
 		if (g_MenuManager->_controllerIndex > 0) {
-			undopop->SetFrame(&string("UndoPop"), 1);
-			undopop->Update();
+			undopop.SetFrame(&string("UndoPop"), 1);
+			undopop.Update();
 		}
 		else {
-			undopop->SetFrame(&string("UndoPop"), 0);
-			undopop->Update();
+			undopop.SetFrame(&string("UndoPop"), 0);
+			undopop.Update();
 		}
 
-		entry->_text = searchstr.c_str();
+		entry._text = searchstr.c_str();
 		if (issearching) {
-			entry->_color._alpha = 1;
+			entry._color._alpha = 1;
 		}
 		else {
 			if ((searchstr.length() <= 0)) {
-				entry->_text = "Press CTRL and type to filter";
+				entry._text = "Press CTRL and type to filter";
 			}
-			entry->_color._alpha = 0.5;
+			entry._color._alpha = 0.5;
 		}
-		entry->_x = pos.x - 20;
+		entry._x = pos.x - 20;
 		
 		int egde = (int)(initialpos.y + paperedge);
 		if (modman->_mods.size() > minmods) {
-			if (barpos->y >= egde) {
-				Vector* vdif = new Vector(barpos->x, (float)egde);
-				entry->_y = (float)egde;
-				searchbar->Render(vdif, &z, &z);
+			if (barpos.y >= egde) {
+				Vector vdif = Vector(barpos.x, (float)egde);
+				entry._y = (float)egde;
+				searchbar.Render(&vdif, &z, &z);
 			}
-			else if (((barpos->y - pos.y) < 22) && (prevscroll > 161.9) && (g_MenuManager->_scrollinterpolationY == prevscroll) && (this->SelectedElement == lastvalid)) { // this is for when the searchbar would obstruct the last element on the list
-				Vector* vdif = new Vector(barpos->x, barpos->y + 20);
-				entry->_y = barpos->y + 20;
-				searchbar->Render(vdif, &z, &z);
+			else if (((barpos.y - pos.y) < 22) && (prevscroll > 161.9) && (g_MenuManager->_scrollinterpolationY == prevscroll) && (this->SelectedElement == lastvalid)) { // this is for when the searchbar would obstruct the last element on the list
+				Vector vdif = Vector(barpos.x, barpos.y + 20);
+				entry._y = barpos.y + 20;
+				searchbar.Render(&vdif, &z, &z);
 			}
 			else {
-				entry->_y = barpos->y;
-				searchbar->Render(barpos, &z, &z);
+				entry._y = barpos.y;
+				searchbar.Render(&barpos, &z, &z);
 			}
 		}
-		undopop->Render(undopos, &z, &z);
+		undopop.Render(&undopos, &z, &z);
 		
 		//this->ModsMenuSprite.RenderLayer(11, &frame_widgetbg->_pos, &z, &z); //cant get this ones to work :(
 		//this->ModsMenuSprite.RenderLayer(12, &frame_widgettext->_pos, &z, &z);
@@ -351,24 +359,24 @@ HOOK_METHOD(Menu_Mods, Render, () -> void) {
 			g_Manager->_buttonsSprite.SetFrame(&string("XboxOne"), 3);//you cant be fucking serious, i keep forgetting frame is a fucking float!
 			g_Manager->_buttonsSprite.SetLayerFrame(0, 3);
 			g_Manager->_buttonsSprite.Update();
-			g_Manager->_buttonsSprite.Render(tabbtnpos, &z, &z);
+			g_Manager->_buttonsSprite.Render(&tabbtnpos, &z, &z);
 		}
 		for (int c = 0; c < 11; c++) {
 			this->ModsMenuSprite.GetLayer(c)->_visible = true;
 		}
 		if (modman->_mods.size() > minmods) {
-			entry->_scaleX = 1;
-			entry->_scaleY = 1;
-			g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
+			entry._scaleX = 1;
+			entry._scaleY = 1;
+			g_Manager->_font7_TeamMeat_10.DrawStringScaled(entry);
 			if (issearching) {
-				entry->_text = "|";
-				entry->_color._alpha = 0.8f;
-				if (cursorblink) { entry->_color._alpha = 0.3f; }
+				entry._text = "|";
+				entry._color._alpha = 0.8f;
+				if (cursorblink) { entry._color._alpha = 0.3f; }
 				if (lastKeyPressTimeMap[-1] < currentTime) { cursorblink = !cursorblink; lastKeyPressTimeMap[-1] = currentTime + 10; }
-				//entry->_x += 2;
-				entry->_x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
-				entry->_scaleY = 1.2f;
-				g_Manager->_font7_TeamMeat_10.DrawStringScaled(*entry);
+				//entry._x += 2;
+				entry._x += g_Manager->_font7_TeamMeat_10.GetStringWidth(searchstr.c_str());
+				entry._scaleY = 1.2f;
+				g_Manager->_font7_TeamMeat_10.DrawStringScaled(entry);
 			}
 		}
 }

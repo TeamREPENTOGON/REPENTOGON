@@ -56,10 +56,10 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
 }}
 	
 	Entity_Player* _player : 0x360;
-	ColorMod* _dirtColor : 0xe28;
 	bool _isFollower : 0xcc4;
 	bool _isDelayed : 0xcc5;
 	int _state : 0xcd4;
+	ColorMod _dirtColor : 0xe28;
 	
     __vtable {
 		skip; // Free

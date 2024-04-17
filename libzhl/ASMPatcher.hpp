@@ -248,6 +248,17 @@ public:
 		EBP
 	};
 
+	enum class XMMRegisters {
+		XMM0,
+		XMM1,
+		XMM2,
+		XMM3,
+		XMM4,
+		XMM5,
+		XMM6,
+		XMM7
+	};
+
 	enum class LeaOps {
 		PLUS,
 		MULT
@@ -316,8 +327,28 @@ public:
 	 */
 	ASMPatch& MoveToMemory(Registers src, int32_t offset, Registers dst);
 
-	/* Move an immediate into a register */
+	/* Move an immediate into a register. */
 	ASMPatch& MoveImmediate(Registers dst, int32_t immediate);
+
+	/* Copy the value of one register into another.
+	 * 
+	 * This function will only work with the low 32-bits of registers. For 
+	 * instance, MoveImmediate(XMM0, EAX) will copy the value of EAX in the
+	 * low 32 bits of XMM0 (MM0). 
+	 * 
+	 * Please remember that moving to an (X)MM register zeroes the bits that 
+	 * are unaffected.
+	 */
+	ASMPatch& CopyRegister(std::variant<Registers, XMMRegisters> const& dst, 
+		std::variant<Registers, XMMRegisters> const& src);
+
+	/* Copy the value of one register into another. 
+	 * 
+	 * This function will only with the low 8-bits of registers. As a consequence, 
+	 * you cannot use to move to/from (X)MM registers. You can only use with 
+	 * general purpose registers.
+	 */
+	ASMPatch& CopyRegister8(Registers dst, Registers src);
 
 	/* Allocate space on the stack for the return value of a function that returns 
 	 * a complex type. */
@@ -440,11 +471,13 @@ private:
 	static void _Init();
 
 	uint8_t RegisterTox86(Registers reg);
+	uint8_t RegisterTox86(XMMRegisters reg);
 
 	// friend void* ASMPatcher::PatchAt(void*, const char*);
 
 	std::bitset<8> ModRM(Registers reg, int32_t value);
-	std::bitset<8> ModRM(Registers src, Registers dst);
+	std::bitset<8> ModRM(std::variant<Registers, XMMRegisters> const& src, 
+		std::variant<Registers, XMMRegisters> const& dst, bool isRegDst);
 	std::vector<std::unique_ptr<ASMNode>> _nodes;
 	static std::map<ASMPatch::Registers, std::bitset<8>> _ModRM;
 	static uint32_t RegisterToBackupRegister(Registers reg);

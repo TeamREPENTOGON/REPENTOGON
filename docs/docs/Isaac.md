@@ -307,6 +307,9 @@ ___
 ### ShowErrorDialog () {: aria-label='Functions' }
 #### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
+
+???- info "Note"
+	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
 ___
 ### TriggerWindowResize () {: aria-label='Functions' }
 #### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }

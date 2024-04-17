@@ -194,3 +194,8 @@ TypeInfo vector_CostumeSpriteDesc {
     Size 12;
     Align 4;
 };
+
+TypeInfo deque_LootListEntry {
+	Size 20;
+	Align 4;
+};

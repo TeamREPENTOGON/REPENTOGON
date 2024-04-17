@@ -51,4 +51,5 @@ __thiscall void Level::InitializeDevilAngelRoom(bool ForceAngel, bool ForceDevil
 
 struct Level {
 	uint32_t _levelStateFlag : 0x1822c;
+	uint32_t _greedwavesclearedwithoutredheartdamage : 0x18204;
 } : 0x18230;

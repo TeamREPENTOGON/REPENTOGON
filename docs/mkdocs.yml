@@ -157,6 +157,7 @@ nav:
     - Language: enums/Language.md
     - LineCheckMode: enums/LineCheckMode.md
     - MainMenuType: enums/MainMenuType.md
+    - MinimapState: enums/MinimapState.md
     - ModCallbacks: enums/ModCallbacks.md
     - MouseButton: enums/MouseButton.md
     - NullPickupSubType: enums/NullPickupSubType.md
@@ -351,6 +352,7 @@ nav:
 - Tags: tags.md
 - Example Mods:
   - Capsules: examples/Capsules.md
+  - Deal Chance: examples/DealChance.md
   - Weighted Outcomes: examples/WeightedOutcomes.md
   - Beams: examples/Beams.md
   - Color Modifiers: examples/ColorModifiers.md
