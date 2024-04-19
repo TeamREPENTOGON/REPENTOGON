@@ -1,5 +1,97 @@
-v1.0.Xx - 
+v1.??? -
+Modified:
+* Callbacks:
+	- MC_PRE_PLAYERHUD_TRINKET_RENDER: now provides [Vector] CropOffset parameter and accepts CropOffset vector in the return table.
 Additions:
+* Lootlist:
+	- constructor
+	- PushEntry(Type, Variant, SubType, Seed = Random(), RNG = nil)
+	- GetEntries
+* LootListEntry:
+	- [Get]Type/Variant/SubType/Seed/RNG
+* EntityPlayer:
+	- Get/SetBombPlaceDelay
+	- Get/SetBloodLustCounter
+	- New functionality for blocking items:
+		BlockCollectible(int itemID)
+		UnblockCollectible(int itemID)
+		IsCollectibleBlocked(int itemID)
+	- Change to HasCollectible and GetCollectibleNum:
+		new optional boolean (IgnoreBlock), ignores collectible block when set to true
+* EntityTear:
+	- GetTearHaloSprite
+	- GetTearEffectSprite
+	- GetDeadEyeSprite
+* EntityPickup:
+	- GetLootList(ShouldAdvance = false)
+	- GetPickupGhost
+	- UpdatePickupGhosts
+* EntityNPC:
+	- GetFireplaceLoot
+	- GetShopkeeperLoot
+* Input:
+	- GetDeviceNameByIdx
+* Game
+	- SetBloom
+* Console:
+	* Added a popup error when a script ran by luamod errors, highlighting the last error thrown, to prevent it from being instantly buried
+* Isaac:
+	- StartNewGame(int playertype, int challenge, int difficulty, int seed), allows starting the game from within the main menu
+* MenuManager:
+	- SetInputMask(int mask) for use with the new ButtonActionBitwise enum, selectively allows/disallows the game's menu read certain inputs, useful for custom menus
+	- GetInputMask()
+* MinimapState Enum:
+	- Used for Minimap.SetState() and Minimap.GetState().
+* RoomConfig:
+	RoomConfig:GetStage(StbType)
+* RoomConfigStage
+	* Get/Set DisplayName, Suffix, PlayerSpot, BossSpot, Music, Backdrop
+	* GetRoomSet(Mode)
+* RoomConfigSet:
+	* Acts like other ArrayProxy classes, but for RoomConfigRoom
+	* __len and Get method, Size const variable
+* Level
+	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
+* Cutscenes
+	* Support for custom music for the music attribute on cutscenes.xml
+* Callbacks:
+	- MC_PRE_PICKUP_GET_LOOT_LIST callback (Pickup, bool ShouldAdvance) - Return LootList to change loot content
+	- MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (Pickup) - Return true to apply pickup ghost to your pickup entitiy, false to cancel it
+	- MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED (Player, ItemConfigItem)
+	- MC_POST_ROOM_TRIGGER_EFFECT_REMOVED (ItemConfigItem)
+	- MC_PRE_X_GRID_COLLISION and MC_X_GRID_COLLISION (EntityX, int gridIndex, GridEntity or nil) - PLAYER/TEAR/FAMILIAR/BOMB/PICKUP/PROJECTILE/NPC, Return true on PRE to ignore collision.
+	- MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM(EntityPlayer, ActiveSlot, Vector offset, float alpha, float scale, Vector chargeBarOffset) - Return true to cancel rendering
+* All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
+/newline/
+Fixes:
+	* Fixed bonehearts not displaying correctly when set through players.xml
+	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
+	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready
+	* Reverted Flooded Caves suffix to _downpour so enemies keep their existing custom spritesheet
+	* Potentially fixed reported but unreproducable instance of a trapdoor deal room variant being generated outside of floor 8
+/newline/
+Modified:
+* Game:ShowGenericLeaderboard no longer fades to main menu
+/newline/
+Fixes:
+* Fixed incorrect declaration for ItemConfig::GetTaggedItems
+/newline/
+v1.0.8c - 
+Fixes:
+* Fixed adding a callback function with an optional param to a vanilla callback that does not support optional params leading to that function never being called, where it used to previously.
+* Fixed the result of Isaac.GetCallbacks() no longer having a metatable.
+/newline/
+v1.0.8b - 
+Fixes:
+* Fixed the MC_PLAYER_GET_HEALTH_TYPE callback causing the last heart to render underneath the first one.
+/newline/
+v1.0.8a - 
+Fixes:
+* Fixed issues with EntityPlayer:GetSmeltedTrinkets() and EntityPlayer:GetFootprintColor()
+/newline/
+v1.0.8 - 
+Additions:
+* New general callback improvements to address some performance issues on some scenarios
 * Deal rooms can now generate variants above 100
 * Add new BlendTypes CONSTANT, OVERLAY
 * EntityPlayer:
@@ -11,6 +103,10 @@ Additions:
 	- GetBibleUpgrades(ItemPoolType)
 * Player:
 	- Added Player:AddNullItemEffect and Player:AddCollectibleEffect, both with the same params (int type,bool costume, int cooldown=defaultcd, bool additive=true)
+* Room:
+	- GetBossVictoryJingle
+	- SaveState
+* RoomDescriptor.BossDeathSeed
 Fixes:
 * Fixes a crash on MC_PRE_LEVEL_SELECT when a callback returned null
 * Fixed a crash that could happen when you ran stage and achievement-related commands with bad syntax (missing a space)
@@ -20,6 +116,7 @@ Fixes:
 * Fix previously incorrect BlendType enums (ADDITIVE -> CONSTANT, MULTIPLICATIVE -> ADDITIVE)
 * Fix ItemPool:GetPillColor not checking all identified effects
 * Fix potential buffer overflow in ItemPool:UnidentifyPill
+* Fix the console crashing when running a command from history in some cases
 /newline/
 v1.0.7c - 
 Additions:
