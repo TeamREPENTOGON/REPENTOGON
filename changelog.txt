@@ -64,7 +64,6 @@ Additions:
 	- MC_PRE_PLAYER_REVIVE(EntityPlayer) - Return false to prevent the player from reviving
 	- MC_POST_PLAYER_REVIVE(EntityPlayer)
 	- MC_POST_PROJECTILE/TEAR_DEATH (EntityProjectile/EntityTear)
-	- MC_PRE/POST_PLAYER_REVIVE (EntityPlayer)
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
 Fixes:

@@ -341,7 +341,7 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::M
 
 		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
 			.push(param)
-			.push(entity, lua::Metatables::ENTITY)
+			.push(entity, metatable)
 			.push(gridIndex)
 			.push(gridEntity, lua::Metatables::GRID_ENTITY)
 			.call(1);
@@ -360,7 +360,7 @@ bool RunGridCollisionCallbacks(Entity* entity, const int gridIndex, const lua::M
 
 		lua::LuaCaller(L).push(postcallbackid)
 			.push(param)
-			.push(entity, lua::Metatables::ENTITY)
+			.push(entity, metatable)
 			.push(gridIndex)
 			.push(gridEntity, lua::Metatables::GRID_ENTITY)
 			.call(0);
