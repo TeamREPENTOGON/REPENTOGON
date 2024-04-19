@@ -121,6 +121,7 @@ void PerformASMPatches() {
 	// Player
 	ASMPatchCheckFamiliar();
 	ASMPatchPlayerStats();
+	ASMPatchPlayerNoShake();
 
 	// Render
 	LuaRender::PatchglDrawElements();
