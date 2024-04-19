@@ -10,4 +10,6 @@ struct RoomTransition depends (ANM2) { {{
 	inline bool IsRenderingBossIntro() {
 		return GetTransitionMode() == 2;
 	}
-}} } : 0x344;
+}}
+	ANM2 _playerExtraPortraitANM2 : 0x224;
+} : 0x344;
