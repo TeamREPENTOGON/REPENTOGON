@@ -18,3 +18,5 @@ void ASMPatchPrePickupComposted();
 void ASMPatchPostChampionRegenCallback();
 void ASMPatchTrinketRender();
 void ASMPatchPickupUpdatePickupGhosts();
+void ASMPatchProjectileDeath();
+void ASMPatchTearDeath();

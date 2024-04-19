@@ -87,6 +87,8 @@ void PerformASMPatches() {
 	ASMPatchPostChampionRegenCallback();
 	ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
+	ASMPatchProjectileDeath();
+	ASMPatchTearDeath();
 
 	// Delirium
 	delirium::AddTransformationCallback();
