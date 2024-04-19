@@ -3913,6 +3913,7 @@ HOOK_METHOD_PRIORITY(PersistentGameData, TryUnlock, -9999, (int achievid) -> boo
 //	super(slot, pos, scale);
 //}
 
+//MC_PRE/POST_MINIMAP_UPDATE (1477/1478)
 HOOK_METHOD(Minimap, Update, () -> void) {
 	const int precallbackid = 1477;
 	if (CallbackState.test(precallbackid - 1000)) {
@@ -3933,6 +3934,7 @@ HOOK_METHOD(Minimap, Update, () -> void) {
 	}
 }
 
+//MC_PRE/POST_MINIMAP_RENDER (1479/1480)
 HOOK_METHOD(Minimap, Render, () -> void) {
 	const int precallbackid = 1479;
 	if (CallbackState.test(precallbackid - 1000)) {
@@ -4004,6 +4006,45 @@ HOOK_METHOD(Room, TriggerEffectRemoved, (ItemConfig_Item* item, int unused) -> v
 		lua::LuaCaller(L).push(callbackid)
 			.pushnil()
 			.push(item, lua::Metatables::ITEM)
+			.call(1);
+	}
+}
+
+//MC_PRE/POST_PLAYER_REVIVE (1482)
+HOOK_METHOD(Entity_Player, Revive, () -> void) {
+		const int precallbackid = 1481;
+		if (CallbackState.test(precallbackid - 1000)) {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+			Entity_Player* ent = (Entity_Player*)this;
+
+			lua::LuaResults lua_result = lua::LuaCaller(L).push(precallbackid)
+				.push(this->GetPlayerType())
+				.push(ent, lua::Metatables::ENTITY_PLAYER)
+				.call(1);
+
+			if (!lua_result && lua_isboolean(L, -1) && lua_toboolean(L, -1) == false) {
+				return;
+			}
+		}
+
+	super();
+
+	const int postcallbackid = 1482;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		Entity_Player* ent = (Entity_Player*)this;
+
+		lua::LuaCaller(L).push(postcallbackid)
+			.push(this->GetPlayerType())
+			.push(ent, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
 }
