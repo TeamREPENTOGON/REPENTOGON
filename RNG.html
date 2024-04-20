@@ -5225,6 +5225,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#rng" class="md-nav__link">
+    <span class="md-ellipsis">
+      RNG ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#randomint" class="md-nav__link">
     <span class="md-ellipsis">
       RandomInt ()
@@ -6501,6 +6510,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#rng" class="md-nav__link">
+    <span class="md-ellipsis">
+      RNG ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#randomint" class="md-nav__link">
     <span class="md-ellipsis">
       RandomInt ()
@@ -6605,6 +6623,12 @@
 
 <h1 id="class-rng">Class "RNG"<a class="headerlink" href="#class-rng" title="Permanent link">⚓︎</a></h1>
 <h2 id="modified-functions">Modified Functions<a class="headerlink" href="#modified-functions" title="Permanent link">⚓︎</a></h2>
+<h3 aria-label="Modified Functions" id="rng">RNG ()<a class="headerlink" href="#rng" title="Permanent link">⚓︎</a></h3>
+<h4 :.copyable=":.copyable" aria-label="Modified Functions" id="rng-int-seed-2853650767-int-shiftidx-35">RNG ( int seed = 2853650767, int shiftIdx = 35 )<a class="headerlink" href="#rng-int-seed-2853650767-int-shiftidx-35" title="Permanent link">⚓︎</a></h4>
+<p>Now takes an optional seed and an optional shiftIdx.
+This can be used to avoid separating construction of the RNG object and a call to SetSeed.</p>
+<p>The function validates both the seed and the shift index.</p>
+<hr />
 <h3 aria-label="Modified Functions" id="randomint">RandomInt ()<a class="headerlink" href="#randomint" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="int-randomint-int-min-int-max">int RandomInt ( int Min, int Max )<a class="headerlink" href="#int-randomint-int-min-int-max" title="Permanent link">⚓︎</a></h4>
 <p>Can now emulate <code>math.random</code> by accepting a second argument to generate a number between the first argument and it, inclusive. Negative values are usable in this mode and will properly generate a number between <code>min</code> and <code>max</code> regardless of sign.</p>
