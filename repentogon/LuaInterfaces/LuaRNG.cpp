@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "Log.h"
 #include "HookSystem.h"
 
 LUA_FUNCTION(Lua_RNGSetSeed) {
@@ -108,6 +109,53 @@ LUA_FUNCTION(Lua_RNG_PhantomVector) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RNG_Constructor) {
+	int seed = luaL_optinteger(L, 2, 0xAA17414F);
+	int shiftIdx = luaL_optinteger(L, 3, 35);
+
+	if (seed == 0) {
+		return luaL_error(L, "Invalid seed 0 for RNG object\n");
+	}
+
+	if (shiftIdx < 0 || shiftIdx > 80) {
+		return luaL_error(L, "Invalid shift index %d for RNG object\n", shiftIdx);
+	}
+
+	void* key = lua::GetMetatableKey(lua::Metatables::RNG);
+	RNG* rng = lua::luabridge::UserdataValue<RNG>::place(L, key);
+	rng->SetSeed(seed, shiftIdx);
+
+	return 1;
+}
+
+static void OverrideRNGConstructor(lua_State* L) {
+	lua::LuaStackProtector protector(L);
+
+	int result = lua_getglobal(L, "RNG");
+	if (result == LUA_TNIL) {
+		lua_pop(L, 1);
+		ZHL::Log("[ERR] No global \"RNG\" in Lua environment\n");
+		return;
+	} 
+	else if (result != LUA_TTABLE) {
+		lua_pop(L, 1);
+		ZHL::Log("[ERR] Global \"RNG\" is not a table\n");
+		return;
+	}
+
+	result = lua_getmetatable(L, -1);
+	if (result == 0) {
+		lua_pop(L, 1);
+		ZHL::Log("[ERR] Global \"RNG\" has not metatable\n");
+		return;
+	}
+
+	lua_pushcfunction(L, Lua_RNG_Constructor);
+	lua_setfield(L, -2, "__call");
+	lua_pop(L, 2);
+	return;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -123,5 +171,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ NULL, NULL }
 	};
 
+	OverrideRNGConstructor(_state);
 	lua::RegisterFunctions(_state, lua::Metatables::RNG, functions);
 }
