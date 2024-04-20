@@ -67,6 +67,7 @@ Additions:
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 /newline/
 Fixes:
+    * Fixed `Isaac.CreateTimer` crashing the game when setting the delay argument to 0
 	* Fixed bonehearts not displaying correctly when set through players.xml
 	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
 	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready

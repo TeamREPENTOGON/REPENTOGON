@@ -155,7 +155,7 @@ LUA_FUNCTION(Lua_CreateTimer) {
 	}
 
 	int delay = (int)luaL_checkinteger(L, 2);
-	if (delay < 0) {
+	if (delay <= 0) {
 		delay = 1;
 	}
 
