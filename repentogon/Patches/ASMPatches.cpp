@@ -122,6 +122,7 @@ void PerformASMPatches() {
 	ASMPatchCheckFamiliar();
 	ASMPatchPlayerStats();
 	ASMPatchPlayerNoShake();
+	ASMPatchPlayerItemNoMetronome();
 
 	// Render
 	LuaRender::PatchglDrawElements();

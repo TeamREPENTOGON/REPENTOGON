@@ -199,3 +199,34 @@ void ASMPatchPlayerNoShake() {
 	ASMPatchNightmareSceneNoShake();
 	ASMPatchBossIntroNoShake();
 }
+
+bool __stdcall PlayerItemNoMetronome(int itemID) {
+	XMLAttributes itemXML = XMLStuff.ItemData->GetNodeById(itemID);
+
+	if (!itemXML["nometronome"].empty()) {
+		std::string noMetronome = itemXML["nometronome"];
+		return noMetronome == "true" ? false : noMetronome == "false" ? true : true;
+	}
+
+	return itemID != 488 && itemID != 475 && itemID != 422 && itemID != 326 && itemID != 482 && itemID != 636;
+
+}
+
+void ASMPatchPlayerItemNoMetronome() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan signature("81ffe80100000f84????????");
+	signature.Scan();
+
+	void* addr = signature.GetAddress();
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // playerType
+		.AddInternalCall(PlayerItemNoMetronome)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
+		.AddRelativeJump((char*)addr + 0x11E);
+	sASMPatcher.PatchAt(addr, &patch);
+}
