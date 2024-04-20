@@ -54,6 +54,10 @@ Additions:
 	* Set/GetGreedWavesClearedWithoutRedHeartDamage: you read that right, finally, the highly requested function is here! 
 * Cutscenes
 	* Support for custom music for the music attribute on cutscenes.xml
+* NightmareScene
+	* GetPlayerExtraPortraitSprite
+* RoomTransition
+	* GetPlayerExtraPortraitSprite
 * Callbacks:
 	- MC_PRE_PICKUP_GET_LOOT_LIST callback (Pickup, bool ShouldAdvance) - Return LootList to change loot content
 	- MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (Pickup) - Return true to apply pickup ghost to your pickup entitiy, false to cancel it
@@ -65,6 +69,8 @@ Additions:
 	- MC_POST_PLAYER_REVIVE(EntityPlayer)
 	- MC_POST_PROJECTILE/TEAR_DEATH (EntityProjectile/EntityTear)
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
+* Added the "noshake" attribute to the players.xml which can "disable" the player portrait shaking animation in the nightmare scene/boss intro
+* Added the "nometronome" attribute to items.xml to prevent items from being picked by Metronome
 /newline/
 Fixes:
     * Fixed `Isaac.CreateTimer` crashing the game when setting the delay argument to 0
@@ -73,12 +79,10 @@ Fixes:
 	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready
 	* Reverted Flooded Caves suffix to _downpour so enemies keep their existing custom spritesheet
 	* Potentially fixed reported but unreproducable instance of a trapdoor deal room variant being generated outside of floor 8
+	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
 /newline/
 Modified:
 * Game:ShowGenericLeaderboard no longer fades to main menu
-/newline/
-Fixes:
-* Fixed incorrect declaration for ItemConfig::GetTaggedItems
 /newline/
 v1.0.8c - 
 Fixes:
