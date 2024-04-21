@@ -68,6 +68,9 @@ Additions:
 	- MC_PRE_PLAYER_REVIVE(EntityPlayer) - Return false to prevent the player from reviving
 	- MC_POST_PLAYER_REVIVE(EntityPlayer)
 	- MC_POST_PROJECTILE/TEAR_DEATH (EntityProjectile/EntityTear)
+	- MC_POST_BOSS_INTRO_SHOW (int BossID1,int BossID2)
+	- MC_POST_ROOM_TRANSITION_UPDATE ()
+	- MC_POST_ROOM_TRANSITION_RENDER ()
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 * Added the "noshake" attribute to the players.xml which can "disable" the player portrait shaking animation in the nightmare scene/boss intro
 * Added the "nometronome" attribute to items.xml to prevent items from being picked by Metronome

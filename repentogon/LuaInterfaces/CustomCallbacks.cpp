@@ -4048,3 +4048,56 @@ HOOK_METHOD(Entity_Player, Revive, () -> void) {
 			.call(1);
 	}
 }
+
+//MC_POST_BOSS_INTRO_SHOW (1270)
+HOOK_METHOD(RoomTransition, StartBossIntro, (unsigned int bossID1, unsigned int bossID2) -> void) {
+	super(bossID1, bossID2);
+
+	const int callbackid = 1270;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(bossID1)
+			.push(bossID2)
+			.call(1);
+	}
+}
+
+//MC_POST_ROOM_TRANSITION_UPDATE (1271)
+HOOK_METHOD(RoomTransition, Update, () -> void) {
+	super();
+
+	const int callbackid = 1271;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(_mode)
+			.call(1);
+	}
+}
+
+//MC_POST_ROOM_TRANSITION_RENDER (1272)
+HOOK_METHOD(RoomTransition, Render, () -> void) {
+	super();
+
+	const int callbackid = 1272;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(_mode)
+			.call(1);
+	}
+}
