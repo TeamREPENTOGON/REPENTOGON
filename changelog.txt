@@ -71,6 +71,7 @@ Additions:
 	- MC_POST_BOSS_INTRO_SHOW (int BossID1,int BossID2)
 	- MC_POST_ROOM_TRANSITION_UPDATE ()
 	- MC_POST_ROOM_TRANSITION_RENDER ()
+	- MC_PRE_X_UPDATE (EntityX) - PLAYER/TEAR/FAMILIAR/BOMB/PICKUP/KNIFE/PROJECTILE/LASER/EFFECT/SLOT, return true to skip internal code, same as MC_PRE_NPC_UPDATE
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 * Added the "noshake" attribute to the players.xml which can "disable" the player portrait shaking animation in the nightmare scene/boss intro
 * Added the "nometronome" attribute to items.xml to prevent items from being picked by Metronome
