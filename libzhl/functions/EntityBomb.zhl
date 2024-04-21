@@ -10,6 +10,39 @@ __thiscall void Entity_Bomb::UpdateDirtColor();
 struct Entity_Bomb depends (ANM2) : public Entity { {{
 	inline int* GetExplosionCountdown() { return &this->_explosionCountdown1; }
 }}
+
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		
+		override
+		"558bec6aff68????????64a1????????5081ece4000000a1????????33c58945??5657508d45??64a3????????8bf9":
+		void Update();
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+	};
+	
 	int _explosionCountdown1 : 0x360;
 	float _height : 0x36c;
 	float _fallingSpeed : 0x370;

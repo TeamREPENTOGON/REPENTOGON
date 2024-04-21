@@ -19,4 +19,37 @@ struct Entity_Laser : public Entity { {{
 	inline bool* GetDisableFollowParent() { return (bool*)((char*)this + 0x434); }
 	inline bool* GetOneHit() { return (bool*)((char*)this + 0x465); }
 	inline std_vector_uint* GetHitList() { return (std_vector_uint*)((char*)this + 0x470); }
-}} } : 0x4b8;
+}} 
+
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		
+		override
+		"558bec6aff68????????64a1????????5083ec54a1????????33c58945??5657508d45??64a3????????8bf9":
+		void Update();
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+	};
+} : 0x4b8;

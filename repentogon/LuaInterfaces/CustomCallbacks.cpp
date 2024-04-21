@@ -411,6 +411,52 @@ HOOK_METHOD(Entity_Laser, DoDamage, (Entity* entity, float damage) -> void) {
 	}
 }
 
+// Returns true if the Update logic should be skipped.
+bool RunPreUpdateCallback(Entity* entity, const lua::Metatables metatable, const int callbackid) {
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller& lua_caller = lua::LuaCaller(L).push(callbackid);
+		if (metatable == lua::Metatables::ENTITY_KNIFE) {
+			lua_caller.push(*entity->GetSubType());
+		}
+		else {
+			lua_caller.push(*entity->GetVariant());
+		}
+		lua::LuaResults result = lua_caller.push(entity, metatable).call(1);
+
+		if (!result && lua_isboolean(L, -1)) {
+			return lua_toboolean(L, -1);
+		}
+	}
+	return false;
+}
+
+// Still call Entity::Update() if we skip the subclass' update,
+// since that aligns with how MC_PRE_NPC_UPDATE works.
+#define HOOK_PRE_UPDATE_CALLBACK(_type, _metatable, _callbackid) \
+HOOK_METHOD(_type, Update, () -> void) { \
+	if (!RunPreUpdateCallback(this, _metatable, _callbackid)) { \
+		super(); \
+	} else { \
+		((Entity*)this)->Original_Update(); \
+	} \
+}
+
+// PRE_X_UPDATE (1160 ~ 1168) (PRE_SLOT_UPDATE is 1169)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Player, lua::Metatables::ENTITY_PLAYER, 1160)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Tear, lua::Metatables::ENTITY_TEAR, 1161)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Familiar, lua::Metatables::ENTITY_FAMILIAR, 1162)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Bomb, lua::Metatables::ENTITY_BOMB, 1163)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Pickup, lua::Metatables::ENTITY_PICKUP, 1164)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Knife, lua::Metatables::ENTITY_KNIFE, 1165)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Projectile, lua::Metatables::ENTITY_PROJECTILE, 1166)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Laser, lua::Metatables::ENTITY_LASER, 1167)
+HOOK_PRE_UPDATE_CALLBACK(Entity_Effect, lua::Metatables::ENTITY_EFFECT, 1168)
+
 // NPC_PICK_TARGET
 HOOK_METHOD(Entity_NPC, GetPlayerTarget, () -> Entity*) {
 	Entity* unmodifiedTarget = super();
@@ -2099,17 +2145,36 @@ HOOK_METHOD(Entity_Slot, Init, (unsigned int Type, unsigned int Variant, unsigne
 	}
 }
 
-//POST_SLOT_UPDATE (1122)
+// PRE/POST_SLOT_UPDATE (1169 / 1122)
 HOOK_METHOD(Entity_Slot, Update, () -> void) {
-	super();
-	const int callbackid = 1122;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int precallbackid = 1169;
+	if (CallbackState.test(precallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		lua::LuaResults result = lua::LuaCaller(L).push(precallbackid)
+			.push(*this->GetVariant())
+			.pushLuabridge(this, lua::metatables::EntitySlotMT)
+			.call(1);
+
+		if (!result && lua_isboolean(L, -1) && (bool)lua_toboolean(L, -1) == true) {
+			((Entity*)this)->Original_Update();
+			return;
+		}
+	}
+
+	super();
+
+	const int postcallbackid = 1122;
+	if (CallbackState.test(postcallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(postcallbackid)
 			.push(*this->GetVariant())
 			.pushLuabridge(this, lua::metatables::EntitySlotMT)
 			.call(1);

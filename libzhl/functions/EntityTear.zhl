@@ -8,6 +8,38 @@ __thiscall bool Entity_Tear::HandleCollision(Entity* collider, bool low);
 __thiscall Entity_Tear* Entity_Tear::MakeMultidimensionalCopy(Entity * spawner);
 
 struct Entity_Tear depends (ANM2) : public Entity {
+	__vtable {
+		skip; // Free
+		skip; // Init
+		skip; // PreUpdate
+		
+		override
+		"558bec6aff68????????64a1????????50b8a0210000":
+		void Update();
+		
+		skip; // Interpolate
+		skip; // Render
+		skip; // RenderShadowLayer
+		skip; // PostRender
+		skip; // TakeDamage
+		skip; // Kill
+		skip; // Remove
+		skip; // TriggerGlowingHourglass
+		skip; // GetRenderZ
+		skip; // CanOverwrite
+		skip; // SetColor
+		skip; // SetCollisionDamage
+		skip; // ClearReferences
+		skip; // CanShutDoors
+		skip; // IsBoss
+		skip; // IsValidTarget
+		skip; // TryThrow
+		skip; // GetForwardVector
+		skip; // HandleCollision
+		skip; // ResetColor
+		skip; // LoadEntityConfig
+	};
+	
 	float _deadEyeIntensity : 0x3b4;
 	ANM2 _tearHaloANM2 : 0x3fc;
 	ANM2 _tearEffectANM2 : 0x510;
