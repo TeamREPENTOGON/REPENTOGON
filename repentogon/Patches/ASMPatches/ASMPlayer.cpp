@@ -200,16 +200,14 @@ void ASMPatchPlayerNoShake() {
 	ASMPatchBossIntroNoShake();
 }
 
-bool __stdcall PlayerItemNoMetronome(int itemID) {
-	XMLAttributes itemXML = XMLStuff.ItemData->GetNodeById(itemID);
+constexpr char ITEM_NO_METRONOME[] = "nometronome";  // Prevent items from being picked by Metronome.
 
-	if (!itemXML["nometronome"].empty()) {
-		std::string noMetronome = itemXML["nometronome"];
-		return noMetronome == "true" ? false : noMetronome == "false" ? true : true;
+bool __stdcall PlayerItemNoMetronome(int itemID) {
+	if (XMLStuff.ItemData->HasCustomTag(itemID, ITEM_NO_METRONOME)) {
+		return false;
 	}
 
 	return itemID != 488 && itemID != 475 && itemID != 422 && itemID != 326 && itemID != 482 && itemID != 636;
-
 }
 
 void ASMPatchPlayerItemNoMetronome() {
