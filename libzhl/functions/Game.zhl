@@ -83,6 +83,9 @@ static void Game::ProcessInput();
 "558bec6aff68????????64a1????????5081eca4000000a1":
 __thiscall void Game::Start(int playertype,int challenge,Seeds seeds,unsigned int difficulty);
 
+"558bec6aff68????????64a1????????5081eca0000000":
+__stdcall void Game::StartFromRerunState(GameState * state);
+
 "558bec51807d??000f28fb":
 __thiscall void Game::SetColorModifier(ColorModState* color, bool lerp, float rate<xmm3>);
 

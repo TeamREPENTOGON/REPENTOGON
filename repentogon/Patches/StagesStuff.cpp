@@ -226,48 +226,10 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	super(in, out, player);
 }
 
-const char* suffixes[35] = {
-	"_basement",
-	"_cellar",
-	"_burningbasement",
-	"_caves",
-	"_catacombs",
-	"_downpour", // rip
-	"_depths",
-	"_necropolis",
-	"_dankdepths",
-	"_womb",
-	"_utero",
-	"_scarredwomb",
-	"_bluewomb",
-	"_sheol",
-	"_cathedral",
-	"_darkroom",
-	"_chest",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"", // void doesn't work, local stage ids are used
-	"_downpour",
-	"_dross",
-	"_mines",
-	"_ashpit",
-	"_mausoleum",
-	"_gehenna",
-	"_corpse",
-	"", // there will never be a mortis
-	"_home"
-};
-
 // helper for asm patch
 bool dealRoomsPatched[2] = { false, false };
 
-HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool) {
 	super(Stage, Mode);
 
 	if (Stage == 0) {
@@ -283,9 +245,6 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 			}
 			dealRoomsPatched[Mode] = true;
 		}
-	}
-	else if (Stage < 36) {
-		this->_stages[Stage]._suffix = suffixes[Stage-1];
 	}
 }
 

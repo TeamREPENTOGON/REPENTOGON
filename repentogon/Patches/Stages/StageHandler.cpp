@@ -10,10 +10,12 @@
 #include <unordered_map>
 #include <sstream>
 
+extern int toint(const string& str);
+
 namespace StageHandler {
 	const unsigned int BUFFER_STAGEID = 23;
 	std::unordered_map<std::string, RoomSet> binaryMap;
-	bool stageOverwritten[37] = { false };
+	std::pair<bool, std::string> stageState[37];
 
 	RoomSet* LoadBinary(std::string* path) {
 		RoomConfig* roomConfig = g_Game->GetRoomConfig();
@@ -65,15 +67,16 @@ namespace StageHandler {
 	bool SwapStage(int stageId, const char* stageName, bool restoring) {
 		// i'm doing xmlData this way to avoid adding an XMLData.h include to StageHandler.h (and thus all other cpp files that use it)
 		XMLAttributes xmlData = (stageName != nullptr ? XMLStuff.StageData->GetNodeByName(stageName) : XMLStuff.StageData->GetNodeById(stageId));
-		std::string comp = restoring ? xmlData["id"] : xmlData["basestage"];
+		int comp = toint(restoring ? xmlData["id"] : xmlData["basestage"]);
 
 		ZHL::Logger logger(true);
-		if (comp.empty()) {
-			logger.Log("[ERROR] StageConfig::SwapStage: no XML data for stage %s!\n", (stageName != nullptr ? stageName : std::to_string(stageId).c_str()));
+		/*
+		if (comp == 0) {
+			logger.Log("[ERROR] StageConfig::SwapStage: no XML data for stage %s!\n", stageName);
 		}
+		*/
 
-		if (!restoring && (comp != "" && !stageOverwritten[stoi(comp)])
-			|| (comp != "" && stageOverwritten[stoi(comp)]))
+		if ((!restoring && !stageState[comp].first) || (restoring && stageState[comp].first))
 		{
 			RoomConfig* roomConfig = g_Game->GetRoomConfig();
 			std::string binary = xmlData["root"] + xmlData["path"];
@@ -81,12 +84,13 @@ namespace StageHandler {
 			std::string gfxRoot = xmlData["bossgfxroot"];
 			std::string playerSpot = gfxRoot + xmlData["playerspot"];
 			std::string bossSpot = gfxRoot + xmlData["bossspot"];
-			std::string displayName = xmlData["name"];
+			std::string displayName = xmlData["displayname"].empty() ? xmlData["name"]: xmlData["displayname"];
 			std::string suffix = xmlData["suffix"];
+			std::string name = (restoring ? tokens[comp] : xmlData["name"]);
 			int musicId = stoi(xmlData["music"]);
 			int backdropId = stoi(xmlData["backdrop"]);
 
-			logger.Log("[INFO] StageHandler::SwapStage: id %d, path %s, greed path %s, gfx path %s, playerSpot %s, bossSpot %s, suffix %s, musicId %d, backDropId %d\n", stageId, binary.c_str(), greedBinary.c_str(), gfxRoot.c_str(), playerSpot.c_str(), suffix.c_str(), bossSpot.c_str(), musicId, backdropId);
+			logger.Log("[INFO] StageHandler::SwapStage: name %s, id %d, path %s, greed path %s, gfx path %s, playerSpot %s, bossSpot %s, suffix %s, musicId %d, backDropId %d\n", name.c_str(), stageId, binary.c_str(), greedBinary.c_str(), gfxRoot.c_str(), playerSpot.c_str(), bossSpot.c_str(), suffix.c_str(), musicId, backdropId);
 
 			RoomConfig_Stage* stage = &roomConfig->_stages[stageId];
 			std::unordered_map<std::string, RoomSet>::const_iterator itr;
@@ -94,7 +98,6 @@ namespace StageHandler {
 			for (size_t i = 0; i < 2; i++)
 			{
 				std::string* path = i ? &greedBinary : &binary;
-				// i was having trouble crashing here when trying to get the c_str of path, so fuck it. we're doing it this way
 				logger.Log("[INFO] Processing RoomSet \"%s\" (mode %d)\n", path->c_str(), i);
 				if (stage->_rooms[i]._loaded)
 				{
@@ -102,24 +105,20 @@ namespace StageHandler {
 					itr = StageHandler::binaryMap.find(stage->_rooms[i]._filepath);
 					if (itr == binaryMap.end()) {
 						// somehow hasn't been inserted yet, do so
-						logger.Log("[INFO] inserting existing binary \"%s\"\n", stage->_rooms[i]._filepath.c_str());
+						logger.Log("[WARNING] existing RoomSet not cached yet, inserting \"%s\"\n", stage->_rooms[i]._filepath.c_str());
 						binaryMap.insert({ stage->_rooms[i]._filepath, stage->_rooms[i] });
 					}
-					else
-					{
-						// update with current copy
-						logger.Log("[INFO] updating cache with copy in RoomConfig::Stage\n");
-						itr._Ptr->_Myval.second = stage->_rooms[i];
-					}
 				}
+				/*
 				else
 				{
-					logger.Log("[INFO] \"%s\" not loaded yet, try loading...\n", stage->_rooms[i]._filepath.c_str());
+					logger.Log("[INFO] \"%s\" not loaded yet, attempting...\n", stage->_rooms[i]._filepath.c_str());
 					RoomSet* baseSet = StageHandler::LoadBinary(&stage->_rooms[i]._filepath);
 					if (baseSet != nullptr)
 						StageHandler::binaryMap.insert({ stage->_rooms[i]._filepath, *baseSet });
 						
 				}
+				*/
 
 				RoomSet* set = StageHandler::GetBinary(path);
 				if (set != nullptr) {
@@ -129,7 +128,7 @@ namespace StageHandler {
 				}
 				else
 				{
-					logger.Log("[INFO] loading new binary \"%s\" to overwrite with\n", path->c_str());
+					logger.Log("[INFO] loading new binary \"%s\" for RoomSet replacement\n", path->c_str());
 					RoomSet* newBinary = StageHandler::LoadBinary(path);
 					if (newBinary != nullptr) {
 						stage->_rooms[i] = *newBinary;
@@ -146,8 +145,9 @@ namespace StageHandler {
 				stage->_suffix = suffix;
 				stage->_musicId = musicId;
 
-				StageHandler::stageOverwritten[stageId] = !StageHandler::stageOverwritten[stageId];
-				logger.Log("[INFO] StageHandler::SwapStage: finished sucessfully\n");
+				stageState[stageId].first = !stageState[stageId].first;
+				stageState[stageId].second = name;
+				logger.Log("[INFO] StageHandler::SwapStage: successfully assigned %s to id %d\n", name.c_str(), stageId);
 				return true;
 			}
 			else
@@ -157,7 +157,7 @@ namespace StageHandler {
 		}
 		else
 		{
-			logger.Log("[INFO] StageHandler::SwapStage: nothing to restore for id %s\n", comp.c_str());
+			logger.Log("[INFO] StageHandler::SwapStage: nothing to restore for id %d\n", comp);
 		}
 		return false;
 	};
@@ -167,6 +167,24 @@ namespace StageHandler {
 			set->_configs[i].Weight = set->_configs[i].InitialWeight;
 		}
 	};
+
+	void ResetAllRoomWeights() {
+		for (auto i = binaryMap.begin(); i != binaryMap.end(); i++) {
+			ResetRoomWeights(&i->second);
+		}
+	}
+
+	int GetStageIdForToken(std::string token) {
+		for (unsigned int i = 0; i < 37; i++) {
+			if (stageState[i].second == token)
+				return i;
+		}
+		return -1;
+	}
+
+	std::string* GetTokenForStageId(int id) {
+		return &stageState[id].second;
+	}
 };
 
 // Handle RoomSet cacheing
@@ -185,25 +203,35 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int id, unsigned int mode) ->
 		return true;
 	}
 	bool res = super(id, mode);
-	if (stage->_suffix.empty()) {
-		stage->_suffix = suffixes[id];
-	}
 
 	// cache the loaded binary
 	if (res) {
 		StageHandler::binaryMap.insert({ *path, *set });
+		if (stage->_suffix.empty()) {
+			stage->_suffix = suffixes[id];
+		}
+		if (StageHandler::stageState[id].second.empty()) {
+			StageHandler::stageState[id].second = tokens[id];
+		}
 	}
 
 	return res;
 }
 
-HOOK_STATIC(LuaEngine, PostGameStart, (unsigned int state) -> void, __stdcall) {
-	if (state == 0) {
-		for (auto i = StageHandler::binaryMap.begin(); i != StageHandler::binaryMap.end(); i++) {
-			StageHandler::ResetRoomWeights(&i->second);
-		}
-	}
-
+HOOK_METHOD(Game, Start, (int playertype, int challenge, Seeds seeds, unsigned int difficulty) -> void) {
+	StageHandler::ResetAllRoomWeights();
+	super(playertype, challenge, seeds, difficulty);
+}
+HOOK_METHOD(Game, NetStart, (void* unk, int challenge, Seeds seed, unsigned int difficulty, GameState* state) -> void) {
+	StageHandler::ResetAllRoomWeights();
+	super(unk, challenge, seed, difficulty, state);
+}
+HOOK_METHOD(Game, StartDebug, (int levelStage, int stageType, int difficulty, std_string* filepath) -> void) {
+	StageHandler::ResetAllRoomWeights();
+	super(levelStage, stageType, difficulty, filepath);
+}
+HOOK_METHOD(Game, StartFromRerunState, (GameState* state) -> void) {
+	StageHandler::ResetAllRoomWeights();
 	super(state);
 }
 
@@ -217,12 +245,15 @@ LUA_FUNCTION(Lua_StageHandler_LoadStage) {
 	if (xmlData["basestage"].empty())
 		return luaL_error(L, "No basestage for stage name %s", name);
 
-	lua_pushboolean(L, StageHandler::SwapStage(stoi(xmlData["basestage"]), name, false));
+	lua_pushboolean(L, StageHandler::SwapStage(toint(xmlData["basestage"]), name, false));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_StageHandler_RestoreStage) {
 	int id = (int)luaL_checkinteger(L, 1);
+	if (id < 0 || id > 36) {
+		return luaL_error(L, "id must be between 0 and 36, both inclusive (got %d)", id);
+	}
 
 	lua_pushboolean(L, StageHandler::SwapStage(id, nullptr, true));
 	return 1;
@@ -264,12 +295,49 @@ LUA_FUNCTION(Lua_StageHandler_GetBinary) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_StageHandler_IsStageOverriden) {
+	int id = (int)luaL_checkinteger(L, 1);
+
+	lua_pushboolean(L, StageHandler::stageState[id].first);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_StageHandler_ResetAllRoomWeights) {
+	StageHandler::ResetAllRoomWeights();
+	return 0;
+}
+
+LUA_FUNCTION(Lua_StageHandler_GetStageIdForToken) {
+	std::string token = luaL_checkstring(L, 1);
+
+	lua_pushinteger(L, StageHandler::GetStageIdForToken(token));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_StageHandler_GetTokenForStageId) {
+	int id = (int)luaL_checkinteger(L, 1);
+	if (id < 0 || id > 36) {
+		return luaL_error(L, "id must be between 0 and 36, both inclusive (got %d)", id);
+	}
+	std::string* res = StageHandler::GetTokenForStageId(id);
+	if (res->empty())
+		lua_pushnil(L);
+	else
+		lua_pushstring(L, res->c_str());
+
+	return 1;
+}
+
 static void RegisterStageHandler(lua_State* L) {
 	lua_newtable(L);
 	lua::TableAssoc(L, "LoadStage", Lua_StageHandler_LoadStage);
 	lua::TableAssoc(L, "RestoreStage", Lua_StageHandler_RestoreStage);
 	lua::TableAssoc(L, "LoadBinary", Lua_StageHandler_LoadBinary);
 	lua::TableAssoc(L, "GetBinary", Lua_StageHandler_GetBinary);
+	lua::TableAssoc(L, "IsStageOverriden", Lua_StageHandler_IsStageOverriden);
+	lua::TableAssoc(L, "ResetAllRoomWeights", Lua_StageHandler_ResetAllRoomWeights);
+	lua::TableAssoc(L, "GetStageIdForToken", Lua_StageHandler_GetStageIdForToken);
+	lua::TableAssoc(L, "GetTokenForStageId", Lua_StageHandler_GetTokenForStageId);
 	lua_setglobal(L, "StageHandler");
 }
 

@@ -38,3 +38,43 @@ const char* suffixes[36] = {
 	"", // there will never be a mortis
 	"_home"
 };
+
+const char* tokens[37] = {
+	"SPECIAL_ROOMS",
+	"BASEMENT",
+	"CELLAR",
+	"BURNING_BASEMENT",
+	"CAVES",
+	"CATACOMBS",
+	"FLOODED_CAVES",
+	"DEPTHS",
+	"NECROPOLIS",
+	"DANK_DEPTHS",
+	"WOMB",
+	"UTERO",
+	"SCARRED_WOMB",
+	"BLUE_WOMB",
+	"SHEOL",
+	"CATHEDRAL",
+	"DARK_ROOM",
+	"CHEST",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"THE_VOID",
+	"DOWNPOUR",
+	"DROSS",
+	"MINES",
+	"ASHPIT",
+	"MAUSOLEUM",
+	"GEHENNA",
+	"CORPSE",
+	"MORTIS", // there will never be a mortis
+	"HOME"
+	"ASCENT"
+};
