@@ -218,6 +218,52 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int id, unsigned int mode) ->
 	return res;
 }
 
+HOOK_METHOD(RoomConfig_Stage, unload, () -> void) {
+	std::unordered_map<std::string, RoomSet>::const_iterator itr;
+	bool restored = false;
+	for (unsigned int i = 0; i < 2; i++) {
+		itr = StageHandler::binaryMap.find(this->_rooms[i]._filepath);
+		if (itr != StageHandler::binaryMap.end()) {
+			StageHandler::binaryMap.erase(itr);
+			stringstream message;
+			message << "removed binary \"" << this->_rooms[i]._filepath << "\" from StageHandler cache.\n";
+			KAGE::LogMessage(0, message.str().c_str());
+			restored = true;
+		}
+	}
+	if (restored && tokens[this->_id] != "") {
+		XMLAttributes xmlData = XMLStuff.StageData->GetNodeById(this->_id);
+		std::string binary = xmlData["root"] + xmlData["path"];
+		std::string greedBinary = xmlData["greedroot"] + xmlData["path"];
+		std::string gfxRoot = xmlData["bossgfxroot"];
+		std::string playerSpot = gfxRoot + xmlData["playerspot"];
+		std::string bossSpot = gfxRoot + xmlData["bossspot"];
+		std::string displayName = xmlData["name"];
+		std::string suffix = xmlData["suffix"];
+		int musicId = stoi(xmlData["music"]);
+		int backdropId = stoi(xmlData["backdrop"]);
+
+		this->_backdrop = backdropId;
+		this->_displayName = displayName;
+		this->_playerSpot = playerSpot;
+		this->_bossSpot = bossSpot;
+		this->_suffix = suffix;
+		this->_musicId = musicId;
+
+		super();
+
+		this->_rooms[0]._filepath = binary;
+		this->_rooms[1]._filepath = greedBinary;
+
+		StageHandler::stageState[this->_id].first = false;
+		StageHandler::stageState[this->_id].second = tokens[this->_id];
+
+		return;
+	}
+
+	super();
+}
+
 HOOK_METHOD(Game, Start, (int playertype, int challenge, Seeds seeds, unsigned int difficulty) -> void) {
 	StageHandler::ResetAllRoomWeights();
 	super(playertype, challenge, seeds, difficulty);
