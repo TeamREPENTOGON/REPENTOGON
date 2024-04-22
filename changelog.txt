@@ -29,6 +29,9 @@ Additions:
 * EntityNPC:
 	- GetFireplaceLoot
 	- GetShopkeeperLoot
+* ItemConfigItem:
+	- HasCustomTag
+	- GetCustomTags
 * Input:
 	- GetDeviceNameByIdx
 * Game
@@ -74,6 +77,7 @@ Additions:
 	- MC_PRE_X_UPDATE (EntityX) - PLAYER/TEAR/FAMILIAR/BOMB/PICKUP/KNIFE/PROJECTILE/LASER/EFFECT/SLOT, return true to skip internal code, same as MC_PRE_NPC_UPDATE
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 * Added the "noshake" attribute to the players.xml which can "disable" the player portrait shaking animation in the nightmare scene/boss intro
+* Added support for a "customtags" attribute in items.xml - a space-separated list of tags that can be checked with ItemConfigItem:HasCustomTag() or ItemConfigItem:GetCustomTags()
 * Added custom tag "nometronome" to items.xml to prevent items from being picked by Metronome
 /newline/
 Fixes:
