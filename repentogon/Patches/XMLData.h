@@ -109,6 +109,8 @@ public:
 	XMLNodeIdxLookupMultiple bymod;
 	XMLNodeIdxLookup byrelativeid;
 	XMLNodeTable byfilepathmulti;
+	// Holds the contents of the "customtags" attribute, converted to lowercase and parsed into a set.
+	unordered_map<int, set<string>> customtags;
 	int maxid;
 	int defmaxid;
 	bool stuffset = false;
@@ -121,6 +123,7 @@ public:
 		bymod.clear();
 		byrelativeid.clear();
 		byfilepathmulti.tab.clear();
+		customtags.clear();
 		maxid = defmaxid;
 	}
 
@@ -205,6 +208,13 @@ public:
 		}
 		else { Childs = XMLChilds(); }
 		return tuple<XMLAttributes, XMLChilds>(Node, Childs);
+	}
+
+	bool HasCustomTag(const int id, const std::string tag) {
+		if (this->customtags.find(id) == this->customtags.end()) {
+			return false;
+		}
+		return this->customtags[id].find(stringlower(tag.c_str())) != this->customtags[id].end();
 	}
 
 	void ProcessChilds(xml_node<char>* parentnode, int id) {

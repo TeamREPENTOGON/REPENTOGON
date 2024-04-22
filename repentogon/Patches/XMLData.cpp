@@ -747,6 +747,22 @@ void inheritdaddyatts(xml_node<char>* daddy,XMLAttributes* atts) {
 	}
 }
 
+// Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
+// Ex: "tag1 tag2 tag3"
+// For the 'customtags' attribute.
+void ParseTagsString(const string& str, set<string>& out) {
+	const string customtagsstr = stringlower(str.c_str());
+	if (!customtagsstr.empty()) {
+		stringstream tagstream(customtagsstr);
+		string tag;
+		while (getline(tagstream, tag, ' ')) {
+			if (!tag.empty()) {
+				out.insert(tag);
+			}
+		}
+	}
+}
+
 //
 //#include <time.h>
 bool initedxmlenums = false;
@@ -827,18 +843,8 @@ void ProcessXmlNode(xml_node<char>* node) {
 				entity["name"] = string(stringTable->GetString("Entities", 0, entity["name"].substr(1, entity["name"].length()).c_str(), &unk));
 				if (entity["name"].compare("StringTable::InvalidKey") == 0) { entity["name"] = entity["untranslatedname"]; }
 			}
-			if (entity.count("customtags") > 0) {
-				// Convert the customtags attribute to lowercase and parse each individual tag.
-				const string customtagsstr = stringlower(entity["customtags"].c_str());
-				if (!customtagsstr.empty()) {
-					stringstream tagstream(customtagsstr);
-					string tag;
-					while (getline(tagstream, tag, ' ')) {
-						if (!tag.empty()) {
-							XMLStuff.EntityData->customtags[idx].insert(tag);
-						}
-					}
-				}
+			if (entity.find("customtags") != entity.end()) {
+				ParseTagsString(entity["customtags"], XMLStuff.EntityData->customtags[idx]);
 			}
 			if (iscontent && (entity["boss"] == "1")) {
 				tuple<int, int> clridx = { toint(entity["id"]), toint(entity["variant"]) };
@@ -1069,6 +1075,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 						if (item["description"].compare("StringTable::InvalidKey") == 0) { item["description"] = item["untranslateddescription"]; }
 					}
 					if (item.find("relativeid") != item.end()) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
+					if (item.find("customtags") != item.end()) {
+						ParseTagsString(item["customtags"], XMLStuff.ItemData->customtags[id]);
+					}
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
 					XMLStuff.ItemData->bymod[lastmodid].push_back(id);
@@ -1132,6 +1141,9 @@ void ProcessXmlNode(xml_node<char>* node) {
 						if (trinket["description"].compare("StringTable::InvalidKey") == 0) { trinket["description"] = trinket["untranslateddescription"]; }
 					}
 					if (trinket.find("relativeid") != trinket.end()) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
+					if (trinket.find("customtags") != trinket.end()) {
+						ParseTagsString(trinket["customtags"], XMLStuff.TrinketData->customtags[id]);
+					}
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
 					XMLStuff.TrinketData->bymod[lastmodid].push_back(id);
@@ -1170,6 +1182,10 @@ void ProcessXmlNode(xml_node<char>* node) {
 				}
 
 				if (item.find("relativeid") != item.end()) { XMLStuff.NullItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
+
+				if (item.find("customtags") != item.end()) {
+					ParseTagsString(item["customtags"], XMLStuff.NullItemData->customtags[id]);
+				}
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
 				XMLStuff.NullItemData->bynamemod[item["name"] + lastmodid] = id;

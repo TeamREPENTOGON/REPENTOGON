@@ -1,6 +1,54 @@
 #include "HookSystem.h"
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
+#include "../Patches/XMLData.h"
+
+XMLDataHolder* GetItemXML(const ItemConfig_Item* config) {
+	if (config->type == 0) {
+		return XMLStuff.NullItemData;
+	}
+	else if (config->type == 2) {
+		return XMLStuff.TrinketData;
+	}
+	return XMLStuff.ItemData;
+}
+
+LUA_FUNCTION(Lua_ItemConfigItem_GetCustomTags) {
+	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+
+	lua_newtable(L);
+
+	XMLDataHolder* xml = GetItemXML(config);
+	if (xml->customtags.find(config->id) != xml->customtags.end()) {
+		int i = 0;
+		for (const std::string& tag : xml->customtags[config->id]) {
+			lua_pushinteger(L, ++i);
+			lua_pushstring(L, tag.c_str());
+			lua_settable(L, -3);
+		}
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigItem_HasCustomTag)
+{
+	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	const std::string tag = luaL_checkstring(L, 2);
+	lua_pushboolean(L, GetItemXML(config)->HasCustomTag(config->id, tag));
+	return 1;
+}
+
+void RegisterItemFunctions(lua_State* L) {
+	luaL_Reg functions[] = {
+		{ "GetCustomTags", Lua_ItemConfigItem_GetCustomTags },
+		{ "HasCustomTag", Lua_ItemConfigItem_HasCustomTag },
+		{ NULL, NULL }
+	};
+
+	lua::RegisterFunctions(L, lua::Metatables::ITEM, functions);
+	lua::RegisterFunctions(L, lua::Metatables::CONST_ITEM, functions);
+}
 
 LUA_FUNCTION(Lua_ItemConfigPill_EffectClass_propget) {
 	ItemConfig_Pill* config = lua::GetUserdata<ItemConfig_Pill*>(L, 1, lua::Metatables::CONST_PILL_EFFECT, "PillEffect");
@@ -55,6 +103,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
+
+	RegisterItemFunctions(_state);
 
 	luaL_Reg functions[] = {
 		{ "GetTaggedItems", Lua_ItemConfig_GetTaggedItems },
