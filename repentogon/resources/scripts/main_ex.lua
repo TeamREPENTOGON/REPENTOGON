@@ -1048,12 +1048,33 @@ rawset(Isaac, "AddCallback", function(mod, callbackID, fn, param)
 	Isaac.AddPriorityCallback(mod, callbackID, CallbackPriority.DEFAULT, fn, param)
 end)
 
-local function RemoveCallbacksIf(callbackList, removeConditionFunc)
+-- Some Callbacks behave weirdly if the Default Null Function is used
+local customNullFunctions = {
+	[ModCallbacks.MC_PRE_GET_LIGHTING_ALPHA] = function(_, OriginalAlpha) return OriginalAlpha end
+}
+
+local function DefaultNullFunction()
+end
+
+local function GetCallbackNullFunction(callbackID)
+	return customNullFunctions[callbackID] or DefaultNullFunction
+end
+
+local currentlyRunningCallback = {}
+local scheduledRemoveCallback = {}
+
+local function RemoveCallbacksIf(callbackID, callbackList, removeConditionFunc)
+	local isCallbackRunning = currentlyRunningCallback[callbackID]
 	local removed = false
 	for i=#callbackList,1,-1 do
 		if removeConditionFunc(callbackList[i]) then
-			table.remove(callbackList, i)
-			removed = true
+			if isCallbackRunning then
+				callbackList[i].Function = GetCallbackNullFunction(callbackID)
+				scheduledRemoveCallback[callbackID] = true
+			else
+				table.remove(callbackList, i)
+				removed = true
+			end
 		end
 	end
 	return removed
@@ -1062,10 +1083,10 @@ end
 local function RemoveAllCallbacksIf(callbackID, removeConditionFunc)
 	local callbackData = Callbacks[callbackID]
 
-	if callbackData and RemoveCallbacksIf(callbackData.ALL, removeConditionFunc) then
-		RemoveCallbacksIf(callbackData.COMMON, removeConditionFunc)
+	if callbackData and RemoveCallbacksIf(callbackID, callbackData.ALL, removeConditionFunc) then
+		RemoveCallbacksIf(callbackID, callbackData.COMMON, removeConditionFunc)
 		for param, paramCallbacks in pairs(callbackData.PARAM) do
-			RemoveCallbacksIf(paramCallbacks, removeConditionFunc)
+			RemoveCallbacksIf(callbackID, paramCallbacks, removeConditionFunc)
 		end
 		if #callbackData.ALL == 0 and type(callbackID) == "number" then
 			-- No more functions left, disable this callback
@@ -1090,6 +1111,30 @@ local function RemoveAllCallbacksForMod(mod)
 	end
 end
 
+local function RemoveScheduledCallbacks(callbackID)
+	if not scheduledRemoveCallback[callbackID] then
+		return
+	end
+	local nullFunction = GetCallbackNullFunction(callbackID)
+	RemoveAllCallbacksIf(callbackID, function(callback) return callback.Function == nullFunction end)
+	scheduledRemoveCallback[callbackID] = false
+end
+
+local function InitRunCallbackInstance(callbackID)
+	local isFirstInstance = not currentlyRunningCallback[callbackID]
+	currentlyRunningCallback[callbackID] = true
+
+	return isFirstInstance
+end
+
+local function DeleteRunCallbackInstance(callbackID, isFirstInstance)
+	if not isFirstInstance then
+		return
+	end
+	currentlyRunningCallback[callbackID] = false
+	RemoveScheduledCallbacks(callbackID)
+end
+
 -- Runs a single callback function and checks the results.
 -- Only returns the value returned by the callback if no errors occured and the return value passed the type checks.
 local function RunCallbackInternal(callbackID, callback, ...)
@@ -1106,6 +1151,7 @@ end
 
 -- Default callback behaviour (first returned value terminates the callback).
 function _RunCallback(callbackID, param, ...)
+	local isFirstInstance = InitRunCallbackInstance(callbackID)
 	local ret
 
 	for callback in GetCallbackIterator(callbackID, param) do
@@ -1120,39 +1166,50 @@ function _RunCallback(callbackID, param, ...)
 		RemoveAllCallbacksForMod(...)  --- First arg for MC_PRE_MOD_UNLOAD is the mod being unloaded.
 	end
 
+	DeleteRunCallbackInstance(callbackID, isFirstInstance)
 	return ret
 end
 
 -- Additive callback behaviour (values returned from a callback replace the value of the first arg for later callbacks).
 -- Doesn't currently support an optional param (would need to update all callbacks that use this to add one).
 function _RunAdditiveCallback(callbackID, value, ...)
+	local isFirstInstance = InitRunCallbackInstance(callbackID)
+
 	for callback in GetCallbackIterator(callbackID) do
 		local ret = RunCallbackInternal(callbackID, callback, value, ...)
 		if ret ~= nil then
 			value = ret
 		end
 	end
+
+	DeleteRunCallbackInstance(callbackID, isFirstInstance)
 	return value
 end
 
 -- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
 function _RunPreRenderCallback(callbackID, param, mt, value, ...)
+	local isFirstInstance = InitRunCallbackInstance(callbackID)
+
 	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, mt, value, ...)
 		if ret ~= nil then
 			if type(ret) == "boolean" and ret == false then
+				DeleteRunCallbackInstance(callbackID, isFirstInstance)
 				return false
 			elseif ret.X and ret.Y then -- We're a Vector, checking it directly will crash the game... While we should always be a Vector at this point it doesn't hurt to check
 				value = value + ret
 			end
 		end
 	end
+
+	DeleteRunCallbackInstance(callbackID, isFirstInstance)
 	return value
 end
 
 -- Custom handling for the MC_ENTITY_TAKE_DMG rewrite, so if a mod changes the damage amount etc that doesn't terminate the callback
 -- and the updated values are shown to later callbacks. The callback also now ONLY terminates early if FALSE is returned.
 function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlags, source, damageCountdown)
+	local isFirstInstance = InitRunCallbackInstance(callbackID)
 	local combinedRet
 
 	for callback in GetCallbackIterator(callbackID, param) do
@@ -1161,6 +1218,7 @@ function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlag
 			if type(ret) == "boolean" and ret == false then
 				-- Only terminate the callback early if someone returns FALSE.
 				-- RIP to returning true stopping the callback.
+				DeleteRunCallbackInstance(callbackID, isFirstInstance)
 				return false
 			elseif type(ret) == "table" then
 				-- Set / update overrides to damage etc so that they are visible to later callbacks.
@@ -1184,6 +1242,7 @@ function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlag
 		end
 	end
 
+	DeleteRunCallbackInstance(callbackID, isFirstInstance)
 	return combinedRet
 end
 
