@@ -230,7 +230,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 bool dealRoomsPatched[2] = { false, false };
 
 HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool) {
-	super(Stage, Mode);
+	bool ret = super(Stage, Mode);
 
 	if (Stage == 0) {
 		if (!dealRoomsPatched[Mode]) {
@@ -246,6 +246,7 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 			dealRoomsPatched[Mode] = true;
 		}
 	}
+	return ret;
 }
 
 LUA_FUNCTION(Lua_SetCurrentFloorMusic)

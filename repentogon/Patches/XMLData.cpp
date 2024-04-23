@@ -259,6 +259,15 @@ void UpdateXMLModEntryData() {
 	}
 }
 
+void LateXMLAttributeUpdate(XMLDataHolder* toupdate, XMLDataHolder* source, const char* attrname) {
+	for each (auto node in toupdate->nodes) {
+		int musicId = toint(node.second[attrname]);
+		if ((musicId == 0) && (source->byname.find(node.second[attrname]) != source->byname.end())) {
+			toupdate->nodes[node.first][attrname] = to_string(source->byname[node.second[attrname]]);
+		}
+	}
+}
+
 //Shameless chatgpt copypaste function
 string getFileName(const string& filePath) {
 	// Find the position of the last directory separator
@@ -2380,6 +2389,9 @@ HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
 	currpath = "";
+	//retroactively patch backdrops into stages (Why here?, load order...yea)
+	LateXMLAttributeUpdate(XMLStuff.StageData, XMLStuff.BackdropData, "backdrop");
+	LateXMLAttributeUpdate(XMLStuff.StageData, XMLStuff.MusicData, "music");
 }
 
 HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
@@ -2887,10 +2899,10 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 					xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);
 					node["realid"] = to_string(id);
 				}
-				int music = toint(node["music"]);
-				if ((music == 0) && (XMLStuff.MusicData->byname.count(node["music"]) > 0)) {
-					auxnode->first_attribute("music")->value(IntToChar(XMLStuff.MusicData->byname[node["music"]]));
-				}
+				//int music = toint(node["music"]);
+				//if ((music == 0) && (XMLStuff.MusicData->byname.count(node["music"]) > 0)) {
+				//	auxnode->first_attribute("music")->value(IntToChar(XMLStuff.MusicData->byname[node["music"]]));
+				//}
 			}
 		}
 	}
@@ -3190,10 +3202,10 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							int id = toint(node["id"]);
 							int music = toint(node["music"]);
 							int backdrop = toint(node["backdrop"]);
-							if ((music == 0) && (node["music"].length() > 0)) {
-								char* track = IntToChar(XMLStuff.MusicData->byname[node["music"]]);
-								auxnode->first_attribute("music")->value(track);
-							}
+							//if ((music == 0) && (node["music"].length() > 0)) {
+								//char* track = IntToChar(XMLStuff.MusicData->byname[node["music"]]);
+								//auxnode->first_attribute("music")->value(track);
+							//}
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
 							inheritdaddy(auxnode, clonedNode);
