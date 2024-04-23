@@ -265,23 +265,18 @@ const char* suffixes[35] = {
 };
 
 // helper for asm patch
-bool dealRoomsPatched[2] = { false, false };
-
 HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
 	super(Stage, Mode);
 
 	if (Stage == 0) {
-		if (!dealRoomsPatched[Mode]) {
-			unsigned int doors = 0;
-			for (int i = 14; i < 16; i++) {
-				//printf("type #%d\n", i);
-				RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, i, 13, 100, 100, 0, 20, &doors, 0, Mode);
-				for (RoomConfig_Room* p : rooms) {
-					//printf("changing subtype of roomconfig at %p (var %d, subtype %d)\n", p, p->Variant, p->Subtype);
-					p->Subtype = 666;
-				}
+		unsigned int doors = 0;
+		for (int i = 14; i < 16; i++) {
+			//printf("type #%d\n", i);
+			RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, i, 13, 100, 100, 0, 20, &doors, 0, -1);
+			for (RoomConfig_Room* p : rooms) {
+				printf("changing subtype of RoomConfigRoom at %p (var %d, subtype %d, mode %d)\n", p, p->Variant, p->Subtype, p->Mode);
+				p->Subtype = 666;
 			}
-			dealRoomsPatched[Mode] = true;
 		}
 	}
 	else if (Stage < 36) {
