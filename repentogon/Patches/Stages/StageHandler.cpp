@@ -162,6 +162,19 @@ namespace StageHandler {
 		return false;
 	};
 
+	bool AppendBinary(RoomSet* roomSet, std::string* binary) {
+		RoomConfig* roomConfig = g_Game->GetRoomConfig();
+		ModManager* modManager = g_Manager->GetModManager();
+		roomConfig->_stages[BUFFER_STAGEID]._id = BUFFER_STAGEID;
+		RoomSet* buffer = &roomConfig->_stages[BUFFER_STAGEID]._rooms[0];
+		int roomCount = buffer->_count;
+		buffer->_filepath = *binary;
+		modManager->UpdateRooms(BUFFER_STAGEID, 0);
+		buffer->_filepath = roomSet->_filepath;
+		*roomSet = *buffer;
+		return roomCount < buffer->_count;
+	}
+
 	void ResetRoomWeights(RoomSet* set) {
 		for (unsigned int i = 0; i < set->_count; i++) {
 			set->_configs[i].Weight = set->_configs[i].InitialWeight;
@@ -341,6 +354,27 @@ LUA_FUNCTION(Lua_StageHandler_GetBinary) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_StageHandler_AppendBinary) {
+	RoomSet* roomSet;
+	if (lua_type(L, 1) == LUA_TSTRING)
+	{
+		std::string path = luaL_checkstring(L, 1);
+		roomSet = StageHandler::LoadBinary(&path);
+		if (roomSet == nullptr) {
+			return luaL_error(L, "No binary exists for path \"%s\"!", path.empty() ? "" : path.c_str());
+		}
+	}
+	else
+	{
+		roomSet = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	}
+	std::string filepath = luaL_checkstring(L, 2);
+
+	lua_pushboolean(L, StageHandler::AppendBinary(roomSet, &filepath));
+
+	return 1;
+}
+
 LUA_FUNCTION(Lua_StageHandler_IsStageOverriden) {
 	int id = (int)luaL_checkinteger(L, 1);
 
@@ -350,7 +384,6 @@ LUA_FUNCTION(Lua_StageHandler_IsStageOverriden) {
 
 LUA_FUNCTION(Lua_StageHandler_ResetRoomWeights) {
 	RoomSet* roomSet;
-
 	if (lua_type(L, 1) == LUA_TSTRING)
 	{
 		std::string path = luaL_checkstring(L, 1);
@@ -400,6 +433,7 @@ static void RegisterStageHandler(lua_State* L) {
 	lua::TableAssoc(L, "RestoreStage", Lua_StageHandler_RestoreStage);
 	lua::TableAssoc(L, "LoadBinary", Lua_StageHandler_LoadBinary);
 	lua::TableAssoc(L, "GetBinary", Lua_StageHandler_GetBinary);
+	lua::TableAssoc(L, "AppendBinary", Lua_StageHandler_AppendBinary);
 	lua::TableAssoc(L, "ResetRoomWeights", Lua_StageHandler_ResetRoomWeights);
 	lua::TableAssoc(L, "ResetAllRoomWeights", Lua_StageHandler_ResetAllRoomWeights);
 	lua::TableAssoc(L, "IsStageOverriden", Lua_StageHandler_IsStageOverriden);
