@@ -89,8 +89,8 @@ namespace StageHandler {
 			std::string displayName = xmlData["displayname"].empty() ? xmlData["name"]: xmlData["displayname"];
 			std::string suffix = xmlData["suffix"];
 			std::string name = (restoring ? tokens[comp] : xmlData["name"]);
-			int musicId = stoi(xmlData["music"]);
-			int backdropId = stoi(xmlData["backdrop"]);
+			int musicId = toint(xmlData["music"]);
+			int backdropId = toint(xmlData["backdrop"]);
 
 			logger.Log("[INFO] StageHandler::SwapStage: name %s, id %d, path %s, greed path %s, gfx path %s, playerSpot %s, bossSpot %s, suffix %s, musicId %d, backDropId %d\n", name.c_str(), stageId, binary.c_str(), greedBinary.c_str(), gfxRoot.c_str(), playerSpot.c_str(), bossSpot.c_str(), suffix.c_str(), musicId, backdropId);
 
@@ -255,8 +255,8 @@ HOOK_METHOD(RoomConfig_Stage, unload, () -> void) {
 		std::string bossSpot = gfxRoot + xmlData["bossspot"];
 		std::string displayName = xmlData["name"];
 		std::string suffix = xmlData["suffix"];
-		int musicId = stoi(xmlData["music"]);
-		int backdropId = stoi(xmlData["backdrop"]);
+		int musicId = toint(xmlData["music"]);
+		int backdropId = toint(xmlData["backdrop"]);
 
 		this->_backdrop = backdropId;
 		this->_displayName = displayName;
