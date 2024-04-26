@@ -143,13 +143,13 @@ public:
 		}
 	}
 
-	XMLAttributes  GetNodeById(int name) {
+	XMLAttributes GetNodeById(int name) {
 		auto iter = this->nodes.find(name);
 		if (iter == this->nodes.end()) { return XMLAttributes(); }
 		else { return iter->second; }
 	}
 
-	XMLAttributes  GetNodeByOrder(int name) {
+	XMLAttributes GetNodeByOrder(int name) {
 		auto iter = this->byorder.find(name);
 		if (iter == this->byorder.end()) { return XMLAttributes(); }
 		else { return this->GetNodeById(iter->second); }
@@ -477,8 +477,7 @@ class XMLPlayer : public XMLDataHolder {
 
 class XMLBackdrop : public XMLDataHolder {
 public:
-	std::pair<bool, short> backdropState[61];
-	uint32_t hookedbackdroptype;
+	std::pair<bool, std::string> backdropState;
 };
 
 class XMLEntity {

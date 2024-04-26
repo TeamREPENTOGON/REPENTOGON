@@ -4187,6 +4187,10 @@ extern bool tobool(const string& str);
 
 ANM2* pathCheckanm2 = new ANM2();
 HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
+	printf("resetting backdropState\n");
+	XMLStuff.BackdropData->backdropState.first = false;
+	XMLStuff.BackdropData->backdropState.second = "no";
+
 	const int callbackId = 1141;
 	const int callbackId2 = 1142;
 	if (CallbackState.test(callbackId - 1000)) {
@@ -4209,28 +4213,23 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 		}
 	}
 
-	if ((XMLStuff.BackdropData->nodes.count(bcktype) > 0) && (bcktype > 60 || XMLStuff.BackdropData->backdropState[bcktype].first)) { // && (bcktype > 0)
+	if (bcktype > 60 && XMLStuff.BackdropData->nodes.count(bcktype) > 0) { // && (bcktype > 0)
 		XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
 
 		uint32_t refbackdrop = toint(node["reftype"]);
 		if (refbackdrop > 60) {
 			//luaL_error(L, "field 'referenceType' should be between 1 and 60 ", refbackdrop);
-			g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60 \n");
+			g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60\n");
 			return;
 		}
-		if (bcktype > 60 && refbackdrop < 1) {
-			if (tobool(node["reversewatergfx"])) refbackdrop = 3;
-			else refbackdrop = 1;
+		if (refbackdrop < 1) {
+			if (tobool(node["reversewatergfx"]))
+				refbackdrop = 3;
+			else
+				refbackdrop = 1;
 		}
-		else if (bcktype < 61) refbackdrop = bcktype;
 
-		XMLStuff.BackdropData->backdropState[bcktype].first = (refbackdrop != bcktype);
-		XMLStuff.BackdropData->backdropState[bcktype].second = toint(node["id"]);
-
-		bool isAnm2Gfx = false;
-		if (refbackdrop == 18 || refbackdrop == 26 || refbackdrop == 35
-			|| refbackdrop == 52 || refbackdrop == 53 || refbackdrop == 54)
-			isAnm2Gfx = true;
+		bool isAnm2Gfx = (refbackdrop == 18 || refbackdrop == 26 || refbackdrop == 35 || refbackdrop == 52 || refbackdrop == 53 || refbackdrop == 54);
 
 		string gfxpath = node["gfxroot"] + node["gfx"];
 		bool correctPath = false;
@@ -4241,9 +4240,8 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 			}
 			pathCheckanm2->Load(gfxpath, true);
 			pathCheckanm2->LoadGraphics(true);
-			if (pathCheckanm2->_animDefaultName.length() > 0) {
+			if (pathCheckanm2->_animDefaultName.length() > 0)
 				correctPath = true;
-			}
 			else {
 				g_Game->GetConsole()->PrintError("[Backdrop:" + to_string(bcktype) + "] file at path '" + gfxpath + "' does not exist \n");
 				return;
@@ -4251,7 +4249,8 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 			pathCheckanm2->Reset();
 		}
 
-		if (!isAnm2Gfx || correctPath) this->configurations[refbackdrop].gfx = gfxpath;
+		if (!isAnm2Gfx || correctPath)
+			this->configurations[refbackdrop].gfx = gfxpath;
 
 		this->configurations[refbackdrop].walls = toint(node["walls"]);
 		this->configurations[refbackdrop].wallVariants = toint(node["wallvariants"]);
@@ -4263,78 +4262,62 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 			string lFloorGfxpath = node["gfxroot"] + node["lfloorgfx"];
 			this->configurations[refbackdrop].lFloorGfx = lFloorGfxpath;
 		}
-		else {
+		else
 			this->configurations[refbackdrop].lFloorGfx = "";
-		}
 
-		if (endsWithPNG(node["nfloorgfx"])) {
+		if (endsWithPNG(node["nfloorgfx"]))
 			this->configurations[refbackdrop].nFloorGfx = node["gfxroot"] + node["nfloorgfx"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].nFloorGfx = "";
-		}
 
-		if (endsWithPNG(node["watergfx"])) {
+		if (endsWithPNG(node["watergfx"]))
 			this->configurations[refbackdrop].waterGfx = node["gfxroot"] + node["watergfx"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].waterGfx = "";
-		}
 
 		/*
 			this->configurations[refbackdrop].reversewatergfx = toboolnode(node["reversewatergfx"]);
 		*/
 
-		if (endsWithANM(node["props"])) {
+		if (endsWithANM(node["props"]))
 			this->configurations[refbackdrop].props = node["gridgfxroot"] + node["props"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].props = "";
-		}
 
-		if (endsWithPNG(node["rocks"])) {
+		if (endsWithPNG(node["rocks"]))
 			this->configurations[refbackdrop].rocks = node["gridgfxroot"] + node["rocks"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].rocks = "gfx/grid/rocks_basement.png";
-		}
 
-		if (endsWithPNG(node["pit"])) {
+		if (endsWithPNG(node["pit"]))
 			this->configurations[refbackdrop].pit = node["gridgfxroot"] + node["pit"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].pit = "gfx/grid/grid_pit.png";
-		}
 
-		if (endsWithPNG(node["waterpit"])) {
+		if (endsWithPNG(node["waterpit"]))
 			this->configurations[refbackdrop].waterPit = node["gridgfxroot"] + node["waterpit"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].waterPit = "gfx/grid/grid_pit_water.png";
-		}
 
-		if (endsWithPNG(node["bridge"])) {
+		if (endsWithPNG(node["bridge"]))
 			this->configurations[refbackdrop].bridge = node["gridgfxroot"] + node["bridge"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].bridge = "gfx/grid/grid_bridge.png";
-		}
 
-		if (endsWithPNG(node["door"])) {
+		if (endsWithPNG(node["door"]))
 			this->configurations[refbackdrop].door = node["gridgfxroot"] + node["door"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].door = "gfx/grid/door_01_normaldoor.png";
-		}
 
-		if (endsWithPNG(node["holeinwall"])) {
+		if (endsWithPNG(node["holeinwall"]))
 			this->configurations[refbackdrop].holeInWall = node["gridgfxroot"] + node["holeinwall"];
-		}
-		else {
+		else
 			this->configurations[refbackdrop].holeInWall = "gfx/grid/door_08_holeinwall.png";
-		}
 
-		XMLStuff.BackdropData->hookedbackdroptype = bcktype;
+		printf("backdropState now 1, %d\n", bcktype);
+
+		XMLStuff.BackdropData->backdropState.first = true;
+		XMLStuff.BackdropData->backdropState.second = node["name"];
 		super((uint32_t)refbackdrop, loadgraphics);
 
 		if (CallbackState.test(callbackId2 - 1000)) {
@@ -4349,6 +4332,5 @@ HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
 		}
 		return;
 	}
-	XMLStuff.BackdropData->hookedbackdroptype = bcktype;
 	super(bcktype, loadgraphics);
 }

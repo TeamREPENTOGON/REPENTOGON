@@ -283,11 +283,16 @@ HOOK_METHOD(RoomConfig_Stage, unload, () -> void) {
 HOOK_METHOD(FXLayers, Init, (char* fileName, int levelStage, int stageType) -> void) {
 	super(fileName, levelStage, stageType);
 
-	int backdropType = this->_backdropType;
-	if (XMLStuff.BackdropData->backdropState[backdropType].first) {
-		XMLAttributes backdropData = XMLStuff.FxParamData->GetNodeById(XMLStuff.BackdropData->backdropState[backdropType].second);
-		XMLAttributes paramData = XMLStuff.FxParamData->GetNodeByName(backdropData["name"]);
+	printf("backdropState.first is %d, second is %s\n", XMLStuff.BackdropData->backdropState.first, XMLStuff.BackdropData->backdropState.second.c_str());
+
+	if (XMLStuff.BackdropData->backdropState.first) {
+		XMLAttributes paramData = XMLStuff.FxParamData->GetNodeByName(XMLStuff.BackdropData->backdropState.second);
 		int id = toint(paramData["id"]);
+
+		stringstream message;
+		message << "name " << paramData["name"] << " , id " << id << ", shadowAlpha " << paramData["shadowalpha"] << "\n";
+
+		printf(message.str().c_str());
 
 		if (id > 0) {
 			FXParams* params = &this->_fxParams;
