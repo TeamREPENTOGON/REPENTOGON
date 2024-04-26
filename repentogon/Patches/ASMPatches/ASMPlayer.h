@@ -16,3 +16,5 @@ static std::vector<Entity_Familiar*>& InitFamiliarStorage() {
 
 void ASMPatchCheckFamiliar();
 void ASMPatchPlayerStats();
+void ASMPatchPlayerNoShake();
+void ASMPatchPlayerItemNoMetronome();

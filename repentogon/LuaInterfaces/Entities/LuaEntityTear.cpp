@@ -35,6 +35,17 @@ LUA_FUNCTION(Lua_GetDeadEyeSprite) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_TearResetSpriteScale)
+{
+	Entity_Tear* tear = lua::GetUserdata<Entity_Tear*>(L, 1, lua::Metatables::ENTITY_TEAR, "EntityTear");
+	bool force = lua::luaL_optboolean(L, 2, false);
+	if (force) {
+		tear->_scaleAnimNum = -1;
+	}
+	tear->ResetSpriteScale();
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -46,6 +57,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetTearHaloSprite", Lua_GetTearHaloSprite },
 		{ "GetTearEffectSprite", Lua_GetTearEffectSprite },
 		{ "GetDeadEyeSprite", Lua_GetDeadEyeSprite },
+		{ "ResetSpriteScale", Lua_TearResetSpriteScale },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_TEAR, functions);

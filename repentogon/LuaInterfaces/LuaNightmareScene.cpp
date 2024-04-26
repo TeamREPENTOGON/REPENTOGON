@@ -65,6 +65,14 @@ LUA_FUNCTION(Lua_NightmareSceneIsDogmaNightmare) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_NightmareSceneGetPlayerExtraPortraitSprite) {
+	NightmareScene* nc = g_Manager->GetNightmareScene();
+	ANM2* anm2 = &nc->_playerExtraPortraitANM2;
+	lua::luabridge::UserdataPtr::push(L, anm2, lua::GetMetatableKey(lua::Metatables::SPRITE));
+
+	return 1;
+}
+
 static void RegisterNightmareScene(lua_State* L)
 {
 	//lua::RegisterGlobalClassFunction(L, lua::GlobalClasses::Isaac, "GetNightmareScene", Lua_GetNightmareScene);
@@ -76,6 +84,7 @@ static void RegisterNightmareScene(lua_State* L)
 		lua::TableAssoc(L, "GetProgressBarSprite", Lua_NightmareSceneGetProgressBarSprite );
 		lua::TableAssoc(L, "GetProgressBarMap", Lua_NightmareSceneGetProgressBarMap );
 		lua::TableAssoc(L, "IsDogmaNightmare", Lua_NightmareSceneIsDogmaNightmare );
+		lua::TableAssoc(L, "GetPlayerExtraPortraitSprite", Lua_NightmareSceneGetPlayerExtraPortraitSprite );
 		//{ NULL, NULL }
 	//};
 	//lua::RegisterNewClass(L, lua::metatables::NightmareSceneMT, lua::metatables::NightmareSceneMT, functions);

@@ -8,9 +8,14 @@ __thiscall void NightmareScene::Render();
 __thiscall void NightmareScene::Show(bool unk);
 
 struct NightmareScene depends (ANM2) { {{
-	inline ANM2* GetBackgroundSprite() { return (ANM2*)((char*)this + 0x20); }
-	inline ANM2* GetBubbleSprite() { return (ANM2*)((char*)this + 0x134); }
-	inline ANM2* GetProgressBarSprite() { return (ANM2*)((char*)this + 0x248); }
+	inline ANM2* GetBackgroundSprite() { return &this->_backgroundANM2; }
+	inline ANM2* GetBubbleSprite() { return &this->_bubbleANM2; }
+	inline ANM2* GetProgressBarSprite() { return &this->_ProgressBarANM2; }
 	inline int* GetProgressBarMap() { return (int*)((char*)this + 0x36c); }
 	inline bool* IsDogmaNightmare() { return (bool*)((char*)this + 0x5e8); }
-}} } : 0x5ec;
+}}
+	ANM2 _backgroundANM2 : 0x20;
+	ANM2 _bubbleANM2 : 0x134;
+	ANM2 _ProgressBarANM2 : 0x248;
+	ANM2 _playerExtraPortraitANM2 : 0x4d4;
+} : 0x5ec;

@@ -63,7 +63,11 @@ struct Entity_Pickup depends (ANM2) : public Entity { {{
 		skip; // Free
 		skip; // Init
 		skip; // PreUpdate
-		skip; // Update
+		
+		override
+		"558bec6aff68????????64a1????????5081ec00020000a1????????33c58945??5657508d45??64a3????????8bf9":
+		void Update();
+		
 		skip; // Interpolate
 		skip; // Render
 		skip; // RenderShadowLayer

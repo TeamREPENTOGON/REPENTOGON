@@ -6,6 +6,16 @@ tags:
 
 ## Modified Functions
 
+
+### RNG () {: aria-label='Modified Functions' }
+#### RNG ( int seed = 2853650767, int shiftIdx = 35 ) { :.copyable aria-label='Modified Functions' }
+Now takes an optional seed and an optional shiftIdx.
+This can be used to avoid separating construction of the RNG object and a call to SetSeed.
+
+The function validates both the seed and the shift index.
+
+___
+
 ### RandomInt () {: aria-label='Modified Functions' }
 #### int RandomInt ( int Min, int Max ) {: .copyable aria-label='Modified Functions' }
 Can now emulate `math.random` by accepting a second argument to generate a number between the first argument and it, inclusive. Negative values are usable in this mode and will properly generate a number between `min` and `max` regardless of sign.

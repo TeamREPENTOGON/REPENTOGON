@@ -87,6 +87,8 @@ void PerformASMPatches() {
 	ASMPatchPostChampionRegenCallback();
 	ASMPatchTrinketRender();
 	ASMPatchPickupUpdatePickupGhosts();
+	ASMPatchProjectileDeath();
+	ASMPatchTearDeath();
 
 	// Delirium
 	delirium::AddTransformationCallback();
@@ -119,6 +121,8 @@ void PerformASMPatches() {
 	// Player
 	ASMPatchCheckFamiliar();
 	ASMPatchPlayerStats();
+	ASMPatchPlayerNoShake();
+	ASMPatchPlayerItemNoMetronome();
 
 	// Render
 	LuaRender::PatchglDrawElements();

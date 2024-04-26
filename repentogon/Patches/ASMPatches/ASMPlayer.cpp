@@ -145,3 +145,86 @@ void ASMPatchPlayerStats() {
 //////////////////////////////////////////////
 // !!!!! EVALUATEITEMS STATS DONE !!!!!
 //////////////////////////////////////////////
+
+bool __stdcall PlayerTypeNoShake(int playerType) {
+	XMLAttributes playerXML = XMLStuff.PlayerData->GetNodeById(playerType);
+
+	if (!playerXML["noshake"].empty()) {
+		std::string noShake = playerXML["noshake"];
+		return noShake == "true" ? true : noShake == "false" ? false : false;
+	}
+
+	return playerType == 4 || playerType == 16 || playerType == 17 || playerType == 14 || playerType == 25 || playerType == 35 || playerType == 33;
+}
+
+void ASMPatchNightmareSceneNoShake() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan signature("83fe040f84????????83fe100f84????????");
+	signature.Scan();
+
+	void* addr = signature.GetAddress();
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // playerType
+		.AddInternalCall(PlayerTypeNoShake)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0xC1) // jump for true
+		.AddRelativeJump((char*)addr + 0x3F);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchBossIntroNoShake() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan signature("83f80474??83f81074??");
+	signature.Scan();
+
+	void* addr = signature.GetAddress();
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EAX) // playerType
+		.AddInternalCall(PlayerTypeNoShake)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x83) // jump for true
+		.AddRelativeJump((char*)addr + 0x23);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchPlayerNoShake() {
+	ASMPatchNightmareSceneNoShake();
+	ASMPatchBossIntroNoShake();
+}
+
+constexpr char ITEM_NO_METRONOME[] = "nometronome";  // Prevent items from being picked by Metronome.
+
+bool __stdcall PlayerItemNoMetronome(int itemID) {
+	if (XMLStuff.ItemData->HasCustomTag(itemID, ITEM_NO_METRONOME)) {
+		return false;
+	}
+
+	return itemID != 488 && itemID != 475 && itemID != 422 && itemID != 326 && itemID != 482 && itemID != 636;
+}
+
+void ASMPatchPlayerItemNoMetronome() {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	SigScan signature("81ffe80100000f84????????");
+	signature.Scan();
+
+	void* addr = signature.GetAddress();
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // playerType
+		.AddInternalCall(PlayerItemNoMetronome)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNE, (char*)addr + 0x42) // jump for true
+		.AddRelativeJump((char*)addr + 0x11E);
+	sASMPatcher.PatchAt(addr, &patch);
+}

@@ -955,3 +955,78 @@ void ASMPatchPickupUpdatePickupGhosts() {
         .AddRelativeJump((char*)addr + 0xCA);
     sASMPatcher.PatchAt(addr, &patch);
 }
+
+// MC_POST_PROJECTILE_DEATH
+void __stdcall RunProjectileDeathCallback(Entity_Projectile* proj) {
+	const int callbackid = 1032;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(proj->_variant)
+			.push(proj, lua::Metatables::ENTITY_PROJECTILE)
+			.call(1);
+	}
+
+	// The patch is overriding the call to remove the projectile.
+	proj->Remove();
+}
+
+void ASMPatchProjectileDeath() {
+	SigScan signature("8bcfff50??837f??02");
+	signature.Scan();
+	void* addr = signature.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Projectile::Update at %p for MC_POST_PROJECTILE_DEATH\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	patch.AddBytes("\x8B\xCF") // mov ecx, edi (restoring some overridden bytes)
+		.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // Entity_Projectile*
+		.AddInternalCall(RunProjectileDeathCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// MC_POST_TEAR_DEATH
+void __stdcall RunTearDeathCallback(Entity_Tear* tear) {
+	const int callbackid = 1033;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaCaller(L).push(callbackid)
+			.push(tear->_variant)
+			.push(tear, lua::Metatables::ENTITY_TEAR)
+			.call(1);
+	}
+
+	// The patch is overriding the call to remove the tear.
+	tear->Remove();
+}
+
+void ASMPatchTearDeath() {
+	SigScan signature("8b40??ffd0e9????????68????????8bd68d8d");
+	signature.Scan();
+	void* addr = signature.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Tear::Update at %p for MC_POST_TEAR_DEATH\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::EDI) // Entity_Tear*
+		.AddInternalCall(RunTearDeathCallback)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x5);
+	sASMPatcher.PatchAt(addr, &patch);
+}
