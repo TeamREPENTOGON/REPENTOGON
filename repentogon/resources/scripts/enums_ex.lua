@@ -2447,6 +2447,9 @@ XMLNode = {
 	PLAYERFORM = 29,
 	NULLITEM = 30,
 	BOSSCOLOR = 31,
+	FXLAYER = 32,
+	FXPARAM = 33,
+	FXRAY = 34,
 }
 
 AutocompleteType = {

@@ -662,6 +662,9 @@ struct XMLData {
 	XMLGeneric* GiantBookData = new XMLGeneric(46);
 	XMLGeneric* BossRushData = new XMLGeneric(0);
 	XMLGeneric* PlayerFormData = new XMLGeneric(14);
+	XMLGeneric* FxLayerData = new XMLGeneric(0);
+	XMLGeneric* FxParamData = new XMLGeneric(0);
+	XMLGeneric* FxRayData = new XMLGeneric(0);
 	XMLBossColor* BossColorData = new XMLBossColor();
 
 	XMLMod* ModData = new XMLMod();
@@ -740,6 +743,17 @@ inline bool SingleValXMLParamParse(xml_node<char>* auxnode, xml_document<char>* 
 	return false;
 }
 
+inline int GetMaxIdFromChilds(xml_node<char>* parentnode,const char* attrname = "id") {
+	int maxid = -1;
+	for (xml_node<char>* auxnodebabe = parentnode->first_node(); auxnodebabe; auxnodebabe = auxnodebabe->next_sibling()) {
+		xml_attribute<char>* attr = auxnodebabe->first_attribute(attrname);
+		if (attr && (stoi(attr->value()) > maxid)) {
+			maxid = stoi(attr->value());
+		}
+	}
+	return maxid;
+}
+
 extern unordered_map<string, int> xmlnodeenum;
 inline void initxmlnodeenum() {
 	xmlnodeenum["entity"] = 1;
@@ -767,6 +781,9 @@ inline void initxmlnodeenum() {
 	xmlnodeenum["bossrush"] = 23;
 	xmlnodeenum["playerforms"] = 24;
 	xmlnodeenum["bosscolors"] = 25;
+	xmlnodeenum["fxlayers"] = 26;
+	xmlnodeenum["fxparams"] = 27;
+	xmlnodeenum["fxrays"] = 28;
 	xmlnodeenum["name"] = 99; //for mod metadata
 }
 
@@ -780,10 +797,10 @@ inline void initxmlmaxnodeenum() {
 
 extern unordered_map<string, int> xmlfullmerge;
 inline void initxmlfullmergelist() {
-	xmlfullmerge["bosscolors.xml"] = 1;
+	xmlfullmerge["bosscolors.xml"] = 1;	
 }
 
-extern XMLDataHolder* xmlnodetypetodata[32];
+extern XMLDataHolder* xmlnodetypetodata[35];
 extern XMLData XMLStuff;
 
 #endif
