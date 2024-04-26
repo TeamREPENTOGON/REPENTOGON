@@ -4,6 +4,7 @@
 #include "../LuaInterfaces/LuaRender.h"
 #include "NullItemsAndCostumes.h"
 #include "FamiliarTags.h"
+#include "Anm2Extras.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -132,6 +133,9 @@ void PerformASMPatches() {
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
 	HookImGui();
+
+	// Sprite
+	ASMPatchesForANM2Extras();
 
 	// Tweaks (bug crashes)
 	if (!ASMPatches::FixGodheadEntityPartition()) {

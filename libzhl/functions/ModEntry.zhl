@@ -6,7 +6,7 @@ __thiscall void ModEntry::GetContentPath(char**param_1,std_string* param_2); //d
 "558bec6aff68????????64a1????????50b874000100":
 __thiscall void ModEntry::WriteMetadata();
 
-struct ModEntry {
+struct ModEntry depends (ModShader) {
 {{
 	inline std_string GetDir() { return *(std_string*)((char*)this + 0); }
 	inline std_string GetName() { return *(std_string*)((char*)this + 0x18); }
@@ -17,17 +17,20 @@ struct ModEntry {
 	inline void SetEnabled(bool  x) { *(bool*)((char*)this + 0xFC) = x; }
 
 	inline ANM2* GetDeathEnemiesAnm2() { return (ANM2*)((char*)this + 0xDF0); }
-	
+
+	inline std::list<ModShader*>* GetShaders() {
+		return (std::list<ModShader*>*)((char*)this + 0xe4);
+	}
 }}
-	std_string _directory : 0x0; // 0x0
-	std_string _name : 0x18; // 0x18
-	std_string _resourcesDirectory : 0x30; // 0x30
-	std_string _contentDirectory : 0x48; // 0x48
-	std_string _dataDirectory : 0x60; // 0x60
-	std_string _metadataVersion : 0x78; //  0x78
-	std_string _metadataWorkshopID : 0x90; // 0x90
-	std_string _metadataDescription : 0xa8; // 0xa8
-	std_string _metadataVisibility : 0xa8; // 0xa8
-	bool _enabled : 0xfc; // 0xfc
-	bool _loaded : 0xfd; // 0xfd
+	std_string _directory : 0x0;
+	std_string _name : 0x18;
+	std_string _resourcesDirectory : 0x30;
+	std_string _contentDirectory : 0x48;
+	std_string _dataDirectory : 0x60;
+	std_string _metadataVersion : 0x78;
+	std_string _metadataWorkshopID : 0x90;
+	std_string _metadataDescription : 0xa8;
+	std_string _metadataVisibility : 0xa8;
+	bool _enabled : 0xfc;
+	bool _loaded : 0xfd;
 } : 0xf04;
