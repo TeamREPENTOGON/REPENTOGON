@@ -11,6 +11,8 @@
 #include <sstream>
 
 extern int toint(const string& str);
+extern float tofloat(const string& str);
+extern bool tobool(const string& str);
 
 namespace StageHandler {
 	const unsigned int BUFFER_STAGEID = 23;
@@ -275,6 +277,99 @@ HOOK_METHOD(RoomConfig_Stage, unload, () -> void) {
 	}
 
 	super();
+}
+
+
+HOOK_METHOD(FXLayers, Init, (char* fileName, int levelStage, int stageType) -> void) {
+	super(fileName, levelStage, stageType);
+
+	int backdropType = this->_backdropType;
+	if (XMLStuff.BackdropData->backdropState[backdropType].first) {
+		XMLAttributes backdropData = XMLStuff.FxParamData->GetNodeById(XMLStuff.BackdropData->backdropState[backdropType].second);
+		XMLAttributes paramData = XMLStuff.FxParamData->GetNodeByName(backdropData["name"]);
+		int id = toint(paramData["id"]);
+
+		if (id > 0) {
+			FXParams* params = &this->_fxParams;
+			params->shadowAlpha = tofloat(paramData["shadowalpha"]);
+			params->useWaterV2 = tobool(paramData["waterv2"]);
+
+			if (XMLStuff.FxParamData->childs.find(id) != XMLStuff.FxParamData->childs.end()) {
+				XMLChilds childs = XMLStuff.FxParamData->childs[id];
+				if (childs.find("roomcolor") != childs.end()) {
+					ColorModState* mod = params->GetColorModifier();
+					for each (XMLAttributes roomcolor in childs["roomcolor"])
+					{
+						if (roomcolor.find("r") != paramData.end()) {
+							mod->r = tofloat(roomcolor["r"]);
+							mod->g = tofloat(roomcolor["g"]);
+							mod->b = tofloat(roomcolor["b"]);
+							mod->a = tofloat(roomcolor["a"]);
+							mod->brightness = tofloat(roomcolor["brightness"]);
+							mod->contrast = tofloat(roomcolor["contrast"]);
+						}
+					}
+				}
+				if (childs.find("watercolor") != childs.end()) {
+					for each (XMLAttributes watercolor in childs["watercolor"])
+					{
+						if (watercolor.find("r") != paramData.end()) {
+							params->waterColor._red = tofloat(watercolor["r"]);
+							params->waterColor._green = tofloat(watercolor["g"]);
+							params->waterColor._blue = tofloat(watercolor["b"]);
+							params->waterColor._alpha = tofloat(watercolor["a"]);
+						}
+					}
+				}
+				/*
+				if (childs.find("watercolormultiplier") != childs.end()) {
+					for each (XMLAttributes watercolormultiplier in childs["watercolormultiplier"])
+					{
+						if (watercolormultiplier.find("r") != paramData.end()) {
+							params->waterColorMultiplier._red = tofloat(watercolormultiplier["r"]);
+							params->waterColorMultiplier._green = tofloat(watercolormultiplier["g"]);
+							params->waterColorMultiplier._blue = tofloat(watercolormultiplier["b"]);
+							params->waterColorMultiplier._alpha = tofloat(watercolormultiplier["a"]);
+						}
+					}
+				}
+				*/
+				if (childs.find("shadowcolor") != childs.end()) {
+					for each (XMLAttributes shadowcolor in childs["shadowcolor"])
+					{
+						if (shadowcolor.find("r") != paramData.end()) {
+							params->shadowColor._red = tofloat(shadowcolor["r"]);
+							params->shadowColor._green = tofloat(shadowcolor["g"]);
+							params->shadowColor._blue = tofloat(shadowcolor["b"]);
+							params->shadowColor._alpha = tofloat(shadowcolor["a"]);
+						}
+					}
+				}
+				if (childs.find("lightcolor") != childs.end()) {
+					for each (XMLAttributes lightcolor in childs["lightcolor"])
+					{
+						if (lightcolor.find("r") != paramData.end()) {
+							params->lightColor._red = tofloat(lightcolor["r"]);
+							params->lightColor._green = tofloat(lightcolor["g"]);
+							params->lightColor._blue = tofloat(lightcolor["b"]);
+							params->lightColor._alpha = tofloat(lightcolor["a"]);
+						}
+					}
+				}
+				if (childs.find("watereffectcolor") != childs.end()) {
+					for each (XMLAttributes watereffectcolor in childs["watereffectcolor"])
+					{
+						if (watereffectcolor.find("r") != paramData.end()) {
+							params->waterEffectColor._tint[0] = tofloat(watereffectcolor["r"]);
+							params->waterEffectColor._tint[1] = tofloat(watereffectcolor["g"]);
+							params->waterEffectColor._tint[2] = tofloat(watereffectcolor["b"]);
+							params->waterEffectColor._tint[3] = tofloat(watereffectcolor["a"]);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 HOOK_METHOD(Game, Start, (int playertype, int challenge, Seeds seeds, unsigned int difficulty) -> void) {

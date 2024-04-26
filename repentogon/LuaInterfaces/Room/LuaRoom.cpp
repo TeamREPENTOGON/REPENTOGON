@@ -3,6 +3,8 @@
 #include "HookSystem.h"
 #include "Room.h"
 
+#include "../../Patches/XMLData.h"
+
 RoomASM roomASM;
 extern uint32_t hookedbackdroptype;
 
@@ -357,15 +359,15 @@ LUA_FUNCTION(Lua_RoomGetNumRainSpawners) {
 
 LUA_FUNCTION(Lua_RoomGetBackdropTypeHui) { //this is a bad way to replace room.GetBackdropType, I think
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	if (hookedbackdroptype != 0) {
-		lua_pushinteger(L, hookedbackdroptype);
-		return 1;
+	if (XMLStuff.BackdropData->hookedbackdroptype != 0) {
+		lua_pushinteger(L, XMLStuff.BackdropData->hookedbackdroptype);
 	}
 	else {
 		Backdrop* bg = room->GetBackdrop();
 		lua_pushinteger(L, bg->backdropId);
-		return 1;
 	}
+
+	return 1;
 }
 
 LUA_FUNCTION(Lua_RoomSaveState) {

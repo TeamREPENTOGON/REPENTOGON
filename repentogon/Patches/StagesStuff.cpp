@@ -230,7 +230,7 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool) {
 	bool ret = super(Stage, Mode);
 
-	if (res && Stage == 0) {
+	if (ret && Stage == 0) {
 		unsigned int doors = 0;
 		for (int i = 14; i < 16; i++) {
 			//printf("type #%d\n", i);

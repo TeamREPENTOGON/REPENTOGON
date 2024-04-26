@@ -476,6 +476,9 @@ class XMLPlayer : public XMLDataHolder {
 };
 
 class XMLBackdrop : public XMLDataHolder {
+public:
+	std::pair<bool, short> backdropState[61];
+	uint32_t hookedbackdroptype;
 };
 
 class XMLEntity {
