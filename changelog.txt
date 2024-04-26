@@ -2,6 +2,10 @@ v1.??? -
 Modified:
 * Callbacks:
 	- MC_PRE_PLAYERHUD_TRINKET_RENDER: now provides [Vector] CropOffset parameter and accepts CropOffset vector in the return table.
+* EntityPlayer:
+	- AddInnateCollectible() now uses a system separate from item wisps, still doesn't save on game exit though!
+	- Change to HasCollectible and GetCollectibleNum:
+		new optional boolean (IgnoreSpoof), ignores collectible block when set to true
 Additions:
 * Lootlist:
 	- constructor
@@ -16,8 +20,7 @@ Additions:
 		BlockCollectible(int itemID)
 		UnblockCollectible(int itemID)
 		IsCollectibleBlocked(int itemID)
-	- Change to HasCollectible and GetCollectibleNum:
-		new optional boolean (IgnoreBlock), ignores collectible block when set to true
+
 * EntityTear:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
