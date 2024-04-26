@@ -32,6 +32,7 @@ using namespace std;
 
 ANM2* pathCheckanm2 = new ANM2();
 char* bosspoolsxml; //caching this ffs
+char* fxlayerssxml; //caching this ffs
 bool itempoolerror = false;
 bool xmlsloaded = false;
 
@@ -50,7 +51,7 @@ unordered_map<string, int> xmlmaxnode;
 unordered_map<string, int> xmlfullmerge;
 XMLData XMLStuff;
 
-XMLDataHolder* xmlnodetypetodata[32] = {
+XMLDataHolder* xmlnodetypetodata[35] = {
 	XMLStuff.ModData,             // 0
 	NULL,//XMLStuff.EntityData,          // 1
 	XMLStuff.PlayerData,          // 2
@@ -82,7 +83,10 @@ XMLDataHolder* xmlnodetypetodata[32] = {
 	XMLStuff.BossRushData,        // 28
 	XMLStuff.PlayerFormData,      // 29
 	XMLStuff.NullItemData,         // 30
-	XMLStuff.BossColorData         // 31
+	XMLStuff.BossColorData,         // 31
+	XMLStuff.FxLayerData,       // 32
+	XMLStuff.FxParamData,        // 33
+	XMLStuff.FxRayData        // 34
 };
 
 
@@ -152,6 +156,58 @@ XMLAttributes BuildGenericEntry(xml_node<char>* node) {
 	return mod;
 }
 
+void inheritdaddyatts(xml_node<char>* daddy, XMLAttributes* atts) {
+	for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
+	{
+		if (atts->find(attr->name()) == atts->end()) {
+			atts->insert(pair<string, string>(stringlower(attr->name()), string(attr->value())));
+		}
+	}
+}
+
+void LoadGenericXMLData(XMLDataHolder* data,xml_node<char>* daddy) {
+	int id = 1;
+	xml_node<char>* babee = daddy->first_node();
+	for (xml_node<char>* auxnode = babee; auxnode; auxnode = auxnode->next_sibling()) {
+		XMLAttributes attributes;
+		for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+		{
+			attributes[stringlower(attr->name())] = string(attr->value());
+		}
+		inheritdaddyatts(daddy, &attributes);
+		//string oldid = attributes["id"];
+		if ((attributes.find("id") != attributes.end()) && ((attributes.find("sourceid") == attributes.end()) || !iscontent)) {
+			id = toint(attributes["id"]);
+		}
+
+		else {
+			if (attributes.find("id") != attributes.end()) { attributes["relativeid"] = attributes["id"]; }
+			data->maxid = data->maxid + 1;
+			attributes["id"] = to_string(data->maxid);
+			id = data->maxid;
+		}
+		if (id > data->maxid) {
+			data->maxid = id;
+		}
+
+		if (attributes.find("sourceid") == attributes.end()) {
+			attributes["sourceid"] = lastmodid;
+		}
+		data->ProcessChilds(auxnode, id);
+		//printf("giantbook: %s (%d) \n", attributes["name"].c_str(),id);
+		if (attributes.find("relativeid") != attributes.end()) { data->byrelativeid[attributes["sourceid"] + attributes["relativeid"]] = id; }
+		data->bynamemod[attributes["name"] + attributes["sourceid"]] = id;
+		data->bymod[attributes["sourceid"]].push_back(id);
+		data->byfilepathmulti.tab[currpath].push_back(id);
+		if (attributes.find("name") != attributes.end()) {
+			data->byname[attributes["name"]] = id;
+		}
+		data->nodes[id] = attributes;
+		data->byorder[data->nodes.size()] = id;
+		//XMLStuff.ModData->sounds[lastmodid] += 1;
+		//printf("music: %s id: %d // %d \n",music["name"].c_str(),id, XMLStuff.MusicData.maxid);
+	}
+}
 
 void ProcessModEntry(char* xmlpath,ModEntry* mod) {
 	if (mod != NULL) { //it is null when its loading vanilla stuff
@@ -738,14 +794,7 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 	mclear(xml);
 }
 */
-void inheritdaddyatts(xml_node<char>* daddy,XMLAttributes* atts) {
-	for (xml_attribute<>* attr = daddy->first_attribute(); attr; attr = attr->next_attribute())
-	{
-		if (atts->find(attr->name()) == atts->end()) {
-			atts->insert(pair<string, string>(stringlower(attr->name()), string(attr->value())));
-		}
-	}
-}
+
 
 // Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
 // Ex: "tag1 tag2 tag3"
@@ -766,8 +815,8 @@ void ParseTagsString(const string& str, set<string>& out) {
 //
 //#include <time.h>
 bool initedxmlenums = false;
-void ProcessXmlNode(xml_node<char>* node) {
-	if (!node || no || xmlsloaded) { return; }
+void ProcessXmlNode(xml_node<char>* node,bool force = false) {
+	if (!force && (!node || no || xmlsloaded)) { return; }
 	if (queuedhackyxmlvalue > 0) { return; }
 	//clock_t tStart = clock();
 	//if (currpath.length() > 0) { printf("Loading: %s \n", currpath.c_str()); }
@@ -2263,6 +2312,15 @@ void ProcessXmlNode(xml_node<char>* node) {
 		XMLStuff.ModData->byorder[XMLStuff.ModData->nodes.size()] = id;
 	}
 	break;
+	case 26: //fxlayers
+		LoadGenericXMLData(XMLStuff.FxLayerData, node);
+		break;
+	case 27: //fxparams
+		LoadGenericXMLData(XMLStuff.FxParamData, node);
+		break;
+	case 28: //fxrays
+		LoadGenericXMLData(XMLStuff.FxRayData, node);
+		break;
 	}
 	//printf("Time taken: %.20fs in %s\n", (double)(clock() - tStart) / CLOCKS_PER_SEC, nodename);
 }
@@ -3083,6 +3141,7 @@ void DoFullMerge(xml_document<>* a, xml_document<>* b) {
 
 
 int maxnodebackdrop = 60;
+int maxfxlayerid = 33;
 
 void inheritdaddy(xml_node<char>* auxnode, xml_node<char>* clonedNode) {
 	xml_node<char>* daddy = auxnode->parent();
@@ -3119,6 +3178,30 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 		}
 	}
 	//resources
+	//maxnodes
+	if (xmlmaxnode.find(filename) != xmlmaxnode.end()) {
+		xml_document<char>* xmldoc = new xml_document<char>();
+		if (XMLParse(xmldoc, xml, filename)) {
+			int newmax = GetMaxIdFromChilds(xmldoc->first_node());
+			if (newmax > 0) {
+				xmlmaxnode[filename] = newmax;
+				//printf("filename: %s max: %d \n", filename.c_str(), xmlmaxnode[filename]);
+			}
+		}
+		mclear(xmldoc);
+	}
+	else if (strcmp(filename.c_str(), "fxlayers.xml") == 0) {
+		xml_document<char>* xmldoc = new xml_document<char>();
+		if (XMLParse(xmldoc, xml, filename)) {
+			int newmax = GetMaxIdFromChilds(xmldoc->first_node("fxLayers")); //fuck this xml in particular
+			if (newmax > 0) {
+				maxfxlayerid = newmax;
+				//printf("filename: %s max: %d \n", filename.c_str(), maxfxlayerid);
+			}
+		}
+		mclear(xmldoc);
+	}
+	//maxnodes 
 	//content
     for (ModEntry* mod : g_Manager->GetModManager()->_mods) {
 		if (mod->IsEnabled()) {
@@ -3175,6 +3258,67 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							inheritdaddy(auxnode, clonedNode);
 							root->append_node(clonedNode);
 						}
+					}
+					else if (strcmp(filename.c_str(), "fxlayers.xml") == 0) {
+						//fxlayers
+						resourcescroot = resourcesdoc->first_node("fxLayers"); 
+						root = xmldoc->first_node("fxLayers");
+						if (resourcescroot != NULL) {
+							for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+								xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+
+								XMLAttributes node;
+								for (xml_attribute<>* attr = auxnode->first_attribute(); attr; attr = attr->next_attribute())
+								{
+									node[stringlower(attr->name())] = string(attr->value());
+								}
+								inheritdaddy(auxnode, clonedNode);
+								maxfxlayerid += 1;
+								xml_attribute<char>* newid;
+								if (node.count("id") > 0) {
+									newid = new xml_attribute<char>(); newid->name("relativeid"); newid->value(clonedNode->first_attribute("id")->value()); clonedNode->append_attribute(newid);
+									clonedNode->first_attribute("id")->value(IntToChar(maxfxlayerid));
+								}
+								else {
+									newid = new xml_attribute<char>(); newid->name("id"); newid->value(IntToChar(maxfxlayerid)); clonedNode->append_attribute(newid);
+								}
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								root->append_node(clonedNode);
+							}
+							ProcessXmlNode(root,true);
+						}
+						//end of fxlayers
+						//fxRays
+						resourcescroot = resourcesdoc->first_node("fxRays");
+						root = xmldoc->first_node("fxRays");
+						if (resourcescroot != NULL) {
+							for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+								xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+								inheritdaddy(auxnode, clonedNode);
+								maxfxlayerid += 1;
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								root->append_node(clonedNode);
+							}
+							ProcessXmlNode(root, true);
+						}
+						//end of fxRays
+						//fxParams
+						resourcescroot = resourcesdoc->first_node("fxParams");
+						root = xmldoc->first_node("fxParams");
+						if (resourcescroot != NULL) {
+							for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
+								xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
+								xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
+								inheritdaddy(auxnode, clonedNode);
+								maxfxlayerid += 1;
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								root->append_node(clonedNode);
+							}
+							ProcessXmlNode(root, true);
+						}
+						//end of fxParams
 					}
 					else if (strcmp(filename.c_str(), "backdrops.xml") == 0) {
 						for (xml_node<char>* auxnode = resourcescroot->first_node(); auxnode; auxnode = auxnode->next_sibling()) {
@@ -3261,11 +3405,13 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 				modifiedXmlStream << *xmldoc;
 				mclear(xmldoc);
 				string modifiedXml = modifiedXmlStream.str();
-				//printf("\nasdsasad: (%d)\n", strlen(xml));
 				//mclear(xml);
 				 xml =new char[modifiedXml.length() + 1];
 				std::strcpy(xml, modifiedXml.c_str());
 				modifiedXmlStream.clear();
+				//if (strcmp(filename.c_str(), "fxlayers.xml") == 0) {
+					//printf("\nasdsasad: (%s)\n", xml);
+				//}
 			}
 			else{
 				mclear(xmldoc);
@@ -3441,13 +3587,27 @@ HOOK_METHOD(ModManager, LoadConfigs, () -> void) {
 }
 
 HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
+	if (charfind(xmldata, "<fxLayers", 50)) {
+		if (fxlayerssxml != NULL) {
+			char* x = new char[strlen(fxlayerssxml) + 1];
+			strcpy(x, fxlayerssxml);
+			super(x);
+			return;
+		}
+		else {
+			char* x = BuildModdedXML(xmldata, "fxlayers.xml", false);
+			fxlayerssxml = new char[strlen(x) + 1];
+			strcpy(fxlayerssxml, x);
+			super(x);
+		}
+		return;
+	}
 	if (xmlsloaded) {
 		//printf("XML: %s", xmldata);
 		if ((bosspoolsxml != NULL) && (charfind(xmldata, "<bosspool", 50))) {
 			char* x = new char[strlen(bosspoolsxml)];
 			strcpy(x, bosspoolsxml);
 			super(x);
-			mclear(x);
 			return;
 		}
 		else if (charfind(xmldata, "<cuts", 50)) {
@@ -3463,7 +3623,7 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 		else{
 			return super(xmldata); 
 		}
-	}
+	}	
 	if (g_Manager->GetOptions()->ModsEnabled()) {
 	try {
 		//string xml = string(xmldata);
@@ -3475,11 +3635,13 @@ HOOK_METHOD(xmldocument_rep, parse, (char* xmldata)-> void) {
 
 		if (charfind(xmldata, "<bosspool", 50)) {
 			if (bosspoolsxml != NULL) {
-				super(bosspoolsxml);
+				char* x = new char[strlen(bosspoolsxml)];
+				strcpy(x, bosspoolsxml);
+				super(x);
 			}
 			else {
 				char* x = BuildModdedXML(xmldata, "bosspools.xml", true);
-				bosspoolsxml = new char[strlen(x)];
+				bosspoolsxml = new char[strlen(x) + 1];
 				strcpy(bosspoolsxml, x);
 				super(x);
 			}

@@ -190,8 +190,11 @@ Additions:
 	- SetHoldTime
 * EntityConfig:
 	- Added EntityConfig.GetBaby(i) and EntityConfig.GetMaxBabyID(), as well as the corresponding EntityConfigBaby class (its co-op babies).
+* FxLayers:
+	- Added content support for fxlayers.xml
 * XMLData :
 	- XMLData.GetEntryByOrder: gets entries in the order they appear on the xmls.
+	- Added XMLData for FxLayers, FxParams and FxRays
 * Callbacks :
 	- MC_POST_NPC_DARK_RED_CHAMPION_REGEN: Called right after a dark red champion regenerates out of goo form
 	- MC_POST_ACHIEVEMENT_UNLOCK: Called after an achievement is unlocked, has the achievement id as its param
