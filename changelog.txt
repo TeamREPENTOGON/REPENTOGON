@@ -16,6 +16,7 @@ Additions:
 * EntityPlayer:
 	- Get/SetBombPlaceDelay
 	- Get/SetBloodLustCounter
+	- GetSpoofedCollectiblesList
 	- New functionality for blocking items:
 		BlockCollectible(int itemID)
 		UnblockCollectible(int itemID)
