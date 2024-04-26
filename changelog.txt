@@ -26,6 +26,7 @@ Additions:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
 	- GetDeadEyeSprite
+	- ResetSpriteScale(bool Force) - New optional "force" boolean, when set to true forces the tear to re-evaluate which scale animation it should be playing
 * EntityPickup:
 	- GetLootList(ShouldAdvance = false)
 	- GetPickupGhost
@@ -65,6 +66,20 @@ Additions:
 	* GetPlayerExtraPortraitSprite
 * RoomTransition
 	* GetPlayerExtraPortraitSprite
+* Sprite
+	* SetCustomShader(string Path) - Overrides only the default ColorOffset shader. Path starts at `.../resources/` and expects to find both a .vs and .fs file. For example: SetCustomShader("shaders/my_shader")
+	* ClearCustomShader()
+	* HasCustomShader(string Path) - Returns true if the specified shader is currently set. If no string is provided, returns true if any custom shader is applied.
+	* SetCustomChampionShader(string Path) - Same as SetCustomShader but for overriding ColorOffset_Champion instead.
+	* ClearCustomChampionShader()
+	* HasCustomChampionShader(string Path)
+* LayerState
+	* SetCustomShader(string Path) - Same as sprite:SetCustomShader() but only for a single layer.
+	* ClearCustomShader()
+	* HasCustomShader(string Path)
+	* SetCustomChampionShader(string Path)
+	* ClearCustomChampionShader()
+	* HasCustomChampionShader(string Path)
 * Callbacks:
 	- MC_PRE_PICKUP_GET_LOOT_LIST callback (Pickup, bool ShouldAdvance) - Return LootList to change loot content
 	- MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (Pickup) - Return true to apply pickup ghost to your pickup entitiy, false to cancel it
