@@ -223,7 +223,9 @@ bool SigScan::Scan(Callback callback)
 			printf("[REPENTOGON] Invalid signature cache! Expect longer load time...\n");
 			SigCache::InvalidateCache(s_sigCounter);
 		}
-		pStart = (unsigned char*)SigCache::_entries[s_sigCounter]._address;
+		else {
+			pStart = (unsigned char*)SigCache::_entries[s_sigCounter]._address;
+		};
 	};
 	unsigned char *pEnd = s_pBase + s_iBaseLen - m_iLength;
 
