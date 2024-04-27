@@ -156,9 +156,20 @@ void ReplaceAchievementSprite(ANM2* AchievPop, int achieveemntid) {
 		AchievPop->ReplaceSpritesheet(2, modachiev["gfxroot"] + modachiev["gfxback"]);
 		AchievPop->LoadGraphics(true);
 	}
-	AchievPop->ReplaceSpritesheet(3, modachiev["gfxroot"] + modachiev["gfx"]);
-	AchievPop->LoadGraphics(true);
-	AchievPop->Update();
+	else {
+		AchievPop->ReplaceSpritesheet(2, string("gfx/ui/achievement/paper.png"));
+		AchievPop->LoadGraphics(true);
+	}
+	PersistentGameData* pgd = g_Manager->GetPersistentGameData();
+	if (pgd->Unlocked(achieveemntid)) {
+		AchievPop->ReplaceSpritesheet(3, modachiev["gfxroot"] + modachiev["gfx"]);
+		AchievPop->LoadGraphics(true);
+		AchievPop->Update();
+	}else{
+		AchievPop->ReplaceSpritesheet(3, string("gfx/ui/achievement/achievement_locked.png"));
+		AchievPop->LoadGraphics(true);
+		AchievPop->Update();
+	}
 	
 }
 
@@ -406,13 +417,16 @@ int ConstrainId(int x) {
 }
 
 int achievbckup[638];
+int lastfuck = 0;
 void BackupAchievsNOverride() {
 	if (secretssource != "BaseGame") {
 		PersistentGameData* pgd = g_Manager->GetPersistentGameData();
-		for (int i = 1; i < currmax; i++) {
-			XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][i-1];
+		for (int i = 1; i <= currmax; i++) {
 			achievbckup[i] = pgd->achievements[i];
-			pgd->achievements[i] = pgd->Unlocked(toint(cur["id"]));
+			if (XMLStuff.ModData->achievlistpermod[secretssource].size() >= i) {
+				XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][i-1];
+				pgd->achievements[i] = pgd->Unlocked(toint(cur["id"]));
+			}
 		}
 	}
 }
@@ -420,7 +434,7 @@ void BackupAchievsNOverride() {
 void RecoverAchievs() {
 	if (secretssource != "BaseGame") {
 		PersistentGameData* pgd = g_Manager->GetPersistentGameData();
-		for (int i = 1; i < currmax; i++) {
+		for (int i = 1; i <= currmax; i++) {
 			pgd->achievements[i] = achievbckup[i];
 		}
 	}
@@ -434,14 +448,7 @@ void UpdateSecretsSprites(bool justpaper) {
 	PersistentGameData* pgd = g_Manager->GetPersistentGameData();
 	XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][menstats->_selectedAchievmentId];
 	int id = toint(cur["id"]);
-	if (pgd->Unlocked(id)) {
-		ReplaceAchievementSprite(&menstats->_achievementsSprite, id);
-	}
-	else {
-		menstats->_achievementsSprite.ReplaceSpritesheet(3, string("gfx/ui/achievement/achievement_locked.png"));
-		menstats->_achievementsSprite.LoadGraphics(true);
-		menstats->_achievementsSprite.Update();
-	}
+	ReplaceAchievementSprite(&menstats->_achievementsSprite, id);
 }
 
 void ChangeCurrentSecrets(int dir) {
@@ -484,13 +491,49 @@ void SetUpReverseSourcesVec() {
 		}
 }
 
+bool tempblocksave = false;
+HOOK_METHOD(PersistentGameData, Save, () -> void) {
+	if (!tempblocksave) {
+		super();
+	}
+}
 
-
+bool achievslidingin = false;
+bool justopened = false;
 HOOK_METHOD(Menu_Stats, UpdateSecrets, () -> void) {
+	tempblocksave = true;
 	BackupAchievsNOverride();
 	super();
 	RecoverAchievs();
+	tempblocksave = false;
 	//UpdateSecretsSprites(false);
+
+	if (secretssource != "BaseGame") {
+		int trgtachv = _selectedAchievmentId;
+		if (this->_achievementsSprite.IsPlaying(&string("Appear"))) {
+			trgtachv -= 1;
+		}
+		else if (this->_achievementsSprite.IsPlaying(&string("Appear2"))) {
+			trgtachv += 1;
+		}
+		if ((trgtachv != _selectedAchievmentId)) {
+			if ((trgtachv >= this->_maxAchievementID) || (this->_maxAchievementID == 1)) { trgtachv = 0; }
+			if (trgtachv < 0) { trgtachv = this->_maxAchievementID - 1; }
+			if (justopened) { 
+				trgtachv = _selectedAchievmentId;
+			}
+			PersistentGameData* pgd = g_Manager->GetPersistentGameData();
+			XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][trgtachv];
+			if (!achievslidingin) {
+				ReplaceAchievementSprite(&this->_achievementsSprite, toint(cur["id"]));
+				achievslidingin = true;
+			}
+		}
+		else {
+			achievslidingin = false;
+		}
+	}
+	justopened = false;
 }
 
 HOOK_METHOD(Menu_Stats, Render, () -> void) {
@@ -531,11 +574,16 @@ HOOK_METHOD(Menu_Stats, Render, () -> void) {
 			this->_cursorLeftSprite.Render(&(offset + Vector(205+ txtwidth, 4)), &z, &z);
 			this->_cursorLeftSprite._rotation = 0;
 			this->_cursorLeftSprite._scale = Vector(1, 1);
+			
+
 		}
 }
 
 
 HOOK_METHOD(Menu_Stats, Update, () -> void) {
+	if (!this->_isAchievementScreenVisible) {
+		justopened = true;
+	}
 	super();
 	if (this->_isAchievementScreenVisible && g_Manager->GetOptions()->ModsEnabled()) {
 		SetUpReverseSourcesVec();
@@ -547,6 +595,5 @@ HOOK_METHOD(Menu_Stats, Update, () -> void) {
 		}
 		Menu_Stats* menstats = g_MenuManager->GetMenuStats();
 		menstats->_maxAchievementID = currmax;
-	}
-
+	}	
 }
