@@ -217,7 +217,8 @@ bool SigScan::Scan(Callback callback)
 
 	unsigned char *pStart = s_pBase;
 	s_sigCounter++;
-	if (s_sigCounter!=-1 && s_sigCounter<SigCache::_entries.size()) {
+	bool readfromcache = (s_sigCounter != -1 && s_sigCounter < SigCache::_entries.size());
+	if (readfromcache){
 		if (SigCache::_entries[s_sigCounter]._sighash != m_sighash) {
 			SigCache::ResetSigFile();
 			printf("[REPENTOGON] Invalid signature cache! Expect longer load time...\n");
@@ -283,8 +284,9 @@ bool SigScan::Scan(Callback callback)
 
 			s_lastMatches = m_matches;
 			if(callback) callback(this);
-			SigCache::WriteCacheEntry(m_sighash, (size_t)m_pAddress);
-
+			if (!readfromcache) {
+				SigCache::WriteCacheEntry(m_sighash, (size_t)m_pAddress);
+			};
 
 			return true;
 		}
