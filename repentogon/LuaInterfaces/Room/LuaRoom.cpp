@@ -357,12 +357,10 @@ LUA_FUNCTION(Lua_RoomGetNumRainSpawners) {
 	return 1;
 }
 
-extern int toint(const string& str);
-
 LUA_FUNCTION(Lua_RoomGetBackdropTypeHui) { //this is a bad way to replace room.GetBackdropType, I think
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	if (XMLStuff.BackdropData->backdropState.first) {
-		lua_pushinteger(L, toint(XMLStuff.BackdropData->GetNodeByName(XMLStuff.BackdropData->backdropState.second)["id"]));
+		lua_pushinteger(L, XMLStuff.BackdropData->backdropState.second);
 	}
 	else {
 		Backdrop* bg = room->GetBackdrop();

@@ -477,7 +477,10 @@ class XMLPlayer : public XMLDataHolder {
 
 class XMLBackdrop : public XMLDataHolder {
 public:
-	std::pair<bool, std::string> backdropState;
+	// overriden id, overridee id
+	std::pair<unsigned short, unsigned short> backdropState;
+	// fine
+	std::string overrideName;
 };
 
 class XMLEntity {

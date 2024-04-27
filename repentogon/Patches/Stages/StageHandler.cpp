@@ -285,8 +285,8 @@ HOOK_METHOD(FXLayers, Init, (char* fileName, int levelStage, int stageType) -> v
 
 	//printf("backdropState.first is %d, second is %s\n", XMLStuff.BackdropData->backdropState.first, XMLStuff.BackdropData->backdropState.second.c_str());
 
-	if (XMLStuff.BackdropData->backdropState.first) {
-		XMLAttributes paramData = XMLStuff.FxParamData->GetNodeByName(XMLStuff.BackdropData->backdropState.second);
+	if (XMLStuff.BackdropData->backdropState.first > 0) {
+		XMLAttributes paramData = XMLStuff.FxParamData->GetNodeByName(XMLStuff.BackdropData->overrideName);
 		int id = toint(paramData["id"]);
 
 		//stringstream message;
