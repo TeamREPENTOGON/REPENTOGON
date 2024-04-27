@@ -5,6 +5,21 @@
 
 #include "libzhl.h"
 
+namespace SigCache {
+	size_t FindCacheEntryBySig(size_t sighash);
+	void LoadCache();
+	void WriteCacheEntry(size_t sighash, size_t address);
+	void InvalidateCache(size_t offset);
+	void ResetSigFile();
+
+	struct SigCacheEntry {
+		size_t _sighash;
+		size_t _address;
+	};
+
+	extern std::vector<SigCacheEntry> _entries;
+	extern bool IsLoaded;
+};
 class LIBZHL_API SigScan
 {
 public:
@@ -27,10 +42,12 @@ private:
 	static unsigned char *s_pLastStartAddress;
 	static unsigned char *s_pLastAddress;
 	static std::list<Match> s_lastMatches;
+	static size_t s_sigCounter;
 
 private:
 	size_t m_iLength;
 	unsigned char *m_sig;
+	size_t m_sighash;
 	unsigned char *m_mask;
 	std::list<Match> m_matches;
 
