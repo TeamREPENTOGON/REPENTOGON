@@ -4,8 +4,20 @@ reference KAGE_Graphics_Shader* g_CurrentShader;
 "a1(????????)a3????????e97e020000f6c120":
 reference KAGE_Graphics_Shader* g_AllShaders;
 
-struct KAGE_Graphics_Shader {
+"c705????????(????????)c705????????ffffffffc605????????00c705????????00000000":
+reference void* KAGE_Graphics_ShaderBase_vftable;
+
+struct KAGE_Graphics_ShaderBase {
+    {{
+        KAGE_Graphics_ShaderBase() : _vtable(__ptr_KAGE_Graphics_ShaderBase_vftable) {};
+    }}
+    void* _vtable : 0x0;
+} : 0x28;
+
+struct KAGE_Graphics_Shader depends (KAGE_Graphics_ShaderBase) {
     {{
         inline int GetShaderId() { return *(int*)((char*)this + 0x28); }
     }}
-};
+    KAGE_Graphics_ShaderBase _shaderBase : 0x0;
+    unsigned int _glProgram : 0x28;
+} : 0x2c;
