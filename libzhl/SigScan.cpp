@@ -18,9 +18,11 @@ namespace SigCache {
 
 	void ResetSigFile() {
 		std::ofstream siglist("signatures.log", std::ios::out | std::ios::trunc);
-		siglist << "1337" << std::endl;	//todo: write exe hash here
-		siglist.close();
-	}
+		if (siglist.is_open()){
+			siglist << "1337" << std::endl;	//todo: write exe hash here
+			siglist.close();
+		};
+	};
 
 	void InvalidateCache(size_t offset) {
 		//todo! clear up cache in case of a mismatch, switch to vec search!!!

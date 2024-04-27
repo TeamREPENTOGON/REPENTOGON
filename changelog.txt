@@ -98,6 +98,7 @@ Additions:
 * Added the "noshake" attribute to the players.xml which can "disable" the player portrait shaking animation in the nightmare scene/boss intro
 * Added support for a "customtags" attribute in items.xml - a space-separated list of tags that can be checked with ItemConfigItem:HasCustomTag() or ItemConfigItem:GetCustomTags()
 * Added custom tag "nometronome" to items.xml to prevent items from being picked by Metronome
+* Improved startup time!
 /newline/
 Fixes:
     * Fixed `Isaac.CreateTimer` crashing the game when setting the delay argument to 0
