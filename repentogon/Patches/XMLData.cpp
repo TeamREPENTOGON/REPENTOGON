@@ -165,6 +165,19 @@ void inheritdaddyatts(xml_node<char>* daddy, XMLAttributes* atts) {
 	}
 }
 
+void UpdateRelEntTracker(XMLDataHolder* data, XMLRelEnt* target, const char* trgtattr) {
+	for each (auto node in data->nodes) {
+		XMLAttributes attrs = node.second;
+		if (attrs.find(trgtattr) != attrs.end()) {
+			int entid = toint(attrs[trgtattr]);
+			if (target->find(entid) == target->end()) {
+				target->insert(pair<int,vector<XMLAttributes>>(entid, vector<XMLAttributes > ()));
+			}
+			target->at(entid).push_back(attrs);
+		}
+	}
+}
+
 void LoadGenericXMLData(XMLDataHolder* data,xml_node<char>* daddy) {
 	int id = 1;
 	xml_node<char>* babee = daddy->first_node();
@@ -2314,12 +2327,15 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 	break;
 	case 26: //fxlayers
 		LoadGenericXMLData(XMLStuff.FxLayerData, node);
+		UpdateRelEntTracker(XMLStuff.FxLayerData, &XMLStuff.BackdropData->relfxlayers, "backdrop");
 		break;
 	case 27: //fxparams
 		LoadGenericXMLData(XMLStuff.FxParamData, node);
+		UpdateRelEntTracker(XMLStuff.FxParamData, &XMLStuff.BackdropData->relfxparams, "backdrop");
 		break;
 	case 28: //fxrays
 		LoadGenericXMLData(XMLStuff.FxRayData, node);
+		UpdateRelEntTracker(XMLStuff.FxRayData, &XMLStuff.BackdropData->relfxrays, "backdrop");
 		break;
 	}
 	//printf("Time taken: %.20fs in %s\n", (double)(clock() - tStart) / CLOCKS_PER_SEC, nodename);
