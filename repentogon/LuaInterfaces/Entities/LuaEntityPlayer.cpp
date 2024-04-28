@@ -2276,6 +2276,15 @@ LUA_FUNCTION(Lua_PlayerSetHeadDirectionLockTime) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerHasGoldenTrinket) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const unsigned int trinket = (unsigned int)luaL_checkinteger(L, 2);
+
+	lua_pushboolean(L, player->HasGoldenTrinket(trinket));
+	
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2481,6 +2490,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothing, leaving it out of the docs
 		{ "GetPlayerIndex", Lua_PlayerGetPlayerIndex }, 
 		{ "GetSpoofedCollectiblesList", Lua_PlayerGetSpoofCollList },
+		{ "HasGoldenTrinket", Lua_PlayerHasGoldenTrinket },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

@@ -21,6 +21,7 @@ Additions:
 		BlockCollectible(int itemID)
 		UnblockCollectible(int itemID)
 		IsCollectibleBlocked(int itemID)
+	- HasGoldenTrinket
 
 * EntityTear:
 	- GetTearHaloSprite

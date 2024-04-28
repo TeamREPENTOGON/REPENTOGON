@@ -464,6 +464,9 @@ __thiscall void Entity_Player::ClearQueueItem();
 "558bec6aff68????????64a1????????5081ecec010000":
 __thiscall void Entity_Player::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 
+"558bec515356576a00":
+__thiscall bool Entity_Player::HasGoldenTrinket(unsigned int TrinketID);
+
 
 struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, TemporaryEffects) : public Entity { {{
     inline int* GetMaxHearts() {return &this->_maxHearts; }
@@ -609,6 +612,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _playerIndex : 0x1550;
 	int _moveDirection : 0x1558;
 	int _headDirection: 0x155c;
+	uint32_t _trinketsID[2] : 0x15e8;
 	vector_SmeltedTrinketDesc _smeltedTrinkets : 0x1670;
 	int _playerForms[15] : 0x1700;
 	KColor _footprintColor1 : 0x1768;
