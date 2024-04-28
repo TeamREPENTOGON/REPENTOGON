@@ -24,7 +24,8 @@ HOOK_METHOD(Cutscene, Show, (int cutsceneid) -> void) {
 HOOK_METHOD(MenuManager, Update, ()->void) {
 	MenuManager* mngr = g_MenuManager;
 	if (SkipIntro::IsIntroSkip && mngr!=nullptr) {
-		mngr->_fadeInActive = 0;
+		mngr->_fadeInColor.r = mngr->_fadeInColor.g = mngr->_fadeInColor.b = 0;
+
 		SkipIntro::IsIntroSkip = false;
 	}
 	super();
