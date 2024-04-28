@@ -24,11 +24,10 @@ namespace StageHandler {
 		ZHL::Logger logger(true);
 		logger.Log("[INFO] StageHandler::LoadBinary: Loading stage binary \"%s\"\n", path->c_str());
 
-		RoomSet newSet;
+		RoomSet* newSet = new RoomSet();
 		RoomConfig_Stage* buffer = &roomConfig->_stages[BUFFER_STAGEID];
-		newSet._filepath = *path;
-		buffer->_rooms[0] = newSet;
-		roomConfig->_stages[BUFFER_STAGEID]._rooms[0] = newSet;
+		newSet->_filepath = *path;
+		buffer->_rooms[0] = *newSet;
 
 		// to look better in the log
 		buffer->_displayName = "(binary) \"" + *path + "\"";
