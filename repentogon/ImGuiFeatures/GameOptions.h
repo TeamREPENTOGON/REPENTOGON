@@ -294,6 +294,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         HelpMarker(LANG.OPT_REPENTOGON_STAT_HUD_PLANETARIUM_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.statHUDPlanetarium, true);
                         AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_SKIP_INTRO, &repentogonOptions.skipIntro);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_SKIP_INTRO_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.skipIntro, false);
+                        AddNewTableRow();
                         ImGui::Checkbox(LANG.OPT_REPENTOGON_QUICKER_ROOM_CLEAR, &repentogonOptions.quickRoomClear);
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_QUICKER_ROOM_CLEAR_MARK);

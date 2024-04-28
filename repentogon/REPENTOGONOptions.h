@@ -32,6 +32,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["KeyMasterDealChance"] = "0";
 			ini["VanillaTweaks"]["QuickRoomClear"] = "0";
 			ini["VanillaTweaks"]["StatHUDPlanetarium"] = "1";
+			ini["VanillaTweaks"]["SkipIntro"] = "0";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
@@ -46,6 +47,7 @@ struct REPENTOGONOptions {
 		keyMasterDealChance = defstoi(ini["VanillaTweaks"]["KeyMasterDealChance"],0);
 		quickRoomClear = defstoi(ini["VanillaTweaks"]["QuickRoomClear"], 0);
 		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
+		skipIntro = defstoi(ini["VanillaTweaks"]["SkipIntro"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
 		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
@@ -84,6 +86,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "QuickRoomClear",	   quickRoomClear);
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
 		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
+		Write("VanillaTweaks", "SkipIntro", skipIntro);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 	}
@@ -97,6 +100,7 @@ struct REPENTOGONOptions {
 	bool enableUnifont;
 	bool statHUDPlanetarium;
 	int unifontRenderMode;
+	bool skipIntro;
 	std::string optionsPath;
 };
 

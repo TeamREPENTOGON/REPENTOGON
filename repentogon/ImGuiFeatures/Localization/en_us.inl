@@ -300,6 +300,8 @@ I(OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES, u8"Key Masters affect deal chan
 I(OPT_REPENTOGON_KEY_MASTERS_AFFECTDEAL_CHANCES_MARK, u8"Killing Key Masters will raise the chance to spawn a deal, now consistent with killing other bums.")
 I(OPT_REPENTOGON_STAT_HUD_PLANETARIUM, u8"Planetarium Chance in Stat HUD")
 I(OPT_REPENTOGON_STAT_HUD_PLANETARIUM_MARK, u8"Adds Planetarium chance generation on the stat HUD. Doesn't have any effect if Planetariums aren't unlocked.")
+I(OPT_REPENTOGON_SKIP_INTRO, u8"Skip Intro Cutscene")
+I(OPT_REPENTOGON_SKIP_INTRO_MARK, u8"Prevents the intro cutscene from playing altogether, no more \"Isaac and his mother\".")
 I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR, u8"Quicker Room Clear")
 I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR_MARK, u8"Rooms will open their doors and spawn rewards quicker. Bosses still require their death animation to play out.")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES, u8"Prevent mod updates")
