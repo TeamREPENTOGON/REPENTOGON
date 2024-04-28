@@ -14,7 +14,17 @@ size_t SigScan::s_sigCounter = -1;
 
 namespace SigCache {
 	bool IsLoaded = false;
+	bool IsIndirectMode = false;
 	std::vector<SigCacheEntry> _entries = {};
+
+	size_t FindCacheEntryBySig(size_t sighash) {
+		for (size_t i = 0; i < _entries.size(); i++) {
+			if (_entries[i]._sighash == sighash) {
+				return _entries[i]._address;
+			};
+		};
+		return 0;
+	};
 
 	void ResetSigFile() {
 		std::ofstream siglist("signatures.log", std::ios::out | std::ios::trunc);
@@ -34,7 +44,8 @@ namespace SigCache {
 			WriteCacheEntry(entry._sighash,entry._address);
 		};
 		//todo: switch to indirect cache scan mode instead of erasing cache from ram!
-		_entries.clear();	//placeholder cache clear, will revert to regular sig search by default
+		IsIndirectMode = true;
+//		_entries.clear();	//placeholder cache clear, will revert to regular sig search by default
 	};
 
 	void LoadCache() {
@@ -225,6 +236,13 @@ bool SigScan::Scan(Callback callback)
 	unsigned char *pStart = s_pBase;
 	s_sigCounter++;
 	bool readfromcache = (s_sigCounter != -1 && s_sigCounter < SigCache::_entries.size());
+	if (SigCache::IsIndirectMode) {
+		readfromcache = false;
+		size_t address = SigCache::FindCacheEntryBySig(m_sighash);
+		if (address != 0) {
+			pStart = (unsigned char*)address;
+		};
+	};
 	if (readfromcache){
 		if (SigCache::_entries[s_sigCounter]._sighash != m_sighash) {
 //			SigCache::ResetSigFile();

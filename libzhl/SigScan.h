@@ -19,6 +19,7 @@ namespace SigCache {
 
 	extern std::vector<SigCacheEntry> _entries;
 	extern bool IsLoaded;
+	extern bool IsIndirectMode;
 };
 class LIBZHL_API SigScan
 {
