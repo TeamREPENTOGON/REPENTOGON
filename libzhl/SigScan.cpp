@@ -19,7 +19,7 @@ namespace SigCache {
 	void ResetSigFile() {
 		std::ofstream siglist("signatures.log", std::ios::out | std::ios::trunc);
 		if (siglist.is_open()){
-			siglist << "1337" << std::endl;	//todo: write exe hash here
+			siglist << "1 1337" << std::endl;	//todo: write exe hash here
 			siglist.close();
 		};
 	};
@@ -28,6 +28,12 @@ namespace SigCache {
 		//todo! clear up cache in case of a mismatch, switch to vec search!!!
 		//should preserve everything up to the (size_t)offset
 
+		ResetSigFile();
+		for (size_t i = 0; i < offset; i++) {		//salvage everything that was correct
+			SigCacheEntry& entry = _entries[i];
+			WriteCacheEntry(entry._sighash,entry._address);
+		};
+		//todo: switch to indirect cache scan mode instead of erasing cache from ram!
 		_entries.clear();	//placeholder cache clear, will revert to regular sig search by default
 	};
 
@@ -40,13 +46,14 @@ namespace SigCache {
 		uint32_t sighash;
 		HMODULE addr;
 		HMODULE baseaddr = GetModuleHandleA(nullptr);
-		uint64_t version_hash=0;
+		size_t version_hash=0;
 		size_t exe_hash = 1337;	//placeholder
+		size_t file_version=1;
 		if (siglist.is_open()) {
 			while (getline(siglist, line)) {
 				if (!version_hash) {
-					(void)sscanf(line.c_str(), "%llu", (&version_hash));
-					if (version_hash != exe_hash) {
+					(void)sscanf(line.c_str(), "%zu %zu", (&file_version), (&version_hash));
+					if (file_version != 1) {
 						siglist.close();
 						break;	//entries.size will be 0, will run resetsigfile
 					}
@@ -61,7 +68,7 @@ namespace SigCache {
 				_entries.push_back(entry);
 			};
 			if (_entries.size() == 0) {
-				printf("[REPENTOGON] Signature cache not found or is invalid. Expect longer load time...\n");
+				printf("[ZHL::SigCache] Signature cache not found or is invalid. Expect longer load time...\n");
 				ResetSigFile();
 			}
 			siglist.close();
@@ -220,9 +227,10 @@ bool SigScan::Scan(Callback callback)
 	bool readfromcache = (s_sigCounter != -1 && s_sigCounter < SigCache::_entries.size());
 	if (readfromcache){
 		if (SigCache::_entries[s_sigCounter]._sighash != m_sighash) {
-			SigCache::ResetSigFile();
-			printf("[REPENTOGON] Invalid signature cache! Expect longer load time...\n");
+//			SigCache::ResetSigFile();
+			printf("[ZHL::SigCache] Invalid signature %x instead of %x! Expect longer load time...\n", SigCache::_entries[s_sigCounter]._sighash,m_sighash);
 			SigCache::InvalidateCache(s_sigCounter);
+			readfromcache = false;
 		}
 		else {
 			pStart = (unsigned char*)SigCache::_entries[s_sigCounter]._address;
