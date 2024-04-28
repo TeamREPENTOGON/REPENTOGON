@@ -6,6 +6,8 @@ Modified:
 	- AddInnateCollectible() now uses a system separate from item wisps, still doesn't save on game exit though!
 	- Change to HasCollectible and GetCollectibleNum:
 		new optional boolean (IgnoreSpoof), ignores collectible block when set to true
+* Game:
+	- ShowGenericLeaderboard no longer fades to main menu
 Additions:
 * Lootlist:
 	- constructor
@@ -22,7 +24,6 @@ Additions:
 		UnblockCollectible(int itemID)
 		IsCollectibleBlocked(int itemID)
 	- HasGoldenTrinket
-
 * EntityTear:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
@@ -109,9 +110,6 @@ Fixes:
 	* Reverted Flooded Caves suffix to _downpour so enemies keep their existing custom spritesheet
 	* Potentially fixed reported but unreproducable instance of a trapdoor deal room variant being generated outside of floor 8
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
-/newline/
-Modified:
-* Game:ShowGenericLeaderboard no longer fades to main menu
 /newline/
 v1.0.8c - 
 Fixes:
