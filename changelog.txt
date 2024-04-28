@@ -2,6 +2,10 @@ v1.??? -
 Modified:
 * Callbacks:
 	- MC_PRE_PLAYERHUD_TRINKET_RENDER: now provides [Vector] CropOffset parameter and accepts CropOffset vector in the return table.
+* EntityPlayer:
+	- AddInnateCollectible() now uses a system separate from item wisps, still doesn't save on game exit though!
+	- Change to HasCollectible and GetCollectibleNum:
+		new optional boolean (IgnoreSpoof), ignores collectible block when set to true
 Additions:
 * Lootlist:
 	- constructor
@@ -12,16 +16,17 @@ Additions:
 * EntityPlayer:
 	- Get/SetBombPlaceDelay
 	- Get/SetBloodLustCounter
+	- GetSpoofedCollectiblesList
 	- New functionality for blocking items:
 		BlockCollectible(int itemID)
 		UnblockCollectible(int itemID)
 		IsCollectibleBlocked(int itemID)
-	- Change to HasCollectible and GetCollectibleNum:
-		new optional boolean (IgnoreBlock), ignores collectible block when set to true
+
 * EntityTear:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
 	- GetDeadEyeSprite
+	- ResetSpriteScale(bool Force) - New optional "force" boolean, when set to true forces the tear to re-evaluate which scale animation it should be playing
 * EntityPickup:
 	- GetLootList(ShouldAdvance = false)
 	- GetPickupGhost
@@ -61,6 +66,20 @@ Additions:
 	* GetPlayerExtraPortraitSprite
 * RoomTransition
 	* GetPlayerExtraPortraitSprite
+* Sprite
+	* SetCustomShader(string Path) - Overrides only the default ColorOffset shader. Path starts at `.../resources/` and expects to find both a .vs and .fs file. For example: SetCustomShader("shaders/my_shader")
+	* ClearCustomShader()
+	* HasCustomShader(string Path) - Returns true if the specified shader is currently set. If no string is provided, returns true if any custom shader is applied.
+	* SetCustomChampionShader(string Path) - Same as SetCustomShader but for overriding ColorOffset_Champion instead.
+	* ClearCustomChampionShader()
+	* HasCustomChampionShader(string Path)
+* LayerState
+	* SetCustomShader(string Path) - Same as sprite:SetCustomShader() but only for a single layer.
+	* ClearCustomShader()
+	* HasCustomShader(string Path)
+	* SetCustomChampionShader(string Path)
+	* ClearCustomChampionShader()
+	* HasCustomChampionShader(string Path)
 * Callbacks:
 	- MC_PRE_PICKUP_GET_LOOT_LIST callback (Pickup, bool ShouldAdvance) - Return LootList to change loot content
 	- MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (Pickup) - Return true to apply pickup ghost to your pickup entitiy, false to cancel it
@@ -79,6 +98,7 @@ Additions:
 * Added the "noshake" attribute to the players.xml which can "disable" the player portrait shaking animation in the nightmare scene/boss intro
 * Added support for a "customtags" attribute in items.xml - a space-separated list of tags that can be checked with ItemConfigItem:HasCustomTag() or ItemConfigItem:GetCustomTags()
 * Added custom tag "nometronome" to items.xml to prevent items from being picked by Metronome
+* Improved startup time!
 /newline/
 Fixes:
     * Fixed `Isaac.CreateTimer` crashing the game when setting the delay argument to 0

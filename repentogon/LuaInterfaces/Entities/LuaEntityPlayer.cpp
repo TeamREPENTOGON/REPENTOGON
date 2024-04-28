@@ -5,6 +5,7 @@
 #include "../LuaWeapon.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 
+
 /*
 
 ..........___.
@@ -20,59 +21,69 @@
 */
 
 std::map<int, int> fakeItems;
-std::unordered_map<int, std::unordered_map<int, bool>> CollBlockList;
 
-HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->bool) {
-	auto& itemlist = CollBlockList;
-	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
-		if (auto searchInner = itemlist[this->_playerIndex].find(type); searchInner != itemlist[this->_playerIndex].end()) {
-			if (itemlist[this->_playerIndex][type] == 0) {
-				return super(type, ignoreModifiers);
-			}
-			return false;
-		};
-	};
-	return super(type, ignoreModifiers);
-}
-
-HOOK_METHOD(Entity_Player, GetCollectibleNum, (int collectibleID, bool onlyCountTrueItems)->int) {
-	auto& itemlist = CollBlockList;
-	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
-		if (auto searchInner = itemlist[this->_playerIndex].find(collectibleID); searchInner != itemlist[this->_playerIndex].end()) {
-			if (itemlist[this->_playerIndex][collectibleID] == 0) {
-				return super(collectibleID, onlyCountTrueItems);
-			}
-			return 0;
-		};
-	};
-	return super(collectibleID, onlyCountTrueItems);
-}
-
-namespace PlayerCollBlock {
-	void BlockCollectible(Entity_Player* player, int itemID) {
-		auto& itemlist = CollBlockList;
+namespace PlayerItemSpoof {
+	struct CollSpoofEntry { int AppendedCount = 0; bool Blocked = false; };
+	std::unordered_map<int, std::unordered_map<int, CollSpoofEntry>> CollSpoofList;
+	bool GlobalSpoofState = true;	//not async friendly but as if anything ever runs async in this damn game
+	void AddInnateCollectibleNew(Entity_Player* player, int itemID, int amount) {
+		auto& itemlist = CollSpoofList;
 		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
 		}
 		else {
 			itemlist[player->_playerIndex] = {};
 		}
-		itemlist[player->_playerIndex].insert_or_assign(itemID, true);
+		auto& playerEntry = itemlist[player->_playerIndex];
+		if (auto searchItemEntry = playerEntry.find(itemID); searchItemEntry != playerEntry.end()) {
+			//	itemlist[player->_playerIndex].insert_or_assign(itemID, true);
+			playerEntry[itemID].AppendedCount += amount;
+			playerEntry[itemID].AppendedCount=(std::max)(playerEntry[itemID].AppendedCount,0);
+			if (playerEntry[itemID].AppendedCount == 0 && playerEntry[itemID].Blocked==false) {
+				playerEntry.erase(itemID);
+			};
+		}
+		else {
+			playerEntry[itemID] = { amount, false };
+		};
+	}
+	void BlockCollectible(Entity_Player* player, int itemID) {
+		auto& itemlist = CollSpoofList;
+		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
+		}
+		else {
+			itemlist[player->_playerIndex] = {};
+		}
+		auto& playerEntry = itemlist[player->_playerIndex];
+		if (auto searchItemEntry = playerEntry.find(itemID); searchItemEntry != playerEntry.end()) {
+			//	itemlist[player->_playerIndex].insert_or_assign(itemID, true);
+			playerEntry[itemID].Blocked = true;
+		}
+		else {
+			playerEntry[itemID] = { 0, true};
+		};
 	};
 	void UnblockCollectible(Entity_Player* player, int itemID) {
-		auto& itemlist = CollBlockList;
+		auto& itemlist = CollSpoofList;
 		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
 		}
 		else {
 			itemlist[player->_playerIndex] = {};
 		}
-		itemlist[player->_playerIndex].insert_or_assign(itemID, false);
+		auto& playerEntry = itemlist[player->_playerIndex];
+		if (auto searchItemEntry = playerEntry.find(itemID); searchItemEntry != playerEntry.end()) {
+			//	itemlist[player->_playerIndex].insert_or_assign(itemID, true);
+			playerEntry[itemID].Blocked = false;
+			if (playerEntry[itemID].AppendedCount == 0) {
+				playerEntry.erase(itemID);
+			};
+		};
 	};
 	bool IsCollectibleBlocked(Entity_Player* player, int itemID) {
-		auto& itemlist = CollBlockList;
+		auto& itemlist = CollSpoofList;
 		bool outbool = false;
 		if (auto searchOuter = itemlist.find(player->_playerIndex); searchOuter != itemlist.end()) {
 			if (auto searchInner = itemlist[player->_playerIndex].find(itemID); searchInner != itemlist[player->_playerIndex].end()) {
-				outbool = itemlist[player->_playerIndex][itemID];
+				outbool = itemlist[player->_playerIndex][itemID].Blocked;
 				goto end;
 			};
 		};
@@ -81,15 +92,43 @@ namespace PlayerCollBlock {
 	};
 }
 
+HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->bool) {
+	if (!PlayerItemSpoof::GlobalSpoofState) { return super(type, ignoreModifiers); };
+	auto& itemlist = PlayerItemSpoof::CollSpoofList;
+	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
+		if (auto searchInner = itemlist[this->_playerIndex].find(type); searchInner != itemlist[this->_playerIndex].end()) {
+			if (itemlist[this->_playerIndex][type].Blocked == false) {
+				return (super(type, ignoreModifiers) || itemlist[this->_playerIndex][type].AppendedCount>0);
+			}
+			return false;
+		};
+	};
+	return super(type, ignoreModifiers);
+};
+
+HOOK_METHOD(Entity_Player, GetCollectibleNum, (int collectibleID, bool onlyCountTrueItems)->int) {
+	if (!PlayerItemSpoof::GlobalSpoofState) { return super(collectibleID, onlyCountTrueItems); };
+	auto& itemlist = PlayerItemSpoof::CollSpoofList;
+	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
+		if (auto searchInner = itemlist[this->_playerIndex].find(collectibleID); searchInner != itemlist[this->_playerIndex].end()) {
+			if (itemlist[this->_playerIndex][collectibleID].Blocked == false) {
+				return super(collectibleID, onlyCountTrueItems) + itemlist[this->_playerIndex][collectibleID].AppendedCount;
+			}
+			return 0;
+		};
+	};
+	return super(collectibleID, onlyCountTrueItems);
+};
+
 HOOK_METHOD(Entity, Remove, ()->void) {
 	if (this && this->_type == 1) {
-		CollBlockList[ ((Entity_Player*)this) -> _playerIndex ] = {};		//cleaning pl data
+		PlayerItemSpoof::CollSpoofList[((Entity_Player*)this)->_playerIndex] = {};		//cleaning pl data
 	}
 	super();
 }
 
 HOOK_METHOD(Game, Exit, (bool ShouldSave)->void) {
-	CollBlockList = {};
+	PlayerItemSpoof::CollSpoofList = {};
 	super(ShouldSave);
 }
 
@@ -97,15 +136,14 @@ LUA_FUNCTION(Lua_HasCollectible) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
 	bool ignoreModifiers = (bool)lua::luaL_optboolean(L, 3, false);
-	bool ignoreBlock = (bool)lua::luaL_optboolean(L, 4, false);
+	bool ignoreSpoof = (bool)lua::luaL_optboolean(L, 4, false);
 	bool outbool = false;
-	bool blockState = PlayerCollBlock::IsCollectibleBlocked(player,itemID);
-	if (ignoreBlock && blockState) {
-		PlayerCollBlock::UnblockCollectible(player, itemID);
+	if (ignoreSpoof) {
+		PlayerItemSpoof::GlobalSpoofState = false;
 	}
 	outbool = player->HasCollectible(itemID,ignoreModifiers);
-	if (ignoreBlock && blockState) {
-		PlayerCollBlock::BlockCollectible(player, itemID);
+	if (ignoreSpoof) {
+		PlayerItemSpoof::GlobalSpoofState = true;
 	}
 	lua_pushboolean(L, outbool);
 	return 1;
@@ -115,15 +153,14 @@ LUA_FUNCTION(Lua_GetCollectibleNum) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
 	bool onlyCountTrueItems = (bool)lua::luaL_optboolean(L, 3, false);
-	bool ignoreBlock = (bool)lua::luaL_optboolean(L, 4, false);
+	bool ignoreSpoof = (bool)lua::luaL_optboolean(L, 4, false);
 	int outnum = 0;
-	bool blockState = PlayerCollBlock::IsCollectibleBlocked(player, itemID);
-	if (ignoreBlock && blockState) {
-		PlayerCollBlock::UnblockCollectible(player, itemID);
+	if (ignoreSpoof) {
+		PlayerItemSpoof::GlobalSpoofState=false;
 	}
 	outnum = player->GetCollectibleNum(itemID, onlyCountTrueItems);
-	if (ignoreBlock && blockState) {
-		PlayerCollBlock::BlockCollectible(player, itemID);
+	if (ignoreSpoof) {
+		PlayerItemSpoof::GlobalSpoofState = true;
 	}
 	lua_pushinteger(L, outnum);
 	return 1;
@@ -132,7 +169,16 @@ LUA_FUNCTION(Lua_GetCollectibleNum) {
 LUA_FUNCTION(Lua_BlockCollectible) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
-	PlayerCollBlock::BlockCollectible(player, itemID);
+	ItemConfig itemConfig = g_Manager->_itemConfig;
+	ItemConfig_Item* item = itemConfig.GetCollectibles()[0][itemID];
+
+	//ItemConfig_Item* item_ptr = item;
+	if (item == nullptr) {
+		return luaL_error(L, "Invalid item");
+	}
+	PlayerItemSpoof::BlockCollectible(player, itemID);
+	player->AddCacheFlags(item->cacheFlags);
+	player->EvaluateItems();
 	lua_pushnil(L);
 	return 1;
 }
@@ -140,7 +186,17 @@ LUA_FUNCTION(Lua_BlockCollectible) {
 LUA_FUNCTION(Lua_UnblockCollectible) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
-	PlayerCollBlock::UnblockCollectible(player, itemID);
+	ItemConfig itemConfig = g_Manager->_itemConfig;
+	ItemConfig_Item* item = itemConfig.GetCollectibles()[0][itemID];
+
+	//ItemConfig_Item* item_ptr = item;
+	if (item == nullptr) {
+		return luaL_error(L, "Invalid item");
+	}
+
+	PlayerItemSpoof::UnblockCollectible(player, itemID);
+	player->AddCacheFlags(item->cacheFlags);
+	player->EvaluateItems();
 	lua_pushnil(L);
 	return 1;
 }
@@ -148,7 +204,7 @@ LUA_FUNCTION(Lua_UnblockCollectible) {
 LUA_FUNCTION(Lua_IsCollectibleBlocked) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY, "EntityPlayer");
 	int itemID = (int)luaL_checkinteger(L, 2);
-	bool outbool = PlayerCollBlock::IsCollectibleBlocked(player, itemID);
+	bool outbool = PlayerItemSpoof::IsCollectibleBlocked(player, itemID);
 	lua_pushboolean(L, outbool);	//push false if entry is not found
 	return 1;
 }
@@ -889,6 +945,7 @@ LUA_FUNCTION(Lua_PlayerAddInnateCollectible)
 
 	const int collectibleID = (int)luaL_checkinteger(L, 2);
 	const int amount = (int)luaL_optinteger(L, 3, 1);
+	const bool evalitems = (bool)lua::luaL_optboolean(L, 4, true);
 
 	ItemConfig itemConfig = g_Manager->_itemConfig;
 	ItemConfig_Item* item = itemConfig.GetCollectibles()[0][collectibleID];
@@ -898,8 +955,9 @@ LUA_FUNCTION(Lua_PlayerAddInnateCollectible)
 		return luaL_error(L, "Invalid item");
 	}
 
-	std::map<int, int>& wispMap = *plr->GetItemWispsList();
-	wispMap[collectibleID] += amount;
+//	std::map<int, int>& wispMap = *plr->GetItemWispsList();
+//	wispMap[collectibleID] += amount;
+	PlayerItemSpoof::AddInnateCollectibleNew(plr,collectibleID,amount);
 
 	if (amount > 0 && item->addCostumeOnPickup) {
 		plr->AddCostume(item, false);
@@ -1270,6 +1328,34 @@ LUA_FUNCTION(Lua_PlayerGetSmeltedTrinkets) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetSpoofCollList)
+{
+	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	auto& spoofItemList = PlayerItemSpoof::CollSpoofList[plr->_playerIndex];
+	lua_newtable(L);
+	int count = 1;
+	for (auto& spoofEntry : spoofItemList) {
+//		lua_pushinteger(L, count);
+		lua_pushinteger(L, spoofEntry.first);
+		lua_newtable(L);
+
+		lua_pushstring(L, "CollectibleID");
+		lua_pushinteger(L, spoofEntry.first);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "AppendedCount");
+		lua_pushinteger(L, spoofEntry.second.AppendedCount);
+		lua_settable(L, -3);
+
+		lua_pushstring(L, "IsBlocked");
+		lua_pushboolean(L, spoofEntry.second.Blocked);
+		lua_settable(L, -3);
+
+		lua_settable(L, -3);
+		count++;
+	};
+	return 1;
+}
 LUA_FUNCTION(Lua_PlayerGetCostumeLayerMap)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
@@ -2394,6 +2480,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsCollectibleBlocked", Lua_IsCollectibleBlocked },
 		{ "AddTrinketEffect", Lua_PlayerAddTrinketEffect }, //this one is ass, literally does nothing, leaving it out of the docs
 		{ "GetPlayerIndex", Lua_PlayerGetPlayerIndex }, 
+		{ "GetSpoofedCollectiblesList", Lua_PlayerGetSpoofCollList },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

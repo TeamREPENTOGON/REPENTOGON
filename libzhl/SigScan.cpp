@@ -1,6 +1,7 @@
 #include "SigScan.h"
 #include <string>
 #include <Windows.h>
+#include <fstream>
 
 #include "hde.h"
 
@@ -9,6 +10,83 @@ size_t SigScan::s_iBaseLen = 0;
 unsigned char *SigScan::s_pLastStartAddress = 0;
 unsigned char *SigScan::s_pLastAddress = 0;
 std::list<SigScan::Match> SigScan::s_lastMatches;
+size_t SigScan::s_sigCounter = -1;
+
+namespace SigCache {
+	bool IsLoaded = false;
+	std::vector<SigCacheEntry> _entries = {};
+
+	void ResetSigFile() {
+		std::ofstream siglist("signatures.log", std::ios::out | std::ios::trunc);
+		if (siglist.is_open()){
+			siglist << "1337" << std::endl;	//todo: write exe hash here
+			siglist.close();
+		};
+	};
+
+	void InvalidateCache(size_t offset) {
+		//todo! clear up cache in case of a mismatch, switch to vec search!!!
+		//should preserve everything up to the (size_t)offset
+
+		_entries.clear();	//placeholder cache clear, will revert to regular sig search by default
+	};
+
+	void LoadCache() {
+		_entries.clear();
+		_entries.reserve(100);
+		std::ifstream siglist("signatures.log");
+		std::string line;
+		size_t sigsize = 0;
+		uint32_t sighash;
+		HMODULE addr;
+		HMODULE baseaddr = GetModuleHandleA(nullptr);
+		uint64_t version_hash=0;
+		size_t exe_hash = 1337;	//placeholder
+		if (siglist.is_open()) {
+			while (getline(siglist, line)) {
+				if (!version_hash) {
+					(void)sscanf(line.c_str(), "%llu", (&version_hash));
+					if (version_hash != exe_hash) {
+						siglist.close();
+						break;	//entries.size will be 0, will run resetsigfile
+					}
+					else {
+						continue;
+					}
+				}
+				(void)sscanf(line.c_str(), "%x %x\n", (uint32_t*)(&sighash), (uint32_t*)(&addr));
+				SigCacheEntry entry;
+				entry._sighash = sighash;
+				entry._address = ((size_t)addr + (size_t)baseaddr);
+				_entries.push_back(entry);
+			};
+			if (_entries.size() == 0) {
+				printf("[REPENTOGON] Signature cache not found or is invalid. Expect longer load time...\n");
+				ResetSigFile();
+			}
+			siglist.close();
+		};
+
+		if (_entries.size() == 0) {
+			ResetSigFile();
+		}
+
+		IsLoaded = true;
+	};
+	void WriteCacheEntry(size_t sighash, size_t address) {
+		std::ofstream siglist("signatures.log",std::ios::app);
+		std::string line;
+		std::string buffer(80, ' ');
+		size_t sigsize = 0;
+		size_t baseaddr = (uint32_t)GetModuleHandleA(nullptr);	//todo: take m_dist instead, get rid of baseaddr here
+		if (siglist.is_open()) {
+			snprintf(&(buffer[0]), 80, "%x %x", sighash, (uint32_t)(address - baseaddr));
+			buffer.resize(strnlen_s(&(buffer[0]), 80));
+			siglist << buffer << std::endl;
+			siglist.close();
+		};
+	};
+};
 
 //=====================================================================
 
@@ -17,7 +95,10 @@ SigScan::SigScan(const char *sig) : m_pAddress(0)
 	m_bStartFromLastAddress = false;
 	m_bNoReturnSeek = false;
 	m_dist = 0;
-
+	m_sighash = std::hash<std::string_view>{} (sig);
+	if (!SigCache::IsLoaded) {
+		SigCache::LoadCache();
+	}
 	// Default signature if nothing was specified
 	if(!sig || !sig[0])
 	{
@@ -135,6 +216,18 @@ bool SigScan::Scan(Callback callback)
 	short itn = 0;
 
 	unsigned char *pStart = s_pBase;
+	s_sigCounter++;
+	bool readfromcache = (s_sigCounter != -1 && s_sigCounter < SigCache::_entries.size());
+	if (readfromcache){
+		if (SigCache::_entries[s_sigCounter]._sighash != m_sighash) {
+			SigCache::ResetSigFile();
+			printf("[REPENTOGON] Invalid signature cache! Expect longer load time...\n");
+			SigCache::InvalidateCache(s_sigCounter);
+		}
+		else {
+			pStart = (unsigned char*)SigCache::_entries[s_sigCounter]._address;
+		};
+	};
 	unsigned char *pEnd = s_pBase + s_iBaseLen - m_iLength;
 
 	if(m_bStartFromLastAddress)
@@ -190,8 +283,11 @@ bool SigScan::Scan(Callback callback)
 				it->address = m_pAddress + it->begin;
 
 			s_lastMatches = m_matches;
-
 			if(callback) callback(this);
+			if (!readfromcache) {
+				SigCache::WriteCacheEntry(m_sighash, (size_t)m_pAddress);
+			};
+
 			return true;
 		}
 	}

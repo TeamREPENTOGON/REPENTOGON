@@ -1,0 +1,4 @@
+struct ModShader depends (KAGE_Graphics_Shader) {
+    std_string name : 0x0;
+    KAGE_Graphics_Shader shader : 0x18;
+} : 0x78;

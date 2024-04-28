@@ -4,6 +4,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../MiscFunctions.h"
+#include "../Patches/Anm2Extras.h"
 
 /*
 * While internally, this is the ANM2 class, it is exposed to Lua as "Sprite".
@@ -164,7 +165,148 @@ LUA_FUNCTION(Lua_SpriteContinueOverlay)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SpriteSetCustomShader)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const std::string path = luaL_checkstring(L, 2);
+	const bool success = SetCustomShader(anm2, path, /*champion=*/false);
+	if (!success) {
+		return luaL_error(L, ("Failed to load shader: " + path).c_str());
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SpriteClearCustomShader)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ClearCustomShader(anm2, /*champion=*/false);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SpriteHasCustomShader)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+
+	const std::string path = luaL_optstring(L, 2, "");
+	bool result = false;
+	if (path.empty()) {
+		result = HasCustomShader(anm2, /*champion=*/false);
+	}
+	else {
+		result = HasCustomShader(anm2, path, /*champion=*/false);
+	}
+	lua_pushboolean(L, result);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SpriteSetCustomChampionShader)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	const std::string path = luaL_checkstring(L, 2);
+	const bool success = SetCustomShader(anm2, path, /*champion=*/true);
+	if (!success) {
+		return luaL_error(L, ("Failed to load shader: " + path).c_str());
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SpriteClearCustomChampionShader)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+	ClearCustomShader(anm2, /*champion=*/true);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_SpriteHasCustomChampionShader)
+{
+	ANM2* anm2 = lua::GetUserdata<ANM2*>(L, 1, lua::Metatables::SPRITE, "Sprite");
+
+	const std::string path = luaL_optstring(L, 2, "");
+	bool result = false;
+	if (path.empty()) {
+		result = HasCustomShader(anm2, /*champion=*/true);
+	}
+	else {
+		result = HasCustomShader(anm2, path, /*champion=*/true);
+	}
+	lua_pushboolean(L, result);
+
+	return 1;
+}
+
+
 // LayerState from here on out
+
+LUA_FUNCTION(Lua_LayerStateSetCustomShader)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	const std::string path = luaL_checkstring(L, 2);
+	const bool success = SetCustomShader(layerState, path, /*champion=*/false);
+	if (!success) {
+		return luaL_error(L, ("Failed to load shader: " + path).c_str());
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateClearCustomShader)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	ClearCustomShader(layerState, /*champion=*/false);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateHasCustomShader)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+
+	const std::string path = luaL_optstring(L, 2, "");
+	bool result = false;
+	if (path.empty()) {
+		result = HasCustomShader(layerState, /*champion=*/false);
+	}
+	else {
+		result = HasCustomShader(layerState, path, /*champion=*/false);
+	}
+	lua_pushboolean(L, result);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_LayerStateSetCustomChampionShader)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	const std::string path = luaL_checkstring(L, 2);
+	const bool success = SetCustomShader(layerState, path, /*champion=*/true);
+	if (!success) {
+		return luaL_error(L, ("Failed to load shader: " + path).c_str());
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateClearCustomChampionShader)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+	ClearCustomShader(layerState, /*champion=*/true);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_LayerStateHasCustomChampionShader)
+{
+	LayerState* layerState = *lua::GetUserdata<LayerState**>(L, 1, lua::metatables::LayerStateMT);
+
+	const std::string path = luaL_optstring(L, 2, "");
+	bool result = false;
+	if (path.empty()) {
+		result = HasCustomShader(layerState, /*champion=*/true);
+	}
+	else {
+		result = HasCustomShader(layerState, path, /*champion=*/true);
+	}
+	lua_pushboolean(L, result);
+
+	return 1;
+}
 
 LUA_FUNCTION(Lua_LayerStateGetLayerID)
 {
@@ -364,6 +506,12 @@ static void RegisterSpriteFuncs(lua_State* L) {
 		{ "GetRenderFlags", Lua_SpriteGetRenderFlags},
 		{ "SetRenderFlags", Lua_SpriteSetRenderFlags},
 		{ "LoadRGON", Lua_SpriteLoadRgonSprite},
+		{ "SetCustomShader", Lua_SpriteSetCustomShader},
+		{ "ClearCustomShader", Lua_SpriteClearCustomShader},
+		{ "HasCustomShader", Lua_SpriteHasCustomShader},
+		{ "SetCustomChampionShader", Lua_SpriteSetCustomChampionShader},
+		{ "ClearCustomChampionShader", Lua_SpriteClearCustomChampionShader},
+		{ "HasCustomChampionShader", Lua_SpriteHasCustomChampionShader},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(L, lua::Metatables::SPRITE, functions);
@@ -394,6 +542,12 @@ static void RegisterLayerState(lua_State* L) {
 		{ "SetWrapSMode", Lua_LayerStateSetWrapSMode},
 		{ "GetWrapTMode", Lua_LayerStateGetWrapTMode},
 		{ "SetWrapTMode", Lua_LayerStateSetWrapTMode},
+		{ "SetCustomShader", Lua_LayerStateSetCustomShader},
+		{ "ClearCustomShader", Lua_LayerStateClearCustomShader},
+		{ "HasCustomShader", Lua_LayerStateHasCustomShader},
+		{ "SetCustomChampionShader", Lua_LayerStateSetCustomChampionShader},
+		{ "ClearCustomChampionShader", Lua_LayerStateClearCustomChampionShader},
+		{ "HasCustomChampionShader", Lua_LayerStateHasCustomChampionShader},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::LayerStateMT, lua::metatables::LayerStateMT, functions);

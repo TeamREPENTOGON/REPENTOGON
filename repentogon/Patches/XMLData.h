@@ -54,6 +54,7 @@ struct hash<tuple<int, int>> {
 typedef unordered_map<string, string> XMLAttributes;
 typedef unordered_map<int, XMLAttributes> XMLNodes;
 typedef unordered_map<string, std::vector <XMLAttributes>> XMLChilds;
+typedef unordered_map<int, std::vector <XMLAttributes>> XMLRelEnt;
 typedef unordered_map<int, XMLChilds> XMLKinder;
 typedef unordered_map<tuple<int, int, int>, XMLChilds> XMLEntityKinder;
 typedef unordered_map<string, int> XMLNodeIdxLookup;
@@ -481,6 +482,19 @@ public:
 	std::pair<unsigned short, unsigned short> backdropState;
 	// fine
 	std::string overrideName;
+
+	XMLRelEnt relfxlayers; //<backdripid, vector<fxlayerid>>
+	XMLRelEnt relfxrays;	//<backdripid, vector<fxrayid>>
+	XMLRelEnt relfxparams; //<backdripid, vector<fxparamid>>
+	vector<XMLAttributes> GetRelatedFXLayers(int backdropid) {
+		return relfxlayers[backdropid];
+	}
+	vector<XMLAttributes> GetRelatedFXRays(int backdropid) {
+		return relfxrays[backdropid];
+	}
+	vector<XMLAttributes> GetRelatedFXParams(int backdropid) {
+		return relfxparams[backdropid];
+	}
 };
 
 class XMLEntity {
