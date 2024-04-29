@@ -812,6 +812,7 @@ inline void initxmlmaxnodeenum() {
 	xmlmaxnode["nightmares.xml"] = 16;
 	xmlmaxnode["playerforms.xml"] = 14;
 	xmlmaxnode["cutscenes.xml"] = 26;
+	xmlmaxnode["backdrops.xml"] = 60;
 }
 
 extern unordered_map<string, int> xmlfullmerge;

@@ -2990,8 +2990,6 @@ void DoFullMerge(xml_document<>* a, xml_document<>* b) {
 	mergeXmlNodes(a, rootsrc, root->first_node());
 }
 
-
-int maxnodebackdrop = 60;
 int maxfxlayerid = 33;
 
 void inheritdaddy(xml_node<char>* auxnode, xml_node<char>* clonedNode) {
@@ -3182,9 +3180,16 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								node[stringlower(attr->name())] = string(attr->value());
 							}
 							inheritdaddy(auxnode, clonedNode);
+
+							xmlmaxnode[filename]++;
 							if (node.count("id") == 0) {
-								maxnodebackdrop += 1;
-								xml_attribute<char>* newid = new xml_attribute<char>(); newid->name("id"); newid->value(IntToChar(maxnodebackdrop)); clonedNode->append_attribute(newid);
+								xml_attribute<char>* newid = new xml_attribute<char>(); newid->name("id"); newid->value(IntToChar(xmlmaxnode[filename])); clonedNode->append_attribute(newid);
+							}
+							else {
+								if (node.count("relativeid") == 0) {
+									xml_attribute<char>* newid = new xml_attribute<char>(); newid->name("relativeid"); newid->value(clonedNode->first_attribute("id")->value()); clonedNode->append_attribute(newid);
+								}
+								clonedNode->first_attribute("id")->value(IntToChar(xmlmaxnode[filename]));
 							}
 
 							root->append_node(clonedNode);

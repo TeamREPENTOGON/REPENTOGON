@@ -290,7 +290,7 @@ Sets the completion marks of a character to match an input table. Requires a tab
 ___
 
 ### SetCurrentFloorBackdrop () {: aria-label='Functions' }
-#### void SetCurrentFloorMusic ( int BackdropId ) {: .copyable aria-label='Functions' }
+#### void SetCurrentFloorBackdrop ( int BackdropId ) {: .copyable aria-label='Functions' }
 Changes the default room backdrop for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
 ___
 
