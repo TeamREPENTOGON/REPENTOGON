@@ -16,6 +16,7 @@ namespace SigCache {
 	bool IsLoaded = false;
 	bool IsIndirectMode = false;
 	std::vector<SigCacheEntry> _entries = {};
+	std::ofstream _writebuffer;
 
 	size_t FindCacheEntryBySig(size_t sighash) {
 		for (size_t i = 0; i < _entries.size(); i++) {
@@ -26,32 +27,36 @@ namespace SigCache {
 		return 0;
 	};
 
+	void FlushCache() {
+		if (_writebuffer.is_open()) {
+			_writebuffer.flush();
+		};
+	};
+
 	void ResetSigFile() {
+		_writebuffer.close();
 		std::ofstream siglist("signatures.log", std::ios::out | std::ios::trunc);
 		if (siglist.is_open()){
 			siglist << "1 1337" << std::endl;	//todo: write exe hash here
 			siglist.close();
 		};
+		_writebuffer.open("signatures.log", std::ios::app);
 	};
 
 	void InvalidateCache(size_t offset) {
-		//todo! clear up cache in case of a mismatch, switch to vec search!!!
-		//should preserve everything up to the (size_t)offset
-
 		ResetSigFile();
 		for (size_t i = 0; i < offset; i++) {		//salvage everything that was correct
 			SigCacheEntry& entry = _entries[i];
 			WriteCacheEntry(entry._sighash,entry._address);
 		};
-		//todo: switch to indirect cache scan mode instead of erasing cache from ram!
 		IsIndirectMode = true;
-//		_entries.clear();	//placeholder cache clear, will revert to regular sig search by default
 	};
 
 	void LoadCache() {
 		_entries.clear();
 		_entries.reserve(100);
 		std::ifstream siglist("signatures.log");
+		_writebuffer.open("signatures.log", std::ios::app);
 		std::string line;
 		size_t sigsize = 0;
 		uint32_t sighash;
@@ -92,21 +97,23 @@ namespace SigCache {
 		IsLoaded = true;
 	};
 	void WriteCacheEntry(size_t sighash, size_t address) {
-		std::ofstream siglist("signatures.log",std::ios::app);
 		std::string line;
 		std::string buffer(80, ' ');
 		size_t sigsize = 0;
 		size_t baseaddr = (uint32_t)GetModuleHandleA(nullptr);	//todo: take m_dist instead, get rid of baseaddr here
-		if (siglist.is_open()) {
+		if (_writebuffer.is_open()) {
 			snprintf(&(buffer[0]), 80, "%x %x", sighash, (uint32_t)(address - baseaddr));
 			buffer.resize(strnlen_s(&(buffer[0]), 80));
-			siglist << buffer << std::endl;
-			siglist.close();
+			_writebuffer << buffer << std::endl;
 		};
 	};
 };
 
 //=====================================================================
+
+void SigScan::FlushCache() {
+	SigCache::FlushCache();
+};
 
 SigScan::SigScan(const char *sig) : m_pAddress(0)
 {

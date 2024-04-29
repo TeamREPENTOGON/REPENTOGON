@@ -50,20 +50,4 @@ HOOK_METHOD(Entity_Familiar, AddToDelayed, () -> void) {
 		return;
 	}
 	super();
-}
-bool exception_message_shown = false;
-HOOK_GLOBAL_PRIORITY(RepCaughtException, 9999, (int x)->void,__cdecl) {
-	char message[1024]="Something went wrong in the vanilla code! Lua traceback unavailable!";
-	if (!exception_message_shown) {
-		if (g_LuaEngine != nullptr) {
-			lua_Debug debuginfo;
-			lua_getstack(g_LuaEngine->_state, 0, &debuginfo);
-			lua_getinfo(g_LuaEngine->_state, "Sln", &debuginfo);
-			snprintf(message, 1024, "Something went wrong in the vanilla code!\nHere's some Lua traceback!\n%s\n%s\n", debuginfo.short_src, debuginfo.namewhat);
-		}
-		printf("hi! i live in your exception handler! ;3\n");
-		MessageBoxA(nullptr, message, "A super-basic crash handler!", MB_OK);
-		exception_message_shown = true;
-	};
-	super(x);
 };
