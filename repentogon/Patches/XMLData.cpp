@@ -3133,6 +3133,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 									newid = new xml_attribute<char>(); newid->name("id"); newid->value(IntToChar(maxfxlayerid)); clonedNode->append_attribute(newid);
 								}
 								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stage");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root,true);
@@ -3147,7 +3148,8 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
 								inheritdaddy(auxnode, clonedNode);
 								maxfxlayerid += 1;
-								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								// implementation of this will be annoying. no backdrop or stage, just _stages_, formatted like "1a,1b" and "1ab"
+								//SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root, true);
@@ -3163,6 +3165,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								inheritdaddy(auxnode, clonedNode);
 								maxfxlayerid += 1;
 								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stage");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root, true);

@@ -17,7 +17,7 @@ extern bool tobool(const string& str);
 namespace StageHandler {
 	const unsigned int BUFFER_STAGEID = 23;
 	std::unordered_map<std::string, RoomSet> binaryMap;
-	std::pair<bool, std::string> stageState[37];
+	StageState stageState[37];
 
 	RoomSet* LoadBinary(std::string* path) {
 		RoomConfig* roomConfig = g_Game->GetRoomConfig();
@@ -81,7 +81,7 @@ namespace StageHandler {
 		}
 		*/
 
-		if ((!restoring && !stageState[comp].first) || (restoring && stageState[comp].first))
+		if ((!restoring && !stageState[comp].overriden) || (restoring && stageState[comp].overriden))
 		{
 			RoomConfig* roomConfig = g_Game->GetRoomConfig();
 			std::string binary = xmlData["root"] + xmlData["path"];
@@ -150,8 +150,9 @@ namespace StageHandler {
 				stage->_suffix = suffix;
 				stage->_musicId = musicId;
 
-				stageState[stageId].first = !stageState[stageId].first;
-				stageState[stageId].second = name;
+				stageState[stageId].overriden = !stageState[stageId].overriden;
+				stageState[stageId].id = toint(xmlData["id"]);
+				stageState[stageId].token = name;
 				logger.Log("[INFO] StageHandler::SwapStage: successfully assigned %s to id %d\n", name.c_str(), stageId);
 				return true;
 			}
@@ -166,13 +167,14 @@ namespace StageHandler {
 		}
 		return false;
 	};
-
+	
+	// TODO: mark this binary as appended to the input RoomSet so subsequent attempts can be cancelled
 	bool AppendBinary(RoomSet* roomSet, std::string* binary) {
 		RoomConfig* roomConfig = g_Game->GetRoomConfig();
 		ModManager* modManager = g_Manager->GetModManager();
 		roomConfig->_stages[BUFFER_STAGEID]._id = BUFFER_STAGEID;
 		RoomSet* buffer = &roomConfig->_stages[BUFFER_STAGEID]._rooms[0];
-		int roomCount = buffer->_count;
+		unsigned int roomCount = buffer->_count;
 		buffer->_filepath = *binary;
 		modManager->UpdateRooms(BUFFER_STAGEID, 0);
 		buffer->_filepath = roomSet->_filepath;
@@ -194,14 +196,14 @@ namespace StageHandler {
 
 	int GetStageIdForToken(std::string token) {
 		for (unsigned int i = 0; i < 37; i++) {
-			if (stageState[i].second == token)
+			if (stageState[i].token == token)
 				return i;
 		}
 		return -1;
 	}
 
 	std::string* GetTokenForStageId(int id) {
-		return &stageState[id].second;
+		return &stageState[id].token;
 	}
 };
 
@@ -228,8 +230,9 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int id, unsigned int mode) ->
 		if (stage->_suffix.empty()) {
 			stage->_suffix = suffixes[id];
 		}
-		if (StageHandler::stageState[id].second.empty()) {
-			StageHandler::stageState[id].second = tokens[id];
+		if (StageHandler::stageState[id].token.empty()) {
+			StageHandler::stageState[id].id = id;
+			StageHandler::stageState[id].token = tokens[id];
 		}
 	}
 
@@ -273,8 +276,9 @@ HOOK_METHOD(RoomConfig_Stage, unload, () -> void) {
 		this->_rooms[0]._filepath = binary;
 		this->_rooms[1]._filepath = greedBinary;
 
-		StageHandler::stageState[this->_id].first = false;
-		StageHandler::stageState[this->_id].second = tokens[this->_id];
+		StageHandler::stageState[this->_id].overriden = false;
+		StageHandler::stageState[this->_id].id = 0;
+		StageHandler::stageState[this->_id].token = tokens[this->_id];
 
 		return;
 	}
@@ -483,7 +487,7 @@ LUA_FUNCTION(Lua_StageHandler_AppendBinary) {
 LUA_FUNCTION(Lua_StageHandler_IsStageOverriden) {
 	int id = (int)luaL_checkinteger(L, 1);
 
-	lua_pushboolean(L, StageHandler::stageState[id].first);
+	lua_pushboolean(L, StageHandler::stageState[id].overriden);
 	return 1;
 }
 
