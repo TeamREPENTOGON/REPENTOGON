@@ -124,10 +124,10 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 		std::vector<PoolItem>& poolItem = itemPool->_pools[itemPoolType]._poolList;
 
 		lua_newtable(L);
+		int idx = 1;
 		for (const auto& item : poolItem) {
-			//lua_pushinteger(L, idx);
+			lua_pushinteger(L, idx);
 			lua_newtable(L);
-
 
 			lua_pushstring(L, "itemID");
 			lua_pushinteger(L, item._itemID);
@@ -149,10 +149,8 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectiblesFromPool) {
 			lua_pushnumber(L, item._removeOn);
 			lua_rawset(L, -3);
 
-			lua_pushinteger(L, item._itemID);
-			lua_insert(L, -2);
 			lua_rawset(L, -3);
-
+			idx++;
 		}
 	}
 	else {
