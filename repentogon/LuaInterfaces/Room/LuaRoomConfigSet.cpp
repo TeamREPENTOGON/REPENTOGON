@@ -28,7 +28,7 @@ LUA_FUNCTION(Lua_RoomConfigSetGetSize)
 LUA_FUNCTION(Lua_RoomConfigSet__gc)
 {
 	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
-	set->game_destructor();
+	set->destructor();
 
 	return 0;
 }

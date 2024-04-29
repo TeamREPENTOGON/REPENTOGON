@@ -15,6 +15,7 @@ extern float tofloat(const string& str);
 extern bool tobool(const string& str);
 
 namespace StageHandler {
+	/* Arbitrarily chosen (replaces legacy Greed Sheol). */
 	const unsigned int BUFFER_STAGEID = 23;
 	std::unordered_map<std::string, RoomSet> binaryMap;
 	StageState stageState[37];
@@ -24,10 +25,10 @@ namespace StageHandler {
 		ZHL::Logger logger(true);
 		logger.Log("[INFO] StageHandler::LoadBinary: Loading stage binary \"%s\"\n", path->c_str());
 
-		RoomSet* newSet = new RoomSet();
-		RoomConfig_Stage* buffer = &roomConfig->_stages[BUFFER_STAGEID];
-		newSet->_filepath = *path;
-		buffer->_rooms[0] = *newSet;
+		RoomSet newSet;
+		RoomConfig_Stage* buffer = roomConfig->_stages + BUFFER_STAGEID;
+		newSet._filepath = *path;
+		buffer->_rooms[0] = newSet;
 
 		// to look better in the log
 		buffer->_displayName = "(binary) \"" + *path + "\"";
@@ -35,7 +36,7 @@ namespace StageHandler {
 		bool res = roomConfig->LoadStageBinary(BUFFER_STAGEID, 0);
 
 		if (res) {
-			RoomSet* ret = &binaryMap.find(*path)._Ptr->_Myval.second;
+			RoomSet* ret = &(binaryMap.find(*path)->second);
 			logger.Log("[INFO] StageHandler::LoadBinary: Loaded successfully at pointer %p\n", ret);
 			return ret;
 		}
@@ -48,10 +49,10 @@ namespace StageHandler {
 		ZHL::Logger logger(true);
 		logger.Log("[INFO] StageHandler::GetBinary: Attempting to retrieve binary \"%s\" from cache\n", path->c_str());
 
-		std::unordered_map<std::string, RoomSet>::const_iterator itr = binaryMap.find(*path);
+		std::unordered_map<std::string, RoomSet>::iterator itr = binaryMap.find(*path);
 
 		if (itr != binaryMap.end()) {
-			RoomSet* ret = &itr._Ptr->_Myval.second;
+			RoomSet* ret = &(itr->second);
 			logger.Log("[INFO] StageHandler::GetBinary: Retrieved successfully from pointer %p\n", ret);
 			return ret;
 		}
@@ -219,7 +220,7 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int id, unsigned int mode) ->
 		stringstream message;
 		message << "[RoomConfig] stage " << id << ": " << stage->_displayName << " (mode " << mode << ") already loaded from binary \"" << set->_filepath << "\"\n";
 		KAGE::LogMessage(0, message.str().c_str());
-		*set = itr._Ptr->_Myval.second;
+		*set = itr->second;
 		return true;
 	}
 	bool res = super(id, mode);
