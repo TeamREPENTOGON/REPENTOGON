@@ -3149,7 +3149,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								inheritdaddy(auxnode, clonedNode);
 								maxfxlayerid += 1;
 								// implementation of this will be annoying. no backdrop or stage, just _stages_, formatted like "1a,1b" and "1ab"
-								//SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stages");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root, true);
