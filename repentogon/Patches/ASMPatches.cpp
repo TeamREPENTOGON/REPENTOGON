@@ -109,6 +109,7 @@ void PerformASMPatches() {
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	PatchDealRoomVariant();
+	ASMPatchFXLayersInit();
 
 	// Menu
 	ASMPatchModsMenu();

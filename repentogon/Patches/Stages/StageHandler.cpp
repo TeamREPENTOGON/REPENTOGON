@@ -286,7 +286,7 @@ HOOK_METHOD(RoomConfig_Stage, unload, () -> void) {
 	super();
 }
 
-
+/*
 HOOK_METHOD(FXLayers, Init, (char* fileName, int levelStage, int stageType) -> void) {
 	super(fileName, levelStage, stageType);
 
@@ -385,6 +385,7 @@ HOOK_METHOD(FXLayers, Init, (char* fileName, int levelStage, int stageType) -> v
 		}
 	}
 }
+*/
 
 HOOK_METHOD(Game, Start, (int playertype, int challenge, Seeds seeds, unsigned int difficulty) -> void) {
 	StageHandler::ResetAllRoomWeights();

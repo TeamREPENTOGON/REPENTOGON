@@ -4,6 +4,9 @@
 #include "ASMLevel.h"
 #include "../../LuaInterfaces/Level.h"
 #include "../../LuaInterfaces/Room/Room.h"
+#include "../Stages/StageHandler.h"
+
+#include "../XMLData.h"
 
 // Prevents Curse of the Lost in Blue Womb in addition to Curse of Darkness (Vanilla)
 // changes evaluated bitmask from 0xfe to 0xfa
@@ -172,4 +175,36 @@ void PatchDealRoomVariant() {
 		.AddBytes("\xFF\x74\x24\x28") // push dword ptr ss:[EBP+subType] 
 		.AddRelativeJump((char*)addrs[1] + 0x6);
 	sASMPatcher.PatchAt((char*)addrs[1], &patch2);
+}
+
+void __stdcall AdjustLevelStageBackdrop(FXLayers* fxlayers) {
+	int stage = g_Game->GetStageID(false);
+	int backdrop = fxlayers->_backdropType;
+
+	//printf("stage %d, overriden %d, id %d, token %s\n", stage, StageHandler::stageState[stage].overriden, StageHandler::stageState[stage].id, StageHandler::stageState[stage].token.empty() ? "EMPTY" : StageHandler::stageState[stage].token.c_str());
+
+	if (StageHandler::stageState[stage].overriden) {
+		fxlayers->_levelStage = StageHandler::stageState[stage].id;
+		fxlayers->_stageType = 0;
+	}
+	if (XMLStuff.BackdropData->backdropState.first == backdrop) {
+		fxlayers->_backdropType = XMLStuff.BackdropData->backdropState.second;
+	}
+
+	fxlayers->_averagePlayerPos = Vector(0, 0);
+}
+
+void ASMPatchFXLayersInit() {
+	SigScan scanner("f30f1106f30f1005????????f30f1146??e8"); // this->_averagePlayerPos = g_VectorZero
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Patching FXLayers::Init at %p\n", addr);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(ASMPatch::Registers::ESI) // FXLayers
+		.AddInternalCall(AdjustLevelStageBackdrop)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0xc);
+	sASMPatcher.PatchAt(addr, &patch);
 }
