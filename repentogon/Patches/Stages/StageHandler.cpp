@@ -44,7 +44,7 @@ namespace StageHandler {
 		return nullptr;
 	};
 
-	RoomSet* GetBinary(std::string* path) {
+	RoomSet* GetBinary(std::string* path, bool loadIfUncached) {
 		ZHL::Logger logger(true);
 		logger.Log("[INFO] StageHandler::GetBinary: Attempting to retrieve binary \"%s\" from cache\n", path->c_str());
 
@@ -56,7 +56,11 @@ namespace StageHandler {
 			return ret;
 		}
 
-		logger.Log("[INFO] StageHandler::GetBinary: Binary is not in cache\n", path->c_str());
+		logger.Log("[INFO] StageHandler::GetBinary: Binary is not in cache, %s\n", loadIfUncached ? "loading" : "returning nullptr");
+
+		if (loadIfUncached) {
+			return LoadBinary(path);
+		}
 		return nullptr;
 	};
 
@@ -121,7 +125,7 @@ namespace StageHandler {
 				}
 				*/
 
-				RoomSet* set = StageHandler::GetBinary(path);
+				RoomSet* set = StageHandler::GetBinary(path, false);
 				if (set != nullptr) {
 					logger.Log("[INFO] replacing with existing RoomSet \"%s\"\n", set->_filepath.c_str());
 					stage->_rooms[i] = *set;
@@ -422,7 +426,7 @@ LUA_FUNCTION(Lua_StageHandler_RestoreStage) {
 LUA_FUNCTION(Lua_StageHandler_LoadBinary) {
 	std::string path = luaL_checkstring(L, 1);
 
-	RoomSet* set = StageHandler::LoadBinary(&path);
+	RoomSet* set = StageHandler::GetBinary(&path, true);
 
 	if (set == nullptr) {
 		lua_pushnil(L);
@@ -460,7 +464,7 @@ LUA_FUNCTION(Lua_StageHandler_AppendBinary) {
 	if (lua_type(L, 1) == LUA_TSTRING)
 	{
 		std::string path = luaL_checkstring(L, 1);
-		roomSet = StageHandler::LoadBinary(&path);
+		roomSet = StageHandler::GetBinary(&path, true);
 		if (roomSet == nullptr) {
 			return luaL_error(L, "No binary exists for path \"%s\"!", path.empty() ? "" : path.c_str());
 		}
@@ -488,7 +492,7 @@ LUA_FUNCTION(Lua_StageHandler_ResetRoomWeights) {
 	if (lua_type(L, 1) == LUA_TSTRING)
 	{
 		std::string path = luaL_checkstring(L, 1);
-		roomSet = StageHandler::LoadBinary(&path);
+		roomSet = StageHandler::GetBinary(&path, false);
 		if (roomSet == nullptr) {
 			return luaL_error(L, "No binary exists for path \"%s\"!", path.empty() ? "" : path.c_str());
 		}
