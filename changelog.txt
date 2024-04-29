@@ -8,8 +8,6 @@ Modified:
 		new optional boolean (IgnoreSpoof), ignores collectible block when set to true
 * Game:
 	- ShowGenericLeaderboard no longer fades to main menu
-* ItemPool
-	- GetCollectiblesFromPool table key is no longer based on item ID
 Additions:
 * Lootlist:
 	- constructor
