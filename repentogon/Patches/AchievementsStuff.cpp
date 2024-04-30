@@ -133,10 +133,6 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 		else {
 			if (nextSkipAchiev == achieveemntid) {
 				nextSkipAchiev = -1;
-				printf("[Achiev] Modded popup prevented due to optional arg in TryUnlock\n");
-			}
-			else {
-				printf("[Achiev] Modded popup prevented due to pops disabled or hidden achiev \n");
 			}
 		}
 		return true;
