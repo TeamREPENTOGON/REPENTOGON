@@ -3,6 +3,7 @@
 #include "HookSystem.h"
 #include "../Patches/XMLData.h"
 #include "../Patches/ChallengesStuff.h"
+#include "../Patches/AchievementsStuff.h"
 
 static const unsigned int PGD_COUNTER_MAX = 495;
 static const unsigned int COLLECTIBLE_MAX = 732;
@@ -20,8 +21,16 @@ LUA_FUNCTION(Lua_PGDTryUnlock)
 {
 	PersistentGameData* pgd = *lua::GetUserdata<PersistentGameData**>(L, 1, lua::metatables::PersistentGameDataMT);
 	int unlock = (int)luaL_checkinteger(L, 2);
+	if (lua_isboolean(L, 3) && lua_toboolean(L, 3)) {
+		nextSkipAchiev = unlock;
+	}
+
 
 	bool success = pgd->TryUnlock(unlock);
+	if (!success) {
+		// It failed, so reset state manually
+		nextSkipAchiev = -1;
+;	}
 	lua_pushboolean(L, success);
 	return 1;
 }
