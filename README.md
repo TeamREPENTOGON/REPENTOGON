@@ -1,4 +1,8 @@
-Language:English|[简体中文](README-ZH.md)
+[![Steam Downloads](https://img.shields.io/steam/downloads/3127536138?color=blue&label=Downloads&logo=steam&logoColor=white?label=Steam%20Downloads)](https://steamcommunity.com/sharedfiles/filedetails/?id=3127536138) 
+[![Github Downloads](https://img.shields.io/github/downloads/TeamREPENTOGON/REPENTOGON/total?logo=github&label=Github%20Downloads)](https://github.com/TeamREPENTOGON/REPENTOGON) 
+[![Github Latest Downloads](https://img.shields.io/github/downloads/TeamREPENTOGON/REPENTOGON/latest/total?logo=github&label=Latest%20Release%20Downloads)](https://github.com/TeamREPENTOGON/REPENTOGON) 
+
+Language:English | [简体中文](README-ZH.md)
 
 ![logo](assets/logo.gif)
 ## A new era for Isaac modding begins now.
