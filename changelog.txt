@@ -9,6 +9,9 @@ Modified:
 * Game:
 	- ShowGenericLeaderboard no longer fades to main menu
 Additions:
+* PlayerManager:
+	- AnyPlayerTypeHasTrinket(PlayerType, TrinketType, IgnoreModifiers = false)
+	- AnyPlayerTypeHasCollectible(PlayerType, CollectibleType, IgnoreModifiers = false)
 * Lootlist:
 	- constructor
 	- PushEntry(Type, Variant, SubType, Seed = Random(), RNG = nil)
