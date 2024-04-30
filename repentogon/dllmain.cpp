@@ -161,7 +161,8 @@ static void FixLuaDump()
 
 	FlushInstructionCache(GetModuleHandle(NULL), NULL, 0);
 }
-
+char REPENTOGON::stocktitle[256]="";
+char REPENTOGON::moddedtitle[256] = "";
 // This small function loads all the hooks and must be present in every mod
 MOD_EXPORT int ModInit(int argc, char** argv)
 {

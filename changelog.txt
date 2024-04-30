@@ -41,6 +41,9 @@ Additions:
 	- GetCustomTags
 * Input:
 	- GetDeviceNameByIdx
+* Isaac:
+	- Get/SetDwmWindowAttribute (for use with new DwmWindowAttributes enum)
+	- Get/SetWindowTitle	(appends text to our title as to avoid confusion)
 * Game
 	- SetBloom
 * Console:

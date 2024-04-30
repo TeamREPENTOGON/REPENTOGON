@@ -8,6 +8,9 @@
 #include "Windows.h"
 #include <string>
 #include "../Patches/ChallengesStuff.h"
+#include <dwmapi.h>
+
+#include "../MiscFunctions.h"
 
 static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
@@ -482,7 +485,63 @@ LUA_FUNCTION(Lua_CenterCursor)
 		SetCursorPos(clientCenter.x, clientCenter.y);
 	}
 	return 0;
-}
+};
+
+LUA_FUNCTION(Lua_SetDWMAttrib)
+{
+	HWND hwnd = GetActiveWindow();
+	DWORD activeProcessId;
+	GetWindowThreadProcessId(hwnd, &activeProcessId);
+	DWORD currentProcessId = GetCurrentProcessId();
+	int32_t attribid = (int32_t)luaL_optinteger(L, 1, 0);
+	int32_t attribval = (int32_t)luaL_optinteger(L, 2, 0);
+
+	switch (attribid) {
+	case (DWMWINDOWATTRIBUTE)DWMWA_CLOAK:
+		return luaL_error(L, "Usage of DWMWA_CLOAK attribute is prohibited!");
+		break;
+	case (DWMWINDOWATTRIBUTE)DWMWA_CLOAKED:
+		return luaL_error(L, "Usage of DWMWA_CLOAKED attribute is prohibited!");
+		break;
+	};
+	if (activeProcessId == currentProcessId) {
+		DwmSetWindowAttribute(hwnd, attribid, &attribval, sizeof(attribval));
+	};
+
+	return 0;
+};
+
+LUA_FUNCTION(Lua_GetDWMAttrib)
+{
+	HWND hwnd = GetActiveWindow();
+	int32_t attribid = (int32_t)luaL_optinteger(L, 1, 0);
+	int32_t attribval;
+	DwmGetWindowAttribute(hwnd, attribid,&attribval,sizeof(attribval));
+	lua_pushinteger(L, attribval);
+	return 1;
+};
+
+LUA_FUNCTION(Lua_SetWindowTitle)
+{
+	const char* text=nullptr;
+	if (!lua_isstring(L,1)) {
+		REPENTOGON::SetStockWindowTitle();
+		return 0;
+	};
+	text = luaL_checkstring(L, 1);
+	char buffer[256];
+	strncpy_s(REPENTOGON::moddedtitle, text, 255);
+	strncpy_s(buffer, REPENTOGON::stocktitle, 255);
+	strncat_s(buffer, REPENTOGON::moddedtitle, 255);
+	SetWindowTextA(GetActiveWindow(), buffer);
+	return 0;
+};
+
+LUA_FUNCTION(Lua_GetWindowTitle)
+{
+	lua_pushstring(L, REPENTOGON::moddedtitle);
+	return 1;
+};
 
 LUA_FUNCTION(Lua_IsInGame) {
 	lua_pushboolean(L, Isaac::IsInGame());
@@ -591,6 +650,10 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindInCapsule", Lua_IsaacFindInCapsule);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "TriggerWindowResize", Lua_TriggerWindowResize);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "CenterCursor", Lua_CenterCursor);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetDwmWindowAttribute", Lua_SetDWMAttrib);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetDwmWindowAttribute", Lua_GetDWMAttrib);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetWindowTitle", Lua_SetWindowTitle);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetWindowTitle", Lua_GetWindowTitle);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsInGame", Lua_IsInGame);
 	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Pause", Lua_IsaacPause); 
 	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Resume", Lua_IsaacResume); //not done, feel free to pick these up they suck

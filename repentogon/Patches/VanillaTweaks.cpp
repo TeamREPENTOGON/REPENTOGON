@@ -80,17 +80,25 @@ HOOK_METHOD(Game, RestoreState, (GameState* gstate, bool loaded) -> void) { //so
 };
 HOOK_STATIC(KAGE_Filesys_FileManager, LoadArchiveFile, (char* path, int unk1, unsigned short unk2)->void, __stdcall) {
 	ZHL::Logger logger;
-	static bool archive_bypass_warn;
-	for (int i = 1; i < __argc; i++) {
-		char* arg = __argv[i];
-		if (strcmp("-unpacked", arg) == 0) {
-			if (!archive_bypass_warn) {
+	static bool unpacked_flag_check_done=false;
+	static bool unpacked_flag_set = false;
+
+	if (!unpacked_flag_check_done) {
+		for (int i = 1; i < __argc; i++) {
+			char* arg = __argv[i];
+			if (strcmp("-unpacked", arg) == 0) {
 				logViewer.AddLog("[REPENTOGON]", "Ignoring archives because of the -unpacked flag! Be careful!\n");
 				printf("[REPENTOGON] Ignoring archives because of the -unpacked flag! Be careful!\n");
-				archive_bypass_warn = true;
-			}
-			return;
+				unpacked_flag_set = true;
+			};
 		};
+		unpacked_flag_check_done = true;
 	};
-	super(path, unk1, unk2);	//for future reference: unk2 seems to be something of a file count??
+
+	if (unpacked_flag_set) {
+		return;
+	}
+	else {
+		return super(path, unk1, unk2);
+	};
 };
