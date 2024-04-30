@@ -49,6 +49,8 @@ string achivjsonpath;
 
 bool sourceswithachievset = false;
 
+int nextSkipAchiev = -1;
+
 int dummyachiev = -1;
 bool achievdone = false;
 bool blocksteam = false;
@@ -108,7 +110,7 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 		Achievements[achievid] = 2; //2 is for notified, 1 is accomplished, <1 is in progress
 		RunTrackersForAchievementCounter(achieveemntid);
 		SaveAchieveemntsToJson();
-		if (((modachiev.find("hidden") == modachiev.end()) || (modachiev["hidden"] == "false")) && g_Manager->GetOptions()->PopUpsEnabled()) { //it is prevented even without this check, but theres no point in doing the hackies if thats the case.
+		if (nextSkipAchiev != achieveemntid && ((modachiev.find("hidden") == modachiev.end()) || (modachiev["hidden"] == "false")) && g_Manager->GetOptions()->PopUpsEnabled()) { //it is prevented even without this check, but theres no point in doing the hackies if thats the case.
 			pendingachievs.push(achieveemntid);
 			if (dummyachiev < 0) {
 				dummyachiev = 2;
@@ -128,7 +130,11 @@ HOOK_METHOD(PersistentGameData, TryUnlock, (int achieveemntid) -> bool) {
 			blocksteam = false;
 			this->achievements[dum] = had;
 		}
-		else { printf("[Achiev] Modded popup prevented due to pops disabled or hidden achiev \n"); }
+		else {
+			if (nextSkipAchiev == achieveemntid) {
+				nextSkipAchiev = -1;
+			}
+		}
 		return true;
 	}
 	return false;

@@ -8,7 +8,12 @@ Modified:
 		new optional boolean (IgnoreSpoof), ignores collectible block when set to true
 * Game:
 	- ShowGenericLeaderboard no longer fades to main menu
+* PersistentGameData:
+	- TryUnlock now accepts an optional boolean to prevent popping up with the achievement paper for modded achievements
 Additions:
+* PlayerManager:
+	- AnyPlayerTypeHasTrinket(PlayerType, TrinketType, IgnoreModifiers = false)
+	- AnyPlayerTypeHasCollectible(PlayerType, CollectibleType, IgnoreModifiers = false)
 * Lootlist:
 	- constructor
 	- PushEntry(Type, Variant, SubType, Seed = Random(), RNG = nil)

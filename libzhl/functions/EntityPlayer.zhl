@@ -100,6 +100,9 @@ __thiscall bool Entity_Player::CanUseCollectible(CollectibleType collectible, in
 "558bec83e4f883ec1c538b5d??56578bf98b0d":
 __thiscall bool Entity_Player::HasCollectible(int type, bool ignoreModifiers);
 
+"558bec807d??0056578bf974":
+__thiscall bool Entity_Player::HasTrinket(uint32_t Type, bool ignoreModifiers);
+
 "8b91f01500":
 __thiscall int Entity_Player::GetCollectibleCount();
 
