@@ -254,4 +254,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, 
 	int _donationModGreed : 0x1c318c;
 	int _donationModAngel : 0x1c3190;
 	float _lightningIntensity : 0x283c00;
+	float _dizzyAmount : 0x283c0c;
+	float _dizzyIntensity : 0x283c04;
+	float _dizzyTargetIntensity : 0x283c08;
 } : 0x285238;
