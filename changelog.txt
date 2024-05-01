@@ -49,6 +49,7 @@ Additions:
 * Isaac:
 	- Get/SetDwmWindowAttribute (for use with new DwmWindowAttributes enum)
 	- Get/SetWindowTitle	(appends text to our title as to avoid confusion)
+	- SetIcon(int/string,bool)	(takes a 0/1 int or a path to .ico file, bool bypasses the 16x16 resolution cap)
 * Game
 	- SetBloom
 * Console:

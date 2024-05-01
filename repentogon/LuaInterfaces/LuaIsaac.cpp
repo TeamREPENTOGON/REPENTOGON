@@ -616,6 +616,58 @@ LUA_FUNCTION(Lua_GetBackdropTypeByName) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_SetIcon) {
+//	int iconsize = luaL_optinteger(L, 2, ICON_SMALL);
+	int resolution=16;
+	bool ignorecap=lua::luaL_optboolean(L,2,false);
+	if(ignorecap){
+		resolution=LR_DEFAULTSIZE;
+	};
+	// switch (iconsize) {
+	// case 0:
+	// 	iconsize = ICON_SMALL;
+	// 	break;
+	// case 1:
+	// 	iconsize = ICON_BIG;
+	// 	break;
+	// };
+	if (lua_isinteger(L, 1)) {
+		int icontoset = (int)luaL_checkinteger(L, 1);
+		switch (icontoset) {
+		case 0:
+			icontoset = 0x65;
+			break;
+		case 1:
+			icontoset = 0x68;
+			break;
+		default:
+			icontoset = 0x65;
+		};
+		HANDLE icon = LoadImageA(GetModuleHandle(nullptr), (LPCSTR)icontoset, IMAGE_ICON, resolution, resolution, 0);
+		HANDLE icon_big = LoadImageA(GetModuleHandle(nullptr), (LPCSTR)icontoset, IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, 0);
+		if (icon) {
+			SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)icon);
+			SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)icon_big);
+		};
+		return 0;
+	};
+	const char* str=nullptr;
+	str=luaL_optstring(L, 1, str);
+	if (!str) {
+		return 0;
+	};
+	std::string modpath = str;
+	std::string fullpath;
+	g_Manager->GetModManager()->TryRedirectPath(&fullpath,&modpath);
+	HANDLE icon=LoadImageA(nullptr, fullpath.c_str(), IMAGE_ICON, resolution, resolution, LR_LOADFROMFILE | LR_SHARED);
+	if (!icon) {
+		return luaL_error(L, "Icon has failed to load!");
+	};
+	SendMessage(GetActiveWindow(), WM_SETICON, ICON_SMALL, (LPARAM)icon);
+	SendMessage(GetActiveWindow(), WM_SETICON, ICON_BIG, (LPARAM)icon);
+	return 0;
+};
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -654,6 +706,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetDwmWindowAttribute", Lua_GetDWMAttrib);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetWindowTitle", Lua_SetWindowTitle);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetWindowTitle", Lua_GetWindowTitle);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "SetIcon", Lua_SetIcon);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "IsInGame", Lua_IsInGame);
 	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Pause", Lua_IsaacPause); 
 	//lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "Resume", Lua_IsaacResume); //not done, feel free to pick these up they suck
