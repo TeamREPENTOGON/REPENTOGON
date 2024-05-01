@@ -276,6 +276,26 @@ LUA_FUNCTION(Lua_SetBloom) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_SetDizzyAmount)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	float targetAmount = (float)luaL_checknumber(L, 2);
+	float intensity = (float)luaL_checknumber(L, 3);
+
+	game->_dizzyTargetIntensity = targetAmount;
+	game->_dizzyIntensity = intensity;
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GetDizzyAmount)
+{
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushinteger(L, game->_dizzyAmount);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -309,6 +329,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetDonationModAngel", Lua_SetDonationModAngel},
 		{ "SetDonationModGreed", Lua_SetDonationModGreed},
 		{ "SetBloom", Lua_SetBloom},
+		{ "GetDizzyAmount", Lua_GetDizzyAmount},
+		{ "SetDizzyAmount", Lua_SetDizzyAmount},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

@@ -11,6 +11,9 @@ Modified:
 * PersistentGameData:
 	- TryUnlock now accepts an optional boolean to prevent popping up with the achievement paper for modded achievements
 Additions:
+* Game:
+	- SetDizzyAmount(amount, intensity)
+	- GetDizzyAmount()
 * PlayerManager:
 	- AnyPlayerTypeHasTrinket(PlayerType, TrinketType, IgnoreModifiers = false)
 	- AnyPlayerTypeHasCollectible(PlayerType, CollectibleType, IgnoreModifiers = false)
