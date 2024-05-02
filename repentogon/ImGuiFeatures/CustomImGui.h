@@ -817,7 +817,7 @@ struct CustomImGui {
         case IMGUI_DATA::ColorValues:
             if (element->type != IMGUI_ELEMENT::ColorEdit)
                 return false;
-            if (!lua_istable(L, 4))
+            if (!lua_istable(L, 3))
                 return luaL_error(L, "Argument 4 needs to be a table!");
 
             // get table input
