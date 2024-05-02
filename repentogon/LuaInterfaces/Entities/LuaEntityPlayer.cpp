@@ -2285,6 +2285,20 @@ LUA_FUNCTION(Lua_PlayerHasGoldenTrinket) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetHallowedGroundCountdown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_hallowedGroundCountdown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetHallowedGroundCountdown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_hallowedGroundCountdown = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2491,6 +2505,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPlayerIndex", Lua_PlayerGetPlayerIndex }, 
 		{ "GetSpoofedCollectiblesList", Lua_PlayerGetSpoofCollList },
 		{ "HasGoldenTrinket", Lua_PlayerHasGoldenTrinket },
+		{ "GetHallowedGroundCountdown", Lua_PlayerGetHallowedGroundCountdown },
+		{ "SetHallowedGroundCountdown", Lua_PlayerSetHallowedGroundCountdown },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
