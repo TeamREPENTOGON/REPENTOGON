@@ -56,6 +56,7 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
 }}
 	
 	Entity_Player* _player : 0x360;
+	int _moveDelayNum: 0x548;
 	bool _isFollower : 0xcc4;
 	bool _isDelayed : 0xcc5;
 	int _state : 0xcd4;

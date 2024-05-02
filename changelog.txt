@@ -10,6 +10,7 @@ Modified:
 	- ShowGenericLeaderboard no longer fades to main menu
 * PersistentGameData:
 	- TryUnlock now accepts an optional boolean to prevent popping up with the achievement paper for modded achievements
+/newline/
 Additions:
 * Game:
 	- SetDizzyAmount(amount, intensity)
@@ -44,6 +45,8 @@ Additions:
 * EntityNPC:
 	- GetFireplaceLoot
 	- GetShopkeeperLoot
+* EntityFamiliar:
+	- [Get/Set]MoveDelayNum
 * ItemConfigItem:
 	- HasCustomTag
 	- GetCustomTags
