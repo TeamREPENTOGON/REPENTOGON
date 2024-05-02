@@ -33,6 +33,7 @@ Additions:
 		UnblockCollectible(int itemID)
 		IsCollectibleBlocked(int itemID)
 	- HasGoldenTrinket
+	- Get/SetHallowedGroundCountdown
 * EntityTear:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
