@@ -544,6 +544,10 @@ void __stdcall RunImGui(HDC hdc) {
 		ImGui::GetIO().FontAllowUserScaling = true;
 		logViewer.AddLog("[REPENTOGON]", "Initialized Dear ImGui v%s\n", IMGUI_VERSION);
 		printf("[REPENTOGON] Dear ImGui v%s initialized! Any further logs can be seen in the in-game log viewer.\n", IMGUI_VERSION);
+		auto gameStartTime = REPENTOGON::GetStartTime();
+		auto finish = std::chrono::high_resolution_clock::now();
+		auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(finish - gameStartTime).count() / 1000.0f;
+		printf("---\n\n\nStart to game took %f seconds!\n\n\n---\n", (float)diff);
 	}
 
 	ImGui_ImplOpenGL3_NewFrame();

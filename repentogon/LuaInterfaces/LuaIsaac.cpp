@@ -11,6 +11,7 @@
 #include <dwmapi.h>
 
 #include "../MiscFunctions.h"
+#include "../REPENTOGONFileMap.h"
 
 static int QueryRadiusRef = -1;
 static int timerFnTable = -1;
@@ -615,7 +616,86 @@ LUA_FUNCTION(Lua_GetBackdropTypeByName) {
 	lua_pushinteger(L, -1);
 	return 1;
 }
+HOOK_METHOD(Preloader, Load, (int param_1)->void) {
+//	printf("[Preloader::Load] param is %p\n", (void*)param_1);
+	super(param_1);
+};
 
+HOOK_METHOD(KAGE_Filesys_FileManager, GetExpandedPath, (char* path)->char*) {
+	char* out = super(path);
+//	printf("[FileMan::GetExpandedPath] Input is %s\nOut is   %s\n",path,out);
+	return out;
+};
+HOOK_METHOD(ModManager, LoadConfigs, (void)->void) {
+	int a = 1;
+	super();
+	a += 1;
+	return;
+};
+HOOK_METHOD(ModManager, ListMods, (void)->void) {
+	super();
+	REPENTOGONFileMap::GenerateMap();
+};
+HOOK_METHOD(ModManager, TryRedirectPath, (std_string *param_1,std_string *param_2)->void) {
+	//int a = 1;
+	//new (param_1) std::string("hi!");
+	//super(param_1,param_2);
+	//a += 1;
+	//return;
+
+//	return super(param_1,param_2);
+//	printf("[ModMan::TryRedirectPath] Trying to redirect %s!\n",param_2->c_str());
+	bool spoofmods = true;
+//	return super(param_1, param_2);
+	if (param_1==nullptr || param_2 == nullptr) {
+		return super(param_1,param_2);
+	};
+	std::string input = *param_2;
+	size_t hashentry = std::hash<std::string>{}(input);
+	REPENTOGONFileMap::FileMapEntry* mapentry = REPENTOGONFileMap::GetEntry(hashentry);
+	//if (spoofmods) {
+	//	std::vector<ModEntry*> backup = std::move(this->_mods);
+	//	this->_mods.clear();
+	//	super(param_1, param_2);
+	//	this->_mods = std::move(backup);
+	//};
+	if (mapentry) {
+		if (param_1 && param_2) {
+			spoofmods = false;
+			new (param_1) std::string("");
+//			param_1->resize(0);
+			//			new (param_1) std::string();
+			param_1->reserve(260);
+			ProduceString(param_2, mapentry, param_1);
+			return;
+		}
+	}
+	else {
+		spoofmods = true;
+	};
+	if (spoofmods) {
+		std::vector<ModEntry*> backup = std::move(this->_mods);
+		this->_mods.clear();
+		super(param_1, param_2);
+		this->_mods = std::move(backup);
+	}
+	//int** beginptr = (int**)modslist;
+	//int** lastptr = (int**)modslist + 1;
+	//int** endptr = (int**)modslist + 2;
+
+	//int* begin = *beginptr;
+	//int* last = *lastptr;
+	//int* end = *endptr;
+
+	//*beginptr = 0;
+	//*lastptr = 0;
+	//*endptr = 0;
+//	new (param_1) std::string("hi!");	//for reference: that's how to init a string
+//	super(param_1,param_2);
+	//*beginptr = begin;
+	//*lastptr = last;
+	//*endptr = end;
+};
 LUA_FUNCTION(Lua_SetIcon) {
 //	int iconsize = luaL_optinteger(L, 2, ICON_SMALL);
 	int resolution=16;
