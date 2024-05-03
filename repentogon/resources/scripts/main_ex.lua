@@ -1316,6 +1316,15 @@ function FontMT.__call(_,FontPath)
 end
 
 
+local beamWeakTable = setmetatable({}, {__mode = "k"})
+local OldBeam = Beam
+function Beam(spr, layer, UseOverlay, UnkBool)
+	local result = OldBeam(spr, layer, UseOverlay, UnkBool)
+	beamWeakTable[result] = spr
+	return result
+end
+
+
 
 --res load error stuff end
 
