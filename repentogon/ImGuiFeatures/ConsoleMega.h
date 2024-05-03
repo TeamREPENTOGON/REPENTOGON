@@ -260,10 +260,14 @@ struct ConsoleMega : ImGuiWindowObject {
         // redirect "giveitem" command to allow for trinket, card and pill being given using their name.
         if (command && (command->autocompleteType == ITEM && !autocompleteBuffer.empty()))
         {
-          AutocompleteEntry firstEntry = autocompleteBuffer.front();
-          if (firstEntry.autocompleteText.at(firstEntry.autocompleteText.find(" ")+1) != 'c')
+          
+          char firstLetter = cmdlets.at(1).at(0);
+          char secondLetter = cmdlets.at(1).at(1);
+          // check if the second part of the command is not of format [letter][digit]
+          if (!(isalpha(firstLetter) && isdigit(secondLetter)))
           {
-            // if first autocomplete entry is not a collectible, replace console input with autocomplete entry.
+            // replace console input (the name of an item to give) with autocomplete entry (its shorthand + id).
+            AutocompleteEntry firstEntry = autocompleteBuffer.front();
             return firstEntry.autocompleteText;
           }
         }
