@@ -123,7 +123,7 @@ Fixes:
 	* Fixed bonehearts not displaying correctly when set through players.xml
 	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
 	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready
-	* Reverted Flooded Caves suffix to _downpour so enemies keep their existing custom spritesheet
+	* Fix Downpour/Dross rooms generated in The Void not having any water
 	* Potentially fixed reported but unreproducable instance of a trapdoor deal room variant being generated outside of floor 8
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
 /newline/

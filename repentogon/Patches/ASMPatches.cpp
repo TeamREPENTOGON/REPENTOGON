@@ -117,6 +117,7 @@ void PerformASMPatches() {
 	// Room
 	ASMPatchAmbushWaveCount();
 	ASMPatchMegaSatanEnding();
+	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
 
 	// Player
