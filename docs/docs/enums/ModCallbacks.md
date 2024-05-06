@@ -1169,7 +1169,7 @@ Alternatively accepts `false` to cancel the track
     This callback is called for *both* MusicManager::Play *and* MusicManager::Crossfade! `IsFade` is provided to distinguish the two.
 
 ???- example "Example Code"
-    This code will forcibly loop every sound (for better or worse).
+    This code will replace all music track with the flooded caves theme (for better or for worse).
     ```lua
     function mod:myFunction(ID, Volume, IsFade)
         return Music.MUSIC_FLOODED_CAVES
