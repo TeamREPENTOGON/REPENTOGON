@@ -137,6 +137,7 @@ LUA_FUNCTION(Lua_HasCollectible) {
 	int itemID = (int)luaL_checkinteger(L, 2);
 	bool ignoreModifiers = (bool)lua::luaL_optboolean(L, 3, false);
 	bool ignoreSpoof = (bool)lua::luaL_optboolean(L, 4, false);
+	ignoreSpoof = ignoreSpoof || ignoreModifiers;
 	bool outbool = false;
 	if (ignoreSpoof) {
 		PlayerItemSpoof::GlobalSpoofState = false;
@@ -154,6 +155,7 @@ LUA_FUNCTION(Lua_GetCollectibleNum) {
 	int itemID = (int)luaL_checkinteger(L, 2);
 	bool onlyCountTrueItems = (bool)lua::luaL_optboolean(L, 3, false);
 	bool ignoreSpoof = (bool)lua::luaL_optboolean(L, 4, false);
+	ignoreSpoof = ignoreSpoof || onlyCountTrueItems;
 	int outnum = 0;
 	if (ignoreSpoof) {
 		PlayerItemSpoof::GlobalSpoofState=false;
