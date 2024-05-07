@@ -126,6 +126,7 @@ Fixes:
 	* Fix Downpour/Dross rooms generated in The Void not having any water
 	* Potentially fixed reported but unreproducable instance of a trapdoor deal room variant being generated outside of floor 8
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
+	* Fixed Gamma scale on the visual settings imgui menu
 /newline/
 v1.0.8c - 
 Fixes:
