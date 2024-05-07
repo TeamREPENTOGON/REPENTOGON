@@ -160,7 +160,7 @@ struct GameOptionsWindow : ImGuiWindowObject {
                 if (ImGui::BeginTabItem(LANG.OPT_VIS)) {
                     if (ImGui::BeginTable("Visual Effects_Table", 2, ImGuiTableFlags_SizingStretchProp)) {
                         AddNewTableRow();
-                        ImGui::SliderFloat(LANG.OPT_VIS_GAMMA, &g_Manager->GetOptions()->_gamma, 0.0f, 1.0f, "%.2f");
+                        ImGui::SliderFloat(LANG.OPT_VIS_GAMMA, &g_Manager->GetOptions()->_gamma, 0.0f, 2.0f, "%.2f");
                         AddResetButton(++resetCounter, g_Manager->GetOptions()->_gamma, 1.0f);
                         AddNewTableRow();
                         ImGui::SliderFloat(LANG.OPT_VIS_EXPOSURE, &g_Manager->GetOptions()->_exposure, 0.0f, 1.0f, "%.2f");

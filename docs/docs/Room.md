@@ -5,8 +5,8 @@ tags:
 # Class "Room"
 ## Modified Functions
 
-### GetBackdropType () {: aria-label='Functions' }
-#### [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) GetBackdropType ( ) {: .copyable aria-label='Functions' }
+### GetBackdropType () {: aria-label='Modified Functions' }
+#### [BackdropType](https://wofsauge.github.io/IsaacDocs/rep/enums/BackdropType.html) GetBackdropType ( ) {: .copyable aria-label='Modified Functions' }
 
 ___
 ### SpawnGridEntity () {: aria-label='Modified Functions' }

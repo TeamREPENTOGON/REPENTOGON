@@ -4,17 +4,19 @@ tags:
 ---
 # Class "RNG"
 
-## Modified Functions
 
+## Modified Constructors
 
-### RNG () {: aria-label='Modified Functions' }
-#### RNG ( int seed = 2853650767, int shiftIdx = 35 ) { :.copyable aria-label='Modified Functions' }
+### RNG () {: aria-label='Modified Constructors' }
+#### [RNG](RNG.md) RNG ( int seed = 2853650767, int shiftIdx = 35 ) { :.copyable aria-label='Modified Constructors' }
 Now takes an optional seed and an optional shiftIdx.
 This can be used to avoid separating construction of the RNG object and a call to SetSeed.
 
 The function validates both the seed and the shift index.
 
 ___
+
+## Modified Functions
 
 ### RandomInt () {: aria-label='Modified Functions' }
 #### int RandomInt ( int Min, int Max ) {: .copyable aria-label='Modified Functions' }

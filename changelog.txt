@@ -10,6 +10,7 @@ Modified:
 	- ShowGenericLeaderboard no longer fades to main menu
 * PersistentGameData:
 	- TryUnlock now accepts an optional boolean to prevent popping up with the achievement paper for modded achievements
+/newline/
 Additions:
 * Game:
 	- SetDizzyAmount(amount, intensity)
@@ -32,6 +33,7 @@ Additions:
 		UnblockCollectible(int itemID)
 		IsCollectibleBlocked(int itemID)
 	- HasGoldenTrinket
+	- Get/SetHallowedGroundCountdown
 * EntityTear:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
@@ -44,6 +46,8 @@ Additions:
 * EntityNPC:
 	- GetFireplaceLoot
 	- GetShopkeeperLoot
+* EntityFamiliar:
+	- [Get/Set]MoveDelayNum
 * ItemConfigItem:
 	- HasCustomTag
 	- GetCustomTags
@@ -119,9 +123,10 @@ Fixes:
 	* Fixed bonehearts not displaying correctly when set through players.xml
 	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
 	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready
-	* Reverted Flooded Caves suffix to _downpour so enemies keep their existing custom spritesheet
+	* Fix Downpour/Dross rooms generated in The Void not having any water
 	* Potentially fixed reported but unreproducable instance of a trapdoor deal room variant being generated outside of floor 8
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
+	* Fixed Gamma scale on the visual settings imgui menu
 /newline/
 v1.0.8c - 
 Fixes:
