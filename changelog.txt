@@ -117,6 +117,8 @@ Additions:
 * Added support for a "customtags" attribute in items.xml - a space-separated list of tags that can be checked with ItemConfigItem:HasCustomTag() or ItemConfigItem:GetCustomTags()
 * Added custom tag "nometronome" to items.xml to prevent items from being picked by Metronome
 * Improved startup time!
+* Buffed Trisagion
+* Added a new option in "Vanilla tweaks" section called "Fast lasers", it tracks the game's lag and (if present) reduces the number of samples used by lasers to ensure better performance
 /newline/
 Fixes:
     * Fixed `Isaac.CreateTimer` crashing the game when setting the delay argument to 0
