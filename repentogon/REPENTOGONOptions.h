@@ -34,10 +34,11 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["StatHUDPlanetarium"] = "1";
 			ini["VanillaTweaks"]["SkipIntro"] = "0";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
+			ini["VanillaTweaks"]["FastLasers"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
-			ini["internal"]["FastLasers"] = "0";
+			ini["internal"]["LastSaveFile"] = "0";
 			iniFile.generate(ini, true);
 		}
 
@@ -50,9 +51,10 @@ struct REPENTOGONOptions {
 		statHUDPlanetarium = defstoi(ini["VanillaTweaks"]["StatHUDPlanetarium"], 1);
 		skipIntro = defstoi(ini["VanillaTweaks"]["SkipIntro"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
+		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
 		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
-		fastLasers = defstoi(ini["internal"]["FastLasers"], 0);
+		lastSaveFile = defstoi(ini["internal"]["LastSaveFile"], 0);
 		printf("Loaded REPENTOGON INI\n");
 	}
 
@@ -89,9 +91,10 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "PreventModUpdates",	   preventModUpdates);
 		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
 		Write("VanillaTweaks", "SkipIntro", skipIntro);
+		Write("VanillaTweaks", "FastLasers", fastLasers);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
-		Write("internal", "FastLasers", fastLasers);
+		Write("internal", "LastSaveFile", lastSaveFile);
 	}
 
 	mINI::INIStructure ini;
@@ -104,6 +107,7 @@ struct REPENTOGONOptions {
 	bool statHUDPlanetarium;
 	int unifontRenderMode;
 	bool fastLasers;
+	int lastSaveFile;
 	bool skipIntro;
 	std::string optionsPath;
 };
