@@ -93,6 +93,9 @@ namespace PlayerItemSpoof {
 }
 
 HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->bool) {
+	if (ignoreModifiers) { 
+		return super(type, ignoreModifiers);
+	};
 	if (!PlayerItemSpoof::GlobalSpoofState) { return super(type, ignoreModifiers); };
 	auto& itemlist = PlayerItemSpoof::CollSpoofList;
 	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
@@ -107,6 +110,9 @@ HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->boo
 };
 
 HOOK_METHOD(Entity_Player, GetCollectibleNum, (int collectibleID, bool onlyCountTrueItems)->int) {
+	if (onlyCountTrueItems) {
+		return super(collectibleID, onlyCountTrueItems);
+	};
 	if (!PlayerItemSpoof::GlobalSpoofState) { return super(collectibleID, onlyCountTrueItems); };
 	auto& itemlist = PlayerItemSpoof::CollSpoofList;
 	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
