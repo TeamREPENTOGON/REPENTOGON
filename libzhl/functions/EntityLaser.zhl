@@ -10,6 +10,9 @@ __thiscall bool Entity_Laser::CanDamageEntity(Entity* entity);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec5156":
 __thiscall void Entity_Laser::RotateToAngle(float angle, float speed);
 
+"8b91????????538b99":
+__thiscall void Entity_Laser::ClearLaserSamples();
+
 struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x420); }
 	inline float* GetScale() { return (float*)((char*)this + 0x430); }

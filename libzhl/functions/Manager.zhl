@@ -70,7 +70,7 @@ __thiscall void Manager::SetFullscreenRendering(bool value);
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
 
-struct Manager depends (StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
+struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
 	inline int* GetTestState() { return (int*)((char*)this + 0x8); }
 	inline PersistentGameData* GetPersistentGameData() { return (PersistentGameData*)((char*)this + 0x14); }
@@ -93,6 +93,7 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	
 	int _state : 0x8;
     PersistentGameData _persistentGameData : 0x14;
+	GameState _gamestate : 0xf34;
     StringTable _stringTable : 0x4a234;
 	SoundEffects _sfxManager : 0x29de0;
 	ItemConfig _itemConfig : 0x29e84;
@@ -104,6 +105,15 @@ struct Manager depends (StringTable, PersistentGameData, NightmareScene, Unknown
 	Font _font8_TeamMeat_12 : 0x12a550;	
 	unsigned int _framecount : 0x4a264;
 	Music _musicmanager : 0x29a78;
+	bool _networkPlay : 0x1ea804;
+	bool _rerunAvailable : 0x1ea6c1;
+	bool _startingFromRerun : 0x1ea6c2;
+	bool _debugStart : 0x1ea72c;
+	bool _starting : 0x1ea6c0;
+	Seeds _startSeeds : 0x1ea6cc;
+	void* _unk_runstart : 0x4a268;
+	bool _startCutscene : 0x1ea830;
+
 } : 0x20a9d8;
 
 "e8????????83c414898544feffff8bc8c745fc05000000e8????????c745fcffffffffa3(????????)e8????????e8????????":

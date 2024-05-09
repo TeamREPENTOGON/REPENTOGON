@@ -1,2 +1,3 @@
-struct GameState {
+struct GameState depends (Seeds){
+    Seeds _seeds : 0x1e3d8;
 } : 0x20294;

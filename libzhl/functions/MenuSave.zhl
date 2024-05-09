@@ -1,3 +1,6 @@
+"558bec83ec78a1????????33c58945??535657ff75":
+__thiscall void Menu_Save::select_save_slot(uint32_t slot);
+
 struct Menu_Save depends (ANM2) { 
     {{
          inline ANM2* GetSaveSelectMenuSprite() { return &this->SaveSelectMenuSprite; }
