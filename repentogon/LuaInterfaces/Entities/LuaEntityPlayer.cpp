@@ -4,6 +4,7 @@
 
 #include "../LuaWeapon.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
+#include "../../Patches/ExtraLives.h"
 
 
 /*
@@ -2307,6 +2308,12 @@ LUA_FUNCTION(Lua_PlayerSetHallowedGroundCountdown) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerHasChanceRevive) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushboolean(L, PlayerHasChanceRevive(player));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2515,6 +2522,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HasGoldenTrinket", Lua_PlayerHasGoldenTrinket },
 		{ "GetHallowedGroundCountdown", Lua_PlayerGetHallowedGroundCountdown },
 		{ "SetHallowedGroundCountdown", Lua_PlayerSetHallowedGroundCountdown },
+		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

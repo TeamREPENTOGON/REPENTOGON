@@ -5,6 +5,7 @@
 #include "NullItemsAndCostumes.h"
 #include "FamiliarTags.h"
 #include "Anm2Extras.h"
+#include "ExtraLives.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -125,6 +126,7 @@ void PerformASMPatches() {
 	ASMPatchPlayerStats();
 	ASMPatchPlayerNoShake();
 	ASMPatchPlayerItemNoMetronome();
+	ASMPatchesForExtraLives();
 
 	// Render
 	LuaRender::PatchglDrawElements();

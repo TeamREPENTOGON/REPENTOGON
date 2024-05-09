@@ -495,6 +495,7 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_ENTITY_DEVOLVE,
 	ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD,
 	ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH,
+	ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES,
 	ModCallbacks.MC_PRE_USE_CARD,
 	ModCallbacks.MC_PRE_USE_PILL,
 	ModCallbacks.MC_PRE_PLAYER_TRIGGER_ROOM_CLEAR,
@@ -1187,11 +1188,22 @@ function _RunEntityTakeDmgCallback(callbackID, param, entity, damage, damageFlag
 	return combinedRet
 end
 
+-- Custom handling for MC_PRE_TRIGGER_PLAYER_DEATH and MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES.
+-- Terminate early if the player is revived by any means.
+function _RunTriggerPlayerDeathCallback(callbackID, param, player, ...)
+	for callback in GetCallbackIterator(callbackID) do
+		local ret = RunCallbackInternal(callbackID, callback, player, ...)
+		if ret == false or not player:IsDead() then
+			return ret
+		end
+	end
+	return true
+end
+
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
-
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
-
 rawset(Isaac, "RunEntityTakeDmgCallback", _RunEntityTakeDmgCallback)
+rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
 
 Isaac.RunCallbackWithParam = _RunCallback
 

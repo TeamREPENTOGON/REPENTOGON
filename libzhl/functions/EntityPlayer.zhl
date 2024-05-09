@@ -67,8 +67,20 @@ __thiscall void Entity_Player::TriggerRoomExit(bool unk);
 "558bec83e4f883ec7ca1????????33c4894424??538bd9":
 __thiscall bool Entity_Player::TriggerDeath(bool checkOnly);
 
+"6a01e8????????c3":
+__thiscall bool Entity_Player::WillPlayerRevive();
+
 "558bec83e4f883ec08568bf15780be????????00":
 __thiscall void Entity_Player::Revive();
+
+"558bec83e4f881ecc4000000a1????????33c4898424????????538bd9":
+__thiscall void Entity_Player::ReviveFromCollectible(uint32_t itemID, bool ownedByThisPlayer);
+
+"558bec83ec24a1????????33c58945??53568bf1":
+__thiscall void Entity_Player::ReviveFromTrinket(uint32_t trinketID);
+
+"8b81????????0fbf91":
+__thiscall int Entity_Player::GetExtraLives();
 
 "558bec568bf1e8????????8b45??8986":
 __thiscall void Entity_Player::SetItemState(CollectibleType collectible);
@@ -269,6 +281,9 @@ __thiscall bool Entity_Player::CanUsePill(int pillEffect);
 
 "558bec518b15????????535633f6":
 __thiscall uint32_t Entity_Player::InvalidateCoPlayerItems();
+
+"558bec83e4f883ec2ca1????????33c4894424??538bd956578b7d":
+__thiscall bool Entity_Player::TryRemoveTrinket(uint32_t id);
 
 "558bec83ec30a1????????33c58945??53":
 __thiscall bool Entity_Player::TryRemoveSmeltedTrinket(unsigned int id);
@@ -595,6 +610,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _gnawedLeafTimer : 0x12c4;
 	short _bloodLustCounter : 0x12cc;	//not sure whether its actually short but we are on x86 so who cares lul
 	int _metronomeCollectibleID : 0x12d8;
+	int _damageCooldown : 0x1308;
 	int _playerType: 0x130c;
 	float _damage : 0x13b8;
 	float _movespeed : 0x14ac;
