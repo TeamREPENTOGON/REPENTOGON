@@ -20,13 +20,8 @@ extern float WINMouseWheelMove_Hori;
 
 LUA_FUNCTION(Lua_InputGetMouseWheel)
 {
-	lua_pushnumber(L, WINMouseWheelMove_Vert);
-	return 1;
-}
-
-LUA_FUNCTION(Lua_InputGetMouseHWheel)
-{
-	lua_pushnumber(L, WINMouseWheelMove_Hori);
+	if (lua::luaL_checkboolean(L, 1)) lua_pushnumber(L, WINMouseWheelMove_Hori);
+	else lua_pushnumber(L, WINMouseWheelMove_Vert);
 	return 1;
 }
 
@@ -38,5 +33,4 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetDeviceNameByIdx", Lua_InputGetDeviceNameByIdx);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetMouseWheel", Lua_InputGetMouseWheel);
-	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Input, "GetMouseHWheel", Lua_InputGetMouseHWheel);
 }
