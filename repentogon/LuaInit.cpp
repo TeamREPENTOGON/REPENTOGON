@@ -20,6 +20,7 @@ static std::map<std::string, std::vector<std::pair<std::string, void*>>> _functi
 int LuaKeys::preRenderCallbackKey = LUA_NOREF;
 int LuaKeys::additiveCallbackKey = LUA_NOREF;
 int LuaKeys::entityTakeDmgCallbackKey = LUA_NOREF;
+int LuaKeys::triggerPlayerDeathCallbackKey = LUA_NOREF;
 
 static int LuaDumpRegistry(lua_State* L) {
 	int top = lua_gettop(L);
@@ -196,6 +197,9 @@ HOOK_METHOD(LuaEngine, Init, (bool Debug) -> void) {
 
 	lua_getglobal(state, "_RunEntityTakeDmgCallback");
 	LuaKeys::entityTakeDmgCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
+
+	lua_getglobal(state, "_RunTriggerPlayerDeathCallback");
+	LuaKeys::triggerPlayerDeathCallbackKey = luaL_ref(state, LUA_REGISTRYINDEX);
 
 	NukeConstMetatables(_state);
 	REPENTOGON::UpdateProgressDisplay("LuaEngine Initialized");

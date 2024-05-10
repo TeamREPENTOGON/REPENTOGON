@@ -947,37 +947,6 @@ HOOK_METHOD(Level, Init, () -> void) {
 }
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
 
-//PRE_TRIGGER_PLAYER_DEATH (id: 1050)
-HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
-	const int callbackid = 1050;	
-	if (!checkOnly && CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.call(1);
-
-		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				if (!lua_toboolean(L, -1)) {
-					this->Revive();
-					*this->GetVisible() = true;
-					return false;
-				}
-			}
-		}
-		return super(checkOnly);
-	}
-	else {
-		return super(checkOnly);
-	}
-}
-//PRE_TRIGGER_PLAYER_DEATH end
-
 //PRE/POST_RESTOCK_SHOP (id: 1070/1071)
 bool ProcessPreRestockCallback(bool Partial) {
 	const int callbackid = 1070;

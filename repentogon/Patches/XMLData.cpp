@@ -825,6 +825,20 @@ void ParseTagsString(const string& str, set<string>& out) {
 	}
 }
 
+// If the item has the appropriate customtags, adds it to the customreviveitems map
+// to make it more efficient to check if the player has any of them layer.
+void CheckCustomRevive(const int id, XMLItem* data) {
+	const bool hasReviveTag = data->HasCustomTag(id, "revive");
+	const bool hasReviveEffectTag = data->HasCustomTag(id, "reviveeffect");
+	if (hasReviveTag || hasReviveEffectTag) {
+		CustomReviveInfo* info = &data->customreviveitems[id];
+		info->item = hasReviveTag;
+		info->effect = hasReviveEffectTag;
+		info->hidden = data->HasCustomTag(id, "hiddenrevive");
+		info->chance = data->HasCustomTag(id, "chancerevive");
+	}
+}
+
 //
 //#include <time.h>
 bool initedxmlenums = false;
@@ -1139,6 +1153,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					if (item.find("relativeid") != item.end()) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
 					if (item.find("customtags") != item.end()) {
 						ParseTagsString(item["customtags"], XMLStuff.ItemData->customtags[id]);
+						CheckCustomRevive(id, XMLStuff.ItemData);
 					}
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
@@ -1205,6 +1220,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					if (trinket.find("relativeid") != trinket.end()) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
 					if (trinket.find("customtags") != trinket.end()) {
 						ParseTagsString(trinket["customtags"], XMLStuff.TrinketData->customtags[id]);
+						CheckCustomRevive(id, XMLStuff.TrinketData);
 					}
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
@@ -1247,6 +1263,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 				if (item.find("customtags") != item.end()) {
 					ParseTagsString(item["customtags"], XMLStuff.NullItemData->customtags[id]);
+					CheckCustomRevive(id, XMLStuff.NullItemData);
 				}
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
