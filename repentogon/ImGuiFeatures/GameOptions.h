@@ -313,6 +313,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_FAST_LASERS_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.fastLasers, false);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_INTERPOLV2, &repentogonOptions.interpolV2);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_INTERPOLV2_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.interpolV2, false);
 
                         ImGui::EndTable();
                     }

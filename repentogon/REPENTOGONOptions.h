@@ -35,6 +35,7 @@ struct REPENTOGONOptions {
 			ini["VanillaTweaks"]["SkipIntro"] = "0";
 			ini["VanillaTweaks"]["PreventModUpdates"] = "0";
 			ini["VanillaTweaks"]["FastLasers"] = "0";
+			ini["VanillaTweaks"]["InterpolV2"] = "0";
 			ini["internal"]["DidModReset"] = "0";
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
@@ -52,6 +53,7 @@ struct REPENTOGONOptions {
 		skipIntro = defstoi(ini["VanillaTweaks"]["SkipIntro"], 0);
 		preventModUpdates = defstoi(ini["VanillaTweaks"]["PreventModUpdates"], 0);
 		fastLasers = defstoi(ini["VanillaTweaks"]["FastLasers"], 0);
+		interpolV2 = defstoi(ini["VanillaTweaks"]["InterpolV2"], 0);
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
 		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
 		lastSaveFile = defstoi(ini["internal"]["LastSaveFile"], 0);
@@ -92,6 +94,7 @@ struct REPENTOGONOptions {
 		Write("VanillaTweaks", "StatHUDPlanetarium",   statHUDPlanetarium);
 		Write("VanillaTweaks", "SkipIntro", skipIntro);
 		Write("VanillaTweaks", "FastLasers", fastLasers);
+		Write("VanillaTweaks", "InterpolV2", interpolV2);
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
@@ -109,6 +112,7 @@ struct REPENTOGONOptions {
 	bool fastLasers;
 	int lastSaveFile;
 	bool skipIntro;
+	bool interpolV2;
 	std::string optionsPath;
 };
 

@@ -3,6 +3,7 @@
 
 #include "../REPENTOGONOptions.h"
 
+
 namespace SkipIntro {
 	bool IsIntroSkip = false;
 };
