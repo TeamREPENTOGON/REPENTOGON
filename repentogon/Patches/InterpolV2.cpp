@@ -4,6 +4,7 @@
 #include "../REPENTOGONOptions.h"
 
 bool _interpol_isgamerender = false;
+bool _interpol_ishudrender = false;
 AnimationState* _interpol_state = 0x0;
 
 HOOK_STATIC(LuaEngine, PostRender, (void)->void,_stdcall) {
@@ -18,6 +19,12 @@ HOOK_METHOD(Game, Render, (void)->void) {
 	_interpol_isgamerender = false;
 };
 
+HOOK_METHOD(HUD, Render, (void)->void) {
+	_interpol_ishudrender = true;
+	super();
+	_interpol_ishudrender = false;
+};
+
 inline float _interpol_short_angle_dis(float from, float to) {
 	float maxAngle = 360.0f;
 	float disAngle = fmod((to - from),maxAngle);
@@ -30,11 +37,13 @@ inline float _interpol_angle_lerp(float from, float to, float perc) {
 };
 
 HOOK_METHOD(AnimationLayer, RenderFrame, (const Vector& position, int unk, const Vector& topLeftClamp, const Vector& BottomRightClamp, ANM2* animation)->void) {
-	if (!repentogonOptions.interpolV2 || !this->_animFrames || !_interpol_isgamerender || !_interpol_state || !(_interpol_state->_isPlaying) || g_Game->IsPaused()) {
+	if (!repentogonOptions.interpolV2 || !this->_animFrames || !_interpol_isgamerender || !_interpol_state || !(_interpol_state->_isPlaying) || (g_Game->IsPaused() && !_interpol_ishudrender)) {
 		return super(position, unk, topLeftClamp, BottomRightClamp, animation);
 	};
 	AnimationFrame* ourframe = this->_animFrames;
 	AnimationFrame* nextframe = 0x0;
+//	LayerState* layerstate = animation->_layerState;
+//	layerstate += this->_layerID;
 	if (unk < this->_numFrames) {
 		ourframe = ourframe + unk;
 	};
@@ -54,10 +63,10 @@ HOOK_METHOD(AnimationLayer, RenderFrame, (const Vector& position, int unk, const
 	lerpappend *= (animation->_playbackSpeed);
 	float lerpperc;
 	lerpperc = (lerpappend+(float)(_interpol_state->_animFrame)-(float)ourframe->startFrame)/(float)(ourframe->duration);
-	float lerpbegin = (1.0f - lerpperc);
 	if (lerpperc > 1.0f) {
-		return super(position, unk, topLeftClamp, BottomRightClamp, animation);	//crappy fix for animations playing too fast, should be later replaced with an actual frame fetch
+		lerpperc = 1.0f;
 	};
+	float lerpbegin = (1.0f - lerpperc);
 
 	Vector oldscale = ourframe->scale;
 	Vector oldpos = ourframe->pos;
@@ -78,7 +87,6 @@ HOOK_METHOD(AnimationLayer, RenderFrame, (const Vector& position, int unk, const
 	ourframe->pos.x = ourframe->pos.x * lerpbegin + nextframe->pos.x * lerpperc;
 	ourframe->pos.y = ourframe->pos.y * lerpbegin + nextframe->pos.y * lerpperc;
 	ourframe->rotation = _interpol_angle_lerp(ourframe->rotation, nextframe->rotation, lerpperc);
-
 	super(position, unk, topLeftClamp, BottomRightClamp,animation);
 
 	for (int i = 0; i < 3; i++) {
