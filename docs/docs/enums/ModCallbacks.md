@@ -1885,19 +1885,32 @@ Accepts no return parameters.
 |1095 |MC_POST_TRIGGER_COLLECTIBLE_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Type) | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | void |
 
 ### MC_PRE_TRIGGER_PLAYER_DEATH {: .copyable }
-Fires right before the game over screen.
+Fires right before the game over screen, but BEFORE the game checks for vanilla revive effects like 1UP.
 
-Accepts `false` to cancel the death, reviving the player in-place with half a heart, or `true` or `nil` to allow the death to go through.
-
+Return `false` or call `player:Revive()` to cancel the death, reviving the player in-place with half a heart. This will also prevent later callbacks from running.
 
 ???- warning "Warning"
-    Much like the vanilla Lua Revive() function, this removes the current run's ability to save. This occurs because the game immediately deletes the save file during the death animation if there's no pending revives, and this callback doesn't fire fast enough to register a revive on death as it occurs right before the game over screen.
+    Returning false or calling `player:Revive()` may remove the current run's ability to save. This occurs because the game immediately deletes the save file during the death animation if there's no pending revives, and this callback doesn't fire fast enough to register a revive on death as it occurs right before the game over screen.
 
-    There is no workaround for this behavior at this time, but this may change in the future.
+    In order to prevent this, only attempt to revive the player if they have an item or effect with REPENTOGON's "revive" customtag, which allows the item/effect to count as an extra life on the HUD and prevents the game from deleting the run save upon player death. See the page on [items.xml](../xml/items.md) for more information and some example XML/code.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1050 |MC_PRE_TRIGGER_PLAYER_DEATH {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
+
+### MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES {: .copyable }
+Fires right before the game over screen, but AFTER the game checks for vanilla revive effects like 1UP.
+
+Return `false` or call `player:Revive()` to cancel the death, reviving the player in-place with half a heart. This will also prevent later callbacks from running.
+
+???- warning "Warning"
+    Returning false or calling `player:Revive()` may remove the current run's ability to save. This occurs because the game immediately deletes the save file during the death animation if there's no pending revives, and this callback doesn't fire fast enough to register a revive on death as it occurs right before the game over screen.
+
+    In order to prevent this, only attempt to revive the player if they have an item or effect with REPENTOGON's "revive" customtag, which allows the item/effect to count as an extra life on the HUD and prevents the game from deleting the run save upon player death. See the page on [items.xml](../xml/items.md) for more information and some example XML/code.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1051 |MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
 
 ### MC_POST_TRIGGER_TRINKET_ADDED {: .copyable }
 Accepts no return parameters.
