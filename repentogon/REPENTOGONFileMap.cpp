@@ -108,6 +108,8 @@ HOOK_METHOD(ModManager, ListMods, (void)->void) {
 	super();
 	REPENTOGONFileMap::GenerateMap();
 };
+
+
 HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param_2)->void) {
 	bool spoofmods = false;
 	if (param_1 == nullptr || param_2 == nullptr) {
@@ -115,6 +117,11 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param
 	};
 	std::transform(param_2->begin(), param_2->end(), param_2->begin(),
 		[](unsigned char c) { return std::tolower(c); });
+	for (char& c : *(std::string*)param_2) {
+		if (c == '\\') {
+			c = '/';
+		};
+	};
 	std::string input = *param_2;
 	size_t hashentry = std::hash<std::string>{}(input);
 	REPENTOGONFileMap::FileMapEntry* mapentry = REPENTOGONFileMap::GetEntry(hashentry);
