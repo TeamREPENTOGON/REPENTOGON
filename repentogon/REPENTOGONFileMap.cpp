@@ -66,6 +66,8 @@ namespace REPENTOGONFileMap {
 		};
 	};
 	void GenerateMap() {
+		return;
+		//kill off for now
 		if (map_init) {
 			return;
 		};
@@ -112,6 +114,8 @@ HOOK_METHOD(ModManager, ListMods, (void)->void) {
 
 HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param_2)->void) {
 //	bool spoofmods = false;
+	return super(param_1, param_2);
+	//kill off map for now
 	if (param_1 == nullptr || param_2 == nullptr) {
 		return super(param_1, param_2);
 	};
