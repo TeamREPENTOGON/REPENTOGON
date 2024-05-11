@@ -60,7 +60,7 @@ namespace REPENTOGONFileMap {
 		for (const auto& file : fs::recursive_directory_iterator(input)) {
 			if (!file.is_directory()) {
 				//                const char* relpath = file.path().string().c_str() + moddir.string().size() + 1;   //account for "\\"
-				relpath = std::string_view{ file.path().string() }.substr(moddir.string().size() + 1);
+				relpath = std::string_view{ file.path().u8string() }.substr(moddir.u8string().size() + 1);
 				AddModEntry(relpath, modfoldertype, modid);
 			};
 		};
