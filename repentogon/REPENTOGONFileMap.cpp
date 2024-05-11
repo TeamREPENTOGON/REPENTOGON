@@ -76,7 +76,7 @@ namespace REPENTOGONFileMap {
 		if (g_Manager && g_Manager->GetModManager()) {
 			ModManager* modmngr = g_Manager->GetModManager();
 			//            for (size_t i = 0; i < modmngr->_mods.size(); i++) {
-			for (size_t i = modmngr->_mods.size() - 1; i-- > 0;) {   //inverse order
+			for (int i = modmngr->_mods.size() - 1; i >= 0;i--) {   //inverse order
 				ModEntry* modentry = modmngr->_mods[i];
 				if (modentry && modentry->_loaded) {
 					for (size_t modfoldertype = FolderType::RESOURCES; modfoldertype < FolderType::LAST; modfoldertype++) {
