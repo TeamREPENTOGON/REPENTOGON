@@ -1,4 +1,4 @@
-v1.??? -
+v1.0.9 -
 Modified:
 * Callbacks:
 	- MC_PRE_PLAYERHUD_TRINKET_RENDER: now provides [Vector] CropOffset parameter and accepts CropOffset vector in the return table.
