@@ -91,7 +91,7 @@ namespace REPENTOGONFileMap {
 		};
 		auto finish_time = std::chrono::high_resolution_clock::now();
 		auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(finish_time - start_time).count() / 1000.0f;
-		ZHL::Log("Generated file map in %lf seconds\n", diff);
+		ZHL::Log("[REPENTOGON] Generated file map in %lf seconds\n", diff);
 	};
 }
 
@@ -111,7 +111,7 @@ HOOK_METHOD(ModManager, ListMods, (void)->void) {
 
 
 HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param_2)->void) {
-	bool spoofmods = false;
+//	bool spoofmods = false;
 	if (param_1 == nullptr || param_2 == nullptr) {
 		return super(param_1, param_2);
 	};
@@ -129,6 +129,10 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param
 		new (param_1) std::string("");
 		param_1->reserve(260);
 		ProduceString(param_2, mapentry, param_1);
+		if (!fs::exists(*(std::string*)param_1)) {
+			ZHL::Log("[REPENTOGON] File %s doesn't exist in a mod %s, hash mismatch?\n",param_2->c_str(), g_Manager->GetModManager()->_mods[mapentry->ModFolder]->_name.c_str());
+			super(param_1, param_2);
+		};
 		return;
 	}
 	else {
