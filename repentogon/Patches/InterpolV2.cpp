@@ -4,7 +4,6 @@
 #include "../REPENTOGONOptions.h"
 
 bool _interpol_isgamerender = false;
-bool _interpol_ishudrender = false;
 AnimationState* _interpol_state = 0x0;
 
 HOOK_STATIC(LuaEngine, PostRender, (void)->void,_stdcall) {
@@ -19,11 +18,6 @@ HOOK_METHOD(Game, Render, (void)->void) {
 	_interpol_isgamerender = false;
 };
 
-HOOK_METHOD(HUD, Render, (void)->void) {
-	_interpol_ishudrender = true;
-	super();
-	_interpol_ishudrender = false;
-};
 
 inline float _interpol_short_angle_dis(float from, float to) {
 	float maxAngle = 360.0f;
@@ -37,7 +31,7 @@ inline float _interpol_angle_lerp(float from, float to, float perc) {
 };
 
 HOOK_METHOD(AnimationLayer, RenderFrame, (const Vector& position, int unk, const Vector& topLeftClamp, const Vector& BottomRightClamp, ANM2* animation)->void) {
-	if (!repentogonOptions.interpolV2 || !this->_animFrames || !_interpol_isgamerender || !_interpol_state || !(_interpol_state->_isPlaying) || (g_Game->IsPaused() && !_interpol_ishudrender)) {
+	if (!repentogonOptions.interpolV2 || !this->_animFrames || !_interpol_isgamerender || !_interpol_state || !(_interpol_state->_isPlaying) || g_Game->IsPauseMenuOpen() || g_Game->GetConsole()->_state!=0 ) {
 		return super(position, unk, topLeftClamp, BottomRightClamp, animation);
 	};
 	AnimationFrame* ourframe = this->_animFrames;
