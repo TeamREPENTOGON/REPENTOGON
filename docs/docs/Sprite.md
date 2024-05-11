@@ -31,6 +31,16 @@ ___
 
 ## Functions
 
+### ClearCustomChampionShader () {: aria-label='Functions' }
+#### void ClearCustomChampionShader ( ) {: .copyable aria-label='Functions' }
+Removes any custom `coloroffset_champion` shader applied by `sprite:SetCustomChampionShader(path)`.
+
+___
+### ClearCustomShader () {: aria-label='Functions' }
+#### void ClearCustomShader ( ) {: .copyable aria-label='Functions' }
+Removes any custom `coloroffset` shader applied by `sprite:SetCustomShader(path)`.
+
+___
 ### Continue () {: aria-label='Functions' }
 #### void Continue ( boolean ContinueOverlay = true ) {: .copyable aria-label='Functions' }
 If the animation is currently stopped, makes it start playing again from the current frame. Will not restart a finished, non-looping animation.
@@ -84,9 +94,41 @@ ___
 #### [AnimRenderFlags](enums/AnimRenderFlags.md) GetRenderFlags ( ) {: .copyable aria-label='Functions' }
 
 ___
+### HasCustomChampionShader () {: aria-label='Functions' }
+#### boolean HasCustomChampionShader ( string ShaderPath ) {: .copyable aria-label='Functions' }
+Returns true if the specified custom champion shader is currently loaded (see `SetCustomChampionShader` below). If no string is provided, returns true if ANY custom champion shader is applied.
+
+___
+### HasCustomShader () {: aria-label='Functions' }
+#### boolean HasCustomShader ( string ShaderPath ) {: .copyable aria-label='Functions' }
+Returns true if the specified custom shader is currently loaded (see `SetCustomShader` below). If no string is provided, returns true if ANY custom shader is applied.
+
+___
 ### IsOverlayEventTriggered () {: aria-label='Functions' }
 #### boolean IsOverlayEventTriggered ( string EventName ) {: .copyable aria-label='Functions' }
 Returns `true` if the currently playing overlay animation just reached the event with the provided name.
+
+___
+### SetCustomChampionShader () {: aria-label='Modified Functions' }
+#### void SetCustomChampionShader ( string ShaderPath ) {: .copyable aria-label='Modified Functions' }
+Specify a custom champion shader file for this Sprite to use instead of the usual `coloroffset_champion` shader. Provided path is expected to start at `.../resources/` and to find both a .vs and .fs file at that location. For example: `sprite:SetCustomChampionShader("shaders/my_shader")` will load `.../resources/shaders/my_shader.vs` and `.../resources/shaders/my_shader.fs`.
+
+The custom champion shader will only be used by the game if the entity is actually a champion.
+
+Note that the custom shader must take the exact same inputs as the default `coloroffset_champion` shader the game uses (it has one additional input compared to `coloroffset`).
+
+You can also set a per-layer shader via [LayerState](LayerState.md).
+
+___
+### SetCustomShader () {: aria-label='Modified Functions' }
+#### void SetCustomShader ( string ShaderPath ) {: .copyable aria-label='Modified Functions' }
+Specify a custom shader file for this Sprite to use instead of the default `coloroffset` shader. Provided path is expected to start at `.../resources/` and to find both a .vs and .fs file at that location. For example: `sprite:SetCustomShader("shaders/my_shader")` will load `.../resources/shaders/my_shader.vs` and `.../resources/shaders/my_shader.fs`.
+
+This custom shader will not be used by the game if the entity is a champion, or if it has the gold/dogma shader applied.
+
+Note that the custom shader must take the exact same inputs as the default `coloroffset` shader the game uses. The gold and dogma shaders also use the same inputs, and can be a good reference.
+
+You can also set a per-layer shader via [LayerState](LayerState.md).
 
 ___
 ### SetRenderFlags () {: aria-label='Functions' }
