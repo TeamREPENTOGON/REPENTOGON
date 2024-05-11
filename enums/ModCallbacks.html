@@ -3097,6 +3097,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_trigger_player_death_post_check_revives" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_post_trigger_trinket_added" class="md-nav__link">
     <span class="md-ellipsis">
       MC_POST_TRIGGER_TRINKET_ADDED
@@ -6233,6 +6242,15 @@
   <a href="#mc_pre_trigger_player_death" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_TRIGGER_PLAYER_DEATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_trigger_player_death_post_check_revives" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES
     </span>
   </a>
   
@@ -12717,6 +12735,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_trigger_player_death_post_check_revives" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_post_trigger_trinket_added" class="md-nav__link">
     <span class="md-ellipsis">
       MC_POST_TRIGGER_TRINKET_ADDED
@@ -18001,12 +18028,12 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_trigger_player_death">MC_PRE_TRIGGER_PLAYER_DEATH<a class="headerlink" href="#mc_pre_trigger_player_death" title="Permanent link">⚓︎</a></h3>
-<p>Fires right before the game over screen.</p>
-<p>Accepts <code>false</code> to cancel the death, reviving the player in-place with half a heart, or <code>true</code> or <code>nil</code> to allow the death to go through.</p>
+<p>Fires right before the game over screen, but BEFORE the game checks for vanilla revive effects like 1UP.</p>
+<p>Return <code>false</code> or call <code>player:Revive()</code> to cancel the death, reviving the player in-place with half a heart. This will also prevent later callbacks from running.</p>
 <details class="- warning">
 <summary>Warning</summary>
-<p>Much like the vanilla Lua Revive() function, this removes the current run's ability to save. This occurs because the game immediately deletes the save file during the death animation if there's no pending revives, and this callback doesn't fire fast enough to register a revive on death as it occurs right before the game over screen.</p>
-<p>There is no workaround for this behavior at this time, but this may change in the future.</p>
+<p>Returning false or calling <code>player:Revive()</code> may remove the current run's ability to save. This occurs because the game immediately deletes the save file during the death animation if there's no pending revives, and this callback doesn't fire fast enough to register a revive on death as it occurs right before the game over screen.</p>
+<p>In order to prevent this, only attempt to revive the player if they have an item or effect with REPENTOGON's "revive" customtag, which allows the item/effect to count as an extra life on the HUD and prevents the game from deleting the run save upon player death. See the page on <a href="../xml/items.html">items.xml</a> for more information and some example XML/code.</p>
 </details>
 <table>
 <thead>
@@ -18022,6 +18049,34 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <tr>
 <td style="text-align: left;">1050</td>
 <td class="copyable" style="text-align: left;">MC_PRE_TRIGGER_PLAYER_DEATH</td>
+<td style="text-align: left;">(<a href="../EntityPlayer.html">EntityPlayer</a> Player)</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">boolean</td>
+</tr>
+</tbody>
+</table>
+<h3 class="copyable" id="mc_trigger_player_death_post_check_revives">MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES<a class="headerlink" href="#mc_trigger_player_death_post_check_revives" title="Permanent link">⚓︎</a></h3>
+<p>Fires right before the game over screen, but AFTER the game checks for vanilla revive effects like 1UP.</p>
+<p>Return <code>false</code> or call <code>player:Revive()</code> to cancel the death, reviving the player in-place with half a heart. This will also prevent later callbacks from running.</p>
+<details class="- warning">
+<summary>Warning</summary>
+<p>Returning false or calling <code>player:Revive()</code> may remove the current run's ability to save. This occurs because the game immediately deletes the save file during the death animation if there's no pending revives, and this callback doesn't fire fast enough to register a revive on death as it occurs right before the game over screen.</p>
+<p>In order to prevent this, only attempt to revive the player if they have an item or effect with REPENTOGON's "revive" customtag, which allows the item/effect to count as an extra life on the HUD and prevents the game from deleting the run save upon player death. See the page on <a href="../xml/items.html">items.xml</a> for more information and some example XML/code.</p>
+</details>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1051</td>
+<td class="copyable" style="text-align: left;">MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES</td>
 <td style="text-align: left;">(<a href="../EntityPlayer.html">EntityPlayer</a> Player)</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">boolean</td>

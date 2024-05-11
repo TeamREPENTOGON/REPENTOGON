@@ -6150,6 +6150,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#customtags" class="md-nav__link">
+    <span class="md-ellipsis">
+      CustomTags
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -6442,6 +6451,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#customtags" class="md-nav__link">
+    <span class="md-ellipsis">
+      CustomTags
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -6546,6 +6564,114 @@
 </code></pre></div></td></tr></table></div></p>
 <p>You can use <code>Isaac.GetNullItemIdByName("my null item")</code> to get the in-game ID of your null item.</p>
 <p>Additionally, you can use the functions in the <a href="https://wofsauge.github.io/IsaacDocs/rep/TemporaryEffects.html">TemporaryEffects</a> class to add, remove, count, or check the current cooldown of null item effects on the player.</p>
+<h2 id="customtags">CustomTags<a class="headerlink" href="#customtags" title="Permanent link">⚓︎</a></h2>
+<p>Repentogon adds a new <code>customtags</code> attribute that can contain a space-separated list of strings that can then be checked in-game. Mods can freely add arbitrary string tags to this attribute in the XML and check if they were added to an item in-game. This can be used for something similar to vanilla's <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ItemConfig.html">item tags</a> without needing to individually list each item in lua code, and mods can also use <code>customtags</code> from other mods in their own XMLs for easier mod compatability.</p>
+<p>Supported for all item types (collectibles, trinkets, and null items).</p>
+<p>Capitalization does not matter and is ignored entirely when adding or checking for <code>customtags</code>.</p>
+<p>Example XML:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>customtags=&quot;yourcustomtag<span class="w"> </span>nometronome&quot;
+</code></pre></div></td></tr></table></div></p>
+<p><code>customtags</code> can be checked in-game via the item's <a href="https://repentogon.com/ItemConfig_Item.html">ItemConfigItem</a>:</p>
+<p>Example Code:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">item</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemConfig</span><span class="p">():</span><span class="n">GetCollectible</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1">-- Returns true if the entity has the tag string specified.</span>
+<span class="c1">-- Capitalization does not matter.</span>
+<span class="kr">if</span> <span class="n">item</span><span class="p">:</span><span class="n">HasCustomTag</span><span class="p">(</span><span class="s2">&quot;yourcustomtag&quot;</span><span class="p">)</span> <span class="kr">then</span>
+  <span class="c1">-- ...</span>
+<span class="kr">end</span>
+
+<span class="c1">-- Returns a table containing all customtags specified for this entity.</span>
+<span class="c1">-- Tags are provided in all lowercase.</span>
+<span class="kd">local</span> <span class="n">customTags</span> <span class="o">=</span> <span class="n">item</span><span class="p">:</span><span class="n">GetCustomTags</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div></p>
+<p>Repentogon itself adds some tags that can be used to apply certain features to items with little to no required lua code at all:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">customtag</th>
+<th style="text-align: left;">Effects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">nometronome</td>
+<td style="text-align: left;">Prevents the item from being picked by Metronome.</td>
+</tr>
+<tr>
+<td style="text-align: left;">revive</td>
+<td style="text-align: left;">Each copy of the collectible/trinket/null effect held is counted as an extra life (on the HUD, etc) and prevents the game from deleting the run save upon death, making reviving the player safe. EntityPlayer functions such as <code>player:GetExtraLives()</code> and <code>player:WillPlayerRevive()</code> respect this. Note that this tag does NOT automatically revive the player, you are still responsible for removing your item/effect and reviving the player when desired, either by calling <code>player:Revive()</code> or returning false on either the <code>MC_PRE_TRIGGER_PLAYER_DEATH</code> or <code>MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES</code> callbacks. See below for some sample code.</td>
+</tr>
+<tr>
+<td style="text-align: left;">reviveeffect</td>
+<td style="text-align: left;">Same as "revive" but instead applies to the corresponding TemporaryEffect of the collectible or trinket. You may want to specify <code>persistent="true"</code> on the collectible/trinket to make its TemporaryEffect persist between rooms. There is no difference between "revive" and "reviveeffect" for null items.</td>
+</tr>
+<tr>
+<td style="text-align: left;">chancerevive</td>
+<td style="text-align: left;">If item is counted as an extra life, displays a "?" next to the extra life count, like Guppy's Collar.</td>
+</tr>
+<tr>
+<td style="text-align: left;">hiddenrevive</td>
+<td style="text-align: left;">If item is counted as an extra life, this prevents it from being counted on the hud. Overrides "chancerevive".</td>
+</tr>
+</tbody>
+</table>
+<p>Sample revive XML:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&lt;passive</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Revive Item&quot;</span><span class="w"> </span><span class="na">description=</span><span class="s">&quot;test&quot;</span><span class="w"> </span><span class="na">gfx=</span><span class="s">&quot;image.png&quot;</span><span class="w"> </span><span class="na">customtags=</span><span class="s">&quot;revive&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;trinket</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Trinket whose TemporaryEffect grants a persistent revive, but...?&quot;</span><span class="w"> </span><span class="na">description=</span><span class="s">&quot;test&quot;</span><span class="w"> </span><span class="na">gfx=</span><span class="s">&quot;image.png&quot;</span><span class="w"> </span><span class="na">persistent=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="na">customtags=</span><span class="s">&quot;reviveeffect chancerevive&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+<span class="nt">&lt;null</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;Null Item that counts as a revive, but is not shown on the HUD&quot;</span><span class="w"> </span><span class="na">persistent=</span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="na">customtags=</span><span class="s">&quot;revive hiddenrevive&quot;</span><span class="w"> </span><span class="nt">/&gt;</span>
+</code></pre></div></td></tr></table></div></p>
+<p>Sample simple revive code:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- &quot;Real&quot; held collectible-based revive with higher priority than all vanilla revives, like 1UP.</span>
+<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_PRE_TRIGGER_PLAYER_DEATH</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">player</span><span class="p">:</span><span class="n">HasCollectible</span><span class="p">(</span><span class="n">yourItemID</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span> <span class="kr">then</span>
+        <span class="n">player</span><span class="p">:</span><span class="n">RemoveCollectible</span><span class="p">(</span><span class="n">yourItemID</span><span class="p">)</span>
+        <span class="n">player</span><span class="p">:</span><span class="n">SetMinDamageCooldown</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>  <span class="c1">-- Grant iframes to the player.</span>
+        <span class="kr">return</span> <span class="kc">false</span>  <span class="c1">-- Causes the player to revive on the spot with half a heart.</span>
+    <span class="kr">end</span>
+<span class="kr">end</span><span class="p">)</span>
+
+<span class="c1">-- Null Item-based revive effect with lower priority than vanilla revives such as 1UP.</span>
+<span class="c1">-- Null Items (or any item TemporaryEffect) can be a good way to handle multiple extra lives.</span>
+<span class="kd">local</span> <span class="n">nullID</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetNullItemIdByName</span><span class="p">(</span><span class="s2">&quot;my null item&quot;</span><span class="p">)</span>
+<span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
+    <span class="kr">if</span> <span class="n">player</span><span class="p">:</span><span class="n">GetEffects</span><span class="p">():</span><span class="n">HasNullEffect</span><span class="p">(</span><span class="n">nullID</span><span class="p">)</span> <span class="kr">then</span>
+        <span class="n">player</span><span class="p">:</span><span class="n">GetEffects</span><span class="p">():</span><span class="n">RemoveNullEffect</span><span class="p">(</span><span class="n">nullID</span><span class="p">)</span>
+        <span class="n">player</span><span class="p">:</span><span class="n">Revive</span><span class="p">()</span>  <span class="c1">-- Calling Revive manually like this is acceptable, and will still prevent later callbacks from running.</span>
+        <span class="c1">-- You can manipulate the player&#39;s post-revive health here, such as fully healing them, or setting them to a single red heart container.</span>
+    <span class="kr">end</span>
+<span class="kr">end</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
 <details class="note" open="open">
 <summary>More Info</summary>
 <p>For more information about this xml, check the original docs entry <a href="https://wofsauge.github.io/IsaacDocs/rep/xml/items.html">here</a>. </p>
