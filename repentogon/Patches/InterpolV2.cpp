@@ -30,7 +30,7 @@ inline float _interpol_angle_lerp(float from, float to, float perc) {
 };
 
 HOOK_METHOD(AnimationLayer, RenderFrame, (const Vector& position, int unk, const Vector& topLeftClamp, const Vector& BottomRightClamp, ANM2* animation)->void) {
-	if (!repentogonOptions.interpolV2 || !this->_animFrames || !_interpol_isgamerender || !_interpol_state) {
+	if (!repentogonOptions.interpolV2 || !this->_animFrames || !_interpol_isgamerender || !_interpol_state || g_Game->IsPaused()) {
 		return super(position, unk, topLeftClamp, BottomRightClamp, animation);
 	};
 	AnimationFrame* ourframe = this->_animFrames;
@@ -55,6 +55,9 @@ HOOK_METHOD(AnimationLayer, RenderFrame, (const Vector& position, int unk, const
 	float lerpperc;
 	lerpperc = (lerpappend+(float)(_interpol_state->_animFrame)-(float)ourframe->startFrame)/(float)(ourframe->duration);
 	float lerpbegin = (1.0f - lerpperc);
+	if (lerpperc >= 1.0f) {
+		return super(position, unk, topLeftClamp, BottomRightClamp, animation);	//crappy fix for animations playing too fast, should be later replaced with an actual frame fetch
+	};
 
 	Vector oldscale = ourframe->scale;
 	Vector oldpos = ourframe->pos;
