@@ -199,7 +199,12 @@ Returns the current charge for when the player stops shooting and charges the Ki
 
 ___
 ### GetBodyMoveDirection () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }    
+#### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetBombPlaceDelay () {: aria-label='Functions' }
+#### int GetBombPlaceDelay ( ) {: .copyable aria-label='Functions' }
+Default bomb place delay is `30 frames`.
 
 ___
 ### GetCambionConceptionState () {: aria-label='Functions' }
@@ -718,6 +723,10 @@ Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_
 
 ???+ bug "Bug"
     The player's head turns pitch black when this function is used without Kidney Stone.
+
+___
+### SetBombPlaceDelay () {: aria-label='Functions' }
+#### void SetBombPlaceDelay ( int Delay ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetCambionConceptionState () {: aria-label='Functions' }
