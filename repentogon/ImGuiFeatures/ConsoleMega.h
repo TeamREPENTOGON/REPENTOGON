@@ -258,7 +258,7 @@ struct ConsoleMega : ImGuiWindowObject {
         commandName.erase(remove(commandName.begin(), commandName.end(), ' '), commandName.end());
         const ConsoleCommand* command = GetCommandByName(commandName);
         // redirect "giveitem" command to allow for trinket, card and pill being given using their name.
-        if (command && (command->autocompleteType == ITEM && !autocompleteBuffer.empty()))
+        if (command && (command->autocompleteType == ITEM && !autocompleteBuffer.empty()) && cmdlets[1].size() >= 2)
         {
           
           char firstLetter = cmdlets.at(1).at(0);

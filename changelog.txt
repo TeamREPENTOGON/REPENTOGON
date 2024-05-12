@@ -1,3 +1,8 @@
+v1.0.9a -
+* Bug fixes
+    - Fixed a bug that caused the giveitem command to crash when the object to
+    give was reduced to a single letter
+/newline/
 v1.0.9 -
 Modified:
 * Callbacks:
