@@ -628,10 +628,13 @@ struct ConsoleMega : ImGuiWindowObject {
                                 config++;
                             }
 
-                            for (auto& specialType : specialRoomTypes) {
-                                entries.insert(AutocompleteEntry(std::string("x.") + specialType.second));
+                            config = set->_configs;
+
+                            for (unsigned int i = 0; i < set->_count; ++i) {
+                                entries.insert(AutocompleteEntry(std::string("x.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
+                                config++;
                             }
-                                
+
                             break;
                         }
 

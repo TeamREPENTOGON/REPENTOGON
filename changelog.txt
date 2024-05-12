@@ -2,6 +2,7 @@ v1.0.9a -
 * Bug fixes
     - Fixed a bug that caused the giveitem command to crash when the object to
     give was reduced to a single letter
+	- Fix "goto [s/x]." command autocomplete
 /newline/
 v1.0.9 -
 Modified:
