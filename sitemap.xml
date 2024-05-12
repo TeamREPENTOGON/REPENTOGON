@@ -41,6 +41,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://repentogon.com/CcpContainer_RoomConfigSet.html</loc>
+         <lastmod>2024-05-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://repentogon.com/ChallengeParam.html</loc>
          <lastmod>2024-05-12</lastmod>
          <changefreq>daily</changefreq>
@@ -286,6 +291,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://repentogon.com/Input.html</loc>
+         <lastmod>2024-05-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://repentogon.com/Isaac.html</loc>
          <lastmod>2024-05-12</lastmod>
          <changefreq>daily</changefreq>
@@ -337,6 +347,16 @@
     </url>
     <url>
          <loc>https://repentogon.com/LevelGeneratorRoom.html</loc>
+         <lastmod>2024-05-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://repentogon.com/LootList.html</loc>
+         <lastmod>2024-05-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://repentogon.com/LootListEntry.html</loc>
          <lastmod>2024-05-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -431,12 +451,22 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://repentogon.com/RoomConfig.html</loc>
+         <lastmod>2024-05-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://repentogon.com/RoomConfigHolder.html</loc>
          <lastmod>2024-05-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://repentogon.com/RoomConfigRoom.html</loc>
+         <lastmod>2024-05-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://repentogon.com/RoomConfigStage.html</loc>
          <lastmod>2024-05-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -576,6 +606,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://repentogon.com/enums/ButtonActionBitwise.html</loc>
+         <lastmod>2024-05-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://repentogon.com/enums/CameraStyle.html</loc>
          <lastmod>2024-05-12</lastmod>
          <changefreq>daily</changefreq>
@@ -622,6 +657,11 @@
     </url>
     <url>
          <loc>https://repentogon.com/enums/DipSubType.html</loc>
+         <lastmod>2024-05-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://repentogon.com/enums/DwmWindowAttribute.html</loc>
          <lastmod>2024-05-12</lastmod>
          <changefreq>daily</changefreq>
     </url>
