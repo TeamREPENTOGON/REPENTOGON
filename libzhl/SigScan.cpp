@@ -5,6 +5,8 @@
 
 #include "hde.h"
 
+#include "ImageHlp.h"
+
 unsigned char *SigScan::s_pBase = 0;
 size_t SigScan::s_iBaseLen = 0;
 unsigned char *SigScan::s_pLastStartAddress = 0;
@@ -17,6 +19,48 @@ namespace SigCache {
 	bool IsIndirectMode = false;
 	std::vector<SigCacheEntry> _entries = {};
 	std::ofstream _writebuffer;
+	std::string _sigcachepath="signatures.log";
+
+	void GenFilename() {
+		DWORD checksum=0;
+		DWORD header_sum = 0;
+
+		TCHAR default_path_buffer[260];
+		TCHAR* exe_path=default_path_buffer;
+		size_t exe_path_size = sizeof(default_path_buffer);
+
+		DWORD out=GetModuleFileName(nullptr, exe_path, exe_path_size);
+		if (out == 0x0) {
+			return;
+		};
+
+		while (GetLastError() == ERROR_INSUFFICIENT_BUFFER){
+			if (exe_path != default_path_buffer) {
+				delete[] exe_path;
+			};
+			exe_path_size *= 2;
+			exe_path = new TCHAR[exe_path_size];
+			if (exe_path == 0x0) {
+				return;			//if we hit this we are doomed either way
+			};
+			DWORD out=GetModuleFileName(nullptr, exe_path, exe_path_size);
+			if (out == 0x0) {
+				if (exe_path != default_path_buffer) {
+					delete[] exe_path;
+				};
+				return;
+			};
+		};
+
+		MapFileAndCheckSum(exe_path,&header_sum,&checksum);
+		char path_buffer[100];
+		(void)snprintf(path_buffer, sizeof(path_buffer),"sig_%08x.log",checksum);
+		_sigcachepath = path_buffer;
+		if (exe_path != default_path_buffer) {
+			delete[] exe_path;
+		};
+		return;
+	};
 
 	size_t FindCacheEntryBySig(size_t sighash) {
 		for (size_t i = 0; i < _entries.size(); i++) {
@@ -35,12 +79,12 @@ namespace SigCache {
 
 	void ResetSigFile() {
 		_writebuffer.close();
-		std::ofstream siglist("signatures.log", std::ios::out | std::ios::trunc);
+		std::ofstream siglist(_sigcachepath, std::ios::out | std::ios::trunc);
 		if (siglist.is_open()){
 			siglist << "1 1337" << std::endl;	//todo: write exe hash here
 			siglist.close();
 		};
-		_writebuffer.open("signatures.log", std::ios::app);
+		_writebuffer.open(_sigcachepath, std::ios::app);
 	};
 
 	void InvalidateCache(size_t offset) {
@@ -55,8 +99,9 @@ namespace SigCache {
 	void LoadCache() {
 		_entries.clear();
 		_entries.reserve(100);
-		std::ifstream siglist("signatures.log");
-		_writebuffer.open("signatures.log", std::ios::app);
+		GenFilename();
+		std::ifstream siglist(_sigcachepath);
+		_writebuffer.open(_sigcachepath, std::ios::app);
 		std::string line;
 		size_t sigsize = 0;
 		uint32_t sighash;

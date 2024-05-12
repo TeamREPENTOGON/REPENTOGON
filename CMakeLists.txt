@@ -216,7 +216,7 @@ add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
 target_link_libraries(zhlREPENTOGON Lua5.4 libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
-target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp)
+target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp Imagehlp)
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
