@@ -6444,15 +6444,15 @@
 <h1 id="class-lootlist">Class "LootList"<a class="headerlink" href="#class-lootlist" title="Permanent link">⚓︎</a></h1>
 <h2 id="constructors">Constructors<a class="headerlink" href="#constructors" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Constructors" id="lootlist">LootList ()<a class="headerlink" href="#lootlist" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Constructors" class="copyable" id="lootlist-beam"><a href="LootList.html">LootList</a> Beam ( )<a class="headerlink" href="#lootlist-beam" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Constructors" class="copyable" id="lootlist-lootlist"><a href="LootList.html">LootList</a> LootList ( )<a class="headerlink" href="#lootlist-lootlist" title="Permanent link">⚓︎</a></h4>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="getentries">GetEntries ()<a class="headerlink" href="#getentries" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="lootlistentry-getentries"><a href="LoostListEntry.md">LootListEntry</a> GetEntries ( )<a class="headerlink" href="#lootlistentry-getentries" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="lootlistentry-getentries"><a href="LootListEntry.html">LootListEntry</a> GetEntries ( )<a class="headerlink" href="#lootlistentry-getentries" title="Permanent link">⚓︎</a></h4>
 <p>Returns a table of LootListEntries contained in the <code>LootList</code>.</p>
-<p>__</p>
+<hr />
 <h3 aria-label="Functions" id="pushentry">PushEntry ()<a class="headerlink" href="#pushentry" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-pushentry-entitytype-int-variant-int-subtype-int-seed-random-rng-rng-nil">void PushEntry ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html">EntityType</a> int Variant, int SubType, int Seed = Random(), <a href="RNG.html">RNG</a> RNG = nil )<a class="headerlink" href="#void-pushentry-entitytype-int-variant-int-subtype-int-seed-random-rng-rng-nil" title="Permanent link">⚓︎</a></h4>
-<p>Creates and pushes a <a href="LoostListEntry.md">LootListEntry</a> into the <code>LootList</code>.</p>
+<h4 aria-label="Functions" class="copyable" id="void-pushentry-entitytype-type-int-variant-int-subtype-int-seed-random-rng-rng-nil">void PushEntry ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html">EntityType</a> Type, int Variant, int SubType, int Seed = Random(), <a href="RNG.html">RNG</a> RNG = nil )<a class="headerlink" href="#void-pushentry-entitytype-type-int-variant-int-subtype-int-seed-random-rng-rng-nil" title="Permanent link">⚓︎</a></h4>
+<p>Creates and pushes a <a href="LootListEntry.html">LootListEntry</a> into the <code>LootList</code>.</p>
 <p>While usually reserved for chests and sacks that give pickups like hearts, bombs, etc, every <code>EntityPickup</code> has a <code>LootList</code> and you can push any type, variant, and subtype as a LootListEntry.</p>
 <details class="example" open="open">
 <summary>Example Code</summary>
@@ -6476,7 +6476,7 @@
     <span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_PICKUP_UPDATE</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">OnPickupUpdate</span><span class="p">,</span> <span class="n">PickupVariant</span><span class="p">.</span><span class="n">PICKUP_CHEST</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
-<p>__</p>
+<hr />
 
 
 
