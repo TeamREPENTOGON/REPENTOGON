@@ -33,7 +33,7 @@ Now no longer crashes the game when given a seed equal `0`.
 ___
 ### StartStageTransition ()  {: aria-label='Modified Functions' }
 #### void StartStageTransition ( boolean SameStage, int TransitionOverride, [EntityPlayer](EntityPlayer.md) Player = nil ) {: .copyable aria-label='Modified Functions' }
-Fixed the crash that sometimes occured due to an incorrect call on the C++ side.
+Fixed the crash that sometimes occurred due to an incorrect call on the C++ side.
 `Player` is now optional (will default to `GetPlayer(0)`).
 
 ___
@@ -67,6 +67,13 @@ ___
 ### GetDebugFlags () {: aria-label='Functions' }
 #### int GetDebugFlags ( ) {: .copyable aria-label='Functions' }
 Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
+
+___
+### GetDizzyAmount () {: aria-label='Functions' }
+#### int GetDizzyAmount ( ) {: .copyable aria-label='Functions' }
+Returns the current dizzy amount akin to Wavy Cap
+???+ bug "Bug"
+    Currently this function only returns `0`. Using [SetDizzyAmount](Game.md#setdizzyamount) or the Wavy Cap collectible has no effect on this function.
 
 ___
 ### GetLerpColorModifier () {: aria-label='Functions' }
@@ -121,6 +128,15 @@ Returns `true` if the current run is a rerun.
 ___
 ### SetColorModifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
+
+___
+### SetDizzyAmount () {: aria-label='Functions' }
+#### void SetDizzyAmount ( float Amount , float Intensity) {: .copyable aria-label='Functions' }
+Sets the dizzy amount akin to Wavy Cap.
+`Amount` is the amount that the screen will be affected. Will reset current dizziness and slowly reach the desired intensity. Also works in reverse if current intensity is higher than the `Amount`.
+`Intensity` is the starting intensity of the effect.
+???+ warning "Warning"
+    Best to stay within `0`-`1` and increment by 0.1 while using this function. `1` has the most extreme effect on the screen while `0` removes the effect.
 
 ___
 ### SetDonationModAngel () {: aria-label='Functions' }

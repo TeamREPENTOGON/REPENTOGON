@@ -30,6 +30,11 @@ ___
 Now accepts a `Force` argument to forcefully reset the charge instead of only rolling for a change to reset.
 
 ___
+### GetCollectibleNum () {: aria-label='Modified Functions' }
+#### int GetCollectibleNum ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean OnlyCountTrueItems = false, IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
+Now accepts a `IgnoreSpoof` argument that ignores innate items.
+
+___
 ### GetMultiShotParams () {: aria-label='Modified Functions' }
 #### [MultiShotParams](MultiShotParams.md) GetMultiShotParams ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType ) {: .copyable aria-label='Modified Functions' }
 Now returns a proper `MultiShotParams` object.
@@ -45,6 +50,11 @@ ___
 ### GetPocketItem () {: aria-label='Modified Functions' }
 #### [PocketItem](PocketItem.md) GetPocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) SlotId ) {: .copyable aria-label='Modified Functions' }
 Now returns a proper `PocketItem` object.
+
+___
+### HasCollectible () {: aria-label='Modified Functions' }
+#### boolean HasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean IgnoreModifiers = false, boolean IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
+Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
 
@@ -368,6 +378,11 @@ ___
 #### int GetGreedsGulletHearts ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetHallowedGroundCountdown () {: aria-label='Functions' }
+#### int GetHallowedGroundCountdown ( ) {: .copyable aria-label='Functions' }
+Returns the grace period countdown of retaining stats from the Hallowed Ground/Star of Bethlehem aura.
+
+___
 ### GetHeadDirectionLockTime () {: aria-label='Functions' }
 #### int GetHeadDirectionLockTime ( ) {: .copyable aria-label='Functions' }
 How long the player's head should be forced to stay in its current direction. `-1` (or lower) indicates the direction is not currently locked.
@@ -554,6 +569,11 @@ ___
 ### HasChanceRevive () {: aria-label='Functions' }
 #### boolean HasChanceRevive ( ) {: .copyable aria-label='Functions' }
 Returns true if a "?" would be displayed on the player's extra life count (ie, the player has Guppy's Collar, or a modded revive item with the `chancerevive` string in REPENTOGON's [customtags items.xml attribute](xml/items.md)).
+
+___
+### HasGoldenTrinket () {: aria-label='Functions' }
+#### boolean HasGoldenTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) ) {: .copyable aria-label='Functions' }
+Returns true if you have a golden variant of the provided [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html).
 
 ___
 ### HasInstantDeathCurse () {: aria-label='Functions' }
@@ -796,6 +816,11 @@ Sets the player's footprint color.
 ___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }
 #### void SetGnawedLeafTimer ( int Timer ) {: .copyable aria-label='Functions' }
+
+___
+### SetHallowedGroundCountdown () {: aria-label='Functions' }
+#### SetHallowedGroundCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+Sets the grace period countdown of retaining stats from the Hallowed Ground/Star of Bethlehem aura.
 
 ___
 ### SetHeadDirection () {: aria-label='Functions' }
