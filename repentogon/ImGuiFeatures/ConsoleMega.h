@@ -580,7 +580,7 @@ struct ConsoleMega : ImGuiWindowObject {
                         case GOTO: {
                             unsigned int stbID = RoomConfig::GetStageID(g_Game->_stage, g_Game->_stageType, -1);
                             RoomConfig_Stage* stage = &g_Game->GetRoomConfig()->_stages[stbID];
-                            RoomSet* set = &stage->_rooms[g_Game->IsGreedMode() ? 1 : 0];
+                            RoomSet* set = &stage->_rooms[g_Game->IsGreedMode()];
                             RoomConfig_Room* config = set->_configs;
                             std::map<int, std::string> specialRoomTypes = {
                                 std::pair<int, std::string>(1, "default"),
@@ -620,7 +620,7 @@ struct ConsoleMega : ImGuiWindowObject {
                             }
 
                             RoomConfig_Stage* special = &g_Game->GetRoomConfig()->_stages[0];
-                            RoomSet* specialSet = &stage->_rooms[g_Game->IsGreedMode() ? 1 : 0];
+                            RoomSet* specialSet = &special->_rooms[g_Game->IsGreedMode()];
                             config = specialSet->_configs;
 
                             for (unsigned int i = 0; i < specialSet->_count; ++i) {
