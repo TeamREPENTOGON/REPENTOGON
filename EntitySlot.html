@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.21">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
     
     
       
@@ -26,7 +26,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.66ac8b77.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.732c4fb1.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
@@ -6767,18 +6767,72 @@
 <hr />
 <h3 aria-label="Functions" id="getdonationvalue">GetDonationValue ()<a class="headerlink" href="#getdonationvalue" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getdonationvalue">int GetDonationValue ( )<a class="headerlink" href="#int-getdonationvalue" title="Permanent link">⚓︎</a></h4>
+<p>Returns how many coins have been given to a beggar. The number returned varies based on the beggar.</p>
+<details class="- info">
+<summary>Return info</summary>
+<ul>
+<li>Beggar: How many coins have been donated.</li>
+<li>Demon Beggar: How many hearts have been donated.</li>
+<li>Battery Bum, Rotten Beggar: Increases with each payment by random amounts, up to 3, and resets back to 0 upon reward or payout.</li>
+<li>All other slots: Remains at 0.</li>
+</ul>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getprizetype">GetPrizeType ()<a class="headerlink" href="#getprizetype" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getprizetype">int GetPrizeType ( )<a class="headerlink" href="#int-getprizetype" title="Permanent link">⚓︎</a></h4>
+<p>Returns an integer that varies based on the slot machine.</p>
+<details class="- info">
+<summary>Return info</summary>
+<ul>
+<li>Slot Machine: Returns a number between <code>3</code>-<code>24</code>. <code>3</code>-<code>12</code> cause the machine to spit out a reward<ul>
+<li><code>3</code>: Fly or pretty fly.</li>
+<li><code>4</code>: Bomb.</li>
+<li><code>5</code>-<code>6</code>: Heart.</li>
+<li><code>7</code>: Key.</li>
+<li><code>8</code>: Pill.</li>
+<li><code>9</code>: Unknown. This never appears to be used.</li>
+<li><code>10</code>-<code>12</code>: 1-2 coins.</li>
+<li><code>13</code>-<code>24</code>: Nothing.</li>
+</ul>
+</li>
+<li>Shell Game &amp; Hell Game: Returns the <code>PickupVariant</code> of the potential prize.</li>
+<li>Bomb Bum: Returns a number <code>1</code>-<code>3</code> based on the type of prize it had output.<ul>
+<li><code>1</code>: Coins.</li>
+<li><code>2</code>: Heart.</li>
+<li><code>3</code>: Collectible.</li>
+</ul>
+</li>
+</ul>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getstate">GetState ()<a class="headerlink" href="#getstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getstate">int GetState ( )<a class="headerlink" href="#int-getstate" title="Permanent link">⚓︎</a></h4>
+<p>Returns the current state of the slot.</p>
+<details class="info" open="open">
+<summary>Return info</summary>
+<p>All slots have a consistent state based on what it's doing that reflect as follows:
+- <code>1</code>: Idle.
+- <code>2</code>: Reward (Shell Game &amp; Hell Game: Idle Reward)
+- <code>3</code>: Bombed
+- <code>4</code>: Payout
+- <code>5</code>: Reward (only for Shell Game &amp; Hell Game)</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="gettimeout">GetTimeout ()<a class="headerlink" href="#gettimeout" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-gettimeout">int GetTimeout ( )<a class="headerlink" href="#int-gettimeout" title="Permanent link">⚓︎</a></h4>
+<p>Returns the timeout in frames until the slot determines its prize. Not used by all slots.</p>
+<details class="- info">
+<summary>Return info</summary>
+<ul>
+<li>All beggars except Bomb Beggar: Increases randomly with each payment, returning either <code>1 &lt;&lt; 16</code>, <code>1 &lt;&lt; 17</code>, or the sum of them, resetting to 0 upon giving a reward.</li>
+<li>Crane Game: For the first successful payout, minimum timeout is <code>1 &lt;&lt; 16</code>, still increasing by 30 and counting down. Second payout is <code>1 &lt;&lt; 17</code>. Third payout is <code>1 &lt;&lt; 16</code> + <code>1 &lt;&lt; 17</code>.</li>
+<li>All other slots: Remains at 0.</li>
+</ul>
+</details>
 <hr />
 <h3 aria-label="Functions" id="gettouch">GetTouch ()<a class="headerlink" href="#gettouch" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-gettouch">int GetTouch ( )<a class="headerlink" href="#int-gettouch" title="Permanent link">⚓︎</a></h4>
+<p>Returns the slot's touch counter. The touch counter goes up by one every frame a player is touching the slot and is reset once no player is touching it.</p>
 <hr />
 <h3 aria-label="Functions" id="randomcoinjamanim">RandomCoinJamAnim ()<a class="headerlink" href="#randomcoinjamanim" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="string-randomcoinjamanim">string RandomCoinJamAnim ( )<a class="headerlink" href="#string-randomcoinjamanim" title="Permanent link">⚓︎</a></h4>
@@ -6786,6 +6840,7 @@
 <hr />
 <h3 aria-label="Functions" id="setdonationvalue">SetDonationValue ()<a class="headerlink" href="#setdonationvalue" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setdonationvalue-int-donationvalue">void SetDonationValue ( int DonationValue )<a class="headerlink" href="#void-setdonationvalue-int-donationvalue" title="Permanent link">⚓︎</a></h4>
+<p>Sets the slot's donation value. See <a href="EntitySlot.html#getdonationvalue">GetDonationValue</a> for more info.</p>
 <hr />
 <h3 aria-label="Functions" id="setprizecollectible">SetPrizeCollectible ()<a class="headerlink" href="#setprizecollectible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setprizecollectible-collectibletype-collectible">void SetPrizeCollectible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible )<a class="headerlink" href="#void-setprizecollectible-collectibletype-collectible" title="Permanent link">⚓︎</a></h4>
@@ -6793,15 +6848,19 @@
 <hr />
 <h3 aria-label="Functions" id="setprizetype">SetPrizeType ()<a class="headerlink" href="#setprizetype" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setprizetype-int-prizetype">void SetPrizeType ( int PrizeType )<a class="headerlink" href="#void-setprizetype-int-prizetype" title="Permanent link">⚓︎</a></h4>
+<p>Sets the prize type of the slot. See <a href="EntitySlot.html#getprizetype">GetPrizeType</a> for more info.</p>
 <hr />
 <h3 aria-label="Functions" id="setstate">SetState ()<a class="headerlink" href="#setstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setstate-int-state">void SetState ( int State )<a class="headerlink" href="#void-setstate-int-state" title="Permanent link">⚓︎</a></h4>
+<p>Sets the state of the slot. See <a href="EntitySlot.html#getstate">GetState</a> for more info.</p>
 <hr />
 <h3 aria-label="Functions" id="settimeout">SetTimeout ()<a class="headerlink" href="#settimeout" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-settimeout-int-timeout">void SetTimeout ( int Timeout )<a class="headerlink" href="#void-settimeout-int-timeout" title="Permanent link">⚓︎</a></h4>
+<p>Sets the timeout of the slot. See <a href="EntitySlot.html#gettimeout">GetTimeout</a> for more info.</p>
 <hr />
 <h3 aria-label="Functions" id="settouch">SetTouch ()<a class="headerlink" href="#settouch" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-settouch-int-touch">void SetTouch ( int Touch )<a class="headerlink" href="#void-settouch-int-touch" title="Permanent link">⚓︎</a></h4>
+<p>Sets the slot's touch counter. The touch counter goes up by one every frame a player is touching the slot and is reset to zero once no player is touching it.</p>
 <hr />
 
 
@@ -6877,7 +6936,7 @@
     <script id="__config" type="application/json">{"base": ".", "features": ["search.suggest", "search.highlight", "search.share", "navigation.tabs", "navigation.instant", "navigation.top"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "rep", "provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.a7c05c9e.min.js"></script>
+      <script src="assets/javascripts/bundle.5cfa9459.min.js"></script>
       
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
       
