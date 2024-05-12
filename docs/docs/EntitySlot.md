@@ -50,6 +50,7 @@ ___
 Returns the current state of the slot.
 ???+ info "Return info"
     All slots have a consistent state based on what it's doing that reflect as follows:
+    
     - `1`: Idle.
     - `2`: Reward (Shell Game & Hell Game: Idle Reward)
     - `3`: Bombed
