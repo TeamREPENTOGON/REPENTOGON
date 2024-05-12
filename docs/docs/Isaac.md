@@ -325,7 +325,7 @@ Displays a Win32 message box. Can be controlled with the `icon` and `buttons` pa
 	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
 ___
 ### SetIcon () {: aria-label='Functions' }
-#### void SetIcon ( integer IsaacIcon OR string IconPath, boolean BypassSize) {: .copyable aria-label='Functions' }
+#### void SetIcon ( int IsaacIcon OR string IconPath, boolean BypassSize) {: .copyable aria-label='Functions' }
 Sets the 16x16 icon located on the game window. Does not update the icon elsewhere, such as the task bar.
 
 `IsaacIcon` is `0` for the normal icon, `1` for the Tainted icon.
