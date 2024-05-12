@@ -185,7 +185,7 @@ Gets the Cutscene ID By Name.
 
 ___
 ### GetDwmWindowAttribute () {: aria-label='Functions' }
-#### DwmWindowAttributes GetDwmWindowAttribute ( ) {: .copyable aria-label='Functions' }
+#### [DwmWindowAttribute](enums/DwmWindowAttribute.md) GetDwmWindowAttribute ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetEntitySubTypeByName () {: aria-label='Functions' }

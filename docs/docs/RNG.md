@@ -4,7 +4,6 @@ tags:
 ---
 # Class "RNG"
 
-
 ## Modified Constructors
 
 ### RNG () {: aria-label='Modified Constructors' }
@@ -15,7 +14,6 @@ This can be used to avoid separating construction of the RNG object and a call t
 The function validates both the seed and the shift index.
 
 ___
-
 ## Modified Functions
 
 ### RandomInt () {: aria-label='Modified Functions' }
@@ -23,7 +21,6 @@ ___
 Can now emulate `math.random` by accepting a second argument to generate a number between the first argument and it, inclusive. Negative values are usable in this mode and will properly generate a number between `min` and `max` regardless of sign.
 
 ___
-
 ### SetSeed () {: aria-label='Modified Functions' }
 #### void SetSeed ( int Seed, int ShiftIdx = 35 ) {: .copyable aria-label='Modified Functions' }
 An error is now thrown if Seed is below 0.
@@ -34,7 +31,6 @@ ShiftIdx is now optional, with the default value set to 35.
 
 ___
 ## Functions 
-
 
 ### PhantomFloat () {: aria-label='Functions' }
 #### float PhantomFloat ( ) {: .copyable aria-label='Functions' }
