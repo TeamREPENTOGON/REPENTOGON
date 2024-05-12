@@ -296,12 +296,32 @@ LUA_FUNCTION(Lua_GetDizzyAmount)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GameAddShopVisits) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	int visitCount = (int)luaL_checkinteger(L, 2);
+	game->_shopVisits += visitCount;
+
+	if (game->_shopVisits >= 6 && !game->IsGreedMode()) {
+		g_Manager->GetPersistentGameData()->TryUnlock(379); // Unlock schoolbag
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_GameGetShopVisits) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	lua_pushinteger(L, game->_shopVisits);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "AddShopVisits", Lua_GameAddShopVisits },
+		{ "GetShopVisits", Lua_GameGetShopVisits },
 		{ "AchievementUnlocksDisallowed", Lua_GameAchievementUnlocksDisallowed},
 		{ "IsPauseMenuOpen", Lua_GameIsPauseMenuOpen},
 		{ "GetPauseMenuState", Lua_GameGetPauseMenuState},
