@@ -126,6 +126,10 @@ ___
 Returns `true` if the current run is a rerun.
 
 ___
+### SetBloom () {: aria-label='Functions' }
+#### void SetBloom ( float Duration, float Amount ) {: .copyable aria-label='Functions' }
+
+___
 ### SetColorModifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
 
@@ -133,7 +137,9 @@ ___
 ### SetDizzyAmount () {: aria-label='Functions' }
 #### void SetDizzyAmount ( float Amount , float Intensity) {: .copyable aria-label='Functions' }
 Sets the dizzy amount akin to Wavy Cap.
-`Amount` is the amount that the screen will be affected. Will reset current dizziness and slowly reach the desired intensity. Also works in reverse if current intensity is higher than the `Amount`.
+
+`Amount` is the amount that the screen will be affected. Screen will slowly reach the desired intensity. Also works in reverse if current intensity is higher than the `Amount`.
+
 `Intensity` is the starting intensity of the effect.
 ???+ warning "Warning"
     Best to stay within `0`-`1` and increment by 0.1 while using this function. `1` has the most extreme effect on the screen while `0` removes the effect.

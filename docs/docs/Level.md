@@ -22,6 +22,10 @@ If set, the level will automatically attempt to place the Knife Piece puzzle doo
 	This is set to `SpecialQuest.DEFAULT` immediately before calling `MC_PRE_LEVEL_INIT`.
 
 ___
+### GetGreedWavesClearedWithoutRedHeartDamage () {: aria-label='Functions' }
+#### int GetGreedWavesClearedWithoutRedHeartDamage ( ) {: .copyable aria-label='Functions' }
+
+___
 ### HasAbandonedMineshaft () {: aria-label='Functions' }
 #### boolean HasAbandonedMineshaft ( ) {: .copyable aria-label='Functions' }
 Returns `true` if the floor has the mineshaft room used for the second Knife Piece puzzle.
@@ -52,6 +56,10 @@ ___
 Sets whether the level should attempt to place the Knife Piece puzzle door for this [LevelStage](https://wofsauge.github.io/IsaacDocs/rep/enums/LevelStage.html).
 ???+ info "Info"
 	This is set to `SpecialQuest.DEFAULT` immediately before calling `MC_PRE_LEVEL_INIT`.
+
+___
+### SetGreedWavesClearedWithoutRedHeartDamage () {: aria-label='Functions' }
+#### void SetGreedWavesClearedWithoutRedHeartDamage ( int WavesCleared ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetName () {: aria-label='Functions' }

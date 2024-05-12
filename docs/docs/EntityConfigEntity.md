@@ -61,7 +61,7 @@ ___
 
 ___
 ### GetBossID () {: aria-label='Functions' }
-#### int GetBossID ( ) {: .copyable aria-label='Functions' }
+#### [BossType](enums/BossType.md) GetBossID ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetCollisionDamage () {: aria-label='Functions' }
