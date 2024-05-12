@@ -885,7 +885,7 @@ LUA_FUNCTION(Lua_PlayerTriggerRoomClear) {
 
 LUA_FUNCTION(Lua_PlayerShuffleCostumes) {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	unsigned int seed = (unsigned int)luaL_optinteger(L, 2, min(Isaac::genrand_int32(), 1));
+	unsigned int seed = (unsigned int)luaL_optinteger(L, 2, std::min(Isaac::genrand_int32(), 1U));
 	plr->ShuffleCostumes(seed);
 
 	return 0;

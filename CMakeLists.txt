@@ -174,6 +174,7 @@ foreach(_source IN ITEMS ${REPENTOGON_SRC})
 endforeach()
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/MP" "/wd4251" "/wd4996")
+target_compile_definitions(zhlREPENTOGON PRIVATE NOMINMAX)
 
 # Delirium
 FILE(GLOB_RECURSE DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.*)
