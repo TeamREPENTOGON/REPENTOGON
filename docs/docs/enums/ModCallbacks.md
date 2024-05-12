@@ -1987,7 +1987,7 @@ Accepts no return parameters.
 |1105 |MC_POST_WEAPON_FIRE {: .copyable } | ([Weapon](../Weapon.md) Weapon, <br>[Vector](../Vector.md) FireDirection, <br>boolean IsShooting, <br>boolean IsInterpolated) | [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) | void |
 
 ### MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable }
-Called before the pickup determines its loot content. Accepts a `LootList` to change loot content.
+Called before the pickup determines its loot content. Accepts a [LootList](../LootList.md) to change loot content.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|

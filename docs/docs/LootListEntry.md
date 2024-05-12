@@ -6,7 +6,9 @@ tags:
 
 ???+ info
     You can get this class by using the following function:
+
     - [LootList:GetEntries()](LootList.md#getentries)
+
     ???+ example "Example Code"
 		```lua
 		local mod = RegisterMod("Print Pickups", 1)

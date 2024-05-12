@@ -6,7 +6,9 @@ tags:
 
 ???+ info
     You can get this class by using the following function:
+
     - [RoomConfig.GetStage()](RoomConfig.md#getstage)
+    
     ???+ example "Example Code"
         ```lua
         local roomConfigStage = RoomConfig.GetStage(StbType.BASEMENT)
@@ -40,7 +42,7 @@ Returns the sprite path for the player spot used in the boss intro and nightmare
 
 ___
 ### GetRoomSet () {: aria-label='Functions' }
-#### [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) GetRoomSet ( int Mode ) {: .copyable aria-label='Functions' }
+#### [RoomConfigSet](CcpContainer_RoomConfigSet.md) GetRoomSet ( int Mode ) {: .copyable aria-label='Functions' }
 Returns a [RoomConfigSet](CcpContainer_RoomConfigSet.md), which contains every [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) in the stage.
 
 `Mode` is `0` for Normal Mode, `1` for Greed Mode
