@@ -1218,6 +1218,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#setbloom" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetBloom ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#setcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       SetColorModifier ()
@@ -3957,6 +3966,15 @@
   <a href="#isrerun" class="md-nav__link">
     <span class="md-ellipsis">
       IsRerun ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setbloom" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetBloom ()
     </span>
   </a>
   
@@ -7263,6 +7281,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#setbloom" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetBloom ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#setcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       SetColorModifier ()
@@ -7449,14 +7476,17 @@
 <h4 aria-label="Functions" class="copyable" id="boolean-isrerun">boolean IsRerun ( )<a class="headerlink" href="#boolean-isrerun" title="Permanent link">⚓︎</a></h4>
 <p>Returns <code>true</code> if the current run is a rerun.</p>
 <hr />
+<h3 aria-label="Functions" id="setbloom">SetBloom ()<a class="headerlink" href="#setbloom" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-setbloom-float-duration-float-amount">void SetBloom ( float Duration, float Amount )<a class="headerlink" href="#void-setbloom-float-duration-float-amount" title="Permanent link">⚓︎</a></h4>
+<hr />
 <h3 aria-label="Functions" id="setcolormodifier">SetColorModifier ()<a class="headerlink" href="#setcolormodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcolormodifier-colormodifier-colormodifier-boolean-lerp-true-float-rate-0015">void SetColorModifier ( <a href="ColorModifier.html">ColorModifier</a> ColorModifier, boolean Lerp = true, float Rate = 0.015 )<a class="headerlink" href="#void-setcolormodifier-colormodifier-colormodifier-boolean-lerp-true-float-rate-0015" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="setdizzyamount">SetDizzyAmount ()<a class="headerlink" href="#setdizzyamount" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setdizzyamount-float-amount-float-intensity">void SetDizzyAmount ( float Amount , float Intensity)<a class="headerlink" href="#void-setdizzyamount-float-amount-float-intensity" title="Permanent link">⚓︎</a></h4>
-<p>Sets the dizzy amount akin to Wavy Cap.
-<code>Amount</code> is the amount that the screen will be affected. Will reset current dizziness and slowly reach the desired intensity. Also works in reverse if current intensity is higher than the <code>Amount</code>.
-<code>Intensity</code> is the starting intensity of the effect.</p>
+<p>Sets the dizzy amount akin to Wavy Cap.</p>
+<p><code>Amount</code> is the amount that the screen will be affected. Screen will slowly reach the desired intensity. Also works in reverse if current intensity is higher than the <code>Amount</code>.</p>
+<p><code>Intensity</code> is the starting intensity of the effect.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
 <p>Best to stay within <code>0</code>-<code>1</code> and increment by 0.1 while using this function. <code>1</code> has the most extreme effect on the screen while <code>0</code> removes the effect.</p>
