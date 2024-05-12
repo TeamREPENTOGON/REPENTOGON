@@ -1119,6 +1119,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getdizzyamount" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetDizzyAmount ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getlerpcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       GetLerpColorModifier ()
@@ -1212,6 +1221,15 @@
   <a href="#setcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       SetColorModifier ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setdizzyamount" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetDizzyAmount ()
     </span>
   </a>
   
@@ -3846,6 +3864,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getdizzyamount" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetDizzyAmount ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getlerpcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       GetLerpColorModifier ()
@@ -3939,6 +3966,15 @@
   <a href="#setcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       SetColorModifier ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setdizzyamount" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetDizzyAmount ()
     </span>
   </a>
   
@@ -7128,6 +7164,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#getdizzyamount" class="md-nav__link">
+    <span class="md-ellipsis">
+      GetDizzyAmount ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#getlerpcolormodifier" class="md-nav__link">
     <span class="md-ellipsis">
       GetLerpColorModifier ()
@@ -7227,6 +7272,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#setdizzyamount" class="md-nav__link">
+    <span class="md-ellipsis">
+      SetDizzyAmount ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#setdonationmodangel" class="md-nav__link">
     <span class="md-ellipsis">
       SetDonationModAngel ()
@@ -7320,7 +7374,7 @@
 <hr />
 <h3 aria-label="Modified Functions" id="startstagetransition">StartStageTransition ()<a class="headerlink" href="#startstagetransition" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="void-startstagetransition-boolean-samestage-int-transitionoverride-entityplayer-player-nil">void StartStageTransition ( boolean SameStage, int TransitionOverride, <a href="EntityPlayer.html">EntityPlayer</a> Player = nil )<a class="headerlink" href="#void-startstagetransition-boolean-samestage-int-transitionoverride-entityplayer-player-nil" title="Permanent link">⚓︎</a></h4>
-<p>Fixed the crash that sometimes occured due to an incorrect call on the C++ side.
+<p>Fixed the crash that sometimes occurred due to an incorrect call on the C++ side.
 <code>Player</code> is now optional (will default to <code>GetPlayer(0)</code>).</p>
 <hr />
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
@@ -7346,6 +7400,14 @@
 <h3 aria-label="Functions" id="getdebugflags">GetDebugFlags ()<a class="headerlink" href="#getdebugflags" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getdebugflags">int GetDebugFlags ( )<a class="headerlink" href="#int-getdebugflags" title="Permanent link">⚓︎</a></h4>
 <p>Returns a <a href="enums/DebugFlag.html">DebugFlag</a> bitmask.</p>
+<hr />
+<h3 aria-label="Functions" id="getdizzyamount">GetDizzyAmount ()<a class="headerlink" href="#getdizzyamount" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="int-getdizzyamount">int GetDizzyAmount ( )<a class="headerlink" href="#int-getdizzyamount" title="Permanent link">⚓︎</a></h4>
+<p>Returns the current dizzy amount akin to Wavy Cap</p>
+<details class="bug" open="open">
+<summary>Bug</summary>
+<p>Currently this function only returns <code>0</code>. Using <a href="Game.html#setdizzyamount">SetDizzyAmount</a> or the Wavy Cap collectible has no effect on this function.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getlerpcolormodifier">GetLerpColorModifier ()<a class="headerlink" href="#getlerpcolormodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="colormodifier-getlerpcolormodifier"><a href="ColorModifier.html">ColorModifier</a> GetLerpColorModifier ( )<a class="headerlink" href="#colormodifier-getlerpcolormodifier" title="Permanent link">⚓︎</a></h4>
@@ -7389,6 +7451,16 @@
 <hr />
 <h3 aria-label="Functions" id="setcolormodifier">SetColorModifier ()<a class="headerlink" href="#setcolormodifier" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcolormodifier-colormodifier-colormodifier-boolean-lerp-true-float-rate-0015">void SetColorModifier ( <a href="ColorModifier.html">ColorModifier</a> ColorModifier, boolean Lerp = true, float Rate = 0.015 )<a class="headerlink" href="#void-setcolormodifier-colormodifier-colormodifier-boolean-lerp-true-float-rate-0015" title="Permanent link">⚓︎</a></h4>
+<hr />
+<h3 aria-label="Functions" id="setdizzyamount">SetDizzyAmount ()<a class="headerlink" href="#setdizzyamount" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Functions" class="copyable" id="void-setdizzyamount-float-amount-float-intensity">void SetDizzyAmount ( float Amount , float Intensity)<a class="headerlink" href="#void-setdizzyamount-float-amount-float-intensity" title="Permanent link">⚓︎</a></h4>
+<p>Sets the dizzy amount akin to Wavy Cap.
+<code>Amount</code> is the amount that the screen will be affected. Will reset current dizziness and slowly reach the desired intensity. Also works in reverse if current intensity is higher than the <code>Amount</code>.
+<code>Intensity</code> is the starting intensity of the effect.</p>
+<details class="warning" open="open">
+<summary>Warning</summary>
+<p>Best to stay within <code>0</code>-<code>1</code> and increment by 0.1 while using this function. <code>1</code> has the most extreme effect on the screen while <code>0</code> removes the effect.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="setdonationmodangel">SetDonationModAngel ()<a class="headerlink" href="#setdonationmodangel" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setdonationmodangel-int-amount">void SetDonationModAngel ( int Amount )<a class="headerlink" href="#void-setdonationmodangel-int-amount" title="Permanent link">⚓︎</a></h4>
