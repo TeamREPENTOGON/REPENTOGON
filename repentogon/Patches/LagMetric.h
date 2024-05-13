@@ -8,4 +8,7 @@ namespace LagMetric{
     extern bool _init;
     extern int _lastMillis;
     inline bool is_circle_laser(Entity_Laser* in);
+    inline bool is_tris_laser(Entity_Laser* in);
+    void ApplyTris(Entity_Laser* in);
+    void ApplyFastLasers(Entity_Laser* in);
 }

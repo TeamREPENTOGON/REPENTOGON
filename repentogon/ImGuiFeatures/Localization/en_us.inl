@@ -311,6 +311,9 @@ I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR_MARK, u8"Rooms will open their doors and spa
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES, u8"Prevent mod updates")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK, u8"The game will skip updating your mods folder to match your current workshop folder. Useful for temporarily emptying your mods folder during mod development.")
 
+I(OPT_REPENTOGON_FILE_MAP, u8"Enable modded file map generation")
+I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Preemptively checks all modded files for faster game start and less stutters. Disable and report to us if you have issues with modded assets loading.")
+
 I(OPT_EXTRA_HUD_MODES_OFF, u8"Off")
 I(OPT_EXTRA_HUD_MODES_NORMAL, u8"Normal")
 I(OPT_EXTRA_HUD_MODES_MINI, u8"Mini")

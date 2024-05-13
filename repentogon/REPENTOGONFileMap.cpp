@@ -3,6 +3,10 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include <Log.h>
+#include "REPENTOGONOptions.h"
+
+#include <locale>
+#include <sstream>
 namespace fs = std::filesystem;
 namespace REPENTOGONFileMap {
 	std::unordered_map<size_t, FileMapEntry> _filemap;
@@ -16,6 +20,7 @@ namespace REPENTOGONFileMap {
 
 	fs::path moddir;
 	std::string modname;
+	std::locale utf8loc = std::locale(".UTF-8");
 
 	void ProduceString(std::string* part_path, FileMapEntry* entry, std::string* outstring) {
 		const std::string& subdirname = (_stringByFType[entry->FolderType]);
@@ -42,6 +47,42 @@ namespace REPENTOGONFileMap {
 	};
 	std::string pathbuf(260, 0);
 	std::string_view relpath;
+	std::string tokenholder;
+	std::istringstream normalize_stringstream;
+	std::vector<size_t> elemstoskip;
+	void NormalizePathString(std::string& input) {
+		normalize_stringstream = std::istringstream(input);
+		pathbuf.resize(0);
+		elemstoskip.resize(0);
+		size_t i = 0;
+		size_t maxi = 0;
+		while (std::getline(normalize_stringstream, tokenholder,'/')) {
+			if (tokenholder == "..") {
+				elemstoskip.push_back(i - 1);
+				elemstoskip.push_back(i);
+			}
+			else if (tokenholder == ".") {
+				elemstoskip.push_back(i);
+			};
+			i++;
+			maxi++;
+		};
+		normalize_stringstream.clear();
+		normalize_stringstream.seekg(0, std::ios::beg);
+		i = 0;
+		while (std::getline(normalize_stringstream, tokenholder, '/')) {
+			if ( std::find(elemstoskip.begin(), elemstoskip.end(), i)!=elemstoskip.end() ) {
+				i++;
+				continue;
+			};
+			pathbuf += tokenholder;
+			i++;
+			if (i != maxi) {
+				pathbuf += '/';
+			};
+		};
+		input = pathbuf;
+	};
 	void AddModEntry(const std::string_view& input, FolderType modfoldertype, size_t modid) {
 		FileMapEntry entry;
 
@@ -50,11 +91,13 @@ namespace REPENTOGONFileMap {
 		entry.ModFolder = modid;
 		pathbuf.resize(0);
 		format_path(input, pathbuf);
+//		NormalizePathString(pathbuf);
 		std::transform(pathbuf.begin(), pathbuf.end(), pathbuf.begin(),
-			[](unsigned char c) { return std::tolower(c); });
+			[](unsigned char c) { return std::tolower(c,utf8loc); });
 		size_t hashentry = std::hash<std::string>{}(pathbuf);
 		_filemap[hashentry] = entry;
 	};
+
 
 	void FindFiles(const fs::path& input, FolderType modfoldertype, size_t modid) {
 		for (const auto& file : fs::recursive_directory_iterator(input)) {
@@ -66,9 +109,8 @@ namespace REPENTOGONFileMap {
 		};
 	};
 	void GenerateMap() {
-		return;
 		//kill off for now
-		if (map_init) {
+		if (map_init || !repentogonOptions.fileMap) {
 			return;
 		};
 		map_init = true;
@@ -114,18 +156,19 @@ HOOK_METHOD(ModManager, ListMods, (void)->void) {
 
 HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param_2)->void) {
 //	bool spoofmods = false;
-	return super(param_1, param_2);
+//	return super(param_1, param_2);
 	//kill off map for now
-	if (param_1 == nullptr || param_2 == nullptr) {
+	if (param_1 == nullptr || param_2 == nullptr || !repentogonOptions.fileMap) {
 		return super(param_1, param_2);
 	};
-	std::transform(param_2->begin(), param_2->end(), param_2->begin(),
-		[](unsigned char c) { return std::tolower(c); });
 	for (char& c : *(std::string*)param_2) {
 		if (c == '\\') {
 			c = '/';
 		};
 	};
+	REPENTOGONFileMap::NormalizePathString(*param_2);
+	std::transform(param_2->begin(), param_2->end(), param_2->begin(),
+		[](unsigned char c) { return std::tolower(c, REPENTOGONFileMap::utf8loc); });
 	std::string input = *param_2;
 	size_t hashentry = std::hash<std::string>{}(input);
 	REPENTOGONFileMap::FileMapEntry* mapentry = REPENTOGONFileMap::GetEntry(hashentry);
