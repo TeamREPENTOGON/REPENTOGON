@@ -314,12 +314,20 @@ LUA_FUNCTION(Lua_GameGetShopVisits) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ClearErasedEnemies) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	game->_erasedEntities.clear();
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "ClearErasedEnemies", Lua_ClearErasedEnemies },
 		{ "AddShopVisits", Lua_GameAddShopVisits },
 		{ "GetShopVisits", Lua_GameGetShopVisits },
 		{ "AchievementUnlocksDisallowed", Lua_GameAchievementUnlocksDisallowed},

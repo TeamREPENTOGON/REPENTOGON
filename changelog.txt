@@ -1,6 +1,7 @@
 v1.0.9a -
 Additions:
 * Game:
+	- ClearErasedEnemies(): void
 	- GetShopVisits(): int
 	- AddShopVisits(count: int): void
 * Bug fixes
