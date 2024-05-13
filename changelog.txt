@@ -4,10 +4,17 @@ Additions:
 	- ClearErasedEnemies(): void
 	- GetShopVisits(): int
 	- AddShopVisits(count: int): void
+* EntitySlot:
+	- GetShellGameAnimationIndex() : int
+	- SetShellGameAnimationIndex(index: int) : void
+	- GetTriggerTimerNum() : int
+	- SetTriggerTimerNum(num: int) : void
+/newline/
 * Bug fixes
     - Fixed a bug that caused the giveitem command to crash when the object to
     give was reduced to a single letter
 	- Fix "goto [s/x]." command autocomplete
+	- Fixed incorrect type set for Slot->_timeout (int -> short)
 /newline/
 v1.0.9 -
 Modified:

@@ -75,6 +75,22 @@ LUA_FUNCTION(Lua_SetPrizeType) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetShellGameAnimationIndex) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, slot->_shellGameAnimationIndex);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetShellGameAnimationIndex) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	slot->_shellGameAnimationIndex = (short)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_GetDonationValue) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
@@ -89,6 +105,22 @@ LUA_FUNCTION(Lua_SetDonationValue) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_GetTriggerTimer) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	lua_pushinteger(L, slot->_triggerTimer);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetTriggerTimer) {
+	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
+	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
+	slot->_triggerTimer = (unsigned int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_GetTimeout) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
@@ -99,7 +131,7 @@ LUA_FUNCTION(Lua_GetTimeout) {
 LUA_FUNCTION(Lua_SetTimeout) {
 	luaL_checkudata(L, 1, lua::metatables::EntitySlotMT);
 	Entity_Slot* slot = lua::UserdataToData<Entity_Slot*>(lua_touserdata(L, 1));
-	*slot->GetTimeout() = (int)luaL_checkinteger(L, 2);
+	*slot->GetTimeout() = (unsigned short)luaL_checkinteger(L, 2);
 	return 0;
 }
 
@@ -166,8 +198,12 @@ void RegisterSlotMetatable(lua_State* L) {
 		{ "SetState", Lua_SetState },
 		{ "GetPrizeType", Lua_GetPrizeType },
 		{ "SetPrizeType", Lua_SetPrizeType },
+		{ "GetShellGameAnimationIndex", Lua_GetShellGameAnimationIndex },
+		{ "SetShellGameAnimationIndex", Lua_SetShellGameAnimationIndex },
 		{ "GetDonationValue", Lua_GetDonationValue },
 		{ "SetDonationValue", Lua_SetDonationValue },
+		{ "GetTriggerTimerNum", Lua_GetTriggerTimer },
+		{ "SetTriggerTimerNum", Lua_SetTriggerTimer },
 		{ "GetTimeout", Lua_GetTimeout },
 		{ "SetTimeout", Lua_SetTimeout },
 		{ "GetTouch", Lua_GetTouch },
