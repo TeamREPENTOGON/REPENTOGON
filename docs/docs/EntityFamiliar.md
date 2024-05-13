@@ -36,6 +36,11 @@ ___
 #### [FollowerPriority](enums/FollowerPriority.md) GetFollowerPriority ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetMoveDelayNum () {: aria-label='Functions' }
+#### int GetMoveDelayNum ( ) {: .copyable aria-label='Functions' }
+Returns the amount in frames that the familiar's movements are delayed from the player's. 30 frames = 1 second.
+
+___
 ### GetPathFinder () {: aria-label='Functions' }
 #### [PathFinder](https://wofsauge.github.io/IsaacDocs/rep/PathFinder.html) GetPathFinder ( ) {: .copyable aria-label='Functions' }
 
@@ -51,6 +56,11 @@ ___
 ___
 ### RemoveFromPlayer () {: aria-label='Functions' }
 #### void RemoveFromPlayer ( ) {: .copyable aria-label='Functions' }
+
+___
+### SetMoveDelayNum () {: aria-label='Functions' }
+#### void SetMoveDelayNum ( int Delay ) {: .copyable aria-label='Functions' }
+Sets the amount in frames that the familiar's movements are delayed from the player's.
 
 ___
 ### TriggerRoomClear () {: aria-label='Functions' }

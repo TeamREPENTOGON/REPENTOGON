@@ -37,6 +37,11 @@ ___
 #### [ColorModifier](../ColorModifier.md) GetCurrentColorModifier ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetInputMask () {: aria-label='Functions' }
+#### [ButtonActionBitwise](../enums/ButtonActionBitwise.md) GetInputMask ( ) {: .copyable aria-label='Functions' }
+Returns the input mask of allowed inputs on the main menu.
+
+___
 ### GetSelectWidgetSprite () {: aria-label='Functions' }
 #### [Sprite](../Sprite.md) GetSelectWidgetSprite ( ) {: .copyable aria-label='Functions' }
 
@@ -56,11 +61,16 @@ ___
 ___
 ### SetActiveMenu () {: aria-label='Functions' }
 #### int SetActiveMenu ([MainMenuType](../enums/MainMenuType.md) Menu ) {: .copyable aria-label='Functions' }
-Changes the active menu on the main menu to match the input menutype.
+Changes the active menu on the main menu to match the given `MainMenuType`.
 
 ___
 ### SetColorModifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](../ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
+
+___
+### SetInputMask () {: aria-label='Functions' }
+#### void SetInputMask ( [ButtonActionBitwise](../enums/ButtonActionBitwise.md) InputMask ) {: .copyable aria-label='Functions' }
+Sets the input mask of allowed inputs on the main menu. Useful for custom menus.
 
 ___
 ### SetViewPosition () {: aria-label='Functions' }

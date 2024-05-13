@@ -184,6 +184,10 @@ ___
 Gets the Cutscene ID By Name.
 
 ___
+### GetDwmWindowAttribute () {: aria-label='Functions' }
+#### [DwmWindowAttribute](enums/DwmWindowAttribute.md) GetDwmWindowAttribute ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetEntitySubTypeByName () {: aria-label='Functions' }
 #### int GetEntitySubTypeByName ( string Name ) {: .copyable aria-label='Functions' }
 Gets the entity SubType by entity name.
@@ -224,6 +228,11 @@ ___
 ### GetString () {: aria-label='Functions' }
 #### string GetString ( string Category, string Key ) {: .copyable aria-label='Functions' }
 Returns the translation string associated with the given key in the given category. The translation is given in the currently selected language.
+
+___
+### GetWindowTitle () {: aria-label='Functions' }
+#### string GetWindowTitle ( ) {: .copyable aria-label='Functions' }
+Returns the appended text on the game's window title.
 
 ___
 ### IsChallengeDone () {: aria-label='Functions' }
@@ -292,8 +301,8 @@ ___
 ### SetCurrentFloorBackdrop () {: aria-label='Functions' }
 #### void SetCurrentFloorBackdrop ( int BackdropId ) {: .copyable aria-label='Functions' }
 Changes the default room backdrop for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
-___
 
+___
 ### SetCurrentFloorMusic () {: aria-label='Functions' }
 #### void SetCurrentFloorMusic ( int MusicId ) {: .copyable aria-label='Functions' }
 Changes the music track for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
@@ -302,8 +311,12 @@ ___
 ### SetCurrentFloorName () {: aria-label='Functions' }
 #### void SetCurrentFloorMusic ( string Name ) {: .copyable aria-label='Functions' }
 Changes the display name for the current floor to match the input id. This change wont persists on save/continue so make sure to account for that.
-___
 
+___
+### SetDwmWindowAttribute () {: aria-label='Functions' }
+#### void SetDwmWindowAttribute ( [DwmWindowAttribute](enums/DwmWindowAttribute.md) Attribute ) {: .copyable aria-label='Functions' }
+
+___
 ### ShowErrorDialog () {: aria-label='Functions' }
 #### [DialogReturn](enums/DialogReturn.md) ShowErrorDialog ( string Title, string Text, [DialogIcons](enums/DialogIcons.md) Icon = DialogIcons.ERROR, [DialogButtons](enums/DialogButtons.md) Buttons = DialogButtons.OK ) {: .copyable aria-label='Functions' }
 Displays a Win32 message box. Can be controlled with the `icon` and `buttons` parameters. Returns a [`DialogReturn`](enums/DialogReturn.md) value that indicates the button pressed.
@@ -311,11 +324,34 @@ Displays a Win32 message box. Can be controlled with the `icon` and `buttons` pa
 ???- info "Note"
 	Take in mind that gamepad wont work for this popup, you'll need to use mouse/keyboard or touchscreen, and the window title wont show up on some enviroments like the steam deck, so dont rely on it too much.
 ___
+### SetIcon () {: aria-label='Functions' }
+#### void SetIcon ( int IsaacIcon OR string IconPath, boolean BypassSize) {: .copyable aria-label='Functions' }
+Sets the 16x16 icon located on the game window. Does not update the icon elsewhere, such as the task bar.
+
+`IsaacIcon` is `0` for the normal icon, `1` for the Tainted icon.
+
+`IconPath` accepts a path to a .ico file.
+
+`BypassSize` bypasses the 16x16 resolution cap.
+
+___
+### StartNewGame () {: aria-label='Functions' }
+#### void StartNewGame ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) Character, [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) Challenge = ChallengeType.CHALLENGE_NULL, [Difficulty](enums/Difficulty.md) Mode = Difficulty.DIFFICULTY_NORMAL, int Seed = Random()) {: .copyable aria-label='Functions' }
+Starts a new game using the specified arguments. Can be used from the main menu.
+
+___
+### SetWindowTitle () {: aria-label='Functions' }
+#### void SetWindowTitle ( string Title ) {: .copyable aria-label='Functions' }
+Sets the appended text on the game's window title.
+
+___
 ### TriggerWindowResize () {: aria-label='Functions' }
 #### void TriggerWindowResize ( ) {: .copyable aria-label='Functions' }
 Simulates a window resize, useful to refresh some option changes like `MaxRenderScale`.
+
 ___
 ### WorldToMenuPosition () {: aria-label='Functions' }
 #### [Vector](Vector.md) WorldToMenuPosition ( [MainMenu](enums/MainMenuType.md) MenuId, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 Converts the World position from input to a pinned main menu position that varies depending on the enum selected. It's important to reconvert this every frame, in a similar fashion to WorldToRender, in order to properly render when menus are changed or the window is resized.
+
 ___

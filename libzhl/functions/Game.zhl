@@ -250,6 +250,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, 
 	Ambush _ambush : 0x1c31b8;
 	unsigned int _challenge : 0x1c319c;
 	DailyChallenge _dailyChallenge: 0x1c3204;
+	int _shopVisits : 0x1c3194;
 	ScoreSheet _scoreSheet : 0x1c32b8;
 	uint32_t _difficulty : 0x243624;
 	bool _shouldLerpColorModState : 0x283b80;

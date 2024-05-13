@@ -28,6 +28,10 @@ ___
 #### [Sprite](Sprite.md) GetBubbleSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetPlayerExtraPortraitSprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetPlayerExtraPortraitSprite ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetProgressBarMap () {: aria-label='Functions' }
 #### int[] GetProgressBarMap ( ) {: .copyable aria-label='Functions' }
 
