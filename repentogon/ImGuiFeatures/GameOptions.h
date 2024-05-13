@@ -318,6 +318,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_INTERPOLV2_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.interpolV2, false);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_FILE_MAP, &repentogonOptions.fileMap);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_FILE_MAP_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.fileMap, true);
 
                         ImGui::EndTable();
                     }

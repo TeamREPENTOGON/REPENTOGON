@@ -40,6 +40,7 @@ struct REPENTOGONOptions {
 			ini["internal"]["EnableUnifont"] = "1";
 			ini["internal"]["UnifontRenderMode"] = "0";
 			ini["internal"]["LastSaveFile"] = "0";
+			ini["internal"]["FileMap"] = "1";
 			iniFile.generate(ini, true);
 		}
 
@@ -57,6 +58,7 @@ struct REPENTOGONOptions {
 		enableUnifont = defstoi(ini["internal"]["EnableUnifont"], 1);
 		unifontRenderMode = defstoi(ini["internal"]["UnifontRenderMode"], 0);
 		lastSaveFile = defstoi(ini["internal"]["LastSaveFile"], 0);
+		fileMap = defstoi(ini["internal"]["FileMap"], 1);
 		printf("Loaded REPENTOGON INI\n");
 	}
 
@@ -98,6 +100,7 @@ struct REPENTOGONOptions {
 		Write("internal",	   "EnableUnifont",		   enableUnifont);
 		Write("internal",	   "UnifontRenderMode",	   unifontRenderMode);
 		Write("internal", "LastSaveFile", lastSaveFile);
+		Write("internal", "FileMap", fileMap);
 	}
 
 	mINI::INIStructure ini;
@@ -113,6 +116,7 @@ struct REPENTOGONOptions {
 	int lastSaveFile;
 	bool skipIntro;
 	bool interpolV2;
+	bool fileMap;
 	std::string optionsPath;
 };
 
