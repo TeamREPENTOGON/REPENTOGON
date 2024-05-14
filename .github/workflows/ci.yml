@@ -20,6 +20,14 @@ jobs:
       with:
         submodules: 'true'
         fetch-depth: 0
+
+    - name: Generate version info
+      run: |
+        echo "#pragma once" > ${{github.workspace}}/repentogon/Version.h
+        $sha = git rev-parse --short HEAD
+        echo "#define VERSION `"nightly-$sha`"" >> ${{github.workspace}}/repentogon/Version.h
+        (gc ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua) -replace 'dev build', "nightly-$sha" | Out-File -encoding ASCII ${{github.workspace}}/repentogon/resources/scripts/main_ex.lua
+        (gc ${{github.workspace}}/launcher/Updater.cpp) -replace 'std::string version = "dev build";', 'std::string version = "nightly-$sha";' | Out-File -encoding ASCII ${{github.workspace}}/launcher/Updater.cpp
           
     - name: Configure CMake
       run: cmake -G "Visual Studio 17 2022" -A "Win32" -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
