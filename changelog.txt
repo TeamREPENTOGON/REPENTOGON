@@ -9,6 +9,7 @@ Additions:
 	- SetShellGameAnimationIndex(index: int) : void
 	- GetTriggerTimerNum() : int
 	- SetTriggerTimerNum(num: int) : void
+- Sorry about the startup line in 1.0.9, half of it was a lie, now it's not! This update enables "file map" functionality, speeding up file lookup, positively affecting the startup time. It shouldn't cause any issue, but if it does don't hesitate to report issues, in the meantime you can disable it in REPENTOGON's options window.
 /newline/
 * Bug fixes
     - Fixed a bug that caused the giveitem command to crash when the object to
