@@ -623,8 +623,8 @@ LUA_FUNCTION(Lua_GetRGON_Changelog) {
 	changelog.open("rgon_changelog.txt");
 	if (changelog.is_open()) {
 		outtext << changelog.rdbuf();
+		text = outtext.str();
 	};
-	text = outtext.str();
 	lua_pushstring(L, text.c_str());
 	return 1;
 };
