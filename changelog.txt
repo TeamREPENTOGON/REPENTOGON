@@ -1,3 +1,7 @@
+v1.0.9b -
+Additions:
+* Add new Vanilla Tweaks option "Mars Double Tap Window", which determines the number of frames where a repeated movement input is counted as a double tap for activating Mars's charge
+/newline/
 v1.0.9a -
 Additions:
 * Game:

@@ -310,6 +310,8 @@ I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR, u8"Quicker Room Clear")
 I(OPT_REPENTOGON_QUICKER_ROOM_CLEAR_MARK, u8"Rooms will open their doors and spawn rewards quicker. Bosses still require their death animation to play out.")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES, u8"Prevent mod updates")
 I(OPT_REPENTOGON_PREVENT_MOD_UPDATES_MARK, u8"The game will skip updating your mods folder to match your current workshop folder. Useful for temporarily emptying your mods folder during mod development.")
+I(OPT_REPENTOGON_MARSDOUBLETAP, u8"Mars Double Tap Window")
+I(OPT_REPENTOGON_MARSDOUBLETAP_MARK, u8"Sets the window of time to double-tap a movement input to dash with Mars.")
 
 I(OPT_REPENTOGON_FILE_MAP, u8"Enable modded file map generation")
 I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Preemptively checks all modded files for faster game start and less stutters. Disable and report to us if you have issues with modded assets loading.")
