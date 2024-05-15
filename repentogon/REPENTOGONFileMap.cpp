@@ -130,15 +130,19 @@ namespace REPENTOGONFileMap {
 		auto start_time = std::chrono::high_resolution_clock::now();
 		if (g_Manager && g_Manager->GetModManager()) {
 			ModManager* modmngr = g_Manager->GetModManager();
+			fs::path basemodpath;
 			//            for (size_t i = 0; i < modmngr->_mods.size(); i++) {
 			for (int i = modmngr->_mods.size() - 1; i >= 0;i--) {   //inverse order
 				ModEntry* modentry = modmngr->_mods[i];
 				if (modentry && modentry->_loaded) {
-					for (size_t modfoldertype = FolderType::RESOURCES; modfoldertype < FolderType::LAST; modfoldertype++) {
-						const std::wstring& subdirname = (_stringByFType[modfoldertype]);
-						moddir = basepath / (modentry->_directory) / subdirname;
-						if (fs::is_directory(moddir)) {
-							FindFiles(moddir, (FolderType)modfoldertype, i);
+					basemodpath = basepath / (modentry->_directory);
+					if (fs::is_directory(basemodpath)) {
+						for (size_t modfoldertype = FolderType::RESOURCES; modfoldertype < FolderType::LAST; modfoldertype++) {
+							const std::wstring& subdirname = (_stringByFType[modfoldertype]);
+							moddir = basemodpath / subdirname;
+							if (fs::is_directory(moddir)) {
+								FindFiles(moddir, (FolderType)modfoldertype, i);
+							};
 						};
 					};
 				};
@@ -164,8 +168,8 @@ HOOK_METHOD(ModManager, ListMods, (void)->void) {
 	REPENTOGONFileMap::GenerateMap();
 };
 
-std::wstring tempwidestr;
 
+std::wstring tempwidestr;
 HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param_2)->void) {
 //	bool spoofmods = false;
 //	return super(param_1, param_2);
@@ -208,6 +212,7 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param
 		return;
 	}
 	else {
+//		printf("Failed to find %s!\n",param_2->c_str());
 		std::vector<ModEntry*> backup = std::move(this->_mods);
 		this->_mods.clear();
 		super(param_1, param_2);
