@@ -44,7 +44,7 @@ void CheckForUpdates() {
     bool ok = true;
     if (!std::filesystem::exists("dsound.ini")) {
         printf("dsound.ini doesn't exist, creating\n");
-        if (MessageBoxA(NULL, "Would you like REPENTOGON to automatically check for updates on game start?\n(We highly recommend saying yes here, we're probably gonna have a lot of them.)", "REPENTOGON", MB_YESNO) == IDYES)
+        if (MessageBoxA(NULL, "Would you like REPENTOGON to automatically check for updates on game start?\n(We highly recommend saying yes here, we're probably gonna have a lot of them.)", "REPENTOGON", MB_YESNO | MB_SETFOREGROUND | MB_TOPMOST | MB_TASKMODAL) == IDYES)
             ini["Options"]["CheckForUpdates"] = "1";
         else
             ini["Options"]["CheckForUpdates"] = "0";
