@@ -2853,7 +2853,7 @@ char* GetResources(char* xml,const string &dir,const string &filename) {
 	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
 	for (const string & path : paths) {
 		if (!std::filesystem::exists(path)) {
-			return "";
+			continue;
 		};
 		ifstream file(path.c_str());
 		if (file.is_open()) {
