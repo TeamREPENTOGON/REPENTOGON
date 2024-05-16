@@ -77,11 +77,11 @@ namespace REPENTOGONFileMap {
 		normalize_stringstream.clear();
 		normalize_stringstream.seekg(0, std::ios::beg);
 		i = 0;
+		if (std::find(elemstoskip.begin(), elemstoskip.end(), (size_t)(-1)) != elemstoskip.end()) {	//skip of -1 means that we have
+			return false;																	//trespassed out the resources folder
+		};
 		while (std::getline(normalize_stringstream, tokenholder, L'/')) {
 			if ( std::find(elemstoskip.begin(), elemstoskip.end(), i)!=elemstoskip.end() ) {
-				if (i == 0) {
-					return false;
-				};
 				i++;
 				continue;
 			};
