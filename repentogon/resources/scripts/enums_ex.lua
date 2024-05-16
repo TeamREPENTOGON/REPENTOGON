@@ -2162,13 +2162,16 @@ CompletionType = {
 	LAMB = 5,
 	MEGA_SATAN = 6,
 	ULTRA_GREED = 7,
-	--scrappedmark?
+	--holds event counter id for greed donations
 	HUSH = 9,
-	--scrappedmark?
+	HARD_MARKS = 10,
 	ULTRA_GREEDIER = 11,
 	DELIRIUM = 12,
 	MOTHER = 13,
 	BEAST = 14,
+	TAINTED = 15,
+	TAINTED_GROUP1 = 16,
+	TAINTED_GROUP2 = 17,
 }
 
 PedestalType = {
