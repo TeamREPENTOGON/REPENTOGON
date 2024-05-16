@@ -221,7 +221,7 @@ Called after an achievement is unlocked.
 |:--|:--|:--|:--|:--|
 |1476 |MC_POST_ACHIEVEMENT_UNLOCK {: .copyable } | ([Achievement](Achievement.md) AchievementID) | [Achievement](Achievement.md) | void |
 
-### MC_POST_ACHIEVEMENT {: .copyable }
+### MC_PRE_COMPLETION_EVENT {: .copyable }
 Can return `false` to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.
 
 Called when a completion even gets triggered, getting as a parameter the code for the event in question. 
