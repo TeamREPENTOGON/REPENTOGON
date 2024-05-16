@@ -65,15 +65,12 @@ namespace REPENTOGONFileMap {
 		size_t maxi = 0;
 		while (std::getline(normalize_stringstream, tokenholder,L'/')) {
 			if (tokenholder == L"..") {
-				if (i == 0) {
-					return false;
-				};
 				elemstoskip.push_back(i - 1);
 				elemstoskip.push_back(i);
 			}
 			else if (tokenholder == L".") {
 				elemstoskip.push_back(i);
-			};
+			}
 			i++;
 			maxi++;
 		};
@@ -82,12 +79,15 @@ namespace REPENTOGONFileMap {
 		i = 0;
 		while (std::getline(normalize_stringstream, tokenholder, L'/')) {
 			if ( std::find(elemstoskip.begin(), elemstoskip.end(), i)!=elemstoskip.end() ) {
+				if (i == 0) {
+					return false;
+				};
 				i++;
 				continue;
 			};
 			wpathbuf += tokenholder;
 			i++;
-			if (i != maxi) {
+			if (i != maxi && tokenholder!=L"") {
 				wpathbuf += L'/';
 			};
 		};
