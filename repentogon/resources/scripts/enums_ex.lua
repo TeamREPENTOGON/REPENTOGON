@@ -93,6 +93,7 @@ ModCallbacks.MC_POST_DEVIL_CALCULATE = 1133
 ModCallbacks.MC_COMPLETION_MARK_GET = 1047
 ModCallbacks.MC_POST_COMPLETION_MARK_GET = 1048
 ModCallbacks.MC_PRE_COMPLETION_EVENT = 1049
+ModCallbacks.MC_POST_COMPLETION_EVENT = 1052 -- groan
 --ModCallbacks.DEPRECATED_MC_USE_PILL = 1001  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM = 1119
 ModCallbacks.MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM = 1079

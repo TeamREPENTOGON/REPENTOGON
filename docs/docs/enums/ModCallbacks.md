@@ -215,13 +215,18 @@ Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
 |1061 |MC_PRE_CHANGE_ROOM {: .copyable } | (int TargetRoomIdx, <br>int Dimension) | - | table |
 
 ### MC_PRE_COMPLETION_EVENT {: .copyable }
-Can return `false` to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.
-
-Triggers when a completion even gets triggered, getting as a parameter the code for the event in question. 
+Can return a new [CompletionType](CompletionType.md) or `false` to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1049 |MC_PRE_COMPLETION_EVENT {: .copyable } | ([CompletionType](CompletionType.md) Completion) | - | void or false |
+|1049 |MC_PRE_COMPLETION_EVENT {: .copyable } | ([CompletionType](CompletionType.md) Completion) | - | [CompletionType](CompletionType.md), boolean |
+
+### MC_POST_COMPLETION_EVENT {: .copyable }
+Called when a completion event is recorded, such as when defeating an end boss or unlocking a tainted character.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1052 |MC_POST_COMPLETION_EVENT {: .copyable } | ([CompletionType](CompletionType.md) Completion) | - | void |
 
 ### MC_PRE_COMPLETION_MARKS_RENDER {: .copyable }
 Can return `false` to prevent the completion marks from rendering.
