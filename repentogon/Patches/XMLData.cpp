@@ -2850,8 +2850,11 @@ bool XMLParse(xml_document<char>* xmldoc, char* xml,const string &dir) {
 }
 
 char* GetResources(char* xml,const string &dir,const string &filename) {
-	vector<string> paths = { dir + "\\resources\\" + filename, dir + "\\resources-dlc3\\" + filename };
+	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
 	for (const string & path : paths) {
+		if (!std::filesystem::exists(path)) {
+			return "";
+		};
 		ifstream file(path.c_str());
 		if (file.is_open()) {
 			std::stringstream sbuffer;
@@ -3193,9 +3196,6 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 			if (mod->IsEnabled()) {
 				string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
 				string resourcesdir = dir + "\\resources\\" + filename;
-				if (!std::filesystem::exists(resourcesdir)) {
-					continue;
-				};
 				char* xmlaux = GetResources(xml, dir, filename);
 				if (strlen(xmlaux) > 1) {
 					xml_document<char>* xmldoc = new xml_document<char>();
