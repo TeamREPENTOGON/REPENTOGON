@@ -1,5 +1,7 @@
 v1.0.9b -
 Additions:
+* Camera:
+	- IsPosVisible(position: Vector) : bool
 * Game:
 	- RecordPlayerCompletion(CompletionType)
 * ModCallbacks:
@@ -9,8 +11,6 @@ Additions:
 /newline/
 v1.0.9a -
 Additions:
-* Camera:
-	- IsPosVisible(position: Vector) : bool
 * Game:
 	- ClearErasedEnemies(): void
 	- GetShopVisits(): int

@@ -50,6 +50,16 @@ ___
 Adds a debug flag to the game. Multiple can be added simultaneously with bitwise concatenation (e.g. `DebugFlag.ENTITY_POSITIONS | DebugFlag.HITSPHERES`).
 
 ___
+### AddShopVisits () {: aria-label='Functions' }
+#### void AddShopVisits ( int Count ) {: .copyable aria-label='Functions' }
+Adds the amount of shops the player has entered this run.
+
+___
+### ClearErasedEnemies () {: aria-label='Functions' }
+#### void ClearErasedEnemies ( ) {: .copyable aria-label='Functions' }
+Clears out all enemies listed as an erased enemy, allowing them to spawn again.
+
+___
 ### DevolveEnemy () {: aria-label='Functions' }
 #### void DevolveEnemy ( [Entity](Entity.md) ) {: .copyable aria-label='Functions' }
 Devolves an enemy, as if the item D10 was used on it.
@@ -88,6 +98,11 @@ ___
 ### GetPlanetariumsVisited () {: aria-label='Functions' }
 #### int GetPlanetariumsVisited ( ) {: .copyable aria-label='Functions' }
 Returns the amount of planetariums the player has entered this run.
+
+___
+### GetShopVisits () {: aria-label='Functions' }
+#### int GetShopVisits ( ) {: .copyable aria-label='Functions' }
+Returns the amount of shops the player has entered this run.
 
 ___
 ### GetTargetColorModifier () {: aria-label='Functions' }

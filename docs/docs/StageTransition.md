@@ -11,6 +11,9 @@ tags:
     Please note that the `StageTransition` is only used to configure how the stage transition plays. If you want to manipulate the content of the screen during a stage transition, you need to use the NightmareScene class.
     
     You can get this class by using the `StageTransition` global table.
+    
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
     ???+ example "Example Code"
         ```lua
         local samestage = StageTransition.GetSameStage()

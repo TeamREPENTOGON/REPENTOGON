@@ -22,18 +22,18 @@ Creates and pushes a [LootListEntry](LootListEntry.md) into the `LootList`.
 While usually reserved for chests and sacks that give pickups like hearts, bombs, etc, every `EntityPickup` has a `LootList` and you can push any type, variant, and subtype as a LootListEntry.
 
 ???+ example "Example Code"
-    This code makes all regular chests spawn the best boss in the entire game. As a bonus, use Guppy's Eye for a horrifying image.
+    This code makes all regular chests contain the best boss in the entire game. As a bonus, use Guppy's Eye for a horrifying image.
 
     ```lua
 		local mod = RegisterMod("Delirium Unboxing", 1)
 
-		function mod:OnPickupUpdate(pickup)
-			if pickup.FrameCount ~= 1 then return end
-			local lootList = pickup:GetLootList()
-			
+		function mod:onPrePickupGetLootList(pickup, shouldAdvance)
+			if pickup.Variant ~= PickupVariant.PICKUP_CHEST then return end
+			local lootList = LootList()
 			lootList:PushEntry(EntityType.ENTITY_DELIRIUM, 0, 0)
+			return lootList
 		end
-		mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, mod.OnPickupUpdate, PickupVariant.PICKUP_CHEST)
+		mod:AddCallback(ModCallbacks.MC_PRE_PICKUP_GET_LOOT_LIST, mod.onPrePickupGetLootList)
     ```
 
 ___
