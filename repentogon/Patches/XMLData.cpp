@@ -3193,6 +3193,9 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 			if (mod->IsEnabled()) {
 				string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
 				string resourcesdir = dir + "\\resources\\" + filename;
+				if (!std::filesystem::exists(resourcesdir)) {
+					continue;
+				};
 				char* xmlaux = GetResources(xml, dir, filename);
 				if (strlen(xmlaux) > 1) {
 					xml_document<char>* xmldoc = new xml_document<char>();
@@ -3243,7 +3246,9 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 
 			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
 			string contentsdir = dir + "\\content\\" + filename;
-
+			if (!std::filesystem::exists(contentsdir)) {
+				continue;
+			};
 			xml_document<char>* xmldoc = new xml_document<char>();
 			if (XMLParse(xmldoc, xml, filename)) {
 				xml_node<char>* root = xmldoc->first_node();
