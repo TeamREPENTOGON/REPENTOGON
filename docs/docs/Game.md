@@ -119,6 +119,11 @@ ___
 Returns `true` if the current run is a rerun.
 
 ___
+### RecordPlayerCompletion () {: aria-label='Functions' }
+#### void RecordPlayerCompletion ( [CompletionType](enums/CompletionType.md) Type ) {: .copyable aria-label='Functions' }
+Sets marks and unlocks achievements associated with this type for all players. Used by the game to award marks as well as tainted completion paper groups.
+
+___
 ### SetColorModifier () {: aria-label='Functions' }
 #### void SetColorModifier ( [ColorModifier](ColorModifier.md) ColorModifier, boolean Lerp = true, float Rate = 0.015 ) {: .copyable aria-label='Functions' }
 
