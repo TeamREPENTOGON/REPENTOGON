@@ -2346,10 +2346,10 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 
 //COMPLETION_MARK_GET 1047
 //POST_COMPLETION_MARK_GET 1048 // There are in CompletionTracker.cpp for convenience
-//(PRE/POST)_COMPLETION_EVENT (1049/1050) 
+//(PRE/POST)_COMPLETION_EVENT (1049/1052) 
 HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall) {
 	const int callbackid1 = 1049;
-	const int callbackid2 = 1050;
+	const int callbackid2 = 1052;
 	lua_State* L = g_LuaEngine->_state;
 	if (CallbackState.test(callbackid1 - 1000)) {
 
