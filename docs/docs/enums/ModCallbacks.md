@@ -1440,6 +1440,7 @@ Accepts `true` to cancel rendering.
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1119 |MC_PRE_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot, <br>[Vector](../Vector.md) Offset, <br>float Alpha, <br>float Scale, <br>[Vector](../Vector.md) ChargeBarOffset) | - | boolean |
+
 ### MC_POST_PLAYERHUD_RENDER_ACTIVE_ITEM {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|

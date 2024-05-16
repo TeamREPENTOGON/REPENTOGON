@@ -321,6 +321,17 @@ LUA_FUNCTION(Lua_ClearErasedEnemies) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_RecordPlayerCompletion) {
+	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
+	int event = (int)luaL_checkinteger(L, 2);
+	if (event < 0 || event > 17) {
+		return luaL_error(L, "Bad CompletionType %d (valid range is 0-17)", event);
+	}
+	g_Manager->RecordPlayerCompletion(event);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -359,6 +370,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetBloom", Lua_SetBloom},
 		{ "GetDizzyAmount", Lua_GetDizzyAmount},
 		{ "SetDizzyAmount", Lua_SetDizzyAmount},
+		{ "RecordPlayerCompletion", Lua_RecordPlayerCompletion},
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GAME, functions);

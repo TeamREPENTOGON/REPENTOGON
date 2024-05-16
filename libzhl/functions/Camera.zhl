@@ -4,6 +4,9 @@ __thiscall void Camera::constructor(Room* room);
 "558bec568bf180be????????0075":
 __thiscall void Camera::SetFocusPosition(Vector* pos);
 
+"558bec83e4f883ec308b15":
+__thiscall bool Camera::IsPosVisible(Vector * Pos);
+
 "558bec83e4f851a1????????568b":
 __thiscall void Camera::DoUpdate(bool unk);
 
