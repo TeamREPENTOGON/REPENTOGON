@@ -826,7 +826,7 @@
         
   
   <span class="md-ellipsis">
-    Isaac.
+    Isaac
   </span>
   
 
@@ -868,7 +868,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityPlayer
+    EntityPlayer
   </span>
   
 
@@ -889,7 +889,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityNPC
+    EntityNPC
   </span>
   
 
@@ -910,7 +910,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityEffect
+    EntityEffect
   </span>
   
 
@@ -931,7 +931,7 @@
         
   
   <span class="md-ellipsis">
-    Game():
+    Game
   </span>
   
 
@@ -2955,7 +2955,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityEffect
+    EntityEffect
   </span>
   
 
@@ -3039,7 +3039,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityNPC
+    EntityNPC
   </span>
   
 
@@ -3060,7 +3060,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityPlayer
+    EntityPlayer
   </span>
   
 
@@ -3345,7 +3345,7 @@
         
   
   <span class="md-ellipsis">
-    Game():
+    Game
   </span>
   
 
@@ -3966,7 +3966,7 @@
         
   
   <span class="md-ellipsis">
-    Isaac.
+    Isaac
   </span>
   
 
@@ -5238,6 +5238,48 @@
   
   
     <li class="md-nav__item">
+      <a href="RoomConfig.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RoomConfig
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="RoomConfigStage.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RoomConfigStage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="GridEntitiesSaveStateVector.html" class="md-nav__link">
         
   
@@ -6456,7 +6498,7 @@
 <p>While usually reserved for chests and sacks that give pickups like hearts, bombs, etc, every <code>EntityPickup</code> has a <code>LootList</code> and you can push any type, variant, and subtype as a LootListEntry.</p>
 <details class="example" open="open">
 <summary>Example Code</summary>
-<p>This code makes all regular chests spawn the best boss in the entire game. As a bonus, use Guppy's Eye for a horrifying image.</p>
+<p>This code makes all regular chests contain the best boss in the entire game. As a bonus, use Guppy's Eye for a horrifying image.</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
@@ -6467,13 +6509,13 @@
 <span class="normal">8</span>
 <span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>    <span class="kd">local</span> <span class="n">mod</span> <span class="o">=</span> <span class="n">RegisterMod</span><span class="p">(</span><span class="s2">&quot;Delirium Unboxing&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">OnPickupUpdate</span><span class="p">(</span><span class="n">pickup</span><span class="p">)</span>
-        <span class="kr">if</span> <span class="n">pickup</span><span class="p">.</span><span class="n">FrameCount</span> <span class="o">~=</span> <span class="mi">1</span> <span class="kr">then</span> <span class="kr">return</span> <span class="kr">end</span>
-        <span class="kd">local</span> <span class="n">lootList</span> <span class="o">=</span> <span class="n">pickup</span><span class="p">:</span><span class="n">GetLootList</span><span class="p">()</span>
-
+    <span class="kr">function</span> <span class="nc">mod</span><span class="p">:</span><span class="nf">onPrePickupGetLootList</span><span class="p">(</span><span class="n">pickup</span><span class="p">,</span> <span class="n">shouldAdvance</span><span class="p">)</span>
+        <span class="kr">if</span> <span class="n">pickup</span><span class="p">.</span><span class="n">Variant</span> <span class="o">~=</span> <span class="n">PickupVariant</span><span class="p">.</span><span class="n">PICKUP_CHEST</span> <span class="kr">then</span> <span class="kr">return</span> <span class="kr">end</span>
+        <span class="kd">local</span> <span class="n">lootList</span> <span class="o">=</span> <span class="n">LootList</span><span class="p">()</span>
         <span class="n">lootList</span><span class="p">:</span><span class="n">PushEntry</span><span class="p">(</span><span class="n">EntityType</span><span class="p">.</span><span class="n">ENTITY_DELIRIUM</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="kr">return</span> <span class="n">lootList</span>
     <span class="kr">end</span>
-    <span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_POST_PICKUP_UPDATE</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">OnPickupUpdate</span><span class="p">,</span> <span class="n">PickupVariant</span><span class="p">.</span><span class="n">PICKUP_CHEST</span><span class="p">)</span>
+    <span class="n">mod</span><span class="p">:</span><span class="n">AddCallback</span><span class="p">(</span><span class="n">ModCallbacks</span><span class="p">.</span><span class="n">MC_PRE_PICKUP_GET_LOOT_LIST</span><span class="p">,</span> <span class="n">mod</span><span class="p">.</span><span class="n">onPrePickupGetLootList</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 <hr />

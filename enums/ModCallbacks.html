@@ -837,7 +837,7 @@
         
   
   <span class="md-ellipsis">
-    Isaac.
+    Isaac
   </span>
   
 
@@ -879,7 +879,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityPlayer
+    EntityPlayer
   </span>
   
 
@@ -900,7 +900,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityNPC
+    EntityNPC
   </span>
   
 
@@ -921,7 +921,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityEffect
+    EntityEffect
   </span>
   
 
@@ -942,7 +942,7 @@
         
   
   <span class="md-ellipsis">
-    Game():
+    Game
   </span>
   
 
@@ -1270,9 +1270,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mc_pre_completion_event" class="md-nav__link">
+  <a href="#mc_post_achievement_unlock" class="md-nav__link">
     <span class="md-ellipsis">
-      MC_PRE_COMPLETION_EVENT
+      MC_POST_ACHIEVEMENT_UNLOCK
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_post_achievement" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_ACHIEVEMENT
     </span>
   </a>
   
@@ -4745,9 +4754,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mc_pre_completion_event" class="md-nav__link">
+  <a href="#mc_post_achievement_unlock" class="md-nav__link">
     <span class="md-ellipsis">
-      MC_PRE_COMPLETION_EVENT
+      MC_POST_ACHIEVEMENT_UNLOCK
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_post_achievement" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_ACHIEVEMENT
     </span>
   </a>
   
@@ -7932,7 +7950,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityEffect
+    EntityEffect
   </span>
   
 
@@ -8016,7 +8034,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityNPC
+    EntityNPC
   </span>
   
 
@@ -8037,7 +8055,7 @@
         
   
   <span class="md-ellipsis">
-    -- EntityPlayer
+    EntityPlayer
   </span>
   
 
@@ -8322,7 +8340,7 @@
         
   
   <span class="md-ellipsis">
-    Game():
+    Game
   </span>
   
 
@@ -8943,7 +8961,7 @@
         
   
   <span class="md-ellipsis">
-    Isaac.
+    Isaac
   </span>
   
 
@@ -10207,6 +10225,48 @@
             RoomConfig
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RoomConfig.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RoomConfig
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RoomConfigStage.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    RoomConfigStage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -11556,9 +11616,18 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mc_pre_completion_event" class="md-nav__link">
+  <a href="#mc_post_achievement_unlock" class="md-nav__link">
     <span class="md-ellipsis">
-      MC_PRE_COMPLETION_EVENT
+      MC_POST_ACHIEVEMENT_UNLOCK
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_post_achievement" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_ACHIEVEMENT
     </span>
   </a>
   
@@ -14278,7 +14347,7 @@ Accepts no return parameters.</p>
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_challenge_done">MC_PRE_CHALLENGE_DONE<a class="headerlink" href="#mc_pre_challenge_done" title="Permanent link">⚓︎</a></h3>
-<p>Executed before a challenge is marked as completed.</p>
+<p>Called before a challenge is marked as completed.</p>
 <p>Returning <code>false</code> will prevent further execution of the challenge completion-tracking function.</p>
 <table>
 <thead>
@@ -14301,7 +14370,7 @@ Accepts no return parameters.</p>
 </tbody>
 </table>
 <h3 class="copyable" id="mc_post_challenge_done">MC_POST_CHALLENGE_DONE<a class="headerlink" href="#mc_post_challenge_done" title="Permanent link">⚓︎</a></h3>
-<p>Executed after a challenge is marked as completed.</p>
+<p>Called after a challenge is marked as completed.</p>
 <table>
 <thead>
 <tr>
@@ -14344,9 +14413,31 @@ Accepts no return parameters.</p>
 </tr>
 </tbody>
 </table>
-<h3 class="copyable" id="mc_pre_completion_event">MC_PRE_COMPLETION_EVENT<a class="headerlink" href="#mc_pre_completion_event" title="Permanent link">⚓︎</a></h3>
+<h3 class="copyable" id="mc_post_achievement_unlock">MC_POST_ACHIEVEMENT_UNLOCK<a class="headerlink" href="#mc_post_achievement_unlock" title="Permanent link">⚓︎</a></h3>
+<p>Called after an achievement is unlocked.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1476</td>
+<td class="copyable" style="text-align: left;">MC_POST_ACHIEVEMENT_UNLOCK</td>
+<td style="text-align: left;">(<a href="Achievement.html">Achievement</a> AchievementID)</td>
+<td style="text-align: left;"><a href="Achievement.html">Achievement</a></td>
+<td style="text-align: left;">void</td>
+</tr>
+</tbody>
+</table>
+<h3 class="copyable" id="mc_post_achievement">MC_POST_ACHIEVEMENT<a class="headerlink" href="#mc_post_achievement" title="Permanent link">⚓︎</a></h3>
 <p>Can return <code>false</code> to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.</p>
-<p>Triggers when a completion even gets triggered, getting as a parameter the code for the event in question. </p>
+<p>Called when a completion even gets triggered, getting as a parameter the code for the event in question. </p>
 <table>
 <thead>
 <tr>
@@ -14413,7 +14504,7 @@ Accepts no return parameters.</p>
 </table>
 <h3 class="copyable" id="mc_completion_mark_get">MC_COMPLETION_MARK_GET<a class="headerlink" href="#mc_completion_mark_get" title="Permanent link">⚓︎</a></h3>
 <p>Can return <code>false</code> to cancel the completion mark.</p>
-<p>Triggers when the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.</p>
+<p>Called when the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.</p>
 <table>
 <thead>
 <tr>
@@ -14435,7 +14526,7 @@ Accepts no return parameters.</p>
 </tbody>
 </table>
 <h3 class="copyable" id="mc_post_completion_mark_get">MC_POST_COMPLETION_MARK_GET<a class="headerlink" href="#mc_post_completion_mark_get" title="Permanent link">⚓︎</a></h3>
-<p>Triggers after the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.</p>
+<p>Called after the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.</p>
 <table>
 <thead>
 <tr>
@@ -19119,7 +19210,7 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <td style="text-align: left;">1481</td>
 <td class="copyable" style="text-align: left;">MC_PRE_PLAYER_REVIVE</td>
 <td style="text-align: left;">(<a href="../EntityPlayer.html">EntityPlayer</a> Player)</td>
-<td style="text-align: left;">-</td>
+<td style="text-align: left;">[PlayerType][https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html]</td>
 <td style="text-align: left;">boolean</td>
 </tr>
 </tbody>
@@ -19141,7 +19232,7 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <td style="text-align: left;">1482</td>
 <td class="copyable" style="text-align: left;">MC_POST_PLAYER_REVIVE</td>
 <td style="text-align: left;">(<a href="../EntityPlayer.html">EntityPlayer</a> Player)</td>
-<td style="text-align: left;">-</td>
+<td style="text-align: left;">[PlayerType][https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html]</td>
 <td style="text-align: left;">void</td>
 </tr>
 </tbody>
@@ -19295,8 +19386,8 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <td style="text-align: left;">1333</td>
 <td class="copyable" style="text-align: left;">MC_PRE_PICKUP_GET_LOOT_LIST</td>
 <td style="text-align: left;">(<a href="../EntityPickup.html">EntityPickup</a> Pickup, <br>boolean ShouldAdvance)</td>
-<td style="text-align: left;"><a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html">PickupVariant</a></td>
-<td style="text-align: left;">void</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;"><a href="../LootList.html">LootList</a></td>
 </tr>
 </tbody>
 </table>
@@ -19323,7 +19414,7 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_post_player_trigger_effect_removed">MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED<a class="headerlink" href="#mc_post_player_trigger_effect_removed" title="Permanent link">⚓︎</a></h3>
-<p>Called after the player's <code>ItemConfigItem</code> TemporaryEffect is removed</p>
+<p>Called after the player's <code>ItemConfigItem</code> TemporaryEffect is removed.</p>
 <table>
 <thead>
 <tr>
@@ -19339,7 +19430,7 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <td style="text-align: left;">1268</td>
 <td class="copyable" style="text-align: left;">MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED</td>
 <td style="text-align: left;">(<a href="../EntityPlayer.html">EntityPlayer</a> Player, <br>[ItemConfigItem][../ItemConfig_Item.md])</td>
-<td style="text-align: left;">[ItemConfigItem][../ItemConfig_Item.md]</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">void</td>
 </tr>
 </tbody>
@@ -19362,7 +19453,7 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <td style="text-align: left;">1269</td>
 <td class="copyable" style="text-align: left;">MC_POST_ROOM_TRIGGER_EFFECT_REMOVED</td>
 <td style="text-align: left;">([ItemConfigItem][../ItemConfig_Item.md])</td>
-<td style="text-align: left;">[ItemConfigItem][../ItemConfig_Item.md]</td>
+<td style="text-align: left;">-</td>
 <td style="text-align: left;">void</td>
 </tr>
 </tbody>
@@ -19819,7 +19910,7 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <td style="text-align: left;">1271</td>
 <td class="copyable" style="text-align: left;">MC_POST_ROOM_TRANSITION_UPDATE</td>
 <td style="text-align: left;">void</td>
-<td style="text-align: left;">-</td>
+<td style="text-align: left;">int TransitionMode</td>
 <td style="text-align: left;">void</td>
 </tr>
 </tbody>
@@ -19840,7 +19931,7 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 <td style="text-align: left;">1272</td>
 <td class="copyable" style="text-align: left;">MC_POST_ROOM_TRANSITION_RENDER</td>
 <td style="text-align: left;">void</td>
-<td style="text-align: left;">-</td>
+<td style="text-align: left;">int TransitionMode</td>
 <td style="text-align: left;">void</td>
 </tr>
 </tbody>
