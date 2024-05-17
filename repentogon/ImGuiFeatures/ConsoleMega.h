@@ -614,7 +614,12 @@ struct ConsoleMega : ImGuiWindowObject {
                                 std::pair<int, std::string>(29, "ultrasecret"),
                             };
 
-                            for (unsigned int i = 0; i < set->_count; ++i) {
+                            for (unsigned int i = 1; i < set->_count; ++i) {
+                                if (config->Type != 1) {
+                                    entries.insert(AutocompleteEntry(std::string("x.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
+                                    config++;
+                                    continue;
+                                };
                                 entries.insert(AutocompleteEntry(std::string("d.") + std::to_string(config->Variant), config->Name));
                                 config++;
                             }
@@ -625,13 +630,6 @@ struct ConsoleMega : ImGuiWindowObject {
 
                             for (unsigned int i = 0; i < specialSet->_count; ++i) {
                                 entries.insert(AutocompleteEntry(std::string("s.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
-                                config++;
-                            }
-
-                            config = set->_configs;
-
-                            for (unsigned int i = 0; i < set->_count; ++i) {
-                                entries.insert(AutocompleteEntry(std::string("x.") + specialRoomTypes[config->Type] + "." + std::to_string(config->Variant), config->Name));
                                 config++;
                             }
 
@@ -1214,6 +1212,9 @@ struct ConsoleMega : ImGuiWindowObject {
                             [](unsigned char c) { return std::tolower(c); });
 
                         if (lowerText.rfind(lowerBuf, 0) == 0 || lowerDesc.find(lowerDescBuf) != std::string::npos) {
+                            if (autocompleteBuffer.size() > 10) {       //autocomplete result cap is defined here
+                                break;
+                            };
                             autocompleteBuffer.push_back(entry);
                         }
                     }
