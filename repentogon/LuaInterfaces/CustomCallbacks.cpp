@@ -2346,29 +2346,51 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 
 //COMPLETION_MARK_GET 1047
 //POST_COMPLETION_MARK_GET 1048 // There are in CompletionTracker.cpp for convenience
-//PRE_COMPLETION_EVENT (1049) 
-HOOK_STATIC(Manager, RecordPlayerCompletion, (int unk) -> void, __stdcall) {
-	const int callbackid = 1049;
-	if (CallbackState.test(callbackid - 1000)) {
+//(PRE/POST)_COMPLETION_EVENT (1049/1052) 
+HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall) {
+	const int callbackid1 = 1049;
+	const int callbackid2 = 1052;
+	lua_State* L = g_LuaEngine->_state;
+	if (CallbackState.test(callbackid1 - 1000)) {
+
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
+			.push(completion)
+			.push(completion)
+			.call(1);
+
+		if (!result)
+		{
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1) == false)
+					return;
+			}
+			else if (lua_isinteger(L, -1)) {
+				int retCompletion = lua_tointeger(L, -1);
+				if (retCompletion >= 0 && retCompletion <= 17)
+					completion = retCompletion;
+				else
+					return;
+			}
+		}
+	}
+
+	super(completion);
+
+	if (CallbackState.test(callbackid2 - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(unk)
-			.push(unk)
+		lua::LuaCaller(L).push(callbackid2)
+			.push(completion)
+			.push(completion)
 			.call(1);
-
-		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				if (!lua_toboolean(L, -1)) {
-					return;
-				}
-			}
-		}
 	}
-	super(unk);
 }
 
 // PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)

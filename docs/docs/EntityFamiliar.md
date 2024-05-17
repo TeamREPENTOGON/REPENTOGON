@@ -60,7 +60,7 @@ ___
 ___
 ### SetMoveDelayNum () {: aria-label='Functions' }
 #### void SetMoveDelayNum ( int Delay ) {: .copyable aria-label='Functions' }
-Sets the amount in frames that the familiar's movements are delayed from the player's.
+Sets the amount in frames that the familiar's movements are delayed from the player's. 30 frames = 1 second.
 
 ___
 ### TriggerRoomClear () {: aria-label='Functions' }

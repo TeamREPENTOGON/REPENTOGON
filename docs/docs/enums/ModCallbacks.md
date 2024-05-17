@@ -192,7 +192,7 @@ Alternatively accepts `false` to cancel rendering
 |1088 |MC_PRE_BOMB_RENDER {: .copyable } | ([EntityBomb](../EntityBomb.md) Bomb, <br>[Vector](../Vector.md) Offset) | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.md) | [Vector](../Vector.md) or boolean |
 
 ### MC_PRE_CHALLENGE_DONE {: .copyable }
-Executed before a challenge is marked as completed.
+Called before a challenge is marked as completed.
 
 Returning `false` will prevent further execution of the challenge completion-tracking function.
 
@@ -201,7 +201,7 @@ Returning `false` will prevent further execution of the challenge completion-tra
 |1471 | MC_PRE_CHALLENGE_DONE {: .copyable } | ([Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html), <br>EntityPlayer [EntityPlayer](../EntityPlayer.md)) | [Challenge](https://wofsauge.github.io/IsaacDocs/rep/enums/Challenge.html) | boolean |
 
 ### MC_POST_CHALLENGE_DONE {: .copyable }
-Executed after a challenge is marked as completed.
+Called after a challenge is marked as completed.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -214,10 +214,17 @@ Accepts a table of parameters: `{TargetRoomIdx, Dimension}`
 |:--|:--|:--|:--|:--|
 |1061 |MC_PRE_CHANGE_ROOM {: .copyable } | (int TargetRoomIdx, <br>int Dimension) | - | table |
 
+### MC_POST_ACHIEVEMENT_UNLOCK {: .copyable }
+Called after an achievement is unlocked.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1476 |MC_POST_ACHIEVEMENT_UNLOCK {: .copyable } | ([Achievement](Achievement.md) AchievementID) | [Achievement](Achievement.md) | void |
+
 ### MC_PRE_COMPLETION_EVENT {: .copyable }
 Can return `false` to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.
 
-Triggers when a completion even gets triggered, getting as a parameter the code for the event in question. 
+Called when a completion even gets triggered, getting as a parameter the code for the event in question. 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -240,14 +247,14 @@ Accepts no return parameters.
 ### MC_COMPLETION_MARK_GET {: .copyable }
 Can return `false` to cancel the completion mark.
 
-Triggers when the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
+Called when the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1047 |MC_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, <br>int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void or false |
 
 ### MC_POST_COMPLETION_MARK_GET {: .copyable }
-Triggers after the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
+Called after the player gets a completion mark, getting as a parameter the code for the mark in question and the playertype.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -1936,14 +1943,14 @@ Return `false` to cancel it."
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1481 |MC_PRE_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | boolean |
+|1481 |MC_PRE_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType][https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html] | boolean |
 
 ### MC_POST_PLAYER_REVIVE {: .copyable }
 Called after the player revives, assuming it wasn't cancelled.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1482 |MC_POST_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | - | void |
+|1482 |MC_POST_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType][https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html] | void |
 
 ### MC_POST_TRIGGER_TRINKET_ADDED {: .copyable }
 Accepts no return parameters.
@@ -1992,7 +1999,7 @@ Called before the pickup determines its loot content. Accepts a [LootList](../Lo
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1333 |MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>boolean ShouldAdvance) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | void |
+|1333 |MC_PRE_PICKUP_GET_LOOT_LIST {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, <br>boolean ShouldAdvance) | - | [LootList](../LootList.md) |
 
 ### MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable }
 Called before a ghost pickup of the loot content is applied to the pickup. Return `true` to apply pickup ghost to your pickup entity, `false` to cancel it.
@@ -2002,11 +2009,11 @@ Called before a ghost pickup of the loot content is applied to the pickup. Retur
 |1334 |MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
 
 ### MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED {: .copyable }
-Called after the player's `ItemConfigItem` TemporaryEffect is removed
+Called after the player's `ItemConfigItem` TemporaryEffect is removed.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1268 |MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ItemConfigItem][../ItemConfig_Item.md]) | [ItemConfigItem][../ItemConfig_Item.md] | void |
+|1268 |MC_POST_PLAYER_TRIGGER_EFFECT_REMOVED {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, <br>[ItemConfigItem][../ItemConfig_Item.md]) | - | void |
 
 ### MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable }
 Called after the room's [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.md) is removed.
@@ -2015,7 +2022,7 @@ Called after the room's [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1269 |MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable } | ([ItemConfigItem][../ItemConfig_Item.md]) | [ItemConfigItem][../ItemConfig_Item.md] | void |
+|1269 |MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable } | ([ItemConfigItem][../ItemConfig_Item.md]) | - | void |
 
 ### MC_PRE_PLAYER_GRID_COLLISION {: .copyable }
 Called before this entity collides with the [GridEntity](../GridEntity.md).
@@ -2196,13 +2203,13 @@ Called right after the boss intro is initialized. `BossID2` is for Double Troubl
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1271 |MC_POST_ROOM_TRANSITION_UPDATE {: .copyable } | void | - | void |
+|1271 |MC_POST_ROOM_TRANSITION_UPDATE {: .copyable } | void | int TransitionMode | void |
 
 ### MC_POST_ROOM_TRANSITION_RENDER {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1272 |MC_POST_ROOM_TRANSITION_RENDER {: .copyable } | void | - | void |
+|1272 |MC_POST_ROOM_TRANSITION_RENDER {: .copyable } | void | int TransitionMode | void |
 
 ### MC_PRE_PLAYER_UPDATE {: .copyable }
 Called before this entity is updated.

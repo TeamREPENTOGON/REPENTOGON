@@ -45,6 +45,11 @@ Returns an integer that varies based on the slot machine.
         - `3`: Collectible.
 
 ___
+### GetShellGameAnimationIndex () {: aria-label='Functions' }
+#### int GetShellGameAnimationIndex ( ) {: .copyable aria-label='Functions' }
+Returns the index used by Shell Game and Hell Game to determine which prize animation to play.
+
+___
 ### GetState () {: aria-label='Functions' }
 #### int GetState ( ) {: .copyable aria-label='Functions' }
 Returns the current state of the slot.
@@ -72,6 +77,15 @@ ___
 Returns the slot's touch counter. The touch counter goes up by one every frame a player is touching the slot and is reset once no player is touching it.
 
 ___
+### GetTriggerTimerNum () {: aria-label='Functions' }
+#### int GetTriggerTimerNum ( ) {: .copyable aria-label='Functions' }
+Returns a number used by Bomb Bum and Reroll Machine.
+
+???+ note "Return Info"
+    When bombing Bomb Bum, this is set to `30`
+
+    Reroll Machine increments this by `1` for every successful reroll. When bombed, has a chance to set it to 11 and reroll another item.
+___
 ### RandomCoinJamAnim () {: aria-label='Functions' }
 #### string RandomCoinJamAnim ( ) {: .copyable aria-label='Functions' }
 Returns a random string from the following options: `CoinJam`, `CoinJam2`, `CoinJam3,` `CoinJam4`. Presumably only used on the donation machines.
@@ -97,6 +111,11 @@ ___
 Sets the state of the slot. See [GetState](EntitySlot.md#getstate) for more info.
 
 ___
+### SetShellGameAnimationIndex () {: aria-label='Functions' }
+#### void SetShellGameAnimationIndex ( int index ) {: .copyable aria-label='Functions' }
+Sets the index used by Shell Game and Hell Game to determine which prize animation to play.
+
+___
 ### SetTimeout () {: aria-label='Functions' }
 #### void SetTimeout ( int Timeout ) {: .copyable aria-label='Functions' }
 Sets the timeout of the slot. See [GetTimeout](EntitySlot.md#gettimeout) for more info.
@@ -105,4 +124,14 @@ ___
 ### SetTouch () {: aria-label='Functions' }
 #### void SetTouch ( int Touch ) {: .copyable aria-label='Functions' }
 Sets the slot's touch counter. The touch counter goes up by one every frame a player is touching the slot and is reset to zero once no player is touching it.
+
+___
+### SetTriggerTimerNum () {: aria-label='Functions' }
+#### void SetTriggerTimerNum ( int num ) {: .copyable aria-label='Functions' }
+Returns a number used by Bomb Bum and Reroll Machine.
+
+???+ note "More Info"
+    When bombing Bomb Bum, this is set to `30`
+
+    Reroll Machine increments this by `1` for every successful reroll. When bombed, has a chance to set it to 11 and reroll another item.
 ___

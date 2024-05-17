@@ -1,13 +1,16 @@
 v1.0.9b -
 Additions:
+* Camera:
+	- IsPosVisible(position: Vector) : bool
 * Game:
-	-RecordPlayerCompletion(CompletionType)
+	- RecordPlayerCompletion(CompletionType)
+* ModCallbacks:
+	- MC_(PRE/POST)_RECORD_PLAYER_COMPLETION
+		Called when a player completes something that would award a mark (end bosses, tainted unlocks)
 * Add new Vanilla Tweaks option "Mars Double Tap Window", which determines the number of frames where a repeated movement input is counted as a double tap for activating Mars's charge
 /newline/
 v1.0.9a -
 Additions:
-* Camera:
-	- IsPosVisible(position: Vector) : bool
 * Game:
 	- ClearErasedEnemies(): void
 	- GetShopVisits(): int
