@@ -120,7 +120,6 @@ namespace REPENTOGONFileMap {
 		};
 	};
 	void GenerateMap() {
-		//kill off for now
 		if (map_init || !repentogonOptions.fileMap) {
 			return;
 		};

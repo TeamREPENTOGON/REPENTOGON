@@ -21,6 +21,7 @@ namespace REPENTOGONFileMap {
     extern std::vector<std::wstring> _stringByFType;
     extern std::unordered_map<size_t, FileMapEntry> _filemap;
     extern std::wstring _modsPath;
+    extern bool map_init;
     void GenerateMap();
     FileMapEntry* GetEntry(size_t input);
 };
