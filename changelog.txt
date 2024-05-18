@@ -12,6 +12,7 @@ Additions:
 * Improved mods' startup speed once again!
 * Minor fix for a file map.
 * "clearcache" command now reloads the file map.
+* Bumbino, Ultra Greed, and familiars like Bum Friend will now trigger MC_PICKUP_GET_COIN_VALUE when collecting coins, and will default to treating modded coin subtypes as worth 1 penny instead of huge values.
 /newline/
 v1.0.9a -
 Additions:

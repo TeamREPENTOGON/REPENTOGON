@@ -3215,48 +3215,6 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 	return super(slot, config, seed, unk);
 }
 
-const int coinValues[8] = { 1, 1, 5, 10, 2, 1, 5, 1 };
-
-int FixedGetCoinValue(int subtype) {
-	if (subtype > 7)
-		return 1;
-	else
-		return coinValues[subtype];
-}
-
-HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
-	if (*this->GetVariant() == 20) {
-		const int callbackid = 1250;
-		if (CallbackState.test(callbackid - 1000)) {
-			lua_State* L = g_LuaEngine->_state;
-			lua::LuaStackProtector protector(L);
-
-			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-				.push(*this->GetSubType())
-				.push(this, lua::Metatables::ENTITY_PICKUP)
-				.call(1);
-
-			if (!result) {
-				if (lua_isinteger(L, -1)) {
-					return ((int)lua_tointeger(L, -1));
-				}
-			}
-		}
-		const unsigned int subtype = *this->GetSubType();
-		XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(5, 20, subtype, true);
-		const std::string coinValue = xmlData["coinvalue"];
-		
-		if (isdigit(coinValue[0])) {
-			return stoi(coinValue);
-		}
-		return FixedGetCoinValue(subtype);
-	}
-	// Apparently trying to hook a func with a jump in its first 5 bytes is hellish. Just return what the normal func already would have
-	return 0;
-}
-
 //MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)
 static bool isMultiShotParamsEvaluating = false;
 HOOK_METHOD(Entity_Player, GetMultiShotParams, (Weapon_MultiShotParams* params, int weaponType) -> Weapon_MultiShotParams*) {
