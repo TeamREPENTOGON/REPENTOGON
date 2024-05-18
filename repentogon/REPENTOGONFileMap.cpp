@@ -5,7 +5,7 @@
 #include <Log.h>
 #include "REPENTOGONOptions.h"
 
-#include <locale>
+//#include <locale>
 #include <sstream>
 namespace fs = std::filesystem;
 namespace REPENTOGONFileMap {
@@ -21,7 +21,7 @@ namespace REPENTOGONFileMap {
 
 	fs::path moddir;
 	std::string modname;
-	std::locale utf8loc = std::locale(".UTF-8");
+//	std::locale utf8loc = std::locale(".UTF-8");
 
 	void ProduceString(std::wstring* part_path, FileMapEntry* entry, std::wstring* outstring) {
 		std::string& moddir = g_Manager->GetModManager()->_mods[entry->ModFolder]->_directory;
@@ -103,8 +103,9 @@ namespace REPENTOGONFileMap {
 		wpathbuf.resize(0);
 		format_path(input, wpathbuf);
 //		NormalizePathString(pathbuf);
-		std::transform(wpathbuf.begin(), wpathbuf.end(), wpathbuf.begin(),
-			[](wchar_t c) { return std::tolower(c,utf8loc); });
+		//std::transform(wpathbuf.begin(), wpathbuf.end(), wpathbuf.begin(),
+		//	[](wchar_t c) { return std::tolower(c,utf8loc); });
+		wpathbuf.resize(CharLowerBuffW(wpathbuf.data(), wpathbuf.size()));
 		size_t hashentry = std::hash<std::wstring>{}(wpathbuf);
 		_filemap[hashentry] = entry;
 	};
@@ -190,8 +191,9 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param
 	if (!success) {
 		return super(param_1,param_2);
 	};
-	std::transform(tempwidestr.begin(), tempwidestr.end(), tempwidestr.begin(),
-		[](wchar_t c) { return std::tolower(c, REPENTOGONFileMap::utf8loc); });
+	//std::transform(tempwidestr.begin(), tempwidestr.end(), tempwidestr.begin(),
+	//	[](wchar_t c) { return std::tolower(c, REPENTOGONFileMap::utf8loc); });
+	tempwidestr.resize(CharLowerBuffW(tempwidestr.data(), tempwidestr.size()));
 	size_t hashentry = std::hash<std::wstring>{}(tempwidestr);
 	REPENTOGONFileMap::FileMapEntry* mapentry = REPENTOGONFileMap::GetEntry(hashentry);
 	if (mapentry) {
