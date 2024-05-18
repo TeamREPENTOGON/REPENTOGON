@@ -20,8 +20,9 @@ extern float WINMouseWheelMove_Hori;
 
 LUA_FUNCTION(Lua_InputGetMouseWheel)
 {
-	if (lua::luaL_checkboolean(L, 1)) lua_pushnumber(L, WINMouseWheelMove_Hori);
-	else lua_pushnumber(L, WINMouseWheelMove_Vert);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	Vector vec = Vector(WINMouseWheelMove_Hori, WDPMouseWheelMove_Value);
+	memcpy(toLua, &vec, sizeof(Vector));
 	return 1;
 }
 
