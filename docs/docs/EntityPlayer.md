@@ -251,10 +251,36 @@ Returns table of player sprite layers data for costumes with the following field
 
 |Field|Type|Comment|
 |:--|:--|:--|
-| costumeIndex | int | Index of active/visible costume for layer. |
-| layerID | int | |
-| priority | int | |
-| isBodyLayer | boolean | |
+| costumeIndex | int | Index of active/visible costume for that layer.  `-1` if no costume is on that layer. |
+| layerID | int | ID of the sprite's layer corresponding to its anm2 file. `-1` if no costume is on that layer. |
+| priority | int | Costume's priority as listed in `costumes2.xml`. `-1` if no costume is on that layer. |
+| isBodyLayer | boolean | `true` if the costume is a body costume. `false` if not or if no costume is on that layer. |
+
+???- info "More Layer Map Info"
+
+    The returned table's index order corresponds to PlayerSpriteLayer. However, due to the differences in the starting index of arrays between Lua and C++, CostumeLayerMap's index needs to be decreased by 1 and it's costumeIndex increased by 1 in order to get accurate information.
+
+    Below is a snippet of code that displays all currently occupied costume layers.
+    Prints are sectioned as such: PlayerSpriteLayer - Layer Name - Item Name/NullItemID - Anm2 filepath
+
+    ```lua
+    local player = Isaac.GetPlayer()
+	local map = Isaac.GetPlayer():GetCostumeLayerMap()
+	print("-------------------------------------------------------------------")
+	local costumeSpriteDescs = player:GetCostumeSpriteDescs()
+	for layer, mapData in ipairs(map) do
+        if mapData.costumeIndex == -1 then goto continue end
+        local costumeSpriteDesc = costumeSpriteDescs[mapData.costumeIndex + 1]
+        local sprite = costumeSpriteDesc:GetSprite()
+        local itemConfig = costumeSpriteDesc:GetItemConfig()
+        local layerName = sprite:GetLayer(mapData.layerID):GetName()
+        local costumeName = itemConfig.Name ~= "" and Isaac.GetString("Items", itemConfig.Name) or "NullItemID "..itemConfig.ID
+        local spritePath = sprite:GetFilename()
+        print(layer - 1, "-", layerName, "-", costumeName, "-", spritePath)
+        ::continue::
+	end
+	print("-------------------------------------------------------------------")
+    ```
 
 ___
 ### GetCostumeSpriteDescs () {: aria-label='Functions' }
