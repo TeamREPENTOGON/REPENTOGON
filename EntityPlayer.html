@@ -12673,25 +12673,63 @@
 <tr>
 <td style="text-align: left;">costumeIndex</td>
 <td style="text-align: left;">int</td>
-<td style="text-align: left;">Index of active/visible costume for layer.</td>
+<td style="text-align: left;">Index of active/visible costume for that layer.  <code>-1</code> if no costume is on that layer.</td>
 </tr>
 <tr>
 <td style="text-align: left;">layerID</td>
 <td style="text-align: left;">int</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">ID of the sprite's layer corresponding to its anm2 file. <code>-1</code> if no costume is on that layer.</td>
 </tr>
 <tr>
 <td style="text-align: left;">priority</td>
 <td style="text-align: left;">int</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">Costume's priority as listed in <code>costumes2.xml</code>. <code>-1</code> if no costume is on that layer.</td>
 </tr>
 <tr>
 <td style="text-align: left;">isBodyLayer</td>
 <td style="text-align: left;">boolean</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;"><code>true</code> if the costume is a body costume. <code>false</code> if not or if no costume is on that layer.</td>
 </tr>
 </tbody>
 </table>
+<details class="- info">
+<summary>More Layer Map Info</summary>
+<p>The returned table's index order corresponds to PlayerSpriteLayer. However, due to the differences in the starting index of arrays between Lua and C++, CostumeLayerMap's index needs to be decreased by 1 and it's costumeIndex increased by 1 in order to get accurate information.</p>
+<p>Below is a snippet of code that displays all currently occupied costume layers.
+Prints are sectioned as such: PlayerSpriteLayer - Layer Name - Item Name/NullItemID - Anm2 filepath</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">player</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetPlayer</span><span class="p">()</span>
+<span class="kd">local</span> <span class="n">map</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetPlayer</span><span class="p">():</span><span class="n">GetCostumeLayerMap</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------------------------------------------------------------------&quot;</span><span class="p">)</span>
+<span class="kd">local</span> <span class="n">costumeSpriteDescs</span> <span class="o">=</span> <span class="n">player</span><span class="p">:</span><span class="n">GetCostumeSpriteDescs</span><span class="p">()</span>
+<span class="kr">for</span> <span class="n">layer</span><span class="p">,</span> <span class="n">mapData</span> <span class="kr">in</span> <span class="nb">ipairs</span><span class="p">(</span><span class="n">map</span><span class="p">)</span> <span class="kr">do</span>
+    <span class="kr">if</span> <span class="n">mapData</span><span class="p">.</span><span class="n">costumeIndex</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="kr">then</span> <span class="kr">goto</span> <span class="nl">continue</span> <span class="kr">end</span>
+    <span class="kd">local</span> <span class="n">costumeSpriteDesc</span> <span class="o">=</span> <span class="n">costumeSpriteDescs</span><span class="p">[</span><span class="n">mapData</span><span class="p">.</span><span class="n">costumeIndex</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="kd">local</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">costumeSpriteDesc</span><span class="p">:</span><span class="n">GetSprite</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">itemConfig</span> <span class="o">=</span> <span class="n">costumeSpriteDesc</span><span class="p">:</span><span class="n">GetItemConfig</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">layerName</span> <span class="o">=</span> <span class="n">sprite</span><span class="p">:</span><span class="n">GetLayer</span><span class="p">(</span><span class="n">mapData</span><span class="p">.</span><span class="n">layerID</span><span class="p">):</span><span class="n">GetName</span><span class="p">()</span>
+    <span class="kd">local</span> <span class="n">costumeName</span> <span class="o">=</span> <span class="n">itemConfig</span><span class="p">.</span><span class="n">Name</span> <span class="o">~=</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="s2">&quot;Items&quot;</span><span class="p">,</span> <span class="n">itemConfig</span><span class="p">.</span><span class="n">Name</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;NullItemID &quot;</span><span class="o">..</span><span class="n">itemConfig</span><span class="p">.</span><span class="n">ID</span>
+    <span class="kd">local</span> <span class="n">spritePath</span> <span class="o">=</span> <span class="n">sprite</span><span class="p">:</span><span class="n">GetFilename</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">layer</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">layerName</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">costumeName</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">spritePath</span><span class="p">)</span>
+    <span class="p">::</span><span class="nl">continue</span><span class="p">::</span>
+<span class="kr">end</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-------------------------------------------------------------------&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+</details>
 <hr />
 <h3 aria-label="Functions" id="getcostumespritedescs">GetCostumeSpriteDescs ()<a class="headerlink" href="#getcostumespritedescs" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="costumespritedesc-getcostumespritedescs"><a href="CostumeSpriteDesc.html">CostumeSpriteDesc</a>[] GetCostumeSpriteDescs ( )<a class="headerlink" href="#costumespritedesc-getcostumespritedescs" title="Permanent link">⚓︎</a></h4>
