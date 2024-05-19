@@ -1,6 +1,6 @@
 v1.0.9d -
 Fixes:
-* Fixed a bug in 1.0.9b where all cutscenes were being replaced by the intro cutscene if any mods were enabled.
+* Fixed a bug with the autoupdater
 /newline/
 v1.0.9c -
 Fixes:
