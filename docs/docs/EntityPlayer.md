@@ -263,24 +263,25 @@ Returns table of player sprite layers data for costumes with the following field
     Below is a snippet of code that displays all currently occupied costume layers.
     Prints are sectioned as such: PlayerSpriteLayer - Layer Name - Item Name/NullItemID - Anm2 filepath
 
-    ```lua
-    local player = Isaac.GetPlayer()
-	local map = Isaac.GetPlayer():GetCostumeLayerMap()
-	print("-------------------------------------------------------------------")
-	local costumeSpriteDescs = player:GetCostumeSpriteDescs()
-	for layer, mapData in ipairs(map) do
-        if mapData.costumeIndex == -1 then goto continue end
-        local costumeSpriteDesc = costumeSpriteDescs[mapData.costumeIndex + 1]
-        local sprite = costumeSpriteDesc:GetSprite()
-        local itemConfig = costumeSpriteDesc:GetItemConfig()
-        local layerName = sprite:GetLayer(mapData.layerID):GetName()
-        local costumeName = itemConfig.Name ~= "" and Isaac.GetString("Items", itemConfig.Name) or "NullItemID "..itemConfig.ID
-        local spritePath = sprite:GetFilename()
-        print(layer - 1, "-", layerName, "-", costumeName, "-", spritePath)
-        ::continue::
-	end
-	print("-------------------------------------------------------------------")
-    ```
+    ???+ example "Example Code"
+        ```lua
+        local player = Isaac.GetPlayer()
+        local map = Isaac.GetPlayer():GetCostumeLayerMap()
+        print("-------------------------------------------------------------------")
+        local costumeSpriteDescs = player:GetCostumeSpriteDescs()
+        for layer, mapData in ipairs(map) do
+            if mapData.costumeIndex == -1 then goto continue end
+            local costumeSpriteDesc = costumeSpriteDescs[mapData.costumeIndex + 1]
+            local sprite = costumeSpriteDesc:GetSprite()
+            local itemConfig = costumeSpriteDesc:GetItemConfig()
+            local layerName = sprite:GetLayer(mapData.layerID):GetName()
+            local costumeName = itemConfig.Name ~= "" and Isaac.GetString("Items", itemConfig.Name) or "NullItemID "..itemConfig.ID
+            local spritePath = sprite:GetFilename()
+            print(layer - 1, "-", layerName, "-", costumeName, "-", spritePath)
+            ::continue::
+        end
+        print("-------------------------------------------------------------------")
+        ```
 
 ___
 ### GetCostumeSpriteDescs () {: aria-label='Functions' }
