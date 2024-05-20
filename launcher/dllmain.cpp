@@ -1,19 +1,22 @@
 #include <Windows.h>
 #include <ImageHlp.h>
 #include "ConsoleWindow.h"
-#include "Updater.h"
-#include "utils.h"
+#include "launcher/utils.h"
 #include <stdio.h>
 #include <vector>
 #include <time.h>
 #include "version.h"
-#include "Logger.h"
+#include "launcher/Logger.h"
+#include "updater/updater.h"
+#include "updater/updater_resources.h"
 
 #include <string>
 
 typedef int (*ModInitFunc)(int, char **);
 
 static std::vector<std::pair<std::string, HMODULE>> mods;
+
+static void CheckForUpdates();
 
 DWORD RedirectLua(HMODULE* outLua) {
 	HMODULE isaac = GetModuleHandle(NULL);
@@ -121,6 +124,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 {
 	if(ul_reason_for_call == DLL_PROCESS_ATTACH)
 	{
+		InitCLI();
 		sLogger->SetOutputFile("dsound.log", "w", true);
 		sLogger->SetFlushOnLog(true);
 		sLogger->Info("Loaded REPENTOGON dsound.dll\n");
@@ -272,6 +276,110 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 	}
 
 	return TRUE;
+}
+
+void CheckForUpdates() {
+	// Extract embedded updater and run it
+	HMODULE dll = GetModuleHandle("dsound");
+	HRSRC updater = FindResource(dll, MAKEINTRESOURCE(IDB_EMBEDEXE1), RT_RCDATA);
+	if (!updater) {
+		sLogger->Error("Unable to unpack updater: resource not found in executable !\n");
+		return;
+	}
+
+	HGLOBAL global = LoadResource(dll, updater);
+	if (!global) {
+		sLogger->Error("Unable to unpack updater: last error = %d !\n", GetLastError());
+		return;
+	}
+
+	DWORD size = SizeofResource(dll, updater);
+	if (size == 0) {
+		sLogger->Error("Invalid size of updater (0) !\n");
+		return;
+	}
+
+	void* data = LockResource(global);
+	if (!data) {
+		sLogger->Error("Unable to lock updater !\n");
+		return;
+	}
+
+	const char* filename = "./REPENTOGONUpdater_Base.exe";
+	FILE* output = fopen(filename, "wb");
+	if (!output) {
+		sLogger->Error("Unable to open temporary file %s to extract the self updater\n", filename);
+		return;
+	}
+
+	size_t count = fwrite(data, size, 1, output);
+	if (count != size) {
+		sLogger->Warn("Inconsistent amount of data written: expected %d, wrote %lu\n", size, count);
+	}
+
+	fclose(output);
+
+	STARTUPINFOA startupInfos;
+	PROCESS_INFORMATION processInfos;
+
+	memset(&startupInfos, 0, sizeof(startupInfos));
+	memset(&processInfos, 0, sizeof(processInfos));
+
+	BOOL ok = CreateProcess(filename, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startupInfos, &processInfos);
+	if (!ok) {
+		sLogger->Error("Unable to execute updater\n");
+		return;
+	}
+
+	HANDLE h = OpenProcess(SYNCHRONIZE | PROCESS_QUERY_INFORMATION, FALSE, processInfos.dwProcessId);
+	if (!h) {
+		sLogger->Error("Unable to get handle to updater process\n");
+		return;
+	}
+
+	sLogger->Info("Waiting for updater to complete\n");
+	if (WaitForSingleObject(h, INFINITE) == WAIT_FAILED) {
+		sLogger->Error("Unable to wait until updater is done: %d\n", GetLastError());
+		return;
+	}
+	DWORD exitCode = 0;
+	ok = GetExitCodeProcess(h, &exitCode);
+	if (!ok) {
+		sLogger->Error("Error when getting exit code of updater: %d\n", GetLastError());
+		return;
+	}
+	sLogger->Info("Updater completed with exit code %d\n", exitCode);
+
+	switch (exitCode) {
+	case UPDATER_EXIT_OK:
+		sLogger->Info("Updater ran successfully\nExiting the process as we need to restart\n");
+		ExitProcess(0);
+		break;
+
+	case UPDATER_EXIT_ERROR:
+		sLogger->Error("Errors were encountered during the update process\n");
+		break;
+
+	case UPDATER_EXIT_SKIPPED:
+		sLogger->Info("Update skiped because CheckForUpdates is false\n");
+		break;
+
+	case UPDATER_EXIT_CLEANUP:
+		sLogger->Info("Updater cleanup performed successfully\n");
+		break;
+
+	case UPDATER_EXIT_DEV_VERSION:
+		sLogger->Info("Update skipped because we are running a dev version\n");
+		break;
+
+	case UPDATER_EXIT_DONT_UPDATE:
+		sLogger->Info("Update skipped as the user refused the update\n");
+		break;
+
+	default:
+		sLogger->Warn("Unexpected exit code %d\n", exitCode);
+		break;
+	}
 }
 
 /*
