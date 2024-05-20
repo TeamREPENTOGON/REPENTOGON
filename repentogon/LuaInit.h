@@ -5,4 +5,5 @@ namespace LuaKeys {
 	extern int additiveCallbackKey;
 	extern int preRenderCallbackKey;
 	extern int entityTakeDmgCallbackKey;
+	extern int triggerPlayerDeathCallbackKey;
 }

@@ -1,5 +1,6 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
+#include "LuaCore.h"
 
 // The GameOver class stores an EntityConfig_Entity reference for the modded entity that the player dies to,
 // in order to access the mod's death portraits. However, it does not clear this reference when the
@@ -49,4 +50,4 @@ HOOK_METHOD(Entity_Familiar, AddToDelayed, () -> void) {
 		return;
 	}
 	super();
-}
+};

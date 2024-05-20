@@ -129,6 +129,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	unsigned long long _flags : 0x160;
     bool _valid : 0x168; 
     bool _visible : 0x169;
+	bool _exists : 0x16a;
 	bool _dead : 0x16b;
 	bool _collidesWithGrid : 0x188;
 	vector_ColorParams _colorParams : 0x1a4;

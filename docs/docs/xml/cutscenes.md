@@ -17,6 +17,7 @@ The following custom attributes can be defined for cutscenes in the cutscenes xm
 | Variable-Name | Possible Values | Description |
 |:--|:--|:--|
 |name|string|used for the GetXByName functions (when this is not present, the filename of the gfx attribute is used instead)|
+|music|string or int|used for the anm2 cutscenes, its available in vanilla but in rgon it now allows to set it to a modded music name|
 
 ???+ note "More Info"
     For more information about this xml, check the original docs entry [here](https://wofsauge.github.io/IsaacDocs/rep/xml/cutscenes.html).

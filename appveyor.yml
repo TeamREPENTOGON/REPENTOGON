@@ -8,16 +8,11 @@ build_script:
 
     git submodule update
 
-    echo "return [[" | Out-File -encoding ASCII repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-        Get-Content changelog.txt -Raw | Add-Content repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-        echo "]]" | Add-Content repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-        echo "Resulting lua file:"
-        type repentogon/resources/scripts/repentogon_extras/changelog_official_text.lua
-        echo "#pragma once" | Out-File -encoding ASCII repentogon/Version.h
+    echo "#pragma once" | Out-File -encoding ASCII repentogon/Version.h
         $version = Get-Content version.txt -Raw
         echo "#define VERSION `"$version`"" | Add-Content repentogon/Version.h
         (gc repentogon/resources/scripts/main_ex.lua) -replace 'dev build', "$version" | Out-File -encoding ASCII repentogon/resources/scripts/main_ex.lua
-        (gc launcher/Updater.cpp) -replace 'std::string version = "dev build";', "std::string version = `"$version`";" | Out-File -encoding ASCII launcher/Updater.cpp
+        (gc updater/Updater.cpp) -replace 'std::string version = "dev build";', "std::string version = `"$version`";" | Out-File -encoding ASCII updater/Updater.cpp
 
     cmake -G "Visual Studio 17 2022" -A "Win32" -B build -DCMAKE_BUILD_TYPE=Release
 
@@ -36,6 +31,7 @@ build_script:
         mv zhlREPENTOGON.dll artifact
         mv Lua5.4.dll artifact
         mv freetype.dll artifact
+        cp ../../changelog.txt artifact/rgon_changelog.txt
 
     cd artifact
 

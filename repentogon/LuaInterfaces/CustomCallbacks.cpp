@@ -947,37 +947,6 @@ HOOK_METHOD(Level, Init, () -> void) {
 }
 //PRE_LEVEL_INIT Callback (id: 1060 enum pending)
 
-//PRE_TRIGGER_PLAYER_DEATH (id: 1050)
-HOOK_METHOD(Entity_Player, TriggerDeath, (bool checkOnly) -> bool) {
-	const int callbackid = 1050;	
-	if (!checkOnly && CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.call(1);
-
-		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				if (!lua_toboolean(L, -1)) {
-					this->Revive();
-					*this->GetVisible() = true;
-					return false;
-				}
-			}
-		}
-		return super(checkOnly);
-	}
-	else {
-		return super(checkOnly);
-	}
-}
-//PRE_TRIGGER_PLAYER_DEATH end
-
 //PRE/POST_RESTOCK_SHOP (id: 1070/1071)
 bool ProcessPreRestockCallback(bool Partial) {
 	const int callbackid = 1070;
@@ -2377,29 +2346,51 @@ HOOK_STATIC(ModManager, RenderCustomCharacterMenu, (int CharacterId, Vector* Ren
 
 //COMPLETION_MARK_GET 1047
 //POST_COMPLETION_MARK_GET 1048 // There are in CompletionTracker.cpp for convenience
-//PRE_COMPLETION_EVENT (1049) 
-HOOK_STATIC(Manager, RecordPlayerCompletion, (int unk) -> void, __stdcall) {
-	const int callbackid = 1049;
-	if (CallbackState.test(callbackid - 1000)) {
+//(PRE/POST)_COMPLETION_EVENT (1049/1052) 
+HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall) {
+	const int callbackid1 = 1049;
+	const int callbackid2 = 1052;
+	lua_State* L = g_LuaEngine->_state;
+	if (CallbackState.test(callbackid1 - 1000)) {
+
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
+			.push(completion)
+			.push(completion)
+			.call(1);
+
+		if (!result)
+		{
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1) == false)
+					return;
+			}
+			else if (lua_isinteger(L, -1)) {
+				int retCompletion = lua_tointeger(L, -1);
+				if (retCompletion >= 0 && retCompletion <= 17)
+					completion = retCompletion;
+				else
+					return;
+			}
+		}
+	}
+
+	super(completion);
+
+	if (CallbackState.test(callbackid2 - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(unk)
-			.push(unk)
+		lua::LuaCaller(L).push(callbackid2)
+			.push(completion)
+			.push(completion)
 			.call(1);
-
-		if (!result) {
-			if (lua_isboolean(L, -1)) {
-				if (!lua_toboolean(L, -1)) {
-					return;
-				}
-			}
-		}
 	}
-	super(unk);
 }
 
 // PRE/POST_PLAYERHUD_RENDER_ACTIVE_ITEM (1119/1079)
@@ -3222,48 +3213,6 @@ HOOK_METHOD(Level, place_room, (LevelGenerator_Room* slot, RoomConfig_Room* conf
 		}
 	}
 	return super(slot, config, seed, unk);
-}
-
-const int coinValues[8] = { 1, 1, 5, 10, 2, 1, 5, 1 };
-
-int FixedGetCoinValue(int subtype) {
-	if (subtype > 7)
-		return 1;
-	else
-		return coinValues[subtype];
-}
-
-HOOK_METHOD(Entity_Pickup, GetCoinValue, () -> int) {
-	if (*this->GetVariant() == 20) {
-		const int callbackid = 1250;
-		if (CallbackState.test(callbackid - 1000)) {
-			lua_State* L = g_LuaEngine->_state;
-			lua::LuaStackProtector protector(L);
-
-			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-				.push(*this->GetSubType())
-				.push(this, lua::Metatables::ENTITY_PICKUP)
-				.call(1);
-
-			if (!result) {
-				if (lua_isinteger(L, -1)) {
-					return ((int)lua_tointeger(L, -1));
-				}
-			}
-		}
-		const unsigned int subtype = *this->GetSubType();
-		XMLAttributes xmlData = XMLStuff.EntityData->GetNodesByTypeVarSub(5, 20, subtype, true);
-		const std::string coinValue = xmlData["coinvalue"];
-		
-		if (isdigit(coinValue[0])) {
-			return stoi(coinValue);
-		}
-		return FixedGetCoinValue(subtype);
-	}
-	// Apparently trying to hook a func with a jump in its first 5 bytes is hellish. Just return what the normal func already would have
-	return 0;
 }
 
 //MC_POST_PLAYER_GET_MULTI_SHOT_PARAMS (1251)

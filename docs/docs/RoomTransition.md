@@ -7,6 +7,9 @@ tags:
 
 ???+ info
     You can get this class by using the `RoomTransition` global table.
+
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
     ???+ example "Example Code"
         ```lua
         local tmode = RoomTransition.GetTransitionMode()
@@ -17,6 +20,10 @@ tags:
 
 ### GetTransitionMode () {: aria-label='Functions' }
 #### int GetTransitionMode ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetPlayerExtraPortraitSprite () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetPlayerExtraPortraitSprite ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetVersusScreenSprite () {: aria-label='Functions' }

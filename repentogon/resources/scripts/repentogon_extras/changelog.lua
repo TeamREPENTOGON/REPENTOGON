@@ -26,7 +26,7 @@ local ChangeLog = {
     ["Sheets"] = --TODO: implement the ability to have multiple sheets with unique sprites and stuff
     {
         [1] = {
-            ["Text"] = require("repentogon_extras/changelog_official_text"),
+            ["Text"] = Isaac.RGON_GetChangelog(),
             ["TextArray"] = {},
         },
     },

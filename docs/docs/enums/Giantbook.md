@@ -56,4 +56,5 @@ tags:
 |43 |REVERSE_SUN {: .copyable } |  |
 |44 |SLEEP_NIGHTMARE {: .copyable } |  |
 |44 |DOGMA {: .copyable } |  |
+|45 |MEGA_MUSH {: .copyable } |  |
 |46 |ETERNAL_HEART_BLACK {: .copyable } |  |

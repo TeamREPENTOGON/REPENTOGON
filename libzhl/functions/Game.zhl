@@ -4,6 +4,9 @@ __thiscall void Game::constructor();
 "558bec6aff68????????64a1????????5083ec40a1????????33c58945??535657508d45??64a3????????c745??00000000":
 __thiscall void Game::StartDebug(int levelStage,int stageType,int difficulty,std_string* unk); 
 
+"558bec6aff68????????64a1????????5081eca0000000":
+__thiscall void Game::StartFromRerunState(GameState* state);
+
 /*
 FuncSignature Signature_GameIsPaused = {
 	"\x83\xB9\x00\x00\x00\x00\x00\x8B\x15",
@@ -248,7 +251,9 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, 
 	bool _isRerun : 0x1c31a0;
 	bool _isDebug : 0x1c31a1;
 	Ambush _ambush : 0x1c31b8;
+	unsigned int _challenge : 0x1c319c;
 	DailyChallenge _dailyChallenge: 0x1c3204;
+	int _shopVisits : 0x1c3194;
 	ScoreSheet _scoreSheet : 0x1c32b8;
 	uint32_t _difficulty : 0x243624;
 	bool _shouldLerpColorModState : 0x283b80;
@@ -259,4 +264,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, 
 	int _donationModGreed : 0x1c318c;
 	int _donationModAngel : 0x1c3190;
 	float _lightningIntensity : 0x283c00;
+	float _dizzyAmount : 0x283c0c;
+	float _dizzyIntensity : 0x283c04;
+	float _dizzyTargetIntensity : 0x283c08;
 } : 0x285238;

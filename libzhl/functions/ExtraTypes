@@ -75,6 +75,11 @@ TypeInfo vector_ColorParams {
     Align 4;
 };
 
+TypeInfo vector_SoundEffect {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo deque_Point {
     Size 20;
     Align 4;

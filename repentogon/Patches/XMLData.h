@@ -367,9 +367,17 @@ class XMLLocustColor : public XMLDataHolder {
 
 };
 
+struct CustomReviveInfo {
+	bool item = false;  // Grants a revive when item/trinket is held.
+	bool effect = false;  // Grants a revive when the corresponding TemporaryEffect is applied.
+	bool hidden = false;  // Revive is not counted on the HUD.
+	bool chance = false;  // Adds a "?" to the hud when held.
+};
+
 class XMLItem : public XMLDataHolder {
 public:
 	vector<XMLAttributes> customachievitems;
+	unordered_map<int, CustomReviveInfo> customreviveitems;
 };
 
 class XMLItemPools : public XMLDataHolder {
@@ -449,10 +457,9 @@ public:
 		}
 };
 
-class XMLTrinket : public XMLDataHolder {
+class XMLTrinket : public XMLItem {
 public:
 	unordered_map<string, int> bypickup;
-	vector<XMLAttributes> customachievitems;
 };
 
 class XMLCard : public XMLDataHolder {

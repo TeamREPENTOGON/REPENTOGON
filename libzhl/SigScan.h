@@ -2,12 +2,15 @@
 
 #include <vector>
 #include <list>
+#include <fstream>
 
 #include "libzhl.h"
 
 namespace SigCache {
+	void FlushCache();
 	size_t FindCacheEntryBySig(size_t sighash);
 	void LoadCache();
+	
 	void WriteCacheEntry(size_t sighash, size_t address);
 	void InvalidateCache(size_t offset);
 	void ResetSigFile();
@@ -17,7 +20,9 @@ namespace SigCache {
 		size_t _address;
 	};
 
+	extern std::ofstream _writebuffer;
 	extern std::vector<SigCacheEntry> _entries;
+	extern std::string _sigcachepath;
 	extern bool IsLoaded;
 	extern bool IsIndirectMode;
 };
@@ -62,6 +67,7 @@ public:
 	SigScan(const char *sig);
 	~SigScan();
 
+	static void FlushCache();
 	bool Scan(Callback callback = NULL);
 
 	void *GetAddress() const {return m_pAddress;}

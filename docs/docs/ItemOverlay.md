@@ -7,6 +7,9 @@ tags:
 
 ???+ info
     You can get this class by using the `ItemOverlay` global table.
+    
+    **Note that to call these functions, you must use a `.` (period) instead of a `:` (colon)!**
+    
     ???+ example "Example Code"
         ```lua
         local overlaysprite = ItemOverlay.GetSprite()

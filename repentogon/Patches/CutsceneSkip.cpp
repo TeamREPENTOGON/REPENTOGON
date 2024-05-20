@@ -3,9 +3,12 @@
 
 #include "../REPENTOGONOptions.h"
 
+
 namespace SkipIntro {
 	bool IsIntroSkip = false;
 };
+
+bool cutsceneskipped = false; //it will only play once and be the first thing that plays anyway
 
 HOOK_METHOD(Cutscene, Show, (int cutsceneid) -> void) {
 	//	printf("%d %d\n", cutsceneid, repentogonOptions.skipIntroCutscene);
@@ -15,9 +18,10 @@ HOOK_METHOD(Cutscene, Show, (int cutsceneid) -> void) {
 	if (!repentogonOptions.skipIntro) {
 		return super(cutsceneid);
 	};
-	if (repentogonOptions.skipIntro && (cutsceneid != 1)) {
+	if (repentogonOptions.skipIntro && (cutsceneskipped)) {
 		return super(cutsceneid);
 	};
+	cutsceneskipped = true;
 	SkipIntro::IsIntroSkip = true;
 };
 

@@ -132,6 +132,20 @@ LUA_FUNCTION(Lua_FamiliarCanBlockProjectiles)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FamiliarGetMoveDelayNum) {
+	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	lua_pushinteger(L, fam->_moveDelayNum);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_FamiliarSetMoveDelayNum) {
+	Entity_Familiar* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	fam->_moveDelayNum = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -151,6 +165,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CanBeDamagedByProjectiles", Lua_FamiliarCanBeDamagedByProjectiles },
 		{ "CanBeDamagedByLasers", Lua_FamiliarCanBeDamagedByLasers },
 		{ "CanBlockProjectiles", Lua_FamiliarCanBlockProjectiles },
+		{ "GetMoveDelayNum", Lua_FamiliarGetMoveDelayNum },
+		{ "SetMoveDelayNum", Lua_FamiliarSetMoveDelayNum },
 		{ NULL, NULL }
 	};
 

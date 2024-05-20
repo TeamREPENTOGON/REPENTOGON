@@ -10,7 +10,13 @@ __thiscall bool Entity_Laser::CanDamageEntity(Entity* entity);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec5156":
 __thiscall void Entity_Laser::RotateToAngle(float angle, float speed);
 
-struct Entity_Laser : public Entity { {{
+"8b91????????538b99":
+__thiscall void Entity_Laser::ClearLaserSamples();
+
+"558bec6aff68????????64a1????????50515657a1????????33c5508d45??64a3????????8bf9897d??e8????????c745??000000008d8f????????c707":
+__thiscall void Entity_Laser::Constructor();
+
+struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 	inline uint32_t* GetHomingType() { return (uint32_t*)((char*)this + 0x420); }
 	inline float* GetScale() { return (float*)((char*)this + 0x430); }
 	
@@ -19,7 +25,11 @@ struct Entity_Laser : public Entity { {{
 	inline bool* GetDisableFollowParent() { return (bool*)((char*)this + 0x434); }
 	inline bool* GetOneHit() { return (bool*)((char*)this + 0x465); }
 	inline std_vector_uint* GetHitList() { return (std_vector_uint*)((char*)this + 0x470); }
+
 }} 
+	BitSet128 _tearFlags : 0x378;
+	bool _sampleLaser : 0x3ad;
+	HomingLaser _homingLaser : 0x3b4;
 
 	__vtable {
 		skip; // Free

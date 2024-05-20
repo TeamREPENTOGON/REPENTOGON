@@ -657,6 +657,20 @@ void ParseTagsString(const string& str, set<string>& out) {
 	}
 }
 
+// If the item has the appropriate customtags, adds it to the customreviveitems map
+// to make it more efficient to check if the player has any of them layer.
+void CheckCustomRevive(const int id, XMLItem* data) {
+	const bool hasReviveTag = data->HasCustomTag(id, "revive");
+	const bool hasReviveEffectTag = data->HasCustomTag(id, "reviveeffect");
+	if (hasReviveTag || hasReviveEffectTag) {
+		CustomReviveInfo* info = &data->customreviveitems[id];
+		info->item = hasReviveTag;
+		info->effect = hasReviveEffectTag;
+		info->hidden = data->HasCustomTag(id, "hiddenrevive");
+		info->chance = data->HasCustomTag(id, "chancerevive");
+	}
+}
+
 //
 //#include <time.h>
 bool initedxmlenums = false;
@@ -971,6 +985,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					if (item.find("relativeid") != item.end()) { XMLStuff.ItemData->byrelativeid[lastmodid + item["relativeid"]] = id; }
 					if (item.find("customtags") != item.end()) {
 						ParseTagsString(item["customtags"], XMLStuff.ItemData->customtags[id]);
+						CheckCustomRevive(id, XMLStuff.ItemData);
 					}
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
@@ -1037,6 +1052,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					if (trinket.find("relativeid") != trinket.end()) { XMLStuff.TrinketData->byrelativeid[lastmodid + trinket["relativeid"]] = id; }
 					if (trinket.find("customtags") != trinket.end()) {
 						ParseTagsString(trinket["customtags"], XMLStuff.TrinketData->customtags[id]);
+						CheckCustomRevive(id, XMLStuff.TrinketData);
 					}
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
@@ -1079,6 +1095,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 
 				if (item.find("customtags") != item.end()) {
 					ParseTagsString(item["customtags"], XMLStuff.NullItemData->customtags[id]);
+					CheckCustomRevive(id, XMLStuff.NullItemData);
 				}
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
@@ -2668,7 +2685,7 @@ bool XMLParse(xml_document<char>* xmldoc, char* xml,const string &dir) {
 }
 
 char* GetResources(char* xml,const string &dir,const string &filename) {
-	vector<string> paths = { dir + "\\resources\\" + filename, dir + "\\resources-dlc3\\" + filename };
+	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
 	for (const string & path : paths) {
 		ifstream file(path.c_str());
 		if (file.is_open()) {
@@ -3061,7 +3078,12 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 
 			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
 			string contentsdir = dir + "\\content\\" + filename;
-
+			// Skip this mod if it does not even have the corresponding XML, to save time and memory during startup.
+			// However, DON'T skip if we are in the middle of hijacking a cutscenes XML reload as part of the custom cutscenes support,
+			// since that messes things up and causes all cutscenes to become the intro cutscene.
+			if (!std::filesystem::exists(contentsdir) && queuedhackyxmlvalue == 0) {
+				continue;
+			};
 			xml_document<char>* xmldoc = new xml_document<char>();
 			if (XMLParse(xmldoc, xml, filename)) {
 				xml_node<char>* root = xmldoc->first_node();

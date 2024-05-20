@@ -1,4 +1,48 @@
-v1.??? -
+v1.0.9d -
+Fixes:
+* Fixed a bug with the autoupdater
+/newline/
+v1.0.9c -
+Fixes:
+* Fixed a bug in 1.0.9b where all cutscenes were being replaced by the intro cutscene if any mods were enabled.
+/newline/
+v1.0.9b -
+Additions:
+* Camera:
+	- IsPosVisible(position: Vector) : bool
+* Game:
+	- RecordPlayerCompletion(CompletionType)
+* ModCallbacks:
+	- MC_(PRE/POST)_RECORD_PLAYER_COMPLETION
+		Called when a player completes something that would award a mark (end bosses, tainted unlocks)
+* Add new Vanilla Tweaks option "Mars Double Tap Window", which determines the number of frames where a repeated movement input is counted as a double tap for activating Mars's charge
+* Updater now runs asynchronously, meaning that you should no longer encounter the "white screen" issue.
+* Improved mods' startup speed once again!
+* Minor fix for a file map.
+* "clearcache" command now reloads the file map.
+* Fixed a regression that resulted in a severe slowdown for certain commands' autocomplete prompts. This fix has also made file map noticeably faster :D
+* Bumbino, Ultra Greed, and familiars like Bum Friend will now trigger MC_PICKUP_GET_COIN_VALUE when collecting coins, and will default to treating modded coin subtypes as worth 1 penny instead of huge values.
+/newline/
+v1.0.9a -
+Additions:
+* Game:
+	- ClearErasedEnemies(): void
+	- GetShopVisits(): int
+	- AddShopVisits(count: int): void
+* EntitySlot:
+	- GetShellGameAnimationIndex() : int
+	- SetShellGameAnimationIndex(index: int) : void
+	- GetTriggerTimerNum() : int
+	- SetTriggerTimerNum(num: int) : void
+- Sorry about the startup line in 1.0.9, half of it was a lie, now it's not! This update enables "file map" functionality, speeding up file lookup, positively affecting the startup time. It shouldn't cause any issue, but if it does don't hesitate to report issues, in the meantime you can disable it in REPENTOGON's options window.
+/newline/
+* Bug fixes
+    - Fixed a bug that caused the giveitem command to crash when the object to
+    give was reduced to a single letter
+	- Fix "goto [s/x]." command autocomplete
+	- Fixed incorrect type set for Slot->_timeout (int -> short)
+/newline/
+v1.0.9 -
 Modified:
 * Callbacks:
 	- MC_PRE_PLAYERHUD_TRINKET_RENDER: now provides [Vector] CropOffset parameter and accepts CropOffset vector in the return table.
@@ -8,7 +52,16 @@ Modified:
 		new optional boolean (IgnoreSpoof), ignores collectible block when set to true
 * Game:
 	- ShowGenericLeaderboard no longer fades to main menu
+* PersistentGameData:
+	- TryUnlock now accepts an optional boolean to prevent popping up with the achievement paper for modded achievements
+/newline/
 Additions:
+* Game:
+	- SetDizzyAmount(amount, intensity)
+	- GetDizzyAmount()
+* PlayerManager:
+	- AnyPlayerTypeHasTrinket(PlayerType, TrinketType, IgnoreModifiers = false)
+	- AnyPlayerTypeHasCollectible(PlayerType, CollectibleType, IgnoreModifiers = false)
 * Lootlist:
 	- constructor
 	- PushEntry(Type, Variant, SubType, Seed = Random(), RNG = nil)
@@ -24,6 +77,8 @@ Additions:
 		UnblockCollectible(int itemID)
 		IsCollectibleBlocked(int itemID)
 	- HasGoldenTrinket
+	- Get/SetHallowedGroundCountdown
+	- HasChanceRevive - Returns true if a "?" would be displayed on the player's extra life count (ie, Guppy's Collar)
 * EntityTear:
 	- GetTearHaloSprite
 	- GetTearEffectSprite
@@ -36,11 +91,17 @@ Additions:
 * EntityNPC:
 	- GetFireplaceLoot
 	- GetShopkeeperLoot
+* EntityFamiliar:
+	- [Get/Set]MoveDelayNum
 * ItemConfigItem:
 	- HasCustomTag
 	- GetCustomTags
 * Input:
 	- GetDeviceNameByIdx
+* Isaac:
+	- Get/SetDwmWindowAttribute (for use with new DwmWindowAttributes enum)
+	- Get/SetWindowTitle	(appends text to our title as to avoid confusion)
+	- SetIcon(int/string,bool)	(takes a 0/1 int or a path to .ico file, bool bypasses the 16x16 resolution cap)
 * Game
 	- SetBloom
 * Console:
@@ -96,20 +157,30 @@ Additions:
 	- MC_POST_ROOM_TRANSITION_UPDATE ()
 	- MC_POST_ROOM_TRANSITION_RENDER ()
 	- MC_PRE_X_UPDATE (EntityX) - PLAYER/TEAR/FAMILIAR/BOMB/PICKUP/KNIFE/PROJECTILE/LASER/EFFECT/SLOT, return true to skip internal code, same as MC_PRE_NPC_UPDATE
+	- MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES (EntityPlayer) - Akin to MC_PRE_TRIGGER_PLAYER_DEATH, but runs right after the game is done checking for vanilla revives.
 * All stages now have a spritesheet suffix (formatted _[stage name, no spaces], ex _burningbasement)
 * Added the "noshake" attribute to the players.xml which can "disable" the player portrait shaking animation in the nightmare scene/boss intro
 * Added support for a "customtags" attribute in items.xml - a space-separated list of tags that can be checked with ItemConfigItem:HasCustomTag() or ItemConfigItem:GetCustomTags()
-* Added custom tag "nometronome" to items.xml to prevent items from being picked by Metronome
-* Improved startup time!
+* Added the following customtags for items.xml:
+	* "nometronome" - Prevents the item from being picked by Metronome
+	* "revive" - Each copy of the collectible/trinket/null effect held counts as an extra life (on the HUD, etc) and prevents the game from deleting the run save upon death, making reviving the player safe. You must still remove the item and actually revive the player yourself.
+	* "reviveeffect" - Same as "revive", but applies to the corresponding TemporaryEffect of the collectible/trinket (you'd probably want to set their effects to be persistent). There is no difference between "revive" and "reviveeffect" for null items.
+	* "chancerevive" - If item is counted as an extra life, displays a "?" next to the extra life count, like Guppy's Collar.
+	* "hiddenrevive" - If item is counted as an extra life, this prevents it from being counted on the hud. Overrides "chancerevive".
+* Improved startup time! (for both REPENTOGON and the game itself)
+* Buffed Trisagion
+* Added a new option in "Vanilla tweaks" section called "Fast lasers", it tracks the game's lag and (if present) reduces the number of samples used by lasers to ensure better performance
+
 /newline/
 Fixes:
     * Fixed `Isaac.CreateTimer` crashing the game when setting the delay argument to 0
 	* Fixed bonehearts not displaying correctly when set through players.xml
 	* Fixed console custom commands starting with "help" not triggering while being eaten away by repentogon's help cmd
 	* Fixed a crash that could occur if Isaac exited the Berserk! state without any remaining health with Spirit Shackles ready
-	* Reverted Flooded Caves suffix to _downpour so enemies keep their existing custom spritesheet
+	* Fix Downpour/Dross rooms generated in The Void not having any water
 	* Potentially fixed reported but unreproducable instance of a trapdoor deal room variant being generated outside of floor 8
 	* Fixed incorrect declaration for ItemConfig::GetTaggedItems
+	* Fixed Gamma scale on the visual settings imgui menu
 /newline/
 v1.0.8c - 
 Fixes:

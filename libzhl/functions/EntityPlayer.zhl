@@ -5,6 +5,9 @@
 __thiscall void Entity_Player::AnimatePickup(ANM2 *param_1,bool param_2,char *param_3);
 */
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505383ec085657a1????????33c5508d45??64a3????????8bf9":
+__thiscall void Entity_Player::constructor();
+
 "558bec83e4f883ec0c5356578bf98bb7":
 __thiscall void Entity_Player::update_red_hearts();
 
@@ -67,8 +70,20 @@ __thiscall void Entity_Player::TriggerRoomExit(bool unk);
 "558bec83e4f883ec7ca1????????33c4894424??538bd9":
 __thiscall bool Entity_Player::TriggerDeath(bool checkOnly);
 
+"6a01e8????????c3":
+__thiscall bool Entity_Player::WillPlayerRevive();
+
 "558bec83e4f883ec08568bf15780be????????00":
 __thiscall void Entity_Player::Revive();
+
+"558bec83e4f881ecc4000000a1????????33c4898424????????538bd9":
+__thiscall void Entity_Player::ReviveFromCollectible(uint32_t itemID, bool ownedByThisPlayer);
+
+"558bec83ec24a1????????33c58945??53568bf1":
+__thiscall void Entity_Player::ReviveFromTrinket(uint32_t trinketID);
+
+"8b81????????0fbf91":
+__thiscall int Entity_Player::GetExtraLives();
 
 "558bec568bf1e8????????8b45??8986":
 __thiscall void Entity_Player::SetItemState(CollectibleType collectible);
@@ -99,6 +114,9 @@ __thiscall bool Entity_Player::CanUseCollectible(CollectibleType collectible, in
 
 "558bec83e4f883ec1c538b5d??56578bf98b0d":
 __thiscall bool Entity_Player::HasCollectible(int type, bool ignoreModifiers);
+
+"558bec807d??0056578bf974":
+__thiscall bool Entity_Player::HasTrinket(uint32_t Type, bool ignoreModifiers);
 
 "8b91f01500":
 __thiscall int Entity_Player::GetCollectibleCount();
@@ -266,6 +284,9 @@ __thiscall bool Entity_Player::CanUsePill(int pillEffect);
 
 "558bec518b15????????535633f6":
 __thiscall uint32_t Entity_Player::InvalidateCoPlayerItems();
+
+"558bec83e4f883ec2ca1????????33c4894424??538bd956578b7d":
+__thiscall bool Entity_Player::TryRemoveTrinket(uint32_t id);
 
 "558bec83ec30a1????????33c58945??53":
 __thiscall bool Entity_Player::TryRemoveSmeltedTrinket(unsigned int id);
@@ -592,6 +613,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _gnawedLeafTimer : 0x12c4;
 	short _bloodLustCounter : 0x12cc;	//not sure whether its actually short but we are on x86 so who cares lul
 	int _metronomeCollectibleID : 0x12d8;
+	int _damageCooldown : 0x1308;
 	int _playerType: 0x130c;
 	float _damage : 0x13b8;
 	float _movespeed : 0x14ac;
@@ -620,6 +642,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
 	int _babySkin : 0x1a0c;
+	int _hallowedGroundCountdown : 0x1cb0;
 	//std_vector_int _wispStorage : 0x1cfc;
 	Entity_Player* _backupPlayer : 0x1d84;
 	int _maggySwingCooldown : 0x1df8;

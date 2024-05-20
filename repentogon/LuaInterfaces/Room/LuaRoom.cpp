@@ -384,6 +384,16 @@ LUA_FUNCTION(Lua_GetBossVictoryJingle) {
 	return 1;
 }
 
+HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
+	roomASM.WaterDisabled = false;
+	super(param_1, desc);
+	//printf("WaterDisabled is %s, stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage);
+	if (g_Game->_stage == 12 && !roomASM.WaterDisabled && (this->_descriptor->Data->StageId == 27 || this->_descriptor->Data->StageId == 28)) {
+		this->_waterAmount = 1.0f;
+		//printf("setting water\n");
+	}
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 

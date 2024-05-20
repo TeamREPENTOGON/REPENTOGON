@@ -4,6 +4,7 @@
 
 #include "../LuaWeapon.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
+#include "../../Patches/ExtraLives.h"
 
 
 /*
@@ -93,6 +94,9 @@ namespace PlayerItemSpoof {
 }
 
 HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->bool) {
+	if (ignoreModifiers) { 
+		return super(type, ignoreModifiers);
+	};
 	if (!PlayerItemSpoof::GlobalSpoofState) { return super(type, ignoreModifiers); };
 	auto& itemlist = PlayerItemSpoof::CollSpoofList;
 	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
@@ -107,6 +111,9 @@ HOOK_METHOD(Entity_Player, HasCollectible, (int type, bool ignoreModifiers)->boo
 };
 
 HOOK_METHOD(Entity_Player, GetCollectibleNum, (int collectibleID, bool onlyCountTrueItems)->int) {
+	if (onlyCountTrueItems) {
+		return super(collectibleID, onlyCountTrueItems);
+	};
 	if (!PlayerItemSpoof::GlobalSpoofState) { return super(collectibleID, onlyCountTrueItems); };
 	auto& itemlist = PlayerItemSpoof::CollSpoofList;
 	if (auto searchOuter = itemlist.find(this->_playerIndex); searchOuter != itemlist.end()) {
@@ -137,6 +144,7 @@ LUA_FUNCTION(Lua_HasCollectible) {
 	int itemID = (int)luaL_checkinteger(L, 2);
 	bool ignoreModifiers = (bool)lua::luaL_optboolean(L, 3, false);
 	bool ignoreSpoof = (bool)lua::luaL_optboolean(L, 4, false);
+	ignoreSpoof = ignoreSpoof || ignoreModifiers;
 	bool outbool = false;
 	if (ignoreSpoof) {
 		PlayerItemSpoof::GlobalSpoofState = false;
@@ -154,6 +162,7 @@ LUA_FUNCTION(Lua_GetCollectibleNum) {
 	int itemID = (int)luaL_checkinteger(L, 2);
 	bool onlyCountTrueItems = (bool)lua::luaL_optboolean(L, 3, false);
 	bool ignoreSpoof = (bool)lua::luaL_optboolean(L, 4, false);
+	ignoreSpoof = ignoreSpoof || onlyCountTrueItems;
 	int outnum = 0;
 	if (ignoreSpoof) {
 		PlayerItemSpoof::GlobalSpoofState=false;
@@ -876,7 +885,7 @@ LUA_FUNCTION(Lua_PlayerTriggerRoomClear) {
 
 LUA_FUNCTION(Lua_PlayerShuffleCostumes) {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	unsigned int seed = (unsigned int)luaL_optinteger(L, 2, min(Isaac::genrand_int32(), 1));
+	unsigned int seed = (unsigned int)luaL_optinteger(L, 2, std::min(Isaac::genrand_int32(), 1U));
 	plr->ShuffleCostumes(seed);
 
 	return 0;
@@ -2285,6 +2294,26 @@ LUA_FUNCTION(Lua_PlayerHasGoldenTrinket) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetHallowedGroundCountdown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_hallowedGroundCountdown);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_PlayerSetHallowedGroundCountdown) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	player->_hallowedGroundCountdown = (int)luaL_checkinteger(L, 2);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerHasChanceRevive) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushboolean(L, PlayerHasChanceRevive(player));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2491,6 +2520,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPlayerIndex", Lua_PlayerGetPlayerIndex }, 
 		{ "GetSpoofedCollectiblesList", Lua_PlayerGetSpoofCollList },
 		{ "HasGoldenTrinket", Lua_PlayerHasGoldenTrinket },
+		{ "GetHallowedGroundCountdown", Lua_PlayerGetHallowedGroundCountdown },
+		{ "SetHallowedGroundCountdown", Lua_PlayerSetHallowedGroundCountdown },
+		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
