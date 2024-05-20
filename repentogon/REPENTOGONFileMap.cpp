@@ -171,10 +171,7 @@ HOOK_METHOD(ModManager, ListMods, (void)->void) {
 
 std::wstring tempwidestr;
 HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param_2)->void) {
-//	bool spoofmods = false;
-//	return super(param_1, param_2);
-	//kill off map for now
-	if (param_1 == nullptr || param_2 == nullptr || !repentogonOptions.fileMap) {
+	if (!repentogonOptions.fileMap) {
 		return super(param_1, param_2);
 	};
 	std::string input = *param_2;
@@ -197,26 +194,22 @@ HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param
 	size_t hashentry = std::hash<std::wstring>{}(tempwidestr);
 	REPENTOGONFileMap::FileMapEntry* mapentry = REPENTOGONFileMap::GetEntry(hashentry);
 	if (mapentry) {
-		new (param_1) std::string("");
 		REPENTOGONFileMap::outputholder.resize(0);
 //		REPENTOGONFileMap::outputholder.reserve(260);
 //		param_1->reserve(260);
 		ProduceString(&tempwidestr, mapentry, &(REPENTOGONFileMap::outputholder));
-		int out_str_size=WideCharToMultiByte(CP_ACP,0,REPENTOGONFileMap::outputholder.data(),REPENTOGONFileMap::outputholder.size(),param_1->data(),0,0,0);
-		param_1->resize(out_str_size);
-		WideCharToMultiByte(CP_ACP, 0, REPENTOGONFileMap::outputholder.data(), REPENTOGONFileMap::outputholder.size(), param_1->data(), out_str_size, 0, 0);
-
 		if (!fs::exists(REPENTOGONFileMap::outputholder)) {
 			ZHL::Log("[REPENTOGON] File %s doesn't exist in a mod %s, hash mismatch?\n",param_2->c_str(), g_Manager->GetModManager()->_mods[mapentry->ModFolder]->_name.c_str());
 			return super(param_1, param_2);
 		};
+		new (param_1) std::string("");
+		int out_str_size=WideCharToMultiByte(CP_ACP,0,REPENTOGONFileMap::outputholder.data(),REPENTOGONFileMap::outputholder.size(),param_1->data(),0,0,0);
+		param_1->resize(out_str_size);
+		WideCharToMultiByte(CP_ACP, 0, REPENTOGONFileMap::outputholder.data(), REPENTOGONFileMap::outputholder.size(), param_1->data(), out_str_size, 0, 0);
 		return;
 	}
 	else {
-//		printf("Failed to find %s!\n",param_2->c_str());
-		std::vector<ModEntry*> backup = std::move(this->_mods);
-		this->_mods.clear();
-		super(param_1, param_2);
-		this->_mods = std::move(backup);
+		new (param_1) std::string(*param_2);	//thats what the game does to a string anyways so no need to do super()
+		return;
 	};
 };
