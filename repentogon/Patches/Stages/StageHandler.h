@@ -9,12 +9,23 @@ struct StageState {
 	std::string token;
 };
 
-namespace StageHandler {
-	extern const unsigned int BUFFER_STAGEID;
-	extern std::unordered_map<std::string, RoomSet> binaryMap;
-	extern StageState stageState[37];
+class StageHandler
+{
+private:
+	StageHandler() {}
+
+public:
+	static StageHandler& GetInstance() {
+		static StageHandler instance;
+		return instance;
+	}
+
+	const unsigned int BUFFER_STAGEID = 23;
+	std::unordered_map<std::string, RoomSet> binaryMap;
+	StageState stageState[37];
 	RoomSet* LoadBinary(std::string* path);
 	RoomSet* GetBinary(std::string* path, bool loadIfUncached);
+	bool AppendBinary(RoomSet* roomSet, std::string* binary);
 	bool IsBinaryLoaded(std::string* path);
 	bool SwapStage(int stageId, const char* stageName, bool restoring);
 	void ResetRoomWeights(RoomSet* set);

@@ -178,13 +178,14 @@ void PatchDealRoomVariant() {
 }
 
 void __stdcall AdjustLevelStageBackdrop(FXLayers* fxlayers) {
+	StageHandler& stageHandler = StageHandler::GetInstance();
 	int stage = g_Game->GetStageID(false);
 	int backdrop = fxlayers->_backdropType;
 
-	//printf("stage %d, overriden %d, id %d, token %s\n", stage, StageHandler::stageState[stage].overriden, StageHandler::stageState[stage].id, StageHandler::stageState[stage].token.empty() ? "EMPTY" : StageHandler::stageState[stage].token.c_str());
+	//printf("stage %d, overriden %d, id %d, token %s\n", stage, stageHandler.stageState[stage].overriden, stageHandler.stageState[stage].id, stageHandler.stageState[stage].token.empty() ? "EMPTY" : stageHandler.stageState[stage].token.c_str());
 
-	if (StageHandler::stageState[stage].overriden) {
-		fxlayers->_levelStage = StageHandler::stageState[stage].id + 4; // to counter dumb math later on in xml parsing
+	if (stageHandler.stageState[stage].overriden) {
+		fxlayers->_levelStage = stageHandler.stageState[stage].id + 4; // to counter dumb math later on in xml parsing
 		fxlayers->_stageType = 1;
 	}
 	if (XMLStuff.BackdropData->backdropState.first == backdrop) {
