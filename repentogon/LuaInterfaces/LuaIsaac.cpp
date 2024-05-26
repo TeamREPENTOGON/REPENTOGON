@@ -307,9 +307,9 @@ LUA_FUNCTION(Lua_GetSubTypeByName) {
 }
 
 LUA_FUNCTION(Lua_PlayCutscene) {
-	int text = (int)luaL_checknumber(L, 1);
-	string out;
-	g_Game->GetConsole()->RunCommand("cutscene " + to_string(text), &out, NULL);
+	const unsigned int cutscene = (unsigned int)luaL_checkinteger(L, 1);
+	const bool shouldClean = lua::luaL_optboolean(L, 2, false);
+	g_Manager->ShowCutscene(cutscene, shouldClean);
 	return 0;
 }
 

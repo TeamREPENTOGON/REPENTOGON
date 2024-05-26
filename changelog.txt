@@ -1,3 +1,9 @@
+v1.x.x -
+Modified:
+* Isaac:
+	PlayCutscene(CleanGameState = false)
+* The game no longer prematurely ends the daily run if there was console input, instead blocking it
+/newline/
 v1.0.9d -
 Fixes:
 * Fixed a bug with the autoupdater

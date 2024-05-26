@@ -69,6 +69,8 @@ __thiscall void Manager::SetFullscreenRendering(bool value);
 "558bec81ec18040000":
 __thiscall void Manager::SetSaveSlot(unsigned int slot);
 
+"558bec518b0d????????8b55":
+__thiscall void Manager::ShowCutscene(uint32_t cutsceneID, bool shouldCleanup);
 
 struct Manager depends (Seeds, GameState, StringTable, PersistentGameData, NightmareScene, UnknownGameStartStruct, ModManager, ReferenceCounter_ImageBase, Cutscene, OptionsConfig, AchievementOverlay, SoundEffects, ItemConfig, EntityConfig, ANM2, Font, ChallengeParam, Music) { {{
 	inline int GetState() { return *(int*)((char*)this + 0x8); }
