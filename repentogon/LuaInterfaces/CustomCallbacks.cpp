@@ -4082,11 +4082,10 @@ HOOK_METHOD(HUD, ShowFortuneText, (int** param_1) -> void) {
 					return;
 				}
 			}
-			else {
-				super(param_1);
-			}
 		}
 	}
+
+	super(param_1);
 }
 
 // MC_PRE_ITEM_TEXT_DISPLAY (1484)
@@ -4120,11 +4119,10 @@ HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool is
 					return;
 				}
 			} 
-			else { 
-				super(title, subtitle, isSticky, isCurseDisplay);
-			}
-		}
+		} 
 	}
+
+	super(title, subtitle, isSticky, isCurseDisplay);
 }
 
 //MC_POST_BOSS_INTRO_SHOW (1270)
