@@ -20,6 +20,10 @@ tags:
 #### [Sprite](Sprite.md) GetControlsANM2 ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetControlsButtonsANM2 () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetControlsButtonsANM2 ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDetailANM2 () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetDetailANM2 ( ) {: .copyable aria-label='Functions' }
 
