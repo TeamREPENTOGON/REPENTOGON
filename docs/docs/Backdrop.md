@@ -16,6 +16,18 @@ tags:
         
 ## Functions
 
+### GetControlsANM2 () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetControlsANM2 ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetDetailANM2 () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetDetailANM2 ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetFloorANM2 () {: aria-label='Functions' }
+#### [Sprite](Sprite.md) GetFloorANM2 ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetFloorImage () {: aria-label='Functions' }
 #### [Image](renderer/Image.md) GetFloorImage ( ) {: .copyable aria-label='Functions' }
 Returns the buffer containing the floor texture of the current room.
