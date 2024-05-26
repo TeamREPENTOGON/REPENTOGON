@@ -4061,6 +4061,70 @@ HOOK_METHOD(Entity_Player, Revive, () -> void) {
 			.push(ent, lua::Metatables::ENTITY_PLAYER)
 			.call(1);
 	}
+} 
+
+// MC_PRE_FORTUNE_DISPLAY (1483)
+HOOK_METHOD(HUD, ShowFortuneText, (int** param_1) -> void) {
+	const int callbackId = 1483;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+			else {
+				super(param_1);
+			}
+		}
+	}
+}
+
+// MC_PRE_ITEM_TEXT_DISPLAY (1484)
+HOOK_METHOD(HUD, ShowItemTextCustom, (wchar_t* title, wchar_t* subtitle, bool isSticky, bool isCurseDisplay) -> void) {
+	const int callbackId = 1484;
+	if (CallbackState.test(callbackId - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		int sizeNeededTitle = WideCharToMultiByte(CP_UTF8, 0, &title[0], wcslen(title), NULL, 0, NULL, NULL);
+		std::string strTitle(sizeNeededTitle, 0);
+		WideCharToMultiByte(CP_UTF8, 0, title, wcslen(title), &strTitle[0], sizeNeededTitle, NULL, NULL);
+		 
+		int sizeNeededSubtitle = WideCharToMultiByte(CP_UTF8, 0, &subtitle[0], wcslen(subtitle), NULL, 0, NULL, NULL);
+		std::string strSubtitle(sizeNeededSubtitle, 0);
+		WideCharToMultiByte(CP_UTF8, 0, subtitle, wcslen(subtitle), &strSubtitle[0], sizeNeededSubtitle, NULL, NULL);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
+			.pushnil()
+			.push(strTitle.c_str())
+			.push(strSubtitle.c_str())
+			.push(isSticky)
+			.push(isCurseDisplay)
+			.call(1);
+		 
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (!lua_toboolean(L, -1)) {
+					return;
+				}
+			} 
+			else { 
+				super(title, subtitle, isSticky, isCurseDisplay);
+			}
+		}
+	}
 }
 
 //MC_POST_BOSS_INTRO_SHOW (1270)
