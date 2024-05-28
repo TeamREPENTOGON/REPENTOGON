@@ -550,11 +550,14 @@ void __stdcall RunImGui(HDC hdc) {
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	UpdateImGuiSettings();
-;
+	float scale_to_set = g_PointScale;
+	if (repentogonOptions.imGuiScale != 0) {
+		scale_to_set = repentogonOptions.imGuiScale;
+	};
 	if (g_PointScale > 0) {
-		imFontUnifont->Scale = g_PointScale * unifont_global_scale;
-		ImGui::GetStyle().FramePadding.y = 4 * g_PointScale * unifont_global_scale;
-		ImGui::GetStyle().ItemSpacing.x = 6 * g_PointScale * unifont_global_scale;
+		imFontUnifont->Scale = scale_to_set * unifont_global_scale;
+		ImGui::GetStyle().FramePadding.y = 4 * scale_to_set * unifont_global_scale;
+		ImGui::GetStyle().ItemSpacing.x = 6 * scale_to_set * unifont_global_scale;
 	}
 		
 
