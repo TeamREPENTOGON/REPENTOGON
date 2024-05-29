@@ -1,5 +1,6 @@
 struct PocketItem
 {
+    // TODO: "slot" here is actually the ID of the card/pill/collectible and should probably be renamed, both here and luaside.
     int _slot : 0x0;
     int _type : 0x4;
 } : 0x8;

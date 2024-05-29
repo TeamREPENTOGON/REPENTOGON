@@ -24,7 +24,7 @@ For items, returns [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/en
 
 ___
 ### GetType () {: aria-label='Functions' }
-#### [PocketItemType](PocketItem.md) GetType ( ) {: .copyable aria-label='Functions' }
-Returns the [PocketItemType](PocketItem.md). Returns `1` if the slot is empty.
+#### [PocketItemType](enums/PocketItemType.md) GetType ( ) {: .copyable aria-label='Functions' }
+Returns the [PocketItemType](enums/PocketItemType.md). Returns `1` if the slot is empty.
 
 ___
