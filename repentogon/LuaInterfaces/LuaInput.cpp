@@ -21,7 +21,7 @@ extern float WINMouseWheelMove_Hori;
 LUA_FUNCTION(Lua_InputGetMouseWheel)
 {
 	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
-	Vector vec = Vector(WINMouseWheelMove_Hori, WDPMouseWheelMove_Value);
+	Vector vec = Vector(WINMouseWheelMove_Hori, WINMouseWheelMove_Vert);
 	memcpy(toLua, &vec, sizeof(Vector));
 	return 1;
 }
