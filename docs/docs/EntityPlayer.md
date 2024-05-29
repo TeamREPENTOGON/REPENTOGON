@@ -637,14 +637,14 @@ Initializes a new player that is controlled by the player's same controller.
 	We've received confirmation from \_Kilburn that this is hardcoded to be handled on vanilla characters. We will need to add a workaround for this.
 
 ___
-### IsCollectibleBlocked () {: aria-label='Functions' }
-#### boolean IsCollectibleBlocked ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
-Returns true if the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) was blocked. Collectibles can only be blocked by use of [BlockCollectible](EntityPlayer.md#blockcollectible).
-
-___
 ### IsCollectibleAnimFinished () {: aria-label='Functions' }
 #### boolean IsCollectibleAnimFinished ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, string Animation ) {: .copyable aria-label='Functions' }
 Returns true if the animation associated with the collectible is visible.
+
+___
+### IsCollectibleBlocked () {: aria-label='Functions' }
+#### boolean IsCollectibleBlocked ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Returns true if the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) was blocked. Collectibles can only be blocked by use of [BlockCollectible](EntityPlayer.md#blockcollectible).
 
 ___
 ### IsCollectibleCostumeVisible () {: aria-label='Functions' }
@@ -856,7 +856,7 @@ ___
 
 ___
 ### SetHallowedGroundCountdown () {: aria-label='Functions' }
-#### SetHallowedGroundCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+#### void SetHallowedGroundCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 Sets the grace period countdown of retaining stats from the Hallowed Ground/Star of Bethlehem aura.
 
 ___

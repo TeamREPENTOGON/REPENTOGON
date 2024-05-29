@@ -27,20 +27,20 @@ tags:
 
 ## Functions
 
-### GetType () {: aria-label='Functions' }
-#### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
-
-___
-### GetVariant () {: aria-label='Functions' }
-#### int GetVariant ( ) {: .copyable aria-label='Functions' }
+### GetSeed () {: aria-label='Functions' }
+#### int GetSeed ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetSubType () {: aria-label='Functions' }
 #### int GetSubType ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetSeed () {: aria-label='Functions' }
-#### int GetSeed ( ) {: .copyable aria-label='Functions' }
+### GetType () {: aria-label='Functions' }
+#### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetVariant () {: aria-label='Functions' }
+#### int GetVariant ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### RNG () {: aria-label='Functions' }

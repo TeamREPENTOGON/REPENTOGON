@@ -106,14 +106,14 @@ ___
 Sets the prize type of the slot. See [GetPrizeType](EntitySlot.md#getprizetype) for more info.
 
 ___
-### SetState () {: aria-label='Functions' }
-#### void SetState ( int State ) {: .copyable aria-label='Functions' }
-Sets the state of the slot. See [GetState](EntitySlot.md#getstate) for more info.
-
-___
 ### SetShellGameAnimationIndex () {: aria-label='Functions' }
 #### void SetShellGameAnimationIndex ( int index ) {: .copyable aria-label='Functions' }
 Sets the index used by Shell Game and Hell Game to determine which prize animation to play.
+
+___
+### SetState () {: aria-label='Functions' }
+#### void SetState ( int State ) {: .copyable aria-label='Functions' }
+Sets the state of the slot. See [GetState](EntitySlot.md#getstate) for more info.
 
 ___
 ### SetTimeout () {: aria-label='Functions' }
