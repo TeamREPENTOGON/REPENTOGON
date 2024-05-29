@@ -16,6 +16,11 @@ tags:
         
 ## Functions
 
+### IsPosVisible () {: aria-label='Functions' }
+#### boolean IsPosVisible ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
+Returns if the in-world position is visible to the camera.
+
+___
 ### SetFocusPosition () {: aria-label='Functions' }
 #### void SetFocusPosition ( [Vector](Vector.md) Pos ) {: .copyable aria-label='Functions' }
 Sets the camera's current focus position, causing it to shift towards the specified position

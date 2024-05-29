@@ -25,8 +25,8 @@ Additions:
 * Game:
 	- RecordPlayerCompletion(CompletionType)
 * ModCallbacks:
-	- MC_(PRE/POST)_RECORD_PLAYER_COMPLETION
-		Called when a player completes something that would award a mark (end bosses, tainted unlocks)
+	- MC_POST_COMPLETION_EVENT
+		POST version of MC_PRE_COMPLETION_EVENT. Called when a player completes something that would award a mark (end bosses, tainted unlocks)
 * Add new Vanilla Tweaks option "Mars Double Tap Window", which determines the number of frames where a repeated movement input is counted as a double tap for activating Mars's charge
 * Updater now runs asynchronously, meaning that you should no longer encounter the "white screen" issue.
 * Improved mods' startup speed once again!
