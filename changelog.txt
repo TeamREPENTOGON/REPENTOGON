@@ -1,3 +1,59 @@
+v1.x.x -
+Additions:
+* ModCallbacks:
+	- MC_PRE_FORTUNE_DISPLAY
+		Called before a fortune paper is displayed.
+	- MC_PRE_ITEM_TEXT_DISPLAY (title, subtitle, isSticky, isCurseDisplay)
+		Called before an item text is displayed (such as with picking up an item, Poke Go, stage title, etc.)
+Modified:
+* Isaac:
+	PlayCutscene(CutsceneID, CleanGameState = false)
+* The game no longer prematurely ends the daily run if there was console input, instead blocking it
+/newline/
+v1.0.9d -
+Fixes:
+* Fixed a bug with the autoupdater
+/newline/
+v1.0.9c -
+Fixes:
+* Fixed a bug in 1.0.9b where all cutscenes were being replaced by the intro cutscene if any mods were enabled.
+/newline/
+v1.0.9b -
+Additions:
+* Camera:
+	- IsPosVisible(position: Vector) : bool
+* Game:
+	- RecordPlayerCompletion(CompletionType)
+* ModCallbacks:
+	- MC_POST_COMPLETION_EVENT
+		POST version of MC_PRE_COMPLETION_EVENT. Called when a player completes something that would award a mark (end bosses, tainted unlocks)
+* Add new Vanilla Tweaks option "Mars Double Tap Window", which determines the number of frames where a repeated movement input is counted as a double tap for activating Mars's charge
+* Updater now runs asynchronously, meaning that you should no longer encounter the "white screen" issue.
+* Improved mods' startup speed once again!
+* Minor fix for a file map.
+* "clearcache" command now reloads the file map.
+* Fixed a regression that resulted in a severe slowdown for certain commands' autocomplete prompts. This fix has also made file map noticeably faster :D
+* Bumbino, Ultra Greed, and familiars like Bum Friend will now trigger MC_PICKUP_GET_COIN_VALUE when collecting coins, and will default to treating modded coin subtypes as worth 1 penny instead of huge values.
+/newline/
+v1.0.9a -
+Additions:
+* Game:
+	- ClearErasedEnemies(): void
+	- GetShopVisits(): int
+	- AddShopVisits(count: int): void
+* EntitySlot:
+	- GetShellGameAnimationIndex() : int
+	- SetShellGameAnimationIndex(index: int) : void
+	- GetTriggerTimerNum() : int
+	- SetTriggerTimerNum(num: int) : void
+- Sorry about the startup line in 1.0.9, half of it was a lie, now it's not! This update enables "file map" functionality, speeding up file lookup, positively affecting the startup time. It shouldn't cause any issue, but if it does don't hesitate to report issues, in the meantime you can disable it in REPENTOGON's options window.
+/newline/
+* Bug fixes
+    - Fixed a bug that caused the giveitem command to crash when the object to
+    give was reduced to a single letter
+	- Fix "goto [s/x]." command autocomplete
+	- Fixed incorrect type set for Slot->_timeout (int -> short)
+/newline/
 v1.0.9 -
 Modified:
 * Callbacks:
