@@ -316,6 +316,9 @@ I(OPT_REPENTOGON_MARSDOUBLETAP_MARK, u8"Sets the window of time to double-tap a 
 I(OPT_REPENTOGON_FILE_MAP, u8"Enable modded file map generation")
 I(OPT_REPENTOGON_FILE_MAP_MARK, u8"Preemptively checks all modded files for faster game start and less stutters. Disable and report to us if you have issues with modded assets loading.")
 
+I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, u8"Extra debug render for FindInRadius")
+I(OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK, u8"While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.")
+
 I(OPT_EXTRA_HUD_MODES_OFF, u8"Off")
 I(OPT_EXTRA_HUD_MODES_NORMAL, u8"Normal")
 I(OPT_EXTRA_HUD_MODES_MINI, u8"Mini")

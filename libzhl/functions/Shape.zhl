@@ -1,6 +1,9 @@
 "558bec83ec10538bd9568b75??578b53":
 __thiscall void Shape::Capsula(Capsule* Thing);
 
+"558bec83ec10538bd90f28c2":
+__thiscall void Shape::Circle(Vector * Position, float Scale<xmm2>);
+
 struct Shape { {{
 	inline int* GetTimeout() { return (int*)((char*)this + 0x4); }
 }} 

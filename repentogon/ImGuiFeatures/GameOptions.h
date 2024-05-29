@@ -328,6 +328,11 @@ struct GameOptionsWindow : ImGuiWindowObject {
                         ImGui::SameLine();
                         HelpMarker(LANG.OPT_REPENTOGON_FILE_MAP_MARK);
                         AddResetButton(++resetCounter, repentogonOptions.fileMap, true);
+                        AddNewTableRow();
+                        ImGui::Checkbox(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS, &repentogonOptions.renderDebugFindInRadius);
+                        ImGui::SameLine();
+                        HelpMarker(LANG.OPT_REPENTOGON_DEBUG_FIND_IN_RADIUS_MARK);
+                        AddResetButton(++resetCounter, repentogonOptions.renderDebugFindInRadius, false);
 
                         ImGui::EndTable();
                     }
