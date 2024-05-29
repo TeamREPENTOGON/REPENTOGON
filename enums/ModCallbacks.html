@@ -1288,6 +1288,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_post_completion_event" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_COMPLETION_EVENT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_pre_completion_marks_render" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_COMPLETION_MARKS_RENDER
@@ -4808,6 +4817,15 @@
   <a href="#mc_pre_completion_event" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_COMPLETION_EVENT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mc_post_completion_event" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_COMPLETION_EVENT
     </span>
   </a>
   
@@ -12062,6 +12080,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#mc_post_completion_event" class="md-nav__link">
+    <span class="md-ellipsis">
+      MC_POST_COMPLETION_EVENT
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mc_pre_completion_marks_render" class="md-nav__link">
     <span class="md-ellipsis">
       MC_PRE_COMPLETION_MARKS_RENDER
@@ -14864,8 +14891,7 @@ Accepts no return parameters.</p>
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_completion_event">MC_PRE_COMPLETION_EVENT<a class="headerlink" href="#mc_pre_completion_event" title="Permanent link">⚓︎</a></h3>
-<p>Can return <code>false</code> to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.</p>
-<p>Called when a completion even gets triggered, getting as a parameter the code for the event in question. </p>
+<p>Can return a new <a href="CompletionType.html">CompletionType</a> or <code>false</code> to cancel the completion event. Canceling it will prevent all marks and completion event related stuff to trigger for all players.</p>
 <table>
 <thead>
 <tr>
@@ -14882,7 +14908,29 @@ Accepts no return parameters.</p>
 <td class="copyable" style="text-align: left;">MC_PRE_COMPLETION_EVENT</td>
 <td style="text-align: left;">(<a href="CompletionType.html">CompletionType</a> Completion)</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">void or false</td>
+<td style="text-align: left;"><a href="CompletionType.html">CompletionType</a>, boolean</td>
+</tr>
+</tbody>
+</table>
+<h3 class="copyable" id="mc_post_completion_event">MC_POST_COMPLETION_EVENT<a class="headerlink" href="#mc_post_completion_event" title="Permanent link">⚓︎</a></h3>
+<p>Called when a completion event is recorded, such as when defeating an end boss or unlocking a tainted character.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">ID</th>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Function Args</th>
+<th style="text-align: left;">Optional Args</th>
+<th style="text-align: left;">Return Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">1052</td>
+<td class="copyable" style="text-align: left;">MC_POST_COMPLETION_EVENT</td>
+<td style="text-align: left;">(<a href="CompletionType.html">CompletionType</a> Completion)</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">void</td>
 </tr>
 </tbody>
 </table>
