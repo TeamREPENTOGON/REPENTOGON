@@ -20,7 +20,7 @@ tags:
 Returns the ID of the `PocketItem`. Returns `0` if the slot is empty.
 For cards, returns [Card](https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html).
 For pills, returns [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html).
-For items, returns [CollectibleEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html).
+For items, returns [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html).
 
 ___
 ### GetType () {: aria-label='Functions' }
