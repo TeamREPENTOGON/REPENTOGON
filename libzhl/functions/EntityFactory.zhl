@@ -1,0 +1,6 @@
+"558bec518b45??535657":
+__thiscall Entity* EntityFactory::Create(unsigned int type, bool force);
+
+struct EntityFactory depends(Entity){
+
+} : 0x5f5260 ;

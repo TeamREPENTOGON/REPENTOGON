@@ -18,3 +18,4 @@ void ASMPatchCheckFamiliar();
 void ASMPatchPlayerStats();
 void ASMPatchPlayerNoShake();
 void ASMPatchPlayerItemNoMetronome();
+void ASMPatchMarsDoubleTapWindow();

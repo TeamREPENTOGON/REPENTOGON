@@ -22,6 +22,7 @@ namespace SigCache {
 
 	extern std::ofstream _writebuffer;
 	extern std::vector<SigCacheEntry> _entries;
+	extern std::string _sigcachepath;
 	extern bool IsLoaded;
 	extern bool IsIndirectMode;
 };

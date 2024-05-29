@@ -32,7 +32,15 @@ ___
 
 ___
 ### AnyPlayerTypeHasBirthright () {: aria-label='Functions' }
-#### boolean AnyPlayerTypeHasBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
+#### boolean AnyPlayerTypeHasBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean IgnoreModifiers = false ) {: .copyable aria-label='Functions' }
+
+___
+### AnyPlayerTypeHasCollectible () {: aria-label='Functions' }
+#### boolean AnyPlayerTypeHasCollectible ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean IgnoreModifiers = false ) {: .copyable aria-label='Functions' }
+
+___
+### AnyPlayerTypeHasTrinket () {: aria-label='Functions' }
+#### boolean AnyPlayerTypeHasTrinket ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 
 ___
 ### FirstBirthrightOwner () {: aria-label='Functions' }

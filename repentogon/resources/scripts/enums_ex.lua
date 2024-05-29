@@ -290,6 +290,10 @@ ModCallbacks.MC_POST_MINIMAP_RENDER = 1480
 ModCallbacks.MC_PRE_PLAYER_REVIVE = 1481
 ModCallbacks.MC_POST_PLAYER_REVIVE = 1482
 
+ModCallbacks.MC_PRE_FORTUNE_DISPLAY = 1483
+
+ModCallbacks.MC_PRE_ITEM_TEXT_DISPLAY = 1484
+
 AddHealthType = {
 	NONE	=	0,
 	RED		=	1<<0,

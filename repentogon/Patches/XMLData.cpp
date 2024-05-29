@@ -2850,7 +2850,7 @@ bool XMLParse(xml_document<char>* xmldoc, char* xml,const string &dir) {
 }
 
 char* GetResources(char* xml,const string &dir,const string &filename) {
-	vector<string> paths = { dir + "\\resources\\" + filename, dir + "\\resources-dlc3\\" + filename };
+	vector<string> paths = { dir + "\\resources-dlc3\\" + filename, dir + "\\resources\\" + filename };
 	for (const string & path : paths) {
 		ifstream file(path.c_str());
 		if (file.is_open()) {
@@ -3243,7 +3243,12 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 
 			string dir = std::filesystem::current_path().string() + "\\mods\\" + mod->GetDir();
 			string contentsdir = dir + "\\content\\" + filename;
-
+			// Skip this mod if it does not even have the corresponding XML, to save time and memory during startup.
+			// However, DON'T skip if we are in the middle of hijacking a cutscenes XML reload as part of the custom cutscenes support,
+			// since that messes things up and causes all cutscenes to become the intro cutscene.
+			if (!std::filesystem::exists(contentsdir) && queuedhackyxmlvalue == 0) {
+				continue;
+			};
 			xml_document<char>* xmldoc = new xml_document<char>();
 			if (XMLParse(xmldoc, xml, filename)) {
 				xml_node<char>* root = xmldoc->first_node();

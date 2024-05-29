@@ -9,12 +9,11 @@ __thiscall void Entity_Slot::SetPrizeCollectible(int CollectibleType);
 
 
 struct Entity_Slot : public Entity { {{
-	inline RNG* GetSlotRNG() { return (RNG*)((char*)this + 0x334); }
-	inline int* GetState() { return (int*)((char*)this + 0x360); }
-	inline int* GetPrizeType() { return (int*)((char*)this + 0x364); }
-	inline int* GetTimeout() { return (int*)((char*)this + 0x36a); }
-	inline int* GetDonationValue() { return (int*)((char*)this + 0x36c); }
-	inline unsigned short* GetTouch() { return (unsigned short*)((char*)this + 0x376); }
+	inline int* GetState() { return &this->_state; }
+	inline int* GetPrizeType() { return &this->_prizeType; }
+	inline short* GetTimeout() { return &this->_timeout; }
+	inline int* GetDonationValue() { return &this->_donationValue; }
+	inline unsigned short* GetTouch() { return &this->_touch; }
 }}
     __vtable {
 		skip; // Free
@@ -58,4 +57,15 @@ struct Entity_Slot : public Entity { {{
 		skip; // ResetColor
 		skip; // LoadEntityConfig
     };
+	
+	int _state : 0x360;
+	int _prizeType : 0x364;
+	short _shellGameAnimationIndex : 0x368;
+	short _timeout : 0x36a;
+	int _donationValue : 0x36c;
+	uint32_t _triggerTimer : 0x370;
+	short _unkShort1 : 0x374;
+	uint16_t _touch : 0x376;
+	ANM2 _prizeAnm2 : 0x378;
+	int _prizeCollectible : 0x48c;
 } : 0x490;

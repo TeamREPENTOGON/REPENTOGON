@@ -228,3 +228,25 @@ void ASMPatchPlayerItemNoMetronome() {
 		.AddRelativeJump((char*)addr + 0x11E);
 	sASMPatcher.PatchAt(addr, &patch);
 }
+
+int marsDoubleTapWindow = 10;
+void __stdcall SetMarsDoubleTapWindow() {
+	marsDoubleTapWindow = repentogonOptions.marsDoubleTapWindow;
+}
+
+void ASMPatchMarsDoubleTapWindow() {
+	SigScan scanner("83bf????????0a0f8f????????8bd0"); // cmp dword ptr [EDI + 0x1da8],0xa
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	void* frameWindowPtr = &marsDoubleTapWindow;
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::GP_REGISTERS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)  // Store for later
+		.AddInternalCall(SetMarsDoubleTapWindow)
+		.AddBytes("\xA1").AddBytes(ByteBuffer().AddAny((char*)&frameWindowPtr, 4)) // mov eax, dword ptr ds:[XXXXXXXX]
+		.AddBytes("\x39\x87\xa8\x1d").AddZeroes(2) // cmp dword ptr [EDI + 0x1da8],EAX
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x7);
+	sASMPatcher.PatchAt(addr, &patch);
+}

@@ -1,12 +1,16 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "Logger.h"
+#include "launcher/Logger.h"
 
 static const char* LogLevelToString(LogLevel level);
 
 Logger::Logger() {
 
+}
+
+void Logger::SynchronizeWithStdout(bool on) {
+	_synchronizeWithStdout = on;
 }
 
 void Logger::SetLogLevel(LogLevel level) {
@@ -60,6 +64,16 @@ void Logger::Log(LogLevel level, const char* fmt, va_list va) {
 	strftime(buffer, 4095, "[%Y-%m-%d %H:%M:%S]", tm);
 	fprintf(_file, "%s %s ", LogLevelToString(level), buffer);
 	vfprintf(_file, fmt, va);
+
+	if (_synchronizeWithStdout) {
+		FILE* output = stdout;
+		if (level >= LOG_WARN) {
+			output = stderr;
+		}
+
+		fprintf(output, "%s %s ", LogLevelToString(level), buffer);
+		vfprintf(output, fmt, va);
+	}
 	va_end(va);
 
 	if (_flushOnLog) {

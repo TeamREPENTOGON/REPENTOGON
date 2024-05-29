@@ -94,13 +94,30 @@ target_compile_options(libzhl PUBLIC "/MD" "/wd4251" "/wd4996")
 # ZHL Launcher
 add_library (zhlLauncher SHARED ${CMAKE_SOURCE_DIR}/launcher/launcher.cpp)
 
+FILE(GLOB LAUNCHER_CORE_SRC ${CMAKE_SOURCE_DIR}/launcher_core/*.cpp)
+add_library(launcher_core STATIC ${LAUNCHER_CORE_SRC})
+target_compile_options(launcher_core PUBLIC "/MD")
+
 # Injected DLL
-FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp)
+set(UPDATER_BASE_BUILD_DIR "${CMAKE_SOURCE_DIR}/updater_rsrc")
+configure_file(${CMAKE_SOURCE_DIR}/updater/updater.rc.in ${CMAKE_SOURCE_DIR}/updater/updater.rc)
+FILE(GLOB LAUNCHER_SRC ${CMAKE_SOURCE_DIR}/launcher/*.cpp ${CMAKE_SOURCE_DIR}/updater/updater.rc)
 add_library(dsound SHARED ${LAUNCHER_SRC})
-target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})
-target_link_libraries(dsound libcurl cryptopp)
+target_include_directories(dsound PRIVATE ${CMAKE_SOURCE_DIR}/include)
+# target_include_directories(dsound PUBLIC ${CURL_INCLUDE_DIR})
+# target_link_libraries(dsound libcurl cryptopp)
 target_compile_options(dsound PUBLIC "/MD" "/wd4996")
-target_link_libraries(dsound Imagehlp)
+target_link_libraries(dsound Imagehlp launcher_core)
+
+# Embedded Updater
+
+add_executable(UpdaterBase ${CMAKE_SOURCE_DIR}/updater/Updater.cpp)
+target_include_directories(UpdaterBase PRIVATE ${CURL_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(UpdaterBase PRIVATE libcurl cryptopp launcher_core)
+target_compile_options(UpdaterBase PUBLIC "/MD")
+add_custom_command (TARGET UpdaterBase POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:UpdaterBase> "${CMAKE_SOURCE_DIR}/updater_rsrc")
+
+add_dependencies(dsound UpdaterBase)
 
 # ImGUI
 enable_language(RC)
@@ -174,6 +191,7 @@ foreach(_source IN ITEMS ${REPENTOGON_SRC})
 endforeach()
 add_library(zhlREPENTOGON SHARED ${REPENTOGON_SRC} )
 target_compile_options(zhlREPENTOGON PUBLIC "/MD" "/MP" "/wd4251" "/wd4996")
+target_compile_definitions(zhlREPENTOGON PRIVATE NOMINMAX)
 
 # Delirium
 FILE(GLOB_RECURSE DELIRIUM_SRC ${CMAKE_SOURCE_DIR}/delirium/*.*)
@@ -215,7 +233,7 @@ add_library(stb SHARED stbParser/stbParser.cpp)
 add_executable(stbc stbParser/stbParserc.cpp)
 target_link_libraries(stbc stb)
 target_link_libraries(zhlREPENTOGON Lua5.4 libzhl freetype "Zydis" imgui ${OPENGL_LIBRARIES})
-target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp)
+target_link_libraries(libzhl Lua5.4 "Zydis" dbghelp Imagehlp)
 
 # Put libraries into folders
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

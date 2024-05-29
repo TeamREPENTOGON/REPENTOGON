@@ -4,6 +4,7 @@
 #include "../LuaInterfaces/LuaRender.h"
 #include "NullItemsAndCostumes.h"
 #include "FamiliarTags.h"
+#include "GetCoinValue.h"
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
 
@@ -127,6 +128,7 @@ void PerformASMPatches() {
 	ASMPatchPlayerNoShake();
 	ASMPatchPlayerItemNoMetronome();
 	ASMPatchesForExtraLives();
+	ASMPatchMarsDoubleTapWindow();
 
 	// Render
 	LuaRender::PatchglDrawElements();
@@ -135,6 +137,7 @@ void PerformASMPatches() {
 	// External
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
+	ASMPatchesForGetCoinValue();
 	HookImGui();
 
 	// Sprite

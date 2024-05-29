@@ -30,6 +30,11 @@ ___
 Now accepts a `Force` argument to forcefully reset the charge instead of only rolling for a change to reset.
 
 ___
+### GetCollectibleNum () {: aria-label='Modified Functions' }
+#### int GetCollectibleNum ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean OnlyCountTrueItems = false, IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
+Now accepts a `IgnoreSpoof` argument that ignores innate items.
+
+___
 ### GetMultiShotParams () {: aria-label='Modified Functions' }
 #### [MultiShotParams](MultiShotParams.md) GetMultiShotParams ( [WeaponType](https://wofsauge.github.io/IsaacDocs/rep/enums/WeaponType.html) WeaponType ) {: .copyable aria-label='Modified Functions' }
 Now returns a proper `MultiShotParams` object.
@@ -43,8 +48,13 @@ Compared to the vanilla function, this implementation has been further augmented
 
 ___
 ### GetPocketItem () {: aria-label='Modified Functions' }
-#### [PocketItem](PocketItem.md) GetPocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) SlotId ) {: .copyable aria-label='Modified Functions' }
-Now returns a proper `PocketItem` object.
+#### [PocketItem](PocketItem.md) GetPocketItem ( int PocketItemSlot ) {: .copyable aria-label='Modified Functions' }
+Now returns a proper `PocketItem` object. `PocketItemSlot` is not synonymous with `ActiveSlot`, instead referring to where the PocketItem is located in your inventory.
+
+___
+### HasCollectible () {: aria-label='Modified Functions' }
+#### boolean HasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean IgnoreModifiers = false, boolean IgnoreSpoof = false ) {: .copyable aria-label='Modified Functions' }
+Now accepts a `IgnoreSpoof` argument that ignores innate items.
 
 ___
 
@@ -97,6 +107,11 @@ Returns ``true`` if the trinket was successfully added, otherwise ``false``.
 ___
 ### AddUrnSouls () {: aria-label='Functions' }
 #### void AddUrnSouls ( int Count = 0 ) {: .copyable aria-label='Functions' }  
+
+___
+### BlockCollectible () {: aria-label='Functions' }
+#### void BlockCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }  
+Blocks the provided [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html). This will make it so the game thinks you don't have the item, even if it's in your inventory.
 
 ___
 ### CanAddCollectibleToInventory () {: aria-label='Functions' }
@@ -199,7 +214,12 @@ Returns the current charge for when the player stops shooting and charges the Ki
 
 ___
 ### GetBodyMoveDirection () {: aria-label='Functions' }
-#### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }    
+#### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetBombPlaceDelay () {: aria-label='Functions' }
+#### int GetBombPlaceDelay ( ) {: .copyable aria-label='Functions' }
+Default bomb place delay is `30 frames`.
 
 ___
 ### GetCambionConceptionState () {: aria-label='Functions' }
@@ -231,10 +251,37 @@ Returns table of player sprite layers data for costumes with the following field
 
 |Field|Type|Comment|
 |:--|:--|:--|
-| costumeIndex | int | Index of active/visible costume for layer. |
-| layerID | int | |
-| priority | int | |
-| isBodyLayer | boolean | |
+| costumeIndex | int | Index of active/visible costume for that layer.  `-1` if no costume is on that layer. |
+| layerID | int | ID of the sprite's layer corresponding to its anm2 file. `-1` if no costume is on that layer. |
+| priority | int | Costume's priority as listed in `costumes2.xml`. `-1` if no costume is on that layer. |
+| isBodyLayer | boolean | `true` if the costume is a body costume. `false` if not or if no costume is on that layer. |
+
+???- info "More Layer Map Info"
+
+    The returned table's index order corresponds to PlayerSpriteLayer. However, due to the differences in the starting index of arrays between Lua and C++, CostumeLayerMap's index needs to be decreased by 1 and it's costumeIndex increased by 1 in order to get accurate information.
+
+    Below is a snippet of code that displays all currently occupied costume layers.
+    Prints are sectioned as such: PlayerSpriteLayer - Layer Name - Item Name/NullItemID - Anm2 filepath
+
+    ???+ example "Example Code"
+        ```lua
+        local player = Isaac.GetPlayer()
+        local map = Isaac.GetPlayer():GetCostumeLayerMap()
+        print("-------------------------------------------------------------------")
+        local costumeSpriteDescs = player:GetCostumeSpriteDescs()
+        for layer, mapData in ipairs(map) do
+            if mapData.costumeIndex == -1 then goto continue end
+            local costumeSpriteDesc = costumeSpriteDescs[mapData.costumeIndex + 1]
+            local sprite = costumeSpriteDesc:GetSprite()
+            local itemConfig = costumeSpriteDesc:GetItemConfig()
+            local layerName = sprite:GetLayer(mapData.layerID):GetName()
+            local costumeName = itemConfig.Name ~= "" and Isaac.GetString("Items", itemConfig.Name) or "NullItemID "..itemConfig.ID
+            local spritePath = sprite:GetFilename()
+            print(layer - 1, "-", layerName, "-", costumeName, "-", spritePath)
+            ::continue::
+        end
+        print("-------------------------------------------------------------------")
+        ```
 
 ___
 ### GetCostumeSpriteDescs () {: aria-label='Functions' }
@@ -361,6 +408,11 @@ ___
 ___
 ### GetGreedsGulletHearts () {: aria-label='Functions' }
 #### int GetGreedsGulletHearts ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetHallowedGroundCountdown () {: aria-label='Functions' }
+#### int GetHallowedGroundCountdown ( ) {: .copyable aria-label='Functions' }
+Returns the grace period countdown of retaining stats from the Hallowed Ground/Star of Bethlehem aura.
 
 ___
 ### GetHeadDirectionLockTime () {: aria-label='Functions' }
@@ -551,6 +603,11 @@ ___
 Returns true if a "?" would be displayed on the player's extra life count (ie, the player has Guppy's Collar, or a modded revive item with the `chancerevive` string in REPENTOGON's [customtags items.xml attribute](xml/items.md)).
 
 ___
+### HasGoldenTrinket () {: aria-label='Functions' }
+#### boolean HasGoldenTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket ) {: .copyable aria-label='Functions' }
+Returns true if you have a golden variant of the provided [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html).
+
+___
 ### HasInstantDeathCurse () {: aria-label='Functions' }
 #### boolean HasInstantDeathCurse ( ) {: .copyable aria-label='Functions' }
 Returns true when the player is in the Lost form triggered by either the white fire in Downpour or Soul of The Lost. (or when in Tainted Jacob's ghost form when being touched by Dark Esau)
@@ -578,6 +635,11 @@ Initializes a new player that is controlled by the player's same controller.
     The twin player will desync from its main twin on save and continue. This softlocks the game in singleplayer, as the game prompts for a controller.
 	
 	We've received confirmation from \_Kilburn that this is hardcoded to be handled on vanilla characters. We will need to add a workaround for this.
+
+___
+### IsCollectibleBlocked () {: aria-label='Functions' }
+#### boolean IsCollectibleBlocked ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Returns true if the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) was blocked. Collectibles can only be blocked by use of [BlockCollectible](EntityPlayer.md#blockcollectible).
 
 ___
 ### IsCollectibleAnimFinished () {: aria-label='Functions' }
@@ -720,6 +782,10 @@ Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_
     The player's head turns pitch black when this function is used without Kidney Stone.
 
 ___
+### SetBombPlaceDelay () {: aria-label='Functions' }
+#### void SetBombPlaceDelay ( int Delay ) {: .copyable aria-label='Functions' }
+
+___
 ### SetCambionConceptionState () {: aria-label='Functions' }
 #### void SetCambionConceptionState ( int State ) {: .copyable aria-label='Functions' }
 Sets how much damage has been taken for the Cambion Conception item.
@@ -787,6 +853,11 @@ Sets the player's footprint color.
 ___
 ### SetGnawedLeafTimer () {: aria-label='Functions' }
 #### void SetGnawedLeafTimer ( int Timer ) {: .copyable aria-label='Functions' }
+
+___
+### SetHallowedGroundCountdown () {: aria-label='Functions' }
+#### SetHallowedGroundCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+Sets the grace period countdown of retaining stats from the Hallowed Ground/Star of Bethlehem aura.
 
 ___
 ### SetHeadDirection () {: aria-label='Functions' }
@@ -999,13 +1070,18 @@ ___
 Tries to remove the specified smelted trinket from the player.
 
 ___
+### UnblockCollectible () {: aria-label='Functions' }
+#### void UnblockCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Unblocks the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) that was blocked through [BlockCollectible](EntityPlayer.md#blockcollectible).
+
+___
 ### UpdateIsaacPregnancy () {: aria-label='Functions' }
 #### void UpdateIsaacPregnancy ( boolean UpdateCambion ) {: .copyable aria-label='Functions' }
 Set `true` if you want to update the [Cambion Conception](https://bindingofisaacrebirth.fandom.com/wiki/Cambion_Conception) costume, otherwise updates the [Immaculate Conception](https://bindingofisaacrebirth.fandom.com/wiki/Immaculate_Conception) costume.
 
 ___
 ### VoidHasCollectible () {: aria-label='Functions' }
-#### boolean VoidHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) ID ) {: .copyable aria-label='Functions' }
+#### boolean VoidHasCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
 Returns true if the specified collectible has been consumed by the Void collectible.
 
 ___

@@ -4,6 +4,7 @@
 #include "../ImGuiFeatures/LogViewer.h"
 #include "LuaCore.h"
 #include "../Patches/ModReloading.h"
+#include "../REPENTOGONFileMap.h"
 
 #include <filesystem>
 #include <iostream> 
@@ -136,6 +137,13 @@ HOOK_METHOD(Console, RunCommand, (std::string& in, std::string* out, Entity_Play
         GameRestart();
         return;
     }
+
+    if ((in == "clearcache") || (in.rfind("clearcache ", 0) == 0)) {
+        REPENTOGONFileMap::_filemap.clear();
+        REPENTOGONFileMap::map_init = false;
+        REPENTOGONFileMap::GenerateMap();
+        return super(in,out,player);
+    };
 
     if ((in == "help") || (in.rfind("help ", 0) == 0)) {
 

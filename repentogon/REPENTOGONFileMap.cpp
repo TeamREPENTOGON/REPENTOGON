@@ -3,23 +3,34 @@
 #include "IsaacRepentance.h"
 #include "HookSystem.h"
 #include <Log.h>
+#include "REPENTOGONOptions.h"
+
+//#include <locale>
+#include <sstream>
 namespace fs = std::filesystem;
 namespace REPENTOGONFileMap {
 	std::unordered_map<size_t, FileMapEntry> _filemap;
 	bool map_init = false;
-	std::vector<std::string> _stringByFType = {
-		"resources",
-		"resources-dlc3",
-		"",
+	std::vector<std::wstring> _stringByFType = {
+		L"resources",
+		L"resources-dlc3",
+		L"",
 	};
-	std::string _modsPath = "";
+	std::wstring _modsPath = L"";
+	std::wstring _producePath = L"";
 
 	fs::path moddir;
 	std::string modname;
+//	std::locale utf8loc = std::locale(".UTF-8");
 
-	void ProduceString(std::string* part_path, FileMapEntry* entry, std::string* outstring) {
-		const std::string& subdirname = (_stringByFType[entry->FolderType]);
-		*outstring = *outstring + _modsPath + "/" + g_Manager->GetModManager()->_mods[entry->ModFolder]->_directory + "/" + subdirname + "/" + *part_path;
+	void ProduceString(std::wstring* part_path, FileMapEntry* entry, std::wstring* outstring) {
+		std::string& moddir = g_Manager->GetModManager()->_mods[entry->ModFolder]->_directory;
+		int wstr_size = MultiByteToWideChar(CP_UTF8, 0, moddir.data(), moddir.size(), _producePath.data(), 0);
+
+		_producePath.resize(wstr_size);
+		MultiByteToWideChar(CP_UTF8, 0, moddir.data(), moddir.size(), _producePath.data(), wstr_size);
+		const std::wstring& subdirname = (_stringByFType[entry->FolderType]);
+		*outstring = *outstring + _modsPath + L"/" + _producePath + L"/" + subdirname + L"/" + *part_path;
 	};
 	FileMapEntry* GetEntry(size_t input) {
 		auto mapentry = _filemap.find(input);
@@ -28,64 +39,110 @@ namespace REPENTOGONFileMap {
 		};
 		return nullptr;
 	};
-	void format_path(const std::string_view& input, std::string& out) {
+	void format_path(const std::wstring_view& input, std::wstring& out) {
 		for (size_t i = 0; i < input.size(); i++) {
-			char buf = input[i];
+			wchar_t buf = input[i];
 			switch (buf) {
-			case '\\':
-				out.push_back('/');
+			case L'\\':
+				out.push_back(L'/');
 				break;
 			default:
 				out.push_back(buf);
 			};
 		};
 	};
-	std::string pathbuf(260, 0);
-	std::string_view relpath;
-	void AddModEntry(const std::string_view& input, FolderType modfoldertype, size_t modid) {
+	std::wstring wpathbuf(260, 0);
+	std::wstring_view relpath;
+	std::wstring tokenholder;
+	std::wstring outputholder;
+	std::wistringstream normalize_stringstream;
+	std::vector<size_t> elemstoskip;
+	bool NormalizePathString(std::wstring& input) {
+		normalize_stringstream = std::wistringstream(input);
+		wpathbuf.resize(0);
+		elemstoskip.resize(0);
+		size_t i = 0;
+		size_t maxi = 0;
+		while (std::getline(normalize_stringstream, tokenholder,L'/')) {
+			if (tokenholder == L"..") {
+				elemstoskip.push_back(i - 1);
+				elemstoskip.push_back(i);
+			}
+			else if (tokenholder == L".") {
+				elemstoskip.push_back(i);
+			}
+			i++;
+			maxi++;
+		};
+		normalize_stringstream.clear();
+		normalize_stringstream.seekg(0, std::ios::beg);
+		i = 0;
+		if (std::find(elemstoskip.begin(), elemstoskip.end(), (size_t)(-1)) != elemstoskip.end()) {	//skip of -1 means that we have
+			return false;																	//trespassed out the resources folder
+		};
+		while (std::getline(normalize_stringstream, tokenholder, L'/')) {
+			if ( std::find(elemstoskip.begin(), elemstoskip.end(), i)!=elemstoskip.end() ) {
+				i++;
+				continue;
+			};
+			wpathbuf += tokenholder;
+			i++;
+			if (i != maxi && tokenholder!=L"") {
+				wpathbuf += L'/';
+			};
+		};
+		input = wpathbuf;
+		return true;
+	};
+	void AddModEntry(const std::wstring_view& input, FolderType modfoldertype, size_t modid) {
 		FileMapEntry entry;
 
 		ModManager* mods = g_Manager->GetModManager();
 		entry.FolderType = modfoldertype;
 		entry.ModFolder = modid;
-		pathbuf.resize(0);
-		format_path(input, pathbuf);
-		std::transform(pathbuf.begin(), pathbuf.end(), pathbuf.begin(),
-			[](unsigned char c) { return std::tolower(c); });
-		size_t hashentry = std::hash<std::string>{}(pathbuf);
+		wpathbuf.resize(0);
+		format_path(input, wpathbuf);
+//		NormalizePathString(pathbuf);
+		//std::transform(wpathbuf.begin(), wpathbuf.end(), wpathbuf.begin(),
+		//	[](wchar_t c) { return std::tolower(c,utf8loc); });
+		wpathbuf.resize(CharLowerBuffW(wpathbuf.data(), wpathbuf.size()));
+		size_t hashentry = std::hash<std::wstring>{}(wpathbuf);
 		_filemap[hashentry] = entry;
 	};
 
+
 	void FindFiles(const fs::path& input, FolderType modfoldertype, size_t modid) {
-		for (const auto& file : fs::recursive_directory_iterator(input)) {
+		for (const auto& file : fs::recursive_directory_iterator(input, fs::directory_options::skip_permission_denied)) {
 			if (!file.is_directory()) {
 				//                const char* relpath = file.path().string().c_str() + moddir.string().size() + 1;   //account for "\\"
-				relpath = std::string_view{ file.path().u8string() }.substr(moddir.u8string().size() + 1);
+				relpath = std::wstring_view{ file.path().wstring() }.substr(moddir.wstring().size() + 1);
 				AddModEntry(relpath, modfoldertype, modid);
 			};
 		};
 	};
 	void GenerateMap() {
-		return;
-		//kill off for now
-		if (map_init) {
+		if (map_init || !repentogonOptions.fileMap) {
 			return;
 		};
 		map_init = true;
-		auto basepath = fs::current_path() / "mods";
-		_modsPath = basepath.string();
+		auto basepath = fs::current_path() / L"mods";
+		_modsPath = basepath.wstring();
 		auto start_time = std::chrono::high_resolution_clock::now();
 		if (g_Manager && g_Manager->GetModManager()) {
 			ModManager* modmngr = g_Manager->GetModManager();
+			fs::path basemodpath;
 			//            for (size_t i = 0; i < modmngr->_mods.size(); i++) {
 			for (int i = modmngr->_mods.size() - 1; i >= 0;i--) {   //inverse order
 				ModEntry* modentry = modmngr->_mods[i];
 				if (modentry && modentry->_loaded) {
-					for (size_t modfoldertype = FolderType::RESOURCES; modfoldertype < FolderType::LAST; modfoldertype++) {
-						const std::string& subdirname = (_stringByFType[modfoldertype]);
-						moddir = basepath / (modentry->_directory) / subdirname;
-						if (fs::is_directory(moddir)) {
-							FindFiles(moddir, (FolderType)modfoldertype, i);
+					basemodpath = basepath / (modentry->_directory);
+					if (fs::is_directory(basemodpath)) {
+						for (size_t modfoldertype = FolderType::RESOURCES; modfoldertype < FolderType::LAST; modfoldertype++) {
+							const std::wstring& subdirname = (_stringByFType[modfoldertype]);
+							moddir = basemodpath / subdirname;
+							if (fs::is_directory(moddir)) {
+								FindFiles(moddir, (FolderType)modfoldertype, i);
+							};
 						};
 					};
 				};
@@ -112,37 +169,47 @@ HOOK_METHOD(ModManager, ListMods, (void)->void) {
 };
 
 
+std::wstring tempwidestr;
 HOOK_METHOD(ModManager, TryRedirectPath, (std_string* param_1, std_string* param_2)->void) {
-//	bool spoofmods = false;
-	return super(param_1, param_2);
-	//kill off map for now
-	if (param_1 == nullptr || param_2 == nullptr) {
+	if (!repentogonOptions.fileMap) {
 		return super(param_1, param_2);
 	};
-	std::transform(param_2->begin(), param_2->end(), param_2->begin(),
-		[](unsigned char c) { return std::tolower(c); });
-	for (char& c : *(std::string*)param_2) {
-		if (c == '\\') {
-			c = '/';
+	std::string input = *param_2;
+//	tempwidestr.resize(input.size() * 4);
+	int wstr_size=MultiByteToWideChar(CP_UTF8,0,input.data(),input.size(),tempwidestr.data(),0 );
+	tempwidestr.resize(wstr_size);
+	MultiByteToWideChar(CP_UTF8, 0, input.data(), input.size(), tempwidestr.data(), wstr_size);
+	for (wchar_t& c : tempwidestr) {
+		if (c == L'\\') {
+			c = L'/';
 		};
 	};
-	std::string input = *param_2;
-	size_t hashentry = std::hash<std::string>{}(input);
+	bool success=REPENTOGONFileMap::NormalizePathString(tempwidestr);
+	if (!success) {
+		return super(param_1,param_2);
+	};
+	//std::transform(tempwidestr.begin(), tempwidestr.end(), tempwidestr.begin(),
+	//	[](wchar_t c) { return std::tolower(c, REPENTOGONFileMap::utf8loc); });
+	tempwidestr.resize(CharLowerBuffW(tempwidestr.data(), tempwidestr.size()));
+	size_t hashentry = std::hash<std::wstring>{}(tempwidestr);
 	REPENTOGONFileMap::FileMapEntry* mapentry = REPENTOGONFileMap::GetEntry(hashentry);
 	if (mapentry) {
-		new (param_1) std::string("");
-		param_1->reserve(260);
-		ProduceString(param_2, mapentry, param_1);
-		if (!fs::exists(*(std::string*)param_1)) {
+		REPENTOGONFileMap::outputholder.resize(0);
+//		REPENTOGONFileMap::outputholder.reserve(260);
+//		param_1->reserve(260);
+		ProduceString(&tempwidestr, mapentry, &(REPENTOGONFileMap::outputholder));
+		if (!fs::exists(REPENTOGONFileMap::outputholder)) {
 			ZHL::Log("[REPENTOGON] File %s doesn't exist in a mod %s, hash mismatch?\n",param_2->c_str(), g_Manager->GetModManager()->_mods[mapentry->ModFolder]->_name.c_str());
-			super(param_1, param_2);
+			return super(param_1, param_2);
 		};
+		new (param_1) std::string("");
+		int out_str_size=WideCharToMultiByte(CP_ACP,0,REPENTOGONFileMap::outputholder.data(),REPENTOGONFileMap::outputholder.size(),param_1->data(),0,0,0);
+		param_1->resize(out_str_size);
+		WideCharToMultiByte(CP_ACP, 0, REPENTOGONFileMap::outputholder.data(), REPENTOGONFileMap::outputholder.size(), param_1->data(), out_str_size, 0, 0);
 		return;
 	}
 	else {
-		std::vector<ModEntry*> backup = std::move(this->_mods);
-		this->_mods.clear();
-		super(param_1, param_2);
-		this->_mods = std::move(backup);
+		new (param_1) std::string(*param_2);	//thats what the game does to a string anyways so no need to do super()
+		return;
 	};
 };

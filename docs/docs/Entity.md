@@ -147,7 +147,7 @@ ___
 #### [EntityNPC](EntityNPC.md) GetMinecart ( ) {: .copyable aria-label='Functions' }
 Returns the minecart the entity is riding.
 
-???+ Return behavior
+???+ note "Return behavior"
     If the entity is not riding a minecart, this function returns `nil`.
 
 ___

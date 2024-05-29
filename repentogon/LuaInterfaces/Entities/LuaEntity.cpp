@@ -86,7 +86,7 @@ LUA_FUNCTION(Lua_EntitySetShadowSize)
 LUA_FUNCTION(Lua_EntityComputeStatusEffectDuration)
 {
 	Entity* ent = lua::GetUserdata<Entity*>(L, 1, lua::Metatables::ENTITY, "Entity");
-	unsigned int initial = max((int)luaL_checkinteger(L, 2), 0);
+	unsigned int initial = std::max((int)luaL_checkinteger(L, 2), 0);
 	EntityRef* ref = lua::GetUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
 	lua_pushinteger(L, ent->ComputeStatusEffectDuration(initial, ref));
 
@@ -394,7 +394,7 @@ inline void SlowTrackCopyStatusEffects(Entity* ent1, Entity* ent2) {
 	if (ent1->_type >= 10 && ent1->_type < 1000) {
 		Entity_NPC* npc = static_cast<Entity_NPC*>(ent2);
 		if (npc->_isBoss) {
-			ent2->_bossStatusEffectCooldown = max(ent1->_bossStatusEffectCooldown, ent2->_bossStatusEffectCooldown);
+			ent2->_bossStatusEffectCooldown = std::max(ent1->_bossStatusEffectCooldown, ent2->_bossStatusEffectCooldown);
 		}
 	}
 

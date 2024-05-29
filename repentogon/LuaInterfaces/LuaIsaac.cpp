@@ -307,9 +307,9 @@ LUA_FUNCTION(Lua_GetSubTypeByName) {
 }
 
 LUA_FUNCTION(Lua_PlayCutscene) {
-	int text = (int)luaL_checknumber(L, 1);
-	string out;
-	g_Game->GetConsole()->RunCommand("cutscene " + to_string(text), &out, NULL);
+	const unsigned int cutscene = (unsigned int)luaL_checkinteger(L, 1);
+	const bool shouldClean = lua::luaL_optboolean(L, 2, false);
+	g_Manager->ShowCutscene(cutscene, shouldClean);
 	return 0;
 }
 
@@ -616,6 +616,19 @@ LUA_FUNCTION(Lua_GetBackdropTypeByName) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetRGON_Changelog) {
+	string text = "Changelog unavailable :(\n";
+	ostringstream outtext;
+	ifstream changelog;
+	changelog.open("rgon_changelog.txt");
+	if (changelog.is_open()) {
+		outtext << changelog.rdbuf();
+		text = outtext.str();
+	};
+	lua_pushstring(L, text.c_str());
+	return 1;
+};
+
 LUA_FUNCTION(Lua_SetIcon) {
 //	int iconsize = luaL_optinteger(L, 2, ICON_SMALL);
 	int resolution=16;
@@ -718,6 +731,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBossColorIdByName", Lua_GetBossColorIdxByName); //alias for musclememory
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartNewGame", Lua_StartNewGame);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RGON_GetChangelog", Lua_GetRGON_Changelog);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();
