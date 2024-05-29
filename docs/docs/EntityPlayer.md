@@ -48,8 +48,8 @@ Compared to the vanilla function, this implementation has been further augmented
 
 ___
 ### GetPocketItem () {: aria-label='Modified Functions' }
-#### [PocketItem](PocketItem.md) GetPocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) SlotId ) {: .copyable aria-label='Modified Functions' }
-Now returns a proper `PocketItem` object.
+#### [PocketItem](PocketItem.md) GetPocketItem ( int PocketItemSlot ) {: .copyable aria-label='Modified Functions' }
+Now returns a proper `PocketItem` object. `PocketItemSlot` is not synonymous with `ActiveSlot`, instead referring to where the PocketItem is located in your inventory.
 
 ___
 ### HasCollectible () {: aria-label='Modified Functions' }
