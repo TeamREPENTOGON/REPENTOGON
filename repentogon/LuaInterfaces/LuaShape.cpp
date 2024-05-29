@@ -31,6 +31,14 @@ LUA_FUNCTION(Lua_ShapeCapsule) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_ShapeCircle) {
+	Shape* shape = *lua::GetUserdata<Shape**>(L, 1, lua::metatables::ShapeMT);
+	Vector* pos = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	const float size = (float)luaL_checknumber(L, 3);
+	shape->Circle(pos, size);
+	return 0;
+}
+
 static void RegisterShape(lua_State* L) {
 	lua::RegisterFunction(L, lua::Metatables::ENTITY, "GetDebugShape", Lua_EntityGetDebugShape);
 
@@ -38,6 +46,7 @@ static void RegisterShape(lua_State* L) {
 		{ "GetTimeout", Lua_ShapeGetTimeout },
 		{ "SetTimeout", Lua_ShapeSetTimeout },
 		{ "Capsule", Lua_ShapeCapsule},
+		{ "Circle", Lua_ShapeCircle},
 		{ NULL, NULL }
 	};
 	lua::RegisterNewClass(L, lua::metatables::ShapeMT, lua::metatables::ShapeMT, functions);
