@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.24">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.25">
     
     
       
@@ -6980,16 +6980,21 @@
 </ul>
 <details class="example" open="open">
 <summary>Example Code</summary>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">pocket</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetPlayer</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span><span class="n">GetPocketItem</span><span class="p">(</span><span class="n">ActiveSlot</span><span class="p">.</span><span class="n">SLOT_PRIMARY</span><span class="p">)</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kd">local</span> <span class="n">pocket</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetPlayer</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span><span class="n">GetPocketItem</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
 </details>
 </details>
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="getslot">GetSlot ()<a class="headerlink" href="#getslot" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getslot">int GetSlot ( )<a class="headerlink" href="#int-getslot" title="Permanent link">⚓︎</a></h4>
+<p>Returns the ID of the <code>PocketItem</code>. Returns <code>0</code> if the slot is empty.
+For cards, returns <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html">Card</a>.
+For pills, returns <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html">PillEffect</a>.
+For items, returns <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleEffect</a>.</p>
 <hr />
 <h3 aria-label="Functions" id="gettype">GetType ()<a class="headerlink" href="#gettype" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="int-gettype">int GetType ( )<a class="headerlink" href="#int-gettype" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="pocketitemtype-gettype"><a href="PocketItem.html">PocketItemType</a> GetType ( )<a class="headerlink" href="#pocketitemtype-gettype" title="Permanent link">⚓︎</a></h4>
+<p>Returns the <a href="PocketItem.html">PocketItemType</a>. Returns <code>1</code> if the slot is empty.</p>
 <hr />
 
 
