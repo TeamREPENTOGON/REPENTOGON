@@ -2202,7 +2202,7 @@ Called right after the boss intro is initialized. `BossID2` is for Double Troubl
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1270 |MC_POST_BOSS_INTRO_SHOW {: .copyable } | ([BossType](enums/BossType.md) BossID1, [BossType](enums/BossType.md) BossID2) | - | void |
+|1270 |MC_POST_BOSS_INTRO_SHOW {: .copyable } | ([BossType](BossType.md) BossID1, [BossType](BossType.md) BossID2) | - | void |
 
 ### MC_POST_ROOM_TRANSITION_UPDATE {: .copyable }
 
