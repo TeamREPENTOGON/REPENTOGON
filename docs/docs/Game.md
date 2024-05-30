@@ -80,10 +80,8 @@ Returns a [DebugFlag](enums/DebugFlag.md) bitmask.
 
 ___
 ### GetDizzyAmount () {: aria-label='Functions' }
-#### int GetDizzyAmount ( ) {: .copyable aria-label='Functions' }
+#### float GetDizzyAmount ( ) {: .copyable aria-label='Functions' }
 Returns the current dizzy amount akin to Wavy Cap
-???+ bug "Bug"
-    Currently this function only returns `0`. Using [SetDizzyAmount](Game.md#setdizzyamount) or the Wavy Cap collectible has no effect on this function.
 
 ___
 ### GetLerpColorModifier () {: aria-label='Functions' }
@@ -155,12 +153,12 @@ ___
 
 ___
 ### SetDizzyAmount () {: aria-label='Functions' }
-#### void SetDizzyAmount ( float Amount , float Intensity) {: .copyable aria-label='Functions' }
+#### void SetDizzyAmount ( float TargetIntensity , float CurrentIntensity ) {: .copyable aria-label='Functions' }
 Sets the dizzy amount akin to Wavy Cap.
 
-`Amount` is the amount that the screen will be affected. Screen will slowly reach the desired intensity. Also works in reverse if current intensity is higher than the `Amount`.
+The current intensity of the effect will gradually move towards the "TargetIntensity".
 
-`Intensity` is the starting intensity of the effect.
+Providing "CurrentIntensity" to this function is optional. If provided, the current intensity is instantly changed to that amount. If unspecified, the current intensity will remain unchanged.
 ???+ warning "Warning"
     Best to stay within `0`-`1` and increment by 0.1 while using this function. `1` has the most extreme effect on the screen while `0` removes the effect.
 
