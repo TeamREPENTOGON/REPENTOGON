@@ -279,11 +279,11 @@ LUA_FUNCTION(Lua_SetBloom) {
 LUA_FUNCTION(Lua_SetDizzyAmount)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	float targetAmount = (float)luaL_checknumber(L, 2);
-	float intensity = (float)luaL_checknumber(L, 3);
+	float targetIntensity = (float)luaL_checknumber(L, 2);
+	float currentIntensity = (float)luaL_optnumber(L, 3, game->_dizzyIntensity);
 
-	game->_dizzyTargetIntensity = targetAmount;
-	game->_dizzyIntensity = intensity;
+	game->_dizzyTargetIntensity = targetIntensity;
+	game->_dizzyIntensity = currentIntensity;
 
 	return 0;
 }
@@ -291,7 +291,7 @@ LUA_FUNCTION(Lua_SetDizzyAmount)
 LUA_FUNCTION(Lua_GetDizzyAmount)
 {
 	Game* game = lua::GetUserdata<Game*>(L, 1, lua::Metatables::GAME, "Game");
-	lua_pushinteger(L, game->_dizzyAmount);
+	lua_pushnumber(L, game->_dizzyIntensity);
 
 	return 1;
 }
