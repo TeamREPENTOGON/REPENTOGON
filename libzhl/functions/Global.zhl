@@ -50,6 +50,7 @@ struct IntPair {
 
 // When adding typedefs, remember to define them in ExtraTypes!
 typedef std::vector<MusicEntry> vector_MusicEntry;
+typedef std::vector<FXLayers_FX> vector_FXLayers_FX;
 typedef std::vector<SoundEffect> vector_SoundEffect;
 typedef std::vector<RoomConfig_Curse> vector_Curse;
 typedef std::deque<Point> deque_Point;

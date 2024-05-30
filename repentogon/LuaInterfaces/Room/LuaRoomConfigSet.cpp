@@ -25,6 +25,14 @@ LUA_FUNCTION(Lua_RoomConfigSetGetSize)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomConfigSet__gc)
+{
+	RoomSet* set = *lua::GetUserdata<RoomSet**>(L, 1, lua::metatables::RoomConfigSetMT);
+	set->destructor();
+
+	return 0;
+}
+
 static void RegisterRoomConfigSet(lua_State* L) {
 	luaL_newmetatable(L, lua::metatables::RoomConfigSetMT);
 	lua_pushstring(L, "__index");
@@ -51,6 +59,7 @@ static void RegisterRoomConfigSet(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "Get", Lua_RoomConfigSetGetRoom },
 		{ "__len", Lua_RoomConfigSetGetSize },
+		{ "__gc", Lua_RoomConfigSet__gc },
 		{ NULL, NULL }
 	};
 

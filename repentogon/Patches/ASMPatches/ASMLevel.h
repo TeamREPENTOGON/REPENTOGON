@@ -4,6 +4,7 @@ void ASMPatchBlueWombCurse();
 void ASMPatchVoidGeneration();
 void PatchSpecialQuest();
 void PatchDealRoomVariant();
+void ASMPatchFXLayersInit();
 
 const int stageidToAchievement[36] = {
 	-1, // Special Rooms

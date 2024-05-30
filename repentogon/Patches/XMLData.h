@@ -144,13 +144,13 @@ public:
 		}
 	}
 
-	XMLAttributes  GetNodeById(int name) {
+	XMLAttributes GetNodeById(int name) {
 		auto iter = this->nodes.find(name);
 		if (iter == this->nodes.end()) { return XMLAttributes(); }
 		else { return iter->second; }
 	}
 
-	XMLAttributes  GetNodeByOrder(int name) {
+	XMLAttributes GetNodeByOrder(int name) {
 		auto iter = this->byorder.find(name);
 		if (iter == this->byorder.end()) { return XMLAttributes(); }
 		else { return this->GetNodeById(iter->second); }
@@ -485,6 +485,11 @@ class XMLPlayer : public XMLDataHolder {
 
 class XMLBackdrop : public XMLDataHolder {
 public:
+	// overriden id, overridee id
+	std::pair<unsigned short, unsigned short> backdropState;
+	// fine
+	std::string overrideName;
+
 	XMLRelEnt relfxlayers; //<backdripid, vector<fxlayerid>>
 	XMLRelEnt relfxrays;	//<backdripid, vector<fxrayid>>
 	XMLRelEnt relfxparams; //<backdripid, vector<fxparamid>>

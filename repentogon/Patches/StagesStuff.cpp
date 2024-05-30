@@ -226,49 +226,11 @@ HOOK_METHOD(Console, RunCommand, (std_string& in, std_string* out, Entity_Player
 	super(in, out, player);
 }
 
-const char* suffixes[35] = {
-	"_basement",
-	"_cellar",
-	"_burningbasement",
-	"_caves",
-	"_catacombs",
-	"_downpour", // rip
-	"_depths",
-	"_necropolis",
-	"_dankdepths",
-	"_womb",
-	"_utero",
-	"_scarredwomb",
-	"_bluewomb",
-	"_sheol",
-	"_cathedral",
-	"_darkroom",
-	"_chest",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"",
-	"", // void doesn't work, local stage ids are used
-	"_downpour",
-	"_dross",
-	"_mines",
-	"_ashpit",
-	"_mausoleum",
-	"_gehenna",
-	"_corpse",
-	"", // there will never be a mortis
-	"_home"
-};
-
 // helper for asm patch
-HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void) {
-	super(Stage, Mode);
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> bool) {
+	bool ret = super(Stage, Mode);
 
-	if (Stage == 0) {
+	if (ret && Stage == 0) {
 		unsigned int doors = 0;
 		for (int i = 14; i < 16; i++) {
 			//printf("type #%d\n", i);
@@ -279,9 +241,7 @@ HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode)
 			}
 		}
 	}
-	else if (Stage < 36) {
-		this->_stages[Stage]._suffix = suffixes[Stage-1];
-	}
+	return ret;
 }
 
 LUA_FUNCTION(Lua_SetCurrentFloorMusic)

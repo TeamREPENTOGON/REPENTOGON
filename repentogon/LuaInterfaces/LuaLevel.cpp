@@ -93,6 +93,12 @@ LUA_FUNCTION(Lua_LevelIsAltPath) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetStageId) {
+	Game* level = lua::GetUserdata<Game*>(L, 1, lua::Metatables::LEVEL, "Level");
+	lua_pushinteger(L, level->GetStageID(false));
+	return 1;
+}
+
 /*
 HOOK_METHOD(Level, IsAltPath, () -> bool) {
 	bool ret = false;
@@ -154,6 +160,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetDimension", Lua_GetDimension},
 		{ "GetForceSpecialQuest", Lua_GetForceSpecialQuest },
 		{ "SetForceSpecialQuest", Lua_SetForceSpecialQuest },
+		{ "GetStageId", Lua_GetStageId },
 
 		{ "SetGreedWavesClearedWithoutRedHeartDamage", lua_LevelSetGreedWavesClearedWithoutRedHeartDamage },
 		{ "GetGreedWavesClearedWithoutRedHeartDamage", lua_LevelGetGreedWavesClearedWithoutRedHeartDamage },

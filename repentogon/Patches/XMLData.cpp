@@ -30,7 +30,6 @@
 using namespace rapidxml;
 using namespace std;
 
-ANM2* pathCheckanm2 = new ANM2();
 char* bosspoolsxml; //caching this ffs
 char* fxlayerssxml; //caching this ffs
 bool itempoolerror = false;
@@ -145,6 +144,24 @@ int toint(const string &str) {
 		}
 	}
 		return 0;
+}
+
+float tofloat(const string& str) {
+	if (str.length() > 0) {
+		char* endPtr;
+		float returnval = strtof(str.c_str(), &endPtr);
+		if (endPtr != "\0") {
+			return returnval;
+		}
+	}
+	return 0.f;
+}
+
+bool tobool(const std::string& str) {
+	if (str.length() >= 4) {
+		return str == "true";
+	}
+	return false;
 }
 
 XMLAttributes BuildGenericEntry(xml_node<char>* node) {
@@ -328,6 +345,15 @@ void UpdateXMLModEntryData() {
 	}
 }
 
+void LateXMLAttributeUpdate(XMLDataHolder* toupdate, XMLDataHolder* source, const char* attrname) {
+	for each (auto node in toupdate->nodes) {
+		int musicId = toint(node.second[attrname]);
+		if ((musicId == 0) && (source->byname.find(node.second[attrname]) != source->byname.end())) {
+			toupdate->nodes[node.first][attrname] = to_string(source->byname[node.second[attrname]]);
+		}
+	}
+}
+
 //Shameless chatgpt copypaste function
 string getFileName(const string& filePath) {
 	// Find the position of the last directory separator
@@ -470,200 +496,6 @@ HOOK_METHOD(Cutscene, Show, (int cutsceneid)-> void) {
 }
 
 //Cutscene XML Hijack
-
-
-//dirty AI things
-bool endsWithPNG(const std::string& str) {
-    if (str.length() >= 4) {
-        return str.substr(str.length() -  4) == ".png";
-    }
-    return false;
-}
-
-bool endsWithANM(const std::string& str) {
-    if (str.length() >= 5) {
-        return str.substr(str.length() -  5) == ".anm2";
-    }
-    return false;
-}
-
-bool toboolnode(const std::string& str) {
-    if (str.length() >= 4) {
-        return str == "true";
-    }
-    return false;
-}
-
-std::bitset<61> changedbackdrops;
-uint32_t hookedbackdroptype;
-extern std::bitset<500> CallbackState;
-
-HOOK_METHOD(Backdrop, Init, (uint32_t bcktype, bool loadgraphics)-> void) {
-	const int callbackId = 1141;
-	const int callbackId2 = 1142;
-	if (CallbackState.test(callbackId - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackId)
-			.pushnil()
-			.push(bcktype)
-			.call(1);
-
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				uint32_t backdropid = (uint32_t)lua_tointeger(L, -1);
-				bcktype = backdropid;
-				//super(backdropid, loadgraphics);
-				//return;
-			}
-		}
-	}
-	
-	if ((XMLStuff.BackdropData->nodes.count(bcktype) > 0) && (bcktype > 60 || changedbackdrops.test(bcktype))) { // && (bcktype > 0)
-		XMLAttributes node = XMLStuff.BackdropData->nodes[bcktype];
-
-		uint32_t refbackdrop = toint(node["reftype"]);
-		if (refbackdrop > 60) {
-			//luaL_error(L, "field 'referenceType' should be between 1 and 60 ", refbackdrop);
-			g_Game->GetConsole()->PrintError("field 'reftype' should be between 1 and 60 \n");
-			return;
-		}
-		if (bcktype > 60 && refbackdrop < 1) {
-			if (toboolnode(node["reversewatergfx"])) refbackdrop = 3;
-			else refbackdrop = 1;
-		}
-		else if (bcktype < 61) refbackdrop = bcktype;
-		
-		if (refbackdrop == bcktype) changedbackdrops.reset(refbackdrop);
-		else changedbackdrops.set(refbackdrop);
-
-		bool isAnm2Gfx = false;
-		if (refbackdrop == 18 || refbackdrop == 26 || refbackdrop == 35 
-		|| refbackdrop == 52 || refbackdrop == 53 || refbackdrop == 54) 
-			isAnm2Gfx = true;
-		
-		string gfxpath = node["gfxroot"] + node["gfx"];
-		bool correctPath = false;
-		if (isAnm2Gfx && (endsWithANM(gfxpath))) {  //file path check // added safe-check for anm2 otherwise it would spriteload a png and have a stroke if the param is wrong
-			if (!pathCheckanm2->_loaded) {
-				ANM2* s = &this->floorANM2;
-				pathCheckanm2->construct_from_copy(s);
-			}
-			pathCheckanm2->Load(gfxpath, true);
-			pathCheckanm2->LoadGraphics(true);
-			if (pathCheckanm2->_animDefaultName.length() > 0) {
-				correctPath = true;
-			}
-			else {
-				g_Game->GetConsole()->PrintError("[Backdrop:" + to_string(bcktype) + "] file at path '" + gfxpath + "' does not exist \n");
-				return;
-			}
-			pathCheckanm2->Reset();
-		}
-		
-		if (!isAnm2Gfx || correctPath) this->configurations[refbackdrop].gfx = gfxpath;
-
-		this->configurations[refbackdrop].walls = toint(node["walls"]);
-		this->configurations[refbackdrop].wallVariants = toint(node["wallvariants"]);
-
-		this->configurations[refbackdrop].floors = toint(node["floors"]);
-		this->configurations[refbackdrop].floorVariants = toint(node["floorvariants"]);
-
-		if ( endsWithPNG(node["lfloorgfx"]) ) {
-			string lFloorGfxpath = node["gfxroot"] + node["lfloorgfx"];
-			this->configurations[refbackdrop].lFloorGfx = lFloorGfxpath;
-		}
-		else {
-			this->configurations[refbackdrop].lFloorGfx = "";
-		}
-
-		if ( endsWithPNG(node["nfloorgfx"]) ) {
-			this->configurations[refbackdrop].nFloorGfx = node["gfxroot"] + node["nfloorgfx"];
-		}
-		else {
-			this->configurations[refbackdrop].nFloorGfx = "";
-		}
-
-		if ( endsWithPNG(node["watergfx"]) ) {
-			this->configurations[refbackdrop].waterGfx = node["gfxroot"] + node["watergfx"];
-		}
-		else {
-			this->configurations[refbackdrop].waterGfx = "";
-		}
-
-		/*
-			this->configurations[refbackdrop].reversewatergfx = toboolnode(node["reversewatergfx"]);
-		*/
-
-		if ( endsWithANM(node["props"]) ) {
-			this->configurations[refbackdrop].props = node["gridgfxroot"] + node["props"];
-		}
-		else {
-			this->configurations[refbackdrop].props = "";
-		}
-
-		if ( endsWithPNG(node["rocks"]) ) {
-			this->configurations[refbackdrop].rocks = node["gridgfxroot"] + node["rocks"];
-		}
-		else {
-			this->configurations[refbackdrop].rocks = "gfx/grid/rocks_basement.png";
-		}
-
-		if ( endsWithPNG(node["pit"]) ) {
-			this->configurations[refbackdrop].pit = node["gridgfxroot"] + node["pit"];
-		}
-		else {
-			this->configurations[refbackdrop].pit = "gfx/grid/grid_pit.png";
-		}
-
-		if ( endsWithPNG(node["waterpit"]) ) {
-			this->configurations[refbackdrop].waterPit = node["gridgfxroot"] + node["waterpit"];
-		}
-		else {
-			this->configurations[refbackdrop].waterPit = "gfx/grid/grid_pit_water.png";
-		}
-
-		if ( endsWithPNG(node["bridge"]) ) {
-			this->configurations[refbackdrop].bridge = node["gridgfxroot"] + node["bridge"];
-		}
-		else {
-			this->configurations[refbackdrop].bridge = "gfx/grid/grid_bridge.png";
-		}
-
-		if ( endsWithPNG(node["door"]) ) {
-			this->configurations[refbackdrop].door = node["gridgfxroot"] + node["door"];
-		}
-		else {
-			this->configurations[refbackdrop].door = "gfx/grid/door_01_normaldoor.png";
-		}
-
-		if ( endsWithPNG(node["holeinwall"]) ) {
-			this->configurations[refbackdrop].holeInWall = node["gridgfxroot"] + node["holeinwall"];
-		}
-		else {
-			this->configurations[refbackdrop].holeInWall = "gfx/grid/door_08_holeinwall.png";
-		}
-
-		hookedbackdroptype = bcktype;
-		super((uint32_t)refbackdrop, loadgraphics);
-
-		if (CallbackState.test(callbackId2 - 1000)) {
-			lua_State* L = g_LuaEngine->_state;
-			lua::LuaStackProtector protector(L);
-			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
-
-			lua::LuaResults result = lua::LuaCaller(L).push(callbackId2)
-				.push(bcktype)
-				.push(bcktype)
-				.call(1);
-		}
-		return;
-	}
-	hookedbackdroptype = bcktype;
-	super(bcktype, loadgraphics);
-}
 
 
 /*
@@ -2487,6 +2319,9 @@ HOOK_METHOD(Music, LoadConfig, (char* xmlpath, bool ismod)->void) {
 	ProcessModEntry(xmlpath, GetModEntryByContentPath(stringlower(xmlpath)));
 	super(xmlpath, ismod);
 	currpath = "";
+	//retroactively patch backdrops into stages (Why here?, load order...yea)
+	LateXMLAttributeUpdate(XMLStuff.StageData, XMLStuff.BackdropData, "backdrop");
+	LateXMLAttributeUpdate(XMLStuff.StageData, XMLStuff.MusicData, "music");
 }
 
 HOOK_METHOD(SFXManager, LoadConfig, (char* xmlpath, bool ismod)->void) {
@@ -2994,10 +2829,10 @@ void CustomXMLCrashPrevention(xml_document<char>* xmldoc, const char* filename) 
 					xml_attribute<char>* realid = new xml_attribute<char>(); realid->name("realid"); realid->value(IntToChar(id)); auxnode->append_attribute(realid);
 					node["realid"] = to_string(id);
 				}
-				int music = toint(node["music"]);
-				if ((music == 0) && (XMLStuff.MusicData->byname.count(node["music"]) > 0)) {
-					auxnode->first_attribute("music")->value(IntToChar(XMLStuff.MusicData->byname[node["music"]]));
-				}
+				//int music = toint(node["music"]);
+				//if ((music == 0) && (XMLStuff.MusicData->byname.count(node["music"]) > 0)) {
+				//	auxnode->first_attribute("music")->value(IntToChar(XMLStuff.MusicData->byname[node["music"]]));
+				//}
 			}
 		}
 	}
@@ -3320,6 +3155,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 									newid = new xml_attribute<char>(); newid->name("id"); newid->value(IntToChar(maxfxlayerid)); clonedNode->append_attribute(newid);
 								}
 								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stage");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root,true);
@@ -3334,7 +3170,8 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
 								inheritdaddy(auxnode, clonedNode);
 								maxfxlayerid += 1;
-								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								// implementation of this will be annoying. no backdrop or stage, just _stages_, formatted like "1a,1b" and "1ab"
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stages");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root, true);
@@ -3350,6 +3187,7 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 								inheritdaddy(auxnode, clonedNode);
 								maxfxlayerid += 1;
 								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.BackdropData, "backdrop");
+								SingleValXMLParamParse(clonedNode, xmldoc, XMLStuff.StageData, "stage");
 								root->append_node(clonedNode);
 							}
 							ProcessXmlNode(root, true);
@@ -3393,10 +3231,10 @@ char * BuildModdedXML(char * xml,const string &filename,bool needsresourcepatch)
 							int id = toint(node["id"]);
 							int music = toint(node["music"]);
 							int backdrop = toint(node["backdrop"]);
-							if ((music == 0) && (node["music"].length() > 0)) {
-								char* track = IntToChar(XMLStuff.MusicData->byname[node["music"]]);
-								auxnode->first_attribute("music")->value(track);
-							}
+							//if ((music == 0) && (node["music"].length() > 0)) {
+								//char* track = IntToChar(XMLStuff.MusicData->byname[node["music"]]);
+								//auxnode->first_attribute("music")->value(track);
+							//}
 							xml_node<char>* clonedNode = xmldoc->clone_node(auxnode);
 							xml_attribute<char>* sourceid = new xml_attribute<char>(); sourceid->name("sourceid"); sourceid->value(lastmodid.c_str()); clonedNode->append_attribute(sourceid);
 							inheritdaddy(auxnode, clonedNode);
