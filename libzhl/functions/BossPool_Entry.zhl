@@ -1,0 +1,6 @@
+struct BossPool_Entry {
+	int _id : 0x0;
+	float _weight1 : 0x4;
+	float _weight2 : 0x8;
+	int _achievementID : 0xc;
+} : 0x14;
