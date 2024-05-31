@@ -3,4 +3,5 @@ struct BossPool_Entry {
 	float _weight1 : 0x4;
 	float _weight2 : 0x8;
 	int _achievementID : 0xc;
+	int _roomID : 0x10;
 } : 0x14;

@@ -122,7 +122,7 @@ __thiscall unsigned int Game::GetStageID(bool unused);
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector) { {{
 	Game()
 	{
 		this->constructor();
@@ -236,6 +236,7 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, PlayerManager, Console, 
 	uint32_t _greedModeTreasureRoomIdx : 0x18200;
 	RoomConfig _roomConfig : 0x1879c;
 	ItemPool _itemPool : 0x1A5CC;
+	BossPool _bossPool: 0x1ADF4;
 	PlayerManager _playerManager : 0x1BA40;
 	Seeds _seedEffects : 0x1bb04;
 	Console _console : 0x1bb60;

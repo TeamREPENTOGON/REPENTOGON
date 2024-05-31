@@ -4177,3 +4177,33 @@ HOOK_METHOD(RoomTransition, Render, () -> void) {
 			.call(1);
 	}
 }
+
+//MC_PRE_BOSS_SELECT (1280)
+HOOK_METHOD(BossPool, GetBossId, (int leveltype, int levelvariant, RNG* unusedRNG) -> int) {
+	int bossId = super(leveltype, levelvariant, unusedRNG);
+
+	const int callbackid = 1280;
+	const auto stageId = RoomConfig::GetStageID(leveltype, levelvariant, -1);
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(bossId)
+			.push(bossId)
+			.push(&_pool[stageId], lua::metatables::BossPoolPoolMT)
+			.push(leveltype)
+			.push(levelvariant)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				bossId = (int)lua_tointeger(L, -1);
+			}
+		}
+	}
+	return bossId;
+}

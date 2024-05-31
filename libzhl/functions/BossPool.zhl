@@ -5,4 +5,4 @@ struct BossPool depends (BossPool_Pool) {
 	BossPool_Pool _pool[37] : 0x0;
 	vector_bool _removedBosses: 0x8ac;
 	vector_bool _removedSpecialBosses: 0x8bc;
-} : 0x8ac;
+} : 0x8cc;
