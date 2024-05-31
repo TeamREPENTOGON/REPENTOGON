@@ -4194,7 +4194,7 @@ HOOK_METHOD(BossPool, GetBossId, (int leveltype, int levelvariant, RNG* unusedRN
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(bossId)
 			.push(bossId)
-			.push(&_pool[stageId], lua::metatables::BossPoolPoolMT)
+			.push(&_pool[stageId], lua::metatables::BossPoolMT)
 			.push(leveltype)
 			.push(levelvariant)
 			.call(1);

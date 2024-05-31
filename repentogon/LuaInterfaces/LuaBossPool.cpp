@@ -10,22 +10,22 @@ LUA_FUNCTION(Lua_BossPoolGetPool) {
 		auto** ud = (BossPool_Pool**)lua_newuserdata(L, sizeof(BossPool_Pool*));
 
 		*ud = &pool;
-		luaL_setmetatable(L, lua::metatables::BossPoolPoolMT);
+		luaL_setmetatable(L, lua::metatables::BossPoolMT);
 		return 1;
 	}
 	else {
-		return luaL_error(L, "[BossPool.GetPool] : Invalid STB type!");
+		return luaL_error(L, "[BossPoolManager.GetPool] : Invalid STB type!");
 	}
 }
 
 LUA_FUNCTION(Lua_PoolGetName) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolPoolMT);
+	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	lua_pushstring(L, pool->_name.c_str());
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PoolGetEntries) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolPoolMT);
+	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	auto& entrys = pool->_entries;
 
 	lua_newtable(L);
@@ -58,19 +58,19 @@ LUA_FUNCTION(Lua_PoolGetEntries) {
 }
 
 LUA_FUNCTION(Lua_PoolGetWeight) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolPoolMT);
+	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	lua_pushnumber(L, pool->_weight);
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PoolGetRNG) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolPoolMT);
+	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	lua::luabridge::UserdataPtr::push(L, &pool->_rng, lua::GetMetatableKey(lua::Metatables::RNG));
 	return 1;
 }
 
 LUA_FUNCTION(Lua_PoolGetDoubleTroubleRoomID) {
-	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolPoolMT);
+	auto* pool = *lua::GetUserdata<BossPool_Pool**>(L, 1, lua::metatables::BossPoolMT);
 	lua_pushinteger(L, pool->_doubleTroubleRoomID);
 	return 1;
 }
@@ -86,7 +86,7 @@ static void RegisterBossPoolPool(lua_State* L) {
 		{ NULL, NULL }
 	};
 
-	lua::RegisterNewClass(L, lua::metatables::BossPoolPoolMT, lua::metatables::BossPoolPoolMT, functions);
+	lua::RegisterNewClass(L, lua::metatables::BossPoolMT, lua::metatables::BossPoolMT, functions);
 }
 
 LUA_FUNCTION(Lua_BossPoolGetRemovedBosses) {
@@ -124,7 +124,7 @@ static void RegisterBossPool(lua_State* L) {
 	lua::TableAssoc(L, "GetRemovedBosses", Lua_BossPoolGetRemovedBosses);
 	lua::TableAssoc(L, "GetRemovedSpecialBosses", Lua_BossPoolGetRemovedSpecialBosses);
 	
-	lua_setglobal(L, "BossPool");
+	lua_setglobal(L, "BossPoolManager");
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
