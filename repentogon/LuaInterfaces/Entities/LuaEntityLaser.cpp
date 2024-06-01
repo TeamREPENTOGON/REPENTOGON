@@ -67,6 +67,22 @@ LUA_FUNCTION(Lua_EntityLaserSetScale)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityLaserGetDamageMultiplier)
+{
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua_pushnumber(L, laser->_damageMultiplier);
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityLaserSetDamageMultiplier)
+{
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	laser->_damageMultiplier = (float)luaL_checknumber(L, 2);
+
+	return 0;
+}
+
 LUA_FUNCTION(Lua_EntityLaserResetSpriteScale)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
@@ -129,6 +145,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetOneHit", Lua_EntityLaserGetOneHit },
 		{ "GetScale", Lua_EntityLaserGetScale },
 		{ "SetScale", Lua_EntityLaserSetScale },
+		{ "GetDamageMultiplier", Lua_EntityLaserGetDamageMultiplier },
+		{ "SetDamageMultiplier", Lua_EntityLaserSetDamageMultiplier },
 		{ "GetShrink", Lua_EntityLaserGetShrink },
 		{ "SetShrink", Lua_EntityLaserSetShrink },
 		{ "GetTimeout", Lua_EntityLaserGetTimeout },
