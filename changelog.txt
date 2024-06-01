@@ -5,6 +5,9 @@ Additions:
 		Called before a fortune paper is displayed.
 	- MC_PRE_ITEM_TEXT_DISPLAY (title, subtitle, isSticky, isCurseDisplay)
 		Called before an item text is displayed (such as with picking up an item, Poke Go, stage title, etc.)
+* EntityLaser:
+	- GetDamageMultiplier()
+	- SetDamageMultiplier(float Mult)
 * Added a new option "Extra debug render for FindInRadius". While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.
 /newline/
 Modified:
