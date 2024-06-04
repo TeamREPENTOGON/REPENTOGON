@@ -33,8 +33,8 @@ ___
 #### [LootList](LootList.md) GetLootList ( ) {: .copyable aria-label='Functions' }
 Returns a **read-only** version of the pickup's [LootList](LootList.md). Loot inside pickups can be seen through use of the Guppy's Eye collectible.
 ___
-### GetPickupGhost () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) GetPickupGhost ( ) {: .copyable aria-label='Functions' }
+### GetPickupGhosts () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) GetPickupGhosts ( ) {: .copyable aria-label='Functions' }
 Returns the `EffectVariant.PICKUP_GHOST` EntityEffect visible through Guppy's Eye. If not visible, returns `nil`.
 
 ___

@@ -43,8 +43,8 @@ ___
 #### int GetVariant ( ) {: .copyable aria-label='Functions' }
 
 ___
-### RNG () {: aria-label='Functions' }
-#### [RNG](RNG.md) RNG ( ) {: .copyable aria-label='Functions' }
+### GetRNG () {: aria-label='Functions' }
+#### [RNG](RNG.md) GetRNG ( ) {: .copyable aria-label='Functions' }
 
 ???+ warning "Warning"
 	May return `nil`.
