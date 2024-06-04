@@ -244,6 +244,17 @@ LUA_FUNCTION(Lua_AnyPlayerTypeHasCollectible)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_SpawnSelectedBaby) 
+{
+	PlayerManager* playerManager = g_Game->GetPlayerManager();
+	const int babyType = (int)luaL_checkinteger(L, 1);
+	const int controllerIndex = (int)luaL_checkinteger(L, 2);
+
+	playerManager->spawn_selected_baby(babyType, controllerIndex);
+
+	return 0;
+}
+
 
 static void RegisterPlayerManager(lua_State* L) {
 	//lua::RegisterFunction(L, lua::Metatables::GAME, "GetPlayerManager", Lua_GetPlayerManager);
@@ -265,6 +276,7 @@ static void RegisterPlayerManager(lua_State* L) {
 		lua::TableAssoc(L, "AnyPlayerTypeHasBirthright", Lua_AnyPlayerTypeHasBirthright);
 		lua::TableAssoc(L, "AnyPlayerTypeHasTrinket", Lua_AnyPlayerTypeHasTrinket);
 		lua::TableAssoc(L, "AnyPlayerTypeHasCollectible", Lua_AnyPlayerTypeHasCollectible);
+		lua::TableAssoc(L, "SpawnSelectedBaby", Lua_SpawnSelectedBaby);
 		
 
 		lua_setglobal(L, "PlayerManager");
