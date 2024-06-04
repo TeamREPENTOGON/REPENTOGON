@@ -38,12 +38,19 @@ LUA_FUNCTION(Lua_GridEntityDoor_SetPreviousVariant) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GridEntityDoor_PlayAnimation) {
+	GridEntity_Door* gridEnt = lua::GetUserdata<GridEntity_Door*>(L, 1, lua::Metatables::GRID_ENTITY_DOOR, "GridEntityDoor");
+	gridEnt->play_animation();
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
 	luaL_Reg functions[] = {
 		{ "GetExtraSprite", Lua_GridEntityDoor_GetExtraSprite },
+		{ "PlayAnimation", Lua_GridEntityDoor_PlayAnimation },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::GRID_ENTITY_DOOR, functions);
