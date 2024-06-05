@@ -170,12 +170,12 @@ RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned in
 	 * If we cannot draw a non trapdoor room in that many attempts, let the game proceed as it would normally,
 	 * mimicking vanilla behavior.
 	 */
-	RoomConfig_Room* result = config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, 0, -1,
+	RoomConfig_Room* result = config->GetRandomRoom(seed, false, stage, roomType, roomShape, 0, -1,
 		minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
 	for (int i = 0; result->Variant == 100 && i < 5; ++i) {
 		ZHL::Log("[DEBUG] We drew a trapdoor variant when performing unbounded variant "
 			"lookup. Try again (%d/5)\n", i + 1);
-		result = config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, 0, -1,
+		result = config->GetRandomRoom(seed, false, stage, roomType, roomShape, 0, -1,
 			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
 	}
 
@@ -186,6 +186,8 @@ RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned in
 	}
 	else {
 		ZHL::Log("[DEBUG] Drew variant %u\n", result->Variant);
+		if (reduceWeight)
+			result->Weight = std::min(1e-7, result->Weight * .1);
 		return result;
 	}
 }
