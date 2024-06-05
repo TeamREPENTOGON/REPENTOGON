@@ -4207,3 +4207,30 @@ HOOK_METHOD(BossPool, GetBossId, (int leveltype, int levelvariant, RNG* unusedRN
 	}
 	return bossId;
 }
+
+//PRE_GET_RANDOM_ROOM_INDEX (1290)
+HOOK_METHOD(Level, GetRandomRoomIndex, (bool IAmErrorRoom, unsigned int Seed) -> int) {
+	int ret = super(IAmErrorRoom, Seed);
+
+	const int callbackid = 1290;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(ret)
+			.push(IAmErrorRoom)
+			.push(Seed)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				return (int)lua_tointeger(L, -1);
+			}
+		}
+	}
+	return ret;
+}

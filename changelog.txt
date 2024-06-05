@@ -5,6 +5,8 @@ Additions:
 		Called before a fortune paper is displayed.
 	- MC_PRE_ITEM_TEXT_DISPLAY (title, subtitle, isSticky, isCurseDisplay)
 		Called before an item text is displayed (such as with picking up an item, Poke Go, stage title, etc.)
+	- PRE_GET_RANDOM_ROOM_INDEX(int RoomIndex, bool IAmErrorRoom, int Seed) 
+		Return int to change room room index.
 * EntityLaser:
 	- GetDamageMultiplier()
 	- SetDamageMultiplier(float Mult)
