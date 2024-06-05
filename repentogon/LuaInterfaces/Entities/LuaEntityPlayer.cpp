@@ -2314,6 +2314,18 @@ LUA_FUNCTION(Lua_PlayerHasChanceRevive) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerSetBlackHeart) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	const unsigned int blackHeart = (unsigned int)luaL_checkinteger(L, 2);
+
+	if ((blackHeart <= player->_soulHearts) && ((int)blackHeart > -1)) {
+		player->_blackHearts |= 1 << (blackHeart >> 1 & 0x1f);
+		player->update_golden_hearts();
+		player->update_bone_hearts();
+	}
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2523,6 +2535,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetHallowedGroundCountdown", Lua_PlayerGetHallowedGroundCountdown },
 		{ "SetHallowedGroundCountdown", Lua_PlayerSetHallowedGroundCountdown },
 		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },
+		{ "SetBlackHeart", Lua_PlayerSetBlackHeart },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
