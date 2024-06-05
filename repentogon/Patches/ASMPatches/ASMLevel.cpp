@@ -142,34 +142,76 @@ void PatchSpecialQuest() {
 	ASMPatchTrySpawnSpecialQuestDoor();
 }
 
-const char* sigs[2] = {
-	"c74424??63000000c74424??00000000",
-	"6affff7424??8bd0"
-};
+/* This function overrides the call to GetRandomRoom in InitDevilAngelRoom.
+ * InitDevilAngelRoom is thiscall. stdcall will mirror the stack cleaning
+ * convention, and, as we don't need to preserve ecx under thiscall, nothing
+ * more is required.
+ */
+static RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight, 
+	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty, 
+	int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode);
+
+RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight, 
+	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty,
+	int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode) {
+	/* Hardcoded variant: 100 is used for trapdoor variants after Mom's Heart / It Lives. 
+	 * Variant bounds are both set to 100 only when the game draws these specific variants. 
+	 * In this case, do nothing, let the game proceeds as it would.
+	 */
+	if (minVariant == maxVariant && maxVariant == 100) {
+		ZHL::Log("[DEBUG] Game naturally selected trapdoor variant when generating "
+			"deal, let it proceed\n");
+		return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+	}
+
+	/* Attempt to draw a random room up to 6 times, ignoring all bounds on variants. As soon as a room that 
+	 * is not a trapdoor variant appears, return it.
+	 * If we cannot draw a non trapdoor room in that many attempts, let the game proceed as it would normally,
+	 * mimicking vanilla behavior.
+	 */
+	RoomConfig_Room* result = config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, 0, -1,
+		minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+	for (int i = 0; result->Variant == 100 && i < 5; ++i) {
+		ZHL::Log("[DEBUG] We drew a trapdoor variant when performing unbounded variant "
+			"lookup. Try again (%d/5)\n", i + 1);
+		result = config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, 0, -1,
+			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+	}
+
+	if (result->Variant == 100) {
+		ZHL::Log("[WARN] Could not draw a non trapdoor variant, deferring to default parameters\n");
+		return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
+			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+	}
+	else {
+		ZHL::Log("[DEBUG] Drew variant %u\n", result->Variant);
+		return result;
+	}
+}
 
 void PatchDealRoomVariant() {
-	SigScan maxVariantScanner(sigs[0]); // maxVariant 0x63 (99)
-	SigScan subTypePushScanner(sigs[1]); // PUSH -0x1, PUSH dword ptr[ESP + subtype]
-	maxVariantScanner.Scan();
-	subTypePushScanner.Scan();
-	void* addrs[2] = { maxVariantScanner.GetAddress(), subTypePushScanner.GetAddress() };
+	const char* signature = "E825040D008BCF894310E82BFCFFFF"; // call GetRandomRoom
+	SigScan scanner(signature);
+	if (!scanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature to patch deal room variants\n");
+		return;
+	}
 
-	printf("[REPENTOGON] Patching InitializeDevilAngelRoom max variant at %p\n", (char*)addrs[0] + 8);
-	ASMPatch patch1;
-	patch1.AddBytes("\xFF\xFF\xFF\xFF"); // -1
-	sASMPatcher.FlatPatch((char*)addrs[0] + 4, &patch1);
+	void* patchAddr = scanner.GetAddress();
 
-	printf("[REPENTOGON] Patching InitializeDevilAngelRoom subtype push %p\n", (char*)addrs[1] + 2);
-	ASMPatch patch2;
-	patch2.Push(-0x1) // mode
-		.AddBytes("\x83\x7c\x24\x2C\x64") // cmp dword ptr ss:[EBP+minVariant],0x64 (100) 
-		.AddBytes("\x75\x11") // jne 0x11 (DEFAULT)
-		.AddBytes("\x83\x7c\x24\x30\x64") // cmp dword ptr ss:[EBP+maxVariant],0x64 (100)
-		.AddBytes("\x75\x0a") // jne 0x0a (DEFAULT)
-		.Push(0x29a) // 666
-		.AddRelativeJump((char*)addrs[1] + 0x6)
-		// DEFAULT
-		.AddBytes("\xFF\x74\x24\x28") // push dword ptr ss:[EBP+subType] 
-		.AddRelativeJump((char*)addrs[1] + 0x6);
-	sASMPatcher.PatchAt((char*)addrs[1], &patch2);
+	printf("[REPENTOGON] Patching InitializeDevilAngelRoom at %p\n", patchAddr);
+	ASMPatch patch;
+	// ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
+	// patch.PreserveRegisters(registers);
+	/* Registers need not be saved, as we are performing the equivalent of a 
+	 * function call. Push ecx so the override function can access the current
+	 * RoomConfig object.
+	 */
+	patch.Push(ASMPatch::Registers::ECX);
+	patch.AddInternalCall(&OverrideGetRandomRoom);
+	patch.AddRelativeJump((char*)patchAddr + 5);
+	// patch.RestoreRegisters(registers);
+
+	sASMPatcher.PatchAt(patchAddr, &patch);
 }
