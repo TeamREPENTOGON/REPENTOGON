@@ -187,7 +187,7 @@ RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned in
 	else {
 		ZHL::Log("[DEBUG] Drew variant %u\n", result->Variant);
 		if (reduceWeight)
-			result->Weight = std::min(1e-7, result->Weight * .1);
+			result->Weight = std::max(1e-7, result->Weight * .1);
 		return result;
 	}
 }
