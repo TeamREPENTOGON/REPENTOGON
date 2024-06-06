@@ -16,7 +16,7 @@ Additions:
 /newline/
 Modified:
 * Isaac:
-	PlayCutscene(CutsceneID, CleanGameState = false)
+	PlayCutscene(CutsceneID, ClearGameState = false)
 * Game:
 	SetDizzyAmount(TargetIntensity, CurrentIntensity) - Providing CurrentIntensity is now optional
 * The game no longer prematurely ends the daily run if there was console input, instead blocking it

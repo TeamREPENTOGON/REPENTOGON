@@ -308,8 +308,8 @@ LUA_FUNCTION(Lua_GetSubTypeByName) {
 
 LUA_FUNCTION(Lua_PlayCutscene) {
 	const unsigned int cutscene = (unsigned int)luaL_checkinteger(L, 1);
-	const bool shouldClean = lua::luaL_optboolean(L, 2, false);
-	g_Manager->ShowCutscene(cutscene, shouldClean);
+	const bool shouldClear = lua::luaL_optboolean(L, 2, false);
+	g_Manager->ShowCutscene(cutscene, shouldClear);
 	return 0;
 }
 
