@@ -9,6 +9,8 @@ Additions:
 		Called before an item text is displayed (such as with picking up an item, Poke Go, stage title, etc.)
 	- PRE_GET_RANDOM_ROOM_INDEX(int RoomIndex, bool IAmErrorRoom, integer Seed) 
 		Return integer to overwrite target room index.
+	- MC_POST_GLOWING_HOURGLASS_SAVE/LOAD (int Slot)
+		Called after the Glowing Hourglass state is saved/loaded
 * EntityLaser:
 	- GetDamageMultiplier()
 	- SetDamageMultiplier(float Mult)

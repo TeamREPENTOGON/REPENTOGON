@@ -4234,3 +4234,65 @@ HOOK_METHOD(Level, GetRandomRoomIndex, (bool IAmErrorRoom, unsigned int Seed) ->
 	}
 	return ret;
 }
+
+inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
+	if (gameState == &g_Game->_glowingHourglassStates[0]._gameState) {
+		return 0;
+	}
+
+	if (gameState == &g_Game->_glowingHourglassStates[1]._gameState) {
+		return 1;
+	}
+
+	return -1;
+}
+
+//POST_GLOWING_HOURGLASS_SAVE (1300)
+HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
+	int currentSlot = GetGlowingHourglassSlot(gameState);
+
+	super(gameState);
+
+	if (currentSlot == -1) {
+		return;
+	}
+
+	const int callbackid = 1300;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(currentSlot)
+			.call(1);
+	}
+	return;
+}
+
+//POST_GLOWING_HOURGLASS_LOAD (1301)
+HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) {
+	int currentSlot = GetGlowingHourglassSlot(gameState);
+
+	super(gameState, startGame);
+
+	if (currentSlot == -1) {
+		return;
+	}
+
+	const int callbackid = 1301;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(currentSlot)
+			.call(1);
+	}
+	return;
+}
