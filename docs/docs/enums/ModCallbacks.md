@@ -109,7 +109,7 @@ Modified values are passed along to the remaining callbacks. Returning false to 
 
 ## New Callbacks
 ### MC_PRE_ADD_COLLECTIBLE {: .copyable }
-Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData, Player}`
+Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData}`
 
 Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) to change the type without changing any other parameters or a boolean to cancel the addition altogether (false) or force it to happen skipping the following callbacks (true).
 
