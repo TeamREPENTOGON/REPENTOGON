@@ -17,14 +17,17 @@ tags:
 
 ### GetSlot () {: aria-label='Functions' }
 #### int GetSlot ( ) {: .copyable aria-label='Functions' }
-Returns the ID of the `PocketItem`. Returns `0` if the slot is empty.
 For cards, returns [Card](https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html).
-For pills, returns [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html).
-For items, returns [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html).
+
+For pills, returns [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html).
+
+For pocket active items, returns the corresponding [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) (either `ActiveSlot.SLOT_POCKET` or `ActiveSlot.SLOT_POCKET2`).
+
+Returns `0` if the slot is empty.
 
 ___
 ### GetType () {: aria-label='Functions' }
 #### [PocketItemType](enums/PocketItemType.md) GetType ( ) {: .copyable aria-label='Functions' }
-Returns the [PocketItemType](enums/PocketItemType.md). Returns `1` if the slot is empty.
+Returns the [PocketItemType](enums/PocketItemType.md). Returns `1` when the slot is empty.
 
 ___
