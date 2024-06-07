@@ -6987,14 +6987,14 @@
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="getslot">GetSlot ()<a class="headerlink" href="#getslot" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getslot">int GetSlot ( )<a class="headerlink" href="#int-getslot" title="Permanent link">⚓︎</a></h4>
-<p>Returns the ID of the <code>PocketItem</code>. Returns <code>0</code> if the slot is empty.
-For cards, returns <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html">Card</a>.
-For pills, returns <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html">PillEffect</a>.
-For items, returns <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a>.</p>
+<p>For cards, returns <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/Card.html">Card</a>.</p>
+<p>For pills, returns <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html">PillColor</a>.</p>
+<p>For pocket active items, returns the corresponding <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">ActiveSlot</a> (either <code>ActiveSlot.SLOT_POCKET</code> or <code>ActiveSlot.SLOT_POCKET2</code>).</p>
+<p>Returns <code>0</code> if the slot is empty.</p>
 <hr />
 <h3 aria-label="Functions" id="gettype">GetType ()<a class="headerlink" href="#gettype" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="pocketitemtype-gettype"><a href="enums/PocketItemType.html">PocketItemType</a> GetType ( )<a class="headerlink" href="#pocketitemtype-gettype" title="Permanent link">⚓︎</a></h4>
-<p>Returns the <a href="enums/PocketItemType.html">PocketItemType</a>. Returns <code>1</code> if the slot is empty.</p>
+<p>Returns the <a href="enums/PocketItemType.html">PocketItemType</a>. Returns <code>1</code> when the slot is empty.</p>
 <hr />
 
 
