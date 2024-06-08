@@ -33,8 +33,8 @@ ___
 #### [LootList](LootList.md) GetLootList ( ) {: .copyable aria-label='Functions' }
 Returns a **read-only** version of the pickup's [LootList](LootList.md). Loot inside pickups can be seen through use of the Guppy's Eye collectible.
 ___
-### GetPickupGhosts () {: aria-label='Functions' }
-#### [EntityEffect](EntityEffect.md) GetPickupGhosts ( ) {: .copyable aria-label='Functions' }
+### GetPickupGhost () {: aria-label='Functions' }
+#### [EntityEffect](EntityEffect.md) GetPickupGhost ( ) {: .copyable aria-label='Functions' }
 Returns the `EffectVariant.PICKUP_GHOST` EntityEffect visible through Guppy's Eye. If not visible, returns `nil`.
 
 ___
@@ -108,8 +108,8 @@ Attempts to remove the collectible from an item pedestal.
 Returns `true` if a collectible was successfully removed from the pedestal. Returns `false` if the pedestal was already empty, or if called on a non-collectible EntityPickup.
 
 ___
-### UpdatePickupGhost () {: aria-label='Functions' }
-#### void UpdatePickupGhost ( ) {: .copyable aria-label='Functions' }
+### UpdatePickupGhosts () {: aria-label='Functions' }
+#### void UpdatePickupGhosts ( ) {: .copyable aria-label='Functions' }
 Updates the `EffectVariant.PICKUP_GHOST` EntityEffect in accordance to the pickup's current [LootList](LootList.md)
 
 ___
