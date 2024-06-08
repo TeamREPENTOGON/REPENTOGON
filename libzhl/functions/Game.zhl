@@ -15,7 +15,13 @@ FuncSignature Signature_GameIsPaused = {
 */
 
 "558bec6aff68????????64a1????????5081ecac000000":
-__thiscall void Game::RestoreState(GameState *gstate,bool loaded); //I think that 2nd param is if some stuff is already loaded or not, just a wild guess, take it with a grain of salt
+__thiscall void Game::RestoreState(GameState* state,bool startGame);
+
+"558bec6aff68????????64a1????????5083ec78a1????????33c58945??535657508d45??64a3????????8bf1":
+__thiscall void Game::SaveState(GameState* state);
+
+"8bc18b88????????85c979":
+__thiscall GlowingHourglassState* Game::GetGlowingHourglassState();
 
 "83b9????????008b15":
 __thiscall bool Game::IsPaused();
@@ -122,7 +128,7 @@ __thiscall unsigned int Game::GetStageID(bool unused);
 "e8????????c745fcffffffffa3(????????)e8":
 reference Game *g_Game;
 
-struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector) { {{
+struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager, Console, ItemOverlay, Ambush, ProceduralItemManager, RoomTransition, GameState, GlowingHourglassState, Seeds, DebugRenderer, ScoreSheet, ColorModState, GameOver, ItemPool, Leaderboard, GenericPrompt, DailyChallenge, Vector) { {{
 	Game()
 	{
 		this->constructor();
@@ -254,6 +260,10 @@ struct Game depends (Level, RoomDescriptor, RoomConfig, BossPool, PlayerManager,
 	int _shopVisits : 0x1c3194;
 	ScoreSheet _scoreSheet : 0x1c32b8;
 	uint32_t _difficulty : 0x243624;
+	bool _isStoringGlowingHourglassState : 0x243646;
+	bool _isRestoringGlowingHourglassState : 0x243647;
+	GlowingHourglassState _glowingHourglassStates[2] : 0x243648;
+	int _currentGlowingHourglassSlot : 0x283b78;
 	bool _shouldLerpColorModState : 0x283b80;
 	ProceduralItemManager _proceduralItemManager : 0x283c20;
 	vector_ErasedEntities _erasedEntities : 0x283c14; 
