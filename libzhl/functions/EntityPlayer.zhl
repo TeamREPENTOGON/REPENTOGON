@@ -653,6 +653,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	KColor _footprintColor2 : 0x1794;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
+	uint32_t _conceptionFamiliarFlags : 0x1858;
 	int _babySkin : 0x1a0c;
 	int _hallowedGroundCountdown : 0x1cb0;
 	//std_vector_int _wispStorage : 0x1cfc;

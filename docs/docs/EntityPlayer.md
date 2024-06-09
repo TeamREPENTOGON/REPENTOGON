@@ -231,6 +231,7 @@ Returns how many times the player has taken damage with the Cambion Conception i
 ___
 ### GetCambionPregnancyLevel () {: aria-label='Functions' }
 #### int GetCambionPregnancyLevel ( ) {: .copyable aria-label='Functions' }
+Corresponds to the current visible state of Cambion Conception's costume (0-2).
 
 ___
 ### GetCollectiblesList () {: aria-label='Functions' }
@@ -443,7 +444,7 @@ ___
 ___
 ### GetImmaculateConceptionState () {: aria-label='Functions' }
 #### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
-Returns how many hearts have been collected with the Immaculate Conception item.
+Returns how many hearts have been collected with the Immaculate Conception item. Resets to 0 after spawning a familiar/soul heart.
 
 ___
 ### GetKeepersSackBonus () {: aria-label='Functions' }
