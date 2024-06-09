@@ -11,6 +11,16 @@ Additions:
 		Return integer to overwrite target room index.
 	- MC_POST_GLOWING_HOURGLASS_SAVE/LOAD (int Slot)
 		Called after the Glowing Hourglass state is saved/loaded
+	- MC_PRE/POST_PLAYER_ADD_CARD/PILL (EntityPlayer, Card/PillColor, PillCardSlot)
+		Called before/after a card/pill gets added to the player's inventory.
+		On PRE: Return a different ID to change the card/pill added, or false to cancel adding it entirely.
+	- MC_POST_PLAYER_REMOVE_CARD/PILL (EntityPlayer, Card/PillColor, PillCardSlot)
+		Called after a card/pill gets removed from the player's inventory by any means (dropped, direct removal, use, etc).
+	- MC_PRE/POST_PLAYER_COLLECT_CARD (EntityPlayer, EntityPickup)
+		Called before/after a player picks up a card/pill off the ground.
+		On PRE: Return false to prevent the card/pill from being picked up.
+	- MC_POST_PLAYER_DROP_CARD/PILL (EntityPlayer, EntityPickup, PillCardSlot)
+		Called after a player drops a card/pill onto the ground from their inventory.
 * EntityLaser:
 	- GetDamageMultiplier()
 	- SetDamageMultiplier(float Mult)

@@ -13,7 +13,7 @@ LUA_FUNCTION(Lua_PlayerGetPocketItem) {
 
 LUA_FUNCTION(Lua_PocketItemGetSlot) {
 	PocketItem* pocketItem = *lua::GetUserdata<PocketItem**>(L, 1, lua::metatables::PocketItemMT);
-	lua_pushinteger(L, pocketItem->_slot);
+	lua_pushinteger(L, pocketItem->_id);
 	return 1;
 }
 

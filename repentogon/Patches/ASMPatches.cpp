@@ -5,6 +5,7 @@
 #include "NullItemsAndCostumes.h"
 #include "FamiliarTags.h"
 #include "GetCoinValue.h"
+#include "PocketItems.h"
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
 
@@ -142,6 +143,7 @@ void PerformASMPatches() {
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchesForGetCoinValue();
+	ASMPatchesForAddRemovePocketItemCallbacks();
 	HookImGui();
 
 	// Sprite
