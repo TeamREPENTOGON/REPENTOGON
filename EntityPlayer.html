@@ -12521,8 +12521,9 @@
 <p>Compared to the vanilla function, this implementation has been further augmented to throw an error if LoopIndex is higher than <a href="MultiShotParams.html#getnumtears">MultiShotParams:GetNumTears()</a>.</p>
 <hr />
 <h3 aria-label="Modified Functions" id="getpocketitem">GetPocketItem ()<a class="headerlink" href="#getpocketitem" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Modified Functions" class="copyable" id="pocketitem-getpocketitem-int-pocketitemslot"><a href="PocketItem.html">PocketItem</a> GetPocketItem ( int PocketItemSlot )<a class="headerlink" href="#pocketitem-getpocketitem-int-pocketitemslot" title="Permanent link">⚓︎</a></h4>
-<p>Now returns a proper <code>PocketItem</code> object. <code>PocketItemSlot</code> is not synonymous with <code>ActiveSlot</code>, instead referring to where the PocketItem is located in your inventory.</p>
+<h4 aria-label="Modified Functions" class="copyable" id="pocketitem-getpocketitem-pillcardslot-slot"><a href="PocketItem.html">PocketItem</a> GetPocketItem ( <a href="enums/PillCardSlot.html">PillCardSlot</a> Slot )<a class="headerlink" href="#pocketitem-getpocketitem-pillcardslot-slot" title="Permanent link">⚓︎</a></h4>
+<p>Gets the card/pill/rune in the specified pocket slot.</p>
+<p>Now returns a proper <code>PocketItem</code> object.</p>
 <hr />
 <h3 aria-label="Modified Functions" id="hascollectible">HasCollectible ()<a class="headerlink" href="#hascollectible" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Functions" class="copyable" id="boolean-hascollectible-collectibletype-collectible-boolean-ignoremodifiers-false-boolean-ignorespoof-false">boolean HasCollectible ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible, boolean IgnoreModifiers = false, boolean IgnoreSpoof = false )<a class="headerlink" href="#boolean-hascollectible-collectibletype-collectible-boolean-ignoremodifiers-false-boolean-ignorespoof-false" title="Permanent link">⚓︎</a></h4>
@@ -13131,7 +13132,7 @@ If the target is not displayed on the ground, this function returns <code>nil</c
 <p>Removes the collectible from the player associated with the specified history index.</p>
 <hr />
 <h3 aria-label="Functions" id="removepocketitem">RemovePocketItem ()<a class="headerlink" href="#removepocketitem" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-removepocketitem-activeslot-slot">void RemovePocketItem ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">ActiveSlot</a> Slot )<a class="headerlink" href="#void-removepocketitem-activeslot-slot" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="void-removepocketitem-pillcardslot-slot">void RemovePocketItem ( <a href="enums/PillCardSlot.html">PillCardSlot</a> Slot )<a class="headerlink" href="#void-removepocketitem-pillcardslot-slot" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="removepoopspell">RemovePoopSpell ()<a class="headerlink" href="#removepoopspell" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-removepoopspell-int-position-0">void RemovePoopSpell ( int Position = 0 )<a class="headerlink" href="#void-removepoopspell-int-position-0" title="Permanent link">⚓︎</a></h4>
