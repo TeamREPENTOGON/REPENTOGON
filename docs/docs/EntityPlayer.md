@@ -48,8 +48,10 @@ Compared to the vanilla function, this implementation has been further augmented
 
 ___
 ### GetPocketItem () {: aria-label='Modified Functions' }
-#### [PocketItem](PocketItem.md) GetPocketItem ( int PocketItemSlot ) {: .copyable aria-label='Modified Functions' }
-Now returns a proper `PocketItem` object. `PocketItemSlot` is not synonymous with `ActiveSlot`, instead referring to where the PocketItem is located in your inventory.
+#### [PocketItem](PocketItem.md) GetPocketItem ( [PillCardSlot](enums/PillCardSlot.md) Slot ) {: .copyable aria-label='Modified Functions' }
+Gets the card/pill/rune in the specified pocket slot.
+
+Now returns a proper `PocketItem` object.
 
 ___
 ### HasCollectible () {: aria-label='Modified Functions' }
@@ -724,7 +726,7 @@ Removes the collectible from the player associated with the specified history in
 
 ___
 ### RemovePocketItem () {: aria-label='Functions' }
-#### void RemovePocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+#### void RemovePocketItem ( [PillCardSlot](enums/PillCardSlot.md) Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### RemovePoopSpell () {: aria-label='Functions' }

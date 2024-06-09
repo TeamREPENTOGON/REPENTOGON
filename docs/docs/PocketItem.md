@@ -28,6 +28,8 @@ Returns `0` if the slot is empty.
 ___
 ### GetType () {: aria-label='Functions' }
 #### [PocketItemType](enums/PocketItemType.md) GetType ( ) {: .copyable aria-label='Functions' }
-Returns the [PocketItemType](enums/PocketItemType.md). Returns `1` when the slot is empty.
+Returns the [PocketItemType](enums/PocketItemType.md).
+
+This value is unreliable if the slot is currently empty, as the game sometimes does not clear it.
 
 ___
