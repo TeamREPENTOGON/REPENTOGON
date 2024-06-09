@@ -2,6 +2,8 @@ v1.x.x -
 Additions:
 * EntityPlayer:
 	- SetBlackHeart(int BlackHeart)
+	- GetCambionFamiliarFlags()
+	- SetCambionFamiliarFlags(CambionFamiliarFlag flags)
 * ModCallbacks:
 	- MC_PRE_FORTUNE_DISPLAY
 		Called before a fortune paper is displayed.
@@ -21,9 +23,13 @@ Additions:
 		On PRE: Return false to prevent the card/pill from being picked up.
 	- MC_POST_PLAYER_DROP_CARD/PILL (EntityPlayer, EntityPickup, PillCardSlot)
 		Called after a player drops a card/pill onto the ground from their inventory.
+	- MC_PRE_PLAYER_GIVE_BIRTH_CAMBION/IMMACULATE (EntityPlayer, CambionFamiliarFlag)
+		Return false to cancel the familiar being added.
 * EntityLaser:
 	- GetDamageMultiplier()
 	- SetDamageMultiplier(float Mult)
+* Enums:
+	- CambionFamiliarFlag
 * Added a new option "Extra debug render for FindInRadius". While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.
 /newline/
 Modified:
