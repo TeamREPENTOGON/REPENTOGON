@@ -1,7 +1,7 @@
 "a1????????3d70020000":
 unsigned int Random();
 
-"558bec8b450889018b450c8d":
+"558bec8b45??89018b45??8d04":
 __thiscall void RNG::SetSeed(unsigned int Seed, unsigned int ShiftIdx);
 
 "558bec568bf18b16":

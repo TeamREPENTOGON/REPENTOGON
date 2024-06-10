@@ -500,6 +500,12 @@ NullPickupSubType = {
 	NO_COLLECTIBLE_TRINKET_CHEST = 4,		
 }
 
+GetCollectibleFlag = {
+	BAN_ACTIVES = 1 << 0,
+	IGNORE_MODIFIERS = 1 << 1,
+	BAN_PASSIVES = 1 << 2
+}
+
 KnifeVariant = {
 	MOMS_KNIFE = 0,
 	BONE_CLUB = 1,
