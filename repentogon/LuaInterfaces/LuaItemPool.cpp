@@ -2,6 +2,10 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 
+inline bool Lua_NotPassedOrNil(lua_State* L, int narg) {
+	return (lua_gettop(L) < narg || lua_isnil(L, narg));
+}
+
 inline bool isCollectibleRemoved(ItemPool* itemPool, uint32_t collectibleID) {
 	std::vector<bool>& removedCollectibles = *itemPool->GetRemovedCollectibles();
 	return removedCollectibles[collectibleID];
@@ -27,7 +31,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
-	bool decrease = lua::luaL_optboolean(L, 3, false);
+	bool keepWeight = lua::luaL_optboolean(L, 3, true); //Fun Fact: main.lua creates a wrapper for GetCollectible that inverts the boolean value passed as Decrease
 	uint32_t seed = (unsigned int)luaL_optinteger(L, 4, Isaac::genrand_int32());
 	int defaultItem = (int)luaL_optinteger(L, 5, COLLECTIBLE_NULL);
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 6, 0);
@@ -37,7 +41,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	}
 
 	flags = flags << 1;
-	if (!decrease) {
+	if (keepWeight) {
 		flags |= 1;
 	}
 
@@ -45,11 +49,57 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	return 1;
 }
 
+inline int GetChaosPoolEx(ItemPool* itemPool, RNG* rng, std::unordered_map<int, bool> blacklist) {
+	WeightedOutcomePicker picker;
+
+	for (int poolType = POOL_TREASURE; poolType < NUM_ITEMPOOLS; poolType++) {
+		if (blacklist.find(poolType) != blacklist.end()) {
+			continue;
+		}
+
+		ItemPool_Item* pool = itemPool->_pools + poolType;
+
+		const uint32_t scaleFactor = 100;
+		WeightedOutcomePicker_Outcome outcome{poolType, (uint32_t)(pool->_totalWeight * scaleFactor)};
+		picker.AddOutcomeWeight(outcome, false);
+	}
+	
+	rng->Next();
+
+	RNG pickerRNG;
+	pickerRNG.SetSeed(rng->_seed, 35);
+
+	return picker.PickOutcome(pickerRNG);
+}
+
 LUA_FUNCTION(Lua_ItemPoolGetRandomPool) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	RNG* rng = lua::GetUserdata<RNG*>(L, 2, lua::Metatables::RNG, "RNG");
+	bool advancedSearch = lua::luaL_optboolean(L, 3, false);
 
-	lua_pushinteger(L, itemPool->get_chaos_pool(rng));
+	if (!advancedSearch) {
+		lua_pushinteger(L, itemPool->get_chaos_pool(rng));
+		return 1;
+	}
+
+	if (!(Lua_NotPassedOrNil(L, 4) || lua_istable(L, 4))) {
+		return luaL_argerror(L, 4, "Invalid Blacklist");
+	}
+
+	std::unordered_map<int, bool> blacklist;
+
+	if (lua_istable(L, 4)) {
+		size_t length = (size_t)lua_rawlen(L, 4);
+
+		for (size_t i = 0; i < length; i++)
+		{
+			lua_rawgeti(L, 4, i + 1);
+			blacklist[(int)luaL_checkinteger(L, -1)] = true;
+			lua_pop(L, 1);
+		}
+	}
+
+	lua_pushinteger(L, GetChaosPoolEx(itemPool, rng, blacklist));
 	return 1;
 }
 
@@ -71,8 +121,6 @@ LUA_FUNCTION(Lua_ItemPoolPickCollectible) {
 	if (!decrease) {
 		flags |= 1;
 	}
-
-	lua_pushnil(L);
 
 	PoolItem* poolItem = itemPool->pick_collectible(targetWeight, pool, flags);
 
@@ -408,7 +456,7 @@ LUA_FUNCTION(Lua_ItemPoolGetBibleUpgrades) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const unsigned int pool = (int)luaL_checkinteger(L, 2);
 
-	if (pool < 0 || pool > 30) {
+	if (pool <= POOL_NULL || pool >= NUM_ITEMPOOLS) {
 		return luaL_argerror(L, 2, "Invalid ItemPoolType");
 	}
 
@@ -423,14 +471,15 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::LuaStackProtector protector(_state);
 
 	luaL_Reg functions[] = {
+		{ "GetCollectible", Lua_ItemPoolGetCollectibleEx },
+
 		{ "GetCardEx", Lua_ItemPoolGetCardEx },
-		{ "GetCollectibleEx", Lua_ItemPoolGetCollectibleEx },
 		{ "GetRandomPool", Lua_ItemPoolGetRandomPool },
 		{ "PickCollectible", Lua_ItemPoolPickCollectible },
 		{ "GetCollectibleFromList", Lua_ItemPoolGetCollectibleFromList },
-		{ "TryBibleMorph", Lua_ItemPoolTryBibleMorph },
-		{ "TryMagicSkinMorph", Lua_ItemPoolTryMagicSkinMorph },
-		{ "TryRosaryMorph", Lua_ItemPoolTryRosaryMorph },
+		//{ "TryBibleMorph", Lua_ItemPoolTryBibleMorph },
+		//{ "TryMagicSkinMorph", Lua_ItemPoolTryMagicSkinMorph },
+		//{ "TryRosaryMorph", Lua_ItemPoolTryRosaryMorph },
 		{ "HasCollectible", Lua_ItemPoolHasCollectible },
 		{ "GetRemovedCollectibles", Lua_ItemPoolGetRemovedCollectibles },
 		{ "GetRoomBlacklistedCollectibles", Lua_ItemPoolGetRoomBlacklistedCollectibles },
