@@ -82,7 +82,9 @@ struct PoolItem {
 	float _weight;
 	float _decreaseBy;
 	float _removeOn;
-	char _pad[4];
+        bool _isUnlocked;
+        bool _isSpecial;
+	char _pad[2];
 	
 	//std_string _itemName;
 };

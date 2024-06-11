@@ -7,8 +7,20 @@ static __stdcall int ItemPool::GetCardEx(int Seed, int SpecialChance, int RuneCh
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????50515351b8e4000100":
 __thiscall void ItemPool::load_pools(char *xmlpath, bool ismod);
 
+"558bec81eca8000000a1????????33c58945??8b45":
+__thiscall int ItemPool::GetCollectible(int itemPoolType, uint32_t seed, uint32_t flags, int defaultItem);
+
+"558bec6aff68????????64a1????????5083ec1c535657a1????????33c5508d45??64a3????????8bd9895d??a1":
+__thiscall int ItemPool::get_chaos_pool(RNG * rng);
+
+"558bec83e4f883ec248b45":
+__thiscall PoolItem* ItemPool::pick_collectible(float targetWeight<xmm1>, ItemPool_Item* pool, uint32_t flags);
+
 "558bec83e4f883ec1c64a1":
 __thiscall int ItemPool::GetCollectibleFromList(const int* list, unsigned int length, unsigned int seed, unsigned int defaultItem, bool addToBlacklist, bool excludeLockedItems);
+
+"558bec83e4f883ec1c53568bf18b0d":
+static __stdcall bool ItemPool::TryReplaceWithMagicSkin(uint32_t seed<ecx>);
 
 "558bec6b45??34":
 __thiscall ItemPool_Item* ItemPool::GetPool(int itemPoolType);
@@ -19,6 +31,7 @@ struct ItemPool depends (ItemPool_Item) {
 		inline std::vector<bool>* GetRoomBlacklistedCollectibles() { return &this->_roomBlacklistedCollectibles; }
 	}}
 	ItemPool_Item _pools[31] : 0x4;
+	int _lastPool : 0x650;
 	vector_bool _removedCollectibles : 0x67c;  // Something goofy seemed to be happening with std::vector<bool> in zhl
 	vector_bool _roomBlacklistedCollectibles : 0x68c;  // doing this as a precaution too
 	vector_TrinketPoolItem _trinketPoolItems : 0x78c;
