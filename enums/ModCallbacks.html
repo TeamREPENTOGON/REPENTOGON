@@ -15086,7 +15086,7 @@ Accepts no return parameters.</p>
 <tr>
 <td style="text-align: left;">1130</td>
 <td class="copyable" style="text-align: left;">MC_PRE_DEVIL_APPLY_ITEMS</td>
-<td style="text-align: left;">void</td>
+<td style="text-align: left;">(float Chance)</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">float</td>
 </tr>
@@ -15109,7 +15109,7 @@ Accepts no return parameters.</p>
 <tr>
 <td style="text-align: left;">1132</td>
 <td class="copyable" style="text-align: left;">MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS</td>
-<td style="text-align: left;">void</td>
+<td style="text-align: left;">(float Chance)</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">float</td>
 </tr>
@@ -19956,11 +19956,11 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_player_grid_collision">MC_PRE_PLAYER_GRID_COLLISION<a class="headerlink" href="#mc_pre_player_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called before this entity collides with the <a href="../GridEntity.html">GridEntity</a>.</p>
+<p>Called before this entity collides with a <a href="../GridEntity.html">GridEntity</a> or other solid grid tile.</p>
 <p>Return <code>true</code> to ignore collision.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -19983,10 +19983,10 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_player_grid_collision">MC_PLAYER_GRID_COLLISION<a class="headerlink" href="#mc_player_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called when this entity collides with the <code>GridEntity</code>, assuming it wasn't skipped.</p>
+<p>Called when this entity collides with the grid, assuming it wasn't skipped.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20009,11 +20009,11 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_tear_grid_collision">MC_PRE_TEAR_GRID_COLLISION<a class="headerlink" href="#mc_pre_tear_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called before this entity collides with the <a href="../GridEntity.html">GridEntity</a>.</p>
+<p>Called before this entity collides with a <a href="../GridEntity.html">GridEntity</a> or other solid grid tile.</p>
 <p>Return <code>true</code> to ignore collision.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20036,10 +20036,10 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_tear_grid_collision">MC_TEAR_GRID_COLLISION<a class="headerlink" href="#mc_tear_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called when this entity collides with the <code>GridEntity</code>, assuming it wasn't skipped.</p>
+<p>Called when this entity collides with the grid, assuming it wasn't skipped.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20062,11 +20062,11 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_familiar_grid_collision">MC_PRE_FAMILIAR_GRID_COLLISION<a class="headerlink" href="#mc_pre_familiar_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called before this entity collides with the <a href="../GridEntity.html">GridEntity</a>.</p>
+<p>Called before this entity collides with a <a href="../GridEntity.html">GridEntity</a> or other solid grid tile.</p>
 <p>Return <code>true</code> to ignore collision.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20089,10 +20089,10 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_familiar_grid_collision">MC_FAMILIAR_GRID_COLLISION<a class="headerlink" href="#mc_familiar_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called when this entity collides with the <code>GridEntity</code>, assuming it wasn't skipped.</p>
+<p>Called when this entity collides with the grid, assuming it wasn't skipped.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20115,11 +20115,11 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_bomb_grid_collision">MC_PRE_BOMB_GRID_COLLISION<a class="headerlink" href="#mc_pre_bomb_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called before this entity collides with the <a href="../GridEntity.html">GridEntity</a>.</p>
+<p>Called before this entity collides with a <a href="../GridEntity.html">GridEntity</a> or other solid grid tile.</p>
 <p>Return <code>true</code> to ignore collision.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20142,10 +20142,10 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_bomb_grid_collision">MC_BOMB_GRID_COLLISION<a class="headerlink" href="#mc_bomb_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called when this entity collides with the <code>GridEntity</code>, assuming it wasn't skipped.</p>
+<p>Called when this entity collides with the grid, assuming it wasn't skipped.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20168,11 +20168,11 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_pickup_grid_collision">MC_PRE_PICKUP_GRID_COLLISION<a class="headerlink" href="#mc_pre_pickup_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called before this entity collides with the <a href="../GridEntity.html">GridEntity</a>.</p>
+<p>Called before this entity collides with a <a href="../GridEntity.html">GridEntity</a> or other solid grid tile.</p>
 <p>Return <code>true</code> to ignore collision.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20195,10 +20195,10 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pickup_grid_collision">MC_PICKUP_GRID_COLLISION<a class="headerlink" href="#mc_pickup_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called when this entity collides with the <code>GridEntity</code>, assuming it wasn't skipped.</p>
+<p>Called when this entity collides with the grid, assuming it wasn't skipped.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20221,11 +20221,11 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_projectile_grid_collision">MC_PRE_PROJECTILE_GRID_COLLISION<a class="headerlink" href="#mc_pre_projectile_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called before this entity collides with the <a href="../GridEntity.html">GridEntity</a>.</p>
+<p>Called before this entity collides with a <a href="../GridEntity.html">GridEntity</a> or other solid grid tile.</p>
 <p>Return <code>true</code> to ignore collision.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20248,10 +20248,10 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_projectile_grid_collision">MC_PROJECTILE_GRID_COLLISION<a class="headerlink" href="#mc_projectile_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called when this entity collides with the <code>GridEntity</code>, assuming it wasn't skipped.</p>
+<p>Called when this entity collides with the grid, assuming it wasn't skipped.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20274,11 +20274,11 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_pre_npc_grid_collision">MC_PRE_NPC_GRID_COLLISION<a class="headerlink" href="#mc_pre_npc_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called before this entity collides with the <a href="../GridEntity.html">GridEntity</a>.</p>
+<p>Called before this entity collides with a <a href="../GridEntity.html">GridEntity</a> or other solid grid tile.</p>
 <p>Return <code>true</code> to ignore collision.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
@@ -20301,10 +20301,10 @@ The 3rd param is actually only useful to check for the 0 slot state, which is th
 </tbody>
 </table>
 <h3 class="copyable" id="mc_npc_grid_collision">MC_NPC_GRID_COLLISION<a class="headerlink" href="#mc_npc_grid_collision" title="Permanent link">⚓︎</a></h3>
-<p>Called when this entity collides with the <code>GridEntity</code>, assuming it wasn't skipped.</p>
+<p>Called when this entity collides with the grid, assuming it wasn't skipped.</p>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p><code>GridEntity</code> can also be nil, as this callback counts empty ground as a grid entity.</p>
+<p><code>GridEntity</code> can be nil, as entities may collide with "empty" grid indexes if the <a href="https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath">GridPath</a> value is &gt;= 1000.</p>
 </details>
 <table>
 <thead>
