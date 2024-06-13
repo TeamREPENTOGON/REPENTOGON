@@ -41,6 +41,7 @@ Modified:
 /newline/
 Fixes:
 * Game():GetDizzyAmount() now returns the intended value, instead of 0
+* Fixed MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY not providing the current number of treasure rooms visited.
 /newline/
 v1.0.9d -
 Fixes:

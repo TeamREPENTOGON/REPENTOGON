@@ -110,7 +110,6 @@ HOOK_METHOD(Room, GetDevilRoomChance, () -> float) {
             lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
             lua::LuaResults preApplyStagePenaltyResult = lua::LuaCaller(L).push(1131)
-                .push(chance)
                 .call(1);
 
             if (!preApplyStagePenaltyResult) {
@@ -287,6 +286,7 @@ HOOK_METHOD(Game, GetPlanetariumChance, () -> float) {
             lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
             lua::LuaResults preApplyTreasureResult = lua::LuaCaller(L).push(1112)
+                .pushnil()
                 .push(treasureRoomsVisited)
                 .call(1);
 
