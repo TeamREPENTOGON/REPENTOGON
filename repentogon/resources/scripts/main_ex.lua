@@ -53,6 +53,13 @@ function require(modname)
 	return ret
 end
 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- COLOR STUFF
+----------------------------------------------------------------------------------------------------
+
+
 rawset(getmetatable(Color), "EmberFade", Color(1, 1, 1, 1, 1, 0.514, 0.004))
 Color.EmberFade:SetTint(0, 0, 0, 1.1)
 
@@ -111,6 +118,13 @@ local colorPresets = {
 for colorName, colorData in pairs(colorPresets) do
 	quickRegisterColorPreset(colorName, table.unpack(colorData))
 end
+
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- TYPE CHECKING UTILITIES
+----------------------------------------------------------------------------------------------------
+
 
 -- I hate Luabridge, we can't have nice things.
 local function GetMetatableType(ret)
@@ -574,6 +588,13 @@ rawset(Isaac, "SetCallbackTypeCheck", function(callbackID, tbl, noSetExpected)
 	end
 end)
 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- ERROR LOGGING / DISPLAY
+----------------------------------------------------------------------------------------------------
+
+
 local function cleanTraceback(level) -- similar to debug.traceback but breaks at xpcall, uses spaces instead of tabs, and doesn't call local functions upvalues
 	level = level + 1
 	local msg = "Stack Traceback:\n"
@@ -788,6 +809,13 @@ local function logError(callbackID, modName, err)
 	end
 end
 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- TYPE CHECKING FOR CALLBACK RETURN VALUES
+----------------------------------------------------------------------------------------------------
+
+
 local function typeCheckCallback(callback, callbackID, ret, ...)
 	local typeCheck = typecheckFunctions[callbackID]
 	if typeCheck then
@@ -831,6 +859,13 @@ local function typeCheckCallback(callback, callbackID, ret, ...)
 	end
 end
 
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- TYPE CHECKING FOR CALLBACK SYSTEM APIS (AddCallback, RemoveCallback, etc)
+----------------------------------------------------------------------------------------------------
+
+
 -- Function argument type checking for AddCallback, RemoveCallback, etc.
 local CALLBACK_ID_TYPE = "Callback ID"
 local function checkArgType(index, val, expectedType, level)
@@ -859,6 +894,13 @@ end
 local function checkNumberArg(index, val, level) checkArgType(index, val, "number", level) end
 local function checkFunctionArg(index, val, level) checkArgType(index, val, "function", level) end
 local function checkCallbackIdArg(index, val, level) checkArgType(index, val, CALLBACK_ID_TYPE, level) end
+
+
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- CALLBACK SYSTEM CORE
+----------------------------------------------------------------------------------------------------
+
 
 local Callbacks = {}
 
@@ -1105,35 +1147,46 @@ local function RunCallbackInternal(callbackID, callback, ...)
 	end
 end
 
--- Default callback behaviour (first returned value terminates the callback).
-function _RunCallback(callbackID, param, ...)
-	local ret
 
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+---- RUNCALLBACK LOGIC
+----------------------------------------------------------------------------------------------------
+
+
+-- Default callback behaviour (first returned non-nil value terminates the callback).
+local function DefaultRunCallbackLogic(callbackID, param, ...)
 	for callback in GetCallbackIterator(callbackID, param) do
-		ret = RunCallbackInternal(callbackID, callback, ...)
+		local ret = RunCallbackInternal(callbackID, callback, ...)
 		if ret ~= nil then
-			break
+			return ret
 		end
 	end
-
-	if callbackID == ModCallbacks.MC_PRE_MOD_UNLOAD then
-		-- I wasn't able to properly override _UnloadMod so I'm doing this here instead for now...
-		RemoveAllCallbacksForMod(...)  --- First arg for MC_PRE_MOD_UNLOAD is the mod being unloaded.
-	end
-
-	return ret
 end
 
--- Additive callback behaviour (values returned from a callback replace the value of the first arg for later callbacks).
--- Doesn't currently support an optional param (would need to update all callbacks that use this to add one).
-function _RunAdditiveCallback(callbackID, value, ...)
-	for callback in GetCallbackIterator(callbackID) do
+local function PreModUnloadCallbackLogic(callbackID, param, mod, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		RunCallbackInternal(callbackID, callback,  mod, ...)
+	end
+
+	-- I wasn't able to properly override _UnloadMod so I'm doing this here instead for now...
+	RemoveAllCallbacksForMod(mod)
+end
+
+-- Basic "additive" callback behaviour. Values returned from a callback replace the value of the FIRST arg for subsequent callbacks.
+function _RunAdditiveCallbackWithParam(callbackID, param, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, value, ...)
 		if ret ~= nil then
 			value = ret
 		end
 	end
 	return value
+end
+
+-- Older paramless version of the additive callback logic, preserved because it was a global.
+function _RunAdditiveCallback(callbackID, value, ...)
+	_RunAdditiveCallbackWithParam(callbackID, nil, value, ...)
 end
 
 -- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
@@ -1191,7 +1244,7 @@ end
 -- Custom handling for MC_PRE_TRIGGER_PLAYER_DEATH and MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES.
 -- Terminate early if the player is revived by any means.
 function _RunTriggerPlayerDeathCallback(callbackID, param, player, ...)
-	for callback in GetCallbackIterator(callbackID) do
+	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, player, ...)
 		if ret == false or not player:IsDead() then
 			return ret
@@ -1200,16 +1253,67 @@ function _RunTriggerPlayerDeathCallback(callbackID, param, player, ...)
 	return true
 end
 
+-- I don't think we need these exposed anymore, but safer to just leave them alone since they were already exposed.
 rawset(Isaac, "RunPreRenderCallback", _RunPreRenderCallback)
 rawset(Isaac, "RunAdditiveCallback", _RunAdditiveCallback)
 rawset(Isaac, "RunEntityTakeDmgCallback", _RunEntityTakeDmgCallback)
 rawset(Isaac, "RunTriggerPlayerDeathCallback", _RunTriggerPlayerDeathCallback)
+
+
+-- Defines non-default callback handling logic to be used for specific callbacks.
+-- If a callback is not specified here, "DefaultRunCallbackLogic" will be called.
+local CustomRunCallbackLogic = {
+	[ModCallbacks.MC_PRE_MOD_UNLOAD] = PreModUnloadCallbackLogic,
+	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
+	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
+	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
+	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = _RunAdditiveCallbackWithParam,
+
+	[ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS] = _RunAdditiveCallbackWithParam,
+	[ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS] = _RunAdditiveCallbackWithParam,
+	[ModCallbacks.MC_POST_DEVIL_CALCULATE] = _RunAdditiveCallbackWithParam,
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_ITEMS] = _RunAdditiveCallbackWithParam,
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS] = _RunAdditiveCallbackWithParam,
+	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = _RunAdditiveCallbackWithParam,
+}
+
+for _, callback in ipairs({
+	ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD,
+	ModCallbacks.MC_PRE_RENDER_PLAYER_BODY,
+	ModCallbacks.MC_PRE_FAMILIAR_RENDER,
+	ModCallbacks.MC_PRE_NPC_RENDER,
+	ModCallbacks.MC_PRE_PLAYER_RENDER,
+	ModCallbacks.MC_PRE_PICKUP_RENDER,
+	ModCallbacks.MC_PRE_TEAR_RENDER,
+	ModCallbacks.MC_PRE_PROJECTILE_RENDER,
+	ModCallbacks.MC_PRE_KNIFE_RENDER,
+	ModCallbacks.MC_PRE_EFFECT_RENDER,
+	ModCallbacks.MC_PRE_BOMB_RENDER,
+	ModCallbacks.MC_PRE_SLOT_RENDER,
+}) do
+	CustomRunCallbackLogic[callback] = _RunPreRenderCallback
+end
+
+
+function _RunCallback(callbackID, param, ...)
+	-- Check for custom logic.
+	local runCallbackLogic = CustomRunCallbackLogic[callbackID] or DefaultRunCallbackLogic
+
+	return runCallbackLogic(callbackID, param, ...)
+end
 
 Isaac.RunCallbackWithParam = _RunCallback
 
 function Isaac.RunCallback(callbackID, ...)
 	return Isaac.RunCallbackWithParam(callbackID, nil, ...)
 end
+
+
+-----------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------
+---- MISC STUFF
+-----------------------------------------------------------------------------------------------------
+
 
 --Menuman Hub
 MenuManager.MainMenu = MainMenu

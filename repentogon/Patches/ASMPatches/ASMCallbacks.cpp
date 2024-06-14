@@ -100,7 +100,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::entityTakeDmgCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		unsigned int entityType = *entity->GetType();
 
