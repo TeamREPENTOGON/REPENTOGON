@@ -1084,3 +1084,57 @@ void ASMPatchPrePlayerGiveBirth() {
 	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
 	PreBirthPatch(immaculateAddr, false);  // Immaculate
 }
+
+// MC_POST_CYCLE_RATE_CALCULATE(1211)
+uint32_t __stdcall RunPostCycleRateCalculate(Entity_Pickup* collectible, uint32_t originalCycleRate) {
+	uint32_t cycleRate = originalCycleRate;
+
+	const int callbackid = 1211;
+	if (!CallbackState.test(callbackid - 1000)) {
+		return originalCycleRate;
+	}
+
+	lua_State* L = g_LuaEngine->_state;
+	lua::LuaStackProtector protector(L);
+	lua::LuaCaller caller(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+	lua::LuaResults failure = lua::LuaCaller(L).push(callbackid)
+	.push(collectible->_cycleCollectibleCount)
+	.push(collectible, lua::Metatables::ENTITY_PICKUP)
+	.push(collectible->_cycleCollectibleCount)
+	.push(originalCycleRate)
+	.call(1);
+
+	if (failure || !lua_isinteger(L, -1)) {
+		return originalCycleRate;
+	}
+
+	cycleRate = (uint32_t)lua_tointeger(L, -1);
+	if (cycleRate == 0) { // Since the game uses this number as a divisor a value of 0 would cause a Crash
+		cycleRate = 1;
+	}
+	return cycleRate;
+}
+
+void ASMPatchPostCycleRateCalculate() {
+	SigScan scanner("837f??0075??c787????????00000000");
+	scanner.Scan();
+	void* cycleSig = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching Entity_Pickup::Update at %p for MC_POST_COLLECTIBLE_CYCLE_RATE_CALCULATE\n", cycleSig);
+
+	ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::ECX, true);
+	ASMPatch patch;
+	patch.AddBytes(ByteBuffer().AddAny((char*)cycleSig, 0x4)) // check if subtype is 0
+        .AddConditionalRelativeJump(ASMPatcher::CondJumps::JE, (char*)cycleSig + 0x6) // return if subtype is 0
+        .PreserveRegisters(reg)
+        .Push(ASMPatch::Registers::ECX) // cycleRate
+        .Push(ASMPatch::Registers::EDI) // Entity_Pickup*
+		.AddInternalCall(RunPostCycleRateCalculate) // call RunPostCycleRateCalculate
+        .CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX) // cycleRate = result
+		.RestoreRegisters(reg)
+		.AddRelativeJump((char*)cycleSig + 0x15);
+	sASMPatcher.PatchAt(cycleSig, &patch);
+}

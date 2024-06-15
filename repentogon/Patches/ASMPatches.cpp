@@ -95,6 +95,7 @@ void PerformASMPatches() {
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
 	ASMPatchPrePlayerGiveBirth();
+	ASMPatchPostCycleRateCalculate();
 
 	// Delirium
 	delirium::AddTransformationCallback();
