@@ -21,3 +21,4 @@ void ASMPatchPickupUpdatePickupGhosts();
 void ASMPatchProjectileDeath();
 void ASMPatchTearDeath();
 void ASMPatchPrePlayerGiveBirth();
+void ASMPatchPostCycleRateCalculate();

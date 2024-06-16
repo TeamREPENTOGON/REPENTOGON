@@ -25,10 +25,22 @@ Additions:
 		Called after a player drops a card/pill onto the ground from their inventory.
 	- MC_PRE_PLAYER_GIVE_BIRTH_CAMBION/IMMACULATE (EntityPlayer, CambionFamiliarFlag)
 		Return false to cancel the familiar being added.
+	- MC_POST_CYCLE_RATE_CALCULATE (EntityPickup, int CycleNum, int OriginalRate)
+		Called after the rate at which a collectible is supposed to cycle is calculated (Glitched Crown effect)
+		Return integer to overwrite cycle rate.
 * EntityLaser:
 	- GetDamageMultiplier()
 	- SetDamageMultiplier(float Mult)
+* ItemPool:
+	- GetRandomPool(RNG, bool AdvancedSearch, table BlackList)
+	- PickCollectible(ItemPoolType, bool Decrease, RNG, GetCollectibleFlag)
+* RNG:
+	- GetShiftIdx()
+	- PhantomNext()
+	- Previous()
+	- PhantomPrevious()
 * Enums:
+	- GetCollectibleFlag
 	- CambionFamiliarFlag
 * Added a new option "Extra debug render for FindInRadius". While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.
 /newline/
@@ -37,6 +49,8 @@ Modified:
 	PlayCutscene(CutsceneID, ClearGameState = false)
 * Game:
 	SetDizzyAmount(TargetIntensity, CurrentIntensity) - Providing CurrentIntensity is now optional
+* ItemPool:
+	GetCollectible(ItemPoolType, Decrease, Seed, DefaultItem, Flags) - Now gives access to the hidden flags
 * The game no longer prematurely ends the daily run if there was console input, instead blocking it
 /newline/
 Fixes:
