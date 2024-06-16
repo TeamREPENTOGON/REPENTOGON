@@ -481,6 +481,8 @@ void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
 
 	static float unifont_global_scale = 1;
+	WINMouseWheelMove_Vert = 0; // Windows doesn't call callbacks all the time, so this values is "sticking"
+	WINMouseWheelMove_Hori = 0;
 
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
