@@ -204,7 +204,7 @@ LUA_FUNCTION(Lua_EntityNPC_ThrowMaggot) {
 	float yOffset = (float)luaL_optnumber(L, 3, -10.0f);
 	float fallSpeed = (float)luaL_optnumber(L, 4, -8.0f);
 
-	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggot(origin, target, yOffset, fallSpeed), lua::Metatables::ENTITY_NPC);
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ThrowMaggot(origin, yOffset, target , fallSpeed), lua::Metatables::ENTITY_NPC);
 
 	return 1;
 }
@@ -223,10 +223,10 @@ LUA_FUNCTION(Lua_EntityNPC_ShootMaggotProjectile) {
 	//Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
 	Vector* origin = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
 	Vector* target = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
-	float velocity = (float)luaL_optnumber(L, 3, -24.0f);
-	float yOffset = (float)luaL_optnumber(L, 4, -8.0f);
+	float velocity = (float)luaL_optnumber(L, 3, -8.f);
+	float yOffset = (float)luaL_optnumber(L, 4, -24.f);
 
-	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ShootMaggotProjectile(origin, target, velocity, yOffset), lua::Metatables::ENTITY_NPC);
+	lua::luabridge::UserdataPtr::push(L, Entity_NPC::ShootMaggotProjectile(origin, yOffset, target, velocity ), lua::Metatables::ENTITY_NPC);
 
 	return 1;
 }

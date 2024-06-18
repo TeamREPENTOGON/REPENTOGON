@@ -38,11 +38,14 @@ Modified:
 	PlayCutscene(CutsceneID, ClearGameState = false)
 * Game:
 	SetDizzyAmount(TargetIntensity, CurrentIntensity) - Providing CurrentIntensity is now optional
+* EntityNPC:
+	ShootMaggotProjectile(Position, Target, FallingSpeed = -8.0, YOffset = -24.0)
 * The game no longer prematurely ends the daily run if there was console input, instead blocking it
 /newline/
 Fixes:
 * Game():GetDizzyAmount() now returns the intended value, instead of 0
 * Fixed MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY not providing the current number of treasure rooms visited.
+* Fixed binders for EntityNPC: ThrowMaggot, ShootMaggotProjectile functions.
 /newline/
 v1.0.9d -
 Fixes:
