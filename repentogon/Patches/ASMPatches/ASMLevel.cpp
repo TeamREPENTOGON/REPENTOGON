@@ -220,7 +220,7 @@ void PatchDealRoomVariant() {
 
 // eliminates the checks that replaces the current OverrideData if it's not a miniboss RoomConfig_Room
 void PatchOverrideDataHandling() {
-	const char* signature[2] = {"74??83380075", "8945??85c974??833900"}; 
+	const char* signature[2] = { "74??83380075", "8945??85c974??833900" };
 	SigScan scanner(signature[0]); // jz 0x0061bcb2
 	if (!scanner.Scan()) {
 		ZHL::Log("[ERROR] Unable to find signature to patch OverrideData handling\n");
@@ -229,7 +229,7 @@ void PatchOverrideDataHandling() {
 
 	void* patchAddr = scanner.GetAddress();
 
-	ZHL::Log("[REPENTOGON] Patching Level::load_room at %p\n", patchAddr);
+	printf("[REPENTOGON] Patching Level::load_room at %p\n", patchAddr);
 	ASMPatch patch1;
 	patch1.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)patchAddr + 0x135)
 		.AddRelativeJump((char*)patchAddr + 0x11);
@@ -244,7 +244,7 @@ void PatchOverrideDataHandling() {
 
 	patchAddr = (char*)scanner2.GetAddress() + 5;
 
-	ZHL::Log("[REPENTOGON] Patching Room::RespawnEnemies at %p\n", patchAddr);
+	printf("[REPENTOGON] Patching Room::RespawnEnemies at %p\n", patchAddr);
 	ASMPatch patch2;
 	patch2.AddBytes("\x0F\x45\xC1") // cmovnz eax, ecx
 		.AddRelativeJump((char*)patchAddr + 0xe);
