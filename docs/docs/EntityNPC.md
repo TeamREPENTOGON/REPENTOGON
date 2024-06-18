@@ -76,7 +76,7 @@ ___
 
 ___
 ### ShootMaggotProjectile () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Position, [Vector](Vector.md) Target, float Velocity = -24.0, float YOffset = -8.0 ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ShootMaggotProjectile ( [Vector](Vector.md) Position, [Vector](Vector.md) Target, float FallingSpeed = -8.0, float YOffset = -24.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### SpawnBloodCloud () {: aria-label='Functions' }
@@ -92,7 +92,7 @@ ___
 
 ___
 ### ThrowMaggot () {: aria-label='Functions' }
-#### static const [EntityNPC](EntityNPC.md) ThrowMaggot ( [Vector](Vector.md) Origin, [Vector](Vector.md) Velocity, float yOffset = -10.0, float FallSpeed = -8.0 ) {: .copyable aria-label='Functions' }
+#### static const [EntityNPC](EntityNPC.md) ThrowMaggot ( [Vector](Vector.md) Origin, [Vector](Vector.md) Velocity, float YOffset = -10.0, float FallSpeed = -8.0 ) {: .copyable aria-label='Functions' }
 
 ___
 ### ThrowMaggotAtPos () {: aria-label='Functions' }
