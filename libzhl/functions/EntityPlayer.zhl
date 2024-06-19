@@ -49,6 +49,9 @@ __thiscall void Entity_Player::AddPrettyFly();
 "558bec83ec085356578b7d??8bd985ff":
 __thiscall void Entity_Player::AddCoins(int amount);
 
+"558bec6aff68????????64a1????????5081ecb4000000a1????????33c58945??53":
+__thiscall void Entity_Player::ControlActiveItem(int slot);
+
 "558bec83e4f883ec208b4d":
 static cleanup PosVel Entity_Player::GetMultiShotPositionVelocity(int loopIndex, WeaponType weaponType, Vector shotDirection, float shotSpeed, Weapon_MultiShotParams multiShotParams);
 
@@ -216,6 +219,9 @@ __thiscall void Entity_Player::TriggerTrinketAdded(unsigned int trinketID, bool 
 "558bec83e4f85153568bf157837e??00":
 __thiscall void Entity_Player::TriggerTrinketRemoved(unsigned int trinketID);
 
+"558bec83e4f883ec0c5356576a0068????????8bf1":
+__thiscall void Entity_Player::TriggerEchoChamber(uint32_t pocketItemType, int cardOrPillColor);
+
 "558bec83e4f85153565733f6":
 __thiscall int Entity_Player::GetWeaponModifiers();
 
@@ -314,7 +320,13 @@ __thiscall void Entity_Player::ClearCollectibleAnim(CollectibleType collectible)
 __thiscall unsigned int Entity_Player::GetMaxPocketItems();
 
 "558bec515356578bf9e8????????8b5d":
-__thiscall void Entity_Player::AddPocketItem(unsigned int slot, unsigned int itemID);
+__thiscall void Entity_Player::AddPocketItem(int id, uint32_t pocketItemType);
+
+"558bec8b55??85d278??83fa0473??8b45??8984??????????c784??????????01000000":
+__thiscall void Entity_Player::SetCard(int slot, int card);
+
+"558bec8b55??85d278??83fa0473??8b45??8984??????????c784??????????00000000":
+__thiscall void Entity_Player::SetPill(int slot, int pillColor);
 
 "558bec568bf1e8????????8b0d":
 __thiscall void Entity_Player::AddBoneOrbital(Vector* Position);
@@ -424,6 +436,9 @@ __thiscall void Entity_Player::MorphToCoopGhost();
 
 "558bec8b45??538bd983f8ff":
 __thiscall void Entity_Player::RemovePocketItem(int slot);
+
+"558bec53568b75??8bd95783feff":
+__thiscall void Entity_Player::DropPocketItem(int slot, Vector* pos);
 
 "558bec6aff68????????64a1????????5083ec58535657a1????????33c5508d45??64a3????????8bf9":
 __thiscall void Entity_Player::RerollAllCollectibles(RNG * rng, bool includeActives);
@@ -641,6 +656,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	KColor _footprintColor2 : 0x1794;
 	uint32_t _deadEyeCharges : 0x17d0;
 	uint32_t _deadEyeMisses : 0x17d4;
+	uint32_t _conceptionFamiliarFlags : 0x1858;
 	int _babySkin : 0x1a0c;
 	int _hallowedGroundCountdown : 0x1cb0;
 	//std_vector_int _wispStorage : 0x1cfc;

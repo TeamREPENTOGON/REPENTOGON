@@ -1,14 +1,57 @@
 v1.x.x -
 Additions:
+* EntityPlayer:
+	- SetBlackHeart(int BlackHeart)
+	- GetCambionFamiliarFlags()
+	- SetCambionFamiliarFlags(CambionFamiliarFlag flags)
 * ModCallbacks:
 	- MC_PRE_FORTUNE_DISPLAY
 		Called before a fortune paper is displayed.
 	- MC_PRE_ITEM_TEXT_DISPLAY (title, subtitle, isSticky, isCurseDisplay)
 		Called before an item text is displayed (such as with picking up an item, Poke Go, stage title, etc.)
+	- PRE_GET_RANDOM_ROOM_INDEX(int RoomIndex, bool IAmErrorRoom, integer Seed) 
+		Return integer to overwrite target room index.
+	- MC_POST_GLOWING_HOURGLASS_SAVE/LOAD (int Slot)
+		Called after the Glowing Hourglass state is saved/loaded
+	- MC_PRE/POST_PLAYER_ADD_CARD/PILL (EntityPlayer, Card/PillColor, PillCardSlot)
+		Called before/after a card/pill gets added to the player's inventory.
+		On PRE: Return a different ID to change the card/pill added, or false to cancel adding it entirely.
+	- MC_POST_PLAYER_REMOVE_CARD/PILL (EntityPlayer, Card/PillColor, PillCardSlot)
+		Called after a card/pill gets removed from the player's inventory by any means (dropped, direct removal, use, etc).
+	- MC_PRE/POST_PLAYER_COLLECT_CARD (EntityPlayer, EntityPickup)
+		Called before/after a player picks up a card/pill off the ground.
+		On PRE: Return false to prevent the card/pill from being picked up.
+	- MC_POST_PLAYER_DROP_CARD/PILL (EntityPlayer, EntityPickup, PillCardSlot)
+		Called after a player drops a card/pill onto the ground from their inventory.
+	- MC_PRE_PLAYER_GIVE_BIRTH_CAMBION/IMMACULATE (EntityPlayer, CambionFamiliarFlag)
+		Return false to cancel the familiar being added.
+* EntityLaser:
+	- GetDamageMultiplier()
+	- SetDamageMultiplier(float Mult)
+* Enums:
+	- CambionFamiliarFlag
+* Added a new option "Extra debug render for FindInRadius". While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.
+* RoomDescriptor.OverrideData is no longer forcibly changed by RoomDescriptor.FLAG_SURPRISE_MINIBOSS
+/newline/
 Modified:
 * Isaac:
-	PlayCutscene(CutsceneID, CleanGameState = false)
+	PlayCutscene(CutsceneID, ClearGameState = false)
+* Game:
+	SetDizzyAmount(TargetIntensity, CurrentIntensity) - Providing CurrentIntensity is now optional
+* EntityNPC:
+	ShootMaggotProjectile(Position, Target, FallingSpeed = -8.0, YOffset = -24.0)
+* Callbacks:
+	- MC_PLAYER_GET_ACTIVE_MAX_CHARGE / MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE
+		Will no longer run for empty active item slots.
+		Now provide the current charge value as an argument.
+		Returning a value no longer stops the callback, and changes the charge value passed to the next callback.
+		If the final result of the callback is <0, the result is treated as 0.
 * The game no longer prematurely ends the daily run if there was console input, instead blocking it
+/newline/
+Fixes:
+* Game():GetDizzyAmount() now returns the intended value, instead of 0
+* Fixed MC_PRE_PLANETARIUM_APPLY_TREASURE_PENALTY not providing the current number of treasure rooms visited.
+* Fixed binders for EntityNPC: ThrowMaggot, ShootMaggotProjectile functions.
 /newline/
 v1.0.9d -
 Fixes:

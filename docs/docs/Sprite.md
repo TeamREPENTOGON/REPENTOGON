@@ -109,8 +109,8 @@ ___
 Returns `true` if the currently playing overlay animation just reached the event with the provided name.
 
 ___
-### SetCustomChampionShader () {: aria-label='Modified Functions' }
-#### void SetCustomChampionShader ( string ShaderPath ) {: .copyable aria-label='Modified Functions' }
+### SetCustomChampionShader () {: aria-label='Functions' }
+#### void SetCustomChampionShader ( string ShaderPath ) {: .copyable aria-label='Functions' }
 Specify a custom champion shader file for this Sprite to use instead of the usual `coloroffset_champion` shader. Provided path is expected to start at `.../resources/` and to find both a .vs and .fs file at that location. For example: `sprite:SetCustomChampionShader("shaders/my_shader")` will load `.../resources/shaders/my_shader.vs` and `.../resources/shaders/my_shader.fs`.
 
 The custom champion shader will only be used by the game if the entity is actually a champion.
@@ -120,8 +120,8 @@ Note that the custom shader must take the exact same inputs as the default `colo
 You can also set a per-layer shader via [LayerState](LayerState.md).
 
 ___
-### SetCustomShader () {: aria-label='Modified Functions' }
-#### void SetCustomShader ( string ShaderPath ) {: .copyable aria-label='Modified Functions' }
+### SetCustomShader () {: aria-label='Functions' }
+#### void SetCustomShader ( string ShaderPath ) {: .copyable aria-label='Functions' }
 Specify a custom shader file for this Sprite to use instead of the default `coloroffset` shader. Provided path is expected to start at `.../resources/` and to find both a .vs and .fs file at that location. For example: `sprite:SetCustomShader("shaders/my_shader")` will load `.../resources/shaders/my_shader.vs` and `.../resources/shaders/my_shader.fs`.
 
 This custom shader will not be used by the game if the entity is a champion, or if it has the gold/dogma shader applied.

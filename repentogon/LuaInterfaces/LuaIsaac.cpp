@@ -308,8 +308,8 @@ LUA_FUNCTION(Lua_GetSubTypeByName) {
 
 LUA_FUNCTION(Lua_PlayCutscene) {
 	const unsigned int cutscene = (unsigned int)luaL_checkinteger(L, 1);
-	const bool shouldClean = lua::luaL_optboolean(L, 2, false);
-	g_Manager->ShowCutscene(cutscene, shouldClean);
+	const bool shouldClear = lua::luaL_optboolean(L, 2, false);
+	g_Manager->ShowCutscene(cutscene, shouldClear);
 	return 0;
 }
 
@@ -681,6 +681,25 @@ LUA_FUNCTION(Lua_SetIcon) {
 	return 0;
 };
 
+LUA_FUNCTION(Lua_FindTargetPit) {
+	Vector* position = lua::GetUserdata<Vector*>(L, 1, lua::Metatables::VECTOR, "Vector");
+	Vector* targetPosition = lua::GetUserdata<Vector*>(L, 2, lua::Metatables::VECTOR, "Vector");
+	const int pitIndex = (int)luaL_optinteger(L, 3, -1);
+
+	lua_pushinteger(L, Entity_NPC::FindTargetPit(position, targetPosition, pitIndex));
+	return 1;
+}
+
+LUA_FUNCTION(Lua_GetAxisAlignedUnitVectorFromDir) {
+	const int dir = (int)luaL_optinteger(L, 1, -1);
+
+	Vector result = Isaac::GetAxisAlignedUnitVectorFromDir(dir);
+	Vector* toLua = lua::luabridge::UserdataValue<Vector>::place(L, lua::GetMetatableKey(lua::Metatables::VECTOR));
+	*toLua = result;
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -732,6 +751,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetBackdropIdByName", Lua_GetBackdropTypeByName); //changed to Id to fit the rest didnt release yet so it foine
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "StartNewGame", Lua_StartNewGame);
 	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "RGON_GetChangelog", Lua_GetRGON_Changelog);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "FindTargetPit", Lua_FindTargetPit);
+	lua::RegisterGlobalClassFunction(_state, lua::GlobalClasses::Isaac, "GetAxisAlignedUnitVectorFromDir", Lua_GetAxisAlignedUnitVectorFromDir);
 
 	SigScan scanner("558bec83e4f883ec14535657f3");
 	bool result = scanner.Scan();

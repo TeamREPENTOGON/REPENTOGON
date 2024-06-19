@@ -5,6 +5,7 @@
 #include "NullItemsAndCostumes.h"
 #include "FamiliarTags.h"
 #include "GetCoinValue.h"
+#include "PocketItems.h"
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
 
@@ -15,6 +16,7 @@
 #include "ASMPatches/ASMLevel.h"
 #include "ASMPatches/ASMMenu.h"
 #include "ASMPatches/ASMPlayer.h"
+#include "ASMPatches/ASMPlayerManager.h"
 #include "ASMPatches/ASMRender.h"
 #include "ASMPatches/ASMRoom.h"
 #include "ASMPatches/ASMTweaks.h"
@@ -92,6 +94,7 @@ void PerformASMPatches() {
 	ASMPatchPickupUpdatePickupGhosts();
 	ASMPatchProjectileDeath();
 	ASMPatchTearDeath();
+	ASMPatchPrePlayerGiveBirth();
 
 	// Delirium
 	delirium::AddTransformationCallback();
@@ -111,6 +114,7 @@ void PerformASMPatches() {
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	PatchDealRoomVariant();
+	PatchOverrideDataHandling();
 
 	// Menu
 	ASMPatchModsMenu();
@@ -134,10 +138,14 @@ void PerformASMPatches() {
 	LuaRender::PatchglDrawElements();
 	PatchStatHudPlanetariumChance();
 
+	//PlayerManager
+	ASMPatchSpawnSelectedBaby();
+
 	// External
 	ASMPatchesForFamiliarCustomTags();
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchesForGetCoinValue();
+	ASMPatchesForAddRemovePocketItemCallbacks();
 	HookImGui();
 
 	// Sprite

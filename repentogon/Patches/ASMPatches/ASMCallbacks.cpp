@@ -100,7 +100,7 @@ bool __stdcall ProcessPreDamageCallback(Entity* entity, char* ebp, bool isPlayer
 
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::entityTakeDmgCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		unsigned int entityType = *entity->GetType();
 
@@ -1029,4 +1029,58 @@ void ASMPatchTearDeath() {
 		.RestoreRegisters(savedRegisters)
 		.AddRelativeJump((char*)addr + 0x5);
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+// MC_PRE_PLAYER_GIVE_BIRTH_CAMBION (1474)
+// MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE (1475)
+bool __stdcall RunPrePlayerGiveBirthCallback(Entity_Player* player, const uint32_t flag, const bool isCambion) {
+	const int callbackid = isCambion ? 1474 : 1475;
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.push(flag)
+			.push(player, lua::Metatables::ENTITY_PLAYER)
+			.push(flag)
+			.call(1);
+
+		if (!results && lua_isboolean(L, -1) && (bool)lua_toboolean(L, -1) == false) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void PreBirthPatch(void* addr, const bool isCambion) {
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS_STACKLESS, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.Push(isCambion)
+		.Push(ASMPatch::Registers::EAX)  // ConceptionFamiliarFlag
+		.Push(ASMPatch::Registers::EDI)  // Entity_Player*
+		.AddInternalCall(RunPrePlayerGiveBirthCallback)
+		.AddBytes("\x84\xC0") // TEST AL, AL
+		.RestoreRegisters(savedRegisters)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 0x19)  // Jump for true, negate birth
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0xA))  // Restore the 10 bytes we overwrote.
+		.AddRelativeJump((char*)addr + 0xA);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchPrePlayerGiveBirth() {
+	SigScan cambionSig("818f????????000200000bc2");
+	cambionSig.Scan();
+	void* cambionAddr = cambionSig.GetAddress();
+	printf("[REPENTOGON] Patching Entity_Player::TakeDamage at %p for MC_PRE_PLAYER_GIVE_BIRTH_CAMBION\n", cambionAddr);
+	PreBirthPatch(cambionAddr, true);  // Cambion
+
+	SigScan immaculateSig("818f????????000200000bc6");
+	immaculateSig.Scan();
+	void* immaculateAddr = immaculateSig.GetAddress();
+	printf("[REPENTOGON] Patching Entity_Player::TriggerHeartPickedUp at %p for MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE\n", immaculateAddr);
+	PreBirthPatch(immaculateAddr, false);  // Immaculate
 }

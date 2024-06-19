@@ -1,7 +1,7 @@
 "a1????????3d70020000":
 unsigned int Random();
 
-"558bec8b450889018b450c8d":
+"558bec8b45??89018b45??8d04":
 __thiscall void RNG::SetSeed(unsigned int Seed, unsigned int ShiftIdx);
 
 "558bec568bf18b16":
@@ -15,6 +15,9 @@ __thiscall unsigned int RNG::Next();
 
 "558bec8b45??568bf1578b7d":
 __thiscall void RNG::game_constructor(unsigned int seed, unsigned int shiftidx);
+
+"558bec8b45??89018b45??8d0440f30f7e0485(????????)":
+reference uint32_t s_Shifts;
 
 struct RNG
 {

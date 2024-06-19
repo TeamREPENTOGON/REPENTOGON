@@ -27,6 +27,14 @@ tags:
 
 ## Functions
 
+### GetSeed () {: aria-label='Functions' }
+#### int GetSeed ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetSubType () {: aria-label='Functions' }
+#### int GetSubType ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetType () {: aria-label='Functions' }
 #### [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) GetType ( ) {: .copyable aria-label='Functions' }
 
@@ -35,16 +43,8 @@ ___
 #### int GetVariant ( ) {: .copyable aria-label='Functions' }
 
 ___
-### GetSubType () {: aria-label='Functions' }
-#### int GetSubType ( ) {: .copyable aria-label='Functions' }
-
-___
-### GetSeed () {: aria-label='Functions' }
-#### int GetSeed ( ) {: .copyable aria-label='Functions' }
-
-___
-### RNG () {: aria-label='Functions' }
-#### [RNG](RNG.md) RNG ( ) {: .copyable aria-label='Functions' }
+### GetRNG () {: aria-label='Functions' }
+#### [RNG](RNG.md) GetRNG ( ) {: .copyable aria-label='Functions' }
 
 ???+ warning "Warning"
 	May return `nil`.

@@ -18,12 +18,12 @@ tags:
 
 ## Functions
 
-### GetTransitionMode () {: aria-label='Functions' }
-#### int GetTransitionMode ( ) {: .copyable aria-label='Functions' }
-
-___
 ### GetPlayerExtraPortraitSprite () {: aria-label='Functions' }
 #### [Sprite](Sprite.md) GetPlayerExtraPortraitSprite ( ) {: .copyable aria-label='Functions' }
+
+___
+### GetTransitionMode () {: aria-label='Functions' }
+#### int GetTransitionMode ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### GetVersusScreenSprite () {: aria-label='Functions' }

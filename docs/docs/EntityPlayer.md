@@ -48,8 +48,10 @@ Compared to the vanilla function, this implementation has been further augmented
 
 ___
 ### GetPocketItem () {: aria-label='Modified Functions' }
-#### [PocketItem](PocketItem.md) GetPocketItem ( int PocketItemSlot ) {: .copyable aria-label='Modified Functions' }
-Now returns a proper `PocketItem` object. `PocketItemSlot` is not synonymous with `ActiveSlot`, instead referring to where the PocketItem is located in your inventory.
+#### [PocketItem](PocketItem.md) GetPocketItem ( [PillCardSlot](enums/PillCardSlot.md) Slot ) {: .copyable aria-label='Modified Functions' }
+Gets the card/pill/rune in the specified pocket slot.
+
+Now returns a proper `PocketItem` object.
 
 ___
 ### HasCollectible () {: aria-label='Modified Functions' }
@@ -229,6 +231,7 @@ Returns how many times the player has taken damage with the Cambion Conception i
 ___
 ### GetCambionPregnancyLevel () {: aria-label='Functions' }
 #### int GetCambionPregnancyLevel ( ) {: .copyable aria-label='Functions' }
+Corresponds to the current visible state of Cambion Conception's costume (0-2).
 
 ___
 ### GetCollectiblesList () {: aria-label='Functions' }
@@ -446,7 +449,7 @@ ___
 ___
 ### GetImmaculateConceptionState () {: aria-label='Functions' }
 #### int GetImmaculateConceptionState ( ) {: .copyable aria-label='Functions' }
-Returns how many hearts have been collected with the Immaculate Conception item.
+Returns how many hearts have been collected with the Immaculate Conception item. Resets to 0 after spawning a familiar/soul heart.
 
 ___
 ### GetKeepersSackBonus () {: aria-label='Functions' }
@@ -642,14 +645,14 @@ Initializes a new player that is controlled by the player's same controller.
 	We've received confirmation from \_Kilburn that this is hardcoded to be handled on vanilla characters. We will need to add a workaround for this.
 
 ___
-### IsCollectibleBlocked () {: aria-label='Functions' }
-#### boolean IsCollectibleBlocked ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
-Returns true if the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) was blocked. Collectibles can only be blocked by use of [BlockCollectible](EntityPlayer.md#blockcollectible).
-
-___
 ### IsCollectibleAnimFinished () {: aria-label='Functions' }
 #### boolean IsCollectibleAnimFinished ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, string Animation ) {: .copyable aria-label='Functions' }
 Returns true if the animation associated with the collectible is visible.
+
+___
+### IsCollectibleBlocked () {: aria-label='Functions' }
+#### boolean IsCollectibleBlocked ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
+Returns true if the [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) was blocked. Collectibles can only be blocked by use of [BlockCollectible](EntityPlayer.md#blockcollectible).
 
 ___
 ### IsCollectibleCostumeVisible () {: aria-label='Functions' }
@@ -729,7 +732,7 @@ Removes the collectible from the player associated with the specified history in
 
 ___
 ### RemovePocketItem () {: aria-label='Functions' }
-#### void RemovePocketItem ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
+#### void RemovePocketItem ( [PillCardSlot](enums/PillCardSlot.md) Slot ) {: .copyable aria-label='Functions' }
 
 ___
 ### RemovePoopSpell () {: aria-label='Functions' }
@@ -866,7 +869,7 @@ ___
 
 ___
 ### SetHallowedGroundCountdown () {: aria-label='Functions' }
-#### SetHallowedGroundCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
+#### void SetHallowedGroundCountdown ( int Countdown ) {: .copyable aria-label='Functions' }
 Sets the grace period countdown of retaining stats from the Hallowed Ground/Star of Bethlehem aura.
 
 ___

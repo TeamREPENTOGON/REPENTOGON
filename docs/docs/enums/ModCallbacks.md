@@ -109,7 +109,7 @@ Modified values are passed along to the remaining callbacks. Returning false to 
 
 ## New Callbacks
 ### MC_PRE_ADD_COLLECTIBLE {: .copyable }
-Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData, Player}`
+Accepts a table of parameters: `{Type, Charge, FirstTime, Slot, VarData}`
 
 Alternatively accepts a [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) to change the type without changing any other parameters or a boolean to cancel the addition altogether (false) or force it to happen skipping the following callbacks (true).
 
@@ -285,7 +285,7 @@ Accepts a `float` to modify the chance in this step of the calculation.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1130 | MC_PRE_DEVIL_APPLY_ITEMS {: .copyable } | void | - | float |
+|1130 | MC_PRE_DEVIL_APPLY_ITEMS {: .copyable } | (float Chance) | - | float |
 
 ### MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS {: .copyable }
 Next, the game applies "special" items which bypass the stage penalty like Goat Head and Eucharist.
@@ -294,7 +294,7 @@ Accepts a `float` to modify the chance in this step of the calculation.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1132 | MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS {: .copyable } | void | - | float |
+|1132 | MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS {: .copyable } | (float Chance) | - | float |
 
 ### MC_PRE_DEVIL_APPLY_STAGE_PENALTY {: .copyable }
 Next, the game calculates stage penalty. If a deal spawned anywhere on the previous two floors, the game decays the resulting chance by either 50% or 25% depending on how many deals have been taken.
@@ -2030,154 +2030,154 @@ Called after the room's [TemporaryEffects](https://wofsauge.github.io/IsaacDocs/
 |1269 |MC_POST_ROOM_TRIGGER_EFFECT_REMOVED {: .copyable } | ([ItemConfigItem][../ItemConfig_Item.md]) | - | void |
 
 ### MC_PRE_PLAYER_GRID_COLLISION {: .copyable }
-Called before this entity collides with the [GridEntity](../GridEntity.md).
+Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
 
 Return `true` to ignore collision.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1171 |MC_PRE_PLAYER_GRID_COLLISION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PLAYER_GRID_COLLISION {: .copyable }
-Called when this entity collides with the `GridEntity`, assuming it wasn't skipped.
+Called when this entity collides with the grid, assuming it wasn't skipped.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1172 |MC_PLAYER_GRID_COLLISION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PRE_TEAR_GRID_COLLISION {: .copyable }
-Called before this entity collides with the [GridEntity](../GridEntity.md).
+Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
 
 Return `true` to ignore collision.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1173 |MC_PRE_TEAR_GRID_COLLISION {: .copyable } | ([EntityTear](../EntityTear.md) Tear, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_TEAR_GRID_COLLISION {: .copyable }
-Called when this entity collides with the `GridEntity`, assuming it wasn't skipped.
+Called when this entity collides with the grid, assuming it wasn't skipped.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1174 |MC_TEAR_GRID_COLLISION {: .copyable } | ([EntityTear](../EntityTear.md) Tear, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PRE_FAMILIAR_GRID_COLLISION {: .copyable }
-Called before this entity collides with the [GridEntity](../GridEntity.md).
+Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
 
 Return `true` to ignore collision.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1175 |MC_PRE_FAMILIAR_GRID_COLLISION {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_FAMILIAR_GRID_COLLISION {: .copyable }
-Called when this entity collides with the `GridEntity`, assuming it wasn't skipped.
+Called when this entity collides with the grid, assuming it wasn't skipped.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1176 |MC_FAMILIAR_GRID_COLLISION {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PRE_BOMB_GRID_COLLISION {: .copyable }
-Called before this entity collides with the [GridEntity](../GridEntity.md).
+Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
 
 Return `true` to ignore collision.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1177 |MC_PRE_BOMB_GRID_COLLISION {: .copyable } | ([EntityBomb](../EntityBomb.md) Bomb, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_BOMB_GRID_COLLISION {: .copyable }
-Called when this entity collides with the `GridEntity`, assuming it wasn't skipped.
+Called when this entity collides with the grid, assuming it wasn't skipped.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1178 |MC_BOMB_GRID_COLLISION {: .copyable } | ([EntityBomb](../EntityBomb.md) Bomb, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PRE_PICKUP_GRID_COLLISION {: .copyable }
-Called before this entity collides with the [GridEntity](../GridEntity.md).
+Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
 
 Return `true` to ignore collision.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1179 |MC_PRE_PICKUP_GRID_COLLISION {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PICKUP_GRID_COLLISION {: .copyable }
-Called when this entity collides with the `GridEntity`, assuming it wasn't skipped.
+Called when this entity collides with the grid, assuming it wasn't skipped.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1180 |MC_PICKUP_GRID_COLLISION {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PRE_PROJECTILE_GRID_COLLISION {: .copyable }
-Called before this entity collides with the [GridEntity](../GridEntity.md).
+Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
 
 Return `true` to ignore collision.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1181 |MC_PRE_PROJECTILE_GRID_COLLISION {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PROJECTILE_GRID_COLLISION {: .copyable }
-Called when this entity collides with the `GridEntity`, assuming it wasn't skipped.
+Called when this entity collides with the grid, assuming it wasn't skipped.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1182 |MC_PROJECTILE_GRID_COLLISION {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_PRE_NPC_GRID_COLLISION {: .copyable }
-Called before this entity collides with the [GridEntity](../GridEntity.md).
+Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
 
 Return `true` to ignore collision.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1183 |MC_PRE_NPC_GRID_COLLISION {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
 
 ### MC_NPC_GRID_COLLISION {: .copyable }
-Called when this entity collides with the `GridEntity`, assuming it wasn't skipped.
+Called when this entity collides with the grid, assuming it wasn't skipped.
 
 ???+ warning "Warning"
-    `GridEntity` can also be nil, as this callback counts empty ground as a grid entity.
+    `GridEntity` can be nil, as entities may collide with "empty" grid indexes if the [GridPath](https://wofsauge.github.io/IsaacDocs/rep/Room.html#getgridpath) value is >= 1000.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
@@ -2202,7 +2202,7 @@ Called right after the boss intro is initialized. `BossID2` is for Double Troubl
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1270 |MC_POST_BOSS_INTRO_SHOW {: .copyable } | ([BossType](enums/BossType.md) BossID1, [BossType](enums/BossType.md) BossID2) | - | void |
+|1270 |MC_POST_BOSS_INTRO_SHOW {: .copyable } | ([BossType](BossType.md) BossID1, [BossType](BossType.md) BossID2) | - | void |
 
 ### MC_POST_ROOM_TRANSITION_UPDATE {: .copyable }
 

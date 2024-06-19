@@ -175,10 +175,10 @@ TypeInfo vector_PoolItem {
 };
 
 // Something goofy seemed to be happening with std::vector<bool> in zhl
-/*TypeInfo vector_bool {
-	Size 12;
+TypeInfo vector_bool {
+	Size 16;
 	Align 4;
-};*/
+};
 
 TypeInfo vector_TrinketPoolItem {
 	Size 12;
@@ -202,5 +202,10 @@ TypeInfo vector_CostumeSpriteDesc {
 
 TypeInfo deque_LootListEntry {
 	Size 20;
+	Align 4;
+};
+
+TypeInfo vector_BossPoolEntry {
+	Size 12;
 	Align 4;
 };

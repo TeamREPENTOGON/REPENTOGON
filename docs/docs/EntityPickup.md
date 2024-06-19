@@ -108,8 +108,8 @@ Attempts to remove the collectible from an item pedestal.
 Returns `true` if a collectible was successfully removed from the pedestal. Returns `false` if the pedestal was already empty, or if called on a non-collectible EntityPickup.
 
 ___
-### UpdatePickupGhost () {: aria-label='Functions' }
-#### void UpdatePickupGhost ( ) {: .copyable aria-label='Functions' }
+### UpdatePickupGhosts () {: aria-label='Functions' }
+#### void UpdatePickupGhosts ( ) {: .copyable aria-label='Functions' }
 Updates the `EffectVariant.PICKUP_GHOST` EntityEffect in accordance to the pickup's current [LootList](LootList.md)
 
 ___

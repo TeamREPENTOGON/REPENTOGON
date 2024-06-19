@@ -88,7 +88,7 @@ bool RunTriggerDeathCallback(Entity_Player* player, const int callbackid) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::triggerPlayerDeathCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.pushnil()

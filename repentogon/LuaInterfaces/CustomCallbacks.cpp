@@ -1459,7 +1459,7 @@ HOOK_METHOD(Entity_Familiar, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1488,7 +1488,7 @@ HOOK_METHOD(Entity_NPC, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetType())
@@ -1517,7 +1517,7 @@ HOOK_METHOD(Entity_Player, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1546,7 +1546,7 @@ HOOK_METHOD(Entity_Pickup, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1575,7 +1575,7 @@ HOOK_METHOD(Entity_Tear, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1604,7 +1604,7 @@ HOOK_METHOD(Entity_Projectile, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1633,7 +1633,7 @@ HOOK_METHOD(Entity_Knife, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1662,7 +1662,7 @@ HOOK_METHOD(Entity_Effect, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1691,7 +1691,7 @@ HOOK_METHOD(Entity_Bomb, Render, (Vector* offset) -> void) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
 			.push(*this->GetVariant())
@@ -1721,7 +1721,7 @@ HOOK_METHOD(Entity_Slot, Render, (Vector* offset) -> void) {
 		
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::preRenderCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid1)
 			.push(*this->GetVariant())
@@ -1986,35 +1986,85 @@ HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 	super();
 }
 
+// MC_PLAYER_GET_ACTIVE_MAX_CHARGE (below) can get triggered multiple times in a single call to some functions.
+// Some result caching is done here specifically for those functions, to reduce how many times the callback runs.
+// Unfortunately these callbacks can still run quite a few times per frame in some situations.
+bool cacheMaxChargeCallback = false;
+std::unordered_map<int, int> cachedMaxCharge;
+
+HOOK_METHOD(Entity_Player, ControlActiveItem, (int slot) -> void) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	super(slot);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+}
+
+HOOK_METHOD(Entity_Player, AddActiveCharge, (unsigned int charge, int slot, bool unk, bool overcharge, bool force) -> int) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	const int result = super(charge, slot, unk, overcharge, force);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+
+	return result;
+}
+
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector& pos, float alpha, float unk, float size) -> void) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	super(slot, pos, alpha, unk, size);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+}
+
 //PLAYER_GET_ACTIVE_MAX_CHARGE (id: 1072)
 HOOK_OVERLOADED_METHOD(Entity_Player, GetActiveMaxCharge, int, (int, int), (int item, int vardata) -> int) {
+	const int normalMaxCharge = super(item, vardata);
+
 	const int callbackid = 1072;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	if (item != 0 && CallbackState.test(callbackid - 1000)) {
+		if (cacheMaxChargeCallback && cachedMaxCharge.find(item) != cachedMaxCharge.end()) {
+			return cachedMaxCharge[item];
+		} else {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(item)
-			.push(item)
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(vardata)
-			.call(1);
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+				.push(item)
+				.push(item)
+				.push(this, lua::Metatables::ENTITY_PLAYER)
+				.push(vardata)
+				.push(normalMaxCharge)
+				.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
+			if (!result && lua_isinteger(L, -1)) {
+				const int newMaxCharge = std::max((int)lua_tointeger(L, -1), 0);
+				if (cacheMaxChargeCallback) {
+					cachedMaxCharge[item] = newMaxCharge;
+				}
+				return newMaxCharge;
 			}
 		}
 	}
-	return super(item, vardata);
+
+	return normalMaxCharge;
 }
 
 //PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE (id: 1073)
 HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
+	const int normalMinCharge = super(slot);
+
 	const int callbackid = 1073;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (this->GetActiveItem(slot) != 0 && CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -2024,15 +2074,15 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 			.push(this->GetActiveItem(slot))
 			.push(slot)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(normalMinCharge)
 			.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
-			}
+		if (!result && lua_isinteger(L, -1)) {
+			return std::max((int)lua_tointeger(L, -1), 0);
 		}
 	}
-	return super(slot);
+
+	return normalMinCharge;
 }
 
 //MC_PRE_REPLACE_SPRITESHEET (id: 1116)
@@ -2600,9 +2650,10 @@ HOOK_METHOD(Entity_Player, GetCollectibleNum, (int CollectibleID, bool OnlyCount
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, LuaKeys::additiveCallbackKey);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
 			.push(modCount)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
 			.push(CollectibleID)
@@ -4176,4 +4227,123 @@ HOOK_METHOD(RoomTransition, Render, () -> void) {
 			.push(_mode)
 			.call(1);
 	}
+}
+
+//MC_PRE_BOSS_SELECT (1280)
+HOOK_METHOD(BossPool, GetBossId, (int leveltype, int levelvariant, RNG* unusedRNG) -> int) {
+	int bossId = super(leveltype, levelvariant, unusedRNG);
+
+	const int callbackid = 1280;
+	const auto stageId = RoomConfig::GetStageID(leveltype, levelvariant, -1);
+
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.push(bossId)
+			.push(bossId)
+			.push(&_pool[stageId], lua::metatables::BossPoolMT)
+			.push(leveltype)
+			.push(levelvariant)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				bossId = (int)lua_tointeger(L, -1);
+			}
+		}
+	}
+	return bossId;
+}
+
+//PRE_GET_RANDOM_ROOM_INDEX (1290)
+HOOK_METHOD(Level, GetRandomRoomIndex, (bool IAmErrorRoom, unsigned int Seed) -> int) {
+	int ret = super(IAmErrorRoom, Seed);
+
+	const int callbackid = 1290;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(ret)
+			.push(IAmErrorRoom)
+			.push(Seed)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				return (int)lua_tointeger(L, -1);
+			}
+		}
+	}
+	return ret;
+}
+
+inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
+	if (gameState == &g_Game->_glowingHourglassStates[0]._gameState) {
+		return 0;
+	}
+
+	if (gameState == &g_Game->_glowingHourglassStates[1]._gameState) {
+		return 1;
+	}
+
+	return -1;
+}
+
+//POST_GLOWING_HOURGLASS_SAVE (1300)
+HOOK_METHOD(Game, SaveState, (GameState* gameState) -> void) {
+	int currentSlot = GetGlowingHourglassSlot(gameState);
+
+	super(gameState);
+
+	if (currentSlot == -1) {
+		return;
+	}
+
+	const int callbackid = 1300;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(currentSlot)
+			.call(1);
+	}
+	return;
+}
+
+//POST_GLOWING_HOURGLASS_LOAD (1301)
+HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) {
+	int currentSlot = GetGlowingHourglassSlot(gameState);
+
+	super(gameState, startGame);
+
+	if (currentSlot == -1) {
+		return;
+	}
+
+	const int callbackid = 1301;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(currentSlot)
+			.call(1);
+	}
+	return;
 }

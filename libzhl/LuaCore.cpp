@@ -729,6 +729,7 @@ namespace lua {
 		const char* BeamMT = "Beam";
 		const char* BestiaryMenuMT = "BestiaryMenu";
 		const char* BlendModeMT = "BlendMode";
+		const char* BossPoolMT = "BossPool";
 		const char* CameraMT = "Camera";
 		const char* CapsuleMT = "Capsule";
 		const char* ChallengeMenuMT = "ChallengeMenu";

@@ -269,6 +269,9 @@ bool handleImguiInputUTF8(WPARAM wParam, LPARAM lParam) {
 	}
 }
 
+float WINMouseWheelMove_Vert = 0;
+float WINMouseWheelMove_Hori = 0;
+
 static std::vector<WPARAM> pressedKeys;
 
 LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -345,6 +348,8 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 		g_Game->GetConsole()->_state = 0;
 	}
 
+	WINMouseWheelMove_Vert = 0;
+	WINMouseWheelMove_Hori = 0;
 
 	// Track what keys are being pressed so we can release them the next time ImGui state changes
 	switch (uMsg) {
@@ -366,6 +371,14 @@ LRESULT CALLBACK windowProc_hook(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 	case WM_KEYUP: {
 		pressedKeys.erase(std::remove(pressedKeys.begin(), pressedKeys.end(), wParam), pressedKeys.end());
 
+		break;
+	}
+	case WM_MOUSEWHEEL: {
+		WINMouseWheelMove_Vert = (float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
+		break;
+	}
+	case WM_MOUSEHWHEEL: {
+		WINMouseWheelMove_Hori = (float)GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
 		break;
 	}
 	}
@@ -468,6 +481,8 @@ void __stdcall RunImGui(HDC hdc) {
 	static std::map<int, ImFont*> fonts;
 
 	static float unifont_global_scale = 1;
+	WINMouseWheelMove_Vert = 0; // Windows doesn't call callbacks all the time, so this values is "sticking"
+	WINMouseWheelMove_Hori = 0;
 
 	if (!imguiInitialized) {
 		HWND window = WindowFromDC(hdc);
@@ -673,3 +688,5 @@ extern ImGuiKey AddChangeKeyButton(bool isController, bool& wasPressed);
 extern void AddWindowContextMenu(bool* pinned);
 extern void HelpMarker(const char* desc);
 extern bool WindowBeginEx(const char* name, bool* p_open, ImGuiWindowFlags flags);
+extern float WINMouseWheelMove_Vert;  //I don't know if this needs to be added to the end of the file, but I don't see any errors
+extern float WINMouseWheelMove_Hori;

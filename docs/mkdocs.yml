@@ -231,6 +231,7 @@ nav:
     - GridEntityDoor: GridEntityDoor.md
     - GridEntityFire: GridEntityFire.md
     - GridEntityGravity: GridEntityGravity.md
+    - GridEntityLock: GridEntityLock.md
     - GridEntityPressurePlate: GridEntityPressurePlate.md
     - GridEntityRock: GridEntityRock.md
     - GridEntityStairs: GridEntityStairs.md
