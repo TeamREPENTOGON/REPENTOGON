@@ -31,7 +31,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
-	bool keepWeight = lua::luaL_optboolean(L, 3, true); //Fun Fact: main.lua creates a wrapper for GetCollectible that inverts the boolean value passed as Decrease
+	bool decrease = lua::luaL_optboolean(L, 3, false);
 	uint32_t seed = (unsigned int)luaL_optinteger(L, 4, Isaac::genrand_int32());
 	int defaultItem = (int)luaL_optinteger(L, 5, COLLECTIBLE_NULL);
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 6, 0);
@@ -41,7 +41,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	}
 
 	flags = flags << 1;
-	if (keepWeight) {
+	if (!decrease) {
 		flags |= 1;
 	}
 

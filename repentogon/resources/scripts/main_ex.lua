@@ -1431,7 +1431,15 @@ function FontMT.__call(_,FontPath)
 	return out,isloaded
 end
 
+--Get rid of the GetCollectible compatibility wrapper
+local ItemPoolMT = getmetatable(ItemPool).__class
+local OldIndex = ItemPoolMT.__index
+local NewIndex = {}
 
+NewIndex.GetCollectible = ItemPoolMT.GetCollectible
+rawset(ItemPoolMT, "__index", function(self, k)
+	return NewIndex[k] or OldIndex(self, k)
+end)
 
 --res load error stuff end
 
