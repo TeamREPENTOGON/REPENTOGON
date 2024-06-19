@@ -1363,8 +1363,6 @@ local CustomRunCallbackLogic = {
 }
 
 for _, callback in ipairs({
-	ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD,
-	ModCallbacks.MC_PRE_RENDER_PLAYER_BODY,
 	ModCallbacks.MC_PRE_FAMILIAR_RENDER,
 	ModCallbacks.MC_PRE_NPC_RENDER,
 	ModCallbacks.MC_PRE_PLAYER_RENDER,
