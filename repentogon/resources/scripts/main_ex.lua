@@ -159,7 +159,15 @@ end
 local function checkNumberGreaterThanFunction(minimum)
 	return function(val)
 		if val <= minimum then
-			return "bad return value (integer must be > " .. minimum .. ")"
+			return "bad return value (number must be > " .. minimum .. ")"
+		end
+	end
+end
+
+local function checkNumberGreaterOrEqualFunction(minimum)
+	return function(val)
+		if val < minimum then
+			return "bad return value (number must be >= " .. minimum .. ")"
 		end
 	end
 end
@@ -524,6 +532,12 @@ local typecheckWarnFunctions = {
 		["boolean"] = true,
 		["number"] = checkNumberGreaterThanFunction(0),
 	},
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = {
+		["number"] = checkNumberGreaterOrEqualFunction(0),
+	},
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = {
+		["number"] = checkNumberGreaterOrEqualFunction(0),
+	},
 }
 
 local boolCallbacks = {
@@ -549,7 +563,6 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_CAMBION,
 	ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE,
 }
-
 for _, callback in ipairs(boolCallbacks) do
 	typecheckFunctions[callback] = { ["boolean"] = true }
 end
@@ -568,9 +581,7 @@ local intCallbacks = {
 	ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE,
 	ModCallbacks.MC_PLAYER_GET_HEART_LIMIT,
 	ModCallbacks.MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE,
-
 }
-
 for _, callback in ipairs(intCallbacks) do
 	typecheckFunctions[callback] = { ["number"] = checkInteger }
 end
@@ -1202,9 +1213,40 @@ local function PreModUnloadCallbackLogic(callbackID, param, mod, ...)
 end
 
 -- Basic "additive" callback behaviour. Values returned from a callback replace the value of the FIRST arg for subsequent callbacks.
+-- Separate implementations are used depending on which arg is updated by the return value, because table.unpack tricks are slower.
 local function RunAdditiveFirstArgCallback(callbackID, param, value, ...)
 	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+local function RunAdditiveSecondArgCallback(callbackID, param, arg1, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+local function RunAdditiveThirdArgCallback(callbackID, param, arg1, arg2, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+local function RunAdditiveFourthArgCallback(callbackID, param, arg1, arg2, arg3, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, ...)
 		if ret ~= nil then
 			value = ret
 		end
@@ -1316,6 +1358,8 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = RunPreAddCardPillCallback,
 	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = RunPreAddCardPillCallback,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = RunAdditiveThirdArgCallback,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = RunAdditiveFourthArgCallback,
 }
 
 for _, callback in ipairs({
