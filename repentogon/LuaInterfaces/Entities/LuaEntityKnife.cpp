@@ -18,6 +18,18 @@ LUA_FUNCTION(Lua_KnifeGetHitList) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_GetIsSwinging) {
+	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	lua_pushboolean(L, knife->_isSwinging);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_SetIsSwinging) {
+	Entity_Knife* knife = lua::GetUserdata<Entity_Knife*>(L, 1, lua::Metatables::ENTITY_KNIFE, "EntityKnife");
+	knife->_isSwinging = lua::luaL_checkboolean(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -25,6 +37,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetHitList", Lua_KnifeGetHitList },
+		{ "GetIsSwinging", Lua_GetIsSwinging },
+		{ "SetIsSwinging", Lua_SetIsSwinging },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_KNIFE, functions);

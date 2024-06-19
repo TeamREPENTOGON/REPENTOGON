@@ -114,6 +114,7 @@ void PerformASMPatches() {
 	ASMPatchVoidGeneration();
 	PatchSpecialQuest();
 	PatchDealRoomVariant();
+	PatchOverrideDataHandling();
 
 	// Menu
 	ASMPatchModsMenu();

@@ -156,6 +156,22 @@ local function checkInteger(val)
 	end
 end
 
+local function checkNumberGreaterThanFunction(minimum)
+	return function(val)
+		if val <= minimum then
+			return "bad return value (number must be > " .. minimum .. ")"
+		end
+	end
+end
+
+local function checkNumberGreaterOrEqualFunction(minimum)
+	return function(val)
+		if val < minimum then
+			return "bad return value (number must be >= " .. minimum .. ")"
+		end
+	end
+end
+
 local function checkTableSizeFunction(size)
 	return function(val)
 		local tablesize = 0
@@ -396,6 +412,14 @@ local typecheckFunctions = {
 		["boolean"] = true,
 		["table"] = checkTableTypeFunction({ Damage="number", DamageFlags="integer", DamageCountdown="number" }),
 	},
+	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
+	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = {
+		["boolean"] = true,
+		["number"] = checkInteger,
+	},
 	[ModCallbacks.MC_CONSOLE_AUTOCOMPLETE] = {
 	    ["table"] = true,
 	},
@@ -500,6 +524,20 @@ local typecheckWarnFunctions = {
 		["boolean"] = true,
 		["table"] = checkTableIndexes({ Discharge = "boolean", Remove = "boolean", ShowAnim = "boolean", }),
 	},
+	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = {
+		["boolean"] = true,
+		["number"] = checkNumberGreaterThanFunction(0),
+	},
+	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = {
+		["boolean"] = true,
+		["number"] = checkNumberGreaterThanFunction(0),
+	},
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = {
+		["number"] = checkNumberGreaterOrEqualFunction(0),
+	},
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = {
+		["number"] = checkNumberGreaterOrEqualFunction(0),
+	},
 }
 
 local boolCallbacks = {
@@ -520,8 +558,11 @@ local boolCallbacks = {
 	ModCallbacks.MC_PRE_MEGA_SATAN_ENDING,
 	ModCallbacks.MC_PRE_PLAYER_USE_BOMB,
 	ModCallbacks.MC_PRE_PLAYER_TAKE_DMG,
+	ModCallbacks.MC_PRE_PLAYER_COLLECT_CARD,
+	ModCallbacks.MC_PRE_PLAYER_COLLECT_PILL,
+	ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_CAMBION,
+	ModCallbacks.MC_PRE_PLAYER_GIVE_BIRTH_IMMACULATE,
 }
-
 for _, callback in ipairs(boolCallbacks) do
 	typecheckFunctions[callback] = { ["boolean"] = true }
 end
@@ -540,9 +581,7 @@ local intCallbacks = {
 	ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE,
 	ModCallbacks.MC_PLAYER_GET_HEART_LIMIT,
 	ModCallbacks.MC_PRE_SLOT_SET_PRIZE_COLLECTIBLE,
-
 }
-
 for _, callback in ipairs(intCallbacks) do
 	typecheckFunctions[callback] = { ["number"] = checkInteger }
 end
@@ -1174,7 +1213,8 @@ local function PreModUnloadCallbackLogic(callbackID, param, mod, ...)
 end
 
 -- Basic "additive" callback behaviour. Values returned from a callback replace the value of the FIRST arg for subsequent callbacks.
-function _RunAdditiveCallbackWithParam(callbackID, param, value, ...)
+-- Separate implementations are used depending on which arg is updated by the return value, because table.unpack tricks are slower.
+local function RunAdditiveFirstArgCallback(callbackID, param, value, ...)
 	for callback in GetCallbackIterator(callbackID, param) do
 		local ret = RunCallbackInternal(callbackID, callback, value, ...)
 		if ret ~= nil then
@@ -1184,9 +1224,51 @@ function _RunAdditiveCallbackWithParam(callbackID, param, value, ...)
 	return value
 end
 
+local function RunAdditiveSecondArgCallback(callbackID, param, arg1, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+local function RunAdditiveThirdArgCallback(callbackID, param, arg1, arg2, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
+local function RunAdditiveFourthArgCallback(callbackID, param, arg1, arg2, arg3, value, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, arg1, arg2, arg3, value, ...)
+		if ret ~= nil then
+			value = ret
+		end
+	end
+	return value
+end
+
 -- Older paramless version of the additive callback logic, preserved because it was a global.
 function _RunAdditiveCallback(callbackID, value, ...)
-	_RunAdditiveCallbackWithParam(callbackID, nil, value, ...)
+	RunAdditiveFirstArgCallback(callbackID, nil, value, ...)
+end
+
+local function RunPreAddCardPillCallback(callbackID, param, player, pillCard, ...)
+	for callback in GetCallbackIterator(callbackID, param) do
+		local ret = RunCallbackInternal(callbackID, callback, player, pillCard, ...)
+		if type(ret) == "boolean" and ret == false then
+			return
+		elseif type(ret) == "number" and ret > 0 then
+			pillCard = ret
+		end
+	end
+	return pillCard
 end
 
 -- Custom behaviour for pre-render callbacks (terminate on false, adds returned vectors to the render offset).
@@ -1267,19 +1349,20 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_ENTITY_TAKE_DMG] = _RunEntityTakeDmgCallback,
 	[ModCallbacks.MC_PRE_TRIGGER_PLAYER_DEATH] = _RunTriggerPlayerDeathCallback,
 	[ModCallbacks.MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES] = _RunTriggerPlayerDeathCallback,
-	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = _RunAdditiveCallbackWithParam,
-
-	[ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS] = _RunAdditiveCallbackWithParam,
-	[ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS] = _RunAdditiveCallbackWithParam,
-	[ModCallbacks.MC_POST_DEVIL_CALCULATE] = _RunAdditiveCallbackWithParam,
-	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_ITEMS] = _RunAdditiveCallbackWithParam,
-	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS] = _RunAdditiveCallbackWithParam,
-	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = _RunAdditiveCallbackWithParam,
+	[ModCallbacks.MC_PRE_PLAYER_APPLY_INNATE_COLLECTIBLE_NUM] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_DEVIL_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_DEVIL_APPLY_SPECIAL_ITEMS] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_POST_DEVIL_CALCULATE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = RunPreAddCardPillCallback,
+	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = RunPreAddCardPillCallback,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = RunAdditiveThirdArgCallback,
+	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MAX_CHARGE] = RunAdditiveFourthArgCallback,
 }
 
 for _, callback in ipairs({
-	ModCallbacks.MC_PRE_RENDER_PLAYER_HEAD,
-	ModCallbacks.MC_PRE_RENDER_PLAYER_BODY,
 	ModCallbacks.MC_PRE_FAMILIAR_RENDER,
 	ModCallbacks.MC_PRE_NPC_RENDER,
 	ModCallbacks.MC_PRE_PLAYER_RENDER,

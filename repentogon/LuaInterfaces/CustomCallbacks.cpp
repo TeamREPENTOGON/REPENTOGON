@@ -1986,35 +1986,85 @@ HOOK_METHOD(Entity_Player, TriggerRoomClear, () -> void) {
 	super();
 }
 
+// MC_PLAYER_GET_ACTIVE_MAX_CHARGE (below) can get triggered multiple times in a single call to some functions.
+// Some result caching is done here specifically for those functions, to reduce how many times the callback runs.
+// Unfortunately these callbacks can still run quite a few times per frame in some situations.
+bool cacheMaxChargeCallback = false;
+std::unordered_map<int, int> cachedMaxCharge;
+
+HOOK_METHOD(Entity_Player, ControlActiveItem, (int slot) -> void) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	super(slot);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+}
+
+HOOK_METHOD(Entity_Player, AddActiveCharge, (unsigned int charge, int slot, bool unk, bool overcharge, bool force) -> int) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	const int result = super(charge, slot, unk, overcharge, force);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+
+	return result;
+}
+
+HOOK_METHOD(PlayerHUD, RenderActiveItem, (unsigned int slot, const Vector& pos, float alpha, float unk, float size) -> void) {
+	cacheMaxChargeCallback = true;
+	cachedMaxCharge.clear();
+
+	super(slot, pos, alpha, unk, size);
+
+	cacheMaxChargeCallback = false;
+	cachedMaxCharge.clear();
+}
+
 //PLAYER_GET_ACTIVE_MAX_CHARGE (id: 1072)
 HOOK_OVERLOADED_METHOD(Entity_Player, GetActiveMaxCharge, int, (int, int), (int item, int vardata) -> int) {
+	const int normalMaxCharge = super(item, vardata);
+
 	const int callbackid = 1072;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	if (item != 0 && CallbackState.test(callbackid - 1000)) {
+		if (cacheMaxChargeCallback && cachedMaxCharge.find(item) != cachedMaxCharge.end()) {
+			return cachedMaxCharge[item];
+		} else {
+			lua_State* L = g_LuaEngine->_state;
+			lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+			lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.push(item)
-			.push(item)
-			.push(this, lua::Metatables::ENTITY_PLAYER)
-			.push(vardata)
-			.call(1);
+			lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+				.push(item)
+				.push(item)
+				.push(this, lua::Metatables::ENTITY_PLAYER)
+				.push(vardata)
+				.push(normalMaxCharge)
+				.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
+			if (!result && lua_isinteger(L, -1)) {
+				const int newMaxCharge = std::max((int)lua_tointeger(L, -1), 0);
+				if (cacheMaxChargeCallback) {
+					cachedMaxCharge[item] = newMaxCharge;
+				}
+				return newMaxCharge;
 			}
 		}
 	}
-	return super(item, vardata);
+
+	return normalMaxCharge;
 }
 
 //PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE (id: 1073)
 HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
+	const int normalMinCharge = super(slot);
+
 	const int callbackid = 1073;
-	if (CallbackState.test(callbackid - 1000)) {
+	if (this->GetActiveItem(slot) != 0 && CallbackState.test(callbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
@@ -2024,15 +2074,15 @@ HOOK_METHOD(Entity_Player, GetActiveMinUsableCharge, (int slot) -> int) {
 			.push(this->GetActiveItem(slot))
 			.push(slot)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(normalMinCharge)
 			.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				return (int)lua_tointeger(L, -1);
-			}
+		if (!result && lua_isinteger(L, -1)) {
+			return std::max((int)lua_tointeger(L, -1), 0);
 		}
 	}
-	return super(slot);
+
+	return normalMinCharge;
 }
 
 //MC_PRE_REPLACE_SPRITESHEET (id: 1116)
