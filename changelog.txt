@@ -28,6 +28,9 @@ Additions:
 * EntityLaser:
 	- GetDamageMultiplier()
 	- SetDamageMultiplier(float Mult)
+* EntityKnife:
+	- GetIsSwinging()
+	- SetIsSwinging(bool)
 * Enums:
 	- CambionFamiliarFlag
 * Added a new option "Extra debug render for FindInRadius". While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.
