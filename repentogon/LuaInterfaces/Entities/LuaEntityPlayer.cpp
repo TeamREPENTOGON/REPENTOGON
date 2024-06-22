@@ -2143,7 +2143,7 @@ LUA_FUNCTION(Lua_PlayerAddColEffect) {
 	if ((!additive) || (cooldown != -6942069)) {
 		effs->GetCollectibleEffect(colid)->_cooldown = cooldown;
 	}
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerAddNullEffect) {
@@ -2165,7 +2165,7 @@ LUA_FUNCTION(Lua_PlayerAddNullEffect) {
 	if ((!additive) || (cooldown != -6942069)) {
 		effs->GetNullEffect(colid)->_cooldown = cooldown;
 	}
-	return 1;
+	return 0;
 }
 
 LUA_FUNCTION(Lua_PlayerAddTrinketEffect) {
@@ -2187,7 +2187,7 @@ LUA_FUNCTION(Lua_PlayerAddTrinketEffect) {
 	if ((!additive) || (cooldown != -6942069)) {
 		effs->GetTrinketEffect(colid)->_cooldown = cooldown;
 	}
-	return 1;
+	return 0;
 }
 
 /*
@@ -2538,7 +2538,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetHeadDirectionLockTime", Lua_PlayerGetHeadDirectionLockTime },
 		{ "SetHeadDirectionLockTime", Lua_PlayerSetHeadDirectionLockTime },
 		{ "SetHeadDirection", Lua_PlayerSetHeadDirection },
-		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
 		{ "AddCollectibleEffect", Lua_PlayerAddColEffect },
 		{ "AddNullItemEffect", Lua_PlayerAddNullEffect },
 		{ "BlockCollectible", Lua_BlockCollectible },
