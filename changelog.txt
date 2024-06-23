@@ -47,6 +47,8 @@ Modified:
 	SetDizzyAmount(TargetIntensity, CurrentIntensity) - Providing CurrentIntensity is now optional
 * EntityNPC:
 	ShootMaggotProjectile(Position, Target, FallingSpeed = -8.0, YOffset = -24.0)
+* EntityPlayer:
+	Fixed vanilla crash when AddNullCostume is given an invalid id; along with other potential crashes in AddCostume
 * Callbacks:
 	- MC_PLAYER_GET_ACTIVE_MAX_CHARGE / MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE
 		Will no longer run for empty active item slots.

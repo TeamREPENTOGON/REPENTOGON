@@ -2340,6 +2340,27 @@ LUA_FUNCTION(Lua_PlayerSetBlackHeart) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_PlayerAddMaxHearts) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int maxHearts = (int)luaL_checkinteger(L, 2);
+	bool ignoreKeeper = lua::luaL_checkboolean(L, 3);
+	player->AddMaxHearts(maxHearts, ignoreKeeper);
+	player->SpawnClot(player->GetPosition(), false);
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerAddNullCostumeOverride) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	int id = (int)luaL_checkinteger(L, 2);
+	int size = g_Manager->_itemConfig.GetNullItems()->size() - 1;
+	if (id < 0 || id > size) {
+		std::string error = "Invalid null item id " + std::to_string(id) + ", valid range is 0 to " + std::to_string(size);
+		return luaL_argerror(L, 2, error.c_str());
+	}
+	player->AddNullCostume(id);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2551,6 +2572,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetHallowedGroundCountdown", Lua_PlayerSetHallowedGroundCountdown },
 		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },
 		{ "SetBlackHeart", Lua_PlayerSetBlackHeart },
+		{ "AddNullCostume", Lua_PlayerAddNullCostumeOverride },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

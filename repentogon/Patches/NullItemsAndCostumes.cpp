@@ -186,9 +186,61 @@ HOOK_METHOD(EntityConfig, LoadPlayers, (char* xmlpath, ModEntry* modentry)->void
 	}
 }
 
+/*
+* AddCostume makes no effort to check whether Item* is nullptr, and will gladly attempt to access it regardless.
+* In fact, in some situations it will turn Item* null, then go ahead and access it later anyways!
+* Thus, fixing this requires multiple patches. The easy one is hooking the function to immediately reject nullptrs,
+* but the cases of turning Item* into a nullptr will need to be manually patched to bail out instead.
+*/
+
+// Immediately return if Item* is nullptr
+HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnly)->void) {
+	if (item == nullptr)
+		return;
+	super(item, itemStateOnly);
+}
+
+void ASMPatchAddCostumeNullptrs() {
+	// Patch #1
+	SigScan scanner("c1f80283f82d");
+	scanner.Scan();
+
+	if (!scanner.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature to patch AddCostume nullptr crash #1!\n");
+		return;
+	}
+
+	void* addr = (char*)scanner.GetAddress() + 6;
+
+	ASMPatch patch;
+	patch.AddConditionalRelativeJump(ASMPatcher::CondJumps::JG, (char*)addr + 0x6)
+		.AddRelativeJump((char*)addr + 0x569);
+
+	sASMPatcher.PatchAt(addr, &patch);
+
+
+	// Patch #2
+	SigScan scanner2("c1f80283f87d");
+	scanner2.Scan();
+
+	if (!scanner2.Scan()) {
+		ZHL::Log("[ERROR] Unable to find signature to patch AddCostume nullptr crash #2!\n");
+		return;
+	}
+
+	addr = (char*)scanner2.GetAddress() + 6;
+
+	ASMPatch patch2;
+	patch2.AddConditionalRelativeJump(ASMPatcher::CondJumps::JG, (char*)addr + 0x6)
+		.AddRelativeJump((char*)addr + 0x519);
+
+	sASMPatcher.PatchAt(addr, &patch2);
+}
+
 
 // Function called in ASMPatches.cpp to run patches at the appropriate time.
 void PatchNullItemAndNullCostumeSupport() {
 	ASMPatchFixLoadingNullItemsFromXml();
 	ASMPatchTieModdedCostumesToModdedNullItems();
+	ASMPatchAddCostumeNullptrs();
 }
