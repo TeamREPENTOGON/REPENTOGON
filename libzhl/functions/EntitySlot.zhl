@@ -8,7 +8,7 @@ __thiscall void Entity_Slot::CreateDropsFromExplosion();
 __thiscall void Entity_Slot::SetPrizeCollectible(int CollectibleType);
 
 
-struct Entity_Slot : public Entity { {{
+struct Entity_Slot depends (ANM2) : public Entity { {{
 	inline int* GetState() { return &this->_state; }
 	inline int* GetPrizeType() { return &this->_prizeType; }
 	inline short* GetTimeout() { return &this->_timeout; }

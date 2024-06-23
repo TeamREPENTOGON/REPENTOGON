@@ -128,7 +128,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		sLogger->SetOutputFile("dsound.log", "w", true);
 		sLogger->SetFlushOnLog(true);
 		sLogger->Info("Loaded REPENTOGON dsound.dll\n");
-		if (HasCommandLineArgument("-repentogonoff")) {
+		if (HasCommandLineArgument("-repentogonoff") || HasCommandLineArgument("-repentogoff") || HasCommandLineArgument("-repentogone")) {
 			FILE* f = fopen("repentogon.log", "a");
 			if (f) {
 				fprintf(f, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");

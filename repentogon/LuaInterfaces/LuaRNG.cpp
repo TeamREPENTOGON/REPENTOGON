@@ -194,8 +194,8 @@ LUA_FUNCTION(Lua_RNG_PhantomVector) {
 }
 
 LUA_FUNCTION(Lua_RNG_Constructor) {
-	int seed = luaL_optinteger(L, 2, 0xAA17414F);
-	int shiftIdx = luaL_optinteger(L, 3, 35);
+	int seed = (int)luaL_optinteger(L, 2, 0xAA17414F);
+	int shiftIdx = (int)luaL_optinteger(L, 3, 35);
 
 	if (seed == 0) {
 		return luaL_error(L, "Invalid seed 0 for RNG object\n");
@@ -230,7 +230,7 @@ static void OverrideRNGConstructor(lua_State* L) {
 	result = lua_getmetatable(L, -1);
 	if (result == 0) {
 		lua_pop(L, 1);
-		ZHL::Log("[ERR] Global \"RNG\" has not metatable\n");
+		ZHL::Log("[ERR] Global \"RNG\" has no metatable\n");
 		return;
 	}
 

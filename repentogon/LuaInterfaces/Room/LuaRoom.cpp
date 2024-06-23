@@ -156,7 +156,7 @@ LUA_FUNCTION(Lua_RoomGetEffects)
 
 LUA_FUNCTION(lua_RoomGetRail) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_Integer index = luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 2);
 
 	if (!room->_descriptor->Data->IsAllowedGridIndex(index)) {
 		// return luaL_error(L, "Invalid grid index %I\n", index);
@@ -176,13 +176,13 @@ LUA_FUNCTION(lua_RoomGetRail) {
 
 LUA_FUNCTION(lua_RoomSetRail) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
-	lua_Integer index = luaL_checkinteger(L, 2);
+	int index = (int)luaL_checkinteger(L, 2);
 
 	if (!room->IsValidGridIndex(index, false)) {
 		return luaL_error(L, "Invalid grind index %lld\n", index);
 	}
 
-	lua_Integer rail = luaL_checkinteger(L, 3);
+	int rail = (int)luaL_checkinteger(L, 3);
 	if (!Room::IsValidRailType(rail)) {
 		return luaL_error(L, "Invalid rail type %lld\n", index);
 	}

@@ -2330,9 +2330,9 @@ LUA_FUNCTION(Lua_PlayerHasChanceRevive) {
 
 LUA_FUNCTION(Lua_PlayerSetBlackHeart) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	const unsigned int blackHeart = (unsigned int)luaL_checkinteger(L, 2);
+	const int blackHeart = (const int)luaL_checkinteger(L, 2);
 
-	if ((blackHeart <= player->_soulHearts) && ((int)blackHeart > -1)) {
+	if ((blackHeart <= player->_soulHearts) && (blackHeart > -1)) {
 		player->_blackHearts |= 1 << (blackHeart >> 1 & 0x1f);
 		player->update_golden_hearts();
 		player->update_bone_hearts();

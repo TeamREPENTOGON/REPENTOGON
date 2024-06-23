@@ -37,7 +37,7 @@ std::optional<int> RunPreAddPocketItemCallback(Entity_Player* player, const uint
 					return std::nullopt;
 				}
 				else if (lua_isinteger(L, -1)) {
-					const int newid = lua_tointeger(L, -1);
+					const int newid = (const int)lua_tointeger(L, -1);
 					if (newid > 0) {
 						return newid;
 					}
