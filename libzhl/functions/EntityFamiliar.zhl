@@ -51,7 +51,7 @@ __thiscall void Entity_Familiar::RemoveFromPlayer(bool UnusedRemoveFamiliar);
 __thiscall bool Entity_Familiar::CanCharm();
 
 
-struct Entity_Familiar depends (ColorMod) : public Entity {
+struct Entity_Familiar depends (ColorMod, ItemConfig_Item) : public Entity {
 {{
 	inline Entity_Player** GetPlayer() { return (Entity_Player**)((char*)this + 0x360); }
 	inline NPCAI_Pathfinder* GetPathFinder() {return (NPCAI_Pathfinder*)((char*)this + 0x54c); }
@@ -63,6 +63,7 @@ struct Entity_Familiar depends (ColorMod) : public Entity {
 	bool _isFollower : 0xcc4;
 	bool _isDelayed : 0xcc5;
 	int _state : 0xcd4;
+	ItemConfig_Item* _item : 0xe20;
 	ColorMod _dirtColor : 0xe28;
 	
     __vtable {

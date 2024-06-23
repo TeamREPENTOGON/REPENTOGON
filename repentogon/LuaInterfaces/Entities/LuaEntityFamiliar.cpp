@@ -146,6 +146,13 @@ LUA_FUNCTION(Lua_FamiliarSetMoveDelayNum) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_FamiliarGetItemConfig) {
+	auto* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	ItemConfig_Item* config = fam->_item;
+	lua::luabridge::UserdataPtr::push(L, config, lua::GetMetatableKey(lua::Metatables::ITEM));
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -167,6 +174,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "CanBlockProjectiles", Lua_FamiliarCanBlockProjectiles },
 		{ "GetMoveDelayNum", Lua_FamiliarGetMoveDelayNum },
 		{ "SetMoveDelayNum", Lua_FamiliarSetMoveDelayNum },
+		{ "GetItemConfig", Lua_FamiliarGetItemConfig },
 		{ NULL, NULL }
 	};
 
