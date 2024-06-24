@@ -31,9 +31,11 @@ LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
-	uint32_t seed = (unsigned int)luaL_optinteger(L, 3, Isaac::genrand_int32());
-	if (seed == 0) seed = 1;  // IDC
-	bool keepWeight = luaL_optinteger(L, 4, 1); //Fun Fact: main.lua creates a wrapper for GetCollectible that inverts the boolean value passed as Decrease, then passes it as an integer.
+	bool decrease = lua::luaL_optboolean(L, 3, false);
+	uint32_t seed = (unsigned int)luaL_optinteger(L, 4, Isaac::genrand_int32());
+	if (seed == 0) {
+		seed = 1;
+	}
 	int defaultItem = (int)luaL_optinteger(L, 5, COLLECTIBLE_NULL);
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 6, 0);
 
@@ -42,7 +44,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	}
 
 	flags = flags << 1;
-	if (keepWeight) {
+	if (!decrease) {
 		flags |= 1;
 	}
 
@@ -228,6 +230,10 @@ LUA_FUNCTION(Lua_ItemPoolTryBibleMorph) {
 LUA_FUNCTION(Lua_ItemPoolTryMagicSkinMorph) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	uint32_t seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
+	if (seed == 0)
+	{
+		seed = 1;
+	}
 	
 	lua_pushboolean(L, itemPool->TryReplaceWithMagicSkin(seed));
 	return 1;
