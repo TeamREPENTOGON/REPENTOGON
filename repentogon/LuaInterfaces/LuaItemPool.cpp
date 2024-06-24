@@ -16,18 +16,6 @@ inline bool isCollectibleBlacklisted(ItemPool* itemPool, uint32_t collectibleID)
 	return blacklistedCollectibles[collectibleID];
 }
 
-inline uint32_t GetValidRNGSeed() {
-	for (int i = 0; i < 10; i++)
-	{
-		uint32_t seed = Isaac::genrand_int32();
-		if (seed != 0)
-		{
-			return seed;
-		} 
-	}
-	return 1;
-}
-
 LUA_FUNCTION(Lua_ItemPoolGetCardEx)
 {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
@@ -46,7 +34,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	bool decrease = lua::luaL_optboolean(L, 3, false);
 	uint32_t seed = (unsigned int)luaL_optinteger(L, 4, Isaac::genrand_int32());
 	if (seed == 0) {
-		seed = GetValidRNGSeed();
+		seed = 1;
 	}
 	int defaultItem = (int)luaL_optinteger(L, 5, COLLECTIBLE_NULL);
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 6, 0);
@@ -244,7 +232,7 @@ LUA_FUNCTION(Lua_ItemPoolTryMagicSkinMorph) {
 	uint32_t seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
 	if (seed == 0)
 	{
-		seed = GetValidRNGSeed();
+		seed = 1;
 	}
 	
 	lua_pushboolean(L, itemPool->TryReplaceWithMagicSkin(seed));
