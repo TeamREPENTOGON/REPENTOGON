@@ -29,6 +29,20 @@ struct Vector { {{
 		y *= amount;
 		return *this;
 	}
+	
+	Vector& operator+=(const Vector& other)
+	{
+		x += other.x;
+		y += other.y;
+		return *this;
+	}
+	
+	Vector& operator-=(const Vector& other)
+	{
+		x -= other.x;
+		y -= other.y;
+		return *this;
+	}	
 }} 
     float x : 0x0, y : 0x4;
 } : 0x8;

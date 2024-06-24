@@ -201,6 +201,21 @@ bool Isaac::IsInGame() {
 	return g_Manager->GetState() == 2 && g_Game;
 }
 
+Vector * Isaac::WorldToScreen(Vector * ret, Vector* pos) {
+	Game * game = g_Game;
+	if (!game) {
+		ret = pos;
+		return ret;
+	}
+	float scale = g_DisplayPixelsPerPoint * g_PointScale;
+	Room* room = game->_room;
+	float f1 = floor((((g_WIDTH - 338.0f) * 0.5f + (pos->x - 60.0f) * 0.65f) * scale + 0.5f));
+	float f2 = floor((((g_HEIGHT - 182.0f) * 0.5f + (pos->y - 140.0f) * 0.65f) * scale + 0.5f));
+	ret->x = f1 / scale + room->_renderScrollOffset.x + game->_screenShakeOffset.x;
+	ret->y = f2 / scale + room->_renderScrollOffset.y + game->_screenShakeOffset.y;
+	return ret;
+}
+
 bool Entity_Player::AddSmeltedTrinket(int trinketID, bool firstTime) {
 	bool trinketAdded = false;
 

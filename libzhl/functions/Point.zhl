@@ -1,11 +1,14 @@
-"558bec83ec10568bf1f30f1046":
-__thiscall void Point::UpdateNormal(Vector* unk);
-
 struct Point depends (Vector) {
 	{{
-		Point() : _pos(Vector()), _spritesheetCoordinate(0.0f), _width(1.0f) {}
-		Point(Vector const& pos, float spritesheetCoordinate, float width) : _pos(pos), _spritesheetCoordinate(spritesheetCoordinate), _width(width) {}
+		Point() : _pos(Vector()), _lastPos(_pos), _target(nullptr), _spritesheetCoordinate(0.0f), _width(1.0f), _fixed(false) {}
+		Point(Vector pos, Entity* target, float spritesheetCoordinate, float width, bool fixed) : _pos(pos), _lastPos(pos), _target(target), _spritesheetCoordinate(spritesheetCoordinate), _width(width) , _fixed(fixed) {}
 	}}
-	Vector _pos : 0x0;
-	float _width : 0x8, _spritesheetCoordinate : 0xc;
-} : 0x10;
+	Vector _pos : 0x0, _lastPos : 0x8;
+	Entity * _target : 0x10;
+	float _width : 0x14, _spritesheetCoordinate : 0x18;
+	bool _fixed : 0x1c;
+} : 0x20;
+
+struct PointDeque depends (Point) {
+	deque_Point deque : 0x0;
+} : 0x14;
