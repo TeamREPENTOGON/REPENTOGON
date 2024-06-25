@@ -50,12 +50,16 @@ LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 	int musicId = (int)luaL_checkinteger(L, 2);
 	music->PlayJingle(musicId, 140, false);
 
+	if (luaL_checkinteger(L, 3))
+		music->_jingleCountdown = (int)lua_tointeger(L, 3);
+
 	return 0;
 }
 
 LUA_FUNCTION(Lua_MusicManager_StopJingle) {
 	Music* music = lua::GetUserdata<Music*>(L, 1, lua::Metatables::MUSIC_MANAGER, "MusicManager");
-	music->StopJingle();
+	music->_jingleVolume = 0.f;
+	music->_jingleCountdown = 0;
 
 	return 0;
 }

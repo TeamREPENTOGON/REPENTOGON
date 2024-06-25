@@ -1,0 +1,38 @@
+struct SoundSourceBase {
+	__vtable {
+		skip; // Free
+		skip; // ApplyDataToHardware
+		skip; // GetHardwareBufferSize
+		skip; // open_file_dunno
+		skip; // Queue
+		skip; // Deque
+		skip; // HasQueuedData
+		skip; // Open
+		skip; // Clone
+		skip; // Close
+		skip; // IsOpen
+		skip; // Play
+		skip; // Pause
+		skip; // Resume
+		skip; // IsPlaying
+		skip; // Stop
+		skip; // SetLooping
+		skip; // IsLooping
+		skip; // SetVolume
+		skip; // GetVolume
+		skip; // SetPan
+		skip; // GetPan
+		skip; // SetPitch
+		skip; // GetPitch
+		skip; // GetNumChannels
+		skip; // GetSourceFormat
+		skip; // GetSampleRate
+		skip; // SystemSuspend
+		skip; // SystemResume
+		skip; // ProcessData
+		skip; // ActivateNextQueuedData
+		skip; // Update
+		skip; // IsPlaybackFinished
+		skip; // IsProcessingFinished
+	};
+} : 0x4;
