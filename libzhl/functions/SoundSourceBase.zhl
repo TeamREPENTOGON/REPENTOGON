@@ -1,23 +1,47 @@
 struct SoundSourceBase {
 	__vtable {
-		skip; // Free
+		"558bec568bf18d4e??c706????????e8????????f645??0174??6a24":
+		SoundSourceBase * Free(bool param_1);
+		
 		skip; // ApplyDataToHardware
 		skip; // GetHardwareBufferSize
-		skip; // open_file_dunno
-		skip; // Queue
-		skip; // Deque
-		skip; // HasQueuedData
-		skip; // Open
-		skip; // Clone
-		skip; // Close
-		skip; // IsOpen
+		
+		"32c0c20800":
+		bool open_file_dunno(int UNK_param_1, int UNK_param_1);
+		
+		"558bec8b51??568d71":
+		void Queue(uint64_t UNK_param_1, int UNK_param_2);
+		
+		"558bec568bf18b56??8b46??4a":
+		void Deque(uint64_t * UNK_param_1);
+		
+		"8379??000f97c0c3????????????????c641??01":
+		bool HasQueuedData();
+		
+		"c641??01b001c20400":
+		bool Open();
+		
+		"558bec8b55??85d274??8b41??8942??8a41":
+		bool Clone(int UNK_param_1);
+		
+		"558bec83ec0c568bf18b46":
+		void Close();
+		
+		"8a41??c3????????????????????????8a41":
+		bool IsOpen();
+		
 		skip; // Play
 		skip; // Pause
 		skip; // Resume
 		skip; // IsPlaying
 		skip; // Stop
-		skip; // SetLooping
-		skip; // IsLooping
+		
+		"558bec8a45??8841??5dc20400??????558bec6aff":
+		void SetLooping(bool value);
+		
+		"8a41??c3????????????????????????c641??01":
+		bool IsLooping();
+		
 		skip; // SetVolume
 		skip; // GetVolume
 		skip; // SetPan

@@ -1,0 +1,72 @@
+struct StreamSourceBase : public SoundSourcePlatformBase {
+	__vtable {
+		override
+		"558bec6aff68????????64a1????????5056a1????????33c5508d45??64a3????????8bf168????????6a046a0c8d46??c745??00000000":
+		 StreamSourceBase * Free(bool param_1);
+		 
+		skip; // ApplyDataToHardware
+		
+		"b800000400c3":
+		 int GetHardwareBufferSize();
+		 
+		skip; // open_file_dunno
+		skip; // Queue
+		skip; // Deque
+		skip; // HasQueuedData
+		
+		override
+		"558bec83e4f8515356578bf9bb04000000":
+		 uint32_t Open(int * param_1);
+		 
+		 override
+		"68????????6a03e8????????83c40832c0":
+		 bool Clone(undefined param_1);
+		 
+		 override
+		"5356578bf98b4f??85c9":
+		 void Close();
+		 
+		skip; // IsOpen
+		
+		override
+		"558bec51568bf18b068b40??ffd084c00f85":
+		 void Play();
+		 
+		skip; // Pause
+		skip; // Resume
+		skip; // IsPlaying
+		
+		override
+		"568bf156":
+		 void Stop();
+		 
+		 override
+		"558bec8a45??3a41":
+		 void SetLooping(bool param_1);
+		 
+		skip; // IsLooping
+		skip; // SetVolume
+		skip; // GetVolume
+		skip; // SetPan
+		skip; // GetPan
+		skip; // SetPitch
+		skip; // GetPitch
+		skip; // GetNumChannels
+		skip; // GetSourceFormat
+		skip; // GetSampleRate
+		skip; // SystemSuspend
+		skip; // SystemResume
+		skip; // ProcessData
+		skip; // ActivateNextQueuedData
+		
+		"558bec83ec1053568bf133c9":
+		 void Update();
+		 
+		"80b9????????0074??33d2":
+		 bool IsPlayingFinished();
+		 
+		"8a81????????c3??????????????????558bec6aff68????????64a1????????5056":
+		 bool IsProcessingFinished();
+		 
+	};
+} : 0x4;
