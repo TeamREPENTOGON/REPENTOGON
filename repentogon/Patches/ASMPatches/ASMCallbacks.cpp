@@ -880,9 +880,8 @@ void ASMPatchTrinketRender() {
 
 	printf("[REPENTOGON] Patching PlayerHUD::RenderTrinket at %p\n", addr);
 	ASMPatch patch;
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::ALL & ~(ASMPatch::SavedRegisters::EAX | ASMPatch::SavedRegisters::XMM4 | ASMPatch::SavedRegisters::XMM2 | ASMPatch::SavedRegisters::XMM3), true);	//make sure new pos and scale are applied
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::ALL & ~(ASMPatch::SavedRegisters::XMM4 | ASMPatch::SavedRegisters::XMM2 | ASMPatch::SavedRegisters::XMM3), true);	//make sure new pos and scale are applied
 	patch
-		.Push(ASMPatch::Registers::EAX)				// manually restoring later
 		.PreserveRegisters(savedRegisters)
 		.AddBytes("\x8B\x9C\x24\x80").AddZeroes(3)	//(mov ebx,esp+0x80), playerhud aka (this)
 		.Push(ASMPatch::Registers::EAX)				//cropoffset ptr which resides in eax
@@ -894,9 +893,8 @@ void ASMPatchTrinketRender() {
 		.Push(ASMPatch::Registers::EAX)				//	slot
 		.Push(ASMPatch::Registers::EBX)				//hud from the ebx
 		.AddInternalCall(&RunTrinketRenderCallback)
-		.RestoreRegisters(savedRegisters)			// this was clearing zf, so we need to wait to test al
 		.AddBytes("\x84\xC0") // test al, al
-		.Pop(ASMPatch::Registers::EAX)				// test done, let's restore eax
+		.RestoreRegisters(savedRegisters)
 		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false
 		.AddBytes("\x8d\x8c\x24\xb8").AddZeroes(3)	//restores the original function at (addr)
 		.AddBytes("\x66\x0F\x7E\x54\x24\x30") 		//movd esp+0x30, xmm2

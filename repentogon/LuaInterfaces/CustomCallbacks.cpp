@@ -3932,9 +3932,6 @@ HOOK_METHOD_PRIORITY(PersistentGameData, TryUnlock, -9999, (int achievid) -> boo
 	return deed;
 }
 
-/*
-*	This is an ASM patch now, under ASMPatches/ASMCallbacks.cpp
-*/
 //HOOK_METHOD(PlayerHUD, RenderTrinket, (unsigned int slot, Vector* pos, float scale) -> void) {
 //	const int callbackid = 1264;
 //	if (CallbackState.test(callbackid - 1000)) {
