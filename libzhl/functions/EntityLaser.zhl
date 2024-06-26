@@ -34,7 +34,11 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 
 	__vtable {
 		skip; // Free
-		skip; // Init
+		
+		override
+		"558bec83e4f851535657ff75??8bf9ff75??ff75??ff75??e8????????8b87":
+		void Init(uint32_t type, uint32_t variant, uint32_t subtype, uint32_t seed);
+
 		skip; // PreUpdate
 		
 		override
@@ -47,7 +51,11 @@ struct Entity_Laser depends (BitSet128, HomingLaser) : public Entity { {{
 		skip; // PostRender
 		skip; // TakeDamage
 		skip; // Kill
-		skip; // Remove
+		
+		override
+		"5356578bd9e8????????8db3????????bf02000000":
+		void Remove();
+
 		skip; // TriggerGlowingHourglass
 		skip; // GetRenderZ
 		skip; // CanOverwrite

@@ -1,6 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "../../Patches/LaserExtras.h"
 
 LUA_FUNCTION(Lua_EntityLaserGetDisableFollowParent)
 {
@@ -133,6 +134,13 @@ LUA_FUNCTION(Lua_EntityLaserRotateToAngle)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityLaserRecalculateSamplesNextUpdate)
+{
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	RecalculateLaserSamplesNextUpdate(laser);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -152,6 +160,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetTimeout", Lua_EntityLaserGetTimeout },
 		{ "ResetSpriteScale", Lua_EntityLaserResetSpriteScale },
 		{ "RotateToAngle", Lua_EntityLaserRotateToAngle },
+		{ "RecalculateSamplesNextUpdate", Lua_EntityLaserRecalculateSamplesNextUpdate },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_LASER, functions);

@@ -28,6 +28,7 @@ Additions:
 * EntityLaser:
 	- GetDamageMultiplier()
 	- SetDamageMultiplier(float Mult)
+	- RecalculateSamplesNextUpdate() - Requests the laser's shape to be fully recalculated next time it updates. Can be used to force the laser to instantly change its MaxDistance/Radius instead of transitioning to it. Doesn't work for OneHit lasers.
 * EntityKnife:
 	- GetIsSwinging()
 	- SetIsSwinging(bool)
