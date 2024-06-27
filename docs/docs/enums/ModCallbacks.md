@@ -1296,7 +1296,7 @@ Can return `false` to prevent the pause screen from rendering. Doing so will als
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1218 |MC_PRE_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](../Sprite.md) PauseBody, <br>[Sprite](../Sprite.md) PauseStats) | - | void |
+|1218 |MC_PRE_PAUSE_SCREEN_RENDER {: .copyable } | ([Sprite](../Sprite.md) PauseBody, <br>[Sprite](../Sprite.md) PauseStats) | - | boolean |
 
 ### MC_POST_PAUSE_SCREEN_RENDER {: .copyable }
 Accepts no return parameters.
