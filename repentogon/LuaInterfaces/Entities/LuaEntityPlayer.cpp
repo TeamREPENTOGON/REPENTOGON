@@ -2352,6 +2352,18 @@ LUA_FUNCTION(Lua_PlayerAddNullCostumeOverride) {
 	return 0;
 }
 
+// not only does this crash the game, the ONLY thing it does is return 0
+// because it was stubbed in repentance but not removed from the api (even the game still uses it a couple times!)
+LUA_FUNCTION(Lua_PlayerGetBombVariant) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	BitSet128* flags = lua::GetUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
+	bool forceSmall = lua::luaL_checkboolean(L, 3);
+
+	lua_pushinteger(L, 0);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2564,6 +2576,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },
 		{ "SetBlackHeart", Lua_PlayerSetBlackHeart },
 		{ "AddNullCostume", Lua_PlayerAddNullCostumeOverride },
+		{ "GetBombVariant", Lua_PlayerGetBombVariant },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
