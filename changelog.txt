@@ -53,6 +53,8 @@ Modified:
 * EntityPlayer:
 	Fixed vanilla crash when AddNullCostume is given an invalid id; along with other potential crashes in AddCostume
 * Callbacks:
+	- MC_PRE_PLAYERHUD_TRINKET_RENDER
+		Fixed returning true to cancel rendering.
 	- MC_PLAYER_GET_ACTIVE_MAX_CHARGE / MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE
 		Will no longer run for empty active item slots.
 		Now provide the current charge value as an argument.
