@@ -897,14 +897,14 @@ void ASMPatchTrinketRender() {
 		.RestoreRegisters(savedRegisters)			// this was clearing zf, so we need to wait to test al
 		.AddBytes("\x84\xC0") // test al, al
 		.Pop(ASMPatch::Registers::EAX)				// test done, let's restore eax
-		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false
+		.AddBytes("\x75\x03\x5F\x5F\x5F")			// jnz 0x5, push edi x 3 (If the function returned false, remove inputs from the stack for a function that will no longer be called.)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JZ, (char*)addr + 0x1f2) // jump for false, skip to the end of RenderTrinket
 		.AddBytes("\x8d\x8c\x24\xb8").AddZeroes(3)	//restores the original function at (addr)
 		.AddBytes("\x66\x0F\x7E\x54\x24\x30") 		//movd esp+0x30, xmm2
 		.AddBytes("\x66\x0F\x7E\x5C\x24\x34")		//movd esp+0x34, xmm3
+		.AddRelativeJump((char*)addr + 0x7);		//jump for true, continue with rendering
 
-		.AddRelativeJump((char*)addr + 0x7);
-
-		sASMPatcher.PatchAt(addr, &patch);
+	sASMPatcher.PatchAt(addr, &patch);
 }
 
 //MC_PRE_PICKUP_UPDATE_GHOST_PICKUPS (1335)
