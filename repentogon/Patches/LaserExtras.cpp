@@ -10,35 +10,23 @@
 #include "XMLData.h"
 #include "../LuaInit.h"
 #include "ASMPatcher.hpp"
-
-std::unordered_set<int> laserIndexesToRecalculateSamples;
+#include "EntityPlus.h"
 
 void RecalculateLaserSamplesNextUpdate(Entity_Laser* laser) {
-	laserIndexesToRecalculateSamples.insert(laser->_index);
-}
-
-HOOK_METHOD(Entity_Laser, Init, (uint32_t type, uint32_t variant, uint32_t subtype, uint32_t seed)->void) {
-	laserIndexesToRecalculateSamples.erase(this->_index);
-	super(type, variant, subtype, seed);
-}
-
-HOOK_METHOD(Entity_Laser, Remove, ()->void) {
-	laserIndexesToRecalculateSamples.erase(this->_index);
-	super();
-}
-
-HOOK_METHOD(Game, Exit, (bool ShouldSave)->void) {
-	laserIndexesToRecalculateSamples.clear();
-	super(ShouldSave);
+	EntityLaserPlus* laserPlus = GetEntityPlus(laser);
+	if (laserPlus) {
+		laserPlus->recalculateSamplesNextUpdate = true;
+	}
 }
 
 void __stdcall CheckRecalculateSamples(Entity_Laser* laser) {
-	if (laserIndexesToRecalculateSamples.find(laser->_index) != laserIndexesToRecalculateSamples.end()) {
+	EntityLaserPlus* laserPlus = GetEntityPlus(laser);
+	if (laserPlus && laserPlus->recalculateSamplesNextUpdate) {
 		laser->_homingLaser._bezier.clear();
 		laser->_homingLaser._samples.clear();
 		laser->_homingLaser._unkVec.clear();
 		laser->_homingLaser._nonOptimizedSamples.clear();
-		laserIndexesToRecalculateSamples.erase(laser->_index);
+		laserPlus->recalculateSamplesNextUpdate = false;
 	}
 }
 
