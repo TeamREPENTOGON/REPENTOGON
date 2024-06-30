@@ -260,6 +260,6 @@ int main() {
         }
     }
 
-    return UPDATER_EXIT_DONT_UPDATE;
+    return UPDATER_EXIT_NO_UPDATE_AVAILABLE;
 }
 
