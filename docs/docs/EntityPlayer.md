@@ -248,6 +248,11 @@ Returns a table with the amount of each collectible the player has, without coun
     ```
 
 ___
+### GetConceptionFamiliarFlags () {: aria-label='Functions' }
+#### int GetConceptionFamiliarFlags ( ) {: .copyable aria-label='Functions' }
+Returns the bitmask corresponding to which familiars have been spawned by Cambion/Immaculate Conception. The additional familiars provided by this bitmask are spawned during familiar cache evaluation, but only while the player has one of those two items.
+
+___
 ### GetCostumeLayerMap () {: aria-label='Functions' }
 #### table GetCostumeLayerMap ( ) {: .copyable aria-label='Functions' }
 Returns table of player sprite layers data for costumes with the following fields:
@@ -797,6 +802,11 @@ ___
 ### SetCanShoot () {: aria-label='Functions' }
 #### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
+
+___
+### SetConceptionFamiliarFlags () {: aria-label='Functions' }
+#### void SetConceptionFamiliarFlags ( [ConceptionFamiliarFlag](enums/ConceptionFamiliarFlag.md) Flags ) {: .copyable aria-label='Functions' }
+Sets the bitmask corresponding to which familiars have been spawned by Cambion/Immaculate Conception. The additional familiars provided by this bitmask are spawned during familiar cache evaluation, but only while the player has one of those two items.
 
 ___
 ### SetControllerIndex () {: aria-label='Functions' }

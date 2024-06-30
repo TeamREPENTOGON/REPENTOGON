@@ -16,6 +16,10 @@ ___
 
 ## Functions
 
+### GetDamageMultiplier () {: aria-label='Functions' }
+#### float GetDamageMultiplier ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetDisableFollowParent () {: aria-label='Functions' }
 #### boolean GetDisableFollowParent ( ) {: .copyable aria-label='Functions' }
 
@@ -46,6 +50,10 @@ ___
 ___
 ### RotateToAngle () {: aria-label='Functions' }
 #### void RotateToAngle ( float Angle, float Speed = 8.0 ) {: .copyable aria-label='Functions' }
+
+___
+### SetDamageMultiplier () {: aria-label='Functions' }
+#### void SetDamageMultiplier ( float DamageMult ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetDisableFollowParent () {: aria-label='Functions' }
