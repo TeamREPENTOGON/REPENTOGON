@@ -1,4 +1,4 @@
-v1.x.x -
+v1.0.10 -
 Additions:
 * EntityPlayer:
 	- SetBlackHeart(int BlackHeart)
