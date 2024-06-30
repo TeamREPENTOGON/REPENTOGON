@@ -36,10 +36,12 @@ Additions:
 * EntityFamiliar:
 	- GetItemConfig()
 * PlayerHUDHeart:
-	- IsEternalHeartOverlayVisible
-	- IsFadingHeart
+	- IsEternalHeartOverlayVisible()
+	- IsFadingHeart()
 * PlayerManager:
-	- RemoveCoPlayer
+	- RemoveCoPlayer(Entity_Player)
+* DailyChallengeMenu:
+	- Get/SetState
 * Enums:
 	- CambionFamiliarFlag
 * Added a new option "Extra debug render for FindInRadius". While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.
