@@ -771,6 +771,7 @@ ___
 ### SetBagOfCraftingContent () {: aria-label='Functions' }
 #### void SetBagOfCraftingContent ( [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] ContentTable ) {: .copyable aria-label='Functions' }
 Sets the content of the bag to the content of the table. Table must use valid [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) ids. Table can be shorter than 8, in which case the remaining indexes are set to empty.
+
 ___
 ### SetBagOfCraftingOutput () {: aria-label='Functions' }
 #### void SetBagOfCraftingOutput ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
@@ -780,6 +781,10 @@ ___
 ### SetBagOfCraftingSlot () {: aria-label='Functions' }
 #### void SetBagOfCraftingSlot ( int SlotID, [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) PickupID ) {: .copyable aria-label='Functions' }
 Sets the specified slot in the player's Bag of Crafting to the specified pickup.
+
+___
+### SetBlackHeart () {: aria-label='Functions' }
+#### void SetBlackHeart ( int BlackHeart ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBladderCharge () {: aria-label='Functions' }

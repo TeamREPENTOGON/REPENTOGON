@@ -84,6 +84,14 @@ ___
 Returns `true` if the game is in co-op mode.
 
 ___
+### RemoveCoPlayer () {: aria-label='Functions' }
+#### void RemoveCoPlayer ( [EntityPlayer](EntityPlayer.md) Player ) {: .copyable aria-label='Functions' }
+Can be used to safely remove extra player entities, such as Strawman.
+
+???- info "Tip"
+    Don't pass the main player to this!
+
+___
 ### SpawnCoPlayer2 () {: aria-label='Functions' }
 #### [EntityPlayer](EntityPlayer.md) SpawnCoPlayer2 ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
 
