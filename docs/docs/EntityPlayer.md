@@ -803,6 +803,8 @@ ___
 #### void SetCambionConceptionState ( int State ) {: .copyable aria-label='Functions' }
 Sets how much damage has been taken for the Cambion Conception item.
 
+Note that the game only spawns a familiar when the player takes damage, if this counter is now at 15, 30, 60 or 90. You cannot trigger a birth directly with this function.
+
 ___
 ### SetCanShoot () {: aria-label='Functions' }
 #### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
@@ -891,6 +893,11 @@ ___
 ### SetImmaculateConceptionState () {: aria-label='Functions' }
 #### void SetImmaculateConceptionState ( int State ) {: .copyable aria-label='Functions' }
 Sets how many hearts have been collected for the Immaculate Conception item.
+
+Note that the game checks to spawn a familiar only when the player picks up a heart, so you cannot trigger that directly with this function.
+
+???+ bug "Bug (1.0.10b)"
+	Setting this to a value the game doesn't expect (<0 or >14) can crash the game.
 
 ___
 ### SetItemState () {: aria-label='Functions' }

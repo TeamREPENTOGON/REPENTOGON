@@ -1,3 +1,7 @@
+v1.?.??? -
+* Fixes:
+	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
+/newline/
 v1.0.10b -
 * Fixes:
 	- Disabled the new Debug find in radius feature until further notice, since it causes issues on some vanilla calls (Ex: Evil Eye)

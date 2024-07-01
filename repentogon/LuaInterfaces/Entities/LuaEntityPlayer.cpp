@@ -1023,7 +1023,9 @@ LUA_FUNCTION(Lua_PlayerGetPlayerIndex)
 LUA_FUNCTION(Lua_PlayerSetImmaculateConceptionState)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*plr->GetImmaculateConceptionState() = (uint32_t)luaL_checkinteger(L, 2);
+	// Clamp the value to 0~14, as the game will crash on pregnancy update if it is set otherwise.
+	// The value also needs to be no higher than 14 to trigger a birth on the next heart pickup.
+	*plr->GetImmaculateConceptionState() = std::clamp((int)luaL_checkinteger(L, 2), 0, 14);
 	return 0;
 }
 
