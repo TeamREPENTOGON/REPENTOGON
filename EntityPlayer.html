@@ -13321,6 +13321,7 @@ If the target is not displayed on the ground, this function returns <code>nil</c
 <h3 aria-label="Functions" id="setcambionconceptionstate">SetCambionConceptionState ()<a class="headerlink" href="#setcambionconceptionstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcambionconceptionstate-int-state">void SetCambionConceptionState ( int State )<a class="headerlink" href="#void-setcambionconceptionstate-int-state" title="Permanent link">⚓︎</a></h4>
 <p>Sets how much damage has been taken for the Cambion Conception item.</p>
+<p>Note that the game only spawns a familiar when the player takes damage, if this counter is now at 15, 30, 60 or 90. You cannot trigger a birth directly with this function.</p>
 <hr />
 <h3 aria-label="Functions" id="setcanshoot">SetCanShoot ()<a class="headerlink" href="#setcanshoot" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="boolean-setcanshoot-boolean-canshoot">boolean SetCanShoot ( boolean CanShoot )<a class="headerlink" href="#boolean-setcanshoot-boolean-canshoot" title="Permanent link">⚓︎</a></h4>
@@ -13392,6 +13393,11 @@ If the target is not displayed on the ground, this function returns <code>nil</c
 <h3 aria-label="Functions" id="setimmaculateconceptionstate">SetImmaculateConceptionState ()<a class="headerlink" href="#setimmaculateconceptionstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setimmaculateconceptionstate-int-state">void SetImmaculateConceptionState ( int State )<a class="headerlink" href="#void-setimmaculateconceptionstate-int-state" title="Permanent link">⚓︎</a></h4>
 <p>Sets how many hearts have been collected for the Immaculate Conception item.</p>
+<p>Note that the game checks to spawn a familiar only when the player picks up a heart, so you cannot trigger that directly with this function.</p>
+<details class="bug" open="open">
+<summary>Bug (1.0.10b)</summary>
+<p>Setting this to a value the game doesn't expect (&lt;0 or &gt;14) can crash the game.</p>
+</details>
 <hr />
 <h3 aria-label="Functions" id="setitemstate">SetItemState ()<a class="headerlink" href="#setitemstate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setitemstate-collectibletype-collectible">void SetItemState ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html">CollectibleType</a> Collectible )<a class="headerlink" href="#void-setitemstate-collectibletype-collectible" title="Permanent link">⚓︎</a></h4>
