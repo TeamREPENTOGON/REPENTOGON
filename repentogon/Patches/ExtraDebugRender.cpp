@@ -2,7 +2,7 @@
 #include "HookSystem.h"
 
 #include "../REPENTOGONOptions.h"
-
+/*
 HOOK_METHOD(EntityList, QueryRadius, (EntityList_EL* result, Vector* Position, float Radius, unsigned int Partitions) -> void) {
 	super(result, Position, Radius, Partitions);
 	if (repentogonOptions.renderDebugFindInRadius && (*g_Game->GetDebugFlags() >> 5 & 1)) {
@@ -14,3 +14,4 @@ HOOK_METHOD(EntityList, QueryRadius, (EntityList_EL* result, Vector* Position, f
 	}
 
 }
+*/ // causes Evil Eye Funkyness
