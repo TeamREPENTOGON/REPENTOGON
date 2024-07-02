@@ -3,8 +3,12 @@ v1.?.??? -
 	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
 /newline/
 v1.0.10b -
+Modified:
+* MusicManager:
+	PlayJingle(Music ID, int Duration)
 * Fixes:
 	- Disabled the new Debug find in radius feature until further notice, since it causes issues on some vanilla calls (Ex: Evil Eye)
+* Room:TrySpawnBlueWombTime now checks Game TimeCounter instead of FrameCount, consistent with TrySpawnBossRushDoor and likely the intended behavior
 /newline/
 v1.0.10a -
 Additions:

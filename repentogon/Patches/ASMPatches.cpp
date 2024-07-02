@@ -125,6 +125,7 @@ void PerformASMPatches() {
 	ASMPatchMegaSatanEnding();
 	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
+	ASMPatchTrySpawnBlueWombDoor();
 
 	// Player
 	ASMPatchCheckFamiliar();

@@ -212,3 +212,13 @@ void ASMPatchRoomClearDelay() {
 	sASMPatcher.PatchAt(((char*)addrs[1] + 0x2), &patch3);
 }
 */
+
+void ASMPatchTrySpawnBlueWombDoor() {
+	SigScan scanner("83f8087c??8b83");
+	scanner.Scan();
+	void* addr = (char*)scanner.GetAddress() + 7;
+	printf("[REPENTOGON] Patching Room::TrySpawnBlueWombDoor at %p\n", addr);
+	ASMPatch patch;
+	patch.AddBytes("\xE0");
+	sASMPatcher.FlatPatch(addr, &patch);
+}
