@@ -14,11 +14,11 @@ tags:
 |6 |MEGA_SATAN {: .copyable } |  |
 |7 |ULTRA_GREED {: .copyable } |  |
 |9 |HUSH {: .copyable } |  |
-|10 |HARD_MARKS {: .copyable } |  |
+|10 |HARD_MARKS {: .copyable } | (Only usable in callbacks) |
 |11 |ULTRA_GREEDIER {: .copyable } |  |
 |12 |DELIRIUM {: .copyable } |  |
 |13 |MOTHER {: .copyable } |  |
 |14 |BEAST {: .copyable } |  |
-|15 |TAINTED {: .copyable } | Tracks tainted player unlock |
-|16 |TAINTED_GROUP1 {: .copyable } | Isaac, ???, Satan, The Lamb |
-|17 |TAINTED_GROUP2 {: .copyable } | Hush, Boss Rush |
+|15 |TAINTED {: .copyable } | Tracks tainted player unlock (Only usable in callbacks) |
+|16 |TAINTED_GROUP1 {: .copyable } | Isaac, ???, Satan, The Lamb (Only usable in callbacks) |
+|17 |TAINTED_GROUP2 {: .copyable } | Hush, Boss Rush (Only usable in callbacks) |
