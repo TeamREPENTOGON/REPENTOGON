@@ -4347,3 +4347,26 @@ HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) 
 	}
 	return;
 }
+
+// GET_STATUS_EFFECT_TARGET (1485)
+HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
+	const int callbackid = 1485;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
+			.push(this->GetType())
+			.push(this, lua::Metatables::ENTITY)
+			.call(1);
+
+		if (!results) {
+			if (lua_isuserdata(L, -1)) {
+				return lua::GetUserdata<Entity*>(L, -1, lua::Metatables::ENTITY, "Entity");
+			}
+		}
+	}
+	return super();
+}
