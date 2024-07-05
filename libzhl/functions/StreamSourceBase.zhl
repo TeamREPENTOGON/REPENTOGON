@@ -16,7 +16,7 @@ struct StreamSourceBase : public SoundSourcePlatformBase {
 		
 		override
 		"558bec83e4f8515356578bf9bb04000000":
-		bool Open();
+		bool Open(void * unk);
 		
 		override
 		"68????????6a03e8????????83c40832c0":
