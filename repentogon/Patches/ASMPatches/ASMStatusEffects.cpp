@@ -15,7 +15,7 @@ struct StatusEffectPatchInfo {
 	unsigned int jumpOffset;
 };
 
-StatusEffectPatchInfo patches[16] = {
+StatusEffectPatchInfo patches[15] = {
 	{"e8????????84c074??8b8e????????85c974??0f1f44??008bf18b8e????????85c975??85d20f84????????8b86????????83e00183c8000f85????????3986????????0f8f????????8b8e????????85d27e??8d04??b92c0100003bc10f4cc8eb??f7da3bca0f4cca898e????????8d4c24??0f2805????????6a010f114424??6a000f57c0",
 	"AddBaited", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x24},
 	{"e8????????84c074??8b8e????????85c974??90",
@@ -38,19 +38,17 @@ StatusEffectPatchInfo patches[16] = {
 	"AddMagnetized", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x24},
 	{"e8????????84c074??8b8e????????85c974??0f1f44??008bf18b8e????????85c975??85ff",
 	"AddMidasFreeze", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x24},
+
+	// this crashed on me once, but now i can't replicate it
+	{"e8????????84c074??8b86????????85c074??0f1f80000000008bf08b86????????85c075??85d20f84????????8bbe????????8bc78b9e????????83e00183c8000f85????????3986????????0f8f????????8b8e????????85d27e??8d04??b9780000003bc10f4cc8eb??f7da3bca0f4cca8bc7898e????????83e040",
+	"AddPoison", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x26},
+
 	{"8bf7e8????????84c074??8b8f????????85c974??8bf18b8e????????85c975??8b8e",
 	"AddShrink", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x21},
 	{"e8????????84c074??8b8e????????85c974??0f1f00",
 	"AddSlowing", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x22},
 	{"e8????????84c074??8b8e????????85c974??8bf1",
 	"AddWeakness", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x1f},
-
-	// crashes when pushing an iced enemy
-	{"8bcee8????????84c074??8b86????????85c074??90",
-	"AddKnockback", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x22},
-	// wrong damage value, random crashes
-	{"e8????????84c074??8b86????????85c074??0f1f80000000008bf08b86????????85c075??85d20f84????????8bbe????????8bc78b9e????????83e00183c8000f85????????3986????????0f8f????????8b8e????????85d27e??8d04??b9780000003bc10f4cc8eb??f7da3bca0f4cca8bc7898e????????83e040",
-	"AddPoison", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x26},
 };
 
 /* /////////////////////
@@ -66,7 +64,7 @@ Entity* __stdcall GetStatusEffectTargetTrampoline(Entity* target) {
 */ /////////////////////
 
 void ASMPatchInlinedGetStatusEffectTarget(void* addr, ASMPatch::Registers entityReg, ASMPatch::Registers targetReg, ASMPatch::SavedRegisters::Registers savedReg, unsigned int jumpOffset) {
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS|ASMPatch::SavedRegisters::XMM1 - savedReg, true);
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS + ASMPatch::SavedRegisters::XMM1 - savedReg, true);
 	ASMPatch patch;
 	patch.PreserveRegisters(savedRegisters)
 		.Push(entityReg)
@@ -79,6 +77,64 @@ void ASMPatchInlinedGetStatusEffectTarget(void* addr, ASMPatch::Registers entity
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
+
+/* /////////////////////
+// Groan
+*/ /////////////////////
+
+/*
+bool avoidIceCrash = false;
+void __stdcall AvoidIceCrashHack() {
+	avoidIceCrash = true;
+}
+
+HOOK_METHOD(Entity_NPC, HandleCollision, (Entity* collider, bool low) -> bool) {
+	bool res = super(collider, low);
+	avoidIceCrash = false;
+	return res;
+}
+
+void ASMPatchIcedKnockbackPre() {
+	SigScan scanner("6a0168c80000008d85");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	ASMPatch patch;
+	patch.AddInternalCall(AvoidIceCrashHack)
+		.AddBytes("\x6a\x01\x68\xc8").AddZeroes(3)
+		.AddRelativeJump((char*)addr + 7);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+
+void ASMPatchIcedKnockback() {
+	SigScan scanner("8bcee8????????84c074??8b86????????85c074??90");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+	bool* ptr = &avoidIceCrash;
+
+	ZHL::Logger logger;
+	logger.Log("Patching dumb AddKnockback crash at %p\n", addr);
+
+	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::ESI, true);
+	ASMPatch patch;
+	patch.PreserveRegisters(savedRegisters)
+		.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
+		.AddBytes("\x84\xC0") // test al, al
+		.AddBytes("\x75\x12") // jne (current addr + 0x12)
+		.Push(ASMPatch::Registers::ECX)
+		.AddInternalCall(GetStatusEffectTargetTrampoline)
+		.RestoreRegisters(savedRegisters)
+		.AddRelativeJump((char*)addr + 0x22)
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))
+		.AddRelativeJump((char*)addr + 7);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+*/
+
+/* /////////////////////
+// Run patches
+*/ /////////////////////
+
 void PatchInlinedGetStatusEffectTarget()
 {
 	ZHL::Logger logger;
@@ -90,4 +146,6 @@ void PatchInlinedGetStatusEffectTarget()
 		logger.Log("Patching inlined GetStatusEffectTarget in %s at %p\n", i.funcName, addr);
 		ASMPatchInlinedGetStatusEffectTarget(addr, i.entityReg, i.targetReg, i.saveReg, i.jumpOffset);
 	};
+	//ASMPatchIcedKnockbackPre();
+	//ASMPatchIcedKnockback();
 }
