@@ -2,9 +2,9 @@
 #include "HookSystem.h"
 
 #include "../REPENTOGONOptions.h"
-/*
-HOOK_METHOD(EntityList, QueryRadius, (EntityList_EL* result, Vector* Position, float Radius, unsigned int Partitions) -> void) {
-	super(result, Position, Radius, Partitions);
+
+HOOK_METHOD(EntityList, QueryRadius, (Vector* Position, float Radius, unsigned int Partitions) -> EntityList_EL) {
+	printf("FindInRadius: %.2f %.2f\n", Position->x, Position->y); // DEBUG
 	if (repentogonOptions.renderDebugFindInRadius && (*g_Game->GetDebugFlags() >> 5 & 1)) {
 		//Vector vec{ 1,1 };
 		//Capsule capsule{ Position, &vec, 0, Radius };
@@ -12,6 +12,5 @@ HOOK_METHOD(EntityList, QueryRadius, (EntityList_EL* result, Vector* Position, f
 		*shape->GetTimeout() = 1;
 		shape->Circle(Position, Radius);
 	}
-
+	return super(Position, Radius, Partitions);
 }
-*/ // causes Evil Eye Funkyness
