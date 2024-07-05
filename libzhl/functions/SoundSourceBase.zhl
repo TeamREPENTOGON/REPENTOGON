@@ -1,7 +1,7 @@
 struct SoundSourceBase {
 	__vtable {
 		"558bec568bf18d4e??c706????????e8????????f645??0174??6a24":
-		SoundSourceBase * Free(bool param_1);
+		void Free(bool param_1);
 		
 		skip; // ApplyDataToHardware
 		skip; // GetHardwareBufferSize
@@ -13,7 +13,7 @@ struct SoundSourceBase {
 		void Queue(uint64_t UNK_param_1, int UNK_param_2);
 		
 		"558bec568bf18b56??8b46??4a":
-		void Deque(uint64_t * UNK_param_1);
+		void Deque(void * UNK_param_1);
 		
 		"8379??000f97c0c3????????????????c641??01":
 		bool HasQueuedData();
@@ -22,7 +22,7 @@ struct SoundSourceBase {
 		bool Open();
 		
 		"558bec8b55??85d274??8b41??8942??8a41":
-		bool Clone(int UNK_param_1);
+		bool Clone(void * UNK_param_1);
 		
 		"558bec83ec0c568bf18b46":
 		void Close();
