@@ -2,7 +2,7 @@ struct StreamSourceBase : public SoundSourcePlatformBase {
 	__vtable {
 		override
 		"558bec6aff68????????64a1????????5056a1????????33c5508d45??64a3????????8bf168????????6a046a0c8d46??c745??00000000":
-		void Free(bool param_1);
+		void * Free(bool param_1);
 		
 		skip; // ApplyDataToHardware
 		
@@ -16,11 +16,11 @@ struct StreamSourceBase : public SoundSourcePlatformBase {
 		
 		override
 		"558bec83e4f8515356578bf9bb04000000":
-		bool Open(void * unk);
+		bool Open(char * path);
 		
 		override
 		"68????????6a03e8????????83c40832c0":
-		bool Clone(void* param_1);
+		bool Clone(SoundSourceBase* right);
 		
 		override
 		"5356578bf98b4f??85c9":

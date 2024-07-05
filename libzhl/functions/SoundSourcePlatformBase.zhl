@@ -2,7 +2,7 @@ struct SoundSourcePlatformBase : public SoundSourceBase {
 	__vtable {
 		override
 		"558bec568bf18d4e??c706????????e8????????f645??0174??6a40":
-		void Free(bool param_1);
+		void * Free(bool param_1);
 
 		"558bec8b45??568bf18946??8b45":
 		bool ApplyDataToHardware(int param_1, int param_2);
