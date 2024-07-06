@@ -1,4 +1,8 @@
 v1.?.??? -
+Additions:
+* RoomDescriptor:
+	InitSeeds(RNG)
+/newline/
 * Fixes:
 	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
 	- Fixed binder for EntityPlayer:DropCollectibleByHistoryIndex which caused crashes on call.
