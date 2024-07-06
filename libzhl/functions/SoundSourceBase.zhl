@@ -7,7 +7,7 @@ struct SoundSourceBase {
 		skip; // GetHardwareBufferSize
 		
 		"32c0c20800":
-		bool open_file_dunno(int UNK_param_1, int UNK_param_1);
+		bool open_file_dunno(int UNK_param_1, int UNK_param_2);
 		
 		"558bec8b51??568d71":
 		void Queue(uint64_t UNK_param_1, int UNK_param_2);

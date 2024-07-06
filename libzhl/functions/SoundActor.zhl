@@ -1,0 +1,11 @@
+struct SoundActor depends (StreamSourceBase)
+{
+	SoundSourcePlatformBase * _source : 0x0;
+	void * _sp2 : 0x4;
+    bool _loop : 0x8;
+	bool _playing : 0x9;
+	bool _paused : 0xa;
+	float _volume : 0xc;
+	float _pan : 0x10;
+	float _pitch : 0x14;
+} : 0x18;

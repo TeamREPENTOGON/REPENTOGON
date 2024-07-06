@@ -1,36 +1,34 @@
-struct SampleSourceBase : public SoundSourcePlatformBase {
+struct StreamSourcePlatformBase : public StreamSourceBase {
 	__vtable {
 		override
-		"558bec6aff68????????64a1????????505657a1????????33c5508d45??64a3????????8bf1c706????????8d7e":
+		"558bec568bf18d4e??c706????????e8????????f645??0174??6a54":
 		void * Free(bool param_1);
 		
-		skip; // ApplyDataToHardware
-		
-		"8b41??8b40??c3??????????????????8b41":
-		int GetHardwareBufferSize();
-		
+		override
+		"558bec515356578bf9897d??8b07":
+		bool ApplyDataToHardware(int param_1, int param_2);
+
+		skip; // GetHardwareBufferSize
 		skip; // open_file_dunno
 		skip; // Queue
 		skip; // Deque
 		skip; // HasQueuedData
 		
 		override
-		"8b41??8b11c641??01":
+		"51568bf18d46":
 		bool Open(char * path);
+
+		skip; // Clone
 		
 		override
-		"558bec6aff68????????64a1????????5083ec08535657a1????????33c5508d45??64a3????????8bd98b75??85f60f84":
-		bool Clone(SoundSourceBase * param_1);
-		
-		override
-		"558bec518bc18378??00":
+		"56578bf1e8????????837e??00":
 		void Close();
-		
+
 		skip; // IsOpen
 		
 		override
-		"558bec568bf18b06ff50??ff75":
-		void Play(void * param_1);
+		"568bf1837e??0074??8b068b40??ffd084c075??a1":
+		void Play(void * unk);
 
 		skip; // Pause
 		skip; // Resume
@@ -47,12 +45,19 @@ struct SampleSourceBase : public SoundSourcePlatformBase {
 		skip; // GetNumChannels
 		skip; // GetSourceFormat
 		skip; // GetSampleRate
-		skip; // SystemSuspend
-		skip; // SystemResume
+		
+		override
+		"538b1d????????568bf1ffd3":
+		void SystemSuspend();
+		
+		override
+		"568b35????????578bf9ffd6":
+		void SystemResume();
+
 		skip; // ProcessData
 		skip; // ActivateNextQueuedData
 		skip; // Update
 		skip; // IsPlaybackFinished
 		skip; // IsProcessingFinished
 	};
-} : 0x48;
+} : 0x4;

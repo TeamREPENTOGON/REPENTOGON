@@ -11,13 +11,25 @@ __thiscall void SoundEffects::LoadConfig(char* filename, bool ismod);
 __thiscall void SoundEffect::Load();
 
 
-struct SoundEffect{
-    unsigned int _id : 0x0;
+struct SoundEffectSample depends (SoundActor) {
+	std_string _filename : 0x0;
+	SoundActor _actor : 0x18;
+	bool _unk_reload : 0x30;
+	int _weight : 0x34;
+} : 0x38;
+
+struct SoundEffect depends (SoundEffectSample) {
+    unsigned int _framePlayed : 0x0;
+	unsigned int _nextPlayableFrame : 0x4;
+	SoundEffectSample _samples[7] : 0x8;
+	unsigned int _sampleCount : 0x190;
+	float _volume : 0x194;
     bool _loaded : 0x198;
-    bool _shouldPreload : 0x199; 
+    bool _shouldPreload : 0x199;
+	std_string _name : 0x1a0;
 } : 0x1b8;
 
-struct SoundEffects depends (SoundEffect){
+struct SoundEffects depends (SoundEffect) {
     vector_SoundEffect _sounds : 0x0;
     int _count : 0xc;
     float _volume : 0x10;

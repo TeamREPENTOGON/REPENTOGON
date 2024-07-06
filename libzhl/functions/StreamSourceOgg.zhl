@@ -1,0 +1,64 @@
+struct StreamSourceOgg : public StreamSourcePlatformBase {
+	__vtable {
+		override
+		"558bec568bf1e8????????f645??0174??68c0000000":
+		void * Free(bool param_1);
+		 
+		skip; // ApplyDataToHardware
+		skip; // GetHardwareBufferSize
+		
+		"558bec83ec188bc1":
+		bool open_file_dunno(char * param_1, bool param_2);
+
+		skip; // Queue
+		skip; // Deque
+		skip; // HasQueuedData
+		
+		override
+		"558bec51538b5d??56578bf1":
+		bool Open(char * param_1);
+		
+		skip; // Clone
+		
+		override
+		"558bec83ec0c53578bf9":
+		void Close();
+
+		skip; // IsOpen
+		skip; // Play
+		skip; // Pause
+		skip; // Resume
+		skip; // IsPlaying
+		skip; // Stop
+		skip; // SetLooping
+		skip; // IsLooping
+		skip; // SetVolume
+		skip; // GetVolume
+		skip; // SetPan
+		skip; // GetPan
+		skip; // SetPitch
+		skip; // GetPitch
+		
+		"8b81????????8b40??c3????????????b801000000":
+		unsigned int GetNumChannels();
+
+		"b801000000c3????????????????????8b81":
+		int GetSourceFormat();
+		
+		"8b81????????8b00":
+		unsigned int GetSampleRate();
+
+		skip; // SystemSuspend
+		skip; // SystemResume
+		
+		"558bec53578bf9":
+		int ProcessData(void * param_1);
+		
+		"558bec83ec0c568bf1578b06":
+		bool ActivateNextQueuedData();
+
+		skip; // Update
+		skip; // IsPlaybackFinished
+		skip; // IsProcessingFinished
+	};
+} : 0x4;
