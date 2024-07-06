@@ -162,7 +162,7 @@ __thiscall int Entity_Player::AddActiveCharge(unsigned int charge, int slot, boo
 __thiscall Entity_Pickup* Entity_Player::DropCollectible(int collectible, Entity_Pickup* existingCollectible, bool removeFromPlayerForm);
 
 "558bec515356578b7d??8bd9895d":
-__thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible);
+__thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible, bool unusedBool);
 
 "558bec83e4f8518a55":
 __thiscall void Entity_Player::AddHearts(int hearts, bool unk);

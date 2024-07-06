@@ -368,7 +368,7 @@ LUA_FUNCTION(Lua_PlayerDropCollectibleByHistoryIndex) {
 		pickup = lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	}
 
-	player->DropCollectibleByHistoryIndex(idx, pickup);
+	player->DropCollectibleByHistoryIndex(idx, pickup, false);
 	if (!pickup) {
 		lua_pushnil(L);
 	}
