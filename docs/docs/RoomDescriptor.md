@@ -22,6 +22,10 @@ ___
 #### int[] GetRestrictedGridIndexes ( ) {: .copyable aria-label='Functions' }
 
 ___
+### InitSeeds () {: aria-label='Functions' }
+#### void InitSeeds ( [RNG](RNG.md) RNG ) {: .copyable aria-label='Functions' }
+
+___
 
 ## Variables
 ### AllowedDoors {: aria-label='Variables' }
