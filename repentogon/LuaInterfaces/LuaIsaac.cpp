@@ -89,7 +89,7 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 	float radius = (float)luaL_checknumber(L, 2);
 	unsigned int partition = (unsigned int)luaL_optinteger(L, 3, -1);
 
-	EntityList_EL res;
+	EntityList_EL res = list->QueryRadius(pos, radius, partition);
 	EntityList_EL* resPtr = &res;
 	lua_newtable(L);
 
@@ -107,8 +107,6 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 		call queryRadius;
 		pop ecx;
 	} */
-
-	list->QueryRadius(&res, pos, radius, partition);
 
 	unsigned int size = res._size;
 

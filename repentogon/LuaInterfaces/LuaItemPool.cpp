@@ -39,7 +39,7 @@ LUA_FUNCTION(Lua_ItemPoolGetCollectibleEx) {
 	int defaultItem = (int)luaL_optinteger(L, 5, COLLECTIBLE_NULL);
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 6, 0);
 
-	if (poolType <= POOL_NULL ||  poolType >= NUM_ITEMPOOLS) {
+	if (poolType < POOL_NULL ||  poolType >= NUM_ITEMPOOLS) {
 		return luaL_argerror(L, 2, "Invalid ItemPoolType");
 	}
 

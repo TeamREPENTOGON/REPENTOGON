@@ -32,7 +32,7 @@ ___
 
 ___
 ### AnyPlayerTypeHasBirthright () {: aria-label='Functions' }
-#### boolean AnyPlayerTypeHasBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean IgnoreModifiers = false ) {: .copyable aria-label='Functions' }
+#### boolean AnyPlayerTypeHasBirthright ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, ) {: .copyable aria-label='Functions' }
 
 ___
 ### AnyPlayerTypeHasCollectible () {: aria-label='Functions' }
@@ -40,7 +40,7 @@ ___
 
 ___
 ### AnyPlayerTypeHasTrinket () {: aria-label='Functions' }
-#### boolean AnyPlayerTypeHasTrinket ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType ) {: .copyable aria-label='Functions' }
+#### boolean AnyPlayerTypeHasTrinket ( [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) PlayerType, [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean IgnoreModifiers = false ) {: .copyable aria-label='Functions' }
 
 ___
 ### FirstBirthrightOwner () {: aria-label='Functions' }
@@ -82,6 +82,14 @@ ___
 ### IsCoopPlay () {: aria-label='Functions' }
 #### boolean IsCoopPlay ( ) {: .copyable aria-label='Functions' }
 Returns `true` if the game is in co-op mode.
+
+___
+### RemoveCoPlayer () {: aria-label='Functions' }
+#### void RemoveCoPlayer ( [EntityPlayer](EntityPlayer.md) Player ) {: .copyable aria-label='Functions' }
+Can be used to safely remove extra player entities, such as Strawman.
+
+???- info "Tip"
+    Don't pass the main player to this!
 
 ___
 ### SpawnCoPlayer2 () {: aria-label='Functions' }

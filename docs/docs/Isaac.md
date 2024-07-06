@@ -255,6 +255,11 @@ ___
 Sets the challenge as not done.
 
 ___
+### PlayCutscene () {: aria-label='Functions' }
+#### int PlayCutscene ( int ID, boolean ClearGameState = false ) {: .copyable aria-label='Functions' }
+Plays the Cutscene of the provided ID. Use Isaac.GetCutsceneIdByName to get the IDs, or the enum for the vanilla ones if you prefer.
+
+___
 ### SetClipboard () {: aria-label='Functions' }
 #### boolean SetClipboard ( string ClipboardData ) {: .copyable aria-label='Functions' }
 Sets the contents of the clipboard to the provided string.

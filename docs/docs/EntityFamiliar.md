@@ -36,6 +36,13 @@ ___
 #### [FollowerPriority](enums/FollowerPriority.md) GetFollowerPriority ( ) {: .copyable aria-label='Functions' }
 
 ___
+### GetItemConfig () {: aria-label='Functions' }
+#### [ItemConfigItem](ItemConfigItem.md) GetItemConfig ( ) {: .copyable aria-label='Functions' }
+Returns the ItemConfigItem corresponding to the item that granted this familiar.
+
+Returns nil if the familiar was not spawned by an item.
+
+___
 ### GetMoveDelayNum () {: aria-label='Functions' }
 #### int GetMoveDelayNum ( ) {: .copyable aria-label='Functions' }
 Returns the amount in frames that the familiar's movements are delayed from the player's. 30 frames = 1 second.

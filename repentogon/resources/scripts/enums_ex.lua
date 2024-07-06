@@ -2207,14 +2207,14 @@ CompletionType = {
 	ULTRA_GREED = 7,
 	--holds event counter id for greed donations
 	HUSH = 9,
-	HARD_MARKS = 10,
+	HARD_MARKS = 10, -- not supported
 	ULTRA_GREEDIER = 11,
 	DELIRIUM = 12,
 	MOTHER = 13,
 	BEAST = 14,
-	TAINTED = 15,
-	TAINTED_GROUP1 = 16,
-	TAINTED_GROUP2 = 17,
+	TAINTED = 15, -- not supported
+	TAINTED_GROUP1 = 16, -- not supported
+	TAINTED_GROUP2 = 17, -- not supported
 }
 
 PedestalType = {

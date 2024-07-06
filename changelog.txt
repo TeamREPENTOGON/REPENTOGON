@@ -1,4 +1,20 @@
-v1.x.x -
+v1.?.??? -
+* Fixes:
+	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
+	- Fixed binder for EntityPlayer:DropCollectibleByHistoryIndex which caused crashes on call.
+/newline/
+Modified:
+	- Re-enabled "Extra debug render for FindInRadius" option.
+/newline/
+v1.0.10b -
+Modified:
+* MusicManager:
+	PlayJingle(Music ID, int Duration)
+* Fixes:
+	- Disabled the new Debug find in radius feature until further notice, since it causes issues on some vanilla calls (Ex: Evil Eye)
+* Room:TrySpawnBlueWombTime now checks Game TimeCounter instead of FrameCount, consistent with TrySpawnBossRushDoor and likely the intended behavior
+/newline/
+v1.0.10a -
 Additions:
 * EntityPlayer:
 	- SetBlackHeart(int BlackHeart)
@@ -36,6 +52,13 @@ Additions:
 	- SetIsSpinAttack(bool)
 * EntityFamiliar:
 	- GetItemConfig()
+* PlayerHUDHeart:
+	- IsEternalHeartOverlayVisible()
+	- IsFadingHeart()
+* PlayerManager:
+	- RemoveCoPlayer(Entity_Player)
+* DailyChallengeMenu:
+	- Get/SetState
 * Enums:
 	- CambionFamiliarFlag
 * Added a new option "Extra debug render for FindInRadius". While the DebugFlag.HITSPHERES flag is enabled, debug spheres will be rendered for FindInRadius/QueryRadius calls.
@@ -51,6 +74,8 @@ Modified:
 * EntityPlayer:
 	Fixed vanilla crash when AddNullCostume is given an invalid id; along with other potential crashes in AddCostume
 * Callbacks:
+	- MC_PRE_PLAYERHUD_TRINKET_RENDER
+		Fixed returning true to cancel rendering.
 	- MC_PLAYER_GET_ACTIVE_MAX_CHARGE / MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE
 		Will no longer run for empty active item slots.
 		Now provide the current charge value as an argument.

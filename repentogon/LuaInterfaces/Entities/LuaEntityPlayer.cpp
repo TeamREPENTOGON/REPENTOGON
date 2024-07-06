@@ -368,7 +368,7 @@ LUA_FUNCTION(Lua_PlayerDropCollectibleByHistoryIndex) {
 		pickup = lua::GetUserdata<Entity_Pickup*>(L, 3, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	}
 
-	player->DropCollectibleByHistoryIndex(idx, pickup);
+	player->DropCollectibleByHistoryIndex(idx, pickup, false);
 	if (!pickup) {
 		lua_pushnil(L);
 	}
@@ -1023,7 +1023,9 @@ LUA_FUNCTION(Lua_PlayerGetPlayerIndex)
 LUA_FUNCTION(Lua_PlayerSetImmaculateConceptionState)
 {
 	Entity_Player* plr = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
-	*plr->GetImmaculateConceptionState() = (uint32_t)luaL_checkinteger(L, 2);
+	// Clamp the value to 0~14, as the game will crash on pregnancy update if it is set otherwise.
+	// The value also needs to be no higher than 14 to trigger a birth on the next heart pickup.
+	*plr->GetImmaculateConceptionState() = std::clamp((int)luaL_checkinteger(L, 2), 0, 14);
 	return 0;
 }
 
@@ -2352,6 +2354,18 @@ LUA_FUNCTION(Lua_PlayerAddNullCostumeOverride) {
 	return 0;
 }
 
+// not only does this crash the game, the ONLY thing it does is return 0
+// because it was stubbed in repentance but not removed from the api (even the game still uses it a couple times!)
+LUA_FUNCTION(Lua_PlayerGetBombVariant) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	BitSet128* flags = lua::GetUserdata<BitSet128*>(L, 2, lua::Metatables::BITSET_128, "BitSet128");
+	bool forceSmall = lua::luaL_checkboolean(L, 3);
+
+	lua_pushinteger(L, 0);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2564,6 +2578,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "HasChanceRevive", Lua_PlayerHasChanceRevive },
 		{ "SetBlackHeart", Lua_PlayerSetBlackHeart },
 		{ "AddNullCostume", Lua_PlayerAddNullCostumeOverride },
+		{ "GetBombVariant", Lua_PlayerGetBombVariant },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

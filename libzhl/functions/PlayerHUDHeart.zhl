@@ -1,7 +1,9 @@
 struct PlayerHUDHeart {
-    int16_t _visibility : 0x0;
-    int16_t _goldenHeartVisibility : 0x2;
-    int _flashType : 0x4;
+    bool _visibility : 0x0;
+	bool _eternalHeartVisibility : 0x1;
+    bool _goldenHeartVisibility : 0x2;
+	bool _fadeHeart : 0x3;
+    int8_t _flashType : 0x4;
     const char* _spriteAnim : 0x8;
     const char* _spriteOverlayAnim : 0xC;
 } : 0x10;

@@ -351,9 +351,13 @@ void CheckForUpdates() {
 	sLogger->Info("Updater completed with exit code %d\n", exitCode);
 
 	switch (exitCode) {
-	case UPDATER_EXIT_OK:
+	case UPDATER_EXIT_UPDATED:
 		sLogger->Info("Updater ran successfully\nExiting the process as we need to restart\n");
 		ExitProcess(0);
+		break;
+
+	case UPDATER_EXIT_NO_UPDATE_AVAILABLE:
+		sLogger->Info("No update available, continuing with normal launch\n");
 		break;
 
 	case UPDATER_EXIT_ERROR:
