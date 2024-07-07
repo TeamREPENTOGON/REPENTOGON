@@ -377,7 +377,19 @@ struct CustomReviveInfo {
 class XMLItem : public XMLDataHolder {
 public:
 	vector<XMLAttributes> customachievitems;
+	// Holds info related to custom revive effects. Populated by parsing "customtags".
 	unordered_map<int, CustomReviveInfo> customreviveitems;
+	// Holds the contents of the "customcache" attribute, converted to lowercase and parsed into a set.
+	unordered_map<int, set<string>> customcache;
+
+	const set<string>& GetCustomCache(const int id) {
+		return this->customcache[id];
+	}
+
+	bool HasCustomCache(const int id, const std::string tag) {
+		const set<string>& customcache = GetCustomCache(id);
+		return customcache.find(stringlower(tag.c_str())) != customcache.end();
+	}
 };
 
 class XMLItemPools : public XMLDataHolder {
@@ -690,7 +702,8 @@ struct XMLData {
 
 	XMLMod* ModData = new XMLMod();
 
-	
+	// Holds all known customcaches.
+	set<string> AllCustomCaches;
 };
 
 

@@ -46,6 +46,10 @@ __thiscall bool TemporaryEffects::HasTrinketEffect(int trinkettype);
 __thiscall void TemporaryEffects::RemoveTrinketEffect(int trinkettype, int count);
 
 
+"558bec5356578bf9807f??0075":
+__thiscall void TemporaryEffects::AddEffect(TemporaryEffect* Effect, bool addcostume, int count);
+
+
 struct TemporaryEffects
 {
     vector_TemporaryEffect _effects : 0x4;
