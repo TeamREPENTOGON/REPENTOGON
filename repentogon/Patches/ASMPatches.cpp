@@ -8,7 +8,7 @@
 #include "PocketItems.h"
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
-#include "LaserExtras.h"
+#include "EntityPlus.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -148,7 +148,7 @@ void PerformASMPatches() {
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchesForGetCoinValue();
 	ASMPatchesForAddRemovePocketItemCallbacks();
-	ASMPatchesForLaserExtras();
+	ASMPatchesForEntityPlus();
 	HookImGui();
 
 	// Sprite

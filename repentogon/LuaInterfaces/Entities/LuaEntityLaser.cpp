@@ -1,7 +1,7 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
-#include "../../Patches/LaserExtras.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_EntityLaserGetDisableFollowParent)
 {
@@ -137,7 +137,10 @@ LUA_FUNCTION(Lua_EntityLaserRotateToAngle)
 LUA_FUNCTION(Lua_EntityLaserRecalculateSamplesNextUpdate)
 {
 	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
-	RecalculateLaserSamplesNextUpdate(laser);
+	EntityLaserPlus* laserPlus = GetEntityLaserPlus(laser);
+	if (laserPlus) {
+		laserPlus->recalculateSamplesNextUpdate = true;
+	}
 	return 0;
 }
 
