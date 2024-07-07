@@ -13,7 +13,7 @@ __thiscall void RoomConfig::LoadStageBinary(unsigned int Stage, unsigned int Mod
 // RoomConfigHolder
 
 "558bec518b55??5356578b7d":
-__thiscall RoomConfig_Room* RoomConfig::GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int32_t difficulty);
+__thiscall RoomConfig_Room* RoomConfig::GetRoomByStageTypeAndVariant(uint32_t stage, uint32_t type, uint32_t variant, int32_t mode);
 
 "558bec6aff68????????64a1????????5083ec74a1????????33c58945??535657508d45??64a3????????894d":
 __thiscall RoomConfig_Room* RoomConfig::GetRandomRoom(unsigned int seed, bool reduceWeight, int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode);
