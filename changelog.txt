@@ -1,10 +1,17 @@
 v1.?.??? -
+Additions:
+* RoomDescriptor:
+	InitSeeds(RNG)
+/newline/
 * Fixes:
 	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
 	- Fixed binder for EntityPlayer:DropCollectibleByHistoryIndex which caused crashes on call.
+	- Fixed an issue in ItemPool:GetCollectible that prevented passing ItemPoolType.POOL_NULL.
 /newline/
 Modified:
-	- Re-enabled "Extra debug render for FindInRadius" option.
+* RoomConfigHolder:
+	- GetRoomByStageTypeAndVariant(StbType, Type, Variant, Mode = -1)
+* Re-enabled "Extra debug render for FindInRadius" option.
 /newline/
 v1.0.10b -
 Modified:
