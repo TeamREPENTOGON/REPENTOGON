@@ -21,7 +21,7 @@ REPENTOGON makes additions and modifications to the Lua API and adds tons of new
 3. Launch the game. If REPENTOGON successfully loaded, you should now see `zhl.log` and `repentogon.log` files in your game directory, and the title bar should now say `Binding of Isaac: Repentance (+ REPENTOGON vX.X.X)`.
 
 # Uninstalling
-Technically, using the launch option `-repentogonoff` or removing `dsound.dll` is all that's needed to disable REPENTOGON, but for a "complete" uninstall:
+Technically, using the launch option `-repentogonoff`/`-repentogoff`/`-repentogone` or removing `dsound.dll` is all that's needed to disable REPENTOGON, but for a "complete" uninstall:
 1. Remove `dsound.dll`, `freetype.dll`, `libzhl.dll`, `Lua5.4.dll`, `resources-repentogon`, and `zhlREPENTOGON.dll` from the game folder.
 2. Optionally, remove log files `dsound.log`, `repentogon.log`, and `zhl.log`.
 2. Delete `resources\rooms` (containing `26.The Void_ex.stb`) and `resources\shaders` (containing `coloroffset_gold_mesafix`).
