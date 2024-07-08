@@ -2,6 +2,11 @@ v1.?.??? -
 Additions:
 * RoomDescriptor:
 	InitSeeds(RNG)
+* ModCallbacks:
+	- MC_PRE_PLAYER_ADD_COSTUME(ItemConfigItem, Player, ItemStateOnly)
+		Called before the costume is added to the player. Return ItemConfigItem to replace the costume or false to cancel adding it entirely.
+	- MC_PRE_PLAYER_REMOVE_COSTUME(ItemConfigItem, Player)
+		Called before the costume is removed from the player. Return false to cancel the removal.
 /newline/
 * Fixes:
 	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
