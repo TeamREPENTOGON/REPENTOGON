@@ -307,8 +307,16 @@ LUA_FUNCTION(Lua_GetSubTypeByName) {
 LUA_FUNCTION(Lua_PlayCutscene) {
 	const unsigned int cutscene = (unsigned int)luaL_checkinteger(L, 1);
 	const bool shouldClear = lua::luaL_optboolean(L, 2, false);
+
+	if (cutscene > 26) {
+		string out;
+		g_Game->GetConsole()->RunCommand("cutscene " + to_string(cutscene), &out, NULL);
+		return 0;
+	}
 	g_Manager->ShowCutscene(cutscene, shouldClear);
 	return 0;
+
+
 }
 
 LUA_FUNCTION(Lua_GetCutsceneByName) {

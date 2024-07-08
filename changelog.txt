@@ -1,4 +1,4 @@
-v1.?.??? -
+v1.0.10c -
 Additions:
 * RoomDescriptor:
 	InitSeeds(RNG)
@@ -9,6 +9,7 @@ Additions:
 		Called before the costume is removed from the player. Return false to cancel the removal.
 /newline/
 * Fixes:
+	- Fixed a severe issue with Isaac.PlayCutscene() causing potential corruption when called for custom cutscene.
 	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
 	- Fixed binder for EntityPlayer:DropCollectibleByHistoryIndex which caused crashes on call.
 	- Fixed an issue in ItemPool:GetCollectible that prevented passing ItemPoolType.POOL_NULL.
