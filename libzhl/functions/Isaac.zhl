@@ -58,5 +58,6 @@ static __x86_64_output Vector Isaac::GetAxisAlignedUnitVectorFromDir(int eDir);
 struct Isaac {
     {{
     LIBZHL_API static bool IsInGame();
+	LIBZHL_API static Vector * WorldToScreen(Vector * buffer, Vector * pos);
     }}
 } : 0;

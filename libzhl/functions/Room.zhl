@@ -90,7 +90,7 @@ __thiscall float<xmm0> Room::GetTimeScale(Vector* unused, Entity* ent);
 "558bec8b55??56578b02":
 __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 
-struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
+struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager, Vector) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
 	inline bool GetRedHeartDamage() { return *(bool*)((char*)this + 0x120C); }
@@ -127,7 +127,8 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     GridEntity* _doors[8] : 0x724;
     uint32_t _doorGridPositions[8] : 0x744;
 	int _roomClearDelay : 0x11ec;
-    Camera *_Camera : 0x11f8;
+    Camera *_Camera : 0x11f8; //0x11F8
+	Vector _renderScrollOffset : 0x1204;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
 	int _greedWaveTimer : 0x7130;
