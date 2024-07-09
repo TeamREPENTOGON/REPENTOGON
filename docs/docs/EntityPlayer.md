@@ -896,8 +896,7 @@ Sets how many hearts have been collected for the Immaculate Conception item.
 
 Note that the game checks to spawn a familiar only when the player picks up a heart, so you cannot trigger that directly with this function.
 
-???+ bug "Bug (1.0.10b)"
-	Setting this to a value the game doesn't expect (<0 or >14) can crash the game.
+If you set a value that is greater than 14, the value is automatically capped at 14, meaning that the next heart picked up will spawn a familiar.
 
 ___
 ### SetItemState () {: aria-label='Functions' }
