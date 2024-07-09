@@ -461,7 +461,7 @@ LUA_FUNCTION(Lua_ItemPoolGetPillColor) {
 
 LUA_FUNCTION(Lua_ItemPoolGetBibleUpgrades) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
-	const unsigned int pool = (int)luaL_checkinteger(L, 2);
+	const int pool = (int)luaL_checkinteger(L, 2);
 
 	if (pool <= POOL_NULL || pool >= NUM_ITEMPOOLS) {
 		return luaL_argerror(L, 2, "Invalid ItemPoolType");
