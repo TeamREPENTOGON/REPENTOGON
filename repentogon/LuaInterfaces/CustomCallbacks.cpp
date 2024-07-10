@@ -4347,3 +4347,76 @@ HOOK_METHOD(Game, RestoreState, (GameState* gameState, bool startGame) -> void) 
 	}
 	return;
 }
+
+inline bool IsCoopBaby(Entity_Player* player) {
+	return player->_variant == 1 || player->_isCoopGhost;
+}
+
+//PRE_PLAYER_ADD_COSTUME (1281)
+HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnly) -> void) {
+	if (IsCoopBaby(this)) {
+		return;
+	}
+
+	const int callbackid = 1281;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(itemStateOnly)
+			.call(1);
+
+		if (!result) {
+			if (lua_isuserdata(L, -1)) {
+				auto* retItem = lua::GetUserdata<ItemConfig_Item*>(L, -1, lua::Metatables::ITEM, "Item");
+				if (retItem) {
+					item = retItem;
+				}
+			}
+			else if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+
+	super(item, itemStateOnly);
+}
+
+//PRE_PLAYER_REMOVE_COSTUME (1282)
+HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
+	if (!item || IsCoopBaby(this)) {
+		return;
+	}
+
+	const int callbackid = 1282;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
+
+	super(item);
+}
