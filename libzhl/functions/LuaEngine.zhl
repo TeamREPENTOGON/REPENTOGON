@@ -64,6 +64,9 @@ __thiscall void LuaEngine::UsePill(int pillEffect, Entity_Player* player, unsign
 "558bec83e4c083ec34538b1d":
 static __cdecl void LuaEngine::Isaac_WorldToScreen(Vector *buffer, Vector* pos);
 
+"558bec83ec18a1????????8d4d":
+static __stdcall int LuaEngine::Isaac_GetItemIdByName(std_string * name);
+
 "8b0d(????????)c745dc01000000":
 reference LuaEngine *g_LuaEngine;
 

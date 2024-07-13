@@ -105,6 +105,11 @@ TypeInfo std_vector_int {
     Align 4;
 };
 
+TypeInfo std_vector_float {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo std_set_int {
     Size 8;
     Align 4;

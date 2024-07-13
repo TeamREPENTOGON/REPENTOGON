@@ -2074,18 +2074,23 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 			{
 				itempool[stringlower(attr->name())] = string(attr->value());
 			}
-			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent){
+
+			bool isNewPool = XMLStuff.PoolData->byname.find(itempool["name"]) == XMLStuff.PoolData->byname.end();
+			if (isNewPool)
+			{
 				XMLStuff.PoolData->maxid = XMLStuff.PoolData->maxid + 1;
 				id = XMLStuff.PoolData->maxid;
 			}
-			else {
+			else
+			{
 				id = XMLStuff.PoolData->byname[itempool["name"]];
 			}
 
 			itempool["sourceid"] = lastmodid;
 			XMLStuff.PoolData->ProcessChilds(auxnode, id);
 			
-			if ((strcmp(lastmodid, "BaseGame") == 0) || !iscontent) {
+			if (isNewPool)
+			{
 				XMLStuff.PoolData->bynamemod[itempool["name"] + lastmodid] = id;
 				XMLStuff.PoolData->bymod[lastmodid].push_back(id);
 				XMLStuff.PoolData->byfilepathmulti.tab[currpath].push_back(id);
