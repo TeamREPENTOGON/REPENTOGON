@@ -91,6 +91,11 @@ ___
 #### void SetVarData ( int VarData ) {: .copyable aria-label='Functions' }
 
 ___
+### TriggerTheresOptionsPickup () {: aria-label='Functions' }
+#### void TriggerTheresOptionsPickup ( ) {: .copyable aria-label='Functions' }
+Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
+
+___
 ### TryFlip () {: aria-label='Functions' }
 #### boolean TryFlip ( ) {: .copyable aria-label='Functions' }
 Will try to flip the collectible, such as when using the Flip item on a collectible pedestal with a second, holographic collectible present behind the first one. Returns `true` if successful, `false` otherwise or if used on non-collectible EntityPickups.
