@@ -15,7 +15,7 @@ All functions in the table are static: they are accessed using the dot (`.`)
 operator, rather than the colon (`:`) operator.
 
 ### MeetsVersion () {: aria-label='Functions' }
-#### bool MeetsVersion ( string version ) {: .copyable aria-label='Functions' }
+#### boolean MeetsVersion ( string version ) {: .copyable aria-label='Functions' }
 Checks whether the specified `version` is greater or equal to the currently 
 installed Repentogon version.
 
