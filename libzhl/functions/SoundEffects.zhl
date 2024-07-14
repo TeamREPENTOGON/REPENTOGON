@@ -33,4 +33,5 @@ struct SoundEffects depends (SoundEffect) {
     vector_SoundEffect _sounds : 0x0;
     int _count : 0xc;
     float _volume : 0x10;
+	float _volumeSlideRate : 0x14;
 } : 0x18;
