@@ -811,11 +811,11 @@ HOOK_METHOD(Level, SetStage, (int a, int b)-> void) {
 
 // Converts a string of space-separated tags to lowercase, parses each individual tag, and inserts them into the provided set.
 // Ex: "tag1 tag2 tag3"
-// For the 'customtags' attribute.
+// For tag-like attributes like 'customtags' and 'customcache'.
 void ParseTagsString(const string& str, set<string>& out) {
-	const string customtagsstr = stringlower(str.c_str());
-	if (!customtagsstr.empty()) {
-		stringstream tagstream(customtagsstr);
+	const string tagsstr = stringlower(str.c_str());
+	if (!tagsstr.empty()) {
+		stringstream tagstream(tagsstr);
 		string tag;
 		while (getline(tagstream, tag, ' ')) {
 			if (!tag.empty()) {
@@ -1155,6 +1155,13 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						ParseTagsString(item["customtags"], XMLStuff.ItemData->customtags[id]);
 						CheckCustomRevive(id, XMLStuff.ItemData);
 					}
+					if (item.find("customcache") != item.end()) {
+						ParseTagsString(item["customcache"], XMLStuff.ItemData->customcache[id]);
+						ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
+					}
+					if (id == 247 || id == 248) {
+						XMLStuff.ItemData->customcache[id].insert("familiarmultiplier");
+					}
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
 					XMLStuff.ItemData->bymod[lastmodid].push_back(id);
@@ -1222,6 +1229,10 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 						ParseTagsString(trinket["customtags"], XMLStuff.TrinketData->customtags[id]);
 						CheckCustomRevive(id, XMLStuff.TrinketData);
 					}
+					if (trinket.find("customcache") != trinket.end()) {
+						ParseTagsString(trinket["customcache"], XMLStuff.TrinketData->customcache[id]);
+						ParseTagsString(trinket["customcache"], XMLStuff.AllCustomCaches);
+					}
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
 					XMLStuff.TrinketData->bymod[lastmodid].push_back(id);
@@ -1264,6 +1275,10 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				if (item.find("customtags") != item.end()) {
 					ParseTagsString(item["customtags"], XMLStuff.NullItemData->customtags[id]);
 					CheckCustomRevive(id, XMLStuff.NullItemData);
+				}
+				if (item.find("customcache") != item.end()) {
+					ParseTagsString(item["customcache"], XMLStuff.NullItemData->customcache[id]);
+					ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
 				}
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);

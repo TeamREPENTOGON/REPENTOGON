@@ -32,7 +32,7 @@ We will do our best to adapt to future updates, but this will take time. We susp
 In the future, if Nicalis were to add *debug symbols* into the game, this would significantly reduce the time needed to adapt to future updates. Isaac has never shipped with these on Windows despite shipping with them on most other platforms, so we feel the exclusion of these on Windows is doing more harm than good, but we nonetheless respect Nicalis's decision to not include them and ask that end-users do not harass Nicalis about getting these included.
 
 ### **Q: How do I disable REPENTOGON?**
-You will need to add `-repentogonoff` as a launch option in order to make the game load without REPENTOGON.
+You will need to add `-repentogonoff`/`-repentogoff`/`-repentogone` as a launch option in order to make the game load without REPENTOGON.
 
 ### **Q: Does REPENTOGON work on Linux / Steam Deck?**
 **Yes!** We do not have a native Linux build as there's no point to since there's no native Linux version of Repentance, but it works properly under Proton. On Steam Deck this is the default setup.

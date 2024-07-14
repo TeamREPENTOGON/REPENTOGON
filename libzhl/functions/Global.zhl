@@ -75,6 +75,7 @@ typedef std::vector<ItemConfig_Item*> vector_ItemPtr;
 typedef std::vector<TrinketPoolItem> vector_TrinketPoolItem;
 typedef std::vector<WeightedOutcomePicker_Outcome> vector_Outcome;
 typedef std::vector<BossPool_Entry> vector_BossPoolEntry;
+typedef std::vector<HomingLaser_Bezier> vector_HomingLaserBezier;
 typedef std::vector<float> std_vector_float;
 
 struct PoolItem {

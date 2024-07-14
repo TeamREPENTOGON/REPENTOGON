@@ -1,3 +1,42 @@
+v1.?.??? -
+Additions:
+* EntityNPC:
+	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
+	- ClearFlyingOverride() - Removes any value set by SetFlyingOverride.
+* EntityLaser:
+	- RecalculateSamplesNextUpdate() - Requests the laser's shape to be fully recalculated next time it updates. Can be used to force the laser to instantly change its MaxDistance/Radius instead of transitioning to it. No effect for OneHit or non-sample lasers.
+* EntityPickup:
+	- TriggerTheresOptionsPickup() - Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
+/newline/
+v1.0.10c -
+Additions:
+* RoomDescriptor:
+	InitSeeds(RNG)
+* ModCallbacks:
+	- MC_PRE_PLAYER_ADD_COSTUME(ItemConfigItem, Player, ItemStateOnly)
+		Called before the costume is added to the player. Return ItemConfigItem to replace the costume or true to cancel adding it entirely.
+	- MC_PRE_PLAYER_REMOVE_COSTUME(ItemConfigItem, Player)
+		Called before the costume is removed from the player. Return true to cancel the removal.
+/newline/
+* Fixes:
+	- Fixed a severe issue with Isaac.PlayCutscene() causing potential corruption when called for custom cutscene.
+	- EntityPlayer:SetImmaculateConceptionState(i) now automatically clamps to valid values only [0,14] to avoid crashes.
+	- Fixed binder for EntityPlayer:DropCollectibleByHistoryIndex which caused crashes on call.
+	- Fixed an issue in ItemPool:GetCollectible that prevented passing ItemPoolType.POOL_NULL.
+/newline/
+Modified:
+* RoomConfigHolder:
+	- GetRoomByStageTypeAndVariant(StbType, Type, Variant, Mode = -1)
+* Re-enabled "Extra debug render for FindInRadius" option.
+/newline/
+v1.0.10b -
+Modified:
+* MusicManager:
+	PlayJingle(Music ID, int Duration)
+* Fixes:
+	- Disabled the new Debug find in radius feature until further notice, since it causes issues on some vanilla calls (Ex: Evil Eye)
+* Room:TrySpawnBlueWombTime now checks Game TimeCounter instead of FrameCount, consistent with TrySpawnBossRushDoor and likely the intended behavior
+/newline/
 v1.0.10a -
 Additions:
 * EntityPlayer:
