@@ -40,6 +40,14 @@ static inline int GetGameStateSlot(GameState* gameState)
 GameState* gameStatePtr = reinterpret_cast<GameState*>(statePtr - offsetof(GameState, fieldName)); \
 int gameStateSlot = GetGameStateSlot(gameStatePtr);
 
+static inline ItemPool_Item* GetItemPoolItem(int poolType)
+{
+	if (poolType >= NUM_ITEMPOOLS) {
+		return &CustomItemPool::itemPools[poolType - NUM_ITEMPOOLS];
+	}
+	return &g_Game->_itemPool._pools[poolType];
+}
+
 static inline ItemConfig_Item* GetCollectibleItemConfig(const int itemID)
 {
     if (itemID < 0)
@@ -393,6 +401,11 @@ namespace CustomItemPool
         }
 
         return -1;
+    }
+
+    inline int GetNumItemPools()
+    {
+        return itemPools.size() + NUM_ITEMPOOLS;
     }
 
     inline int GetCustomItemPoolId(int itemPoolType)
@@ -811,6 +824,26 @@ HOOK_METHOD(ItemPool, get_chaos_pool, (RNG * rng) -> int)
 	pickerRNG.SetSeed(rng->_seed, 35);
 
 	return picker.PickOutcome(pickerRNG);
+}
+
+HOOK_METHOD(ItemPool, AddBibleUpgrade, (int add, int poolType) -> void)
+{
+    size_t numItemPools = CustomItemPool::GetNumItemPools();
+
+    if (poolType <= POOL_NULL || poolType > numItemPools)
+    {
+        return;
+    }
+
+    if (poolType == numItemPools)
+    {
+        for (size_t i = 0; i < numItemPools; i++)
+        {
+            GetItemPoolItem(i)->_bibleUpgrade += add;
+        }
+    }
+
+    GetItemPoolItem(poolType)->_bibleUpgrade += add;
 }
 
 // Pass the correct ItemPool_Item to pick_collectible

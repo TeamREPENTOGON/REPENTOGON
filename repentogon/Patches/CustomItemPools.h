@@ -83,6 +83,7 @@ namespace CustomItemPool
 
     inline int CreateNewPool(const std::string& name, bool isGreed);
     inline int GetPoolIdByName(const std::string& name);
+    inline int GetNumItemPools();
     inline int GetCustomItemPoolId(int itemPoolType);
     inline void ParseItemNode(const XMLAttributes& itemNode, XMLPoolItem& item);
     inline void GetItemsFromXMLNode(uint32_t nodeId, std::vector<XMLPoolItem>& items);
