@@ -174,6 +174,8 @@ ModCallbacks.MC_PRE_PLAYER_USE_BOMB = 1220
 ModCallbacks.MC_POST_PLAYER_USE_BOMB = 1221
 ModCallbacks.MC_NPC_PICK_TARGET = 1222
 ModCallbacks.MC_POST_NPC_DARK_RED_CHAMPION_REGEN = 1223
+ModCallbacks.MC_EVALUATE_CUSTOM_CACHE = 1224
+ModCallbacks.MC_EVALUATE_FAMILIAR_MULTIPLIER = 1225
 
 --ModCallbacks.DEPRECATED_MC_PRE_PLAYER_COLLISION = 1230  -- Re-implementation of this callback used to use a different ID, now it uses the original callback ID
 ModCallbacks.MC_POST_PLAYER_COLLISION = 1231

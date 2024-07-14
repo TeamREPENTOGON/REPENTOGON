@@ -702,8 +702,8 @@ struct XMLData {
 
 	XMLMod* ModData = new XMLMod();
 
-	// Holds all known customcaches.
-	set<string> AllCustomCaches;
+	// Holds all known customcache strings.
+	set<string> AllCustomCaches = {"familiarmultiplier"};
 };
 
 

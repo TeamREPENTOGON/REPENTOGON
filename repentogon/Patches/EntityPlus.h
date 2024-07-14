@@ -13,6 +13,20 @@ class EntityPlus {
 	std::optional<bool> isFlyingOverride = std::nullopt;
 };
 
+// Attributes for EntityPlayer.
+class EntityPlayerPlus : public EntityPlus {
+public:
+	std::set<std::string> customCacheTags;
+	std::unordered_map<std::string, double> customCacheResults;
+};
+
+// Attributes for EntityFamiliar.
+class EntityFamiliarPlus : public EntityPlus {
+public:
+	std::optional<float> cachedMultiplier = std::nullopt;
+	uintptr_t cachedMultiplierPlayer = 0;
+};
+
 // Attributes for EntityLaser.
 class EntityLaserPlus : public EntityPlus {
   public:
@@ -25,6 +39,8 @@ EntityPlus* GetEntityPlus(Entity* entity);
 
 // Gets the corresponding EntityPlus subclass for each Entity subclass.
 // Will return nullptr if somehow called for the wrong entity type, or if the entity is not properly initialized.
+EntityPlayerPlus* GetEntityPlayerPlus(Entity_Player* player);
+EntityFamiliarPlus* GetEntityFamiliarPlus(Entity_Familiar* familiar);
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser);
 
 void ASMPatchesForEntityPlus();

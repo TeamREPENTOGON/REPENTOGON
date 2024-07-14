@@ -3,6 +3,7 @@
 
 #include "../LuaInterfaces/LuaRender.h"
 #include "NullItemsAndCostumes.h"
+#include "CustomCache.h"
 #include "FamiliarTags.h"
 #include "GetCoinValue.h"
 #include "PocketItems.h"
@@ -149,6 +150,7 @@ void PerformASMPatches() {
 	ASMPatchesForGetCoinValue();
 	ASMPatchesForAddRemovePocketItemCallbacks();
 	ASMPatchesForEntityPlus();
+	ASMPatchesForCustomCache();
 	HookImGui();
 
 	// Sprite

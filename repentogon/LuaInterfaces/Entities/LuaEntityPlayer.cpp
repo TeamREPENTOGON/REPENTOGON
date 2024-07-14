@@ -5,6 +5,8 @@
 #include "../LuaWeapon.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 #include "../../Patches/ExtraLives.h"
+#include "../../Patches/EntityPlus.h"
+#include "../../Patches/XmlData.h"
 
 
 /*
@@ -2366,6 +2368,54 @@ LUA_FUNCTION(Lua_PlayerGetBombVariant) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerAddCustomCacheTag) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+
+	const int type = lua_type(L, 2);
+
+	if (type == LUA_TTABLE) {
+		std::set<std::string> customcaches;
+
+		auto tableLength = lua_rawlen(L, 2);
+		for (auto i = 1; i <= tableLength; ++i) {
+			lua_pushinteger(L, i);
+			lua_gettable(L, 2);
+			if (lua_type(L, -1) == LUA_TNIL)
+				break;
+			playerPlus->customCacheTags.insert(stringlower(luaL_checkstring(L, -1)));
+			lua_pop(L, 1);
+		}
+	}
+	else {
+		playerPlus->customCacheTags.insert(stringlower(luaL_checkstring(L, 2)));
+	}
+
+	const bool evalItems = lua::luaL_optboolean(L, 3, false);
+
+	if (evalItems) {
+		player->EvaluateItems();
+	}
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetCustomCacheValue) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+
+	const std::string layerName = luaL_checkstring(L, 2);
+
+	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
+
+	if (playerPlus && playerPlus->customCacheResults.find(layerName) != playerPlus->customCacheResults.end()) {
+		lua_pushnumber(L, playerPlus->customCacheResults[layerName]);
+	}
+	lua_pushnumber(L, 0);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2579,6 +2629,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetBlackHeart", Lua_PlayerSetBlackHeart },
 		{ "AddNullCostume", Lua_PlayerAddNullCostumeOverride },
 		{ "GetBombVariant", Lua_PlayerGetBombVariant },
+		{ "AddCustomCacheTag", Lua_PlayerAddCustomCacheTag },
+		{ "GetCustomCacheValue", Lua_PlayerGetCustomCacheValue },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);

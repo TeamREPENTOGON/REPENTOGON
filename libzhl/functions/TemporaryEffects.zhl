@@ -53,6 +53,7 @@ __thiscall void TemporaryEffects::AddEffect(TemporaryEffect* Effect, bool addcos
 struct TemporaryEffects
 {
     vector_TemporaryEffect _effects : 0x4;
-    bool _disabled: 0x11;
+    bool _shouldEvaluateCache : 0x10;
+    bool _disabled : 0x11;
     Entity_Player* _player : 0x14;
 } : 0x18;

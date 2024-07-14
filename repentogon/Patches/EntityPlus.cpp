@@ -73,7 +73,11 @@ HOOK_METHOD(Entity, Init, (unsigned int type, unsigned int variant, unsigned int
 	holder->data.reset();  // Delete any pre-existing EntityPlus.
 
 	// Initialize the EntityPlus as the correct subclass for this entity.
-	if (type == 7) {
+	if (type == 1) {
+		holder->data = std::make_unique<EntityPlayerPlus>();
+	} else if (type == 3) {
+		holder->data = std::make_unique<EntityFamiliarPlus>();
+	} else if (type == 7) {
 		holder->data = std::make_unique<EntityLaserPlus>();
 	} else {
 		holder->data = std::make_unique<EntityPlus>();
@@ -105,6 +109,14 @@ EntityPlus* GetEntityPlus(Entity* entity) {
 }
 
 // The dynamic_cast returns nullptr if the entity was not initialized with the correct subclass.
+EntityPlayerPlus* GetEntityPlayerPlus(Entity_Player* player) {
+	return dynamic_cast<EntityPlayerPlus*>(GetEntityPlusHolder(player, true)->data.get());
+}
+
+EntityFamiliarPlus* GetEntityFamiliarPlus(Entity_Familiar* familiar) {
+	return dynamic_cast<EntityFamiliarPlus*>(GetEntityPlusHolder(familiar, true)->data.get());
+}
+
 EntityLaserPlus* GetEntityLaserPlus(Entity_Laser* laser) {
 	return dynamic_cast<EntityLaserPlus*>(GetEntityPlusHolder(laser, true)->data.get());
 }

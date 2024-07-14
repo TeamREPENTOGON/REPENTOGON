@@ -1157,7 +1157,10 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					}
 					if (item.find("customcache") != item.end()) {
 						ParseTagsString(item["customcache"], XMLStuff.ItemData->customcache[id]);
-						ParseTagsString(item["customcache"], XMLStuff.ItemData->allcustomcache);
+						ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
+					}
+					if (id == 247 || id == 248) {
+						XMLStuff.ItemData->customcache[id].insert("familiarmultiplier");
 					}
 					XMLStuff.ItemData->ProcessChilds(auxnode, id);
 					XMLStuff.ItemData->bynamemod[item["name"] + lastmodid] = id;
@@ -1228,7 +1231,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 					}
 					if (trinket.find("customcache") != trinket.end()) {
 						ParseTagsString(trinket["customcache"], XMLStuff.TrinketData->customcache[id]);
-						ParseTagsString(trinket["customcache"], XMLStuff.TrinketData->allcustomcache);
+						ParseTagsString(trinket["customcache"], XMLStuff.AllCustomCaches);
 					}
 					XMLStuff.TrinketData->ProcessChilds(auxnode, id);
 					XMLStuff.TrinketData->bynamemod[trinket["name"] + lastmodid] = id;
@@ -1275,7 +1278,7 @@ void ProcessXmlNode(xml_node<char>* node,bool force = false) {
 				}
 				if (item.find("customcache") != item.end()) {
 					ParseTagsString(item["customcache"], XMLStuff.NullItemData->customcache[id]);
-					ParseTagsString(item["customcache"], XMLStuff.NullItemData->allcustomcache);
+					ParseTagsString(item["customcache"], XMLStuff.AllCustomCaches);
 				}
 
 				XMLStuff.NullItemData->ProcessChilds(auxnode, id);
