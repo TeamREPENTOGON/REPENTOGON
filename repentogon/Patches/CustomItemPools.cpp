@@ -148,14 +148,14 @@ namespace CustomItemPool
 
     void SaveData::FixItemPool()
     {
-        ItemPool itemPool = g_Game->_itemPool;
+        ItemPool& itemPool = g_Game->_itemPool;
         this->TryFixItemPoolType(&itemPool._lastPool);
         itemPool._remainingGenesisItems[POOL_TREASURE] += this->danglingGenesisItems;
     }
 
     inline void SaveData::FixPlayerHistory(Entity_Player* player)
     {
-        std::vector<History_HistoryItem> historyItems = player->GetHistory()->_historyItems;
+        std::vector<History_HistoryItem>& historyItems = player->GetHistory()->_historyItems;
         for (size_t i = 0; i < historyItems.size(); i++)
         {
             this->TryFixItemPoolType(&historyItems[i]._itemPoolType);
