@@ -403,7 +403,7 @@ namespace CustomItemPool
         return -1;
     }
 
-    inline int GetNumItemPools()
+    size_t GetNumItemPools()
     {
         return itemPools.size() + NUM_ITEMPOOLS;
     }
@@ -681,7 +681,7 @@ namespace CustomItemPool
         MTRNG mtRNG;
         mtRNG.Init(g_Game->_itemPool._itemPoolRNG._seed);
 
-        for (size_t i = 0; i < itemPools.size(); i--)
+        for (size_t i = 0; i < itemPools.size(); i++)
         {
             ShufflePool(i, mtRNG);
         }

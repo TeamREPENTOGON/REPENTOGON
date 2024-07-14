@@ -130,7 +130,11 @@ LUA_FUNCTION(Lua_ItemPoolPickCollectible) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	int poolType = (int)luaL_checkinteger(L, 2);
 	bool decrease = lua::luaL_optboolean(L, 3, false);
-	RNG* rng = lua::GetUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
+
+	RNG* rng = nullptr;
+	if (!Lua_NotPassedOrNil(L, 4)) {
+		rng = lua::GetUserdata<RNG*>(L, 4, lua::Metatables::RNG, "RNG");
+	}
 	uint32_t flags = (unsigned int)luaL_optinteger(L, 5, 0);
 
 	if (!IsValidPool(poolType)) {
@@ -138,7 +142,17 @@ LUA_FUNCTION(Lua_ItemPoolPickCollectible) {
 	}
 
 	ItemPool_Item* pool = GetItemPoolItem(poolType);
-	float targetWeight = rng->RandomFloat() * pool->_totalWeight;
+	float targetWeight = 0;
+	if (rng == nullptr) {
+		RNG tempRNG;
+		uint32_t seed = Isaac::genrand_int32();
+		seed = seed != 0 ? seed : 1;
+		tempRNG.SetSeed(seed, 4);
+		targetWeight = tempRNG.RandomFloat() * pool->_totalWeight;
+	}
+	else {
+		targetWeight = rng->RandomFloat() * pool->_totalWeight;
+	}
 
 	flags = flags << 1;
 	if (!decrease) {
@@ -477,8 +491,7 @@ LUA_FUNCTION(Lua_ItemPoolGetPillColor) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_AddBibleUpgrade)
-{
+LUA_FUNCTION(Lua_ItemPoolAddBibleUpgrade) {
 	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
 	const int add = (int)luaL_checkinteger(L, 2);
 	const int poolType = (int)luaL_checkinteger(L, 3);
@@ -521,6 +534,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 
 	luaL_Reg functions[] = {
 		{ "GetCollectible", Lua_ItemPoolGetCollectibleEx },
+		{ "AddBibleUpgrade", Lua_ItemPoolAddBibleUpgrade },
 
 		{ "GetCardEx", Lua_ItemPoolGetCardEx },
 		{ "GetRandomPool", Lua_ItemPoolGetRandomPool },
