@@ -544,11 +544,9 @@ void CodeEmitter::CheckVTableHierarchyConsistency(Struct const& s, std::vector<S
             for (std::variant<Signature, Skip, Function> const& fn : parent->_virtualFunctions) {
                 Function const* function = GetFunction(fn);
                 if (function) {
-                    if (function->_name == sig._function._name) {
-                        if (*function == sig._function) {
-                            found = true;
-                            break;
-                        }
+                    if (*function == sig._function) {
+                        found = true;
+                        break;
                     }
                 }
             }
@@ -1028,10 +1026,10 @@ void CodeEmitter::EmitAssembly(std::variant<Signature, Function> const& sig, boo
 
             uint32_t position;
             if (std::holds_alternative<Signature>(sig)) {
-                position = _currentStructure->GetVirtualFunctionSlot(std::get<Signature>(sig), true);
+                position = _currentStructure->GetVirtualFunctionSlot(&(std::get<Signature>(sig)), true);
             }
             else {
-                position = _currentStructure->GetVirtualFunctionSlot(std::get<Function>(sig));
+                position = _currentStructure->GetVirtualFunctionSlot(&(std::get<Function>(sig)));
             }
             call << "call [eax + " << position * 4 << "]";
             EmitInstruction(call.str());
