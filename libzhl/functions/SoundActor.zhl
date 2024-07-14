@@ -1,4 +1,4 @@
-struct SoundActor depends (StreamSourceBase)
+struct SoundActor depends (SoundSourcePlatformBase)
 {
 	SoundSourcePlatformBase * _source : 0x0;
 	void * _sp2 : 0x4;
