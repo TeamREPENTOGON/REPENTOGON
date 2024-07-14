@@ -198,6 +198,7 @@ LUA_FUNCTION(Lua_PickupUpdatePickupGhosts) {
 	pickup->UpdatePickupGhosts();
 	return 0;
 }
+
 /*LUA_FUNCTION(Lua_PickupIsChest) {
 	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
 	unsigned int variant = (unsigned int)luaL_optinteger(L, 2, pickup->_variant);
@@ -206,6 +207,12 @@ LUA_FUNCTION(Lua_PickupUpdatePickupGhosts) {
 }
 */
 
+
+LUA_FUNCTION(Lua_PickupTriggerTheresOptionsPickup) {
+	Entity_Pickup* pickup = lua::GetUserdata<Entity_Pickup*>(L, 1, lua::Metatables::ENTITY_PICKUP, "EntityPickup");
+	pickup->TriggerTheresOptionsPickup();
+	return 0;
+}
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
@@ -236,6 +243,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		//{ "IsChest", Lua_PickupIsChest },
 		{ "GetPickupGhost", Lua_PickupGetPickupGhost },
 		{ "UpdatePickupGhosts", Lua_PickupUpdatePickupGhosts },
+		{ "TriggerTheresOptionsPickup", Lua_PickupTriggerTheresOptionsPickup },
 		{ NULL, NULL }
 	};
 

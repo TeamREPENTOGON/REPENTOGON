@@ -5,6 +5,8 @@ Additions:
 	- ClearFlyingOverride() - Removes any value set by SetFlyingOverride.
 * EntityLaser:
 	- RecalculateSamplesNextUpdate() - Requests the laser's shape to be fully recalculated next time it updates. Can be used to force the laser to instantly change its MaxDistance/Radius instead of transitioning to it. No effect for OneHit or non-sample lasers.
+* EntityPickup:
+	- TriggerTheresOptionsPickup() - Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
 /newline/
 v1.0.10c -
 Additions:
