@@ -263,3 +263,9 @@ bool Music::ValidateMusicID(int id, int& max) {
 
 	return id >= 0 && id < max;
 }
+
+bool SoundEffects::ValidateSoundID(int id, int& max) {
+	max = _sounds.size();
+
+	return id >= 0 && id < max;
+}

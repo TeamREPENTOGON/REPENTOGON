@@ -30,6 +30,9 @@ struct SoundEffect depends (SoundEffectSample) {
 } : 0x1b8;
 
 struct SoundEffects depends (SoundEffect) {
+{{
+	  bool LIBZHL_API ValidateSoundID(int id, int& max);
+}} 
     vector_SoundEffect _sounds : 0x0;
     int _count : 0xc;
     float _volume : 0x10;
