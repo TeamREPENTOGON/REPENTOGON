@@ -444,7 +444,7 @@ namespace CustomItemPool
             {
                 std::string name = itemNode.at("name");
                 int itemID = LuaEngine::Isaac_GetItemIdByName(&name);
-                if (itemID < 0)
+                if (itemID > -1)
                 {
                     item.itemID = itemID;
                 }
