@@ -702,7 +702,6 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
         Emit("virtual ");
     } */
     EmitFunction(fun);
-    EmitNL();
 
     if (fun.IsDebug()) {
         Emit("#endif");
@@ -723,7 +722,12 @@ void CodeEmitter::Emit(Signature const& var, bool isVirtual) {
     }
 }
 
-void CodeEmitter::EmitFunction(Function const& fun) {
+void CodeEmitter::EmitFunction(Function const& fun, bool withPrefix) {
+    if (withPrefix) {
+        EmitTab();
+        Emit("LIBZHL_API ");
+    }
+
     uint32_t qualifiers = fun._qualifiers;
     if (qualifiers & STATIC) {
         Emit("static ");
@@ -758,6 +762,7 @@ void CodeEmitter::EmitFunction(Function const& fun) {
         }
     }
     Emit(");");
+    EmitNL();
 }
 
 void CodeEmitter::Emit(std::variant<Signature, Skip, Function> const& sig) {
@@ -774,13 +779,12 @@ void CodeEmitter::Emit(std::variant<Signature, Skip, Function> const& sig) {
     }
     else {
         Function const& fn = std::get<Function>(sig);
-        EmitFunction(fn);
-        EmitNL();
+        EmitFunction(fn, true);
         EmitAssembly(fn, true, false);
 
         Function copy = fn;
         copy._name.append("_Original");
-        EmitFunction(copy);
+        EmitFunction(copy, true);
         EmitAssembly(copy, true, true);
     }
 }
