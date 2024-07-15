@@ -34,6 +34,9 @@ static __stdcall bool ItemPool::TryReplaceWithMagicSkin(uint32_t seed<ecx>);
 "558bec8b45??83f81f":
 __thiscall void ItemPool::AddBibleUpgrade(int Add, int PoolType);
 
+"558bec83e4f8515356578b7d??8bd9":
+__thiscall void ItemPool::ResetCollectible(int Collectible);
+
 "558bec6b45??34":
 __thiscall ItemPool_Item* ItemPool::GetPool(int itemPoolType);
 

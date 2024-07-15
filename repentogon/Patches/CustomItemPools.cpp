@@ -846,6 +846,26 @@ HOOK_METHOD(ItemPool, AddBibleUpgrade, (int add, int poolType) -> void)
     GetItemPoolItem(poolType)->_bibleUpgrade += add;
 }
 
+HOOK_METHOD(ItemPool, ResetCollectible, (int collectible) -> void)
+{
+    if (collectible < COLLECTIBLE_NULL)
+    {
+        return;
+    }
+
+    super(collectible);
+    for (auto& itemPool_Item : CustomItemPool::itemPools)
+    {
+        for (auto& poolItem : itemPool_Item._poolList)
+        {
+            if (poolItem._itemID == collectible)
+            {
+                poolItem._weight = poolItem._initialWeight;
+            }
+        }
+    }
+}
+
 // Pass the correct ItemPool_Item to pick_collectible
 ItemPool_Item* __stdcall GetItemPool_Item(uint32_t itemPoolOffset)
 {

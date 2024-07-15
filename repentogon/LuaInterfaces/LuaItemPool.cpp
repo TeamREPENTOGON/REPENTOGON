@@ -527,6 +527,17 @@ LUA_FUNCTION(Lua_ItemPoolGetBibleUpgrades) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemPoolResetCollectible) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+	const int collectible = (int)luaL_checkinteger(L, 2);
+
+	if (collectible < COLLECTIBLE_NULL || collectible >= g_Manager->GetItemConfig()->GetCollectibles()->size()) {
+		return luaL_argerror(L, 2, "Invalid Collectible");
+	}
+
+	itemPool->ResetCollectible(collectible);
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -554,6 +565,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "UnidentifyPill", Lua_ItemPoolUnidentifyPill },
 		{ "GetPillColor", Lua_ItemPoolGetPillColor },
 		{ "GetBibleUpgrades", Lua_ItemPoolGetBibleUpgrades },
+		{ "ResetCollectible", Lua_ItemPoolResetCollectible },
 
 		{ NULL, NULL }
 	};
