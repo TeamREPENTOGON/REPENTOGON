@@ -1,0 +1,63 @@
+struct StreamSourcePlatformBase : public StreamSourceBase {
+	__vtable {
+		override
+		"558bec568bf18d4e??c706????????e8????????f645??0174??6a54":
+		void * Free(bool param_1);
+		
+		override
+		"558bec515356578bf9897d??8b07":
+		bool ApplyDataToHardware(int param_1, int param_2);
+
+		skip; // GetHardwareBufferSize
+		skip; // open_file_dunno
+		skip; // Queue
+		skip; // Deque
+		skip; // HasQueuedData
+		
+		override
+		"51568bf18d46":
+		bool Open(char * path);
+
+		skip; // Clone
+		
+		override
+		"56578bf1e8????????837e??00":
+		void Close();
+
+		skip; // IsOpen
+		
+		override
+		"568bf1837e??0074??8b068b40??ffd084c075??a1":
+		void Play(void * unk);
+
+		skip; // Pause
+		skip; // Resume
+		skip; // IsPlaying
+		skip; // Stop
+		skip; // SetLooping
+		skip; // IsLooping
+		skip; // SetVolume
+		skip; // GetVolume
+		skip; // SetPan
+		skip; // GetPan
+		skip; // SetPitch
+		skip; // GetPitch
+		skip; // GetNumChannels
+		skip; // GetSourceFormat
+		skip; // GetSampleRate
+		
+		override
+		"538b1d????????568bf1ffd3":
+		void SystemSuspend();
+		
+		override
+		"568b35????????578bf9ffd6":
+		void SystemResume();
+
+		skip; // ProcessData
+		skip; // ActivateNextQueuedData
+		skip; // Update
+		skip; // IsPlaybackFinished
+		skip; // IsProcessingFinished
+	};
+} : 0x4;
