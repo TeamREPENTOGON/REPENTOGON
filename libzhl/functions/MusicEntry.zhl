@@ -1,8 +1,13 @@
-struct MusicEntry
+struct MusicEntry depends (MusicLayer)
 {
-	int _guessingId : 0x0;
+	int _id : 0x0;
     std_string _name : 0x4;
-	std_string _guessingString : 0x1c;
-	std_string _filenameMaybe : 0x34;
+	std_string _introFilename : 0x1c;
+	std_string _filename : 0x34;
 	bool _loop : 0x4c;
+	unsigned char _layerMode : 0x4d;
+	float _multiplier : 0x50;
+	float _layerFadeRate : 0x54;
+	MusicLayer* _layers : 0x58;
+	unsigned int _numLayers : 0x5c;
 } : 0x60;

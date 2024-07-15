@@ -55,7 +55,7 @@ LUA_FUNCTION(Lua_MusicManager_PlayJingle) {
 
 	if (luaL_checkinteger(L, 3))
 		//duration was inlined and (at least most) calls to the func had it stripped from the args, just set it ourselves
-		music->_jingleCountdownMaybe = duration;
+		music->_jingleCountdown = duration;
 
 	return 0;
 }

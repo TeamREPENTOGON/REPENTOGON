@@ -214,6 +214,7 @@ namespace lua {
         extern LIBZHL_API const char* MinimapMT;
         extern LIBZHL_API const char* ModsMenuMT;
         extern LIBZHL_API const char* MultiShotParamsMT;
+        extern LIBZHL_API const char* MusicEntry;
         extern LIBZHL_API const char* NightmareSceneMT;
         extern LIBZHL_API const char* NullFrameMT;
         extern LIBZHL_API const char* OptionsMenuMT;
@@ -237,6 +238,7 @@ namespace lua {
         extern LIBZHL_API const char* SaveMenuMT;
         extern LIBZHL_API const char* ScoreSheetMT;
         extern LIBZHL_API const char* ShapeMT;
+        extern LIBZHL_API const char* SoundActorMT;
         extern LIBZHL_API const char* SpecialSeedsMenuMT;
         extern LIBZHL_API const char* StageTransitionMT;
         extern LIBZHL_API const char* StatsMenuMT;
