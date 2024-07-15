@@ -54,7 +54,7 @@ LUA_FUNCTION(Lua_SoundStreamGetFrameCount)
 	return 1;
 }
 
-static void RegisterSoundStreamSet(lua_State* L)
+static void RegisterSoundStream(lua_State* L)
 {
 	luaL_Reg functions[] = {
 		{ "GetActor", Lua_SoundStreamGetActor},
@@ -66,12 +66,12 @@ static void RegisterSoundStreamSet(lua_State* L)
 		{ "GetFrameCount", Lua_SoundStreamGetFrameCount},
 		{ NULL, NULL }
 	};
-	lua::RegisterNewClass(L, lua::metatables::SoundStreamSetMT, lua::metatables::SoundStreamSetMT, functions);
+	lua::RegisterNewClass(L, lua::metatables::SoundStreamMT, lua::metatables::SoundStreamMT, functions);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
 	lua::LuaStackProtector protector(_state);
-	RegisterSoundStreamSet(_state);
+	RegisterSoundStream(_state);
 }
