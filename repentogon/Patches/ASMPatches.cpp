@@ -3,11 +3,13 @@
 
 #include "../LuaInterfaces/LuaRender.h"
 #include "NullItemsAndCostumes.h"
+#include "CustomCache.h"
 #include "FamiliarTags.h"
 #include "GetCoinValue.h"
 #include "PocketItems.h"
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
+#include "EntityPlus.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -125,6 +127,7 @@ void PerformASMPatches() {
 	ASMPatchMegaSatanEnding();
 	ASMPatchWaterDisabler();
 	PatchRoomClearDelay();
+	ASMPatchTrySpawnBlueWombDoor();
 
 	// Player
 	ASMPatchCheckFamiliar();
@@ -146,6 +149,8 @@ void PerformASMPatches() {
 	PatchNullItemAndNullCostumeSupport();
 	ASMPatchesForGetCoinValue();
 	ASMPatchesForAddRemovePocketItemCallbacks();
+	ASMPatchesForEntityPlus();
+	ASMPatchesForCustomCache();
 	HookImGui();
 
 	// Sprite

@@ -84,8 +84,8 @@ Repentogon itself adds some tags that can be used to apply certain features to i
 | nometronome | Prevents the item from being picked by Metronome. |
 | revive | Each copy of the collectible/trinket/null effect held is counted as an extra life (on the HUD, etc) and prevents the game from deleting the run save upon death, making reviving the player safe. EntityPlayer functions such as `player:GetExtraLives()` and `player:WillPlayerRevive()` respect this. Note that this tag does NOT automatically revive the player, you are still responsible for removing your item/effect and reviving the player when desired, either by calling `player:Revive()` or returning false on either the `MC_PRE_TRIGGER_PLAYER_DEATH` or `MC_TRIGGER_PLAYER_DEATH_POST_CHECK_REVIVES` callbacks. See below for some sample code. |
 | reviveeffect | Same as "revive" but instead applies to the corresponding TemporaryEffect of the collectible or trinket. You may want to specify `persistent="true"` on the collectible/trinket to make its TemporaryEffect persist between rooms. There is no difference between "revive" and "reviveeffect" for null items. |
-| chancerevive | If item is counted as an extra life, displays a "?" next to the extra life count, like Guppy's Collar. |
-| hiddenrevive | If item is counted as an extra life, this prevents it from being counted on the hud. Overrides "chancerevive". |
+| chancerevive | If the "revive" or "reviveeffect" tag is present, also displays a "?" next to the extra life count, like Guppy's Collar. |
+| hiddenrevive | If the "revive" or "reviveeffect" tag is present, this prevents it from being counted on the hud. Overrides "chancerevive". |
 
 Sample revive XML:
 ```xml

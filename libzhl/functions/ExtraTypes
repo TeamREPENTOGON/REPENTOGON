@@ -105,6 +105,11 @@ TypeInfo std_vector_int {
     Align 4;
 };
 
+TypeInfo std_vector_vector2 {
+    Size 12;
+    Align 4;
+};
+
 TypeInfo std_set_int {
     Size 8;
     Align 4;
@@ -206,6 +211,11 @@ TypeInfo deque_LootListEntry {
 };
 
 TypeInfo vector_BossPoolEntry {
+	Size 12;
+	Align 4;
+};
+
+TypeInfo vector_HomingLaserBezier {
 	Size 12;
 	Align 4;
 };

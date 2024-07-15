@@ -89,7 +89,7 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 	float radius = (float)luaL_checknumber(L, 2);
 	unsigned int partition = (unsigned int)luaL_optinteger(L, 3, -1);
 
-	EntityList_EL res;
+	EntityList_EL res = list->QueryRadius(pos, radius, partition);
 	EntityList_EL* resPtr = &res;
 	lua_newtable(L);
 
@@ -107,8 +107,6 @@ LUA_FUNCTION(Lua_IsaacFindInRadiusFix)
 		call queryRadius;
 		pop ecx;
 	} */
-
-	list->QueryRadius(&res, pos, radius, partition);
 
 	unsigned int size = res._size;
 
@@ -309,8 +307,16 @@ LUA_FUNCTION(Lua_GetSubTypeByName) {
 LUA_FUNCTION(Lua_PlayCutscene) {
 	const unsigned int cutscene = (unsigned int)luaL_checkinteger(L, 1);
 	const bool shouldClear = lua::luaL_optboolean(L, 2, false);
+
+	if (cutscene > 26) {
+		string out;
+		g_Game->GetConsole()->RunCommand("cutscene " + to_string(cutscene), &out, NULL);
+		return 0;
+	}
 	g_Manager->ShowCutscene(cutscene, shouldClear);
 	return 0;
+
+
 }
 
 LUA_FUNCTION(Lua_GetCutsceneByName) {

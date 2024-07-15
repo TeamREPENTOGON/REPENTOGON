@@ -27,6 +27,12 @@ tags:
 
 ## Functions
 
+### GetRNG () {: aria-label='Functions' }
+#### [RNG](RNG.md) GetRNG ( ) {: .copyable aria-label='Functions' }
+
+???+ warning "Warning"
+	May return `nil`.
+___
 ### GetSeed () {: aria-label='Functions' }
 #### int GetSeed ( ) {: .copyable aria-label='Functions' }
 
@@ -42,10 +48,4 @@ ___
 ### GetVariant () {: aria-label='Functions' }
 #### int GetVariant ( ) {: .copyable aria-label='Functions' }
 
-___
-### GetRNG () {: aria-label='Functions' }
-#### [RNG](RNG.md) GetRNG ( ) {: .copyable aria-label='Functions' }
-
-???+ warning "Warning"
-	May return `nil`.
 ___

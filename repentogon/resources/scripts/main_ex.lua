@@ -1356,6 +1356,8 @@ local CustomRunCallbackLogic = {
 	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_ITEMS] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_PLANETARIUM_APPLY_TELESCOPE_LENS] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_POST_PLANETARIUM_CALCULATE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_EVALUATE_CUSTOM_CACHE] = RunAdditiveFirstArgCallback,
+	[ModCallbacks.MC_EVALUATE_FAMILIAR_MULTIPLIER] = RunAdditiveFirstArgCallback,
 	[ModCallbacks.MC_PRE_PLAYER_ADD_CARD] = RunPreAddCardPillCallback,
 	[ModCallbacks.MC_PRE_PLAYER_ADD_PILL] = RunPreAddCardPillCallback,
 	[ModCallbacks.MC_PLAYER_GET_ACTIVE_MIN_USABLE_CHARGE] = RunAdditiveThirdArgCallback,
@@ -1514,7 +1516,15 @@ function FontMT.__call(_,FontPath)
 	return out,isloaded
 end
 
+--Get rid of the GetCollectible compatibility wrapper
+local ItemPoolMT = getmetatable(ItemPool).__class
+local OldIndex = ItemPoolMT.__index
+local NewIndex = {}
 
+NewIndex.GetCollectible = ItemPoolMT.GetCollectible
+rawset(ItemPoolMT, "__index", function(self, k)
+	return NewIndex[k] or OldIndex(self, k)
+end)
 
 --res load error stuff end
 

@@ -162,7 +162,7 @@ __thiscall int Entity_Player::AddActiveCharge(unsigned int charge, int slot, boo
 __thiscall Entity_Pickup* Entity_Player::DropCollectible(int collectible, Entity_Pickup* existingCollectible, bool removeFromPlayerForm);
 
 "558bec515356578b7d??8bd9895d":
-__thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible);
+__thiscall Entity_Pickup* Entity_Player::DropCollectibleByHistoryIndex(int index, Entity_Pickup* existingCollectible, bool unusedBool);
 
 "558bec83e4f8518a55":
 __thiscall void Entity_Player::AddHearts(int hearts, bool unk);
@@ -269,6 +269,9 @@ __thiscall void Entity_Player::CheckPoopSpellQueue();
 
 "558bec6aff68????????64a1????????5081ec78010000":
 __thiscall void Entity_Player::AddCostume(ItemConfig_Item* collectibleID, bool itemStateOnly);
+
+"558bec83e4f8515356578b7d??8bf185ff":
+__thiscall void Entity_Player::RemoveCostume(ItemConfig_Item * Item);
 
 "558bec8b55??5685d278??a1????????8bb0????????8b80????????2bc6c1f8023bd07d??8b04??6a00":
 __thiscall void Entity_Player::AddNullCostume(int costumeid);

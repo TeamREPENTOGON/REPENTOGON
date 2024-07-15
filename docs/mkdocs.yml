@@ -191,6 +191,8 @@ nav:
     - XMLNode: enums/XMLNode.md
   - Ambush: Ambush.md
   - Backdrop: Backdrop.md
+  - BossPool: BossPool.md
+  - BossPoolManager: BossPoolManager.md
   - Camera: Camera.md
   - Capsule: Capsule.md
   - CcpContainer: 
@@ -316,6 +318,7 @@ nav:
     - Vertex: renderer/Vertex.md
     - VertexBuffer: renderer/VertexBuffer.md
     - VertexDescriptor: renderer/VertexDescriptor.md
+  - REPENTOGON: Repentogon.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfig:

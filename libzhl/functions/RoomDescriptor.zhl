@@ -1,3 +1,6 @@
+"558bec83e4f883ec1453568b75??8bd9":
+__thiscall void RoomDescriptor::InitSeeds(RNG * rng);
+
 struct RoomDescriptor depends (RoomConfig_Room)
 {
     int32_t GridIndex : 0x0; // 0x0

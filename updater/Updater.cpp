@@ -246,7 +246,7 @@ int main() {
                     }
 
                     ShellExecute(NULL, "open", "REPENTOGONUpdater.exe", args.c_str(), NULL, SW_SHOWDEFAULT);
-                    return UPDATER_EXIT_OK;
+                    return UPDATER_EXIT_UPDATED;
                 }
                 else {
                     sLogger->Info("Skipping update as per user request\n");
@@ -260,6 +260,6 @@ int main() {
         }
     }
 
-    return UPDATER_EXIT_OK;
+    return UPDATER_EXIT_NO_UPDATE_AVAILABLE;
 }
 

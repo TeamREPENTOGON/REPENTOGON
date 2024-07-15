@@ -1,6 +1,9 @@
 "558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf9897d??c707????????c747??00000000c747??00000000":
 __thiscall void Entity::constructor();
 
+"558bec6aff68????????64a1????????5083ec085657a1????????33c5508d45??64a3????????8bf980bf????????00":
+__thiscall void Entity::destructor();
+
 /*
 "558bec518b45088d4d08": //bad signature
 static void Entity::PlaySound(int ID, float Volume, int FrameDelay, bool Loop, float Pitch);
@@ -71,6 +74,9 @@ __thiscall Entity_Effect * Entity::MakeGroundPoof(Vector * pos, ColorMod * color
 "558bec83e4f881ec94000000f30f1005":
 __thiscall void Entity::TeleportToRandomPosition(bool unused);
 
+"8b81????????85c074??83f80374??83f80174??83f80274??32c0":
+__thiscall bool Entity::IsFlying();
+
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
 	inline int GetIndex() { return *(int*)((char*)this + 0x20); }
@@ -131,7 +137,10 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     bool _visible : 0x169;
 	bool _exists : 0x16a;
 	bool _dead : 0x16b;
+	// 0x184 is a boolean related to collisions.
+	unsigned short _entityExtraDataPtrUpperBytes : 0x186;
 	bool _collidesWithGrid : 0x188;
+	unsigned short _entityExtraDataPtrLowerBytes : 0x18a;
 	vector_ColorParams _colorParams : 0x1a4;
 	int _fireDamageCountdown : 0x208;
 	int _damageCountdown : 0x20c;

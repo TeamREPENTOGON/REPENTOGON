@@ -248,6 +248,11 @@ Returns a table with the amount of each collectible the player has, without coun
     ```
 
 ___
+### GetConceptionFamiliarFlags () {: aria-label='Functions' }
+#### int GetConceptionFamiliarFlags ( ) {: .copyable aria-label='Functions' }
+Returns the bitmask corresponding to which familiars have been spawned by Cambion/Immaculate Conception. The additional familiars provided by this bitmask are spawned during familiar cache evaluation, but only while the player has one of those two items.
+
+___
 ### GetCostumeLayerMap () {: aria-label='Functions' }
 #### table GetCostumeLayerMap ( ) {: .copyable aria-label='Functions' }
 Returns table of player sprite layers data for costumes with the following fields:
@@ -766,6 +771,7 @@ ___
 ### SetBagOfCraftingContent () {: aria-label='Functions' }
 #### void SetBagOfCraftingContent ( [BagOfCraftingPickup](enums/BagOfCraftingPickup.md)[] ContentTable ) {: .copyable aria-label='Functions' }
 Sets the content of the bag to the content of the table. Table must use valid [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) ids. Table can be shorter than 8, in which case the remaining indexes are set to empty.
+
 ___
 ### SetBagOfCraftingOutput () {: aria-label='Functions' }
 #### void SetBagOfCraftingOutput ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible ) {: .copyable aria-label='Functions' }
@@ -775,6 +781,10 @@ ___
 ### SetBagOfCraftingSlot () {: aria-label='Functions' }
 #### void SetBagOfCraftingSlot ( int SlotID, [BagOfCraftingPickup](enums/BagOfCraftingPickup.md) PickupID ) {: .copyable aria-label='Functions' }
 Sets the specified slot in the player's Bag of Crafting to the specified pickup.
+
+___
+### SetBlackHeart () {: aria-label='Functions' }
+#### void SetBlackHeart ( int BlackHeart ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBladderCharge () {: aria-label='Functions' }
@@ -793,10 +803,17 @@ ___
 #### void SetCambionConceptionState ( int State ) {: .copyable aria-label='Functions' }
 Sets how much damage has been taken for the Cambion Conception item.
 
+Note that the game only spawns a familiar when the player takes damage, if this counter is now at 15, 30, 60 or 90. You cannot trigger a birth directly with this function.
+
 ___
 ### SetCanShoot () {: aria-label='Functions' }
 #### boolean SetCanShoot ( boolean CanShoot ) {: .copyable aria-label='Functions' }
 Instantaneously disables (or enables) the player's ability to shoot. The base game primarily uses this for special challenges.
+
+___
+### SetConceptionFamiliarFlags () {: aria-label='Functions' }
+#### void SetConceptionFamiliarFlags ( [ConceptionFamiliarFlag](enums/ConceptionFamiliarFlag.md) Flags ) {: .copyable aria-label='Functions' }
+Sets the bitmask corresponding to which familiars have been spawned by Cambion/Immaculate Conception. The additional familiars provided by this bitmask are spawned during familiar cache evaluation, but only while the player has one of those two items.
 
 ___
 ### SetControllerIndex () {: aria-label='Functions' }
@@ -876,6 +893,10 @@ ___
 ### SetImmaculateConceptionState () {: aria-label='Functions' }
 #### void SetImmaculateConceptionState ( int State ) {: .copyable aria-label='Functions' }
 Sets how many hearts have been collected for the Immaculate Conception item.
+
+Note that the game checks to spawn a familiar only when the player picks up a heart, so you cannot trigger that directly with this function.
+
+If you set a value that is greater than 14, the value is automatically capped at 14, meaning that the next heart picked up will spawn a familiar.
 
 ___
 ### SetItemState () {: aria-label='Functions' }
