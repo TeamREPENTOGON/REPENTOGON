@@ -3,11 +3,14 @@ struct SoundSourceBase {
 		"558bec568bf18d4e??c706????????e8????????f645??0174??6a24":
 		void * Free(bool param_1);
 		
-		skip; // ApplyDataToHardware
-		skip; // GetHardwareBufferSize
+		pure
+		bool ApplyDataToHardware(int param_1, int param_2);
+
+		pure
+		int GetHardwareBufferSize();
 		
 		"32c0c20800":
-		bool open_file_dunno(int UNK_param_1, int UNK_param_2);
+		bool open_file_dunno(char * param_1, bool param_2);
 		
 		"558bec8b51??568d71":
 		void Queue(uint64_t UNK_param_1, int UNK_param_2);
@@ -30,11 +33,20 @@ struct SoundSourceBase {
 		"8a41??c3????????????????????????8a41":
 		bool IsOpen();
 		
-		skip; // Play
-		skip; // Pause
-		skip; // Resume
-		skip; // IsPlaying
-		skip; // Stop
+		pure
+		void Play(void * param_1);
+		
+		pure
+		void Pause();
+
+		pure
+		void Resume();
+
+		pure
+		bool IsPlaying();
+
+		pure
+		void Stop();
 		
 		"558bec8a45??8841??5dc20400??????558bec6aff":
 		void SetLooping(bool value);
@@ -42,21 +54,52 @@ struct SoundSourceBase {
 		"8a41??c3????????????????????????c641??01":
 		bool IsLooping();
 		
-		skip; // SetVolume
-		skip; // GetVolume
-		skip; // SetPan
-		skip; // GetPan
-		skip; // SetPitch
-		skip; // GetPitch
-		skip; // GetNumChannels
-		skip; // GetSourceFormat
-		skip; // GetSampleRate
-		skip; // SystemSuspend
-		skip; // SystemResume
-		skip; // ProcessData
-		skip; // ActivateNextQueuedData
-		skip; // Update
-		skip; // IsPlaybackFinished
-		skip; // IsProcessingFinished
+		pure
+		void SetVolume(float param_1);
+
+		pure
+		float GetVolume();
+
+		pure
+		void SetPan(float param_1);
+
+		pure
+		float GetPan();
+
+		pure
+		void SetPitch(float param_1);
+
+		pure
+		float GetPitch();
+		
+		pure
+		uint16_t GetNumChannels();
+
+		pure
+		int GetSourceFormat();
+		
+		pure
+		unsigned int GetSampleRate();
+		
+		pure
+		void SystemSuspend();
+
+		pure
+		void SystemResume();
+		
+		pure
+		int ProcessData(void * param_1);
+		
+		pure
+		bool ActivateNextQueuedData();
+		
+		pure
+		void Update();
+		
+		pure
+		bool IsPlayingFinished();
+		
+		pure
+		bool IsProcessingFinished();
 	};
 } : 0x4;

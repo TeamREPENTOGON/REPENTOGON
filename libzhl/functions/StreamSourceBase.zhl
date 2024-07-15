@@ -6,6 +6,7 @@ struct StreamSourceBase : public SoundSourcePlatformBase {
 		
 		skip; // ApplyDataToHardware
 		
+		override
 		"b800000400c3":
 		int GetHardwareBufferSize();
 		
@@ -59,12 +60,15 @@ struct StreamSourceBase : public SoundSourcePlatformBase {
 		skip; // ProcessData
 		skip; // ActivateNextQueuedData
 		
+		override
 		"558bec83ec1053568bf133c9":
 		void Update();
 		
+		override
 		"80b9????????0074??33d2":
 		bool IsPlayingFinished();
 		
+		override
 		"8a81????????c3??????????????????558bec6aff68????????64a1????????5056":
 		bool IsProcessingFinished();
 		
