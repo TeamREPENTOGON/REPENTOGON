@@ -10,6 +10,7 @@
 #include "Anm2Extras.h"
 #include "ExtraLives.h"
 #include "EntityPlus.h"
+#include "CustomItemPools.h"
 
 #include "ASMPatches/ASMCallbacks.h"
 #include "ASMPatches/ASMDelirium.h"
@@ -151,6 +152,7 @@ void PerformASMPatches() {
 	ASMPatchesForAddRemovePocketItemCallbacks();
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
+	ASMPatchesForCustomItemPools();
 	HookImGui();
 
 	// Sprite
