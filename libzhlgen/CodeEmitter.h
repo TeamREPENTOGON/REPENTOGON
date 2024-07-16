@@ -49,7 +49,7 @@ private:
 	void Emit(Signature const& sig, bool isVirtual);
 	void Emit(std::variant<Signature, Skip, Function> const& sig);
 	void Emit(PointerDecl const& ptr);
-	void EmitFunction(Function const& fun);
+	void EmitFunction(Function const& fun, bool withPrefix = false);
 	void Emit(VariableSignature const& sig);
 	void EmitNamespace(std::string const& name);
 	void Emit(ExternalFunction const& fn);
