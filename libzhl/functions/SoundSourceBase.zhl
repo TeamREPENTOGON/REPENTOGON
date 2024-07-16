@@ -34,7 +34,7 @@ struct SoundSourceBase {
 		bool IsOpen();
 		
 		pure
-		void Play(void * param_1);
+		void Play(bool unk);
 		
 		pure
 		void Pause();

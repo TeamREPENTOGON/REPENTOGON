@@ -31,7 +31,7 @@ struct StreamSourceBase : public SoundSourcePlatformBase {
 		
 		override
 		"558bec51568bf18b068b40??ffd084c00f85":
-		void Play(void * unk);
+		void Play(bool unk);
 		
 		skip; // Pause
 		skip; // Resume

@@ -31,7 +31,7 @@ struct SampleSourceBase : public SoundSourcePlatformBase {
 		
 		override
 		"558bec568bf18b06ff50??ff75":
-		void Play(void * param_1);
+		void Play(bool unk);
 
 		skip; // Pause
 		skip; // Resume

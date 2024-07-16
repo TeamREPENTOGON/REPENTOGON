@@ -28,7 +28,7 @@ struct StreamSourcePlatformBase : public StreamSourceBase {
 		
 		override
 		"568bf1837e??0074??8b068b40??ffd084c075??a1":
-		void Play(void * unk);
+		void Play(bool unk);
 
 		skip; // Pause
 		skip; // Resume
