@@ -3,6 +3,8 @@
 #include "HookSystem.h"
 #include "Room.h"
 
+#include "../../Patches/CustomItemPools.h"
+
 RoomASM roomASM;
 extern uint32_t hookedbackdroptype;
 
@@ -382,14 +384,91 @@ LUA_FUNCTION(Lua_GetBossVictoryJingle) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_RoomSetItemPool) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	const int poolType = (int)luaL_checkinteger(L, 2);
+
+	if (poolType < POOL_NULL || poolType >= CustomItemPool::itemPools.size() + NUM_ITEMPOOLS) {
+		return luaL_argerror(L, 2, "Invalid ItemPoolType");
+	}
+
+	roomASM.ItemPool = poolType;
+
+	return 0;
+}
+
+inline int TrySpecialPool(Room* room) {
+	const uint32_t roomType = room->_roomType;
+
+	if (room->_bossId == BOSS_FALLEN) {
+		return ROOM_DEVIL;
+	}
+
+	if (roomType == ROOM_BOSS) {
+		if (*g_Game->GetLevelStateFlags() & (1 << 17)) {
+			return ROOM_DEVIL;
+		}
+		return roomType;
+	}
+
+	if (roomType == ROOM_TREASURE) {
+		if (g_Game->IsGreedMode() && (room->_descriptor->GridIndex != g_Game->_greedModeTreasureRoomIdx)) {
+			return ROOM_BOSS;
+		}
+		if (room->_descriptor->Flags & (1 << 11)) {
+			return ROOM_DEVIL;
+		}
+		return roomType;
+	}
+
+	if (roomType == ROOM_CHALLENGE && (room->_descriptor->Data->Subtype == 1)) {
+		return ROOM_BOSS;
+	}
+
+	return roomType;
+}
+
+LUA_FUNCTION(Lua_RoomGetItemPool) {
+	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
+	uint32_t seed = (unsigned int)luaL_optinteger(L, 2, Isaac::genrand_int32());
+	seed = seed != 0 ? seed : 1;
+	bool raw = lua::luaL_optboolean(L, 3, false);
+
+	if (roomASM.ItemPool != POOL_NULL || raw) {
+		lua_pushinteger(L, roomASM.ItemPool);
+		return 1;
+	}
+
+	const auto& roomData = room->_descriptor->Data;
+	if ((roomData->Type == ROOM_DEFAULT) && (roomData->StageId == STB_HOME) && roomData->Subtype == 2) {
+		lua_pushinteger(L, POOL_MOMS_CHEST);
+		return 1;
+	}
+
+	uint32_t roomType = TrySpecialPool(room);
+	int poolType = g_Game->_itemPool.GetPoolForRoom(roomType, seed);
+	poolType = poolType != POOL_NULL ? poolType : POOL_TREASURE;
+
+	lua_pushinteger(L, poolType);
+	return 1;
+}
+
 HOOK_METHOD(Room, Init, (int param_1, RoomDescriptor * desc) -> void) {
 	roomASM.WaterDisabled = false;
+	roomASM.ItemPool = POOL_NULL;
 	super(param_1, desc);
 	//printf("WaterDisabled is %s, stage is %d\n", roomASM.WaterDisabled ? "TRUE" : "FALSE", g_Game->_stage);
 	if (g_Game->_stage == 12 && !roomASM.WaterDisabled && (this->_descriptor->Data->StageId == 27 || this->_descriptor->Data->StageId == 28)) {
 		this->_waterAmount = 1.0f;
 		//printf("setting water\n");
 	}
+}
+
+HOOK_METHOD(Room, GetSeededCollectible, (uint32_t seed, bool noDecrease) -> int) {
+	if (roomASM.ItemPool != POOL_NULL) {
+		return g_Game->_itemPool.GetCollectible(roomASM.ItemPool, seed, noDecrease, COLLECTIBLE_NULL);
+	}
+	return super(seed, noDecrease);
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -438,6 +517,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBackdropType", Lua_RoomGetBackdropTypeHui},
 		{ "SaveState", Lua_RoomSaveState},
 		{ "GetBossVictoryJingle", Lua_GetBossVictoryJingle},
+		{ "SetItemPool", Lua_RoomSetItemPool },
+		{ "GetItemPool", Lua_RoomGetItemPool },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ROOM, functions);
