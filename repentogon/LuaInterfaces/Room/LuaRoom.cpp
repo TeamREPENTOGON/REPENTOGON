@@ -434,12 +434,18 @@ LUA_FUNCTION(Lua_RoomGetItemPool) {
 	seed = seed != 0 ? seed : 1;
 	bool raw = lua::luaL_optboolean(L, 3, false);
 
+	const RoomConfig_Room* roomData = room->_descriptor->Data;
+	if (g_Manager->_starting || roomData == nullptr)
+	{
+		lua_pushinteger(L, POOL_NULL);
+		return 1;
+	}
+
 	if (roomASM.ItemPool != POOL_NULL || raw) {
 		lua_pushinteger(L, roomASM.ItemPool);
 		return 1;
 	}
 
-	const auto& roomData = room->_descriptor->Data;
 	if ((roomData->Type == ROOM_DEFAULT) && (roomData->StageId == STB_HOME) && roomData->Subtype == 2) {
 		lua_pushinteger(L, POOL_MOMS_CHEST);
 		return 1;
