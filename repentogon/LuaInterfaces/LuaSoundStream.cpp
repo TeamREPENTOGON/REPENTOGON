@@ -1,11 +1,16 @@
 #include "IsaacRepentance.h"
 #include "LuaCore.h"
 #include "HookSystem.h"
+#include "Log.h"
 
 LUA_FUNCTION(Lua_SoundStreamGetActor)
 {
 	SoundStream* stream = *lua::GetUserdata<SoundStream**>(L, 1, lua::metatables::SoundStreamMT);
 	SoundActor* toLua = &stream->_actor;
+
+	ZHL::Logger logger(true);
+	logger.Log("getting actor at addr %d\n", &stream->_actor);
+
 	SoundActor** luaSoundActor = (SoundActor**)lua_newuserdata(L, sizeof(SoundActor*));
 	*luaSoundActor = toLua;
 	luaL_setmetatable(L, lua::metatables::SoundActorMT);
