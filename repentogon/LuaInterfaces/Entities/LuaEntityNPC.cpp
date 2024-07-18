@@ -4,6 +4,7 @@
 
 #include "../../Patches/XMLData.h"
 #include "../../Patches/ASMPatches/ASMEntityNPC.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_EntityNPC_UpdateDirtColor)
 {
@@ -338,6 +339,36 @@ LUA_FUNCTION(Lua_GetSirenPlayerEntity) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_GetFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus && entityPlus->isFlyingOverride.has_value()) {
+		lua_pushboolean(L, *entityPlus->isFlyingOverride);
+	}
+	else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_SetFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus) {
+		entityPlus->isFlyingOverride = lua::luaL_checkboolean(L, 2);
+	}
+	return 0;
+}
+
+LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	EntityPlus* entityPlus = GetEntityPlus(npc);
+	if (entityPlus) {
+		entityPlus->isFlyingOverride = std::nullopt;
+	}
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -361,6 +392,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		//{ "ThrowMaggot", Lua_EntityNPC_ThrowMaggot },
 		//{ "ThrowMaggotAtPos", Lua_EntityNPC_ThrowMaggotAtPos },
 		{ "TryThrow", Lua_EntityNPC_TryThrow },
+		{ "GetFlyingOverride", Lua_EntityNPC_GetFlyingOverride },
+		{ "SetFlyingOverride", Lua_EntityNPC_SetFlyingOverride },
+		{ "ClearFlyingOverride", Lua_EntityNPC_ClearFlyingOverride },
 
 		{ "IsBossColor", Lua_IsBossColor },
 		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },

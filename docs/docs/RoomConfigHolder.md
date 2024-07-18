@@ -20,7 +20,7 @@ Returns a RoomConfigRoom corresponding to the given params.
 ___
 
 ### GetRoomByStageTypeAndVariant () {: aria-label='Functions' }
-#### [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) GetRoomByStageTypeAndVariant ( [StbType](enums/StbType.md) Stage, [RoomType](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomType.html) Type, int Variant, int Difficulty ) {: .copyable aria-label='Functions' }
+#### [RoomConfigRoom](https://wofsauge.github.io/IsaacDocs/rep/RoomConfig_Room.html) GetRoomByStageTypeAndVariant ( [StbType](enums/StbType.md) Stage, [RoomType](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomType.html) Type, int Variant, int Mode = -1 ) {: .copyable aria-label='Functions' }
 Returns a RoomConfigRoom corresponding to the given params.
 
 ___

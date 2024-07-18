@@ -2,6 +2,7 @@
 #include "LuaCore.h"
 #include "HookSystem.h"
 #include "../../Patches/FamiliarTags.h"
+#include "../../Patches/EntityPlus.h"
 
 LUA_FUNCTION(Lua_FamiliarGetFollowerPriority)
 {
@@ -153,6 +154,15 @@ LUA_FUNCTION(Lua_FamiliarGetItemConfig) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FamiliarEvaluateMultiplier) {
+	auto* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	EntityFamiliarPlus* famPlus = GetEntityFamiliarPlus(fam);
+	if (famPlus) {
+		famPlus->cachedMultiplier = std::nullopt;
+	}
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -175,6 +185,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMoveDelayNum", Lua_FamiliarGetMoveDelayNum },
 		{ "SetMoveDelayNum", Lua_FamiliarSetMoveDelayNum },
 		{ "GetItemConfig", Lua_FamiliarGetItemConfig },
+		{ "EvaluateMultiplier", Lua_FamiliarEvaluateMultiplier },
 		{ NULL, NULL }
 	};
 

@@ -3,5 +3,5 @@ struct ItemPool_Item depends (RNG) {
 	vector_PoolItem _poolList : 0x4 ;
 	RNG _rng1 : 0x10 ;
 	RNG _rng2 : 0x20 ;
-	int _bibleUpgrade : 0x30 ;
+	uint32_t _bibleUpgrade : 0x30 ;
 } : 0x34;

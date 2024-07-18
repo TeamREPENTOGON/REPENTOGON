@@ -1,3 +1,4 @@
+#include "HookSystem.h"
 #include "ASMPatcher.hpp"
 #include "../ASMPatches.h"
 
@@ -63,25 +64,25 @@ void ASMPatchVoidGeneration() {
 	ASMPatch patch;
 	ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::XMM0 | ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	patch.PreserveRegisters(registers)
-	.Push(ASMPatch::Registers::EBP, -0x38)
-	.Push(ASMPatch::Registers::EBP, -0x68)
-	.Push(ASMPatch::Registers::EBP, -0x40)
-	.Push(0x14)
-	.Push(ASMPatch::Registers::EBP, -0x70)
-	.Push(ASMPatch::Registers::EBP, -0x74)
-	.Push(ASMPatch::Registers::EBP, -0x78)
-	.Push(ASMPatch::Registers::EBP, -0x7C)
-	.Push(ASMPatch::Registers::EBP, -0x80)
-	.LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x64, ASMPatch::Registers::EBX)
-	.Push(ASMPatch::Registers::EBX)
-	.Push(ASMPatch::Registers::EBP, -0x30)
-	.AddInternalCall(VoidGenerationOverride)
-	.AddBytes("\x84\xC0") // test al, al
-	.RestoreRegisters(registers)
-	.AddBytes("\xc7\x45\x94\x14").AddZeroes(3)
-	.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 103) // we handled the vector ourselves
-	.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore the commands we overwrote
-	.AddRelativeJump((char*)addr + 0x8);
+		.Push(ASMPatch::Registers::EBP, -0x38)
+		.Push(ASMPatch::Registers::EBP, -0x68)
+		.Push(ASMPatch::Registers::EBP, -0x40)
+		.Push(0x14)
+		.Push(ASMPatch::Registers::EBP, -0x70)
+		.Push(ASMPatch::Registers::EBP, -0x74)
+		.Push(ASMPatch::Registers::EBP, -0x78)
+		.Push(ASMPatch::Registers::EBP, -0x7C)
+		.Push(ASMPatch::Registers::EBP, -0x80)
+		.LoadEffectiveAddress(ASMPatch::Registers::EBP, -0x64, ASMPatch::Registers::EBX)
+		.Push(ASMPatch::Registers::EBX)
+		.Push(ASMPatch::Registers::EBP, -0x30)
+		.AddInternalCall(VoidGenerationOverride)
+		.AddBytes("\x84\xC0") // test al, al
+		.RestoreRegisters(registers)
+		.AddBytes("\xc7\x45\x94\x14").AddZeroes(3)
+		.AddConditionalRelativeJump(ASMPatcher::CondJumps::JNZ, (char*)addr + 103) // we handled the vector ourselves
+		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x8))  // Restore the commands we overwrote
+		.AddRelativeJump((char*)addr + 0x8);
 
 	sASMPatcher.PatchAt(addr, &patch);
 }
@@ -142,30 +143,53 @@ void PatchSpecialQuest() {
 	ASMPatchTrySpawnSpecialQuestDoor();
 }
 
+static const int TRAPDOOR_DEAL_SUBTYPE = 666;
+// Change subtype of trapdoor Devil and Angel room, after they are loaded in RoomConfig
+HOOK_METHOD(RoomConfig, LoadStageBinary, (unsigned int Stage, unsigned int Mode) -> void)
+{
+	super(Stage, Mode);
+
+	if (Stage != 0)
+	{
+		return;
+	}
+
+	//Change Trapdoor Subtype
+	for (int roomType = 14; roomType < 16; roomType++)
+	{
+		unsigned int doors = 0;
+		RoomConfigRoomPtrVector rooms = g_Game->_roomConfig.GetRooms(0, roomType, 13, 100, 100, 0, 20, &doors, 0, Mode);
+		for (RoomConfig_Room* p : rooms)
+		{
+			p->Subtype = TRAPDOOR_DEAL_SUBTYPE;
+		}
+	}
+}
+
 /* This function overrides the call to GetRandomRoom in InitDevilAngelRoom.
  * InitDevilAngelRoom is thiscall. stdcall will mirror the stack cleaning
  * convention, and, as we don't need to preserve ecx under thiscall, nothing
  * more is required.
  */
-static RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight, 
-	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty, 
+static RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight,
+	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty,
 	int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode);
 
-RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight, 
+RoomConfig_Room* __stdcall OverrideGetRandomRoom(RoomConfig* config, unsigned int seed, bool reduceWeight,
 	int stage, int roomType, int roomShape, unsigned int minVariant, int maxVariant, int minDifficulty,
 	int maxDifficulty, unsigned int* requiredDoors, unsigned int roomSubtype, int mode) {
-	/* Hardcoded variant: 100 is used for trapdoor variants after Mom's Heart / It Lives. 
-	 * Variant bounds are both set to 100 only when the game draws these specific variants. 
-	 * In this case, do nothing, let the game proceeds as it would.
+	/* Hardcoded variant: 100 is used for trapdoor variants after Mom's Heart / It Lives.
+	 * Variant bounds are both set to 100 only when the game draws these specific variants.
+	 * In this case, change the requested subtype.
 	 */
 	if (minVariant == maxVariant && maxVariant == 100) {
 		ZHL::Log("[DEBUG] Game naturally selected trapdoor variant when generating "
 			"deal, let it proceed\n");
 		return config->GetRandomRoom(seed, reduceWeight, stage, roomType, roomShape, minVariant, maxVariant,
-			minDifficulty, maxDifficulty, requiredDoors, roomSubtype, mode);
+			minDifficulty, maxDifficulty, requiredDoors, TRAPDOOR_DEAL_SUBTYPE, mode);
 	}
 
-	/* Attempt to draw a random room up to 6 times, ignoring all bounds on variants. As soon as a room that 
+	/* Attempt to draw a random room up to 6 times, ignoring all bounds on variants. As soon as a room that
 	 * is not a trapdoor variant appears, return it.
 	 * If we cannot draw a non trapdoor room in that many attempts, let the game proceed as it would normally,
 	 * mimicking vanilla behavior.
@@ -206,7 +230,7 @@ void PatchDealRoomVariant() {
 	ASMPatch patch;
 	// ASMPatch::SavedRegisters registers(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS, true);
 	// patch.PreserveRegisters(registers);
-	/* Registers need not be saved, as we are performing the equivalent of a 
+	/* Registers need not be saved, as we are performing the equivalent of a
 	 * function call. Push ecx so the override function can access the current
 	 * RoomConfig object.
 	 */

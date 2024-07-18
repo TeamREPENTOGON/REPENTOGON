@@ -276,7 +276,7 @@ static void RegisterASMPatchTest(lua_State* L) {
 	lua_register(L, "ASMPatch", Lua_NewASMPatch);
 }
 
-HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
+/* HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 	lua_State* state = g_LuaEngine->_state;
 	lua::LuaStackProtector protector(state);
@@ -291,6 +291,6 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	RegisterASMPatchTest(state);
 
 	lua_register(state, "Disassemble", Lua_Disassemble);
-};
+}; */
 
 #endif

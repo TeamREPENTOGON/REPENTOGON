@@ -558,12 +558,19 @@ std::string Struct::GetTemplateName() const {
     return result.str();
 }
 
-uint32_t Struct::GetVirtualFunctionSlotInternal(Signature const& signature) const {
+uint32_t Struct::GetVirtualFunctionSlotInternal(Signature const* signature) const {
     uint32_t result = 0;
     for (auto const& fn : _virtualFunctions) {
         if (std::holds_alternative<Signature>(fn)) {
             Signature const& sig = std::get<Signature>(fn);
-            if (sig == signature) {
+            if (sig == *signature) {
+                return result;
+            }
+        }
+        else if (std::holds_alternative<Function>(fn)) {
+            Function const& func = std::get<Function>(fn);
+
+            if (func == signature->_function) {
                 return result;
             }
         }
@@ -575,7 +582,7 @@ uint32_t Struct::GetVirtualFunctionSlotInternal(Signature const& signature) cons
     return 0;
 }
 
-uint32_t Struct::GetVirtualFunctionSlot(Signature const& signature, bool checkParent) const {
+uint32_t Struct::GetVirtualFunctionSlot(Signature const* signature, bool checkParent) const {
     if (_parents.size() > 1) {
         throw std::runtime_error("I don't want to implement multiple inheritance, are you sure there is no other way to design this ?");
     }
@@ -585,13 +592,27 @@ uint32_t Struct::GetVirtualFunctionSlot(Signature const& signature, bool checkPa
     }
     else {
         if (checkParent) {
-            auto [parent, sig] = GetVirtualFunctionSource(signature._function);
+            auto [parent, sig] = GetVirtualFunctionSource(signature->_function);
             if (!parent) {
+                /* If parent and sig are both null, we are on a declaration of a pure function 
+                 * that corresponds to nothing in the parents. Therefore we can simply get 
+                 * its offset in the vtable of the current type.
+                 */
                 uint32_t result = std::get<Type*>(_parents.front())->GetStruct().GetNbVirtualFunctions();
                 return result + GetVirtualFunctionSlotInternal(signature);
             }
             else {
-                return parent->GetVirtualFunctionSlot(*sig, false);
+                /* If sig is null, create a fake signature that contains the concrete version of 
+                 * the function, so GetVirtualFunctionSlotInternal can later check the 
+                 * functions in the vtable against something.
+                 */
+                if (!sig) {
+                    Signature dummy;
+                    dummy._sig = "";
+                    dummy._function = signature->_function;
+                    return parent->GetVirtualFunctionSlot(&dummy, false);
+                }
+                return parent->GetVirtualFunctionSlot(sig, false);
             }
         }
         else {
@@ -601,7 +622,7 @@ uint32_t Struct::GetVirtualFunctionSlot(Signature const& signature, bool checkPa
     }
 }
 
-uint32_t Struct::GetVirtualFunctionSlot(Function const& fn) const {
+uint32_t Struct::GetVirtualFunctionSlot(Function const* fn) const {
     if (_parents.size() > 1) {
         throw std::runtime_error("Multiple inheritance not supported");
     }
@@ -617,8 +638,11 @@ uint32_t Struct::GetVirtualFunctionSlot(Function const& fn) const {
             continue;
         }
 
-        if (std::get<Function>(fun) == fn) {
+        if (std::get<Function>(fun) == *fn) {
             return result;
+        }
+        else {
+            ++result;
         }
     }
 
@@ -659,10 +683,19 @@ std::tuple<Struct*, Signature*> Struct::GetVirtualFunctionSource(Function const&
                 continue;
             }
 
-            if (std::get<Signature>(function)._function == fn) {
-                resStruct = const_cast<Struct*>(this);
-                resSignature = const_cast<Signature*>(&(std::get<Signature>(function)));
-                break;
+            if (std::holds_alternative<Function>(function)) {
+                if (std::get<Function>(function) == fn) {
+                    resStruct = const_cast<Struct*>(this);
+                    resSignature = nullptr;
+                    break;
+                }
+            }
+            else {
+                if (std::get<Signature>(function)._function == fn) {
+                    resStruct = const_cast<Struct*>(this);
+                    resSignature = const_cast<Signature*>(&(std::get<Signature>(function)));
+                    break;
+                }
             }
         }
     }

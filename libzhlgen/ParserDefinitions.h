@@ -100,9 +100,9 @@ struct Struct {
     std::string ToString(bool full) const;
     size_t size() const;
     std::string GetTemplateName() const;
-    uint32_t GetVirtualFunctionSlot(Signature const& sig, bool checkParent) const;
-    uint32_t GetVirtualFunctionSlot(Function const& fn) const;
-    uint32_t GetVirtualFunctionSlotInternal(Signature const& sig) const;
+    uint32_t GetVirtualFunctionSlot(Signature const* sig, bool checkParent) const;
+    uint32_t GetVirtualFunctionSlot(Function const* fn) const;
+    uint32_t GetVirtualFunctionSlotInternal(Signature const* sig) const;
     uint32_t GetNbVirtualFunctions() const;
     std::tuple<Struct*, Signature*> GetVirtualFunctionSource(Function const& fn) const;
 

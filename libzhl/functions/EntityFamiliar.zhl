@@ -50,6 +50,9 @@ __thiscall void Entity_Familiar::RemoveFromPlayer(bool UnusedRemoveFamiliar);
 "8b41??3d84030000":
 __thiscall bool Entity_Familiar::CanCharm();
 
+"538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ece800000056":
+__thiscall void Entity_Familiar::WispInit();
+
 
 struct Entity_Familiar depends (ColorMod, ItemConfig_Item) : public Entity {
 {{

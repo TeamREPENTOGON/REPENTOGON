@@ -318,6 +318,7 @@ nav:
     - Vertex: renderer/Vertex.md
     - VertexBuffer: renderer/VertexBuffer.md
     - VertexDescriptor: renderer/VertexDescriptor.md
+  - REPENTOGON: Repentogon.md
   - RNG: RNG.md
   - Room: Room.md
   - RoomConfig:

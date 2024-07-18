@@ -1,0 +1,11 @@
+"558bec8b45??8901c781????????01000000":
+__thiscall void MTRNG::Init(uint32_t seed);
+
+"568bf18b86????????3d70020000":
+__thiscall uint32_t MTRNG::Next();
+
+struct MTRNG
+{
+    uint32_t _seeds[624] : 0x0;
+    uint32_t _currentIndex : 0x9c0;
+} : 0x9c4; //0x9c4

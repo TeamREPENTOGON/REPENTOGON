@@ -49,12 +49,12 @@ private:
 	void Emit(Signature const& sig, bool isVirtual);
 	void Emit(std::variant<Signature, Skip, Function> const& sig);
 	void Emit(PointerDecl const& ptr);
-	void EmitFunction(Function const& fun);
+	void EmitFunction(Function const& fun, bool withPrefix = false);
 	void Emit(VariableSignature const& sig);
 	void EmitNamespace(std::string const& name);
 	void Emit(ExternalFunction const& fn);
 	void Emit(std::vector<Variable> const& vars);
-	void EmitParamData(Function const& fn, FunctionParam const& param, uint32_t* fnStackSize, uint32_t* stackSize);
+	void EmitParamData(Function const& fn, FunctionParam const& param, uint32_t* fnStackSize, uint32_t* stackSize, bool comma);
 
 	void EmitAssembly(std::variant<Signature, Function> const& sig, bool isVirtual, bool isPure);
 	void EmitAssembly(VariableSignature const& sig);
