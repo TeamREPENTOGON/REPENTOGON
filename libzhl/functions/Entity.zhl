@@ -16,7 +16,7 @@ __thiscall void Entity::CopyStatusEffects();
 __thiscall void Entity::AddIce(const EntityRef& ref, int duration);
 
 "558bec83e4f85156ff75??8bf1e8":
-__thiscall void Entity::AddKnockback(const EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
+__thiscall void Entity::AddKnockback(EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage);
 
 "558bec518379??01":
 __thiscall unsigned int Entity::ComputeStatusEffectDuration(int initial, EntityRef* source);
@@ -106,6 +106,9 @@ __thiscall void Entity::AddWeakness(const EntityRef& ref, int duration);
 
 "8bd1e8????????84c0":
 __thiscall Entity * Entity::GetStatusEffectTarget();
+
+"8b41??3d8d030000":
+__thiscall bool Entity::get_status_effect_target();
 
 struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 {{
@@ -199,6 +202,7 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
 	float _poisonDamage : 0x278;
 	float _burnDamage : 0x27c;
 	float _depthOffset : 0x2b0;
+	float _mass : 0x2d4;
 	float _collisionDamage : 0x2e0;
     float _speedMultiplier : 0x2F4;
 	float _shrinkStatus1 : 0x30c;
