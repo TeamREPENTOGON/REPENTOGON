@@ -112,18 +112,6 @@ void ASMPatchIcedKnockbackPrePlayer() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-HOOK_METHOD(Entity_NPC, HandleCollision, (Entity* collider, bool low) -> bool) {
-	bool res = super(collider, low);
-	avoidIceCrash = false;
-	return res;
-}
-
-HOOK_METHOD(Entity_Player, HandleCollision, (Entity* collider, bool low) -> bool) {
-	bool res = super(collider, low);
-	avoidIceCrash = false;
-	return res;
-}
-
 HOOK_METHOD(Entity, AddKnockback, (EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage) -> void) {
 	if (!avoidIceCrash)
 		super(ref, pushDirection, duration, takeImpactDamage);
@@ -156,6 +144,8 @@ HOOK_METHOD(Entity, AddKnockback, (EntityRef& ref, const Vector& pushDirection, 
 				entity->CopyStatusEffects();
 			}
 		}
+
+		avoidIceCrash = false;
 	}
 }
 
