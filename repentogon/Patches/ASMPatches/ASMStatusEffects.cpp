@@ -15,7 +15,7 @@ struct StatusEffectPatchInfo {
 	unsigned int jumpOffset;
 };
 
-StatusEffectPatchInfo patches[15] = {
+StatusEffectPatchInfo patches[16] = {
 	{"e8????????84c074??8b8e????????85c974??0f1f44??008bf18b8e????????85c975??85d20f84????????8b86????????83e00183c8000f85????????3986????????0f8f????????8b8e????????85d27e??8d04??b92c0100003bc10f4cc8eb??f7da3bca0f4cca898e????????8d4c24??0f2805????????6a010f114424??6a000f57c0",
 	"AddBaited", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x24},
 	{"e8????????84c074??8b8e????????85c974??90",
@@ -34,6 +34,8 @@ StatusEffectPatchInfo patches[15] = {
 	"AddFreeze", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x23},
 	{"e8????????84c074??8b8e????????85c974??0f1f84??000000008bf18b8e????????85c975??8b8e????????85d2",
 	"AddIce", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x27},
+	{"8bcee8????????84c074??8b86????????85c074??90",
+	"AddKnockback", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x22},
 	{"e8????????84c074??8b8e????????85c974??0f1f44??008bf18b8e????????85c975??85d20f84????????8b86????????83e00183c8000f85????????3986????????0f8f????????8b8e????????85d27e??8d04??b92c0100003bc10f4cc8eb??f7da3bca0f4cca898e????????8d4c24??0f2805????????6a010f114424??6a000f2805",
 	"AddMagnetized", 0, ASMPatch::Registers::ECX, ASMPatch::Registers::ESI, ASMPatch::SavedRegisters::Registers::ESI, 0x24},
 	{"e8????????84c074??8b8e????????85c974??0f1f44??008bf18b8e????????85c975??85ff",
@@ -77,24 +79,16 @@ void ASMPatchInlinedGetStatusEffectTarget(void* addr, ASMPatch::Registers entity
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-
 /* /////////////////////
-// Groan
+// Thank you, God bless you, and God bless the United States of America.
 */ /////////////////////
 
-/*
 bool avoidIceCrash = false;
 void __stdcall AvoidIceCrashHack() {
 	avoidIceCrash = true;
 }
 
-HOOK_METHOD(Entity_NPC, HandleCollision, (Entity* collider, bool low) -> bool) {
-	bool res = super(collider, low);
-	avoidIceCrash = false;
-	return res;
-}
-
-void ASMPatchIcedKnockbackPre() {
+void ASMPatchIcedKnockbackPreNPC() {
 	SigScan scanner("6a0168c80000008d85");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
@@ -106,30 +100,64 @@ void ASMPatchIcedKnockbackPre() {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-void ASMPatchIcedKnockback() {
-	SigScan scanner("8bcee8????????84c074??8b86????????85c074??90");
+void ASMPatchIcedKnockbackPrePlayer() {
+	SigScan scanner("68c8000000508d4424");
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
-	bool* ptr = &avoidIceCrash;
 
-	ZHL::Logger logger;
-	logger.Log("Patching dumb AddKnockback crash at %p\n", addr);
-
-	ASMPatch::SavedRegisters savedRegisters(ASMPatch::SavedRegisters::Registers::GP_REGISTERS - ASMPatch::SavedRegisters::Registers::ESI, true);
 	ASMPatch patch;
-	patch.PreserveRegisters(savedRegisters)
-		.AddBytes("\xA0").AddBytes(ByteBuffer().AddAny((char*)&ptr, 4)) // mov al, byte ptr ds:[XXXXXXXX]
-		.AddBytes("\x84\xC0") // test al, al
-		.AddBytes("\x75\x12") // jne (current addr + 0x12)
-		.Push(ASMPatch::Registers::ECX)
-		.AddInternalCall(GetStatusEffectTargetTrampoline)
-		.RestoreRegisters(savedRegisters)
-		.AddRelativeJump((char*)addr + 0x22)
-		.AddBytes(ByteBuffer().AddAny((char*)addr, 0x7))
-		.AddRelativeJump((char*)addr + 7);
+	patch.AddInternalCall(AvoidIceCrashHack)
+		.AddBytes("\x68\xc8").AddZeroes(3)
+		.AddRelativeJump((char*)addr + 5);
 	sASMPatcher.PatchAt(addr, &patch);
 }
-*/
+
+HOOK_METHOD(Entity_NPC, HandleCollision, (Entity* collider, bool low) -> bool) {
+	bool res = super(collider, low);
+	avoidIceCrash = false;
+	return res;
+}
+
+HOOK_METHOD(Entity_Player, HandleCollision, (Entity* collider, bool low) -> bool) {
+	bool res = super(collider, low);
+	avoidIceCrash = false;
+	return res;
+}
+
+HOOK_METHOD(Entity, AddKnockback, (EntityRef& ref, const Vector& pushDirection, int duration, bool takeImpactDamage) -> void) {
+	if (!avoidIceCrash)
+		super(ref, pushDirection, duration, takeImpactDamage);
+	else
+	{
+		Entity* entity = this;
+		if (!IgnoreEffectFromFriendly(&ref)) {
+			if (GetStatusEffectTarget()) {
+				Entity* parent = this->_parent;
+				Entity* otherEnt = parent;
+				while (otherEnt = parent, otherEnt != nullptr) {
+					entity = otherEnt;
+					parent = otherEnt->_parent;
+				}
+			}
+			if (duration != 0 && ((entity->_flags & 1) == 0 || (entity->_flags & 0x2000000000000) != 0)) {
+				entity->_knockbackCountdown = duration;
+				entity->_knockbackDirection = pushDirection;
+				if (10.0f < entity->_mass && ((this->_flags & 0x2000000000000) == 0)) {
+					float logMass = 1.0f / std::log10(entity->_mass);
+					entity->_knockbackDirection *= logMass;
+					int countdown = (int)(entity->_knockbackCountdown * logMass);
+					if (countdown < 1)
+						countdown = 1;
+					entity->_knockbackCountdown = countdown;
+				}
+				entity->_flags |= 0x800000000000;
+				if (takeImpactDamage)
+					entity->_flags |= 0x1800000000000;
+				entity->CopyStatusEffects();
+			}
+		}
+	}
+}
 
 /* /////////////////////
 // Run patches
@@ -146,6 +174,6 @@ void PatchInlinedGetStatusEffectTarget()
 		logger.Log("Patching inlined GetStatusEffectTarget in %s at %p\n", i.funcName, addr);
 		ASMPatchInlinedGetStatusEffectTarget(addr, i.entityReg, i.targetReg, i.saveReg, i.jumpOffset);
 	};
-	//ASMPatchIcedKnockbackPre();
-	//ASMPatchIcedKnockback();
+	ASMPatchIcedKnockbackPreNPC();
+	ASMPatchIcedKnockbackPrePlayer();
 }
