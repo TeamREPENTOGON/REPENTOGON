@@ -4589,7 +4589,7 @@ HOOK_METHOD(Entity, GetStatusEffectTarget, () -> Entity*) {
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
 		lua::LuaResults results = lua::LuaCaller(L).push(callbackid)
-			.push(this->GetType())
+			.push(*this->GetType())
 			.push(this, lua::Metatables::ENTITY)
 			.call(1);
 
