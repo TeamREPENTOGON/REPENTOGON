@@ -11,10 +11,12 @@ Additions:
 * EntityPickup:
 	- TriggerTheresOptionsPickup() - Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
 * LayerState:
-	- GetFlip[X,Y](), SetFlip[X/Y]()
+	- GetFlip[X/Y](), SetFlip[X/Y]()
 * Room:
 	- SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
 	- GetItemPool(int Seed, boolean Raw) - Retrieves the pool the game would use to generate random collectibles in the current room.
+Fixes:
+	- Temporarily disable modified RoomDescriptor.OverrideData handling to prevent potential cases of it not being properly replaced
 /newline/
 v1.0.10c -
 Additions:
