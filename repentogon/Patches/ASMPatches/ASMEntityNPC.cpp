@@ -31,7 +31,7 @@ void PerformHushPanicPatch(void* addr) {
 	sASMPatcher.PatchAt(addr, &patch);
 }
 
-int __stdcall IsRoomSlow() {
+bool __stdcall IsRoomSlow() {
 	Room* room = g_Game->_room;
 	return (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
 }
@@ -42,10 +42,12 @@ void PatchHushLaserSpeed() {
 	SigScan scanner(signature);
 	scanner.Scan();
 	void* addr = scanner.GetAddress();
+	printf("[REPENTOGON] Patching Hush laser attack speed bug at %p\n", addr);
+
 	const float* floatPtr = &hushLaserAdjust;
 	ASMPatch patch;
 	patch.AddBytes("\xF3\x0F\x10\x81\xAC\x14").AddZeroes(2); // movss xmm0,dword ptr ds:[ecx+14AC]
-	patch.AddInternalCall(IsRoomSlow); // call SetHushPanicLevel()
+	patch.AddInternalCall(IsRoomSlow);
 	patch.AddBytes("\x84\xC0"); // test al, al
 	patch.AddBytes("\x74\x08"); // je, eip+0x8
 	patch.AddBytes("\xF3\x0F\x59\x05").AddBytes(ByteBuffer().AddAny((char*)&floatPtr, 4)); // mulss xmm0, dword ptr [0xXXXXXXXX]
