@@ -93,6 +93,9 @@ __thiscall void Room::TriggerEffectRemoved(ItemConfig_Item* item, int unused);
 "558bec83e4f85153568bf18b0d":
 __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
 
+"a1????????83b8????????16b802000000":
+__thiscall uint32_t Room::GetBrokenWatchState();
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }
@@ -134,6 +137,7 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
 	uint32_t _bossId : 0x1d1c;
     bool _redHeartDamage : 0x120c;
     EntityList _entityList : 0x1218;
+	int _slowdownDuration : 0x7120;
 	int _greedWaveTimer : 0x7130;
 	float _waterAmount : 0x7134;
 	bool _pacifist : 0x7185;

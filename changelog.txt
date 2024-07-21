@@ -16,6 +16,7 @@ Additions:
 	- SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
 	- GetItemPool(int Seed, boolean Raw) - Retrieves the pool the game would use to generate random collectibles in the current room.
 Fixes:
+	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
 	- Temporarily disable modified RoomDescriptor.OverrideData handling to prevent potential cases of it not being properly replaced
 /newline/
 v1.0.10c -
