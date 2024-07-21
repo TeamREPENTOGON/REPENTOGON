@@ -274,3 +274,41 @@ void PatchOverrideDataHandling() {
 		.AddRelativeJump((char*)patchAddr + 0xe);
 	sASMPatcher.FlatPatch(patchAddr, &patch2);
 }
+
+// https://docs.google.com/spreadsheets/d/1Y9SUTWnsVTrc_0f1vSZzqK6zc-1qttDrCG5kpDLrTvA/
+void PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls() {
+	SigScan scanner("898424????????898c24????????898424????????898c24????????898424????????898c24????????898424????????898c24????????898424");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
+
+	// Swap EAX and ECX when populating the DoorSlot array indexes 2~11.
+	for (int i = 0; i < 10; i++) {
+		void* subAddr = (char*)addr + ((7 * i) + 1);
+		ASMPatch patch;
+		patch.AddBytes((i % 2 == 0) ? "\x8C" : "\x84");
+		sASMPatcher.FlatPatch(subAddr, &patch);
+	}
+}
+void PatchTryResizeEndroomMissingLongThinRoomDoorSlot() {
+	SigScan scanner("8b94??????????b801000000");
+	scanner.Scan();
+	void* addr = scanner.GetAddress();
+
+	printf("[REPENTOGON] Patching LevelGenerator::try_resize_endroom at %p\n", addr);
+
+	// If we attempt to read from index 13 in the DoorSlot array (which seems to be reading outside the bounds of the array) read from index 12 instead.
+	ASMPatch patch;
+	patch.CopyRegister(ASMPatch::Registers::EDX, ASMPatch::Registers::ESI)
+		.AddBytes("\x83\xfa\x0d")  // cmp edx, 13
+		.AddBytes("\x0f\x85\x01").AddZeroes(3)  // jne (skips the next command if edx != 13)
+		.AddBytes("\x4a")  // dec edx (skipped if the jump happened)
+		.AddBytes("\x8B\x94\x94\xE0").AddZeroes(3)  // mov edx, dword ptr [esp + edx*0x4 + 0xe0]
+		.AddRelativeJump((char*)addr + 0x7);
+	sASMPatcher.PatchAt(addr, &patch);
+}
+void PatchLevelGeneratorTryResizeEndroom() {
+	PatchTryResizeEndroomIncorrectDoorSlotsForLongWalls();
+	PatchTryResizeEndroomMissingLongThinRoomDoorSlot();
+}

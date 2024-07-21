@@ -118,6 +118,7 @@ void PerformASMPatches() {
 	PatchSpecialQuest();
 	PatchDealRoomVariant();
 	//PatchOverrideDataHandling();
+	PatchLevelGeneratorTryResizeEndroom();
 
 	// Menu
 	ASMPatchModsMenu();
