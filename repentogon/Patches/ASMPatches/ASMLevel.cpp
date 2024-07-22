@@ -39,7 +39,7 @@ bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_
 		maxDifficulty = (maxDifficulty == 15 ? 20 : maxDifficulty);
 		for (int id = 0; id < 36; ++id) {
 			if (generateLevels.test(id)) {
-				ZHL::Log("Adding stage id %d\n", id + 1);
+				//ZHL::Log("Adding stage id %d\n", id + 1);
 				std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id + 1, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
 				rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
 			}
