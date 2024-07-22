@@ -4,6 +4,17 @@ tags:
 ---
 # Class "RoomDescriptor"
 
+## Modified Variables
+___
+### AllowedDoors {: aria-label='Modified Variables' }
+#### DoorSet AllowedDoors {: .copyable aria-label='Modified Variables' }
+Now properly returns the allowed door slot.
+___
+### Doors {: aria-label='Modified Variables' }
+#### DoorSet Doors {: .copyable aria-label='Modified Variables' }
+Now properly returns the door slot.
+___
+
 ## Functions
 
 ### AddRestrictedGridIndex () {: aria-label='Functions' }
@@ -28,13 +39,9 @@ ___
 ___
 
 ## Variables
-### AllowedDoors {: aria-label='Variables' }
-#### DoorSet AllowedDoors {: .copyable aria-label='Variables' }
-Now properly returns the allowed door slot.
-___
-### Doors {: aria-label='Variables' }
-#### DoorSet Doors {: .copyable aria-label='Variables' }
-Now properly returns the door slot.
+### BossDeathSeed {: aria-label='Variables' }
+#### int BossDeathSeed {: .copyable aria-label='Variables' }
+
 ___
 
 

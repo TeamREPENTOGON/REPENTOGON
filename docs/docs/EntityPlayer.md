@@ -215,6 +215,10 @@ ___
 Returns the current charge for when the player stops shooting and charges the Kidney Stone item.
 
 ___
+### GetBloodLustCounter () {: aria-label='Functions' }
+#### int GetBloodLustCounter ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetBodyMoveDirection () {: aria-label='Functions' }
 #### [Vector](Vector.md) GetBodyMoveDirection ( ) {: .copyable aria-label='Functions' }
 
@@ -514,6 +518,10 @@ ___
 Returns the amount of collectibles the player has tied to the specified transformation.
 
 ___
+### GetPlayerIndex () {: aria-label='Functions' }
+#### int GetPlayerIndex ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetPonyCharge () {: aria-label='Functions' }
 #### int GetPonyCharge ( ) {: .copyable aria-label='Functions' }
 Returns the amount of frames left until the charging effect from the A Pony or White Pony item deactivates.
@@ -551,6 +559,16 @@ ___
 ### GetSpeedModifier () {: aria-label='Functions' }
 #### int GetSpeedModifier ( ) {: .copyable aria-label='Functions' }
 For Experimental Treatement, returns `-1`, `0` or `1` depending on the speed rolled.
+
+___
+### GetSpoofedCollectiblesList () {: aria-label='Functions' }
+#### table[] GetSpoofedCollectiblesList ( ) {: .copyable aria-label='Functions' }
+
+|Field|Type|Comment|
+|:--|:--|:--|
+| CollectibleID | [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) | |
+| AppendedCount | int | |
+| IsBlocked | boolean | |
 
 ___
 ### GetTotalActiveCharge () {: aria-label='Functions' }
@@ -793,6 +811,10 @@ Used by the [Kidney Stone](https://bindingofisaacrebirth.fandom.com/wiki/Kidney_
 
 ???+ bug "Bug"
     The player's head turns pitch black when this function is used without Kidney Stone.
+
+___
+### SetBloodLustCounter () {: aria-label='Functions' }
+#### void SetBloodLustCounter ( int Counter ) {: .copyable aria-label='Functions' }
 
 ___
 ### SetBombPlaceDelay () {: aria-label='Functions' }

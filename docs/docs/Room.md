@@ -41,6 +41,10 @@ ___
 Returns a [Backdrop](Backdrop.md) object.
 
 ___
+### GetBossVictoryJingle () {: aria-label='Functions' }
+#### [Music](https://wofsauge.github.io/IsaacDocs/rep/enums/Music.html) GetBossVictoryJingle ( ) {: .copyable aria-label='Functions' }
+
+___
 ### GetCamera () {: aria-label='Functions' }
 #### [Camera](Camera.md) GetCamera ( ) {: .copyable aria-label='Functions' }
 Returns a [Camera](Camera.md) object.

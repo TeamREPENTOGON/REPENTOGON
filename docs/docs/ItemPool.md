@@ -6,6 +6,10 @@ tags:
 
 ## Functions
 
+### AddBibleUpgrade () {: aria-label='Functions' }
+#### void AddBibleUpgrade ( int Add, [ItemPoolType](https://wofsauge.github.io/IsaacDocs/rep/enums/ItemPoolType.html) PoolType ) {: .copyable aria-label='Functions' }
+
+___
 ### CanSpawnCollectible () {: aria-label='Functions' }
 #### boolean CanSpawnCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, boolean ignoreLocked ) {: .copyable aria-label='Functions' }
 

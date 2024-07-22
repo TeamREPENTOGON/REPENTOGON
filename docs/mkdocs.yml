@@ -191,8 +191,9 @@ nav:
     - XMLNode: enums/XMLNode.md
   - Ambush: Ambush.md
   - Backdrop: Backdrop.md
-  - BossPool: BossPool.md
-  - BossPoolManager: BossPoolManager.md
+  - BossPool:
+    - BossPool: BossPool.md
+    - BossPoolManager: BossPoolManager.md
   - Camera: Camera.md
   - Capsule: Capsule.md
   - CcpContainer: 
