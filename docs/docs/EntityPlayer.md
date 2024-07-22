@@ -703,6 +703,7 @@ Returns `true` if the player is the non-active form of Tainted Lazarus with Birt
 ___
 ### IsInvisible () {: aria-label='Functions' }
 #### boolean IsInvisible ( ) {: .copyable aria-label='Functions' }
+Returns `true` if the player has the Faded Polaroid / Camo Undies effect active.
 
 ___
 ### IsItemCostumeVisible () {: aria-label='Functions' }
