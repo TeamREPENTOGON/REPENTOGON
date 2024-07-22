@@ -171,4 +171,9 @@ void PerformASMPatches() {
 	if (!ASMPatches::BerserkSpiritShacklesCrash::Patch()) {
 		ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
 	}
+
+	if (!ASMPatches::FixHushFXVeins()) {
+		ZHL::Log("[ERROR] Error while restoring Hush boss room veins FX\n");
+	}
+	
 }

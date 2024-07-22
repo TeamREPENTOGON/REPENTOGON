@@ -182,4 +182,28 @@ namespace ASMPatches {
 			return true;
 		}
 	}
+
+	bool FixHushFXVeins() {
+		SigScan signature("76??8d70");
+		if (!signature.Scan()) {
+			return false;
+		}
+
+		void* addr = signature.GetAddress();
+		ASMPatch patch;
+		patch.AddBytes(ByteBuffer().AddString("\xeb")); // jmp
+		sASMPatcher.FlatPatch(addr, &patch);
+
+		SigScan signature2("83bf????????0074??8d87");
+		if (!signature2.Scan()) {
+			return false;
+		}
+
+		void* addr2 = signature2.GetAddress();
+		ASMPatch patch2;
+		patch2.AddBytes(ByteBuffer().AddString("\xeb\x07")); // jmp
+		sASMPatcher.FlatPatch(addr2, &patch2);
+
+		return true;
+	}
 }
