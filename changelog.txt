@@ -20,6 +20,7 @@ Fixes:
 	- Restore/fix the vein effect in Hush's boss room pre-Repentance
 	- Fix ???/Blue Womb rooms generating in The Void even when not using Better Void Generation
 	- Fix Void Portal rooms potentially not being generated in The Void
+	- Fix room weights not correctly being reset when reseeding in The Void
 	- Temporarily disable modified RoomDescriptor.OverrideData handling to prevent potential cases of it not being properly replaced
 /newline/
 v1.0.10c -

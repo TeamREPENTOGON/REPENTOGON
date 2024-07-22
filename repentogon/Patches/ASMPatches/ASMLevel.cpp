@@ -6,6 +6,8 @@
 #include "../../LuaInterfaces/Level.h"
 #include "../../LuaInterfaces/Room/Room.h"
 
+std::bitset<36> generateLevels;
+
 // Prevents Curse of the Lost in Blue Womb in addition to Curse of Darkness (Vanilla)
 // changes evaluated bitmask from 0xfe to 0xfa
 void ASMPatchBlueWombCurse() {
@@ -35,29 +37,12 @@ bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_
 	if (g_Game->GetDimension() != 2) {
 		// to include Void portal rooms
 		maxDifficulty = (maxDifficulty == 15 ? 20 : maxDifficulty);
-		for (int id = 1; id < 37; ++id) {
-			if (repentogonOptions.betterVoidGeneration) {
-				if ((id > 17 && id < 26) || id == 34 || id == 35 || !IsFloorUnlocked(id))
-					continue;
+		for (int id = 0; id < 36; ++id) {
+			if (generateLevels.test(id)) {
+				ZHL::Log("Adding stage id %d\n", id + 1);
+				std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id + 1, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
+				rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
 			}
-			else
-			{
-				// mimic default generation (except for letting void rooms be added)
-				if ((id > 17 && id != 26) || id == 13)
-					continue;
-			}
-
-			// Configure the subtype here because backwards uses a 
-			// specific set of subtypes. I'll need the RNG object to 
-			// make this seed dependant.
-			/* if (i == 36) {
-
-			} */
-
-			//ZHL::Log("Inserting rooms for stageid %d\n", id);
-
-			std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
-			rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
 		}
 		return true;
 	}
@@ -95,6 +80,39 @@ void ASMPatchVoidGeneration() {
 		.AddRelativeJump((char*)addr + 0x8);
 
 	sASMPatcher.PatchAt(addr, &patch);
+}
+
+HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
+{
+	if (this->_stage == 12)
+	{
+		if (generateLevels.any())
+		{
+			RoomConfig* roomConfig = &g_Game->_roomConfig;
+			int mode = g_Game->IsGreedMode();
+			for (int id = 1; id < 37; ++id) {
+				if (generateLevels.test(id-1) && roomConfig != nullptr)
+					roomConfig->ResetRoomWeights(id, mode);
+			}
+			generateLevels.reset();
+		}
+		
+		for (int id = 1; id < 37; ++id) {
+			if (repentogonOptions.betterVoidGeneration) {
+				if ((id > 17 && id < 26) || id == 34 || id == 35 || !IsFloorUnlocked(id))
+					continue;
+			}
+			else
+			{
+				// mimic default generation (except for letting void rooms be added)
+				if ((id > 17 && id != 26) || id == 13)
+					continue;
+			}
+			generateLevels.set(id-1, true);
+		}
+	}
+
+	super(rng);
 }
 
 bool __stdcall SpawnSpecialQuestDoorValidStageTypeCheck() {
