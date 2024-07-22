@@ -33,12 +33,19 @@ bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_
 	int maxVariant, int minDifficulty, int maxDifficulty, unsigned int* doors, unsigned int subtype, int mode) {
 	// we want to skip all this and let the game handle things if we're generating death certificate
 	if (g_Game->GetDimension() != 2) {
-		for (int i = 1; i < 37; ++i) {
-
-			if (!repentogonOptions.betterVoidGeneration && (i > 17 && i != 26) && i != 13)
-				continue;
-			else if (repentogonOptions.betterVoidGeneration && ((i > 17 && i < 26) || i == 34 || i == 35 || !IsFloorUnlocked(i)))
-				continue;
+		// to include Void portal rooms
+		maxDifficulty = (maxDifficulty == 15 ? 20 : maxDifficulty);
+		for (int id = 1; id < 37; ++id) {
+			if (repentogonOptions.betterVoidGeneration) {
+				if ((id > 17 && id < 26) || id == 34 || id == 35 || !IsFloorUnlocked(id))
+					continue;
+			}
+			else
+			{
+				// mimic default generation (except for letting void rooms be added)
+				if ((id > 17 && id != 26) || id == 13)
+					continue;
+			}
 
 			// Configure the subtype here because backwards uses a 
 			// specific set of subtypes. I'll need the RNG object to 
@@ -46,7 +53,10 @@ bool __stdcall VoidGenerationOverride(RoomConfig* _this, std::vector<RoomConfig_
 			/* if (i == 36) {
 
 			} */
-			std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(i, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
+
+			//ZHL::Log("Inserting rooms for stageid %d\n", id);
+
+			std::vector<RoomConfig_Room*> stageRooms = _this->GetRooms(id, type, shape, minVariant, maxVariant, minDifficulty, maxDifficulty, doors, subtype, mode);
 			rooms->insert(rooms->begin(), stageRooms.begin(), stageRooms.end());
 		}
 		return true;
