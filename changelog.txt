@@ -3,6 +3,8 @@ Additions:
 * It is now possible to define Custom ItemPools in itempools.xml. (the Id can be obtained using Isaac.GetPoolIdByName(poolName))
 * Isaac:
 	- GetPoolIdByName(string Name) - returns -1 if the pool is not found.
+* EntityPlayer:
+	- GetMovingBoxContents()
 * EntityNPC:
 	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
 	- ClearFlyingOverride() - Removes any value set by SetFlyingOverride.
@@ -12,6 +14,8 @@ Additions:
 	- TriggerTheresOptionsPickup() - Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
 * LayerState:
 	- GetFlip[X/Y](), SetFlip[X/Y]()
+* Level:
+	- GetMyosotisPickups() - returns the pickups that will be transferred to the next floor by the myosotis trinket effect
 * Room:
 	- SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
 	- GetItemPool(int Seed, boolean Raw) - Retrieves the pool the game would use to generate random collectibles in the current room.
