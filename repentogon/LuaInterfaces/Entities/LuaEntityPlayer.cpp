@@ -3,6 +3,7 @@
 #include "HookSystem.h"
 
 #include "../LuaWeapon.h"
+#include "../LuaEntitySaveState.h"
 #include "../../Patches/ASMPatches/ASMPlayer.h"
 #include "../../Patches/ExtraLives.h"
 #include "../../Patches/EntityPlus.h"
@@ -561,6 +562,14 @@ LUA_FUNCTION(Lua_PlayerSetBagOfCraftingOutput)
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 	*player->GetBagOfCraftingOutput() = (int)luaL_checkinteger(L, 2);
 	return 0;
+}
+
+LUA_FUNCTION(Lua_PlayerGetMovingBoxContents)
+{
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	Lua_EntitiesSaveStateVector* ud = lua::place<Lua_EntitiesSaveStateVector>(L, lua::metatables::EntitiesSaveStateVectorMT);
+	ud->data = (player->GetMovingBoxContents());
+	return 1;
 }
 
 LUA_FUNCTION(Lua_PlayerGetSpeedModifier)
@@ -2454,6 +2463,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBagOfCraftingSlot", Lua_PlayerGetBoCSlot },
 		{ "GetBagOfCraftingOutput", Lua_PlayerGetBagOfCraftingOutput },
 		{ "SetBagOfCraftingOutput", Lua_PlayerSetBagOfCraftingOutput },
+		{ "GetMovingBoxContents", Lua_PlayerGetMovingBoxContents },
 		{ "GetSpeedModifier", Lua_PlayerGetSpeedModifier },
 		{ "SetSpeedModifier", Lua_PlayerSetSpeedModifier },
 		{ "GetFireDelayModifier", Lua_PlayerGetFireDelayModifier },
