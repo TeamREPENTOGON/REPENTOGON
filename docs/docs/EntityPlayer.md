@@ -99,6 +99,26 @@ ___
 ### AddLocust () {: aria-label='Functions' }
 #### void AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
+???+ info "Supported Items"
+    There are a few items which spawn unique locusts.
+    
+    - Breakfast (default)
+    - The Inner Eye
+    - Spoon Bender
+    - Cricket's Head
+    - Number One
+    - Blood of the Martyr
+    - Halo of Flies
+    - The Common Cold
+    - Brimstone
+    - Ipecac
+    - Mutant Spider
+    - Fire Mind
+    - Scorpio
+    - Holy Light
+    - Jacob's Ladder
+    - 120 Volt
+
 ___
 ### AddSmeltedTrinket () {: aria-label='Functions' }
 #### boolean AddSmeltedTrinket ( [TrinketType](https://wofsauge.github.io/IsaacDocs/rep/enums/TrinketType.html) Trinket, boolean FirstTimePickingUp = true ) {: .copyable aria-label='Functions' }
