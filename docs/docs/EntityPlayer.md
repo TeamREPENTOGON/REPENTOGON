@@ -99,7 +99,7 @@ ___
 ### AddLocust () {: aria-label='Functions' }
 #### void AddLocust ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, [Vector](Vector.md) Position ) {: .copyable aria-label='Functions' }
 
-???+ info "Supported Items"
+???- info "Supported Items"
     There are a few items which spawn unique locusts.
     
     - Breakfast (default)
@@ -142,6 +142,15 @@ ___
 ___
 ### CanCrushRocks () {: aria-label='Functions' }
 #### boolean CanCrushRocks ( ) {: .copyable aria-label='Functions' }
+
+???- info "Info"
+    Returns `true` if the player has one of the following items / effects / transformations.
+    
+    - The Nail
+    - Leo
+    - Thunder Thighs
+    - Mega Mush
+    - Stompy
 
 ___
 ### CanOverrideActiveItem () {: aria-label='Functions' }
