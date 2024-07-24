@@ -646,6 +646,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	int _speedModifier : 0x1468, _fireDelayModifier : 0x146c, _damageModifier : 0x1470, _tearRangeModifier : 0x1474, _shotSpeedModifier : 0x1478, _luckModifier : 0x147c;
 	float _edenSpeed : 0x1490, _edenFireDelay : 0x1494, _edenDamage : 0x1498, _edenTearRange : 0x149c, _edenShotSpeed : 0x14a0, _edenLuck : 0x14a4;
 	uint32_t _cacheFlags : 0x14b8;
+	int8_t _tearDisplacement : 0x14bc;
 	ActiveItemDesc _activeDesc[4] : 0x14c4;
 	int _bombPlaceDelay : 0x1544;
 	int _controllerIndex : 0x154c;

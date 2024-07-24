@@ -3,6 +3,8 @@ Additions:
 * It is now possible to define Custom ItemPools in itempools.xml. (the Id can be obtained using Isaac.GetPoolIdByName(poolName))
 * Isaac:
 	- GetPoolIdByName(string Name) - returns -1 if the pool is not found.
+* EntityPlayer:
+	- GetTearDisplacement() - Returns the player's TearDisplacement value, used to check what eye the player is shooting from. 1 means that the last shot was from the right eye, -1 means the opposite.
 * EntityNPC:
 	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
 	- ClearFlyingOverride() - Removes any value set by SetFlyingOverride.
