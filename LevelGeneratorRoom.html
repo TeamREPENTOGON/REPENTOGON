@@ -7217,9 +7217,9 @@ In order to check if a door at a given slot is available, use the DoorSlot enume
 <p>This tests if the DoorSlot <code>LEFT0</code> is available.
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">if</span> <span class="n">room</span><span class="p">:</span><span class="n">DoorMask</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">DoorSlot</span><span class="p">.</span><span class="n">LEFT0</span><span class="p">)</span> <span class="kr">then</span>
-    <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Room has a door on slot LEFT0)</span>
-<span class="s2">end</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">if</span> <span class="n">room</span><span class="p">:</span><span class="n">DoorMask</span><span class="p">()</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">DoorSlot</span><span class="p">.</span><span class="n">LEFT0</span><span class="p">)</span> <span class="o">~=</span> <span class="mi">0</span> <span class="kr">then</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Room has a door in slot LEFT0&quot;</span><span class="p">)</span>
+<span class="kr">end</span>
 </code></pre></div></td></tr></table></div></p>
 </details>
 <hr />

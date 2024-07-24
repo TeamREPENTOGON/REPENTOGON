@@ -5978,15 +5978,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#doors" class="md-nav__link">
-    <span class="md-ellipsis">
-      Doors
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -6006,6 +5997,15 @@
   <a href="#addrestrictedgridindex" class="md-nav__link">
     <span class="md-ellipsis">
       AddRestrictedGridIndex ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Doors
     </span>
   </a>
   
@@ -7144,15 +7144,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#doors" class="md-nav__link">
-    <span class="md-ellipsis">
-      Doors
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -7172,6 +7163,15 @@
   <a href="#addrestrictedgridindex" class="md-nav__link">
     <span class="md-ellipsis">
       AddRestrictedGridIndex ()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#doors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Doors
     </span>
   </a>
   
@@ -7276,15 +7276,30 @@
 <hr />
 <h3 aria-label="Modified Variables" id="alloweddoors">AllowedDoors<a class="headerlink" href="#alloweddoors" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Modified Variables" class="copyable" id="doorset-alloweddoors">DoorSet AllowedDoors<a class="headerlink" href="#doorset-alloweddoors" title="Permanent link">⚓︎</a></h4>
-<p>Now properly returns the allowed door slot.</p>
-<hr />
-<h3 aria-label="Modified Variables" id="doors">Doors<a class="headerlink" href="#doors" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Modified Variables" class="copyable" id="doorset-doors">DoorSet Doors<a class="headerlink" href="#doorset-doors" title="Permanent link">⚓︎</a></h4>
-<p>Now properly returns the door slot.</p>
+<p>Now properly returns a value.</p>
+<p>Returns a bitmask corresponding to which door slots are currently enabled.</p>
+<p>Doors are typically only included in this bitmask when there is a door currently present, even if the room would allow a door in that slot.</p>
+<details class="example" open="open">
+<summary>Example</summary>
+<p>This tests if the DoorSlot <code>LEFT0</code> is enabled.
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kr">if</span> <span class="n">roomDesc</span><span class="p">.</span><span class="n">AllowedDoors</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">DoorSlot</span><span class="p">.</span><span class="n">LEFT0</span><span class="p">)</span> <span class="o">~=</span> <span class="mi">0</span> <span class="kr">then</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Room has a door in slot LEFT0&quot;</span><span class="p">)</span>
+<span class="kr">end</span>
+</code></pre></div></td></tr></table></div></p>
+</details>
 <hr />
 <h2 id="functions">Functions<a class="headerlink" href="#functions" title="Permanent link">⚓︎</a></h2>
 <h3 aria-label="Functions" id="addrestrictedgridindex">AddRestrictedGridIndex ()<a class="headerlink" href="#addrestrictedgridindex" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-addrestrictedgridindex-int-gridindex">void AddRestrictedGridIndex ( int GridIndex )<a class="headerlink" href="#void-addrestrictedgridindex-int-gridindex" title="Permanent link">⚓︎</a></h4>
+<hr />
+<h3 aria-label="Variables" id="doors">Doors<a class="headerlink" href="#doors" title="Permanent link">⚓︎</a></h3>
+<h4 aria-label="Variables" class="copyable" id="int-doors">int[] Doors<a class="headerlink" href="#int-doors" title="Permanent link">⚓︎</a></h4>
+<p>Allows you to check which level grid index each <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html">DoorSlot</a> in the room connects to.</p>
+<p>For example, <code>roomdesc.Doors[DoorSlot.UP0]</code> provides the level grid index that the upwards door would connect to.</p>
+<p>The value will be <code>-1</code> if the <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html">RoomShape</a> does not allow a door in that slot.</p>
+<p>Note that this typically provides a valid index even if there is no door present, and even if the room itself does not allow a door in that slot.</p>
 <hr />
 <h3 aria-label="Functions" id="getentitiessavestate">GetEntitiesSaveState ()<a class="headerlink" href="#getentitiessavestate" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="entitiessavestatevector-getentitiessavestate"><a href="EntitiesSaveStateVector.html">EntitiesSaveStateVector</a> GetEntitiesSaveState ( )<a class="headerlink" href="#entitiessavestatevector-getentitiessavestate" title="Permanent link">⚓︎</a></h4>
