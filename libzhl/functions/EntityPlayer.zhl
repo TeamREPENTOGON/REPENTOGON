@@ -551,6 +551,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	inline float* GetD8RangeModifier() { return (float*)((char*)this + 0x1864); }
 	inline float* GetD8FireDelayModifier() { return (float*)((char*)this + 0x1868); }
 	inline int* GetGoldenHearts() { return (int*)((char*)this + 0x186C); }
+	inline vector_EntitySaveState* GetMovingBoxContents() {return &this->_movingBoxContents; }
 	inline int* GetBoneHearts() {return (int*)((char*)this + 0x1CA8); }
 	inline int* GetBrokenHearts() {return (int*)((char*)this + 0x1CC0); }
 	inline int* GetRottenHearts() {return (int*)((char*)this + 0x1CC4); }
@@ -662,6 +663,7 @@ struct Entity_Player depends (ANM2, ColorMod, KColor, PlayerCostumeMap, Temporar
 	uint32_t _deadEyeMisses : 0x17d4;
 	uint32_t _conceptionFamiliarFlags : 0x1858;
 	int _babySkin : 0x1a0c;
+	vector_EntitySaveState _movingBoxContents : 0x1c9c;
 	int _hallowedGroundCountdown : 0x1cb0;
 	//std_vector_int _wispStorage : 0x1cfc;
 	Entity_Player* _backupPlayer : 0x1d84;

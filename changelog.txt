@@ -4,6 +4,7 @@ Additions:
 * Isaac:
 	- GetPoolIdByName(string Name) - returns -1 if the pool is not found.
 * EntityPlayer:
+	- GetMovingBoxContents()
 	- GetTearDisplacement() - Returns the player's TearDisplacement value, used to check what eye the player is shooting from. 1 means that the last shot was from the right eye, -1 means the opposite.
 * EntityNPC:
 	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
@@ -14,6 +15,8 @@ Additions:
 	- TriggerTheresOptionsPickup() - Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
 * LayerState:
 	- GetFlip[X/Y](), SetFlip[X/Y]()
+* Level:
+	- GetMyosotisPickups() - returns the pickups that will be transferred to the next floor by the myosotis trinket effect
 * Room:
 	- SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
 	- GetItemPool(int Seed, boolean Raw) - Retrieves the pool the game would use to generate random collectibles in the current room.
