@@ -8,17 +8,37 @@ tags:
 ___
 ### AllowedDoors {: aria-label='Modified Variables' }
 #### DoorSet AllowedDoors {: .copyable aria-label='Modified Variables' }
-Now properly returns the allowed door slot.
-___
-### Doors {: aria-label='Modified Variables' }
-#### DoorSet Doors {: .copyable aria-label='Modified Variables' }
-Now properly returns the door slot.
+Now properly returns a value.
+
+Returns a bitmask corresponding to which door slots are currently enabled.
+
+Doors are typically only included in this bitmask when there is a door currently present, even if the room would allow a door in that slot.
+
+???+ example "Example"
+    This tests if the DoorSlot `LEFT0` is enabled.
+    ```lua
+    if roomDesc.AllowedDoors & (1 << DoorSlot.LEFT0) ~= 0 then
+        print("Room has a door in slot LEFT0")
+    end
+    ```
+
 ___
 
 ## Functions
 
 ### AddRestrictedGridIndex () {: aria-label='Functions' }
 #### void AddRestrictedGridIndex ( int GridIndex ) {: .copyable aria-label='Functions' }
+
+___
+### Doors {: aria-label='Variables' }
+#### int[] Doors {: .copyable aria-label='Variables' }
+Allows you to check which level grid index each [DoorSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/DoorSlot.html) in the room connects to.
+
+For example, `roomdesc.Doors[DoorSlot.UP0]` provides the level grid index that the upwards door would connect to.
+
+The value will be `-1` if the [RoomShape](https://wofsauge.github.io/IsaacDocs/rep/enums/RoomShape.html) does not allow a door in that slot.
+
+Note that this typically provides a valid index even if there is no door present, and even if the room itself does not allow a door in that slot.
 
 ___
 ### GetEntitiesSaveState () {: aria-label='Functions' }
