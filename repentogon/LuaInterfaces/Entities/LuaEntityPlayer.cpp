@@ -2425,6 +2425,13 @@ LUA_FUNCTION(Lua_PlayerGetCustomCacheValue) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_PlayerGetTearDisplacement) {
+	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
+	lua_pushinteger(L, player->_tearDisplacement);
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -2641,6 +2648,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetBombVariant", Lua_PlayerGetBombVariant },
 		{ "AddCustomCacheTag", Lua_PlayerAddCustomCacheTag },
 		{ "GetCustomCacheValue", Lua_PlayerGetCustomCacheValue },
+		{ "GetTearDisplacement", Lua_PlayerGetTearDisplacement },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_PLAYER, functions);
