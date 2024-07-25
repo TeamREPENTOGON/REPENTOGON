@@ -18,9 +18,6 @@ Additions:
 	- [Is/Set]PrismTouched()
 * EntityBomb:
 	- [Is/Set]PrismTouched()
-* EntityLaser:
-	- [Is/Set]MultidimensionalTouched()
-	- [Is/Set]PrismTouched()
 * EntityKnife:
 	- [Is/Set]MultidimensionalTouched()
 	- [Is/Set]PrismTouched()
