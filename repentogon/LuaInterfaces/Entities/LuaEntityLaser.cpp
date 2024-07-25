@@ -144,6 +144,24 @@ LUA_FUNCTION(Lua_EntityLaserRecalculateSamplesNextUpdate)
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityLaserIsMultidimensionalTouched) {
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua_pushboolean(L, laser->_multidimensionalTouched);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityLaserIsPrismTouched) {
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	lua_pushboolean(L, laser->_prismTouched);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_EntityLaserSetPrismTouched) {
+	Entity_Laser* laser = lua::GetUserdata<Entity_Laser*>(L, 1, lua::Metatables::ENTITY, "EntityLaser");
+	laser->_prismTouched = lua::luaL_checkboolean(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -164,6 +182,9 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "ResetSpriteScale", Lua_EntityLaserResetSpriteScale },
 		{ "RotateToAngle", Lua_EntityLaserRotateToAngle },
 		{ "RecalculateSamplesNextUpdate", Lua_EntityLaserRecalculateSamplesNextUpdate },
+		{ "IsMultidimensionalTouched", Lua_EntityLaserIsMultidimensionalTouched },
+		{ "IsPrismTouched", Lua_EntityLaserIsPrismTouched },
+		{ "SetPrismTouched", Lua_EntityLaserSetPrismTouched },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_LASER, functions);

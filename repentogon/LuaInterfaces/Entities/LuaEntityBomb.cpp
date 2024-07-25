@@ -134,6 +134,18 @@ LUA_FUNCTION(Lua_BombSetRocketSpeed) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_BombIsPrismTouched) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	lua_pushboolean(L, bomb->_prismTouched);
+	return 1;
+}
+
+LUA_FUNCTION(Lua_BombSetPrismTouched) {
+	Entity_Bomb* bomb = lua::GetUserdata<Entity_Bomb*>(L, 1, lua::Metatables::ENTITY_BOMB, "EntityBomb");
+	bomb->_prismTouched = lua::luaL_checkboolean(L, 2);
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -156,6 +168,8 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetRocketAngle", Lua_BombSetRocketAngle },
 		{ "GetRocketSpeed", Lua_BombGetRocketSpeed },
 		{ "SetRocketSpeed", Lua_BombSetRocketSpeed },
+		{ "IsPrismTouched", Lua_BombIsPrismTouched },
+		{ "SetPrismTouched", Lua_BombSetPrismTouched },
 		{ NULL, NULL }
 	};
 	lua::RegisterFunctions(_state, lua::Metatables::ENTITY_BOMB, functions);
