@@ -181,12 +181,12 @@ LUA_FUNCTION(lua_RoomSetRail) {
 	int index = (int)luaL_checkinteger(L, 2);
 
 	if (!room->IsValidGridIndex(index, false)) {
-		return luaL_error(L, "Invalid grind index %lld\n", index);
+		return luaL_error(L, "Invalid grid index %d\n", index);
 	}
 
 	int rail = (int)luaL_checkinteger(L, 3);
 	if (!Room::IsValidRailType(rail)) {
-		return luaL_error(L, "Invalid rail type %lld\n", index);
+		return luaL_error(L, "Invalid rail type %d\n", rail);
 	}
 
 	room->SetRailType((uint8_t)index, (RailType)rail);
