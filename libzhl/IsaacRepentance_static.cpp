@@ -2,18 +2,45 @@
 #include "Log.h"
 
 bool Room::IsValidRailType(int rail) {
-	if (rail < 0) {
-		return false;
-	}
-	else if (rail > RailType::RAIL_NONE) {
+	if (rail < 0 || rail > RailType::RAIL_NONE) {
 		return false;
 	}
 	else {
-		return rail <= RailType::RAIL_CROSSROAD || 
-			rail == RAIL_DOOR_LEFT || 
-			rail == RAIL_DOOR_RIGHT || 
-			rail == RAIL_DOOR_TOP || 
-			rail == RAIL_DOOR_BOTTOM;
+		return rail <= RailType::RAIL_CROSSROAD ||
+			rail == RailType::RAIL_HORIZONTAL ||
+			rail == RailType::RAIL_VERTICAL ||
+			rail == RailType::RAIL_DOWN_TO_RIGHT ||
+			rail == RailType::RAIL_DOWN_TO_LEFT ||
+			rail == RailType::RAIL_UP_TO_RIGHT ||
+			rail == RailType::RAIL_UP_TO_LEFT ||
+			rail == RailType::RAIL_CROSSROAD ||
+			rail == RailType::RAIL_END_LEFT ||
+			rail == RailType::RAIL_END_RIGHT ||
+			rail == RailType::RAIL_END_UP ||
+			rail == RailType::RAIL_END_DOWN ||
+			rail == RailType::RAIL_HORIZONTAL_CART_LEFT ||
+			rail == RailType::RAIL_HORIZONTAL_CART_RIGHT ||
+			rail == RailType::RAIL_VERTICAL_CART_UP ||
+			rail == RailType::RAIL_VERTICAL_CART_DOWN ||
+			rail == RailType::RAIL_MINESHAFT_HORIZONTAL_1 ||
+			rail == RailType::RAIL_MINESHAFT_HORIZONTAL_2 ||
+			rail == RailType::RAIL_MINESHAFT_HORIZONTAL_3 ||
+			rail == RailType::RAIL_MINESHAFT_VERTICAL_1 ||
+			rail == RailType::RAIL_MINESHAFT_VERTICAL_2 ||
+			rail == RailType::RAIL_MINESHAFT_VERTICAL_3 ||
+			rail == RailType::RAIL_MINESHAFT_DOWN_TO_RIGHT_1 ||
+			rail == RailType::RAIL_MINESHAFT_DOWN_TO_RIGHT_2 ||
+			rail == RailType::RAIL_MINESHAFT_DOWN_TO_LEFT_1 ||
+			rail == RailType::RAIL_MINESHAFT_DOWN_TO_LEFT_2 ||
+			rail == RailType::RAIL_MINESHAFT_UP_TO_RIGHT_1 ||
+			rail == RailType::RAIL_MINESHAFT_UP_TO_RIGHT_2 ||
+			rail == RailType::RAIL_MINESHAFT_UP_TO_LEFT_1 ||
+			rail == RailType::RAIL_MINESHAFT_UP_TO_LEFT_2 ||
+			rail == RailType::RAIL_DOOR_LEFT ||
+			rail == RailType::RAIL_DOOR_BOTTOM ||
+			rail == RailType::RAIL_DOOR_RIGHT ||
+			rail == RailType::RAIL_DOOR_TOP ||
+			rail == RailType::RAIL_NONE;
 	}
 }
 
