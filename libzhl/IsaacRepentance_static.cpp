@@ -9,7 +9,7 @@ bool Room::IsValidRailType(int rail) {
 		return false;
 	}
 	else {
-		return rail <= RailType::RAIL_CROSSING || 
+		return rail <= RailType::RAIL_CROSSROAD || 
 			rail == RAIL_DOOR_LEFT || 
 			rail == RAIL_DOOR_RIGHT || 
 			rail == RAIL_DOOR_TOP || 
