@@ -7,7 +7,7 @@ Additions:
 	- Room:GetItemPool(int Seed, boolean Raw) - Retrieves the pooltype the game would use to generate random collectibles in the current room.
 * ModCallbacks:
 	- POST versions of MC_PRE_PLAYER_ADD/REMOVE_COSTUME
-	- MC_[PRE/POST]_FORCE_PILL_EFFECT
+	- MC_POST_FORCE_PILL_EFFECT
 	- MC_EVALUATE_CUSTOM_CACHE(Player, CustomCacheTag, float value)
 		Cache-style evaluation for custom player attributes.
 		Return a number to modify the value. Modified values are passed to the next callback.

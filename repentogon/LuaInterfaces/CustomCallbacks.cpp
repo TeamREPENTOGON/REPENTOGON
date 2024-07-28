@@ -4286,27 +4286,27 @@ HOOK_METHOD(Level, GetRandomRoomIndex, (bool IAmErrorRoom, unsigned int Seed) ->
 	return ret;
 }
 
-//PRE_FORCE_ADD_PILL_EFFECT (1128)
+//PRE_FORCE_ADD_PILL_EFFECT (1128), temporarily disabled
 HOOK_METHOD(ItemPool, ForceAddPillEffect, (int32_t ID)->int) {
 	int ret = -1;
 	int callbackid = 1128;
-	if (CallbackState.test(callbackid - 1000)) {
-		lua_State* L = g_LuaEngine->_state;
-		lua::LuaStackProtector protector(L);
+	// if (CallbackState.test(callbackid - 1000)) {
+	// 	lua_State* L = g_LuaEngine->_state;
+	// 	lua::LuaStackProtector protector(L);
 
-		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+	// 	lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
-			.pushnil()
-			.push(ID)
-			.call(1);
+	// 	lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+	// 		.pushnil()
+	// 		.push(ID)
+	// 		.call(1);
 
-		if (!result) {
-			if (lua_isinteger(L, -1)) {
-				ret = (int)lua_tointeger(L, -1);
-			};
-		}
-	};
+	// 	if (!result) {
+	// 		if (lua_isinteger(L, -1)) {
+	// 			ret = (int)lua_tointeger(L, -1);
+	// 		};
+	// 	}
+	// };
 
 	if (ret == -1) {
 		ret = super(ID);
