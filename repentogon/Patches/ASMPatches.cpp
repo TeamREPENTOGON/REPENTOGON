@@ -22,6 +22,7 @@
 #include "ASMPatches/ASMPlayerManager.h"
 #include "ASMPatches/ASMRender.h"
 #include "ASMPatches/ASMRoom.h"
+#include "ASMPatches/ASMStatusEffects.h"
 #include "ASMPatches/ASMTweaks.h"
 
 #include "ASMPatcher.hpp"
@@ -138,6 +139,9 @@ void PerformASMPatches() {
 	ASMPatchPlayerItemNoMetronome();
 	ASMPatchesForExtraLives();
 	ASMPatchMarsDoubleTapWindow();
+
+	// Status Effects
+	PatchInlinedGetStatusEffectTarget();
 
 	// Render
 	LuaRender::PatchglDrawElements();
