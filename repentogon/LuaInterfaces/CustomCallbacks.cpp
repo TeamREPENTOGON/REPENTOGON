@@ -4286,6 +4286,50 @@ HOOK_METHOD(Level, GetRandomRoomIndex, (bool IAmErrorRoom, unsigned int Seed) ->
 	return ret;
 }
 
+//PRE_FORCE_ADD_PILL_EFFECT (1128)
+HOOK_METHOD(ItemPool, ForceAddPillEffect, (int32_t ID)->int) {
+	int ret = -1;
+	int callbackid = 1128;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(ID)
+			.call(1);
+
+		if (!result) {
+			if (lua_isinteger(L, -1)) {
+				ret = (int)lua_tointeger(L, -1);
+			};
+		}
+	};
+
+	if (ret == -1) {
+		ret = super(ID);
+	};
+
+//POST_FORCE_PILL_EFFECT (1129)
+	callbackid = 1129;
+	if (CallbackState.test(callbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+			.pushnil()
+			.push(ID)
+			.push(ret)
+			.call(1);
+	};
+
+	return ret;
+};
+
 inline int GetGlowingHourglassSlot(GameState* gameState) { //g_Game->_currentGlowingHourglassSlot should always contain the slot that is currently being saved/restored, but I'm doing this just to be safe.
 	if (gameState == &g_Game->_glowingHourglassStates[0]._gameState) {
 		return 0;
