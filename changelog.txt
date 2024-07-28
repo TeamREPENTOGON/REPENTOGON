@@ -8,11 +8,24 @@ Additions:
 * ModCallbacks:
 	- POST versions of MC_PRE_PLAYER_ADD/REMOVE_COSTUME
 	- MC_[PRE/POST]_FORCE_PILL_EFFECT
+	- MC_EVALUATE_CUSTOM_CACHE(Player, CustomCacheTag, float value)
+		Cache-style evaluation for custom player attributes.
+		Return a number to modify the value. Modified values are passed to the next callback.
+		CustomCacheTags must always be all lowercase.
+		Optional param: CustomCacheTag
+	- MC_EVALUATE_FAMILIAR_MULTIPLIER(Familiar, float mult, Player)
+		Called when a familiar's cached multiplier needs to be re-evaluated.
+		Return a number to modify the multiplier. Modified values are passed to the next callback.
+		Optional param: FamiliarVariant
 * Isaac:
 	- GetPoolIdByName(string Name) - returns -1 if the pool is not found.
 * EntityPlayer:
 	- GetMovingBoxContents()
 	- GetTearDisplacement() - Returns the player's TearDisplacement value, used to check what eye the player is shooting from. 1 means that the last shot was from the right eye, -1 means the opposite.
+	- AddCustomCacheTag(string OR {string, string, ...}, bool evaluateItemsNow) - Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
+	- GetCustomCacheValue(string CustomCacheTag) - Returns the current cached value for the specified CustomCacheTag. Will return 0 by default if the provided tag has not been evaluated.
+* EntityFamiliar:
+	- InvalidateCachedMultiplier() - Makes it so that the next time GetMultiplier is called, MC_EVALUATE_FAMILIAR_MULTIPLIER is triggered to recalculate/allow modifying the multiplier.
 * EntityNPC:
 	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
 	- ClearFlyingOverride() - Removes any value set by SetFlyingOverride.
@@ -37,14 +50,25 @@ Additions:
 * Room:
 	- SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
 	- GetItemPool(int Seed, boolean Raw) - Retrieves the pool the game would use to generate random collectibles in the current room.
+* ItemConfigItem:
+	- HasCustomCacheTag
+	- GetCustomCacheTags
+* Added support for a "customcache" attribute in items.xml
+	- Formatted as a space-separated list of string tags, same as other similar attributes.
+	- Capitalization is ignored - tags are converted to all lowercase.
+	- Whenever an item/trinket/effect is added or removed, triggers MC_EVALUATE_CUSTOM_CACHE on the player for each tag specified for that item.
+	- MC_EVALUATE_CUSTOM_CACHE will evaluate a number value (starts at 0 by default) which can be retrieved afterwards with player:GetCustomCacheValue(tag)
+	- Every tag that exists on at least one item in items.xml will also be triggered by CacheFlag.CACHE_ALL
+	- REPENTOGON adds one custom cache tag (so far): "familiarmultiplier". Note that this one does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggering MC_EVALUATE_FAMILIAR_MULTIPLIER for each familiar.
 Fixes:
-	- Fixed potential crash during the ascent
+	- Fixed the game getting permanantly stuck trying to generate an ascent floor if a modded boss room has certain door layouts
 	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
 	- Restore/fix the vein effect in Hush's boss room pre-Repentance
 	- Fix ???/Blue Womb rooms generating in The Void even when not using Better Void Generation
 	- Fix Void Portal rooms potentially not being generated in The Void
 	- Fix room weights not correctly being reset when reseeding in The Void
 	- Temporarily disable modified RoomDescriptor.OverrideData handling to prevent potential cases of it not being properly replaced
+	- Fix Isaac's Heart being immune to lasers
 /newline/
 v1.0.10c -
 Additions:

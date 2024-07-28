@@ -3,7 +3,7 @@
 #include "LuaCore.h"
 #include "../Patches/XMLData.h"
 
-XMLDataHolder* GetItemXML(const ItemConfig_Item* config) {
+XMLItem* GetItemXML(const ItemConfig_Item* config) {
 	if (config->type == 0) {
 		return XMLStuff.NullItemData;
 	}
@@ -18,7 +18,7 @@ LUA_FUNCTION(Lua_ItemConfigItem_GetCustomTags) {
 
 	lua_newtable(L);
 
-	XMLDataHolder* xml = GetItemXML(config);
+	XMLItem* xml = GetItemXML(config);
 	if (xml->customtags.find(config->id) != xml->customtags.end()) {
 		int i = 0;
 		for (const std::string& tag : xml->customtags[config->id]) {
@@ -39,10 +39,38 @@ LUA_FUNCTION(Lua_ItemConfigItem_HasCustomTag)
 	return 1;
 }
 
+LUA_FUNCTION(Lua_ItemConfigItem_GetCustomCacheTags) {
+	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+
+	lua_newtable(L);
+
+	XMLItem* xml = GetItemXML(config);
+	if (xml->customcache.find(config->id) != xml->customcache.end()) {
+		int i = 0;
+		for (const std::string& tag : xml->customcache[config->id]) {
+			lua_pushinteger(L, ++i);
+			lua_pushstring(L, tag.c_str());
+			lua_settable(L, -3);
+		}
+	}
+
+	return 1;
+}
+
+LUA_FUNCTION(Lua_ItemConfigItem_HasCustomCacheTag)
+{
+	ItemConfig_Item* config = lua::GetUserdata<ItemConfig_Item*>(L, 1, lua::Metatables::ITEM, "Item");
+	const std::string tag = luaL_checkstring(L, 2);
+	lua_pushboolean(L, GetItemXML(config)->HasCustomCache(config->id, tag));
+	return 1;
+}
+
 void RegisterItemFunctions(lua_State* L) {
 	luaL_Reg functions[] = {
 		{ "GetCustomTags", Lua_ItemConfigItem_GetCustomTags },
 		{ "HasCustomTag", Lua_ItemConfigItem_HasCustomTag },
+		{ "GetCustomCacheTags", Lua_ItemConfigItem_GetCustomCacheTags },
+		{ "HasCustomCacheTag", Lua_ItemConfigItem_HasCustomCacheTag },
 		{ NULL, NULL }
 	};
 

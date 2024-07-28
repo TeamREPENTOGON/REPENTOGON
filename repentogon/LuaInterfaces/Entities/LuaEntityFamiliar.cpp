@@ -154,7 +154,7 @@ LUA_FUNCTION(Lua_FamiliarGetItemConfig) {
 	return 1;
 }
 
-LUA_FUNCTION(Lua_FamiliarEvaluateMultiplier) {
+LUA_FUNCTION(Lua_FamiliarInvalidateCachedMultiplier) {
 	auto* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	EntityFamiliarPlus* famPlus = GetEntityFamiliarPlus(fam);
 	if (famPlus) {
@@ -185,7 +185,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetMoveDelayNum", Lua_FamiliarGetMoveDelayNum },
 		{ "SetMoveDelayNum", Lua_FamiliarSetMoveDelayNum },
 		{ "GetItemConfig", Lua_FamiliarGetItemConfig },
-		{ "EvaluateMultiplier", Lua_FamiliarEvaluateMultiplier },
+		{ "InvalidateCachedMultiplier", Lua_FamiliarInvalidateCachedMultiplier },
 		{ NULL, NULL }
 	};
 

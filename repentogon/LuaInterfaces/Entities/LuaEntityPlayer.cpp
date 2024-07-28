@@ -2413,14 +2413,16 @@ LUA_FUNCTION(Lua_PlayerAddCustomCacheTag) {
 LUA_FUNCTION(Lua_PlayerGetCustomCacheValue) {
 	Entity_Player* player = lua::GetUserdata<Entity_Player*>(L, 1, lua::Metatables::ENTITY_PLAYER, "EntityPlayer");
 
-	const std::string layerName = luaL_checkstring(L, 2);
+	const std::string tag = luaL_checkstring(L, 2);
 
 	EntityPlayerPlus* playerPlus = GetEntityPlayerPlus(player);
 
-	if (playerPlus && playerPlus->customCacheResults.find(layerName) != playerPlus->customCacheResults.end()) {
-		lua_pushnumber(L, playerPlus->customCacheResults[layerName]);
+	if (playerPlus && playerPlus->customCacheResults.find(tag) != playerPlus->customCacheResults.end()) {
+		lua_pushnumber(L, playerPlus->customCacheResults[tag]);
 	}
-	lua_pushnumber(L, 0);
+	else {
+		lua_pushnumber(L, 0);
+	}
 
 	return 1;
 }
