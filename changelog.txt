@@ -1,6 +1,10 @@
-v1.?.??? -
+v1.0.11 -
 Additions:
-* It is now possible to define Custom ItemPools in itempools.xml. (the Id can be obtained using Isaac.GetPoolIdByName(poolName))
+* Itempools:
+	- Added support for new custom itempools through itempools.xml on the content folder
+	- Isaac.GetPoolIdByName(poolName) - returns the id of a given custom pool
+	- Room:SetItemPool(ItemPoolType PoolType) - sets the pool to use when the game needs to generate random collectibles in the current room
+	- Room:GetItemPool(int Seed, boolean Raw) - Retrieves the pooltype the game would use to generate random collectibles in the current room.
 * ModCallbacks:
 	- POST versions of MC_PRE_PLAYER_ADD/REMOVE_COSTUME
 	- MC_[PRE/POST]_FORCE_PILL_EFFECT
@@ -34,6 +38,7 @@ Additions:
 	- SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
 	- GetItemPool(int Seed, boolean Raw) - Retrieves the pool the game would use to generate random collectibles in the current room.
 Fixes:
+	- Fixed potential crash during the ascent
 	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
 	- Restore/fix the vein effect in Hush's boss room pre-Repentance
 	- Fix ???/Blue Womb rooms generating in The Void even when not using Better Void Generation
