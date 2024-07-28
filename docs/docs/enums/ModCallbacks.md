@@ -1551,6 +1551,14 @@ Accepts no return parameters.
 |:--|:--|:--|:--|:--|
 |1127 |MC_PLAYER_INIT_PRE_LEVEL_INIT_STATS {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
+### MC_POST_FORCE_ADD_PILL_EFFECT {: .copyable }
+
+Accepts no return parameters.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1129 |MC_POST_FORCE_ADD_PILL_EFFECT {: .copyable } | [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html), [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) | - | void |
+
 ### MC_POST_PLAYER_NEW_LEVEL {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
