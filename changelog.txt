@@ -1,6 +1,8 @@
 v1.?.??? -
 Additions:
 * It is now possible to define Custom ItemPools in itempools.xml. (the Id can be obtained using Isaac.GetPoolIdByName(poolName))
+* ModCallbacks:
+	- POST versions of MC_PRE_PLAYER_ADD/REMOVE_COSTUME.
 * Isaac:
 	- GetPoolIdByName(string Name) - returns -1 if the pool is not found.
 * EntityPlayer:

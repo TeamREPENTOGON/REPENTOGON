@@ -4352,20 +4352,20 @@ inline bool IsCoopBaby(Entity_Player* player) {
 	return player->_variant == 1 || player->_isCoopGhost;
 }
 
-//PRE_PLAYER_ADD_COSTUME (1281)
+//PRE/POST_PLAYER_ADD_COSTUME (1281/1283)
 HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnly) -> void) {
 	if (IsCoopBaby(this)) {
 		return;
 	}
 
-	const int callbackid = 1281;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int preCallbackid = 1281;
+	if (CallbackState.test(preCallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 		
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
 			.pushnil()
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
@@ -4388,22 +4388,37 @@ HOOK_METHOD(Entity_Player, AddCostume, (ItemConfig_Item* item, bool itemStateOnl
 	}
 
 	super(item, itemStateOnly);
+
+	const int postCallbackid = 1283;
+	if (CallbackState.test(postCallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+		
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.push(itemStateOnly)
+			.call(1);
+	}
 }
 
-//PRE_PLAYER_REMOVE_COSTUME (1282)
+//PRE/POST_PLAYER_REMOVE_COSTUME (1282/1284)
 HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 	if (!item || IsCoopBaby(this)) {
 		return;
 	}
 
-	const int callbackid = 1282;
-	if (CallbackState.test(callbackid - 1000)) {
+	const int preCallbackid = 1282;
+	if (CallbackState.test(preCallbackid - 1000)) {
 		lua_State* L = g_LuaEngine->_state;
 		lua::LuaStackProtector protector(L);
 
 		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
 
-		lua::LuaResults result = lua::LuaCaller(L).push(callbackid)
+		lua::LuaResults result = lua::LuaCaller(L).push(preCallbackid)
 			.pushnil()
 			.push(item, lua::Metatables::ITEM)
 			.push(this, lua::Metatables::ENTITY_PLAYER)
@@ -4419,4 +4434,26 @@ HOOK_METHOD(Entity_Player, RemoveCostume, (ItemConfig_Item* item) -> void) {
 	}
 
 	super(item);
+
+	const int postCallbackid = 1284;
+	if (CallbackState.test(postCallbackid - 1000)) {
+		lua_State* L = g_LuaEngine->_state;
+		lua::LuaStackProtector protector(L);
+
+		lua_rawgeti(L, LUA_REGISTRYINDEX, g_LuaEngine->runCallbackRegistry->key);
+
+		lua::LuaResults result = lua::LuaCaller(L).push(postCallbackid)
+			.pushnil()
+			.push(item, lua::Metatables::ITEM)
+			.push(this, lua::Metatables::ENTITY_PLAYER)
+			.call(1);
+
+		if (!result) {
+			if (lua_isboolean(L, -1)) {
+				if (lua_toboolean(L, -1)) {
+					return;
+				}
+			}
+		}
+	}
 }
