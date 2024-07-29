@@ -119,7 +119,7 @@ namespace CustomItemPool
             ItemPool_Item& itemPool = itemPools[pool];
             std::vector<float>& poolItemWeights = this->poolItemWeights[pool];
 
-            size_t lowestSize = std::min(itemPool._poolList.size(), poolConfigs.size());
+            size_t lowestSize = std::min(itemPool._poolList.size(), poolConfigs[pool].poolList.size());
             for (size_t poolItem = 0; poolItem < lowestSize; poolItem++)
             {
                 itemPools[pool]._poolList[poolItem]._weight = poolItemWeights[poolItem];
@@ -405,7 +405,7 @@ namespace CustomItemPool
 
     size_t GetNumItemPools()
     {
-        return itemPools.size() + NUM_ITEMPOOLS;
+        return poolConfigs.size() + NUM_ITEMPOOLS;
     }
 
     inline int GetCustomItemPoolId(int itemPoolType)
@@ -1022,6 +1022,49 @@ void ASMPatchDecreaseRemainingGenesisItems()
     sASMPatcher.PatchAt(decreaseGenesisItemsSig, &patch);
 }
 
+void ASMPatchPoolNotFoundLogINFO()
+{
+    SigScan scanner("5068????????6a??e8????????c645");
+    scanner.Scan();
+    void* poolNotFoundSig = scanner.GetAddress();
+
+    printf("[REPENTOGON] Patching ItemPool::load_pools at %p for CustomItemPools\n", poolNotFoundSig);
+
+    ASMPatch patch;
+    patch.AddRelativeJump((char*)poolNotFoundSig + 0xD); // Skip KAGE::LogMessage
+    sASMPatcher.PatchAt(poolNotFoundSig, &patch);
+}
+
+const char* emptyString = "";
+
+const char* __stdcall Debug12GetItemPoolName(int itemPoolType)
+{
+    if (itemPoolType < 0 || itemPoolType >= CustomItemPool::poolConfigs.size() + NUM_ITEMPOOLS)
+    {
+        return emptyString;
+    }
+    return CustomItemPool::poolConfigs[itemPoolType - NUM_ITEMPOOLS].name.c_str();
+}
+
+void ASMPatchGetDebug12PoolName(const char* signature)
+{
+    SigScan scanner(signature);
+    scanner.Scan();
+    void* debug12PoolNameSig = scanner.GetAddress();
+
+    printf("[REPENTOGON] Patching EntityPlayer::RenderDebugInfo at %p for CustomItemPools\n", debug12PoolNameSig);
+
+    ASMPatch::SavedRegisters reg(ASMPatch::SavedRegisters::GP_REGISTERS_STACKLESS & ~ASMPatch::SavedRegisters::ECX, true);
+    ASMPatch patch;
+    patch.PreserveRegisters(reg)
+        .Push(ASMPatch::Registers::EAX) // itemPoolType
+        .AddInternalCall(Debug12GetItemPoolName) // call Debug12GetItemPoolName
+        .CopyRegister(ASMPatch::Registers::ECX, ASMPatch::Registers::EAX) // mov ECX, EAX
+        .RestoreRegisters(reg)
+        .AddRelativeJump((char*)debug12PoolNameSig + 0x5); // resume
+    sASMPatcher.PatchAt(debug12PoolNameSig, &patch);
+}
+
 void ASMPatchesForCustomItemPools()
 {
     ASMPatchFirstPickCollectible();
@@ -1029,6 +1072,13 @@ void ASMPatchesForCustomItemPools()
     ASMPatchPreTriggerGenesis();
     ASMPatchAddGenesisPoolWeight();
     ASMPatchDecreaseRemainingGenesisItems();
+}
+
+void ExtraASMPatchesForCustomItemPools()
+{
+    ASMPatchPoolNotFoundLogINFO();
+    ASMPatchGetDebug12PoolName("b9????????8b46??85c078??83f81e73??8b0485????????eb??b8????????5150ff76??8d85????????ff76??ff365268????????508d45");
+    ASMPatchGetDebug12PoolName("b9????????8b46??85c078??83f81e73??8b0485????????eb??b8????????5150ff76??8d85????????ff76??ff365268????????508d85");
 }
 
 LUA_FUNCTION(Lua_CustomItemPoolGetPoolIdByName)

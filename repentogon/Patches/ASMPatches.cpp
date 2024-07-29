@@ -154,6 +154,7 @@ void PerformASMPatches() {
 	ASMPatchesForEntityPlus();
 	ASMPatchesForCustomCache();
 	ASMPatchesForCustomItemPools();
+	ExtraASMPatchesForCustomItemPools();
 	HookImGui();
 
 	// Sprite

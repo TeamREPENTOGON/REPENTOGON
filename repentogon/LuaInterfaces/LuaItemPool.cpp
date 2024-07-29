@@ -536,6 +536,16 @@ LUA_FUNCTION(Lua_ItemPoolResetCollectible) {
 	}
 
 	itemPool->ResetCollectible(collectible);
+
+	return 0;
+}
+
+LUA_FUNCTION(Lua_ItemPoolGetNumItemPools) {
+	ItemPool* itemPool = lua::GetUserdata<ItemPool*>(L, 1, lua::Metatables::ITEM_POOL, "ItemPool");
+
+	lua_pushinteger(L, CustomItemPool::GetNumItemPools());
+
+	return 1;
 }
 
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
@@ -566,6 +576,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetPillColor", Lua_ItemPoolGetPillColor },
 		{ "GetBibleUpgrades", Lua_ItemPoolGetBibleUpgrades },
 		{ "ResetCollectible", Lua_ItemPoolResetCollectible },
+		{ "GetNumItemPools", Lua_ItemPoolGetNumItemPools },
 
 		{ NULL, NULL }
 	};
