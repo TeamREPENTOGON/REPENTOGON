@@ -81,6 +81,9 @@ __thiscall LootList Entity_NPC::fireplace_get_loot(bool ShouldAdvance);
 "558bec83ec20f30f100d":
 static int Entity_NPC::FindTargetPit(Vector* Pos1, Vector* Pos2, unsigned int PitIndex);
 
+"558bec6aff68????????64a1????????5081eca400000053":
+__thiscall bool Entity_NPC::TrySplit(float defaultDamage<xmm1>, EntityRef * source, bool doScreenEffects);
+
 /*
 // Minecart functions
 "558bec51538bd98b8b":

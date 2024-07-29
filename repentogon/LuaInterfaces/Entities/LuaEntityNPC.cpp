@@ -369,6 +369,17 @@ LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
 	return 0;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	const float defaultDamage = luaL_checknumber(L, 2);
+	auto* source  = lua::GetUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
+	const bool doScreenEffects = lua::luaL_optboolean(L, 4, true);
+
+	lua_pushboolean(L, npc->TrySplit(defaultDamage, source, doScreenEffects));
+
+	return 1;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -399,6 +410,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "IsBossColor", Lua_IsBossColor },
 		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
 		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
+		{ "TrySplit", Lua_EntityNPC_TrySplit },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }

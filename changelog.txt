@@ -30,6 +30,7 @@ Additions:
 * EntityNPC:
 	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
 	- ClearFlyingOverride() - Removes any value set by SetFlyingOverride.
+	- TrySplit(float DefaultDamage, EntityRef Source, DoScreenEffects = true)
 * EntityLaser:
 	- RecalculateSamplesNextUpdate() - Requests the laser's shape to be fully recalculated next time it updates. Can be used to force the laser to instantly change its MaxDistance/Radius instead of transitioning to it. No effect for OneHit or non-sample lasers.
 	- IsMultidimensionalTouched()
