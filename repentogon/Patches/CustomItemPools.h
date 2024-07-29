@@ -112,3 +112,4 @@ namespace CustomItemPool
 };
 
 void ASMPatchesForCustomItemPools();
+void ExtraASMPatchesForCustomItemPools();
