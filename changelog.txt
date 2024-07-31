@@ -15,8 +15,8 @@ Additions:
 	- Render()
 	- SetText(string Text1 = "", string Text2 = "", string Text3 = "", string Text4 = "", string Text5 = "")
 	- GetSprite()
-	- GetCurrentSelection()
-	- GetSubmittedSelection()
+	- GetCurrentSelection() - (0 - No, 1 - Yes)
+	- GetSubmittedSelection() - (0 - None, 1 - Yes, 2 - No)
 * ModCallbacks:
 	- POST versions of MC_PRE_PLAYER_ADD/REMOVE_COSTUME
 	- MC_POST_FORCE_PILL_EFFECT
@@ -56,6 +56,8 @@ Additions:
 	- TriggerTheresOptionsPickup() - Removes pickups with the same option group (OptionsPickupIndex) as the target pickup.
 * LayerState:
 	- GetFlip[X/Y](), SetFlip[X/Y]()
+* Game:
+	- GetGenericPrompt()
 * Level:
 	- GetMyosotisPickups() - returns the pickups that will be transferred to the next floor by the myosotis trinket effect
 * ItemConfigItem:
