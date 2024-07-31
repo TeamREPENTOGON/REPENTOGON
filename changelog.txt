@@ -2,10 +2,21 @@ v1.0.11 -
 Additions:
 * Itempools:
 	- Added support for new custom itempools through itempools.xml on the content folder
-	- Isaac.GetPoolIdByName(poolName) - returns the id of a given custom pool
-	- Room:SetItemPool(ItemPoolType PoolType) - sets the pool to use when the game needs to generate random collectibles in the current room
+	- Isaac.GetPoolIdByName(poolName) - returns the id of a given custom pool. Returns -1 if the pool is not found.
+	- Room:SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
 	- Room:GetItemPool(int Seed, boolean Raw) - Retrieves the pooltype the game would use to generate random collectibles in the current room.
-	- ItemPool:GetNumItemPools() - Retrieves the total number of itempools in the game, including custom itempools
+	- ItemPool:GetNumItemPools() - Retrieves the total number of itempools in the game, including custom itempools.
+* GenericPrompt:
+	- GenericPrompt constructor
+	- Initialize(boolean SmallPrompt = false)
+	- Show()
+	- IsActive()
+	- Update(boolean ProcessInput)
+	- Render()
+	- SetText(string Text1 = "", string Text2 = "", string Text3 = "", string Text4 = "", string Text5 = "")
+	- GetSprite()
+	- GetCurrentSelection()
+	- GetSubmittedSelection()
 * ModCallbacks:
 	- POST versions of MC_PRE_PLAYER_ADD/REMOVE_COSTUME
 	- MC_POST_FORCE_PILL_EFFECT
@@ -18,8 +29,6 @@ Additions:
 		Called when a familiar's cached multiplier needs to be re-evaluated.
 		Return a number to modify the multiplier. Modified values are passed to the next callback.
 		Optional param: FamiliarVariant
-* Isaac:
-	- GetPoolIdByName(string Name) - returns -1 if the pool is not found.
 * EntityPlayer:
 	- GetMovingBoxContents()
 	- GetTearDisplacement() - Returns the player's TearDisplacement value, used to check what eye the player is shooting from. 1 means that the last shot was from the right eye, -1 means the opposite.
@@ -49,9 +58,6 @@ Additions:
 	- GetFlip[X/Y](), SetFlip[X/Y]()
 * Level:
 	- GetMyosotisPickups() - returns the pickups that will be transferred to the next floor by the myosotis trinket effect
-* Room:
-	- SetItemPool(ItemPoolType PoolType) - Sets the pool to use when the game needs to generate random collectibles in the current room.
-	- GetItemPool(int Seed, boolean Raw) - Retrieves the pool the game would use to generate random collectibles in the current room.
 * ItemConfigItem:
 	- HasCustomCacheTag
 	- GetCustomCacheTags
@@ -62,6 +68,7 @@ Additions:
 	- MC_EVALUATE_CUSTOM_CACHE will evaluate a number value (starts at 0 by default) which can be retrieved afterwards with player:GetCustomCacheValue(tag)
 	- Every tag that exists on at least one item in items.xml will also be triggered by CacheFlag.CACHE_ALL
 	- REPENTOGON adds one custom cache tag (so far): "familiarmultiplier". Note that this one does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggering MC_EVALUATE_FAMILIAR_MULTIPLIER for each familiar.
+/newline/	
 Fixes:
 	- Fixed the game getting permanantly stuck trying to generate an ascent floor if a modded boss room has certain door layouts
 	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed

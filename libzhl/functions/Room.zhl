@@ -96,6 +96,9 @@ __thiscall int Room::GetSeededCollectible(uint32_t Seed, bool NoDecrease);
 "a1????????83b8????????16b802000000":
 __thiscall uint32_t Room::GetBrokenWatchState();
 
+"558bec83e4f883ec14538bd956578b43??8148??00400000":
+__thiscall void Room::MamaMegaExplosion(Vector * Position);
+
 struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) {
 {{
 	inline Camera* GetCamera() { return *(Camera**)((char*)this + 0x11F8); }

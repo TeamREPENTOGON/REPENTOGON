@@ -55,6 +55,9 @@ __thiscall int Level::GetRandomRoomIndex(bool IAmErrorRoom, unsigned int Seed);
 "538bdc83ec0883e4f883c404558b6b??896c24??8bec6aff68????????64a1????????505381ec48040000":
 __thiscall void Level::generate_dungeon(RNG * RNG);
 
+"558bec83e4f883ec0c568bf18b86":
+__thiscall void Level::StartMamaMega(Vector * Position);
+
 struct Level {
 	uint32_t _stage : 0x0;
 	uint32_t _stageType : 0x4;
