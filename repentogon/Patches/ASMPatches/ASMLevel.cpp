@@ -89,10 +89,12 @@ HOOK_METHOD(Level, generate_dungeon, (RNG* rng) -> void)
 		if (generateLevels.any())
 		{
 			RoomConfig* roomConfig = &g_Game->_roomConfig;
-			int mode = g_Game->IsGreedMode();
-			for (int id = 1; id < 37; ++id) {
-				if (generateLevels.test(id-1) && roomConfig != nullptr)
-					roomConfig->ResetRoomWeights(id, mode);
+			if (roomConfig != nullptr) {
+				uint8_t mode = g_Game->IsGreedMode();
+				for (int id = 1; id < 37; ++id) {
+					if (generateLevels.test(id - 1))
+						roomConfig->ResetRoomWeights(id, mode);
+				}
 			}
 			generateLevels.reset();
 		}

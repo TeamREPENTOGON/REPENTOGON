@@ -33,7 +33,7 @@ void PerformHushPanicPatch(void* addr) {
 
 bool __stdcall IsRoomSlow() {
 	Room* room = g_Game->_room;
-	return (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
+	return repentogonOptions.hushPanicStateFix && (room->_slowdownDuration > 0 || room->GetBrokenWatchState() == 1);
 }
 
 const float hushLaserAdjust = 0.513f * 0.75; // a base value i got empirically a while back + a slight extra bit of wiggle room
