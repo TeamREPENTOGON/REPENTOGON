@@ -6217,24 +6217,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#getflipx" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetFlipX ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#getflipy" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetFlipY ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#getlayerid" class="md-nav__link">
     <span class="md-ellipsis">
       GetLayerID ()
@@ -6373,24 +6355,6 @@
   <a href="#setcustomshader" class="md-nav__link">
     <span class="md-ellipsis">
       SetCustomShader ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#setflipx" class="md-nav__link">
-    <span class="md-ellipsis">
-      SetFlipX ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#setflipy" class="md-nav__link">
-    <span class="md-ellipsis">
-      SetFlipY ()
     </span>
   </a>
   
@@ -7385,24 +7349,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#getflipx" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetFlipX ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#getflipy" class="md-nav__link">
-    <span class="md-ellipsis">
-      GetFlipY ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#getlayerid" class="md-nav__link">
     <span class="md-ellipsis">
       GetLayerID ()
@@ -7547,24 +7493,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#setflipx" class="md-nav__link">
-    <span class="md-ellipsis">
-      SetFlipX ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#setflipy" class="md-nav__link">
-    <span class="md-ellipsis">
-      SetFlipY ()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#setpos" class="md-nav__link">
     <span class="md-ellipsis">
       SetPos ()
@@ -7683,12 +7611,6 @@
 <h3 aria-label="Functions" id="getdefaultspritesheetpath">GetDefaultSpritesheetPath ()<a class="headerlink" href="#getdefaultspritesheetpath" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="string-getdefaultspritesheetpath">string GetDefaultSpritesheetPath ( )<a class="headerlink" href="#string-getdefaultspritesheetpath" title="Permanent link">⚓︎</a></h4>
 <hr />
-<h3 aria-label="Functions" id="getflipx">GetFlipX ()<a class="headerlink" href="#getflipx" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="boolean-getflipx">boolean GetFlipX ( )<a class="headerlink" href="#boolean-getflipx" title="Permanent link">⚓︎</a></h4>
-<hr />
-<h3 aria-label="Functions" id="getflipy">GetFlipY ()<a class="headerlink" href="#getflipy" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="boolean-getflipy">boolean GetFlipY ( )<a class="headerlink" href="#boolean-getflipy" title="Permanent link">⚓︎</a></h4>
-<hr />
 <h3 aria-label="Functions" id="getlayerid">GetLayerID ()<a class="headerlink" href="#getlayerid" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getlayerid">int GetLayerID ( )<a class="headerlink" href="#int-getlayerid" title="Permanent link">⚓︎</a></h4>
 <hr />
@@ -7743,23 +7665,17 @@
 <h3 aria-label="Functions" id="setcropoffset">SetCropOffset ()<a class="headerlink" href="#setcropoffset" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcropoffset-vector-offset">void SetCropOffset ( <a href="Vector.html">Vector</a> Offset )<a class="headerlink" href="#void-setcropoffset-vector-offset" title="Permanent link">⚓︎</a></h4>
 <hr />
-<h3 aria-label="Functions" id="setcustomchampionshader">SetCustomChampionShader ()<a class="headerlink" href="#setcustomchampionshader" title="Permanent link">⚓︎</a></h3>
+<h3 aria-label="Modified Functions" id="setcustomchampionshader">SetCustomChampionShader ()<a class="headerlink" href="#setcustomchampionshader" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcustomchampionshader-string-shaderpath">void SetCustomChampionShader ( string ShaderPath )<a class="headerlink" href="#void-setcustomchampionshader-string-shaderpath" title="Permanent link">⚓︎</a></h4>
 <p>Specify a custom champion shader file for this layer to use instead of the usual <code>coloroffset_champion</code> shader. Provided path is expected to start at <code>.../resources/</code> and to find both a .vs and .fs file at that location. For example: <code>layer:SetCustomChampionShader("shaders/my_shader")</code> will load <code>.../resources/shaders/my_shader.vs</code> and <code>.../resources/shaders/my_shader.fs</code>.</p>
 <p>The custom champion shader will only be used by the game if the entity is actually a champion.</p>
 <p>Note that the custom shader must take the exact same inputs as the default <code>coloroffset_champion</code> shader the game uses (it has one additional input compared to <code>coloroffset</code>).</p>
 <hr />
-<h3 aria-label="Functions" id="setcustomshader">SetCustomShader ()<a class="headerlink" href="#setcustomshader" title="Permanent link">⚓︎</a></h3>
+<h3 aria-label="Modified Functions" id="setcustomshader">SetCustomShader ()<a class="headerlink" href="#setcustomshader" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setcustomshader-string-shaderpath">void SetCustomShader ( string ShaderPath )<a class="headerlink" href="#void-setcustomshader-string-shaderpath" title="Permanent link">⚓︎</a></h4>
 <p>Specify a custom shader file for this layer to use instead of the default <code>coloroffset</code> shader. Provided path is expected to start at <code>.../resources/</code> and to find both a .vs and .fs file at that location. For example: <code>layer:SetCustomShader("shaders/my_shader")</code> will load <code>.../resources/shaders/my_shader.vs</code> and <code>.../resources/shaders/my_shader.fs</code>.</p>
 <p>This custom shader will not be used by the game if the entity is a champion, or if it has the gold/dogma shader applied.</p>
 <p>Note that the custom shader must take the exact same inputs as the default <code>coloroffset</code> shader the game uses. The gold and dogma shaders also use the same inputs, and can be a good reference.</p>
-<hr />
-<h3 aria-label="Functions" id="setflipx">SetFlipX ()<a class="headerlink" href="#setflipx" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-setflipx-boolean-flipx">void SetFlipX ( boolean FlipX )<a class="headerlink" href="#void-setflipx-boolean-flipx" title="Permanent link">⚓︎</a></h4>
-<hr />
-<h3 aria-label="Functions" id="setflipy">SetFlipY ()<a class="headerlink" href="#setflipy" title="Permanent link">⚓︎</a></h3>
-<h4 aria-label="Functions" class="copyable" id="void-setflipy-boolean-flipy">void SetFlipY ( boolean FlipY )<a class="headerlink" href="#void-setflipy-boolean-flipy" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="setpos">SetPos ()<a class="headerlink" href="#setpos" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="void-setpos-vector-pos">void SetPos ( <a href="Vector.html">Vector</a> Pos )<a class="headerlink" href="#void-setpos-vector-pos" title="Permanent link">⚓︎</a></h4>
