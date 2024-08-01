@@ -173,8 +173,10 @@ void PerformASMPatches() {
 		ZHL::Log("[ERROR] Error while fixing the Berserk + Spirit Shackles crash\n");
 	}
 
-	if (!ASMPatches::FixHushFXVeins()) {
-		ZHL::Log("[ERROR] Error while restoring Hush boss room veins FX\n");
-	}
+	// This patch needs to be remade to include a toggle setting and fix glowing hourglass and the day before a release isn't the time for that
+
+	//if (!ASMPatches::FixHushFXVeins()) {
+	//	ZHL::Log("[ERROR] Error while restoring Hush boss room veins FX\n");
+	//}
 	
 }

@@ -75,7 +75,6 @@ Additions:
 Fixes:
 	- Fixed the game getting permanantly stuck trying to generate an ascent floor if a modded boss room has certain door layouts
 	- Fix a vanilla bug that caused Hush's laser attack to ignore a room's slowdown state and always chase the player at full speed
-	- Restore/fix the vein effect in Hush's boss room pre-Repentance
 	- Fix ???/Blue Womb rooms generating in The Void even when not using Better Void Generation
 	- Fix Void Portal rooms potentially not being generated in The Void
 	- Fix room weights not correctly being reset when reseeding in The Void
