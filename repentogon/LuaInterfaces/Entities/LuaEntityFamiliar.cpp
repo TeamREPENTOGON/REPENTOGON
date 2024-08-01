@@ -154,6 +154,24 @@ LUA_FUNCTION(Lua_FamiliarGetItemConfig) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_FamiliarGetMultiplier) {
+	auto* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
+	EntityFamiliarPlus* famPlus = GetEntityFamiliarPlus(fam);
+	if (famPlus && !famPlus->cachedMultiplier) {
+		// We can't use the return value yet due to where the float value ends up in memory.
+		// However, just calling it will trigger re-evaluation & cache the result via my ASM patch.
+		fam->GetMultiplier();
+	}
+	if (famPlus && famPlus->cachedMultiplier) {
+		lua_pushnumber(L, *famPlus->cachedMultiplier);
+	}
+	else {
+		// Uh oh
+		lua_pushnumber(L, 1.0f);
+	}
+	return 1;
+}
+
 LUA_FUNCTION(Lua_FamiliarInvalidateCachedMultiplier) {
 	auto* fam = lua::GetUserdata<Entity_Familiar*>(L, 1, lua::Metatables::ENTITY_FAMILIAR, "EntityFamiliar");
 	EntityFamiliarPlus* famPlus = GetEntityFamiliarPlus(fam);
@@ -186,6 +204,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "SetMoveDelayNum", Lua_FamiliarSetMoveDelayNum },
 		{ "GetItemConfig", Lua_FamiliarGetItemConfig },
 		{ "InvalidateCachedMultiplier", Lua_FamiliarInvalidateCachedMultiplier },
+		{ "GetMultiplier", Lua_FamiliarGetMultiplier },
 		{ NULL, NULL }
 	};
 

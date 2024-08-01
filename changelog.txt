@@ -35,6 +35,7 @@ Additions:
 	- AddCustomCacheTag(string OR {string, string, ...}, bool evaluateItemsNow) - Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
 	- GetCustomCacheValue(string CustomCacheTag) - Returns the current cached value for the specified CustomCacheTag. Will return 0 by default if the provided tag has not been evaluated.
 * EntityFamiliar:
+	- GetMultiplier() - Returns the "multiplier" for the familiar, from effects such as BFFs or Hive Mind. Typically used to multiply things such as familiar damage.
 	- InvalidateCachedMultiplier() - Makes it so that the next time GetMultiplier is called, MC_EVALUATE_FAMILIAR_MULTIPLIER is triggered to recalculate/allow modifying the multiplier.
 * EntityNPC:
 	- SetFlyingOverride(bool) - Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.

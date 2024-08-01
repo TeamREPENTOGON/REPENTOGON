@@ -98,7 +98,7 @@ ___
 #### void SetCropOffset ( [Vector](Vector.md) Offset ) {: .copyable aria-label='Functions' }
 
 ___
-### SetCustomChampionShader () {: aria-label='Modified Functions' }
+### SetCustomChampionShader () {: aria-label='Functions' }
 #### void SetCustomChampionShader ( string ShaderPath ) {: .copyable aria-label='Functions' }
 Specify a custom champion shader file for this layer to use instead of the usual `coloroffset_champion` shader. Provided path is expected to start at `.../resources/` and to find both a .vs and .fs file at that location. For example: `layer:SetCustomChampionShader("shaders/my_shader")` will load `.../resources/shaders/my_shader.vs` and `.../resources/shaders/my_shader.fs`.
 
@@ -107,7 +107,7 @@ The custom champion shader will only be used by the game if the entity is actual
 Note that the custom shader must take the exact same inputs as the default `coloroffset_champion` shader the game uses (it has one additional input compared to `coloroffset`).
 
 ___
-### SetCustomShader () {: aria-label='Modified Functions' }
+### SetCustomShader () {: aria-label='Functions' }
 #### void SetCustomShader ( string ShaderPath ) {: .copyable aria-label='Functions' }
 Specify a custom shader file for this layer to use instead of the default `coloroffset` shader. Provided path is expected to start at `.../resources/` and to find both a .vs and .fs file at that location. For example: `layer:SetCustomShader("shaders/my_shader")` will load `.../resources/shaders/my_shader.vs` and `.../resources/shaders/my_shader.fs`.
 
