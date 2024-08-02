@@ -380,6 +380,23 @@ LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
 	return 1;
 }
 
+LUA_FUNCTION(Lua_EntityNPC_ReplaceSpritesheet) {
+	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
+	const int layerId = luaL_checkinteger(L, 2);
+	std::string newSpriteSheet = luaL_checkstring(L, 3);
+	bool loadGraphics = lua::luaL_optboolean(L, 4, false);
+
+	std::string input;
+
+	npc->translate_gfx_path(input, newSpriteSheet);
+	npc->_sprite.ReplaceSpritesheet(layerId, input);
+
+	if (loadGraphics) {
+		npc->_sprite.LoadGraphics(false);
+	}
+	return 0;
+}
+
 HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 	super();
 
@@ -411,6 +428,7 @@ HOOK_METHOD(LuaEngine, RegisterClasses, () -> void) {
 		{ "GetDarkRedChampionRegenTimer", Lua_GetDarkRedChampionRegenTimer },
 		{ "GetSirenPlayerEntity", Lua_GetSirenPlayerEntity },
 		{ "TrySplit", Lua_EntityNPC_TrySplit },
+		{ "ReplaceSpritesheet", Lua_EntityNPC_ReplaceSpritesheet },
 		// Minecart
 		//{ "MinecartUpdateChild", Lua_EntityNPC_Minecart_UpdateChild },
 		{ NULL, NULL }
