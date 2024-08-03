@@ -320,9 +320,9 @@ namespace CustomItemPool
     CustomItemPool::GameState gameStates[2];
     SaveData saveData;
 
-    std::unordered_map<std::string, int> InitReservedNames()
+    std::unordered_map<std::string, int>& InitReservedNames()
     {
-        std::unordered_map<std::string, int> reservedNames;
+        static std::unordered_map<std::string, int> reservedNames;
 
         reservedNames["treasure"] = POOL_TREASURE;
         reservedNames["shop"] = POOL_SHOP;
