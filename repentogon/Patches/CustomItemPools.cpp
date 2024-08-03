@@ -1027,15 +1027,17 @@ void ASMPatchDecreaseRemainingGenesisItems()
 
 void ASMPatchPoolNotFoundLogINFO()
 {
-    SigScan scanner("5068????????6a??e8????????c645");
+    SigScan scanner("e8????????c645fc0383c40c");
     scanner.Scan();
     void* poolNotFoundSig = scanner.GetAddress();
 
-    printf("[REPENTOGON] Patching ItemPool::load_pools at %p for CustomItemPools\n", poolNotFoundSig);
+    ZHL::Log("[REPENTOGON] Patching ItemPool::load_pools at %p for CustomItemPools\n", poolNotFoundSig);
 
     ASMPatch patch;
-    patch.AddRelativeJump((char*)poolNotFoundSig + 0xD); // Skip KAGE::LogMessage
-    sASMPatcher.PatchAt(poolNotFoundSig, &patch);
+    ByteBuffer buffer;
+    buffer.AddByte('\x90', 5);
+    patch.AddBytes(buffer);
+    sASMPatcher.FlatPatch(poolNotFoundSig, &patch, true);
 }
 
 const char* emptyString = "";

@@ -1,3 +1,6 @@
+v1.0.11b -
+Bug fixes:
+	- Fixed a crash that could occur randomly when using custom item pools
 v1.0.11a -
 Bug fixes:
 	- Fixed a division by zero that occured when shuffling an empty item pool
