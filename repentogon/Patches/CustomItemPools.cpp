@@ -664,6 +664,9 @@ namespace CustomItemPool
         }
 
         std::vector<PoolItem>& poolItems = itemPools[customPoolID]._poolList;
+        if (poolItems.empty())
+            return;
+
         for (size_t lastIndex = poolItems.size() - 1; lastIndex > 0; lastIndex--)
         {
             uint32_t randomIndex = mtRNG.Next() % (lastIndex + 1);
