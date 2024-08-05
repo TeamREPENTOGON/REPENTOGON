@@ -12975,7 +12975,7 @@
 <h4 aria-label="Functions" class="copyable" id="void-addboneorbital-vector-position">void AddBoneOrbital ( <a href="Vector.html">Vector</a> Position )<a class="headerlink" href="#void-addboneorbital-vector-position" title="Permanent link">⚓︎</a></h4>
 <hr />
 <h3 aria-label="Functions" id="addcustomcachetag">AddCustomCacheTag ()<a class="headerlink" href="#addcustomcachetag" title="Permanent link">⚓︎</a></h3>
-<h4 id="void-addcustomcachetag-string-or-string-string-bool-evaluateitems-false-copyable-aria-labelfunctions">void AddCustomCacheTag ( string OR {string, string, ...}, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }<a class="headerlink" href="#void-addcustomcachetag-string-or-string-string-bool-evaluateitems-false-copyable-aria-labelfunctions" title="Permanent link">⚓︎</a></h4>
+<h4 aria-label="Functions" class="copyable" id="void-addcustomcachetag-string-or-string-string-bool-evaluateitems-false">void AddCustomCacheTag ( string OR {string, string, ...}, bool EvaluateItems = false )<a class="headerlink" href="#void-addcustomcachetag-string-or-string-string-bool-evaluateitems-false" title="Permanent link">⚓︎</a></h4>
 <p>Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).</p>
 <hr />
 <h3 aria-label="Functions" id="addinnatecollectible">AddInnateCollectible ()<a class="headerlink" href="#addinnatecollectible" title="Permanent link">⚓︎</a></h3>
@@ -13136,7 +13136,7 @@
 <hr />
 <h3 aria-label="Functions" id="getcustomcachevalue">GetCustomCacheValue ()<a class="headerlink" href="#getcustomcachevalue" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="float-getcustomcachevalue">float GetCustomCacheValue ( )<a class="headerlink" href="#float-getcustomcachevalue" title="Permanent link">⚓︎</a></h4>
-<p>Returns the current cached value for the specified CustomCacheTag. Will return 0 by default if the provided tag has not been evaluated.</p>
+<p>Returns the current cached value for the specified CustomCacheTag. Will return <code>0</code> by default if the provided tag has not been evaluated.</p>
 <hr />
 <h3 aria-label="Functions" id="getcollectibleslist">GetCollectiblesList ()<a class="headerlink" href="#getcollectibleslist" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="table-getcollectibleslist">table GetCollectiblesList ( )<a class="headerlink" href="#table-getcollectibleslist" title="Permanent link">⚓︎</a></h4>
@@ -13497,9 +13497,13 @@ If the target is not displayed on the ground, this function returns <code>nil</c
 <h3 aria-label="Functions" id="getteardisplacement">GetTearDisplacement ()<a class="headerlink" href="#getteardisplacement" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-getteardisplacement-activeslot-slot">int GetTearDisplacement ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">ActiveSlot</a> Slot )<a class="headerlink" href="#int-getteardisplacement-activeslot-slot" title="Permanent link">⚓︎</a></h4>
 <p>Returns the player's TearDisplacement value, used to check what eye the player is shooting from.</p>
-<p>+??? info "Return info"
-    - <code>1</code> Right eye
-    - <code>-1</code> Left eye</p>
+<details class="info" open="open">
+<summary>Return info</summary>
+<ul>
+<li><code>1</code> Right eye</li>
+<li><code>-1</code> Left eye</li>
+</ul>
+</details>
 <hr />
 <h3 aria-label="Functions" id="gettotalactivecharge">GetTotalActiveCharge ()<a class="headerlink" href="#gettotalactivecharge" title="Permanent link">⚓︎</a></h3>
 <h4 aria-label="Functions" class="copyable" id="int-gettotalactivecharge-activeslot-slot">int GetTotalActiveCharge ( <a href="https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html">ActiveSlot</a> Slot )<a class="headerlink" href="#int-gettotalactivecharge-activeslot-slot" title="Permanent link">⚓︎</a></h4>
