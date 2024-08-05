@@ -88,8 +88,8 @@ ___
 #### [GenericPrompt](GenericPrompt.md) GetGenericPrompt ( ) {: .copyable aria-label='Functions' }
 Returns the currently active `GenericPrompt` object.
 
-+??? bug "Bug"
-	Crashes the game if used during a run while no prompts are active.
+???+ bug "Bug"
+	  Crashes the game if used during a run while no prompts are active.
 
 ___
 ### GetLerpColorModifier () {: aria-label='Functions' }

@@ -228,7 +228,7 @@ ___
 ### GetPersistentGameData () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
 
-__
+___
 ### GetPoolIdByName () {: aria-label='Functions' }
 #### [ItemPoolType](ItemPoolType.md) GetPoolIdByName ( ) {: .copyable aria-label='Functions' }
 Returns the ID of a given custom pool. Returns `-1` if the pool is not found.

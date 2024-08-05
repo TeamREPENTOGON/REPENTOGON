@@ -2238,28 +2238,28 @@ Called right after the boss intro is initialized. `BossID2` is for Double Troubl
 |:--|:--|:--|:--|:--|
 |1272 |MC_POST_ROOM_TRANSITION_RENDER {: .copyable } | void | int TransitionMode | void |
 
-## MC_PRE_PLAYER_ADD_COSTUME {: .copyable }
+### MC_PRE_PLAYER_ADD_COSTUME {: .copyable }
 Called before the costume is added to the player. Return [ItemConfigItem](../ItemConfig_Item.md) to replace the costume or `true` to cancel adding it entirely.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1281 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | [ItemConfigItem](../ItemConfig_Item.md) ItemConfig or boolean |
 
-## MC_PRE_PLAYER_REMOVE_COSTUME {: .copyable }
+### MC_PRE_PLAYER_REMOVE_COSTUME {: .copyable }
 Called before the costume is added to the player. Return `true` to cancel the removal.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1282 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | boolean |
 
-## MC_POST_PLAYER_ADD_COSTUME {: .copyable }
+### MC_POST_PLAYER_ADD_COSTUME {: .copyable }
 Called after the costume is added to the player, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1283 |MC_POST_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
 
-## MC_POST_PLAYER_REMOVE_COSTUME {: .copyable }
+### MC_POST_PLAYER_REMOVE_COSTUME {: .copyable }
 Called after the costume is added to the player, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|

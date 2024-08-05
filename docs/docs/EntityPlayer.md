@@ -83,7 +83,7 @@ ___
 
 ___
 ### AddCustomCacheTag () {: aria-label='Functions' }
-#### void AddCustomCacheTag ( string OR {string, string, ...}, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }
+#### void AddCustomCacheTag ( string OR \{string, string, ...\}, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }
 Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
 
 ___
@@ -274,7 +274,7 @@ Corresponds to the current visible state of Cambion Conception's costume (0-2).
 ___
 ### GetCustomCacheValue () {: aria-label='Functions' }
 #### float GetCustomCacheValue ( ) {: .copyable aria-label='Functions' }
-Returns the current cached value for the specified CustomCacheTag. Will return 0 by default if the provided tag has not been evaluated.
+Returns the current cached value for the specified CustomCacheTag. Will return `0` by default if the provided tag has not been evaluated.
 
 ___
 ### GetCollectiblesList () {: aria-label='Functions' }
@@ -619,7 +619,7 @@ ___
 #### int GetTearDisplacement ( [ActiveSlot](https://wofsauge.github.io/IsaacDocs/rep/enums/ActiveSlot.html) Slot ) {: .copyable aria-label='Functions' }
 Returns the player's TearDisplacement value, used to check what eye the player is shooting from.
 
-+??? info "Return info"
+???+ info "Return info"
     - `1` Right eye
     - `-1` Left eye
 

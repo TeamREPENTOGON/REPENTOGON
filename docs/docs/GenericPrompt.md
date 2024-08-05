@@ -38,7 +38,7 @@ Returns whether the prompt is active or not.
 ___
 ### Update () {: aria-label='Functions' }
 #### void Update ( boolean ProcessInput ) {: .copyable aria-label='Functions' }
-Updates the animation of the prompt paper. Set ProcessInput to `true` to track the player's input for selecting yes/no, `false` otherwise.
+Updates the animation of the prompt paper. Set `ProcessInput` to `true` to track the player's input for selecting yes/no, `false` otherwise.
 
 ___
 ### Render () {: aria-label='Functions' }

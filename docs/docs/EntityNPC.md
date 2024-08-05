@@ -83,7 +83,7 @@ ___
 ___
 ### ReplaceSpritesheet () {: aria-label='Functions' }
 #### void ReplaceSpritesheet ( int LayerId, string PngFilename, bool LoadGraphics = false ) {: .copyable aria-label='Functions' }
-Similar to [Sprite:ReplaceSpritesheet()](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html#replacespritesheet). Appends "_champion"/stage suffix to PngFilename if possible.
+Similar to [Sprite.ReplaceSpritesheet()](https://wofsauge.github.io/IsaacDocs/rep/Sprite.html#replacespritesheet). Appends "_champion"/stage suffix to `PngFilename` if possible.
 
 ___
 ### SetControllerId () {: aria-label='Functions' }
@@ -93,7 +93,7 @@ Sets the ControllerId for the NPC, which indicates which player will control it.
 ___
 ### SetFlyingOverride () {: aria-label='Functions' }
 #### void SetFlyingOverride ( boolean CanFly ) {: .copyable aria-label='Functions' }
-Sets an override to the return value of IsFlying, which is normally based on EntityGridCollisionClass. Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
+Sets an override to the return value of IsFlying, which is normally based on [EntityGridCollisionClass](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityGridCollisionClass.html). Can be used to make grounded enemies ignore creep, or flying enemies get hit by creep.
 
 ___
 ### SetShieldStrength () {: aria-label='Functions' }

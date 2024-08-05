@@ -77,9 +77,9 @@ ___
 ___
 ### GetItemPool () {: aria-label='Functions' }
 #### [ItemPoolType](ItemPoolType.md) PoolType GetItemPool ( int Seed, boolean Raw ) {: .copyable aria-label='Functions' }
-Retrieves the [ItemPoolType](ItemPoolType.md) the game would use to generate random collectibles in the current room. Unlike ItemPool:GetPoolForRoom(), this takes into account the pool set using SetItemPool(), and runs the game's pool selection code, which handles unique cases (ex. Boss Room + Used Satanic Bible = Devil Pool).
+Retrieves the [ItemPoolType](ItemPoolType.md) the game would use to generate random collectibles in the current room. Unlike [ItemPool.GetPoolForRoom()](https://wofsauge.github.io/IsaacDocs/rep/ItemPool.html#getpoolforroom), this takes into account the pool set using [SetItemPool()](Room.md#setitempool), and runs the game's pool selection code, which handles unique cases (ex. Boss Room + Used Satanic Bible = Devil Pool).
 
-If Raw is set to true and the pool is set to POOL_NULL then POOL_NULL will be returned, instead of running the game's pool selection code.
+If `Raw` is set to `true` and the pool is set to `POOL_NULL` then `POOL_NULL` will be returned, instead of running the game's pool selection code.
 
 ___
 ### GetLightningIntensity () {: aria-label='Functions' }
