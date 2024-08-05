@@ -35,8 +35,28 @@ ___
 Returns the tear halo sprite used by Godhead tears.
 
 ___
+### IsMultidimensionalTouched () {: aria-label='Functions' }
+#### boolean IsMultidimensionalTouched ( ) {: .copyable aria-label='Functions' }
+Returns if the tear was created through the Multi Dimensional Baby effect.
+
+___
+### IsPrismTouched () {: aria-label='Functions' }
+#### boolean IsPrismTouched ( ) {: .copyable aria-label='Functions' }
+Returns if the tear was created through the Angelic Prism effect.
+
+___
 ### MakeMultidimensionalCopy () {: aria-label='Functions' }
 #### [EntityTear](EntityTear.md) MakeMultidimensionalCopy ( ) {: .copyable aria-label='Functions' }
 Copies the tear and applies a black and white effect to it. This effect is the same one used by the Multidimensional Baby familiar.
+
+___
+### SetMultidimensionalTouched () {: aria-label='Functions' }
+#### void SetMultiDimensionalTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
+Sets if the tear was created through the Angelic Prism effect.
+
+___
+### SetPrismTouched () {: aria-label='Functions' }
+#### void SetPrismTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
+Sets if the tear was created through the Angelic Prism effect.
 
 ___

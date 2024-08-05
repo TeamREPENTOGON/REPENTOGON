@@ -228,6 +228,7 @@ nav:
   - Font: Font.md
   - FXParams: FXParams.md
   - Game: Game.md
+  - GenericPrompt: GenericPrompt.md
   - GridEntity:
     - GridEntity: GridEntity.md
     - GridEntityDecoration: GridEntityDecoration.md

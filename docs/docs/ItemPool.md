@@ -51,6 +51,11 @@ ___
 Returns the amount of trinkets available in the item pool.
 
 ___
+### GetNumItemPools () {: aria-label='Functions' }
+#### int GetNumItemPools ( ) {: .copyable aria-label='Functions' }
+Retrieves the total number of item pools in the game, including custom item pools.
+
+___
 ### GetPillColor () {: aria-label='Functions' }
 #### [PillColor](https://wofsauge.github.io/IsaacDocs/rep/enums/PillColor.html) GetPillColor ( [PillEffect](https://wofsauge.github.io/IsaacDocs/rep/enums/PillEffect.html) ID ) {: .copyable aria-label='Functions' }
 Returns a PillColor matching the specificed PillEffect, returns -1 if the Effect is not in the rotation.

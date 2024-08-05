@@ -150,7 +150,7 @@ Returns a table containing all the marks for the character.
 
 ???- info "Table structure & usage"
 	- The table has the following fields: 
-		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) asociated to the marks
+		* PlayerType: containing the [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) associated to the marks
 		* MomsHeart: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 		* Isaac: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
 		* Satan: value of [Difficulty](https://wofsauge.github.io/IsaacDocs/rep/enums/Difficulty.html) 0-2 indicating the completion
@@ -227,6 +227,11 @@ ___
 ___
 ### GetPersistentGameData () {: aria-label='Functions' }
 #### [PersistentGameData](PersistentGameData.md) GetPersistentGameData ( ) {: .copyable aria-label='Functions' }
+
+__
+### GetPoolIdByName () {: aria-label='Functions' }
+#### [ItemPoolType](ItemPoolType.md) GetPoolIdByName ( ) {: .copyable aria-label='Functions' }
+Returns the ID of a given custom pool. Returns `-1` if the pool is not found.
 
 ___
 ### GetRenderPosition () {: aria-label='Functions' }

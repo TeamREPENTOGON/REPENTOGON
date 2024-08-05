@@ -263,7 +263,7 @@ Called after the player gets a completion mark, getting as a parameter the code 
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1048 |MC_POST_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, <br>int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) |
+|1048 |MC_POST_COMPLETION_MARK_GET {: .copyable } | ([CompletionType](CompletionType.md) Completion, <br>int [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html)) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_CONSOLE_AUTOCOMPLETE {: .copyable }
 This is called whenever a function with the CUSTOM [AutocompleteType](AutocompleteType.md) enum is being entered into the console. Called every time the console input changes.
@@ -1257,11 +1257,25 @@ Return an entity to make the NPC target that entity instead.
 |1222 |MC_NPC_PICK_TARGET {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, <br>[Entity](../Entity.md) CurrentTarget) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | [Entity](../Entity.md) |
 
 ### MC_POST_NPC_DARK_RED_CHAMPION_REGEN {: .copyable }
-Runs right after a dark red champion regerates out of the goo form.
+Runs right after a dark red champion regenerates out of the goo form.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1223 |MC_POST_NPC_DARK_RED_CHAMPION_REGEN {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | void |
+
+### MC_EVALUATE_CUSTOM_CACHE {: .copyable }
+Called when a custom cache tag is evaluated. Return a number to modify the value. Modified values are passed onto the next callback.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1224 |MC_EVALUATE_CUSTOM_CACHE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, CustomCacheTag string, float Value) | string CustomCacheTag | void |
+
+### MC_EVALUATE_FAMILIAR_MULTIPLIER {: .copyable }
+Called when a familiar's cached multiplier needs to be re-evaluated. Return a number to modify the multiplier. Modified values are passed to the next callback."
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1225 |MC_EVALUATE_FAMILIAR_MULTIPLIER {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar, float Mult, [EntityPlayer](../EntityPlayer.md) Player) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | void |
 
 ### MC_PRE_NPC_RENDER {: .copyable }
 Accepts a [Vector](../Vector.md) to modify render offset
@@ -1775,7 +1789,7 @@ The first parameter is the slot you should care about, the 2nd parameter (isslot
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1470 |MC_POST_SAVESLOT_LOAD {: .copyable } | (int saveslot, <br>boolean isslotselected, <br>int rawslot) |  |  |
+|1470 |MC_POST_SAVESLOT_LOAD {: .copyable } | (int saveslot, <br>boolean isslotselected, <br>int rawslot) | void | - | void |
 
 ### MC_PRE_SFX_PLAY {: .copyable }
 Accepts a table of parameters: `{ID, Volume, FrameDelay, Loop, Pitch, Pan}`
@@ -1956,14 +1970,14 @@ Return `false` to cancel it."
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1481 |MC_PRE_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType][https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html] | boolean |
+|1481 |MC_PRE_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType]([https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | boolean |
 
 ### MC_POST_PLAYER_REVIVE {: .copyable }
 Called after the player revives, assuming it wasn't cancelled.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1482 |MC_POST_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType][https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html] | void |
+|1482 |MC_POST_PLAYER_REVIVE {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player) | [PlayerType](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerType.html) | void |
 
 ### MC_POST_TRIGGER_TRINKET_ADDED {: .copyable }
 Accepts no return parameters.
@@ -2047,7 +2061,7 @@ Return `true` to ignore collision.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1171 |MC_PRE_PLAYER_GRID_COLLISION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1171 |MC_PRE_PLAYER_GRID_COLLISION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [PlayerVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerVariant.html) | boolean |
 
 ### MC_PLAYER_GRID_COLLISION {: .copyable }
 Called when this entity collides with the grid, assuming it wasn't skipped.
@@ -2057,7 +2071,7 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1172 |MC_PLAYER_GRID_COLLISION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1172 |MC_PLAYER_GRID_COLLISION {: .copyable } | ([EntityPlayer](../EntityPlayer.md) Player, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [PlayerVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PlayerVariant.html) | boolean |
 
 ### MC_PRE_TEAR_GRID_COLLISION {: .copyable }
 Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
@@ -2069,7 +2083,7 @@ Return `true` to ignore collision.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1173 |MC_PRE_TEAR_GRID_COLLISION {: .copyable } | ([EntityTear](../EntityTear.md) Tear, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1173 |MC_PRE_TEAR_GRID_COLLISION {: .copyable } | ([EntityTear](../EntityTear.md) Tear, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | boolean |
 
 ### MC_TEAR_GRID_COLLISION {: .copyable }
 Called when this entity collides with the grid, assuming it wasn't skipped.
@@ -2079,7 +2093,7 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1174 |MC_TEAR_GRID_COLLISION {: .copyable } | ([EntityTear](../EntityTear.md) Tear, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1174 |MC_TEAR_GRID_COLLISION {: .copyable } | ([EntityTear](../EntityTear.md) Tear, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | boolean |
 
 ### MC_PRE_FAMILIAR_GRID_COLLISION {: .copyable }
 Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
@@ -2091,7 +2105,7 @@ Return `true` to ignore collision.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1175 |MC_PRE_FAMILIAR_GRID_COLLISION {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1175 |MC_PRE_FAMILIAR_GRID_COLLISION {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | boolean |
 
 ### MC_FAMILIAR_GRID_COLLISION {: .copyable }
 Called when this entity collides with the grid, assuming it wasn't skipped.
@@ -2101,7 +2115,7 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1176 |MC_FAMILIAR_GRID_COLLISION {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1176 |MC_FAMILIAR_GRID_COLLISION {: .copyable } | ([EntityFamiliar](../EntityFamiliar.md) Familiar, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [FamiliarVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/FamiliarVariant.html) | boolean |
 
 ### MC_PRE_BOMB_GRID_COLLISION {: .copyable }
 Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
@@ -2113,7 +2127,7 @@ Return `true` to ignore collision.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1177 |MC_PRE_BOMB_GRID_COLLISION {: .copyable } | ([EntityBomb](../EntityBomb.md) Bomb, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1177 |MC_PRE_BOMB_GRID_COLLISION {: .copyable } | ([EntityBomb](../EntityBomb.md) Bomb, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.html) | boolean |
 
 ### MC_BOMB_GRID_COLLISION {: .copyable }
 Called when this entity collides with the grid, assuming it wasn't skipped.
@@ -2123,7 +2137,7 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1178 |MC_BOMB_GRID_COLLISION {: .copyable } | ([EntityBomb](../EntityBomb.md) Bomb, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1178 |MC_BOMB_GRID_COLLISION {: .copyable } | ([EntityBomb](../EntityBomb.md) Bomb, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [BombVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/BombVariant.html) | boolean |
 
 ### MC_PRE_PICKUP_GRID_COLLISION {: .copyable }
 Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
@@ -2135,7 +2149,7 @@ Return `true` to ignore collision.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1179 |MC_PRE_PICKUP_GRID_COLLISION {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1179 |MC_PRE_PICKUP_GRID_COLLISION {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
 
 ### MC_PICKUP_GRID_COLLISION {: .copyable }
 Called when this entity collides with the grid, assuming it wasn't skipped.
@@ -2145,7 +2159,7 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1180 |MC_PICKUP_GRID_COLLISION {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1180 |MC_PICKUP_GRID_COLLISION {: .copyable } | ([EntityPickup](../EntityPickup.md) Pickup, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [PickupVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/PickupVariant.html) | boolean |
 
 ### MC_PRE_PROJECTILE_GRID_COLLISION {: .copyable }
 Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
@@ -2157,7 +2171,7 @@ Return `true` to ignore collision.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1181 |MC_PRE_PROJECTILE_GRID_COLLISION {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1181 |MC_PRE_PROJECTILE_GRID_COLLISION {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | boolean |
 
 ### MC_PROJECTILE_GRID_COLLISION {: .copyable }
 Called when this entity collides with the grid, assuming it wasn't skipped.
@@ -2167,7 +2181,7 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1182 |MC_PROJECTILE_GRID_COLLISION {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1182 |MC_PROJECTILE_GRID_COLLISION {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | boolean |
 
 ### MC_PRE_NPC_GRID_COLLISION {: .copyable }
 Called before this entity collides with a [GridEntity](../GridEntity.md) or other solid grid tile.
@@ -2179,7 +2193,7 @@ Return `true` to ignore collision.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1183 |MC_PRE_NPC_GRID_COLLISION {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1183 |MC_PRE_NPC_GRID_COLLISION {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean |
 
 ### MC_NPC_GRID_COLLISION {: .copyable }
 Called when this entity collides with the grid, assuming it wasn't skipped.
@@ -2189,19 +2203,19 @@ Called when this entity collides with the grid, assuming it wasn't skipped.
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1184 |MC_NPC_GRID_COLLISION {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [GridEntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/GridEntityType.html) | boolean |
+|1184 |MC_NPC_GRID_COLLISION {: .copyable } | ([EntityNPC](../EntityNPC.md) NPC, int GridIndex, [GridEntity](../GridEntity.md) GridEntity) | [EntityType](https://wofsauge.github.io/IsaacDocs/rep/enums/EntityType.html) | boolean |
 
 ### MC_POST_PROJECTILE_DEATH {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1032 |MC_POST_PROJECTILE_DEATH {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | boolean |
+|1032 |MC_POST_PROJECTILE_DEATH {: .copyable } | ([EntityProjectile](../EntityProjectile.md) Projectile) | [ProjectileVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/ProjectileVariant.html) | void |
 
 ### MC_POST_TEAR_DEATH {: .copyable }
 
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
-|1032 |MC_POST_TEAR_DEATH {: .copyable } | ([EntityTear](../EntityTear.md) Tear) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | boolean |
+|1032 |MC_POST_TEAR_DEATH {: .copyable } | ([EntityTear](../EntityTear.md) Tear) | [TearVariant](https://wofsauge.github.io/IsaacDocs/rep/enums/TearVariant.html) | void |
 
 ### MC_POST_BOSS_INTRO_SHOW {: .copyable }
 Accepts no return parameters.
@@ -2223,6 +2237,34 @@ Called right after the boss intro is initialized. `BossID2` is for Double Troubl
 |ID|Name|Function Args|Optional Args|Return Type|
 |:--|:--|:--|:--|:--|
 |1272 |MC_POST_ROOM_TRANSITION_RENDER {: .copyable } | void | int TransitionMode | void |
+
+## MC_PRE_PLAYER_ADD_COSTUME {: .copyable }
+Called before the costume is added to the player. Return [ItemConfigItem](../ItemConfig_Item.md) to replace the costume or `true` to cancel adding it entirely.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1281 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | [ItemConfigItem](../ItemConfig_Item.md) ItemConfig or boolean |
+
+## MC_PRE_PLAYER_REMOVE_COSTUME {: .copyable }
+Called before the costume is added to the player. Return `true` to cancel the removal.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1282 |MC_PRE_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | boolean |
+
+## MC_POST_PLAYER_ADD_COSTUME {: .copyable }
+Called after the costume is added to the player, assuming it wasn't skipped.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1283 |MC_POST_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
+
+## MC_POST_PLAYER_REMOVE_COSTUME {: .copyable }
+Called after the costume is added to the player, assuming it wasn't skipped.
+
+|ID|Name|Function Args|Optional Args|Return Type|
+|:--|:--|:--|:--|:--|
+|1284 |MC_POST_PLAYER_ADD_COSTUME {: .copyable } | ([ItemConfigItem](../ItemConfig_Item.md) ItemConfig, [EntityPlayer](../EntityPlayer.md) Player, boolean ItemStateOnly) | - | void |
 
 ### MC_PRE_PLAYER_UPDATE {: .copyable }
 Called before this entity is updated.

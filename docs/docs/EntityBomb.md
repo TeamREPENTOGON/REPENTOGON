@@ -47,6 +47,11 @@ ___
 #### boolean IsLoadingCostumes ( ) {: .copyable aria-label='Functions' }
 
 ___
+### IsPrismTouched () {: aria-label='Functions' }
+#### boolean IsPrismTouched ( ) {: .copyable aria-label='Functions' }
+Returns if the bomb was created through the Angelic Prism effect.
+
+___
 ### SetFallingSpeed () {: aria-label='Functions' }
 #### void SetFallingSpeed ( float Speed ) {: .copyable aria-label='Functions' }
 
@@ -57,6 +62,11 @@ ___
 ___
 ### SetLoadCostumes () {: aria-label='Functions' }
 #### void SetLoadCostumes ( boolean Load = true ) {: .copyable aria-label='Functions' }
+
+___
+### SetPrismTouched () {: aria-label='Functions' }
+#### void SetPrismTouched ( boolean IsTouched ) {: .copyable aria-label='Functions' }
+Sets if the bomb was created through the Angelic Prism effect.
 
 ___
 ### SetRocketAngle () {: aria-label='Functions' }
