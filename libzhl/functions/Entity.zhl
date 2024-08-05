@@ -137,6 +137,8 @@ struct Entity depends (AnimationState, ANM2, RNG, Vector) {
     bool _visible : 0x169;
 	bool _exists : 0x16a;
 	bool _dead : 0x16b;
+	int _entityGridCollisionClass : 0x17c;
+	int _entityCollisionClass : 0x180;
 	// 0x184 is a boolean related to collisions.
 	unsigned short _entityExtraDataPtrUpperBytes : 0x186;
 	bool _collidesWithGrid : 0x188;
