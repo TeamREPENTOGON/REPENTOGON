@@ -41,7 +41,7 @@ ___
 
 ___
 ### GetTimeout () {: aria-label='Functions' }
-#### boolean GetTimeout ( ) {: .copyable aria-label='Functions' }
+#### int GetTimeout ( ) {: .copyable aria-label='Functions' }
 
 ___
 ### IsMultidimensionalTouched () {: aria-label='Functions' }
@@ -89,6 +89,6 @@ ___
 
 ___
 ### SetTimeout () {: aria-label='Functions' }
-#### void SetTimeout ( boolean Value ) {: .copyable aria-label='Functions' }
+#### void SetTimeout ( int Value ) {: .copyable aria-label='Functions' }
 
 ___
