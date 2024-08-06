@@ -86,6 +86,8 @@ ___
 #### void AddCustomCacheTag ( string OR \{string, string, ...\}, bool EvaluateItems = false ) {: .copyable aria-label='Functions' }
 Add CustomCacheTag(s) to be evaluated next time EvaluateItems runs (which is right now, if the optional boolean is passed).
 
+See [items.xml](xml/items.md) for more information on custom caches.
+
 ___
 ### AddInnateCollectible () {: aria-label='Functions' }
 #### void AddInnateCollectible ( [CollectibleType](https://wofsauge.github.io/IsaacDocs/rep/enums/CollectibleType.html) Collectible, int Amount = 1 ) {: .copyable aria-label='Functions' }
@@ -273,8 +275,10 @@ Corresponds to the current visible state of Cambion Conception's costume (0-2).
 
 ___
 ### GetCustomCacheValue () {: aria-label='Functions' }
-#### float GetCustomCacheValue ( ) {: .copyable aria-label='Functions' }
+#### float GetCustomCacheValue ( string CustomCacheTag ) {: .copyable aria-label='Functions' }
 Returns the current cached value for the specified CustomCacheTag. Will return `0` by default if the provided tag has not been evaluated.
+
+See [items.xml](xml/items.md) for more information on custom caches.
 
 ___
 ### GetCollectiblesList () {: aria-label='Functions' }
