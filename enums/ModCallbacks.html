@@ -18710,7 +18710,8 @@ The callback accepts two parameters:</p>
 </tbody>
 </table>
 <h3 class="copyable" id="mc_evaluate_custom_cache">MC_EVALUATE_CUSTOM_CACHE<a class="headerlink" href="#mc_evaluate_custom_cache" title="Permanent link">⚓︎</a></h3>
-<p>Called when a custom cache tag is evaluated. Return a number to modify the value. Modified values are passed onto the next callback.</p>
+<p>Called when a custom cache is evaluated (see <a href="xml/items.md">items.xml</a>). Return a number to modify the value. Modified values are passed onto the next callback.</p>
+<p>The initial value is always 0. The most recent result can be obtained at any time using <code>player:GetCustomCacheValue("mycustomcache")</code></p>
 <table>
 <thead>
 <tr>
@@ -18732,7 +18733,9 @@ The callback accepts two parameters:</p>
 </tbody>
 </table>
 <h3 class="copyable" id="mc_evaluate_familiar_multiplier">MC_EVALUATE_FAMILIAR_MULTIPLIER<a class="headerlink" href="#mc_evaluate_familiar_multiplier" title="Permanent link">⚓︎</a></h3>
-<p>Called when a familiar's cached multiplier needs to be re-evaluated. Return a number to modify the multiplier. Modified values are passed to the next callback."</p>
+<p>Called when a familiar's cached multiplier needs to be re-evaluated. Return a number to modify the multiplier. Modified values are passed to the next callback.</p>
+<p>Effects such as BFFs or Hive Mind have already been applied at this point.</p>
+<p>Note that the result of this callback is cached, so the callback only runs when needed. It will be triggered if an item with the <code>familiarmultiplier</code> "customcache" is added/removed (see <a href="xml/items.md">items.xml</a>) or if <code>familiar:InvalidateCachedMultiplier()</code> is called.</p>
 <table>
 <thead>
 <tr>

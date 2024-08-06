@@ -6754,9 +6754,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#items-n-trinkets" class="md-nav__link">
+  <a href="#items-trinkets" class="md-nav__link">
     <span class="md-ellipsis">
-      Items n Trinkets
+      Items &amp; Trinkets
     </span>
   </a>
   
@@ -6775,6 +6775,15 @@
   <a href="#customtags" class="md-nav__link">
     <span class="md-ellipsis">
       CustomTags
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customcache" class="md-nav__link">
+    <span class="md-ellipsis">
+      CustomCache
     </span>
   </a>
   
@@ -7055,9 +7064,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#items-n-trinkets" class="md-nav__link">
+  <a href="#items-trinkets" class="md-nav__link">
     <span class="md-ellipsis">
-      Items n Trinkets
+      Items &amp; Trinkets
     </span>
   </a>
   
@@ -7076,6 +7085,15 @@
   <a href="#customtags" class="md-nav__link">
     <span class="md-ellipsis">
       CustomTags
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customcache" class="md-nav__link">
+    <span class="md-ellipsis">
+      CustomCache
     </span>
   </a>
   
@@ -7113,7 +7131,7 @@
 <h1 id="file-itemsxml">File "items.xml"<a class="headerlink" href="#file-itemsxml" title="Permanent link">⚓︎</a></h1>
 <p><strong class="xmlInfo red">Resource-Folder</strong>: Using this file in a resource folder of a mod will replace the original file.</p>
 <p><strong class="xmlInfo green">Content-Folder</strong>: Using this file in a content folder will add new items.</p>
-<h2 id="items-n-trinkets">Items n Trinkets<a class="headerlink" href="#items-n-trinkets" title="Permanent link">⚓︎</a></h2>
+<h2 id="items-trinkets">Items &amp; Trinkets<a class="headerlink" href="#items-trinkets" title="Permanent link">⚓︎</a></h2>
 <p>With REPENTOGON, the following xml attributes have changed functionality for regular items and trinkets:</p>
 <table>
 <thead>
@@ -7127,7 +7145,7 @@
 <tr>
 <td style="text-align: left;">achievement</td>
 <td style="text-align: left;">int</td>
-<td style="text-align: left;">Ties the item/trinket to be unlocked by anachievement. For modded ones, use the provided achievement name xml attribute(define one if it doesnt have one already).</td>
+<td style="text-align: left;">Ties the item/trinket to be unlocked by an achievement. For modded ones, use the provided achievement name xml attribute (define one if it doesnt have one already).</td>
 </tr>
 </tbody>
 </table>
@@ -7293,6 +7311,76 @@
     <span class="kr">end</span>
 <span class="kr">end</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
+<h2 id="customcache">CustomCache<a class="headerlink" href="#customcache" title="Permanent link">⚓︎</a></h2>
+<p>Repentogon also adds a <code>customcache</code> attribute. It is similar to <code>customtags</code>, in that it is a space-separated list of strings, but it has special behaviour to emulate the basegame's <code>cache</code> attribute.</p>
+<p>Whenever an item with one of these tags (or their associated TemporaryEffect) is added or removed, the callback MC_EVALUATE_CUSTOM_CACHE will run, allowing for a value associated with the <code>customcache</code> tag to be recalculated.</p>
+<p>The resultant value of this callback can be obtained using <code>player:GetCustomCacheValue("mycustomcache")</code>. Note that the value is 0 by default.</p>
+<p>MC_EVALUATE_CUSTOM_CACHE will also run for every <code>customcache</code> that has been specified on at least one item in <code>items.xml</code> whenever a cache evaluation for <code>CacheFlag.CACHE_ALL</code> is run (such as the start of a run). Evaluations can also be triggered manually, even for tags not present in <code>items.xml</code>.</p>
+<p>Supported for all item types (collectibles, trinkets, and null items).</p>
+<p>Capitalization does not matter and is ignored in most cases, but prefer to keep things all lowercase.</p>
+<p>Example XML:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>customcache=&quot;mycustomcache<span class="w"> </span>familiarmultiplier&quot;
+</code></pre></div></td></tr></table></div></p>
+<p>Example Code:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">-- Returns a table containing all customtags specified for this entity.</span>
+<span class="c1">-- Tags are provided in all lowercase.</span>
+<span class="kd">local</span> <span class="n">customTags</span> <span class="o">=</span> <span class="n">item</span><span class="p">:</span><span class="n">GetCustomCacheTags</span><span class="p">()</span>
+
+<span class="c1">-- Triggers evaluation for the customcache immediately.</span>
+<span class="n">player</span><span class="p">:</span><span class="n">AddCustomCacheTag</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+
+<span class="c1">-- Queue multiple customcaches for evaluation, but does not trigger evaluation immediately.</span>
+<span class="c1">-- The evaluation will happen whenever a standard cache evaluation is triggered, such as via `player:EvaluateItems()`.</span>
+<span class="n">player</span><span class="p">:</span><span class="n">AddCustomCacheTag</span><span class="p">({</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">,</span> <span class="s2">&quot;myothercustomcache&quot;</span><span class="p">},</span> <span class="kc">false</span><span class="p">)</span>
+
+<span class="c1">-- Get the current cached value.</span>
+<span class="kd">local</span> <span class="n">cacheValue</span> <span class="o">=</span> <span class="n">player</span><span class="p">:</span><span class="n">GetCustomCacheValue</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">)</span>
+
+<span class="c1">-- The tags listed in the `customcache` attribute can be checked via the ItemConfig.</span>
+<span class="kd">local</span> <span class="n">item</span> <span class="o">=</span> <span class="n">Isaac</span><span class="p">.</span><span class="n">GetItemConfig</span><span class="p">():</span><span class="n">GetCollectible</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+
+<span class="c1">-- Returns true if the entity has the tag string specified.</span>
+<span class="c1">-- Capitalization does not matter.</span>
+<span class="kr">if</span> <span class="n">item</span><span class="p">:</span><span class="n">HasCustomCacheTag</span><span class="p">(</span><span class="s2">&quot;mycustomcache&quot;</span><span class="p">)</span> <span class="kr">then</span>
+  <span class="c1">-- ...</span>
+<span class="kr">end</span>
+</code></pre></div></td></tr></table></div></p>
+<p>Repentogon itself adds some tags that can be used to apply certain features to items with minimal lua code:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">customtag</th>
+<th style="text-align: left;">Effects</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">familiarmultiplier</td>
+<td style="text-align: left;">Does not trigger MC_EVALUATE_CUSTOM_CACHE, instead triggers MC_EVALUATE_FAMILIAR_MULTIPLIER for each of the player's familiars the next time any code checks their multiplier.</td>
+</tr>
+</tbody>
+</table>
 <details class="note" open="open">
 <summary>More Info</summary>
 <p>For more information about this xml, check the original docs entry <a href="https://wofsauge.github.io/IsaacDocs/rep/xml/items.html">here</a>. </p>
