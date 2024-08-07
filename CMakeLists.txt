@@ -57,7 +57,8 @@ add_subdirectory("libs/curl")
 # Crypto++
 option(CRYPTOPP_BUILD_TESTING "" OFF)
 add_subdirectory("libs/cryptopp-cmake")
-target_compile_options(cryptopp PUBLIC "/MD")
+# wd4996 ignore warning C4996: use of deprecated function
+target_compile_options(cryptopp PUBLIC "/MD" "/wd4996")
 
 # Parser
 FILE(GLOB PARSER_SRC ${CMAKE_SOURCE_DIR}/libzhlgen/*.cpp)
@@ -114,7 +115,8 @@ target_link_libraries(dsound Imagehlp launcher_core)
 add_executable(UpdaterBase ${CMAKE_SOURCE_DIR}/updater/Updater.cpp)
 target_include_directories(UpdaterBase PRIVATE ${CURL_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(UpdaterBase PRIVATE libcurl cryptopp launcher_core)
-target_compile_options(UpdaterBase PUBLIC "/MD")
+# wd4003 ignore warning C4003: not enough arguments for function-like macro invocation
+target_compile_options(UpdaterBase PUBLIC "/MD" "/wd4003")
 add_custom_command (TARGET UpdaterBase POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:UpdaterBase> "${CMAKE_SOURCE_DIR}/updater_rsrc")
 
 add_dependencies(dsound UpdaterBase)

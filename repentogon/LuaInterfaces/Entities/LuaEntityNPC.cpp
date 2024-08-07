@@ -371,7 +371,7 @@ LUA_FUNCTION(Lua_EntityNPC_ClearFlyingOverride) {
 
 LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	const float defaultDamage = luaL_checknumber(L, 2);
+	const float defaultDamage = (float)luaL_checknumber(L, 2);
 	auto* source  = lua::GetUserdata<EntityRef*>(L, 3, lua::Metatables::ENTITY_REF, "EntityRef");
 	const bool doScreenEffects = lua::luaL_optboolean(L, 4, true);
 
@@ -382,7 +382,7 @@ LUA_FUNCTION(Lua_EntityNPC_TrySplit) {
 
 LUA_FUNCTION(Lua_EntityNPC_ReplaceSpritesheet) {
 	Entity_NPC* npc = lua::GetUserdata<Entity_NPC*>(L, 1, lua::Metatables::ENTITY_NPC, "EntityNPC");
-	const int layerId = luaL_checkinteger(L, 2);
+	const int layerId = (int)luaL_checkinteger(L, 2);
 	std::string newSpriteSheet = luaL_checkstring(L, 3);
 	bool loadGraphics = lua::luaL_optboolean(L, 4, false);
 

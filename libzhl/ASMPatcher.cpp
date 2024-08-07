@@ -16,6 +16,9 @@
 #include "Log.h"
 #include "SigScan.h"
 
+// C4309: truncation of constant value
+#pragma warning(disable : 4309)
+
 #ifdef max
 #undef max
 #endif
@@ -673,6 +676,7 @@ ASMPatch& ASMPatch::CopyRegister(std::variant<Registers, XMMRegisters> const& ds
 
 	// Add R/M
 	std::bitset<8> rm = ModRM(src, dst, isRegDest);
+  #pragma warning(suppress : 4244)
 	bytes.AddByte(rm.to_ulong());
 	return AddBytes(bytes);
 }
@@ -682,6 +686,7 @@ ASMPatch& ASMPatch::CopyRegister8(ASMPatch::Registers dst, ASMPatch::Registers s
 	// mov /r: 0x8A r8, r/m8
 	bytes.AddByte(0x8A);
 	std::bitset<8> rm = ModRM(src, dst, true);
+  #pragma warning(suppress : 4244)
 	bytes.AddByte(rm.to_ulong());
 	return AddBytes(bytes);
 }

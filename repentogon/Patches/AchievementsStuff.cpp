@@ -429,7 +429,7 @@ void BackupAchievsNOverride() {
 		PersistentGameData* pgd = g_Manager->GetPersistentGameData();
 		for (int i = 1; i <= currmax; i++) {
 			achievbckup[i] = pgd->achievements[i];
-			if (XMLStuff.ModData->achievlistpermod[secretssource].size() >= i) {
+			if ((int)XMLStuff.ModData->achievlistpermod[secretssource].size() >= i) {
 				XMLAttributes cur = XMLStuff.ModData->achievlistpermod[secretssource][i-1];
 				pgd->achievements[i] = pgd->Unlocked(toint(cur["id"]));
 			}
@@ -461,7 +461,7 @@ void ChangeCurrentSecrets(int dir) {
 	int tgrtdir = curridx + dir;
 	if (tgrtdir < 0) {
 		tgrtdir = SourcesWithAchiev.size() - 1;
-	}else if (tgrtdir >= SourcesWithAchiev.size()) {
+	}else if (tgrtdir >= (int)SourcesWithAchiev.size()) {
 		tgrtdir = 0;
 	} 
 	if (curridx != tgrtdir) {

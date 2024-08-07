@@ -50,7 +50,7 @@ LUA_FUNCTION(lua_LevelSetName) {
 
 LUA_FUNCTION(lua_LevelSetGreedWavesClearedWithoutRedHeartDamage) {
 	Level* level = lua::GetUserdata<Level*>(L, 1, lua::Metatables::LEVEL, "Level");
-	level->_greedwavesclearedwithoutredheartdamage = luaL_checkinteger(L, 2);
+	level->_greedwavesclearedwithoutredheartdamage = (uint32_t)luaL_checkinteger(L, 2);
 	return 0;
 }
 LUA_FUNCTION(lua_LevelGetGreedWavesClearedWithoutRedHeartDamage) {

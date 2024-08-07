@@ -185,7 +185,7 @@ void Signature::AddInstructionOperandsToSignature(ZydisDisassembledInstruction c
 		// displacement falls into the address space of the proces. It means we may be attempting to 
 		// read from / write to an absolute address.
 		if (instruction.info.raw.modrm.mod == 0 && instruction.info.raw.modrm.rm == 5 /* BP */ &&
-			instruction.info.raw.disp.value >= moduleAddr && instruction.info.raw.disp.value < moduleAddr + _moduleSize) {
+			instruction.info.raw.disp.value >= (ZyanI64)moduleAddr && instruction.info.raw.disp.value < (ZyanI64)(moduleAddr + _moduleSize)) {
 			// Mod = 0 && RM = 5 is always a 32 (4 * 8) bits displacement in protected mode
 			WildcardRaw(raw, 4);
 		}

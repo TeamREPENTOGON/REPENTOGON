@@ -16,7 +16,6 @@
 #include "Lang.h"
 
 #include <Windows.h>
-#include <format>
 #include <gl/GL.h>
 #include <sstream>
 #include <algorithm>
@@ -567,8 +566,8 @@ void __stdcall RunImGui(HDC hdc) {
 	UpdateImGuiSettings();
 	float scale_to_set = g_PointScale;
 	if (repentogonOptions.imGuiScale != 0) {
-		scale_to_set = repentogonOptions.imGuiScale;
-	};
+		scale_to_set = (float)repentogonOptions.imGuiScale;
+	}
 	if (g_PointScale > 0) {
 		imFontUnifont->Scale = scale_to_set * unifont_global_scale;
 		ImGui::GetStyle().FramePadding.y = 4 * scale_to_set * unifont_global_scale;

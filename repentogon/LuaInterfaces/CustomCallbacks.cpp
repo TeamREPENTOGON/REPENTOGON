@@ -2419,7 +2419,7 @@ HOOK_STATIC(Manager, RecordPlayerCompletion, (int completion) -> void, __stdcall
 					return;
 			}
 			else if (lua_isinteger(L, -1)) {
-				int retCompletion = lua_tointeger(L, -1);
+				int retCompletion = (int)lua_tointeger(L, -1);
 				if (retCompletion >= 0 && retCompletion <= 17)
 					completion = retCompletion;
 				else

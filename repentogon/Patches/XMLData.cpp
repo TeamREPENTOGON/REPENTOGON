@@ -2639,7 +2639,7 @@ LUA_FUNCTION(Lua_GetBossColorByTypeVarSub)
 	tuple idx = { etype,evar };
 		if (XMLStuff.BossColorData->bytypevar.find(idx) != XMLStuff.BossColorData->bytypevar.end()) {
 			vector<XMLAttributes> vecnodes =  XMLStuff.BossColorData->childs[XMLStuff.BossColorData->bytypevar[idx]]["color"];
-			if ((esub > 0) && (vecnodes.size() > (esub-1))) {
+			if ((esub > 0) && ((int)vecnodes.size() > (esub-1))) {
 				Lua_PushXMLNode(L, vecnodes[esub-1], XMLChilds());
 				return 1;
 			}
