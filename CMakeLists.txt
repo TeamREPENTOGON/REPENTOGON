@@ -14,7 +14,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include "${CMAKE_SOURCE_DIR}/libs/lua"
     "${CMAKE_SOURCE_DIR}/libs/LuaBridge/Source/LuaBridge" 
     "${CMAKE_SOURCE_DIR}/libzhl" "${CMAKE_SOURCE_DIR}/libs/imgui" 
     "${CMAKE_SOURCE_DIR}/libs/imgui/misc/freetype" "${CMAKE_SOURCE_DIR}/libs/imgui/backends" 
-    "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini")
+    "${CMAKE_SOURCE_DIR}/libs/NaturalSort" "${CMAKE_SOURCE_DIR}/libs/glad/include" "${CMAKE_SOURCE_DIR}/libs/mINI/src/mini"
+    "${CMAKE_SOURCE_DIR}/libs/luasocket")
 
 # Zydis
 option(ZYDIS_BUILD_TOOLS "" OFF)
@@ -76,6 +77,55 @@ FILE(GLOB LUA_SRC ${CMAKE_SOURCE_DIR}/libs/lua/*.c)
 list(REMOVE_ITEM LUA_SRC "${CMAKE_SOURCE_DIR}/libs/lua/onelua.c")
 add_compile_definitions(LUA_BUILD_AS_DLL)
 add_library(Lua5.4 SHARED ${LUA_SRC})
+
+# LuaSocket
+set(LUASOCKET_SRC
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/luasocket.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/timeout.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/buffer.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/io.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/auxiliar.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/compat.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/options.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/inet.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/except.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/select.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/tcp.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/udp.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/mime.c
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/wsocket.c
+)
+
+set(LUASOCKET_HEADERS
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/luasocket.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/timeout.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/buffer.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/io.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/auxiliar.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/compat.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/options.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/inet.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/except.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/select.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/tcp.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/udp.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/mime.h
+    ${CMAKE_SOURCE_DIR}/libs/luasocket/src/wsocket.h
+)
+execute_process(
+    COMMAND ${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/libs/luasocket_patch.diff
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/luasocket
+    RESULT_VARIABLE result
+)
+
+if(result)
+    message(FATAL_ERROR "Failed to apply luasocket_patch.diff: ${result}")
+endif()
+
+add_compile_definitions(_WIN32)
+add_library(LuaSocket SHARED ${LUASOCKET_SRC} ${LUASOCKET_HEADERS})
+target_link_libraries(LuaSocket ws2_32 Lua5.4)
+# target_include_directories(LuaSocket PUBLIC ${CMAKE_SOURCE_DIR}/libs/luasocket/src)
 
 # IsaacRepentance.h/.cpp
 FILE(GLOB ZHL_FILES ${CMAKE_SOURCE_DIR}/libzhl/functions/*.zhl)
@@ -207,6 +257,7 @@ target_compile_options(zhlDelirium PUBLIC "/MD")
 
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources")
 add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources-repentogon")
+add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/LuaSocket.dll" "$<TARGET_FILE_DIR:zhlREPENTOGON>/resources/scripts/repentogon_socket/core.dll")
 # add_custom_command(TARGET zhlDelirium POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/delirium/resources-delirium" "$<TARGET_FILE_DIR:zhlDelirium>/resources-delirium")
 
 if(NOT ISAAC_DIRECTORY STREQUAL "")
@@ -218,6 +269,7 @@ if(NOT ISAAC_DIRECTORY STREQUAL "")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlREPENTOGON>/zhlREPENTOGON.dll" "${ISAAC_DIRECTORY}")
 	add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources" "${ISAAC_DIRECTORY}/resources")
     add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/repentogon/resources-repentogon" "${ISAAC_DIRECTORY}/resources-repentogon")
+    add_custom_command(TARGET zhlREPENTOGON POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:dsound>/LuaSocket.dll" "${ISAAC_DIRECTORY}/resources/scripts/repentogon_socket/core.dll")
     add_custom_command(TARGET zhlDelirium POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE_DIR:zhlDelirium>/zhlDelirium.dll" "${ISAAC_DIRECTORY}")
     # add_custom_command(TARGET zhlDelirium POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory "${PROJECT_SOURCE_DIR}/delirium/resources-delirium" "${ISAAC_DIRECTORY}/resources-delirium")
 endif()

@@ -1,0 +1,13 @@
+diff --git a/src/luasocket.c b/src/luasocket.c
+index 0fd99f7..683fa08 100644
+--- a/src/luasocket.c
++++ b/src/luasocket.c
+@@ -96,7 +96,7 @@ static int base_open(lua_State *L) {
+ /*-------------------------------------------------------------------------*\
+ * Initializes all library modules.
+ \*-------------------------------------------------------------------------*/
+-LUASOCKET_API int luaopen_socket_core(lua_State *L) {
++LUASOCKET_API int luaopen_repentogon_socket_core(lua_State *L) {
+     int i;
+     base_open(L);
+     for (i = 0; mod[i].name; i++) mod[i].func(L);
