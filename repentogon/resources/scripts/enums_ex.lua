@@ -2682,8 +2682,8 @@ BlendType = {
 
 MinimapState = {
 	NORMAL = 0,
-	EXPANDED_OPAQUE = 1,
-	EXPANDED = 2
+	EXPANDED = 1,
+	EXPANDED_OPAQUE = 2
 }
 
 DwmWindowAttributes={
