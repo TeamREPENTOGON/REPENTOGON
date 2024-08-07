@@ -5,6 +5,33 @@ set (ISAAC_DIRECTORY "" CACHE PATH "Path to the root directory of the game")
 set (CMAKE_BUILD_TYPE "Debug")
 set (ZHL_LOG_FILE "" CACHE PATH "Path to the file in which logs will be written")
 
+function(apply_patch patch_file patch_dir)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} apply --check ${patch_file}
+        WORKING_DIRECTORY ${patch_dir}
+        RESULT_VARIABLE check_result
+        OUTPUT_QUIET
+        ERROR_QUIET
+    )
+
+    if(check_result EQUAL 0)
+        message(STATUS "Applying patch ${patch_file}")
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} apply ${patch_file}
+            WORKING_DIRECTORY ${patch_dir}
+            RESULT_VARIABLE apply_result
+            OUTPUT_QUIET
+            ERROR_QUIET
+        )
+
+        if(NOT apply_result EQUAL 0)
+            message(FATAL_ERROR "Failed to apply patch ${patch_file}: ${apply_result}")
+        endif()
+    else()
+        message(STATUS "Patch ${patch_file} has already been applied or cannot be applied cleanly")
+    endif()
+endfunction()
+
 project(RepExtender)
 
 find_package(OpenGL REQUIRED)
@@ -112,16 +139,7 @@ set(LUASOCKET_HEADERS
     ${CMAKE_SOURCE_DIR}/libs/luasocket/src/mime.h
     ${CMAKE_SOURCE_DIR}/libs/luasocket/src/wsocket.h
 )
-execute_process(
-    COMMAND ${GIT_EXECUTABLE} apply ${CMAKE_SOURCE_DIR}/libs/luasocket_patch.diff
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/libs/luasocket
-    RESULT_VARIABLE result
-)
-
-if(result)
-    message(FATAL_ERROR "Failed to apply luasocket_patch.diff: ${result}")
-endif()
-
+apply_patch(${CMAKE_SOURCE_DIR}/libs/luasocket_patch.diff ${CMAKE_SOURCE_DIR}/libs/luasocket)
 add_compile_definitions(_WIN32)
 add_library(LuaSocket SHARED ${LUASOCKET_SRC} ${LUASOCKET_HEADERS})
 target_link_libraries(LuaSocket ws2_32 Lua5.4)
