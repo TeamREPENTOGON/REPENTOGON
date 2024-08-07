@@ -49,6 +49,10 @@ end
 local oldrequire = require
 
 function require(modname)
+	if modname == "socket.core" then
+		return oldrequire("repentogon_socket.core")
+	end
+
 	local ret = oldrequire(modname)
 	return ret
 end
