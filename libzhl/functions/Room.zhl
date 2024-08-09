@@ -119,8 +119,8 @@ struct Room depends (EntityList, RoomDescriptor, TemporaryEffects, RailManager) 
     inline Backdrop* GetBackdrop() { return (Backdrop*)((char*)this + 0x1D34); }
 	inline Vector* GetWaterCurrent() {return (Vector*)((char*)this + 0x7344); }
     inline RailType* GetRails() { return (RailType*)((char*)this + 0x7350); }
-    inline RailType GetRailType(uint8_t gridIndex) { return GetRails()[gridIndex]; }
-    inline void SetRailType(uint8_t gridIndex, RailType railType) { GetRails()[gridIndex] = railType; }
+    inline RailType GetRailType(uint16_t gridIndex) { return GetRails()[gridIndex]; }
+    inline void SetRailType(uint16_t gridIndex, RailType railType) { GetRails()[gridIndex] = railType; }
     static bool LIBZHL_API IsValidRailType(int rail);
     inline bool IsValidGridIndex(int index, bool includeWalls = true) const {
         return _descriptor->Data->IsValidGridIndex(index, includeWalls);

@@ -189,7 +189,7 @@ LUA_FUNCTION(lua_RoomSetRail) {
 		return luaL_error(L, "Invalid rail type %d\n", rail);
 	}
 
-	room->SetRailType((uint8_t)index, (RailType)rail);
+	room->SetRailType(index, (RailType)rail);
 
 	return 0;
 }
