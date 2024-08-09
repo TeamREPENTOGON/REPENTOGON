@@ -145,7 +145,7 @@ bool RoomConfig_Room::IsValidGridIndex(int index, bool includeWalls) const {
 		  return index >= 0 && index <= 234;
 		} else {
 		  return index % 15 != 0 && index % 15 != 14 &&
-			index <= 16 && index <= 218;
+			index >= 16 && index <= 218;
 		}
 
     /* |-----------------------------------------------------------|
