@@ -180,7 +180,10 @@ LUA_FUNCTION(lua_RoomSetRail) {
 	Room* room = lua::GetUserdata<Room*>(L, 1, lua::Metatables::ROOM, lua::metatables::RoomMT);
 	int index = (int)luaL_checkinteger(L, 2);
 
-	if (!room->IsValidGridIndex(index, false)) {
+	/* if (!room->IsValidGridIndex(index, false)) {
+		return luaL_error(L, "Invalid grid index %d\n", index);
+	} */
+	if (index < 0 || (index >= (room->_gridHeight * room->_gridWidth))) {
 		return luaL_error(L, "Invalid grid index %d\n", index);
 	}
 
